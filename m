@@ -1,75 +1,111 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Subject: Re: [Xen-devel] [PATCH v1 08/21] x86/xen/MSI: Use MSI chip framework
- to configure MSI/MSI-X irq
-Date: Wed, 10 Sep 2014 10:59:57 -0400
-Message-ID: <20140910145957.GD12893@laptop.dumpdata.com>
-References: <1409911806-10519-1-git-send-email-wangyijing@huawei.com>
- <1409911806-10519-9-git-send-email-wangyijing@huawei.com>
- <5409C8C0.8020200@citrix.com>
- <540E6095.8030409@huawei.com>
- <54104641.7020007@citrix.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 1/6] iommu/arm-smmu: add support for specifying clocks
+Date: Wed, 10 Sep 2014 19:27:39 +0100
+Message-ID: <20140910182739.GM1710@arm.com>
+References: <1407891099-24641-1-git-send-email-mitchelh@codeaurora.org>
+	<1407891099-24641-2-git-send-email-mitchelh@codeaurora.org>
+	<20140819125833.GO23128@arm.com> <53F39F6D.1040205@codeaurora.org>
+	<20140826142757.GU23445@arm.com>
+	<vnkwa968b6ux.fsf@mitchelh-linux.qualcomm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-mips-bounce@linux-mips.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <54104641.7020007@citrix.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: David Vrabel <david.vrabel@citrix.com>
-Cc: Yijing Wang <wangyijing@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Joerg Roedel <joro@8bytes.org>, x86@kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, xen-devel@lists.xenproject.org, arnab.basu@freescale.com, Arnd Bergmann <arnd@arndb.de>, Chris Metcalf <cmetcalf@tilera.com>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Bharat.Bhushan@freescale.com, Tony Luck <tony.luck@intel.com>, Ralf Baechle <ralf@linux-mips.org>, iommu@lists.l
+In-Reply-To: <vnkwa968b6ux.fsf-Yf+dfxj6toJBVvN7MMdr1KRtKmQZhJ7pQQ4Iyu8u01E@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Sep 10, 2014 at 01:38:25PM +0100, David Vrabel wrote:
-> On 09/09/14 03:06, Yijing Wang wrote:
-> > On 2014/9/5 22:29, David Vrabel wrote:
-> >> On 05/09/14 11:09, Yijing Wang wrote:
-> >>> Use MSI chip framework instead of arch MSI functions to configure
-> >>> MSI/MSI-X irq. So we can manage MSI/MSI-X irq in a unified framework.
-> >> [...]
-> >>> --- a/arch/x86/pci/xen.c
-> >>> +++ b/arch/x86/pci/xen.c
-> >> [...]
-> >>> @@ -418,9 +430,9 @@ int __init pci_xen_init(void)
-> >>>  #endif
-> >>>  
-> >>>  #ifdef CONFIG_PCI_MSI
-> >>> -	x86_msi.setup_msi_irqs = xen_setup_msi_irqs;
-> >>> -	x86_msi.teardown_msi_irq = xen_teardown_msi_irq;
-> >>> -	x86_msi.teardown_msi_irqs = xen_teardown_msi_irqs;
-> >>> +	xen_msi_chip.setup_irqs = xen_setup_msi_irqs;
-> >>> +	xen_msi_chip.teardown_irqs = xen_teardown_msi_irqs;
-> >>> +	x86_msi_chip = &xen_msi_chip;
-> >>>  	msi_chip.irq_mask = xen_nop_msi_mask;
-> >>>  	msi_chip.irq_unmask = xen_nop_msi_mask;
-> >>
-> >> Why have these not been changed to set the x86_msi_chip.mask/unmask
-> >> fields instead?
-> > 
-> > Hi David, x86_msi_chip here is struct msi_chip data type, used to configure MSI/MSI-X
-> > irq. msi_chip above is struct irq_chip data type, represent the MSI irq controller. They are
-> > not the same object. Their name easily confusing people.
+On Wed, Sep 10, 2014 at 02:29:42AM +0100, Mitchel Humpherys wrote:
+> On Tue, Aug 26 2014 at 07:27:58 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> > On Tue, Aug 19, 2014 at 08:03:09PM +0100, Olav Haugan wrote:
+> >> Clients of the SMMU driver are required to vote for clocks and power
+> >> when they know they need to use the SMMU. However, the clock and power
+> >> needed to be on for the SMMU to service bus masters aren't necessarily
+> >> the same as the ones needed to read/write registers...See below.
+> >
+> > The case I'm thinking of is where a device masters through the IOMMU, but
+> > doesn't make use of any translations. In this case, its transactions will
+> > bypass the SMMU and I want to ensure that continues to happen, regardless of
+> > the power state of the SMMU.
 > 
-> Ok, it all makes sense now.
+> Then I assume the driver for such a device wouldn't be attaching to (or
+> detaching from) the IOMMU, so we won't be touching it at all either
+> way. Or am I missing something?
+
+As long as its only the register file that gets powered down, then there's
+no issue. However, that's making assumptions about what these clocks are
+controlling. Is there a way for the driver to know which aspects of the
+device are controlled by which clock?
+
+> >> > What stops theses from racing with each other when there are multiple
+> >> > clocks? I also assume that the clk API ignores calls to clk_enable_prepare
+> >> > for a clk that's already enabled? I couldn't find that code...
+> >> 
+> >> All the clock APIs are reference counted yes. Not sure what you mean by
+> >> racing with each other? When you call to enable a clock the call does
+> >> not return until the clock is already ON (or OFF).
+> >
+> > I was thinking of an interrupt handler racing with normal code, but actually
+> > you balance the clk enable/disable in the interrupt handlers. However, it's
+> > not safe to call these clk functions from irq context anyway, since
+> > clk_prepare may sleep.
 > 
-> Acked-by: David Vrabel <david.vrabel@citrix.com>
+> Ah yes. You okay with moving to a threaded IRQ?
 
-You can also add 'Tested-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>'
+A threaded IRQ already makes sense for context interrupts (if anybody has a
+platform that can do stalls properly), but it seems a bit weird for the
+global fault handler. Is there no way to fix the race instead?
 
-on the whole series - I ran it through on Xen and on baremetal with a mix of 32/64 builds.
-
-Oh, and also Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com> the Xen parts.
-
+> >> >> @@ -2061,12 +2164,16 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+> >> >>  	spin_unlock(&arm_smmu_devices_lock);
+> >> >>  
+> >> >>  	arm_smmu_device_reset(smmu);
+> >> >> +	arm_smmu_disable_clocks(smmu);
+> >> > 
+> >> > I wonder if this is really the right thing to do. Rather than the
+> >> > fine-grained clock enable/disable you have, why don't we just enable in
+> >> > domain_init and disable in domain_destroy, with refcounting for the clocks?
+> >> > 
+> >> 
+> >> So the whole point of all of this is that we try to save power. As Mitch
+> >> wrote in the commit text we want to only leave the clock and power on
+> >> for as short period of time as possible.
+> >
+> > Understood, but if the clocks are going up and down like yo-yos, then it's
+> > not obvious that you end up saving any power at all. Have you tried
+> > measuring the power consumption with different granularities for the
+> > clocks?
 > 
-> David
+> This has been profiled extensively and for some use cases it's a huge
+> win. Unfortunately we don't have any numbers for public sharing :( but
+> you can imagine a use case where some multimedia framework maps a bunch
+> of buffers into an SMMU at the beginning of some interactive user
+> session and doesn't unmap them until the (human) user decides they are
+> done. This could be a long time, all the while these clocks could be
+> off, saving power.
+
+Ok, I can see that. I wonder whether we could wrap all of the iommu_ops
+functions with the clock enable/disable code, instead of putting it directly
+into the drivers?
+
+> > The code you're proposing seems to take the approach of `we're going to
+> > access registers so enable the clocks, access the registers then disable the
+> > clocks', which is simple but may not be particularly effective.
 > 
-> _______________________________________________
-> Xen-devel mailing list
-> Xen-devel@lists.xen.org
-> http://lists.xen.org/xen-devel
+> Yes, that's a good summary of the approach here. It has been effective
+> in saving power for us in the past...
+
+Mike, do you have any experience with this sort of stuff?
+
+Will
