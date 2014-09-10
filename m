@@ -1,53 +1,181 @@
-From: Gary Kroening <gfk@sgi.com>
-Subject: Re: [RFC] iommu/vt-d: Use the SIRTP when enabling remapping
-Date: Wed, 10 Sep 2014 02:58:46 -0500
-Message-ID: <541004B6.8070800@sgi.com>
-References: <1410297096-54096-1-git-send-email-nzimmer@sgi.com> <540FF614.8000003@siemens.com>
+From: Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC PATCH v6 15/20] vfio/platform: support for maskable and
+	automasked interrupts
+Date: Wed, 10 Sep 2014 12:13:33 +0200
+Message-ID: <20140910101333.GA3002@lvm>
+References: <1401987808-23596-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1401987808-23596-16-git-send-email-a.motakis@virtualopensystems.com>
+	<20140608101703.GB3279@lvm>
+	<CAG8rG2z02JPE+D-Bo1puuMPCR=wETciLaBgKT+i1XKQ55U-kYg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <540FF614.8000003@siemens.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jan Kiszka <jan.kiszka@siemens.com>, Nathan Zimmer <nzimmer@sgi.com>, jroedel@suse.de
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAG8rG2z02JPE+D-Bo1puuMPCR=wETciLaBgKT+i1XKQ55U-kYg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, KVM devel mailing list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, alvise rigo <a.rigo-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 9/10/2014 1:56 AM, Jan Kiszka wrote:
-> On 2014-09-09 23:11, Nathan Zimmer wrote:
->> The previous change (iommu/vt-d: Don't store SIRTP request) to this area
->> caused a crash in our simulator. In particular is seems that by the time a
->> UART interrupt is sent through the system, we don't see interrupt remapping
->> to be enabled.  So the interrupt does not get translated to a logical
->> interrupt and crashes.
->>
->> OR'ing the SIRTP request to make sure it is seen but hopefully not sticky.
->> This seems like a clean fix, at least on our simulator; if you don't agree,
->> our simulator guy will take a closer look at our iommu model.
->
-> Check the VT-d spec (6.7, Set Interrupt Remapping Table Pointer
-> Operation): "Software must always follow the interrupt-remapping table
-> pointer set operation with a global invalidate of the IEC to ensure
-> hardware references the new structures *before* enabling interrupt
-> remapping." There is also (command register description): "If multiple
-> control fields in this register need to be modified, software must
-> serialize the modifications through multiple writes to this register."
-> This, in combination with the command registers description of bits 24
-> and 25 strongly suggests that your model is broken.
+On Tue, Sep 02, 2014 at 06:06:17PM +0200, Antonios Motakis wrote:
+> On Sun, Jun 8, 2014 at 12:17 PM, Christoffer Dall
+> <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+> > On Thu, Jun 05, 2014 at 07:03:23PM +0200, Antonios Motakis wrote:
+> >> Adds support to mask interrupts, and also for automasked interrupts.
+> >> Level sensitive interrupts are exposed as automasked interrupts and
+> >> are masked and disabled automatically when they fire.
+> >>
+> >> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> >> ---
+> >>  drivers/vfio/platform/vfio_platform_irq.c     | 112 ++++++++++++++++++++++++--
+> >>  drivers/vfio/platform/vfio_platform_private.h |   2 +
+> >>  2 files changed, 109 insertions(+), 5 deletions(-)
+> >>
+> >> diff --git a/drivers/vfio/platform/vfio_platform_irq.c b/drivers/vfio/platform/vfio_platform_irq.c
+> >> index d79f5af..10dfbf0 100644
+> >> --- a/drivers/vfio/platform/vfio_platform_irq.c
+> >> +++ b/drivers/vfio/platform/vfio_platform_irq.c
+> >> @@ -51,9 +51,17 @@ int vfio_platform_irq_init(struct vfio_platform_device *vdev)
+> >>               if (hwirq < 0)
+> >>                       goto err;
+> >>
+> >> -             vdev->irq[i].flags = VFIO_IRQ_INFO_EVENTFD;
+> >> +             spin_lock_init(&vdev->irq[i].lock);
+> >> +
+> >> +             vdev->irq[i].flags = VFIO_IRQ_INFO_EVENTFD
+> >> +                                     | VFIO_IRQ_INFO_MASKABLE;
+> >> +
+> >> +             if (irq_get_trigger_type(hwirq) & IRQ_TYPE_LEVEL_MASK)
+> >> +                     vdev->irq[i].flags |= VFIO_IRQ_INFO_AUTOMASKED;
+> >
+> > This seems to rely on the fact that you had actually loaded a driver for
+> > your device to set the right type.  Is this assumption always correct?
+> >
+> > It seems to me that this configuration bit should now be up to your user
+> > space drive who is the best candidate to know details about your device
+> > at this point?
+> >
+> 
+> Hm, I see this type being set usually either in a device tree source,
+> or in the support code for a specific platform. Are there any
+> situations where this is actually set by the driver? If I understand
+> right this is not the case for the PL330, but if it is possible that
+> it is the case for another device then I need to rethink this. Though
+> as far as I understand this should not be the case.
+> 
 
-Thanks, Jan. I'll read up on it. Still working out some kinks with
-the relatively new IOMMU/interrupt-remapping logic which we added over
-the last 18 months or so. Sorry for any distraction, and thanks for the
-help/info.
-Gary
+Wow, this has been incredibly long time since I looked at this code, so
+not sure if I remember my original reasoning anymore, however,
 
->
->>
->> Found testing on our simulator, not real hardware.
->
-> Funnily, the original issue was found by the QEMU model of VT-d that
-> used to take the last cited sentence very strictly (I asked to remove it
-> due to the preexisting Linux versions).
->
-> Jan
->
+while device properties are set in the DT, they would only be available
+to this code if you actually loaded a device driver for that device,
+right?  I'm just not sure that assumption always holds for devices used
+by VFIO, but I'm really not sure anymore.  Maybe I'm rambling.
+
+> >> +
+> >>               vdev->irq[i].count = 1;
+> >>               vdev->irq[i].hwirq = hwirq;
+> >> +             vdev->irq[i].masked = false;
+> >>       }
+> >>
+> >>       vdev->num_irqs = cnt;
+> >> @@ -77,11 +85,27 @@ void vfio_platform_irq_cleanup(struct vfio_platform_device *vdev)
+> >>
+> >>  static irqreturn_t vfio_irq_handler(int irq, void *dev_id)
+> >>  {
+> >> -     struct eventfd_ctx *trigger = dev_id;
+> >> +     struct vfio_platform_irq *irq_ctx = dev_id;
+> >> +     unsigned long flags;
+> >> +     int ret = IRQ_NONE;
+> >> +
+> >> +     spin_lock_irqsave(&irq_ctx->lock, flags);
+> >> +
+> >> +     if (!irq_ctx->masked) {
+> >> +             ret = IRQ_HANDLED;
+> >> +
+> >> +             if (irq_ctx->flags & VFIO_IRQ_INFO_AUTOMASKED) {
+> >> +                     disable_irq_nosync(irq_ctx->hwirq);
+> >> +                     irq_ctx->masked = true;
+> >> +             }
+> >> +     }
+> >>
+> >> -     eventfd_signal(trigger, 1);
+> >> +     spin_unlock_irqrestore(&irq_ctx->lock, flags);
+> >>
+> >> -     return IRQ_HANDLED;
+> >> +     if (ret == IRQ_HANDLED)
+> >> +             eventfd_signal(irq_ctx->trigger, 1);
+> >> +
+> >> +     return ret;
+> >>  }
+> >>
+> >>  static int vfio_set_trigger(struct vfio_platform_device *vdev,
+> >> @@ -162,6 +186,82 @@ static int vfio_platform_set_irq_trigger(struct vfio_platform_device *vdev,
+> >>       return -EFAULT;
+> >>  }
+> >>
+> >> +static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
+> >> +                                 unsigned index, unsigned start,
+> >> +                                 unsigned count, uint32_t flags, void *data)
+> >> +{
+> >> +     uint8_t arr;
+> >
+> >
+> > arr?
+> 
+> arr for array! As in, the VFIO API allows an array of IRQs. However
+> for platform devices we don't use this, each IRQ is exposed
+> independently as an array of 1 IRQ.
+> 
+
+but it's not an array.  If it contains IRQs, call it irqs.  Unless this
+is referring specifically to a field *named* array, I don't remember the
+API at current, but reading the code along it didn't make sense to me to
+have a uint8_t called arr, and code should make as much sense
+independenly as possible.
+
+This reminds me of people writing code like:
+
+String str;
+
+yuck.
+
+> >
+> >> +
+> >> +     if (start != 0 || count != 1)
+> >> +             return -EINVAL;
+> >> +
+> >> +     switch (flags & VFIO_IRQ_SET_DATA_TYPE_MASK) {
+> >> +     case VFIO_IRQ_SET_DATA_BOOL:
+> >> +             if (copy_from_user(&arr, data, sizeof(uint8_t)))
+> >> +                     return -EFAULT;
+> >> +
+> >> +             if (arr != 0x1)
+> >> +                     return -EINVAL;
+> >
+> > why the fallthrough, what's this about?
+> 
+> The VFIO API allows to unmask/mask an array of IRQs, however with
+> platform devices we only have arrays of 1 IRQ (so not really arrays).
+> 
+> So if the user uses VFIO_IRQ_SET_DATA_BOOL, we need to check that arr
+> == 0x1. When that is the case, a fallthrough to the same code for
+> VFIO_IRQ_SET_DATA_NONE is safe.
+> 
+> If that is not readable enough, then I can add a comment or duplicate
+> the code that does the unmasking. I realize that if you don't know the
+> VFIO API well, then this can look confusing.
+> 
+
+yeah, please put a big fat comment explaining the fallthrough.
+
+-Christoffer
