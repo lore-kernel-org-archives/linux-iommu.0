@@ -1,11 +1,14 @@
-From: Maurizio Lombardi <mlombard-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH] amd_iommu: do not dereference a NULL pointer address.
-Date: Thu, 11 Sep 2014 12:28:03 +0200
-Message-ID: <1410431283-21417-1-git-send-email-mlombard@redhat.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v3 0/3] Support for nesting IOMMUs in VFIO
+Date: Thu, 11 Sep 2014 18:10:52 +0100
+Message-ID: <20140911171052.GB6158@arm.com>
+References: <1409651619-27342-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1409651619-27342-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,31 +18,35 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-under low memory conditions, alloc_pte() may return a NULL pointer.
-iommu_map_page() does not check it and will panic the system.
+Hi Alex,
 
-Signed-off-by: Maurizio Lombardi <mlombard-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/amd_iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
+On Tue, Sep 02, 2014 at 10:53:36AM +0100, Will Deacon wrote:
+> Hello,
+> 
+> This is version three of the patches I originally posted here:
+> 
+>   RFCv1: http://permalink.gmane.org/gmane.linux.kernel.iommu/5552
+>   RFCv2: http://permalink.gmane.org/gmane.linux.kernel.iommu/5700
+> 
+> Changes since RFCv2 include:
+> 
+>   - Dropped the RFC tag
+>   - Rebased onto 3.17-rc*
+>   - Iterate the support bus_types (currently just PCI) and check that
+>     nesting is actually supported
+> 
+> The corresponding arm-smmu changes are included to show how the new
+> domain attribute can be used.
+> 
+> All feedback welcome,
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index ecb0109..9585268 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -1368,6 +1368,9 @@ static int iommu_map_page(struct protection_domain *dom,
- 	count     = PAGE_SIZE_PTE_COUNT(page_size);
- 	pte       = alloc_pte(dom, bus_addr, page_size, NULL, GFP_KERNEL);
- 
-+	if (!pte)
-+		return -ENOMEM;
-+
- 	for (i = 0; i < count; ++i)
- 		if (IOMMU_PTE_PRESENT(pte[i]))
- 			return -EBUSY;
--- 
-Maurizio Lombardi
+Do you have any comments on this series? I've got a fair amount of work
+building on top of it, so it would good to either fix it or see about
+getting it merged.
+
+Cheers,
+
+Will
