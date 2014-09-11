@@ -1,74 +1,41 @@
-From: Kiran Padwal <kiran.padwal@smartplayin.com>
-Subject: [PATCH] iommu: Make of_device_id array const
-Date: Thu, 11 Sep 2014 19:07:36 +0530
-Message-ID: <1410442656-21112-1-git-send-email-kiran.padwal@smartplayin.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: will.deacon@arm.com, joro@8bytes.org, hdoyu@nvidia.com, swarren@wwwdotorg.org, thierry.reding@gmail.com
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org, Kiran Padwal <kiran.padwal@smartplayin.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu: Make of_device_id array const
+Date: Thu, 11 Sep 2014 14:51:19 +0100
+Message-ID: <20140911135119.GH6158@arm.com>
+References: <1410442656-21112-1-git-send-email-kiran.padwal@smartplayin.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1410442656-21112-1-git-send-email-kiran.padwal-edOiRQu9Xnj5XLMNweQjbQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Kiran Padwal <kiran.padwal-edOiRQu9Xnj5XLMNweQjbQ@public.gmane.org>
+Cc: "swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org" <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Make of_device_id array const, because all OF functions handle it as const.
+On Thu, Sep 11, 2014 at 02:37:36PM +0100, Kiran Padwal wrote:
+> Make of_device_id array const, because all OF functions handle it as const.
+> 
+> Signed-off-by: Kiran Padwal <kiran.padwal-edOiRQu9Xnj5XLMNweQjbQ@public.gmane.org>
+> ---
+>  drivers/iommu/arm-smmu.c   |    2 +-
+>  drivers/iommu/omap-iommu.c |    2 +-
+>  drivers/iommu/tegra-gart.c |    2 +-
+>  drivers/iommu/tegra-smmu.c |    2 +-
+>  4 files changed, 4 insertions(+), 4 deletions(-)
 
-Signed-off-by: Kiran Padwal <kiran.padwal@smartplayin.com>
----
- drivers/iommu/arm-smmu.c   |    2 +-
- drivers/iommu/omap-iommu.c |    2 +-
- drivers/iommu/tegra-gart.c |    2 +-
- drivers/iommu/tegra-smmu.c |    2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+Ha, I've seen a few of these patches recently. Did some tool just get
+support for detecting this?
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index ca18d6d..095f4e5 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1993,7 +1993,7 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
- }
- 
- #ifdef CONFIG_OF
--static struct of_device_id arm_smmu_of_match[] = {
-+static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,smmu-v1", },
- 	{ .compatible = "arm,smmu-v2", },
- 	{ .compatible = "arm,mmu-400", },
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index e202b0c..47517cf 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1006,7 +1006,7 @@ static int omap_iommu_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
--static struct of_device_id omap_iommu_of_match[] = {
-+static const struct of_device_id omap_iommu_of_match[] = {
- 	{ .compatible = "ti,omap2-iommu" },
- 	{ .compatible = "ti,omap4-iommu" },
- 	{ .compatible = "ti,dra7-iommu"	},
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index b10a8ec..d6a3a09 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -416,7 +416,7 @@ static const struct dev_pm_ops tegra_gart_pm_ops = {
- 	.resume		= tegra_gart_resume,
- };
- 
--static struct of_device_id tegra_gart_of_match[] = {
-+static const struct of_device_id tegra_gart_of_match[] = {
- 	{ .compatible = "nvidia,tegra20-gart", },
- 	{ },
- };
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 3ded389..05860a4 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -1260,7 +1260,7 @@ static const struct dev_pm_ops tegra_smmu_pm_ops = {
- 	.resume		= tegra_smmu_resume,
- };
- 
--static struct of_device_id tegra_smmu_of_match[] = {
-+static const struct of_device_id tegra_smmu_of_match[] = {
- 	{ .compatible = "nvidia,tegra30-smmu", },
- 	{ },
- };
--- 
-1.7.9.5
+Anyway, looks fine and should probably go via Joerg.
+
+Will
