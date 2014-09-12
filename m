@@ -1,16 +1,12 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: ath9k and AMD IOMMU alias breakage on 3.16?
-Date: Fri, 12 Sep 2014 18:17:52 +0200
-Message-ID: <20140912161752.GV28786@8bytes.org>
-References: <CAGou9MhCmRajqfh91rxbBUr9PBvJxo7U=g9p4Onp0pJk4BwBnA@mail.gmail.com>
-	<1409976104.2982.56.camel@ul30vt.home>
-	<CAGou9Mg+5GhUUECM4qurF6UzhLMARgeCtbL020U9y0Vs7aFGoA@mail.gmail.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [RFC PATCH v3 0/7] Introduce automatic DMA configuration for IOMMU
+	masters
+Date: Fri, 12 Sep 2014 17:34:48 +0100
+Message-ID: <1410539695-29128-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAGou9Mg+5GhUUECM4qurF6UzhLMARgeCtbL020U9y0Vs7aFGoA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,27 +16,57 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jason Newton <nevion-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jason,
+Hi all,
 
-On Fri, Sep 05, 2014 at 10:28:01PM -0700, Jason Newton wrote:
-> [    0.021820] AMD-Vi: device: 00:00.2 cap: 0040 seg: 0 flags: b8 info 0000
-> [    0.021827] AMD-Vi:        mmio-addr: 00000000feb80000
-> [    0.021844] AMD-Vi:   DEV_SELECT_RANGE_START	 devid: 00:01.0 flags: 00
-> [    0.021848] AMD-Vi:   DEV_RANGE_END		 devid: ff:1f.6
-> [    0.022730] AMD-Vi:   DEV_ALIAS_RANGE		 devid: 02:00.0 flags: 00 devid_to: 00:14.4
-> [    0.022735] AMD-Vi:   DEV_RANGE_END		 devid: 02:1f.7
-> [    0.022745] AMD-Vi:   DEV_SPECIAL(HPET[0])		devid: 00:14.0
-> [    0.022749] AMD-Vi:   DEV_SPECIAL(IOAPIC[5])		devid: 00:14.0
-> [    0.022753] AMD-Vi:   DEV_SPECIAL(IOAPIC[6])		devid: 00:00.0
+Here is version three of the RFC I've previously posted here:
 
-It is just a test, as I don't know how the hardware is actually wired in
-your system, but can you try to boot with 'ivrs_ioapic[6]=00:00.1' on
-the kernel command line and report if it makes any difference?
+  RFCv1: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-August/283023.html
+  RFCv2: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-September/283752.html
 
-Thanks,
+Changes since RFCv2 include:
 
-	Joerg
+  - Put the iommu_ops in iommu_data so of_iommu_configure can avoid using
+    the bus_type
+  - Initialise the offset and DMA masks on the dev in of_dma_configure
+    instead of in the arch callback (as this would cause a regression on
+    some architectures)
+  - Added deconfigure/teardown code based on ref counting the iommu_dma_mapping
+  - A bunch of small fixes (_OF_DECLARE,  some code shuffling, fix multiple
+    IOMMU parsing)
+
+All feedback welcome. Hopefully this is now at a point where people can
+start looking to port dma-mapping and/or IOMMU drivers to it.
+
+Cheers,
+
+Will
+
+--->8
+
+Will Deacon (7):
+  iommu: provide early initialisation hook for IOMMU drivers
+  dma-mapping: replace set_arch_dma_coherent_ops with arch_setup_dma_ops
+  iommu: add new iommu_ops callback for adding an OF device
+  iommu: provide helper function to configure an IOMMU for an of master
+  dma-mapping: detect and configure IOMMU in of_dma_configure
+  arm: call iommu_init before of_platform_populate
+  arm: dma-mapping: plumb our iommu mapping ops into arch_setup_dma_ops
+
+ arch/arm/include/asm/dma-mapping.h |  9 ++--
+ arch/arm/kernel/setup.c            |  2 +
+ arch/arm/mm/dma-mapping.c          | 68 ++++++++++++++++++++++++++----
+ drivers/iommu/Kconfig              |  2 +-
+ drivers/iommu/of_iommu.c           | 84 ++++++++++++++++++++++++++++++++++++++
+ drivers/of/platform.c              | 53 +++++++++++++-----------
+ include/asm-generic/vmlinux.lds.h  |  2 +
+ include/linux/dma-mapping.h        | 21 +++++++---
+ include/linux/iommu.h              | 15 +++++++
+ include/linux/of_iommu.h           | 35 ++++++++++++++++
+ 10 files changed, 247 insertions(+), 44 deletions(-)
+
+-- 
+2.1.0
