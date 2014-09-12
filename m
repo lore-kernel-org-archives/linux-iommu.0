@@ -1,252 +1,56 @@
-From: Jerome Glisse <j.glisse@gmail.com>
+From: Andrew Morton <akpm@linux-foundation.org>
 Subject: Re: [PATCH 0/3 v3] mmu_notifier: Allow to manage CPU external TLBs
-Date: Fri, 12 Sep 2014 15:21:01 -0400
-Message-ID: <20140912192100.GB5196@gmail.com>
+Date: Fri, 12 Sep 2014 12:27:37 -0700
+Message-ID: <20140912122737.53a7947e5378fa501092887b@linux-foundation.org>
 References: <1410277434-3087-1-git-send-email-joro@8bytes.org>
- <20140910150125.31a7495c7d0fe814b85fd514@linux-foundation.org>
- <20140911000211.GA4989@gmail.com>
- <20140912121036.1fb998af4147ad9ea35166db@linux-foundation.org>
+	<20140910150125.31a7495c7d0fe814b85fd514@linux-foundation.org>
+	<20140911000211.GA4989@gmail.com>
+	<20140912121036.1fb998af4147ad9ea35166db@linux-foundation.org>
+	<20140912192100.GB5196@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <20140912121036.1fb998af4147ad9ea35166db@linux-foundation.org>
+In-Reply-To: <20140912192100.GB5196@gmail.com>
 Sender: owner-linux-mm@kvack.org
-To: Andrew Morton <akpm@linux-foundation.org>
+To: Jerome Glisse <j.glisse@gmail.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Andrea Arcangeli <aarcange@redhat.com>, Rik van Riel <riel@redhat.com>, jroedel@suse.de, Peter Zijlstra <a.p.zijlstra@chello.nl>, John.Bridgman@amd.com, Jesse Barnes <jbarnes@virtuousgeek.org>, Hugh Dickins <hughd@google.com>, linux-kernel@vger.kernel.org, ben.sander@amd.com, linux-mm@kvack.org, Jerome Glisse <jglisse@redhat.com>, Jay.Cornwall@amd.com, Mel Gorman <mgorman@suse.de>, David Woodhouse <dwmw2@infradead.org>, Johannes Weiner <jweiner@redhat.com>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 12, 2014 at 12:10:36PM -0700, Andrew Morton wrote:
-> On Wed, 10 Sep 2014 20:02:12 -0400 Jerome Glisse <j.glisse@gmail.com> w=
-rote:
->=20
-> > On Wed, Sep 10, 2014 at 03:01:25PM -0700, Andrew Morton wrote:
-> > > On Tue,  9 Sep 2014 17:43:51 +0200 Joerg Roedel <joro@8bytes.org> w=
-rote:
-> > >=20
-> > > > here is a patch-set to extend the mmu_notifiers in the Linux
-> > > > kernel to allow managing CPU external TLBs. Those TLBs may
-> > > > be implemented in IOMMUs or any other external device, e.g.
-> > > > ATS/PRI capable PCI devices.
-> > > >=20
-> > > > The problem with managing these TLBs are the semantics of
-> > > > the invalidate_range_start/end call-backs currently
-> > > > available. Currently the subsystem using mmu_notifiers has
-> > > > to guarantee that no new TLB entries are established between
-> > > > invalidate_range_start/end. Furthermore the
-> > > > invalidate_range_start() function is called when all pages
-> > > > are still mapped and invalidate_range_end() when the pages
-> > > > are unmapped an already freed.
-> > > >=20
-> > > > So both call-backs can't be used to safely flush any non-CPU
-> > > > TLB because _start() is called too early and _end() too
-> > > > late.
-> > >=20
-> > > There's a lot of missing information here.  Why don't the existing
-> > > callbacks suit non-CPU TLBs?  What is different about them?  Please
-> > > update the changelog to contain all this context.
-> >=20
-> > So unlike KVM or any current user of the mmu_notifier api, any PCIE
-> > ATS/PASID capable hardware IOMMUv2 for AMD and forgot the marketing
-> > name for Intel (probably VTd) implementation walk the cpu page table
-> > on there own and have there own TLB cache. In fact not only the iommu
-> > can have a TLB cache but any single PCIE hardware can implement its
-> > own local TLB cache.
-> >=20
-> > So if we flush the IOMMU and device TLB inside the range_start callba=
-ck
-> > there is a chance that the hw will just rewalk the cpu page table and
-> > repopulate its TLB before the CPU page table is actually updated.
-> >=20
-> > Now if we shoot down the TLB inside the range_end callback, then we
-> > are too late ie the CPU page table is already populated with new entr=
-y
-> > and all the TLB in the IOMMU an in device might be pointing to the ol=
-d
-> > pages.
-> >=20
-> > So the aim of this callback is to happen right after the CPU page tab=
-le
-> > is updated but before the old page is freed or recycled.
->=20
-> You had me up to here.  What is "the old page"?  pagetable page, I
-> assume?  upper, middle, lower, all the above?  Why does the callback
-> function need to get at that page?
+On Fri, 12 Sep 2014 15:21:01 -0400 Jerome Glisse <j.glisse@gmail.com> wrote:
 
-No old page is not a page from the cpu page table directory free but a pa=
-ge
-that use to belong to the process ie a page that was backing an address r=
-ange
-of the process we are interested in. The kernel flush the cpu tlb and the=
-n
-free those pages before calling the mmu_notifier end callback (for good r=
-easons).
+> > > I think this sumup all motivation behind this patchset and also behind
+> > > my other patchset. As usual i am happy to discuss alternative way to do
+> > > things but i think that the path of least disruption from current code
+> > > is the one implemented by those patchset.
+> > 
+> > "least disruption" is nice, but "good implementation" is better.  In
+> > other words I'd prefer the more complex implementation if the end
+> > result is better.  Depending on the magnitudes of "complex" and
+> > "better" :) Two years from now (which isn't very long), I don't think
+> > we'll regret having chosen the better implementation.
+> > 
+> > Does this patchset make compromises to achieve low disruption?
+> 
+> Well right now i think we are lacking proper userspace support with which
+> this code and the global new usecase can be stress tested allowing to gather
+> profiling information.
+> 
+> I think as a first step we should take this least disruptive path and if
+> it proove to perform badly then we should work toward possibly more complex
+> design. Note that only complex design i can think of involve an overhaul of
+> how process memory management is done and probably linking cpu page table
+> update with the scheduler to try to hide cost of those update by scheduling
+> other thread meanwhile.
 
-So we want to flush the hardware TLB (whish is distinc from CPU TLB) befo=
-re
-any of the page that use to be valid page backing address range of the pr=
-ocess
-are freed or recycle.
-
-Sorry for the confusion my wording caused.
-
->=20
-> > > Also too skimpy.  I *think* this is a variant of the problem in the
-> > > preceding paragraph.  We get a fault storm (which is problem 2) and
-> > > sometimes the faulting device gives up (which is problem 1).
-> > >=20
-> > > Or something.  Please de-fog all of this.
-> > >=20
-> >=20
-> > Does above explanation help understand the issue ? Given that on each
-> > device page fault an IRQ is trigger (well the way the hw works is bit
-> > more complex than that).
->=20
-> It helps.  Please understand that my main aim here is not to ask
-> specific questions.  I seek to demonstrate the level of detail which I
-> believe should be in the changelog so that others can effectively
-> understand and review this patchset, and to understand this code in the
-> future.
-
-Totaly agree and i am rooting for better commit message in other kernel
-component, since i am reviewing more patches in distinct component i now
-clearly see the value of good and exhaustive commit message.
-
->=20
-> So it would be good if you were to update the changelog to answer these
-> questions.  It would be better if it were also to answer similar
-> questions which I didn't think to ask!
->=20
-> > > > Furthermore the _start()/end() notifiers only catch the
-> > > > moment when page mappings are released, but not page-table
-> > > > pages. But this is necessary for managing external TLBs when
-> > > > the page-table is shared with the CPU.
-> > >=20
-> > > How come?
-> >=20
-> > As explained above end() might happens after page that were previousl=
-y
-> > mapped are free or recycled.
->=20
-> Again, some explanation of why the driver wishes to inspect the
-> pagetable pages would be useful.
->=20
-> > >=20
-> > > > To solve this situation I wrote a patch-set to introduce a
-> > > > new notifier call-back: mmu_notifer_invalidate_range(). This
-> > > > notifier lifts the strict requirements that no new
-> > > > references are taken in the range between _start() and
-> > > > _end(). When the subsystem can't guarantee that any new
-> > > > references are taken is has to provide the
-> > > > invalidate_range() call-back to clear any new references in
-> > > > there.
-> > > >=20
-> > > > It is called between invalidate_range_start() and _end()
-> > > > every time the VMM has to wipe out any references to a
-> > > > couple of pages. This are usually the places where the CPU
-> > > > TLBs are flushed too and where its important that this
-> > > > happens before invalidate_range_end() is called.
-> > > >=20
-> > > > Any comments and review appreciated!
-> > >=20
-> > > The patchset looks decent, although I find it had to review because=
- I
-> > > just wasn't provided with enough of the thinking that went into it.=
-  I
-> > > have enough info to look at the C code, but not enough info to iden=
-tify
-> > > and evaluate alternative implementation approaches, to identify
-> > > possible future extensions, etc.
-> > >=20
-> > > The patchset does appear to add significant additional overhead to =
-hot
-> > > code paths when mm_has_notifiers(mm).  Please let's update the
-> > > changelog to address this rather important concern.  How significan=
-t is
-> > > the impact on such mm's, how common are such mm's now and in the
-> > > future, should we (for example) look at short-circuiting
-> > > __mmu_notifier_invalidate_range() if none of the registered notifie=
-rs
-> > > implement ->invalidate_range(), etc.
-> >=20
-> > So one might feel like just completely removing the range_start()/end=
-()
-> > from the mmu_notifier and stick to this one callback but it will not =
-work
-> > with other hardware like the one i am doing HMM patchset for (i send =
-it
-> > again a couple weeks ago https://lkml.org/lkml/2014/8/29/423).
-> >=20
-> > Right now there are very few user of the mmu_notifier, SGI, xen, KVM =
-and
-> > sadly recently the GPU folks (which i am part of too). So as the GPU =
-are
-> > starting to use it we will see a lot more application going through t=
-he
-> > mmu_notifier callback. Yet you do want to leverage the hw like GPU an=
-d
-> > you do want to use the same address space on the GPU as on the CPU an=
-d
-> > thus you do want to share or at least keep synchronize the GPU view o=
-f
-> > the CPU page table.
-> >=20
-> > Right now, for IOMMUv2 this means adding this callback, for device th=
-at
-> > do not rely on ATS/PASID PCIE extension this means something like HMM=
-.
-> > Also note that HMM is a superset of IOMMUv2 as it could be use at the
-> > same time and provide more feature mainly allowing migrating some pag=
-e
-> > to device local memory for performances purposes.
->=20
-> OK, but none of that addressed my question regarding the performance
-> cost.
-
-I think Joerg addressed the performances concern in his email, basicly,
-CPU TLB flush is already a costly operation and the hardware TLB flush
-should just barely register a noise (this is current theory but hard to
-say until we have a full working stack including userspace with which
-proper and extensive benchmark and profiling can be perform).
-
->=20
-> > I think this sumup all motivation behind this patchset and also behin=
-d
-> > my other patchset. As usual i am happy to discuss alternative way to =
-do
-> > things but i think that the path of least disruption from current cod=
-e
-> > is the one implemented by those patchset.
->=20
-> "least disruption" is nice, but "good implementation" is better.  In
-> other words I'd prefer the more complex implementation if the end
-> result is better.  Depending on the magnitudes of "complex" and
-> "better" :) Two years from now (which isn't very long), I don't think
-> we'll regret having chosen the better implementation.
->=20
-> Does this patchset make compromises to achieve low disruption?
-
-Well right now i think we are lacking proper userspace support with which
-this code and the global new usecase can be stress tested allowing to gat=
-her
-profiling information.
-
-I think as a first step we should take this least disruptive path and if
-it proove to perform badly then we should work toward possibly more compl=
-ex
-design. Note that only complex design i can think of involve an overhaul =
-of
-how process memory management is done and probably linking cpu page table
-update with the scheduler to try to hide cost of those update by scheduli=
-ng
-other thread meanwhile.
-
-Cheers,
-J=E9r=F4me
+OK.  Often I'd resist merging a patchset when we're not sure it will be
+sufficient.  But there are practical advantages to doing so and the
+present patchset is quite simple.  So if we decide to remove it later
+on the impact will be small.  If the patchset made userspace-visible
+changes then things would be different!
 
 --
 To unsubscribe, send a message with 'unsubscribe linux-mm' in
 the body to majordomo@kvack.org.  For more info on Linux MM,
 see: http://www.linux-mm.org/ .
-Don't email: <a href=3Dmailto:"dont@kvack.org"> email@kvack.org </a>
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
