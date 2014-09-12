@@ -1,153 +1,208 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v3 2/3] vfio/iommu_type1: add new
-	VFIO_TYPE1_NESTING_IOMMU IOMMU type
-Date: Fri, 12 Sep 2014 11:25:50 -0600
-Message-ID: <1410542750.2982.419.camel@ul30vt.home>
-References: <1409651619-27342-1-git-send-email-will.deacon@arm.com>
-	<1409651619-27342-3-git-send-email-will.deacon@arm.com>
-	<1410462748.2982.342.camel@ul30vt.home>
-	<20140912165520.GF12108@arm.com>
+From: Jerome Glisse <j.glisse@gmail.com>
+Subject: Re: [PATCH 0/3 v3] mmu_notifier: Allow to manage CPU external TLBs
+Date: Fri, 12 Sep 2014 14:39:35 -0400
+Message-ID: <20140912183934.GA5196@gmail.com>
+References: <1410277434-3087-1-git-send-email-joro@8bytes.org>
+ <20140910150125.31a7495c7d0fe814b85fd514@linux-foundation.org>
+ <20140911000211.GA4989@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140912165520.GF12108-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Return-path: <owner-linux-mm@kvack.org>
+Content-Disposition: inline
+In-Reply-To: <20140911000211.GA4989@gmail.com>
+Sender: owner-linux-mm@kvack.org
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Andrea Arcangeli <aarcange@redhat.com>, Rik van Riel <riel@redhat.com>, jroedel@suse.de, Peter Zijlstra <a.p.zijlstra@chello.nl>, John.Bridgman@amd.com, Jesse Barnes <jbarnes@virtuousgeek.org>, Hugh Dickins <hughd@google.com>, linux-kernel@vger.kernel.org, ben.sander@amd.com, linux-mm@kvack.org, Jerome Glisse <jglisse@redhat.com>, Jay.Cornwall@amd.com, Mel Gorman <mgorman@suse.de>, David Woodhouse <dwmw2@infradead.org>, Johannes Weiner <jweiner@redhat.com>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 2014-09-12 at 17:55 +0100, Will Deacon wrote:
-> Hi Alex,
-> 
-> Thanks for taking a look.
-> 
-> On Thu, Sep 11, 2014 at 08:12:28PM +0100, Alex Williamson wrote:
-> > On Tue, 2014-09-02 at 10:53 +0100, Will Deacon wrote:
-> > > diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> > > index 0734fbe5b651..50aa56c7b6a7 100644
-> > > --- a/drivers/vfio/vfio_iommu_type1.c
-> > > +++ b/drivers/vfio/vfio_iommu_type1.c
-> > > @@ -53,11 +53,15 @@ module_param_named(disable_hugepages,
-> > >  MODULE_PARM_DESC(disable_hugepages,
-> > >  		 "Disable VFIO IOMMU support for IOMMU hugepages.");
-> > >  
-> > > +/* Feature flags for VFIO Type-1 IOMMUs */
-> > > +#define VFIO_IOMMU_FEAT_V2	(1 << 0)
-> > > +#define VFIO_IOMMU_FEAT_NESTING	(1 << 1)
-> > > +
-> > >  struct vfio_iommu {
-> > >  	struct list_head	domain_list;
-> > >  	struct mutex		lock;
-> > >  	struct rb_root		dma_list;
-> > > -	bool v2;
-> > > +	int			features;
-> > 
-> > Personally I'd rather add a nesting bool than mask out flag bits.
-> 
-> Sure.
-> 
-> > > @@ -705,6 +710,9 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
-> > >  		goto out_free;
-> > >  	}
-> > >  
-> > > +	if (iommu->features & VFIO_IOMMU_FEAT_NESTING)
-> > > +		iommu_domain_set_attr(domain->domain, DOMAIN_ATTR_NESTING, &attr);
-> > > +
-> > 
-> > Shouldn't we fail if this doesn't work?
-> 
-> The reason I don't fail is because device passthrough can still work with an
-> IOMMU that isn't capable of nesting. The part that won't work is attempting
-> to instantiate a virtual SMMU interface for the guest.
-> 
-> However, it just struck me that userspace knows whether or not it's going to
-> want a virtual SMMU interface. If it does, then failure to set NESTING is
-> fatal. If it doesn't, then it doesn't need to set the flag so there is no
-> issue.
-> 
-> > >  	ret = iommu_attach_group(domain->domain, iommu_group);
-> > >  	if (ret)
-> > >  		goto out_domain;
-> > > @@ -815,12 +823,50 @@ done:
-> > >  	mutex_unlock(&iommu->lock);
-> > >  }
-> > >  
-> > > +static int vfio_iommus_have_nesting(void)
-> > > +{
-> > > +	static struct bus_type *bus_types[] = { &pci_bus_type };
-> > 
-> > Hmm, we just got rid of all traces of pci in this file, so I'm not too
-> > excited about adding it back.  Don't we no longer include pci.h?  I'm
-> > surprised this doesn't throw a warning.  We should try to be independent
-> > of CONFIG_PCI here.
-> 
-> I don't see any warning here.
-> 
-> > > +		if (!iommu_present(bus))
-> > > +			continue;
-> > > +
-> > > +		domain = iommu_domain_alloc(bus);
-> > > +		if (!domain)
-> > > +			continue;
-> > > +
-> > > +		if (!iommu_domain_set_attr(domain, DOMAIN_ATTR_NESTING, &attr))
-> > > +			ret = 1;
-> > > +
-> > > +		iommu_domain_free(domain);
-> > > +	}
-> > 
-> > Can this support Joerg's iommu_capable() interface so we can test w/o
-> > creating a domain?  We still have the bus_type problem though.
-> 
-> [...]
-> 
-> > > @@ -886,6 +955,10 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
-> > >  		case VFIO_TYPE1_IOMMU:
-> > >  		case VFIO_TYPE1v2_IOMMU:
-> > >  			return 1;
-> > > +		case VFIO_TYPE1_NESTING_IOMMU:
-> > > +			if (!iommu)
-> > > +				return vfio_iommus_have_nesting();
-> > > +			return vfio_domains_have_iommu_nesting(iommu);
-> > 
-> > I'd just about prefer to statically return 1 for NESTING and then fail
-> > to add groups if we can't set the attribute.  It sucks, but here we test
-> > an arbitrary bus type to determine whether nesting is supported, allow a
-> > nesting iommu type to be set regardless of what kind of devices are
-> > about to go into it, and require that the user test to see whether the
-> > requested IOMMU attribute actually stuck.  That's not a very intuitive
-> > interface.  Thanks,
-> 
-> Yes, I totally agree that the interface is clunky. Returning 1 for NESTING
-> solves both the pci bus problem and the iommu_capable issue, so that sounds
-> like a great simplification of the code.
-> 
-> That means userspace:
-> 
->   - Can always open a VFIO_TYPE1_NESTING_IOMMU
->   - VFIO_CHECK_EXTENSION will always return 1
->   - When adding groups (e.g. SET_IOMMU), the iommu_domain_set_attr can
->     fail, which will cause the corresponding ioctl to fail
-> 
-> If nesting is not required because there is no virtual SMMU interface,
-> then the usual TYPE1 IOMMU can be used.
-> 
-> Sound good?
+On Wed, Sep 10, 2014 at 08:02:12PM -0400, Jerome Glisse wrote:
+> On Wed, Sep 10, 2014 at 03:01:25PM -0700, Andrew Morton wrote:
+> > On Tue,  9 Sep 2014 17:43:51 +0200 Joerg Roedel <joro@8bytes.org> wro=
+te:
+> >=20
+> > > here is a patch-set to extend the mmu_notifiers in the Linux
+> > > kernel to allow managing CPU external TLBs. Those TLBs may
+> > > be implemented in IOMMUs or any other external device, e.g.
+> > > ATS/PRI capable PCI devices.
+> > >=20
+> > > The problem with managing these TLBs are the semantics of
+> > > the invalidate_range_start/end call-backs currently
+> > > available. Currently the subsystem using mmu_notifiers has
+> > > to guarantee that no new TLB entries are established between
+> > > invalidate_range_start/end. Furthermore the
+> > > invalidate_range_start() function is called when all pages
+> > > are still mapped and invalidate_range_end() when the pages
+> > > are unmapped an already freed.
+> > >=20
+> > > So both call-backs can't be used to safely flush any non-CPU
+> > > TLB because _start() is called too early and _end() too
+> > > late.
+> >=20
+> > There's a lot of missing information here.  Why don't the existing
+> > callbacks suit non-CPU TLBs?  What is different about them?  Please
+> > update the changelog to contain all this context.
+>=20
+> So unlike KVM or any current user of the mmu_notifier api, any PCIE
+> ATS/PASID capable hardware IOMMUv2 for AMD and forgot the marketing
+> name for Intel (probably VTd) implementation walk the cpu page table
+> on there own and have there own TLB cache. In fact not only the iommu
+> can have a TLB cache but any single PCIE hardware can implement its
+> own local TLB cache.
+>=20
+> So if we flush the IOMMU and device TLB inside the range_start callback
+> there is a chance that the hw will just rewalk the cpu page table and
+> repopulate its TLB before the CPU page table is actually updated.
+>=20
+> Now if we shoot down the TLB inside the range_end callback, then we
+> are too late ie the CPU page table is already populated with new entry
+> and all the TLB in the IOMMU an in device might be pointing to the old
+> pages.
+>=20
+> So the aim of this callback is to happen right after the CPU page table
+> is updated but before the old page is freed or recycled. Note that it
+> is also safe for COW and other transition from like read only to read
+> and write or the other way around.
+>=20
+> >=20
+> > > In the AMD IOMMUv2 driver this is currently implemented by
+> > > assigning an empty page-table to the external device between
+> > > _start() and _end(). But as tests have shown this doesn't
+> > > work as external devices don't re-fault infinitly but enter
+> > > a failure state after some time.
+> >=20
+> > More missing info.  Why are these faults occurring?  Is there some
+> > device activity which is trying to fault in pages, but the CPU is
+> > executing code between _start() and _end() so the driver must refuse =
+to
+> > instantiate a page to satisfy the fault?  That's just a guess, and I
+> > shouldn't be guessing.  Please update the changelog to fully describe
+> > the dynamic activity which is causing this.
+>=20
+> The hack that was use prior to this patch was to point the IOMMU to an
+> empty page table (a zero page) inside the range_start() callback and
+> shoot down the TLB but this meant that the device might enter inside a
+> storm of page fault. GPU can have thousand of threads and because durin=
+g
+> invalidation the empty page table is use they all starts triggering pag=
+e
+> fault even if they were not trying to access the range being invalidate=
+d.
+> It turns out that when this happens current hw like AMD GPU actually st=
+op
+> working after a while ie the hw stumble because there is too much fault
+> going on.
+>=20
+> >=20
+> > > Next problem with this solution is that it causes an
+> > > interrupt storm for IO page faults to be handled when an
+> > > empty page-table is assigned.
+> >=20
+> > Also too skimpy.  I *think* this is a variant of the problem in the
+> > preceding paragraph.  We get a fault storm (which is problem 2) and
+> > sometimes the faulting device gives up (which is problem 1).
+> >=20
+> > Or something.  Please de-fog all of this.
+> >=20
+>=20
+> Does above explanation help understand the issue ? Given that on each
+> device page fault an IRQ is trigger (well the way the hw works is bit
+> more complex than that).
+>=20
+> > > Furthermore the _start()/end() notifiers only catch the
+> > > moment when page mappings are released, but not page-table
+> > > pages. But this is necessary for managing external TLBs when
+> > > the page-table is shared with the CPU.
+> >=20
+> > How come?
+>=20
+> As explained above end() might happens after page that were previously
+> mapped are free or recycled.
+>=20
+> >=20
+> > > To solve this situation I wrote a patch-set to introduce a
+> > > new notifier call-back: mmu_notifer_invalidate_range(). This
+> > > notifier lifts the strict requirements that no new
+> > > references are taken in the range between _start() and
+> > > _end(). When the subsystem can't guarantee that any new
+> > > references are taken is has to provide the
+> > > invalidate_range() call-back to clear any new references in
+> > > there.
+> > >=20
+> > > It is called between invalidate_range_start() and _end()
+> > > every time the VMM has to wipe out any references to a
+> > > couple of pages. This are usually the places where the CPU
+> > > TLBs are flushed too and where its important that this
+> > > happens before invalidate_range_end() is called.
+> > >=20
+> > > Any comments and review appreciated!
+> >=20
+> > The patchset looks decent, although I find it had to review because I
+> > just wasn't provided with enough of the thinking that went into it.  =
+I
+> > have enough info to look at the C code, but not enough info to identi=
+fy
+> > and evaluate alternative implementation approaches, to identify
+> > possible future extensions, etc.
+> >=20
+> > The patchset does appear to add significant additional overhead to ho=
+t
+> > code paths when mm_has_notifiers(mm).  Please let's update the
+> > changelog to address this rather important concern.  How significant =
+is
+> > the impact on such mm's, how common are such mm's now and in the
+> > future, should we (for example) look at short-circuiting
+> > __mmu_notifier_invalidate_range() if none of the registered notifiers
+> > implement ->invalidate_range(), etc.
+>=20
+> So one might feel like just completely removing the range_start()/end()
+> from the mmu_notifier and stick to this one callback but it will not wo=
+rk
+> with other hardware like the one i am doing HMM patchset for (i send it
+> again a couple weeks ago https://lkml.org/lkml/2014/8/29/423).
+>=20
+> Right now there are very few user of the mmu_notifier, SGI, xen, KVM an=
+d
+> sadly recently the GPU folks (which i am part of too). So as the GPU ar=
+e
+> starting to use it we will see a lot more application going through the
+> mmu_notifier callback. Yet you do want to leverage the hw like GPU and
+> you do want to use the same address space on the GPU as on the CPU and
+> thus you do want to share or at least keep synchronize the GPU view of
+> the CPU page table.
+>=20
+> Right now, for IOMMUv2 this means adding this callback, for device that
+> do not rely on ATS/PASID PCIE extension this means something like HMM.
+> Also note that HMM is a superset of IOMMUv2 as it could be use at the
+> same time and provide more feature mainly allowing migrating some page
+> to device local memory for performances purposes.
+>=20
+> I think this sumup all motivation behind this patchset and also behind
+> my other patchset. As usual i am happy to discuss alternative way to do
+> things but i think that the path of least disruption from current code
+> is the one implemented by those patchset.
+>=20
+> Cheers,
+> J=E9r=F4me
 
-It's not 100% satisfying, but I can't think of anything better.
-VFIO_TYPE1_NESTING_IOMMU is then just a VFIO level indication of support
-with no indication of underlying hardware support.  The user doesn't
-know until they add a group if it's really possible.  Not ideal from a
-user perspective, but VFIO has always left itself the option of
-disallowing groups from being added to a container.  Thanks,
+Hi Andrew, i wanted to touch base to see if those explanations were enoug=
+h
+to understand the problem we are trying to solve. Do you think the patchs=
+et
+is ok or do you feel like there should be a better solution ?
 
-Alex
+Cheers,
+J=E9r=F4me
+
+>=20
+>=20
+> > _______________________________________________
+> > iommu mailing list
+> > iommu@lists.linux-foundation.org
+> > https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=3Dmailto:"dont@kvack.org"> email@kvack.org </a>
