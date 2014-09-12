@@ -1,15 +1,15 @@
 From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] x86: irq_remapping: Fix the regression of hpet irq
-	remapping
-Date: Fri, 12 Sep 2014 17:13:18 +0800
-Message-ID: <5412B92E.2040503@huawei.com>
-References: <1410512753-6428-1-git-send-email-wangyijing@huawei.com>
-	<5412B69C.8000202@linux.intel.com>
+Subject: Re: [Patch Part3 V5 1/8] iommu/vt-d: Introduce helper function
+	dmar_walk_resources()
+Date: Fri, 12 Sep 2014 17:16:30 +0800
+Message-ID: <5412B9EE.3070708@huawei.com>
+References: <1410487848-6027-1-git-send-email-jiang.liu@linux.intel.com>
+	<1410487848-6027-2-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5412B69C.8000202-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <1410487848-6027-2-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,105 +19,349 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hotplug-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2014/9/12 17:02, Jiang Liu wrote:
+On 2014/9/12 10:10, Jiang Liu wrote:
+> Introduce helper function dmar_walk_resources to walk resource entries
+> in DMAR table and ACPI buffer object returned by ACPI _DSM method
+> for IOMMU hot-plug.
 > 
+> Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+
+Hi Gerry. some comments below.
+
+
+> ---
+>  drivers/iommu/dmar.c        |  209 +++++++++++++++++++++++--------------------
+>  drivers/iommu/intel-iommu.c |    4 +-
+>  include/linux/dmar.h        |   19 ++--
+>  3 files changed, 122 insertions(+), 110 deletions(-)
 > 
-> On 2014/9/12 17:05, Yijing Wang wrote:
->> Commit 71054d8841b4 introduced x86_msi_ops.setup_hpet_msi
->> to setup hpet MSI irq when irq remapping enabled.
->> This caused a regression of hpet MSI irq remapping.
->>
->> Original code flow before commit 71054d8841b4:
->> hpet_setup_msi_irq()
->> 	arch_setup_hpet_msi()
->> 		setup_hpet_msi_remapped()
->> 			remap_ops->setup_hpet_msi()
->> 				alloc_irte()
->> 		msi_compose_msg()
->> 		hpet_msi_write()
->> 		...
->>
->> Current code flow after commit 71054d8841b4:
->> hpet_setup_msi_irq()
->> 	x86_msi.setup_hpet_msi()
->> 		setup_hpet_msi_remapped()
->> 			intel_setup_hpet_msi()
->> 				alloc_irte()
->>
->>
->>
->> Currently, we only alloc_irte() for hpet MSI, but
->> have not composed and wrote its msg...
->>
->> Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->> ---
->>  drivers/iommu/irq_remapping.c |    9 ++++++++-
->>  1 files changed, 8 insertions(+), 1 deletions(-)
->>
->> diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
->> index 85eb212..3541c71 100644
->> --- a/drivers/iommu/irq_remapping.c
->> +++ b/drivers/iommu/irq_remapping.c
->> @@ -12,6 +12,7 @@
->>  #include <asm/processor.h>
->>  #include <asm/x86_init.h>
->>  #include <asm/apic.h>
->> +#include <asm/hpet.h>
->>  
->>  #include "irq_remapping.h"
->>  
->> @@ -332,10 +333,16 @@ static int msi_setup_remapped_irq(struct pci_dev *pdev, unsigned int irq,
->>  
->>  static int setup_hpet_msi_remapped(unsigned int irq, unsigned int id)
->>  {
->> +	int ret;
->> +
->>  	if (!remap_ops || !remap_ops->setup_hpet_msi)
->>  		return -ENODEV;
->>  
->> -	return remap_ops->setup_hpet_msi(irq, id);
->> +	ret = remap_ops->setup_hpet_msi(irq, id);
->> +	if (ret)
->> +		return -EINVAL;
->> +
->> +	return default_setup_hpet_msi(irq, id);
->>  }
-> Hi Yijing,
-> 	How about move default_setup_hpet_msi(irq, id) into
-> intel_setup_hpet_msi and amd.setup_hpet_msi?
+> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+> index 60ab474bfff3..afd46eb9a5de 100644
+> --- a/drivers/iommu/dmar.c
+> +++ b/drivers/iommu/dmar.c
+> @@ -44,6 +44,14 @@
+>  
+>  #include "irq_remapping.h"
+>  
+> +typedef int (*dmar_res_handler_t)(struct acpi_dmar_header *, void *);
+> +struct dmar_res_callback {
+> +	dmar_res_handler_t	cb[ACPI_DMAR_TYPE_RESERVED];
+> +	void			*arg[ACPI_DMAR_TYPE_RESERVED];
+> +	bool			ignore_unhandled;
+> +	bool			print_entry;
 
-Hmmm, because the common irq remapping code is placed at irq_remapping.c, so
-what about change remap_ops->setup_hpet_msi to remap_ops->alloc_remapping_irq(),
+Why do we need a switch to control print ?
 
-  static int setup_hpet_msi_remapped(unsigned int irq, unsigned int id)
-  {
- +	int ret;
- +
-  	if (!remap_ops || !remap_ops->alloc_remapping_irq)
-  		return -ENODEV;
+> +};
+> +
+>  
+> +static int dmar_walk_resources(struct acpi_dmar_header *start, size_t len,
+> +			       struct dmar_res_callback *cb)
 
- -	return remap_ops->alloc_remapping_irq(irq, id);
- +	ret = remap_ops->alloc_remapping_irq(irq, id);
- +	if (ret)
- +		return -EINVAL;
- +
- +	return default_setup_hpet_msi(irq, id);
-  }
+The name dmar_walk_resources easily make people think this is related with I/O or memory resources.
+Do you have a better idea of this ?  What about dmar_walk_remapping_entry() or dmar_walk_remapping_structure() ?
 
-Thanks!
-Yijing.
+> +{
+> +	int ret = 0;
+> +	struct acpi_dmar_header *iter, *next;
+> +	struct acpi_dmar_header *end = ((void *)start) + len;
+> +
+> +	for (iter = start; iter < end && ret == 0; iter = next) {
+> +		next = (void *)iter + iter->length;
+> +		if (iter->length == 0) {
+> +			/* Avoid looping forever on bad ACPI tables */
+> +			pr_debug(FW_BUG "Invalid 0-length structure\n");
 
-> Regards!
-> Gerry
->>  
->>  void panic_if_irq_remap(const char *msg)
->>
-> 
-> .
+What about use pr_warn() instead of pr_debug(), pr_debug() default is off.
+
+> +			break;
+> +		} else if (next > end) {
+> +			/* Avoid passing table end */
+> +			pr_warn(FW_BUG "record passes table end\n");
+> +			ret = -EINVAL;
+> +			break;
+> +		}
+> +
+> +		if (cb->print_entry)
+> +			dmar_table_print_dmar_entry(iter);
+> +
+> +		if (iter->type >= ACPI_DMAR_TYPE_RESERVED) {
+> +			/* continue for forward compatibility */
+> +			pr_debug("Unknown DMAR structure type %d\n",
+> +				 iter->type);
+
+Same as above.
+
+> +		} else if (cb->cb[iter->type]) {
+> +			ret = cb->cb[iter->type](iter, cb->arg[iter->type]);
+> +		} else if (!cb->ignore_unhandled) {
+> +			pr_warn("No handler for DMAR structure type %d\n",
+> +				iter->type);
+> +			ret = -EINVAL;
+> +		}
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static inline int dmar_walk_dmar_table(struct acpi_table_dmar *dmar,
+> +				       struct dmar_res_callback *cb)
+> +{
+> +	return dmar_walk_resources((struct acpi_dmar_header *)(dmar + 1),
+> +				   dmar->header.length - sizeof(*dmar), cb);
+> +}
+> +
+>  /**
+>   * parse_dmar_table - parses the DMA reporting table
+>   */
+> @@ -493,9 +554,18 @@ static int __init
+>  parse_dmar_table(void)
+>  {
+>  	struct acpi_table_dmar *dmar;
+> -	struct acpi_dmar_header *entry_header;
+>  	int ret = 0;
+>  	int drhd_count = 0;
+> +	struct dmar_res_callback cb = {
+> +		.print_entry = true,
+> +		.ignore_unhandled = true,
+> +		.arg[ACPI_DMAR_TYPE_HARDWARE_UNIT] = &drhd_count,
+> +		.cb[ACPI_DMAR_TYPE_HARDWARE_UNIT] = &dmar_parse_one_drhd,
+> +		.cb[ACPI_DMAR_TYPE_RESERVED_MEMORY] = &dmar_parse_one_rmrr,
+> +		.cb[ACPI_DMAR_TYPE_ROOT_ATS] = &dmar_parse_one_atsr,
+> +		.cb[ACPI_DMAR_TYPE_HARDWARE_AFFINITY] = &dmar_parse_one_rhsa,
+> +		.cb[ACPI_DMAR_TYPE_NAMESPACE] = &dmar_parse_one_andd,
+> +	};
+>  
+>  	/*
+>  	 * Do it again, earlier dmar_tbl mapping could be mapped with
+> @@ -519,51 +589,10 @@ parse_dmar_table(void)
+>  	}
+>  
+>  	pr_info("Host address width %d\n", dmar->width + 1);
+> -
+> -	entry_header = (struct acpi_dmar_header *)(dmar + 1);
+> -	while (((unsigned long)entry_header) <
+> -			(((unsigned long)dmar) + dmar_tbl->length)) {
+> -		/* Avoid looping forever on bad ACPI tables */
+> -		if (entry_header->length == 0) {
+> -			pr_warn("Invalid 0-length structure\n");
+> -			ret = -EINVAL;
+> -			break;
+> -		}
+> -
+> -		dmar_table_print_dmar_entry(entry_header);
+> -
+> -		switch (entry_header->type) {
+> -		case ACPI_DMAR_TYPE_HARDWARE_UNIT:
+> -			drhd_count++;
+> -			ret = dmar_parse_one_drhd(entry_header);
+> -			break;
+> -		case ACPI_DMAR_TYPE_RESERVED_MEMORY:
+> -			ret = dmar_parse_one_rmrr(entry_header);
+> -			break;
+> -		case ACPI_DMAR_TYPE_ROOT_ATS:
+> -			ret = dmar_parse_one_atsr(entry_header);
+> -			break;
+> -		case ACPI_DMAR_TYPE_HARDWARE_AFFINITY:
+> -#ifdef CONFIG_ACPI_NUMA
+> -			ret = dmar_parse_one_rhsa(entry_header);
+> -#endif
+> -			break;
+> -		case ACPI_DMAR_TYPE_NAMESPACE:
+> -			ret = dmar_parse_one_andd(entry_header);
+> -			break;
+> -		default:
+> -			pr_warn("Unknown DMAR structure type %d\n",
+> -				entry_header->type);
+> -			ret = 0; /* for forward compatibility */
+> -			break;
+> -		}
+> -		if (ret)
+> -			break;
+> -
+> -		entry_header = ((void *)entry_header + entry_header->length);
+> -	}
+> -	if (drhd_count == 0)
+> +	ret = dmar_walk_dmar_table(dmar, &cb);
+> +	if (ret == 0 && drhd_count == 0)
+>  		pr_warn(FW_BUG "No DRHD structure found in DMAR table\n");
+> +
+>  	return ret;
+>  }
+>  
+> @@ -762,76 +791,60 @@ static void warn_invalid_dmar(u64 addr, const char *message)
+>  		dmi_get_system_info(DMI_PRODUCT_VERSION));
+>  }
+>  
+> -static int __init check_zero_address(void)
+> +static int __ref
+> +dmar_validate_one_drhd(struct acpi_dmar_header *entry, void *arg)
+>  {
+> -	struct acpi_table_dmar *dmar;
+> -	struct acpi_dmar_header *entry_header;
+>  	struct acpi_dmar_hardware_unit *drhd;
+> +	void __iomem *addr;
+> +	u64 cap, ecap;
+>  
+> -	dmar = (struct acpi_table_dmar *)dmar_tbl;
+> -	entry_header = (struct acpi_dmar_header *)(dmar + 1);
+> -
+> -	while (((unsigned long)entry_header) <
+> -			(((unsigned long)dmar) + dmar_tbl->length)) {
+> -		/* Avoid looping forever on bad ACPI tables */
+> -		if (entry_header->length == 0) {
+> -			pr_warn("Invalid 0-length structure\n");
+> -			return 0;
+> -		}
+> -
+> -		if (entry_header->type == ACPI_DMAR_TYPE_HARDWARE_UNIT) {
+> -			void __iomem *addr;
+> -			u64 cap, ecap;
+> -
+> -			drhd = (void *)entry_header;
+> -			if (!drhd->address) {
+> -				warn_invalid_dmar(0, "");
+> -				goto failed;
+> -			}
+> +	drhd = (void *)entry;
+> +	if (!drhd->address) {
+> +		warn_invalid_dmar(0, "");
+> +		return -EINVAL;
+> +	}
+>  
+> -			addr = early_ioremap(drhd->address, VTD_PAGE_SIZE);
+> -			if (!addr ) {
+> -				printk("IOMMU: can't validate: %llx\n", drhd->address);
+> -				goto failed;
+> -			}
+> -			cap = dmar_readq(addr + DMAR_CAP_REG);
+> -			ecap = dmar_readq(addr + DMAR_ECAP_REG);
+> -			early_iounmap(addr, VTD_PAGE_SIZE);
+> -			if (cap == (uint64_t)-1 && ecap == (uint64_t)-1) {
+> -				warn_invalid_dmar(drhd->address,
+> -						  " returns all ones");
+> -				goto failed;
+> -			}
+> -		}
+> +	addr = early_ioremap(drhd->address, VTD_PAGE_SIZE);
+> +	if (!addr) {
+> +		pr_warn("IOMMU: can't validate: %llx\n", drhd->address);
+> +		return -EINVAL;
+> +	}
+> +	cap = dmar_readq(addr + DMAR_CAP_REG);
+> +	ecap = dmar_readq(addr + DMAR_ECAP_REG);
+> +	early_iounmap(addr, VTD_PAGE_SIZE);
+>  
+> -		entry_header = ((void *)entry_header + entry_header->length);
+> +	if (cap == (uint64_t)-1 && ecap == (uint64_t)-1) {
+> +		warn_invalid_dmar(drhd->address, " returns all ones");
+> +		return -EINVAL;
+>  	}
+> -	return 1;
+>  
+> -failed:
+>  	return 0;
+>  }
+>  
+>  int __init detect_intel_iommu(void)
+>  {
+>  	int ret;
+> +	struct dmar_res_callback validate_drhd_cb = {
+> +		.cb[ACPI_DMAR_TYPE_HARDWARE_UNIT] = &dmar_validate_one_drhd,
+> +		.ignore_unhandled = true,
+> +	};
+>  
+>  	down_write(&dmar_global_lock);
+>  	ret = dmar_table_detect();
+>  	if (ret)
+> -		ret = check_zero_address();
+> -	{
+> -		if (ret && !no_iommu && !iommu_detected && !dmar_disabled) {
+> -			iommu_detected = 1;
+> -			/* Make sure ACS will be enabled */
+> -			pci_request_acs();
+> -		}
+> +		ret = !dmar_walk_dmar_table((struct acpi_table_dmar *)dmar_tbl,
+> +					    &validate_drhd_cb);
+> +	if (ret && !no_iommu && !iommu_detected && !dmar_disabled) {
+> +		iommu_detected = 1;
+> +		/* Make sure ACS will be enabled */
+> +		pci_request_acs();
+> +	}
+>  
+>  #ifdef CONFIG_X86
+> -		if (ret)
+> -			x86_init.iommu.iommu_init = intel_iommu_init;
+> +	if (ret)
+> +		x86_init.iommu.iommu_init = intel_iommu_init;
+>  #endif
+> -	}
+> +
+>  	early_acpi_os_unmap_memory((void __iomem *)dmar_tbl, dmar_tbl_size);
+>  	dmar_tbl = NULL;
+>  	up_write(&dmar_global_lock);
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 5619f264862d..4af2206e41bc 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -3682,7 +3682,7 @@ static inline void init_iommu_pm_ops(void) {}
+>  #endif	/* CONFIG_PM */
+>  
+>  
+> -int __init dmar_parse_one_rmrr(struct acpi_dmar_header *header)
+> +int __init dmar_parse_one_rmrr(struct acpi_dmar_header *header, void *arg)
+>  {
+>  	struct acpi_dmar_reserved_memory *rmrr;
+>  	struct dmar_rmrr_unit *rmrru;
+> @@ -3708,7 +3708,7 @@ int __init dmar_parse_one_rmrr(struct acpi_dmar_header *header)
+>  	return 0;
+>  }
+>  
+> -int __init dmar_parse_one_atsr(struct acpi_dmar_header *hdr)
+> +int __init dmar_parse_one_atsr(struct acpi_dmar_header *hdr, void *arg)
+>  {
+>  	struct acpi_dmar_atsr *atsr;
+>  	struct dmar_atsr_unit *atsru;
+> diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+> index 1deece46a0ca..fac8ca34f9a8 100644
+> --- a/include/linux/dmar.h
+> +++ b/include/linux/dmar.h
+> @@ -115,22 +115,21 @@ extern int dmar_remove_dev_scope(struct dmar_pci_notify_info *info,
+>  extern int detect_intel_iommu(void);
+>  extern int enable_drhd_fault_handling(void);
+>  
+> +static inline int dmar_res_noop(struct acpi_dmar_header *hdr, void *arg)
+> +{
+> +	return 0;
+> +}
+> +
+>  #ifdef CONFIG_INTEL_IOMMU
+>  extern int iommu_detected, no_iommu;
+>  extern int intel_iommu_init(void);
+> -extern int dmar_parse_one_rmrr(struct acpi_dmar_header *header);
+> -extern int dmar_parse_one_atsr(struct acpi_dmar_header *header);
+> +extern int dmar_parse_one_rmrr(struct acpi_dmar_header *header, void *arg);
+> +extern int dmar_parse_one_atsr(struct acpi_dmar_header *header, void *arg);
+>  extern int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info);
+>  #else /* !CONFIG_INTEL_IOMMU: */
+>  static inline int intel_iommu_init(void) { return -ENODEV; }
+> -static inline int dmar_parse_one_rmrr(struct acpi_dmar_header *header)
+> -{
+> -	return 0;
+> -}
+> -static inline int dmar_parse_one_atsr(struct acpi_dmar_header *header)
+> -{
+> -	return 0;
+> -}
+> +#define	dmar_parse_one_rmrr		dmar_res_noop
+> +#define	dmar_parse_one_atsr		dmar_res_noop
+>  static inline int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
+>  {
+>  	return 0;
 > 
 
 
