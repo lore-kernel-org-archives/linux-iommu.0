@@ -1,15 +1,15 @@
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+From: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
 Subject: Re: [PATCH 0/3 v3] mmu_notifier: Allow to manage CPU external TLBs
-Date: Fri, 12 Sep 2014 20:47:39 +0200
-Message-ID: <20140912184739.GF2519@suse.de>
+Date: Fri, 12 Sep 2014 12:10:36 -0700
+Message-ID: <20140912121036.1fb998af4147ad9ea35166db@linux-foundation.org>
 References: <1410277434-3087-1-git-send-email-joro@8bytes.org>
 	<20140910150125.31a7495c7d0fe814b85fd514@linux-foundation.org>
+	<20140911000211.GA4989@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140910150125.31a7495c7d0fe814b85fd514-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+In-Reply-To: <20140911000211.GA4989-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,137 +19,157 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: Andrea Arcangeli <aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jay.Cornwall-5C7GfCeVMHo@public.gmane.org, Peter Zijlstra <a.p.zijlstra-/NLkJaSkS4VmR6Xm/wNWPw@public.gmane.org>, John.Bridgman-5C7GfCeVMHo@public.gmane.org, Hugh Dickins <hughd-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ben.sander-5C7GfCeVMHo@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jesse Barnes <jbarnes-Y1mF5jBUw70BENJcbMCuUQ@public.gmane.org>, Mel Gorman <mgorman-l3A5Bk7waGM@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Johannes Weiner <jweiner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Andrea Arcangeli <aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, jroedel-l3A5Bk7waGM@public.gmane.org, Peter Zijlstra <a.p.zijlstra-/NLkJaSkS4VmR6Xm/wNWPw@public.gmane.org>, John.Bridgman-5C7GfCeVMHo@public.gmane.org, Hugh Dickins <hughd-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jesse Barnes <jbarnes-Y1mF5jBUw70BENJcbMCuUQ@public.gmane.org>, Johannes Weiner <jweiner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jay.Cornwall-5C7GfCeVMHo@public.gmane.org, Mel Gorman <mgorman-l3A5Bk7waGM@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, ben.sander-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Andrew,
+On Wed, 10 Sep 2014 20:02:12 -0400 Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
 
-thanks for your review, I tried to answer your questions below.
-
-On Wed, Sep 10, 2014 at 03:01:25PM -0700, Andrew Morton wrote:
-> On Tue,  9 Sep 2014 17:43:51 +0200 Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
-> > So both call-backs can't be used to safely flush any non-CPU
-> > TLB because _start() is called too early and _end() too
-> > late.
+> On Wed, Sep 10, 2014 at 03:01:25PM -0700, Andrew Morton wrote:
+> > On Tue,  9 Sep 2014 17:43:51 +0200 Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> > 
+> > > here is a patch-set to extend the mmu_notifiers in the Linux
+> > > kernel to allow managing CPU external TLBs. Those TLBs may
+> > > be implemented in IOMMUs or any other external device, e.g.
+> > > ATS/PRI capable PCI devices.
+> > > 
+> > > The problem with managing these TLBs are the semantics of
+> > > the invalidate_range_start/end call-backs currently
+> > > available. Currently the subsystem using mmu_notifiers has
+> > > to guarantee that no new TLB entries are established between
+> > > invalidate_range_start/end. Furthermore the
+> > > invalidate_range_start() function is called when all pages
+> > > are still mapped and invalidate_range_end() when the pages
+> > > are unmapped an already freed.
+> > > 
+> > > So both call-backs can't be used to safely flush any non-CPU
+> > > TLB because _start() is called too early and _end() too
+> > > late.
+> > 
+> > There's a lot of missing information here.  Why don't the existing
+> > callbacks suit non-CPU TLBs?  What is different about them?  Please
+> > update the changelog to contain all this context.
 > 
-> There's a lot of missing information here.  Why don't the existing
-> callbacks suit non-CPU TLBs?  What is different about them?  Please
-> update the changelog to contain all this context.
-
-The existing call-backs are called too early or too late. Specifically,
-invalidate_range_start() is called when all pages are still mapped and 
-invalidate_range_end() when all pages are unmapped and potentially
-freed.
-
-This is fine when the users of the mmu_notifiers manage their own
-SoftTLB, like KVM does. When the TLB is managed in software it is easy
-to wipe out entries for a given range and prevent new entries to be
-established until invalidate_range_end is called.
-
-But when the user of mmu_notifiers has to manage a hardware TLB it can
-still wipe out TLB entries in invalidate_range_start, but it can't make
-sure that no new TLB entries in the given range are established between
-invalidate_range_start and invalidate_range_end.
-
-	[ Actually the current AMD IOMMUv2 code tries to do that with
-	  setting the setting an empty page-table for the non-CPU TLB,
-	  but this causes address translation errors which end up in
-	  device failures. ]
-
-But to avoid silent data corruption the TLB entries need to be flushed
-out of the non-CPU hardware TLB when the pages are unmapped (at this
-point in time no _new_ TLB entries can be established in the non-CPU
-TLB) but not yet freed (as the non-CPU TLB may still have _existing_
-entries pointing to the pages about to be freed).
-
-So to fix this problem we need to catch the moment when the Linux VMM
-flushes remote TLBs (as a non-CPU TLB is not very different in its
-flushing requirements from any other remote CPU TLB), as this is the
-point in time when the pages are unmapped but _not_ yet freed.
-
-The mmu_notifier_invalidate_range() function aims to catch that moment.
-
-> > In the AMD IOMMUv2 driver this is currently implemented by
-> > assigning an empty page-table to the external device between
-> > _start() and _end(). But as tests have shown this doesn't
-> > work as external devices don't re-fault infinitly but enter
-> > a failure state after some time.
+> So unlike KVM or any current user of the mmu_notifier api, any PCIE
+> ATS/PASID capable hardware IOMMUv2 for AMD and forgot the marketing
+> name for Intel (probably VTd) implementation walk the cpu page table
+> on there own and have there own TLB cache. In fact not only the iommu
+> can have a TLB cache but any single PCIE hardware can implement its
+> own local TLB cache.
 > 
-> More missing info.  Why are these faults occurring?  Is there some
-> device activity which is trying to fault in pages, but the CPU is
-> executing code between _start() and _end() so the driver must refuse to
-> instantiate a page to satisfy the fault?  That's just a guess, and I
-> shouldn't be guessing.  Please update the changelog to fully describe
-> the dynamic activity which is causing this.
-
-The device (usually a GPU) runs some process (for example a compute job)
-that directly accesses a Linux process address space. Any access
-to a process address space can cause a page-fault, whether the access
-comes from the CPU or a remote device.
-
-When the page-fault comes from a compute job running on a GPU, is is
-reported to Linux by an IOMMU interrupt.
-
-The current implementation of invalidate_range_start/end assigns an
-empty page-table, which causes many page-faults from the GPU process,
-resulting in an interrupt storm for the IOMMU.
-
-The fault handler doesn't handle the fault if an
-invalidate_range_start/end pair is active, but just reports back SUCESS
-to the device to let it refault the page then (refaulting is the same strategy
-KVM implements). But existing GPUs that make use of this feature don't
-refault indefinitly, after a certain number of faults for the same
-address the device enters a failure state and needs to be resetted.L
-
-> > Next problem with this solution is that it causes an
-> > interrupt storm for IO page faults to be handled when an
-> > empty page-table is assigned.
+> So if we flush the IOMMU and device TLB inside the range_start callback
+> there is a chance that the hw will just rewalk the cpu page table and
+> repopulate its TLB before the CPU page table is actually updated.
 > 
-> Also too skimpy.  I *think* this is a variant of the problem in the
-> preceding paragraph.  We get a fault storm (which is problem 2) and
-> sometimes the faulting device gives up (which is problem 1).
+> Now if we shoot down the TLB inside the range_end callback, then we
+> are too late ie the CPU page table is already populated with new entry
+> and all the TLB in the IOMMU an in device might be pointing to the old
+> pages.
 > 
-> Or something.  Please de-fog all of this.
+> So the aim of this callback is to happen right after the CPU page table
+> is updated but before the old page is freed or recycled.
 
-Right, I will update the description to be more clear.
+You had me up to here.  What is "the old page"?  pagetable page, I
+assume?  upper, middle, lower, all the above?  Why does the callback
+function need to get at that page?
 
-> > Furthermore the _start()/end() notifiers only catch the
-> > moment when page mappings are released, but not page-table
-> > pages. But this is necessary for managing external TLBs when
-> > the page-table is shared with the CPU.
+> > Also too skimpy.  I *think* this is a variant of the problem in the
+> > preceding paragraph.  We get a fault storm (which is problem 2) and
+> > sometimes the faulting device gives up (which is problem 1).
+> > 
+> > Or something.  Please de-fog all of this.
+> > 
 > 
-> How come?
+> Does above explanation help understand the issue ? Given that on each
+> device page fault an IRQ is trigger (well the way the hw works is bit
+> more complex than that).
 
-As mmu_notifiers are not used for managing TLBs that share the same
-page-table as the CPU uses, there was not need to catch the page-table
-freeing events, so it is not available yet.
+It helps.  Please understand that my main aim here is not to ask
+specific questions.  I seek to demonstrate the level of detail which I
+believe should be in the changelog so that others can effectively
+understand and review this patchset, and to understand this code in the
+future.
 
-> > Any comments and review appreciated!
+So it would be good if you were to update the changelog to answer these
+questions.  It would be better if it were also to answer similar
+questions which I didn't think to ask!
+
+> > > Furthermore the _start()/end() notifiers only catch the
+> > > moment when page mappings are released, but not page-table
+> > > pages. But this is necessary for managing external TLBs when
+> > > the page-table is shared with the CPU.
+> > 
+> > How come?
 > 
-> The patchset looks decent, although I find it had to review because I
-> just wasn't provided with enough of the thinking that went into it.  I
-> have enough info to look at the C code, but not enough info to identify
-> and evaluate alternative implementation approaches, to identify
-> possible future extensions, etc.
+> As explained above end() might happens after page that were previously
+> mapped are free or recycled.
 
-Fair enough, I hope I clarified a few things with my explanations
-above. I will also update the description of the patch-set when I
-re-send.
+Again, some explanation of why the driver wishes to inspect the
+pagetable pages would be useful.
 
-> The patchset does appear to add significant additional overhead to hot
-> code paths when mm_has_notifiers(mm).  Please let's update the
-> changelog to address this rather important concern.  How significant is
-> the impact on such mm's, how common are such mm's now and in the
-> future, should we (for example) look at short-circuiting
-> __mmu_notifier_invalidate_range() if none of the registered notifiers
-> implement ->invalidate_range(), etc.
+> > 
+> > > To solve this situation I wrote a patch-set to introduce a
+> > > new notifier call-back: mmu_notifer_invalidate_range(). This
+> > > notifier lifts the strict requirements that no new
+> > > references are taken in the range between _start() and
+> > > _end(). When the subsystem can't guarantee that any new
+> > > references are taken is has to provide the
+> > > invalidate_range() call-back to clear any new references in
+> > > there.
+> > > 
+> > > It is called between invalidate_range_start() and _end()
+> > > every time the VMM has to wipe out any references to a
+> > > couple of pages. This are usually the places where the CPU
+> > > TLBs are flushed too and where its important that this
+> > > happens before invalidate_range_end() is called.
+> > > 
+> > > Any comments and review appreciated!
+> > 
+> > The patchset looks decent, although I find it had to review because I
+> > just wasn't provided with enough of the thinking that went into it.  I
+> > have enough info to look at the C code, but not enough info to identify
+> > and evaluate alternative implementation approaches, to identify
+> > possible future extensions, etc.
+> > 
+> > The patchset does appear to add significant additional overhead to hot
+> > code paths when mm_has_notifiers(mm).  Please let's update the
+> > changelog to address this rather important concern.  How significant is
+> > the impact on such mm's, how common are such mm's now and in the
+> > future, should we (for example) look at short-circuiting
+> > __mmu_notifier_invalidate_range() if none of the registered notifiers
+> > implement ->invalidate_range(), etc.
+> 
+> So one might feel like just completely removing the range_start()/end()
+> from the mmu_notifier and stick to this one callback but it will not work
+> with other hardware like the one i am doing HMM patchset for (i send it
+> again a couple weeks ago https://lkml.org/lkml/2014/8/29/423).
+> 
+> Right now there are very few user of the mmu_notifier, SGI, xen, KVM and
+> sadly recently the GPU folks (which i am part of too). So as the GPU are
+> starting to use it we will see a lot more application going through the
+> mmu_notifier callback. Yet you do want to leverage the hw like GPU and
+> you do want to use the same address space on the GPU as on the CPU and
+> thus you do want to share or at least keep synchronize the GPU view of
+> the CPU page table.
+> 
+> Right now, for IOMMUv2 this means adding this callback, for device that
+> do not rely on ATS/PASID PCIE extension this means something like HMM.
+> Also note that HMM is a superset of IOMMUv2 as it could be use at the
+> same time and provide more feature mainly allowing migrating some page
+> to device local memory for performances purposes.
 
-I think it adds the most overhead to single-CPU kernels. The
-invalidate_range notifier is called in the paths that also do a remote
-TLB flush, which is very expensive on its own. To those paths it adds
-just another remote TLB that needs to be flushed.
+OK, but none of that addressed my question regarding the performance
+cost.
 
-Regards,
+> I think this sumup all motivation behind this patchset and also behind
+> my other patchset. As usual i am happy to discuss alternative way to do
+> things but i think that the path of least disruption from current code
+> is the one implemented by those patchset.
 
-	Joerg
+"least disruption" is nice, but "good implementation" is better.  In
+other words I'd prefer the more complex implementation if the end
+result is better.  Depending on the magnitudes of "complex" and
+"better" :) Two years from now (which isn't very long), I don't think
+we'll regret having chosen the better implementation.
+
+Does this patchset make compromises to achieve low disruption?
