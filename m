@@ -1,16 +1,15 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [RFC][PATCH] devicetree: Add master-id-bits property to the iommu
-	device
-Date: Mon, 15 Sep 2014 10:37:45 +0000
-Message-ID: <bfdff6494d7f46ab9a9f00f94159e9e1@BL2PR03MB468.namprd03.prod.outlook.com>
-References: <1410718646-9710-1-git-send-email-Varun.Sethi@freescale.com>
-	<201409150438.29649.arnd@arndb.de>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [RFC PATCH v3 3/7] iommu: add new iommu_ops callback for adding an
+	OF device
+Date: Mon, 15 Sep 2014 13:57:38 +0200
+Message-ID: <5416D432.8020107@samsung.com>
+References: <1410539695-29128-1-git-send-email-will.deacon@arm.com>
+	<1410539695-29128-4-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <201409150438.29649.arnd-r2nGTMty4D4@public.gmane.org>
-Content-Language: en-US
+In-reply-to: <1410539695-29128-4-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,48 +19,59 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: "Mark.Rutland-5wv7dgnIgG8@public.gmane.org" <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Arnd,
+Hello,
 
-> -----Original Message-----
-> From: Arnd Bergmann [mailto:arnd-r2nGTMty4D4@public.gmane.org]
-> Sent: Monday, September 15, 2014 8:08 AM
-> To: Sethi Varun-B16395
-> Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; Mark.Rutland-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org;
-> hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org; swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org; robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; linux-arm-
-> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; Yoder Stuart-B08248
-> Subject: Re: [RFC][PATCH] devicetree: Add master-id-bits property to the
-> iommu device
-> 
-> On Sunday 14 September 2014, Varun Sethi wrote:
-> > "master-id-bits" property added to the IOMMU device node. This
-> > property can be used by the IOMMU driver to match relevan bits in the
-> > master id expressed by a DMA master.
-> >
-> > This can be used to mask out certain bits that get added to the device
-> > master id due to IOMMU topology. For example, in case of MMU-500 the
-> > TBUID gets appended to the master id. This prevents sharing of a
-> > stream ID, amongst devices which are connected to different TBUs.
-> >
-> > Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-> 
-> This seems rather specific to MMU-500. I don't think that most IOMMUs would
-> use the term 'master ID', 'stream ID' or even the general concept, and you
-> don't expand the acronym 'TBU'. I've seen many IOMMUs and I don't even
-> know what that means.
+On 2014-09-12 18:34, Will Deacon wrote:
+> This patch adds a new function to the iommu_ops structure to allow an
+> OF device to be added to a specific IOMMU instance using the recently
+> merged generic devicetree binding for IOMMUs. The callback (of_xlate)
+> takes a struct device representing the master and an of_phandle_args
+> representing the IOMMU and the correspondong IDs for the new master.
+>
+> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> ---
+>   include/linux/iommu.h | 5 +++++
+>   1 file changed, 5 insertions(+)
+>
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 4256f3ce1673..821eb0bd9f6c 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -21,6 +21,7 @@
+>   
+>   #include <linux/errno.h>
+>   #include <linux/err.h>
+> +#include <linux/of.h>
+>   #include <linux/types.h>
+>   #include <trace/events/iommu.h>
+>   
+> @@ -140,6 +141,10 @@ struct iommu_ops {
+>   	/* Get the numer of window per domain */
+>   	u32 (*domain_get_windows)(struct iommu_domain *domain);
+>   
+> +#ifdef CONFIG_OF_IOMMU
+> +	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
+> +#endif
 
-TBU refers to the translation buffer unit, which is responsible for caching page translations. In case of translation miss in the cache, translation request is forwarded to the TCU (Translation control unit). The master id forwarded to TCU would also contain the TBU ID.  Using the master-id-bits property we can mask out the additional TBU bits at the TCU. This is a cause of concern when we want to share master id for devices which are connected to different TBUs. We have a hot pluggable bus architecture, where a device group can have multiple devices connected to different TBUs. So, we need a mechanism to mask out additional TBIU bits.
 
-> 
-> Why do you think this is something that is needed to be known at the global
-> level, rather than a property for some individual drivers?
-> 
-In case of Freescale Layerscape SOCs, number of bits used for defining a stream id are specific to a given platform. 
+If I understand correctly, this callback is intended to do per-master 
+initialization
+of the iommu structures required by the given iommu driver (I stored them in
+dev->archdata.iommu). However I really don't get what is the meaning of 
+the return
+value. Is it a boolean value? It is used only by of_iommu_configure to 
+check if
+the parse loop should be terminated...
 
-Are you suggesting that this property should be added to the master device node, rather than the iommu node?
+> +
+>   	unsigned long pgsize_bitmap;
+>   };
 
--Varun
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
