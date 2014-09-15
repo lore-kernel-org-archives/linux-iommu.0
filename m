@@ -1,13 +1,16 @@
-From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [Patch Part3 V5 0/8] Enable support of Intel DMAR device hotplug
-Date: Mon, 15 Sep 2014 15:54:03 +0800
-Message-ID: <54169B1B.1070709@huawei.com>
-References: <1410487848-6027-1-git-send-email-jiang.liu@linux.intel.com>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [RFC][PATCH] devicetree: Add master-id-bits property to the iommu
+	device
+Date: Mon, 15 Sep 2014 10:37:45 +0000
+Message-ID: <bfdff6494d7f46ab9a9f00f94159e9e1@BL2PR03MB468.namprd03.prod.outlook.com>
+References: <1410718646-9710-1-git-send-email-Varun.Sethi@freescale.com>
+	<201409150438.29649.arnd@arndb.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1410487848-6027-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <201409150438.29649.arnd-r2nGTMty4D4@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,61 +20,48 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hotplug-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: "Mark.Rutland-5wv7dgnIgG8@public.gmane.org" <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-I built and boot this series in Huawei RH5885 (Intel(R) Xeon(R) CPU E7- 4807, two IOHs and two IOMMUs),
-It works fine, IRQ remap and DMA remap are both look good.
-But because my platform BIOS has no _DSM, so I didn't test the hotplug case yet.
+Hi Arnd,
 
-Thanks!
-Yijing.
+> -----Original Message-----
+> From: Arnd Bergmann [mailto:arnd-r2nGTMty4D4@public.gmane.org]
+> Sent: Monday, September 15, 2014 8:08 AM
+> To: Sethi Varun-B16395
+> Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; Mark.Rutland-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org;
+> hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org; swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org; robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; linux-arm-
+> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; Yoder Stuart-B08248
+> Subject: Re: [RFC][PATCH] devicetree: Add master-id-bits property to the
+> iommu device
+> 
+> On Sunday 14 September 2014, Varun Sethi wrote:
+> > "master-id-bits" property added to the IOMMU device node. This
+> > property can be used by the IOMMU driver to match relevan bits in the
+> > master id expressed by a DMA master.
+> >
+> > This can be used to mask out certain bits that get added to the device
+> > master id due to IOMMU topology. For example, in case of MMU-500 the
+> > TBUID gets appended to the master id. This prevents sharing of a
+> > stream ID, amongst devices which are connected to different TBUs.
+> >
+> > Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+> 
+> This seems rather specific to MMU-500. I don't think that most IOMMUs would
+> use the term 'master ID', 'stream ID' or even the general concept, and you
+> don't expand the acronym 'TBU'. I've seen many IOMMUs and I don't even
+> know what that means.
 
+TBU refers to the translation buffer unit, which is responsible for caching page translations. In case of translation miss in the cache, translation request is forwarded to the TCU (Translation control unit). The master id forwarded to TCU would also contain the TBU ID.  Using the master-id-bits property we can mask out the additional TBU bits at the TCU. This is a cause of concern when we want to share master id for devices which are connected to different TBUs. We have a hot pluggable bus architecture, where a device group can have multiple devices connected to different TBUs. So, we need a mechanism to mask out additional TBIU bits.
 
-On 2014/9/12 10:10, Jiang Liu wrote:
-> When hot plugging a descrete IOH or a physical processor with embedded
-> IIO, we need to handle DMAR(or IOMMU) unit in the PCIe host bridge if
-> DMAR is in use. This patch set tries to enhance current DMAR/IOMMU/IR
-> drivers to support hotplug and is based on latest Linus master branch.
 > 
-> All prerequisite patches to support DMAR device hotplug have been merged
-> into the mainstream kernel, and this is the last patch set to enable
-> DMAR device hotplug.
+> Why do you think this is something that is needed to be known at the global
+> level, rather than a property for some individual drivers?
 > 
-> You may access the patch set at:
-> https://github.com/jiangliu/linux.git iommu/hotplug_v5
-> 
-> This patch set has been tested on Intel development machine.
-> Appreciate any comments and tests.
-> 
-> Patch 1-4 enhances DMAR framework to support hotplug
-> Patch 5 enhances Intel interrupt remapping driver to support hotplug
-> Patch 6 enhances error handling in Intel IR driver
-> Patch 7 enhance Intel IOMMU to support hotplug
-> Patch 8 enhance ACPI pci_root driver to handle DMAR units
-> 
-> Jiang Liu (8):
->   iommu/vt-d: Introduce helper function dmar_walk_resources()
->   iommu/vt-d: Dynamically allocate and free seq_id for DMAR units
->   iommu/vt-d: Implement DMAR unit hotplug framework
->   iommu/vt-d: Search for ACPI _DSM method for DMAR hotplug
->   iommu/vt-d: Enhance intel_irq_remapping driver to support DMAR unit
->     hotplug
->   iommu/vt-d: Enhance error recovery in function
->     intel_enable_irq_remapping()
->   iommu/vt-d: Enhance intel-iommu driver to support DMAR unit hotplug
->   pci, ACPI, iommu: Enhance pci_root to support DMAR device hotplug
-> 
->  drivers/acpi/pci_root.c             |   16 +-
->  drivers/iommu/dmar.c                |  532 ++++++++++++++++++++++++++++-------
->  drivers/iommu/intel-iommu.c         |  297 ++++++++++++++-----
->  drivers/iommu/intel_irq_remapping.c |  233 +++++++++++----
->  include/linux/dmar.h                |   50 +++-
->  5 files changed, 888 insertions(+), 240 deletions(-)
-> 
+In case of Freescale Layerscape SOCs, number of bits used for defining a stream id are specific to a given platform. 
 
+Are you suggesting that this property should be added to the master device node, rather than the iommu node?
 
--- 
-Thanks!
-Yijing
+-Varun
