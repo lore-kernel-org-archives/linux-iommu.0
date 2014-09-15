@@ -1,77 +1,54 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [RFC PATCH v3 3/7] iommu: add new iommu_ops callback for adding an
-	OF device
-Date: Mon, 15 Sep 2014 13:57:38 +0200
-Message-ID: <5416D432.8020107@samsung.com>
-References: <1410539695-29128-1-git-send-email-will.deacon@arm.com>
-	<1410539695-29128-4-git-send-email-will.deacon@arm.com>
+From: Lucas Stach <l.stach@pengutronix.de>
+Subject: Re: [PATCH v1 03/21] MSI: Remove the redundant irq_set_chip_data()
+Date: Mon, 15 Sep 2014 16:00:48 +0200
+Message-ID: <1410789648.3314.5.camel@pengutronix.de>
+References: <1409911806-10519-1-git-send-email-wangyijing@huawei.com>
+	 <1409911806-10519-4-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1410539695-29128-4-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <1409911806-10519-4-git-send-email-wangyijing@huawei.com>
+Sender: linux-arch-owner@vger.kernel.org
+To: Yijing Wang <wangyijing@huawei.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, linux-arch@vger.kernel.org, arnab.basu@freescale.com, Bharat.Bhushan@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org, Chris Metcalf <cmetcalf@tilera.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
-
-On 2014-09-12 18:34, Will Deacon wrote:
-> This patch adds a new function to the iommu_ops structure to allow an
-> OF device to be added to a specific IOMMU instance using the recently
-> merged generic devicetree binding for IOMMUs. The callback (of_xlate)
-> takes a struct device representing the master and an of_phandle_args
-> representing the IOMMU and the correspondong IDs for the new master.
->
-> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Am Freitag, den 05.09.2014, 18:09 +0800 schrieb Yijing Wang:
+> Currently, pcie-designware, pcie-rcar, pci-tegra drivers
+> use irq chip_data to save the msi_chip pointer. They
+> already call irq_set_chip_data() in their own MSI irq map
+> functions. So irq_set_chip_data() in arch_setup_msi_irq()
+> is useless.
+> 
+> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
 > ---
->   include/linux/iommu.h | 5 +++++
->   1 file changed, 5 insertions(+)
->
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 4256f3ce1673..821eb0bd9f6c 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -21,6 +21,7 @@
->   
->   #include <linux/errno.h>
->   #include <linux/err.h>
-> +#include <linux/of.h>
->   #include <linux/types.h>
->   #include <trace/events/iommu.h>
->   
-> @@ -140,6 +141,10 @@ struct iommu_ops {
->   	/* Get the numer of window per domain */
->   	u32 (*domain_get_windows)(struct iommu_domain *domain);
->   
-> +#ifdef CONFIG_OF_IOMMU
-> +	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
-> +#endif
+>  drivers/pci/msi.c |    2 --
+>  1 files changed, 0 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+> index f6cb317..d547f7f 100644
+> --- a/drivers/pci/msi.c
+> +++ b/drivers/pci/msi.c
+> @@ -41,8 +41,6 @@ int __weak arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
+>  	if (err < 0)
+>  		return err;
+>  
+> -	irq_set_chip_data(desc->irq, chip);
+> -
+>  	return 0;
+>  }
+>  
 
+arch_teardown_msi_irq() expects to find the msi_chip in the irq
+chip_data field. As this means drivers don't have any reasonable other
+possibility to stuff things into this field, I think it would make sense
+to do the cleanup the other way around: keep the irq_set_chip_data
+arch_setup_msi_irq() and rip it out of the individual drivers.
 
-If I understand correctly, this callback is intended to do per-master 
-initialization
-of the iommu structures required by the given iommu driver (I stored them in
-dev->archdata.iommu). However I really don't get what is the meaning of 
-the return
-value. Is it a boolean value? It is used only by of_iommu_configure to 
-check if
-the parse loop should be terminated...
+Regards,
+Lucas
 
-> +
->   	unsigned long pgsize_bitmap;
->   };
-
-Best regards
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Pengutronix e.K.             | Lucas Stach                 |
+Industrial Linux Solutions   | http://www.pengutronix.de/  |
