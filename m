@@ -1,16 +1,17 @@
-From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [Patch Part3 V5 1/8] iommu/vt-d: Introduce helper function
-	dmar_walk_resources()
-Date: Tue, 16 Sep 2014 16:08:26 +0800
-Message-ID: <5417EFFA.3090804@huawei.com>
+From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [Patch Part3 V5 5/8] iommu/vt-d: Enhance intel_irq_remapping
+	driver to support DMAR unit hotplug
+Date: Tue, 16 Sep 2014 16:13:47 +0800
+Message-ID: <5417F13B.7030500@linux.intel.com>
 References: <1410487848-6027-1-git-send-email-jiang.liu@linux.intel.com>
-	<1410487848-6027-2-git-send-email-jiang.liu@linux.intel.com>
-	<5412B9EE.3070708@huawei.com> <5417E322.9090201@linux.intel.com>
+	<1410487848-6027-6-git-send-email-jiang.liu@linux.intel.com>
+	<54164D01.4060003@huawei.com> <5417E00D.5000108@linux.intel.com>
+	<5417EC7B.4060400@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5417E322.9090201-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <5417EC7B.4060400-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,83 +21,79 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hotplug-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
->>>  #include "irq_remapping.h"
->>>  
->>> +typedef int (*dmar_res_handler_t)(struct acpi_dmar_header *, void *);
->>> +struct dmar_res_callback {
->>> +	dmar_res_handler_t	cb[ACPI_DMAR_TYPE_RESERVED];
->>> +	void			*arg[ACPI_DMAR_TYPE_RESERVED];
->>> +	bool			ignore_unhandled;
->>> +	bool			print_entry;
->>
->> Why do we need a switch to control print ?
-> We will walk DMAR entries several times during hotplug and only
-> want to print once.
 
-Fine, thanks for your explanation.
 
+On 2014/9/16 15:53, Yijing Wang wrote:
+> On 2014/9/16 15:00, Jiang Liu wrote:
+>> On 2014/9/15 10:20, Yijing Wang wrote:
+>>>> +static void ir_remove_ioapic_hpet_scope(struct intel_iommu *iommu)
+>>>> +{
+>>>> +	int i;
+>>>>  
+>>>> -			ir_parse_one_hpet_scope(scope, iommu);
+>>>> -		}
+>>>> -		start += scope->length;
+>>>> -	}
+>>>> +	for (i = 0; i < MAX_HPET_TBS; i++)
+>>>> +		if (ir_hpet[i].iommu == iommu)
+>>>> +			ir_hpet[i].iommu = NULL;
+>>>
+>>> Hi Gerry, why not reset whole ir_hpe and ir_ioapic data struct?
+>> Hi Yijing,
+>> 	Thanks for review. Zero is legal for id, bus and devfn in
+>> struct ioapic_scope and struct hpet_scope. So we use domain field
+>> as a flag to mark entry valid or invalid and only reset iommu field.
+> 
+> Hi Gerry, use iommu field as a flag to mark entry valid may be not safe enough,
+> I found map_hpet_to_ir() and map_ioapic_to_ir() still only check the id field to return the valid iommu.
+> 
+> What about this case:
+> E.g. ir_hpet[2].id = N, ir_hpet[2].iommu = NULL, ir_hpet[4].id = N, ir_hpet[4].iommu = iommu;
+> 
+> ir_hpet[2] maybe released yet, and the hpet now has been saved in ir_hpet[4], but map_hpet_to_irq()
+> will return the wrong iommu(NULL).
+Hi Yijing,
+Good catch, I will enhance map_hpet_to_ir() and map_ioapic_to_ir().
+Regards!
+Gerry
+> 
+> 
+> static struct intel_iommu *map_hpet_to_ir(u8 hpet_id)
+> {
+> 	int i;
+> 
+> 	for (i = 0; i < MAX_HPET_TBS; i++)
+> 		if (ir_hpet[i].id == hpet_id)
+> 			return ir_hpet[i].iommu;
+> 	return NULL;
+> }
 > 
 >>
->>> +};
->>> +
->>>  
->>> +static int dmar_walk_resources(struct acpi_dmar_header *start, size_t len,
->>> +			       struct dmar_res_callback *cb)
+>> Regards!
+>> Gerry
+>>>
+>>>
+>>>
+>>>>  
+>>>> -	return 0;
+>>>> +	for (i = 0; i < MAX_IO_APICS; i++)
+>>>> +		if (ir_ioapic[i].iommu == iommu)
+>>>> +			ir_ioapic[i].iommu = NULL;
+>>>>  }
+>>>>  
+>>>
+>>> --
+>>> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+>>> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>> Please read the FAQ at  http://www.tux.org/lkml/
+>>>
 >>
->> The name dmar_walk_resources easily make people think this is related with I/O or memory resources.
->> Do you have a better idea of this ?  What about dmar_walk_remapping_entry() or dmar_walk_remapping_structure() ?
-> Good suggestion, I like dmar_walk_remapping_entries().
+>> .
 >>
->>> +{
->>> +	int ret = 0;
->>> +	struct acpi_dmar_header *iter, *next;
->>> +	struct acpi_dmar_header *end = ((void *)start) + len;
->>> +
->>> +	for (iter = start; iter < end && ret == 0; iter = next) {
->>> +		next = (void *)iter + iter->length;
->>> +		if (iter->length == 0) {
->>> +			/* Avoid looping forever on bad ACPI tables */
->>> +			pr_debug(FW_BUG "Invalid 0-length structure\n");
->>
->> What about use pr_warn() instead of pr_debug(), pr_debug() default is off.
-> It seems a common practice for BIOS engineer to mark the last entry with
-> zero length. So it will be annoying if we generate this debug message
-> on product kernel.
-
-OK.
-
 > 
->>
->>> +			break;
->>> +		} else if (next > end) {
->>> +			/* Avoid passing table end */
->>> +			pr_warn(FW_BUG "record passes table end\n");
->>> +			ret = -EINVAL;
->>> +			break;
->>> +		}
->>> +
->>> +		if (cb->print_entry)
->>> +			dmar_table_print_dmar_entry(iter);
->>> +
->>> +		if (iter->type >= ACPI_DMAR_TYPE_RESERVED) {
->>> +			/* continue for forward compatibility */
->>> +			pr_debug("Unknown DMAR structure type %d\n",
->>> +				 iter->type);
->>
->> Same as above.
-> This is typically caused by new DMAR specification. It will also be
-> annoying too if  we also generate this debug message on an newer
-> hardware platform with older linux kernel.
-
-OK.
-
 > 
->>
->>> +		} else if (cb->cb[iter->type]) {
->>> +			ret = cb->cb[iter->type](iter, cb->arg[iter->type]);
->>> +		} else if (!cb->ignore_unhandled) {
->>> +			pr_warn("No handler for DMAR structure type %d\n",
