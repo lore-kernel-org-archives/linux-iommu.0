@@ -1,48 +1,66 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v2 03/18] drm: exynos: detach from default dma-mapping domain
-	on init
-Date: Tue, 16 Sep 2014 13:54:30 +0200
-Message-ID: <1410868485-4143-4-git-send-email-m.szyprowski@samsung.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCH v2 02/18] arm: exynos: bind power domains earlier,
+ on device creation
+Date: Tue, 16 Sep 2014 13:54:29 +0200
+Message-ID: <1410868485-4143-3-git-send-email-m.szyprowski@samsung.com>
 References: <1410868485-4143-1-git-send-email-m.szyprowski@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1410868485-4143-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <1410868485-4143-1-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds code, which detach sub-device nodes from default iommu
-domain if such has been configured.
+This patches change initialization time of power domain driver from client
+device driver bind to device creation. This lets other core drivers to
+register power domain notifiers before client driver is bound.
 
-Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- drivers/gpu/drm/exynos/exynos_drm_iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm/mach-exynos/pm_domains.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/exynos/exynos_drm_iommu.c b/drivers/gpu/drm/exynos/exynos_drm_iommu.c
-index b32b291f88ff..323601a52a25 100644
---- a/drivers/gpu/drm/exynos/exynos_drm_iommu.c
-+++ b/drivers/gpu/drm/exynos/exynos_drm_iommu.c
-@@ -100,6 +100,9 @@ int drm_iommu_attach_device(struct drm_device *drm_dev,
+diff --git a/arch/arm/mach-exynos/pm_domains.c b/arch/arm/mach-exynos/pm_domains.c
+index fd76e1b5a471..1d368a26528c 100644
+--- a/arch/arm/mach-exynos/pm_domains.c
++++ b/arch/arm/mach-exynos/pm_domains.c
+@@ -159,13 +159,13 @@ static int exynos_pm_notifier_call(struct notifier_block *nb,
+ 	struct device *dev = data;
  
- 	dma_set_max_seg_size(subdrv_dev, 0xffffffffu);
+ 	switch (event) {
+-	case BUS_NOTIFY_BIND_DRIVER:
++	case BUS_NOTIFY_ADD_DEVICE:
+ 		if (dev->of_node)
+ 			exynos_read_domain_from_dt(dev);
  
-+	if (subdrv_dev->archdata.mapping)
-+		arm_iommu_detach_device(subdrv_dev);
+ 		break;
+ 
+-	case BUS_NOTIFY_UNBOUND_DRIVER:
++	case BUS_NOTIFY_DEL_DEVICE:
+ 		exynos_remove_device_from_domain(dev);
+ 
+ 		break;
+@@ -177,6 +177,13 @@ static struct notifier_block platform_nb = {
+ 	.notifier_call = exynos_pm_notifier_call,
+ };
+ 
++static int exynos_pm_domain_add(struct device *dev, void *priv)
++{
++	if (dev->of_node)
++		exynos_read_domain_from_dt(dev);
++	return 0;
++}
 +
- 	ret = arm_iommu_attach_device(subdrv_dev, dev->archdata.mapping);
- 	if (ret < 0) {
- 		DRM_DEBUG_KMS("failed iommu attach.\n");
+ static __init int exynos4_pm_init_power_domain(void)
+ {
+ 	struct platform_device *pdev;
+@@ -236,6 +243,7 @@ no_clk:
+ 	}
+ 
+ 	bus_register_notifier(&platform_bus_type, &platform_nb);
++	bus_for_each_dev(&platform_bus_type, NULL, NULL, exynos_pm_domain_add);
+ 
+ 	return 0;
+ }
 -- 
 1.9.2
