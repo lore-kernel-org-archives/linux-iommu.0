@@ -1,99 +1,80 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [Patch Part3 V5 5/8] iommu/vt-d: Enhance intel_irq_remapping
-	driver to support DMAR unit hotplug
-Date: Tue, 16 Sep 2014 16:13:47 +0800
-Message-ID: <5417F13B.7030500@linux.intel.com>
-References: <1410487848-6027-1-git-send-email-jiang.liu@linux.intel.com>
-	<1410487848-6027-6-git-send-email-jiang.liu@linux.intel.com>
-	<54164D01.4060003@huawei.com> <5417E00D.5000108@linux.intel.com>
-	<5417EC7B.4060400@huawei.com>
+From: Lucas Stach <l.stach@pengutronix.de>
+Subject: Re: [PATCH v1 03/21] MSI: Remove the redundant irq_set_chip_data()
+Date: Tue, 16 Sep 2014 12:29:09 +0200
+Message-ID: <1410863349.2746.5.camel@pengutronix.de>
+References: <1409911806-10519-1-git-send-email-wangyijing@huawei.com>
+		 <1409911806-10519-4-git-send-email-wangyijing@huawei.com>
+	 <1410789648.3314.5.camel@pengutronix.de> <541792C0.9090303@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5417EC7B.4060400-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hotplug-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <541792C0.9090303@huawei.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Yijing Wang <wangyijing@huawei.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, linux-arch@vger.kernel.org, arnab.basu@freescale.com, Bharat.Bhushan@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org, Chris Metcalf <cmetcalf@tilera.com>
 List-Id: iommu@lists.linux-foundation.org
 
+Am Dienstag, den 16.09.2014, 09:30 +0800 schrieb Yijing Wang:
+> On 2014/9/15 22:00, Lucas Stach wrote:
+> > Am Freitag, den 05.09.2014, 18:09 +0800 schrieb Yijing Wang:
+> >> Currently, pcie-designware, pcie-rcar, pci-tegra drivers
+> >> use irq chip_data to save the msi_chip pointer. They
+> >> already call irq_set_chip_data() in their own MSI irq map
+> >> functions. So irq_set_chip_data() in arch_setup_msi_irq()
+> >> is useless.
+> >>
+> >> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+> >> ---
+> >>  drivers/pci/msi.c |    2 --
+> >>  1 files changed, 0 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+> >> index f6cb317..d547f7f 100644
+> >> --- a/drivers/pci/msi.c
+> >> +++ b/drivers/pci/msi.c
+> >> @@ -41,8 +41,6 @@ int __weak arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
+> >>  	if (err < 0)
+> >>  		return err;
+> >>  
+> >> -	irq_set_chip_data(desc->irq, chip);
+> >> -
+> >>  	return 0;
+> >>  }
+> >>  
+> > 
+> > arch_teardown_msi_irq() expects to find the msi_chip in the irq
+> > chip_data field. As this means drivers don't have any reasonable other
+> > possibility to stuff things into this field, I think it would make sense
+> > to do the cleanup the other way around: keep the irq_set_chip_data
+> > arch_setup_msi_irq() and rip it out of the individual drivers.
+> 
+> Hi Lucas, thanks for your review and comments!
+> irq_set_chip_data() should not be placed in MSI core functions, because other arch like x86,
+> use irq_data->chip_data to stores irq_cfg. So how to set the chip_data is arch dependent.
+> And this series is mainly to use MSI chip framework in all platforms.
+> Currently, only ARM platform MSI drivers use the chip_data to store msi_chip, and the drivers call
+> irq_set_chip_data() in their driver already. So I thought we should clean up it in MSI core code.
+> 
+Okay I see your point, so the cleanup done this way is okay.
 
+But then this still introduces a problem: arch_teardown_msi_irq()
+expects to find the msi_chip in the chip_data field, which is okay for
+all ARM PCI host drivers, but not for other arch MSI chips.
 
-On 2014/9/16 15:53, Yijing Wang wrote:
-> On 2014/9/16 15:00, Jiang Liu wrote:
->> On 2014/9/15 10:20, Yijing Wang wrote:
->>>> +static void ir_remove_ioapic_hpet_scope(struct intel_iommu *iommu)
->>>> +{
->>>> +	int i;
->>>>  
->>>> -			ir_parse_one_hpet_scope(scope, iommu);
->>>> -		}
->>>> -		start += scope->length;
->>>> -	}
->>>> +	for (i = 0; i < MAX_HPET_TBS; i++)
->>>> +		if (ir_hpet[i].iommu == iommu)
->>>> +			ir_hpet[i].iommu = NULL;
->>>
->>> Hi Gerry, why not reset whole ir_hpe and ir_ioapic data struct?
->> Hi Yijing,
->> 	Thanks for review. Zero is legal for id, bus and devfn in
->> struct ioapic_scope and struct hpet_scope. So we use domain field
->> as a flag to mark entry valid or invalid and only reset iommu field.
-> 
-> Hi Gerry, use iommu field as a flag to mark entry valid may be not safe enough,
-> I found map_hpet_to_ir() and map_ioapic_to_ir() still only check the id field to return the valid iommu.
-> 
-> What about this case:
-> E.g. ir_hpet[2].id = N, ir_hpet[2].iommu = NULL, ir_hpet[4].id = N, ir_hpet[4].iommu = iommu;
-> 
-> ir_hpet[2] maybe released yet, and the hpet now has been saved in ir_hpet[4], but map_hpet_to_irq()
-> will return the wrong iommu(NULL).
-Hi Yijing,
-Good catch, I will enhance map_hpet_to_ir() and map_ioapic_to_ir().
-Regards!
-Gerry
-> 
-> 
-> static struct intel_iommu *map_hpet_to_ir(u8 hpet_id)
-> {
-> 	int i;
-> 
-> 	for (i = 0; i < MAX_HPET_TBS; i++)
-> 		if (ir_hpet[i].id == hpet_id)
-> 			return ir_hpet[i].iommu;
-> 	return NULL;
-> }
-> 
->>
->> Regards!
->> Gerry
->>>
->>>
->>>
->>>>  
->>>> -	return 0;
->>>> +	for (i = 0; i < MAX_IO_APICS; i++)
->>>> +		if (ir_ioapic[i].iommu == iommu)
->>>> +			ir_ioapic[i].iommu = NULL;
->>>>  }
->>>>  
->>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
->>> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>> Please read the FAQ at  http://www.tux.org/lkml/
->>>
->>
->> .
->>
-> 
-> 
+You fix this by completely removing arch_teardown_msi_irq() at the end
+of the series, but this still has the potential to introduce issues for
+other arches than ARM within the series. So this patch should include a
+change to replace the line
+
+struct msi_chip *chip = irq_get_chip_data(irq);
+
+with something that doesn't rely on the msi_chip being in the irq
+chip_data field.
+
+Regards,
+Lucas
+
+-- 
+Pengutronix e.K.             | Lucas Stach                 |
+Industrial Linux Solutions   | http://www.pengutronix.de/  |
