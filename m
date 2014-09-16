@@ -1,84 +1,96 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC PATCH v3 0/7] Introduce automatic DMA configuration for
- IOMMU masters
-Date: Tue, 16 Sep 2014 12:40:27 +0100
-Message-ID: <541821AB.8040403@arm.com>
-References: <1410539695-29128-1-git-send-email-will.deacon@arm.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH v2 00/18] Exynos SYSMMU (IOMMU) integration with DT and
+	DMA-mapping subsystem
+Date: Tue, 16 Sep 2014 13:54:27 +0200
+Message-ID: <1410868485-4143-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1410539695-29128-1-git-send-email-will.deacon@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Will Deacon <will.deacon@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Cc: "jroedel@suse.de" <jroedel@suse.de>, "arnd@arndb.de" <arnd@arndb.de>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "laurent.pinchart@ideasonboard.com" <laurent.pinchart@ideasonboard.com>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, "hdoyu@nvidia.com" <hdoyu@nvidia.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+Hello Everyone,
 
-On 12/09/14 17:34, Will Deacon wrote:
-> Hi all,
->
-> Here is version three of the RFC I've previously posted here:
->
->    RFCv1: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-August/283023.html
->    RFCv2: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-September/283752.html
->
-> Changes since RFCv2 include:
->
->    - Put the iommu_ops in iommu_data so of_iommu_configure can avoid using
->      the bus_type
->    - Initialise the offset and DMA masks on the dev in of_dma_configure
->      instead of in the arch callback (as this would cause a regression on
->      some architectures)
->    - Added deconfigure/teardown code based on ref counting the iommu_dma_mapping
->    - A bunch of small fixes (_OF_DECLARE,  some code shuffling, fix multiple
->      IOMMU parsing)
->
-> All feedback welcome. Hopefully this is now at a point where people can
-> start looking to port dma-mapping and/or IOMMU drivers to it.
->
+This is yet another attempt to finally make Exynos SYSMMU driver fully
+integrated with DMA-mapping subsystem.
 
-What about AMBA devices? Playing with this on Juno and wondering why my 
-PL330 doesn't get any of_xlate callbacks, I see that 
-of_amba_device_create doesn't call of_dma_configure or anything from 
-that path. It's easy to work around by removing the arm,primecell 
-compatible, but that feels pretty dirty.
+Previous approach is available here: https://lkml.org/lkml/2014/8/5/183
 
-Robin.
+I meantime, there have been a discussion about the way the iommu driver
+should be integrated with dma-mapping subsystem, which resulted in "[RFC
+PATCH v3 0/7] Introduce automatic DMA configuration for IOMMU masters"
+patches prepared by Will Deacon:
+http://www.spinics.net/lists/arm-kernel/msg362076.html 
+Those patches removed the need to use bus-specific notifiers for
+initialization.
 
-> Cheers,
->
-> Will
->
-> --->8
->
-> Will Deacon (7):
->    iommu: provide early initialisation hook for IOMMU drivers
->    dma-mapping: replace set_arch_dma_coherent_ops with arch_setup_dma_ops
->    iommu: add new iommu_ops callback for adding an OF device
->    iommu: provide helper function to configure an IOMMU for an of master
->    dma-mapping: detect and configure IOMMU in of_dma_configure
->    arm: call iommu_init before of_platform_populate
->    arm: dma-mapping: plumb our iommu mapping ops into arch_setup_dma_ops
->
->   arch/arm/include/asm/dma-mapping.h |  9 ++--
->   arch/arm/kernel/setup.c            |  2 +
->   arch/arm/mm/dma-mapping.c          | 68 ++++++++++++++++++++++++++----
->   drivers/iommu/Kconfig              |  2 +-
->   drivers/iommu/of_iommu.c           | 84 ++++++++++++++++++++++++++++++++++++++
->   drivers/of/platform.c              | 53 +++++++++++++-----------
->   include/asm-generic/vmlinux.lds.h  |  2 +
->   include/linux/dma-mapping.h        | 21 +++++++---
->   include/linux/iommu.h              | 15 +++++++
->   include/linux/of_iommu.h           | 35 ++++++++++++++++
->   10 files changed, 247 insertions(+), 44 deletions(-)
->
+Main changes since previous version of my patches:
+
+1. rebased onto "[RFC PATCH v3 0/7] Introduce automatic DMA
+configuration for IOMMU masters" patches, changed initialization from
+bus notifiers to DT related callbacks
+
+2. removed support for separate IO address spaces - this will be
+discussed separately after the basic support gets merged
+
+3. removed support for power domain notifier-based runtime power
+management - this also will be discussed separately later
+
+I hope that the driver with above changes will be easier to be merged to
+v3.18.
+
+Best regards
+Marek Szyprowski
+Samsung R&D Institute Poland
+
+
+
+Patch summary:
+
+Marek Szyprowski (18):
+  arm: dma-mapping: arm_iommu_attach_device: automatically set
+    max_seg_size
+  arm: exynos: bind power domains earlier, on device creation
+  drm: exynos: detach from default dma-mapping domain on init
+  clk: exynos: add missing smmu_g2d clock and update comments
+  ARM: DTS: Exynos4: add System MMU nodes
+  iommu: exynos: don't read version register on every tlb operation
+  iommu: exynos: remove unused functions
+  iommu: exynos: remove useless spinlock
+  iommu: exynos: refactor function parameters to simplify code
+  iommu: exynos: remove unused functions, part 2
+  iommu: exynos: remove useless device_add/remove callbacks
+  iommu: exynos: add support for binding more than one sysmmu to master
+    device
+  iommu: exynos: add support for runtime_pm
+  iommu: exynos: rename variables to reflect their purpose
+  iommu: exynos: document internal structures
+  iommu: exynos: remove excessive includes and sort others
+    alphabetically
+  iommu: exynos: init from dt-specific callback instead of initcall
+  iommu: exynos: add callback for initializing devices from device tree
+
+ arch/arm/boot/dts/exynos4.dtsi            | 117 +++++++
+ arch/arm/boot/dts/exynos4210.dtsi         |  23 ++
+ arch/arm/boot/dts/exynos4x12.dtsi         |  82 +++++
+ arch/arm/mach-exynos/pm_domains.c         |  12 +-
+ arch/arm/mm/dma-mapping.c                 |  16 +
+ drivers/clk/samsung/clk-exynos4.c         |   1 +
+ drivers/gpu/drm/exynos/exynos_drm_iommu.c |   3 +
+ drivers/iommu/exynos-iommu.c              | 494 ++++++++++++++----------------
+ include/dt-bindings/clock/exynos4.h       |  10 +-
+ 9 files changed, 483 insertions(+), 275 deletions(-)
+
+-- 
+1.9.2
