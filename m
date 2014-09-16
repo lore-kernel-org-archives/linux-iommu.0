@@ -1,66 +1,71 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v2 02/18] arm: exynos: bind power domains earlier,
- on device creation
-Date: Tue, 16 Sep 2014 13:54:29 +0200
-Message-ID: <1410868485-4143-3-git-send-email-m.szyprowski@samsung.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH v2 04/18] clk: exynos: add missing smmu_g2d clock and update
+	comments
+Date: Tue, 16 Sep 2014 13:54:31 +0200
+Message-ID: <1410868485-4143-5-git-send-email-m.szyprowski@samsung.com>
 References: <1410868485-4143-1-git-send-email-m.szyprowski@samsung.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1410868485-4143-1-git-send-email-m.szyprowski@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <1410868485-4143-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patches change initialization time of power domain driver from client
-device driver bind to device creation. This lets other core drivers to
-register power domain notifiers before client driver is bound.
+This patch adds missing smmu_g2d clock implementation and updates
+comment about Exynos4 clocks from 278-282 range. Those clocks are
+available on all Exynos4 SoC series, so the misleading comment has been
+removed.
 
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Acked-by: Tomasz Figa <t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- arch/arm/mach-exynos/pm_domains.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/clk/samsung/clk-exynos4.c   |  1 +
+ include/dt-bindings/clock/exynos4.h | 10 +++++-----
+ 2 files changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/mach-exynos/pm_domains.c b/arch/arm/mach-exynos/pm_domains.c
-index fd76e1b5a471..1d368a26528c 100644
---- a/arch/arm/mach-exynos/pm_domains.c
-+++ b/arch/arm/mach-exynos/pm_domains.c
-@@ -159,13 +159,13 @@ static int exynos_pm_notifier_call(struct notifier_block *nb,
- 	struct device *dev = data;
- 
- 	switch (event) {
--	case BUS_NOTIFY_BIND_DRIVER:
-+	case BUS_NOTIFY_ADD_DEVICE:
- 		if (dev->of_node)
- 			exynos_read_domain_from_dt(dev);
- 
- 		break;
- 
--	case BUS_NOTIFY_UNBOUND_DRIVER:
-+	case BUS_NOTIFY_DEL_DEVICE:
- 		exynos_remove_device_from_domain(dev);
- 
- 		break;
-@@ -177,6 +177,13 @@ static struct notifier_block platform_nb = {
- 	.notifier_call = exynos_pm_notifier_call,
+diff --git a/drivers/clk/samsung/clk-exynos4.c b/drivers/clk/samsung/clk-exynos4.c
+index ac163d7f5bc3..12a7cc3b5953 100644
+--- a/drivers/clk/samsung/clk-exynos4.c
++++ b/drivers/clk/samsung/clk-exynos4.c
+@@ -1183,6 +1183,7 @@ static struct samsung_gate_clock exynos4x12_gate_clks[] __initdata = {
+ 	GATE(CLK_SPI1_ISP, "spi1_isp", "aclk200", E4X12_GATE_ISP1, 13,
+ 			CLK_IGNORE_UNUSED | CLK_GET_RATE_NOCACHE, 0),
+ 	GATE(CLK_G2D, "g2d", "aclk200", GATE_IP_DMC, 23, 0, 0),
++	GATE(CLK_SMMU_G2D, "smmu_g2d", "aclk200", GATE_IP_DMC, 24, 0, 0),
+ 	GATE(CLK_TMU_APBIF, "tmu_apbif", "aclk100", E4X12_GATE_IP_PERIR, 17, 0,
+ 		0),
  };
- 
-+static int exynos_pm_domain_add(struct device *dev, void *priv)
-+{
-+	if (dev->of_node)
-+		exynos_read_domain_from_dt(dev);
-+	return 0;
-+}
-+
- static __init int exynos4_pm_init_power_domain(void)
- {
- 	struct platform_device *pdev;
-@@ -236,6 +243,7 @@ no_clk:
- 	}
- 
- 	bus_register_notifier(&platform_bus_type, &platform_nb);
-+	bus_for_each_dev(&platform_bus_type, NULL, NULL, exynos_pm_domain_add);
- 
- 	return 0;
- }
+diff --git a/include/dt-bindings/clock/exynos4.h b/include/dt-bindings/clock/exynos4.h
+index 459bd2bd411f..fb9816354079 100644
+--- a/include/dt-bindings/clock/exynos4.h
++++ b/include/dt-bindings/clock/exynos4.h
+@@ -115,11 +115,11 @@
+ #define CLK_SMMU_MFCR		275
+ #define CLK_G3D			276
+ #define CLK_G2D			277
+-#define CLK_ROTATOR		278 /* Exynos4210 only */
+-#define CLK_MDMA		279 /* Exynos4210 only */
+-#define CLK_SMMU_G2D		280 /* Exynos4210 only */
+-#define CLK_SMMU_ROTATOR	281 /* Exynos4210 only */
+-#define CLK_SMMU_MDMA		282 /* Exynos4210 only */
++#define CLK_ROTATOR		278
++#define CLK_MDMA		279
++#define CLK_SMMU_G2D		280
++#define CLK_SMMU_ROTATOR	281
++#define CLK_SMMU_MDMA		282
+ #define CLK_FIMD0		283
+ #define CLK_MIE0		284
+ #define CLK_MDNIE0		285 /* Exynos4412 only */
 -- 
 1.9.2
