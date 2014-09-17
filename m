@@ -1,115 +1,83 @@
-From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH v1 16/21] s390/MSI: Use MSI chip framework to configure
- MSI/MSI-X irq
-Date: Wed, 17 Sep 2014 09:24:10 +0800
-Message-ID: <5418E2BA.4030304@huawei.com>
-References: <1409911806-10519-1-git-send-email-wangyijing@huawei.com> <1409911806-10519-17-git-send-email-wangyijing@huawei.com> <alpine.LFD.2.11.1409161325280.1618@denkbrett>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH v3 3/7] iommu: add new iommu_ops callback for adding
+	an OF device
+Date: Wed, 17 Sep 2014 02:39:07 +0100
+Message-ID: <20140917013907.GA15756@arm.com>
+References: <1410539695-29128-1-git-send-email-will.deacon@arm.com>
+	<1410539695-29128-4-git-send-email-will.deacon@arm.com>
+	<5416D432.8020107@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <sparclinux-owner@vger.kernel.org>
-In-Reply-To: <alpine.LFD.2.11.1409161325280.1618@denkbrett>
-Sender: sparclinux-owner@vger.kernel.org
-To: Sebastian Ott <sebott@linux.vnet.ibm.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, linux-arch@vger.kernel.org, arnab.basu@freescale.com, Bharat.Bhushan@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org, Chris Metcalf <cmetcalf@tilera.com>, Ralf Baechle <ralf@linux-mi>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <5416D432.8020107-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2014/9/16 19:35, Sebastian Ott wrote:
+On Mon, Sep 15, 2014 at 12:57:38PM +0100, Marek Szyprowski wrote:
 > Hello,
-> 
-> On Fri, 5 Sep 2014, Yijing Wang wrote:
->> Use MSI chip framework instead of arch MSI functions to configure
->> MSI/MSI-X irq. So we can manage MSI/MSI-X irq in a unified framework.
->>
->> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
->> ---
->>  arch/s390/pci/pci.c |   18 ++++++++++++++----
->>  1 files changed, 14 insertions(+), 4 deletions(-)
->>
->> diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
->> index 2fa7b14..da5316e 100644
->> --- a/arch/s390/pci/pci.c
->> +++ b/arch/s390/pci/pci.c
->> @@ -358,7 +358,7 @@ static void zpci_irq_handler(struct airq_struct *airq)
->>  	}
->>  }
->>
->> -int arch_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
->> +int zpci_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
->>  {
->>  	struct zpci_dev *zdev = get_zdev(pdev);
->>  	unsigned int hwirq, msi_vecs;
->> @@ -434,7 +434,7 @@ out:
->>  	return rc;
->>  }
->>
->> -void arch_teardown_msi_irqs(struct pci_dev *pdev)
->> +static void zpci_teardown_msi_irqs(struct pci_dev *pdev)
->>  {
->>  	struct zpci_dev *zdev = get_zdev(pdev);
->>  	struct msi_desc *msi;
->> @@ -448,9 +448,9 @@ void arch_teardown_msi_irqs(struct pci_dev *pdev)
->>  	/* Release MSI interrupts */
->>  	list_for_each_entry(msi, &pdev->msi_list, list) {
->>  		if (msi->msi_attrib.is_msix)
->> -			default_msix_mask_irq(msi, 1);
->> +			__msix_mask_irq(msi, 1);
->>  		else
->> -			default_msi_mask_irq(msi, 1, 1);
->> +			__msi_mask_irq(msi, 1, 1);
-> 
-> The default_msi_mask_irq to __msi_mask_irq renaming is hidden in your
-> patch "x86/xen/MSI: Eliminate arch_msix_mask_irq() and arch_msi_mask_irq()"
-> 
-> This means that between that patch and this one s390 will not compile.
-> Could you please move this hunk to the other patch or even make an extra
-> patch with the renaming. Other than that:
 
-Good catch. I will move this hunk into the patch "x86/xen/MSI: Eliminate arch_msix_mask_irq() and arch_msi_mask_irq()".
+Hi Marek,
 
-> 
-> Acked-by: Sebastian Ott <sebott@linux.vnet.ibm.com>
+Thanks for looking again at this -- I'll take at look at your exynos series
+when I'm back in the UK next week.
 
-
-Thanks!
-Yijing.
-
-
-> 
-> Regards,
-> Sebastian
-> 
->>  		irq_set_msi_desc(msi->irq, NULL);
->>  		irq_free_desc(msi->irq);
->>  		msi->msg.address_lo = 0;
->> @@ -464,6 +464,16 @@ void arch_teardown_msi_irqs(struct pci_dev *pdev)
->>  	airq_iv_free_bit(zpci_aisb_iv, zdev->aisb);
->>  }
->>
->> +static struct msi_chip zpci_msi_chip = {
->> +	.setup_irqs = zpci_setup_msi_irqs,
->> +	.teardown_irqs = zpci_teardown_msi_irqs,
->> +};
->> +
->> +struct msi_chip *arch_find_msi_chip(struct pci_dev *dev)
->> +{
->> +	return &zpci_msi_chip;
->> +}
->> +
->>  static void zpci_map_resources(struct zpci_dev *zdev)
->>  {
->>  	struct pci_dev *pdev = zdev->pdev;
->> -- 
->> 1.7.1
->>
->>
+> On 2014-09-12 18:34, Will Deacon wrote:
+> > This patch adds a new function to the iommu_ops structure to allow an
+> > OF device to be added to a specific IOMMU instance using the recently
+> > merged generic devicetree binding for IOMMUs. The callback (of_xlate)
+> > takes a struct device representing the master and an of_phandle_args
+> > representing the IOMMU and the correspondong IDs for the new master.
+> >
+> > Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> > ---
+> >   include/linux/iommu.h | 5 +++++
+> >   1 file changed, 5 insertions(+)
+> >
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index 4256f3ce1673..821eb0bd9f6c 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -21,6 +21,7 @@
+> >   
+> >   #include <linux/errno.h>
+> >   #include <linux/err.h>
+> > +#include <linux/of.h>
+> >   #include <linux/types.h>
+> >   #include <trace/events/iommu.h>
+> >   
+> > @@ -140,6 +141,10 @@ struct iommu_ops {
+> >   	/* Get the numer of window per domain */
+> >   	u32 (*domain_get_windows)(struct iommu_domain *domain);
+> >   
+> > +#ifdef CONFIG_OF_IOMMU
+> > +	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
+> > +#endif
 > 
 > 
-> .
-> 
+> If I understand correctly, this callback is intended to do per-master 
+> initialization
+> of the iommu structures required by the given iommu driver (I stored them in
+> dev->archdata.iommu). However I really don't get what is the meaning of 
+> the return
+> value. Is it a boolean value? It is used only by of_iommu_configure to 
+> check if
+> the parse loop should be terminated...
 
+It should probably return 0 on success, < 0 otherwise. I'll fix
+of_iommu_configure to check for < 0 and only exit the loop then. The idea is
+that we don't swizzle the DMA ops for a device to IOMMU ops if of_xlate
+failed for any of its IDs.
 
--- 
-Thanks!
-Yijing
-
+Will
