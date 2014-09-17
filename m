@@ -1,58 +1,115 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH v3 0/7] Introduce automatic DMA configuration for
-	IOMMU masters
-Date: Wed, 17 Sep 2014 02:19:11 +0100
-Message-ID: <20140917011910.GA3232@arm.com>
-References: <1410539695-29128-1-git-send-email-will.deacon@arm.com>
-	<541821AB.8040403@arm.com>
+From: Yijing Wang <wangyijing@huawei.com>
+Subject: Re: [PATCH v1 16/21] s390/MSI: Use MSI chip framework to configure
+ MSI/MSI-X irq
+Date: Wed, 17 Sep 2014 09:24:10 +0800
+Message-ID: <5418E2BA.4030304@huawei.com>
+References: <1409911806-10519-1-git-send-email-wangyijing@huawei.com> <1409911806-10519-17-git-send-email-wangyijing@huawei.com> <alpine.LFD.2.11.1409161325280.1618@denkbrett>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <541821AB.8040403-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <sparclinux-owner@vger.kernel.org>
+In-Reply-To: <alpine.LFD.2.11.1409161325280.1618@denkbrett>
+Sender: sparclinux-owner@vger.kernel.org
+To: Sebastian Ott <sebott@linux.vnet.ibm.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, linux-arch@vger.kernel.org, arnab.basu@freescale.com, Bharat.Bhushan@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org, Chris Metcalf <cmetcalf@tilera.com>, Ralf Baechle <ralf@linux-mi>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Sep 16, 2014 at 12:40:27PM +0100, Robin Murphy wrote:
-> On 12/09/14 17:34, Will Deacon wrote:
-> > Here is version three of the RFC I've previously posted here:
-> >
-> >    RFCv1: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-August/283023.html
-> >    RFCv2: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-September/283752.html
-> >
-> > Changes since RFCv2 include:
-> >
-> >    - Put the iommu_ops in iommu_data so of_iommu_configure can avoid using
-> >      the bus_type
-> >    - Initialise the offset and DMA masks on the dev in of_dma_configure
-> >      instead of in the arch callback (as this would cause a regression on
-> >      some architectures)
-> >    - Added deconfigure/teardown code based on ref counting the iommu_dma_mapping
-> >    - A bunch of small fixes (_OF_DECLARE,  some code shuffling, fix multiple
-> >      IOMMU parsing)
-> >
-> > All feedback welcome. Hopefully this is now at a point where people can
-> > start looking to port dma-mapping and/or IOMMU drivers to it.
-> >
+On 2014/9/16 19:35, Sebastian Ott wrote:
+> Hello,
 > 
-> What about AMBA devices? Playing with this on Juno and wondering why my 
-> PL330 doesn't get any of_xlate callbacks, I see that 
-> of_amba_device_create doesn't call of_dma_configure or anything from 
-> that path. It's easy to work around by removing the arm,primecell 
-> compatible, but that feels pretty dirty.
+> On Fri, 5 Sep 2014, Yijing Wang wrote:
+>> Use MSI chip framework instead of arch MSI functions to configure
+>> MSI/MSI-X irq. So we can manage MSI/MSI-X irq in a unified framework.
+>>
+>> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+>> ---
+>>  arch/s390/pci/pci.c |   18 ++++++++++++++----
+>>  1 files changed, 14 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
+>> index 2fa7b14..da5316e 100644
+>> --- a/arch/s390/pci/pci.c
+>> +++ b/arch/s390/pci/pci.c
+>> @@ -358,7 +358,7 @@ static void zpci_irq_handler(struct airq_struct *airq)
+>>  	}
+>>  }
+>>
+>> -int arch_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
+>> +int zpci_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
+>>  {
+>>  	struct zpci_dev *zdev = get_zdev(pdev);
+>>  	unsigned int hwirq, msi_vecs;
+>> @@ -434,7 +434,7 @@ out:
+>>  	return rc;
+>>  }
+>>
+>> -void arch_teardown_msi_irqs(struct pci_dev *pdev)
+>> +static void zpci_teardown_msi_irqs(struct pci_dev *pdev)
+>>  {
+>>  	struct zpci_dev *zdev = get_zdev(pdev);
+>>  	struct msi_desc *msi;
+>> @@ -448,9 +448,9 @@ void arch_teardown_msi_irqs(struct pci_dev *pdev)
+>>  	/* Release MSI interrupts */
+>>  	list_for_each_entry(msi, &pdev->msi_list, list) {
+>>  		if (msi->msi_attrib.is_msix)
+>> -			default_msix_mask_irq(msi, 1);
+>> +			__msix_mask_irq(msi, 1);
+>>  		else
+>> -			default_msi_mask_irq(msi, 1, 1);
+>> +			__msi_mask_irq(msi, 1, 1);
+> 
+> The default_msi_mask_irq to __msi_mask_irq renaming is hidden in your
+> patch "x86/xen/MSI: Eliminate arch_msix_mask_irq() and arch_msi_mask_irq()"
+> 
+> This means that between that patch and this one s390 will not compile.
+> Could you please move this hunk to the other patch or even make an extra
+> patch with the renaming. Other than that:
 
-Yeah, that's just a bug in mainline. I'll look at fixing it if you don't
-beat me to it.
+Good catch. I will move this hunk into the patch "x86/xen/MSI: Eliminate arch_msix_mask_irq() and arch_msi_mask_irq()".
 
-Will
+> 
+> Acked-by: Sebastian Ott <sebott@linux.vnet.ibm.com>
+
+
+Thanks!
+Yijing.
+
+
+> 
+> Regards,
+> Sebastian
+> 
+>>  		irq_set_msi_desc(msi->irq, NULL);
+>>  		irq_free_desc(msi->irq);
+>>  		msi->msg.address_lo = 0;
+>> @@ -464,6 +464,16 @@ void arch_teardown_msi_irqs(struct pci_dev *pdev)
+>>  	airq_iv_free_bit(zpci_aisb_iv, zdev->aisb);
+>>  }
+>>
+>> +static struct msi_chip zpci_msi_chip = {
+>> +	.setup_irqs = zpci_setup_msi_irqs,
+>> +	.teardown_irqs = zpci_teardown_msi_irqs,
+>> +};
+>> +
+>> +struct msi_chip *arch_find_msi_chip(struct pci_dev *dev)
+>> +{
+>> +	return &zpci_msi_chip;
+>> +}
+>> +
+>>  static void zpci_map_resources(struct zpci_dev *zdev)
+>>  {
+>>  	struct pci_dev *pdev = zdev->pdev;
+>> -- 
+>> 1.7.1
+>>
+>>
+> 
+> 
+> .
+> 
+
+
+-- 
+Thanks!
+Yijing
+
