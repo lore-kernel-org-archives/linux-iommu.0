@@ -1,14 +1,17 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 2/2] iommu/amd: Split init_iommu_group() from
-	iommu_init_device()
-Date: Fri, 19 Sep 2014 10:03:13 -0600
-Message-ID: <20140919160312.14485.90453.stgit@gimli.home>
-References: <20140919154944.14485.743.stgit@gimli.home>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 04/13 v2] iommu/arm-smmu: Convert to iommu_capable() API
+	function function
+Date: Fri, 19 Sep 2014 17:42:20 +0100
+Message-ID: <20140919164220.GI20773@arm.com>
+References: <1409914384-21191-1-git-send-email-joro@8bytes.org>
+	<1409914384-21191-5-git-send-email-joro@8bytes.org>
+	<20140908165136.GW26030@arm.com> <20140917085312.GE2533@suse.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140919154944.14485.743.stgit-GCcqpEzw8uZBDLzU/O5InQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20140917085312.GE2533-l3A5Bk7waGM@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,89 +21,79 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mstowe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-For a PCI device, aliases from the IVRS table won't be populated
-into dma_alias_devfn until after iommu_init_device() is called on
-each device.  We therefore want to split init_iommu_group() to
-be called from a separate loop immediately following.
+On Wed, Sep 17, 2014 at 09:53:12AM +0100, Joerg Roedel wrote:
+> Hi Will,
 
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org # 3.17
----
+Hello Joerg,
 
- drivers/iommu/amd_iommu.c |   27 +++++++++++++--------------
- 1 file changed, 13 insertions(+), 14 deletions(-)
+> On Mon, Sep 08, 2014 at 05:51:36PM +0100, Will Deacon wrote:
+> > On Fri, Sep 05, 2014 at 11:52:56AM +0100, Joerg Roedel wrote:
+> > > From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> > > 
+> > > Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> > > Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> > > ---
+> > >  drivers/iommu/arm-smmu.c | 35 ++++++++++++++++++++++++++---------
+> > >  1 file changed, 26 insertions(+), 9 deletions(-)
+> 
+> Okay, so here is the updated patch:
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index ecb0109..5aff937 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -260,17 +260,13 @@ static bool check_device(struct device *dev)
- 	return true;
- }
- 
--static int init_iommu_group(struct device *dev)
-+static void init_iommu_group(struct device *dev)
- {
- 	struct iommu_group *group;
- 
- 	group = iommu_group_get_for_dev(dev);
--
--	if (IS_ERR(group))
--		return PTR_ERR(group);
--
--	iommu_group_put(group);
--	return 0;
-+	if (!IS_ERR(group))
-+		iommu_group_put(group);
- }
- 
- static int __last_alias(struct pci_dev *pdev, u16 alias, void *data)
-@@ -340,7 +336,6 @@ static int iommu_init_device(struct device *dev)
- 	struct pci_dev *pdev = to_pci_dev(dev);
- 	struct iommu_dev_data *dev_data;
- 	u16 alias;
--	int ret;
- 
- 	if (dev->archdata.iommu)
- 		return 0;
-@@ -364,12 +359,6 @@ static int iommu_init_device(struct device *dev)
- 		dev_data->alias_data = alias_data;
- 	}
- 
--	ret = init_iommu_group(dev);
--	if (ret) {
--		free_dev_data(dev_data);
--		return ret;
--	}
--
- 	if (pci_iommuv2_capable(pdev)) {
- 		struct amd_iommu *iommu;
- 
-@@ -455,6 +444,15 @@ int __init amd_iommu_init_devices(void)
- 			goto out_free;
- 	}
- 
-+	/*
-+	 * Initialize IOMMU groups only after iommu_init_device() has
-+	 * had a chance to populate any IVRS defined aliases.
-+	 */
-+	for_each_pci_dev(pdev) {
-+		if (check_device(&pdev->dev))
-+			init_iommu_group(&pdev->dev);
-+	}
-+
- 	return 0;
- 
- out_free:
-@@ -2415,6 +2413,7 @@ static int device_change_notifier(struct notifier_block *nb,
- 	case BUS_NOTIFY_ADD_DEVICE:
- 
- 		iommu_init_device(dev);
-+		init_iommu_group(dev);
- 
- 		/*
- 		 * dev_data is still NULL and
+Thanks, comments inline.
+
+> From b5d895980849ba1a46a5250cd4cc5f3f9f28235d Mon Sep 17 00:00:00 2001
+> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> Date: Fri, 5 Sep 2014 10:49:34 +0200
+> Subject: [PATCH 04/13] iommu/arm-smmu: Convert to iommu_capable() API function
+> 
+> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> ---
+>  drivers/iommu/arm-smmu.c | 20 ++++++++++----------
+>  1 file changed, 10 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index a83cc2a..f5cacf4 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1526,20 +1526,20 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
+>  	return __pfn_to_phys(pte_pfn(pte)) | (iova & ~PAGE_MASK);
+>  }
+>  
+> -static int arm_smmu_domain_has_cap(struct iommu_domain *domain,
+> -				   unsigned long cap)
+> +static bool arm_smmu_capable(enum iommu_cap cap)
+>  {
+> -	struct arm_smmu_domain *smmu_domain = domain->priv;
+> -	struct arm_smmu_device *smmu = smmu_domain->smmu;
+> -	u32 features = smmu ? smmu->features : 0;
+> -
+>  	switch (cap) {
+>  	case IOMMU_CAP_CACHE_COHERENCY:
+> -		return features & ARM_SMMU_FEAT_COHERENT_WALK;
+> +		/*
+> +		 * Return false here until we have a way to find out whether the
+> +		 * SMMUs in the system a coherently connected and able to force
+> +		 * DMA coherency.
+> +		 */
+
+s/a/are/
+
+However, I thought about this a bit more and the coherency isn't necessarily
+a global property of the SMMU. In reality, it is dependent on the IOTLBs in
+use by the domain, so it's not going to be possible to report true here in
+many cases.
+
+That means we'd need a way to say `this device is dma coherent when its
+downstream IOMMU is enabled with IOMMU_CACHE mappings'. For the moment,
+people will probably just add `dma-coherent' to the endpoint and dma-mapping
+will request IOMMU_CACHE mappings regardless of the features advertised by
+the IOMMU. In that case, it might make more sense to return `true' here as
+we can always generated cacheable transactions from the SMMU. The
+dma-coherent property on the device would then indicate whether those
+transactions will snoop the CPU caches.
+
+Will
