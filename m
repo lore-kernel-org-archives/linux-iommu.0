@@ -1,49 +1,57 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC PATCH v3 1/7] iommu: provide early initialisation hook for
- IOMMU drivers
-Date: Thu, 18 Sep 2014 15:31:54 +0100
-Message-ID: <541AECDA.1000805@arm.com>
-References: <1410539695-29128-1-git-send-email-will.deacon@arm.com>
- <1410539695-29128-2-git-send-email-will.deacon@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1410539695-29128-2-git-send-email-will.deacon@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Will Deacon <will.deacon@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Cc: "jroedel@suse.de" <jroedel@suse.de>, "arnd@arndb.de" <arnd@arndb.de>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "laurent.pinchart@ideasonboard.com" <laurent.pinchart@ideasonboard.com>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, "hdoyu@nvidia.com" <hdoyu@nvidia.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>
+From: Jiang Liu <jiang.liu@linux.intel.com>
+Subject: [Patch Part3 V6 0/8] Enable support of Intel DMAR device hotplug
+Date: Fri, 19 Sep 2014 13:18:47 +0800
+Message-ID: <1411103935-31301-1-git-send-email-jiang.liu@linux.intel.com>
+Return-path: <linux-hotplug-owner@vger.kernel.org>
+Sender: linux-hotplug-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, Tony Luck <tony.luck@intel.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-hotplug@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+When hot plugging a descrete IOH or a physical processor with embedded
+IIO, we need to handle DMAR(or IOMMU) unit in the PCIe host bridge if
+DMAR is in use. This patch set tries to enhance current DMAR/IOMMU/IR
+drivers to support hotplug and is based on latest Linus master branch.
 
-After some fun times wondering why on Earth of_iommu_init was trying to 
-instantiate a GIC, I think we may need one of these as part of this 
-patch, too ;)
+All prerequisite patches to support DMAR device hotplug have been merged
+into the mainstream kernel, and this is the last patch set to enable
+DMAR device hotplug.
 
-Robin.
+You may access the patch set at:
+https://github.com/jiangliu/linux.git iommu/hotplug_v6
 
---->8---
+This patch set has been tested on Intel development machine.
+Appreciate any comments and tests.
 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 8656b63..1927691 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -24,6 +24,9 @@
-  #include <linux/of_iommu.h>
-  #include <linux/slab.h>
+V5->V6:
+1) Fix a race condition found during review
+2) Refine dmar_walk_resources() to dmar_walk_remapping_entries()
 
-+static const struct of_device_id __iommu_of_table_sentinel
-+       __used __section(__iommu_of_table_end);
-+
-  /**
-   * of_get_dma_window - Parse *dma-window property and returns 0 if found.
-   *
+Patch 1-4 enhances DMAR framework to support hotplug
+Patch 5 enhances Intel interrupt remapping driver to support hotplug
+Patch 6 enhances error handling in Intel IR driver
+Patch 7 enhance Intel IOMMU to support hotplug
+Patch 8 enhance ACPI pci_root driver to handle DMAR units
+
+Jiang Liu (8):
+  iommu/vt-d: Introduce helper function dmar_walk_resources()
+  iommu/vt-d: Dynamically allocate and free seq_id for DMAR units
+  iommu/vt-d: Implement DMAR unit hotplug framework
+  iommu/vt-d: Search for ACPI _DSM method for DMAR hotplug
+  iommu/vt-d: Enhance intel_irq_remapping driver to support DMAR unit
+    hotplug
+  iommu/vt-d: Enhance error recovery in function
+    intel_enable_irq_remapping()
+  iommu/vt-d: Enhance intel-iommu driver to support DMAR unit hotplug
+  pci, ACPI, iommu: Enhance pci_root to support DMAR device hotplug
+
+ drivers/acpi/pci_root.c             |   16 +-
+ drivers/iommu/dmar.c                |  532 ++++++++++++++++++++++++++++-------
+ drivers/iommu/intel-iommu.c         |  297 ++++++++++++++-----
+ drivers/iommu/intel_irq_remapping.c |  237 ++++++++++++----
+ include/linux/dmar.h                |   50 +++-
+ 5 files changed, 890 insertions(+), 242 deletions(-)
+
+-- 
+1.7.10.4
+
