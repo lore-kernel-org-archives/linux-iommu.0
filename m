@@ -1,84 +1,35 @@
-From: Mark Salter <msalter@redhat.com>
-Subject: [PATCH] iommu/core: fix bus notifier breakage
-Date: Sun, 21 Sep 2014 13:58:24 -0400
-Message-ID: <1411322304-3925-1-git-send-email-msalter@redhat.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>, Mark Salter <msalter@redhat.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu: fix bug in pmd construction
+Date: Mon, 22 Sep 2014 09:48:07 +0100
+Message-ID: <20140922084807.GA25809@arm.com>
+References: <1411163922-8833-1-git-send-email-mitchelh@codeaurora.org>
+	<1dbe5bf443a44828bf27d282a93c1065@BL2PR03MB468.namprd03.prod.outlook.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1dbe5bf443a44828bf27d282a93c1065-AZ66ij2kwaacCcN9WK45f+O6mTEJWrR4XA4E9RH9d+qIuWR1G4zioA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-iommu_bus_init() registers a bus notifier on the given bus by using
-a statically defined notifier block:
+On Sun, Sep 21, 2014 at 08:56:28AM +0100, Varun Sethi wrote:
+> I have made changes to the arm smmu driver paging support, as a part of
+> the huge page support patch. Will is currently reviewing changes made by
+> me. I should be able to post my patch in the next couple of weeks.
 
-  static struct notifier_block iommu_bus_nb = {
-          .notifier_call = iommu_bus_notifier,
-  };
+Yup, but this patch looks like a sensible change for now. I agree that we
+can't currently hit the bug, but that code is intended to be usable for use
+across multiple PMDs, so I'll apply this.
 
-This same notifier block is used for all busses. This causes a
-problem for notifiers registered after iommu has registered this
-callback on multiple busses. The problem is that a subsequent
-notifier being registered on a bus which has this iommu notifier
-will also get linked in to the notifier list of all other busses
-which have this iommu notifier.
-
-This patch fixes this by allocating the notifier_block at runtime.
-Some error checking is also added to catch any allocation failure
-or notifier registration error.
-
-Signed-off-by: Mark Salter <msalter@redhat.com>
----
- drivers/iommu/iommu.c | 26 ++++++++++++++++----------
- 1 file changed, 16 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 0639b92..f00697a 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -770,18 +770,26 @@ static int iommu_bus_notifier(struct notifier_block *nb,
- 	return 0;
- }
- 
--static struct notifier_block iommu_bus_nb = {
--	.notifier_call = iommu_bus_notifier,
--};
--
--static void iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
-+static int iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
- {
-+	int err;
-+	struct notifier_block *nb;
- 	struct iommu_callback_data cb = {
- 		.ops = ops,
- 	};
- 
--	bus_register_notifier(bus, &iommu_bus_nb);
--	bus_for_each_dev(bus, NULL, &cb, add_iommu_group);
-+	nb = kzalloc(sizeof(struct notifier_block), GFP_KERNEL);
-+	if (!nb)
-+		return -ENOMEM;
-+
-+	nb->notifier_call = iommu_bus_notifier;
-+
-+	err = bus_register_notifier(bus, nb);
-+	if (err) {
-+		kfree(nb);
-+		return err;
-+	}
-+	return bus_for_each_dev(bus, NULL, &cb, add_iommu_group);
- }
- 
- /**
-@@ -805,9 +813,7 @@ int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops)
- 	bus->iommu_ops = ops;
- 
- 	/* Do IOMMU specific setup for this bus-type */
--	iommu_bus_init(bus, ops);
--
--	return 0;
-+	return iommu_bus_init(bus, ops);
- }
- EXPORT_SYMBOL_GPL(bus_set_iommu);
- 
--- 
-1.9.3
+Will
