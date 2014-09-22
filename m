@@ -1,17 +1,17 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH v3 5/7] dma-mapping: detect and configure IOMMU in
-	of_dma_configure
-Date: Mon, 22 Sep 2014 18:50:27 +0100
-Message-ID: <20140922175027.GK7936@arm.com>
-References: <1410539695-29128-1-git-send-email-will.deacon@arm.com>
-	<1410539695-29128-6-git-send-email-will.deacon@arm.com>
-	<4252161.sBJZLIS2WH@avalon> <20140922092909.GJ1470@ulmo>
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH 2/2] iommu/arm-smmu: add support for access-protected
+	mappings
+Date: Mon, 22 Sep 2014 15:28:42 -0700
+Message-ID: <vnkwtx3zb885.fsf@mitchelh-linux.qualcomm.com>
+References: <1410984969-2340-1-git-send-email-mitchelh@codeaurora.org>
+	<1410984969-2340-3-git-send-email-mitchelh@codeaurora.org>
+	<20140919220535.GM20773@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140922092909.GJ1470@ulmo>
+In-Reply-To: <20140919220535.GM20773-5wv7dgnIgG8@public.gmane.org> (Will Deacon's message of "Fri,
+	19 Sep 2014 23:05:36 +0100")
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,94 +21,102 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Sep 22, 2014 at 10:29:10AM +0100, Thierry Reding wrote:
-> On Thu, Sep 18, 2014 at 02:17:33PM +0300, Laurent Pinchart wrote:
-> > On Friday 12 September 2014 17:34:53 Will Deacon wrote:
-> > > This patch extends of_dma_configure so that it sets up the IOMMU for a
-> > > device, as well as the coherent/non-coherent DMA mapping ops.
-> > > 
-> > > Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> > > ---
-> > >  arch/arm/include/asm/dma-mapping.h |  4 +++-
-> > >  drivers/of/platform.c              | 24 +++++++++++++++++-------
-> > >  include/linux/dma-mapping.h        |  8 +++++++-
-> > >  3 files changed, 27 insertions(+), 9 deletions(-)
-> > > 
-> > > diff --git a/arch/arm/include/asm/dma-mapping.h
-> > > b/arch/arm/include/asm/dma-mapping.h index 7e9ac4f604c3..a8bb0c494bb3
-> > > 100644
-> > > --- a/arch/arm/include/asm/dma-mapping.h
-> > > +++ b/arch/arm/include/asm/dma-mapping.h
-> > > @@ -121,7 +121,9 @@ static inline unsigned long dma_max_pfn(struct device
-> > > *dev) }
-> > >  #define dma_max_pfn(dev) dma_max_pfn(dev)
-> > > 
-> > > -static inline void arch_setup_dma_ops(struct device *dev, bool coherent)
-> > > +static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
-> > > +				      u64 size, struct iommu_dma_mapping *iommu,
-> > > +				      bool coherent)
-> > >  {
-> > >  	if (coherent)
-> > >  		set_dma_ops(dev, &arm_coherent_dma_ops);
-> > > diff --git a/drivers/of/platform.c b/drivers/of/platform.c
-> > > index 946dd7ae0394..95ebd38db545 100644
-> > > --- a/drivers/of/platform.c
-> > > +++ b/drivers/of/platform.c
-> > > @@ -19,6 +19,7 @@
-> > >  #include <linux/slab.h>
-> > >  #include <linux/of_address.h>
-> > >  #include <linux/of_device.h>
-> > > +#include <linux/of_iommu.h>
-> > >  #include <linux/of_irq.h>
-> > >  #include <linux/of_platform.h>
-> > >  #include <linux/platform_device.h>
-> > > @@ -166,6 +167,7 @@ static void of_dma_configure(struct platform_device
-> > > *pdev) int ret;
-> > >  	bool coherent;
-> > >  	unsigned long offset;
-> > > +	struct iommu_dma_mapping *iommu;
-> > >  	struct device *dev = &pdev->dev;
-> > > 
-> > >  	/*
-> > > @@ -195,7 +197,19 @@ static void of_dma_configure(struct platform_device
-> > > *pdev) dev_dbg(dev, "device is%sdma coherent\n",
-> > >  		coherent ? " " : " not ");
-> > > 
-> > > -	arch_setup_dma_ops(dev, coherent);
-> > > +	iommu = of_iommu_configure(dev);
-> > > +	dev_dbg(dev, "device is%sbehind an iommu\n",
-> > > +		iommu ? " " : " not ");
-> > > +
-> > > +	arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
-> > > +
-> > > +	if (iommu)
-> > > +		kref_put(&iommu->kref, of_iommu_deconfigure);
-> > 
-> > What's the expected life cycle of the iommu_dma_mapping structure ? It gets 
-> > created by of_iommu_configure() and the initial reference gets dropped here. I 
-> > suppose you expect arch code to need to keep a reference to the structure, but 
-> > your implementation in patch 7/7 doesn't. As far as I can see, you don't even 
-> > use the contents of the structure in the ARM arch_setup_dma_ops() 
-> > implementation. Do you expect that to change later, or other architectures to 
-> > need it ?
-> > 
-> > By the way, now that I think about it, I find struct iommu_dma_mapping and 
-> > struct dma_iommu_mapping very confusing.
-> 
-> Agreed. I wonder how useful it is to know the set of IOMMU instances
-> that each device can master through. Wouldn't it be more useful to keep
-> a list of master interfaces for each device? The set of IOMMU instances
-> can trivially be derived from that.
+On Fri, Sep 19 2014 at 03:05:36 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> On Wed, Sep 17, 2014 at 09:16:09PM +0100, Mitchel Humpherys wrote:
+>> ARM SMMUs support memory access control via some bits in the translation
+>> table descriptor memory attributes. Currently we assume all translations
+>> are "unprivileged". Add support for privileged mappings, controlled by
+>> the IOMMU_PRIV prot flag.
+>> 
+>> Also sneak in a whitespace change for consistency with nearby code.
+>> 
+>> Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>> ---
+>>  drivers/iommu/arm-smmu.c | 5 +++--
+>>  1 file changed, 3 insertions(+), 2 deletions(-)
+>> 
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index ca18d6d42a..93999ec22c 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -1256,10 +1256,11 @@ static int arm_smmu_alloc_init_pte(struct arm_smmu_device *smmu, pmd_t *pmd,
+>>  	}
+>>  
+>>  	if (stage == 1) {
+>> -		pteval |= ARM_SMMU_PTE_AP_UNPRIV | ARM_SMMU_PTE_nG;
+>> +		pteval |= ARM_SMMU_PTE_nG;
+>> +		if (!(prot & IOMMU_PRIV))
+>> +			pteval |= ARM_SMMU_PTE_AP_UNPRIV;
+>
+> I think this actually makes more sense if we invert the logic, i.e. have
+> IOMMU_USER as a flag which sets the UNPRIV bit in the pte.
 
-I'm struggling to think how that would look. What do you mean by `master
-interfaces' in terms of the code we have in Linux? At the end of the day,
-the list of IOMMU instances (i.e. iommu_dma_mapping) exists because you
-and Laurent have use-cases involving devices mastering through multiple
-IOMMUs. If it doesn't work for you, it might be best for you to send me
-the patch ;)
+I'm fine either way but the common case seems to be unprivileged
+mappings (at least in our system).  We have one user of this flag out of
+a dozen or so users.
 
-Will
+>
+> I don't have the spec to hand, but I guess you can't enforce this at
+> stage-2? If so, do we also need a new IOMMU capability so people don't try
+> to use this for stage-2 only SMMUs?
+
+Hmm, actually we do have S2AP although it doesn't make a distinction
+between accesses from EL0 and EL1.  But maybe it would make sense to
+make the `IOMMU_PRIV' mean `no access from EL0 or EL1' for stage 2
+mappings?  Something like:
+
+
+-- >8 --
+Subject: iommu/arm-smmu: add support for access-protected mappings
+
+ARM SMMUs support memory access control via some bits in the translation
+table descriptor memory attributes. Currently we assume all translations
+are "unprivileged". Add support for privileged mappings, controlled by
+the IOMMU_PRIV prot flag.
+
+Also sneak in a whitespace change for consistency with nearby code.
+
+Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index ca18d6d42a..4f85b64f74 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1256,18 +1256,19 @@ static int arm_smmu_alloc_init_pte(struct arm_smmu_device *smmu, pmd_t *pmd,
+ 	}
+ 
+ 	if (stage == 1) {
+-		pteval |= ARM_SMMU_PTE_AP_UNPRIV | ARM_SMMU_PTE_nG;
++		pteval |= ARM_SMMU_PTE_nG;
++		if (!(prot & IOMMU_PRIV))
++			pteval |= ARM_SMMU_PTE_AP_UNPRIV;
+ 		if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
+ 			pteval |= ARM_SMMU_PTE_AP_RDONLY;
+-
+ 		if (prot & IOMMU_CACHE)
+ 			pteval |= (MAIR_ATTR_IDX_CACHE <<
+ 				   ARM_SMMU_PTE_ATTRINDX_SHIFT);
+ 	} else {
+ 		pteval |= ARM_SMMU_PTE_HAP_FAULT;
+-		if (prot & IOMMU_READ)
++		if (prot & IOMMU_READ && !(prot & IOMMU_PRIV))
+ 			pteval |= ARM_SMMU_PTE_HAP_READ;
+-		if (prot & IOMMU_WRITE)
++		if (prot & IOMMU_WRITE && !(prot & IOMMU_PRIV))
+ 			pteval |= ARM_SMMU_PTE_HAP_WRITE;
+ 		if (prot & IOMMU_CACHE)
+ 			pteval |= ARM_SMMU_PTE_MEMATTR_OIWB;
+
+
+
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+hosted by The Linux Foundation
