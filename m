@@ -1,17 +1,15 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC][PATCH] devicetree: Add master-id-bits property to the
-	iommu device
-Date: Mon, 22 Sep 2014 11:23:23 +0200
-Message-ID: <20140922092322.GI1470@ulmo>
-References: <1410718646-9710-1-git-send-email-Varun.Sethi@freescale.com>
-	<201409150438.29649.arnd@arndb.de>
-	<bfdff6494d7f46ab9a9f00f94159e9e1@BL2PR03MB468.namprd03.prod.outlook.com>
-	<201409151857.05463.arnd@arndb.de>
-	<febe4a288f2f438ca95988929ee71580@BL2PR03MB468.namprd03.prod.outlook.com>
+Subject: Re: [RFC PATCH v3 5/7] dma-mapping: detect and configure IOMMU in
+	of_dma_configure
+Date: Mon, 22 Sep 2014 11:29:10 +0200
+Message-ID: <20140922092909.GJ1470@ulmo>
+References: <1410539695-29128-1-git-send-email-will.deacon@arm.com>
+	<1410539695-29128-6-git-send-email-will.deacon@arm.com>
+	<4252161.sBJZLIS2WH@avalon>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============2452411381798826894=="
+Content-Type: multipart/mixed; boundary="===============5095381001274049224=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <febe4a288f2f438ca95988929ee71580-AZ66ij2kwaacCcN9WK45f+O6mTEJWrR4XA4E9RH9d+qIuWR1G4zioA@public.gmane.org>
+In-Reply-To: <4252161.sBJZLIS2WH@avalon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,136 +19,142 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: "Mark.Rutland-5wv7dgnIgG8@public.gmane.org" <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============2452411381798826894==
+--===============5095381001274049224==
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="7IgncvKP0CVPV/ZZ"
+	protocol="application/pgp-signature"; boundary="2fjX3cMESU3XgGmZ"
 Content-Disposition: inline
 
 
---7IgncvKP0CVPV/ZZ
+--2fjX3cMESU3XgGmZ
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Sep 16, 2014 at 06:04:48PM +0000, Varun Sethi wrote:
-> Hi Arnd,
+On Thu, Sep 18, 2014 at 02:17:33PM +0300, Laurent Pinchart wrote:
+> Hi Will,
 >=20
-> > -----Original Message-----
-> > From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
-> > bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Arnd Bergmann
-> > Sent: Monday, September 15, 2014 10:27 PM
-> > To: Sethi Varun-B16395
-> > Cc: Mark.Rutland-5wv7dgnIgG8@public.gmane.org; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > swarren-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org; Yoder Stuart-B08248;
-> > robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> > thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> > Subject: Re: [RFC][PATCH] devicetree: Add master-id-bits property to the
-> > iommu device
+> Thank you for the patch.
+>=20
+> On Friday 12 September 2014 17:34:53 Will Deacon wrote:
+> > This patch extends of_dma_configure so that it sets up the IOMMU for a
+> > device, as well as the coherent/non-coherent DMA mapping ops.
 > >=20
-> > On Monday 15 September 2014, Varun Sethi wrote:
-> > > >
-> > > > This seems rather specific to MMU-500. I don't think that most
-> > > > IOMMUs would use the term 'master ID', 'stream ID' or even the
-> > > > general concept, and you don't expand the acronym 'TBU'. I've seen
-> > > > many IOMMUs and I don't even know what that means.
-> > >
-> > > TBU refers to the translation buffer unit, which is responsible for c=
-aching
-> > page translations. In case of translation miss in the cache, translatio=
-n request is
-> > forwarded to the TCU (Translation control unit). The master id forwarde=
-d to
-> > TCU would also contain the TBU ID.  Using the master-id-bits property w=
-e can
-> > mask out the additional TBU bits at the TCU. This is a cause of concern=
- when we
-> > want to share master id for devices which are connected to different TB=
-Us. We
-> > have a hot pluggable bus architecture, where a device group can have mu=
-ltiple
-> > devices connected to different TBUs. So, we need a mechanism to mask out
-> > additional TBIU bits.
+> > Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> > ---
+> >  arch/arm/include/asm/dma-mapping.h |  4 +++-
+> >  drivers/of/platform.c              | 24 +++++++++++++++++-------
+> >  include/linux/dma-mapping.h        |  8 +++++++-
+> >  3 files changed, 27 insertions(+), 9 deletions(-)
 > >=20
-> > Ok, I think I understand now
+> > diff --git a/arch/arm/include/asm/dma-mapping.h
+> > b/arch/arm/include/asm/dma-mapping.h index 7e9ac4f604c3..a8bb0c494bb3
+> > 100644
+> > --- a/arch/arm/include/asm/dma-mapping.h
+> > +++ b/arch/arm/include/asm/dma-mapping.h
+> > @@ -121,7 +121,9 @@ static inline unsigned long dma_max_pfn(struct devi=
+ce
+> > *dev) }
+> >  #define dma_max_pfn(dev) dma_max_pfn(dev)
 > >=20
-> > > > Why do you think this is something that is needed to be known at the
-> > > > global level, rather than a property for some individual drivers?
-> > > >
-> > > In case of Freescale Layerscape SOCs, number of bits used for definin=
-g a
-> > stream id are specific to a given platform.
-> > >
-> > > Are you suggesting that this property should be added to the master d=
-evice
-> > node, rather than the iommu node?
+> > -static inline void arch_setup_dma_ops(struct device *dev, bool coheren=
+t)
+> > +static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
+> > +				      u64 size, struct iommu_dma_mapping *iommu,
+> > +				      bool coherent)
+> >  {
+> >  	if (coherent)
+> >  		set_dma_ops(dev, &arm_coherent_dma_ops);
+> > diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+> > index 946dd7ae0394..95ebd38db545 100644
+> > --- a/drivers/of/platform.c
+> > +++ b/drivers/of/platform.c
+> > @@ -19,6 +19,7 @@
+> >  #include <linux/slab.h>
+> >  #include <linux/of_address.h>
+> >  #include <linux/of_device.h>
+> > +#include <linux/of_iommu.h>
+> >  #include <linux/of_irq.h>
+> >  #include <linux/of_platform.h>
+> >  #include <linux/platform_device.h>
+> > @@ -166,6 +167,7 @@ static void of_dma_configure(struct platform_device
+> > *pdev) int ret;
+> >  	bool coherent;
+> >  	unsigned long offset;
+> > +	struct iommu_dma_mapping *iommu;
+> >  	struct device *dev =3D &pdev->dev;
 > >=20
-> > Most importantly, I think this needs to be part of the (iommu) device s=
-pecific
-> > binding, not the generic binding that is used for all iommus that may o=
-r may not
-> > have this concept.
+> >  	/*
+> > @@ -195,7 +197,19 @@ static void of_dma_configure(struct platform_device
+> > *pdev) dev_dbg(dev, "device is%sdma coherent\n",
+> >  		coherent ? " " : " not ");
 > >=20
-> > I believe in case of the ARM SMMU, it should actually go into the maste=
-r node
-> > as part of the 'iommus' property, because the mask can be different for=
- each
-> > master. If your IOMMU has a fixed mask that is used for all devices, th=
-at's fine
-> > and you can put it into the iommu node itself but document it in the bi=
-nding for
-> > your IOMMU.
-> >=20
-> > For hot-pluggable buses, you probably need to have the 'iommus' propert=
-y in
-> > the node that corresponds to the bus controller, and that will have a m=
-ask that
-> > is used for all devices plugged into it.
-> Can I add a note to the generic binding about representing the "mask"
-> as a part of the "iommus" property. This would similar to the note
-> about the "dma-ranges"
+> > -	arch_setup_dma_ops(dev, coherent);
+> > +	iommu =3D of_iommu_configure(dev);
+> > +	dev_dbg(dev, "device is%sbehind an iommu\n",
+> > +		iommu ? " " : " not ");
+> > +
+> > +	arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
+> > +
+> > +	if (iommu)
+> > +		kref_put(&iommu->kref, of_iommu_deconfigure);
+>=20
+> What's the expected life cycle of the iommu_dma_mapping structure ? It ge=
+ts=20
+> created by of_iommu_configure() and the initial reference gets dropped he=
+re. I=20
+> suppose you expect arch code to need to keep a reference to the structure=
+, but=20
+> your implementation in patch 7/7 doesn't. As far as I can see, you don't =
+even=20
+> use the contents of the structure in the ARM arch_setup_dma_ops()=20
+> implementation. Do you expect that to change later, or other architecture=
+s to=20
+> need it ?
+>=20
+> By the way, now that I think about it, I find struct iommu_dma_mapping an=
+d=20
+> struct dma_iommu_mapping very confusing.
 
-I think the concept of a mask is fairly device-specific. Adding a note
-to it in the generic binding could be confusing to people working with
-IOMMUs that don't know the concept.
-
-dma-ranges on the other hand is a generic property, so referring to it
-in the generic binding makes sense.
+Agreed. I wonder how useful it is to know the set of IOMMU instances
+that each device can master through. Wouldn't it be more useful to keep
+a list of master interfaces for each device? The set of IOMMU instances
+can trivially be derived from that.
 
 Thierry
 
---7IgncvKP0CVPV/ZZ
+--2fjX3cMESU3XgGmZ
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJUH+qKAAoJEN0jrNd/PrOh05MP/0OL1tmtGZhZmq5LShiOVggd
-m9XL+IKVycTjF++FpmQjwSBSzWFyEoM5SeRfnWZMm+gyTv5euqg5SJF1vUWCUSrI
-YK8fhqj9iJZbfW6dP0bKEy+16S+IrsPRJBDBIP7Sp1Lh3dMIm3kR/vW5KgLV1pfR
-wViOcuatemB0Dtt3inj6BM3KkQhZl+9u/xZUSMggrAueVW44XkAZ9CxJVlYmGBja
-I21Lchn5Vbpwf92l6ZTbFE0M6SKTOcjarXzOIXw647/tK++86CLkbsx5ejDRVntP
-uqneT7xde+ope+YC3/BTBUwc9Zg0MFdtjQ4qiK80cpFrt9TtXRJHvSruGqPwkrTL
-u2JaPHw7bkoaJBhWCemHYkn0l8/1ft3w+3BtsFrfAMDct0HKghwhUy6GUkK/TXz0
-Ta2ZZLXF0E4+jFqd1gTQLYdH0MMSw3WmCUezDX3YhvCiRsjDEk8Oxxw6Nge/sE48
-+n+g9nmPoafImtU8nJbJEOSaOv5XUMke/w+nyxUPGEOz09Z2qkfyHNfHULO85iAC
-qhxrGmxaXyFJHNOr1kkKUP8Ob6amTA9GdjxdiHaoC6+t1OPafmG6DQQY2fGf8t65
-KE8Dc3FA4hWyDzI0OBsxSVRjSYflkOM0LWY2CpKcj3aFq9Js1qxNkaxfaOUaRIb+
-ah37VDeyTSDM5G0QA1NO
-=inWs
+iQIcBAEBAgAGBQJUH+vlAAoJEN0jrNd/PrOhrqYP/jJ4YbiwTxOQTInVn7MBEr8G
+AdxkJ3QEBHZy7GahPd+yaY+55UctvUgNhxdX3aGNvDsEJfHWocAdSujEJAn4+xec
+oIr26RNFNt9R7GZdwvCCJL1KmMmtX7+1XP26o4oH8+Qsg7bnlxGv7IhAqH1yfTrN
+A4HVgMaZhgKn7OM18Qf4gbTGZ/jrLuZzkUP6KHw6SRp6E9V+9m62ULNdPHvaugLx
+1egqJlE81y3NszYXvtym9OGlFOeELUhCAQzOGgbYT2xUDpSt9ZCT6hePgfronXAL
+rE9nzSz/t7exwksUHiR7ITj0cujCdxYibLBtx0ihME4+TYNidcJvAF05nHWaXnSW
+1miGMQis2lGdPGdacJFdoMZl0ZXb60tnPRNEOTGpGFa6/5DMbGPKngSaapzyep5b
+ZX1WTuaQnzTkWnqVPXaJgI5SxY+bLz80hT5IZePrx1/NmzuNNwsU4CzA3XBd8gd3
+0SgwC7ekyL8fP/AxvXA5mo4/pV505p9pGgPPEe1nJdyVHSF9D1OiV/pqzyQnrcxh
+n60ZvCd8p6Vh1NB91bZZycKBOy3oIWI/lFt/XCsCVmwIiHQdBzYVo6WCsqhW52WV
+tFF6rJmmHJqfmPu6aPaCXmSRmWUOd1EFVa5kV0btE/gvzLFzP9AcbjqKzaPDTZFh
+015ZXpYoI9dtYGTUmt6G
+=ABzl
 -----END PGP SIGNATURE-----
 
---7IgncvKP0CVPV/ZZ--
+--2fjX3cMESU3XgGmZ--
 
---===============2452411381798826894==
+--===============5095381001274049224==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============2452411381798826894==--
+--===============5095381001274049224==--
