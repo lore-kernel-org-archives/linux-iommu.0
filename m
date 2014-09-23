@@ -1,8 +1,8 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCHv7 03/26] iommu/arm-smmu: add IOMMU_CAP_NOEXEC to the ARM SMMU
-	driver
-Date: Tue, 23 Sep 2014 16:46:02 +0200
-Message-ID: <1411483586-29304-4-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [PATCHv7 06/26] vfio/iommu_type1: implement the
+	VFIO_DMA_MAP_FLAG_NOEXEC flag
+Date: Tue, 23 Sep 2014 16:46:05 +0200
+Message-ID: <1411483586-29304-7-git-send-email-a.motakis@virtualopensystems.com>
 References: <1411483586-29304-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,29 +19,100 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The ARM SMMU supports the IOMMU_NOEXEC protection flag. Add the
-corresponding IOMMU capability.
+Some IOMMU drivers, such as the ARM SMMU driver, make available the
+IOMMU_NOEXEC flag, to set the page tables for a device as XN (execute never).
+This affects devices such as the ARM PL330 DMA Controller, which respects
+this flag and will refuse to fetch DMA instructions from memory where the
+XN flag has been set.
+
+The flag can be used only if all IOMMU domains behind the container support
+the IOMMU_NOEXEC flag. Also, if any mappings are created with the flag, any
+new domains with devices will have to support it as well.
 
 Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/vfio/vfio_iommu_type1.c | 38 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 37 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index c7cbdda..7c0fa25 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1539,6 +1539,8 @@ static int arm_smmu_domain_has_cap(struct iommu_domain *domain,
- 		return features & ARM_SMMU_FEAT_COHERENT_WALK;
- 	case IOMMU_CAP_INTR_REMAP:
- 		return 1; /* MSIs are just memory writes */
-+	case IOMMU_CAP_NOEXEC:
-+		return 1;
- 	default:
- 		return 0;
- 	}
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index 0734fbe..09e5064 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -81,6 +81,26 @@ struct vfio_group {
+ };
+ 
+ /*
++ * This function returns true only if _all_ domains support the capability.
++ */
++static int vfio_all_domains_have_iommu_noexec(struct vfio_iommu *iommu)
++{
++	struct vfio_domain *d;
++	int ret = 1;
++
++	mutex_lock(&iommu->lock);
++	list_for_each_entry(d, &iommu->domain_list, next) {
++		if (!iommu_domain_has_cap(d->domain, IOMMU_CAP_NOEXEC)) {
++			ret = 0;
++			break;
++		}
++	}
++	mutex_unlock(&iommu->lock);
++
++	return ret;
++}
++
++/*
+  * This code handles mapping and unmapping of user data buffers
+  * into DMA'ble space using the IOMMU
+  */
+@@ -546,6 +566,11 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
+ 		prot |= IOMMU_WRITE;
+ 	if (map->flags & VFIO_DMA_MAP_FLAG_READ)
+ 		prot |= IOMMU_READ;
++	if (map->flags & VFIO_DMA_MAP_FLAG_NOEXEC) {
++		if (!vfio_all_domains_have_iommu_noexec(iommu))
++			return -EINVAL;
++		prot |= IOMMU_NOEXEC;
++	}
+ 
+ 	if (!prot || !size || (size | iova | vaddr) & mask)
+ 		return -EINVAL;
+@@ -636,6 +661,12 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
+ 		dma = rb_entry(n, struct vfio_dma, node);
+ 		iova = dma->iova;
+ 
++		/* if any of the mappings to be replayed has the NOEXEC flag
++		 * set, then the new iommu domain must support it */
++		if ((dma->prot | IOMMU_NOEXEC) &&
++		    !iommu_domain_has_cap(domain->domain, IOMMU_CAP_NOEXEC))
++			return -EINVAL;
++
+ 		while (iova < dma->iova + dma->size) {
+ 			phys_addr_t phys = iommu_iova_to_phys(d->domain, iova);
+ 			size_t size;
+@@ -890,6 +921,10 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+ 			if (!iommu)
+ 				return 0;
+ 			return vfio_domains_have_iommu_cache(iommu);
++		case VFIO_IOMMU_PROT_NOEXEC:
++			if (!iommu)
++				return 0;
++			return vfio_all_domains_have_iommu_noexec(iommu);
+ 		default:
+ 			return 0;
+ 		}
+@@ -913,7 +948,8 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+ 	} else if (cmd == VFIO_IOMMU_MAP_DMA) {
+ 		struct vfio_iommu_type1_dma_map map;
+ 		uint32_t mask = VFIO_DMA_MAP_FLAG_READ |
+-				VFIO_DMA_MAP_FLAG_WRITE;
++				VFIO_DMA_MAP_FLAG_WRITE |
++				VFIO_DMA_MAP_FLAG_NOEXEC;
+ 
+ 		minsz = offsetofend(struct vfio_iommu_type1_dma_map, size);
+ 
 -- 
 1.8.3.2
