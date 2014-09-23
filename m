@@ -1,17 +1,15 @@
-From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu/arm-smmu: add support for access-protected
-	mappings
-Date: Mon, 22 Sep 2014 15:28:42 -0700
-Message-ID: <vnkwtx3zb885.fsf@mitchelh-linux.qualcomm.com>
-References: <1410984969-2340-1-git-send-email-mitchelh@codeaurora.org>
-	<1410984969-2340-3-git-send-email-mitchelh@codeaurora.org>
-	<20140919220535.GM20773@arm.com>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [RFC PATCH v3 6/7] arm: call iommu_init before
+	of_platform_populate
+Date: Tue, 23 Sep 2014 09:02:39 +0200
+Message-ID: <20140923070238.GH30514@ulmo>
+References: <1410539695-29128-1-git-send-email-will.deacon@arm.com>
+	<11868654.D6MinQlF2p@wuerfel> <20140922114039.GT1470@ulmo>
+	<3261451.zpO6MVx5yo@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============8076197467819955701=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140919220535.GM20773-5wv7dgnIgG8@public.gmane.org> (Will Deacon's message of "Fri,
-	19 Sep 2014 23:05:36 +0100")
+In-Reply-To: <3261451.zpO6MVx5yo@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,102 +19,155 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 19 2014 at 03:05:36 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> On Wed, Sep 17, 2014 at 09:16:09PM +0100, Mitchel Humpherys wrote:
->> ARM SMMUs support memory access control via some bits in the translation
->> table descriptor memory attributes. Currently we assume all translations
->> are "unprivileged". Add support for privileged mappings, controlled by
->> the IOMMU_PRIV prot flag.
->> 
->> Also sneak in a whitespace change for consistency with nearby code.
->> 
->> Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->> ---
->>  drivers/iommu/arm-smmu.c | 5 +++--
->>  1 file changed, 3 insertions(+), 2 deletions(-)
->> 
->> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->> index ca18d6d42a..93999ec22c 100644
->> --- a/drivers/iommu/arm-smmu.c
->> +++ b/drivers/iommu/arm-smmu.c
->> @@ -1256,10 +1256,11 @@ static int arm_smmu_alloc_init_pte(struct arm_smmu_device *smmu, pmd_t *pmd,
->>  	}
->>  
->>  	if (stage == 1) {
->> -		pteval |= ARM_SMMU_PTE_AP_UNPRIV | ARM_SMMU_PTE_nG;
->> +		pteval |= ARM_SMMU_PTE_nG;
->> +		if (!(prot & IOMMU_PRIV))
->> +			pteval |= ARM_SMMU_PTE_AP_UNPRIV;
->
-> I think this actually makes more sense if we invert the logic, i.e. have
-> IOMMU_USER as a flag which sets the UNPRIV bit in the pte.
 
-I'm fine either way but the common case seems to be unprivileged
-mappings (at least in our system).  We have one user of this flag out of
-a dozen or so users.
-
->
-> I don't have the spec to hand, but I guess you can't enforce this at
-> stage-2? If so, do we also need a new IOMMU capability so people don't try
-> to use this for stage-2 only SMMUs?
-
-Hmm, actually we do have S2AP although it doesn't make a distinction
-between accesses from EL0 and EL1.  But maybe it would make sense to
-make the `IOMMU_PRIV' mean `no access from EL0 or EL1' for stage 2
-mappings?  Something like:
+--===============8076197467819955701==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="vtJ+CqYNzKB4ukR4"
+Content-Disposition: inline
 
 
--- >8 --
-Subject: iommu/arm-smmu: add support for access-protected mappings
+--vtJ+CqYNzKB4ukR4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-ARM SMMUs support memory access control via some bits in the translation
-table descriptor memory attributes. Currently we assume all translations
-are "unprivileged". Add support for privileged mappings, controlled by
-the IOMMU_PRIV prot flag.
+On Mon, Sep 22, 2014 at 06:03:47PM +0200, Arnd Bergmann wrote:
+> On Monday 22 September 2014 13:40:40 Thierry Reding wrote:
+> > On Mon, Sep 22, 2014 at 01:08:27PM +0200, Arnd Bergmann wrote:
+> > > On Monday 22 September 2014 11:36:15 Thierry Reding wrote:
+> > > > On Fri, Sep 12, 2014 at 05:34:54PM +0100, Will Deacon wrote:
+> > > > > We need to ensure that the IOMMUs in the system have a chance to =
+perform
+> > > > > some basic initialisation before we start adding masters to them.
+> > > > >=20
+> > > > > This patch adds a call to of_iommu_init before of_platform_popula=
+te.
+> > > >=20
+> > > > Why can't you call it from of_platform_populate() directly? That wa=
+y it
+> > > > would be usable for all architectures rather than just ARM. Eventua=
+lly
+> > > > we're going to need the same thing for 64-bit ARM (and possibly oth=
+ers
+> > > > as well).
+> > >=20
+> > > IIRC, of_platform_populate can be called multiple times, even recursi=
+vely
+> > > be drivers that populate their own child devices.
+> >=20
+> > Indeed. Perhaps it could be conditionally called when root =3D=3D NULL.=
+ But
+> > perhaps that's not safe either. Anyway, I still think we shouldn't be
+> > making this some randomly placed early initcall anyway.
+>=20
+> I disagree. IOMMUs are special in the same sense that irqchips, clocks and
+> timers are. This is not just a random call, it is being explicit about a
+> base functionality that is needed for all devices attached to it.
 
-Also sneak in a whitespace change for consistency with nearby code.
+Why do you say IOMMUs are special? I can understand how clocks and
+timers are somewhat special because they are required at early boot. But
+IOMMUs are not special in that way. I don't think there are any IOMMU
+users that early in the boot process. The only reason why IOMMU is
+special is because of the way it's currently hooked into the driver
+model.
 
-Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
- drivers/iommu/arm-smmu.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+> While we pretend that these are just device drivers in some sense, I think
+> it's perfectly reasonable to have an explicit entry point for each subsys=
+tem
+> here.
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index ca18d6d42a..4f85b64f74 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1256,18 +1256,19 @@ static int arm_smmu_alloc_init_pte(struct arm_smmu_device *smmu, pmd_t *pmd,
- 	}
- 
- 	if (stage == 1) {
--		pteval |= ARM_SMMU_PTE_AP_UNPRIV | ARM_SMMU_PTE_nG;
-+		pteval |= ARM_SMMU_PTE_nG;
-+		if (!(prot & IOMMU_PRIV))
-+			pteval |= ARM_SMMU_PTE_AP_UNPRIV;
- 		if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
- 			pteval |= ARM_SMMU_PTE_AP_RDONLY;
--
- 		if (prot & IOMMU_CACHE)
- 			pteval |= (MAIR_ATTR_IDX_CACHE <<
- 				   ARM_SMMU_PTE_ATTRINDX_SHIFT);
- 	} else {
- 		pteval |= ARM_SMMU_PTE_HAP_FAULT;
--		if (prot & IOMMU_READ)
-+		if (prot & IOMMU_READ && !(prot & IOMMU_PRIV))
- 			pteval |= ARM_SMMU_PTE_HAP_READ;
--		if (prot & IOMMU_WRITE)
-+		if (prot & IOMMU_WRITE && !(prot & IOMMU_PRIV))
- 			pteval |= ARM_SMMU_PTE_HAP_WRITE;
- 		if (prot & IOMMU_CACHE)
- 			pteval |= ARM_SMMU_PTE_MEMATTR_OIWB;
+They aren't really device drivers at all. They don't bind to devices but
+to device tree nodes. And that comes at a high cost. Writing drivers for
+these subsystems is weird, because all of a sudden you can no longer use
+all the goodies that we've become used to (dev_log(), devres, ...) over
+the years.
+
+> I see two problems with using deferred probing here:=20
+>=20
+> - we don't actually need to defer the probing but the binding to the driv=
+er
+>   when no dma ops are set, but it seems silly to even create the device
+>   before we can find out which ops it should use.
+
+What does device creation have to do with anything? Surely a device
+won't need IOMMU services before the device is bound to a driver.
+
+>   The reason is that a driver does not actively ask for an IOMMU as it wo=
+uld
+>   for other subsystems (gpio, led, dmaengine, ...).
+
+Actually it does. At least in some cases. If you want to use the IOMMU
+API directly you'd call something like iommu_present() on the bus type
+and then allocate an IOMMU domain and attach to it. Unfortunately the
+API seems to have been designed under the assumption that IOMMU will
+have been registered before any users, so the API doesn't propagate any
+meaningful errors.
+
+Currently the specifics of how that works is all mostly hidden within
+the IOMMU driver which will decide what IOMMU to attach to. That's
+problematic for cases where a device has multiple master interfaces,
+since it won't be able to decide which one to attach to.
+
+Also, even if in other cases the drivers don't actively ask for an IOMMU
+that doesn't mean that they couldn't be made to. For drivers that use
+the DMA/IOMMU integration layer this is probably not practicable, but
+there is no reason the core couldn't do it.
+
+> - As long as the dma_ops are not set, we can't actually call probe() for
+>   any device other than iommus, and even that would require adding special
+>   magic in the platform_device_probe(), so we'd just defer every device
+>   until we get to the iommu. This likely causes a lot of overhead at probe
+>   time.
+
+Why? The patches that I (and Hiroshi before me) posted a while ago did
+exactly that and it worked just fine. The only objection to that was
+that Greg (and you I think) didn't want to have that code in the core
+and therefore -EPROBE_DEFER can't properly be propagated. There's no
+special magic required beyond that. The IOMMU becomes a resource or
+service provider, just like any other driver.
+
+As for the overhead I think that's negligible. Hopefully the IOMMU would
+be standalone enough not to defer probing itself, so at worst all IOMMU
+users would be deferred once. Many of them will already defer because of
+other resources such as GPIOs, clocks or regulators anyway. But that's a
+problem for which a solution could be implemented. Dependency-based
+probe ordering was discussed not so long ago. With that in place the
+IOMMU would be probed before any of its users.
+
+Thierry
+
+--vtJ+CqYNzKB4ukR4
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJUIRsOAAoJEN0jrNd/PrOhs1kP/16p1Z9+9dgf3dPX0hUdCchv
+wvKS+conMLjb6FtTBj7dZcjGq53pCdu5t0EsC4p3sAz5SDpfMF9xYH8QBXbmQfy8
+kcMoDcFt5vlkKNJiaAsqeZPO/gcwnzV56zWzDycrOS3enEnufsMDJ0WZogaJ/6a7
+ElidA8dMoNTkWm+aRex+7RGl6osjHDuliWCs2/I2/qKSX82oyRNcX6MZK8f02EwB
+BfVf7/fPetfVlLkbInnXHug+BLC+qGAewLkXkh2gBrxnlbMqQdgVy+hhD/e7OiZk
++5mPI9qzqRft602S+N52zlSgT2dGiUWqi9ZuEZ2RmFZXH1GljE6dxvDT/7M4cqag
+mtVYfzL9mQiT7JiHubkAH/f3G07UghRObpDzoAWHm+//RrbxCorAjxYLgfOHwCdW
+9Seu5ACOehuvji0jg2VdPGWTRmWyltyIBCO/rPw0koUZgwbFlZ44oWiwBs4GY+uo
+tAmByu/fE9WRHp3pOmk5Zn4lfN4FzcJ39avQ10Vgg5jh70JLRRM7XTPP/rKIU56M
+eRTydrM8UQMaNuRTmPEtF3P+90fIsDiBpK57EcTe6DVDLAzJwgF8rD1JLN2iLexH
+NJUFTZLyBpw8l8y+nVJdelNNwArwPL7UxojhmfQEX5Tarkxe9b++N3ikUQJfPAkq
+LzgHDOnuJyyPEiLliT58
+=JpaZ
+-----END PGP SIGNATURE-----
+
+--vtJ+CqYNzKB4ukR4--
+
+--===============8076197467819955701==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 
-
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-hosted by The Linux Foundation
+--===============8076197467819955701==--
