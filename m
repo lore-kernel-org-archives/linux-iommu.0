@@ -1,15 +1,11 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC PATCH v3 6/7] arm: call iommu_init before
-	of_platform_populate
-Date: Tue, 23 Sep 2014 10:59:47 +0200
-Message-ID: <20140923085946.GP30514@ulmo>
-References: <1410539695-29128-1-git-send-email-will.deacon@arm.com>
-	<3261451.zpO6MVx5yo@wuerfel> <20140923070238.GH30514@ulmo>
-	<3765297.6j3Rv68iqn@wuerfel>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: [PATCHv7 00/26] VFIO support for platform and AMBA devices on ARM
+Date: Tue, 23 Sep 2014 16:45:59 +0200
+Message-ID: <1411483586-29304-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============8969136699200683140=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <3765297.6j3Rv68iqn@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,125 +15,114 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+This patch series aims to implement VFIO support for platform devices that
+reside behind an IOMMU. Examples of such devices are devices behind an ARM
+SMMU, or behind a Samsung Exynos System MMU.
 
---===============8969136699200683140==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="eAnxKwVhzStH6fSc"
-Content-Disposition: inline
+This version of the patch series introduces numerous fixes and cleanups based
+on the feedback received on the previous version, and also features support
+for ARM AMBA devices.
 
+The API used is based on the existing VFIO API that is also used with PCI
+devices. Only devices that include a basic set of IRQs and memory regions are
+targeted; devices with complex relationships with other devices on a device
+tree are not taken into account at this stage.
 
---eAnxKwVhzStH6fSc
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patch series is based on Linux 3.17-rc5 and can be cloned from the
+branch vfio-platform-v7 at git-9UaJU3cA/F/QT0dZR+AlfA@public.gmane.org:virtualopensystems/linux-kvm-arm.git
 
-On Tue, Sep 23, 2014 at 09:44:25AM +0200, Arnd Bergmann wrote:
-> On Tuesday 23 September 2014 09:02:39 Thierry Reding wrote:
->=20
-> > > I see two problems with using deferred probing here:=20
-> > >=20
-> > > - we don't actually need to defer the probing but the binding to the =
-driver
-> > >   when no dma ops are set, but it seems silly to even create the devi=
-ce
-> > >   before we can find out which ops it should use.
-> >=20
-> > What does device creation have to do with anything? Surely a device
-> > won't need IOMMU services before the device is bound to a driver.
->=20
-> The problem is that the driver will start using the IOMMU as soon
-> as it calls dma_map_*, but that happens at runtime, not necessarily
-> during the probe function.
+Changes since v6:
+ - Integrated support for AMBA devices
+ - Numerous cleanups and fixes
+Changes since v5:
+ - Full eventfd support for IRQ masking and unmasking.
+ - Changed IOMMU_EXEC to IOMMU_NOEXEC, along with related flags in VFIO.
+ - Other fixes based on reviewer comments.
+Changes since v4:
+ - Use static offsets for each region in the VFIO device fd
+ - Include patch in the series for the ARM SMMU to expose IOMMU_EXEC
+   availability via IOMMU_CAP_DMA_EXEC
+ - Rebased on VFIO multi domain support:
+   - IOMMU_EXEC is now available if at least one IOMMU in the container
+     supports it
+   - Expose IOMMU_EXEC if available via the capability VFIO_IOMMU_PROT_EXEC
+ - Some bug fixes
+Changes since v3:
+ - Use Kim Phillips' driver_probe_device()
+Changes since v2:
+ - Fixed Read/Write and MMAP on device regions
+ - Removed dependency on Device Tree
+ - Interrupts support
+ - Interrupt masking/unmasking
+ - Automask level sensitive interrupts
+ - Introduced VFIO_DMA_MAP_FLAG_EXEC
+ - Code clean ups
 
-But it won't call dma_map_*() before probe, right? If this is done in
-the core we can defer probing before the driver's probe is called, so
-there shouldn't be an issue.
+Antonios Motakis (26):
+  iommu/arm-smmu: change IOMMU_EXEC to IOMMU_NOEXEC
+  iommu: add capability IOMMU_CAP_NOEXEC
+  iommu/arm-smmu: add IOMMU_CAP_NOEXEC to the ARM SMMU driver
+  vfio/iommu_type1: support for platform bus devices on ARM
+  vfio: introduce the VFIO_DMA_MAP_FLAG_NOEXEC flag
+  vfio/iommu_type1: implement the VFIO_DMA_MAP_FLAG_NOEXEC flag
+  driver core: amba: add device binding path 'driver_override'
+  driver core: amba: add documentation for binding path
+    'driver_override'
+  vfio/platform: initial skeleton of VFIO support for platform devices
+  vfio: platform: probe to devices on the platform bus
+  vfio: platform: add the VFIO PLATFORM module to Kconfig
+  vfio: amba: VFIO support for AMBA devices
+  vfio: amba: add the VFIO for AMBA devices module to Kconfig
+  vfio/platform: return info for bound device
+  vfio/platform: return info for device memory mapped IO regions
+  vfio/platform: read and write support for the device fd
+  vfio/platform: support MMAP of MMIO regions
+  vfio/platform: return IRQ info
+  vfio/platform: initial interrupts support code
+  vfio/platform: trigger an interrupt via eventfd
+  vfio/platform: support for maskable and automasked interrupts
+  vfio: move eventfd support code for VFIO_PCI to a separate file
+  vfio: add local lock in virqfd instead of depending on VFIO PCI
+  vfio: pass an opaque pointer on virqfd initialization
+  vfio: initialize the virqfd workqueue in VFIO generic code
+  vfio/platform: implement IRQ masking/unmasking via an eventfd
 
-> So we can get into the weird situation that probe() returns success,
-> but then you can't use the device yet because you don't know whether
-> it is supposed to use an IOMMU or not.
+ Documentation/ABI/testing/sysfs-bus-amba      |  20 ++
+ drivers/amba/bus.c                            |  44 +++
+ drivers/iommu/arm-smmu.c                      |  11 +-
+ drivers/vfio/Kconfig                          |   3 +-
+ drivers/vfio/Makefile                         |   5 +-
+ drivers/vfio/pci/vfio_pci.c                   |   8 -
+ drivers/vfio/pci/vfio_pci_intrs.c             | 234 +-------------
+ drivers/vfio/pci/vfio_pci_private.h           |   3 -
+ drivers/vfio/platform/Kconfig                 |  19 ++
+ drivers/vfio/platform/Makefile                |   8 +
+ drivers/vfio/platform/vfio_amba.c             | 108 +++++++
+ drivers/vfio/platform/vfio_platform.c         |  96 ++++++
+ drivers/vfio/platform/vfio_platform_common.c  | 432 ++++++++++++++++++++++++++
+ drivers/vfio/platform/vfio_platform_irq.c     | 354 +++++++++++++++++++++
+ drivers/vfio/platform/vfio_platform_private.h |  77 +++++
+ drivers/vfio/vfio.c                           |   8 +
+ drivers/vfio/vfio_iommu_type1.c               |  38 ++-
+ drivers/vfio/virqfd.c                         | 215 +++++++++++++
+ include/linux/amba/bus.h                      |   1 +
+ include/linux/iommu.h                         |   3 +-
+ include/linux/vfio.h                          |  27 ++
+ include/uapi/linux/vfio.h                     |   4 +
+ 22 files changed, 1477 insertions(+), 241 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-amba
+ create mode 100644 drivers/vfio/platform/Kconfig
+ create mode 100644 drivers/vfio/platform/Makefile
+ create mode 100644 drivers/vfio/platform/vfio_amba.c
+ create mode 100644 drivers/vfio/platform/vfio_platform.c
+ create mode 100644 drivers/vfio/platform/vfio_platform_common.c
+ create mode 100644 drivers/vfio/platform/vfio_platform_irq.c
+ create mode 100644 drivers/vfio/platform/vfio_platform_private.h
+ create mode 100644 drivers/vfio/virqfd.c
 
-Of course any such solution would only work under the assumption that
-the driver (or core) knows what it's doing and doesn't call dma_map_*()
-until IOMMU support has properly been set up.
-
-For DMA/IOMMU integration users I'd expect the core to set everything up
-before proceeding to calling the driver's .probe() function. For others
-they will need a way to either explicitly check for the IOMMU master
-interface or have the core do that for them (similar to how it would do
-that for DMA/IOMMU integration users).
-
-> > >   The reason is that a driver does not actively ask for an IOMMU as i=
-t would
-> > >   for other subsystems (gpio, led, dmaengine, ...).
-> >=20
-> > Actually it does. At least in some cases. If you want to use the IOMMU
-> > API directly you'd call something like iommu_present() on the bus type
-> > and then allocate an IOMMU domain and attach to it. Unfortunately the
-> > API seems to have been designed under the assumption that IOMMU will
-> > have been registered before any users, so the API doesn't propagate any
-> > meaningful errors.
->=20
-> That's just a special case that does not even work as it should yet,
-
-Of course it works. I count at least 3 drivers in mainline (and 1 local)
-that do exactly this.
-
-> please don't confuse the matter more by talking about drivers that
-> use the IOMMU API explicitly, this series has very little to do with
-> that.
-
-It has everything to do with it. If we go and implement everything in
-terms of DMA/IOMMU then we leave out all other users. Depending on who
-you talk to the direct IOMMU users are the actually important ones.
-
-> > Also, even if in other cases the drivers don't actively ask for an IOMMU
-> > that doesn't mean that they couldn't be made to. For drivers that use
-> > the DMA/IOMMU integration layer this is probably not practicable, but
-> > there is no reason the core couldn't do it.
->=20
-> We intentionally have an abstraction that is meant to let you write drive=
-rs
-> without knowing about iommu, swiotlb or coherency, these are all hidden
-> behind the dma_map_ops implementation.
-
-Perhaps I'm missing something then. How can you associate two devices
-with the same domain with dma_map_ops?
-
-Thierry
-
---eAnxKwVhzStH6fSc
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJUITaCAAoJEN0jrNd/PrOhgycP/A/jas68DBgcAyvFfgP73FuB
-TGNPcJA+Lf0DgVU1Sx5SzhmGWoX3lyT9iafGkY9gnzRc74AihqiRW4LW1/sYsMfs
-5YZnXVFSScbPk5o2NlBAYf5QqcF0hezROsWpGIXRHteRP3rfUqq23hy37OeBQcrg
-EfxBnqHmURnnugbMyEuDkDm0yRfTnXZ/PXGXfqaNgcbbix5MfPf1HkFoNLIAPko2
-gmZjXe8ftw8SiGqpDdsjoELCbVCygBNve/6hS1zJwScapnsMUQ9td7kjTAasQWKQ
-8tMG9bHhnnXUvP8Wov+/aUBSr7GERi+gOmSuDP2wPKoA0YjZocDbZ3+eb/1DPE7Z
-2KHMJ5kdGo4AAeXYS/3f48cwm9+Go7jN7GWPbTsMvOwQAsRFN/a9YW7TmGi3VtKT
-ECeHpJjOYQoSA7jrP/3Ruq3JO1GYNjFN/ls8V91uHSbMGWuOJWw4FFcdioN/edc1
-vu1hOUarqBHyBdV01naQi7mOQUP9pYhBjQcez90Aktnl/rnhKrs+YD0Xv1he7we+
-FbGU5ch43AI0VBBvKZX80lKaTL5pIr4wEc51qNMDVaj3Rd9LX913iNP/fD0oReoK
-aGq5Y+msQaTCnfcxBPf+TS038XQ26mqUpUy/e0wXMtihw+7hEU90Ys27c6SBH82g
-BtNJoYWhi3zp6A768Zcy
-=alu2
------END PGP SIGNATURE-----
-
---eAnxKwVhzStH6fSc--
-
---===============8969136699200683140==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============8969136699200683140==--
+-- 
+1.8.3.2
