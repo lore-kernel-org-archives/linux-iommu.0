@@ -1,7 +1,8 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCHv7 24/26] vfio: pass an opaque pointer on virqfd initialization
-Date: Tue, 23 Sep 2014 16:46:23 +0200
-Message-ID: <1411483586-29304-25-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [PATCHv7 26/26] vfio/platform: implement IRQ masking/unmasking via an
+	eventfd
+Date: Tue, 23 Sep 2014 16:46:25 +0200
+Message-ID: <1411483586-29304-27-git-send-email-a.motakis@virtualopensystems.com>
 References: <1411483586-29304-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,147 +19,120 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alexander Gordeev <agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-VFIO_PCI passes the VFIO device structure *vdev via eventfd to the handler
-that implements masking/unmasking of IRQs via an eventfd. We can replace
-it in the virqfd infrastructure with an opaque type so we can make use
-of the mechanism from other VFIO bus drivers.
+With this patch the VFIO user will be able to set an eventfd that can be
+used in order to mask and unmask IRQs of platform devices.
 
 Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 ---
- drivers/vfio/pci/vfio_pci_intrs.c | 11 +++++++----
- drivers/vfio/virqfd.c             | 17 ++++++++---------
- include/linux/vfio.h              | 12 ++++++------
- 3 files changed, 21 insertions(+), 19 deletions(-)
+ drivers/vfio/platform/vfio_platform_irq.c     | 48 +++++++++++++++++++++++++--
+ drivers/vfio/platform/vfio_platform_private.h |  2 ++
+ 2 files changed, 48 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/vfio/pci/vfio_pci_intrs.c b/drivers/vfio/pci/vfio_pci_intrs.c
-index e56c814..6ca22a8 100644
---- a/drivers/vfio/pci/vfio_pci_intrs.c
-+++ b/drivers/vfio/pci/vfio_pci_intrs.c
-@@ -27,8 +27,10 @@
- /*
-  * INTx
-  */
--static void vfio_send_intx_eventfd(struct vfio_pci_device *vdev, void *unused)
-+static void vfio_send_intx_eventfd(void *opaque, void *unused)
- {
-+	struct vfio_pci_device *vdev = opaque;
+diff --git a/drivers/vfio/platform/vfio_platform_irq.c b/drivers/vfio/platform/vfio_platform_irq.c
+index 90fa25a..4ea3d5a 100644
+--- a/drivers/vfio/platform/vfio_platform_irq.c
++++ b/drivers/vfio/platform/vfio_platform_irq.c
+@@ -45,11 +45,21 @@ static void vfio_platform_mask(struct vfio_platform_irq *irq_ctx)
+ 	spin_unlock_irqrestore(&irq_ctx->lock, flags);
+ }
+ 
++static int vfio_platform_mask_handler(void *opaque, void *unused)
++{
++	struct vfio_platform_irq *irq_ctx = opaque;
 +
- 	if (likely(is_intx(vdev) && !vdev->virq_disabled))
- 		eventfd_signal(vdev->ctx[0].trigger, 1);
- }
-@@ -71,9 +73,9 @@ void vfio_pci_intx_mask(struct vfio_pci_device *vdev)
-  * a signal is necessary, which can then be handled via a work queue
-  * or directly depending on the caller.
-  */
--static int vfio_pci_intx_unmask_handler(struct vfio_pci_device *vdev,
--					void *unused)
-+static int vfio_pci_intx_unmask_handler(void *opaque, void *unused)
++	vfio_platform_mask(irq_ctx);
++
++	return 0;
++}
++
+ static int vfio_platform_set_irq_mask(struct vfio_platform_device *vdev,
+ 				    unsigned index, unsigned start,
+ 				    unsigned count, uint32_t flags, void *data)
  {
-+	struct vfio_pci_device *vdev = opaque;
- 	struct pci_dev *pdev = vdev->pdev;
- 	unsigned long flags;
- 	int ret = 0;
-@@ -411,7 +413,8 @@ static int vfio_pci_set_intx_unmask(struct vfio_pci_device *vdev,
- 	} else if (flags & VFIO_IRQ_SET_DATA_EVENTFD) {
- 		int32_t fd = *(int32_t *)data;
- 		if (fd >= 0)
--			return virqfd_enable(vdev, vfio_pci_intx_unmask_handler,
-+			return virqfd_enable((void *) vdev,
-+					     vfio_pci_intx_unmask_handler,
- 					     vfio_send_intx_eventfd, NULL,
- 					     &vdev->ctx[0].unmask, fd);
+ 	uint8_t irq_bitmap;
++	int32_t fd;
  
-diff --git a/drivers/vfio/virqfd.c b/drivers/vfio/virqfd.c
-index 27fa2f0..ac63ec0 100644
---- a/drivers/vfio/virqfd.c
-+++ b/drivers/vfio/virqfd.c
-@@ -14,7 +14,6 @@
- #include <linux/eventfd.h>
- #include <linux/file.h>
- #include <linux/slab.h>
--#include "pci/vfio_pci_private.h"
+ 	if (start != 0 || count != 1)
+ 		return -EINVAL;
+@@ -75,7 +85,19 @@ static int vfio_platform_set_irq_mask(struct vfio_platform_device *vdev,
+ 		vfio_platform_mask(&vdev->irqs[index]);
+ 		return 0;
  
- static struct workqueue_struct *vfio_irqfd_cleanup_wq;
- static spinlock_t lock;
-@@ -49,7 +48,7 @@ static int virqfd_wakeup(wait_queue_t *wait, unsigned mode, int sync, void *key)
- 	if (flags & POLLIN) {
- 		/* An event has been signaled, call function */
- 		if ((!virqfd->handler ||
--		     virqfd->handler(virqfd->vdev, virqfd->data)) &&
-+		     virqfd->handler(virqfd->opaque, virqfd->data)) &&
- 		    virqfd->thread)
- 			schedule_work(&virqfd->inject);
+-	case VFIO_IRQ_SET_DATA_EVENTFD: /* XXX not implemented yet */
++	case VFIO_IRQ_SET_DATA_EVENTFD:
++		if (copy_from_user(&fd, data, sizeof(int32_t)))
++			return -EFAULT;
++
++		if (fd >= 0)
++			return virqfd_enable((void *) &vdev->irqs[index],
++					     vfio_platform_mask_handler,
++					     NULL, NULL,
++					     &vdev->irqs[index].mask, fd);
++
++		virqfd_disable(&vdev->irqs[index].mask);
++		return 0;
++
+ 	default:
+ 		return -ENOTTY;
  	}
-@@ -99,13 +98,13 @@ static void virqfd_inject(struct work_struct *work)
- {
- 	struct virqfd *virqfd = container_of(work, struct virqfd, inject);
- 	if (virqfd->thread)
--		virqfd->thread(virqfd->vdev, virqfd->data);
-+		virqfd->thread(virqfd->opaque, virqfd->data);
+@@ -97,11 +119,21 @@ static void vfio_platform_unmask(struct vfio_platform_irq *irq_ctx)
+ 	spin_unlock_irqrestore(&irq_ctx->lock, flags);
  }
  
--int virqfd_enable(struct vfio_pci_device *vdev,
--			 int (*handler)(struct vfio_pci_device *, void *),
--			 void (*thread)(struct vfio_pci_device *, void *),
--			 void *data, struct virqfd **pvirqfd, int fd)
-+int virqfd_enable(void *opaque,
-+		  int (*handler)(void *, void *),
-+		  void (*thread)(void *, void *),
-+		  void *data, struct virqfd **pvirqfd, int fd)
++static int vfio_platform_unmask_handler(void *opaque, void *unused)
++{
++	struct vfio_platform_irq *irq_ctx = opaque;
++
++	vfio_platform_unmask(irq_ctx);
++
++	return 0;
++}
++
+ static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
+ 				    unsigned index, unsigned start,
+ 				    unsigned count, uint32_t flags, void *data)
  {
- 	struct fd irqfd;
- 	struct eventfd_ctx *ctx;
-@@ -118,7 +117,7 @@ int virqfd_enable(struct vfio_pci_device *vdev,
- 		return -ENOMEM;
+ 	uint8_t irq_bitmap;
++	int32_t fd;
  
- 	virqfd->pvirqfd = pvirqfd;
--	virqfd->vdev = vdev;
-+	virqfd->opaque = opaque;
- 	virqfd->handler = handler;
- 	virqfd->thread = thread;
- 	virqfd->data = data;
-@@ -171,7 +170,7 @@ int virqfd_enable(struct vfio_pci_device *vdev,
- 	 * before we registered and trigger it as if we didn't miss it.
- 	 */
- 	if (events & POLLIN) {
--		if ((!handler || handler(vdev, data)) && thread)
-+		if ((!handler || handler(opaque, data)) && thread)
- 			schedule_work(&virqfd->inject);
+ 	if (start != 0 || count != 1)
+ 		return -EINVAL;
+@@ -123,7 +155,19 @@ static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
+ 		vfio_platform_unmask(&vdev->irqs[index]);
+ 		return 0;
+ 
+-	case VFIO_IRQ_SET_DATA_EVENTFD: /* XXX not implemented yet */
++	case VFIO_IRQ_SET_DATA_EVENTFD:
++		if (copy_from_user(&fd, data, sizeof(int32_t)))
++			return -EFAULT;
++
++		if (fd >= 0)
++			return virqfd_enable((void *) &vdev->irqs[index],
++					     vfio_platform_unmask_handler,
++					     NULL, NULL,
++					     &vdev->irqs[index].unmask, fd);
++
++		virqfd_disable(&vdev->irqs[index].unmask);
++		return 0;
++
+ 	default:
+ 		return -ENOTTY;
  	}
+diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
+index 500e299..dd1beda 100644
+--- a/drivers/vfio/platform/vfio_platform_private.h
++++ b/drivers/vfio/platform/vfio_platform_private.h
+@@ -32,6 +32,8 @@ struct vfio_platform_irq {
+ 	struct eventfd_ctx	*trigger;
+ 	bool			masked;
+ 	spinlock_t		lock;
++	struct virqfd		*unmask;
++	struct virqfd		*mask;
+ };
  
-diff --git a/include/linux/vfio.h b/include/linux/vfio.h
-index fb6037b..ce23a42 100644
---- a/include/linux/vfio.h
-+++ b/include/linux/vfio.h
-@@ -128,10 +128,10 @@ static inline long vfio_spapr_iommu_eeh_ioctl(struct iommu_group *group,
-  * IRQFD support
-  */
- struct virqfd {
--	struct vfio_pci_device	*vdev;
-+	void			*opaque;
- 	struct eventfd_ctx	*eventfd;
--	int			(*handler)(struct vfio_pci_device *, void *);
--	void			(*thread)(struct vfio_pci_device *, void *);
-+	int			(*handler)(void *, void *);
-+	void			(*thread)(void *, void *);
- 	void			*data;
- 	struct work_struct	inject;
- 	wait_queue_t		wait;
-@@ -142,9 +142,9 @@ struct virqfd {
- 
- extern int vfio_pci_virqfd_init(void);
- extern void vfio_pci_virqfd_exit(void);
--extern int virqfd_enable(struct vfio_pci_device *vdev,
--			 int (*handler)(struct vfio_pci_device *, void *),
--			 void (*thread)(struct vfio_pci_device *, void *),
-+extern int virqfd_enable(void *opaque,
-+			 int (*handler)(void *, void *),
-+			 void (*thread)(void *, void *),
- 			 void *data, struct virqfd **pvirqfd, int fd);
- extern void virqfd_disable(struct virqfd **pvirqfd);
- 
+ struct vfio_platform_region {
 -- 
 1.8.3.2
