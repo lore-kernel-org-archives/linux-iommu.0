@@ -1,15 +1,15 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC PATCH v3 6/7] arm: call iommu_init before
-	of_platform_populate
-Date: Tue, 23 Sep 2014 09:02:39 +0200
-Message-ID: <20140923070238.GH30514@ulmo>
+Subject: Re: [RFC PATCH v3 7/7] arm: dma-mapping: plumb our iommu mapping ops
+	into arch_setup_dma_ops
+Date: Tue, 23 Sep 2014 09:14:01 +0200
+Message-ID: <20140923071355.GI30514@ulmo>
 References: <1410539695-29128-1-git-send-email-will.deacon@arm.com>
-	<11868654.D6MinQlF2p@wuerfel> <20140922114039.GT1470@ulmo>
-	<3261451.zpO6MVx5yo@wuerfel>
+	<1410539695-29128-8-git-send-email-will.deacon@arm.com>
+	<20140922091934.GH1470@ulmo> <20140922174337.GI7936@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============8076197467819955701=="
+Content-Type: multipart/mixed; boundary="===============8302422256182219736=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <3261451.zpO6MVx5yo@wuerfel>
+In-Reply-To: <20140922174337.GI7936-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,155 +19,107 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============8076197467819955701==
+--===============8302422256182219736==
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="vtJ+CqYNzKB4ukR4"
+	protocol="application/pgp-signature"; boundary="aFi3jz1oiPowsTUB"
 Content-Disposition: inline
 
 
---vtJ+CqYNzKB4ukR4
+--aFi3jz1oiPowsTUB
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Sep 22, 2014 at 06:03:47PM +0200, Arnd Bergmann wrote:
-> On Monday 22 September 2014 13:40:40 Thierry Reding wrote:
-> > On Mon, Sep 22, 2014 at 01:08:27PM +0200, Arnd Bergmann wrote:
-> > > On Monday 22 September 2014 11:36:15 Thierry Reding wrote:
-> > > > On Fri, Sep 12, 2014 at 05:34:54PM +0100, Will Deacon wrote:
-> > > > > We need to ensure that the IOMMUs in the system have a chance to =
-perform
-> > > > > some basic initialisation before we start adding masters to them.
-> > > > >=20
-> > > > > This patch adds a call to of_iommu_init before of_platform_popula=
-te.
-> > > >=20
-> > > > Why can't you call it from of_platform_populate() directly? That wa=
-y it
-> > > > would be usable for all architectures rather than just ARM. Eventua=
-lly
-> > > > we're going to need the same thing for 64-bit ARM (and possibly oth=
-ers
-> > > > as well).
-> > >=20
-> > > IIRC, of_platform_populate can be called multiple times, even recursi=
-vely
-> > > be drivers that populate their own child devices.
+On Mon, Sep 22, 2014 at 06:43:37PM +0100, Will Deacon wrote:
+> Hi Thierry,
+>=20
+> On Mon, Sep 22, 2014 at 10:19:35AM +0100, Thierry Reding wrote:
+> > On Fri, Sep 12, 2014 at 05:34:55PM +0100, Will Deacon wrote:
+> > [...]
+> > > +static bool arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base=
+, u64 size)
+> > > +{
+> > > +	struct dma_iommu_mapping *mapping;
+> > > +
+> > > +	mapping =3D arm_iommu_create_mapping(dev->bus, dma_base, size);
 > >=20
-> > Indeed. Perhaps it could be conditionally called when root =3D=3D NULL.=
- But
-> > perhaps that's not safe either. Anyway, I still think we shouldn't be
-> > making this some randomly placed early initcall anyway.
+> > If I understand correctly this will be called for each device that has
+> > an IOMMU master interface and will end up creating a new mapping for
+> > each of the devices. Each of these mappings will translate to a domain
+> > in the IOMMU API, which in turn is a separate address space.
 >=20
-> I disagree. IOMMUs are special in the same sense that irqchips, clocks and
-> timers are. This is not just a random call, it is being explicit about a
-> base functionality that is needed for all devices attached to it.
-
-Why do you say IOMMUs are special? I can understand how clocks and
-timers are somewhat special because they are required at early boot. But
-IOMMUs are not special in that way. I don't think there are any IOMMU
-users that early in the boot process. The only reason why IOMMU is
-special is because of the way it's currently hooked into the driver
-model.
-
-> While we pretend that these are just device drivers in some sense, I think
-> it's perfectly reasonable to have an explicit entry point for each subsys=
-tem
-> here.
-
-They aren't really device drivers at all. They don't bind to devices but
-to device tree nodes. And that comes at a high cost. Writing drivers for
-these subsystems is weird, because all of a sudden you can no longer use
-all the goodies that we've become used to (dev_log(), devres, ...) over
-the years.
-
-> I see two problems with using deferred probing here:=20
+> Correct, although that's largely because I've bolted on the existing ARM
+> IOMMU code.
 >=20
-> - we don't actually need to defer the probing but the binding to the driv=
-er
->   when no dma ops are set, but it seems silly to even create the device
->   before we can find out which ops it should use.
+> > How do you envision to support use-cases where a set of devices need to
+> > share a single domain? This is needed for example in DRM where SoCs
+> > often have a set of hardware blocks (each with its own master interface)
+> > that compose the display device. On Tegra for example there are two
+> > display controllers that need access to the same IOVA domain so that
+> > they can scan out framebuffers.
+>=20
+> Yup. In this case, the iommu_dma_mapping passed to arch_setup_dma_ops
+> contains a domain and an allocator for each IOMMU instance in the system.
+> It would then be up to the architecture how it makes use of those, but
+> the most obvious thing to do would be to attach devices mastering through
+> an IOMMU instance to that per-instance domain.
+>=20
+> The other use-case is isolation (one domain per device), which I guess
+> matches what the ARM code is doing at the moment.
 
-What does device creation have to do with anything? Surely a device
-won't need IOMMU services before the device is bound to a driver.
+I think there are two cases here. You can have a composite device that
+wants to manage a single domain (using its own allocator) for a set of
+hardware devices. At the same time a set of devices (think 2D and 3D
+engines) could want to use a multiple domains for process separation.
+In that case I'd expect a logical DRM device to allocate one domain per
+process and then associate the 2D and 3D engines with that same domain
+on process switch.
 
->   The reason is that a driver does not actively ask for an IOMMU as it wo=
-uld
->   for other subsystems (gpio, led, dmaengine, ...).
-
-Actually it does. At least in some cases. If you want to use the IOMMU
-API directly you'd call something like iommu_present() on the bus type
-and then allocate an IOMMU domain and attach to it. Unfortunately the
-API seems to have been designed under the assumption that IOMMU will
-have been registered before any users, so the API doesn't propagate any
-meaningful errors.
-
-Currently the specifics of how that works is all mostly hidden within
-the IOMMU driver which will decide what IOMMU to attach to. That's
-problematic for cases where a device has multiple master interfaces,
-since it won't be able to decide which one to attach to.
-
-Also, even if in other cases the drivers don't actively ask for an IOMMU
-that doesn't mean that they couldn't be made to. For drivers that use
-the DMA/IOMMU integration layer this is probably not practicable, but
-there is no reason the core couldn't do it.
-
-> - As long as the dma_ops are not set, we can't actually call probe() for
->   any device other than iommus, and even that would require adding special
->   magic in the platform_device_probe(), so we'd just defer every device
->   until we get to the iommu. This likely causes a lot of overhead at probe
->   time.
-
-Why? The patches that I (and Hiroshi before me) posted a while ago did
-exactly that and it worked just fine. The only objection to that was
-that Greg (and you I think) didn't want to have that code in the core
-and therefore -EPROBE_DEFER can't properly be propagated. There's no
-special magic required beyond that. The IOMMU becomes a resource or
-service provider, just like any other driver.
-
-As for the overhead I think that's negligible. Hopefully the IOMMU would
-be standalone enough not to defer probing itself, so at worst all IOMMU
-users would be deferred once. Many of them will already defer because of
-other resources such as GPIOs, clocks or regulators anyway. But that's a
-problem for which a solution could be implemented. Dependency-based
-probe ordering was discussed not so long ago. With that in place the
-IOMMU would be probed before any of its users.
+What I proposed a while back was to leave it up to the IOMMU driver to
+choose an allocator for the device. Or rather, choose whether to use a
+custom allocator or the DMA/IOMMU integration allocator. The way this
+worked was to keep a list of devices in the IOMMU driver. Devices in
+this list would be added to domain reserved for DMA/IOMMU integration.
+Those would typically be devices such as SD/MMC, audio, ... devices that
+are in-kernel and need no per-process separation. By default devices
+wouldn't be added to a domain, so devices forming a composite DRM device
+would be able to manage their own domain.
 
 Thierry
 
---vtJ+CqYNzKB4ukR4
+--aFi3jz1oiPowsTUB
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJUIRsOAAoJEN0jrNd/PrOhs1kP/16p1Z9+9dgf3dPX0hUdCchv
-wvKS+conMLjb6FtTBj7dZcjGq53pCdu5t0EsC4p3sAz5SDpfMF9xYH8QBXbmQfy8
-kcMoDcFt5vlkKNJiaAsqeZPO/gcwnzV56zWzDycrOS3enEnufsMDJ0WZogaJ/6a7
-ElidA8dMoNTkWm+aRex+7RGl6osjHDuliWCs2/I2/qKSX82oyRNcX6MZK8f02EwB
-BfVf7/fPetfVlLkbInnXHug+BLC+qGAewLkXkh2gBrxnlbMqQdgVy+hhD/e7OiZk
-+5mPI9qzqRft602S+N52zlSgT2dGiUWqi9ZuEZ2RmFZXH1GljE6dxvDT/7M4cqag
-mtVYfzL9mQiT7JiHubkAH/f3G07UghRObpDzoAWHm+//RrbxCorAjxYLgfOHwCdW
-9Seu5ACOehuvji0jg2VdPGWTRmWyltyIBCO/rPw0koUZgwbFlZ44oWiwBs4GY+uo
-tAmByu/fE9WRHp3pOmk5Zn4lfN4FzcJ39avQ10Vgg5jh70JLRRM7XTPP/rKIU56M
-eRTydrM8UQMaNuRTmPEtF3P+90fIsDiBpK57EcTe6DVDLAzJwgF8rD1JLN2iLexH
-NJUFTZLyBpw8l8y+nVJdelNNwArwPL7UxojhmfQEX5Tarkxe9b++N3ikUQJfPAkq
-LzgHDOnuJyyPEiLliT58
-=JpaZ
+iQIcBAEBAgAGBQJUIR2zAAoJEN0jrNd/PrOhPwQP/3ply0aOr0rOC0WaQhdG8ZGs
+IbKGmqDPQUGzU091ewIp6nNy8C9/hMMhFNKIITIEKc6XRuF2f4r8CuIE+m/n+2rI
+VXFkrDYK/Uj6rc/0YioBqftN5CGUY4X/bWOEppR2YbHdNNML0BbvG81e0EQOuCuL
+38zD1ELDKpHXqED724bA9JK0ypkTCm3DkRl/xC9Y5CRchKlcEm1UyDJyEZQh0dYw
+GlAt7gp3RDw/xwX+t3VjrWwPpE6lwaPGaSU4CLnNJjfy4ARM5t5ZYdzNb+FX54NO
+DoHKUmzIeYk5zZYVK0DJe3HcpCt95PAXtCALtM5n4ZQJ4JYRweZQ7pSxGCW4ramM
+o5GDwbPmRqhxz0DXyavgptwLwcSD9t4rlxIje0lHyAlOwJF+GDmaT2zZzzWYypT5
+wvnYueKH2JX1t6Ip136kyBjj8R6/Y3AZ80dOim8nRaX7TEMDWVVCILx80+Cl2qhf
+1TCsoYPGoGUqt10WEr8+mKru+bIXP5OE/vv8EtYxTOMZ5krZIgu9kkzIdZ5ybN/q
+Yjy9b7B4iDTjODjBbvkxCGQWLZXEZ5rSju1e5Zdp9F+lmkMCxqxIHpRxjmxlh2mK
+PR4BKvHEvq7YBJLqc8aaoKIXs9nb+T0d2zosBALVLkpb798eqUkPW+D7Qj2uxqpW
+SrpM/762KpH386j9+wl2
+=IImn
 -----END PGP SIGNATURE-----
 
---vtJ+CqYNzKB4ukR4--
+--aFi3jz1oiPowsTUB--
 
---===============8076197467819955701==
+--===============8302422256182219736==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============8076197467819955701==--
+--===============8302422256182219736==--
