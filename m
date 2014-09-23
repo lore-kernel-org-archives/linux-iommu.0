@@ -1,8 +1,8 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCHv7 08/26] driver core: amba: add documentation for binding path
-	'driver_override'
-Date: Tue, 23 Sep 2014 16:46:07 +0200
-Message-ID: <1411483586-29304-9-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [PATCHv7 09/26] vfio/platform: initial skeleton of VFIO support for
+	platform devices
+Date: Tue, 23 Sep 2014 16:46:08 +0200
+Message-ID: <1411483586-29304-10-git-send-email-a.motakis@virtualopensystems.com>
 References: <1411483586-29304-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,43 +19,202 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, "open list:ABI/API" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add documentation for alternative binding path 'driver_override' for
-AMBA devices.
+This patch forms the common skeleton code for platform devices support
+with VFIO. This will include the core functionality of VFIO_PLATFORM,
+however binding to the device and discovering the device resources will
+be done with the help of a separate file where any Linux platform bus
+specific code will reside.
+
+This will allow us to implement support for also discovering AMBA devices
+and their resources, but still reuse a large part of the VFIO_PLATFORM
+implementation.
 
 Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 ---
- Documentation/ABI/testing/sysfs-bus-amba | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-amba
+ drivers/vfio/platform/vfio_platform_common.c  | 129 ++++++++++++++++++++++++++
+ drivers/vfio/platform/vfio_platform_private.h |  35 +++++++
+ 2 files changed, 164 insertions(+)
+ create mode 100644 drivers/vfio/platform/vfio_platform_common.c
+ create mode 100644 drivers/vfio/platform/vfio_platform_private.h
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-amba b/Documentation/ABI/testing/sysfs-bus-amba
+diff --git a/drivers/vfio/platform/vfio_platform_common.c b/drivers/vfio/platform/vfio_platform_common.c
 new file mode 100644
-index 0000000..e7b5467
+index 0000000..07d02dc
 --- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-amba
-@@ -0,0 +1,20 @@
-+What:		/sys/bus/amba/devices/.../driver_override
-+Date:		September 2014
-+Contact:	Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-+Description:
-+		This file allows the driver for a device to be specified which
-+		will override standard OF, ACPI, ID table, and name matching.
-+		When specified, only a driver with a name matching the value
-+		written to driver_override will have an opportunity to bind to
-+		the device. The override is specified by writing a string to the
-+		driver_override file (echo vfio-amba > driver_override)	and may
-+		be cleared with an empty string (echo > driver_override).
-+		This returns the device to standard matching rules binding.
-+		Writing to driver_override does not automatically unbind the
-+		device from its current driver or make any attempt to
-+		automatically load the specified driver. If no driver with a
-+		matching name is currently loaded in the kernel, the device will
-+		not bind to any driver. This also allows devices to opt-out of
-+		driver binding using a driver_override name such as "none".
-+		Only a single driver may be specified in the override, there is
-+		no support for parsing delimiters.
++++ b/drivers/vfio/platform/vfio_platform_common.c
+@@ -0,0 +1,129 @@
++/*
++ * Copyright (C) 2013 - Virtual Open Systems
++ * Author: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License, version 2, as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include <linux/device.h>
++#include <linux/interrupt.h>
++#include <linux/iommu.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/notifier.h>
++#include <linux/pm_runtime.h>
++#include <linux/slab.h>
++#include <linux/types.h>
++#include <linux/uaccess.h>
++#include <linux/vfio.h>
++#include <linux/io.h>
++
++#include "vfio_platform_private.h"
++
++static void vfio_platform_release(void *device_data)
++{
++	module_put(THIS_MODULE);
++}
++
++static int vfio_platform_open(void *device_data)
++{
++	if (!try_module_get(THIS_MODULE))
++		return -ENODEV;
++
++	return 0;
++}
++
++static long vfio_platform_ioctl(void *device_data,
++			   unsigned int cmd, unsigned long arg)
++{
++	if (cmd == VFIO_DEVICE_GET_INFO)
++		return -EINVAL;
++
++	else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
++		return -EINVAL;
++
++	else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
++		return -EINVAL;
++
++	else if (cmd == VFIO_DEVICE_SET_IRQS)
++		return -EINVAL;
++
++	else if (cmd == VFIO_DEVICE_RESET)
++		return -EINVAL;
++
++	return -ENOTTY;
++}
++
++static ssize_t vfio_platform_read(void *device_data, char __user *buf,
++			     size_t count, loff_t *ppos)
++{
++	return -EINVAL;
++}
++
++static ssize_t vfio_platform_write(void *device_data, const char __user *buf,
++			      size_t count, loff_t *ppos)
++{
++	return -EINVAL;
++}
++
++static int vfio_platform_mmap(void *device_data, struct vm_area_struct *vma)
++{
++	return -EINVAL;
++}
++
++static const struct vfio_device_ops vfio_platform_ops = {
++	.name		= "vfio-platform",
++	.open		= vfio_platform_open,
++	.release	= vfio_platform_release,
++	.ioctl		= vfio_platform_ioctl,
++	.read		= vfio_platform_read,
++	.write		= vfio_platform_write,
++	.mmap		= vfio_platform_mmap,
++};
++
++int vfio_platform_probe_common(struct vfio_platform_device *vdev,
++			       struct device *dev)
++{
++	struct iommu_group *group;
++	int ret;
++
++	if (!vdev)
++		return -EINVAL;
++
++	group = iommu_group_get(dev);
++	if (!group) {
++		pr_err("VFIO: No IOMMU group for device %s\n", vdev->name);
++		return -EINVAL;
++	}
++
++	ret = vfio_add_group_dev(dev, &vfio_platform_ops, vdev);
++	if (ret) {
++		iommu_group_put(group);
++		return ret;
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(vfio_platform_probe_common);
++
++int vfio_platform_remove_common(struct device *dev)
++{
++	struct vfio_platform_device *vdev;
++
++	vdev = vfio_del_group_dev(dev);
++	if (!vdev)
++		return -EINVAL;
++
++	iommu_group_put(dev->iommu_group);
++	kfree(vdev);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(vfio_platform_remove_common);
+diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
+new file mode 100644
+index 0000000..ef76737
+--- /dev/null
++++ b/drivers/vfio/platform/vfio_platform_private.h
+@@ -0,0 +1,35 @@
++/*
++ * Copyright (C) 2013 - Virtual Open Systems
++ * Author: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License, version 2, as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef VFIO_PLATFORM_PRIVATE_H
++#define VFIO_PLATFORM_PRIVATE_H
++
++struct vfio_platform_device {
++	/*
++	 * These fields should be filled by the bus driver at binding time
++	 */
++	void		*opaque;
++	const char	*name;
++	uint32_t	flags;
++	/* callbacks to discover device resources */
++	struct resource*
++		(*get_resource)(struct vfio_platform_device *vdev, int i);
++	int	(*get_irq)(struct vfio_platform_device *vdev, int i);
++};
++
++extern int vfio_platform_probe_common(struct vfio_platform_device *vdev,
++				      struct device *dev);
++extern int vfio_platform_remove_common(struct device *dev);
++
++#endif /* VFIO_PLATFORM_PRIVATE_H */
 -- 
 1.8.3.2
