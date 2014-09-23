@@ -1,7 +1,7 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCHv7 17/26] vfio/platform: support MMAP of MMIO regions
-Date: Tue, 23 Sep 2014 16:46:16 +0200
-Message-ID: <1411483586-29304-18-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [PATCHv7 18/26] vfio/platform: return IRQ info
+Date: Tue, 23 Sep 2014 16:46:17 +0200
+Message-ID: <1411483586-29304-19-git-send-email-a.motakis@virtualopensystems.com>
 References: <1411483586-29304-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,71 +21,194 @@ To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvmarm-FPEHb7Xf0XXU
 Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Allow to memory map the MMIO regions of the device so userspace can
-directly access them.
+Return information for the interrupts exposed by the device.
+This patch extends VFIO_DEVICE_GET_INFO with the number of IRQs
+and enables VFIO_DEVICE_GET_IRQ_INFO.
 
 Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 ---
- drivers/vfio/platform/vfio_platform_common.c | 40 +++++++++++++++++++++++++++-
- 1 file changed, 39 insertions(+), 1 deletion(-)
+ drivers/vfio/platform/Makefile                |  2 +-
+ drivers/vfio/platform/vfio_platform_common.c  | 30 ++++++++++++--
+ drivers/vfio/platform/vfio_platform_irq.c     | 59 +++++++++++++++++++++++++++
+ drivers/vfio/platform/vfio_platform_private.h | 10 +++++
+ 4 files changed, 97 insertions(+), 4 deletions(-)
+ create mode 100644 drivers/vfio/platform/vfio_platform_irq.c
 
+diff --git a/drivers/vfio/platform/Makefile b/drivers/vfio/platform/Makefile
+index 1957170..81de144 100644
+--- a/drivers/vfio/platform/Makefile
++++ b/drivers/vfio/platform/Makefile
+@@ -1,5 +1,5 @@
+ 
+-vfio-platform-y := vfio_platform.o vfio_platform_common.o
++vfio-platform-y := vfio_platform.o vfio_platform_common.o vfio_platform_irq.o
+ 
+ obj-$(CONFIG_VFIO_PLATFORM) += vfio-platform.o
+ 
 diff --git a/drivers/vfio/platform/vfio_platform_common.c b/drivers/vfio/platform/vfio_platform_common.c
-index 589b226..5551d32 100644
+index 5551d32..6dccf22 100644
 --- a/drivers/vfio/platform/vfio_platform_common.c
 +++ b/drivers/vfio/platform/vfio_platform_common.c
-@@ -50,6 +50,11 @@ static int vfio_platform_regions_init(struct vfio_platform_device *vdev)
- 		vdev->regions[i].size = resource_size(res);
- 		vdev->regions[i].flags = VFIO_REGION_INFO_FLAG_READ
- 					| VFIO_REGION_INFO_FLAG_WRITE;
-+		/* Only regions addressed with PAGE granularity may be MMAPed
-+		 * securely. */
-+		if (!(vdev->regions[i].addr & ~PAGE_MASK)
-+				&& !(vdev->regions[i].size & ~PAGE_MASK))
-+			vdev->regions[i].flags |= VFIO_REGION_INFO_FLAG_MMAP;
+@@ -80,8 +80,10 @@ static void vfio_platform_release(void *device_data)
+ {
+ 	struct vfio_platform_device *vdev = device_data;
+ 
+-	if (atomic_dec_and_test(&vdev->refcnt))
++	if (atomic_dec_and_test(&vdev->refcnt)) {
+ 		vfio_platform_regions_cleanup(vdev);
++		vfio_platform_irq_cleanup(vdev);
++	}
+ 
+ 	module_put(THIS_MODULE);
+ }
+@@ -98,10 +100,16 @@ static int vfio_platform_open(void *device_data)
+ 		ret = vfio_platform_regions_init(vdev);
+ 		if (ret)
+ 			goto err_reg;
++
++		ret = vfio_platform_irq_init(vdev);
++		if (ret)
++			goto err_irq;
  	}
  
- 	vdev->num_regions = cnt;
-@@ -281,7 +286,40 @@ err:
+ 	return 0;
  
- static int vfio_platform_mmap(void *device_data, struct vm_area_struct *vma)
- {
--	return -EINVAL;
-+	struct vfio_platform_device *vdev = device_data;
-+	unsigned int index;
-+	u64 req_len, pgoff, req_start;
-+	struct vfio_platform_region regions;
-+
-+	index = vma->vm_pgoff >> (VFIO_PLATFORM_OFFSET_SHIFT - PAGE_SHIFT);
-+
-+	if (vma->vm_end < vma->vm_start)
-+		return -EINVAL;
-+	if ((vma->vm_flags & VM_SHARED) == 0)
-+		return -EINVAL;
-+	if (index >= vdev->num_regions)
-+		return -EINVAL;
-+	if (vma->vm_start & ~PAGE_MASK)
-+		return -EINVAL;
-+	if (vma->vm_end & ~PAGE_MASK)
-+		return -EINVAL;
-+
-+	regions = vdev->regions[index];
-+
-+	req_len = vma->vm_end - vma->vm_start;
-+	pgoff = vma->vm_pgoff &
-+		((1U << (VFIO_PLATFORM_OFFSET_SHIFT - PAGE_SHIFT)) - 1);
-+	req_start = pgoff << PAGE_SHIFT;
-+
-+	if (regions.size < PAGE_SIZE || req_start + req_len > regions.size)
-+		return -EINVAL;
-+
-+	vma->vm_private_data = vdev;
-+	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
-+	vma->vm_pgoff = (regions.addr >> PAGE_SHIFT) + pgoff;
-+
-+	return remap_pfn_range(vma, vma->vm_start, vma->vm_pgoff,
-+			       req_len, vma->vm_page_prot);
- }
++err_irq:
++	vfio_platform_regions_cleanup(vdev);
+ err_reg:
+ 	module_put(THIS_MODULE);
+ 	return ret;
+@@ -126,7 +134,7 @@ static long vfio_platform_ioctl(void *device_data,
  
- static const struct vfio_device_ops vfio_platform_ops = {
+ 		info.flags = vdev->flags;
+ 		info.num_regions = vdev->num_regions;
+-		info.num_irqs = 0;
++		info.num_irqs = vdev->num_irqs;
+ 
+ 		return copy_to_user((void __user *)arg, &info, minsz);
+ 
+@@ -152,7 +160,23 @@ static long vfio_platform_ioctl(void *device_data,
+ 		return copy_to_user((void __user *)arg, &info, minsz);
+ 
+ 	} else if (cmd == VFIO_DEVICE_GET_IRQ_INFO) {
+-		return -EINVAL;
++		struct vfio_irq_info info;
++
++		minsz = offsetofend(struct vfio_irq_info, count);
++
++		if (copy_from_user(&info, (void __user *)arg, minsz))
++			return -EFAULT;
++
++		if (info.argsz < minsz)
++			return -EINVAL;
++
++		if (info.index >= vdev->num_irqs)
++			return -EINVAL;
++
++		info.flags = vdev->irqs[info.index].flags;
++		info.count = vdev->irqs[info.index].count;
++
++		return copy_to_user((void __user *)arg, &info, minsz);
+ 
+ 	} else if (cmd == VFIO_DEVICE_SET_IRQS)
+ 		return -EINVAL;
+diff --git a/drivers/vfio/platform/vfio_platform_irq.c b/drivers/vfio/platform/vfio_platform_irq.c
+new file mode 100644
+index 0000000..d99c71c
+--- /dev/null
++++ b/drivers/vfio/platform/vfio_platform_irq.c
+@@ -0,0 +1,59 @@
++/*
++ * VFIO platform devices interrupt handling
++ *
++ * Copyright (C) 2013 - Virtual Open Systems
++ * Author: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License, version 2, as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include <linux/device.h>
++#include <linux/eventfd.h>
++#include <linux/interrupt.h>
++#include <linux/iommu.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/notifier.h>
++#include <linux/pm_runtime.h>
++#include <linux/slab.h>
++#include <linux/types.h>
++#include <linux/uaccess.h>
++#include <linux/vfio.h>
++#include <linux/platform_device.h>
++#include <linux/irq.h>
++
++#include "vfio_platform_private.h"
++
++int vfio_platform_irq_init(struct vfio_platform_device *vdev)
++{
++	int cnt = 0, i;
++
++	while (vdev->get_irq(vdev, cnt) > 0)
++		cnt++;
++
++	vdev->irqs = kcalloc(cnt, sizeof(struct vfio_platform_irq), GFP_KERNEL);
++	if (!vdev->irqs)
++		return -ENOMEM;
++
++	for (i = 0; i < cnt; i++) {
++		vdev->irqs[i].flags = 0;
++		vdev->irqs[i].count = 1;
++	}
++
++	vdev->num_irqs = cnt;
++
++	return 0;
++}
++
++void vfio_platform_irq_cleanup(struct vfio_platform_device *vdev)
++{
++	vdev->num_irqs = 0;
++	kfree(vdev->irqs);
++}
+diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
+index 4145fd6..c5c7a7b 100644
+--- a/drivers/vfio/platform/vfio_platform_private.h
++++ b/drivers/vfio/platform/vfio_platform_private.h
+@@ -24,6 +24,11 @@
+ #define VFIO_PLATFORM_INDEX_TO_OFFSET(index)	\
+ 	((u64)(index) << VFIO_PLATFORM_OFFSET_SHIFT)
+ 
++struct vfio_platform_irq {
++	u32			flags;
++	u32			count;
++};
++
+ struct vfio_platform_region {
+ 	u64			addr;
+ 	resource_size_t		size;
+@@ -34,6 +39,8 @@ struct vfio_platform_region {
+ struct vfio_platform_device {
+ 	struct vfio_platform_region	*regions;
+ 	u32				num_regions;
++	struct vfio_platform_irq	*irqs;
++	u32				num_irqs;
+ 	atomic_t			refcnt;
+ 
+ 	/*
+@@ -52,4 +59,7 @@ extern int vfio_platform_probe_common(struct vfio_platform_device *vdev,
+ 				      struct device *dev);
+ extern int vfio_platform_remove_common(struct device *dev);
+ 
++extern int vfio_platform_irq_init(struct vfio_platform_device *vdev);
++extern void vfio_platform_irq_cleanup(struct vfio_platform_device *vdev);
++
+ #endif /* VFIO_PLATFORM_PRIVATE_H */
 -- 
 1.8.3.2
