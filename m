@@ -1,15 +1,16 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCHv7 01/26] iommu/arm-smmu: change IOMMU_EXEC to IOMMU_NOEXEC
-Date: Tue, 23 Sep 2014 15:58:16 +0100
-Message-ID: <20140923145816.GE28608@arm.com>
-References: <1411483586-29304-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1411483586-29304-2-git-send-email-a.motakis@virtualopensystems.com>
+From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu/omap: Reverse dependency between omap-iommu
+	and omap-iommu2
+Date: Tue, 23 Sep 2014 11:04:22 -0500
+Message-ID: <54219A06.80201@ti.com>
+References: <1410277545-32157-1-git-send-email-laurent.pinchart@ideasonboard.com>
+	<3123675.ihHe2cOfgC@avalon> <540F7FD0.4010109@ti.com>
+	<2586861.3TFFdmAzkQ@avalon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1411483586-29304-2-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+In-Reply-To: <2586861.3TFFdmAzkQ@avalon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,37 +20,101 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Florian Vaussard <florian.vaussard-p8DiymsW2f8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Antonios,
+Hi Laurent,
 
-On Tue, Sep 23, 2014 at 03:46:00PM +0100, Antonios Motakis wrote:
-> Exposing the XN flag of the SMMU driver as IOMMU_NOEXEC instead of
-> IOMMU_EXEC makes it enforceable, since for IOMMUs that don't support
-> the XN flag pages will always be executable.
+>
+> On Tuesday 09 September 2014 17:31:44 Suman Anna wrote:
+>>> On Tuesday 09 September 2014 16:33:11 Suman Anna wrote:
+>>>> On 09/09/2014 10:45 AM, Laurent Pinchart wrote:
+>>>>> The OMAP IOMMU driver supports both the OMAP1 and OMAP2+ IOMMU variants
+>>>>> by splitting the driver into a core module and a thin arch-specific
+>>>>> operations module.
+>>>>>
+>>>>> (In practice only the OMAP2+ module omap-iommu2 is implemented, but
+>>>>> let's not denigrate the effort.)
+>>>>
+>>>> Thank you for the patch. I had something similar in my list of cleanup
+>>>> TODO items on the OMAP IOMMU driver, but I was intending to cut down
+>>>> more and consolidate the omap-iommu.c and omap-iommu2.c files into a
+>>>> single one.
+>>>>
+>>>> This had been the case from the introduction of the driver going back to
+>>>> v2.6.30, and OMAP1 was never added and I doubt it would be added anytime
+>>>> in the foreseeable future.
+>>>>
+>>>>> The arch-specific operations module registers itself with the OMAP IOMMU
+>>>>> core module at initialization time. This initializes a module global
+>>>>> arch-specific operations pointer, used at runtime by the IOMMU
+>>>>> instances.
+>>>>>
+>>>>> This scheme causes several issues. In addition to making it impossible
+>>>>> to support different OMAP IOMMU types in a single system (which in all
+>>>>> fairness is quite unlikely to happen),
+>>>>
+>>>> Yep, except for a few enhancements (like reporting Fault PC address on
+>>>> OMAP4 DSPs, and dropping both endianness support), the core IOMMU
+>>>> functionality hasn't changed much between OMAP2 and the latest OMAP4+
+>>>> SoCs. So, my plan was to completely get rid of the iommu_functions (it
+>>>> also eliminates the need for exporting most of the OMAP IOMMU API). So
+>>>> while I am ok with the current patch, I prefer consolidation than
+>>>> keeping the scalability alive, it can always be added if a need for that
+>>>> arises. What do you think?
+>>>
+>>> I agree with your approach, but in the meantime we have a problem to
+>>> solve.
+>>> How about applying this patch now (it goes in the right direction anyway),
+>>> and then removing the iommu functions when you will have time ?
+>>
+>> Can you give the subsys_initcall solution a try to see if that resolves
+>> the problem at hand? That would be a much smaller change, if that
+>> doesn't work we can go with this patch.
 > 
-> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu.c | 9 +++++----
->  include/linux/iommu.h    | 2 +-
->  2 files changed, 6 insertions(+), 5 deletions(-)
+> It seems to work.
+> 
+>> I will work on my cleanup list for 3.19.
+> 
+> Does that schedule still hold ? If so I'll submit a simple subsys_initcall() 
+> patch for v3.18.
 
-[...]
+Yes, that would be great. I am working on the patches and will post them
+in a couple of days.
 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 20f9a52..e1a644c 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -27,7 +27,7 @@
->  #define IOMMU_READ	(1 << 0)
->  #define IOMMU_WRITE	(1 << 1)
->  #define IOMMU_CACHE	(1 << 2) /* DMA cache coherency */
-> -#define IOMMU_EXEC	(1 << 3)
-> +#define IOMMU_NOEXEC	(1 << 3)
+regards
+Suman
 
-This hunk needs to be a separate patch merged by Joerg before I can take the
-arm-smmu part (which looks fine).
-
-Will
+> 
+>>>>  it also causes initialization
+>>>>  
+>>>>> ordering issues by requiring the arch-specific operations module to be
+>>>>> loaded before any IOMMU user. This results in a probe breakage with the
+>>>>> OMAP3 ISP driver when not compiled as a module.
+>>>>
+>>>> This can be fixed if we make the current omap-iommu2.c as a
+>>>> subsys_initcall as well, right?
+>>>>
+>>>> regards
+>>>> Suman
+>>>>
+>>>>> Fix the problem by inverting the dependency. Instead of having the
+>>>>> omap-iommu2 module register itself to iommu-omap, make the iommu-omap
+>>>>> retrieve the omap-iommu2 operations structure directly when probing the
+>>>>> IOMMU device. This ensures that a probed IOMMU will always have valid
+>>>>> arch-specific operations.
+>>>>>
+>>>>> As the arch-specific operations pointer is now initialized at probe
+>>>>> time, this change requires turning it from a global variable into a
+>>>>> per-device variable.
+>>>>>
+>>>>> Signed-off-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+>>>>> ---
+>>>>>
+>>>>>  drivers/iommu/omap-iommu-debug.c |  6 ++-
+>>>>>  drivers/iommu/omap-iommu.c       | 94 +++++++++++++--------------------
+>>>>>  drivers/iommu/omap-iommu.h       | 10 ++++-
+>>>>>  drivers/iommu/omap-iommu2.c      | 18 +-------
+>>>>>  4 files changed, 45 insertions(+), 83 deletions(-)
+> 
