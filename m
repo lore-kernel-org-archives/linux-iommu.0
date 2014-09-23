@@ -1,39 +1,66 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v1 00/21] Use MSI chip to configure MSI/MSI-X in all
- platforms
-Date: Tue, 23 Sep 2014 15:09:36 -0600
-Message-ID: <20140923210936.GC27117@google.com>
-References: <1409911806-10519-1-git-send-email-wangyijing@huawei.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCHv7 01/26] iommu/arm-smmu: change IOMMU_EXEC to IOMMU_NOEXEC
+Date: Tue, 23 Sep 2014 16:14:10 -0600
+Message-ID: <1411510450.24563.44.camel@ul30vt.home>
+References: <1411483586-29304-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1411483586-29304-2-git-send-email-a.motakis@virtualopensystems.com>
+	<20140923145816.GE28608@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1409911806-10519-1-git-send-email-wangyijing@huawei.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Yijing Wang <wangyijing@huawei.com>
-Cc: linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Bharat.Bhushan@freescale.com, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Joerg Roedel <joro@8bytes.org>, x86@kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, xen-devel@lists.xenproject.org, arnab.basu@freescale.com, Arnd Bergmann <arnd@arndb.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Chris Metcalf <cmetcalf@tilera.com>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Xinwei Hu <huxinwei@huawei.com>, Tony Luck <tony.luck@intel.com>, Ralf Baechle <ralf@linux-mips.org>, iommu@lists.linux-foundation.org, Wuyun <wuyun.wu@huawei.com>, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140923145816.GE28608-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 05, 2014 at 06:09:45PM +0800, Yijing Wang wrote:
-> This series is based Bjorn's pci-next branch + Alexander Gordeev's two patches
-> "Remove arch_msi_check_device()" link: https://lkml.org/lkml/2014/7/12/41
+On Tue, 2014-09-23 at 15:58 +0100, Will Deacon wrote:
+> Hi Antonios,
 > 
-> Currently, there are a lot of weak arch functions in MSI code.
-> Thierry Reding Introduced MSI chip framework to configure MSI/MSI-X in arm.
-> This series use MSI chip framework to refactor MSI code across all platforms
-> to eliminate weak arch functions. It has been tested fine in x86(with or without
-> irq remap).
+> On Tue, Sep 23, 2014 at 03:46:00PM +0100, Antonios Motakis wrote:
+> > Exposing the XN flag of the SMMU driver as IOMMU_NOEXEC instead of
+> > IOMMU_EXEC makes it enforceable, since for IOMMUs that don't support
+> > the XN flag pages will always be executable.
+> > 
+> > Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> > ---
+> >  drivers/iommu/arm-smmu.c | 9 +++++----
+> >  include/linux/iommu.h    | 2 +-
+> >  2 files changed, 6 insertions(+), 5 deletions(-)
+> 
+> [...]
+> 
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index 20f9a52..e1a644c 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -27,7 +27,7 @@
+> >  #define IOMMU_READ	(1 << 0)
+> >  #define IOMMU_WRITE	(1 << 1)
+> >  #define IOMMU_CACHE	(1 << 2) /* DMA cache coherency */
+> > -#define IOMMU_EXEC	(1 << 3)
+> > +#define IOMMU_NOEXEC	(1 << 3)
+> 
+> This hunk needs to be a separate patch merged by Joerg before I can take the
+> arm-smmu part (which looks fine).
 
-I see you plan some updates, so I'll look for a v2 posting after v3.17 releases.
-It will be great to get rid of some of those weak functions!
+That separate hunk would be unbuildable since arm-smmu depends on the
+IOMMU_EXEC define.  Patch 2/ is also in iommu code and gates patch 3/ in
+arm-smmu.  The IOMMU-core changes are pretty trivial, so perhaps Joerg
+would be willing to ACK 1&2 and let Will include the first 3 patches
+through his tree.
 
-Bjorn
+These first 3 patches should have been sent on their own since they're
+small an obvious so they don't get hung up on the reset of the series.
+Thanks,
+
+Alex
