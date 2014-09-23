@@ -1,15 +1,15 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCHv7 06/26] vfio/iommu_type1: implement the
-	VFIO_DMA_MAP_FLAG_NOEXEC flag
-Date: Tue, 23 Sep 2014 16:40:59 -0600
-Message-ID: <1411512059.24563.57.camel@ul30vt.home>
+Subject: Re: [PATCHv7 07/26] driver core: amba: add device binding path
+	'driver_override'
+Date: Tue, 23 Sep 2014 16:45:25 -0600
+Message-ID: <1411512325.24563.59.camel@ul30vt.home>
 References: <1411483586-29304-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1411483586-29304-7-git-send-email-a.motakis@virtualopensystems.com>
+	<1411483586-29304-8-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1411483586-29304-7-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+In-Reply-To: <1411483586-29304-8-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,109 +20,113 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 On Tue, 2014-09-23 at 16:46 +0200, Antonios Motakis wrote:
-> Some IOMMU drivers, such as the ARM SMMU driver, make available the
-> IOMMU_NOEXEC flag, to set the page tables for a device as XN (execute never).
-> This affects devices such as the ARM PL330 DMA Controller, which respects
-> this flag and will refuse to fetch DMA instructions from memory where the
-> XN flag has been set.
+> As already demonstrated with PCI [1] and the platform bus [2], a
+> driver_override property in sysfs can be used to bypass the id matching
+> of a device to a AMBA driver. This can be used by VFIO to bind to any AMBA
+> device requested by the user.
 > 
-> The flag can be used only if all IOMMU domains behind the container support
-> the IOMMU_NOEXEC flag. Also, if any mappings are created with the flag, any
-> new domains with devices will have to support it as well.
+> [1] http://lists-archives.com/linux-kernel/28030441-pci-introduce-new-device-binding-path-using-pci_dev-driver_override.html
+> [2] https://www.redhat.com/archives/libvir-list/2014-April/msg00382.html
 > 
 > Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 > ---
->  drivers/vfio/vfio_iommu_type1.c | 38 +++++++++++++++++++++++++++++++++++++-
->  1 file changed, 37 insertions(+), 1 deletion(-)
+>  drivers/amba/bus.c       | 44 ++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/amba/bus.h |  1 +
+>  2 files changed, 45 insertions(+)
+
+Why are 7 & 8 being dragged into this series?  Combine them into a
+single patch and post it separately.
+
 > 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index 0734fbe..09e5064 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -81,6 +81,26 @@ struct vfio_group {
->  };
+> diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
+> index 3cf61a1..473177c 100644
+> --- a/drivers/amba/bus.c
+> +++ b/drivers/amba/bus.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/pm_runtime.h>
+>  #include <linux/amba/bus.h>
+>  #include <linux/sizes.h>
+> +#include <linux/limits.h>
 >  
->  /*
-> + * This function returns true only if _all_ domains support the capability.
-> + */
-> +static int vfio_all_domains_have_iommu_noexec(struct vfio_iommu *iommu)
-
-Rename to vfio_domains_have_iommu_noexec() for consistency with the
-cache version.
-
+>  #include <asm/irq.h>
+>  
+> @@ -42,6 +43,10 @@ static int amba_match(struct device *dev, struct device_driver *drv)
+>  	struct amba_device *pcdev = to_amba_device(dev);
+>  	struct amba_driver *pcdrv = to_amba_driver(drv);
+>  
+> +	/* When driver_override is set, only bind to the matching driver */
+> +	if (pcdev->driver_override)
+> +		return !strcmp(pcdev->driver_override, drv->name);
+> +
+>  	return amba_lookup(pcdrv->id_table, pcdev) != NULL;
+>  }
+>  
+> @@ -58,6 +63,44 @@ static int amba_uevent(struct device *dev, struct kobj_uevent_env *env)
+>  	return retval;
+>  }
+>  
+> +static ssize_t driver_override_show(struct device *_dev,
+> +				    struct device_attribute *attr, char *buf)
 > +{
-> +	struct vfio_domain *d;
-> +	int ret = 1;
+> +	struct amba_device *dev = to_amba_device(_dev);
 > +
-> +	mutex_lock(&iommu->lock);
-> +	list_for_each_entry(d, &iommu->domain_list, next) {
-> +		if (!iommu_domain_has_cap(d->domain, IOMMU_CAP_NOEXEC)) {
-
-Should we cache this in domain->prot like we do for IOMMU_CACHE?
-
-> +			ret = 0;
-> +			break;
-> +		}
-> +	}
-> +	mutex_unlock(&iommu->lock);
-> +
-> +	return ret;
+> +	return sprintf(buf, "%s\n", dev->driver_override);
 > +}
 > +
-> +/*
->   * This code handles mapping and unmapping of user data buffers
->   * into DMA'ble space using the IOMMU
->   */
-> @@ -546,6 +566,11 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
->  		prot |= IOMMU_WRITE;
->  	if (map->flags & VFIO_DMA_MAP_FLAG_READ)
->  		prot |= IOMMU_READ;
-> +	if (map->flags & VFIO_DMA_MAP_FLAG_NOEXEC) {
-> +		if (!vfio_all_domains_have_iommu_noexec(iommu))
-> +			return -EINVAL;
-> +		prot |= IOMMU_NOEXEC;
-> +	}
->  
->  	if (!prot || !size || (size | iova | vaddr) & mask)
->  		return -EINVAL;
-> @@ -636,6 +661,12 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
->  		dma = rb_entry(n, struct vfio_dma, node);
->  		iova = dma->iova;
->  
-> +		/* if any of the mappings to be replayed has the NOEXEC flag
-> +		 * set, then the new iommu domain must support it */
-
-nit, please fix the comment style to match the rest of the file.
-
-> +		if ((dma->prot | IOMMU_NOEXEC) &&
-> +		    !iommu_domain_has_cap(domain->domain, IOMMU_CAP_NOEXEC))
-> +			return -EINVAL;
+> +static ssize_t driver_override_store(struct device *_dev,
+> +				     struct device_attribute *attr,
+> +				     const char *buf, size_t count)
+> +{
+> +	struct amba_device *dev = to_amba_device(_dev);
+> +	char *driver_override, *old = dev->driver_override, *cp;
 > +
->  		while (iova < dma->iova + dma->size) {
->  			phys_addr_t phys = iommu_iova_to_phys(d->domain, iova);
->  			size_t size;
-> @@ -890,6 +921,10 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
->  			if (!iommu)
->  				return 0;
->  			return vfio_domains_have_iommu_cache(iommu);
-> +		case VFIO_IOMMU_PROT_NOEXEC:
-> +			if (!iommu)
-> +				return 0;
-> +			return vfio_all_domains_have_iommu_noexec(iommu);
->  		default:
->  			return 0;
->  		}
-> @@ -913,7 +948,8 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
->  	} else if (cmd == VFIO_IOMMU_MAP_DMA) {
->  		struct vfio_iommu_type1_dma_map map;
->  		uint32_t mask = VFIO_DMA_MAP_FLAG_READ |
-> -				VFIO_DMA_MAP_FLAG_WRITE;
-> +				VFIO_DMA_MAP_FLAG_WRITE |
-> +				VFIO_DMA_MAP_FLAG_NOEXEC;
+> +	if (count > PATH_MAX)
+> +		return -EINVAL;
+> +
+> +	driver_override = kstrndup(buf, count, GFP_KERNEL);
+> +	if (!driver_override)
+> +		return -ENOMEM;
+> +
+> +	cp = strchr(driver_override, '\n');
+> +	if (cp)
+> +		*cp = '\0';
+> +
+> +	if (strlen(driver_override)) {
+> +		dev->driver_override = driver_override;
+> +	} else {
+> +	       kfree(driver_override);
+> +	       dev->driver_override = NULL;
+> +	}
+> +
+> +	kfree(old);
+> +
+> +	return count;
+> +}
+> +
+>  #define amba_attr_func(name,fmt,arg...)					\
+>  static ssize_t name##_show(struct device *_dev,				\
+>  			   struct device_attribute *attr, char *buf)	\
+> @@ -80,6 +123,7 @@ amba_attr_func(resource, "\t%016llx\t%016llx\t%016lx\n",
+>  static struct device_attribute amba_dev_attrs[] = {
+>  	__ATTR_RO(id),
+>  	__ATTR_RO(resource),
+> +	__ATTR_RW(driver_override),
+>  	__ATTR_NULL,
+>  };
 >  
->  		minsz = offsetofend(struct vfio_iommu_type1_dma_map, size);
+> diff --git a/include/linux/amba/bus.h b/include/linux/amba/bus.h
+> index fdd7e1b..7c011e7 100644
+> --- a/include/linux/amba/bus.h
+> +++ b/include/linux/amba/bus.h
+> @@ -32,6 +32,7 @@ struct amba_device {
+>  	struct clk		*pclk;
+>  	unsigned int		periphid;
+>  	unsigned int		irq[AMBA_NR_IRQS];
+> +	char			*driver_override;
+>  };
 >  
+>  struct amba_driver {
