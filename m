@@ -1,14 +1,18 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v4 2/3] vfio/iommu_type1: add new VFIO_TYPE1_NESTING_IOMMU
-	IOMMU type
-Date: Wed, 24 Sep 2014 10:21:24 +0100
-Message-ID: <1411550485-32483-3-git-send-email-will.deacon@arm.com>
-References: <1411550485-32483-1-git-send-email-will.deacon@arm.com>
+Subject: Re: [PATCH 2/2] iommu/arm-smmu: add support for access-protected
+	mappings
+Date: Wed, 24 Sep 2014 17:27:26 +0100
+Message-ID: <20140924162726.GE16244@arm.com>
+References: <1410984969-2340-1-git-send-email-mitchelh@codeaurora.org>
+	<1410984969-2340-3-git-send-email-mitchelh@codeaurora.org>
+	<20140919220535.GM20773@arm.com>
+	<vnkwtx3zb885.fsf@mitchelh-linux.qualcomm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1411550485-32483-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <vnkwtx3zb885.fsf-Yf+dfxj6toJBVvN7MMdr1KRtKmQZhJ7pQQ4Iyu8u01E@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,122 +22,64 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-VFIO allows devices to be safely handed off to userspace by putting
-them behind an IOMMU configured to ensure DMA and interrupt isolation.
-This enables userspace KVM clients, such as kvmtool and qemu, to further
-map the device into a virtual machine.
+On Mon, Sep 22, 2014 at 11:28:42PM +0100, Mitchel Humpherys wrote:
+> On Fri, Sep 19 2014 at 03:05:36 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> > On Wed, Sep 17, 2014 at 09:16:09PM +0100, Mitchel Humpherys wrote:
+> >> ARM SMMUs support memory access control via some bits in the translation
+> >> table descriptor memory attributes. Currently we assume all translations
+> >> are "unprivileged". Add support for privileged mappings, controlled by
+> >> the IOMMU_PRIV prot flag.
+> >> 
+> >> Also sneak in a whitespace change for consistency with nearby code.
+> >> 
+> >> Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> >> ---
+> >>  drivers/iommu/arm-smmu.c | 5 +++--
+> >>  1 file changed, 3 insertions(+), 2 deletions(-)
+> >> 
+> >> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> >> index ca18d6d42a..93999ec22c 100644
+> >> --- a/drivers/iommu/arm-smmu.c
+> >> +++ b/drivers/iommu/arm-smmu.c
+> >> @@ -1256,10 +1256,11 @@ static int arm_smmu_alloc_init_pte(struct arm_smmu_device *smmu, pmd_t *pmd,
+> >>  	}
+> >>  
+> >>  	if (stage == 1) {
+> >> -		pteval |= ARM_SMMU_PTE_AP_UNPRIV | ARM_SMMU_PTE_nG;
+> >> +		pteval |= ARM_SMMU_PTE_nG;
+> >> +		if (!(prot & IOMMU_PRIV))
+> >> +			pteval |= ARM_SMMU_PTE_AP_UNPRIV;
+> >
+> > I think this actually makes more sense if we invert the logic, i.e. have
+> > IOMMU_USER as a flag which sets the UNPRIV bit in the pte.
+> 
+> I'm fine either way but the common case seems to be unprivileged
+> mappings (at least in our system).  We have one user of this flag out of
+> a dozen or so users.
 
-With IOMMUs such as the ARM SMMU, it is then possible to provide SMMU
-translation services to the guest operating system, which are nested
-with the existing translation installed by VFIO. However, enabling this
-feature means that the IOMMU driver must be informed that the VFIO domain
-is being created for the purposes of nested translation.
+Well, I think the common case in reality (ie. in upstream) is that we don't
+care, since there's no page table sharing with the CPU. Given that our DMA
+buffers are privilege on the kernel side, it's consistent to copy that as
+the default.
 
-This patch adds a new IOMMU type (VFIO_TYPE1_NESTING_IOMMU) to the VFIO
-type-1 driver. The new IOMMU type acts identically to the
-VFIO_TYPE1v2_IOMMU type, but additionally sets the DOMAIN_ATTR_NESTING
-attribute on its IOMMU domains.
+> >
+> > I don't have the spec to hand, but I guess you can't enforce this at
+> > stage-2? If so, do we also need a new IOMMU capability so people don't try
+> > to use this for stage-2 only SMMUs?
+> 
+> Hmm, actually we do have S2AP although it doesn't make a distinction
+> between accesses from EL0 and EL1.  But maybe it would make sense to
+> make the `IOMMU_PRIV' mean `no access from EL0 or EL1' for stage 2
+> mappings?  Something like:
 
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
----
- drivers/vfio/vfio_iommu_type1.c | 29 +++++++++++++++++++++++------
- include/uapi/linux/vfio.h       |  3 +++
- 2 files changed, 26 insertions(+), 6 deletions(-)
+Hmm, that really doesn't match up with what KVM is doing on the CPU side and
+would probably break DMA on stage-2 only SMMUs.
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 0734fbe5b651..d15b00700a31 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -57,7 +57,8 @@ struct vfio_iommu {
- 	struct list_head	domain_list;
- 	struct mutex		lock;
- 	struct rb_root		dma_list;
--	bool v2;
-+	bool			v2;
-+	bool			nesting;
- };
- 
- struct vfio_domain {
-@@ -671,7 +672,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	struct vfio_group *group, *g;
- 	struct vfio_domain *domain, *d;
- 	struct bus_type *bus = NULL;
--	int ret;
-+	int ret, attr = 1;
- 
- 	mutex_lock(&iommu->lock);
- 
-@@ -705,6 +706,13 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 		goto out_free;
- 	}
- 
-+	if (iommu->nesting) {
-+		ret = iommu_domain_set_attr(domain->domain, DOMAIN_ATTR_NESTING,
-+					    &attr);
-+		if (ret)
-+			goto out_domain;
-+	}
-+
- 	ret = iommu_attach_group(domain->domain, iommu_group);
- 	if (ret)
- 		goto out_domain;
-@@ -819,17 +827,25 @@ static void *vfio_iommu_type1_open(unsigned long arg)
- {
- 	struct vfio_iommu *iommu;
- 
--	if (arg != VFIO_TYPE1_IOMMU && arg != VFIO_TYPE1v2_IOMMU)
--		return ERR_PTR(-EINVAL);
--
- 	iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
- 	if (!iommu)
- 		return ERR_PTR(-ENOMEM);
- 
-+	switch (arg) {
-+	case VFIO_TYPE1_IOMMU:
-+		break;
-+	case VFIO_TYPE1_NESTING_IOMMU:
-+		iommu->nesting = true;
-+	case VFIO_TYPE1v2_IOMMU:
-+		iommu->v2 = true;
-+		break;
-+	default:
-+		return ERR_PTR(-EINVAL);
-+	}
-+
- 	INIT_LIST_HEAD(&iommu->domain_list);
- 	iommu->dma_list = RB_ROOT;
- 	mutex_init(&iommu->lock);
--	iommu->v2 = (arg == VFIO_TYPE1v2_IOMMU);
- 
- 	return iommu;
- }
-@@ -885,6 +901,7 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
- 		switch (arg) {
- 		case VFIO_TYPE1_IOMMU:
- 		case VFIO_TYPE1v2_IOMMU:
-+		case VFIO_TYPE1_NESTING_IOMMU:
- 			return 1;
- 		case VFIO_DMA_CC_IOMMU:
- 			if (!iommu)
-diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-index 6612974c64bf..29715d27548f 100644
---- a/include/uapi/linux/vfio.h
-+++ b/include/uapi/linux/vfio.h
-@@ -33,6 +33,9 @@
- /* Check if EEH is supported */
- #define VFIO_EEH			5
- 
-+/* Two-stage IOMMU */
-+#define VFIO_TYPE1_NESTING_IOMMU	6	/* Implies v2 */
-+
- /*
-  * The IOCTL interface is designed for extensibility by embedding the
-  * structure length (argsz) and flags into structures passed between
--- 
-2.1.0
+A better bet is to add a capability bit to the SMMU, which only advertises
+support for IOMMU_USER mappings if stage-1 is supported.
+
+Will
