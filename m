@@ -1,18 +1,14 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu/arm-smmu: add support for iova_to_phys through
-	ATS1PR
-Date: Wed, 24 Sep 2014 17:37:12 +0100
-Message-ID: <20140924163712.GG16244@arm.com>
-References: <1410460244-18943-1-git-send-email-mitchelh@codeaurora.org>
-	<1410460244-18943-3-git-send-email-mitchelh@codeaurora.org>
-	<20140922152614.GP25809@arm.com>
-	<vnkwiokdx1nj.fsf@mitchelh-linux.qualcomm.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCHv7 20/26] vfio/platform: trigger an interrupt via eventfd
+Date: Wed, 24 Sep 2014 11:00:09 -0600
+Message-ID: <1411578009.24563.107.camel@ul30vt.home>
+References: <1411483586-29304-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1411483586-29304-21-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <vnkwiokdx1nj.fsf-Yf+dfxj6toJBVvN7MMdr1KRtKmQZhJ7pQQ4Iyu8u01E@public.gmane.org>
+In-Reply-To: <1411483586-29304-21-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,34 +18,156 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Sep 24, 2014 at 02:12:00AM +0100, Mitchel Humpherys wrote:
-> On Mon, Sep 22 2014 at 08:26:14 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> > On Thu, Sep 11, 2014 at 07:30:44PM +0100, Mitchel Humpherys wrote:
-> >> +		return arm_smmu_iova_to_phys_soft(domain, iova);
-> >> +	}
-> >> +
-> >> +	phys = readl_relaxed(cb_base + ARM_SMMU_CB_PAR_LO);
-> >> +	phys |= ((u64) readl_relaxed(cb_base + ARM_SMMU_CB_PAR_HI)) << 32;
-> >> +
-> >> +	if (phys & CB_PAR_F) {
-> >> +		dev_err(dev, "translation fault on %s!\n", dev_name(dev));
-> >> +		dev_err(dev, "PAR = 0x%llx\n", phys);
-> >> +	}
-> >> +	phys = (phys & 0xFFFFFFF000ULL) | (iova & 0x00000FFF);
-> >
-> > How does this work for 64k pages?
+On Tue, 2014-09-23 at 16:46 +0200, Antonios Motakis wrote:
+> This patch allows to set an eventfd for a patform device's interrupt,
+> and also to trigger the interrupt eventfd from userspace for testing.
 > 
-> So at the moment we're always assuming that we're using v7/v8 long
-> descriptor format, right?  All I see in the spec (14.5.15 SMMU_CBn_PAR)
-> is that bits[47:12]=>PA[47:12]...  Or am I missing something completely?
+> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> ---
+>  drivers/vfio/platform/vfio_platform_irq.c     | 89 ++++++++++++++++++++++++++-
+>  drivers/vfio/platform/vfio_platform_private.h |  2 +
+>  2 files changed, 89 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/vfio/platform/vfio_platform_irq.c b/drivers/vfio/platform/vfio_platform_irq.c
+> index 007b386..25a7825 100644
+> --- a/drivers/vfio/platform/vfio_platform_irq.c
+> +++ b/drivers/vfio/platform/vfio_platform_irq.c
+> @@ -45,11 +45,91 @@ static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
+>  	return -EINVAL;
+>  }
+>  
+> +static irqreturn_t vfio_irq_handler(int irq, void *dev_id)
+> +{
+> +	struct vfio_platform_irq *irq_ctx = dev_id;
+> +
+> +	eventfd_signal(irq_ctx->trigger, 1);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int vfio_set_trigger(struct vfio_platform_device *vdev,
+> +			    int index, int fd)
+> +{
+> +	struct vfio_platform_irq *irq = &vdev->irqs[index];
+> +	struct eventfd_ctx *trigger;
+> +	int ret;
+> +
+> +	if (irq->trigger) {
+> +		free_irq(irq->hwirq, irq);
+> +		kfree(irq->name);
+> +		eventfd_ctx_put(irq->trigger);
+> +		irq->trigger = NULL;
+> +	}
+> +
+> +	if (fd < 0) /* Disable only */
+> +		return 0;
+> +
+> +	irq->name = kasprintf(GFP_KERNEL, "vfio-irq[%d](%s)",
+> +						irq->hwirq, vdev->name);
+> +	if (!irq->name)
+> +		return -ENOMEM;
+> +
+> +	trigger = eventfd_ctx_fdget(fd);
+> +	if (IS_ERR(trigger)) {
+> +		kfree(irq->name);
+> +		return PTR_ERR(trigger);
+> +	}
+> +
+> +	irq->trigger = trigger;
+> +
+> +	ret = request_irq(irq->hwirq, vfio_irq_handler, 0, irq->name, irq);
+> +	if (ret) {
+> +		kfree(irq->name);
+> +		eventfd_ctx_put(trigger);
+> +		irq->trigger = NULL;
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  static int vfio_platform_set_irq_trigger(struct vfio_platform_device *vdev,
+>  				     unsigned index, unsigned start,
+>  				     unsigned count, uint32_t flags, void *data)
+>  {
+> -	return -EINVAL;
+> +	struct vfio_platform_irq *irq = &vdev->irqs[index];
+> +	uint8_t irq_bitmap;
 
-I think you've got 64k pages confused with the short-descriptor format.
+Minor nit here and also present in the next patch, I believe when we
+have DATA_BOOL, it's defined to be a u8 array, where each byte is a
+bool, not each bit.  So it's not actually a bitmap.  The PCI code
+handles any non-zero byte as true, not just bit0.  Thanks,
 
-When we use 64k pages with long descriptors, you're masked off bits 15-12 of
-the iova above, so you'll have a hole in the physical address afaict.
+Alex
 
-Will
+> +	int32_t fd;
+> +
+> +	switch (flags & VFIO_IRQ_SET_DATA_TYPE_MASK) {
+> +	case VFIO_IRQ_SET_DATA_NONE:
+> +		if (count == 0)
+> +			return vfio_set_trigger(vdev, index, -1);
+> +
+> +		vfio_irq_handler(irq->hwirq, irq);
+> +		return 0;
+> +
+> +	case VFIO_IRQ_SET_DATA_BOOL:
+> +		if (copy_from_user(&irq_bitmap, data, sizeof(uint8_t)))
+> +			return -EFAULT;
+> +
+> +		if (irq_bitmap == 0x1) {
+> +			vfio_irq_handler(irq->hwirq, irq);
+> +			return 0;
+> +		}
+> +
+> +		return -EINVAL;
+> +
+> +	case VFIO_IRQ_SET_DATA_EVENTFD:
+> +		if (copy_from_user(&fd, data, sizeof(int32_t)))
+> +			return -EFAULT;
+> +
+> +		return vfio_set_trigger(vdev, index, fd);
+> +	}
+> +
+> +	return -EFAULT;
+>  }
+>  
+>  int vfio_platform_set_irqs_ioctl(struct vfio_platform_device *vdev,
+> @@ -95,7 +175,7 @@ int vfio_platform_irq_init(struct vfio_platform_device *vdev)
+>  		if (hwirq < 0)
+>  			goto err;
+>  
+> -		vdev->irqs[i].flags = 0;
+> +		vdev->irqs[i].flags = VFIO_IRQ_INFO_EVENTFD;
+>  		vdev->irqs[i].count = 1;
+>  		vdev->irqs[i].hwirq = hwirq;
+>  	}
+> @@ -110,6 +190,11 @@ err:
+>  
+>  void vfio_platform_irq_cleanup(struct vfio_platform_device *vdev)
+>  {
+> +	int i;
+> +
+> +	for (i = 0; i < vdev->num_irqs; i++)
+> +		vfio_set_trigger(vdev, i, -1);
+> +
+>  	vdev->num_irqs = 0;
+>  	kfree(vdev->irqs);
+>  }
+> diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
+> index 4201b94..765b371 100644
+> --- a/drivers/vfio/platform/vfio_platform_private.h
+> +++ b/drivers/vfio/platform/vfio_platform_private.h
+> @@ -28,6 +28,8 @@ struct vfio_platform_irq {
+>  	u32			flags;
+>  	u32			count;
+>  	int			hwirq;
+> +	char			*name;
+> +	struct eventfd_ctx	*trigger;
+>  };
+>  
+>  struct vfio_platform_region {
