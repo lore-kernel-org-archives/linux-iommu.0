@@ -1,16 +1,19 @@
-From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [Patch Part3 V6 8/8] pci, ACPI, iommu: Enhance pci_root to
-	support DMAR device hotplug
-Date: Wed, 24 Sep 2014 12:37:14 -0600
-Message-ID: <20140924183714.GE20416@google.com>
-References: <1411103935-31301-1-git-send-email-jiang.liu@linux.intel.com>
-	<1411103935-31301-9-git-send-email-jiang.liu@linux.intel.com>
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH 2/2] iommu/arm-smmu: add support for iova_to_phys through
+	ATS1PR
+Date: Wed, 24 Sep 2014 13:34:26 -0700
+Message-ID: <vnkw38bgkbal.fsf@mitchelh-linux.qualcomm.com>
+References: <1410460244-18943-1-git-send-email-mitchelh@codeaurora.org>
+	<1410460244-18943-3-git-send-email-mitchelh@codeaurora.org>
+	<20140922152614.GP25809@arm.com>
+	<vnkwiokdx1nj.fsf@mitchelh-linux.qualcomm.com>
+	<20140924163712.GG16244@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1411103935-31301-9-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <20140924163712.GG16244-5wv7dgnIgG8@public.gmane.org> (Will Deacon's message of "Wed,
+	24 Sep 2014 17:37:12 +0100")
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,96 +23,48 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-hotplug-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 19, 2014 at 01:18:55PM +0800, Jiang Liu wrote:
-> Finally enhance pci_root driver to support DMAR device hotplug when
-> hot-plugging PCI host bridges.
-> 
-> Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> Reviewed-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+On Wed, Sep 24 2014 at 09:37:12 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> On Wed, Sep 24, 2014 at 02:12:00AM +0100, Mitchel Humpherys wrote:
+>> On Mon, Sep 22 2014 at 08:26:14 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+>> > On Thu, Sep 11, 2014 at 07:30:44PM +0100, Mitchel Humpherys wrote:
+>> >> +		return arm_smmu_iova_to_phys_soft(domain, iova);
+>> >> +	}
+>> >> +
+>> >> +	phys = readl_relaxed(cb_base + ARM_SMMU_CB_PAR_LO);
+>> >> +	phys |= ((u64) readl_relaxed(cb_base + ARM_SMMU_CB_PAR_HI)) << 32;
+>> >> +
+>> >> +	if (phys & CB_PAR_F) {
+>> >> +		dev_err(dev, "translation fault on %s!\n", dev_name(dev));
+>> >> +		dev_err(dev, "PAR = 0x%llx\n", phys);
+>> >> +	}
+>> >> +	phys = (phys & 0xFFFFFFF000ULL) | (iova & 0x00000FFF);
+>> >
+>> > How does this work for 64k pages?
+>> 
+>> So at the moment we're always assuming that we're using v7/v8 long
+>> descriptor format, right?  All I see in the spec (14.5.15 SMMU_CBn_PAR)
+>> is that bits[47:12]=>PA[47:12]...  Or am I missing something completely?
+>
+> I think you've got 64k pages confused with the short-descriptor format.
+>
+> When we use 64k pages with long descriptors, you're masked off bits 15-12 of
+> the iova above, so you'll have a hole in the physical address afaict.
 
-I assume this will be merged via a non-PCI tree, so:
+Even with long descriptors the spec says bits 15-12 should come from
+CB_PAR...  It makes no mention of reinterpreting those bits depending on
+the programmed page granule.  The only thing I can conclude from the
+spec is that hardware should be smart enough to do the right thing with
+bits 15-12 when the page granule is 64k.  Although even if hardware is
+smart enough I guess CB_PAR[15:12] should be the same as iova[15:12] for
+the 64k case?
 
-Acked-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 
-Looks OK to me, but I expect you'll want Rafael's ack as well.
+-Mitch
 
-> ---
->  drivers/acpi/pci_root.c |   16 ++++++++++++++--
->  1 file changed, 14 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
-> index e6ae603ed1a1..4e177daa18e3 100644
-> --- a/drivers/acpi/pci_root.c
-> +++ b/drivers/acpi/pci_root.c
-> @@ -33,6 +33,7 @@
->  #include <linux/pci.h>
->  #include <linux/pci-acpi.h>
->  #include <linux/pci-aspm.h>
-> +#include <linux/dmar.h>
->  #include <linux/acpi.h>
->  #include <linux/slab.h>
->  #include <acpi/apei.h>	/* for acpi_hest_init() */
-> @@ -511,6 +512,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
->  	struct acpi_pci_root *root;
->  	acpi_handle handle = device->handle;
->  	int no_aspm = 0, clear_aspm = 0;
-> +	bool hotadd = system_state != SYSTEM_BOOTING;
->  
->  	root = kzalloc(sizeof(struct acpi_pci_root), GFP_KERNEL);
->  	if (!root)
-> @@ -557,6 +559,11 @@ static int acpi_pci_root_add(struct acpi_device *device,
->  	strcpy(acpi_device_class(device), ACPI_PCI_ROOT_CLASS);
->  	device->driver_data = root;
->  
-> +	if (hotadd && dmar_device_add(handle)) {
-> +		result = -ENXIO;
-> +		goto end;
-> +	}
-> +
->  	pr_info(PREFIX "%s [%s] (domain %04x %pR)\n",
->  	       acpi_device_name(device), acpi_device_bid(device),
->  	       root->segment, &root->secondary);
-> @@ -583,7 +590,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
->  			root->segment, (unsigned int)root->secondary.start);
->  		device->driver_data = NULL;
->  		result = -ENODEV;
-> -		goto end;
-> +		goto remove_dmar;
->  	}
->  
->  	if (clear_aspm) {
-> @@ -597,7 +604,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
->  	if (device->wakeup.flags.run_wake)
->  		device_set_run_wake(root->bus->bridge, true);
->  
-> -	if (system_state != SYSTEM_BOOTING) {
-> +	if (hotadd) {
->  		pcibios_resource_survey_bus(root->bus);
->  		pci_assign_unassigned_root_bus_resources(root->bus);
->  	}
-> @@ -607,6 +614,9 @@ static int acpi_pci_root_add(struct acpi_device *device,
->  	pci_unlock_rescan_remove();
->  	return 1;
->  
-> +remove_dmar:
-> +	if (hotadd)
-> +		dmar_device_remove(handle);
->  end:
->  	kfree(root);
->  	return result;
-> @@ -625,6 +635,8 @@ static void acpi_pci_root_remove(struct acpi_device *device)
->  
->  	pci_remove_root_bus(root->bus);
->  
-> +	dmar_device_remove(device->handle);
-> +
->  	pci_unlock_rescan_remove();
->  
->  	kfree(root);
-> -- 
-> 1.7.10.4
-> 
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+hosted by The Linux Foundation
