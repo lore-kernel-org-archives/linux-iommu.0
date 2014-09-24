@@ -1,19 +1,11 @@
-From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu/arm-smmu: add support for iova_to_phys through
-	ATS1PR
-Date: Wed, 24 Sep 2014 13:34:26 -0700
-Message-ID: <vnkw38bgkbal.fsf@mitchelh-linux.qualcomm.com>
-References: <1410460244-18943-1-git-send-email-mitchelh@codeaurora.org>
-	<1410460244-18943-3-git-send-email-mitchelh@codeaurora.org>
-	<20140922152614.GP25809@arm.com>
-	<vnkwiokdx1nj.fsf@mitchelh-linux.qualcomm.com>
-	<20140924163712.GG16244@arm.com>
+From: Rob Roschewsk <gerard-1/SUfjJPYocsP9Te1NuDSQC/G2K4zDHf@public.gmane.org>
+Subject: RE: [PATCH] iommu/vt-d: Fix broken device issue when using iommu=pt
+Date: Wed, 24 Sep 2014 17:56:31 -0400 (EDT)
+Message-ID: <1597491265.153338.1411595791727.JavaMail.open-xchange@oxuslxltgw04.lxa.perfora.net>
+Reply-To: Rob Roschewsk <gerard-1/SUfjJPYocsP9Te1NuDSQC/G2K4zDHf@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============4740933910685493678=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140924163712.GG16244-5wv7dgnIgG8@public.gmane.org> (Will Deacon's message of "Wed,
-	24 Sep 2014 17:37:12 +0100")
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,48 +15,118 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Sep 24 2014 at 09:37:12 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> On Wed, Sep 24, 2014 at 02:12:00AM +0100, Mitchel Humpherys wrote:
->> On Mon, Sep 22 2014 at 08:26:14 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
->> > On Thu, Sep 11, 2014 at 07:30:44PM +0100, Mitchel Humpherys wrote:
->> >> +		return arm_smmu_iova_to_phys_soft(domain, iova);
->> >> +	}
->> >> +
->> >> +	phys = readl_relaxed(cb_base + ARM_SMMU_CB_PAR_LO);
->> >> +	phys |= ((u64) readl_relaxed(cb_base + ARM_SMMU_CB_PAR_HI)) << 32;
->> >> +
->> >> +	if (phys & CB_PAR_F) {
->> >> +		dev_err(dev, "translation fault on %s!\n", dev_name(dev));
->> >> +		dev_err(dev, "PAR = 0x%llx\n", phys);
->> >> +	}
->> >> +	phys = (phys & 0xFFFFFFF000ULL) | (iova & 0x00000FFF);
->> >
->> > How does this work for 64k pages?
->> 
->> So at the moment we're always assuming that we're using v7/v8 long
->> descriptor format, right?  All I see in the spec (14.5.15 SMMU_CBn_PAR)
->> is that bits[47:12]=>PA[47:12]...  Or am I missing something completely?
->
-> I think you've got 64k pages confused with the short-descriptor format.
->
-> When we use 64k pages with long descriptors, you're masked off bits 15-12 of
-> the iova above, so you'll have a hole in the physical address afaict.
+--===============4740933910685493678==
+Content-Type: multipart/alternative;
+	boundary="----=_Part_153337_1981567742.1411595791667"
 
-Even with long descriptors the spec says bits 15-12 should come from
-CB_PAR...  It makes no mention of reinterpreting those bits depending on
-the programmed page granule.  The only thing I can conclude from the
-spec is that hardware should be smart enough to do the right thing with
-bits 15-12 when the page granule is 64k.  Although even if hardware is
-smart enough I guess CB_PAR[15:12] should be the same as iova[15:12] for
-the 64k case?
+------=_Part_153337_1981567742.1411595791667
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hello All .... wonder if there has been any movement on this issue .... I'm
+having a similar issue 
+ 
+I'm running an HP dl380 gen 8 with an Emulex OneConnect 10Gb iSCSI (14e4:164c)
+(rev 11)
+also known as " Hewlett-Packard Company NC373i Integrated Multifunction Gigabit
+Server Adapter"
+ 
+03:00.2 Mass storage controller: Emulex Corporation OneConnect 10Gb iSCSI
+Initiator (be3) (rev 01)
+
+03:00.3 Mass storage controller: Emulex Corporation OneConnect 10Gb iSCSI
+Initiator (be3) (rev 01)
+
+Seems as soon as the iscsi target is contacted the following messages appear in
+the log every few seconds ....
+
+Sep 24 15:25:30  kernel: [ 78.682675] dmar: DRHD: handling fault status reg 2
+Sep 24 15:25:30  kernel: [ 78.699797] dmar: DMAR:[DMA Write] Request device
+[03:00.2] fault addr ffffc000
+Sep 24 15:25:30  kernel: [ 78.699797] DMAR:[fault reason 05] PTE Write access is
+not set
+Sep 24 15:25:30  kernel: [ 78.934546] dmar: DRHD: handling fault status reg 102
+Sep 24 15:25:30  kernel: [ 78.934549] dmar: DMAR:[DMA Write] Request device
+[03:00.2] fault addr ffffc000
+Sep 24 15:25:30  kernel: [ 78.934549] DMAR:[fault reason 05] PTE Write access is
+not set
+Sep 24 15:25:30  kernel: [ 78.935359] dmar: DRHD: handling fault status reg 202
+
+If I pull intel_iommu=on out of the kernel command line the problem goes away.
+
+System is running Ubuntu 14.04.1 LTS 
+
+3.13.0-32-generic #57-Ubuntu SMP Tue Jul 15 03:51:08 UTC 2014 x86_64 x86_64
+x86_64 GNU/Linux
+
+Looking for help .... I'm not sure where I should be looking next ..... I need
+SR-IOV for other adapters in the box.
+
+I have a system up that I can pull any data from that might be required.
+
+Thanks,
+
+--> Rob
+
+ 
+------=_Part_153337_1981567742.1411595791667
+MIME-Version: 1.0
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ 
+  <style type="text/css">.mceResizeHandle {position: absolute;border: 1px solid black;background: #FFF;width: 5px;height: 5px;z-index: 10000}.mceResizeHandle:hover {background: #000}img[data-mce-selected] {outline: 1px solid black}img.mceClonedResizable, table.mceClonedResizable {position: absolute;outline: 1px dashed black;opacity: .5;z-index: 10000}
+</style>
+ 
+ </head><body style="">
+ 
+  <div>
+   Hello All .... wonder if there has been any movement on this issue .... I&#39;m&#160;having&#160;a similar issue&#160;
+  </div> 
+  <div>
+   &#160;
+  </div> 
+  <div>
+   I&#39;m&#160;running&#160;an HP dl380 gen 8 with an&#160;Emulex OneConnect 10Gb iSCSI (14e4:164c) (rev 11)
+  </div> 
+  <div>
+   also known as &#34;
+   <span style="font-size: 9pt;">Hewlett-Packard Company NC373i Integrated Multifunction Gigabit Server Adapter&#34;</span>
+  </div> 
+  <div>
+   &#160;
+  </div> 
+  <div>
+   <span style="font-size: 9pt;">03:00.2 Mass storage controller: Emulex Corporation OneConnect 10Gb iSCSI Initiator (be3) (rev 01)</span>
+  </div> 
+  <div> 
+   <p>03:00.3 Mass storage controller: Emulex Corporation OneConnect 10Gb iSCSI Initiator (be3) (rev 01)</p> 
+   <p>Seems as soon as the iscsi target is contacted the following messages&#160;appear in the log every few seconds ....</p> 
+   <p>Sep 24 15:25:30 &#160;kernel: [ 78.682675] dmar: DRHD: handling fault status reg 2<br />Sep 24 15:25:30 &#160;kernel: [ 78.699797] dmar: DMAR:[DMA Write] Request device [03:00.2] fault addr ffffc000<br />Sep 24 15:25:30 &#160;kernel: [ 78.699797] DMAR:[fault reason 05] PTE Write access is not set<br />Sep 24 15:25:30 &#160;kernel: [ 78.934546] dmar: DRHD: handling fault status reg 102<br />Sep 24 15:25:30 &#160;kernel: [ 78.934549] dmar: DMAR:[DMA Write] Request device [03:00.2] fault addr ffffc000<br />Sep 24 15:25:30 &#160;kernel: [ 78.934549] DMAR:[fault reason 05] PTE Write access is not set<br />Sep 24 15:25:30 &#160;kernel: [ 78.935359] dmar: DRHD: handling fault status reg 202</p> 
+   <p>If I pull intel_iommu=on out of the kernel command line the problem goes away.</p> 
+   <p>System is running Ubuntu 14.04.1 LTS&#160;</p> 
+   <p>3.13.0-32-generic #57-Ubuntu SMP Tue Jul 15 03:51:08 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux</p> 
+   <p>Looking for help .... I&#39;m not sure where I should be looking next ..... I need SR-IOV for other adapters in the box.</p> 
+   <p>I have a system up that I can pull any data from that might be required.</p> 
+   <p>Thanks,</p> 
+   <p>--&#62; Rob</p> 
+   <p>&#160;</p> 
+  </div>
+ 
+</body></html>
+------=_Part_153337_1981567742.1411595791667--
+
+--===============4740933910685493678==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 
--Mitch
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-hosted by The Linux Foundation
+--===============4740933910685493678==--
