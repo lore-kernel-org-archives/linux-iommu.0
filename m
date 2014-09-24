@@ -1,11 +1,13 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v4 0/3] Support for nesting IOMMUs in VFIO
-Date: Wed, 24 Sep 2014 10:21:22 +0100
-Message-ID: <1411550485-32483-1-git-send-email-will.deacon@arm.com>
+Subject: [PATCH v4 1/3] iommu: introduce domain attribute for nesting IOMMUs
+Date: Wed, 24 Sep 2014 10:21:23 +0100
+Message-ID: <1411550485-32483-2-git-send-email-will.deacon@arm.com>
+References: <1411550485-32483-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1411550485-32483-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,36 +21,36 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi all,
+Some IOMMUs, such as the ARM SMMU, support two stages of translation.
+The idea behind such a scheme is to allow a guest operating system to
+use the IOMMU for DMA mappings in the first stage of translation, with
+the hypervisor then installing mappings in the second stage to provide
+isolation of the DMA to the physical range assigned to that virtual
+machine.
 
-This is version four of the patches I originally posted here:
+In order to allow IOMMU domains to be used for second-stage translation,
+this patch adds a new iommu_attr (IOMMU_ATTR_NESTING) for setting
+second-stage domains prior to device attach. The attribute can also be
+queried to see if a domain is actually making use of nesting.
 
-  RFCv1: http://permalink.gmane.org/gmane.linux.kernel.iommu/5552
-  RFCv2: http://permalink.gmane.org/gmane.linux.kernel.iommu/5700
-     v3: http://permalink.gmane.org/gmane.linux.kernel.iommu/6230
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+---
+ include/linux/iommu.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-The main change since v3 is the mass simplification of the type1 IOMMU
-code based on discussions with Alex. We now unconditionally advertise
-support for nesting IOMMUs and postpone failure until group attach time.
-
-Alex -- any chance you could queue the first two patches please? I'll
-deal with the arm-smmu patch for 3.19.
-
-Feedback welcome,
-
-Will
-
-
-Will Deacon (3):
-  iommu: introduce domain attribute for nesting IOMMUs
-  vfio/iommu_type1: add new VFIO_TYPE1_NESTING_IOMMU IOMMU type
-  iommu/arm-smmu: add support for DOMAIN_ATTR_NESTING attribute
-
- drivers/iommu/arm-smmu.c        | 110 ++++++++++++++++++++++++++++++++--------
- drivers/vfio/vfio_iommu_type1.c |  29 ++++++++---
- include/linux/iommu.h           |   1 +
- include/uapi/linux/vfio.h       |   3 ++
- 4 files changed, 117 insertions(+), 26 deletions(-)
-
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 20f9a527922a..7b02bcc85b9e 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -80,6 +80,7 @@ enum iommu_attr {
+ 	DOMAIN_ATTR_FSL_PAMU_STASH,
+ 	DOMAIN_ATTR_FSL_PAMU_ENABLE,
+ 	DOMAIN_ATTR_FSL_PAMUV1,
++	DOMAIN_ATTR_NESTING,	/* two stages of translation */
+ 	DOMAIN_ATTR_MAX,
+ };
+ 
 -- 
 2.1.0
