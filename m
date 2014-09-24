@@ -1,18 +1,18 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu/arm-smmu: add support for access-protected
-	mappings
-Date: Wed, 24 Sep 2014 17:27:26 +0100
-Message-ID: <20140924162726.GE16244@arm.com>
-References: <1410984969-2340-1-git-send-email-mitchelh@codeaurora.org>
-	<1410984969-2340-3-git-send-email-mitchelh@codeaurora.org>
-	<20140919220535.GM20773@arm.com>
-	<vnkwtx3zb885.fsf@mitchelh-linux.qualcomm.com>
+Subject: Re: [RFC PATCH v3 7/7] arm: dma-mapping: plumb our iommu mapping ops
+	into arch_setup_dma_ops
+Date: Wed, 24 Sep 2014 17:33:38 +0100
+Message-ID: <20140924163338.GF16244@arm.com>
+References: <1410539695-29128-1-git-send-email-will.deacon@arm.com>
+	<1410539695-29128-8-git-send-email-will.deacon@arm.com>
+	<20140922091934.GH1470@ulmo> <20140922174337.GI7936@arm.com>
+	<20140923071355.GI30514@ulmo>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <vnkwtx3zb885.fsf-Yf+dfxj6toJBVvN7MMdr1KRtKmQZhJ7pQQ4Iyu8u01E@public.gmane.org>
+In-Reply-To: <20140923071355.GI30514@ulmo>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,64 +22,47 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Sep 22, 2014 at 11:28:42PM +0100, Mitchel Humpherys wrote:
-> On Fri, Sep 19 2014 at 03:05:36 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> > On Wed, Sep 17, 2014 at 09:16:09PM +0100, Mitchel Humpherys wrote:
-> >> ARM SMMUs support memory access control via some bits in the translation
-> >> table descriptor memory attributes. Currently we assume all translations
-> >> are "unprivileged". Add support for privileged mappings, controlled by
-> >> the IOMMU_PRIV prot flag.
-> >> 
-> >> Also sneak in a whitespace change for consistency with nearby code.
-> >> 
-> >> Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> >> ---
-> >>  drivers/iommu/arm-smmu.c | 5 +++--
-> >>  1 file changed, 3 insertions(+), 2 deletions(-)
-> >> 
-> >> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> >> index ca18d6d42a..93999ec22c 100644
-> >> --- a/drivers/iommu/arm-smmu.c
-> >> +++ b/drivers/iommu/arm-smmu.c
-> >> @@ -1256,10 +1256,11 @@ static int arm_smmu_alloc_init_pte(struct arm_smmu_device *smmu, pmd_t *pmd,
-> >>  	}
-> >>  
-> >>  	if (stage == 1) {
-> >> -		pteval |= ARM_SMMU_PTE_AP_UNPRIV | ARM_SMMU_PTE_nG;
-> >> +		pteval |= ARM_SMMU_PTE_nG;
-> >> +		if (!(prot & IOMMU_PRIV))
-> >> +			pteval |= ARM_SMMU_PTE_AP_UNPRIV;
-> >
-> > I think this actually makes more sense if we invert the logic, i.e. have
-> > IOMMU_USER as a flag which sets the UNPRIV bit in the pte.
+On Tue, Sep 23, 2014 at 08:14:01AM +0100, Thierry Reding wrote:
+> On Mon, Sep 22, 2014 at 06:43:37PM +0100, Will Deacon wrote:
+> > Yup. In this case, the iommu_dma_mapping passed to arch_setup_dma_ops
+> > contains a domain and an allocator for each IOMMU instance in the system.
+> > It would then be up to the architecture how it makes use of those, but
+> > the most obvious thing to do would be to attach devices mastering through
+> > an IOMMU instance to that per-instance domain.
+> > 
+> > The other use-case is isolation (one domain per device), which I guess
+> > matches what the ARM code is doing at the moment.
 > 
-> I'm fine either way but the common case seems to be unprivileged
-> mappings (at least in our system).  We have one user of this flag out of
-> a dozen or so users.
+> I think there are two cases here. You can have a composite device that
+> wants to manage a single domain (using its own allocator) for a set of
+> hardware devices. At the same time a set of devices (think 2D and 3D
+> engines) could want to use a multiple domains for process separation.
+> In that case I'd expect a logical DRM device to allocate one domain per
+> process and then associate the 2D and 3D engines with that same domain
+> on process switch.
 
-Well, I think the common case in reality (ie. in upstream) is that we don't
-care, since there's no page table sharing with the CPU. Given that our DMA
-buffers are privilege on the kernel side, it's consistent to copy that as
-the default.
+Sure, but that's well outside of what the dma-mapping API is going to setup
+as a default domain. These specialist setups are certainly possible, but I
+think they should be driven by, for example, the DRM code as opposed to
+being in the core dma-mapping code.
 
-> >
-> > I don't have the spec to hand, but I guess you can't enforce this at
-> > stage-2? If so, do we also need a new IOMMU capability so people don't try
-> > to use this for stage-2 only SMMUs?
-> 
-> Hmm, actually we do have S2AP although it doesn't make a distinction
-> between accesses from EL0 and EL1.  But maybe it would make sense to
-> make the `IOMMU_PRIV' mean `no access from EL0 or EL1' for stage 2
-> mappings?  Something like:
+> What I proposed a while back was to leave it up to the IOMMU driver to
+> choose an allocator for the device. Or rather, choose whether to use a
+> custom allocator or the DMA/IOMMU integration allocator. The way this
+> worked was to keep a list of devices in the IOMMU driver. Devices in
+> this list would be added to domain reserved for DMA/IOMMU integration.
+> Those would typically be devices such as SD/MMC, audio, ... devices that
+> are in-kernel and need no per-process separation. By default devices
+> wouldn't be added to a domain, so devices forming a composite DRM device
+> would be able to manage their own domain.
 
-Hmm, that really doesn't match up with what KVM is doing on the CPU side and
-would probably break DMA on stage-2 only SMMUs.
-
-A better bet is to add a capability bit to the SMMU, which only advertises
-support for IOMMU_USER mappings if stage-1 is supported.
+I'd live to have as little of this as possible in the IOMMU drivers, as we
+should leave those to deal with the IOMMU hardware and not domain
+management. Having subsystems manage their own dma ops is an extension to
+the dma-mapping API.
 
 Will
