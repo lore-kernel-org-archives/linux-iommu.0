@@ -1,14 +1,16 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCHv7 20/26] vfio/platform: trigger an interrupt via eventfd
-Date: Wed, 24 Sep 2014 11:00:09 -0600
-Message-ID: <1411578009.24563.107.camel@ul30vt.home>
-References: <1411483586-29304-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1411483586-29304-21-git-send-email-a.motakis@virtualopensystems.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 01/18] arm: dma-mapping: arm_iommu_attach_device:
+	automatically set max_seg_size
+Date: Wed, 24 Sep 2014 18:06:27 +0100
+Message-ID: <20140924170627.GK16244@arm.com>
+References: <1410868485-4143-1-git-send-email-m.szyprowski@samsung.com>
+	<1410868485-4143-2-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1411483586-29304-21-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1410868485-4143-2-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,156 +20,47 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org" <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2014-09-23 at 16:46 +0200, Antonios Motakis wrote:
-> This patch allows to set an eventfd for a patform device's interrupt,
-> and also to trigger the interrupt eventfd from userspace for testing.
+Hi Marek,
+
+On Tue, Sep 16, 2014 at 12:54:28PM +0100, Marek Szyprowski wrote:
+> If device has no max_seg_size set, we assume that there is no limit and
+> force it to DMA_BIT_MASK(32) to always use contiguous mappings in DMA
+> address space.
 > 
-> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 > ---
->  drivers/vfio/platform/vfio_platform_irq.c     | 89 ++++++++++++++++++++++++++-
->  drivers/vfio/platform/vfio_platform_private.h |  2 +
->  2 files changed, 89 insertions(+), 2 deletions(-)
+>  arch/arm/mm/dma-mapping.c | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
 > 
-> diff --git a/drivers/vfio/platform/vfio_platform_irq.c b/drivers/vfio/platform/vfio_platform_irq.c
-> index 007b386..25a7825 100644
-> --- a/drivers/vfio/platform/vfio_platform_irq.c
-> +++ b/drivers/vfio/platform/vfio_platform_irq.c
-> @@ -45,11 +45,91 @@ static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
->  	return -EINVAL;
->  }
->  
-> +static irqreturn_t vfio_irq_handler(int irq, void *dev_id)
-> +{
-> +	struct vfio_platform_irq *irq_ctx = dev_id;
-> +
-> +	eventfd_signal(irq_ctx->trigger, 1);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int vfio_set_trigger(struct vfio_platform_device *vdev,
-> +			    int index, int fd)
-> +{
-> +	struct vfio_platform_irq *irq = &vdev->irqs[index];
-> +	struct eventfd_ctx *trigger;
-> +	int ret;
-> +
-> +	if (irq->trigger) {
-> +		free_irq(irq->hwirq, irq);
-> +		kfree(irq->name);
-> +		eventfd_ctx_put(irq->trigger);
-> +		irq->trigger = NULL;
-> +	}
-> +
-> +	if (fd < 0) /* Disable only */
-> +		return 0;
-> +
-> +	irq->name = kasprintf(GFP_KERNEL, "vfio-irq[%d](%s)",
-> +						irq->hwirq, vdev->name);
-> +	if (!irq->name)
-> +		return -ENOMEM;
-> +
-> +	trigger = eventfd_ctx_fdget(fd);
-> +	if (IS_ERR(trigger)) {
-> +		kfree(irq->name);
-> +		return PTR_ERR(trigger);
-> +	}
-> +
-> +	irq->trigger = trigger;
-> +
-> +	ret = request_irq(irq->hwirq, vfio_irq_handler, 0, irq->name, irq);
-> +	if (ret) {
-> +		kfree(irq->name);
-> +		eventfd_ctx_put(trigger);
-> +		irq->trigger = NULL;
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  static int vfio_platform_set_irq_trigger(struct vfio_platform_device *vdev,
->  				     unsigned index, unsigned start,
->  				     unsigned count, uint32_t flags, void *data)
+> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> index bcd5f836f27e..84705e24571b 100644
+> --- a/arch/arm/mm/dma-mapping.c
+> +++ b/arch/arm/mm/dma-mapping.c
+> @@ -2050,6 +2050,22 @@ int arm_iommu_attach_device(struct device *dev,
 >  {
-> -	return -EINVAL;
-> +	struct vfio_platform_irq *irq = &vdev->irqs[index];
-> +	uint8_t irq_bitmap;
-
-Minor nit here and also present in the next patch, I believe when we
-have DATA_BOOL, it's defined to be a u8 array, where each byte is a
-bool, not each bit.  So it's not actually a bitmap.  The PCI code
-handles any non-zero byte as true, not just bit0.  Thanks,
-
-Alex
-
-> +	int32_t fd;
-> +
-> +	switch (flags & VFIO_IRQ_SET_DATA_TYPE_MASK) {
-> +	case VFIO_IRQ_SET_DATA_NONE:
-> +		if (count == 0)
-> +			return vfio_set_trigger(vdev, index, -1);
-> +
-> +		vfio_irq_handler(irq->hwirq, irq);
-> +		return 0;
-> +
-> +	case VFIO_IRQ_SET_DATA_BOOL:
-> +		if (copy_from_user(&irq_bitmap, data, sizeof(uint8_t)))
-> +			return -EFAULT;
-> +
-> +		if (irq_bitmap == 0x1) {
-> +			vfio_irq_handler(irq->hwirq, irq);
-> +			return 0;
-> +		}
-> +
-> +		return -EINVAL;
-> +
-> +	case VFIO_IRQ_SET_DATA_EVENTFD:
-> +		if (copy_from_user(&fd, data, sizeof(int32_t)))
-> +			return -EFAULT;
-> +
-> +		return vfio_set_trigger(vdev, index, fd);
+>  	int err;
+>  
+> +	/*
+> +	 * if device has no max_seg_size set, we assume that there is no limit
+> +	 * and force it to DMA_BIT_MASK(32) to always use contiguous mappings
+> +	 * in DMA address space
+> +	 */
+> +	if (!dev->dma_parms) {
+> +		dev->dma_parms = kzalloc(sizeof(*dev->dma_parms), GFP_KERNEL);
+> +		if (!dev->dma_parms)
+> +			return -ENOMEM;
 > +	}
-> +
-> +	return -EFAULT;
->  }
->  
->  int vfio_platform_set_irqs_ioctl(struct vfio_platform_device *vdev,
-> @@ -95,7 +175,7 @@ int vfio_platform_irq_init(struct vfio_platform_device *vdev)
->  		if (hwirq < 0)
->  			goto err;
->  
-> -		vdev->irqs[i].flags = 0;
-> +		vdev->irqs[i].flags = VFIO_IRQ_INFO_EVENTFD;
->  		vdev->irqs[i].count = 1;
->  		vdev->irqs[i].hwirq = hwirq;
->  	}
-> @@ -110,6 +190,11 @@ err:
->  
->  void vfio_platform_irq_cleanup(struct vfio_platform_device *vdev)
->  {
-> +	int i;
-> +
-> +	for (i = 0; i < vdev->num_irqs; i++)
-> +		vfio_set_trigger(vdev, i, -1);
-> +
->  	vdev->num_irqs = 0;
->  	kfree(vdev->irqs);
->  }
-> diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
-> index 4201b94..765b371 100644
-> --- a/drivers/vfio/platform/vfio_platform_private.h
-> +++ b/drivers/vfio/platform/vfio_platform_private.h
-> @@ -28,6 +28,8 @@ struct vfio_platform_irq {
->  	u32			flags;
->  	u32			count;
->  	int			hwirq;
-> +	char			*name;
-> +	struct eventfd_ctx	*trigger;
->  };
->  
->  struct vfio_platform_region {
+> +	if (!dev->dma_parms->max_segment_size) {
+> +		err = dma_set_max_seg_size(dev, DMA_BIT_MASK(32));
+
+Would it make more sense to base this default value off the dma_mask?
+In my IOMMU series, of_dma_configure passes back a size parameter to
+arch_setup_dma_ops which is calculated from the dma-ranges property or the
+coherent dma mask if the ranges property is absent, so maybe we should set
+this there too?
+
+Will
