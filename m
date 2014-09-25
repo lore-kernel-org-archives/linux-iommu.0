@@ -1,16 +1,14 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 04/22] x86/xen/MSI: Eliminate arch_msix_mask_irq() and
-	arch_msi_mask_irq()
-Date: Thu, 25 Sep 2014 10:33:46 -0400
-Message-ID: <20140925143346.GF20089@laptop.dumpdata.com>
-References: <1411614872-4009-1-git-send-email-wangyijing@huawei.com>
-	<1411614872-4009-5-git-send-email-wangyijing@huawei.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 0/2] iommu: Fix regression in IOMMU grouping
+Date: Thu, 25 Sep 2014 16:40:35 +0200
+Message-ID: <20140925144035.GC8306@8bytes.org>
+References: <20140919154944.14485.743.stgit@gimli.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1411614872-4009-5-git-send-email-wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20140919154944.14485.743.stgit-GCcqpEzw8uZBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,145 +18,37 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, arnab.basu-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Chris Metcalf <cmetcalf-kv+TWInifGbQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Sergei Shtylyov <sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, iom
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mstowe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Sep 25, 2014 at 11:14:14AM +0800, Yijing Wang wrote:
-> Commit 0e4ccb150 added two __weak arch functions arch_msix_mask_irq()
-> and arch_msi_mask_irq() to fix a bug found when running xen in x86.
-> Introduced these two funcntions make MSI code complex. And mask/unmask
-
-"These two functions made the MSI code more complex."
-> is the irq actions related to interrupt controller, should not use
-> weak arch functions to override mask/unmask interfaces. This patch
-
-I am bit baffled of what you are saying.
-> reverted commit 0e4ccb150 and export struct irq_chip msi_chip, modify
-> msi_chip->irq_mask/irq_unmask() in xen init functions to fix this
-> bug for simplicity. Also this is preparation for using struct
-> msi_chip instead of weak arch MSI functions in all platforms.
-> Keep default_msi_mask_irq() and default_msix_mask_irq() in
-> linux/msi.h to make s390 MSI code compile happy, they wiil be removed
-
-s/wiil/will.
-
-> in the later patch.
+On Fri, Sep 19, 2014 at 10:03:00AM -0600, Alex Williamson wrote:
+> We've had surprisingly little fallout from the DMA alias changes, but
+> unfortunately one regression has popped up.  We have an AMD system
+> that seems to use the SATA controller to master transactions for the
+> legacy IDE controller and they are different slots on the root complex.
+> The IVRS reports 00:11.0 (SATA) as an alias from 00:14.1 (IDE), which
+> doesn't work with the new, converged PCI IOMMU grouping code, where
+> we've made a simplifying assumption that aliases will be to the same
+> slot.
 > 
-> Tested-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+> To fix this, we need to rip out that assumption and write the alias
+> search code that I was unable to come up with previously.  I think
+> this can now do the chaining of aliases, which I referenced in the
+> removed comments.  Any sort of multi-level aliases are exceptionally
+> unlikely, but I think this code can now handle whatever firmware and
+> alias quirks can throw at it.
 
-I don't even remember testing it - I guess I did the earlier version.
+Applied to core, thanks Alex.
 
-So a couple of questions since I've totally forgotten about this:
-
-> diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
-> index 50f67a3..5f8f3af 100644
-> --- a/drivers/pci/msi.c
-> +++ b/drivers/pci/msi.c
-> @@ -162,7 +162,7 @@ static inline __attribute_const__ u32 msi_mask(unsigned x)
->   * reliably as devices without an INTx disable bit will then generate a
->   * level IRQ which will never be cleared.
->   */
-> -u32 default_msi_mask_irq(struct msi_desc *desc, u32 mask, u32 flag)
-> +u32 __msi_mask_irq(struct msi_desc *desc, u32 mask, u32 flag)
->  {
->  	u32 mask_bits = desc->masked;
->  
-> @@ -176,14 +176,9 @@ u32 default_msi_mask_irq(struct msi_desc *desc, u32 mask, u32 flag)
->  	return mask_bits;
->  }
->  
-> -__weak u32 arch_msi_mask_irq(struct msi_desc *desc, u32 mask, u32 flag)
-> -{
-> -	return default_msi_mask_irq(desc, mask, flag);
-> -}
-> -
->  static void msi_mask_irq(struct msi_desc *desc, u32 mask, u32 flag)
->  {
-> -	desc->masked = arch_msi_mask_irq(desc, mask, flag);
-> +	desc->masked = __msi_mask_irq(desc, mask, flag);
->  }
->  
->  /*
-> @@ -193,7 +188,7 @@ static void msi_mask_irq(struct msi_desc *desc, u32 mask, u32 flag)
->   * file.  This saves a few milliseconds when initialising devices with lots
->   * of MSI-X interrupts.
->   */
-> -u32 default_msix_mask_irq(struct msi_desc *desc, u32 flag)
-> +u32 __msix_mask_irq(struct msi_desc *desc, u32 flag)
->  {
->  	u32 mask_bits = desc->masked;
->  	unsigned offset = desc->msi_attrib.entry_nr * PCI_MSIX_ENTRY_SIZE +
-> @@ -206,14 +201,9 @@ u32 default_msix_mask_irq(struct msi_desc *desc, u32 flag)
->  	return mask_bits;
->  }
->  
-> -__weak u32 arch_msix_mask_irq(struct msi_desc *desc, u32 flag)
-> -{
-> -	return default_msix_mask_irq(desc, flag);
-> -}
-> -
->  static void msix_mask_irq(struct msi_desc *desc, u32 flag)
->  {
-> -	desc->masked = arch_msix_mask_irq(desc, flag);
-> +	desc->masked = __msix_mask_irq(desc, flag);
->  }
->  
->  static void msi_set_mask_bit(struct irq_data *data, u32 flag)
-> @@ -852,7 +842,7 @@ void pci_msi_shutdown(struct pci_dev *dev)
->  	/* Return the device with MSI unmasked as initial states */
->  	mask = msi_mask(desc->msi_attrib.multi_cap);
->  	/* Keep cached state to be restored */
-> -	arch_msi_mask_irq(desc, mask, ~mask);
-> +	__msi_mask_irq(desc, mask, ~mask);
-
-If I am reading this right, it will call the old 'default_msi_mask_irq'
-which is exactly what we don't want to do under Xen. We want to call
-the NOP code.
->  
->  	/* Restore dev->irq to its default pin-assertion irq */
->  	dev->irq = desc->msi_attrib.default_irq;
-> @@ -950,7 +940,7 @@ void pci_msix_shutdown(struct pci_dev *dev)
->  	/* Return the device with MSI-X masked as initial states */
->  	list_for_each_entry(entry, &dev->msi_list, list) {
->  		/* Keep cached states to be restored */
-> -		arch_msix_mask_irq(entry, 1);
-> +		__msix_mask_irq(entry, 1);
-
-Ditto here.
-
-Looking more at this code I have to retract my Reviewed-by and Tested-by
-on the whole series.
-
-Is it possible to get a git tree for this please?
-
->  	}
->  
->  	msix_clear_and_set_ctrl(dev, PCI_MSIX_FLAGS_ENABLE, 0);
-> diff --git a/include/linux/msi.h b/include/linux/msi.h
-> index 45ef8cb..cc46a62 100644
-> --- a/include/linux/msi.h
-> +++ b/include/linux/msi.h
-> @@ -19,6 +19,8 @@ void read_msi_msg(struct msi_desc *entry, struct msi_msg *msg);
->  void get_cached_msi_msg(struct msi_desc *entry, struct msi_msg *msg);
->  void __write_msi_msg(struct msi_desc *entry, struct msi_msg *msg);
->  void write_msi_msg(unsigned int irq, struct msi_msg *msg);
-> +u32 __msix_mask_irq(struct msi_desc *desc, u32 flag);
-> +u32 __msi_mask_irq(struct msi_desc *desc, u32 mask, u32 flag);
->  
->  struct msi_desc {
->  	struct {
-> @@ -59,8 +61,8 @@ void arch_restore_msi_irqs(struct pci_dev *dev);
->  
->  void default_teardown_msi_irqs(struct pci_dev *dev);
->  void default_restore_msi_irqs(struct pci_dev *dev);
-> -u32 default_msi_mask_irq(struct msi_desc *desc, u32 mask, u32 flag);
-> -u32 default_msix_mask_irq(struct msi_desc *desc, u32 flag);
-> +#define default_msi_mask_irq	__msi_mask_irq
-> +#define default_msix_mask_irq	__msix_mask_irq
->  
->  struct msi_chip {
->  	struct module *owner;
-> -- 
-> 1.7.1
 > 
+> I know this is late for 3.17, but this is a regression from the prior
+> code.  If reviews and testing can give us the confidence to put it in
+> for 3.17, that would be my preference.  I've also marked it for stable
+> in case we want to loop back through that way.  Thanks,
+
+The change is too big to make it into v3.17 at this point of the
+development cycle, so I queued it up for the upcoming merge window.
+
+
+	Joerg
