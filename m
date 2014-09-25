@@ -1,15 +1,15 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v5 1/1] iommu-api: Add map_sg/unmap_sg functions
-Date: Thu, 25 Sep 2014 19:01:08 +0200
-Message-ID: <20140925170108.GE8306@8bytes.org>
-References: <1407797150-515-1-git-send-email-ohaugan@codeaurora.org>
-	<1407797150-515-2-git-send-email-ohaugan@codeaurora.org>
+Subject: Re: [PATCH v2] x86: irq_remapping: Fix the regression of hpet irq
+	remapping
+Date: Thu, 25 Sep 2014 19:12:58 +0200
+Message-ID: <20140925171258.GD28786@8bytes.org>
+References: <1410946339-27764-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1407797150-515-2-git-send-email-ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <1410946339-27764-1-git-send-email-wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,46 +19,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Aug 11, 2014 at 03:45:50PM -0700, Olav Haugan wrote:
-> +static inline int iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
-> +			       struct scatterlist *sg, unsigned int nents,
-> +			       int prot, unsigned long flags)
-> +{
-> +	return domain->ops->map_sg(domain, iova, sg, nents, prot, flags);
-> +}
-> +
-> +static inline int iommu_unmap_sg(struct iommu_domain *domain,
-> +				 unsigned long iova, size_t size,
-> +				 unsigned long flags)
-> +{
-> +	return domain->ops->unmap_sg(domain, iova, size, flags);
-> +}
+On Wed, Sep 17, 2014 at 05:32:19PM +0800, Yijing Wang wrote:
+> Commit 71054d8841b4 ("x86, hpet: Introduce x86_msi_ops.setup_hpet_msi")
+> introduced x86_msi_ops.setup_hpet_msi to setup hpet MSI irq 
+> when irq remapping enabled. This caused a regression of 
+> hpet MSI irq remapping.
+> 
+> Original code flow before commit 71054d8841b4:
+> hpet_setup_msi_irq()
+> 	arch_setup_hpet_msi()
+> 		setup_hpet_msi_remapped()
+> 			remap_ops->setup_hpet_msi()
+> 				alloc_irte()
+> 		msi_compose_msg()
+> 		hpet_msi_write()
+> 		...
+> 
+> Current code flow after commit 71054d8841b4:
+> hpet_setup_msi_irq()
+> 	x86_msi.setup_hpet_msi()
+> 		setup_hpet_msi_remapped()
+> 			intel_setup_hpet_msi()
+> 				alloc_irte()
+> 
+> Currently, we only call alloc_irte() for hpet MSI, but
+> do not composed and wrote its msg...
+> 
+> Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> ---
+> v1->v2: rename remap_ops->setup_hpet_msi to remap_ops->alloc_hpet_msi.
+> ---
+>  drivers/iommu/amd_iommu.c           |    4 ++--
+>  drivers/iommu/intel_irq_remapping.c |    4 ++--
+>  drivers/iommu/irq_remapping.c       |   11 +++++++++--
+>  drivers/iommu/irq_remapping.h       |    2 +-
+>  4 files changed, 14 insertions(+), 7 deletions(-)
 
-I have thought a little bit more about this interface and think that it
-would be better to just return a size_t from iommu_map_sg().  The
-function returns the amount of address space mapped by it, 0 in the
-worst case.
-
-This makes it easy to unmap the region just with
-iommu_unmap(domain, iova, size) in the end and removing the need for a
-new iommu_unmap_sg() function. Also the error-path of the map_sg
-call-backs becomes easier as the function then just returns the amount
-of address-space already mapped before the error happened.
-
-So the prototype would be:
-
-	size_t iommu_map_sg(struct iommu_domain *domain,
-			    unsigned long iova,
-			    struct scatterlist *sg,
-			    unsigned int nents,
-			    int prot);
-
-(as I said before, the flags parameter should not be added by this
- patch-set).
-
-
-	Joerg
+Applied, thanks.
