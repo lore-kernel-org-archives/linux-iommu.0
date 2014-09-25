@@ -1,17 +1,14 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4 2/3] vfio/iommu_type1: add new
-	VFIO_TYPE1_NESTING_IOMMU IOMMU type
-Date: Thu, 25 Sep 2014 16:07:14 +0100
-Message-ID: <20140925150714.GP20043@arm.com>
-References: <1411550485-32483-1-git-send-email-will.deacon@arm.com>
-	<1411550485-32483-3-git-send-email-will.deacon@arm.com>
-	<1411582999.24563.110.camel@ul30vt.home>
+From: Mark Salter <msalter-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] iommu/core: fix bus notifier breakage
+Date: Thu, 25 Sep 2014 11:15:44 -0400
+Message-ID: <1411658144.25340.75.camel@deneb.redhat.com>
+References: <1411322304-3925-1-git-send-email-msalter@redhat.com>
+	<20140925144754.GD8306@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1411582999.24563.110.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+In-Reply-To: <20140925144754.GD8306-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,97 +18,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Alex,
-
-On Wed, Sep 24, 2014 at 07:23:19PM +0100, Alex Williamson wrote:
-> On Wed, 2014-09-24 at 10:21 +0100, Will Deacon wrote:
-> > VFIO allows devices to be safely handed off to userspace by putting
-> > them behind an IOMMU configured to ensure DMA and interrupt isolation.
-> > This enables userspace KVM clients, such as kvmtool and qemu, to further
-> > map the device into a virtual machine.
+On Thu, 2014-09-25 at 16:47 +0200, Joerg Roedel wrote:
+> On Sun, Sep 21, 2014 at 01:58:24PM -0400, Mark Salter wrote:
+> > iommu_bus_init() registers a bus notifier on the given bus by using
+> > a statically defined notifier block:
 > > 
-> > With IOMMUs such as the ARM SMMU, it is then possible to provide SMMU
-> > translation services to the guest operating system, which are nested
-> > with the existing translation installed by VFIO. However, enabling this
-> > feature means that the IOMMU driver must be informed that the VFIO domain
-> > is being created for the purposes of nested translation.
+> >   static struct notifier_block iommu_bus_nb = {
+> >           .notifier_call = iommu_bus_notifier,
+> >   };
 > > 
-> > This patch adds a new IOMMU type (VFIO_TYPE1_NESTING_IOMMU) to the VFIO
-> > type-1 driver. The new IOMMU type acts identically to the
-> > VFIO_TYPE1v2_IOMMU type, but additionally sets the DOMAIN_ATTR_NESTING
-> > attribute on its IOMMU domains.
-
-[...]
-
-> > diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> > index 0734fbe5b651..d15b00700a31 100644
-> > --- a/drivers/vfio/vfio_iommu_type1.c
-> > +++ b/drivers/vfio/vfio_iommu_type1.c
-> > @@ -57,7 +57,8 @@ struct vfio_iommu {
-> >  	struct list_head	domain_list;
-> >  	struct mutex		lock;
-> >  	struct rb_root		dma_list;
-> > -	bool v2;
-> > +	bool			v2;
-> > +	bool			nesting;
-> >  };
-> >  
-> >  struct vfio_domain {
-> > @@ -671,7 +672,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
-> >  	struct vfio_group *group, *g;
-> >  	struct vfio_domain *domain, *d;
-> >  	struct bus_type *bus = NULL;
-> > -	int ret;
-> > +	int ret, attr = 1;
-> >  
-> >  	mutex_lock(&iommu->lock);
-> >  
-> > @@ -705,6 +706,13 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
-> >  		goto out_free;
-> >  	}
-> >  
-> > +	if (iommu->nesting) {
+> > This same notifier block is used for all busses. This causes a
+> > problem for notifiers registered after iommu has registered this
+> > callback on multiple busses. The problem is that a subsequent
+> > notifier being registered on a bus which has this iommu notifier
+> > will also get linked in to the notifier list of all other busses
+> > which have this iommu notifier.
+> > 
+> > This patch fixes this by allocating the notifier_block at runtime.
+> > Some error checking is also added to catch any allocation failure
+> > or notifier registration error.
+> > 
+> > Signed-off-by: Mark Salter <msalter-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> > ---
+> >  drivers/iommu/iommu.c | 26 ++++++++++++++++----------
+> >  1 file changed, 16 insertions(+), 10 deletions(-)
 > 
-> nit, attr declaration could be moved here
+> Makes sense, applied. Where have you hit this condition where IOMMUs for
+> different buses are registered?
 
-Sure.
+arm_smmu_init()
 
-> > +		ret = iommu_domain_set_attr(domain->domain, DOMAIN_ATTR_NESTING,
-> > +					    &attr);
-> > +		if (ret)
-> > +			goto out_domain;
-> > +	}
-> > +
-> >  	ret = iommu_attach_group(domain->domain, iommu_group);
-> >  	if (ret)
-> >  		goto out_domain;
-> > @@ -819,17 +827,25 @@ static void *vfio_iommu_type1_open(unsigned long arg)
-> >  {
-> >  	struct vfio_iommu *iommu;
-> >  
-> > -	if (arg != VFIO_TYPE1_IOMMU && arg != VFIO_TYPE1v2_IOMMU)
-> > -		return ERR_PTR(-EINVAL);
-> > -
-> >  	iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
-> >  	if (!iommu)
-> >  		return ERR_PTR(-ENOMEM);
-> >  
-> > +	switch (arg) {
-> > +	case VFIO_TYPE1_IOMMU:
-> > +		break;
-> > +	case VFIO_TYPE1_NESTING_IOMMU:
-> > +		iommu->nesting = true;
-> > +	case VFIO_TYPE1v2_IOMMU:
-> > +		iommu->v2 = true;
-> > +		break;
-> > +	default:
-> 
-> Leaks iommu
+	/* Oh, for a proper bus abstraction */
+	if (!iommu_present(&platform_bus_type))
+		bus_set_iommu(&platform_bus_type, &arm_smmu_ops);
 
-Yikes, sorry about that. Will fix.
+#ifdef CONFIG_ARM_AMBA
+	if (!iommu_present(&amba_bustype))
+		bus_set_iommu(&amba_bustype, &arm_smmu_ops);
+#endif
 
-Will
+#ifdef CONFIG_PCI
+	if (!iommu_present(&pci_bus_type))
+		bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
+#endif
