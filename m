@@ -1,16 +1,13 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 1/1] iommu/amd: set iommu for early mapped ioapic/hpet
-Date: Thu, 25 Sep 2014 19:29:52 +0200
-Message-ID: <20140925172952.GF8306@8bytes.org>
-References: <053191AD6E9023439BF3970DE870051856D1EF3AC5@APSHAXMS02.ap.sony.com>
-	<20140905135320.GP28786@8bytes.org>
-	<053191AD6E9023439BF3970DE870051856D274B417@APSHAXMS02.ap.sony.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v5 1/2] iommu: introduce domain attribute for nesting IOMMUs
+Date: Thu, 25 Sep 2014 18:45:00 +0100
+Message-ID: <1411667101-26197-2-git-send-email-will.deacon@arm.com>
+References: <1411667101-26197-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <053191AD6E9023439BF3970DE870051856D274B417-vLFws2UBKuUBqgaMIWwxlo3UfPj+9hkl@public.gmane.org>
+In-Reply-To: <1411667101-26197-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,20 +17,40 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Su, Friendy" <Friendy.Su-7U/KSKJipcvM1kAEIRd3EQ@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Some IOMMUs, such as the ARM SMMU, support two stages of translation.
+The idea behind such a scheme is to allow a guest operating system to
+use the IOMMU for DMA mappings in the first stage of translation, with
+the hypervisor then installing mappings in the second stage to provide
+isolation of the DMA to the physical range assigned to that virtual
+machine.
 
-On Tue, Sep 09, 2014 at 04:34:52PM +0800, Su, Friendy wrote:
-> > The problem you describe here should also be fixed by this (simpler)
-> > patch. Can you test this please?
-> 
-> The running result of this patch is correct.
+In order to allow IOMMU domains to be used for second-stage translation,
+this patch adds a new iommu_attr (IOMMU_ATTR_NESTING) for setting
+second-stage domains prior to device attach. The attribute can also be
+queried to see if a domain is actually making use of nesting.
 
-Okay, fine, thanks for testing. I queued this patch up for the next
-merge window.
+Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+---
+ include/linux/iommu.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-
-	Joerg
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 20f9a527922a..7b02bcc85b9e 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -80,6 +80,7 @@ enum iommu_attr {
+ 	DOMAIN_ATTR_FSL_PAMU_STASH,
+ 	DOMAIN_ATTR_FSL_PAMU_ENABLE,
+ 	DOMAIN_ATTR_FSL_PAMUV1,
++	DOMAIN_ATTR_NESTING,	/* two stages of translation */
+ 	DOMAIN_ATTR_MAX,
+ };
+ 
+-- 
+2.1.0
