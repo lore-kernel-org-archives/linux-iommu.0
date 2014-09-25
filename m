@@ -1,53 +1,63 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/core: fix bus notifier breakage
-Date: Thu, 25 Sep 2014 16:47:54 +0200
-Message-ID: <20140925144754.GD8306@8bytes.org>
-References: <1411322304-3925-1-git-send-email-msalter@redhat.com>
+From: Liviu Dudau <liviu@dudau.co.uk>
+Subject: Re: [PATCH v2 00/22] Use MSI chip framework to configure MSI/MSI-X
+ in all platforms
+Date: Thu, 25 Sep 2014 15:48:55 +0100
+Message-ID: <20140925144855.GB31157@bart.dudau.co.uk>
+References: <1411614872-4009-1-git-send-email-wangyijing@huawei.com>
+ <20140925074235.GN12423@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-ia64-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1411322304-3925-1-git-send-email-msalter-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mark Salter <msalter-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <20140925074235.GN12423@ulmo>
+Sender: linux-ia64-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Yijing Wang <wangyijing@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, linux-arch@vger.kernel.org, arnab.basu@freescale.com, Bharat.Bhushan@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, Sep 21, 2014 at 01:58:24PM -0400, Mark Salter wrote:
-> iommu_bus_init() registers a bus notifier on the given bus by using
-> a statically defined notifier block:
+On Thu, Sep 25, 2014 at 09:42:36AM +0200, Thierry Reding wrote:
+> On Thu, Sep 25, 2014 at 11:14:10AM +0800, Yijing Wang wrote:
+> > This series is based Bjorn's pci/msi branch
+> > git://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git pci/msi
+> > 
+> > Currently, there are a lot of weak arch functions in MSI code.
+> > Thierry Reding Introduced MSI chip framework to configure MSI/MSI-X in arm.
+> > This series use MSI chip framework to refactor MSI code across all platforms
+> > to eliminate weak arch functions. Then all MSI irqs will be managed in a 
+> > unified framework. Because this series changed a lot of ARCH MSI code,
+> > so tests in the platforms which MSI code modified are warmly welcomed!
 > 
->   static struct notifier_block iommu_bus_nb = {
->           .notifier_call = iommu_bus_notifier,
->   };
+> Apart from the comments to the individual patches I very much like where
+> this is going. Thanks for taking care of this.
 > 
-> This same notifier block is used for all busses. This causes a
-> problem for notifiers registered after iommu has registered this
-> callback on multiple busses. The problem is that a subsequent
-> notifier being registered on a bus which has this iommu notifier
-> will also get linked in to the notifier list of all other busses
-> which have this iommu notifier.
-> 
-> This patch fixes this by allocating the notifier_block at runtime.
-> Some error checking is also added to catch any allocation failure
-> or notifier registration error.
-> 
-> Signed-off-by: Mark Salter <msalter-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/iommu/iommu.c | 26 ++++++++++++++++----------
->  1 file changed, 16 insertions(+), 10 deletions(-)
+> Thierry
 
-Makes sense, applied. Where have you hit this condition where IOMMUs for
-different buses are registered?
+I am actually in disagreement with you, Thierry. I don't like the general direction
+of the patches, or at least I don't like the fact that we don't have a portable
+way of setting up the msi_chip without having to rely on weak architectural hooks.
+I'm surprised no one considers the case of a platform having more than one host
+bridge and possibly more than one MSI unit. With the current proposed patchset I
+can't see how that would work.
 
+What I would like to see is a way of creating the pci_host_bridge structure outside
+the pci_create_root_bus(). That would then allow us to pass this sort of platform
+details like associated msi_chip into the host bridge and the child busses will
+have an easy way of finding the information needed by finding the root bus and then
+the host bridge structure. Then the generic pci_scan_root_bus() can be used by (mostly)
+everyone and the drivers can remove their kludges that try to work around the
+current limitations.
 
-	Joerg
+Best regards,
+Liviu
+
+---------------------
+   .oooO
+   (   )
+    \ (  Oooo.
+     \_) (   )
+          ) /
+         (_/
+
+ One small step
+   for me ...
+
