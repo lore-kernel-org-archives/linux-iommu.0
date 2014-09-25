@@ -1,75 +1,86 @@
-From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: Fix broken device issue when using iommu=pt
-Date: Thu, 25 Sep 2014 10:36:02 +0800
-Message-ID: <54237F92.1090601@huawei.com>
-References: <1597491265.153338.1411595791727.JavaMail.open-xchange@oxuslxltgw04.lxa.perfora.net>
+From: Yijing Wang <wangyijing@huawei.com>
+Subject: [PATCH v2 07/22] PCI/MSI: Refactor struct msi_chip to make it become more common
+Date: Thu, 25 Sep 2014 11:14:17 +0800
+Message-ID: <1411614872-4009-8-git-send-email-wangyijing@huawei.com>
+References: <1411614872-4009-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1597491265.153338.1411595791727.JavaMail.open-xchange-91tEjvOFe9KcT/DCa4qSTkaJx/dRlJfr5NbjCUgZEJk@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Rob Roschewsk <gerard-1/SUfjJPYocsP9Te1NuDSQC/G2K4zDHf@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-ia64-owner@vger.kernel.org>
+In-Reply-To: <1411614872-4009-1-git-send-email-wangyijing@huawei.com>
+Sender: linux-ia64-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, linux-arch@vger.kernel.org, arnab.basu@freescale.com, Bharat.Bhushan@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org, Chris Metcalf <cmetcalf@til>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2014/9/25 5:56, Rob Roschewsk wrote:
-> Hello All .... wonder if there has been any movement on this issue .... I'm having a similar issue 
->  
-> I'm running an HP dl380 gen 8 with an Emulex OneConnect 10Gb iSCSI (14e4:164c) (rev 11)
-> also known as " Hewlett-Packard Company NC373i Integrated Multifunction Gigabit Server Adapter"
->  
-> 03:00.2 Mass storage controller: Emulex Corporation OneConnect 10Gb iSCSI Initiator (be3) (rev 01)
-> 
-> 03:00.3 Mass storage controller: Emulex Corporation OneConnect 10Gb iSCSI Initiator (be3) (rev 01)
-> 
-> Seems as soon as the iscsi target is contacted the following messages appear in the log every few seconds ....
-> 
+Now there are a lot of __weak arch functions in MSI code.
+These functions make MSI driver complex. Thierry Reding Introduced
+a new MSI chip framework to configure MSI/MSI-X irq in ARM. Use
+the new MSI chip framework to refactor all other platform MSI
+arch code to eliminate weak arch MSI functions. This patch add
+.restore_irq() and .setup_irqs() to make it become more common.
 
-It seems to a different problem, in my issue, the DMA fault messages contained a non-exist PCI ID in system.
-But in this issue, 03:00.2 is in system, the fault addr is ffffc000, I guess it's DMA virtual address allocated
-by vt-d driver. And it seems to 03:00.2 has no write access authority.
+Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+---
+ drivers/pci/msi.c   |   15 +++++++++++++++
+ include/linux/msi.h |    3 +++
+ 2 files changed, 18 insertions(+), 0 deletions(-)
 
-> Sep 24 15:25:30  kernel: [ 78.682675] dmar: DRHD: handling fault status reg 2
-> Sep 24 15:25:30  kernel: [ 78.699797] dmar: DMAR:[DMA Write] Request device [03:00.2] fault addr ffffc000
-> Sep 24 15:25:30  kernel: [ 78.699797] DMAR:[fault reason 05] PTE Write access is not set
-> Sep 24 15:25:30  kernel: [ 78.934546] dmar: DRHD: handling fault status reg 102
-> Sep 24 15:25:30  kernel: [ 78.934549] dmar: DMAR:[DMA Write] Request device [03:00.2] fault addr ffffc000
-> Sep 24 15:25:30  kernel: [ 78.934549] DMAR:[fault reason 05] PTE Write access is not set
-> Sep 24 15:25:30  kernel: [ 78.935359] dmar: DRHD: handling fault status reg 202
-> 
-> If I pull intel_iommu=on out of the kernel command line the problem goes away.
-> 
-> System is running Ubuntu 14.04.1 LTS 
-> 
-> 3.13.0-32-generic #57-Ubuntu SMP Tue Jul 15 03:51:08 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
-> 
-> Looking for help .... I'm not sure where I should be looking next ..... I need SR-IOV for other adapters in the box.
-> 
-> I have a system up that I can pull any data from that might be required.
-> 
-> Thanks,
-> 
-> --> Rob
-> 
->  
-> 
-> 
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> 
-
-
+diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+index 3acbe65..d10edee 100644
+--- a/drivers/pci/msi.c
++++ b/drivers/pci/msi.c
+@@ -64,6 +64,11 @@ int __weak arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
+ {
+ 	struct msi_desc *entry;
+ 	int ret;
++	struct msi_chip *chip;
++
++	chip = arch_find_msi_chip(dev);
++	if (chip && chip->setup_irqs)
++		return chip->setup_irqs(dev, nvec, type);
+ 
+ 	/*
+ 	 * If an architecture wants to support multiple MSI, it needs to
+@@ -106,6 +111,11 @@ void default_teardown_msi_irqs(struct pci_dev *dev)
+ 
+ void __weak arch_teardown_msi_irqs(struct pci_dev *dev)
+ {
++	struct msi_chip *chip = arch_find_msi_chip(dev);
++
++	if (chip && chip->teardown_irqs)
++		return chip->teardown_irqs(dev);
++
+ 	return default_teardown_msi_irqs(dev);
+ }
+ 
+@@ -129,6 +139,11 @@ static void default_restore_msi_irq(struct pci_dev *dev, int irq)
+ 
+ void __weak arch_restore_msi_irqs(struct pci_dev *dev)
+ {
++	struct msi_chip *chip = arch_find_msi_chip(dev);
++
++	if (chip && chip->restore_irqs)
++		return chip->restore_irqs(dev);
++
+ 	return default_restore_msi_irqs(dev);
+ }
+ 
+diff --git a/include/linux/msi.h b/include/linux/msi.h
+index 6fdc5c6..4cf1f31 100644
+--- a/include/linux/msi.h
++++ b/include/linux/msi.h
+@@ -69,7 +69,10 @@ struct msi_chip {
+ 	struct list_head list;
+ 
+ 	int (*setup_irq)(struct pci_dev *dev, struct msi_desc *desc);
++	int (*setup_irqs)(struct pci_dev *dev, int nvec, int type);
+ 	void (*teardown_irq)(unsigned int irq);
++	void (*teardown_irqs)(struct pci_dev *dev);
++	void (*restore_irqs)(struct pci_dev *dev);
+ };
+ 
+ #endif /* LINUX_MSI_H */
 -- 
-Thanks!
-Yijing
+1.7.1
+
