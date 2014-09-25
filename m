@@ -1,62 +1,115 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2] x86: irq_remapping: Fix the regression of hpet irq
-	remapping
-Date: Thu, 25 Sep 2014 19:12:58 +0200
-Message-ID: <20140925171258.GD28786@8bytes.org>
-References: <1410946339-27764-1-git-send-email-wangyijing@huawei.com>
+From: Liviu Dudau <liviu@dudau.co.uk>
+Subject: Re: [PATCH v2 00/22] Use MSI chip framework to configure MSI/MSI-X
+ in all platforms
+Date: Thu, 25 Sep 2014 18:16:12 +0100
+Message-ID: <20140925171612.GC31157@bart.dudau.co.uk>
+References: <1411614872-4009-1-git-send-email-wangyijing@huawei.com>
+ <20140925074235.GN12423@ulmo>
+ <20140925144855.GB31157@bart.dudau.co.uk>
+ <20140925164937.GB30382@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-mips-bounce@linux-mips.org>
 Content-Disposition: inline
-In-Reply-To: <1410946339-27764-1-git-send-email-wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <20140925164937.GB30382@ulmo>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Yijing Wang <wangyijing@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, linux-arch@vger.kernel.org, arnab.basu@freescale.com, Bharat.Bhushan@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Ton
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Sep 17, 2014 at 05:32:19PM +0800, Yijing Wang wrote:
-> Commit 71054d8841b4 ("x86, hpet: Introduce x86_msi_ops.setup_hpet_msi")
-> introduced x86_msi_ops.setup_hpet_msi to setup hpet MSI irq 
-> when irq remapping enabled. This caused a regression of 
-> hpet MSI irq remapping.
+On Thu, Sep 25, 2014 at 06:49:38PM +0200, Thierry Reding wrote:
+> On Thu, Sep 25, 2014 at 03:48:55PM +0100, Liviu Dudau wrote:
+> > On Thu, Sep 25, 2014 at 09:42:36AM +0200, Thierry Reding wrote:
+> > > On Thu, Sep 25, 2014 at 11:14:10AM +0800, Yijing Wang wrote:
+> > > > This series is based Bjorn's pci/msi branch
+> > > > git://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git pci/msi
+> > > > 
+> > > > Currently, there are a lot of weak arch functions in MSI code.
+> > > > Thierry Reding Introduced MSI chip framework to configure MSI/MSI-X in arm.
+> > > > This series use MSI chip framework to refactor MSI code across all platforms
+> > > > to eliminate weak arch functions. Then all MSI irqs will be managed in a 
+> > > > unified framework. Because this series changed a lot of ARCH MSI code,
+> > > > so tests in the platforms which MSI code modified are warmly welcomed!
+> > > 
+> > > Apart from the comments to the individual patches I very much like where
+> > > this is going. Thanks for taking care of this.
+> > > 
+> > > Thierry
+> > 
+> > I am actually in disagreement with you, Thierry. I don't like the general direction
+> > of the patches, or at least I don't like the fact that we don't have a portable
+> > way of setting up the msi_chip without having to rely on weak architectural hooks.
 > 
-> Original code flow before commit 71054d8841b4:
-> hpet_setup_msi_irq()
-> 	arch_setup_hpet_msi()
-> 		setup_hpet_msi_remapped()
-> 			remap_ops->setup_hpet_msi()
-> 				alloc_irte()
-> 		msi_compose_msg()
-> 		hpet_msi_write()
-> 		...
+> Oh, good. That's actually one of the things I said I wasn't happy with
+> either. =)
 > 
-> Current code flow after commit 71054d8841b4:
-> hpet_setup_msi_irq()
-> 	x86_msi.setup_hpet_msi()
-> 		setup_hpet_msi_remapped()
-> 			intel_setup_hpet_msi()
-> 				alloc_irte()
+> > I'm surprised no one considers the case of a platform having more than one host
+> > bridge and possibly more than one MSI unit. With the current proposed patchset I
+> > can't see how that would work.
 > 
-> Currently, we only call alloc_irte() for hpet MSI, but
-> do not composed and wrote its msg...
-> 
-> Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> ---
-> v1->v2: rename remap_ops->setup_hpet_msi to remap_ops->alloc_hpet_msi.
-> ---
->  drivers/iommu/amd_iommu.c           |    4 ++--
->  drivers/iommu/intel_irq_remapping.c |    4 ++--
->  drivers/iommu/irq_remapping.c       |   11 +++++++++--
->  drivers/iommu/irq_remapping.h       |    2 +-
->  4 files changed, 14 insertions(+), 7 deletions(-)
+> The PCI core can already deal with that. An MSI chip can be set per bus
+> and the weak pcibios_add_bus() can be used to set that. Often it might
+> not even be necessary to do it via pcibios_add_bus() if you create the
+> root bus directly, since you can attach the MSI chip at that time.
 
-Applied, thanks.
+But I'm thinking that we need to move away from pcibios_add_bus() interface to do
+something that should be generic. You don't need to be called for every bus when all
+you want is just the root bus in order to add the MSI chip. Also, from looking at
+the current patchset, a lot of architectures would set the MSI chip to a global
+variable, which means you don't have an option to choose the MSI chip based on the
+bus.
+
+> 
+> > What I would like to see is a way of creating the pci_host_bridge structure outside
+> > the pci_create_root_bus(). That would then allow us to pass this sort of platform
+> > details like associated msi_chip into the host bridge and the child busses will
+> > have an easy way of finding the information needed by finding the root bus and then
+> > the host bridge structure. Then the generic pci_scan_root_bus() can be used by (mostly)
+> > everyone and the drivers can remove their kludges that try to work around the
+> > current limitations.
+> 
+> I think both issues are orthogonal. Last time I checked a lot of work
+> was still necessary to unify host bridges enough so that it could be
+> shared across architectures. But perhaps some of that work has
+> happened in the meantime.
+
+Breaking out the host bridge creation from root bus creation is not difficult, just not
+agree upon. That would be the first step in making the generic host brige structure
+useful for sharing, specially if used as a sort of "parent" structure that you can
+wrap with your actual host bridge structure.
+
+> 
+> But like I said, when you create the root bus, you can easily attach the
+> MSI chip to it.
+
+Not if you want to use the generic pci_scan_root_bus() function. One needs to copy the code
+and add their own needed modifications. Which makes it hard to fix bugs and prevents code
+reuse.
+
+Best regards,
+Liviu
+
+> 
+> Thierry
+
+
+
+-- 
+-------------------
+   .oooO
+   (   )
+    \ (  Oooo.
+     \_) (   )
+          ) /
+         (_/
+
+ One small step
+   for me ...
