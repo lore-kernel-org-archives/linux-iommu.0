@@ -1,63 +1,50 @@
-From: Liviu Dudau <liviu@dudau.co.uk>
-Subject: Re: [PATCH v2 00/22] Use MSI chip framework to configure MSI/MSI-X
- in all platforms
-Date: Thu, 25 Sep 2014 15:48:55 +0100
-Message-ID: <20140925144855.GB31157@bart.dudau.co.uk>
-References: <1411614872-4009-1-git-send-email-wangyijing@huawei.com>
- <20140925074235.GN12423@ulmo>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v4 1/3] iommu: introduce domain attribute for nesting
+	IOMMUs
+Date: Thu, 25 Sep 2014 16:05:33 +0100
+Message-ID: <20140925150532.GO20043@arm.com>
+References: <1411550485-32483-1-git-send-email-will.deacon@arm.com>
+	<1411550485-32483-2-git-send-email-will.deacon@arm.com>
+	<20140925143233.GB8306@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20140925074235.GN12423@ulmo>
-Sender: linux-ia64-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Yijing Wang <wangyijing@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, linux-arch@vger.kernel.org, arnab.basu@freescale.com, Bharat.Bhushan@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@
+In-Reply-To: <20140925143233.GB8306-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Sep 25, 2014 at 09:42:36AM +0200, Thierry Reding wrote:
-> On Thu, Sep 25, 2014 at 11:14:10AM +0800, Yijing Wang wrote:
-> > This series is based Bjorn's pci/msi branch
-> > git://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git pci/msi
+On Thu, Sep 25, 2014 at 03:32:33PM +0100, Joerg Roedel wrote:
+> On Wed, Sep 24, 2014 at 10:21:23AM +0100, Will Deacon wrote:
+> > Some IOMMUs, such as the ARM SMMU, support two stages of translation.
+> > The idea behind such a scheme is to allow a guest operating system to
+> > use the IOMMU for DMA mappings in the first stage of translation, with
+> > the hypervisor then installing mappings in the second stage to provide
+> > isolation of the DMA to the physical range assigned to that virtual
+> > machine.
 > > 
-> > Currently, there are a lot of weak arch functions in MSI code.
-> > Thierry Reding Introduced MSI chip framework to configure MSI/MSI-X in arm.
-> > This series use MSI chip framework to refactor MSI code across all platforms
-> > to eliminate weak arch functions. Then all MSI irqs will be managed in a 
-> > unified framework. Because this series changed a lot of ARCH MSI code,
-> > so tests in the platforms which MSI code modified are warmly welcomed!
+> > In order to allow IOMMU domains to be used for second-stage translation,
+> > this patch adds a new iommu_attr (IOMMU_ATTR_NESTING) for setting
+> > second-stage domains prior to device attach. The attribute can also be
+> > queried to see if a domain is actually making use of nesting.
+> > 
+> > Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> > Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> > Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 > 
-> Apart from the comments to the individual patches I very much like where
-> this is going. Thanks for taking care of this.
-> 
-> Thierry
+> Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-I am actually in disagreement with you, Thierry. I don't like the general direction
-of the patches, or at least I don't like the fact that we don't have a portable
-way of setting up the msi_chip without having to rely on weak architectural hooks.
-I'm surprised no one considers the case of a platform having more than one host
-bridge and possibly more than one MSI unit. With the current proposed patchset I
-can't see how that would work.
+Thanks, Joerg.
 
-What I would like to see is a way of creating the pci_host_bridge structure outside
-the pci_create_root_bus(). That would then allow us to pass this sort of platform
-details like associated msi_chip into the host bridge and the child busses will
-have an easy way of finding the information needed by finding the root bus and then
-the host bridge structure. Then the generic pci_scan_root_bus() can be used by (mostly)
-everyone and the drivers can remove their kludges that try to work around the
-current limitations.
-
-Best regards,
-Liviu
-
----------------------
-   .oooO
-   (   )
-    \ (  Oooo.
-     \_) (   )
-          ) /
-         (_/
-
- One small step
-   for me ...
-
+Will
