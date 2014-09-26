@@ -1,16 +1,21 @@
-From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: Re: [PATCHv7 05/26] vfio: introduce the VFIO_DMA_MAP_FLAG_NOEXEC flag
-Date: Fri, 26 Sep 2014 17:45:15 +0200
-Message-ID: <CAG8rG2wrt43HJeRjHPF_M6oXvmiDH6WRPm8dHXhT0QoP0YH+9g@mail.gmail.com>
-References: <1411483586-29304-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1411483586-29304-6-git-send-email-a.motakis@virtualopensystems.com>
-	<1411510876.24563.47.camel@ul30vt.home>
-	<1411511426.24563.52.camel@ul30vt.home>
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH 2/2] iommu/arm-smmu: add support for iova_to_phys through
+	ATS1PR
+Date: Fri, 26 Sep 2014 10:20:39 -0700
+Message-ID: <vnkwa95mb8ns.fsf@mitchelh-linux.qualcomm.com>
+References: <1410460244-18943-1-git-send-email-mitchelh@codeaurora.org>
+	<1410460244-18943-3-git-send-email-mitchelh@codeaurora.org>
+	<20140922152614.GP25809@arm.com>
+	<vnkwiokdx1nj.fsf@mitchelh-linux.qualcomm.com>
+	<20140924163712.GG16244@arm.com>
+	<vnkw38bgkbal.fsf@mitchelh-linux.qualcomm.com>
+	<20140926102430.GF22293@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1411511426.24563.52.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+In-Reply-To: <20140926102430.GF22293-5wv7dgnIgG8@public.gmane.org> (Will Deacon's message of "Fri,
+	26 Sep 2014 11:24:30 +0100")
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,70 +25,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: KVM devel mailing list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "open list:ABI/API" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Sep 24, 2014 at 12:30 AM, Alex Williamson
-<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> On Tue, 2014-09-23 at 16:21 -0600, Alex Williamson wrote:
->> On Tue, 2014-09-23 at 16:46 +0200, Antonios Motakis wrote:
->> > We introduce the VFIO_DMA_MAP_FLAG_NOEXEC flag to the VFIO dma map call,
->> > and expose its availability via the capability VFIO_IOMMU_PROT_NOEXEC.
->> > This way the user can control whether the XN flag will be set on the
->> > requested mappings. The IOMMU_NOEXEC flag needs to be available for all
->> > the IOMMUs of the container used.
+On Fri, Sep 26 2014 at 03:24:30 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> On Wed, Sep 24, 2014 at 09:34:26PM +0100, Mitchel Humpherys wrote:
+>> On Wed, Sep 24 2014 at 09:37:12 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+>> > On Wed, Sep 24, 2014 at 02:12:00AM +0100, Mitchel Humpherys wrote:
+>> >> On Mon, Sep 22 2014 at 08:26:14 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+>> >> > On Thu, Sep 11, 2014 at 07:30:44PM +0100, Mitchel Humpherys wrote:
+>> >> >> +		return arm_smmu_iova_to_phys_soft(domain, iova);
+>> >> >> +	}
+>> >> >> +
+>> >> >> +	phys = readl_relaxed(cb_base + ARM_SMMU_CB_PAR_LO);
+>> >> >> +	phys |= ((u64) readl_relaxed(cb_base + ARM_SMMU_CB_PAR_HI)) << 32;
+>> >> >> +
+>> >> >> +	if (phys & CB_PAR_F) {
+>> >> >> +		dev_err(dev, "translation fault on %s!\n", dev_name(dev));
+>> >> >> +		dev_err(dev, "PAR = 0x%llx\n", phys);
+>> >> >> +	}
+>> >> >> +	phys = (phys & 0xFFFFFFF000ULL) | (iova & 0x00000FFF);
+>> >> >
+>> >> > How does this work for 64k pages?
+>> >> 
+>> >> So at the moment we're always assuming that we're using v7/v8 long
+>> >> descriptor format, right?  All I see in the spec (14.5.15 SMMU_CBn_PAR)
+>> >> is that bits[47:12]=>PA[47:12]...  Or am I missing something completely?
 >> >
->> > Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
->> > ---
->> >  include/uapi/linux/vfio.h | 2 ++
->> >  1 file changed, 2 insertions(+)
+>> > I think you've got 64k pages confused with the short-descriptor format.
 >> >
->> > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
->> > index 6612974..30f630c 100644
->> > --- a/include/uapi/linux/vfio.h
->> > +++ b/include/uapi/linux/vfio.h
->> > @@ -29,6 +29,7 @@
->> >   * capability is subject to change as groups are added or removed.
->> >   */
->> >  #define VFIO_DMA_CC_IOMMU          4
->> > +#define VFIO_IOMMU_PROT_NOEXEC             5
->>
->> Can't we advertise this as a flag bit in vfio_iommu_type1_info instead?
+>> > When we use 64k pages with long descriptors, you're masked off bits 15-12 of
+>> > the iova above, so you'll have a hole in the physical address afaict.
+>> 
+>> Even with long descriptors the spec says bits 15-12 should come from
+>> CB_PAR...  It makes no mention of reinterpreting those bits depending on
+>> the programmed page granule.  The only thing I can conclude from the
+>> spec is that hardware should be smart enough to do the right thing with
+>> bits 15-12 when the page granule is 64k.  Although even if hardware is
+>> smart enough I guess CB_PAR[15:12] should be the same as iova[15:12] for
+>> the 64k case?
 >
-> Ok, I see in the next patch that it's pretty similar to
-> VFIO_DMA_CC_IOMMU, so the check extension is probably correct for
-> determining the current state.  Maybe we could name it more similarly,
-> VFIO_DMA_NOEXEC_IOMMU.  I guess the intended usage is that once a user
-> attaches a group to the container they can query whether the
-> VFIO_DMA_MAP_FLAG_NOEXEC is valid.  Ok.  Thanks,
->
+> Yeah, fair enough, the code you have should work correctly then.
+> Unfortunately, I don't have any suitable hardware on which to test it.
 
-Sorry for the numbering, ack and ack :)
-
-> Alex
->
->> Also, EEH already took 5 as seen immediately below.
->>
->> >
->> >  /* Check if EEH is supported */
->> >  #define VFIO_EEH                   5
->> > @@ -401,6 +402,7 @@ struct vfio_iommu_type1_dma_map {
->> >     __u32   flags;
->> >  #define VFIO_DMA_MAP_FLAG_READ (1 << 0)            /* readable from device */
->> >  #define VFIO_DMA_MAP_FLAG_WRITE (1 << 1)   /* writable from device */
->> > +#define VFIO_DMA_MAP_FLAG_NOEXEC (1 << 2)  /* not executable from device */
->> >     __u64   vaddr;                          /* Process virtual address */
->> >     __u64   iova;                           /* IO virtual address */
->> >     __u64   size;                           /* Size of mapping (bytes) */
->>
->>
->
->
->
+FWIW, I have tested this on a few platforms here.  I'll send out a v2
+for the series then with the changes you suggested on the iopoll patch.
 
 
+-Mitch
 
 -- 
-Antonios Motakis
-Virtual Open Systems
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+hosted by The Linux Foundation
