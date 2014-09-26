@@ -1,17 +1,15 @@
-From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: Re: [PATCH v2 06/22] PCI/MSI: Introduce weak arch_find_msi_chip()
-	to find MSI chip
-Date: Fri, 26 Sep 2014 12:38:26 +0200 (CEST)
-Message-ID: <alpine.DEB.2.11.1409261236160.4567@nanos>
-References: <1411614872-4009-1-git-send-email-wangyijing@huawei.com>
-	<1411614872-4009-7-git-send-email-wangyijing@huawei.com>
-	<alpine.DEB.2.10.1409251220570.4604@nanos>
-	<5424D30A.6040900@huawei.com>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: Re: [PATCHv7 02/26] iommu: add capability IOMMU_CAP_NOEXEC
+Date: Fri, 26 Sep 2014 17:00:39 +0200
+Message-ID: <CAG8rG2xJm+WQicO8+uR5Pqh4HO0kTambeGoYUAjA7qYYHNJT8w@mail.gmail.com>
+References: <1411483586-29304-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1411483586-29304-3-git-send-email-a.motakis@virtualopensystems.com>
+	<20140926094827.GE28786@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5424D30A.6040900-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20140926094827.GE28786-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,49 +19,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, arnab.basu-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Chris Metcalf <cmetcalf-kv+TWInifGbQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Sergei Shtylyov <sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, KVM devel mailing list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 26 Sep 2014, Yijing Wang wrote:
-> On 2014/9/25 18:38, Thomas Gleixner wrote:
-> > On Thu, 25 Sep 2014, Yijing Wang wrote:
-> > 
-> >> Introduce weak arch_find_msi_chip() to find the match msi_chip.
-> >> Currently, MSI chip associates pci bus to msi_chip. Because in
-> >> ARM platform, there may be more than one MSI controller in system.
-> >> Associate pci bus to msi_chip help pci device to find the match
-> >> msi_chip and setup MSI/MSI-X irq correctly. But in other platform,
-> >> like in x86. we only need one MSI chip, because all device use
-> >> the same MSI address/data and irq etc. So it's no need to associate
-> >> pci bus to MSI chip, just use a arch function, arch_find_msi_chip()
-> >> to return the MSI chip for simplicity. The default weak
-> >> arch_find_msi_chip() used in ARM platform, find the MSI chip
-> >> by pci bus.
-> > 
-> > This is really backwards. On one hand you try to get rid of the weak
-> > arch functions zoo and then you invent new ones for no good
-> > reason. Why can't x86 store the chip in the pci bus?
-> > 
-> > Looking deeper, I'm questioning the whole notion of different
-> > msi_chips. Are this really different MSI controllers with a different
-> > feature set or are this defacto multiple instances of the same
-> > controller which just need a different data set?
-> 
-> MSI chip in this series is to setup MSI irq, including IRQ allocation, Map,
-> compose MSI msg ..., in different platform, many arch specific MSI irq details in it.
-> It's difficult to extract the common data and code.
-> 
-> I have a plan to rework MSI related irq_chips in kernel, PCI and Non-PCI, currently,
-> HPET, DMAR and PCI have their own irq_chip and MSI related functions, write_msi_msg(),
-> mask_msi_irq(), etc... I want to extract the common data set for that, so we can
-> remove lots of unnecessary MSI code.
+On Fri, Sep 26, 2014 at 11:48 AM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> On Tue, Sep 23, 2014 at 04:46:01PM +0200, Antonios Motakis wrote:
+>> Some IOMMUs accept an IOMMU_NOEXEC protection flag in addition to
+>> IOMMU_READ and IOMMU_WRITE. Expose this as an IOMMU capability.
+>>
+>> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+>> ---
+>>  include/linux/iommu.h | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index e1a644c..0433553 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -59,6 +59,7 @@ struct iommu_domain {
+>>
+>>  #define IOMMU_CAP_CACHE_COHERENCY    0x1
+>>  #define IOMMU_CAP_INTR_REMAP         0x2     /* isolates device intrs */
+>> +#define IOMMU_CAP_NOEXEC             0x3     /* IOMMU_NOEXEC flag */
+>
+> This changed recently to an enum, please rebase to latest iommu/next
+> branch.
+>
+>
+> With that change:
+>
+>         Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+>
+> for patches 1 and 2.
+>
 
-That makes sense. Can you please make sure that this does not conflict
-with the ongoing work Jiang is doing in the x86 irq area with
-hierarchical irqdomains to distangle layered levels like MSI from the
-underlying vector/irqremap mechanics.
+Ack
 
-Thanks,
 
-	tglx
+-- 
+Antonios Motakis
+Virtual Open Systems
