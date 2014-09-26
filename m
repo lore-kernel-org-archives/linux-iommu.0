@@ -1,20 +1,17 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu/arm-smmu: add support for iova_to_phys through
-	ATS1PR
-Date: Fri, 26 Sep 2014 11:24:30 +0100
-Message-ID: <20140926102430.GF22293@arm.com>
-References: <1410460244-18943-1-git-send-email-mitchelh@codeaurora.org>
-	<1410460244-18943-3-git-send-email-mitchelh@codeaurora.org>
-	<20140922152614.GP25809@arm.com>
-	<vnkwiokdx1nj.fsf@mitchelh-linux.qualcomm.com>
-	<20140924163712.GG16244@arm.com>
-	<vnkw38bgkbal.fsf@mitchelh-linux.qualcomm.com>
+From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Subject: Re: [PATCH v2 06/22] PCI/MSI: Introduce weak arch_find_msi_chip()
+	to find MSI chip
+Date: Fri, 26 Sep 2014 12:38:26 +0200 (CEST)
+Message-ID: <alpine.DEB.2.11.1409261236160.4567@nanos>
+References: <1411614872-4009-1-git-send-email-wangyijing@huawei.com>
+	<1411614872-4009-7-git-send-email-wangyijing@huawei.com>
+	<alpine.DEB.2.10.1409251220570.4604@nanos>
+	<5424D30A.6040900@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <vnkw38bgkbal.fsf-Yf+dfxj6toJBVvN7MMdr1KRtKmQZhJ7pQQ4Iyu8u01E@public.gmane.org>
+In-Reply-To: <5424D30A.6040900-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,47 +21,49 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, arnab.basu-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Chris Metcalf <cmetcalf-kv+TWInifGbQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Sergei Shtylyov <sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Sep 24, 2014 at 09:34:26PM +0100, Mitchel Humpherys wrote:
-> On Wed, Sep 24 2014 at 09:37:12 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> > On Wed, Sep 24, 2014 at 02:12:00AM +0100, Mitchel Humpherys wrote:
-> >> On Mon, Sep 22 2014 at 08:26:14 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> >> > On Thu, Sep 11, 2014 at 07:30:44PM +0100, Mitchel Humpherys wrote:
-> >> >> +		return arm_smmu_iova_to_phys_soft(domain, iova);
-> >> >> +	}
-> >> >> +
-> >> >> +	phys = readl_relaxed(cb_base + ARM_SMMU_CB_PAR_LO);
-> >> >> +	phys |= ((u64) readl_relaxed(cb_base + ARM_SMMU_CB_PAR_HI)) << 32;
-> >> >> +
-> >> >> +	if (phys & CB_PAR_F) {
-> >> >> +		dev_err(dev, "translation fault on %s!\n", dev_name(dev));
-> >> >> +		dev_err(dev, "PAR = 0x%llx\n", phys);
-> >> >> +	}
-> >> >> +	phys = (phys & 0xFFFFFFF000ULL) | (iova & 0x00000FFF);
-> >> >
-> >> > How does this work for 64k pages?
-> >> 
-> >> So at the moment we're always assuming that we're using v7/v8 long
-> >> descriptor format, right?  All I see in the spec (14.5.15 SMMU_CBn_PAR)
-> >> is that bits[47:12]=>PA[47:12]...  Or am I missing something completely?
-> >
-> > I think you've got 64k pages confused with the short-descriptor format.
-> >
-> > When we use 64k pages with long descriptors, you're masked off bits 15-12 of
-> > the iova above, so you'll have a hole in the physical address afaict.
+On Fri, 26 Sep 2014, Yijing Wang wrote:
+> On 2014/9/25 18:38, Thomas Gleixner wrote:
+> > On Thu, 25 Sep 2014, Yijing Wang wrote:
+> > 
+> >> Introduce weak arch_find_msi_chip() to find the match msi_chip.
+> >> Currently, MSI chip associates pci bus to msi_chip. Because in
+> >> ARM platform, there may be more than one MSI controller in system.
+> >> Associate pci bus to msi_chip help pci device to find the match
+> >> msi_chip and setup MSI/MSI-X irq correctly. But in other platform,
+> >> like in x86. we only need one MSI chip, because all device use
+> >> the same MSI address/data and irq etc. So it's no need to associate
+> >> pci bus to MSI chip, just use a arch function, arch_find_msi_chip()
+> >> to return the MSI chip for simplicity. The default weak
+> >> arch_find_msi_chip() used in ARM platform, find the MSI chip
+> >> by pci bus.
+> > 
+> > This is really backwards. On one hand you try to get rid of the weak
+> > arch functions zoo and then you invent new ones for no good
+> > reason. Why can't x86 store the chip in the pci bus?
+> > 
+> > Looking deeper, I'm questioning the whole notion of different
+> > msi_chips. Are this really different MSI controllers with a different
+> > feature set or are this defacto multiple instances of the same
+> > controller which just need a different data set?
 > 
-> Even with long descriptors the spec says bits 15-12 should come from
-> CB_PAR...  It makes no mention of reinterpreting those bits depending on
-> the programmed page granule.  The only thing I can conclude from the
-> spec is that hardware should be smart enough to do the right thing with
-> bits 15-12 when the page granule is 64k.  Although even if hardware is
-> smart enough I guess CB_PAR[15:12] should be the same as iova[15:12] for
-> the 64k case?
+> MSI chip in this series is to setup MSI irq, including IRQ allocation, Map,
+> compose MSI msg ..., in different platform, many arch specific MSI irq details in it.
+> It's difficult to extract the common data and code.
+> 
+> I have a plan to rework MSI related irq_chips in kernel, PCI and Non-PCI, currently,
+> HPET, DMAR and PCI have their own irq_chip and MSI related functions, write_msi_msg(),
+> mask_msi_irq(), etc... I want to extract the common data set for that, so we can
+> remove lots of unnecessary MSI code.
 
-Yeah, fair enough, the code you have should work correctly then.
-Unfortunately, I don't have any suitable hardware on which to test it.
+That makes sense. Can you please make sure that this does not conflict
+with the ongoing work Jiang is doing in the x86 irq area with
+hierarchical irqdomains to distangle layered levels like MSI from the
+underlying vector/irqremap mechanics.
 
-Will
+Thanks,
+
+	tglx
