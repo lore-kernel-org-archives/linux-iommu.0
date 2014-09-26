@@ -1,16 +1,16 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: Re: [PATCHv7 06/26] vfio/iommu_type1: implement the
-	VFIO_DMA_MAP_FLAG_NOEXEC flag
-Date: Fri, 26 Sep 2014 17:39:45 +0200
-Message-ID: <CAG8rG2z14gT28jec66o3UQ=z-omNv+bC43moJT-FhdUtd2OJDg@mail.gmail.com>
+Subject: Re: [PATCHv7 05/26] vfio: introduce the VFIO_DMA_MAP_FLAG_NOEXEC flag
+Date: Fri, 26 Sep 2014 17:45:15 +0200
+Message-ID: <CAG8rG2wrt43HJeRjHPF_M6oXvmiDH6WRPm8dHXhT0QoP0YH+9g@mail.gmail.com>
 References: <1411483586-29304-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1411483586-29304-7-git-send-email-a.motakis@virtualopensystems.com>
-	<1411512059.24563.57.camel@ul30vt.home>
+	<1411483586-29304-6-git-send-email-a.motakis@virtualopensystems.com>
+	<1411510876.24563.47.camel@ul30vt.home>
+	<1411511426.24563.52.camel@ul30vt.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1411512059.24563.57.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+In-Reply-To: <1411511426.24563.52.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,123 +21,62 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: KVM devel mailing list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: KVM devel mailing list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "open list:ABI/API" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Sep 24, 2014 at 12:40 AM, Alex Williamson
+On Wed, Sep 24, 2014 at 12:30 AM, Alex Williamson
 <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> On Tue, 2014-09-23 at 16:46 +0200, Antonios Motakis wrote:
->> Some IOMMU drivers, such as the ARM SMMU driver, make available the
->> IOMMU_NOEXEC flag, to set the page tables for a device as XN (execute never).
->> This affects devices such as the ARM PL330 DMA Controller, which respects
->> this flag and will refuse to fetch DMA instructions from memory where the
->> XN flag has been set.
+> On Tue, 2014-09-23 at 16:21 -0600, Alex Williamson wrote:
+>> On Tue, 2014-09-23 at 16:46 +0200, Antonios Motakis wrote:
+>> > We introduce the VFIO_DMA_MAP_FLAG_NOEXEC flag to the VFIO dma map call,
+>> > and expose its availability via the capability VFIO_IOMMU_PROT_NOEXEC.
+>> > This way the user can control whether the XN flag will be set on the
+>> > requested mappings. The IOMMU_NOEXEC flag needs to be available for all
+>> > the IOMMUs of the container used.
+>> >
+>> > Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+>> > ---
+>> >  include/uapi/linux/vfio.h | 2 ++
+>> >  1 file changed, 2 insertions(+)
+>> >
+>> > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+>> > index 6612974..30f630c 100644
+>> > --- a/include/uapi/linux/vfio.h
+>> > +++ b/include/uapi/linux/vfio.h
+>> > @@ -29,6 +29,7 @@
+>> >   * capability is subject to change as groups are added or removed.
+>> >   */
+>> >  #define VFIO_DMA_CC_IOMMU          4
+>> > +#define VFIO_IOMMU_PROT_NOEXEC             5
 >>
->> The flag can be used only if all IOMMU domains behind the container support
->> the IOMMU_NOEXEC flag. Also, if any mappings are created with the flag, any
->> new domains with devices will have to support it as well.
->>
->> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
->> ---
->>  drivers/vfio/vfio_iommu_type1.c | 38 +++++++++++++++++++++++++++++++++++++-
->>  1 file changed, 37 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
->> index 0734fbe..09e5064 100644
->> --- a/drivers/vfio/vfio_iommu_type1.c
->> +++ b/drivers/vfio/vfio_iommu_type1.c
->> @@ -81,6 +81,26 @@ struct vfio_group {
->>  };
->>
->>  /*
->> + * This function returns true only if _all_ domains support the capability.
->> + */
->> +static int vfio_all_domains_have_iommu_noexec(struct vfio_iommu *iommu)
+>> Can't we advertise this as a flag bit in vfio_iommu_type1_info instead?
 >
-> Rename to vfio_domains_have_iommu_noexec() for consistency with the
-> cache version.
->
-
-The logic here is a slightly different logic between the two. For
-IOMMU_CACHE we generally check if any domain includes it, for NOEXEC
-in contract we need all domains to support it, otherwise we can't
-expose the capability. Hence the _all_ addition in the name of the
-function.
-
->> +{
->> +     struct vfio_domain *d;
->> +     int ret = 1;
->> +
->> +     mutex_lock(&iommu->lock);
->> +     list_for_each_entry(d, &iommu->domain_list, next) {
->> +             if (!iommu_domain_has_cap(d->domain, IOMMU_CAP_NOEXEC)) {
->
-> Should we cache this in domain->prot like we do for IOMMU_CACHE?
->
->> +                     ret = 0;
->> +                     break;
->> +             }
->> +     }
->> +     mutex_unlock(&iommu->lock);
->> +
->> +     return ret;
->> +}
->> +
->> +/*
->>   * This code handles mapping and unmapping of user data buffers
->>   * into DMA'ble space using the IOMMU
->>   */
->> @@ -546,6 +566,11 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
->>               prot |= IOMMU_WRITE;
->>       if (map->flags & VFIO_DMA_MAP_FLAG_READ)
->>               prot |= IOMMU_READ;
->> +     if (map->flags & VFIO_DMA_MAP_FLAG_NOEXEC) {
->> +             if (!vfio_all_domains_have_iommu_noexec(iommu))
->> +                     return -EINVAL;
->> +             prot |= IOMMU_NOEXEC;
->> +     }
->>
->>       if (!prot || !size || (size | iova | vaddr) & mask)
->>               return -EINVAL;
->> @@ -636,6 +661,12 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
->>               dma = rb_entry(n, struct vfio_dma, node);
->>               iova = dma->iova;
->>
->> +             /* if any of the mappings to be replayed has the NOEXEC flag
->> +              * set, then the new iommu domain must support it */
->
-> nit, please fix the comment style to match the rest of the file.
+> Ok, I see in the next patch that it's pretty similar to
+> VFIO_DMA_CC_IOMMU, so the check extension is probably correct for
+> determining the current state.  Maybe we could name it more similarly,
+> VFIO_DMA_NOEXEC_IOMMU.  I guess the intended usage is that once a user
+> attaches a group to the container they can query whether the
+> VFIO_DMA_MAP_FLAG_NOEXEC is valid.  Ok.  Thanks,
 >
 
-Ack
+Sorry for the numbering, ack and ack :)
 
->> +             if ((dma->prot | IOMMU_NOEXEC) &&
->> +                 !iommu_domain_has_cap(domain->domain, IOMMU_CAP_NOEXEC))
->> +                     return -EINVAL;
->> +
->>               while (iova < dma->iova + dma->size) {
->>                       phys_addr_t phys = iommu_iova_to_phys(d->domain, iova);
->>                       size_t size;
->> @@ -890,6 +921,10 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
->>                       if (!iommu)
->>                               return 0;
->>                       return vfio_domains_have_iommu_cache(iommu);
->> +             case VFIO_IOMMU_PROT_NOEXEC:
->> +                     if (!iommu)
->> +                             return 0;
->> +                     return vfio_all_domains_have_iommu_noexec(iommu);
->>               default:
->>                       return 0;
->>               }
->> @@ -913,7 +948,8 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
->>       } else if (cmd == VFIO_IOMMU_MAP_DMA) {
->>               struct vfio_iommu_type1_dma_map map;
->>               uint32_t mask = VFIO_DMA_MAP_FLAG_READ |
->> -                             VFIO_DMA_MAP_FLAG_WRITE;
->> +                             VFIO_DMA_MAP_FLAG_WRITE |
->> +                             VFIO_DMA_MAP_FLAG_NOEXEC;
+> Alex
+>
+>> Also, EEH already took 5 as seen immediately below.
 >>
->>               minsz = offsetofend(struct vfio_iommu_type1_dma_map, size);
+>> >
+>> >  /* Check if EEH is supported */
+>> >  #define VFIO_EEH                   5
+>> > @@ -401,6 +402,7 @@ struct vfio_iommu_type1_dma_map {
+>> >     __u32   flags;
+>> >  #define VFIO_DMA_MAP_FLAG_READ (1 << 0)            /* readable from device */
+>> >  #define VFIO_DMA_MAP_FLAG_WRITE (1 << 1)   /* writable from device */
+>> > +#define VFIO_DMA_MAP_FLAG_NOEXEC (1 << 2)  /* not executable from device */
+>> >     __u64   vaddr;                          /* Process virtual address */
+>> >     __u64   iova;                           /* IO virtual address */
+>> >     __u64   size;                           /* Size of mapping (bytes) */
+>>
 >>
 >
 >
