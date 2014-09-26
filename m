@@ -1,18 +1,15 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v2 00/22] Use MSI chip framework to configure MSI/MSI-X
-	in all platforms
-Date: Fri, 26 Sep 2014 11:05:38 +0200
-Message-ID: <20140926090537.GH31106@ulmo>
-References: <1411614872-4009-1-git-send-email-wangyijing@huawei.com>
-	<20140925074235.GN12423@ulmo>
-	<20140925144855.GB31157@bart.dudau.co.uk>
-	<20140925164937.GB30382@ulmo>
-	<20140925171612.GC31157@bart.dudau.co.uk>
-	<542505B3.7040208@huawei.com> <20140926085430.GG31106@ulmo>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCHv7 02/26] iommu: add capability IOMMU_CAP_NOEXEC
+Date: Fri, 26 Sep 2014 11:48:27 +0200
+Message-ID: <20140926094827.GE28786@8bytes.org>
+References: <1411483586-29304-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1411483586-29304-3-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============2000916252416521293=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140926085430.GG31106@ulmo>
+Content-Disposition: inline
+In-Reply-To: <1411483586-29304-3-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,132 +19,35 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, arnab.basu-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Chris Metcalf <cmetcalf-kv+TWInifGbQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Liviu Dudau <liviu-I3yL/QOVVjH10XsdtD+oqA@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Sergei Shtylyov <sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, iommu@lists.l
+To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Cc: Shuah Khan <shuah.kh-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On Tue, Sep 23, 2014 at 04:46:01PM +0200, Antonios Motakis wrote:
+> Some IOMMUs accept an IOMMU_NOEXEC protection flag in addition to
+> IOMMU_READ and IOMMU_WRITE. Expose this as an IOMMU capability.
+> 
+> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> ---
+>  include/linux/iommu.h | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index e1a644c..0433553 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -59,6 +59,7 @@ struct iommu_domain {
+>  
+>  #define IOMMU_CAP_CACHE_COHERENCY	0x1
+>  #define IOMMU_CAP_INTR_REMAP		0x2	/* isolates device intrs */
+> +#define IOMMU_CAP_NOEXEC		0x3	/* IOMMU_NOEXEC flag */
 
---===============2000916252416521293==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="mhOzvPhkurUs4vA9"
-Content-Disposition: inline
-
-
---mhOzvPhkurUs4vA9
-Content-Type: multipart/mixed; boundary="7J16OGEJ/mt06A90"
-Content-Disposition: inline
-
-
---7J16OGEJ/mt06A90
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Fri, Sep 26, 2014 at 10:54:32AM +0200, Thierry Reding wrote:
-[...]
-> At least for Tegra it's trivial to just hook it up in tegra_pcie_scan_bus()
-> directly (patch attached).
-
-Really attached this time.
-
-Thierry
-
---7J16OGEJ/mt06A90
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: inline; filename="0001-PCI-tegra-Remove-.add_bus-callback.patch"
-Content-Transfer-Encoding: quoted-printable
-
-=46rom 2cedfcf38cdfe21688d1363659f28e271ce43358 Mon Sep 17 00:00:00 2001
-=46rom: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Date: Fri, 26 Sep 2014 10:35:47 +0200
-Subject: [PATCH] PCI: tegra: Remove .add_bus() callback
-
-The .add_bus() callback is called for every bus and used to associate an
-MSI chip with each bus. However the PCI core code already propagates the
-root bus' MSI chip to child busses, so it is enough to associate the MSI
-chip with the root bus upon creation. Conveniently the Tegra PCIe host
-bridge driver creates the root bus directly, so the association can be
-done at the same time.
-
-Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
- drivers/pci/host/pci-tegra.c | 13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/pci/host/pci-tegra.c b/drivers/pci/host/pci-tegra.c
-index 3d43874319be..d314e549ac0c 100644
---- a/drivers/pci/host/pci-tegra.c
-+++ b/drivers/pci/host/pci-tegra.c
-@@ -694,15 +694,6 @@ static int tegra_pcie_map_irq(const struct pci_dev *pd=
-ev, u8 slot, u8 pin)
- 	return irq;
- }
-=20
--static void tegra_pcie_add_bus(struct pci_bus *bus)
--{
--	if (IS_ENABLED(CONFIG_PCI_MSI)) {
--		struct tegra_pcie *pcie =3D sys_to_pcie(bus->sysdata);
--
--		bus->msi =3D &pcie->msi.chip;
--	}
--}
--
- static struct pci_bus *tegra_pcie_scan_bus(int nr, struct pci_sys_data *sy=
-s)
- {
- 	struct tegra_pcie *pcie =3D sys_to_pcie(sys);
-@@ -713,6 +704,9 @@ static struct pci_bus *tegra_pcie_scan_bus(int nr, stru=
-ct pci_sys_data *sys)
- 	if (!bus)
- 		return NULL;
-=20
-+	if (IS_ENABLED(CONFIG_PCI_MSI))
-+		bus->msi =3D &pcie->msi.chip;
-+
- 	pci_scan_child_bus(bus);
-=20
- 	return bus;
-@@ -1885,7 +1879,6 @@ static int tegra_pcie_enable(struct tegra_pcie *pcie)
- 	hw.private_data =3D (void **)&pcie;
- 	hw.setup =3D tegra_pcie_setup;
- 	hw.map_irq =3D tegra_pcie_map_irq;
--	hw.add_bus =3D tegra_pcie_add_bus;
- 	hw.scan =3D tegra_pcie_scan_bus;
- 	hw.ops =3D &tegra_pcie_ops;
-=20
---=20
-2.1.0
+This changed recently to an enum, please rebase to latest iommu/next
+branch.
 
 
---7J16OGEJ/mt06A90--
+With that change:
 
---mhOzvPhkurUs4vA9
-Content-Type: application/pgp-signature
+	Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJUJSxhAAoJEN0jrNd/PrOhoLsQAMJ5GxCoND9IRjKBHBmrC/51
-EfiGjh/v0yQqfkGFBzV41mV+tCThGSuHsefr0h7ItMMzGSclLZNdT2VKt/KaFqem
-Q6V+CwdSlDiMMLcpCjAGvp4hdDi+0XDCy7Y8jkC2W03El4vSRXMuLEqqwrFdK0gB
-05H6NYD2ozSZkLSz6kKZzDriAmV7soM2oCUtQ+lBTeYuz7dHFV0KFUtmka5mK5Hw
-WRmES6tba2YsjZcBnVOuEkrGOcXmV7rSG/Q4VI45Dcq0xyQIIoMbk5StAhi3htzg
-zmNTj58VhrHnqJeicxjD9PAwm2Pil1eAb97Rp/jTkGc7h8gdjHPjRiN4D2Hzv+3u
-POIs9Wnw/B7Nu+cbah6VrwbhkZJ6ONOdO969FwEKVqUAgrYQNOlpb764IfsNqWSd
-4SrBJxcX6Rf49cDgpeVdMu2M+y3JrSx8B34Y2Jvrjqfu7+Fqg1oUmaiIraZTw7Mx
-2L+r9XOSjoImov5pWFOQK6TQLFAQxg/Jzc3VbQW/Asthgh9J1IdnaawQ1tUmd7X3
-2SkPbFifpMXG/q4Kzo7ziNHEChdugUtgjqSedknGrxRhTgYMcoFuvmqg11yv5giF
-cQ4aiPTi7iwKtIUJ6der5Ypyym8WH6g9McEkXHr8MHTPwy5VwjoOIa5f9h8c0DF3
-JVw7pOJIyEgFtmcvn4p1
-=YM+j
------END PGP SIGNATURE-----
-
---mhOzvPhkurUs4vA9--
-
---===============2000916252416521293==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============2000916252416521293==--
+for patches 1 and 2.
