@@ -1,158 +1,71 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCHv7 06/26] vfio/iommu_type1: implement the
-	VFIO_DMA_MAP_FLAG_NOEXEC flag
-Date: Fri, 26 Sep 2014 14:27:37 -0600
-Message-ID: <1411763257.7360.49.camel@ul30vt.home>
-References: <1411483586-29304-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1411483586-29304-7-git-send-email-a.motakis@virtualopensystems.com>
-	<1411512059.24563.57.camel@ul30vt.home>
-	<CAG8rG2z14gT28jec66o3UQ=z-omNv+bC43moJT-FhdUtd2OJDg@mail.gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: [PATCH v3 0/5] enhance DMA CMA on x86
+Date: Sat, 27 Sep 2014 10:30:34 -0400
+Message-ID: <5426CA0A.7000806@hurleysoftware.com>
+References: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAG8rG2z14gT28jec66o3UQ=z-omNv+bC43moJT-FhdUtd2OJDg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: KVM devel mailing list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Akinobu Mita <akinobu.mita@gmail.com>, linux-kernel@vger.kernel.org, akpm@linux-foundation.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, David Woodhouse <dwmw2@infradead.org>, Don Dutile <ddutile@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <andi@firstfloor.org>, x86@kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 2014-09-26 at 17:39 +0200, Antonios Motakis wrote:
-> On Wed, Sep 24, 2014 at 12:40 AM, Alex Williamson
-> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> > On Tue, 2014-09-23 at 16:46 +0200, Antonios Motakis wrote:
-> >> Some IOMMU drivers, such as the ARM SMMU driver, make available the
-> >> IOMMU_NOEXEC flag, to set the page tables for a device as XN (execute never).
-> >> This affects devices such as the ARM PL330 DMA Controller, which respects
-> >> this flag and will refuse to fetch DMA instructions from memory where the
-> >> XN flag has been set.
-> >>
-> >> The flag can be used only if all IOMMU domains behind the container support
-> >> the IOMMU_NOEXEC flag. Also, if any mappings are created with the flag, any
-> >> new domains with devices will have to support it as well.
-> >>
-> >> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-> >> ---
-> >>  drivers/vfio/vfio_iommu_type1.c | 38 +++++++++++++++++++++++++++++++++++++-
-> >>  1 file changed, 37 insertions(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> >> index 0734fbe..09e5064 100644
-> >> --- a/drivers/vfio/vfio_iommu_type1.c
-> >> +++ b/drivers/vfio/vfio_iommu_type1.c
-> >> @@ -81,6 +81,26 @@ struct vfio_group {
-> >>  };
-> >>
-> >>  /*
-> >> + * This function returns true only if _all_ domains support the capability.
-> >> + */
-> >> +static int vfio_all_domains_have_iommu_noexec(struct vfio_iommu *iommu)
-> >
-> > Rename to vfio_domains_have_iommu_noexec() for consistency with the
-> > cache version.
-> >
+On 04/15/2014 09:08 AM, Akinobu Mita wrote:
+> This patch set enhances the DMA Contiguous Memory Allocator on x86.
 > 
-> The logic here is a slightly different logic between the two. For
-> IOMMU_CACHE we generally check if any domain includes it,
+> Currently the DMA CMA is only supported with pci-nommu dma_map_ops
+> and furthermore it can't be enabled on x86_64.  But I would like to
+> allocate big contiguous memory with dma_alloc_coherent() and tell it
+> to the device that requires it, regardless of which dma mapping
+> implementation is actually used in the system.
+> 
+> So this makes it work with swiotlb and intel-iommu dma_map_ops, too.
+> And this also extends "cma=" kernel parameter to specify placement
+> constraint by the physical address range of memory allocations.  For
+> example, CMA allocates memory below 4GB by "cma=64M@0-4G", it is
+> required for the devices only supporting 32-bit addressing on 64-bit
+> systems without iommu.
+> 
+> * Changes from v2
+> - Rebased on current Linus tree
+> - Add Acked-by line
+> - Fix gfp flags check for __GFP_ATOMIC, reported by Marek Szyprowski
+> - Avoid CMA area on highmem with cma= option, reported by Marek Szyprowski
+> 
+> * Changes from v1
+> - fix dma_alloc_coherent() with __GFP_ZERO
+> - add placement specifier for "cma=" kernel parameter
+> 
+> Akinobu Mita (5):
+>   x86: make dma_alloc_coherent() return zeroed memory if CMA is enabled
+>   x86: enable DMA CMA with swiotlb
+>   intel-iommu: integrate DMA CMA
+>   memblock: introduce memblock_alloc_range()
+>   cma: add placement specifier for "cma=" kernel parameter
 
-Not true, all the domains must support IOMMU_CACHE for the function to
-return 1.  In fact, the code is so identical that if we were to cache
-IOMMU_CAP_NOEXEC into domain->prot, we should probably only have one
-function:
+This patchset breaks every x86 iommu configuration when CONFIG_DMA_CMA is
+on, which is the base configuration for Ubuntu x86 and amd64 distro kernels.
 
-static int vfio_domains_have_iommu_flag(struct vfio_iommu *iommu, int flag);
+Granted, the patchset leveraged existing code from the nommu configuration,
+but that base (ie., calling dma_alloc_from_contiguous() in
+dma_generic_alloc_config()) was an ill-conceived test configuration designed
+to allow ARM developers to validate the CMA allocator on x86 boxen and
+KVM guests, not as a general-purpose replacement for the existing page
+allocator. The test code should have had a separate CONFIG_ knob.
 
->  for NOEXEC
-> in contract we need all domains to support it, otherwise we can't
-> expose the capability. Hence the _all_ addition in the name of the
-> function.
-> 
-> >> +{
-> >> +     struct vfio_domain *d;
-> >> +     int ret = 1;
-> >> +
-> >> +     mutex_lock(&iommu->lock);
-> >> +     list_for_each_entry(d, &iommu->domain_list, next) {
-> >> +             if (!iommu_domain_has_cap(d->domain, IOMMU_CAP_NOEXEC)) {
-> >
-> > Should we cache this in domain->prot like we do for IOMMU_CACHE?
-> >
-> >> +                     ret = 0;
-> >> +                     break;
-> >> +             }
-> >> +     }
-> >> +     mutex_unlock(&iommu->lock);
-> >> +
-> >> +     return ret;
-> >> +}
-> >> +
-> >> +/*
-> >>   * This code handles mapping and unmapping of user data buffers
-> >>   * into DMA'ble space using the IOMMU
-> >>   */
-> >> @@ -546,6 +566,11 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
-> >>               prot |= IOMMU_WRITE;
-> >>       if (map->flags & VFIO_DMA_MAP_FLAG_READ)
-> >>               prot |= IOMMU_READ;
-> >> +     if (map->flags & VFIO_DMA_MAP_FLAG_NOEXEC) {
-> >> +             if (!vfio_all_domains_have_iommu_noexec(iommu))
-> >> +                     return -EINVAL;
-> >> +             prot |= IOMMU_NOEXEC;
-> >> +     }
-> >>
-> >>       if (!prot || !size || (size | iova | vaddr) & mask)
-> >>               return -EINVAL;
-> >> @@ -636,6 +661,12 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
-> >>               dma = rb_entry(n, struct vfio_dma, node);
-> >>               iova = dma->iova;
-> >>
-> >> +             /* if any of the mappings to be replayed has the NOEXEC flag
-> >> +              * set, then the new iommu domain must support it */
-> >
-> > nit, please fix the comment style to match the rest of the file.
-> >
-> 
-> Ack
-> 
-> >> +             if ((dma->prot | IOMMU_NOEXEC) &&
-> >> +                 !iommu_domain_has_cap(domain->domain, IOMMU_CAP_NOEXEC))
-> >> +                     return -EINVAL;
-> >> +
-> >>               while (iova < dma->iova + dma->size) {
-> >>                       phys_addr_t phys = iommu_iova_to_phys(d->domain, iova);
-> >>                       size_t size;
-> >> @@ -890,6 +921,10 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
-> >>                       if (!iommu)
-> >>                               return 0;
-> >>                       return vfio_domains_have_iommu_cache(iommu);
-> >> +             case VFIO_IOMMU_PROT_NOEXEC:
-> >> +                     if (!iommu)
-> >> +                             return 0;
-> >> +                     return vfio_all_domains_have_iommu_noexec(iommu);
-> >>               default:
-> >>                       return 0;
-> >>               }
-> >> @@ -913,7 +948,8 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
-> >>       } else if (cmd == VFIO_IOMMU_MAP_DMA) {
-> >>               struct vfio_iommu_type1_dma_map map;
-> >>               uint32_t mask = VFIO_DMA_MAP_FLAG_READ |
-> >> -                             VFIO_DMA_MAP_FLAG_WRITE;
-> >> +                             VFIO_DMA_MAP_FLAG_WRITE |
-> >> +                             VFIO_DMA_MAP_FLAG_NOEXEC;
-> >>
-> >>               minsz = offsetofend(struct vfio_iommu_type1_dma_map, size);
-> >>
-> >
-> >
-> >
-> 
-> 
-> 
+What this patchset does is restrict all iommu configurations which can
+map all of system memory to one _very_ small physical region, thus disabling
+the whole point of an iommu.
+
+Now I know why my GPU is causing paging to disk! And why my RAID controller
+stalls for ages when I do a git log at the same time as a kernel build!
+
+And the apparent goal of this patchset is to enable DMA allocation below
+4GB, which is already supported in the existing page allocator with the
+GFP_DMA32 flag?!
+
+Regards,
+Peter Hurley
