@@ -1,71 +1,45 @@
-From: Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH v3 0/5] enhance DMA CMA on x86
-Date: Sat, 27 Sep 2014 10:30:34 -0400
-Message-ID: <5426CA0A.7000806@hurleysoftware.com>
-References: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com>
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH v2 0/2] iommu/arm-smmu: hard iova_to_phys
+Date: Sat, 27 Sep 2014 14:31:51 -0700
+Message-ID: <1411853513-9571-1-git-send-email-mitchelh@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Akinobu Mita <akinobu.mita@gmail.com>, linux-kernel@vger.kernel.org, akpm@linux-foundation.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, David Woodhouse <dwmw2@infradead.org>, Don Dutile <ddutile@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <andi@firstfloor.org>, x86@kernel.org, iommu@lists.linux-foundation.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/15/2014 09:08 AM, Akinobu Mita wrote:
-> This patch set enhances the DMA Contiguous Memory Allocator on x86.
-> 
-> Currently the DMA CMA is only supported with pci-nommu dma_map_ops
-> and furthermore it can't be enabled on x86_64.  But I would like to
-> allocate big contiguous memory with dma_alloc_coherent() and tell it
-> to the device that requires it, regardless of which dma mapping
-> implementation is actually used in the system.
-> 
-> So this makes it work with swiotlb and intel-iommu dma_map_ops, too.
-> And this also extends "cma=" kernel parameter to specify placement
-> constraint by the physical address range of memory allocations.  For
-> example, CMA allocates memory below 4GB by "cma=64M@0-4G", it is
-> required for the devices only supporting 32-bit addressing on 64-bit
-> systems without iommu.
-> 
-> * Changes from v2
-> - Rebased on current Linus tree
-> - Add Acked-by line
-> - Fix gfp flags check for __GFP_ATOMIC, reported by Marek Szyprowski
-> - Avoid CMA area on highmem with cma= option, reported by Marek Szyprowski
-> 
-> * Changes from v1
-> - fix dma_alloc_coherent() with __GFP_ZERO
-> - add placement specifier for "cma=" kernel parameter
-> 
-> Akinobu Mita (5):
->   x86: make dma_alloc_coherent() return zeroed memory if CMA is enabled
->   x86: enable DMA CMA with swiotlb
->   intel-iommu: integrate DMA CMA
->   memblock: introduce memblock_alloc_range()
->   cma: add placement specifier for "cma=" kernel parameter
+This series introduces support for performing iova-to-phys translations via
+the ARM SMMU hardware on supported implementations. We also make use of
+some new generic macros for polling hardware registers.
 
-This patchset breaks every x86 iommu configuration when CONFIG_DMA_CMA is
-on, which is the base configuration for Ubuntu x86 and amd64 distro kernels.
+Changes since v1:
 
-Granted, the patchset leveraged existing code from the nommu configuration,
-but that base (ie., calling dma_alloc_from_contiguous() in
-dma_generic_alloc_config()) was an ill-conceived test configuration designed
-to allow ARM developers to validate the CMA allocator on x86 boxen and
-KVM guests, not as a general-purpose replacement for the existing page
-allocator. The test code should have had a separate CONFIG_ knob.
+  - Renamed one of the iopoll macros to use the more standard `_atomic'
+    suffix
+  - Removed some convenience iopoll wrappers to encourage explicitness
 
-What this patchset does is restrict all iommu configurations which can
-map all of system memory to one _very_ small physical region, thus disabling
-the whole point of an iommu.
 
-Now I know why my GPU is causing paging to disk! And why my RAID controller
-stalls for ages when I do a git log at the same time as a kernel build!
+Matt Wagantall (1):
+  iopoll: Introduce memory-mapped IO polling macros
 
-And the apparent goal of this patchset is to enable DMA allocation below
-4GB, which is already supported in the existing page allocator with the
-GFP_DMA32 flag?!
+Mitchel Humpherys (1):
+  iommu/arm-smmu: add support for iova_to_phys through ATS1PR
 
-Regards,
-Peter Hurley
+ drivers/iommu/arm-smmu.c | 73 ++++++++++++++++++++++++++++++++++++++++++++-
+ include/linux/iopoll.h   | 77 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 149 insertions(+), 1 deletion(-)
+ create mode 100644 include/linux/iopoll.h
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+hosted by The Linux Foundation
