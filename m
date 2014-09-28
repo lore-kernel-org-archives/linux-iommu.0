@@ -1,179 +1,45 @@
-From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH v3 2/2] iommu/arm-smmu: add support for iova_to_phys through
-	ATS1PR
-Date: Sat, 27 Sep 2014 20:27:29 -0700
-Message-ID: <1411874849-343-3-git-send-email-mitchelh@codeaurora.org>
-References: <1411874849-343-1-git-send-email-mitchelh@codeaurora.org>
+From: Yijing Wang <wangyijing@huawei.com>
+Subject: Re: [PATCH v2 00/22] Use MSI chip framework to configure MSI/MSI-X
+ in all platforms
+Date: Sun, 28 Sep 2014 14:11:44 +0800
+Message-ID: <5427A6A0.5040703@huawei.com>
+References: <1411614872-4009-1-git-send-email-wangyijing@huawei.com> <20140925074235.GN12423@ulmo> <20140925144855.GB31157@bart.dudau.co.uk> <20140925164937.GB30382@ulmo> <20140925171612.GC31157@bart.dudau.co.uk> <542505B3.7040208@huawei.com> <20140926085430.GG31106@ulmo> <20140926090537.GH31106@ulmo> <54277327.6070500@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1411874849-343-1-git-send-email-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <54277327.6070500@huawei.com>
+Sender: linux-arch-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Liviu Dudau <liviu@dudau.co.uk>, Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, linux-arch@vger.kernel.org, arnab.basu@freescale.com, Bharat.Bhushan@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@da>
 List-Id: iommu@lists.linux-foundation.org
 
-Currently, we provide the iommu_ops.iova_to_phys service by doing a
-table walk in software to translate IO virtual addresses to physical
-addresses. On SMMUs that support it, it can be useful to ask the SMMU
-itself to do the translation. This can be used to warm the TLBs for an
-SMMU. It can also be useful for testing and hardware validation.
+On 2014/9/28 10:32, Yijing Wang wrote:
+> On 2014/9/26 17:05, Thierry Reding wrote:
+>> On Fri, Sep 26, 2014 at 10:54:32AM +0200, Thierry Reding wrote:
+>> [...]
+>>> At least for Tegra it's trivial to just hook it up in tegra_pcie_scan_bus()
+>>> directly (patch attached).
+>>
+>> Really attached this time.
+>>
+>> Thierry
+>>
+> 
+> It looks good to me, so I will update the arm pci hostbridge driver to assign
+> pci root bus the msi chip instead of current pcibios_add_bus(). But for other
+> platforms which only have a one msi chip, I will kept the arch_find_msi_chip()
+> temporarily for more comments, especially from Bjorn.
 
-Since the address translation registers are optional on SMMUv2, only
-enable hardware translations when using SMMUv1 or when SMMU_IDR0.S1TS=1
-and SMMU_IDR0.ATOSNS=0, as described in the ARM SMMU v1-v2 spec.
+Oh, sorry, I found designware and rcar use pci_scan_root_bus(), so we can not simply
+assign msi chip to root bus in all host drivers's scan functions.
 
-Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
- drivers/iommu/arm-smmu.c | 73 +++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 72 insertions(+), 1 deletion(-)
+> 
+> Thanks!
+> Yijing.
+> 
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 37dc3dd0df..934870b593 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -36,6 +36,7 @@
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/iommu.h>
-+#include <linux/iopoll.h>
- #include <linux/mm.h>
- #include <linux/module.h>
- #include <linux/of.h>
-@@ -140,6 +141,7 @@
- #define ID0_S2TS			(1 << 29)
- #define ID0_NTS				(1 << 28)
- #define ID0_SMS				(1 << 27)
-+#define ID0_ATOSNS			(1 << 26)
- #define ID0_PTFS_SHIFT			24
- #define ID0_PTFS_MASK			0x2
- #define ID0_PTFS_V8_ONLY		0x2
-@@ -233,11 +235,17 @@
- #define ARM_SMMU_CB_TTBR0_HI		0x24
- #define ARM_SMMU_CB_TTBCR		0x30
- #define ARM_SMMU_CB_S1_MAIR0		0x38
-+#define ARM_SMMU_CB_PAR_LO		0x50
-+#define ARM_SMMU_CB_PAR_HI		0x54
- #define ARM_SMMU_CB_FSR			0x58
- #define ARM_SMMU_CB_FAR_LO		0x60
- #define ARM_SMMU_CB_FAR_HI		0x64
- #define ARM_SMMU_CB_FSYNR0		0x68
- #define ARM_SMMU_CB_S1_TLBIASID		0x610
-+#define ARM_SMMU_CB_ATS1PR_LO		0x800
-+#define ARM_SMMU_CB_ATS1PR_HI		0x804
-+#define ARM_SMMU_CB_ATSR		0x8f0
-+#define ATSR_LOOP_TIMEOUT		1000000	/* 1s! */
- 
- #define SCTLR_S1_ASIDPNE		(1 << 12)
- #define SCTLR_CFCFG			(1 << 7)
-@@ -249,6 +257,10 @@
- #define SCTLR_M				(1 << 0)
- #define SCTLR_EAE_SBOP			(SCTLR_AFE | SCTLR_TRE)
- 
-+#define CB_PAR_F			(1 << 0)
-+
-+#define ATSR_ACTIVE			(1 << 0)
-+
- #define RESUME_RETRY			(0 << 0)
- #define RESUME_TERMINATE		(1 << 0)
- 
-@@ -366,6 +378,7 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_TRANS_S1		(1 << 2)
- #define ARM_SMMU_FEAT_TRANS_S2		(1 << 3)
- #define ARM_SMMU_FEAT_TRANS_NESTED	(1 << 4)
-+#define ARM_SMMU_FEAT_TRANS_OPS		(1 << 5)
- 	u32				features;
- 
- #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
-@@ -1524,7 +1537,7 @@ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
- 	return ret ? 0 : size;
- }
- 
--static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
-+static phys_addr_t arm_smmu_iova_to_phys_soft(struct iommu_domain *domain,
- 					 dma_addr_t iova)
- {
- 	pgd_t *pgdp, pgd;
-@@ -1557,6 +1570,59 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
- 	return __pfn_to_phys(pte_pfn(pte)) | (iova & ~PAGE_MASK);
- }
- 
-+static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
-+					dma_addr_t iova)
-+{
-+	struct arm_smmu_domain *smmu_domain = domain->priv;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+	struct device *dev = smmu->dev;
-+	void __iomem *cb_base;
-+	u32 tmp;
-+	u64 phys;
-+
-+	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
-+
-+	if (smmu->version == 1) {
-+		u32 reg = iova & ~0xFFF;
-+		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_LO);
-+	} else {
-+		u32 reg = iova & ~0xFFF;
-+		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_LO);
-+		reg = (iova & ~0xFFF) >> 32;
-+		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_HI);
-+	}
-+
-+	if (readl_poll_timeout(cb_base + ARM_SMMU_CB_ATSR, tmp,
-+				!(tmp & ATSR_ACTIVE), 10, ATSR_LOOP_TIMEOUT)) {
-+		dev_err(dev,
-+			"iova to phys timed out on 0x%pa. Falling back to software table walk.\n",
-+			&iova);
-+		return arm_smmu_iova_to_phys_soft(domain, iova);
-+	}
-+
-+	phys = readl_relaxed(cb_base + ARM_SMMU_CB_PAR_LO);
-+	phys |= ((u64) readl_relaxed(cb_base + ARM_SMMU_CB_PAR_HI)) << 32;
-+
-+	if (phys & CB_PAR_F) {
-+		dev_err(dev, "translation fault!\n");
-+		dev_err(dev, "PAR = 0x%llx\n", phys);
-+	}
-+	phys = (phys & 0xFFFFFFF000ULL) | (iova & 0x00000FFF);
-+
-+	return phys;
-+}
-+
-+static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
-+					dma_addr_t iova)
-+{
-+	struct arm_smmu_domain *smmu_domain = domain->priv;
-+
-+	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_TRANS_OPS)
-+		return arm_smmu_iova_to_phys_hard(domain, iova);
-+	return arm_smmu_iova_to_phys_soft(domain, iova);
-+}
-+
- static int arm_smmu_domain_has_cap(struct iommu_domain *domain,
- 				   unsigned long cap)
- {
-@@ -1777,6 +1843,11 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 		return -ENODEV;
- 	}
- 
-+	if (smmu->version == 1 || (!(id & ID0_ATOSNS) && (id & ID0_S1TS))) {
-+		smmu->features |= ARM_SMMU_FEAT_TRANS_OPS;
-+		dev_notice(smmu->dev, "\taddress translation ops\n");
-+	}
-+
- 	if (id & ID0_CTTW) {
- 		smmu->features |= ARM_SMMU_FEAT_COHERENT_WALK;
- 		dev_notice(smmu->dev, "\tcoherent table walk\n");
+
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-hosted by The Linux Foundation
+Thanks!
+Yijing
