@@ -1,8 +1,8 @@
 From: Chuck Ebbert <cebbert.lkml@gmail.com>
 Subject: Re: [PATCH 1/2] x86: don't unnecessarily call
  dma_alloc_from_contiguous()
-Date: Sun, 28 Sep 2014 15:41:15 -0500
-Message-ID: <20140928154115.6d77541d@as>
+Date: Sun, 28 Sep 2014 15:45:25 -0500
+Message-ID: <20140928154525.76cc5464@as>
 References: <1411919524-3666-1-git-send-email-akinobu.mita@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -60,8 +60,7 @@ Akinobu Mita <akinobu.mita@gmail.com> wrote:
 > +	page = alloc_pages_node(dev_to_node(dev), flag | __GFP_NOWARN,
 > +				get_order(size));
 
-Shouldn't you be doing this only in the case where order is relatively
-small? Like < PAGE_ALLOC_COSTLY_ORDER or so?
+Only try small allocs here, like when order < PAGE_ALLOC_COSTLY_ORDER ?
 
 >  	/* CMA can be used only in the context which permits sleeping */
 > -	if (flag & __GFP_WAIT) {
@@ -75,6 +74,11 @@ small? Like < PAGE_ALLOC_COSTLY_ORDER or so?
 > -	/* fallback */
 > -	if (!page)
 > -		page = alloc_pages_node(dev_to_node(dev), flag, get_order(size));
+
+(I forgot to add this in my first reply). I think it should try for a
+small alloc without CMA first, then try CMA, and then this final
+fallback for larger allocs.
+
 > -	if (!page)
 > +	if (!page) {
 > +		warn_alloc_failed(flag, get_order(size), NULL);
