@@ -1,88 +1,68 @@
-From: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v3 0/5] enhance DMA CMA on x86
-Date: Sun, 28 Sep 2014 09:31:50 +0900
-Message-ID: <CAC5umyhgs8---HZLa7_DOSbqW0uPbLgqTfBweScZSR9oWbG9xg@mail.gmail.com>
-References: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com>
-	<5426CA0A.7000806@hurleysoftware.com>
+From: Yijing Wang <wangyijing@huawei.com>
+Subject: Re: [PATCH v2 00/22] Use MSI chip framework to configure MSI/MSI-X
+ in all platforms
+Date: Sun, 28 Sep 2014 10:16:12 +0800
+Message-ID: <54276F6C.5010705@huawei.com>
+References: <1411614872-4009-1-git-send-email-wangyijing@huawei.com> <20140925074235.GN12423@ulmo> <20140925144855.GB31157@bart.dudau.co.uk> <20140925164937.GB30382@ulmo> <5424E09F.50701@huawei.com> <20140926085030.GE31157@bart.dudau.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5426CA0A.7000806-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20140926085030.GE31157@bart.dudau.co.uk>
+Sender: linux-pci-owner@vger.kernel.org
+To: Liviu Dudau <liviu@dudau.co.uk>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, linux-arch@vger.kernel.org, arnab.basu@freescale.com, Bharat.Bhushan@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, David S. Miller
 List-Id: iommu@lists.linux-foundation.org
 
-2014-09-27 23:30 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
-> On 04/15/2014 09:08 AM, Akinobu Mita wrote:
->> This patch set enhances the DMA Contiguous Memory Allocator on x86.
+>>>> What I would like to see is a way of creating the pci_host_bridge structure outside
+>>>> the pci_create_root_bus(). That would then allow us to pass this sort of platform
+>>>> details like associated msi_chip into the host bridge and the child busses will
+>>>> have an easy way of finding the information needed by finding the root bus and then
+>>>> the host bridge structure. Then the generic pci_scan_root_bus() can be used by (mostly)
+>>>> everyone and the drivers can remove their kludges that try to work around the
+>>>> current limitations.
 >>
->> Currently the DMA CMA is only supported with pci-nommu dma_map_ops
->> and furthermore it can't be enabled on x86_64.  But I would like to
->> allocate big contiguous memory with dma_alloc_coherent() and tell it
->> to the device that requires it, regardless of which dma mapping
->> implementation is actually used in the system.
->>
->> So this makes it work with swiotlb and intel-iommu dma_map_ops, too.
->> And this also extends "cma=" kernel parameter to specify placement
->> constraint by the physical address range of memory allocations.  For
->> example, CMA allocates memory below 4GB by "cma=64M@0-4G", it is
->> required for the devices only supporting 32-bit addressing on 64-bit
->> systems without iommu.
->>
->> * Changes from v2
->> - Rebased on current Linus tree
->> - Add Acked-by line
->> - Fix gfp flags check for __GFP_ATOMIC, reported by Marek Szyprowski
->> - Avoid CMA area on highmem with cma= option, reported by Marek Szyprowski
->>
->> * Changes from v1
->> - fix dma_alloc_coherent() with __GFP_ZERO
->> - add placement specifier for "cma=" kernel parameter
->>
->> Akinobu Mita (5):
->>   x86: make dma_alloc_coherent() return zeroed memory if CMA is enabled
->>   x86: enable DMA CMA with swiotlb
->>   intel-iommu: integrate DMA CMA
->>   memblock: introduce memblock_alloc_range()
->>   cma: add placement specifier for "cma=" kernel parameter
->
-> This patchset breaks every x86 iommu configuration when CONFIG_DMA_CMA is
-> on, which is the base configuration for Ubuntu x86 and amd64 distro kernels.
->
-> Granted, the patchset leveraged existing code from the nommu configuration,
-> but that base (ie., calling dma_alloc_from_contiguous() in
-> dma_generic_alloc_config()) was an ill-conceived test configuration designed
-> to allow ARM developers to validate the CMA allocator on x86 boxen and
-> KVM guests, not as a general-purpose replacement for the existing page
-> allocator. The test code should have had a separate CONFIG_ knob.
->
-> What this patchset does is restrict all iommu configurations which can
-> map all of system memory to one _very_ small physical region, thus disabling
-> the whole point of an iommu.
->
-> Now I know why my GPU is causing paging to disk! And why my RAID controller
-> stalls for ages when I do a git log at the same time as a kernel build!
+>> So I think maybe save msi chip in PCI arch sysdata is a good candidate.
+> 
+> Except that arch sysdata at the moment is an opaque pointer. I am all in favour in
+> changing the type of sysdata from void* into pci_host_bridge* and arches can wrap their old
+> sysdata around the pci_host_bridge*.
 
-The solution I have for this is that instead of trying to
-dma_alloc_from_contiguous() firstly, call alloc_pages() in dma_alloc_coherent().
-dma_alloc_from_contiguous() should be called only when alloc_pages() is failed
-or DMA_ATTR_FORCE_CONTIGUOUS is specified in dma_attr.
+I inspected every arch and found there are almost no common stuff, and generic data struct should
+be created in generic PCI code. Another, I don't like associate msi chip and every PCI device, further more,
+almost all platforms except arm have only one MSI controller, and currently, PCI enumerating code doesn't need
+to know the MSI chip details, like for legacy IRQ, PCI device doesn't need to know which IRQ controller they
+should deliver IRQ to. I would think more about it, and hope other PCI guys can give some comments, especially from Bjorn.
 
-> And the apparent goal of this patchset is to enable DMA allocation below
-> 4GB, which is already supported in the existing page allocator with the
-> GFP_DMA32 flag?!
+Thanks!
+Yijing.
 
-The goal of this patchset is to enable huge DMA allocation which
-alloc_pages() can't (> MAX_ORDER) for the devices that require it.
+> 
+> Best regards,
+> Liviu
+> 
+>>
+>>>
+>>> I think both issues are orthogonal. Last time I checked a lot of work
+>>> was still necessary to unify host bridges enough so that it could be
+>>> shared across architectures. But perhaps some of that work has
+>>> happened in the meantime.
+>>>
+>>> But like I said, when you create the root bus, you can easily attach the
+>>> MSI chip to it.
+>>>
+>>> Thierry
+>>>
+>>
+>>
+>> -- 
+>> Thanks!
+>> Yijing
+>>
+>>
+> 
 
-Thanks for the notification.  I'll prepare a patch described above.
+
+-- 
+Thanks!
+Yijing
