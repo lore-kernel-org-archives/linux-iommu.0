@@ -1,15 +1,16 @@
 From: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 1/2] x86: don't unnecessarily call
-	dma_alloc_from_contiguous()
-Date: Mon, 29 Sep 2014 22:21:18 +0900
-Message-ID: <CAC5umygE3R6WwtG0P+LN7NV1Fn=DZ8+p41rG5hCJrWs64Yrr_A@mail.gmail.com>
-References: <1411919524-3666-1-git-send-email-akinobu.mita@gmail.com>
-	<20140928154525.76cc5464@as>
+Subject: Re: [PATCH v3 0/5] enhance DMA CMA on x86
+Date: Mon, 29 Sep 2014 23:32:55 +0900
+Message-ID: <CAC5umyjP4OscSC8igVLYPEm-6gqiXt9md46sLu77Vut5UiPb=g@mail.gmail.com>
+References: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com>
+	<5426CA0A.7000806@hurleysoftware.com>
+	<CAC5umyhgs8---HZLa7_DOSbqW0uPbLgqTfBweScZSR9oWbG9xg@mail.gmail.com>
+	<54294C0B.1060705@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140928154525.76cc5464@as>
+In-Reply-To: <54294C0B.1060705-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,78 +20,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Chuck Ebbert <cebbert.lkml-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-2014-09-29 5:45 GMT+09:00 Chuck Ebbert <cebbert.lkml-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>:
-> On Mon, 29 Sep 2014 00:52:03 +0900
-> Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+2014-09-29 21:09 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
+> On 09/27/2014 08:31 PM, Akinobu Mita wrote:
+>> 2014-09-27 23:30 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
+>>> On 04/15/2014 09:08 AM, Akinobu Mita wrote:
+>>>> This patch set enhances the DMA Contiguous Memory Allocator on x86.
 >
->> If CONFIG_DMA_CMA is enabled, dma_generic_alloc_coherent() tries to
->> allocate memory region by dma_alloc_from_contiguous() before trying to
->> use alloc_pages().
->>
->> This wastes CMA region by small DMA-coherent buffers which can be
->> allocated by alloc_pages().  And it also causes performance degradation,
->> as this is trying to drive _all_ dma mapping allocations through a
->> _very_ small window, reported by Peter Hurley.
->>
->> This fixes it by trying to allocate by alloc_pages() first in
->> dma_generic_alloc_coherent() as dma_alloc_from_contiguous should be
->> called only for huge allocation.
->>
->> Signed-off-by: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->> Reported-by: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
->> Cc: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
->> Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
->> Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
->> Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
->> Cc: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
->> Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
->> Cc: Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
->> Cc: "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>
->> Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>
->> Cc: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
->> Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
->> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->> ---
->>  arch/x86/kernel/pci-dma.c | 12 ++++++------
->>  1 file changed, 6 insertions(+), 6 deletions(-)
->>
->> diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
->> index a25e202..0402266 100644
->> --- a/arch/x86/kernel/pci-dma.c
->> +++ b/arch/x86/kernel/pci-dma.c
->> @@ -99,20 +99,20 @@ void *dma_generic_alloc_coherent(struct device *dev, size_t size,
->>
->>       flag &= ~__GFP_ZERO;
->>  again:
->> -     page = NULL;
->> +     page = alloc_pages_node(dev_to_node(dev), flag | __GFP_NOWARN,
->> +                             get_order(size));
+> [...]
 >
-> Only try small allocs here, like when order < PAGE_ALLOC_COSTLY_ORDER ?
+>>> What this patchset does is restrict all iommu configurations which can
+>>> map all of system memory to one _very_ small physical region, thus disabling
+>>> the whole point of an iommu.
+>>>
+>>> Now I know why my GPU is causing paging to disk! And why my RAID controller
+>>> stalls for ages when I do a git log at the same time as a kernel build!
+>>
+>> The solution I have for this is that instead of trying to
+>> dma_alloc_from_contiguous() firstly, call alloc_pages() in dma_alloc_coherent().
+>> dma_alloc_from_contiguous() should be called only when alloc_pages() is failed
+>> or DMA_ATTR_FORCE_CONTIGUOUS is specified in dma_attr.
 >
->>       /* CMA can be used only in the context which permits sleeping */
->> -     if (flag & __GFP_WAIT) {
->> +     if (!page && (flag & __GFP_WAIT)) {
->>               page = dma_alloc_from_contiguous(dev, count, get_order(size));
->>               if (page && page_to_phys(page) + size > dma_mask) {
->>                       dma_release_from_contiguous(dev, page, count);
->>                       page = NULL;
->>               }
->>       }
->> -     /* fallback */
->> -     if (!page)
->> -             page = alloc_pages_node(dev_to_node(dev), flag, get_order(size));
->
-> (I forgot to add this in my first reply). I think it should try for a
-> small alloc without CMA first, then try CMA, and then this final
-> fallback for larger allocs.
+> Why is all this extra complexity being added when there are no X86 users
+> of DMA_ATTR_FORCE_CONTIGUOUS?
 
-I'm concerned with the performance problem reported by Peter Hurley.
-This could be a solution, but I would like to hear Peter's opinion.
+I misunderstood DMA_ATTR_FORCE_CONTIGUOUS.  It is specified to request
+that underlaying DMA mapping span physically contiguous with IOMMU.
+But current alloc_dma_coherent() for intel-iommu always returns
+physically contiguous memory, so it is ignored on x86.
 
-For now, I prefer the solution by this patch because it gives less
-impact on CONFIG_DMA_CMA enabled.  But it can be improved later on.
+>>> And the apparent goal of this patchset is to enable DMA allocation below
+>>> 4GB, which is already supported in the existing page allocator with the
+>>> GFP_DMA32 flag?!
+>>
+>> The goal of this patchset is to enable huge DMA allocation which
+>> alloc_pages() can't (> MAX_ORDER) for the devices that require it.
+>
+> What x86 devices need > MAX_ORDER DMA allocation and why can't they allocate
+> directly from dma_alloc_from_contiguous()?
+
+I need this for UFS unified memory extension which is apparently not in
+mainline for now.
+http://www.jedec.org/standards-documents/docs/jesd220-1
+http://www.jedec.org/sites/default/files/T_Fujisawa_MF_2013.pdf
+
+But there must be some other use cases on x86, too.  Because I have
+received several emails privately from developers who care its status.
+
+And allocating directly from dma_alloc_from_contiguous() in the driver
+doesn't work with IOMMU, as it just returns memory regoin and doesn't
+create DMA mapping.
