@@ -1,16 +1,16 @@
-From: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v3 0/5] enhance DMA CMA on x86
-Date: Mon, 29 Sep 2014 23:32:55 +0900
-Message-ID: <CAC5umyjP4OscSC8igVLYPEm-6gqiXt9md46sLu77Vut5UiPb=g@mail.gmail.com>
-References: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com>
-	<5426CA0A.7000806@hurleysoftware.com>
-	<CAC5umyhgs8---HZLa7_DOSbqW0uPbLgqTfBweScZSR9oWbG9xg@mail.gmail.com>
-	<54294C0B.1060705@hurleysoftware.com>
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v3 1/2] iopoll: Introduce memory-mapped IO polling macros
+Date: Mon, 29 Sep 2014 09:47:34 -0700
+Message-ID: <vnkwmw9il6ft.fsf@mitchelh-linux.qualcomm.com>
+References: <1411874849-343-1-git-send-email-mitchelh@codeaurora.org>
+	<1411874849-343-2-git-send-email-mitchelh@codeaurora.org>
+	<20140929083136.GG12506@ulmo>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <54294C0B.1060705-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+In-Reply-To: <20140929083136.GG12506@ulmo> (Thierry Reding's message of "Mon,
+	29 Sep 2014 10:31:37 +0200")
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,56 +20,43 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-2014-09-29 21:09 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
-> On 09/27/2014 08:31 PM, Akinobu Mita wrote:
->> 2014-09-27 23:30 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
->>> On 04/15/2014 09:08 AM, Akinobu Mita wrote:
->>>> This patch set enhances the DMA Contiguous Memory Allocator on x86.
+On Mon, Sep 29 2014 at 01:31:37 AM, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> On Sat, Sep 27, 2014 at 08:27:28PM -0700, Mitchel Humpherys wrote:
+>> From: Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>> 
+>> It is sometimes necessary to poll a memory-mapped register until its
+>> value satisfies some condition. Introduce a family of convenience macros
+>> that do this. Tight-loop and sleeping versions are provided with and
+>> without timeouts.
+>> 
+>> Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+>> Signed-off-by: Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>> Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>> ---
+>>  include/linux/iopoll.h | 77 ++++++++++++++++++++++++++++++++++++++++++++++++++
+>>  1 file changed, 77 insertions(+)
+>>  create mode 100644 include/linux/iopoll.h
 >
-> [...]
->
->>> What this patchset does is restrict all iommu configurations which can
->>> map all of system memory to one _very_ small physical region, thus disabling
->>> the whole point of an iommu.
->>>
->>> Now I know why my GPU is causing paging to disk! And why my RAID controller
->>> stalls for ages when I do a git log at the same time as a kernel build!
->>
->> The solution I have for this is that instead of trying to
->> dma_alloc_from_contiguous() firstly, call alloc_pages() in dma_alloc_coherent().
->> dma_alloc_from_contiguous() should be called only when alloc_pages() is failed
->> or DMA_ATTR_FORCE_CONTIGUOUS is specified in dma_attr.
->
-> Why is all this extra complexity being added when there are no X86 users
-> of DMA_ATTR_FORCE_CONTIGUOUS?
+> It would be good to provide a changelog with each new version of the
+> patch. As it is I now have v2 and v3 of this patch in my inbox and I
+> have no idea what the differences are, so I'd need to download both
+> and run them through interdiff to find out.
 
-I misunderstood DMA_ATTR_FORCE_CONTIGUOUS.  It is specified to request
-that underlaying DMA mapping span physically contiguous with IOMMU.
-But current alloc_dma_coherent() for intel-iommu always returns
-physically contiguous memory, so it is ignored on x86.
+Yeah I put the changelog in the cover letter.  There were no changes on
+this patch, though I admit that wasn't entirely clear now re-reading the
+cover letter text.  I also didn't account for the fact that you probably
+aren't reading the whole series since I only Cc'd you on this patch, not
+the whole series.  In any case, I probably shouldn't have re-sent the
+whole series after one minor modification to one patch in the series.
 
->>> And the apparent goal of this patchset is to enable DMA allocation below
->>> 4GB, which is already supported in the existing page allocator with the
->>> GFP_DMA32 flag?!
->>
->> The goal of this patchset is to enable huge DMA allocation which
->> alloc_pages() can't (> MAX_ORDER) for the devices that require it.
->
-> What x86 devices need > MAX_ORDER DMA allocation and why can't they allocate
-> directly from dma_alloc_from_contiguous()?
 
-I need this for UFS unified memory extension which is apparently not in
-mainline for now.
-http://www.jedec.org/standards-documents/docs/jesd220-1
-http://www.jedec.org/sites/default/files/T_Fujisawa_MF_2013.pdf
+-Mitch
 
-But there must be some other use cases on x86, too.  Because I have
-received several emails privately from developers who care its status.
-
-And allocating directly from dma_alloc_from_contiguous() in the driver
-doesn't work with IOMMU, as it just returns memory regoin and doesn't
-create DMA mapping.
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+hosted by The Linux Foundation
