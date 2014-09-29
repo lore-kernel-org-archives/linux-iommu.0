@@ -1,89 +1,161 @@
-From: Chuck Ebbert <cebbert.lkml@gmail.com>
-Subject: Re: [PATCH 1/2] x86: don't unnecessarily call
- dma_alloc_from_contiguous()
-Date: Sun, 28 Sep 2014 15:45:25 -0500
-Message-ID: <20140928154525.76cc5464@as>
-References: <1411919524-3666-1-git-send-email-akinobu.mita@gmail.com>
+From: Yijing Wang <wangyijing@huawei.com>
+Subject: Re: [PATCH v2 00/22] Use MSI chip framework to configure MSI/MSI-X
+ in all platforms
+Date: Mon, 29 Sep 2014 09:44:17 +0800
+Message-ID: <5428B971.50101@huawei.com>
+References: <1411614872-4009-1-git-send-email-wangyijing@huawei.com> <20140925074235.GN12423@ulmo> <20140925144855.GB31157@bart.dudau.co.uk> <20140925164937.GB30382@ulmo> <5424E09F.50701@huawei.com> <20140926085030.GE31157@bart.dudau.co.uk> <54276F6C.5010705@huawei.com> <20140928112144.GA4671@bart.dudau.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1411919524-3666-1-git-send-email-akinobu.mita@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Akinobu Mita <akinobu.mita@gmail.com>
-Cc: linux-kernel@vger.kernel.org, akpm@linux-foundation.org, Peter Hurley <peter@hurleysoftware.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, David Woodhouse <dwmw2@infradead.org>, Don Dutile <ddutile@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <andi@firstfloor.org>, Yinghai Lu <yinghai@kernel.org>, x86@kernel.org, iommu@lists.linux-foundation.org
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <20140928112144.GA4671@bart.dudau.co.uk>
+Sender: linux-arch-owner@vger.kernel.org
+To: Liviu Dudau <liviu@dudau.co.uk>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, linux-arch@vger.kernel.org, arnab.basu@freescale.com, Bharat.Bhushan@freescale.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, David S. Miller
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 29 Sep 2014 00:52:03 +0900
-Akinobu Mita <akinobu.mita@gmail.com> wrote:
+On 2014/9/28 19:21, Liviu Dudau wrote:
+> On Sun, Sep 28, 2014 at 10:16:12AM +0800, Yijing Wang wrote:
+>>>>>> What I would like to see is a way of creating the pci_host_bridge structure outside
+>>>>>> the pci_create_root_bus(). That would then allow us to pass this sort of platform
+>>>>>> details like associated msi_chip into the host bridge and the child busses will
+>>>>>> have an easy way of finding the information needed by finding the root bus and then
+>>>>>> the host bridge structure. Then the generic pci_scan_root_bus() can be used by (mostly)
+>>>>>> everyone and the drivers can remove their kludges that try to work around the
+>>>>>> current limitations.
+>>>>
+>>>> So I think maybe save msi chip in PCI arch sysdata is a good candidate.
+>>>
+>>> Except that arch sysdata at the moment is an opaque pointer. I am all in favour in
+>>> changing the type of sysdata from void* into pci_host_bridge* and arches can wrap their old
+>>> sysdata around the pci_host_bridge*.
+>>
+>> I inspected every arch and found there are almost no common stuff,
+> 
+> I will disagree here. Most (all?) of the structures that are passed as sysdata argument to
 
-> If CONFIG_DMA_CMA is enabled, dma_generic_alloc_coherent() tries to
-> allocate memory region by dma_alloc_from_contiguous() before trying to
-> use alloc_pages().
+Most.
+
+> pci_create_root_bus() or pci_scan_root_bus() have a set of resources for storing the MEM and
+> IO ranges, which struct pci_host_bridge already has. So that can be factored out of the
+> arch code. Same for pci_domain_nr. Then there are some variables that are used for communication
+> with the platform code due to convoluted way(s) in which PCI code gets instantiated.
+
+Yes, currently some archs store MEM and IO resource in pci sysdata, and others not, move the MEM and IO
+resource to pci_host_bride could make code become simple, we can clean up the resource list argument in
+pci scan functions.
+
 > 
-> This wastes CMA region by small DMA-coherent buffers which can be
-> allocated by alloc_pages().  And it also causes performance degradation,
-> as this is trying to drive _all_ dma mapping allocations through a
-> _very_ small window, reported by Peter Hurley.
+> What I am arguing here is not that the arch equivalent of pci_host_bridge structure is already
+> common, but that by moving the members that are common out of arch sysdata into pci_host_bridge
+> we will have more commonality and it will be easier to re-factor the code.
+
+Now, I got it, thanks!
+
 > 
-> This fixes it by trying to allocate by alloc_pages() first in
-> dma_generic_alloc_coherent() as dma_alloc_from_contiguous should be
-> called only for huge allocation.
+>> and generic data struct should
+>> be created in generic PCI code.
 > 
-> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
-> Reported-by: Peter Hurley <peter@hurleysoftware.com>
-> Cc: Peter Hurley <peter@hurleysoftware.com>
-> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-> Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-> Cc: David Woodhouse <dwmw2@infradead.org>
-> Cc: Don Dutile <ddutile@redhat.com>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Ingo Molnar <mingo@redhat.com>
-> Cc: "H. Peter Anvin" <hpa@zytor.com>
-> Cc: Andi Kleen <andi@firstfloor.org>
-> Cc: Yinghai Lu <yinghai@kernel.org>
-> Cc: x86@kernel.org
-> Cc: iommu@lists.linux-foundation.org
-> ---
->  arch/x86/kernel/pci-dma.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
+> Not necessarily. What I have in mind is something like this:
+
+This is a good idea, what I'm worried is this series is already large, so I think we need to post
+another series to do it.
+
+
 > 
-> diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
-> index a25e202..0402266 100644
-> --- a/arch/x86/kernel/pci-dma.c
-> +++ b/arch/x86/kernel/pci-dma.c
-> @@ -99,20 +99,20 @@ void *dma_generic_alloc_coherent(struct device *dev, size_t size,
+>  - drivers/pci/ exports pci_init_host_bridge() that does the initialisation of bridge->windows
+>    and anything else that is needed (like find_pci_host_bridge() function).
+>  - arch code does:
+> 
+> 	struct pci_controller {
+> 		struct pci_host_bridge bridge;
+> 		.....
+> 	};
+> 
+> 	#define to_pci_controller(bridge)	container_of(bridge, struct pci_controller, bridge)
+> 
+> 	static inline struct pci_controller *get_host_controller(const struct pci_bus *bus)
+> 	{
+> 		struct pci_host_bridge *bridge = find_pci_host_bridge(bus);
+> 		if (bridge)
+> 			return to_pci_controller(bridge);
+> 
+> 		return NULL;
+> 	}
+> 
+> 	int arch_pci_init(....)
+> 	{
+> 		struct pci_controller *hose;
+> 		....
+> 		hose = kzalloc(sizeof(*hose), GFP_KERNEL);
+> 		pci_init_host_bridge(&hose->bridge);
+> 		....
+> 		pci_scan_root_bus(...., &hose->bridge, &resources);
+> 		....
+> 		return 0;
+> 	}
+> 
+> Then finding the right structure will be easy.
+> 
+>> Another, I don't like associate msi chip and every PCI device, further more,
+>> almost all platforms except arm have only one MSI controller, and currently, PCI enumerating code doesn't need
+>> to know the MSI chip details, like for legacy IRQ, PCI device doesn't need to know which IRQ controller they
+>> should deliver IRQ to. I would think more about it, and hope other PCI guys can give some comments, especially from Bjorn.
+>>
+> 
+> I wasn't suggesing to associate an msi chip with every PCI device, but with the pci_host_bridge.
+> I don't expect a host bridge to have more than one msi chip, so that should be OK. Also, I'm
+> thinking that getting the associated msi chip should be some sort of pci_host_bridge ops function,
+> and for arches that don't care about MSI it doesn't get implemented.
+
+Currently, a property "msi-parent" was introduced in arm, and all msi chip integrated in irq chip controller will
+be added to of_pci_msi_chip_list. PCI host driver find the match msi chip by its of_node.
+
+Thanks!
+Yijing.
+
+> 
+> Best regards,
+> Liviu
+> 
 >  
->  	flag &= ~__GFP_ZERO;
->  again:
-> -	page = NULL;
-> +	page = alloc_pages_node(dev_to_node(dev), flag | __GFP_NOWARN,
-> +				get_order(size));
+>> Thanks!
+>> Yijing.
+>>
+>>>
+>>> Best regards,
+>>> Liviu
+>>>
+>>>>
+>>>>>
+>>>>> I think both issues are orthogonal. Last time I checked a lot of work
+>>>>> was still necessary to unify host bridges enough so that it could be
+>>>>> shared across architectures. But perhaps some of that work has
+>>>>> happened in the meantime.
+>>>>>
+>>>>> But like I said, when you create the root bus, you can easily attach the
+>>>>> MSI chip to it.
+>>>>>
+>>>>> Thierry
+>>>>>
+>>>>
+>>>>
+>>>> -- 
+>>>> Thanks!
+>>>> Yijing
+>>>>
+>>>>
+>>>
+>>
+>>
+>> -- 
+>> Thanks!
+>> Yijing
+>>
+>>
+> 
 
-Only try small allocs here, like when order < PAGE_ALLOC_COSTLY_ORDER ?
 
->  	/* CMA can be used only in the context which permits sleeping */
-> -	if (flag & __GFP_WAIT) {
-> +	if (!page && (flag & __GFP_WAIT)) {
->  		page = dma_alloc_from_contiguous(dev, count, get_order(size));
->  		if (page && page_to_phys(page) + size > dma_mask) {
->  			dma_release_from_contiguous(dev, page, count);
->  			page = NULL;
->  		}
->  	}
-> -	/* fallback */
-> -	if (!page)
-> -		page = alloc_pages_node(dev_to_node(dev), flag, get_order(size));
-
-(I forgot to add this in my first reply). I think it should try for a
-small alloc without CMA first, then try CMA, and then this final
-fallback for larger allocs.
-
-> -	if (!page)
-> +	if (!page) {
-> +		warn_alloc_failed(flag, get_order(size), NULL);
->  		return NULL;
-> +	}
->  
->  	addr = page_to_phys(page);
->  	if (addr + size > dma_mask) {
+-- 
+Thanks!
+Yijing
