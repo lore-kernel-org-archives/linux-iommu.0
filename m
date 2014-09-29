@@ -1,18 +1,14 @@
-From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: Re: [PATCHv7 06/26] vfio/iommu_type1: implement the
-	VFIO_DMA_MAP_FLAG_NOEXEC flag
-Date: Mon, 29 Sep 2014 12:38:10 +0200
-Message-ID: <CAG8rG2ykooVtOo83hMrDvaeWvpvOpDi5X6XsHBf-BeD5WpG9Nw@mail.gmail.com>
-References: <1411483586-29304-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1411483586-29304-7-git-send-email-a.motakis@virtualopensystems.com>
-	<1411512059.24563.57.camel@ul30vt.home>
-	<CAG8rG2z14gT28jec66o3UQ=z-omNv+bC43moJT-FhdUtd2OJDg@mail.gmail.com>
-	<1411763257.7360.49.camel@ul30vt.home>
+From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v3 0/5] enhance DMA CMA on x86
+Date: Mon, 29 Sep 2014 08:09:47 -0400
+Message-ID: <54294C0B.1060705@hurleysoftware.com>
+References: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com>	<5426CA0A.7000806@hurleysoftware.com>
+	<CAC5umyhgs8---HZLa7_DOSbqW0uPbLgqTfBweScZSR9oWbG9xg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1411763257.7360.49.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+In-Reply-To: <CAC5umyhgs8---HZLa7_DOSbqW0uPbLgqTfBweScZSR9oWbG9xg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,155 +18,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: KVM devel mailing list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 26, 2014 at 10:27 PM, Alex Williamson
-<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> On Fri, 2014-09-26 at 17:39 +0200, Antonios Motakis wrote:
->> On Wed, Sep 24, 2014 at 12:40 AM, Alex Williamson
->> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
->> > On Tue, 2014-09-23 at 16:46 +0200, Antonios Motakis wrote:
->> >> Some IOMMU drivers, such as the ARM SMMU driver, make available the
->> >> IOMMU_NOEXEC flag, to set the page tables for a device as XN (execute never).
->> >> This affects devices such as the ARM PL330 DMA Controller, which respects
->> >> this flag and will refuse to fetch DMA instructions from memory where the
->> >> XN flag has been set.
->> >>
->> >> The flag can be used only if all IOMMU domains behind the container support
->> >> the IOMMU_NOEXEC flag. Also, if any mappings are created with the flag, any
->> >> new domains with devices will have to support it as well.
->> >>
->> >> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
->> >> ---
->> >>  drivers/vfio/vfio_iommu_type1.c | 38 +++++++++++++++++++++++++++++++++++++-
->> >>  1 file changed, 37 insertions(+), 1 deletion(-)
->> >>
->> >> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
->> >> index 0734fbe..09e5064 100644
->> >> --- a/drivers/vfio/vfio_iommu_type1.c
->> >> +++ b/drivers/vfio/vfio_iommu_type1.c
->> >> @@ -81,6 +81,26 @@ struct vfio_group {
->> >>  };
->> >>
->> >>  /*
->> >> + * This function returns true only if _all_ domains support the capability.
->> >> + */
->> >> +static int vfio_all_domains_have_iommu_noexec(struct vfio_iommu *iommu)
->> >
->> > Rename to vfio_domains_have_iommu_noexec() for consistency with the
->> > cache version.
->> >
->>
->> The logic here is a slightly different logic between the two. For
->> IOMMU_CACHE we generally check if any domain includes it,
->
-> Not true, all the domains must support IOMMU_CACHE for the function to
-> return 1.  In fact, the code is so identical that if we were to cache
-> IOMMU_CAP_NOEXEC into domain->prot, we should probably only have one
-> function:
->
-> static int vfio_domains_have_iommu_flag(struct vfio_iommu *iommu, int flag);
->
+On 09/27/2014 08:31 PM, Akinobu Mita wrote:
+> 2014-09-27 23:30 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
+>> On 04/15/2014 09:08 AM, Akinobu Mita wrote:
+>>> This patch set enhances the DMA Contiguous Memory Allocator on x86.
 
-You are absolutely correct, I managed to confuse myself when switching
-from vfio_domains_have_iommu_exec to vfio_domains_have_iommu_noexec.
+[...]
 
-I will implement the shared function.
+>> What this patchset does is restrict all iommu configurations which can
+>> map all of system memory to one _very_ small physical region, thus disabling
+>> the whole point of an iommu.
+>>
+>> Now I know why my GPU is causing paging to disk! And why my RAID controller
+>> stalls for ages when I do a git log at the same time as a kernel build!
+> 
+> The solution I have for this is that instead of trying to
+> dma_alloc_from_contiguous() firstly, call alloc_pages() in dma_alloc_coherent().
+> dma_alloc_from_contiguous() should be called only when alloc_pages() is failed
+> or DMA_ATTR_FORCE_CONTIGUOUS is specified in dma_attr.
 
->>  for NOEXEC
->> in contract we need all domains to support it, otherwise we can't
->> expose the capability. Hence the _all_ addition in the name of the
->> function.
->>
->> >> +{
->> >> +     struct vfio_domain *d;
->> >> +     int ret = 1;
->> >> +
->> >> +     mutex_lock(&iommu->lock);
->> >> +     list_for_each_entry(d, &iommu->domain_list, next) {
->> >> +             if (!iommu_domain_has_cap(d->domain, IOMMU_CAP_NOEXEC)) {
->> >
->> > Should we cache this in domain->prot like we do for IOMMU_CACHE?
->> >
->> >> +                     ret = 0;
->> >> +                     break;
->> >> +             }
->> >> +     }
->> >> +     mutex_unlock(&iommu->lock);
->> >> +
->> >> +     return ret;
->> >> +}
->> >> +
->> >> +/*
->> >>   * This code handles mapping and unmapping of user data buffers
->> >>   * into DMA'ble space using the IOMMU
->> >>   */
->> >> @@ -546,6 +566,11 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
->> >>               prot |= IOMMU_WRITE;
->> >>       if (map->flags & VFIO_DMA_MAP_FLAG_READ)
->> >>               prot |= IOMMU_READ;
->> >> +     if (map->flags & VFIO_DMA_MAP_FLAG_NOEXEC) {
->> >> +             if (!vfio_all_domains_have_iommu_noexec(iommu))
->> >> +                     return -EINVAL;
->> >> +             prot |= IOMMU_NOEXEC;
->> >> +     }
->> >>
->> >>       if (!prot || !size || (size | iova | vaddr) & mask)
->> >>               return -EINVAL;
->> >> @@ -636,6 +661,12 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
->> >>               dma = rb_entry(n, struct vfio_dma, node);
->> >>               iova = dma->iova;
->> >>
->> >> +             /* if any of the mappings to be replayed has the NOEXEC flag
->> >> +              * set, then the new iommu domain must support it */
->> >
->> > nit, please fix the comment style to match the rest of the file.
->> >
->>
->> Ack
->>
->> >> +             if ((dma->prot | IOMMU_NOEXEC) &&
->> >> +                 !iommu_domain_has_cap(domain->domain, IOMMU_CAP_NOEXEC))
->> >> +                     return -EINVAL;
->> >> +
->> >>               while (iova < dma->iova + dma->size) {
->> >>                       phys_addr_t phys = iommu_iova_to_phys(d->domain, iova);
->> >>                       size_t size;
->> >> @@ -890,6 +921,10 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
->> >>                       if (!iommu)
->> >>                               return 0;
->> >>                       return vfio_domains_have_iommu_cache(iommu);
->> >> +             case VFIO_IOMMU_PROT_NOEXEC:
->> >> +                     if (!iommu)
->> >> +                             return 0;
->> >> +                     return vfio_all_domains_have_iommu_noexec(iommu);
->> >>               default:
->> >>                       return 0;
->> >>               }
->> >> @@ -913,7 +948,8 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
->> >>       } else if (cmd == VFIO_IOMMU_MAP_DMA) {
->> >>               struct vfio_iommu_type1_dma_map map;
->> >>               uint32_t mask = VFIO_DMA_MAP_FLAG_READ |
->> >> -                             VFIO_DMA_MAP_FLAG_WRITE;
->> >> +                             VFIO_DMA_MAP_FLAG_WRITE |
->> >> +                             VFIO_DMA_MAP_FLAG_NOEXEC;
->> >>
->> >>               minsz = offsetofend(struct vfio_iommu_type1_dma_map, size);
->> >>
->> >
->> >
->> >
->>
->>
->>
->
->
->
+Why is all this extra complexity being added when there are no X86 users
+of DMA_ATTR_FORCE_CONTIGUOUS?
 
 
+>> And the apparent goal of this patchset is to enable DMA allocation below
+>> 4GB, which is already supported in the existing page allocator with the
+>> GFP_DMA32 flag?!
+> 
+> The goal of this patchset is to enable huge DMA allocation which
+> alloc_pages() can't (> MAX_ORDER) for the devices that require it.
 
--- 
-Antonios Motakis
-Virtual Open Systems
+What x86 devices need > MAX_ORDER DMA allocation and why can't they allocate
+directly from dma_alloc_from_contiguous()?
+
+Regards,
+Peter Hurley
