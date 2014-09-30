@@ -1,13 +1,18 @@
-From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
-Subject: [PATCH 11/17] iommu/omap: Make pagetable debugfs entry read-only
-Date: Tue, 30 Sep 2014 16:16:06 -0500
-Message-ID: <1412111772-38006-12-git-send-email-s-anna@ti.com>
-References: <1412111772-38006-1-git-send-email-s-anna@ti.com>
+From: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v3 0/5] enhance DMA CMA on x86
+Date: Wed, 1 Oct 2014 08:23:02 +0900
+Message-ID: <CAC5umygXqxUx2BnFxnbmGh7OsxBBtMM1CqhKGeQiPWZwbUhF_g@mail.gmail.com>
+References: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com>
+	<5426CA0A.7000806@hurleysoftware.com>
+	<CAC5umyhgs8---HZLa7_DOSbqW0uPbLgqTfBweScZSR9oWbG9xg@mail.gmail.com>
+	<54294C0B.1060705@hurleysoftware.com>
+	<CAC5umyjP4OscSC8igVLYPEm-6gqiXt9md46sLu77Vut5UiPb=g@mail.gmail.com>
+	<542ABF77.1020402@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1412111772-38006-1-git-send-email-s-anna-l0cyMroinI0@public.gmane.org>
+In-Reply-To: <542ABF77.1020402-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,112 +22,84 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Remove the writeability on the 'pagetable' debugfs entry,
-so that the mapping/unmapping into an OMAP IOMMU is only
-limited to actual client devices/drivers at kernel-level.
+2014-09-30 23:34 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
+> On 09/29/2014 10:32 AM, Akinobu Mita wrote:
+>> 2014-09-29 21:09 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
+>>> On 09/27/2014 08:31 PM, Akinobu Mita wrote:
+>>>> 2014-09-27 23:30 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
+>>>>> On 04/15/2014 09:08 AM, Akinobu Mita wrote:
+>>>>>> This patch set enhances the DMA Contiguous Memory Allocator on x86.
+>>>
+>>> [...]
+>>>
+>>>>> What this patchset does is restrict all iommu configurations which can
+>>>>> map all of system memory to one _very_ small physical region, thus disabling
+>>>>> the whole point of an iommu.
+>>>>>
+>>>>> Now I know why my GPU is causing paging to disk! And why my RAID controller
+>>>>> stalls for ages when I do a git log at the same time as a kernel build!
+>>>>
+>>>> The solution I have for this is that instead of trying to
+>>>> dma_alloc_from_contiguous() firstly, call alloc_pages() in dma_alloc_coherent().
+>>>> dma_alloc_from_contiguous() should be called only when alloc_pages() is failed
+>>>> or DMA_ATTR_FORCE_CONTIGUOUS is specified in dma_attr.
+>>>
+>>> Why is all this extra complexity being added when there are no X86 users
+>>> of DMA_ATTR_FORCE_CONTIGUOUS?
+>>
+>> I misunderstood DMA_ATTR_FORCE_CONTIGUOUS.  It is specified to request
+>> that underlaying DMA mapping span physically contiguous with IOMMU.
+>> But current alloc_dma_coherent() for intel-iommu always returns
+>> physically contiguous memory, so it is ignored on x86.
+>>
+>>>>> And the apparent goal of this patchset is to enable DMA allocation below
+>>>>> 4GB, which is already supported in the existing page allocator with the
+>>>>> GFP_DMA32 flag?!
+>>>>
+>>>> The goal of this patchset is to enable huge DMA allocation which
+>>>> alloc_pages() can't (> MAX_ORDER) for the devices that require it.
+>>>
+>>> What x86 devices need > MAX_ORDER DMA allocation and why can't they allocate
+>>> directly from dma_alloc_from_contiguous()?
+>>
+>> I need this for UFS unified memory extension which is apparently not in
+>> mainline for now.
+>> http://www.jedec.org/standards-documents/docs/jesd220-1
+>> http://www.jedec.org/sites/default/files/T_Fujisawa_MF_2013.pdf
+>>
+>> But there must be some other use cases on x86, too.  Because I have
+>> received several emails privately from developers who care its status.
+>>
+>> And allocating directly from dma_alloc_from_contiguous() in the driver
+>> doesn't work with IOMMU, as it just returns memory regoin and doesn't
+>> create DMA mapping.
+>
+>
+> I read the UFS Unified Memory Extension v1.0 (JESD220-1) specification and
+> it is not clear to me that using DMA mapping is the right approach to
+> supporting UM, at least on x86.
 
-Signed-off-by: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
----
- drivers/iommu/omap-iommu-debug.c | 48 ++--------------------------------------
- 1 file changed, 2 insertions(+), 46 deletions(-)
+Without DMA mapping, there is no way for the devices to access host
+memory.  Unified memory extension requires a single contiguous memory
+region instead of multiple scattered mapping.
 
-diff --git a/drivers/iommu/omap-iommu-debug.c b/drivers/iommu/omap-iommu-debug.c
-index a520438..28de657 100644
---- a/drivers/iommu/omap-iommu-debug.c
-+++ b/drivers/iommu/omap-iommu-debug.c
-@@ -24,8 +24,6 @@
- #include "omap-iopgtable.h"
- #include "omap-iommu.h"
- 
--#define MAXCOLUMN 100 /* for short messages */
--
- static DEFINE_MUTEX(iommu_debug_lock);
- 
- static struct dentry *iommu_debug_root;
-@@ -82,39 +80,6 @@ static ssize_t debug_read_tlb(struct file *file, char __user *userbuf,
- 	return bytes;
- }
- 
--static ssize_t debug_write_pagetable(struct file *file,
--		     const char __user *userbuf, size_t count, loff_t *ppos)
--{
--	struct iotlb_entry e;
--	struct cr_regs cr;
--	int err;
--	struct device *dev = file->private_data;
--	struct omap_iommu *obj = dev_to_omap_iommu(dev);
--	char buf[MAXCOLUMN], *p = buf;
--
--	count = min(count, sizeof(buf));
--
--	mutex_lock(&iommu_debug_lock);
--	if (copy_from_user(p, userbuf, count)) {
--		mutex_unlock(&iommu_debug_lock);
--		return -EFAULT;
--	}
--
--	sscanf(p, "%x %x", &cr.cam, &cr.ram);
--	if (!cr.cam || !cr.ram) {
--		mutex_unlock(&iommu_debug_lock);
--		return -EINVAL;
--	}
--
--	omap_iotlb_cr_to_e(&cr, &e);
--	err = omap_iopgtable_store_entry(obj, &e);
--	if (err)
--		dev_err(obj->dev, "%s: fail to store cr\n", __func__);
--
--	mutex_unlock(&iommu_debug_lock);
--	return count;
--}
--
- #define dump_ioptable_entry_one(lv, da, val)			\
- 	({							\
- 		int __err = 0;					\
-@@ -202,14 +167,6 @@ static ssize_t debug_read_pagetable(struct file *file, char __user *userbuf,
- 	return bytes;
- }
- 
--#define DEBUG_FOPS(name)						\
--	static const struct file_operations debug_##name##_fops = {	\
--		.open = simple_open,					\
--		.read = debug_read_##name,				\
--		.write = debug_write_##name,				\
--		.llseek = generic_file_llseek,				\
--	};
--
- #define DEBUG_FOPS_RO(name)						\
- 	static const struct file_operations debug_##name##_fops = {	\
- 		.open = simple_open,					\
-@@ -219,7 +176,7 @@ static ssize_t debug_read_pagetable(struct file *file, char __user *userbuf,
- 
- DEBUG_FOPS_RO(regs);
- DEBUG_FOPS_RO(tlb);
--DEBUG_FOPS(pagetable);
-+DEBUG_FOPS_RO(pagetable);
- 
- #define __DEBUG_ADD_FILE(attr, mode)					\
- 	{								\
-@@ -230,7 +187,6 @@ DEBUG_FOPS(pagetable);
- 			return -ENOMEM;					\
- 	}
- 
--#define DEBUG_ADD_FILE(name) __DEBUG_ADD_FILE(name, 0600)
- #define DEBUG_ADD_FILE_RO(name) __DEBUG_ADD_FILE(name, 0400)
- 
- static int iommu_debug_register(struct device *dev, void *data)
-@@ -263,7 +219,7 @@ static int iommu_debug_register(struct device *dev, void *data)
- 
- 	DEBUG_ADD_FILE_RO(regs);
- 	DEBUG_ADD_FILE_RO(tlb);
--	DEBUG_ADD_FILE(pagetable);
-+	DEBUG_ADD_FILE_RO(pagetable);
- 
- 	return 0;
- 
--- 
-2.1.0
+> And without a mainline user, the merits of this approach are not evident.
+> I cannot even find a production x86 UFS controller, much less one that
+> supports UME.
+>
+> The only PCI UFS controller I could find (and that mainline supports) is
+> Samsung's x86 FPGA-based test unit for developing UFS devices in a x86 test
+> environment, and not a production x86 design.
+>
+> Samsung's own roadmap (http://www.slideshare.net/linaroorg/next-gen-mobilestorageufs)
+> mentions nothing about bringing UFS to x86 designs.
+>
+> Unless there's something else I've missed, I don't think these patches
+> belong in mainline.
+
+Removing CONFIG_CMA_DMA support from x86_64 will disappoint me, but it's
+personal opinion.  FWIW, MIPS also starts supporting it in linux-next.
