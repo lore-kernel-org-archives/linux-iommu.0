@@ -1,105 +1,61 @@
-From: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+From: Thomas Gleixner <tglx@linutronix.de>
 Subject: Re: [PATCH v3 0/5] enhance DMA CMA on x86
-Date: Wed, 1 Oct 2014 08:23:02 +0900
-Message-ID: <CAC5umygXqxUx2BnFxnbmGh7OsxBBtMM1CqhKGeQiPWZwbUhF_g@mail.gmail.com>
-References: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com>
-	<5426CA0A.7000806@hurleysoftware.com>
-	<CAC5umyhgs8---HZLa7_DOSbqW0uPbLgqTfBweScZSR9oWbG9xg@mail.gmail.com>
-	<54294C0B.1060705@hurleysoftware.com>
-	<CAC5umyjP4OscSC8igVLYPEm-6gqiXt9md46sLu77Vut5UiPb=g@mail.gmail.com>
-	<542ABF77.1020402@hurleysoftware.com>
+Date: Wed, 1 Oct 2014 01:45:44 +0200 (CEST)
+Message-ID: <alpine.DEB.2.11.1410010131380.4455@nanos>
+References: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com> <5426CA0A.7000806@hurleysoftware.com> <CAC5umyhgs8---HZLa7_DOSbqW0uPbLgqTfBweScZSR9oWbG9xg@mail.gmail.com> <54294C0B.1060705@hurleysoftware.com> <CAC5umyjP4OscSC8igVLYPEm-6gqiXt9md46sLu77Vut5UiPb=g@mail.gmail.com>
+ <542ABF77.1020402@hurleysoftware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <542ABF77.1020402-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <542ABF77.1020402@hurleysoftware.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: Akinobu Mita <akinobu.mita@gmail.com>, LKML <linux-kernel@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, David Woodhouse <dwmw2@infradead.org>, Don Dutile <ddutile@redhat.com>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <andi@firstfloor.org>, x86@kernel.org, iommu@lists.linux-foundation.org, Greg KH <greg@kroah.com>
 List-Id: iommu@lists.linux-foundation.org
 
-2014-09-30 23:34 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
-> On 09/29/2014 10:32 AM, Akinobu Mita wrote:
->> 2014-09-29 21:09 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
->>> On 09/27/2014 08:31 PM, Akinobu Mita wrote:
->>>> 2014-09-27 23:30 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
->>>>> On 04/15/2014 09:08 AM, Akinobu Mita wrote:
->>>>>> This patch set enhances the DMA Contiguous Memory Allocator on x86.
->>>
->>> [...]
->>>
->>>>> What this patchset does is restrict all iommu configurations which can
->>>>> map all of system memory to one _very_ small physical region, thus disabling
->>>>> the whole point of an iommu.
->>>>>
->>>>> Now I know why my GPU is causing paging to disk! And why my RAID controller
->>>>> stalls for ages when I do a git log at the same time as a kernel build!
->>>>
->>>> The solution I have for this is that instead of trying to
->>>> dma_alloc_from_contiguous() firstly, call alloc_pages() in dma_alloc_coherent().
->>>> dma_alloc_from_contiguous() should be called only when alloc_pages() is failed
->>>> or DMA_ATTR_FORCE_CONTIGUOUS is specified in dma_attr.
->>>
->>> Why is all this extra complexity being added when there are no X86 users
->>> of DMA_ATTR_FORCE_CONTIGUOUS?
->>
->> I misunderstood DMA_ATTR_FORCE_CONTIGUOUS.  It is specified to request
->> that underlaying DMA mapping span physically contiguous with IOMMU.
->> But current alloc_dma_coherent() for intel-iommu always returns
->> physically contiguous memory, so it is ignored on x86.
->>
->>>>> And the apparent goal of this patchset is to enable DMA allocation below
->>>>> 4GB, which is already supported in the existing page allocator with the
->>>>> GFP_DMA32 flag?!
->>>>
->>>> The goal of this patchset is to enable huge DMA allocation which
->>>> alloc_pages() can't (> MAX_ORDER) for the devices that require it.
->>>
->>> What x86 devices need > MAX_ORDER DMA allocation and why can't they allocate
->>> directly from dma_alloc_from_contiguous()?
->>
->> I need this for UFS unified memory extension which is apparently not in
->> mainline for now.
->> http://www.jedec.org/standards-documents/docs/jesd220-1
->> http://www.jedec.org/sites/default/files/T_Fujisawa_MF_2013.pdf
->>
->> But there must be some other use cases on x86, too.  Because I have
->> received several emails privately from developers who care its status.
->>
->> And allocating directly from dma_alloc_from_contiguous() in the driver
->> doesn't work with IOMMU, as it just returns memory regoin and doesn't
->> create DMA mapping.
->
->
+On Tue, 30 Sep 2014, Peter Hurley wrote:
 > I read the UFS Unified Memory Extension v1.0 (JESD220-1) specification and
 > it is not clear to me that using DMA mapping is the right approach to
 > supporting UM, at least on x86.
-
-Without DMA mapping, there is no way for the devices to access host
-memory.  Unified memory extension requires a single contiguous memory
-region instead of multiple scattered mapping.
-
+> 
 > And without a mainline user, the merits of this approach are not evident.
 > I cannot even find a production x86 UFS controller, much less one that
 > supports UME.
->
+> 
 > The only PCI UFS controller I could find (and that mainline supports) is
 > Samsung's x86 FPGA-based test unit for developing UFS devices in a x86 test
 > environment, and not a production x86 design.
->
-> Samsung's own roadmap (http://www.slideshare.net/linaroorg/next-gen-mobilestorageufs)
-> mentions nothing about bringing UFS to x86 designs.
->
+
+And how is that relevant? That device exists and you have no reason to
+deny it to be supported just because you are not interested in it.
+ 
 > Unless there's something else I've missed, I don't think these patches
 > belong in mainline.
 
-Removing CONFIG_CMA_DMA support from x86_64 will disappoint me, but it's
-personal opinion.  FWIW, MIPS also starts supporting it in linux-next.
+You missed that there is no reason WHY such a device should not be
+supported in mainline.
+
+> Samsung's own roadmap
+> (http://www.slideshare.net/linaroorg/next-gen-mobilestorageufs)
+> mentions nothing about bringing UFS to x86 designs.
+
+And that's telling you what? 
+
+   - That we should deny Samsung proper support for their obviously
+     x86 based test card
+
+   - That we should ignore a JEDEC Standard which is obviously never
+     going to hit x86 land just because you decide it?
+
+Your argumentation is just ass backwards. Linux wants to support the
+full zoo of hardware including this particular PCI card. Period.
+
+Whether the proposed patchset is the correct solution to support it is
+a completely different question.
+
+So either you stop this right now and help Akinobu to find the proper
+solution or you just go back in your uncontaminated x86 cave and STFU.
+
+Thanks,
+
+	tglx
