@@ -1,15 +1,16 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v3 1/2] iopoll: Introduce memory-mapped IO polling macros
-Date: Tue, 30 Sep 2014 08:04:43 +0200
-Message-ID: <20140930060442.GF29874@ulmo>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v3 2/2] iommu/arm-smmu: add support for iova_to_phys
+	through ATS1PR
+Date: Tue, 30 Sep 2014 11:23:34 +0100
+Message-ID: <20140930102334.GH8075@arm.com>
 References: <1411874849-343-1-git-send-email-mitchelh@codeaurora.org>
-	<1411874849-343-2-git-send-email-mitchelh@codeaurora.org>
-	<20140929083136.GG12506@ulmo>
-	<vnkwmw9il6ft.fsf@mitchelh-linux.qualcomm.com>
+	<1411874849-343-3-git-send-email-mitchelh@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0149921722164149123=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <vnkwmw9il6ft.fsf-Yf+dfxj6toJBVvN7MMdr1KRtKmQZhJ7pQQ4Iyu8u01E@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1411874849-343-3-git-send-email-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,87 +21,76 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Mitch,
 
---===============0149921722164149123==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="lIrNkN/7tmsD/ALM"
-Content-Disposition: inline
+On Sun, Sep 28, 2014 at 04:27:29AM +0100, Mitchel Humpherys wrote:
+> Currently, we provide the iommu_ops.iova_to_phys service by doing a
+> table walk in software to translate IO virtual addresses to physical
+> addresses. On SMMUs that support it, it can be useful to ask the SMMU
+> itself to do the translation. This can be used to warm the TLBs for an
+> SMMU. It can also be useful for testing and hardware validation.
+> 
+> Since the address translation registers are optional on SMMUv2, only
+> enable hardware translations when using SMMUv1 or when SMMU_IDR0.S1TS=1
+> and SMMU_IDR0.ATOSNS=0, as described in the ARM SMMU v1-v2 spec.
 
+[...]
 
---lIrNkN/7tmsD/ALM
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> +static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
+> +					dma_addr_t iova)
+> +{
+> +	struct arm_smmu_domain *smmu_domain = domain->priv;
+> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
+> +	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+> +	struct device *dev = smmu->dev;
+> +	void __iomem *cb_base;
+> +	u32 tmp;
+> +	u64 phys;
+> +
+> +	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
+> +
+> +	if (smmu->version == 1) {
+> +		u32 reg = iova & ~0xFFF;
 
-On Mon, Sep 29, 2014 at 09:47:34AM -0700, Mitchel Humpherys wrote:
-> On Mon, Sep 29 2014 at 01:31:37 AM, Thierry Reding <thierry.reding@gmail.=
-com> wrote:
-> > On Sat, Sep 27, 2014 at 08:27:28PM -0700, Mitchel Humpherys wrote:
-> >> From: Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> >>=20
-> >> It is sometimes necessary to poll a memory-mapped register until its
-> >> value satisfies some condition. Introduce a family of convenience macr=
-os
-> >> that do this. Tight-loop and sleeping versions are provided with and
-> >> without timeouts.
-> >>=20
-> >> Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> >> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> >> Signed-off-by: Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> >> Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> >> ---
-> >>  include/linux/iopoll.h | 77 +++++++++++++++++++++++++++++++++++++++++=
-+++++++++
-> >>  1 file changed, 77 insertions(+)
-> >>  create mode 100644 include/linux/iopoll.h
-> >
-> > It would be good to provide a changelog with each new version of the
-> > patch. As it is I now have v2 and v3 of this patch in my inbox and I
-> > have no idea what the differences are, so I'd need to download both
-> > and run them through interdiff to find out.
->=20
-> Yeah I put the changelog in the cover letter.  There were no changes on
-> this patch, though I admit that wasn't entirely clear now re-reading the
-> cover letter text.  I also didn't account for the fact that you probably
-> aren't reading the whole series since I only Cc'd you on this patch, not
-> the whole series.  In any case, I probably shouldn't have re-sent the
-> whole series after one minor modification to one patch in the series.
+Cosmetic comment, but hex constants are lowercase everywhere else in the
+file.
 
-No worries, thanks for clarifying.
+> +		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_LO);
+> +	} else {
+> +		u32 reg = iova & ~0xFFF;
+> +		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_LO);
+> +		reg = (iova & ~0xFFF) >> 32;
+> +		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_HI);
+> +	}
+> +
+> +	if (readl_poll_timeout(cb_base + ARM_SMMU_CB_ATSR, tmp,
+> +				!(tmp & ATSR_ACTIVE), 10, ATSR_LOOP_TIMEOUT)) {
+> +		dev_err(dev,
+> +			"iova to phys timed out on 0x%pa. Falling back to software table walk.\n",
+> +			&iova);
+> +		return arm_smmu_iova_to_phys_soft(domain, iova);
+> +	}
+> +
+> +	phys = readl_relaxed(cb_base + ARM_SMMU_CB_PAR_LO);
+> +	phys |= ((u64) readl_relaxed(cb_base + ARM_SMMU_CB_PAR_HI)) << 32;
 
-Thierry
+The absence of locking in this function concerns me a bit. For the software
+implementation, we're just reading page tables, but here we're writing ATS
+registers and I think we need to ensure serialisation against another
+iova_to_phys on the same domain.
 
---lIrNkN/7tmsD/ALM
-Content-Type: application/pgp-signature
+> +	if (phys & CB_PAR_F) {
+> +		dev_err(dev, "translation fault!\n");
+> +		dev_err(dev, "PAR = 0x%llx\n", phys);
+> +	}
+> +	phys = (phys & 0xFFFFFFF000ULL) | (iova & 0x00000FFF);
+> +
+> +	return phys;
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+You can return phys == 0 on failure (at least, the callers in kvm and vfio
+treat this as an error).
 
-iQIcBAEBAgAGBQJUKkf5AAoJEN0jrNd/PrOhfGcP/jNwdsdaqV8Cuv+NjxR+1Vut
-l3YCUpXDW3Y6IyzjXQIdydjAa9zgO4FwKIq24x0vks/SSJQ3WsXJSZx9FmUY+b7Z
-8VtslQEK1rr9k9oNKfVkVp7e3c/Y7RrTJvqWR4Pq3f3oF9QzuwXKUdJ/IsO+ZL8A
-oOQIqTqM5anW/szmdl2kUVtDLh1R9caPSdZCWANe6SKE+pI5MNj7IpOIkIzKv/og
-Hu8iLNqx9Wj58cERNqmAlNOUwA032kOsRRxFTioK/E/FykA2GByXY5zc77kFoNEd
-Mmla+RurGTb8B+lrlddbnAQ0wzRBEM8vXZVMKQ/ECPcjIMMshrVigXJJsUR9sZL+
-LQL9R6b7xWBLU9cJwfcX73DZqJcvLQh8kRi+qvSbkgvPQ9gwXTFiJRh+bVfrNxTg
-vRHntoEBxpnoyYVasI6K30l091NuzoPO8OaWmyx5XhoGrS2u+7eau5vFmhmP3Q08
-TFr8oKuB9fyMd4PfXvuLT3TUSGf0ptsR474DiSvh8nwq4Q7tW8BBBS3zIflfRM5J
-Yei/J5iVPHX6jwXPG8n5Hebw3hT5/wAScmGa7Vgqom11jS1Ej22cAawGn1hPCiyc
-EI2fPnpyTyVHAW0m/t93fcDWkZw54XM28lc3skhoZ3yrfVsrGvvbEIeaczhMmo/6
-xE400mOCHNWxdrUTNg26
-=EO0/
------END PGP SIGNATURE-----
-
---lIrNkN/7tmsD/ALM--
-
---===============0149921722164149123==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============0149921722164149123==--
+Will
