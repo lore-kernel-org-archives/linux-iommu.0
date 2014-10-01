@@ -1,17 +1,19 @@
-From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v3 2/2] iommu/arm-smmu: add support for iova_to_phys
-	through ATS1PR
-Date: Tue, 30 Sep 2014 18:28:30 -0700
-Message-ID: <vnkwppec8toh.fsf@mitchelh-linux.qualcomm.com>
-References: <1411874849-343-1-git-send-email-mitchelh@codeaurora.org>
-	<1411874849-343-3-git-send-email-mitchelh@codeaurora.org>
-	<20140930102334.GH8075@arm.com>
+From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v3 0/5] enhance DMA CMA on x86
+Date: Tue, 30 Sep 2014 21:49:54 -0400
+Message-ID: <542B5DC2.8020806@hurleysoftware.com>
+References: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com>
+	<5426CA0A.7000806@hurleysoftware.com>
+	<CAC5umyhgs8---HZLa7_DOSbqW0uPbLgqTfBweScZSR9oWbG9xg@mail.gmail.com>
+	<54294C0B.1060705@hurleysoftware.com>
+	<CAC5umyjP4OscSC8igVLYPEm-6gqiXt9md46sLu77Vut5UiPb=g@mail.gmail.com>
+	<542ABF77.1020402@hurleysoftware.com>
+	<alpine.DEB.2.11.1410010131380.4455@nanos>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140930102334.GH8075-5wv7dgnIgG8@public.gmane.org> (Will Deacon's message of "Tue,
-	30 Sep 2014 11:23:34 +0100")
+In-Reply-To: <alpine.DEB.2.11.1410010131380.4455@nanos>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,93 +23,32 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Sep 30 2014 at 03:23:34 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> Hi Mitch,
->
-> On Sun, Sep 28, 2014 at 04:27:29AM +0100, Mitchel Humpherys wrote:
->> Currently, we provide the iommu_ops.iova_to_phys service by doing a
->> table walk in software to translate IO virtual addresses to physical
->> addresses. On SMMUs that support it, it can be useful to ask the SMMU
->> itself to do the translation. This can be used to warm the TLBs for an
->> SMMU. It can also be useful for testing and hardware validation.
->> 
->> Since the address translation registers are optional on SMMUv2, only
->> enable hardware translations when using SMMUv1 or when SMMU_IDR0.S1TS=1
->> and SMMU_IDR0.ATOSNS=0, as described in the ARM SMMU v1-v2 spec.
->
-> [...]
->
->> +static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
->> +					dma_addr_t iova)
->> +{
->> +	struct arm_smmu_domain *smmu_domain = domain->priv;
->> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
->> +	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
->> +	struct device *dev = smmu->dev;
->> +	void __iomem *cb_base;
->> +	u32 tmp;
->> +	u64 phys;
->> +
->> +	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
->> +
->> +	if (smmu->version == 1) {
->> +		u32 reg = iova & ~0xFFF;
->
-> Cosmetic comment, but hex constants are lowercase everywhere else in the
-> file.
+On 09/30/2014 07:45 PM, Thomas Gleixner wrote:
+> Whether the proposed patchset is the correct solution to support it is
+> a completely different question.
 
-Ah, woops.  Let me fix that.
+This patchset has been in mainline since 3.16 and has already caused
+regressions, so the question of whether this is the correct solution has
+already been answered.
 
->
->> +		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_LO);
->> +	} else {
->> +		u32 reg = iova & ~0xFFF;
->> +		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_LO);
->> +		reg = (iova & ~0xFFF) >> 32;
->> +		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_HI);
->> +	}
->> +
->> +	if (readl_poll_timeout(cb_base + ARM_SMMU_CB_ATSR, tmp,
->> +				!(tmp & ATSR_ACTIVE), 10, ATSR_LOOP_TIMEOUT)) {
->> +		dev_err(dev,
->> +			"iova to phys timed out on 0x%pa. Falling back to software table walk.\n",
->> +			&iova);
->> +		return arm_smmu_iova_to_phys_soft(domain, iova);
->> +	}
->> +
->> +	phys = readl_relaxed(cb_base + ARM_SMMU_CB_PAR_LO);
->> +	phys |= ((u64) readl_relaxed(cb_base + ARM_SMMU_CB_PAR_HI)) << 32;
->
-> The absence of locking in this function concerns me a bit. For the software
-> implementation, we're just reading page tables, but here we're writing ATS
-> registers and I think we need to ensure serialisation against another
-> iova_to_phys on the same domain.
+> So either you stop this right now and help Akinobu to find the proper
+> solution 
 
-Good catch, let me take the domain lock here.  I'll also have to move to
-readl_poll_timeout_atomic since the domain lock is a spinlock.
+If this is only a test platform for ARM parts then I don't think it
+unreasonable to suggest forking x86 swiotlb support into a iommu=cma
+selector that gets DMA mapping working for this test platform and doesn't
+cause a bunch of breakage.
 
->
->> +	if (phys & CB_PAR_F) {
->> +		dev_err(dev, "translation fault!\n");
->> +		dev_err(dev, "PAR = 0x%llx\n", phys);
->> +	}
->> +	phys = (phys & 0xFFFFFFF000ULL) | (iova & 0x00000FFF);
->> +
->> +	return phys;
->
-> You can return phys == 0 on failure (at least, the callers in kvm and vfio
-> treat this as an error).
+Which is different than if the plan is to ship production units for x86;
+then a general purpose solution will be required.
 
-Ah yes, I agree that a 0 return value from iommu_iova_to_phys appears to
-be treated as an error.  Let me fix that.
+As to the good design of a general purpose solution for allocating and
+mapping huge order pages, you are certainly more qualified to help Akinobu
+than I am.
 
-
--Mitch
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-hosted by The Linux Foundation
+Regards,
+Peter Hurley
