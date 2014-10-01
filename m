@@ -1,356 +1,660 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 12/17] iommu/omap: Integrate omap-iommu-debug into omap-iommu
-Date: Wed, 01 Oct 2014 13:52:30 +0300
-Message-ID: <2808184.EdyuxU2UIF@avalon>
-References: <1412111772-38006-1-git-send-email-s-anna@ti.com> <1412111772-38006-13-git-send-email-s-anna@ti.com>
+From: Sean Paul <seanpaul-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC 09/10] drm/tegra: Add IOMMU support
+Date: Wed, 1 Oct 2014 11:54:11 -0400
+Message-ID: <CAOw6vbLFLrqWYB-4N50G7oucgMD+xd+QtdcMSzX4z7xRiU-vPQ@mail.gmail.com>
+References: <1403815790-8548-1-git-send-email-thierry.reding@gmail.com>
+ <1403815790-8548-10-git-send-email-thierry.reding@gmail.com> <CAOw6vbJy6oy7cibH4f332UM=kS56KUMcnYdUTG0pEYXyQkFDoQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1412111772-38006-13-git-send-email-s-anna@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Suman Anna <s-anna@ti.com>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-omap@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAOw6vbJy6oy7cibH4f332UM=kS56KUMcnYdUTG0pEYXyQkFDoQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Paul Walmsley <pwalmsley-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Rhyland Klein <rklein-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Allen Martin <amartin-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Suman,
+On Tue, Sep 30, 2014 at 2:48 PM, Sean Paul <seanpaul-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org> wrote:
+> On Thu, Jun 26, 2014 at 4:49 PM, Thierry Reding
+> <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+>> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+>>
+>> When an IOMMU device is available on the platform bus, allocate an I=
+OMMU
+>> domain and attach the display controllers to it. The display control=
+lers
+>> can then scan out non-contiguous buffers by mapping them through the
+>> IOMMU.
+>>
+>
+> Hi Thierry,
+> A few comments from St=C3=A9phane and myself that came up while we we=
+re
+> reviewing this for our tree.
+>
+>> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+>> ---
+>>  drivers/gpu/drm/tegra/dc.c  |  21 ++++
+>>  drivers/gpu/drm/tegra/drm.c |  17 ++++
+>>  drivers/gpu/drm/tegra/drm.h |   3 +
+>>  drivers/gpu/drm/tegra/fb.c  |  16 ++-
+>>  drivers/gpu/drm/tegra/gem.c | 236 +++++++++++++++++++++++++++++++++=
+++++++-----
+>>  drivers/gpu/drm/tegra/gem.h |   4 +
+>>  6 files changed, 273 insertions(+), 24 deletions(-)
+>>
+>> diff --git a/drivers/gpu/drm/tegra/dc.c b/drivers/gpu/drm/tegra/dc.c
+>> index afcca04f5367..0f7452d04811 100644
+>> --- a/drivers/gpu/drm/tegra/dc.c
+>> +++ b/drivers/gpu/drm/tegra/dc.c
+>> @@ -9,6 +9,7 @@
+>>
+>>  #include <linux/clk.h>
+>>  #include <linux/debugfs.h>
+>> +#include <linux/iommu.h>
+>>  #include <linux/reset.h>
+>>
+>>  #include "dc.h"
+>> @@ -1283,8 +1284,18 @@ static int tegra_dc_init(struct host1x_client=
+ *client)
+>>  {
+>>         struct drm_device *drm =3D dev_get_drvdata(client->parent);
+>>         struct tegra_dc *dc =3D host1x_client_to_dc(client);
+>> +       struct tegra_drm *tegra =3D drm->dev_private;
+>>         int err;
+>>
+>> +       if (tegra->domain) {
+>> +               err =3D iommu_attach_device(tegra->domain, dc->dev);
+>> +               if (err < 0) {
+>> +                       dev_err(dc->dev, "failed to attach to IOMMU:=
+ %d\n",
+>> +                               err);
+>> +                       return err;
+>> +               }
+>
+> [from St=C3=A9phane]
+>
+> shouldn't we call detach in the error paths below?
+>
+>
+>> +       }
+>> +
+>>         drm_crtc_init(drm, &dc->base, &tegra_crtc_funcs);
+>>         drm_mode_crtc_set_gamma_size(&dc->base, 256);
+>>         drm_crtc_helper_add(&dc->base, &tegra_crtc_helper_funcs);
+>> @@ -1318,7 +1329,9 @@ static int tegra_dc_init(struct host1x_client =
+*client)
+>>
+>>  static int tegra_dc_exit(struct host1x_client *client)
+>>  {
+>> +       struct drm_device *drm =3D dev_get_drvdata(client->parent);
+>>         struct tegra_dc *dc =3D host1x_client_to_dc(client);
+>> +       struct tegra_drm *tegra =3D drm->dev_private;
+>>         int err;
+>>
+>>         devm_free_irq(dc->dev, dc->irq, dc);
+>> @@ -1335,6 +1348,8 @@ static int tegra_dc_exit(struct host1x_client =
+*client)
+>>                 return err;
+>>         }
+>>
+>> +       iommu_detach_device(tegra->domain, dc->dev);
+>> +
+>>         return 0;
+>>  }
+>>
+>> @@ -1462,6 +1477,12 @@ static int tegra_dc_probe(struct platform_dev=
+ice *pdev)
+>>                 return -ENXIO;
+>>         }
+>>
+>> +       err =3D iommu_attach(&pdev->dev);
+>> +       if (err < 0) {
+>> +               dev_err(&pdev->dev, "failed to attach to IOMMU: %d\n=
+", err);
+>> +               return err;
+>> +       }
+>> +
+>>         INIT_LIST_HEAD(&dc->client.list);
+>>         dc->client.ops =3D &dc_client_ops;
+>>         dc->client.dev =3D &pdev->dev;
+>> diff --git a/drivers/gpu/drm/tegra/drm.c b/drivers/gpu/drm/tegra/drm=
+=2Ec
+>> index 59736bb810cd..1d2bbafad982 100644
+>> --- a/drivers/gpu/drm/tegra/drm.c
+>> +++ b/drivers/gpu/drm/tegra/drm.c
+>> @@ -8,6 +8,7 @@
+>>   */
+>>
+>>  #include <linux/host1x.h>
+>> +#include <linux/iommu.h>
+>>
+>>  #include "drm.h"
+>>  #include "gem.h"
+>> @@ -33,6 +34,16 @@ static int tegra_drm_load(struct drm_device *drm,=
+ unsigned long flags)
+>>         if (!tegra)
+>>                 return -ENOMEM;
+>>
+>> +       if (iommu_present(&platform_bus_type)) {
+>> +               tegra->domain =3D iommu_domain_alloc(&platform_bus_t=
+ype);
+>> +               if (IS_ERR(tegra->domain)) {
+>> +                       kfree(tegra);
+>> +                       return PTR_ERR(tegra->domain);
+>> +               }
+>> +
+>> +               drm_mm_init(&tegra->mm, 0, SZ_2G);
+>
+>
+> [from St=C3=A9phane]:
+>
+> none of these are freed in the error path below (iommu_domain_free an=
+d
+> drm_mm_takedown)
+>
+> also |tegra| isn't freed either?
+>
+>
+>
+>> +       }
+>> +
+>>         mutex_init(&tegra->clients_lock);
+>>         INIT_LIST_HEAD(&tegra->clients);
+>>         drm->dev_private =3D tegra;
+>> @@ -71,6 +82,7 @@ static int tegra_drm_load(struct drm_device *drm, =
+unsigned long flags)
+>>  static int tegra_drm_unload(struct drm_device *drm)
+>>  {
+>>         struct host1x_device *device =3D to_host1x_device(drm->dev);
+>> +       struct tegra_drm *tegra =3D drm->dev_private;
+>>         int err;
+>>
+>>         drm_kms_helper_poll_fini(drm);
+>> @@ -82,6 +94,11 @@ static int tegra_drm_unload(struct drm_device *dr=
+m)
+>>         if (err < 0)
+>>                 return err;
+>>
+>> +       if (tegra->domain) {
+>> +               iommu_domain_free(tegra->domain);
+>> +               drm_mm_takedown(&tegra->mm);
+>> +       }
+>> +
+>>         return 0;
+>>  }
+>>
+>> diff --git a/drivers/gpu/drm/tegra/drm.h b/drivers/gpu/drm/tegra/drm=
+=2Eh
+>> index 96d754e7b3eb..a07c796b7edc 100644
+>> --- a/drivers/gpu/drm/tegra/drm.h
+>> +++ b/drivers/gpu/drm/tegra/drm.h
+>> @@ -39,6 +39,9 @@ struct tegra_fbdev {
+>>  struct tegra_drm {
+>>         struct drm_device *drm;
+>>
+>> +       struct iommu_domain *domain;
+>> +       struct drm_mm mm;
+>> +
+>>         struct mutex clients_lock;
+>>         struct list_head clients;
+>>
+>> diff --git a/drivers/gpu/drm/tegra/fb.c b/drivers/gpu/drm/tegra/fb.c
+>> index 7790d43ad082..21c65dd817c3 100644
+>> --- a/drivers/gpu/drm/tegra/fb.c
+>> +++ b/drivers/gpu/drm/tegra/fb.c
+>> @@ -65,8 +65,12 @@ static void tegra_fb_destroy(struct drm_framebuff=
+er *framebuffer)
+>>         for (i =3D 0; i < fb->num_planes; i++) {
+>>                 struct tegra_bo *bo =3D fb->planes[i];
+>>
+>> -               if (bo)
+>> +               if (bo) {
+>> +                       if (bo->pages && bo->virt)
+>> +                               vunmap(bo->virt);
+>> +
+>>                         drm_gem_object_unreference_unlocked(&bo->gem=
+);
+>> +               }
+>>         }
+>>
+>>         drm_framebuffer_cleanup(framebuffer);
+>> @@ -252,6 +256,16 @@ static int tegra_fbdev_probe(struct drm_fb_help=
+er *helper,
+>>         offset =3D info->var.xoffset * bytes_per_pixel +
+>>                  info->var.yoffset * fb->pitches[0];
+>>
+>> +       if (bo->pages) {
+>> +               bo->vaddr =3D vmap(bo->pages, bo->num_pages, VM_MAP,
+>> +                                pgprot_writecombine(PAGE_KERNEL));
+>> +               if (!bo->vaddr) {
+>> +                       dev_err(drm->dev, "failed to vmap() framebuf=
+fer\n");
+>> +                       err =3D -ENOMEM;
+>> +                       goto destroy;
+>> +               }
+>> +       }
+>> +
+>>         drm->mode_config.fb_base =3D (resource_size_t)bo->paddr;
+>>         info->screen_base =3D (void __iomem *)bo->vaddr + offset;
+>>         info->screen_size =3D size;
+>> diff --git a/drivers/gpu/drm/tegra/gem.c b/drivers/gpu/drm/tegra/gem=
+=2Ec
+>> index c1e4e8b6e5ca..2912e61a2599 100644
+>> --- a/drivers/gpu/drm/tegra/gem.c
+>> +++ b/drivers/gpu/drm/tegra/gem.c
+>> @@ -14,8 +14,10 @@
+>>   */
+>>
+>>  #include <linux/dma-buf.h>
+>> +#include <linux/iommu.h>
+>>  #include <drm/tegra_drm.h>
+>>
+>> +#include "drm.h"
+>>  #include "gem.h"
+>>
+>>  static inline struct tegra_bo *host1x_to_tegra_bo(struct host1x_bo =
+*bo)
+>> @@ -90,14 +92,144 @@ static const struct host1x_bo_ops tegra_bo_ops =
+=3D {
+>>         .kunmap =3D tegra_bo_kunmap,
+>>  };
+>>
+>> +static int iommu_map_sg(struct iommu_domain *domain, struct sg_tabl=
+e *sgt,
+>> +                       dma_addr_t iova, int prot)
+>> +{
+>> +       unsigned long offset =3D 0;
+>> +       struct scatterlist *sg;
+>> +       unsigned int i, j;
+>> +       int err;
+>> +
+>> +       for_each_sg(sgt->sgl, sg, sgt->nents, i) {
+>> +               dma_addr_t phys =3D sg_phys(sg);
+>> +               size_t length =3D sg->offset;
+>> +
+>> +               phys =3D sg_phys(sg) - sg->offset;
+>> +               length =3D sg->length + sg->offset;
+>> +
+>> +               err =3D iommu_map(domain, iova + offset, phys, lengt=
+h, prot);
+>> +               if (err < 0)
+>> +                       goto unmap;
+>> +
+>> +               offset +=3D length;
+>> +       }
+>> +
+>> +       return 0;
+>> +
+>> +unmap:
+>> +       offset =3D 0;
+>> +
+>> +       for_each_sg(sgt->sgl, sg, i, j) {
+>> +               size_t length =3D sg->length + sg->offset;
+>> +               iommu_unmap(domain, iova + offset, length);
+>> +               offset +=3D length;
+>> +       }
+>> +
+>> +       return err;
+>> +}
+>> +
+>> +static int iommu_unmap_sg(struct iommu_domain *domain, struct sg_ta=
+ble *sgt,
+>> +                         dma_addr_t iova)
+>> +{
+>> +       unsigned long offset =3D 0;
+>> +       struct scatterlist *sg;
+>> +       unsigned int i;
+>> +
+>> +       for_each_sg(sgt->sgl, sg, sgt->nents, i) {
+>> +               dma_addr_t phys =3D sg_phys(sg);
+>> +               size_t length =3D sg->offset;
+>> +
+>> +               phys =3D sg_phys(sg) - sg->offset;
+>> +               length =3D sg->length + sg->offset;
+>> +
+>> +               iommu_unmap(domain, iova + offset, length);
+>> +               offset +=3D length;
+>> +       }
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +static int tegra_bo_iommu_map(struct tegra_drm *tegra, struct tegra=
+_bo *bo)
+>> +{
+>> +       int prot =3D IOMMU_READ | IOMMU_WRITE;
+>> +       int err;
+>> +
+>> +       if (bo->mm)
+>> +               return -EBUSY;
+>> +
+>> +       bo->mm =3D kzalloc(sizeof(*bo->mm), GFP_KERNEL);
+>> +       if (!bo->mm)
+>> +               return -ENOMEM;
+>> +
+>> +       err =3D drm_mm_insert_node_generic(&tegra->mm, bo->mm, bo->g=
+em.size,
+>> +                                        PAGE_SIZE, 0, 0, 0);
+>> +       if (err < 0) {
+>> +               dev_err(tegra->drm->dev, "out of virtual memory: %d\=
+n", err);
+>> +               return err;
+>> +       }
+>> +
+>> +       bo->paddr =3D bo->mm->start;
+>> +
+>> +       err =3D iommu_map_sg(tegra->domain, bo->sgt, bo->paddr, prot=
+);
+>> +       if (err < 0) {
+>> +               dev_err(tegra->drm->dev, "failed to map buffer: %d\n=
+", err);
+>> +               return err;
+>> +       }
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +static int tegra_bo_iommu_unmap(struct tegra_drm *tegra, struct teg=
+ra_bo *bo)
+>> +{
+>> +       if (!bo->mm)
+>> +               return 0;
+>> +
+>> +       iommu_unmap_sg(tegra->domain, bo->sgt, bo->paddr);
+>> +       drm_mm_remove_node(bo->mm);
+>> +
+>> +       kfree(bo->mm);
+>> +       return 0;
+>> +}
+>> +
+>>  static void tegra_bo_destroy(struct drm_device *drm, struct tegra_b=
+o *bo)
+>>  {
+>> -       dma_free_writecombine(drm->dev, bo->gem.size, bo->vaddr, bo-=
+>paddr);
+>> +       if (!bo->pages)
+>> +               dma_free_writecombine(drm->dev, bo->gem.size, bo->va=
+ddr,
+>> +                                     bo->paddr);
 
-Thank you for the patch.
+One more thing. If tegra_bo_alloc fails, we'll have bo->vaddr =3D=3D NU=
+LL
+and bo->paddr =3D=3D ~0 here, which causes a crash.
 
-On Tuesday 30 September 2014 16:16:07 Suman Anna wrote:
-> The debugfs support for OMAP IOMMU is currently implemented
-> as a module, warranting certain OMAP-specific IOMMU API to
-> be exported. The OMAP IOMMU, when enabled, can only be built-in
-> into the kernel, so integrate the OMAP IOMMU debug module
-> into the OMAP IOMMU driver. This helps in eliminating the
-> need to export most of the current OMAP IOMMU API.
-> 
-> The following are the main changes:
-> - The OMAP_IOMMU_DEBUG Kconfig option is eliminated, and
->   the OMAP IOMMU debugfs support is built alongside the OMAP
->   IOMMU driver, and enabled automatically only when debugfs
->   is enabled.
+I posted https://lkml.org/lkml/2014/9/30/659 to check for the error
+condition in the mm code, but it seems like reviewer consensus is to
+check for this before calling free.
 
-That's the part I'm unsure about. We're loosing the ability to save space by 
-not building the omap-iommu debugfs support when debugfs is enabled.
+As such, we'll need to make sure bo->vaddr !=3D NULL before calling
+dma_free_writecombine to avoid this situation.
 
-For the rest of the series,
+Would you prefer I send a patch up to fix this separately, or would
+you like to roll this into your next version?
 
-Acked-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Sean
 
-> - The debugfs directory and entry creation logic is reversed,
->   the calls are invoked by the OMAP IOMMU driver now.
-> - The current iffy circular logic of adding IOMMU archdata
->   to the IOMMU devices itself to get a pointer to the omap_iommu
->   object in the debugfs support code is replaced by directly
->   using the omap_iommu structure while creating the debugfs
->   entries.
-> - The debugfs root directory is renamed from the generic name
->   "iommu" to a specific name "omap_iommu".
-> - Unneeded headers have also been cleaned up while at this.
-> - There will no longer be a omap-iommu-debug.ko module after
->   this patch.
-> 
-> Signed-off-by: Suman Anna <s-anna@ti.com>
-> ---
->  drivers/iommu/Kconfig            |   9 ----
->  drivers/iommu/Makefile           |   3 +-
->  drivers/iommu/omap-iommu-debug.c | 102
-> ++++++++++++--------------------------- drivers/iommu/omap-iommu.c       | 
-> 11 +++--
->  drivers/iommu/omap-iommu.h       |   7 +++
->  5 files changed, 45 insertions(+), 87 deletions(-)
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index dd51122..9724d4a 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -143,15 +143,6 @@ config OMAP_IOMMU
->  	depends on ARCH_OMAP2PLUS
->  	select IOMMU_API
-> 
-> -config OMAP_IOMMU_DEBUG
-> -       tristate "Export OMAP IOMMU internals in DebugFS"
-> -       depends on OMAP_IOMMU && DEBUG_FS
-> -       help
-> -         Select this to see extensive information about
-> -         the internal state of OMAP IOMMU in debugfs.
-> -
-> -         Say N unless you know you need this.
-> -
->  config TEGRA_IOMMU_GART
->  	bool "Tegra GART IOMMU Support"
->  	depends on ARCH_TEGRA_2x_SOC
-> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-> index 18fa446..e0a4fed 100644
-> --- a/drivers/iommu/Makefile
-> +++ b/drivers/iommu/Makefile
-> @@ -10,8 +10,7 @@ obj-$(CONFIG_DMAR_TABLE) += dmar.o
->  obj-$(CONFIG_INTEL_IOMMU) += iova.o intel-iommu.o
->  obj-$(CONFIG_IPMMU_VMSA) += ipmmu-vmsa.o
->  obj-$(CONFIG_IRQ_REMAP) += intel_irq_remapping.o irq_remapping.o
-> -obj-$(CONFIG_OMAP_IOMMU) += omap-iommu.o
-> -obj-$(CONFIG_OMAP_IOMMU_DEBUG) += omap-iommu-debug.o
-> +obj-$(CONFIG_OMAP_IOMMU) += omap-iommu.o omap-iommu-debug.o
->  obj-$(CONFIG_TEGRA_IOMMU_GART) += tegra-gart.o
->  obj-$(CONFIG_TEGRA_IOMMU_SMMU) += tegra-smmu.o
->  obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
-> diff --git a/drivers/iommu/omap-iommu-debug.c
-> b/drivers/iommu/omap-iommu-debug.c index 28de657..54a0dc6 100644
-> --- a/drivers/iommu/omap-iommu-debug.c
-> +++ b/drivers/iommu/omap-iommu-debug.c
-> @@ -10,15 +10,11 @@
->   * published by the Free Software Foundation.
->   */
-> 
-> -#include <linux/module.h>
->  #include <linux/err.h>
-> -#include <linux/clk.h>
->  #include <linux/io.h>
->  #include <linux/slab.h>
->  #include <linux/uaccess.h>
-> -#include <linux/platform_device.h>
->  #include <linux/debugfs.h>
-> -#include <linux/omap-iommu.h>
->  #include <linux/platform_data/iommu-omap.h>
-> 
->  #include "omap-iopgtable.h"
-> @@ -31,8 +27,7 @@ static struct dentry *iommu_debug_root;
->  static ssize_t debug_read_regs(struct file *file, char __user *userbuf,
->  			       size_t count, loff_t *ppos)
->  {
-> -	struct device *dev = file->private_data;
-> -	struct omap_iommu *obj = dev_to_omap_iommu(dev);
-> +	struct omap_iommu *obj = file->private_data;
->  	char *p, *buf;
->  	ssize_t bytes;
-> 
-> @@ -55,8 +50,7 @@ static ssize_t debug_read_regs(struct file *file, char
-> __user *userbuf, static ssize_t debug_read_tlb(struct file *file, char
-> __user *userbuf, size_t count, loff_t *ppos)
->  {
-> -	struct device *dev = file->private_data;
-> -	struct omap_iommu *obj = dev_to_omap_iommu(dev);
-> +	struct omap_iommu *obj = file->private_data;
->  	char *p, *buf;
->  	ssize_t bytes, rest;
-> 
-> @@ -141,8 +135,7 @@ out:
->  static ssize_t debug_read_pagetable(struct file *file, char __user
-> *userbuf, size_t count, loff_t *ppos)
->  {
-> -	struct device *dev = file->private_data;
-> -	struct omap_iommu *obj = dev_to_omap_iommu(dev);
-> +	struct omap_iommu *obj = file->private_data;
->  	char *p, *buf;
->  	size_t bytes;
-> 
-> @@ -181,93 +174,58 @@ DEBUG_FOPS_RO(pagetable);
->  #define __DEBUG_ADD_FILE(attr, mode)					\
->  	{								\
->  		struct dentry *dent;					\
-> -		dent = debugfs_create_file(#attr, mode, parent,		\
-> -					   dev, &debug_##attr##_fops);	\
-> +		dent = debugfs_create_file(#attr, mode, obj->debug_dir,	\
-> +					   obj, &debug_##attr##_fops);	\
->  		if (!dent)						\
-> -			return -ENOMEM;					\
-> +			goto err;					\
->  	}
-> 
->  #define DEBUG_ADD_FILE_RO(name) __DEBUG_ADD_FILE(name, 0400)
-> 
-> -static int iommu_debug_register(struct device *dev, void *data)
-> +void omap_iommu_debugfs_add(struct omap_iommu *obj)
->  {
-> -	struct platform_device *pdev = to_platform_device(dev);
-> -	struct omap_iommu *obj = platform_get_drvdata(pdev);
-> -	struct omap_iommu_arch_data *arch_data;
-> -	struct dentry *d, *parent;
-> -
-> -	if (!obj || !obj->dev)
-> -		return -EINVAL;
-> -
-> -	arch_data = kzalloc(sizeof(*arch_data), GFP_KERNEL);
-> -	if (!arch_data)
-> -		return -ENOMEM;
-> -
-> -	arch_data->iommu_dev = obj;
-> +	struct dentry *d;
-> 
-> -	dev->archdata.iommu = arch_data;
-> +	if (!iommu_debug_root)
-> +		return;
-> 
-> -	d = debugfs_create_dir(obj->name, iommu_debug_root);
-> -	if (!d)
-> -		goto nomem;
-> -	parent = d;
-> +	obj->debug_dir = debugfs_create_dir(obj->name, iommu_debug_root);
-> +	if (!obj->debug_dir)
-> +		return;
-> 
-> -	d = debugfs_create_u8("nr_tlb_entries", 0400, parent,
-> +	d = debugfs_create_u8("nr_tlb_entries", 0400, obj->debug_dir,
->  			      (u8 *)&obj->nr_tlb_entries);
->  	if (!d)
-> -		goto nomem;
-> +		return;
-> 
->  	DEBUG_ADD_FILE_RO(regs);
->  	DEBUG_ADD_FILE_RO(tlb);
->  	DEBUG_ADD_FILE_RO(pagetable);
-> 
-> -	return 0;
-> +	return;
-> 
-> -nomem:
-> -	kfree(arch_data);
-> -	return -ENOMEM;
-> +err:
-> +	debugfs_remove_recursive(obj->debug_dir);
->  }
-> 
-> -static int iommu_debug_unregister(struct device *dev, void *data)
-> +void omap_iommu_debugfs_remove(struct omap_iommu *obj)
->  {
-> -	if (!dev->archdata.iommu)
-> -		return 0;
-> -
-> -	kfree(dev->archdata.iommu);
-> -
-> -	dev->archdata.iommu = NULL;
-> +	if (!obj->debug_dir)
-> +		return;
-> 
-> -	return 0;
-> +	debugfs_remove_recursive(obj->debug_dir);
->  }
-> 
-> -static int __init iommu_debug_init(void)
-> +void __init omap_iommu_debugfs_init(void)
->  {
-> -	struct dentry *d;
-> -	int err;
-> -
-> -	d = debugfs_create_dir("iommu", NULL);
-> -	if (!d)
-> -		return -ENOMEM;
-> -	iommu_debug_root = d;
-> -
-> -	err = omap_foreach_iommu_device(d, iommu_debug_register);
-> -	if (err)
-> -		goto err_out;
-> -	return 0;
-> -
-> -err_out:
-> -	debugfs_remove_recursive(iommu_debug_root);
-> -	return err;
-> +	if (debugfs_initialized()) {
-> +		iommu_debug_root = debugfs_create_dir("omap_iommu", NULL);
-> +		if (!iommu_debug_root)
-> +			pr_err("can't create debugfs dir\n");
-> +	}
->  }
-> -module_init(iommu_debug_init)
-> 
-> -static void __exit iommu_debugfs_exit(void)
-> +void __exit omap_iommu_debugfs_exit(void)
->  {
-> -	debugfs_remove_recursive(iommu_debug_root);
-> -	omap_foreach_iommu_device(NULL, iommu_debug_unregister);
-> +	debugfs_remove(iommu_debug_root);
->  }
-> -module_exit(iommu_debugfs_exit)
-> -
-> -MODULE_DESCRIPTION("omap iommu: debugfs interface");
-> -MODULE_AUTHOR("Hiroshi DOYU <Hiroshi.DOYU@nokia.com>");
-> -MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index 9ace5557..717d654 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -472,8 +472,6 @@ static void flush_iotlb_all(struct omap_iommu *obj)
->  	pm_runtime_put_sync(obj->dev);
->  }
-> 
-> -#if defined(CONFIG_OMAP_IOMMU_DEBUG) ||
-> defined(CONFIG_OMAP_IOMMU_DEBUG_MODULE) -
->  #define pr_reg(name)							\
->  	do {								\
->  		ssize_t bytes;						\
-> @@ -602,8 +600,6 @@ int omap_foreach_iommu_device(void *data, int
-> (*fn)(struct device *, void *)) }
->  EXPORT_SYMBOL_GPL(omap_foreach_iommu_device);
-> 
-> -#endif /* CONFIG_OMAP_IOMMU_DEBUG_MODULE */
-> -
->  /*
->   *	H/W pagetable operations
->   */
-> @@ -1077,6 +1073,8 @@ static int omap_iommu_probe(struct platform_device
-> *pdev) pm_runtime_irq_safe(obj->dev);
->  	pm_runtime_enable(obj->dev);
-> 
-> +	omap_iommu_debugfs_add(obj);
-> +
->  	dev_info(&pdev->dev, "%s registered\n", obj->name);
->  	return 0;
->  }
-> @@ -1086,6 +1084,7 @@ static int omap_iommu_remove(struct platform_device
-> *pdev) struct omap_iommu *obj = platform_get_drvdata(pdev);
-> 
->  	iopgtable_clear_entry_all(obj);
-> +	omap_iommu_debugfs_remove(obj);
-> 
->  	pm_runtime_disable(obj->dev);
-> 
-> @@ -1403,6 +1402,8 @@ static int __init omap_iommu_init(void)
-> 
->  	bus_set_iommu(&platform_bus_type, &omap_iommu_ops);
-> 
-> +	omap_iommu_debugfs_init();
-> +
->  	return platform_driver_register(&omap_iommu_driver);
->  }
->  /* must be ready before omap3isp is probed */
-> @@ -1413,6 +1414,8 @@ static void __exit omap_iommu_exit(void)
->  	kmem_cache_destroy(iopte_cachep);
-> 
->  	platform_driver_unregister(&omap_iommu_driver);
-> +
-> +	omap_iommu_debugfs_exit();
->  }
->  module_exit(omap_iommu_exit);
-> 
-> diff --git a/drivers/iommu/omap-iommu.h b/drivers/iommu/omap-iommu.h
-> index 0516e0e..6e9a8d2 100644
-> --- a/drivers/iommu/omap-iommu.h
-> +++ b/drivers/iommu/omap-iommu.h
-> @@ -30,6 +30,7 @@ struct omap_iommu {
->  	void __iomem	*regbase;
->  	struct device	*dev;
->  	struct iommu_domain *domain;
-> +	struct dentry	*debug_dir;
-> 
->  	spinlock_t	iommu_lock;	/* global for this whole object */
-> 
-> @@ -202,6 +203,12 @@ omap_iommu_dump_ctx(struct omap_iommu *obj, char *buf,
-> ssize_t len); extern size_t
->  omap_dump_tlb_entries(struct omap_iommu *obj, char *buf, ssize_t len);
-> 
-> +void omap_iommu_debugfs_init(void);
-> +void omap_iommu_debugfs_exit(void);
-> +
-> +void omap_iommu_debugfs_add(struct omap_iommu *obj);
-> +void omap_iommu_debugfs_remove(struct omap_iommu *obj);
-> +
->  /*
->   * register accessors
->   */
 
--- 
-Regards,
 
-Laurent Pinchart
 
+>> +       else
+>> +               drm_gem_put_pages(&bo->gem, bo->pages, true, true);
+>> +}
+>> +
+>> +static int tegra_bo_get_pages(struct drm_device *drm, struct tegra_=
+bo *bo,
+>> +                             size_t size)
+>> +{
+>> +       bo->pages =3D drm_gem_get_pages(&bo->gem, GFP_KERNEL);
+>> +       if (!bo->pages)
+>> +               return -ENOMEM;
+>> +
+>> +       bo->num_pages =3D size >> PAGE_SHIFT;
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +static int tegra_bo_alloc(struct drm_device *drm, struct tegra_bo *=
+bo,
+>> +                         size_t size)
+>> +{
+>> +       bo->vaddr =3D dma_alloc_writecombine(drm->dev, size, &bo->pa=
+ddr,
+>> +                                          GFP_KERNEL | __GFP_NOWARN=
+);
+>> +       if (!bo->vaddr) {
+>> +               dev_err(drm->dev, "failed to allocate buffer of size=
+ %zu\n",
+>> +                       size);
+>> +               return -ENOMEM;
+>> +       }
+>> +
+>> +       return 0;
+>>  }
+>>
+>>  struct tegra_bo *tegra_bo_create(struct drm_device *drm, unsigned i=
+nt size,
+>>                                  unsigned long flags)
+>>  {
+>> +       struct tegra_drm *tegra =3D drm->dev_private;
+>>         struct tegra_bo *bo;
+>>         int err;
+>>
+>> @@ -108,22 +240,33 @@ struct tegra_bo *tegra_bo_create(struct drm_de=
+vice *drm, unsigned int size,
+>>         host1x_bo_init(&bo->base, &tegra_bo_ops);
+>>         size =3D round_up(size, PAGE_SIZE);
+>>
+>> -       bo->vaddr =3D dma_alloc_writecombine(drm->dev, size, &bo->pa=
+ddr,
+>> -                                          GFP_KERNEL | __GFP_NOWARN=
+);
+>> -       if (!bo->vaddr) {
+>> -               dev_err(drm->dev, "failed to allocate buffer with si=
+ze %u\n",
+>> -                       size);
+>> -               err =3D -ENOMEM;
+>> -               goto err_dma;
+>> -       }
+>> -
+>>         err =3D drm_gem_object_init(drm, &bo->gem, size);
+>>         if (err)
+>> -               goto err_init;
+>> +               goto free;
+>>
+>>         err =3D drm_gem_create_mmap_offset(&bo->gem);
+>
+> We need to call drm_gem_free_mmap_offset if one of the calls below
+> fails, otherwise we'll try to free the mmap_offset on an already
+> destroyed bo.
+>
+>
+> Sean
+>
+>
+>
+>>         if (err)
+>> -               goto err_mmap;
+>> +               goto release;
+>> +
+>> +       if (tegra->domain) {
+>> +               err =3D tegra_bo_get_pages(drm, bo, size);
+>> +               if (err < 0)
+>> +                       goto release;
+>> +
+>> +               bo->sgt =3D drm_prime_pages_to_sg(bo->pages, bo->num=
+_pages);
+>> +               if (IS_ERR(bo->sgt)) {
+>> +                       err =3D PTR_ERR(bo->sgt);
+>> +                       goto release;
+>> +               }
+>> +
+>> +               err =3D tegra_bo_iommu_map(tegra, bo);
+>> +               if (err < 0)
+>> +                       goto release;
+>> +       } else {
+>> +               err =3D tegra_bo_alloc(drm, bo, size);
+>> +               if (err < 0)
+>> +                       goto release;
+>> +       }
+>>
+>>         if (flags & DRM_TEGRA_GEM_CREATE_TILED)
+>>                 bo->tiling.mode =3D TEGRA_BO_TILING_MODE_TILED;
+>> @@ -133,11 +276,10 @@ struct tegra_bo *tegra_bo_create(struct drm_de=
+vice *drm, unsigned int size,
+>>
+>>         return bo;
+>>
+>> -err_mmap:
+>> +release:
+>>         drm_gem_object_release(&bo->gem);
+>> -err_init:
+>>         tegra_bo_destroy(drm, bo);
+>> -err_dma:
+>> +free:
+>>         kfree(bo);
+>>
+>>         return ERR_PTR(err);
+>> @@ -172,6 +314,7 @@ err:
+>>  static struct tegra_bo *tegra_bo_import(struct drm_device *drm,
+>>                                         struct dma_buf *buf)
+>>  {
+>> +       struct tegra_drm *tegra =3D drm->dev_private;
+>>         struct dma_buf_attachment *attach;
+>>         struct tegra_bo *bo;
+>>         ssize_t size;
+>> @@ -211,12 +354,19 @@ static struct tegra_bo *tegra_bo_import(struct=
+ drm_device *drm,
+>>                 goto detach;
+>>         }
+>>
+>> -       if (bo->sgt->nents > 1) {
+>> -               err =3D -EINVAL;
+>> -               goto detach;
+>> +       if (tegra->domain) {
+>> +               err =3D tegra_bo_iommu_map(tegra, bo);
+>> +               if (err < 0)
+>> +                       goto detach;
+>> +       } else {
+>> +               if (bo->sgt->nents > 1) {
+>> +                       err =3D -EINVAL;
+>> +                       goto detach;
+>> +               }
+>> +
+>> +               bo->paddr =3D sg_dma_address(bo->sgt->sgl);
+>>         }
+>>
+>> -       bo->paddr =3D sg_dma_address(bo->sgt->sgl);
+>>         bo->gem.import_attach =3D attach;
+>>
+>>         return bo;
+>> @@ -239,8 +389,12 @@ free:
+>>
+>>  void tegra_bo_free_object(struct drm_gem_object *gem)
+>>  {
+>> +       struct tegra_drm *tegra =3D gem->dev->dev_private;
+>>         struct tegra_bo *bo =3D to_tegra_bo(gem);
+>>
+>> +       if (tegra->domain)
+>> +               tegra_bo_iommu_unmap(tegra, bo);
+>> +
+>>         if (gem->import_attach) {
+>>                 dma_buf_unmap_attachment(gem->import_attach, bo->sgt=
+,
+>>                                          DMA_TO_DEVICE);
+>> @@ -301,7 +455,38 @@ int tegra_bo_dumb_map_offset(struct drm_file *f=
+ile, struct drm_device *drm,
+>>         return 0;
+>>  }
+>>
+>> +static int tegra_bo_fault(struct vm_area_struct *vma, struct vm_fau=
+lt *vmf)
+>> +{
+>> +       struct drm_gem_object *gem =3D vma->vm_private_data;
+>> +       struct tegra_bo *bo =3D to_tegra_bo(gem);
+>> +       struct page *page;
+>> +       pgoff_t offset;
+>> +       int err;
+>> +
+>> +       if (!bo->pages)
+>> +               return VM_FAULT_SIGBUS;
+>> +
+>> +       offset =3D ((unsigned long)vmf->virtual_address - vma->vm_st=
+art) >> PAGE_SHIFT;
+>> +       page =3D bo->pages[offset];
+>> +
+>> +       err =3D vm_insert_page(vma, (unsigned long)vmf->virtual_addr=
+ess, page);
+>> +       switch (err) {
+>> +       case -EAGAIN:
+>> +       case 0:
+>> +       case -ERESTARTSYS:
+>> +       case -EINTR:
+>> +       case -EBUSY:
+>> +               return VM_FAULT_NOPAGE;
+>> +
+>> +       case -ENOMEM:
+>> +               return VM_FAULT_OOM;
+>> +       }
+>> +
+>> +       return VM_FAULT_SIGBUS;
+>> +}
+>> +
+>>  const struct vm_operations_struct tegra_bo_vm_ops =3D {
+>> +       .fault =3D tegra_bo_fault,
+>>         .open =3D drm_gem_vm_open,
+>>         .close =3D drm_gem_vm_close,
+>>  };
+>> @@ -316,13 +501,18 @@ int tegra_drm_mmap(struct file *file, struct v=
+m_area_struct *vma)
+>>         if (ret)
+>>                 return ret;
+>>
+>> +       vma->vm_flags |=3D VM_MIXEDMAP;
+>> +       vma->vm_flags &=3D ~VM_PFNMAP;
+>> +
+>>         gem =3D vma->vm_private_data;
+>>         bo =3D to_tegra_bo(gem);
+>>
+>> -       ret =3D remap_pfn_range(vma, vma->vm_start, bo->paddr >> PAG=
+E_SHIFT,
+>> -                             vma->vm_end - vma->vm_start, vma->vm_p=
+age_prot);
+>> -       if (ret)
+>> -               drm_gem_vm_close(vma);
+>> +       if (!bo->pages) {
+>> +               ret =3D remap_pfn_range(vma, vma->vm_start, bo->padd=
+r >> PAGE_SHIFT,
+>> +                                     vma->vm_end - vma->vm_start, v=
+ma->vm_page_prot);
+>> +               if (ret)
+>> +                       drm_gem_vm_close(vma);
+>> +       }
+>>
+>>         return ret;
+>>  }
+>> diff --git a/drivers/gpu/drm/tegra/gem.h b/drivers/gpu/drm/tegra/gem=
+=2Eh
+>> index 43a25c853357..c2e3f43e4b3f 100644
+>> --- a/drivers/gpu/drm/tegra/gem.h
+>> +++ b/drivers/gpu/drm/tegra/gem.h
+>> @@ -37,6 +37,10 @@ struct tegra_bo {
+>>         dma_addr_t paddr;
+>>         void *vaddr;
+>>
+>> +       struct drm_mm_node *mm;
+>> +       unsigned long num_pages;
+>> +       struct page **pages;
+>> +
+>>         struct tegra_bo_tiling tiling;
+>>  };
+>>
+>> --
+>> 2.0.0
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-kern=
+el" in
+>> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> Please read the FAQ at  http://www.tux.org/lkml/
