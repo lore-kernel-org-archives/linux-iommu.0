@@ -1,53 +1,34 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH v3 0/5] enhance DMA CMA on x86
-Date: Wed, 1 Oct 2014 11:05:13 +0200 (CEST)
-Message-ID: <alpine.DEB.2.11.1410011057290.4455@nanos>
-References: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com> <5426CA0A.7000806@hurleysoftware.com> <CAC5umyhgs8---HZLa7_DOSbqW0uPbLgqTfBweScZSR9oWbG9xg@mail.gmail.com> <54294C0B.1060705@hurleysoftware.com> <CAC5umyjP4OscSC8igVLYPEm-6gqiXt9md46sLu77Vut5UiPb=g@mail.gmail.com>
- <542ABF77.1020402@hurleysoftware.com> <alpine.DEB.2.11.1410010131380.4455@nanos> <542B5DC2.8020806@hurleysoftware.com>
-Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <542B5DC2.8020806@hurleysoftware.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Akinobu Mita <akinobu.mita@gmail.com>, LKML <linux-kernel@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, David Woodhouse <dwmw2@infradead.org>, Don Dutile <ddutile@redhat.com>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <andi@firstfloor.org>, x86@kernel.org, iommu@lists.linux-foundation.org, Greg KH <greg@kroah.com>
+From: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: [PATCH 0/3] Rockchip IOMMU driver and devicetree bindings
+Date: Wed,  1 Oct 2014 18:20:40 +0800
+Message-ID: <1412158843-8115-1-git-send-email-djkurtz@chromium.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 30 Sep 2014, Peter Hurley wrote:
-> On 09/30/2014 07:45 PM, Thomas Gleixner wrote:
-> > Whether the proposed patchset is the correct solution to support it is
-> > a completely different question.
-> 
-> This patchset has been in mainline since 3.16 and has already caused
-> regressions, so the question of whether this is the correct solution has
-> already been answered.
+Add a driver and devicetree bindings for the IOMMU found in Rockchip RK3288
+SoCs.
 
-Agreed.
- 
-> > So either you stop this right now and help Akinobu to find the proper
-> > solution 
-> 
-> If this is only a test platform for ARM parts then I don't think it
-> unreasonable to suggest forking x86 swiotlb support into a iommu=cma
-> selector that gets DMA mapping working for this test platform and doesn't
-> cause a bunch of breakage.
+Daniel Kurtz (3):
+  iommu/rockchip: rk3288 iommu driver
+  dt-bindings: iommu: Add documentation for rockchip iommu
+  ARM: dts: rk3288: add VOP iommu nodes
 
-Breakage is not acceptable in any case.
- 
-> Which is different than if the plan is to ship production units for x86;
-> then a general purpose solution will be required.
-> 
-> As to the good design of a general purpose solution for allocating and
-> mapping huge order pages, you are certainly more qualified to help Akinobu
-> than I am.
+ .../devicetree/bindings/iommu/rockchip,iommu.txt   |  26 +
+ arch/arm/boot/dts/rk3288.dtsi                      |  18 +
+ drivers/iommu/Kconfig                              |  11 +
+ drivers/iommu/Makefile                             |   1 +
+ drivers/iommu/rockchip-iommu.c                     | 924 +++++++++++++++++++++
+ 5 files changed, 980 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
+ create mode 100644 drivers/iommu/rockchip-iommu.c
 
-Fair enough. Still this does not make the case for outright rejecting
-the idea of supporting that kind of device even if it is a esoteric
-case. We deal with enough esoteric hardware in Linux and if done
-right, it's no harm to anyone.
+-- 
+2.1.0.rc2.206.gedb03e5
 
-I'll have a look at the technical details.
-
-Thanks,
-
-	tglx
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
