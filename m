@@ -1,12 +1,21 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 0/2] iommu/vt-d: Make RMRR matching compatible with older
-	kernels
-Date: Thu,  2 Oct 2014 12:09:06 +0200
-Message-ID: <1412244548-27617-1-git-send-email-joro@8bytes.org>
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v3 0/5] enhance DMA CMA on x86
+Date: Thu, 2 Oct 2014 12:41:21 -0400
+Message-ID: <20141002164121.GF1715@laptop.dumpdata.com>
+References: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com>
+	<5426CA0A.7000806@hurleysoftware.com>
+	<CAC5umyhgs8---HZLa7_DOSbqW0uPbLgqTfBweScZSR9oWbG9xg@mail.gmail.com>
+	<54294C0B.1060705@hurleysoftware.com>
+	<CAC5umyjP4OscSC8igVLYPEm-6gqiXt9md46sLu77Vut5UiPb=g@mail.gmail.com>
+	<542ABF77.1020402@hurleysoftware.com>
+	<alpine.DEB.2.11.1410010131380.4455@nanos>
+	<542B5DC2.8020806@hurleysoftware.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <542B5DC2.8020806-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,37 +25,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+To: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On Tue, Sep 30, 2014 at 09:49:54PM -0400, Peter Hurley wrote:
+> On 09/30/2014 07:45 PM, Thomas Gleixner wrote:
+> > Whether the proposed patchset is the correct solution to support it is
+> > a completely different question.
+> 
+> This patchset has been in mainline since 3.16 and has already caused
+> regressions, so the question of whether this is the correct solution has
+> already been answered.
+> 
+> > So either you stop this right now and help Akinobu to find the proper
+> > solution 
+> 
+> If this is only a test platform for ARM parts then I don't think it
+> unreasonable to suggest forking x86 swiotlb support into a iommu=cma
 
-here is a patch-set to make RMRR matching in the Intel IOMMU
-driver compatible with older kernels. This is needed because
-some BIOS vendors build RMRR entries to work with older
-kernels, but that will break on newer ones that implement
-the correct PCI device scope matching scheme defined in the
-VT-d specification.
+Not sure what you mean by 'forking x86 swiotlb' ? As in have SWIOTLB
+work under ARM?
 
-Make the current Intel IOMMU driver work with the old RMRR
-entries too.
+> selector that gets DMA mapping working for this test platform and doesn't
+> cause a bunch of breakage.
 
-These patches have been tested in an affected system and fix
-the issue seen there (newer kernel did not setup RMRR
-entries for a plugged in device).
+I think you might want to take a look at the IOMMU_DETECT macros
+and enable CMA there only if the certain devices are available.
 
-Regards,
+That way the normal flow of detecting which IOMMU to use is still present
+and will turn of CMA if there is no device that would use it.
 
-	Joerg
-
-Joerg Roedel (2):
-  iommu/vt-d: Store bus information in RMRR PCI device path
-  iommu/vt-d: Work around broken RMRR firmware entries
-
- drivers/iommu/dmar.c | 23 ++++++++++++++++++++---
- include/linux/dmar.h |  8 +++++++-
- 2 files changed, 27 insertions(+), 4 deletions(-)
-
--- 
-1.9.1
+> 
+> Which is different than if the plan is to ship production units for x86;
+> then a general purpose solution will be required.
+> 
+> As to the good design of a general purpose solution for allocating and
+> mapping huge order pages, you are certainly more qualified to help Akinobu
+> than I am.
+> 
+> Regards,
+> Peter Hurley
+> 
