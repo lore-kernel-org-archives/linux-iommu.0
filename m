@@ -1,13 +1,12 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 1/2] iommu/vt-d: Store bus information in RMRR PCI device path
-Date: Thu,  2 Oct 2014 12:09:07 +0200
-Message-ID: <1412244548-27617-2-git-send-email-joro@8bytes.org>
-References: <1412244548-27617-1-git-send-email-joro@8bytes.org>
+Subject: [PATCH 0/2] iommu/vt-d: Make RMRR matching compatible with older
+	kernels
+Date: Thu,  2 Oct 2014 12:09:06 +0200
+Message-ID: <1412244548-27617-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1412244548-27617-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,52 +20,33 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-ke
 Cc: jroedel-l3A5Bk7waGM@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Hi,
 
-This will be used later to match broken RMRR entries.
+here is a patch-set to make RMRR matching in the Intel IOMMU
+driver compatible with older kernels. This is needed because
+some BIOS vendors build RMRR entries to work with older
+kernels, but that will break on newer ones that implement
+the correct PCI device scope matching scheme defined in the
+VT-d specification.
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/dmar.c | 1 +
- include/linux/dmar.h | 8 +++++++-
- 2 files changed, 8 insertions(+), 1 deletion(-)
+Make the current Intel IOMMU driver work with the old RMRR
+entries too.
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 06d268a..6ba28b0 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -155,6 +155,7 @@ dmar_alloc_pci_notify_info(struct pci_dev *dev, unsigned long event)
- 	if (event == BUS_NOTIFY_ADD_DEVICE) {
- 		for (tmp = dev; tmp; tmp = tmp->bus->self) {
- 			level--;
-+			info->path[level].bus = tmp->bus->number;
- 			info->path[level].device = PCI_SLOT(tmp->devfn);
- 			info->path[level].function = PCI_FUNC(tmp->devfn);
- 			if (pci_is_root_bus(tmp->bus))
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 1deece4..593fff9 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -56,13 +56,19 @@ struct dmar_drhd_unit {
- 	struct intel_iommu *iommu;
- };
- 
-+struct dmar_pci_path {
-+	u8 bus;
-+	u8 device;
-+	u8 function;
-+};
-+
- struct dmar_pci_notify_info {
- 	struct pci_dev			*dev;
- 	unsigned long			event;
- 	int				bus;
- 	u16				seg;
- 	u16				level;
--	struct acpi_dmar_pci_path	path[];
-+	struct dmar_pci_path		path[];
- }  __attribute__((packed));
- 
- extern struct rw_semaphore dmar_global_lock;
+These patches have been tested in an affected system and fix
+the issue seen there (newer kernel did not setup RMRR
+entries for a plugged in device).
+
+Regards,
+
+	Joerg
+
+Joerg Roedel (2):
+  iommu/vt-d: Store bus information in RMRR PCI device path
+  iommu/vt-d: Work around broken RMRR firmware entries
+
+ drivers/iommu/dmar.c | 23 ++++++++++++++++++++---
+ include/linux/dmar.h |  8 +++++++-
+ 2 files changed, 27 insertions(+), 4 deletions(-)
+
 -- 
 1.9.1
