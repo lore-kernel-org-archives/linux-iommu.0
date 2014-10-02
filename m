@@ -1,15 +1,13 @@
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [PATCH 0/2] iommu/vt-d: Keep RMRR mappings around on driver unbind
-Date: Thu, 2 Oct 2014 11:20:17 +0200
-Message-ID: <20141002092017.GA1824@suse.de>
-References: <1412074923-6342-1-git-send-email-joro@8bytes.org>
-	<20141001223510.GB12989@kroah.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 2/2] iommu/vt-d: Work around broken RMRR firmware entries
+Date: Thu,  2 Oct 2014 12:09:08 +0200
+Message-ID: <1412244548-27617-3-git-send-email-joro@8bytes.org>
+References: <1412244548-27617-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20141001223510.GB12989-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1412244548-27617-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,19 +17,70 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Oct 01, 2014 at 03:35:10PM -0700, Greg Kroah-Hartman wrote:
-> I have no objection to these, do you want me to take them through my
-> tree?  Or if they are going through some other one feel free to add:
-> 
-> 	Acked-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-> 
-> To the first patch.
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Thanks Greg! I added the patches to the IOMMU tree.
+The VT-d specification states that an RMRR entry in the DMAR
+table needs to specify the full path to the device. This is
+also how newer Linux kernels implement it.
 
+Unfortunatly older drivers just match for the target device
+and not the full path to the device, so that BIOS vendors
+implement that behavior into their BIOSes to make them work
+with older Linux kernels. But those RMRR entries break on
+newer Linux kernels.
 
-	Joerg
+Work around this issue by adding a fall-back into the RMRR
+matching code to match those old RMRR entries too.
+
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/dmar.c | 22 +++++++++++++++++++---
+ 1 file changed, 19 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 6ba28b0..371ff33 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -178,17 +178,33 @@ static bool dmar_match_pci_path(struct dmar_pci_notify_info *info, int bus,
+ 	int i;
+ 
+ 	if (info->bus != bus)
+-		return false;
++		goto fallback;
+ 	if (info->level != count)
+-		return false;
++		goto fallback;
+ 
+ 	for (i = 0; i < count; i++) {
+ 		if (path[i].device != info->path[i].device ||
+ 		    path[i].function != info->path[i].function)
+-			return false;
++			goto fallback;
+ 	}
+ 
+ 	return true;
++
++fallback:
++
++	if (count != 1)
++		return false;
++
++	i = info->level - 1;
++	if (bus              == info->path[i].bus &&
++	    path[0].device   == info->path[i].device &&
++	    path[0].function == info->path[i].function) {
++		pr_info(FW_BUG "RMRR entry for device %02x:%02x.%x is broken - applying workaround\n",
++			bus, path[0].device, path[0].function);
++		return true;
++	}
++
++	return false;
+ }
+ 
+ /* Return: > 0 if match found, 0 if no match found, < 0 if error happens */
+-- 
+1.9.1
