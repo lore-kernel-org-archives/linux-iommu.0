@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 2/2] iommu/vt-d: Work around broken RMRR firmware entries
-Date: Thu,  2 Oct 2014 12:09:08 +0200
-Message-ID: <1412244548-27617-3-git-send-email-joro@8bytes.org>
+Subject: [PATCH 1/2] iommu/vt-d: Store bus information in RMRR PCI device path
+Date: Thu,  2 Oct 2014 12:09:07 +0200
+Message-ID: <1412244548-27617-2-git-send-email-joro@8bytes.org>
 References: <1412244548-27617-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,64 +23,50 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-The VT-d specification states that an RMRR entry in the DMAR
-table needs to specify the full path to the device. This is
-also how newer Linux kernels implement it.
-
-Unfortunatly older drivers just match for the target device
-and not the full path to the device, so that BIOS vendors
-implement that behavior into their BIOSes to make them work
-with older Linux kernels. But those RMRR entries break on
-newer Linux kernels.
-
-Work around this issue by adding a fall-back into the RMRR
-matching code to match those old RMRR entries too.
+This will be used later to match broken RMRR entries.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/dmar.c | 22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
+ drivers/iommu/dmar.c | 1 +
+ include/linux/dmar.h | 8 +++++++-
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 6ba28b0..371ff33 100644
+index 06d268a..6ba28b0 100644
 --- a/drivers/iommu/dmar.c
 +++ b/drivers/iommu/dmar.c
-@@ -178,17 +178,33 @@ static bool dmar_match_pci_path(struct dmar_pci_notify_info *info, int bus,
- 	int i;
+@@ -155,6 +155,7 @@ dmar_alloc_pci_notify_info(struct pci_dev *dev, unsigned long event)
+ 	if (event == BUS_NOTIFY_ADD_DEVICE) {
+ 		for (tmp = dev; tmp; tmp = tmp->bus->self) {
+ 			level--;
++			info->path[level].bus = tmp->bus->number;
+ 			info->path[level].device = PCI_SLOT(tmp->devfn);
+ 			info->path[level].function = PCI_FUNC(tmp->devfn);
+ 			if (pci_is_root_bus(tmp->bus))
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index 1deece4..593fff9 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -56,13 +56,19 @@ struct dmar_drhd_unit {
+ 	struct intel_iommu *iommu;
+ };
  
- 	if (info->bus != bus)
--		return false;
-+		goto fallback;
- 	if (info->level != count)
--		return false;
-+		goto fallback;
++struct dmar_pci_path {
++	u8 bus;
++	u8 device;
++	u8 function;
++};
++
+ struct dmar_pci_notify_info {
+ 	struct pci_dev			*dev;
+ 	unsigned long			event;
+ 	int				bus;
+ 	u16				seg;
+ 	u16				level;
+-	struct acpi_dmar_pci_path	path[];
++	struct dmar_pci_path		path[];
+ }  __attribute__((packed));
  
- 	for (i = 0; i < count; i++) {
- 		if (path[i].device != info->path[i].device ||
- 		    path[i].function != info->path[i].function)
--			return false;
-+			goto fallback;
- 	}
- 
- 	return true;
-+
-+fallback:
-+
-+	if (count != 1)
-+		return false;
-+
-+	i = info->level - 1;
-+	if (bus              == info->path[i].bus &&
-+	    path[0].device   == info->path[i].device &&
-+	    path[0].function == info->path[i].function) {
-+		pr_info(FW_BUG "RMRR entry for device %02x:%02x.%x is broken - applying workaround\n",
-+			bus, path[0].device, path[0].function);
-+		return true;
-+	}
-+
-+	return false;
- }
- 
- /* Return: > 0 if match found, 0 if no match found, < 0 if error happens */
+ extern struct rw_semaphore dmar_global_lock;
 -- 
 1.9.1
