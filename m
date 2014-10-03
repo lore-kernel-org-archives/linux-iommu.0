@@ -1,14 +1,20 @@
-From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v3 0/5] enhance DMA CMA on x86
-Date: Fri, 03 Oct 2014 10:27:14 -0400
-Message-ID: <542EB242.4090102@hurleysoftware.com>
-References: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com>	<5426CA0A.7000806@hurleysoftware.com>	<CAC5umyhgs8---HZLa7_DOSbqW0uPbLgqTfBweScZSR9oWbG9xg@mail.gmail.com>	<54294C0B.1060705@hurleysoftware.com>	<CAC5umyjP4OscSC8igVLYPEm-6gqiXt9md46sLu77Vut5UiPb=g@mail.gmail.com>	<542ABF77.1020402@hurleysoftware.com>	<alpine.DEB.2.11.1410010131380.4455@nanos>	<542B5DC2.8020806@hurleysoftware.com>	<20141002164121.GF1715@laptop.dumpdata.com>	<542DCB9C.4020703@hurleysoftware.com>
-	<CAC5umyjHruhnwiKwrHLBAF+g0ZDVouuuNvrisrUH8o963GyytQ@mail.gmail.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH v3 7/7] arm: dma-mapping: plumb our iommu mapping ops
+	into arch_setup_dma_ops
+Date: Fri, 3 Oct 2014 16:08:50 +0100
+Message-ID: <20141003150850.GA32451@arm.com>
+References: <1410539695-29128-1-git-send-email-will.deacon@arm.com>
+	<1410539695-29128-8-git-send-email-will.deacon@arm.com>
+	<20140922091934.GH1470@ulmo> <20140922174337.GI7936@arm.com>
+	<20140923071355.GI30514@ulmo> <20140924163338.GF16244@arm.com>
+	<20140925064022.GC12423@ulmo> <20140930160035.GM2548@arm.com>
+	<20141001084549.GE18463@ulmo>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAC5umyjHruhnwiKwrHLBAF+g0ZDVouuuNvrisrUH8o963GyytQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20141001084549.GE18463@ulmo>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,90 +24,110 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/02/2014 07:08 PM, Akinobu Mita wrote:
-> 2014-10-03 7:03 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
->> On 10/02/2014 12:41 PM, Konrad Rzeszutek Wilk wrote:
->>> On Tue, Sep 30, 2014 at 09:49:54PM -0400, Peter Hurley wrote:
->>>> On 09/30/2014 07:45 PM, Thomas Gleixner wrote:
+Hi Thierry,
+
+On Wed, Oct 01, 2014 at 09:46:10AM +0100, Thierry Reding wrote:
+> On Tue, Sep 30, 2014 at 05:00:35PM +0100, Will Deacon wrote:
+> > On Thu, Sep 25, 2014 at 07:40:23AM +0100, Thierry Reding wrote:
+> [...]
+> > > So I think what we're going to need is a way to prevent the default
+> > > attachment to DMA/IOMMU. Or alternatively not associate devices with
+> > > IOMMU domains by default but let drivers explicitly make the decision.
+> > 
+> > Which drivers and how would they know what to do? I think you might be
+> > jumping the gun a bit here, given where mainline is with using the IOMMU
+> > for anything at all.
 > 
->>>> Which is different than if the plan is to ship production units for x86;
->>>> then a general purpose solution will be required.
->>>>
->>>> As to the good design of a general purpose solution for allocating and
->>>> mapping huge order pages, you are certainly more qualified to help Akinobu
->>>> than I am.
->>
->> What Akinobu's patches intend to support is:
->>
->>         phys_addr = dma_alloc_coherent(dev, 64 * 1024 * 1024, &bus_addr, GFP_KERNEL);
->>
->> which raises three issues:
->>
->> 1. Where do coherent blocks of this size come from?
->> 2. How to prevent fragmentation of these reserved blocks over time by
->>    existing DMA users?
->> 3. Is this support generically required across all iommu implementations on x86?
->>
->> Questions 1 and 2 are non-trivial, in the general case, otherwise the page
->> allocator would already do this. Simply dropping in the contiguous memory
->> allocator doesn't work because CMA does not have the same policy and performance
->> as the page allocator, and is already causing performance regressions even
->> in the absence of huge page allocations.
+> I don't think I am. I've been working on patches to enable IOMMU on
+> Tegra, with the specific use-case that we want to use it to allow
+> physically non-contiguous framebuffers to be used for scan out.
 > 
-> Could you take a look at the patches I sent?  Can they fix these issues?
-> https://lkml.org/lkml/2014/9/28/110
+> In order to do so the DRM driver allocates an IOMMU domain and adds both
+> display controllers to it. When a framebuffer is created or imported
+> from DMA-BUF, it gets mapped into this domain and both display
+> controllers can use the IOVA address as the framebuffer base address.
+
+Does that mean you manually swizzle the dma_map_ops for the device in the
+DRM driver?
+
+> Given that a device can only be attached to a single domain at a time
+> this will cause breakage when the ARM glue code starts automatically
+> attaching the display controllers to a default domain.
+
+Why couldn't you just re-use the domain already allocated by the DMA mapping
+API?
+
+> > > > > What I proposed a while back was to leave it up to the IOMMU driver to
+> > > > > choose an allocator for the device. Or rather, choose whether to use a
+> > > > > custom allocator or the DMA/IOMMU integration allocator. The way this
+> > > > > worked was to keep a list of devices in the IOMMU driver. Devices in
+> > > > > this list would be added to domain reserved for DMA/IOMMU integration.
+> > > > > Those would typically be devices such as SD/MMC, audio, ... devices that
+> > > > > are in-kernel and need no per-process separation. By default devices
+> > > > > wouldn't be added to a domain, so devices forming a composite DRM device
+> > > > > would be able to manage their own domain.
+> > > > 
+> > > > I'd live to have as little of this as possible in the IOMMU drivers, as we
+> > > > should leave those to deal with the IOMMU hardware and not domain
+> > > > management. Having subsystems manage their own dma ops is an extension to
+> > > > the dma-mapping API.
+> > > 
+> > > It's not an extension, really. It's more that both need to be able to
+> > > coexist. For some devices you may want to create an IOMMU domain and
+> > > hook it up with the DMA mapping functions, for others you don't and
+> > > handle mapping to IOVA space explicitly.
+> > 
+> > I think it's an extension in the sense that mainline doesn't currently do
+> > what you want, regardless of this patch series.
 > 
-> With these patches, normal alloc_pages() is used for allocation first
-> and dma_alloc_from_contiguous() is used as a fallback.
+> It's interesting since you're now the second person to say this. Can you
+> please elaborate why you think that's the case?
 
-Sure, I can test these patches this weekend.
-Where are the unit tests?
+Because the only way to set up DMA through an IOMMU on ARM is via the
+arm_iommu_* functions, which are currently called from a subset of the
+IOMMU drivers themselves:
 
->> So that's why I raised question 3; is making the necessary compromises to support
->> 64MB coherent DMA allocations across all x86 iommu implementations actually
->> required?
->>
->> Prior to Akinobu's patches, the use of CMA by x86 iommu configurations was
->> designed to be limited to testing configurations, as the introductory
->> commit states:
->>
->> commit 0a2b9a6ea93650b8a00f9fd5ee8fdd25671e2df6
->> Author: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
->> Date:   Thu Dec 29 13:09:51 2011 +0100
->>
->>     X86: integrate CMA with DMA-mapping subsystem
->>
->>     This patch adds support for CMA to dma-mapping subsystem for x86
->>     architecture that uses common pci-dma/pci-nommu implementation. This
->>     allows to test CMA on KVM/QEMU and a lot of common x86 boxes.
->>
->>     Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
->>     Signed-off-by: Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
->>     CC: Michal Nazarewicz <mina86-deATy8a+UHjQT0dZR+AlfA@public.gmane.org>
->>     Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
->>
->>
->> Which brings me to my suggestion: if support for huge coherent DMA is
->> required only for a special test platform, then could not this support
->> be specific to a new iommu configuration, namely iommu=cma, which would
->> get initialized much the same way that iommu=calgary is now.
->>
->> The code for such a iommu configuration would mostly duplicate
->> arch/x86/kernel/pci-swiotlb.c and the CMA support would get removed from
->> the other x86 iommu implementations.
+  drivers/gpu/drm/exynos/exynos_drm_iommu.c
+  drivers/iommu/ipmmu-vmsa.c
+  drivers/iommu/shmobile-iommu.c
+  drivers/media/platform/omap3isp/isp.c
+
+Of these, ipmmu-vmsa.c and shmobile.c both allocate a domain per device.
+The omap3 code seems to do something similar. That just leaves the exynos
+driver, which Marek has been reworking anyway.
+
+> I do have local patches that allow precisely this use-case to work
+> without changes to the IOMMU core or requiring any extra ARM-specific
+> glue.
 > 
-> I'm not sure I read correctly, though.  Can boot option 'cma=0' also
-> help avoiding CMA from IOMMU implementation?
+> There's a fair bit of jumping through hoops, because for example you
+> don't know what IOMMU instance a domain belongs to at .domain_init()
+> time, so I have to defer most of the actual domain initalization until a
+> device is actually attached to it, but I digress.
+> 
+> > > Doing so would leave a large number of address spaces available for
+> > > things like a GPU driver to keep per-process address spaces for
+> > > isolation.
+> > > 
+> > > I don't see how we'd be able to do that with the approach that you
+> > > propose in this series since it assumes that each device will be
+> > > associated with a separate domain.
+> > 
+> > No, that's an artifact of the existing code on ARM. My series adds a list of
+> > domains to each device, but those domains are per-IOMMU instance and can
+> > appear in multiple lists.
+> 
+> So you're saying the end result will be that there's a single domain per
+> IOMMU device that will be associated with all devices that have a master
+> interface to it?
 
-Maybe, but that's not an appropriate solution for distro kernels.
+Yes, that's the plan. Having thought about it some more (after your
+comments), subsystems can still call of_dma_deconfigure if they want to do
+their own IOMMU domain management. That may well be useful for things like
+VFIO, for example.
 
-Nor does this address configurations that want a really large CMA so
-1GB huge pages can be allocated (not for DMA though).
-
-Regards,
-Peter Hurley
- 
+Will
