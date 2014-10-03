@@ -1,22 +1,11 @@
-From: konrad wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
 Subject: Re: [PATCH v3 0/5] enhance DMA CMA on x86
-Date: Fri, 03 Oct 2014 12:33:56 -0400
-Message-ID: <542ECFF4.7010602@oracle.com>
-References: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com>
-	<5426CA0A.7000806@hurleysoftware.com>
-	<CAC5umyhgs8---HZLa7_DOSbqW0uPbLgqTfBweScZSR9oWbG9xg@mail.gmail.com>
-	<54294C0B.1060705@hurleysoftware.com>
-	<CAC5umyjP4OscSC8igVLYPEm-6gqiXt9md46sLu77Vut5UiPb=g@mail.gmail.com>
-	<542ABF77.1020402@hurleysoftware.com>
-	<alpine.DEB.2.11.1410010131380.4455@nanos>
-	<542B5DC2.8020806@hurleysoftware.com>
-	<20141002164121.GF1715@laptop.dumpdata.com>
-	<542DCB9C.4020703@hurleysoftware.com>
-	<CAC5umyjHruhnwiKwrHLBAF+g0ZDVouuuNvrisrUH8o963GyytQ@mail.gmail.com>
-	<542EB242.4090102@hurleysoftware.com>
+Date: Fri, 03 Oct 2014 12:39:12 -0400
+Message-ID: <542ED130.2090501@hurleysoftware.com>
+References: <1397567329-3771-1-git-send-email-akinobu.mita@gmail.com>	<5426CA0A.7000806@hurleysoftware.com>	<CAC5umyhgs8---HZLa7_DOSbqW0uPbLgqTfBweScZSR9oWbG9xg@mail.gmail.com>	<54294C0B.1060705@hurleysoftware.com>	<CAC5umyjP4OscSC8igVLYPEm-6gqiXt9md46sLu77Vut5UiPb=g@mail.gmail.com>	<542ABF77.1020402@hurleysoftware.com>	<alpine.DEB.2.11.1410010131380.4455@nanos>	<542B5DC2.8020806@hurleysoftware.com>	<20141002164121.GF1715@laptop.dumpdata.com>	<542DCB9C.4020703@hurleysoftware.com>	<CAC5umyjHruhnwiKwrHLBAF+g0ZDVouuuNvrisrUH8o963GyytQ@mail.gmail.com>	<542EB242.4090102@hurleysoftware.com>
 	<CAC5umygJ3EDOb4E29+YPo4t4Ew_K3x7jpxLrmvNco3U=UJBCrA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 In-Reply-To: <CAC5umygJ3EDOb4E29+YPo4t4Ew_K3x7jpxLrmvNco3U=UJBCrA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
@@ -30,10 +19,10 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/3/2014 12:06 PM, Akinobu Mita wrote:
+On 10/03/2014 12:06 PM, Akinobu Mita wrote:
 > 2014-10-03 23:27 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
 >> On 10/02/2014 07:08 PM, Akinobu Mita wrote:
 >>> 2014-10-03 7:03 GMT+09:00 Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>:
@@ -50,13 +39,13 @@ On 10/3/2014 12:06 PM, Akinobu Mita wrote:
 >>>>
 >>>> What Akinobu's patches intend to support is:
 >>>>
->>>>          phys_addr = dma_alloc_coherent(dev, 64 * 1024 * 1024, &bus_addr, GFP_KERNEL);
+>>>>         phys_addr = dma_alloc_coherent(dev, 64 * 1024 * 1024, &bus_addr, GFP_KERNEL);
 >>>>
 >>>> which raises three issues:
 >>>>
 >>>> 1. Where do coherent blocks of this size come from?
 >>>> 2. How to prevent fragmentation of these reserved blocks over time by
->>>>     existing DMA users?
+>>>>    existing DMA users?
 >>>> 3. Is this support generically required across all iommu implementations on x86?
 >>>>
 >>>> Questions 1 and 2 are non-trivial, in the general case, otherwise the page
@@ -73,11 +62,23 @@ On 10/3/2014 12:06 PM, Akinobu Mita wrote:
 >>
 >> Sure, I can test these patches this weekend.
 >> Where are the unit tests?
->
+> 
 > Thanks a lot.  I would like to know whether the performance regression
 > you see will disappear or not with these patches as if CONFIG_DMA_CMA is
 > disabled.
->
+
+I think something may have gotten lost in translation.
+
+My "test" consists of doing my daily work (email, emacs, kernel builds,
+web breaks, etc).
+
+I don't have a testsuite that validates a page allocator or records any
+performance metrics (for TTM allocations under load, as an example).
+
+Without a unit test and performance metrics, my "test" is not really
+positive affirmation of a correct implementation.
+
+
 >>>> So that's why I raised question 3; is making the necessary compromises to support
 >>>> 64MB coherent DMA allocations across all x86 iommu implementations actually
 >>>> required?
@@ -90,16 +91,16 @@ On 10/3/2014 12:06 PM, Akinobu Mita wrote:
 >>>> Author: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 >>>> Date:   Thu Dec 29 13:09:51 2011 +0100
 >>>>
->>>>      X86: integrate CMA with DMA-mapping subsystem
+>>>>     X86: integrate CMA with DMA-mapping subsystem
 >>>>
->>>>      This patch adds support for CMA to dma-mapping subsystem for x86
->>>>      architecture that uses common pci-dma/pci-nommu implementation. This
->>>>      allows to test CMA on KVM/QEMU and a lot of common x86 boxes.
+>>>>     This patch adds support for CMA to dma-mapping subsystem for x86
+>>>>     architecture that uses common pci-dma/pci-nommu implementation. This
+>>>>     allows to test CMA on KVM/QEMU and a lot of common x86 boxes.
 >>>>
->>>>      Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
->>>>      Signed-off-by: Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
->>>>      CC: Michal Nazarewicz <mina86-deATy8a+UHjQT0dZR+AlfA@public.gmane.org>
->>>>      Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+>>>>     Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+>>>>     Signed-off-by: Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+>>>>     CC: Michal Nazarewicz <mina86-deATy8a+UHjQT0dZR+AlfA@public.gmane.org>
+>>>>     Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
 >>>>
 >>>>
 >>>> Which brings me to my suggestion: if support for huge coherent DMA is
@@ -118,21 +119,20 @@ On 10/3/2014 12:06 PM, Akinobu Mita wrote:
 >>
 >> Nor does this address configurations that want a really large CMA so
 >> 1GB huge pages can be allocated (not for DMA though).
->
+> 
 > Now I see the point of iommu=cma you suggested.  But what should we do
 > when CONFIG_SWIOTLB is disabled, especially for x86_32?
 > Should we just introduce yet another flag to tell not using DMA_CMA
 > instead of adding new swiotlb-like iommu implementation?
->
 
-If you implement an DMA API producer - aka dma_ops (which is what Peter 
-is thinking I believe) it won't matter which IOMMUs / DMA producers are 
-selected right?
+Again, since I don't know what you're using this for and
+there are no existing mainline users, I can't really design this for
+you.
 
-Or are you saying that CMA needs SWIOTLB to handle certain type of
-pages as a fallback mechanism - and hence there needs to be a tight
-relationship?
+I'm just trying to do my best to come up with alternative solutions
+that limit the impact to existing x86 configurations, while still
+achieving your goals (without really knowing what those design
+constraints are).
 
-In which case I would look at making SWIOTLB be more library like - the 
-Xen-SWIOTLB already does that by using certain parts of the SWIOTLB code
-which are exposed to the rest of the kernel.
+Regards,
+Peter Hurley
