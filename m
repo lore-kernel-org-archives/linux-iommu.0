@@ -1,11 +1,13 @@
 From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: [RFC][PATCH 1/2] Introduce the IOMMU_DEVICE flag.
-Date: Mon, 6 Oct 2014 15:58:15 +0530
-Message-ID: <1412591296-31934-1-git-send-email-Varun.Sethi@freescale.com>
+Subject: [RFC][PATCH 2/2] Add support of the IOMMU_DEVICE flag.
+Date: Mon, 6 Oct 2014 15:58:16 +0530
+Message-ID: <1412591296-31934-2-git-send-email-Varun.Sethi@freescale.com>
+References: <1412591296-31934-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1412591296-31934-1-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,25 +21,40 @@ To: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8
 Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This is used for indicating device memory type for a DMA transaction. IOMMU
-driver would set up attributes indicationg access to device memory.
+This flag is used for specifying access to device memory. SMMU would apply
+device memory attributes for a DMA transaction. This is required for setting
+access to GIC registers, for generating message interrupts. This would ensure that 
+transactions targetting device memory are not gathered or reordered.
 
 Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 ---
- include/linux/iommu.h |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/arm-smmu.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 20f9a52..0599fe1 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -28,6 +28,7 @@
- #define IOMMU_WRITE	(1 << 1)
- #define IOMMU_CACHE	(1 << 2) /* DMA cache coherency */
- #define IOMMU_EXEC	(1 << 3)
-+#define IOMMU_DEVICE	(1 << 4) /* Indicates access to device memory */
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index ca18d6d..f8338d6 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1263,6 +1263,10 @@ static int arm_smmu_alloc_init_pte(struct arm_smmu_device *smmu, pmd_t *pmd,
+ 		if (prot & IOMMU_CACHE)
+ 			pteval |= (MAIR_ATTR_IDX_CACHE <<
+ 				   ARM_SMMU_PTE_ATTRINDX_SHIFT);
++
++		if (prot & IOMMU_DEVICE)
++			pteval |= (MAIR_ATTR_IDX_DEV <<
++				   ARM_SMMU_PTE_ATTRINDX_SHIFT);
+ 	} else {
+ 		pteval |= ARM_SMMU_PTE_HAP_FAULT;
+ 		if (prot & IOMMU_READ)
+@@ -1273,6 +1277,9 @@ static int arm_smmu_alloc_init_pte(struct arm_smmu_device *smmu, pmd_t *pmd,
+ 			pteval |= ARM_SMMU_PTE_MEMATTR_OIWB;
+ 		else
+ 			pteval |= ARM_SMMU_PTE_MEMATTR_NC;
++
++		if (prot & IOMMU_DEVICE)
++			pteval |= ARM_SMMU_PTE_MEMATTR_DEV;
+ 	}
  
- struct iommu_ops;
- struct iommu_group;
+ 	/* If no access, create a faulting entry to avoid TLB fills */
 -- 
 1.7.9.5
