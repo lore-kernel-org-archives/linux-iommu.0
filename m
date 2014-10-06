@@ -1,13 +1,11 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v2] cma: make default CMA area size zero for x86
-Date: Mon, 06 Oct 2014 12:04:32 +0200
-Message-ID: <54326930.1090805@samsung.com>
-References: <1412517260-3832-1-git-send-email-akinobu.mita@gmail.com>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: [RFC][PATCH 1/2] Introduce the IOMMU_DEVICE flag.
+Date: Mon, 6 Oct 2014 15:58:15 +0530
+Message-ID: <1412591296-31934-1-git-send-email-Varun.Sethi@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1412517260-3832-1-git-send-email-akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,81 +15,29 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org
-Cc: Chuck Ebbert <cebbert.lkml-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jean Delvare <jdelvare-l3A5Bk7waGM@public.gmane.org>
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+This is used for indicating device memory type for a DMA transaction. IOMMU
+driver would set up attributes indicationg access to device memory.
 
-On 2014-10-05 15:54, Akinobu Mita wrote:
-> This makes CMA memory area size zero for x86 in default configuration
-> (doesn't change on the other architectures).  If default CMA size is
-> zero, DMA_CMA is disabled.  It can be enabled by passing cma= to the
-> kernel.
->
-> This makes less impact on x86.  Because there is no mainline driver that
-> requires it for x86, and Peter Hurley reported the performance
-> regression, as this is trying to drive _all_ dma mapping allocations
-> through a _very_ small window.
->
-> Signed-off-by: Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> Reported-by: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-> Cc: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-> Cc: Chuck Ebbert <cebbert.lkml-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> Cc: Jean Delvare <jdelvare-l3A5Bk7waGM@public.gmane.org>
-> Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-> Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-> Cc: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-> Cc: Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Cc: "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>
-> Cc: Andi Kleen <andi-Vw/NltI1exuRpAAqCnN02g@public.gmane.org>
-> Cc: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+---
+ include/linux/iommu.h |    1 +
+ 1 file changed, 1 insertion(+)
 
-Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-
-> ---
-> * v2
-> - Add information in help text, suggested by Chuck Ebbert
->
->   drivers/base/Kconfig | 8 +++++++-
->   1 file changed, 7 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/base/Kconfig b/drivers/base/Kconfig
-> index 4e7f0ff..115882f 100644
-> --- a/drivers/base/Kconfig
-> +++ b/drivers/base/Kconfig
-> @@ -240,18 +240,24 @@ comment "Default contiguous memory area size:"
->   config CMA_SIZE_MBYTES
->   	int "Size in Mega Bytes"
->   	depends on !CMA_SIZE_SEL_PERCENTAGE
-> +	default 0 if X86
->   	default 16
->   	help
->   	  Defines the size (in MiB) of the default memory area for Contiguous
-> -	  Memory Allocator.
-> +	  Memory Allocator.  If the size of 0 is selected, CMA is disabled by
-> +	  default, but it can be enabled by passing cma=size[MG] to the kernel.
-> +
->   
->   config CMA_SIZE_PERCENTAGE
->   	int "Percentage of total memory"
->   	depends on !CMA_SIZE_SEL_MBYTES
-> +	default 0 if X86
->   	default 10
->   	help
->   	  Defines the size of the default memory area for Contiguous Memory
->   	  Allocator as a percentage of the total memory in the system.
-> +	  If 0 percent is selected, CMA is disabled by default, but it can be
-> +	  enabled by passing cma=size[MG] to the kernel.
->   
->   choice
->   	prompt "Selected region size"
-
-Best regards
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 20f9a52..0599fe1 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -28,6 +28,7 @@
+ #define IOMMU_WRITE	(1 << 1)
+ #define IOMMU_CACHE	(1 << 2) /* DMA cache coherency */
+ #define IOMMU_EXEC	(1 << 3)
++#define IOMMU_DEVICE	(1 << 4) /* Indicates access to device memory */
+ 
+ struct iommu_ops;
+ struct iommu_group;
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+1.7.9.5
