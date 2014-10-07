@@ -1,15 +1,14 @@
-From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [RFC][PATCH 2/2] Add support of the IOMMU_DEVICE flag.
-Date: Mon, 06 Oct 2014 16:32:34 -0700
-Message-ID: <vnkwr3ykn59p.fsf@mitchelh-linux.qualcomm.com>
-References: <1412591296-31934-1-git-send-email-Varun.Sethi@freescale.com>
-	<1412591296-31934-2-git-send-email-Varun.Sethi@freescale.com>
+From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH 2/2] iommu/vt-d: Work around broken RMRR firmware entries
+Date: Tue, 07 Oct 2014 08:59:24 +0800
+Message-ID: <54333AEC.6000603@linux.intel.com>
+References: <1412244548-27617-1-git-send-email-joro@8bytes.org>
+	<1412244548-27617-3-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1412591296-31934-2-git-send-email-Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-	(Varun Sethi's message of "Mon, 6 Oct 2014 15:58:16 +0530")
+In-Reply-To: <1412244548-27617-3-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,20 +18,76 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Oct 06 2014 at 03:28:16 AM, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org> wrote:
-> This flag is used for specifying access to device memory. SMMU would apply
-> device memory attributes for a DMA transaction. This is required for setting
-> access to GIC registers, for generating message interrupts. This would ensure that 
 
-Nit: long line and trailing whitespace.
-
-
--Mitch
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-hosted by The Linux Foundation
+On 2014/10/2 18:09, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> 
+> The VT-d specification states that an RMRR entry in the DMAR
+> table needs to specify the full path to the device. This is
+> also how newer Linux kernels implement it.
+> 
+> Unfortunatly older drivers just match for the target device
+> and not the full path to the device, so that BIOS vendors
+> implement that behavior into their BIOSes to make them work
+> with older Linux kernels. But those RMRR entries break on
+> newer Linux kernels.
+> 
+> Work around this issue by adding a fall-back into the RMRR
+> matching code to match those old RMRR entries too.
+> 
+> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> ---
+>  drivers/iommu/dmar.c | 22 +++++++++++++++++++---
+>  1 file changed, 19 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+> index 6ba28b0..371ff33 100644
+> --- a/drivers/iommu/dmar.c
+> +++ b/drivers/iommu/dmar.c
+> @@ -178,17 +178,33 @@ static bool dmar_match_pci_path(struct dmar_pci_notify_info *info, int bus,
+>  	int i;
+>  
+>  	if (info->bus != bus)
+> -		return false;
+> +		goto fallback;
+>  	if (info->level != count)
+> -		return false;
+> +		goto fallback;
+>  
+>  	for (i = 0; i < count; i++) {
+>  		if (path[i].device != info->path[i].device ||
+>  		    path[i].function != info->path[i].function)
+> -			return false;
+> +			goto fallback;
+>  	}
+>  
+>  	return true;
+> +
+> +fallback:
+> +
+> +	if (count != 1)
+> +		return false;
+> +
+> +	i = info->level - 1;
+> +	if (bus              == info->path[i].bus &&
+> +	    path[0].device   == info->path[i].device &&
+> +	    path[0].function == info->path[i].function) {
+> +		pr_info(FW_BUG "RMRR entry for device %02x:%02x.%x is broken - applying workaround\n",
+> +			bus, path[0].device, path[0].function);
+> +		return true;
+> +	}
+> +
+> +	return false;
+>  }
+>  
+>  /* Return: > 0 if match found, 0 if no match found, < 0 if error happens */
+> 
+Hi Joerg,
+	Thanks for fixing this:)
+	Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Regards!
+Gerry
