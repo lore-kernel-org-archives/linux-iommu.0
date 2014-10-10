@@ -1,58 +1,74 @@
-From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v4 1/2] iopoll: Introduce memory-mapped IO polling macros
-Date: Thu, 09 Oct 2014 15:45:05 -0700
-Message-ID: <vnkwppe07thq.fsf@mitchelh-linux.qualcomm.com>
-References: <1412126893-15796-1-git-send-email-mitchelh@codeaurora.org>
-	<1412126893-15796-2-git-send-email-mitchelh@codeaurora.org>
-	<23910474.oJQUXZsx4W@wuerfel>
-	<vnkwoatngwmo.fsf@mitchelh-linux.qualcomm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <vnkwoatngwmo.fsf-Yf+dfxj6toJBVvN7MMdr1KRtKmQZhJ7pQQ4Iyu8u01E@public.gmane.org> (Mitchel
-	Humpherys's message of "Tue, 07 Oct 2014 18:47:59 -0700")
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Kiran Padwal <kiran.padwal@smartplayin.com>
+Subject: [PATCH] iommu: use dev_get_platdata()
+Date: Fri, 10 Oct 2014 19:01:10 +0530
+Message-ID: <1412947870-10033-1-git-send-email-kiran.padwal@smartplayin.com>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, Kiran Padwal <kiran.padwal@smartplayin.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Oct 07 2014 at 06:47:59 PM, Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
->>> +#define readl_poll_timeout_atomic(addr, val, cond, max_reads, time_between_us) \
->>> +({ \
->>> +       int count; \
->>> +       for (count = (max_reads); count > 0; count--) { \
->>> +               (val) = readl(addr); \
->>> +               if (cond) \
->>> +                       break; \
->>> +               udelay(time_between_us); \
->>> +       } \
->>> +       (cond) ? 0 : -ETIMEDOUT; \
->>> +})
->>
->> udelay has a large variability, I think it would be better to also use
->> ktime_compare here and make the interface the same as the other one.
->> You might want to add a warning if someone tries to pass more than a few
->> microseconds as the timeout.
->
-> Sounds good, will update in v5.
+Use the wrapper function for retrieving the platform data instead of
+accessing dev->platform_data directly.
 
-Except I'll probably hold off on adding a warning about udelay since
-udelay already includes a "warning" (a compile error, actually) when
-exceedingly large delays are requested.
+Signed-off-by: Kiran Padwal <kiran.padwal@smartplayin.com>
+---
+ drivers/iommu/msm_iommu_dev.c |    4 ++--
+ drivers/iommu/omap-iommu.c    |    6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-
--Mitch
-
+diff --git a/drivers/iommu/msm_iommu_dev.c b/drivers/iommu/msm_iommu_dev.c
+index 61def7cb..6b16c5c 100644
+--- a/drivers/iommu/msm_iommu_dev.c
++++ b/drivers/iommu/msm_iommu_dev.c
+@@ -131,7 +131,7 @@ static int msm_iommu_probe(struct platform_device *pdev)
+ 	struct clk *iommu_clk;
+ 	struct clk *iommu_pclk;
+ 	struct msm_iommu_drvdata *drvdata;
+-	struct msm_iommu_dev *iommu_dev = pdev->dev.platform_data;
++	struct msm_iommu_dev *iommu_dev = dev_get_platdata(&pdev->dev);
+ 	void __iomem *regs_base;
+ 	int ret, irq, par;
+ 
+@@ -264,7 +264,7 @@ static int msm_iommu_remove(struct platform_device *pdev)
+ 
+ static int msm_iommu_ctx_probe(struct platform_device *pdev)
+ {
+-	struct msm_iommu_ctx_dev *c = pdev->dev.platform_data;
++	struct msm_iommu_ctx_dev *c = dev_get_platdata(&pdev->dev);
+ 	struct msm_iommu_drvdata *drvdata;
+ 	struct msm_iommu_ctx_drvdata *ctx_drvdata;
+ 	int i, ret;
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index 3627887..fb9ab86 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -151,7 +151,7 @@ static int iommu_enable(struct omap_iommu *obj)
+ {
+ 	int err;
+ 	struct platform_device *pdev = to_platform_device(obj->dev);
+-	struct iommu_platform_data *pdata = pdev->dev.platform_data;
++	struct iommu_platform_data *pdata = dev_get_platdata(&pdev->dev);
+ 
+ 	if (!arch_iommu)
+ 		return -ENODEV;
+@@ -174,7 +174,7 @@ static int iommu_enable(struct omap_iommu *obj)
+ static void iommu_disable(struct omap_iommu *obj)
+ {
+ 	struct platform_device *pdev = to_platform_device(obj->dev);
+-	struct iommu_platform_data *pdata = pdev->dev.platform_data;
++	struct iommu_platform_data *pdata = dev_get_platdata(&pdev->dev);
+ 
+ 	arch_iommu->disable(obj);
+ 
+@@ -934,7 +934,7 @@ static int omap_iommu_probe(struct platform_device *pdev)
+ 	int irq;
+ 	struct omap_iommu *obj;
+ 	struct resource *res;
+-	struct iommu_platform_data *pdata = pdev->dev.platform_data;
++	struct iommu_platform_data *pdata = dev_get_platdata(&pdev->dev);
+ 	struct device_node *of = pdev->dev.of_node;
+ 
+ 	obj = devm_kzalloc(&pdev->dev, sizeof(*obj) + MMU_REG_SIZE, GFP_KERNEL);
 -- 
-Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+1.7.9.5
