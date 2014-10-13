@@ -1,7 +1,8 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCH 2/5] vfio: introduce the VFIO_DMA_MAP_FLAG_NOEXEC flag
-Date: Mon, 13 Oct 2014 15:09:05 +0200
-Message-ID: <1413205748-6300-3-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [PATCH 5/5] vfio/iommu_type1: implement the VFIO_DMA_MAP_FLAG_NOEXEC
+	flag
+Date: Mon, 13 Oct 2014 15:09:08 +0200
+Message-ID: <1413205748-6300-6-git-send-email-a.motakis@virtualopensystems.com>
 References: <1413205748-6300-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,39 +19,87 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, "open list:ABI/API" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-We introduce the VFIO_DMA_MAP_FLAG_NOEXEC flag to the VFIO dma map call,
-and expose its availability via the capability VFIO_DMA_NOEXEC_IOMMU.
-This way the user can control whether the XN flag will be set on the
-requested mappings. The IOMMU_NOEXEC flag needs to be available for all
-the IOMMUs of the container used.
+Some IOMMU drivers, such as the ARM SMMU driver, make available the
+IOMMU_NOEXEC flag, to set the page tables for a device as XN (execute never).
+This affects devices such as the ARM PL330 DMA Controller, which respects
+this flag and will refuse to fetch DMA instructions from memory where the
+XN flag has been set.
+
+The flag can be used only if all IOMMU domains behind the container support
+the IOMMU_NOEXEC flag. Also, if any mappings are created with the flag, any
+new domains with devices will have to support it as well.
 
 Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 ---
- include/uapi/linux/vfio.h | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/vfio/vfio_iommu_type1.c | 25 ++++++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-index 6612974..111b5e8 100644
---- a/include/uapi/linux/vfio.h
-+++ b/include/uapi/linux/vfio.h
-@@ -29,6 +29,7 @@
-  * capability is subject to change as groups are added or removed.
-  */
- #define VFIO_DMA_CC_IOMMU		4
-+#define VFIO_DMA_NOEXEC_IOMMU		5
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index 8b4202a..e225e8f 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -569,6 +569,12 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
+ 	if (map->flags & VFIO_DMA_MAP_FLAG_READ)
+ 		prot |= IOMMU_READ;
  
- /* Check if EEH is supported */
- #define VFIO_EEH			5
-@@ -401,6 +402,7 @@ struct vfio_iommu_type1_dma_map {
- 	__u32	flags;
- #define VFIO_DMA_MAP_FLAG_READ (1 << 0)		/* readable from device */
- #define VFIO_DMA_MAP_FLAG_WRITE (1 << 1)	/* writable from device */
-+#define VFIO_DMA_MAP_FLAG_NOEXEC (1 << 2)	/* not executable from device */
- 	__u64	vaddr;				/* Process virtual address */
- 	__u64	iova;				/* IO virtual address */
- 	__u64	size;				/* Size of mapping (bytes) */
++	if (map->flags & VFIO_DMA_MAP_FLAG_NOEXEC) {
++		if (!vfio_domains_have_iommu_cap(iommu, IOMMU_CAP_NOEXEC))
++			return -EINVAL;
++		prot |= IOMMU_NOEXEC;
++	}
++
+ 	if (!prot || !size || (size | iova | vaddr) & mask)
+ 		return -EINVAL;
+ 
+@@ -662,6 +668,14 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
+ 		dma = rb_entry(n, struct vfio_dma, node);
+ 		iova = dma->iova;
+ 
++		/*
++		 * if any of the mappings to be replayed has the NOEXEC flag
++		 * set, then the new iommu domain must support it
++		 */
++		if ((dma->prot | IOMMU_NOEXEC) &&
++				!(domain->caps & IOMMU_CAP_NOEXEC))
++			return -EINVAL;
++
+ 		while (iova < dma->iova + dma->size) {
+ 			phys_addr_t phys = iommu_iova_to_phys(d->domain, iova);
+ 			size_t size;
+@@ -749,6 +763,9 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	if (iommu_capable(bus, IOMMU_CAP_CACHE_COHERENCY))
+ 		domain->caps |= IOMMU_CAP_CACHE_COHERENCY;
+ 
++	if (iommu_capable(bus, IOMMU_CAP_NOEXEC))
++		domain->caps |= IOMMU_CAP_NOEXEC;
++
+ 	/*
+ 	 * Try to match an existing compatible domain.  We don't want to
+ 	 * preclude an IOMMU driver supporting multiple bus_types and being
+@@ -900,6 +917,11 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+ 				return 0;
+ 			return vfio_domains_have_iommu_cap(iommu,
+ 						  IOMMU_CAP_CACHE_COHERENCY);
++		case VFIO_DMA_NOEXEC_IOMMU:
++			if (!iommu)
++				return 0;
++			return vfio_domains_have_iommu_cap(iommu,
++							   IOMMU_CAP_NOEXEC);
+ 		default:
+ 			return 0;
+ 		}
+@@ -923,7 +945,8 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+ 	} else if (cmd == VFIO_IOMMU_MAP_DMA) {
+ 		struct vfio_iommu_type1_dma_map map;
+ 		uint32_t mask = VFIO_DMA_MAP_FLAG_READ |
+-				VFIO_DMA_MAP_FLAG_WRITE;
++				VFIO_DMA_MAP_FLAG_WRITE |
++				VFIO_DMA_MAP_FLAG_NOEXEC;
+ 
+ 		minsz = offsetofend(struct vfio_iommu_type1_dma_map, size);
+ 
 -- 
 2.1.1
