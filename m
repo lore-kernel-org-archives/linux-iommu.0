@@ -1,12 +1,13 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCH 0/3] iommu: replace IOMMU_EXEC with IOMMU_EXEC and update ARM
-	SMMU driver
-Date: Mon, 13 Oct 2014 15:06:15 +0200
-Message-ID: <1413205579-6124-1-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [PATCH 1/3] iommu/arm-smmu: change IOMMU_EXEC to IOMMU_NOEXEC
+Date: Mon, 13 Oct 2014 15:06:16 +0200
+Message-ID: <1413205579-6124-2-git-send-email-a.motakis@virtualopensystems.com>
+References: <1413205579-6124-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1413205579-6124-1-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,22 +18,60 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: will.deacon-5wv7dgnIgG8@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org
-Cc: eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch series applies to Joerg Roedel's iommu/next branch, commit 09b5269a.
-It replaces the IOMMU_EXEC flag used by the ARM SMMU driver to IOMMU_NOEXEC.
-This is more enforceable, since the lack of the flag on hardware that doesn't
-support it implies that the target memory will be executable.
+Exposing the XN flag of the SMMU driver as IOMMU_NOEXEC instead of
+IOMMU_EXEC makes it enforceable, since for IOMMUs that don't support
+the XN flag pages will always be executable.
 
-Antonios Motakis (3):
-  iommu/arm-smmu: change IOMMU_EXEC to IOMMU_NOEXEC
-  iommu: add capability IOMMU_CAP_NOEXEC
-  iommu/arm-smmu: add IOMMU_CAP_NOEXEC to the ARM SMMU driver
+Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 9 +++++----
+ include/linux/iommu.h    | 2 +-
+ 2 files changed, 6 insertions(+), 5 deletions(-)
 
- drivers/iommu/arm-smmu.c | 11 +++++++----
- include/linux/iommu.h    |  3 ++-
- 2 files changed, 9 insertions(+), 5 deletions(-)
-
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 60558f7..566c176 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1281,7 +1281,7 @@ static int arm_smmu_alloc_init_pte(struct arm_smmu_device *smmu, pmd_t *pmd,
+ 				   unsigned long pfn, int prot, int stage)
+ {
+ 	pte_t *pte, *start;
+-	pteval_t pteval = ARM_SMMU_PTE_PAGE | ARM_SMMU_PTE_AF | ARM_SMMU_PTE_XN;
++	pteval_t pteval = ARM_SMMU_PTE_PAGE | ARM_SMMU_PTE_AF;
+ 
+ 	if (pmd_none(*pmd)) {
+ 		/* Allocate a new set of tables */
+@@ -1315,10 +1315,11 @@ static int arm_smmu_alloc_init_pte(struct arm_smmu_device *smmu, pmd_t *pmd,
+ 			pteval |= ARM_SMMU_PTE_MEMATTR_NC;
+ 	}
+ 
++	if (prot & IOMMU_NOEXEC)
++		pteval |= ARM_SMMU_PTE_XN;
++
+ 	/* If no access, create a faulting entry to avoid TLB fills */
+-	if (prot & IOMMU_EXEC)
+-		pteval &= ~ARM_SMMU_PTE_XN;
+-	else if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
++	if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
+ 		pteval &= ~ARM_SMMU_PTE_PAGE;
+ 
+ 	pteval |= ARM_SMMU_PTE_SH_IS;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 379a617..5f6f71c 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -27,7 +27,7 @@
+ #define IOMMU_READ	(1 << 0)
+ #define IOMMU_WRITE	(1 << 1)
+ #define IOMMU_CACHE	(1 << 2) /* DMA cache coherency */
+-#define IOMMU_EXEC	(1 << 3)
++#define IOMMU_NOEXEC	(1 << 3)
+ 
+ struct iommu_ops;
+ struct iommu_group;
 -- 
 2.1.1
