@@ -1,64 +1,88 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 02/12] amba: Add Kconfig file
-Date: Mon, 13 Oct 2014 12:33:44 +0200
-Message-ID: <1413196434-5292-2-git-send-email-thierry.reding@gmail.com>
+Subject: [PATCH v4 03/12] ARM: tegra: Move AHB Kconfig to drivers/amba
+Date: Mon, 13 Oct 2014 12:33:45 +0200
+Message-ID: <1413196434-5292-3-git-send-email-thierry.reding@gmail.com>
 References: <1413196434-5292-1-git-send-email-thierry.reding@gmail.com>
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <1413196434-5292-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-Rather than duplicate the ARM_AMBA Kconfig symbol in both 32-bit and
-64-bit ARM architectures, move the common definition to drivers/amba
-where dependent drivers will be located.
+This will allow the Kconfig option to be shared among 32-bit and 64-bit
+ARM.
 
 Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- arch/arm/Kconfig     | 3 ---
- arch/arm64/Kconfig   | 3 ---
- drivers/amba/Kconfig | 2 ++
- 3 files changed, 2 insertions(+), 6 deletions(-)
- create mode 100644 drivers/amba/Kconfig
+Changes in v4:
+- add precursory patch introducing drivers/amba/Kconfig, rebase on top
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 89c4b5ccc68d..77f8ca5cc3e6 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -1259,9 +1259,6 @@ source "arch/arm/common/Kconfig"
+Changes in v3:
+- select ARM_AMBA from ARCH_TEGRA to enable the TEGRA_AHB driver
+
+ arch/arm/mach-tegra/Kconfig |  9 +--------
+ drivers/Kconfig             |  2 ++
+ drivers/amba/Kconfig        | 12 ++++++++++++
+ 3 files changed, 15 insertions(+), 8 deletions(-)
+
+diff --git a/arch/arm/mach-tegra/Kconfig b/arch/arm/mach-tegra/Kconfig
+index 095399618ca5..d0be9a1ef6b8 100644
+--- a/arch/arm/mach-tegra/Kconfig
++++ b/arch/arm/mach-tegra/Kconfig
+@@ -2,6 +2,7 @@ menuconfig ARCH_TEGRA
+ 	bool "NVIDIA Tegra" if ARCH_MULTI_V7
+ 	select ARCH_REQUIRE_GPIOLIB
+ 	select ARCH_SUPPORTS_TRUSTED_FOUNDATIONS
++	select ARM_AMBA
+ 	select ARM_GIC
+ 	select CLKSRC_MMIO
+ 	select HAVE_ARM_SCU if SMP
+@@ -59,12 +60,4 @@ config ARCH_TEGRA_124_SOC
+ 	  Support for NVIDIA Tegra T124 processor family, based on the
+ 	  ARM CortexA15MP CPU
  
- menu "Bus support"
- 
--config ARM_AMBA
--	bool
+-config TEGRA_AHB
+-	bool "Enable AHB driver for NVIDIA Tegra SoCs"
+-	default y
+-	help
+-	  Adds AHB configuration functionality for NVIDIA Tegra SoCs,
+-	  which controls AHB bus master arbitration and some
+-	  performance parameters(priority, prefech size).
 -
- config ISA
- 	bool
- 	help
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index ac9afde76dea..9442ff1209d5 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -165,9 +165,6 @@ endmenu
+ endif
+diff --git a/drivers/Kconfig b/drivers/Kconfig
+index 1a693d3f9d51..af02a8a8ec4a 100644
+--- a/drivers/Kconfig
++++ b/drivers/Kconfig
+@@ -1,5 +1,7 @@
+ menu "Device Drivers"
  
- menu "Bus support"
++source "drivers/amba/Kconfig"
++
+ source "drivers/base/Kconfig"
  
--config ARM_AMBA
--	bool
--
- config PCI
- 	bool "PCI support"
- 	help
+ source "drivers/bus/Kconfig"
 diff --git a/drivers/amba/Kconfig b/drivers/amba/Kconfig
-new file mode 100644
-index 000000000000..d1cba6a9b3b8
---- /dev/null
+index d1cba6a9b3b8..4a5c9d279059 100644
+--- a/drivers/amba/Kconfig
 +++ b/drivers/amba/Kconfig
-@@ -0,0 +1,2 @@
-+config ARM_AMBA
-+	bool
+@@ -1,2 +1,14 @@
+ config ARM_AMBA
+ 	bool
++
++if ARM_AMBA
++
++config TEGRA_AHB
++	bool "Enable AHB driver for NVIDIA Tegra SoCs"
++	default y if ARCH_TEGRA
++	help
++	  Adds AHB configuration functionality for NVIDIA Tegra SoCs,
++	  which controls AHB bus master arbitration and some performance
++	  parameters (priority, prefetch size).
++
++endif
 -- 
 2.1.2
