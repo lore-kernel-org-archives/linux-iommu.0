@@ -1,7 +1,7 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 06/12] ARM: tegra: Add memory controller support for Tegra20
-Date: Mon, 13 Oct 2014 12:33:48 +0200
-Message-ID: <1413196434-5292-6-git-send-email-thierry.reding@gmail.com>
+Subject: [PATCH 09/12] ARM: tegra: Add memory controller support for Tegra124
+Date: Mon, 13 Oct 2014 12:33:51 +0200
+Message-ID: <1413196434-5292-9-git-send-email-thierry.reding@gmail.com>
 References: <1413196434-5292-1-git-send-email-thierry.reding@gmail.com>
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <1413196434-5292-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
@@ -12,42 +12,36 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-Collapses the old memory-controller and IOMMU device tree nodes into a
-single node to more accurately describe the hardware.
-
-Note that this is an incompatible change, but while a GART driver has
-existed for a few years it has never been used to do any translations.
+Add the memory controller and wire up the interrupt that is used to
+report errors. Provide a reference to the memory controller clock and
+mark the device as being an IOMMU by adding an #iommu-cells property.
 
 Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- arch/arm/boot/dts/tegra20.dtsi | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ arch/arm/boot/dts/tegra124.dtsi | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/arch/arm/boot/dts/tegra20.dtsi b/arch/arm/boot/dts/tegra20.dtsi
-index 3b374c49d04d..a195c1975f3c 100644
---- a/arch/arm/boot/dts/tegra20.dtsi
-+++ b/arch/arm/boot/dts/tegra20.dtsi
-@@ -538,15 +538,14 @@
- 
- 	memory-controller@7000f000 {
- 		compatible = "nvidia,tegra20-mc";
--		reg = <0x7000f000 0x024
--		       0x7000f03c 0x3c4>;
-+		reg = <0x7000f000 0x00000400   /* controller registers */
-+		       0x58000000 0x02000000>; /* GART aperture */
-+		clocks = <&tegra_car TEGRA20_CLK_MC>;
-+		clock-names = "mc";
-+
- 		interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>;
--	};
- 
--	iommu@7000f024 {
--		compatible = "nvidia,tegra20-gart";
--		reg = <0x7000f024 0x00000018	/* controller registers */
--		       0x58000000 0x02000000>;	/* GART aperture */
-+		#iommu-cells = <1>;
+diff --git a/arch/arm/boot/dts/tegra124.dtsi b/arch/arm/boot/dts/tegra124.dtsi
+index 478c555ebd96..afe9c6a34709 100644
+--- a/arch/arm/boot/dts/tegra124.dtsi
++++ b/arch/arm/boot/dts/tegra124.dtsi
+@@ -551,6 +551,17 @@
+ 		reset-names = "fuse";
  	};
  
- 	memory-controller@7000f400 {
++	mc: memory-controller@0,70019000 {
++		compatible = "nvidia,tegra124-mc";
++		reg = <0x0 0x70019000 0x0 0x1000>;
++		clocks = <&tegra_car TEGRA124_CLK_MC>;
++		clock-names = "mc";
++
++		interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>;
++
++		#iommu-cells = <1>;
++	};
++
+ 	sata@0,70020000 {
+ 		compatible = "nvidia,tegra124-ahci";
+ 
 -- 
 2.1.2
