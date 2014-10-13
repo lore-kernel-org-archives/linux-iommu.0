@@ -1,7 +1,7 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCH 1/3] iommu/arm-smmu: change IOMMU_EXEC to IOMMU_NOEXEC
-Date: Mon, 13 Oct 2014 15:06:16 +0200
-Message-ID: <1413205579-6124-2-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [PATCH 2/3] iommu: add capability IOMMU_CAP_NOEXEC
+Date: Mon, 13 Oct 2014 15:06:17 +0200
+Message-ID: <1413205579-6124-3-git-send-email-a.motakis@virtualopensystems.com>
 References: <1413205579-6124-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,60 +18,29 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: will.deacon-5wv7dgnIgG8@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org
-Cc: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Exposing the XN flag of the SMMU driver as IOMMU_NOEXEC instead of
-IOMMU_EXEC makes it enforceable, since for IOMMUs that don't support
-the XN flag pages will always be executable.
+Some IOMMUs accept an IOMMU_NOEXEC protection flag in addition to
+IOMMU_READ and IOMMU_WRITE. Expose this as an IOMMU capability.
 
 Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 9 +++++----
- include/linux/iommu.h    | 2 +-
- 2 files changed, 6 insertions(+), 5 deletions(-)
+ include/linux/iommu.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 60558f7..566c176 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1281,7 +1281,7 @@ static int arm_smmu_alloc_init_pte(struct arm_smmu_device *smmu, pmd_t *pmd,
- 				   unsigned long pfn, int prot, int stage)
- {
- 	pte_t *pte, *start;
--	pteval_t pteval = ARM_SMMU_PTE_PAGE | ARM_SMMU_PTE_AF | ARM_SMMU_PTE_XN;
-+	pteval_t pteval = ARM_SMMU_PTE_PAGE | ARM_SMMU_PTE_AF;
- 
- 	if (pmd_none(*pmd)) {
- 		/* Allocate a new set of tables */
-@@ -1315,10 +1315,11 @@ static int arm_smmu_alloc_init_pte(struct arm_smmu_device *smmu, pmd_t *pmd,
- 			pteval |= ARM_SMMU_PTE_MEMATTR_NC;
- 	}
- 
-+	if (prot & IOMMU_NOEXEC)
-+		pteval |= ARM_SMMU_PTE_XN;
-+
- 	/* If no access, create a faulting entry to avoid TLB fills */
--	if (prot & IOMMU_EXEC)
--		pteval &= ~ARM_SMMU_PTE_XN;
--	else if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
-+	if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
- 		pteval &= ~ARM_SMMU_PTE_PAGE;
- 
- 	pteval |= ARM_SMMU_PTE_SH_IS;
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 379a617..5f6f71c 100644
+index 5f6f71c..ba026f1 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -27,7 +27,7 @@
- #define IOMMU_READ	(1 << 0)
- #define IOMMU_WRITE	(1 << 1)
- #define IOMMU_CACHE	(1 << 2) /* DMA cache coherency */
--#define IOMMU_EXEC	(1 << 3)
-+#define IOMMU_NOEXEC	(1 << 3)
+@@ -61,6 +61,7 @@ enum iommu_cap {
+ 	IOMMU_CAP_CACHE_COHERENCY,	/* IOMMU can enforce cache coherent DMA
+ 					   transactions */
+ 	IOMMU_CAP_INTR_REMAP,		/* IOMMU supports interrupt isolation */
++	IOMMU_CAP_NOEXEC,		/* IOMMU_NOEXEC flag */
+ };
  
- struct iommu_ops;
- struct iommu_group;
+ /*
 -- 
 2.1.1
