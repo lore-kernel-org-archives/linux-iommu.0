@@ -1,14 +1,11 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCH 4/5] vfio: type1: replace vfio_domains_have_iommu_cache with
-	generic function
-Date: Mon, 13 Oct 2014 15:09:07 +0200
-Message-ID: <1413205748-6300-5-git-send-email-a.motakis@virtualopensystems.com>
-References: <1413205748-6300-1-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [PATCH v8 00/18] VFIO support for platform and AMBA devices on ARM
+Date: Mon, 13 Oct 2014 15:10:07 +0200
+Message-ID: <1413205825-6370-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1413205748-6300-1-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,79 +16,106 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Replace the function vfio_domains_have_iommu_cache() with a more generic
-function vfio_domains_have_iommu_cap() which allows to check all domains
-of an vfio_iommu structure for a given cached capability.
+This patch series aims to implement VFIO support for platform devices that
+reside behind an IOMMU. Examples of such devices are devices behind an ARM
+SMMU, or behind a Samsung Exynos System MMU.
 
-Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
----
- drivers/vfio/vfio_iommu_type1.c | 37 +++++++++++++++++++------------------
- 1 file changed, 19 insertions(+), 18 deletions(-)
+The API used is based on the existing VFIO API that is also used with PCI
+devices. Only devices that include a basic set of IRQs and memory regions are
+targeted; devices with complex relationships with other devices on a device
+tree are not taken into account at this stage.
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 62a8b4d..8b4202a 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -80,6 +80,23 @@ struct vfio_group {
- 	struct list_head	next;
- };
- 
-+static int vfio_domains_have_iommu_cap(struct vfio_iommu *iommu, int cap)
-+{
-+	struct vfio_domain *domain;
-+	int ret = 1;
-+
-+	mutex_lock(&iommu->lock);
-+	list_for_each_entry(domain, &iommu->domain_list, next) {
-+		if (!(domain->caps & cap)) {
-+			ret = 0;
-+			break;
-+		}
-+	}
-+	mutex_unlock(&iommu->lock);
-+
-+	return ret;
-+}
-+
- /*
-  * This code handles mapping and unmapping of user data buffers
-  * into DMA'ble space using the IOMMU
-@@ -867,23 +884,6 @@ static void vfio_iommu_type1_release(void *iommu_data)
- 	kfree(iommu);
- }
- 
--static int vfio_domains_have_iommu_cache(struct vfio_iommu *iommu)
--{
--	struct vfio_domain *domain;
--	int ret = 1;
--
--	mutex_lock(&iommu->lock);
--	list_for_each_entry(domain, &iommu->domain_list, next) {
--		if (!(domain->caps & IOMMU_CAP_CACHE_COHERENCY)) {
--			ret = 0;
--			break;
--		}
--	}
--	mutex_unlock(&iommu->lock);
--
--	return ret;
--}
--
- static long vfio_iommu_type1_ioctl(void *iommu_data,
- 				   unsigned int cmd, unsigned long arg)
- {
-@@ -898,7 +898,8 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
- 		case VFIO_DMA_CC_IOMMU:
- 			if (!iommu)
- 				return 0;
--			return vfio_domains_have_iommu_cache(iommu);
-+			return vfio_domains_have_iommu_cap(iommu,
-+						  IOMMU_CAP_CACHE_COHERENCY);
- 		default:
- 			return 0;
- 		}
+This patch series should be applied at least on the following series/patches:
+ - [PATCH 0/3] iommu: replace IOMMU_EXEC with IOMMU_EXEC and update ARM SMMU driver
+ - [PATCH] driver core: amba: add device binding path 'driver_override'
+ - [PATCH 0/5] vfio: type1: support for ARM SMMUS with VFIO_IOMMU_TYPE1
+
+A copy can be cloned from the branch vfio-platform-v8 at:
+git-9UaJU3cA/F/QT0dZR+AlfA@public.gmane.org:virtualopensystems/linux-kvm-arm.git
+
+Changes since v7:
+ - Some initial placeholder functionality for PIO resources
+ - Cleaned up code for IRQ triggering, masking and unmasking
+ - Some functionality has been removed from this series and posted separately:
+   - VFIO_IOMMU_TYPE1 support for ARM SMMUs
+   - IOMMU NOEXEC patches
+   - driver_override functionality for AMBA devices
+ - Several fixes
+Changes since v6:
+ - Integrated support for AMBA devices
+ - Numerous cleanups and fixes
+Changes since v5:
+ - Full eventfd support for IRQ masking and unmasking.
+ - Changed IOMMU_EXEC to IOMMU_NOEXEC, along with related flags in VFIO.
+ - Other fixes based on reviewer comments.
+Changes since v4:
+ - Use static offsets for each region in the VFIO device fd
+ - Include patch in the series for the ARM SMMU to expose IOMMU_EXEC
+   availability via IOMMU_CAP_DMA_EXEC
+ - Rebased on VFIO multi domain support:
+   - IOMMU_EXEC is now available if at least one IOMMU in the container
+     supports it
+   - Expose IOMMU_EXEC if available via the capability VFIO_IOMMU_PROT_EXEC
+ - Some bug fixes
+Changes since v3:
+ - Use Kim Phillips' driver_probe_device()
+Changes since v2:
+ - Fixed Read/Write and MMAP on device regions
+ - Removed dependency on Device Tree
+ - Interrupts support
+ - Interrupt masking/unmasking
+ - Automask level sensitive interrupts
+ - Introduced VFIO_DMA_MAP_FLAG_EXEC
+ - Code clean ups
+
+Antonios Motakis (18):
+  vfio/platform: initial skeleton of VFIO support for platform devices
+  vfio: platform: probe to devices on the platform bus
+  vfio: platform: add the VFIO PLATFORM module to Kconfig
+  vfio: amba: VFIO support for AMBA devices
+  vfio: amba: add the VFIO for AMBA devices module to Kconfig
+  vfio/platform: return info for bound device
+  vfio/platform: return info for device memory mapped IO regions
+  vfio/platform: read and write support for the device fd
+  vfio/platform: support MMAP of MMIO regions
+  vfio/platform: return IRQ info
+  vfio/platform: initial interrupts support code
+  vfio/platform: trigger an interrupt via eventfd
+  vfio/platform: support for maskable and automasked interrupts
+  vfio: move eventfd support code for VFIO_PCI to a separate file
+  vfio: add local lock in virqfd instead of depending on VFIO PCI
+  vfio: pass an opaque pointer on virqfd initialization
+  vfio: initialize the virqfd workqueue in VFIO generic code
+  vfio/platform: implement IRQ masking/unmasking via an eventfd
+
+ drivers/vfio/Kconfig                          |   1 +
+ drivers/vfio/Makefile                         |   5 +-
+ drivers/vfio/pci/vfio_pci.c                   |   8 -
+ drivers/vfio/pci/vfio_pci_intrs.c             | 234 +-----------
+ drivers/vfio/pci/vfio_pci_private.h           |   3 -
+ drivers/vfio/platform/Kconfig                 |  19 +
+ drivers/vfio/platform/Makefile                |   8 +
+ drivers/vfio/platform/vfio_amba.c             | 108 ++++++
+ drivers/vfio/platform/vfio_platform.c         | 107 ++++++
+ drivers/vfio/platform/vfio_platform_common.c  | 508 ++++++++++++++++++++++++++
+ drivers/vfio/platform/vfio_platform_irq.c     | 316 ++++++++++++++++
+ drivers/vfio/platform/vfio_platform_private.h |  80 ++++
+ drivers/vfio/vfio.c                           |   8 +
+ drivers/vfio/virqfd.c                         | 215 +++++++++++
+ include/linux/vfio.h                          |  27 ++
+ include/uapi/linux/vfio.h                     |   2 +
+ 16 files changed, 1415 insertions(+), 234 deletions(-)
+ create mode 100644 drivers/vfio/platform/Kconfig
+ create mode 100644 drivers/vfio/platform/Makefile
+ create mode 100644 drivers/vfio/platform/vfio_amba.c
+ create mode 100644 drivers/vfio/platform/vfio_platform.c
+ create mode 100644 drivers/vfio/platform/vfio_platform_common.c
+ create mode 100644 drivers/vfio/platform/vfio_platform_irq.c
+ create mode 100644 drivers/vfio/platform/vfio_platform_private.h
+ create mode 100644 drivers/vfio/virqfd.c
+
 -- 
 2.1.1
