@@ -1,10 +1,15 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [git pull] IOMMU Updates for Linux v3.18
-Date: Tue, 14 Oct 2014 10:33:07 +0200
-Message-ID: <20141014083307.GA9598@8bytes.org>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [RFC PATCH v3 5/7] dma-mapping: detect and configure IOMMU in
+	of_dma_configure
+Date: Tue, 14 Oct 2014 15:53:59 +0300
+Message-ID: <4572757.M4IDlCz5Vc@avalon>
+References: <1410539695-29128-1-git-send-email-will.deacon@arm.com>
+	<20140922092909.GJ1470@ulmo> <20140922175027.GK7936@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0112793282908632801=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20140922175027.GK7936-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -14,192 +19,111 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Will,
 
---===============0112793282908632801==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="vkogqOf2sHV7VnPd"
-Content-Disposition: inline
+On Monday 22 September 2014 18:50:27 Will Deacon wrote:
+> On Mon, Sep 22, 2014 at 10:29:10AM +0100, Thierry Reding wrote:
+> > On Thu, Sep 18, 2014 at 02:17:33PM +0300, Laurent Pinchart wrote:
+> >> On Friday 12 September 2014 17:34:53 Will Deacon wrote:
+> >>> This patch extends of_dma_configure so that it sets up the IOMMU for a
+> >>> device, as well as the coherent/non-coherent DMA mapping ops.
+> >>> 
+> >>> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> >>> ---
+> >>> 
+> >>>  arch/arm/include/asm/dma-mapping.h |  4 +++-
+> >>>  drivers/of/platform.c              | 24 +++++++++++++++++-------
+> >>>  include/linux/dma-mapping.h        |  8 +++++++-
+> >>>  3 files changed, 27 insertions(+), 9 deletions(-)
+> >>> 
+> >>> diff --git a/arch/arm/include/asm/dma-mapping.h
+> >>> b/arch/arm/include/asm/dma-mapping.h index 7e9ac4f604c3..a8bb0c494bb3
+> >>> 100644
+> >>> --- a/arch/arm/include/asm/dma-mapping.h
+> >>> +++ b/arch/arm/include/asm/dma-mapping.h
+> >>> @@ -121,7 +121,9 @@ static inline unsigned long dma_max_pfn(struct
+> >>> device *dev)
+> >>>  }
+> >>>  #define dma_max_pfn(dev) dma_max_pfn(dev)
+> >>> 
+> >>> -static inline void arch_setup_dma_ops(struct device *dev, bool
+> >>> coherent)
+> >>> +static inline void arch_setup_dma_ops(struct device *dev, u64
+> >>> dma_base,
+> >>> +				      u64 size, struct iommu_dma_mapping *iommu,
+> >>> +				      bool coherent)
+> >>>  {
+> >>>  	if (coherent)
+> >>>  		set_dma_ops(dev, &arm_coherent_dma_ops);
+> >>> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+> >>> index 946dd7ae0394..95ebd38db545 100644
+> >>> --- a/drivers/of/platform.c
+> >>> +++ b/drivers/of/platform.c
+> >>> @@ -19,6 +19,7 @@
+> >>>  #include <linux/slab.h>
+> >>>  #include <linux/of_address.h>
+> >>>  #include <linux/of_device.h>
+> >>> +#include <linux/of_iommu.h>
+> >>>  #include <linux/of_irq.h>
+> >>>  #include <linux/of_platform.h>
+> >>>  #include <linux/platform_device.h>
+> >>> @@ -166,6 +167,7 @@ static void of_dma_configure(struct
+> >>> platform_device *pdev)
+> >>>  	int ret;
+> >>>  	bool coherent;
+> >>>  	unsigned long offset;
+> >>> +	struct iommu_dma_mapping *iommu;
+> >>>  	struct device *dev = &pdev->dev;
+> >>>  	
+> >>>  	/*
+> >>> @@ -195,7 +197,19 @@ static void of_dma_configure(struct
+> >>> platform_device *pdev)
+> >>>  	dev_dbg(dev, "device is%sdma coherent\n",
+> >>>  		coherent ? " " : " not ");
+> >>> 
+> >>> -	arch_setup_dma_ops(dev, coherent);
+> >>> +	iommu = of_iommu_configure(dev);
+> >>> +	dev_dbg(dev, "device is%sbehind an iommu\n",
+> >>> +		iommu ? " " : " not ");
+> >>> +
+> >>> +	arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
+> >>> +
+> >>> +	if (iommu)
+> >>> +		kref_put(&iommu->kref, of_iommu_deconfigure);
+> >> 
+> >> What's the expected life cycle of the iommu_dma_mapping structure ? It
+> >> gets created by of_iommu_configure() and the initial reference gets
+> >> dropped here. I suppose you expect arch code to need to keep a reference
+> >> to the structure, but your implementation in patch 7/7 doesn't. As far as
+> >> I can see, you don't even use the contents of the structure in the ARM
+> >> arch_setup_dma_ops() implementation. Do you expect that to change later,
+> >> or other architectures to need it ?
+> >> 
+> >> By the way, now that I think about it, I find struct iommu_dma_mapping
+> >> and struct dma_iommu_mapping very confusing.
+> > 
+> > Agreed. I wonder how useful it is to know the set of IOMMU instances
+> > that each device can master through. Wouldn't it be more useful to keep
+> > a list of master interfaces for each device? The set of IOMMU instances
+> > can trivially be derived from that.
+> 
+> I'm struggling to think how that would look. What do you mean by `master
+> interfaces' in terms of the code we have in Linux? At the end of the day,
+> the list of IOMMU instances (i.e. iommu_dma_mapping) exists because you
+> and Laurent have use-cases involving devices mastering through multiple
+> IOMMUs. If it doesn't work for you, it might be best for you to send me
+> the patch ;)
 
+Just for the record, I've brought up the topic of masters being served by 
+multiple IOMMUs, but don't have a use case for it (yet at least). I do have 
+masters served through multiple streams with separate stream IDs, but all by 
+the same IOMMU.
 
---vkogqOf2sHV7VnPd
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+-- 
+Regards,
 
-Hi Linus,
-
-The following changes since commit fe82dcec644244676d55a1384c958d5f67979adb:
-
-  Linux 3.17-rc7 (2014-09-28 14:29:07 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v3.18
-
-for you to fetch changes up to 09b5269a1b3d47525d7c25efeb16f5407ef82ea2:
-
-  Merge branches 'arm/exynos', 'arm/omap', 'arm/smmu', 'x86/vt-d', 'x86/amd' and 'core' into next (2014-10-02 12:24:45 +0200)
-
-----------------------------------------------------------------
-
-IOMMU Updates for Linux v3.18
-
-This pull-request includes:
-
-	* Change in the IOMMU-API to convert the former iommu_domain_capable
-	  function to just iommu_capable
-
-	* Various fixes in handling RMRR ranges for the VT-d driver (one fix
-	  requires a device driver core change which was acked
-	  by Greg KH)
-
-	* The AMD IOMMU driver now assigns and deassigns complete alias groups
-	  to fix issues with devices using the wrong PCI request-id
-
-	* MMU-401 support for the ARM SMMU driver
-
-	* Multi-master IOMMU group support for the ARM SMMU driver
-
-	* Various other small fixes all over the place
-
-----------------------------------------------------------------
-Alex Williamson (2):
-      iommu: Rework iommu_group_get_for_pci_dev()
-      iommu/amd: Split init_iommu_group() from iommu_init_device()
-
-Andreea-Cristina Bernat (1):
-      iommu: Replace rcu_assign_pointer() with RCU_INIT_POINTER()
-
-Jan Kiszka (1):
-      iommu/vt-d: Don't store SIRTP request
-
-Joerg Roedel (23):
-      iommu/amd: Move struct iommu_dev_data to amd_iommu.c
-      iommu/amd: Keep a list of devices in an alias group
-      iommu/amd: Attach and detach complete alias group
-      iommu/amd: Remove device binding reference count
-      Merge branch 'for-joerg/arm-smmu/updates' of git://git.kernel.org/.../will/linux into arm/smmu
-      iommu: Convert iommu-caps from define to enum
-      iommu: Introduce iommu_capable API function
-      iommu/amd: Convert to iommu_capable() API function
-      iommu/arm-smmu: Convert to iommu_capable() API function
-      iommu/fsl: Convert to iommu_capable() API function
-      iommu/vt-d: Convert to iommu_capable() API function
-      iommu/msm: Convert to iommu_capable() API function
-      iommu/tegra: Convert to iommu_capable() API function
-      kvm: iommu: Convert to use new iommu_capable() API function
-      vfio: Convert to use new iommu_capable() API function
-      IB/usnic: Convert to use new iommu_capable() API function
-      iommu: Remove iommu_domain_has_cap() API function
-      iommu/amd: Fix devid mapping for ivrs_ioapic override
-      driver core: Add BUS_NOTIFY_REMOVED_DEVICE event
-      iommu/vt-d: Only remove domain when device is removed
-      iommu/vt-d: Store bus information in RMRR PCI device path
-      iommu/vt-d: Work around broken RMRR firmware entries
-      Merge branches 'arm/exynos', 'arm/omap', 'arm/smmu', 'x86/vt-d', 'x86/amd' and 'core' into next
-
-Kiran Padwal (1):
-      iommu: Make of_device_id array const
-
-Laurent Pinchart (1):
-      iommu/omap: Remove omap_iommu unused owner field
-
-Mark Salter (1):
-      iommu: Fix bus notifier breakage
-
-Maurizio Lombardi (1):
-      amd_iommu: do not dereference a NULL pointer address.
-
-Mitchel Humpherys (1):
-      iommu/arm-smmu: fix bug in pmd construction
-
-Robin Murphy (2):
-      iommu/arm-smmu: fix architecture version detection
-      iommu/arm-smmu: support MMU-401
-
-Sachin Kamat (1):
-      iommu/exynos: Fix trivial typos
-
-Suman Anna (2):
-      iommu/omap: Check for valid archdata in attach_dev
-      iommu/omap: Fix iommu archdata name for DT-based devices
-
-Will Deacon (5):
-      iommu/arm-smmu: allow translation stage to be forced on the cmdline
-      iommu/arm-smmu: add support for multi-master iommu groups
-      iommu/arm-smmu: put iommu_domain pointer in dev->archdata.iommu
-      iommu/arm-smmu: use page shift instead of page size to avoid division
-      iommu/arm-smmu: don't bother truncating the s1 output size to VA_BITS
-
-Yijing Wang (1):
-      iommu/irq_remapping: Fix the regression of hpet irq remapping
-
- .../devicetree/bindings/iommu/arm,smmu.txt         |   1 +
- drivers/base/core.c                                |   3 +
- drivers/infiniband/hw/usnic/usnic_uiom.c           |   2 +-
- drivers/iommu/amd_iommu.c                          | 117 ++++++-----
- drivers/iommu/amd_iommu_init.c                     |  21 +-
- drivers/iommu/amd_iommu_types.h                    |  21 --
- drivers/iommu/arm-smmu.c                           | 220 ++++++++++++---------
- drivers/iommu/dmar.c                               |  25 ++-
- drivers/iommu/exynos-iommu.c                       |  51 ++---
- drivers/iommu/fsl_pamu_domain.c                    |   5 +-
- drivers/iommu/intel-iommu.c                        |  16 +-
- drivers/iommu/intel_irq_remapping.c                |   7 +-
- drivers/iommu/iommu.c                              | 208 +++++++++++--------
- drivers/iommu/irq_remapping.c                      |  11 +-
- drivers/iommu/irq_remapping.h                      |   2 +-
- drivers/iommu/msm_iommu.c                          |   7 +-
- drivers/iommu/omap-iommu.c                         |  27 +--
- drivers/iommu/omap-iommu.h                         |   1 -
- drivers/iommu/tegra-gart.c                         |   9 +-
- drivers/iommu/tegra-smmu.c                         |   9 +-
- drivers/vfio/vfio_iommu_type1.c                    |   4 +-
- include/linux/device.h                             |  11 +-
- include/linux/dmar.h                               |   8 +-
- include/linux/iommu.h                              |  25 ++-
- virt/kvm/iommu.c                                   |   6 +-
- 25 files changed, 461 insertions(+), 356 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
-
---vkogqOf2sHV7VnPd
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJUPN/DAAoJECvwRC2XARrjM4MP/0rSGyaYRpFyFCHUlJsvWUHk
-B2ELCDnhEy/LYvBH1NI+YdLHefjl4yF2g6kikYjszF/1hrOBDWJXbFFY8xYx0mhS
-CWw5rmdIedBbDKJex8vk+/nPsez+o0k5NLK91qlaIpERAW7rXVJ1Slnbc9uKBRfi
-CqMBojPsncY/uPinRu+eteK1XCEqCNZJZV/maiZTNYSDAdbQy+5QDrKFhBDNxow9
-lPFnTPT2MH77vPjx8yfu/DVHj1Uj/I0s6tobFllWMSLhLUeTthMBX4DFSYtDZT9O
-xl/ubXnB3KVabDoTDMgWmF2zu5WNMoakQ538OpDtA49shJ162O54qibXBOkCjHaf
-8nLM/orFMx0C1XyW/BsVjTr8eGZGh6hsJ/hQt7Kbq0DtUzynnRWj2oB1S1xG+Got
-2/J1XuB6b0DxWnnfuWQp6LprKCp8RgUp0rbzUgGaFDbIyr/uWjUIFpZVJpwgcr5D
-79AuYpSlHWTMC5zXCZv0/Y+Le+cE3WPbBIJlZjvid6Ly7s6aDdhLStGra0jzUpaQ
-ejQmCqP5cw/LaJLguMCF/NtWR/ph7UQUAFK9+wpQ9Rz73WxElI7YE8bBq9OKR1eY
-4jwvEts97D/BcdGiOSb+mDqBVNZwNb5Sy752O4fkyifIq7ky9War/5rVQ/mxXUXc
-E7FiUsfIii/qTZNYmYS8
-=3TXL
------END PGP SIGNATURE-----
-
---vkogqOf2sHV7VnPd--
-
---===============0112793282908632801==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============0112793282908632801==--
+Laurent Pinchart
