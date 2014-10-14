@@ -1,8 +1,7 @@
 From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH v6 2/2] iommu/arm-smmu: add support for iova_to_phys through
-	ATS1PR
-Date: Tue, 14 Oct 2014 14:53:30 -0700
-Message-ID: <1413323610-27484-3-git-send-email-mitchelh@codeaurora.org>
+Subject: [PATCH v6 1/2] iopoll: Introduce memory-mapped IO polling macros
+Date: Tue, 14 Oct 2014 14:53:29 -0700
+Message-ID: <1413323610-27484-2-git-send-email-mitchelh@codeaurora.org>
 References: <1413323610-27484-1-git-send-email-mitchelh@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,170 +18,247 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Currently, we provide the iommu_ops.iova_to_phys service by doing a
-table walk in software to translate IO virtual addresses to physical
-addresses. On SMMUs that support it, it can be useful to ask the SMMU
-itself to do the translation. This can be used to warm the TLBs for an
-SMMU. It can also be useful for testing and hardware validation.
+From: Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 
-Since the address translation registers are optional on SMMUv2, only
-enable hardware translations when using SMMUv1 or when SMMU_IDR0.S1TS=1
-and SMMU_IDR0.ATOSNS=0, as described in the ARM SMMU v1-v2 spec.
+It is sometimes necessary to poll a memory-mapped register until its value
+satisfies some condition. Introduce a family of convenience macros that do
+this. Tight-looping, sleeping, and timing out can all be accomplished using
+these macros.
 
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 ---
 Changes since v5:
-  - None. Re-sending series due to change in patch 1/2 in series
+  - Use a shift instead of a divide in the poll loop.
 ---
- drivers/iommu/arm-smmu.c | 79 +++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 78 insertions(+), 1 deletion(-)
+ include/linux/iopoll.h | 213 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 213 insertions(+)
+ create mode 100644 include/linux/iopoll.h
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 37dc3dd0df..ef57043994 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -36,6 +36,7 @@
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/iommu.h>
-+#include <linux/iopoll.h>
- #include <linux/mm.h>
- #include <linux/module.h>
- #include <linux/of.h>
-@@ -140,6 +141,7 @@
- #define ID0_S2TS			(1 << 29)
- #define ID0_NTS				(1 << 28)
- #define ID0_SMS				(1 << 27)
-+#define ID0_ATOSNS			(1 << 26)
- #define ID0_PTFS_SHIFT			24
- #define ID0_PTFS_MASK			0x2
- #define ID0_PTFS_V8_ONLY		0x2
-@@ -233,11 +235,16 @@
- #define ARM_SMMU_CB_TTBR0_HI		0x24
- #define ARM_SMMU_CB_TTBCR		0x30
- #define ARM_SMMU_CB_S1_MAIR0		0x38
-+#define ARM_SMMU_CB_PAR_LO		0x50
-+#define ARM_SMMU_CB_PAR_HI		0x54
- #define ARM_SMMU_CB_FSR			0x58
- #define ARM_SMMU_CB_FAR_LO		0x60
- #define ARM_SMMU_CB_FAR_HI		0x64
- #define ARM_SMMU_CB_FSYNR0		0x68
- #define ARM_SMMU_CB_S1_TLBIASID		0x610
-+#define ARM_SMMU_CB_ATS1PR_LO		0x800
-+#define ARM_SMMU_CB_ATS1PR_HI		0x804
-+#define ARM_SMMU_CB_ATSR		0x8f0
- 
- #define SCTLR_S1_ASIDPNE		(1 << 12)
- #define SCTLR_CFCFG			(1 << 7)
-@@ -249,6 +256,10 @@
- #define SCTLR_M				(1 << 0)
- #define SCTLR_EAE_SBOP			(SCTLR_AFE | SCTLR_TRE)
- 
-+#define CB_PAR_F			(1 << 0)
+diff --git a/include/linux/iopoll.h b/include/linux/iopoll.h
+new file mode 100644
+index 0000000000..21dd41942b
+--- /dev/null
++++ b/include/linux/iopoll.h
+@@ -0,0 +1,213 @@
++/*
++ * Copyright (c) 2012-2014 The Linux Foundation. All rights reserved.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 and
++ * only version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ */
 +
-+#define ATSR_ACTIVE			(1 << 0)
++#ifndef _LINUX_IOPOLL_H
++#define _LINUX_IOPOLL_H
 +
- #define RESUME_RETRY			(0 << 0)
- #define RESUME_TERMINATE		(1 << 0)
- 
-@@ -366,6 +377,7 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_TRANS_S1		(1 << 2)
- #define ARM_SMMU_FEAT_TRANS_S2		(1 << 3)
- #define ARM_SMMU_FEAT_TRANS_NESTED	(1 << 4)
-+#define ARM_SMMU_FEAT_TRANS_OPS		(1 << 5)
- 	u32				features;
- 
- #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
-@@ -1524,7 +1536,7 @@ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
- 	return ret ? 0 : size;
- }
- 
--static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
-+static phys_addr_t arm_smmu_iova_to_phys_soft(struct iommu_domain *domain,
- 					 dma_addr_t iova)
- {
- 	pgd_t *pgdp, pgd;
-@@ -1557,6 +1569,66 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
- 	return __pfn_to_phys(pte_pfn(pte)) | (iova & ~PAGE_MASK);
- }
- 
-+static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
-+					dma_addr_t iova)
-+{
-+	struct arm_smmu_domain *smmu_domain = domain->priv;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+	struct device *dev = smmu->dev;
-+	void __iomem *cb_base;
-+	u32 tmp;
-+	u64 phys;
-+	unsigned long flags;
++#include <linux/kernel.h>
++#include <linux/types.h>
++#include <linux/hrtimer.h>
++#include <linux/delay.h>
++#include <linux/errno.h>
++#include <linux/io.h>
 +
-+	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
++/**
++ * readx_poll_timeout - Periodically poll an address until a condition is met or a timeout occurs
++ * @op: accessor function (takes @addr as its only argument)
++ * @addr: Address to poll
++ * @val: Variable to read the value into
++ * @cond: Break condition (usually involving @val)
++ * @sleep_us: Maximum time to sleep between reads in us (0 tight-loops)
++ * @timeout_us: Timeout in us, 0 means never timeout
++ *
++ * Returns 0 on success and -ETIMEDOUT upon a timeout. In either
++ * case, the last read value at @addr is stored in @val. Must not
++ * be called from atomic context if sleep_us or timeout_us are used.
++ *
++ * Generally you'll want to use one of the specialized macros defined below
++ * rather than this macro directly.
++ */
++#define readx_poll_timeout(op, addr, val, cond, sleep_us, timeout_us)	\
++({ \
++	ktime_t timeout = ktime_add_us(ktime_get(), timeout_us); \
++	might_sleep_if(sleep_us); \
++	for (;;) { \
++		(val) = op(addr); \
++		if (cond) \
++			break; \
++		if (timeout_us && ktime_compare(ktime_get(), timeout) > 0) { \
++			(val) = op(addr); \
++			break; \
++		} \
++		if (sleep_us) \
++			usleep_range((sleep_us >> 2) + 1, sleep_us); \
++	} \
++	(cond) ? 0 : -ETIMEDOUT; \
++})
 +
-+	spin_lock_irqsave(&smmu_domain->lock, flags);
++/**
++ * readx_poll_timeout_atomic - Periodically poll an address until a condition is met or a timeout occurs
++ * @op: accessor function (takes @addr as its only argument)
++ * @addr: Address to poll
++ * @val: Variable to read the value into
++ * @cond: Break condition (usually involving @val)
++ * @delay_us: Time to udelay between reads in us (0 tight-loops)
++ * @timeout_us: Timeout in us, 0 means never timeout
++ *
++ * Returns 0 on success and -ETIMEDOUT upon a timeout. In either
++ * case, the last read value at @addr is stored in @val.
++ *
++ * Generally you'll want to use one of the specialized macros defined below
++ * rather than this macro directly.
++ */
++#define readx_poll_timeout_atomic(op, addr, val, cond, delay_us, timeout_us) \
++({ \
++	ktime_t timeout = ktime_add_us(ktime_get(), timeout_us); \
++	for (;;) { \
++		(val) = op(addr); \
++		if (cond) \
++			break; \
++		if (timeout_us && ktime_compare(ktime_get(), timeout) > 0) { \
++			(val) = op(addr); \
++			break; \
++		} \
++		if (delay_us) \
++			udelay(delay_us);	\
++	} \
++	(cond) ? 0 : -ETIMEDOUT; \
++})
 +
-+	if (smmu->version == 1) {
-+		u32 reg = iova & ~0xfff;
-+		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_LO);
-+	} else {
-+		u32 reg = iova & ~0xfff;
-+		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_LO);
-+		reg = (iova & ~0xfff) >> 32;
-+		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_HI);
-+	}
 +
-+	if (readl_poll_timeout_atomic(cb_base + ARM_SMMU_CB_ATSR, tmp,
-+				!(tmp & ATSR_ACTIVE), 5, 50)) {
-+		dev_err(dev,
-+			"iova to phys timed out on 0x%pa. Falling back to software table walk.\n",
-+			&iova);
-+		return arm_smmu_iova_to_phys_soft(domain, iova);
-+	}
++#define readl_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(readl, addr, val, cond, delay_us, timeout_us)
 +
-+	phys = readl_relaxed(cb_base + ARM_SMMU_CB_PAR_LO);
-+	phys |= ((u64) readl_relaxed(cb_base + ARM_SMMU_CB_PAR_HI)) << 32;
++#define readl_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(readl, addr, val, cond, delay_us, timeout_us)
 +
-+	spin_unlock_irqrestore(&smmu_domain->lock, flags);
++#define readb_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(readb, addr, val, cond, delay_us, timeout_us)
 +
-+	if (phys & CB_PAR_F) {
-+		dev_err(dev, "translation fault!\n");
-+		dev_err(dev, "PAR = 0x%llx\n", phys);
-+		phys = 0;
-+	} else {
-+		phys = (phys & 0xfffffff000ULL) | (iova & 0x00000fff);
-+	}
++#define readb_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(readb, addr, val, cond, delay_us, timeout_us)
 +
-+	return phys;
-+}
++#define readw_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(readw, addr, val, cond, delay_us, timeout_us)
 +
-+static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
-+					dma_addr_t iova)
-+{
-+	struct arm_smmu_domain *smmu_domain = domain->priv;
++#define readw_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(readw, addr, val, cond, delay_us, timeout_us)
 +
-+	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_TRANS_OPS)
-+		return arm_smmu_iova_to_phys_hard(domain, iova);
-+	return arm_smmu_iova_to_phys_soft(domain, iova);
-+}
++#define readq_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(readq, addr, val, cond, delay_us, timeout_us)
 +
- static int arm_smmu_domain_has_cap(struct iommu_domain *domain,
- 				   unsigned long cap)
- {
-@@ -1777,6 +1849,11 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 		return -ENODEV;
- 	}
- 
-+	if (smmu->version == 1 || (!(id & ID0_ATOSNS) && (id & ID0_S1TS))) {
-+		smmu->features |= ARM_SMMU_FEAT_TRANS_OPS;
-+		dev_notice(smmu->dev, "\taddress translation ops\n");
-+	}
++#define readq_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(readq, addr, val, cond, delay_us, timeout_us)
 +
- 	if (id & ID0_CTTW) {
- 		smmu->features |= ARM_SMMU_FEAT_COHERENT_WALK;
- 		dev_notice(smmu->dev, "\tcoherent table walk\n");
++#define readb_relaxed_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(readb_relaxed, addr, val, cond, delay_us, timeout_us)
++
++#define readb_relaxed_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(readb_relaxed, addr, val, cond, delay_us, timeout_us)
++
++#define readw_relaxed_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(readw_relaxed, addr, val, cond, delay_us, timeout_us)
++
++#define readw_relaxed_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(readw_relaxed, addr, val, cond, delay_us, timeout_us)
++
++#define readl_relaxed_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(readl_relaxed, addr, val, cond, delay_us, timeout_us)
++
++#define readl_relaxed_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(readl_relaxed, addr, val, cond, delay_us, timeout_us)
++
++#define readq_relaxed_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(readq_relaxed, addr, val, cond, delay_us, timeout_us)
++
++#define readq_relaxed_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(readq_relaxed, addr, val, cond, delay_us, timeout_us)
++
++#define ioread8_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(ioread8, addr, val, cond, delay_us, timeout_us)
++
++#define ioread8_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(ioread8, addr, val, cond, delay_us, timeout_us)
++
++#define ioread16_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(ioread16, addr, val, cond, delay_us, timeout_us)
++
++#define ioread16_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(ioread16, addr, val, cond, delay_us, timeout_us)
++
++#define ioread16be_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(ioread16be, addr, val, cond, delay_us, timeout_us)
++
++#define ioread16be_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(ioread16be, addr, val, cond, delay_us, timeout_us)
++
++#define ioread32_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(ioread32, addr, val, cond, delay_us, timeout_us)
++
++#define ioread32_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(ioread32, addr, val, cond, delay_us, timeout_us)
++
++#define ioread32b3_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(ioread32b3, addr, val, cond, delay_us, timeout_us)
++
++#define ioread32b3_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(ioread32b3, addr, val, cond, delay_us, timeout_us)
++
++#define inb_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(inb, addr, val, cond, delay_us, timeout_us)
++
++#define inb_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(inb, addr, val, cond, delay_us, timeout_us)
++
++#define inb_p_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(inb_p, addr, val, cond, delay_us, timeout_us)
++
++#define inb_p_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(inb_p, addr, val, cond, delay_us, timeout_us)
++
++#define inw_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(inw, addr, val, cond, delay_us, timeout_us)
++
++#define inw_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(inw, addr, val, cond, delay_us, timeout_us)
++
++#define inw_p_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(inw_p, addr, val, cond, delay_us, timeout_us)
++
++#define inw_p_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(inw_p, addr, val, cond, delay_us, timeout_us)
++
++#define inw_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(inw, addr, val, cond, delay_us, timeout_us)
++
++#define inw_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(inw, addr, val, cond, delay_us, timeout_us)
++
++#define inl_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(inl, addr, val, cond, delay_us, timeout_us)
++
++#define inl_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(inl, addr, val, cond, delay_us, timeout_us)
++
++#define inl_p_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(inl_p, addr, val, cond, delay_us, timeout_us)
++
++#define inl_p_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(inl_p, addr, val, cond, delay_us, timeout_us)
++
++
++#endif /* _LINUX_IOPOLL_H */
 -- 
 Qualcomm Innovation Center, Inc.
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
