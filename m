@@ -1,15 +1,15 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [RFC PATCH v3 4/7] iommu: provide helper function to configure an
-	IOMMU for an of master
-Date: Tue, 14 Oct 2014 16:12:59 +0300
-Message-ID: <6158503.EYJT9z30tm@avalon>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [RFC PATCH v3 6/7] arm: call iommu_init before
+	of_platform_populate
+Date: Tue, 14 Oct 2014 15:20:46 +0200
+Message-ID: <4378271.6Q6s1JjOus@wuerfel>
 References: <1410539695-29128-1-git-send-email-will.deacon@arm.com>
-	<4801495.ovhjCBfpBC@avalon> <20140922171352.GF7936@arm.com>
+	<3765297.6j3Rv68iqn@wuerfel> <2650492.UcyhNye0aG@avalon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20140922171352.GF7936-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <2650492.UcyhNye0aG@avalon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,151 +19,43 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
-
-On Monday 22 September 2014 18:13:52 Will Deacon wrote:
-> On Thu, Sep 18, 2014 at 12:13:13PM +0100, Laurent Pinchart wrote:
-> > Hi Will,
-> 
-> Hi Laurent,
-> 
-> > Thank you for the patch.
-> 
-> Sorry for the delay in replying, I was at Connect last week and the email
-> has backed up.
-
-No worries.
-
-> > On Friday 12 September 2014 17:34:52 Will Deacon wrote:
-> >> The generic IOMMU device-tree bindings can be used to add arbitrary OF
-> >> masters to an IOMMU with a compliant binding.
-> >> 
-> >> This patch introduces of_iommu_configure, which does exactly that. A
-> >> list of iommu_dma_mapping structures are created for each device, which
-> >> represent the set of IOMMU instances through which the device can
-> >> master. The list is protected by a kref count and freed when no users
-> >> remain. It is expected that DMA-mapping code will take a reference if it
-> >> wishes to make use of the IOMMU information.
-> 
-> [...]
-> 
-> >> +struct iommu_dma_mapping *of_iommu_configure(struct device *dev)
-> >> +{
-> >> +	struct of_phandle_args iommu_spec;
-> >> +	struct iommu_dma_mapping *mapping;
-> >> +	struct device_node *np;
-> >> +	struct iommu_data *iommu = NULL;
-> >> +	int idx = 0;
-> >> +
-> >> +	/*
-> >> +	 * We don't currently walk up the tree looking for a parent IOMMU.
-> >> +	 * See the `Notes:' section of
-> >> +	 * Documentation/devicetree/bindings/iommu/iommu.txt
-> >> +	 */
-> >> +	while (!of_parse_phandle_with_args(dev->of_node, "iommus",
-> >> +					   "#iommu-cells", idx,
-> >> +					   &iommu_spec)) {
-> >> +		struct iommu_data *data;
-> >> +
-> >> +		np = iommu_spec.np;
-> >> +		data = of_iommu_get_data(np);
-> >> +
-> >> +		if (!data || !data->ops || !data->ops->of_xlate)
-> >> +			goto err_put_node;
-> >> +
-> >> +		if (!iommu) {
-> >> +			iommu = data;
-> >> +		} else if (iommu != data) {
-> >> +			/* We don't currently support multi-IOMMU masters */
-> >> +			pr_warn("Rejecting device %s with multiple IOMMU 
-instances\n",
-> >> +				dev_name(dev));
-> >> +			goto err_put_node;
-> >> +		}
-> >> +
-> >> +		if (!data->ops->of_xlate(dev, &iommu_spec))
-> >> +			goto err_put_node;
-> >> +
-> >> +		of_node_put(np);
-> >> +		idx++;
-> >> +	}
-> >> +
-> >> +	if (!iommu)
-> >> +		return NULL;
-> >> +
-> >> +	mapping = kzalloc(sizeof(*mapping), GFP_KERNEL);
-> >> +	if (!mapping)
-> >> +		return NULL;
-> >> +
-> >> +	kref_init(&mapping->kref);
-> >> +	INIT_LIST_HEAD(&mapping->node);
+On Tuesday 14 October 2014 16:07:38 Laurent Pinchart wrote:
+> On Tuesday 23 September 2014 09:44:25 Arnd Bergmann wrote:
+> > On Tuesday 23 September 2014 09:02:39 Thierry Reding wrote:
+> > > > I see two problems with using deferred probing here:
+> > > > 
+> > > > - we don't actually need to defer the probing but the binding to the
+> > > >   driver when no dma ops are set, but it seems silly to even create the
+> > > >   device before we can find out which ops it should use.
+> > > 
+> > > What does device creation have to do with anything? Surely a device
+> > > won't need IOMMU services before the device is bound to a driver.
 > > 
-> > I might be missing something, but that doesn't seem to match the commit
-> > message. This creates a single iommu_dma_mapping per device, where is the
-> > list supposed to be populated ?
-> 
-> Right. I currently only populate the first node in the list, and the loop
-> above barfs if we find multiple IOMMUs. I was hoping you'd add support for
-> that later on, as you mentioned the need for this so I guess you can test it
-> too?
-
-I can, I was just puzzled by the mismatch between the code and commit message. 
-As your patch series doesn't provide a complete end-to-end implementation it's 
-not always easy to understand how you envision that implementation to work, 
-and thus difficult to implement the required modifications to the IOMMU 
-driver.
-
-> >> +void of_iommu_deconfigure(struct kref *kref)
-> >> +{
-> >> +	struct iommu_dma_mapping *mapping, *curr, *next;
-> >> +
-> >> +	mapping = container_of(kref, struct iommu_dma_mapping, kref);
-> >> +	list_for_each_entry_safe(curr, next, &mapping->node, node) {
-> >> +		list_del(&curr->node);
-> >> +		kfree(curr);
-> >> +	}
+> > The problem is that the driver will start using the IOMMU as soon
+> > as it calls dma_map_*, but that happens at runtime, not necessarily
+> > during the probe function.
 > > 
-> > Don't you need to also kfree(mapping) here ?
+> > So we can get into the weird situation that probe() returns success,
+> > but then you can't use the device yet because you don't know whether
+> > it is supposed to use an IOMMU or not.
 > 
-> Yup, thanks.
-> 
-> >> +}
-> >> +
-> > 
-> > Do you expect other users of of_iommu_deconfigure() than kref_put() ? If
-> > not, how about exposing an of_iommu_put(struct iommu_dma_mapping *) that
-> > would call kref_put() internally, and hiding of_iommu_deconfigure() ?
-> 
-> That's a good idea, I'll do that.
-> 
-> >>  void __init of_iommu_init(void)
-> >>  {
-> >>  	struct device_node *np;
-> >> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> >> index 1e944e77d38d..e60e52d82db9 100644
-> >> --- a/include/linux/dma-mapping.h
-> >> +++ b/include/linux/dma-mapping.h
-> >> @@ -62,6 +62,14 @@ struct dma_map_ops {
-> >>  	int is_phys;
-> >>  };
-> >> 
-> >> +struct iommu_data;
-> >> +
-> >> +struct iommu_dma_mapping {
-> >> +	struct iommu_data *iommu;
-> >> +	struct list_head node;
-> >> +	struct kref kref;
-> >> +};
-> > 
-> > Could you please document the structure with kerneldoc ?
-> 
-> Ok, I'll try!
+> If we want IOMMU devices to be supported by common device drivers we need to 
+> defer probing of the master devices, there's no doubt about that. Earlier 
+> approaches that hooked up into the device core code were rejected, but it 
+> should be possible to use bus notifiers to achieve the same result (with the 
+> drawback of having to register one notifier per bus). The 
+> BUS_NOTIFY_BIND_DRIVER notifier can then just return -EPROBE_DEFER when a 
+> iommus property is available and points to an IOMMU not registered yet. I'm 
+> not saying we have to do this, but I believe that at least from a technical 
+> point of view it could be done.
 
--- 
-Regards,
+I think that fundamentally speaking, relying on notifiers for something like
+this is very problematic, both in terms of maintainability and reliability.
+We should really try to get the notifiers out of the iommu handling, not put
+more of them in.
 
-Laurent Pinchart
+	Arnd
