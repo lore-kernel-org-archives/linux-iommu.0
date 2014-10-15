@@ -1,15 +1,17 @@
-From: David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
-Subject: Re: [PATCH v3 25/27] Sparc/MSI: Use MSI chip framework to
-	configure MSI/MSI-X irq
-Date: Tue, 14 Oct 2014 22:36:41 -0400 (EDT)
-Message-ID: <20141014.223641.1750858832286185881.davem@davemloft.net>
-References: <1413342435-7876-1-git-send-email-wangyijing@huawei.com>
-	<1413342435-7876-26-git-send-email-wangyijing@huawei.com>
+From: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Subject: Re: [PATCH 0/8] iommu/vt-d: Fix crash dump failure caused by legacy
+	DMA/IO
+Date: Wed, 15 Oct 2014 16:10:02 +0800
+Message-ID: <543E2BDA.8030906@hp.com>
+References: <1398386198-19304-1-git-send-email-bill.sumner@hp.com>
+	<1398854973.12733.23.camel@i7.infradead.org>
+	<20140702133258.GN26537@8bytes.org>
+	<20140711162745.GA8335@anatevka.fc.hp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1413342435-7876-26-git-send-email-wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20140711162745.GA8335-dMAi7lA+vBPDUbYHzcRnttBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,16 +21,65 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, arnab.basu-KZfg59tc24xl57MIdRCFDg@public.gmane.org, liviu-I3yL/QOVVjH10XsdtD+oqA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, cmetcalf-kv+TWInifGbQT0dZR+AlfA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org, huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, david.vrabel-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org, wuyun.wu-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, zhenhua-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Date: Wed, 15 Oct 2014 11:07:13 +0800
+David, Joerg,
+I plan to merge this patch set with 3.17 stable kernel, and split this 
+patch set into two :
+1. The core part, including the changed functions, like [Patch 4/8], 
+[Patch 8/8].
+2. For the formatting issues, like [Patch 1/8],[Patch 3/8],  including 
+the changes for code formations, creation of new files 
+intel-iommu-kdump.c, intel-iommu-private.h.
 
-> Use MSI chip framework instead of arch MSI functions to configure
-> MSI/MSI-X irq. So we can manage MSI/MSI-X irq in a unified framework.
-> 
-> Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+I believe this will make the patch set more clear to read and understand.
 
-Acked-by: David S. Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+What are your suggestions?
+
+Thanks
+Zhenhua
+
+
+On 07/12/2014 12:27 AM, Jerry Hoemann wrote:
+> On Wed, Jul 02, 2014 at 03:32:59PM +0200, Joerg Roedel wrote:
+>> Hi David,
+>>
+>> On Wed, Apr 30, 2014 at 11:49:33AM +0100, David Woodhouse wrote:
+>>> There could be all kinds of existing mappings in the DMA page tables,
+>>> and I'm not sure it's safe to preserve them. What prevents the crashdump
+>>> kernel from trying to use any of the physical pages which are
+>>> accessible, and which could thus be corrupted by stray DMA?
+>>>
+>>> In fact, the old kernel could even have set up 1:1 passthrough mappings
+>>> for some devices, which would then be able to DMA *anywhere*. Surely we
+>>> need to prevent that?
+>>
+>> Ideally we would prevent that, yes. But the problem is that a failed DMA
+>> transaction might put the device into an unrecoverable state. Usually
+>> any in-flight DMA transactions should only target buffers set up by the
+>> previous kernel and not corrupt any data.
+>>
+>>> After the last round of this patchset, we discussed a potential
+>>> improvement where you point every virtual bus address at the *same*
+>>> physical scratch page.
+>>
+>> That is a solution to prevent the in-flight DMA failures. But what
+>> happens when there is some in-flight DMA to a disk to write some inodes
+>> or a new superblock. Then this scratch address-space may cause
+>> filesystem corruption at worst.
+>>
+>> So with this in mind I would prefer initially taking over the
+>> page-tables from the old kernel before the device drivers re-initialize
+>> the devices.
+>>
+>>
+>> 	Joerg
+>
+> David, Joerg,
+>
+> What do you think here?  Do you want me to update the patch set for 3.17?
+>
+> Jerry
+>
