@@ -1,8 +1,8 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [RFC PATCH v2 3/4] vfio: platform: devtree: access property as a list
-	of strings
-Date: Thu, 16 Oct 2014 17:54:35 +0200
-Message-ID: <1413474876-28544-4-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [RFC PATCH v2 4/4] vfio: platform: devtree: return arrays of u32, u16,
+	or u8 data
+Date: Thu, 16 Oct 2014 17:54:36 +0200
+Message-ID: <1413474876-28544-5-git-send-email-a.motakis@virtualopensystems.com>
 References: <1413474876-28544-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,72 +22,81 @@ To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9Q
 Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Certain device tree properties (e.g. the device node name, the compatible
-string), are available as a list of strings (separated by the null
-terminating character). Let the VFIO user query this type of properties.
+Certain properties of a device tree node are accessible as an array
+of unsigned integers, either u32, u16, or u8. Let the VFIO user query
+this type of device node properties. Accessing u64 arrays is not yet
+implemented in this RFC.
 
 Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 ---
- drivers/vfio/platform/devtree.c | 43 ++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 42 insertions(+), 1 deletion(-)
+ drivers/vfio/platform/devtree.c | 55 ++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 54 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/vfio/platform/devtree.c b/drivers/vfio/platform/devtree.c
-index 032ee16..6d25f97 100644
+index 6d25f97..17f55d4 100644
 --- a/drivers/vfio/platform/devtree.c
 +++ b/drivers/vfio/platform/devtree.c
-@@ -45,11 +45,52 @@ static int devtree_get_prop_list(struct device_node *np, unsigned *lenp,
- 	return ret;
- }
- 
-+static int devtree_get_full_name(struct device_node *np, unsigned *lenp,
-+				 void __user *datap, unsigned long datasz)
-+{
-+	int len = strlen(np->full_name) + 1;
-+
-+	if (lenp)
-+		*lenp = len;
-+
-+	if (len > datasz)
-+		return -EAGAIN;
-+
-+	if (copy_to_user(datap, np->full_name, len))
-+		return -EFAULT;
-+
-+	return 0;
-+}
-+
- static int devtree_get_strings(struct device_node *np,
- 			       char *name, unsigned *lenp,
- 			       void __user *datap, unsigned long datasz)
+@@ -97,7 +97,60 @@ static int devtree_get_uint(struct device_node *np, char *name,
+ 			    uint32_t type, unsigned *lenp,
+ 			    void __user *datap, unsigned long datasz)
  {
 -	return -EINVAL;
-+	struct property *prop;
-+	int len;
++	int ret, n;
++	size_t sz;
++	u8 *out;
++	int (*func)(const struct device_node *, const char *, void *, size_t)
++		= NULL;
 +
-+	prop = of_find_property(np, name, &len);
++	switch (type) {
++	case VFIO_DEVTREE_TYPE_U32:
++		sz = sizeof(u32);
++		func = (int (*)(const struct device_node *,
++				const char *, void *, size_t))
++			of_property_read_u32_array;
++		break;
++	case VFIO_DEVTREE_TYPE_U16:
++		sz = sizeof(u16);
++		func = (int (*)(const struct device_node *,
++				const char *, void *, size_t))
++			of_property_read_u16_array;
++		break;
++	case VFIO_DEVTREE_TYPE_U8:
++		sz = sizeof(u8);
++		func = (int (*)(const struct device_node *,
++				const char *, void *, size_t))
++			of_property_read_u8_array;
++		break;
 +
-+	if (!prop) {
-+		/* special case full_name as a property that is not on the fdt,
-+		 * but we wish to return to the user as it includes the full
-+		 * path of the device */
-+		if (!strcmp(name, "full_name"))
-+			return devtree_get_full_name(np, lenp, datap, datasz);
-+		else
-+			return -EINVAL;
++	default:
++		return -EINVAL;
 +	}
 +
-+	if (lenp)
-+		*lenp = len;
++	n = of_property_count_elems_of_size(np, name, sz);
++	if (n < 0)
++		return n;
 +
-+	if (len > datasz)
++	if (lenp)
++		*lenp = n * sz;
++
++	if (n * sz > datasz)
 +		return -EAGAIN;
 +
-+	if (copy_to_user(datap, prop->value, len))
++	out = kcalloc(n, sz, GFP_KERNEL);
++	if (!out)
 +		return -EFAULT;
 +
-+	return 0;
++	ret = func(np, name, out, n);
++	if (ret)
++		goto out;
++
++	if (copy_to_user(datap, out, n * sz))
++		ret = -EFAULT;
++
++out:
++	kfree(out);
++	return ret;
  }
  
- static int devtree_get_uint(struct device_node *np, char *name,
+ int vfio_platform_devtree_info(struct device_node *np,
 -- 
 2.1.1
