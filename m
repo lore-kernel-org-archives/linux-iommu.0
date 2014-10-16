@@ -1,15 +1,12 @@
-From: Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v3 22/27] s390/MSI: Use MSI chip framework to configure
-	MSI/MSI-X irq
-Date: Thu, 16 Oct 2014 14:13:20 +0200 (CEST)
-Message-ID: <alpine.LFD.2.11.1410161411340.1575@denkbrett>
-References: <1413342435-7876-1-git-send-email-wangyijing@huawei.com>
-	<1413342435-7876-23-git-send-email-wangyijing@huawei.com>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: [RFC PATCH v2 0/4] vfio: platform: return device tree info for a
+	platform device node
+Date: Thu, 16 Oct 2014 17:54:32 +0200
+Message-ID: <1413474876-28544-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1413342435-7876-23-git-send-email-wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,102 +16,96 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, arnab.basu-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Liviu Dudau <liviu-I3yL/QOVVjH10XsdtD+oqA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Chris Metcalf <cmetcalf-kv+TWInifGbQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Sergei Shtylyov <sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, iommu-cunTk1MwBs8@public.gmane.org
+To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 15 Oct 2014, Yijing Wang wrote:
-> Use MSI chip framework instead of arch MSI functions to configure
-> MSI/MSI-X irq. So we can manage MSI/MSI-X irq in a unified framework.
-> 
-> Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> ---
-> Hi Sebastian,
->    I dropped the Acked-by , because this version has a
-> lot changes compared to last. So, I guess you may want to check it again.
+This RFC's intention is to show what an interface to access device node
+properties for the VFIO platform driver can look like.
 
-I did and I agree with that one too.
+If a device tree node corresponding to a platform device bound by VFIO PLATFORM
+or VFIO AMBA is available, this patch series will allow the user to query the
+properties associated with this device node. This can be useful for userspace
+drivers to automatically query parameters related to the device.
 
-Regards,
-Sebastian
+An API to return data from a device's device tree has been proposed before on
+these lists. The API proposed here is slightly different.
 
-> ---
->  arch/s390/include/asm/pci.h |    9 +++++++++
->  arch/s390/pci/pci.c         |   12 ++++++++++--
->  2 files changed, 19 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
-> index c030900..4d41f08 100644
-> --- a/arch/s390/include/asm/pci.h
-> +++ b/arch/s390/include/asm/pci.h
-> @@ -88,6 +88,8 @@ struct zpci_dev {
->  	u32 uid;			/* user defined id */
->  	u8 util_str[CLP_UTIL_STR_LEN];	/* utility string */
-> 
-> +	struct msi_chip *msi_chip;
-> +
->  	/* IRQ stuff */
->  	u64		msi_addr;	/* MSI address */
->  	struct airq_iv *aibv;		/* adapter interrupt bit vector */
-> @@ -121,6 +123,13 @@ struct zpci_dev {
->  	struct dentry	*debugfs_perf;
->  };
-> 
-> +static inline struct msi_chip *pci_msi_chip(struct pci_bus *bus)
-> +{
-> +	struct zpci_dev *zpci = bus->sysdata;
-> +
-> +	return zpci->msi_chip;
-> +}
-> +
->  static inline bool zdev_enabled(struct zpci_dev *zdev)
->  {
->  	return (zdev->fh & (1UL << 31)) ? true : false;
-> diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
-> index 552b990..bf6732f 100644
-> --- a/arch/s390/pci/pci.c
-> +++ b/arch/s390/pci/pci.c
-> @@ -358,7 +358,8 @@ static void zpci_irq_handler(struct airq_struct *airq)
->  	}
->  }
-> 
-> -int arch_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
-> +static int zpci_setup_msi_irqs(struct msi_chip *chip,
-> +		struct pci_dev *pdev, int nvec, int type)
->  {
->  	struct zpci_dev *zdev = get_zdev(pdev);
->  	unsigned int hwirq, msi_vecs;
-> @@ -434,7 +435,8 @@ out:
->  	return rc;
->  }
-> 
-> -void arch_teardown_msi_irqs(struct pci_dev *pdev)
-> +static void zpci_teardown_msi_irqs(struct msi_chip *chip,
-> +		struct pci_dev *pdev)
->  {
->  	struct zpci_dev *zdev = get_zdev(pdev);
->  	struct msi_desc *msi;
-> @@ -464,6 +466,11 @@ void arch_teardown_msi_irqs(struct pci_dev *pdev)
->  	airq_iv_free_bit(zpci_aisb_iv, zdev->aisb);
->  }
-> 
-> +static struct msi_chip zpci_msi_chip = {
-> +	.setup_irqs = zpci_setup_msi_irqs,
-> +	.teardown_irqs = zpci_teardown_msi_irqs,
-> +};
-> +
->  static void zpci_map_resources(struct zpci_dev *zdev)
->  {
->  	struct pci_dev *pdev = zdev->pdev;
-> @@ -749,6 +756,7 @@ static int zpci_scan_bus(struct zpci_dev *zdev)
->  	if (ret)
->  		return ret;
-> 
-> +	zdev->msi_chip = &zpci_msi_chip;
->  	zdev->bus = pci_scan_root_bus(NULL, ZPCI_BUS_NR, &pci_root_ops,
->  				      zdev, &resources);
->  	if (!zdev->bus) {
-> -- 
-> 1.7.1
-> 
-> 
+Properties to parse from the device tree are not indexed by a numerical id.
+The host system doesn't guarantee any specific ordering for the available
+properties, or that those will remain the same; while this does not happen in
+practice, there is nothing from the host changing the device nodes during
+operation. For this reason in this RFC properties are accessed by property name.
+
+The type of the property accessed must also be known by the user. Properties
+types implemented in this RFC:
+- VFIO_DEVTREE_TYPE_STRINGS (strings sepparated by the null character)
+- VFIO_DEVTREE_TYPE_U32
+- VFIO_DEVTREE_TYPE_U16
+- VFIO_DEVTREE_TYPE_U8
+
+These can all be access by the ioctl VFIO_DEVICE_GET_DEVTREE_INFO. A new ioctl
+was preferred instead of shoehorning the functionality in VFIO_DEVICE_GET_INFO.
+The structure exchanged with userspace looks like this:
+
+/**
+ * VFIO_DEVICE_GET_DEVTREE_INFO - _IOR(VFIO_TYPE, VFIO_BASE + 16,
+ *						struct vfio_devtree_info)
+ *
+ * Retrieve information from the device's device tree, if available.
+ * Caller will initialize data[] with a single string with the requested
+ * devicetree property name, and type depending on whether a array of strings
+ * or an array of u32 values is expected. On success, data[] will be extended
+ * with the requested information, either as an array of u32, or with a list
+ * of strings sepparated by the NULL terminating character.
+ * Return: 0 on success, -errno on failure.
+ */
+struct vfio_devtree_info {
+	__u32	argsz;
+	__u32	type;
+#define VFIO_DEVTREE_PROP_LIST		0
+#define VFIO_DEVTREE_TYPE_STRINGS	1
+#define VFIO_DEVTREE_TYPE_U8		2
+#define VFIO_DEVTREE_TYPE_U16		3
+#define VFIO_DEVTREE_TYPE_U32		4
+	__u32	length;
+	__u8	data[];
+};
+#define VFIO_DEVICE_GET_DEVTREE_INFO	_IO(VFIO_TYPE, VFIO_BASE + 17)
+
+The length of the property will be reported in length, so the user can reallocate
+the structure if the data does not fit the first time the call is used.
+
+Specifically for QEMU, reading the "compatible" property of the device tree
+node could be of use to find out what device is being assigned to the guest and
+handle appropriately a wider range of devices in the future, and to generate an
+appropriate device tree for the guest.
+
+TODOs:
+ - 64 bit values support
+ - We can consider to rebase this on the patch series by Rafael J. Wysocki:
+   "[PATCH v4 00/13] Add ACPI _DSD and unified device properties support"
+   This would make 64 bit support more straightforward as it already includes
+   the APIs we need for 64 bit OF values.
+
+Changes since v1:
+ - Updated for VFIO platform patch series v8:
+   VFIO AMBA devices now supported in addition to VFIO PLATFORM devices
+ - Refactored and cleaned up the code
+
+Antonios Motakis (4):
+  vfio: platform: add device tree info API and skeleton
+  vfio: platform: devtree: return available property names
+  vfio: platform: devtree: access property as a list of strings
+  vfio: platform: devtree: return arrays of u32, u16, or u8 data
+
+ drivers/vfio/platform/Makefile                |   3 +-
+ drivers/vfio/platform/devtree.c               | 199 ++++++++++++++++++++++++++
+ drivers/vfio/platform/vfio_platform_common.c  |  39 +++++
+ drivers/vfio/platform/vfio_platform_private.h |   6 +
+ include/uapi/linux/vfio.h                     |  26 ++++
+ 5 files changed, 272 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/vfio/platform/devtree.c
+
+-- 
+2.1.1
