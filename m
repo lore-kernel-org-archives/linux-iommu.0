@@ -1,102 +1,71 @@
-From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [RFC PATCH v2 4/4] vfio: platform: devtree: return arrays of u32, u16,
-	or u8 data
-Date: Thu, 16 Oct 2014 17:54:36 +0200
-Message-ID: <1413474876-28544-5-git-send-email-a.motakis@virtualopensystems.com>
-References: <1413474876-28544-1-git-send-email-a.motakis@virtualopensystems.com>
+From: Olav Haugan <ohaugan@codeaurora.org>
+Subject: Re: [PATCH v5 1/1] iommu-api: Add map_sg/unmap_sg functions
+Date: Thu, 16 Oct 2014 10:23:07 -0700
+Message-ID: <543FFEFB.2010604@codeaurora.org>
+References: <1407797150-515-1-git-send-email-ohaugan@codeaurora.org> <1407797150-515-2-git-send-email-ohaugan@codeaurora.org> <20140925170108.GE8306@8bytes.org> <5432E757.10201@codeaurora.org> <20141015091652.GB13162@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1413474876-28544-1-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <20141015091652.GB13162@ulmo>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Joerg Roedel <joro@8bytes.org>, laurent.pinchart+renesas@ideasonboard.com, konrad.wilk@oracle.com, mitchelh@codeaurora.org, linux-arm-msm@vger.kernel.org, will.deacon@arm.com, iommu@lists.linux-foundation.org, robdclark@gmail.com, Varun.Sethi@freescale.com, kgene.kim@samsung.com, dwmw2@infradead.org, linux-arm-kernel@lists.infradead.org, hdoyu@nvidia.com
 List-Id: iommu@lists.linux-foundation.org
 
-Certain properties of a device tree node are accessible as an array
-of unsigned integers, either u32, u16, or u8. Let the VFIO user query
-this type of device node properties. Accessing u64 arrays is not yet
-implemented in this RFC.
+On 10/15/2014 2:16 AM, Thierry Reding wrote:
+> On Mon, Oct 06, 2014 at 12:02:47PM -0700, Olav Haugan wrote:
+>> On 9/25/2014 10:01 AM, Joerg Roedel wrote:
+>>> On Mon, Aug 11, 2014 at 03:45:50PM -0700, Olav Haugan wrote:
+>>>> +static inline int iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+>>>> +			       struct scatterlist *sg, unsigned int nents,
+>>>> +			       int prot, unsigned long flags)
+>>>> +{
+>>>> +	return domain->ops->map_sg(domain, iova, sg, nents, prot, flags);
+>>>> +}
+>>>> +
+>>>> +static inline int iommu_unmap_sg(struct iommu_domain *domain,
+>>>> +				 unsigned long iova, size_t size,
+>>>> +				 unsigned long flags)
+>>>> +{
+>>>> +	return domain->ops->unmap_sg(domain, iova, size, flags);
+>>>> +}
+>>>
+>>> I have thought a little bit more about this interface and think that it
+>>> would be better to just return a size_t from iommu_map_sg().  The
+>>> function returns the amount of address space mapped by it, 0 in the
+>>> worst case.
+>>>
+>>> This makes it easy to unmap the region just with
+>>> iommu_unmap(domain, iova, size) in the end and removing the need for a
+>>> new iommu_unmap_sg() function. Also the error-path of the map_sg
+>>> call-backs becomes easier as the function then just returns the amount
+>>> of address-space already mapped before the error happened.
+>>>
+>>> So the prototype would be:
+>>>
+>>> 	size_t iommu_map_sg(struct iommu_domain *domain,
+>>> 			    unsigned long iova,
+>>> 			    struct scatterlist *sg,
+>>> 			    unsigned int nents,
+>>> 			    int prot);
+>>>
+>>> (as I said before, the flags parameter should not be added by this
+>>>   patch-set).
+>>>
+>>
+>> Ok, sounds good. I'll post v6 soon.
+>
+> Perhaps make the return value ssize_t so that we can propagate errors?
+>
 
-Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
----
- drivers/vfio/platform/devtree.c | 55 ++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 54 insertions(+), 1 deletion(-)
+I am fine with that. Joerg?
 
-diff --git a/drivers/vfio/platform/devtree.c b/drivers/vfio/platform/devtree.c
-index 6d25f97..17f55d4 100644
---- a/drivers/vfio/platform/devtree.c
-+++ b/drivers/vfio/platform/devtree.c
-@@ -97,7 +97,60 @@ static int devtree_get_uint(struct device_node *np, char *name,
- 			    uint32_t type, unsigned *lenp,
- 			    void __user *datap, unsigned long datasz)
- {
--	return -EINVAL;
-+	int ret, n;
-+	size_t sz;
-+	u8 *out;
-+	int (*func)(const struct device_node *, const char *, void *, size_t)
-+		= NULL;
-+
-+	switch (type) {
-+	case VFIO_DEVTREE_TYPE_U32:
-+		sz = sizeof(u32);
-+		func = (int (*)(const struct device_node *,
-+				const char *, void *, size_t))
-+			of_property_read_u32_array;
-+		break;
-+	case VFIO_DEVTREE_TYPE_U16:
-+		sz = sizeof(u16);
-+		func = (int (*)(const struct device_node *,
-+				const char *, void *, size_t))
-+			of_property_read_u16_array;
-+		break;
-+	case VFIO_DEVTREE_TYPE_U8:
-+		sz = sizeof(u8);
-+		func = (int (*)(const struct device_node *,
-+				const char *, void *, size_t))
-+			of_property_read_u8_array;
-+		break;
-+
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	n = of_property_count_elems_of_size(np, name, sz);
-+	if (n < 0)
-+		return n;
-+
-+	if (lenp)
-+		*lenp = n * sz;
-+
-+	if (n * sz > datasz)
-+		return -EAGAIN;
-+
-+	out = kcalloc(n, sz, GFP_KERNEL);
-+	if (!out)
-+		return -EFAULT;
-+
-+	ret = func(np, name, out, n);
-+	if (ret)
-+		goto out;
-+
-+	if (copy_to_user(datap, out, n * sz))
-+		ret = -EFAULT;
-+
-+out:
-+	kfree(out);
-+	return ret;
- }
- 
- int vfio_platform_devtree_info(struct device_node *np,
+Thanks,
+
+.Olav
+
 -- 
-2.1.1
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora 
+Forum, a Linux Foundation Collaborative Project
