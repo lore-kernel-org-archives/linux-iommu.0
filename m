@@ -1,71 +1,131 @@
-From: David Riley <davidriley-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 06/12] ARM: tegra: Add memory controller support for Tegra20
-Date: Fri, 17 Oct 2014 10:43:56 -0700
-Message-ID: <CAASgrz3Z2vW0L+u5kju9bAh-R4PnreMnhoGaKY_UwSTGFcBshA@mail.gmail.com>
-References: <1413196434-5292-1-git-send-email-thierry.reding@gmail.com>
-	<1413196434-5292-6-git-send-email-thierry.reding@gmail.com>
+From: Oded Gabbay <oded.gabbay@amd.com>
+Subject: [PATCH 1/1] iommu/amd: Use delayed mmu release notifier
+Date: Sat, 18 Oct 2014 00:43:27 +0300
+Message-ID: <54418D7F.3050304@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1413196434-5292-6-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Olof Johansson <olofj-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Thierry,
+This patch makes use of the new delayed mmu release notifier feature in
+mm code. This is necessary because on the one hand amd_iommu_unbind_pasid
+must be called explicitly during the tear-down of a process, but on the
+other hand, it could be called from a function (e.g. in amdkfd)
+which is a call-back function for the mmu notifier release.
+In such a case, amd_iommu_unbind_pasid must not free the pasid_state
+object, as it is a member in the list of mmu release notifiers (and
+freeing it in the middle of iterating the list will break the list).
 
-On Mon, Oct 13, 2014 at 3:33 AM, Thierry Reding
-<thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
->
-> Collapses the old memory-controller and IOMMU device tree nodes into a
-> single node to more accurately describe the hardware.
->
-> Note that this is an incompatible change, but while a GART driver has
-> existed for a few years it has never been used to do any translations.
->
-> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> ---
->  arch/arm/boot/dts/tegra20.dtsi | 13 ++++++-------
->  1 file changed, 6 insertions(+), 7 deletions(-)
->
-> diff --git a/arch/arm/boot/dts/tegra20.dtsi b/arch/arm/boot/dts/tegra20.dtsi
-> index 3b374c49d04d..a195c1975f3c 100644
-> --- a/arch/arm/boot/dts/tegra20.dtsi
-> +++ b/arch/arm/boot/dts/tegra20.dtsi
-> @@ -538,15 +538,14 @@
->
->         memory-controller@7000f000 {
->                 compatible = "nvidia,tegra20-mc";
-> -               reg = <0x7000f000 0x024
-> -                      0x7000f03c 0x3c4>;
-> +               reg = <0x7000f000 0x00000400   /* controller registers */
-> +                      0x58000000 0x02000000>; /* GART aperture */
+Therefore, this patch delays the release of pasid_state to a later
+call-back, which is called inside an srcu, and there we can freely
+release the object.
 
-Aren't these bindings supposed to be stable?  The tegra20-mc driver
-isn't modified.
+The flow of function calls when a process is teared-down looks like this:
+(This flow assumes that amdkfd is the client of amd_iommu_v2)
 
-> +               clocks = <&tegra_car TEGRA20_CLK_MC>;
-> +               clock-names = "mc";
-> +
->                 interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>;
-> -       };
->
-> -       iommu@7000f024 {
-> -               compatible = "nvidia,tegra20-gart";
-> -               reg = <0x7000f024 0x00000018    /* controller registers */
-> -                      0x58000000 0x02000000>;  /* GART aperture */
-> +               #iommu-cells = <1>;
->         };
->
->         memory-controller@7000f400 {
-> --
-> 2.1.2
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-tegra" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+1. mmu release notifiers for the destroyed process are started to get called.
 
-Dave
+2. amd_iommu_v2 notifier gets called, and it calls a call-back
+   function (inv_ctx_cb). amdkfd, which implements this call-back function,
+   performs tear-down of the relevant queues per device per process.
+
+3. Later, amdkfd's mmu notifier callback (kfd_process_notifier_release()) gets
+   called and releases more things that are related to the process.
+   In that function, amd_iommu_unbind_pasid() is explicitly called.
+
+4. (current code) amd_iommu_unbind_pasid() frees the mmu notifier
+   object itself, which mustn't be freed while iterating over the list
+   of mmu notifiers.
+
+4. (new code in this patch) amd_iommu_unbind_pasid() sets a delayed notifier,
+   using the delayed mmu release notifier feature (new in 3.17),
+   which does the actual release later, after the iteration over the list of
+   mmu notifiers is over.
+
+Signed-off-by: Oded Gabbay <oded.gabbay@amd.com>
+---
+ drivers/iommu/amd_iommu_v2.c | 32 +++++++++++++++++++++++++++++---
+ 1 file changed, 29 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
+index 5f578e8..1e83bdd 100644
+--- a/drivers/iommu/amd_iommu_v2.c
++++ b/drivers/iommu/amd_iommu_v2.c
+@@ -57,6 +57,9 @@ struct pasid_state {
+ 	spinlock_t lock;			/* Protect pri_queues and
+ 						   mmu_notifer_count */
+ 	wait_queue_head_t wq;			/* To wait for count == 0 */
++
++	struct rcu_head	rcu;			/* Use for delayed freeing of
++						   pasid_state structure */
+ };
+ 
+ struct device_state {
+@@ -297,7 +300,6 @@ static void put_pasid_state_wait(struct pasid_state *pasid_state)
+ 		schedule();
+ 
+ 	finish_wait(&pasid_state->wq, &wait);
+-	free_pasid_state(pasid_state);
+ }
+ 
+ static void unbind_pasid(struct pasid_state *pasid_state)
+@@ -369,6 +371,8 @@ static void free_pasid_states(struct device_state *dev_state)
+ 		put_pasid_state_wait(pasid_state); /* Reference taken in
+ 						      amd_iommu_bind_pasid */
+ 
++		free_pasid_state(pasid_state);
++
+ 		/* Drop reference taken in amd_iommu_bind_pasid */
+ 		put_device_state(dev_state);
+ 	}
+@@ -711,6 +715,17 @@ out:
+ }
+ EXPORT_SYMBOL(amd_iommu_bind_pasid);
+ 
++static void pasid_state_destroy_delayed(struct rcu_head *rcu)
++{
++	struct pasid_state *pasid_state;
++
++	pasid_state = container_of(rcu, struct pasid_state, rcu);
++
++	mmdrop(pasid_state->mm);
++
++	free_pasid_state(pasid_state);
++}
++
+ void amd_iommu_unbind_pasid(struct pci_dev *pdev, int pasid)
+ {
+ 	struct pasid_state *pasid_state;
+@@ -743,13 +758,24 @@ void amd_iommu_unbind_pasid(struct pci_dev *pdev, int pasid)
+ 	clear_pasid_state(dev_state, pasid_state->pasid);
+ 
+ 	/*
++	 * Because we drop mm_count inside pasid_state_destroy_delayed
++	 * and because the mmu_notifier_unregister function also drop
++	 * mm_count we need to take an extra count here.
++	 */
++	atomic_inc(&pasid_state->mm->mm_count);
++
++	/*
+ 	 * Call mmu_notifier_unregister to drop our reference
+ 	 * to pasid_state->mm
+ 	 */
+-	mmu_notifier_unregister(&pasid_state->mn, pasid_state->mm);
++	mmu_notifier_unregister_no_release(&pasid_state->mn, pasid_state->mm);
+ 
+ 	put_pasid_state_wait(pasid_state); /* Reference taken in
+-					      amd_iommu_bind_pasid */
++				      amd_iommu_pasid_bind */
++
++	mmu_notifier_call_srcu(&pasid_state->rcu,
++				&pasid_state_destroy_delayed);
++
+ out:
+ 	/* Drop reference taken in this function */
+ 	put_device_state(dev_state);
+-- 
+1.9.1
