@@ -1,162 +1,65 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [PATCH v3 04/27] arm/MSI: Save MSI chip in pci_sys_data
-Date: Mon, 20 Oct 2014 18:21:58 +0100
-Message-ID: <20141020172158.GA8017@e102568-lin.cambridge.arm.com>
-References: <1413342435-7876-1-git-send-email-wangyijing@huawei.com>
- <1413342435-7876-5-git-send-email-wangyijing@huawei.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 0/3] iommu: replace IOMMU_EXEC with IOMMU_EXEC and update
+	ARM SMMU driver
+Date: Mon, 20 Oct 2014 19:42:01 +0100
+Message-ID: <20141020184201.GA1455@arm.com>
+References: <1413205579-6124-1-git-send-email-a.motakis@virtualopensystems.com>
+	<20141020153915.GH20301@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-ia64-owner@vger.kernel.org>
-In-Reply-To: <1413342435-7876-5-git-send-email-wangyijing@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-Sender: linux-ia64-owner@vger.kernel.org
-To: Yijing Wang <wangyijing@huawei.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "huxinwei@huawei.com" <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "arnab.basu@freescale.com" <arnab.basu@freescale.com>, "Bharat.Bhushan@freescale.com" <Bharat.Bhushan@freescale.com>, "x86@kernel.org" <x86@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>, Joerg Roedel <joro@8bytes.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>"linux-mips@linux-mips.org" <l>
+In-Reply-To: <20141020153915.GH20301-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Oct 15, 2014 at 04:06:52AM +0100, Yijing Wang wrote:
-> Saving msi chip in pci_sys_data can make pci bus and
-> devices don't need to know msi chip detail, it also
-> make pci enumeration code be decoupled from msi chip.
-> In fact, all pci devices under the same pci hostbridge
-> share same msi chip. So msi chip should be seen as one
-> of resources or attributes to be initialized in pci host
-> bridge driver. Currently, pci hostbridge drivers create
-> pci_host_bridge in pci_create_root_bus(), and pass arch
-> specific pci sysdata to core pci scan functions. So pci
-> arch sysdata is good place to save msi chip.
+On Mon, Oct 20, 2014 at 04:39:15PM +0100, Will Deacon wrote:
+> On Mon, Oct 13, 2014 at 02:06:15PM +0100, Antonios Motakis wrote:
+> > This patch series applies to Joerg Roedel's iommu/next branch, commit 09b5269a.
+> > It replaces the IOMMU_EXEC flag used by the ARM SMMU driver to IOMMU_NOEXEC.
+> > This is more enforceable, since the lack of the flag on hardware that doesn't
+> > support it implies that the target memory will be executable.
 > 
-> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
-> ---
->  arch/arm/include/asm/mach/pci.h |    6 ++++++
->  arch/arm/include/asm/pci.h      |    9 +++++++++
->  arch/arm/kernel/bios32.c        |    3 +++
->  drivers/pci/msi.c               |    6 ++++++
->  include/linux/pci.h             |    9 +++++++++
->  5 files changed, 33 insertions(+), 0 deletions(-)
-> 
-> diff --git a/arch/arm/include/asm/mach/pci.h b/arch/arm/include/asm/mach/pci.h
-> index 7fc4278..59b0d87 100644
-> --- a/arch/arm/include/asm/mach/pci.h
-> +++ b/arch/arm/include/asm/mach/pci.h
-> @@ -22,6 +22,9 @@ struct hw_pci {
->  #ifdef CONFIG_PCI_DOMAINS
->  	int		domain;
->  #endif
-> +#ifdef CONFIG_PCI_MSI
-> +	struct msi_chip *msi_chip;
-> +#endif
->  	struct pci_ops	*ops;
->  	int		nr_controllers;
->  	void		**private_data;
-> @@ -47,6 +50,9 @@ struct pci_sys_data {
->  #ifdef CONFIG_PCI_DOMAINS
->  	int		domain;
->  #endif
-> +#ifdef CONFIG_PCI_MSI
-> +	struct msi_chip *msi_chip;
-> +#endif
+> Looks good to me; I'll take this via the arm-smmu tree and send it to Joerg
+> along with anything else that gets queued for 3.19.
 
-This struct is defined for ARM only. We are trying to remove dependency on it
-so that we can have a single driver for ARM32 and ARM64 systems without
-pcibios dependency. Why can't we add this msi chip data to the host
-bridge struct instead ? I understand it is all a matter of how to pass
-the pointer to pci_scan_root_bus(), where the bridge is created.
-We could initialize the msi chip on the bridge through the bus pointer
-returned by the pci_scan_root_bus() function.
+The 0-day builder spotted a new warning from this series:
 
-Thanks,
-Lorenzo
+   drivers/iommu/amd_iommu.c: In function 'amd_iommu_capable':
+>> drivers/iommu/amd_iommu.c:3409:2: warning: enumeration value 'IOMMU_CAP_NOEXEC' not handled in switch [-Wswitch]
+     switch (cap) {
+     ^
 
->  	struct list_head node;
->  	int		busnr;		/* primary bus number			*/
->  	u64		mem_offset;	/* bus->cpu memory mapping offset	*/
-> diff --git a/arch/arm/include/asm/pci.h b/arch/arm/include/asm/pci.h
-> index 7e95d85..b562c09 100644
-> --- a/arch/arm/include/asm/pci.h
-> +++ b/arch/arm/include/asm/pci.h
-> @@ -31,6 +31,15 @@ static inline int pci_proc_domain(struct pci_bus *bus)
->  }
->  #endif /* CONFIG_PCI_DOMAINS */
->  
-> +#ifdef CONFIG_PCI_MSI
-> +static inline struct msi_chip *pci_msi_chip(struct pci_bus *bus)
-> +{
-> +	struct pci_sys_data *root = bus->sysdata;
-> +
-> +	return root->msi_chip;
-> +}
-> +#endif
-> +
->  /*
->   * The PCI address space does equal the physical memory address space.
->   * The networking and block device layers use this boolean for bounce
-> diff --git a/arch/arm/kernel/bios32.c b/arch/arm/kernel/bios32.c
-> index 17a26c1..a19038d 100644
-> --- a/arch/arm/kernel/bios32.c
-> +++ b/arch/arm/kernel/bios32.c
-> @@ -471,6 +471,9 @@ static void pcibios_init_hw(struct device *parent, struct hw_pci *hw,
->  #ifdef CONFIG_PCI_DOMAINS
->  		sys->domain  = hw->domain;
->  #endif
-> +#ifdef CONFIG_PCI_MSI
-> +		sys->msi_chip = hw->msi_chip;
-> +#endif
->  		sys->busnr   = busnr;
->  		sys->swizzle = hw->swizzle;
->  		sys->map_irq = hw->map_irq;
-> diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
-> index 22e413c..f11108c 100644
-> --- a/drivers/pci/msi.c
-> +++ b/drivers/pci/msi.c
-> @@ -35,6 +35,9 @@ int __weak arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
->  	struct msi_chip *chip = dev->bus->msi;
->  	int err;
->  
-> +	if (!chip)
-> +		chip = pci_msi_chip(dev->bus);
-> +
->  	if (!chip || !chip->setup_irq)
->  		return -EINVAL;
->  
-> @@ -50,6 +53,9 @@ void __weak arch_teardown_msi_irq(unsigned int irq)
->  	struct msi_desc *entry = irq_get_msi_desc(irq);
->  	struct msi_chip *chip = entry->dev->bus->msi;
->  
-> +	if (!chip)
-> +		chip = pci_msi_chip(entry->dev->bus);
-> +
->  	if (!chip || !chip->teardown_irq)
->  		return;
->  
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index 9cd2721..7a48b40 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -1433,6 +1433,15 @@ static inline int pci_get_new_domain_nr(void) { return -ENOSYS; }
->  
->  #include <asm/pci.h>
->  
-> +/* Just avoid compile error, will be clean up later */
-> +#ifdef CONFIG_PCI_MSI
-> +
-> +#ifndef pci_msi_chip
-> +#define pci_msi_chip(bus)	NULL
-> +#endif
-> +
-> +#endif
-> +
->  /* these helpers provide future and backwards compatibility
->   * for accessing popular PCI BAR info */
->  #define pci_resource_start(dev, bar)	((dev)->resource[(bar)].start)
-> -- 
-> 1.7.1
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
-> 
+I fixed it with the patch below, but I'd appreciate you and Joerg taking
+a look too.
 
+Cheers,
+
+Will
+
+--->8
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 505a9adac2d5..3d78a8fb5a6a 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3411,6 +3411,8 @@ static bool amd_iommu_capable(enum iommu_cap cap)
+                return true;
+        case IOMMU_CAP_INTR_REMAP:
+                return (irq_remapping_enabled == 1);
++       case IOMMU_CAP_NOEXEC:
++               return false;
+        }
+ 
+        return false;
