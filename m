@@ -1,131 +1,239 @@
-From: Oded Gabbay <oded.gabbay@amd.com>
-Subject: [PATCH 1/1] iommu/amd: Use delayed mmu release notifier
-Date: Sat, 18 Oct 2014 00:43:27 +0300
-Message-ID: <54418D7F.3050304@amd.com>
+From: Tomeu Vizoso <tomeu-XCtybt49RKsYaV1qd6yewg@public.gmane.org>
+Subject: Re: [PATCH v3 01/12] clk: tegra: Implement memory-controller clock
+Date: Mon, 20 Oct 2014 13:02:45 +0200
+Message-ID: <CAAObsKB0ozbOy8ZzgbEyf-SrqF5jpfHUXCJdAMiqgS78DAyaVA@mail.gmail.com>
+References: <1413196434-5292-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1413196434-5292-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Peter De Schrijver <pdeschrijver-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Prashant Gaikwad <pgaikwad-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch makes use of the new delayed mmu release notifier feature in
-mm code. This is necessary because on the one hand amd_iommu_unbind_pasid
-must be called explicitly during the tear-down of a process, but on the
-other hand, it could be called from a function (e.g. in amdkfd)
-which is a call-back function for the mmu notifier release.
-In such a case, amd_iommu_unbind_pasid must not free the pasid_state
-object, as it is a member in the list of mmu release notifiers (and
-freeing it in the middle of iterating the list will break the list).
+On 13 October 2014 12:33, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+>
+> The memory controller clock runs either at half or the same frequency as
+> the EMC clock.
+>
+> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+> Changes in v3:
+> - split registration into a separate function that can be reused for all
+>   SoC generations, but pass in the name and parent parameters for
+>   clarity as well as the register address (in case it ever changes) and
+>   the EMC spin-lock since it isn't globally available
+>
+>  drivers/clk/tegra/clk-divider.c          | 13 +++++++++++++
+>  drivers/clk/tegra/clk-tegra114.c         |  7 ++++++-
+>  drivers/clk/tegra/clk-tegra124.c         |  7 ++++++-
+>  drivers/clk/tegra/clk-tegra20.c          |  8 +++++++-
+>  drivers/clk/tegra/clk-tegra30.c          |  7 ++++++-
+>  drivers/clk/tegra/clk.h                  |  2 ++
+>  include/dt-bindings/clock/tegra114-car.h |  2 +-
+>  include/dt-bindings/clock/tegra124-car.h |  2 +-
+>  include/dt-bindings/clock/tegra20-car.h  |  2 +-
+>  9 files changed, 43 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/clk/tegra/clk-divider.c b/drivers/clk/tegra/clk-divider.c
+> index 290f9c1a3749..84e1b3c1fb2a 100644
+> --- a/drivers/clk/tegra/clk-divider.c
+> +++ b/drivers/clk/tegra/clk-divider.c
+> @@ -185,3 +185,16 @@ struct clk *tegra_clk_register_divider(const char *name,
+>
+>         return clk;
+>  }
+> +
+> +static const struct clk_div_table mc_div_table[] = {
+> +       { .val = 0, .div = 2 },
+> +       { .val = 1, .div = 1 },
+> +       { .val = 0, .div = 0 },
+> +};
+> +
+> +struct clk *tegra_clk_register_mc(const char *name, const char *parent_name,
+> +                                 void __iomem *reg, spinlock_t *lock)
+> +{
+> +       return clk_register_divider_table(NULL, "mc", "emc_mux", 0, reg,
 
-Therefore, this patch delays the release of pasid_state to a later
-call-back, which is called inside an srcu, and there we can freely
-release the object.
+Should take name and parent_name from the passed args?
 
-The flow of function calls when a process is teared-down looks like this:
-(This flow assumes that amdkfd is the client of amd_iommu_v2)
+With that change:
 
-1. mmu release notifiers for the destroyed process are started to get called.
+Reviewed-By: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
 
-2. amd_iommu_v2 notifier gets called, and it calls a call-back
-   function (inv_ctx_cb). amdkfd, which implements this call-back function,
-   performs tear-down of the relevant queues per device per process.
+Cheers,
 
-3. Later, amdkfd's mmu notifier callback (kfd_process_notifier_release()) gets
-   called and releases more things that are related to the process.
-   In that function, amd_iommu_unbind_pasid() is explicitly called.
+Tomeu
 
-4. (current code) amd_iommu_unbind_pasid() frees the mmu notifier
-   object itself, which mustn't be freed while iterating over the list
-   of mmu notifiers.
-
-4. (new code in this patch) amd_iommu_unbind_pasid() sets a delayed notifier,
-   using the delayed mmu release notifier feature (new in 3.17),
-   which does the actual release later, after the iteration over the list of
-   mmu notifiers is over.
-
-Signed-off-by: Oded Gabbay <oded.gabbay@amd.com>
----
- drivers/iommu/amd_iommu_v2.c | 32 +++++++++++++++++++++++++++++---
- 1 file changed, 29 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index 5f578e8..1e83bdd 100644
---- a/drivers/iommu/amd_iommu_v2.c
-+++ b/drivers/iommu/amd_iommu_v2.c
-@@ -57,6 +57,9 @@ struct pasid_state {
- 	spinlock_t lock;			/* Protect pri_queues and
- 						   mmu_notifer_count */
- 	wait_queue_head_t wq;			/* To wait for count == 0 */
-+
-+	struct rcu_head	rcu;			/* Use for delayed freeing of
-+						   pasid_state structure */
- };
- 
- struct device_state {
-@@ -297,7 +300,6 @@ static void put_pasid_state_wait(struct pasid_state *pasid_state)
- 		schedule();
- 
- 	finish_wait(&pasid_state->wq, &wait);
--	free_pasid_state(pasid_state);
- }
- 
- static void unbind_pasid(struct pasid_state *pasid_state)
-@@ -369,6 +371,8 @@ static void free_pasid_states(struct device_state *dev_state)
- 		put_pasid_state_wait(pasid_state); /* Reference taken in
- 						      amd_iommu_bind_pasid */
- 
-+		free_pasid_state(pasid_state);
-+
- 		/* Drop reference taken in amd_iommu_bind_pasid */
- 		put_device_state(dev_state);
- 	}
-@@ -711,6 +715,17 @@ out:
- }
- EXPORT_SYMBOL(amd_iommu_bind_pasid);
- 
-+static void pasid_state_destroy_delayed(struct rcu_head *rcu)
-+{
-+	struct pasid_state *pasid_state;
-+
-+	pasid_state = container_of(rcu, struct pasid_state, rcu);
-+
-+	mmdrop(pasid_state->mm);
-+
-+	free_pasid_state(pasid_state);
-+}
-+
- void amd_iommu_unbind_pasid(struct pci_dev *pdev, int pasid)
- {
- 	struct pasid_state *pasid_state;
-@@ -743,13 +758,24 @@ void amd_iommu_unbind_pasid(struct pci_dev *pdev, int pasid)
- 	clear_pasid_state(dev_state, pasid_state->pasid);
- 
- 	/*
-+	 * Because we drop mm_count inside pasid_state_destroy_delayed
-+	 * and because the mmu_notifier_unregister function also drop
-+	 * mm_count we need to take an extra count here.
-+	 */
-+	atomic_inc(&pasid_state->mm->mm_count);
-+
-+	/*
- 	 * Call mmu_notifier_unregister to drop our reference
- 	 * to pasid_state->mm
- 	 */
--	mmu_notifier_unregister(&pasid_state->mn, pasid_state->mm);
-+	mmu_notifier_unregister_no_release(&pasid_state->mn, pasid_state->mm);
- 
- 	put_pasid_state_wait(pasid_state); /* Reference taken in
--					      amd_iommu_bind_pasid */
-+				      amd_iommu_pasid_bind */
-+
-+	mmu_notifier_call_srcu(&pasid_state->rcu,
-+				&pasid_state_destroy_delayed);
-+
- out:
- 	/* Drop reference taken in this function */
- 	put_device_state(dev_state);
--- 
-1.9.1
+> +                                         16, 1, 0, mc_div_table, lock);
+> +}
+> diff --git a/drivers/clk/tegra/clk-tegra114.c b/drivers/clk/tegra/clk-tegra114.c
+> index f760f31d05c4..0b03d2cf7264 100644
+> --- a/drivers/clk/tegra/clk-tegra114.c
+> +++ b/drivers/clk/tegra/clk-tegra114.c
+> @@ -173,6 +173,7 @@ static DEFINE_SPINLOCK(pll_d_lock);
+>  static DEFINE_SPINLOCK(pll_d2_lock);
+>  static DEFINE_SPINLOCK(pll_u_lock);
+>  static DEFINE_SPINLOCK(pll_re_lock);
+> +static DEFINE_SPINLOCK(emc_lock);
+>
+>  static struct div_nmp pllxc_nmp = {
+>         .divm_shift = 0,
+> @@ -1228,7 +1229,11 @@ static __init void tegra114_periph_clk_init(void __iomem *clk_base,
+>                                ARRAY_SIZE(mux_pllmcp_clkm),
+>                                CLK_SET_RATE_NO_REPARENT,
+>                                clk_base + CLK_SOURCE_EMC,
+> -                              29, 3, 0, NULL);
+> +                              29, 3, 0, &emc_lock);
+> +
+> +       clk = tegra_clk_register_mc("mc", "emc_mux", clk_base + CLK_SOURCE_EMC,
+> +                                   &emc_lock);
+> +       clks[TEGRA114_CLK_MC] = clk;
+>
+>         for (i = 0; i < ARRAY_SIZE(tegra_periph_clk_list); i++) {
+>                 data = &tegra_periph_clk_list[i];
+> diff --git a/drivers/clk/tegra/clk-tegra124.c b/drivers/clk/tegra/clk-tegra124.c
+> index e3a85842ce0c..f5f9baca7bb6 100644
+> --- a/drivers/clk/tegra/clk-tegra124.c
+> +++ b/drivers/clk/tegra/clk-tegra124.c
+> @@ -132,6 +132,7 @@ static DEFINE_SPINLOCK(pll_d2_lock);
+>  static DEFINE_SPINLOCK(pll_e_lock);
+>  static DEFINE_SPINLOCK(pll_re_lock);
+>  static DEFINE_SPINLOCK(pll_u_lock);
+> +static DEFINE_SPINLOCK(emc_lock);
+>
+>  /* possible OSC frequencies in Hz */
+>  static unsigned long tegra124_input_freq[] = {
+> @@ -1127,7 +1128,11 @@ static __init void tegra124_periph_clk_init(void __iomem *clk_base,
+>         clk = clk_register_mux(NULL, "emc_mux", mux_pllmcp_clkm,
+>                                ARRAY_SIZE(mux_pllmcp_clkm), 0,
+>                                clk_base + CLK_SOURCE_EMC,
+> -                              29, 3, 0, NULL);
+> +                              29, 3, 0, &emc_lock);
+> +
+> +       clk = tegra_clk_register_mc("mc", "emc_mux", clk_base + CLK_SOURCE_EMC,
+> +                                   &emc_lock);
+> +       clks[TEGRA124_CLK_MC] = clk;
+>
+>         /* cml0 */
+>         clk = clk_register_gate(NULL, "cml0", "pll_e", 0, clk_base + PLLE_AUX,
+> diff --git a/drivers/clk/tegra/clk-tegra20.c b/drivers/clk/tegra/clk-tegra20.c
+> index dace2b1b5ae6..41272dcc9e22 100644
+> --- a/drivers/clk/tegra/clk-tegra20.c
+> +++ b/drivers/clk/tegra/clk-tegra20.c
+> @@ -140,6 +140,8 @@ static struct cpu_clk_suspend_context {
+>  static void __iomem *clk_base;
+>  static void __iomem *pmc_base;
+>
+> +static DEFINE_SPINLOCK(emc_lock);
+> +
+>  #define TEGRA_INIT_DATA_MUX(_name, _parents, _offset,  \
+>                             _clk_num, _gate_flags, _clk_id)     \
+>         TEGRA_INIT_DATA(_name, NULL, NULL, _parents, _offset,   \
+> @@ -819,11 +821,15 @@ static void __init tegra20_periph_clk_init(void)
+>                                ARRAY_SIZE(mux_pllmcp_clkm),
+>                                CLK_SET_RATE_NO_REPARENT,
+>                                clk_base + CLK_SOURCE_EMC,
+> -                              30, 2, 0, NULL);
+> +                              30, 2, 0, &emc_lock);
+>         clk = tegra_clk_register_periph_gate("emc", "emc_mux", 0, clk_base, 0,
+>                                     57, periph_clk_enb_refcnt);
+>         clks[TEGRA20_CLK_EMC] = clk;
+>
+> +       clk = tegra_clk_register_mc("mc", "emc_mux", clk_base + CLK_SOURCE_EMC,
+> +                                   &emc_lock);
+> +       clks[TEGRA20_CLK_MC] = clk;
+> +
+>         /* dsi */
+>         clk = tegra_clk_register_periph_gate("dsi", "pll_d", 0, clk_base, 0,
+>                                     48, periph_clk_enb_refcnt);
+> diff --git a/drivers/clk/tegra/clk-tegra30.c b/drivers/clk/tegra/clk-tegra30.c
+> index 5bbacd01094f..4b9d8bd3d0bf 100644
+> --- a/drivers/clk/tegra/clk-tegra30.c
+> +++ b/drivers/clk/tegra/clk-tegra30.c
+> @@ -177,6 +177,7 @@ static unsigned long input_freq;
+>
+>  static DEFINE_SPINLOCK(cml_lock);
+>  static DEFINE_SPINLOCK(pll_d_lock);
+> +static DEFINE_SPINLOCK(emc_lock);
+>
+>  #define TEGRA_INIT_DATA_MUX(_name, _parents, _offset,  \
+>                             _clk_num, _gate_flags, _clk_id)     \
+> @@ -1157,11 +1158,15 @@ static void __init tegra30_periph_clk_init(void)
+>                                ARRAY_SIZE(mux_pllmcp_clkm),
+>                                CLK_SET_RATE_NO_REPARENT,
+>                                clk_base + CLK_SOURCE_EMC,
+> -                              30, 2, 0, NULL);
+> +                              30, 2, 0, &emc_lock);
+>         clk = tegra_clk_register_periph_gate("emc", "emc_mux", 0, clk_base, 0,
+>                                     57, periph_clk_enb_refcnt);
+>         clks[TEGRA30_CLK_EMC] = clk;
+>
+> +       clk = tegra_clk_register_mc("mc", "emc_mux", clk_base + CLK_SOURCE_EMC,
+> +                                   &emc_lock);
+> +       clks[TEGRA30_CLK_MC] = clk;
+> +
+>         /* cml0 */
+>         clk = clk_register_gate(NULL, "cml0", "pll_e", 0, clk_base + PLLE_AUX,
+>                                 0, 0, &cml_lock);
+> diff --git a/drivers/clk/tegra/clk.h b/drivers/clk/tegra/clk.h
+> index 16ec8d6bb87f..4e458aa8d45c 100644
+> --- a/drivers/clk/tegra/clk.h
+> +++ b/drivers/clk/tegra/clk.h
+> @@ -86,6 +86,8 @@ struct clk *tegra_clk_register_divider(const char *name,
+>                 const char *parent_name, void __iomem *reg,
+>                 unsigned long flags, u8 clk_divider_flags, u8 shift, u8 width,
+>                 u8 frac_width, spinlock_t *lock);
+> +struct clk *tegra_clk_register_mc(const char *name, const char *parent_name,
+> +                                 void __iomem *reg, spinlock_t *lock);
+>
+>  /*
+>   * Tegra PLL:
+> diff --git a/include/dt-bindings/clock/tegra114-car.h b/include/dt-bindings/clock/tegra114-car.h
+> index fc12621fb432..534c03f8ad72 100644
+> --- a/include/dt-bindings/clock/tegra114-car.h
+> +++ b/include/dt-bindings/clock/tegra114-car.h
+> @@ -49,7 +49,7 @@
+>  #define TEGRA114_CLK_I2S0 30
+>  /* 31 */
+>
+> -/* 32 */
+> +#define TEGRA114_CLK_MC 32
+>  /* 33 */
+>  #define TEGRA114_CLK_APBDMA 34
+>  /* 35 */
+> diff --git a/include/dt-bindings/clock/tegra124-car.h b/include/dt-bindings/clock/tegra124-car.h
+> index 6bac637fd635..af9bc9a3ddbc 100644
+> --- a/include/dt-bindings/clock/tegra124-car.h
+> +++ b/include/dt-bindings/clock/tegra124-car.h
+> @@ -48,7 +48,7 @@
+>  #define TEGRA124_CLK_I2S0 30
+>  /* 31 */
+>
+> -/* 32 */
+> +#define TEGRA124_CLK_MC 32
+>  /* 33 */
+>  #define TEGRA124_CLK_APBDMA 34
+>  /* 35 */
+> diff --git a/include/dt-bindings/clock/tegra20-car.h b/include/dt-bindings/clock/tegra20-car.h
+> index 9406207cfac8..04500b243a4d 100644
+> --- a/include/dt-bindings/clock/tegra20-car.h
+> +++ b/include/dt-bindings/clock/tegra20-car.h
+> @@ -49,7 +49,7 @@
+>  /* 30 */
+>  #define TEGRA20_CLK_CACHE2 31
+>
+> -#define TEGRA20_CLK_MEM 32
+> +#define TEGRA20_CLK_MC 32
+>  #define TEGRA20_CLK_AHBDMA 33
+>  #define TEGRA20_CLK_APBDMA 34
+>  /* 35 */
+> --
+> 2.1.2
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-tegra" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
