@@ -1,142 +1,311 @@
-From: Alban Browaeys <alban.browaeys@gmail.com>
-Subject: Re: [PATCH v2 11/18] iommu: exynos: remove useless
- device_add/remove callbacks
-Date: Tue, 21 Oct 2014 12:59:07 +0200
-Message-ID: <1413889147.31696.1.camel@gmail.com>
-References: <1410868485-4143-1-git-send-email-m.szyprowski@samsung.com>
-	 <1410868485-4143-12-git-send-email-m.szyprowski@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <1410868485-4143-12-git-send-email-m.szyprowski@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>
+From: Frank Blaschka <blaschka@linux.vnet.ibm.com>
+Subject: [PATCH linux-next] iommu: add iommu for s390 platform
+Date: Tue, 21 Oct 2014 13:57:25 +0200
+Message-ID: <1413892645-37657-1-git-send-email-blaschka@linux.vnet.ibm.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, schwidefsky@de.ibm.com
+Cc: linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org, iommu@lists.linux-foundation.org, sebott@linux.vnet.ibm.com, gerald.schaefer@de.ibm.com, Frank Blaschka <blaschka@linux.vnet.ibm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Le mardi 16 septembre 2014 =C3=A0 13:54 +0200, Marek Szyprowski a =C3=A9=
-crit :
-> The driver doesn't need to do anything important in device add/remove
-> callbacks, because initialization will be done from device-tree speci=
-fic
-> callbacks added later. IOMMU groups created by current code were neve=
-r
-> used.
->=20
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Add a basic iommu for the s390 platform. The code is pretty simple
+since on s390 each PCI device has its own virtual io address space
+starting at the same vio address. For this a domain could hold only
+one pci device. Also there is no relation between pci devices so each
+device belongs to a separate iommu group.
 
+Signed-off-by: Frank Blaschka <blaschka@linux.vnet.ibm.com>
+---
+ MAINTAINERS                 |   8 ++
+ arch/s390/include/asm/pci.h |   3 +
+ arch/s390/pci/pci_dma.c     |  19 ++++-
+ drivers/iommu/Kconfig       |   9 +++
+ drivers/iommu/Makefile      |   1 +
+ drivers/iommu/s390-iommu.c  | 179 ++++++++++++++++++++++++++++++++++++++++++++
+ 6 files changed, 217 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/iommu/s390-iommu.c
 
-The exyons iommu init fails if those are removed, that is it never reac=
-h
-init_done:
-1. exynos_iommu_setup
-2. - exynos_iommu_init
-3. ---bus_set_iommu
-4. ------ add_iommu_group
-
-that is (4) add_iommu_group returns ENODEV to bus_set_iommu, the latter
-doing so to exynos_iommu_init. Which thus error out before the init_don=
-e
-is set to true.
-
-Mind restoring device_add/remove  is not that easy. Either I did not an=
-d
-modified add_iommu_group to return 0 if add_device was not defined. Thi=
-s
-works.
-Otherwise I did revert this patch but had to also move the iommu_init
-from iommu.c before of_iommu_init in arch/arm/kernel/setup.c (switching
-iommu_init to global namespace in the process). This to avoid use of no=
-t
-yet initialized mutex  iommu_group_mutex and crash that follow suit.
-This mutex is used in iommu_group_add_device called by
-exynos_iommu_add_device.
-
-The logs of the first issue, ie exynos_iommo_init and bus_set_iommu
-returns ENODEV
-
-[    0.602816] exynos_iommu_init: Failed to register exynos-iommu
-driver.
-[    0.603358] platform 13620000.sysmmu: device is not dma coherent
-[    0.603384] platform 13620000.sysmmu: device is not behind an iommu
-[    0.605243] exynos-sysmmu 13620000.sysmmu: genpd_dev_pm_attach()
-failed to find PM domain: -2
-[    0.606399] exynos_iommu_init: Failed to register exynos-iommu
-driver.
-[    0.607263] platform 13630000.sysmmu: device is not dma coherent
-[    0.607290] platform 13630000.sysmmu: device is not behind an iommu
-[    0.609111] exynos-sysmmu 13620000.sysmmu: genpd_dev_pm_attach()
-failed to find PM domain: -2
-[    0.609464] exynos-sysmmu 13620000.sysmmu: Unbalanced
-pm_runtime_enable!
-[    0.609868] exynos-sysmmu 13630000.sysmmu: genpd_dev_pm_attach()
-failed to find PM domain: -2
-(...)
-[    0.946506] platform 10800000.g2d: device is not dma coherent
-[    0.946553] platform 10800000.g2d: device is not behind an iommu
-(...)
-
-
-
-Mind the power domain failure comes from me not finding a way to apply
-the power domain registration this early yet .
-
-
-Best regards,
-Alban Broweys
-
-
-> ---
->  drivers/iommu/exynos-iommu.c | 28 ----------------------------
->  1 file changed, 28 deletions(-)
->=20
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iomm=
-u.c
-> index b271348a4ec1..1b3f00726cd4 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -1055,32 +1055,6 @@ static phys_addr_t exynos_iommu_iova_to_phys(s=
-truct iommu_domain *domain,
->  	return phys;
->  }
-> =20
-> -static int exynos_iommu_add_device(struct device *dev)
-> -{
-> -	struct iommu_group *group;
-> -	int ret;
-> -
-> -	group =3D iommu_group_get(dev);
-> -
-> -	if (!group) {
-> -		group =3D iommu_group_alloc();
-> -		if (IS_ERR(group)) {
-> -			dev_err(dev, "Failed to allocate IOMMU group\n");
-> -			return PTR_ERR(group);
-> -		}
-> -	}
-> -
-> -	ret =3D iommu_group_add_device(group, dev);
-> -	iommu_group_put(group);
-> -
-> -	return ret;
-> -}
-> -
-> -static void exynos_iommu_remove_device(struct device *dev)
-> -{
-> -	iommu_group_remove_device(dev);
-> -}
-> -
->  static const struct iommu_ops exynos_iommu_ops =3D {
->  	.domain_init =3D exynos_iommu_domain_init,
->  	.domain_destroy =3D exynos_iommu_domain_destroy,
-> @@ -1089,8 +1063,6 @@ static const struct iommu_ops exynos_iommu_ops =
-=3D {
->  	.map =3D exynos_iommu_map,
->  	.unmap =3D exynos_iommu_unmap,
->  	.iova_to_phys =3D exynos_iommu_iova_to_phys,
-> -	.add_device =3D exynos_iommu_add_device,
-> -	.remove_device =3D exynos_iommu_remove_device,
->  	.pgsize_bitmap =3D SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
->  };
-> =20
+diff --git a/MAINTAINERS b/MAINTAINERS
+index bc69ca4..a3ba11b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -7935,6 +7935,14 @@ F:	drivers/s390/net/*iucv*
+ F:	include/net/iucv/
+ F:	net/iucv/
+ 
++S390 IOMMU
++M:      Frank Blaschka <blaschka@linux.vnet.ibm.com>
++M:      linux390@de.ibm.com
++L:      linux-s390@vger.kernel.org
++W:      http://www.ibm.com/developerworks/linux/linux390/
++S:      Supported
++F:      drivers/iommu/s390-iommu.c
++
+ S3C24XX SD/MMC Driver
+ M:	Ben Dooks <ben-linux@fluff.org>
+ L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
+index c030900..6790d0d 100644
+--- a/arch/s390/include/asm/pci.h
++++ b/arch/s390/include/asm/pci.h
+@@ -177,6 +177,9 @@ struct zpci_dev *get_zdev_by_fid(u32);
+ /* DMA */
+ int zpci_dma_init(void);
+ void zpci_dma_exit(void);
++int dma_update_trans(struct zpci_dev *zdev, unsigned long pa,
++		     dma_addr_t dma_addr, size_t size, int flags);
++void dma_purge_rto_entries(struct zpci_dev *zdev);
+ 
+ /* FMB */
+ int zpci_fmb_enable_device(struct zpci_dev *);
+diff --git a/arch/s390/pci/pci_dma.c b/arch/s390/pci/pci_dma.c
+index 4cbb29a..a4db33e 100644
+--- a/arch/s390/pci/pci_dma.c
++++ b/arch/s390/pci/pci_dma.c
+@@ -139,8 +139,8 @@ static void dma_update_cpu_trans(struct zpci_dev *zdev, void *page_addr,
+ 		entry_clr_protected(entry);
+ }
+ 
+-static int dma_update_trans(struct zpci_dev *zdev, unsigned long pa,
+-			    dma_addr_t dma_addr, size_t size, int flags)
++int dma_update_trans(struct zpci_dev *zdev, unsigned long pa,
++		     dma_addr_t dma_addr, size_t size, int flags)
+ {
+ 	unsigned int nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
+ 	u8 *page_addr = (u8 *) (pa & PAGE_MASK);
+@@ -210,6 +210,21 @@ static void dma_cleanup_tables(struct zpci_dev *zdev)
+ 	zdev->dma_table = NULL;
+ }
+ 
++void dma_purge_rto_entries(struct zpci_dev *zdev)
++{
++	unsigned long *table;
++	int rtx;
++
++	if (!zdev || !zdev->dma_table)
++		return;
++	table = zdev->dma_table;
++	for (rtx = 0; rtx < ZPCI_TABLE_ENTRIES; rtx++)
++		if (reg_entry_isvalid(table[rtx])) {
++			dma_free_seg_table(table[rtx]);
++			invalidate_table_entry(&table[rtx]);
++		}
++}
++
+ static unsigned long __dma_alloc_iommu(struct zpci_dev *zdev,
+ 				       unsigned long start, int size)
+ {
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index dd51122..545e3fd 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -302,4 +302,13 @@ config ARM_SMMU
+ 	  Say Y here if your SoC includes an IOMMU device implementing
+ 	  the ARM SMMU architecture.
+ 
++config S390_IOMMU
++        bool "s390 IOMMU Support"
++        depends on S390 && PCI
++        select IOMMU_API
++        help
++          Support for the IBM s/390 IOMMU
++
++          If unsure, say N here.
++
+ endif # IOMMU_SUPPORT
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 16edef7..1278aad 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -19,3 +19,4 @@ obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
+ obj-$(CONFIG_SHMOBILE_IOMMU) += shmobile-iommu.o
+ obj-$(CONFIG_SHMOBILE_IPMMU) += shmobile-ipmmu.o
+ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
++obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
+diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+new file mode 100644
+index 0000000..f9f048d
+--- /dev/null
++++ b/drivers/iommu/s390-iommu.c
+@@ -0,0 +1,179 @@
++#include <linux/io.h>
++#include <linux/interrupt.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++#include <linux/pm_runtime.h>
++#include <linux/clk.h>
++#include <linux/err.h>
++#include <linux/mm.h>
++#include <linux/iommu.h>
++#include <linux/errno.h>
++#include <linux/list.h>
++#include <linux/memblock.h>
++#include <linux/export.h>
++#include <linux/pci.h>
++#include <linux/sizes.h>
++#include <asm/pci_dma.h>
++
++#define S390_IOMMU_PGSIZES SZ_4K
++
++struct s390_domain {
++	struct zpci_dev *zdev;
++};
++
++static int s390_iommu_domain_init(struct iommu_domain *domain)
++{
++	struct s390_domain *priv;
++
++	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	domain->priv = priv;
++	return 0;
++}
++
++static void s390_iommu_domain_destroy(struct iommu_domain *domain)
++{
++	kfree(domain->priv);
++	domain->priv = NULL;
++}
++
++static int s390_iommu_attach_device(struct iommu_domain *domain,
++				    struct device *dev)
++{
++	struct s390_domain *priv = domain->priv;
++
++	if (priv->zdev)
++		return -EEXIST;
++
++	priv->zdev = (struct zpci_dev *)to_pci_dev(dev)->sysdata;
++	return 0;
++}
++
++static void s390_iommu_detach_device(struct iommu_domain *domain,
++				     struct device *dev)
++{
++	struct s390_domain *priv = domain->priv;
++
++	dma_purge_rto_entries(priv->zdev);
++	priv->zdev = NULL;
++}
++
++static int s390_iommu_map(struct iommu_domain *domain, unsigned long iova,
++			  phys_addr_t paddr, size_t size, int prot)
++{
++	struct s390_domain *priv = domain->priv;
++	int flags = 0;
++	int rc;
++
++	if (!priv->zdev)
++		return -ENODEV;
++
++	rc = dma_update_trans(priv->zdev, (unsigned long)paddr, iova, size,
++			      flags);
++
++	return rc;
++}
++
++static phys_addr_t s390_iommu_iova_to_phys(struct iommu_domain *domain,
++					   dma_addr_t iova)
++{
++	struct s390_domain *priv = domain->priv;
++	phys_addr_t phys = 0;
++	unsigned long *sto, *pto, *rto;
++	unsigned int rtx, sx, px;
++
++	if (!priv->zdev)
++		return -ENODEV;
++
++	rtx = calc_rtx(iova);
++	sx = calc_sx(iova);
++	px = calc_px(iova);
++	rto = priv->zdev->dma_table;
++
++	if (reg_entry_isvalid(rto[rtx])) {
++		sto = get_rt_sto(rto[rtx]);
++		if (reg_entry_isvalid(sto[sx])) {
++			pto = get_st_pto(sto[sx]);
++			if ((pto[px] & ZPCI_PTE_VALID_MASK) == ZPCI_PTE_VALID)
++				phys = pto[px] & ZPCI_PTE_ADDR_MASK;
++		}
++	}
++
++	return phys;
++}
++
++static size_t s390_iommu_unmap(struct iommu_domain *domain,
++			       unsigned long iova, size_t size)
++{
++	struct s390_domain *priv = domain->priv;
++	int flags = ZPCI_PTE_INVALID;
++	phys_addr_t paddr;
++	int rc;
++
++	if (!priv->zdev)
++		goto out;
++
++	paddr = s390_iommu_iova_to_phys(domain, iova);
++	if (!paddr)
++		goto out;
++
++	rc = dma_update_trans(priv->zdev, (unsigned long)paddr, iova, size,
++			      flags);
++out:
++	return size;
++}
++
++static bool s390_iommu_capable(enum iommu_cap cap)
++{
++	switch (cap) {
++	case IOMMU_CAP_CACHE_COHERENCY:
++		return true;
++	case IOMMU_CAP_INTR_REMAP:
++		return true;
++	}
++
++	return false;
++}
++
++static int s390_iommu_add_device(struct device *dev)
++{
++	struct iommu_group *group;
++	int ret;
++
++	group = iommu_group_alloc();
++	if (IS_ERR(group)) {
++		dev_err(dev, "Failed to allocate IOMMU group\n");
++		return PTR_ERR(group);
++	}
++
++	ret = iommu_group_add_device(group, dev);
++	return ret;
++}
++
++static void s390_iommu_remove_device(struct device *dev)
++{
++	iommu_group_remove_device(dev);
++}
++
++static struct iommu_ops s390_iommu_ops = {
++	.capable = s390_iommu_capable,
++	.domain_init = s390_iommu_domain_init,
++	.domain_destroy = s390_iommu_domain_destroy,
++	.attach_dev = s390_iommu_attach_device,
++	.detach_dev = s390_iommu_detach_device,
++	.map = s390_iommu_map,
++	.unmap = s390_iommu_unmap,
++	.iova_to_phys = s390_iommu_iova_to_phys,
++	.add_device = s390_iommu_add_device,
++	.remove_device = s390_iommu_remove_device,
++	.pgsize_bitmap = S390_IOMMU_PGSIZES,
++};
++
++static int __init s390_iommu_init(void)
++{
++	bus_set_iommu(&pci_bus_type, &s390_iommu_ops);
++	return 0;
++}
++subsys_initcall(s390_iommu_init);
+-- 
+1.8.5.5
