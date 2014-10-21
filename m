@@ -1,254 +1,142 @@
-From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH 5/5] iommu/vt-d: enable kdump support in iommu module
-Date: Tue, 21 Oct 2014 16:04:19 +0800
-Message-ID: <1413878659-1383-6-git-send-email-zhen-hual@hp.com>
-References: <1413878659-1383-1-git-send-email-zhen-hual@hp.com>
+From: Alban Browaeys <alban.browaeys@gmail.com>
+Subject: Re: [PATCH v2 11/18] iommu: exynos: remove useless
+ device_add/remove callbacks
+Date: Tue, 21 Oct 2014 12:59:07 +0200
+Message-ID: <1413889147.31696.1.camel@gmail.com>
+References: <1410868485-4143-1-git-send-email-m.szyprowski@samsung.com>
+	 <1410868485-4143-12-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1413878659-1383-1-git-send-email-zhen-hual-VXdhtT5mjnY@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <1410868485-4143-12-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Modify the operation of the following functions when called during crash dump:
- device_to_domain_id
- get_domain_for_dev
- init_dmars
- intel_iommu_init
+Le mardi 16 septembre 2014 =C3=A0 13:54 +0200, Marek Szyprowski a =C3=A9=
+crit :
+> The driver doesn't need to do anything important in device add/remove
+> callbacks, because initialization will be done from device-tree speci=
+fic
+> callbacks added later. IOMMU groups created by current code were neve=
+r
+> used.
+>=20
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 
-Signed-off-by: Bill Sumner 
----
- drivers/iommu/intel-iommu.c | 134 +++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 121 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index bde8f22..be12dab 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -40,6 +40,7 @@
- #include <linux/pci-ats.h>
- #include <linux/memblock.h>
- #include <linux/dma-contiguous.h>
-+#include <linux/crash_dump.h>
- #include <asm/irq_remapping.h>
- #include <asm/cacheflush.h>
- #include <asm/iommu.h>
-@@ -393,6 +394,8 @@ static struct list_head *domain_values_list;
-  */
- #define RET_BADCOPY -1	/* Return-code: Cannot copy translate tables */
- 
-+static int intel_iommu_in_crashdump;
-+
- /*
-  * Struct copy_page_addr_parms is used to allow copy_page_addr()
-  * to accumulate values across multiple calls and returns.
-@@ -2287,6 +2290,24 @@ static void domain_remove_dev_info(struct dmar_domain *domain)
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
- }
- 
-+#ifdef CONFIG_CRASH_DUMP
-+static int device_to_domain_id(struct intel_iommu *iommu, u8 bus, u8 devfn)
-+{
-+	int did = -1;			/* domain-id returned */
-+	struct root_entry *root;
-+	struct context_entry *context;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&iommu->lock, flags);
-+	root = &iommu->root_entry[bus];
-+	context = get_context_addr_from_root(root);
-+	if (context && context_present(context+devfn))
-+		did = context_domain_id(context+devfn);
-+	spin_unlock_irqrestore(&iommu->lock, flags);
-+	return did;
-+}
-+#endif /* CONFIG_CRASH_DUMP */
-+
- /*
-  * find_domain
-  * Note: we use struct device->archdata.iommu stores the info
-@@ -2375,6 +2396,9 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
- 	unsigned long flags;
- 	u8 bus, devfn;
- 	int did = -1;   /* Default to "no domain_id supplied" */
-+#ifdef CONFIG_CRASH_DUMP
-+	struct domain_values_entry *dve = NULL;
-+#endif /* CONFIG_CRASH_DUMP */
- 
- 	domain = find_domain(dev);
- 	if (domain)
-@@ -2408,6 +2432,24 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
- 	domain = alloc_domain(0);
- 	if (!domain)
- 		return NULL;
-+
-+#ifdef CONFIG_CRASH_DUMP
-+	if (intel_iommu_in_crashdump) {
-+		/*
-+		 * if this device had a did in the old kernel
-+		 * use its values instead of generating new ones
-+		 */
-+		did = device_to_domain_id(iommu, bus, devfn);
-+		if (did > 0 || (did == 0 && !cap_caching_mode(iommu->cap)))
-+			dve = intel_iommu_did_to_domain_values_entry(did,
-+								iommu);
-+		if (dve)
-+			gaw = dve->gaw;
-+		else
-+			did = -1;
-+	}
-+#endif /* CONFIG_CRASH_DUMP */
-+
- 	domain->id = iommu_attach_domain(domain, iommu, did);
- 	if (domain->id < 0) {
- 		free_domain_mem(domain);
-@@ -2419,6 +2461,18 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
- 		return NULL;
- 	}
- 
-+#ifdef CONFIG_CRASH_DUMP
-+	if (intel_iommu_in_crashdump && dve) {
-+
-+		if (domain->pgd)
-+			free_pgtable_page(domain->pgd);
-+
-+		domain->pgd = dve->pgd;
-+
-+		copy_reserved_iova(&dve->iovad, &domain->iovad);
-+	}
-+#endif /* CONFIG_CRASH_DUMP */
-+
- 	/* register PCI DMA alias device */
- 	if (dev_is_pci(dev)) {
- 		tmp = dmar_insert_dev_info(iommu, PCI_BUS_NUM(dma_alias),
-@@ -2860,6 +2914,10 @@ static int __init init_dmars(void)
- 	struct device *dev;
- 	struct intel_iommu *iommu;
- 	int i, ret;
-+#ifdef CONFIG_CRASH_DUMP
-+	struct root_entry *root_old_phys;
-+	struct root_entry *root_new_virt;
-+#endif /* CONFIG_CRASH_DUMP */
- 
- 	/*
- 	 * for each drhd
-@@ -2903,16 +2961,40 @@ static int __init init_dmars(void)
- 		if (ret)
- 			goto free_iommu;
- 
--		/*
--		 * TBD:
--		 * we could share the same root & context tables
--		 * among all IOMMU's. Need to Split it later.
--		 */
--		ret = iommu_alloc_root_entry(iommu);
--		if (ret) {
--			printk(KERN_ERR "IOMMU: allocate root entry failed\n");
--			goto free_iommu;
-+#ifdef CONFIG_CRASH_DUMP
-+		if (intel_iommu_in_crashdump) {
-+			pr_info("IOMMU Copying translate tables from panicked kernel\n");
-+			ret = intel_iommu_copy_translation_tables(drhd,
-+					&root_old_phys, &root_new_virt,
-+					g_num_of_iommus);
-+			if (ret) {
-+				pr_err("IOMMU: Copy translate tables failed\n");
-+
-+				/* Best to stop trying */
-+				intel_iommu_in_crashdump = false;
-+				goto error;
-+			}
-+			iommu->root_entry = root_new_virt;
-+			pr_info("IOMMU: root_new_virt:0x%12.12llx phys:0x%12.12llx\n",
-+				(u64)root_new_virt,
-+				virt_to_phys(root_new_virt));
-+			intel_iommu_get_dids_from_old_kernel(iommu);
-+		} else {
-+#endif /* CONFIG_CRASH_DUMP */
-+			/*
-+			 * TBD:
-+			 * we could share the same root & context tables
-+			 * among all IOMMU's. Need to Split it later.
-+			 */
-+			ret = iommu_alloc_root_entry(iommu);
-+			if (ret) {
-+				pr_err("IOMMU: allocate root entry failed\n");
-+				goto free_iommu;
-+			}
-+#ifdef CONFIG_CRASH_DUMP
- 		}
-+#endif /* CONFIG_CRASH_DUMP */
-+
- 		if (!ecap_pass_through(iommu->ecap))
- 			hw_pass_through = 0;
- 	}
-@@ -2971,6 +3053,16 @@ static int __init init_dmars(void)
- 
- 	check_tylersburg_isoch();
- 
-+#ifdef CONFIG_CRASH_DUMP
-+	/*
-+	 * In the crashdump kernel: Skip setting-up new domains for
-+	 * si, rmrr, and the isa bus on the expectation that these
-+	 * translations were copied from the old kernel.
-+	 */
-+	if (intel_iommu_in_crashdump)
-+		goto skip_new_domains_for_si_rmrr_isa;
-+#endif /* CONFIG_CRASH_DUMP */
-+
- 	/*
- 	 * If pass through is not set or not enabled, setup context entries for
- 	 * identity mappings for rmrr, gfx, and isa and may fall back to static
-@@ -3011,6 +3103,10 @@ static int __init init_dmars(void)
- 
- 	iommu_prepare_isa();
- 
-+#ifdef CONFIG_CRASH_DUMP
-+skip_new_domains_for_si_rmrr_isa:;
-+#endif /* CONFIG_CRASH_DUMP */
-+
- 	/*
- 	 * for each drhd
- 	 *   enable fault log
-@@ -4185,12 +4281,24 @@ int __init intel_iommu_init(void)
- 		goto out_free_dmar;
- 	}
- 
-+#ifdef CONFIG_CRASH_DUMP
- 	/*
--	 * Disable translation if already enabled prior to OS handover.
-+	 * If (This is the crash kernel)
-+	 *    Set: copy iommu translate tables from old kernel
-+	 *    Skip disabling the iommu hardware translations
- 	 */
--	for_each_active_iommu(iommu, drhd)
--		if (iommu->gcmd & DMA_GCMD_TE)
--			iommu_disable_translation(iommu);
-+	if (is_kdump_kernel()) {
-+		intel_iommu_in_crashdump = true;
-+		pr_info("IOMMU intel_iommu_in_crashdump = true\n");
-+		pr_info("IOMMU Skip disabling iommu hardware translations\n");
-+	} else
-+#endif /* CONFIG_CRASH_DUMP */
-+		/*
-+		 * Disable translation if already enabled prior to OS handover.
-+		 */
-+		for_each_active_iommu(iommu, drhd)
-+			if (iommu->gcmd & DMA_GCMD_TE)
-+				iommu_disable_translation(iommu);
- 
- 	if (dmar_dev_scope_init() < 0) {
- 		if (force_on)
--- 
-2.0.0-rc0
+The exyons iommu init fails if those are removed, that is it never reac=
+h
+init_done:
+1. exynos_iommu_setup
+2. - exynos_iommu_init
+3. ---bus_set_iommu
+4. ------ add_iommu_group
+
+that is (4) add_iommu_group returns ENODEV to bus_set_iommu, the latter
+doing so to exynos_iommu_init. Which thus error out before the init_don=
+e
+is set to true.
+
+Mind restoring device_add/remove  is not that easy. Either I did not an=
+d
+modified add_iommu_group to return 0 if add_device was not defined. Thi=
+s
+works.
+Otherwise I did revert this patch but had to also move the iommu_init
+from iommu.c before of_iommu_init in arch/arm/kernel/setup.c (switching
+iommu_init to global namespace in the process). This to avoid use of no=
+t
+yet initialized mutex  iommu_group_mutex and crash that follow suit.
+This mutex is used in iommu_group_add_device called by
+exynos_iommu_add_device.
+
+The logs of the first issue, ie exynos_iommo_init and bus_set_iommu
+returns ENODEV
+
+[    0.602816] exynos_iommu_init: Failed to register exynos-iommu
+driver.
+[    0.603358] platform 13620000.sysmmu: device is not dma coherent
+[    0.603384] platform 13620000.sysmmu: device is not behind an iommu
+[    0.605243] exynos-sysmmu 13620000.sysmmu: genpd_dev_pm_attach()
+failed to find PM domain: -2
+[    0.606399] exynos_iommu_init: Failed to register exynos-iommu
+driver.
+[    0.607263] platform 13630000.sysmmu: device is not dma coherent
+[    0.607290] platform 13630000.sysmmu: device is not behind an iommu
+[    0.609111] exynos-sysmmu 13620000.sysmmu: genpd_dev_pm_attach()
+failed to find PM domain: -2
+[    0.609464] exynos-sysmmu 13620000.sysmmu: Unbalanced
+pm_runtime_enable!
+[    0.609868] exynos-sysmmu 13630000.sysmmu: genpd_dev_pm_attach()
+failed to find PM domain: -2
+(...)
+[    0.946506] platform 10800000.g2d: device is not dma coherent
+[    0.946553] platform 10800000.g2d: device is not behind an iommu
+(...)
+
+
+
+Mind the power domain failure comes from me not finding a way to apply
+the power domain registration this early yet .
+
+
+Best regards,
+Alban Broweys
+
+
+> ---
+>  drivers/iommu/exynos-iommu.c | 28 ----------------------------
+>  1 file changed, 28 deletions(-)
+>=20
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iomm=
+u.c
+> index b271348a4ec1..1b3f00726cd4 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -1055,32 +1055,6 @@ static phys_addr_t exynos_iommu_iova_to_phys(s=
+truct iommu_domain *domain,
+>  	return phys;
+>  }
+> =20
+> -static int exynos_iommu_add_device(struct device *dev)
+> -{
+> -	struct iommu_group *group;
+> -	int ret;
+> -
+> -	group =3D iommu_group_get(dev);
+> -
+> -	if (!group) {
+> -		group =3D iommu_group_alloc();
+> -		if (IS_ERR(group)) {
+> -			dev_err(dev, "Failed to allocate IOMMU group\n");
+> -			return PTR_ERR(group);
+> -		}
+> -	}
+> -
+> -	ret =3D iommu_group_add_device(group, dev);
+> -	iommu_group_put(group);
+> -
+> -	return ret;
+> -}
+> -
+> -static void exynos_iommu_remove_device(struct device *dev)
+> -{
+> -	iommu_group_remove_device(dev);
+> -}
+> -
+>  static const struct iommu_ops exynos_iommu_ops =3D {
+>  	.domain_init =3D exynos_iommu_domain_init,
+>  	.domain_destroy =3D exynos_iommu_domain_destroy,
+> @@ -1089,8 +1063,6 @@ static const struct iommu_ops exynos_iommu_ops =
+=3D {
+>  	.map =3D exynos_iommu_map,
+>  	.unmap =3D exynos_iommu_unmap,
+>  	.iova_to_phys =3D exynos_iommu_iova_to_phys,
+> -	.add_device =3D exynos_iommu_add_device,
+> -	.remove_device =3D exynos_iommu_remove_device,
+>  	.pgsize_bitmap =3D SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
+>  };
+> =20
