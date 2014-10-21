@@ -1,14 +1,15 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v8 09/18] vfio/platform: support MMAP of MMIO regions
-Date: Tue, 21 Oct 2014 10:51:47 -0600
-Message-ID: <1413910307.4202.148.camel@ul30vt.home>
-References: <1413205825-6370-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1413205825-6370-10-git-send-email-a.motakis@virtualopensystems.com>
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v6 1/2] iopoll: Introduce memory-mapped IO polling macros
+Date: Tue, 21 Oct 2014 10:12:32 -0700
+Message-ID: <vnkw1tq1z6rj.fsf@mitchelh-linux.qualcomm.com>
+References: <1413323610-27484-1-git-send-email-mitchelh@codeaurora.org>
+	<1413323610-27484-2-git-send-email-mitchelh@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1413205825-6370-10-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+In-Reply-To: <1413323610-27484-2-git-send-email-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+	(Mitchel Humpherys's message of "Tue, 14 Oct 2014 14:53:29 -0700")
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,100 +19,37 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2014-10-13 at 15:10 +0200, Antonios Motakis wrote:
-> Allow to memory map the MMIO regions of the device so userspace can
-> directly access them. PIO regions are not being handled at this point.
-> 
-> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+On Tue, Oct 14 2014 at 02:53:29 PM, Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+> From: Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>
+> It is sometimes necessary to poll a memory-mapped register until its value
+> satisfies some condition. Introduce a family of convenience macros that do
+> this. Tight-looping, sleeping, and timing out can all be accomplished using
+> these macros.
+>
+> Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 > ---
->  drivers/vfio/platform/vfio_platform_common.c | 57 ++++++++++++++++++++++++++++
->  1 file changed, 57 insertions(+)
-> 
-> diff --git a/drivers/vfio/platform/vfio_platform_common.c b/drivers/vfio/platform/vfio_platform_common.c
-> index ac74710..4db7187 100644
-> --- a/drivers/vfio/platform/vfio_platform_common.c
-> +++ b/drivers/vfio/platform/vfio_platform_common.c
-> @@ -57,6 +57,16 @@ static int vfio_platform_regions_init(struct vfio_platform_device *vdev)
->  			if (!(res->flags & IORESOURCE_READONLY))
->  				vdev->regions[i].flags |=
->  					VFIO_REGION_INFO_FLAG_WRITE;
-> +
-> +			/*
-> +			 * Only regions addressed with PAGE granularity may be
-> +			 * MMAPed securely.
-> +			 */
-> +			if (!(vdev->regions[i].addr & ~PAGE_MASK) &&
-> +					!(vdev->regions[i].size & ~PAGE_MASK))
-> +				vdev->regions[i].flags |=
-> +					VFIO_REGION_INFO_FLAG_MMAP;
-> +
+> Changes since v5:
+>   - Use a shift instead of a divide in the poll loop.
+> ---
+>  include/linux/iopoll.h | 213 +++++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 213 insertions(+)
+>  create mode 100644 include/linux/iopoll.h
 
-Should this be included in the above !readonly test?  I don't see that
-we're doing anything below that would prevent writes to the mmap for a
-readonly resource.  I suspect that just like PCI, it's not all that
-useful to provide mmap support for read-only regions.  They're not
-typically performance paths.
+I realize I sent this at a bad time (ELCE) but were there any more
+comments on this patch?
 
->  			break;
->  		case IORESOURCE_IO:
->  			vdev->regions[i].type = VFIO_PLATFORM_REGION_TYPE_PIO;
-> @@ -325,8 +335,55 @@ static ssize_t vfio_platform_write(void *device_data, const char __user *buf,
->  	return -EINVAL;
->  }
->  
-> +static int vfio_platform_mmap_mmio(struct vfio_platform_region region,
-> +				   struct vm_area_struct *vma)
-> +{
-> +	u64 req_len, pgoff, req_start;
-> +
-> +	req_len = vma->vm_end - vma->vm_start;
-> +	pgoff = vma->vm_pgoff &
-> +		((1U << (VFIO_PLATFORM_OFFSET_SHIFT - PAGE_SHIFT)) - 1);
-> +	req_start = pgoff << PAGE_SHIFT;
-> +
-> +	if (region.size < PAGE_SIZE || req_start + req_len > region.size)
-> +		return -EINVAL;
-> +
-> +	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
-> +	vma->vm_pgoff = (region.addr >> PAGE_SHIFT) + pgoff;
-> +
-> +	return remap_pfn_range(vma, vma->vm_start, vma->vm_pgoff,
-> +			       req_len, vma->vm_page_prot);
-> +}
-> +
->  static int vfio_platform_mmap(void *device_data, struct vm_area_struct *vma)
->  {
-> +	struct vfio_platform_device *vdev = device_data;
-> +	unsigned int index;
-> +
-> +	index = vma->vm_pgoff >> (VFIO_PLATFORM_OFFSET_SHIFT - PAGE_SHIFT);
-> +
-> +	if (vma->vm_end < vma->vm_start)
-> +		return -EINVAL;
-> +	if ((vma->vm_flags & VM_SHARED) == 0)
-> +		return -EINVAL;
-> +	if (index >= vdev->num_regions)
-> +		return -EINVAL;
-> +	if (vma->vm_start & ~PAGE_MASK)
-> +		return -EINVAL;
-> +	if (vma->vm_end & ~PAGE_MASK)
-> +		return -EINVAL;
-> +
-> +	if (!(vdev->regions[index].flags & VFIO_REGION_INFO_FLAG_MMAP))
-> +		return -EINVAL;
-> +
-> +	vma->vm_private_data = vdev;
-> +
-> +	if (vdev->regions[index].type & VFIO_PLATFORM_REGION_TYPE_MMIO)
-> +		return vfio_platform_mmap_mmio(vdev->regions[index], vma);
-> +
-> +	else if (vdev->regions[index].type & VFIO_PLATFORM_REGION_TYPE_PIO)
-> +		return -EINVAL; /* not implemented */
-> +
->  	return -EINVAL;
->  }
->  
+
+-Mitch
+
+-- 
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
