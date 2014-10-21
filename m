@@ -1,178 +1,89 @@
-From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH v3 04/27] arm/MSI: Save MSI chip in pci_sys_data
-Date: Tue, 21 Oct 2014 09:32:04 +0800
-Message-ID: <5445B794.30601@huawei.com>
-References: <1413342435-7876-1-git-send-email-wangyijing@huawei.com> <1413342435-7876-5-git-send-email-wangyijing@huawei.com> <20141020172158.GA8017@e102568-lin.cambridge.arm.com>
+From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Subject: [PATCH 0/5] iommu/vt-d: Fix crash dump failure caused by legacy DMA/IO
+Date: Tue, 21 Oct 2014 16:04:14 +0800
+Message-ID: <1413878659-1383-1-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-ia64-owner@vger.kernel.org>
-In-Reply-To: <20141020172158.GA8017@e102568-lin.cambridge.arm.com>
-Sender: linux-ia64-owner@vger.kernel.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "huxinwei@huawei.com" <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "arnab.basu@freescale.com" <arnab.basu@freescale.com>, "Bharat.Bhushan@freescale.com" <Bharat.Bhushan@freescale.com>, "x86@kernel.org" <x86@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>, Joerg Roedel <joro@8bytes.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, linux-mips@linux-mips.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2014/10/21 1:21, Lorenzo Pieralisi wrote:
-> On Wed, Oct 15, 2014 at 04:06:52AM +0100, Yijing Wang wrote:
->> Saving msi chip in pci_sys_data can make pci bus and
->> devices don't need to know msi chip detail, it also
->> make pci enumeration code be decoupled from msi chip.
->> In fact, all pci devices under the same pci hostbridge
->> share same msi chip. So msi chip should be seen as one
->> of resources or attributes to be initialized in pci host
->> bridge driver. Currently, pci hostbridge drivers create
->> pci_host_bridge in pci_create_root_bus(), and pass arch
->> specific pci sysdata to core pci scan functions. So pci
->> arch sysdata is good place to save msi chip.
->>
->> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
->> ---
->>  arch/arm/include/asm/mach/pci.h |    6 ++++++
->>  arch/arm/include/asm/pci.h      |    9 +++++++++
->>  arch/arm/kernel/bios32.c        |    3 +++
->>  drivers/pci/msi.c               |    6 ++++++
->>  include/linux/pci.h             |    9 +++++++++
->>  5 files changed, 33 insertions(+), 0 deletions(-)
->>
->> diff --git a/arch/arm/include/asm/mach/pci.h b/arch/arm/include/asm/mach/pci.h
->> index 7fc4278..59b0d87 100644
->> --- a/arch/arm/include/asm/mach/pci.h
->> +++ b/arch/arm/include/asm/mach/pci.h
->> @@ -22,6 +22,9 @@ struct hw_pci {
->>  #ifdef CONFIG_PCI_DOMAINS
->>  	int		domain;
->>  #endif
->> +#ifdef CONFIG_PCI_MSI
->> +	struct msi_chip *msi_chip;
->> +#endif
->>  	struct pci_ops	*ops;
->>  	int		nr_controllers;
->>  	void		**private_data;
->> @@ -47,6 +50,9 @@ struct pci_sys_data {
->>  #ifdef CONFIG_PCI_DOMAINS
->>  	int		domain;
->>  #endif
->> +#ifdef CONFIG_PCI_MSI
->> +	struct msi_chip *msi_chip;
->> +#endif
-> 
-> This struct is defined for ARM only. We are trying to remove dependency on it
-> so that we can have a single driver for ARM32 and ARM64 systems without
-> pcibios dependency. Why can't we add this msi chip data to the host
-> bridge struct instead ? I understand it is all a matter of how to pass
-> the pointer to pci_scan_root_bus(), where the bridge is created.
-> We could initialize the msi chip on the bridge through the bus pointer
-> returned by the pci_scan_root_bus() function.
+The following series implements a fix for:
+A kdump problem about DMA that has been discussed for a long time.
+That is, when a kernel panics and boots into the kdump kernel, DMA that was
+started by the panicked kernel is not stopped before the kdump kernel is booted;
+and the kdump kernel disables the IOMMU while this DMA continues.
+This causes the IOMMU to stop translating the DMA addresses as IOVAs and
+begin to treat them as physical memory addresses -- which causes the DMA to either:
+1. generate DMAR errors or
+2. generate PCI SERR errors or
+3. transfer data to or from incorrect areas of memory.
+Often this causes the dump to fail.
 
-As mentioned in Patch 0, I will refactor generic pci hostbridge in another series,
-We need not only save msi_chip into pci_host_bridge, and other common info, like domain_nr,
-resources.
+This patch set modifies the behavior of the Intel iommu in the crashdump kernel: 
+1. to accept the iommu hardware in an active state,
+2. to leave the current translations in-place so that legacy DMA will continue
+   using its current buffers until the device drivers in the crashdump kernel
+   initialize and initialize their devices,
+3. to use different portions of the iova address ranges for the device drivers
+   in the crashdump kernel than the iova ranges that were in-use at the time
+   of the panic.  
 
-Thanks!
-Yijing.
+Advantages of this approach:
+1. All manipulation of the IO-device is done by the Linux device-driver
+   for that device.
+2. This approach behaves in a manner very similar to operation without an
+   active iommu.
+3. Any activity between the IO-device and its RMRR areas is handled by the
+   device-driver in the same manner as during a non-kdump boot.
+4. If an IO-device has no driver in the kdump kernel, it is simply left alone.
+   This supports the practice of creating a special kdump kernel without
+   drivers for any devices that are not required for taking a crashdump. 
+5. Minimal code-changes among the existing mainline intel-iommu code.
 
-> 
-> Thanks,
-> Lorenzo
-> 
->>  	struct list_head node;
->>  	int		busnr;		/* primary bus number			*/
->>  	u64		mem_offset;	/* bus->cpu memory mapping offset	*/
->> diff --git a/arch/arm/include/asm/pci.h b/arch/arm/include/asm/pci.h
->> index 7e95d85..b562c09 100644
->> --- a/arch/arm/include/asm/pci.h
->> +++ b/arch/arm/include/asm/pci.h
->> @@ -31,6 +31,15 @@ static inline int pci_proc_domain(struct pci_bus *bus)
->>  }
->>  #endif /* CONFIG_PCI_DOMAINS */
->>  
->> +#ifdef CONFIG_PCI_MSI
->> +static inline struct msi_chip *pci_msi_chip(struct pci_bus *bus)
->> +{
->> +	struct pci_sys_data *root = bus->sysdata;
->> +
->> +	return root->msi_chip;
->> +}
->> +#endif
->> +
->>  /*
->>   * The PCI address space does equal the physical memory address space.
->>   * The networking and block device layers use this boolean for bounce
->> diff --git a/arch/arm/kernel/bios32.c b/arch/arm/kernel/bios32.c
->> index 17a26c1..a19038d 100644
->> --- a/arch/arm/kernel/bios32.c
->> +++ b/arch/arm/kernel/bios32.c
->> @@ -471,6 +471,9 @@ static void pcibios_init_hw(struct device *parent, struct hw_pci *hw,
->>  #ifdef CONFIG_PCI_DOMAINS
->>  		sys->domain  = hw->domain;
->>  #endif
->> +#ifdef CONFIG_PCI_MSI
->> +		sys->msi_chip = hw->msi_chip;
->> +#endif
->>  		sys->busnr   = busnr;
->>  		sys->swizzle = hw->swizzle;
->>  		sys->map_irq = hw->map_irq;
->> diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
->> index 22e413c..f11108c 100644
->> --- a/drivers/pci/msi.c
->> +++ b/drivers/pci/msi.c
->> @@ -35,6 +35,9 @@ int __weak arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
->>  	struct msi_chip *chip = dev->bus->msi;
->>  	int err;
->>  
->> +	if (!chip)
->> +		chip = pci_msi_chip(dev->bus);
->> +
->>  	if (!chip || !chip->setup_irq)
->>  		return -EINVAL;
->>  
->> @@ -50,6 +53,9 @@ void __weak arch_teardown_msi_irq(unsigned int irq)
->>  	struct msi_desc *entry = irq_get_msi_desc(irq);
->>  	struct msi_chip *chip = entry->dev->bus->msi;
->>  
->> +	if (!chip)
->> +		chip = pci_msi_chip(entry->dev->bus);
->> +
->>  	if (!chip || !chip->teardown_irq)
->>  		return;
->>  
->> diff --git a/include/linux/pci.h b/include/linux/pci.h
->> index 9cd2721..7a48b40 100644
->> --- a/include/linux/pci.h
->> +++ b/include/linux/pci.h
->> @@ -1433,6 +1433,15 @@ static inline int pci_get_new_domain_nr(void) { return -ENOSYS; }
->>  
->>  #include <asm/pci.h>
->>  
->> +/* Just avoid compile error, will be clean up later */
->> +#ifdef CONFIG_PCI_MSI
->> +
->> +#ifndef pci_msi_chip
->> +#define pci_msi_chip(bus)	NULL
->> +#endif
->> +
->> +#endif
->> +
->>  /* these helpers provide future and backwards compatibility
->>   * for accessing popular PCI BAR info */
->>  #define pci_resource_start(dev, bar)	((dev)->resource[(bar)].start)
->> -- 
->> 1.7.1
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->> Please read the FAQ at  http://www.tux.org/lkml/
->>
-> 
-> 
-> .
-> 
+Summary of changes in this patch set:
+1. Updated to a more current top-of-tree and merged the code with the
+   large number of changes that were recently taken-in to intel-iommu.c
+2. Returned to the structure of a patch-set
+3. Enabled the intel-iommu driver to consist of multiple *.c files
+   by moving many of the #defines, prototypes, and inline functions
+   into a new file: intel-iommu-private.h (First three patches implement
+   only this enhancement -- could be applied independent of the last 5)
+4. Moved the new "crashdump fix" code into a new file: intel-iommu-kdump.c 
+5. Removed the pr_debug constructs from the new code that implements the
+   "crashdump fix" -- making the code much cleaner and easier to read.
+6. Miscellaneous cleanups such as enum-values for return-codes.
+7. Simplified the code that retrieves the values needed to initialize a new
+   domain by using the linked-list of previously-collected values
+   instead of stepping back into the tree of translation tables.
 
+Original version by Bill Sumner:
+	https://lkml.org/lkml/2014/4/24/836
+
+Changed in this version:
+	Split the original patchset into two sets. This patchset includes 
+	4~8 patches in the original set.
+
+Bill Sumner (5):
+  iommu/vt-d: Update iommu_attach_domain() and its callers
+  iommu/vt-d: Items required for kdump
+  iommu/vt-d: data types and functions used for kdump
+  iommu/vt-d: Add domain-id functions
+  iommu/vt-d: enable kdump support in iommu module
+
+ drivers/iommu/intel-iommu.c | 829 ++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 803 insertions(+), 26 deletions(-)
 
 -- 
-Thanks!
-Yijing
-
+2.0.0-rc0
