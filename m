@@ -1,18 +1,15 @@
-From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: Re: [PATCH 5/5] vfio/iommu_type1: implement the
-	VFIO_DMA_MAP_FLAG_NOEXEC flag
-Date: Tue, 21 Oct 2014 16:41:51 +0200
-Message-ID: <CAG8rG2w6z=P=jc1n+Ay9-iBOKSFXsfdfmuyZeEJWKJM9kSdVMA@mail.gmail.com>
-References: <1413205748-6300-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1413205748-6300-6-git-send-email-a.motakis@virtualopensystems.com>
-	<1413839603.4202.108.camel@ul30vt.home>
-	<CAG8rG2wca4w8LaDSVbgNwfd=e077UaVdpaFhFkMphmyH62Dm3w@mail.gmail.com>
-	<1413902274.4202.113.camel@ul30vt.home>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v8 02/18] vfio: platform: probe to devices on the
+	platform bus
+Date: Tue, 21 Oct 2014 10:17:49 -0600
+Message-ID: <1413908269.4202.135.camel@ul30vt.home>
+References: <1413205825-6370-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1413205825-6370-3-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1413902274.4202.113.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+In-Reply-To: <1413205825-6370-3-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,151 +19,146 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, "open list:ABI/API" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Oct 21, 2014 at 4:37 PM, Alex Williamson
-<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> On Tue, 2014-10-21 at 14:40 +0200, Antonios Motakis wrote:
->> On Mon, Oct 20, 2014 at 11:13 PM, Alex Williamson
->> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
->> > On Mon, 2014-10-13 at 15:09 +0200, Antonios Motakis wrote:
->> >> Some IOMMU drivers, such as the ARM SMMU driver, make available the
->> >> IOMMU_NOEXEC flag, to set the page tables for a device as XN (execute never).
->> >> This affects devices such as the ARM PL330 DMA Controller, which respects
->> >> this flag and will refuse to fetch DMA instructions from memory where the
->> >> XN flag has been set.
->> >>
->> >> The flag can be used only if all IOMMU domains behind the container support
->> >> the IOMMU_NOEXEC flag. Also, if any mappings are created with the flag, any
->> >> new domains with devices will have to support it as well.
->> >>
->> >> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
->> >> ---
->> >>  drivers/vfio/vfio_iommu_type1.c | 25 ++++++++++++++++++++++++-
->> >>  1 file changed, 24 insertions(+), 1 deletion(-)
->> >>
->> >> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
->> >> index 8b4202a..e225e8f 100644
->> >> --- a/drivers/vfio/vfio_iommu_type1.c
->> >> +++ b/drivers/vfio/vfio_iommu_type1.c
->> >> @@ -569,6 +569,12 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
->> >>       if (map->flags & VFIO_DMA_MAP_FLAG_READ)
->> >>               prot |= IOMMU_READ;
->> >>
->> >> +     if (map->flags & VFIO_DMA_MAP_FLAG_NOEXEC) {
->> >> +             if (!vfio_domains_have_iommu_cap(iommu, IOMMU_CAP_NOEXEC))
->> >> +                     return -EINVAL;
->> >> +             prot |= IOMMU_NOEXEC;
->> >> +     }
->> >> +
->> >>       if (!prot || !size || (size | iova | vaddr) & mask)
->> >>               return -EINVAL;
->> >
->> > I think this test needs to move above adding the NOEXEC flag, otherwise
->> > we now allow mappings without read or write, which is an ABI change.
->> >
->>
->> Ack.
->>
->> >>
->> >> @@ -662,6 +668,14 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
->> >>               dma = rb_entry(n, struct vfio_dma, node);
->> >>               iova = dma->iova;
->> >>
->> >> +             /*
->> >> +              * if any of the mappings to be replayed has the NOEXEC flag
->> >> +              * set, then the new iommu domain must support it
->> >> +              */
->> >> +             if ((dma->prot | IOMMU_NOEXEC) &&
->> >
->> > I think you mean
->> >
->> > & IOMMU_NOEXEC
->>
->> Ack.
->>
->> >
->> >> +                             !(domain->caps & IOMMU_CAP_NOEXEC))
->> >> +                     return -EINVAL;
->> >> +
->> >
->> > In patch 2/5 you stated:
->> >
->> >         The IOMMU_NOEXEC flag needs to be available for all the IOMMUs
->> >         of the container used.
->> >
->> > But here you'll create heterogeneous containers so long as there are no
->> > NOEXEC mappings.  Is that intentional or a side effect of the above
->> > masking bug?
->> >
->>
->> Yeah, my intention was to not stop the user of having heterogeneous
->> containers, as long as he doesn't care about using the NOEXEC flag. As
->> soon as the user tries to apply this flag however, then it should be
->> supported by all the IOMMUs behind the container - otherwise it is not
->> enforceable.
->>
->> Do you think we should change this behavior? I think most users will
->> not care about using this flag, and we should not stop them from
->> mixing containers.
->
-> I think that's a reasonable way to go, but let's add a comment in uapi
-> vfio.h describing that expectation.  Thanks,
+On Mon, 2014-10-13 at 15:10 +0200, Antonios Motakis wrote:
+> Driver to bind to Linux platform devices, and callbacks to discover their
+> resources to be used by the main VFIO PLATFORM code.
+> 
+> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> ---
+>  drivers/vfio/platform/vfio_platform.c | 107 ++++++++++++++++++++++++++++++++++
+>  include/uapi/linux/vfio.h             |   1 +
+>  2 files changed, 108 insertions(+)
+>  create mode 100644 drivers/vfio/platform/vfio_platform.c
+> 
+> diff --git a/drivers/vfio/platform/vfio_platform.c b/drivers/vfio/platform/vfio_platform.c
+> new file mode 100644
+> index 0000000..baeb7da
+> --- /dev/null
+> +++ b/drivers/vfio/platform/vfio_platform.c
+> @@ -0,0 +1,107 @@
+> +/*
+> + * Copyright (C) 2013 - Virtual Open Systems
+> + * Author: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License, version 2, as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + */
+> +
+> +#include <linux/device.h>
+> +#include <linux/eventfd.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/iommu.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/notifier.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/slab.h>
+> +#include <linux/types.h>
+> +#include <linux/uaccess.h>
+> +#include <linux/vfio.h>
+> +#include <linux/io.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/irq.h>
+> +
+> +#include "vfio_platform_private.h"
+> +
+> +#define DRIVER_VERSION  "0.8"
+> +#define DRIVER_AUTHOR   "Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>"
+> +#define DRIVER_DESC     "VFIO for platform devices - User Level meta-driver"
+> +
+> +/* probing devices from the linux platform bus */
+> +
+> +static struct resource *get_platform_resource(struct vfio_platform_device *vdev,
+> +						int num)
+> +{
+> +	struct platform_device *dev = (struct platform_device *) vdev->opaque;
+> +	int i;
+> +
+> +	for (i = 0; i < dev->num_resources; i++) {
+> +		struct resource *r = &dev->resource[i];
+> +
+> +		if (resource_type(r) & (IORESOURCE_MEM|IORESOURCE_IO)) {
+> +			num--;
+> +
+> +			if (!num)
+> +				return r;
 
-Ok, will do.
+Has this been tested?  What happens when we call this with num = 0?
 
->
-> Alex
->
->> >>               while (iova < dma->iova + dma->size) {
->> >>                       phys_addr_t phys = iommu_iova_to_phys(d->domain, iova);
->> >>                       size_t size;
->> >> @@ -749,6 +763,9 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->> >>       if (iommu_capable(bus, IOMMU_CAP_CACHE_COHERENCY))
->> >>               domain->caps |= IOMMU_CAP_CACHE_COHERENCY;
->> >>
->> >> +     if (iommu_capable(bus, IOMMU_CAP_NOEXEC))
->> >> +             domain->caps |= IOMMU_CAP_NOEXEC;
->> >> +
->> >>       /*
->> >>        * Try to match an existing compatible domain.  We don't want to
->> >>        * preclude an IOMMU driver supporting multiple bus_types and being
->> >> @@ -900,6 +917,11 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
->> >>                               return 0;
->> >>                       return vfio_domains_have_iommu_cap(iommu,
->> >>                                                 IOMMU_CAP_CACHE_COHERENCY);
->> >> +             case VFIO_DMA_NOEXEC_IOMMU:
->> >> +                     if (!iommu)
->> >> +                             return 0;
->> >> +                     return vfio_domains_have_iommu_cap(iommu,
->> >> +                                                        IOMMU_CAP_NOEXEC);
->> >>               default:
->> >>                       return 0;
->> >>               }
->> >> @@ -923,7 +945,8 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
->> >>       } else if (cmd == VFIO_IOMMU_MAP_DMA) {
->> >>               struct vfio_iommu_type1_dma_map map;
->> >>               uint32_t mask = VFIO_DMA_MAP_FLAG_READ |
->> >> -                             VFIO_DMA_MAP_FLAG_WRITE;
->> >> +                             VFIO_DMA_MAP_FLAG_WRITE |
->> >> +                             VFIO_DMA_MAP_FLAG_NOEXEC;
->> >>
->> >>               minsz = offsetofend(struct vfio_iommu_type1_dma_map, size);
->> >>
->> >
->> >
->> >
->>
->>
->>
->
->
->
-
-
-
--- 
-Antonios Motakis
-Virtual Open Systems
+> +		}
+> +	}
+> +	return NULL;
+> +}
+> +
+> +static int get_platform_irq(struct vfio_platform_device *vdev, int i)
+> +{
+> +	struct platform_device *pdev = (struct platform_device *) vdev->opaque;
+> +
+> +	return platform_get_irq(pdev, i);
+> +}
+> +
+> +
+> +static int vfio_platform_probe(struct platform_device *pdev)
+> +{
+> +	struct vfio_platform_device *vdev;
+> +	int ret;
+> +
+> +	vdev = kzalloc(sizeof(*vdev), GFP_KERNEL);
+> +	if (!vdev)
+> +		return -ENOMEM;
+> +
+> +	vdev->opaque = (void *) pdev;
+> +	vdev->name = pdev->name;
+> +	vdev->flags = VFIO_DEVICE_FLAGS_PLATFORM;
+> +	vdev->get_resource = get_platform_resource;
+> +	vdev->get_irq = get_platform_irq;
+> +
+> +	ret = vfio_platform_probe_common(vdev, &pdev->dev);
+> +	if (ret)
+> +		kfree(vdev);
+> +
+> +	return ret;
+> +}
+> +
+> +static int vfio_platform_remove(struct platform_device *pdev)
+> +{
+> +	return vfio_platform_remove_common(&pdev->dev);
+> +}
+> +
+> +static struct platform_driver vfio_platform_driver = {
+> +	.probe		= vfio_platform_probe,
+> +	.remove		= vfio_platform_remove,
+> +	.driver	= {
+> +		.name	= "vfio-platform",
+> +		.owner	= THIS_MODULE,
+> +	},
+> +};
+> +
+> +module_platform_driver(vfio_platform_driver);
+> +
+> +MODULE_VERSION(DRIVER_VERSION);
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_AUTHOR(DRIVER_AUTHOR);
+> +MODULE_DESCRIPTION(DRIVER_DESC);
+> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> index 111b5e8..aca6d3e 100644
+> --- a/include/uapi/linux/vfio.h
+> +++ b/include/uapi/linux/vfio.h
+> @@ -158,6 +158,7 @@ struct vfio_device_info {
+>  	__u32	flags;
+>  #define VFIO_DEVICE_FLAGS_RESET	(1 << 0)	/* Device supports reset */
+>  #define VFIO_DEVICE_FLAGS_PCI	(1 << 1)	/* vfio-pci device */
+> +#define VFIO_DEVICE_FLAGS_PLATFORM (1 << 2)	/* vfio-platform device */
+>  	__u32	num_regions;	/* Max region index + 1 */
+>  	__u32	num_irqs;	/* Max IRQ index + 1 */
+>  };
