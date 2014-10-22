@@ -1,126 +1,42 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 0/8] iommu/vt-d: Fix crash dump failure caused by legacy
- DMA/IO
-Date: Wed, 22 Oct 2014 15:21:58 +0200
-Message-ID: <20141022132158.GD10074@8bytes.org>
-References: <1398386198-19304-1-git-send-email-bill.sumner@hp.com>
- <1398854973.12733.23.camel@i7.infradead.org>
- <20140702133258.GN26537@8bytes.org>
- <CAErSpo69VmK5zD-ztNVHCA=KrK8zucqubY17z0K3rcpe6ReNUA@mail.gmail.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 12/17] iommu/omap: Integrate omap-iommu-debug into
+	omap-iommu
+Date: Wed, 22 Oct 2014 15:29:51 +0200
+Message-ID: <20141022132951.GE10074@8bytes.org>
+References: <1412111772-38006-1-git-send-email-s-anna@ti.com>
+	<1412111772-38006-13-git-send-email-s-anna@ti.com>
+	<2808184.EdyuxU2UIF@avalon> <542C26DF.9030102@ti.com>
+	<5446CFFB.8030704@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAErSpo69VmK5zD-ztNVHCA=KrK8zucqubY17z0K3rcpe6ReNUA@mail.gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, "Hoemann, Jerry" <jerry.hoemann@hp.com>, Takao Indoh <indou.takao@jp.fujitsu.com>, Baoquan He <bhe@redhat.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "kexec@lists.infradead.org" <kexec@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, doug.hatch@hp.com, "ishii.hironobu@jp.fujitsu.com" <ishii.hironobu@jp.fujitsu.com>, zhenhua@hp.com, Zhen-Hua <zhen-hual@hp.com>, "Eric W. Biederman" <ebiederm@xmission.com>, "Vaden, Tom L (HP Server OS Architecture)" <tom.vaden@hp.com>
+In-Reply-To: <5446CFFB.8030704-l0cyMroinI0@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Bjorn,
+On Tue, Oct 21, 2014 at 04:28:27PM -0500, Suman Anna wrote:
+> I am looking to refresh this series for 3.19, and this is the only patch
+> that may need some changes. Please let me know what your preference is,
+> and I can rework this patch if needed. Either way,
+> the plan is to not have an OMAP IOMMU debugfs module, but only to
+> have an option not to build the debugfs portions.
 
-On Tue, Oct 21, 2014 at 08:16:46PM -0600, Bjorn Helgaas wrote:
-> I was looking at Zhen-Hua's recent patches, trying to figure out if I
-> need to do anything with them.  Resetting devices in the old kernel
-> seems like a non-starter.  Resetting devices in the new kernel, ...,
-> well, maybe.  It seems ugly, and it seems like the sort of problem
-> that IOMMUs are designed to solve.
+Can I apply this series without this patch and you send me an updated
+version of only this patch? If yes, please let me know, otherwise please
+rebase the series on v3.18-rc1 and resend.
 
-Actually resetting the devices in the kdump kernel would be one of the
-better solutions for this problem. When we have a generic way to stop
-all in-flight DMA from the PCI endpoints we could safely disable and
-then re-enable the IOMMU.
-
-> On Wed, Jul 2, 2014 at 7:32 AM, Joerg Roedel <joro@8bytes.org> wrote:
-> > That is a solution to prevent the in-flight DMA failures. But what
-> > happens when there is some in-flight DMA to a disk to write some inodes
-> > or a new superblock. Then this scratch address-space may cause
-> > filesystem corruption at worst.
-> 
-> This in-flight DMA is from a device programmed by the old kernel, and
-> it would be reading data from the old kernel's buffers.  I think
-> you're suggesting that we might want that DMA read to complete so the
-> device can update filesystem metadata?
-
-Well, it is not about updating filesystem metadata. In the kdump kernel
-we have these options:
-
-	1) Disable the IOMMU. Problem here is, that DMA is now
-	   untranslated, so that any in-flight DMA might read or write
-	   from a random location in memory, corrupting the kdump or
-	   even the new kexec kernel memory. So this is a non-starter.
-
-	2) Re-program the IOMMU to block all DMA. This is safer as it
-	   does not corrupt any data in memory. But some devices react
-	   very poorly on a master abort from the IOMMU, so bad that the
-	   driver in the kdump kernel fails to initialize that device.
-	   In this case taking dump itself might fail (and often does,
-	   according to reports)
-
-	3) To prevent master aborts like in option (2), David suggested
-	   to map the whole DMA address space to a scratch page. This
-	   also prevents system memory corruption and the master aborts.
-	   But the problem is, that in-flight DMA will now read all
-	   zeros. This can corrupt disk and network data, at worst it
-	   nulls out the superblocks of your filesystem and you lose all
-	   data. So this is not an option too.
-
-What we currently do in the VT-d driver is a mixture of (1) and (2). The
-VT-d driver disables the IOMMU hardware (opening a race window for
-memory data corruption), re-initializes it to reject any ongoing DMA
-(which causes master aborts for in-flight DMA) and re-enables the IOMMU
-hardware.
-
-But this strategy fails in heavy IO environments quite often and we look
-into ways to solve the problem, or at least improve the current
-situation as good as we can.
-
-I talked to David about this at LPC and we came up with basically this
-procedure:
-
-	1. If the VT-d driver finds the IOMMU enabled, it reuses its
-	   root-context table. This way the IOMMU must not be disabled
-	   and re-enabled, eliminating the race we have now.
-	   Other data structures like the context-entries are copied
-	   over from the old kernel.  We basically keep all mappings
-	   from the old kernel, allowing any in-flight DMA to succeed.
-	   No memory or disk data corruption.
-	   The issue here is, that we modify data from the old kernel
-	   which is about to be dumped. But there are ways to work
-	   around that.
-
-	2. When a device driver issues the first dma_map command for a
-	   device, we assign a new and empty page-table, thus removing
-	   all mappings from the old kernel for the device.
-	   Rationale is, that at this point the device driver should
-	   have reset the device to a point where all in-flight DMA is
-	   canceled.
-
-This approach goes into the same direction as Bill Sumners patch-set,
-which Li took over. But it goes not as far as keeping the old mappings
-while the kdump kernel is still working with the devices (which might
-introduce new issues and corner cases).
-
-> > So with this in mind I would prefer initially taking over the
-> > page-tables from the old kernel before the device drivers re-initialize
-> > the devices.
-> 
-> This makes the dump kernel more dependent on data from the old kernel,
-> which we obviously want to avoid when possible.
-
-Sure, but this is not really possible here (unless we have a generic and
-reliable way to reset all PCI endpoint devices and cancel all in-flight
-DMA before we disable the IOMMU in the kdump kernel).
-Otherwise we always risk data corruption somewhere, in system memory or
-on disk.
-
-> I didn't find the previous discussion where pointing every virtual bus
-> address at the same physical scratch page was proposed.  Why was that
-> better than programming the IOMMU to reject every DMA?
-
-As I said, the problem is that this causes master aborts which some
-devices can't recover from, so that the device driver in the kdump
-kernel fails to initialize the device.
-
+Thanks,
 
 	Joerg
