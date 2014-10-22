@@ -1,66 +1,65 @@
-From: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [PATCH 0/3] iommu: replace IOMMU_EXEC with IOMMU_EXEC and update
-	ARM SMMU driver
-Date: Wed, 22 Oct 2014 17:25:36 +0200
-Message-ID: <20141022152536.GB9734@suse.de>
-References: <1413205579-6124-1-git-send-email-a.motakis@virtualopensystems.com>
-	<20141020153915.GH20301@arm.com> <20141020184201.GA1455@arm.com>
+From: Frank Blaschka <blaschka@linux.vnet.ibm.com>
+Subject: Re: [PATCH linux-next] iommu: add iommu for s390 platform
+Date: Wed, 22 Oct 2014 17:43:20 +0200
+Message-ID: <20141022154320.GA42442@tuxmaker.boeblingen.de.ibm.com>
+References: <1413892645-37657-1-git-send-email-blaschka@linux.vnet.ibm.com> <20141022141728.GG10074@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20141020184201.GA1455-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20141022141728.GG10074@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: schwidefsky@de.ibm.com, linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org, iommu@lists.linux-foundation.org, sebott@linux.vnet.ibm.com, gerald.schaefer@de.ibm.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Oct 20, 2014 at 07:42:01PM +0100, Will Deacon wrote:
-> On Mon, Oct 20, 2014 at 04:39:15PM +0100, Will Deacon wrote:
-> > On Mon, Oct 13, 2014 at 02:06:15PM +0100, Antonios Motakis wrote:
-> > > This patch series applies to Joerg Roedel's iommu/next branch, commit 09b5269a.
-> > > It replaces the IOMMU_EXEC flag used by the ARM SMMU driver to IOMMU_NOEXEC.
-> > > This is more enforceable, since the lack of the flag on hardware that doesn't
-> > > support it implies that the target memory will be executable.
-> > 
-> > Looks good to me; I'll take this via the arm-smmu tree and send it to Joerg
-> > along with anything else that gets queued for 3.19.
+On Wed, Oct 22, 2014 at 04:17:29PM +0200, Joerg Roedel wrote:
+> Hi Frank,
 > 
-> The 0-day builder spotted a new warning from this series:
+> On Tue, Oct 21, 2014 at 01:57:25PM +0200, Frank Blaschka wrote:
+> > Add a basic iommu for the s390 platform. The code is pretty simple
+> > since on s390 each PCI device has its own virtual io address space
+> > starting at the same vio address.
 > 
->    drivers/iommu/amd_iommu.c: In function 'amd_iommu_capable':
-> >> drivers/iommu/amd_iommu.c:3409:2: warning: enumeration value 'IOMMU_CAP_NOEXEC' not handled in switch [-Wswitch]
->      switch (cap) {
->      ^
-> 
-> I fixed it with the patch below, but I'd appreciate you and Joerg taking
-> a look too.
-> 
-> Cheers,
-> 
-> Will
-> 
-> --->8
-> 
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index 505a9adac2d5..3d78a8fb5a6a 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -3411,6 +3411,8 @@ static bool amd_iommu_capable(enum iommu_cap cap)
->                 return true;
->         case IOMMU_CAP_INTR_REMAP:
->                 return (irq_remapping_enabled == 1);
-> +       case IOMMU_CAP_NOEXEC:
-> +               return false;
->         }
+> Are there any limitations on IOVA address space for the devices or can
+> be really any system physical address mapped starting from 0 to 2^64?
+>
 
-Looks good to me.
+Hi Joerg,
+
+Basically there are no limitations. Depending on the s390 maschine
+generation a device starts its IOVA at a specific address (announced by
+the HW). But as I already told each device starts at the same address.
+I think this prevents having multiple devices on the same IOMMU domain.
+ 
+> > For this a domain could hold only one pci device.
+> 
+> This bothers me, as it is not compatible with the IOMMU-API. I looked a
+> little bit into how the mappings are created, and it seems there is a
+> per-device dma_table.
+>
+
+yes, you are absolutely right. There is a per-device dma_table.
+There is no general IOMMU device but each pci device has its own IOMMU
+translation capability.
+ 
+> Is there any reason a dma_table can't be per IOMMU domain and assigned
+> to multiple devices at the same time?
+
+Is there a possibility the IOMMU domain can support e.g. something like
+
+VIOA 0x10000 -> pci device 1
+VIOA 0x10000 -> pci device 2
+
+> 
+> Otherwise the code looks quite simple and straight forward.
+>
+
+Thx for your review and help 
+
+Frank
+ 
+> 
+> 	Joerg
+> 
+> 
