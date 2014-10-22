@@ -1,14 +1,16 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 0/3] Rockchip IOMMU driver and devicetree bindings
-Date: Wed, 22 Oct 2014 17:20:19 +0200
-Message-ID: <20141022152019.GK10074@8bytes.org>
-References: <1412158843-8115-1-git-send-email-djkurtz@chromium.org>
+From: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: [PATCH 0/3] iommu: replace IOMMU_EXEC with IOMMU_EXEC and update
+	ARM SMMU driver
+Date: Wed, 22 Oct 2014 17:25:36 +0200
+Message-ID: <20141022152536.GB9734@suse.de>
+References: <1413205579-6124-1-git-send-email-a.motakis@virtualopensystems.com>
+	<20141020153915.GH20301@arm.com> <20141020184201.GA1455@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1412158843-8115-1-git-send-email-djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+In-Reply-To: <20141020184201.GA1455-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,31 +20,47 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Grant Grundler <grundler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, =?iso-8859-1?Q?St=E9phane?= Marchesin <marcheu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Oct 01, 2014 at 06:20:40PM +0800, Daniel Kurtz wrote:
-> Add a driver and devicetree bindings for the IOMMU found in Rockchip RK3288
-> SoCs.
+On Mon, Oct 20, 2014 at 07:42:01PM +0100, Will Deacon wrote:
+> On Mon, Oct 20, 2014 at 04:39:15PM +0100, Will Deacon wrote:
+> > On Mon, Oct 13, 2014 at 02:06:15PM +0100, Antonios Motakis wrote:
+> > > This patch series applies to Joerg Roedel's iommu/next branch, commit 09b5269a.
+> > > It replaces the IOMMU_EXEC flag used by the ARM SMMU driver to IOMMU_NOEXEC.
+> > > This is more enforceable, since the lack of the flag on hardware that doesn't
+> > > support it implies that the target memory will be executable.
+> > 
+> > Looks good to me; I'll take this via the arm-smmu tree and send it to Joerg
+> > along with anything else that gets queued for 3.19.
 > 
-> Daniel Kurtz (3):
->   iommu/rockchip: rk3288 iommu driver
->   dt-bindings: iommu: Add documentation for rockchip iommu
->   ARM: dts: rk3288: add VOP iommu nodes
+> The 0-day builder spotted a new warning from this series:
 > 
->  .../devicetree/bindings/iommu/rockchip,iommu.txt   |  26 +
->  arch/arm/boot/dts/rk3288.dtsi                      |  18 +
->  drivers/iommu/Kconfig                              |  11 +
->  drivers/iommu/Makefile                             |   1 +
->  drivers/iommu/rockchip-iommu.c                     | 924 +++++++++++++++++++++
->  5 files changed, 980 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
->  create mode 100644 drivers/iommu/rockchip-iommu.c
+>    drivers/iommu/amd_iommu.c: In function 'amd_iommu_capable':
+> >> drivers/iommu/amd_iommu.c:3409:2: warning: enumeration value 'IOMMU_CAP_NOEXEC' not handled in switch [-Wswitch]
+>      switch (cap) {
+>      ^
+> 
+> I fixed it with the patch below, but I'd appreciate you and Joerg taking
+> a look too.
+> 
+> Cheers,
+> 
+> Will
+> 
+> --->8
+> 
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> index 505a9adac2d5..3d78a8fb5a6a 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -3411,6 +3411,8 @@ static bool amd_iommu_capable(enum iommu_cap cap)
+>                 return true;
+>         case IOMMU_CAP_INTR_REMAP:
+>                 return (irq_remapping_enabled == 1);
+> +       case IOMMU_CAP_NOEXEC:
+> +               return false;
+>         }
 
-Please make sure you also get Acks for the DT bindings. With that and
-the issue I mentioned in the other email fixed, I will apply these
-patches?
-
-
-	Joerg
+Looks good to me.
