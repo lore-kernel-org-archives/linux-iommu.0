@@ -1,15 +1,16 @@
-From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH 12/17] iommu/omap: Integrate omap-iommu-debug into
-	omap-iommu
-Date: Tue, 21 Oct 2014 16:28:27 -0500
-Message-ID: <5446CFFB.8030704@ti.com>
-References: <1412111772-38006-1-git-send-email-s-anna@ti.com>	<1412111772-38006-13-git-send-email-s-anna@ti.com>	<2808184.EdyuxU2UIF@avalon>
-	<542C26DF.9030102@ti.com>
+From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 0/8] iommu/vt-d: Fix crash dump failure caused by legacy
+	DMA/IO
+Date: Tue, 21 Oct 2014 20:16:46 -0600
+Message-ID: <CAErSpo69VmK5zD-ztNVHCA=KrK8zucqubY17z0K3rcpe6ReNUA@mail.gmail.com>
+References: <1398386198-19304-1-git-send-email-bill.sumner@hp.com>
+	<1398854973.12733.23.camel@i7.infradead.org>
+	<20140702133258.GN26537@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <542C26DF.9030102-l0cyMroinI0@public.gmane.org>
+In-Reply-To: <20140702133258.GN26537-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,54 +21,59 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Vaden,
+	Tom L (HP Server OS Architecture)" <tom.vaden-VXdhtT5mjnY@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>, doug.hatch-VXdhtT5mjnY@public.gmane.org, "ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org" <ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org>, zhenhua-VXdhtT5mjnY@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Eric W. Biederman" <ebiederm-aS9lmoZGLiVWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
+
+[-cc Bill, +cc Zhen-Hua, Eric, Tom, Jerry]
 
 Hi Joerg,
 
-On 10/01/2014 11:07 AM, Anna, Suman wrote:
-> Hi Laurent,
-> 
->> On Tuesday 30 September 2014 16:16:07 Suman Anna wrote:
->>> The debugfs support for OMAP IOMMU is currently implemented
->>> as a module, warranting certain OMAP-specific IOMMU API to
->>> be exported. The OMAP IOMMU, when enabled, can only be built-in
->>> into the kernel, so integrate the OMAP IOMMU debug module
->>> into the OMAP IOMMU driver. This helps in eliminating the
->>> need to export most of the current OMAP IOMMU API.
->>>
->>> The following are the main changes:
->>> - The OMAP_IOMMU_DEBUG Kconfig option is eliminated, and
->>>   the OMAP IOMMU debugfs support is built alongside the OMAP
->>>   IOMMU driver, and enabled automatically only when debugfs
->>>   is enabled.
->>
->> That's the part I'm unsure about. We're loosing the ability to save space by 
->> not building the omap-iommu debugfs support when debugfs is enabled.
-> 
-> Yeah, I thought about it a bit, and went in favor of eliminating the
-> Kconfig. I don't have a strong opinion on this, but if saving space is
-> what is preferred, I can easily rework this patch to add it back.
-> 
-> Joerg, any preference which way we should go here?
+I was looking at Zhen-Hua's recent patches, trying to figure out if I
+need to do anything with them.  Resetting devices in the old kernel
+seems like a non-starter.  Resetting devices in the new kernel, ...,
+well, maybe.  It seems ugly, and it seems like the sort of problem
+that IOMMUs are designed to solve.  Anyway, I found this old
+discussion that I didn't quite understand:
 
-I am looking to refresh this series for 3.19, and this is the only patch
-that may need some changes. Please let me know what your preference is,
-and I can rework this patch if needed. Either way,
-the plan is to not have an OMAP IOMMU debugfs module, but only to
-have an option not to build the debugfs portions.
+On Wed, Jul 2, 2014 at 7:32 AM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> On Wed, Apr 30, 2014 at 11:49:33AM +0100, David Woodhouse wrote:
 
-regards
-Suman
+>> After the last round of this patchset, we discussed a potential
+>> improvement where you point every virtual bus address at the *same*
+>> physical scratch page.
+>
+> That is a solution to prevent the in-flight DMA failures. But what
+> happens when there is some in-flight DMA to a disk to write some inodes
+> or a new superblock. Then this scratch address-space may cause
+> filesystem corruption at worst.
 
-> 
->>
->> For the rest of the series,
->>
->> Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-> 
-> Thank you for reviewing the patches.
-> 
-> regards
-> Suman
-> 
+This in-flight DMA is from a device programmed by the old kernel, and
+it would be reading data from the old kernel's buffers.  I think
+you're suggesting that we might want that DMA read to complete so the
+device can update filesystem metadata?
+
+I don't really understand that argument.  Don't we usually want to
+stop any data from escaping the machine after a crash, on the theory
+that the old kernel is crashing because something is catastrophically
+wrong and we may have already corrupted things in memory?  If so,
+allowing this old DMA to complete is just as likely to make things
+worse as to make them better.
+
+Without kdump, we likely would reboot through the BIOS and the device
+would get reset and the DMA would never happen at all.  So if we made
+the dump kernel program the IOMMU to prevent the DMA, that seems like
+a similar situation.
+
+> So with this in mind I would prefer initially taking over the
+> page-tables from the old kernel before the device drivers re-initialize
+> the devices.
+
+This makes the dump kernel more dependent on data from the old kernel,
+which we obviously want to avoid when possible.
+
+I didn't find the previous discussion where pointing every virtual bus
+address at the same physical scratch page was proposed.  Why was that
+better than programming the IOMMU to reject every DMA?
+
+Bjorn
