@@ -1,90 +1,77 @@
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Subject: Re: [PATCH 1/1] pci: fix dmar fault for kdump kernel
-Date: Wed, 22 Oct 2014 09:54:07 -0700
-Message-ID: <5447E12F.2030905@gmail.com>
-References: <1412925191-27970-1-git-send-email-zhen-hual@hp.com> <543CEE32.50109@hp.com> <543E2CD5.60708@jp.fujitsu.com> <CAErSpo4isVMeBipp3TngVtZ2CmeQva-6RSHgS8O4C9M+p1ua=Q@mail.gmail.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v8 09/18] vfio/platform: support MMAP of MMIO regions
+Date: Wed, 22 Oct 2014 10:56:15 -0600
+Message-ID: <1413996975.4202.226.camel@ul30vt.home>
+References: <1413205825-6370-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1413205825-6370-10-git-send-email-a.motakis@virtualopensystems.com>
+	<1413910307.4202.148.camel@ul30vt.home>
+	<CAG8rG2yUmpzzfEYVqA0H+5LcBcLjFY=j43t420Sa7FLnfmG8Ug@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <CAErSpo4isVMeBipp3TngVtZ2CmeQva-6RSHgS8O4C9M+p1ua=Q@mail.gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>, Takao Indoh <indou.takao@jp.fujitsu.com>
-Cc: "Li, Zhen-Hua" <zhen-hual@hp.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linda.knippers@hp.com, jerry.hoemann@hp.com, lisa.mitchell@hp.com, rwright@hp.com, Joerg Roedel <joro@8bytes.org>, "Eric W. Biederman" <ebiederm@xmission.com>, Tom Vaden <tom.vaden@hp.com>, David Woodhouse <dwmw2@infradead.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAG8rG2yUmpzzfEYVqA0H+5LcBcLjFY=j43t420Sa7FLnfmG8Ug-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/21/2014 07:47 PM, Bjorn Helgaas wrote:
-> [+cc Joerg, Eric, Tom, David, iommu list]
->
-> On Wed, Oct 15, 2014 at 2:14 AM, Takao Indoh <indou.takao@jp.fujitsu.com> wrote:
->> (2014/10/14 18:34), Li, ZhenHua wrote:
->>> I tested on the latest stable version 3.17, it works well.
->>>
->>> On 10/10/2014 03:13 PM, Li, Zhen-Hua wrote:
->>>> On a HP system with Intel vt-d supported and many PCI devices on it,
->>>> when kernel crashed and the kdump kernel boots with intel_iommu=on,
->>>> there may be some unexpected DMA requests on this adapter, which will
->>>> cause DMA Remapping faults like:
->>>>      dmar: DRHD: handling fault status reg 102
->>>>      dmar: DMAR:[DMA Read] Request device [41:00.0] fault addr fff81000
->>>>      DMAR:[fault reason 01] Present bit in root entry is clear
->>>>
->>>> This bug may happen on *any* PCI device.
->>>> Analysis for this bug:
->>>>
->>>> The present bit is set in this function:
->>>>
->>>> static struct context_entry * device_to_context_entry(
->>>>                  struct intel_iommu *iommu, u8 bus, u8 devfn)
->>>> {
->>>>      ......
->>>>                  set_root_present(root);
->>>>      ......
->>>> }
->>>>
->>>> Calling tree:
->>>>      device driver
->>>>          intel_alloc_coherent
->>>>              __intel_map_single
->>>>                  domain_context_mapping
->>>>                      domain_context_mapping_one
->>>>                          device_to_context_entry
->>>>
->>>> This means, the present bit in root entry will not be set until the device
->>>> driver is loaded.
->>>>
->>>> But in the kdump kernel, hardware devices are not aware that control has
->>>> transferred to the second kernel, and those drivers must initialize again.
->>>> Consequently there may be unexpected DMA requests from devices activity
->>>> initiated in the first kernel leading to the DMA Remapping errors in the
->>>> second kernel.
->>>>
->>>> To fix this DMAR fault, we need to reset the bus that this device on. Reset
->>>> the device itself does not work.
-> You have not explained why the DMAR faults are a problem.  The fault
-> is just an indication that the IOMMU prevented a DMA from completing.
-> If the DMA is an artifact of the crashed kernel, we probably don't
-> *want* it to complete, so taking a DMAR fault seems like exactly the
-> right thing.
->
-> If the problem is that we're being flooded with messages, it's easy
-> enough to just tone down the printks.
+On Wed, 2014-10-22 at 15:55 +0200, Antonios Motakis wrote:
+> On Tue, Oct 21, 2014 at 6:51 PM, Alex Williamson
+> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+> > On Mon, 2014-10-13 at 15:10 +0200, Antonios Motakis wrote:
+> >> Allow to memory map the MMIO regions of the device so userspace can
+> >> directly access them. PIO regions are not being handled at this point.
+> >>
+> >> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> >> ---
+> >>  drivers/vfio/platform/vfio_platform_common.c | 57 ++++++++++++++++++++++++++++
+> >>  1 file changed, 57 insertions(+)
+> >>
+> >> diff --git a/drivers/vfio/platform/vfio_platform_common.c b/drivers/vfio/platform/vfio_platform_common.c
+> >> index ac74710..4db7187 100644
+> >> --- a/drivers/vfio/platform/vfio_platform_common.c
+> >> +++ b/drivers/vfio/platform/vfio_platform_common.c
+> >> @@ -57,6 +57,16 @@ static int vfio_platform_regions_init(struct vfio_platform_device *vdev)
+> >>                       if (!(res->flags & IORESOURCE_READONLY))
+> >>                               vdev->regions[i].flags |=
+> >>                                       VFIO_REGION_INFO_FLAG_WRITE;
+> >> +
+> >> +                     /*
+> >> +                      * Only regions addressed with PAGE granularity may be
+> >> +                      * MMAPed securely.
+> >> +                      */
+> >> +                     if (!(vdev->regions[i].addr & ~PAGE_MASK) &&
+> >> +                                     !(vdev->regions[i].size & ~PAGE_MASK))
+> >> +                             vdev->regions[i].flags |=
+> >> +                                     VFIO_REGION_INFO_FLAG_MMAP;
+> >> +
+> >
+> > Should this be included in the above !readonly test?  I don't see that
+> > we're doing anything below that would prevent writes to the mmap for a
+> > readonly resource.  I suspect that just like PCI, it's not all that
+> > useful to provide mmap support for read-only regions.  They're not
+> > typically performance paths.
+> 
+> Indeed. Alternatively we could just MMAP the region as read only as
+> well. Even if typically they are not performance critical areas, maybe
+> it doesn't hurt to allow MMAP when possible.
 
-As I recall what we have seen in the past with the network controllers
-is that they get stuck in a state where they can no longer perform any
-DMA due to the fact that some of the transactions have returned errors
-from the IOMMU being reset.  The only way out is to perform a PCIe reset
-on the part after the IOMMU has been enabled which doesn't occur
-automatically unless AER or EEH is enabled in the system.
-
-One thought would be to take a look at the IOMMU reset code.  Is there
-any way to go through and make sure that all of the PCI devices that
-make use of the IOMMU have the bus mastering disabled prior to the IOMMU
-being reset?  For example could we suspend all of the parts in order to
-force them to hold off any transactions, and then resume them after the
-IOMMU has been reset?  If we could do at least that much that would
-prevent the errors and should allow for a graceful reset.
-
-Thanks,
+Sure, we could allow a read-only mmap.  On PCI the only read-only region
+is the PCI option ROM.  The PCI spec indicates that devices may use the
+same address decoders for the ROM as for BARs, so the ROM and BAR may
+not be simultaneously accessible.  QEMU also caches the ROM once the
+guest does read it, so it's never been an issue to allow mmap of that
+resource.  I would probably only bother to provide read-only mmap if you
+know vfio-platform devices are going to make more significant use of
+read-only regions.  Thanks,
 
 Alex
