@@ -1,349 +1,141 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH v2 12/17] iommu/omap: Integrate omap-iommu-debug into omap-iommu
-Date: Thu, 23 Oct 2014 02:16:28 +0300
-Message-ID: <4007170.3MByJsLVSg@avalon>
-References: <1414016555-28067-1-git-send-email-s-anna@ti.com> <1414016555-28067-13-git-send-email-s-anna@ti.com>
+From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v3 24/27] IA64/MSI: Use MSI chip framework to configure
+	MSI/MSI-X irq
+Date: Wed, 22 Oct 2014 17:53:45 -0600
+Message-ID: <20141022235345.GE4795@google.com>
+References: <1413342435-7876-1-git-send-email-wangyijing@huawei.com>
+	<1413342435-7876-25-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1414016555-28067-13-git-send-email-s-anna@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Suman Anna <s-anna@ti.com>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-omap@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1413342435-7876-25-git-send-email-wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, arnab.basu-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Liviu Dudau <liviu-I3yL/QOVVjH10XsdtD+oqA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Chris Metcalf <cmetcalf-kv+TWInifGbQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Sergei Shtylyov <sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, iommu@l
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Suman,
+On Wed, Oct 15, 2014 at 11:07:12AM +0800, Yijing Wang wrote:
+> Use MSI chip framework instead of arch MSI functions to configure
+> MSI/MSI-X irq. So we can manage MSI/MSI-X irq in a unified framework.
 
-Thank you for the patch.
+This needs slightly more detail.  You're using the MSI chip framework
+"instead of arch MSI functions".  Well, there are still arch-specific
+functions, i.e., arch_ia64_setup_msi_irq() and
+arch_ia64_teardown_msi_irq().
 
-On Wednesday 22 October 2014 17:22:30 Suman Anna wrote:
-> The debugfs support for OMAP IOMMU is currently implemented
-> as a module, warranting certain OMAP-specific IOMMU API to
-> be exported. The OMAP IOMMU, when enabled, can only be built-in
-> into the kernel, so integrate the OMAP IOMMU debug module
-> into the OMAP IOMMU driver. This helps in eliminating the
-> need to export most of the current OMAP IOMMU API.
-> 
-> The following are the main changes:
-> - The debugfs directory and entry creation logic is reversed,
->   the calls are invoked by the OMAP IOMMU driver now.
-> - The current iffy circular logic of adding IOMMU archdata
->   to the IOMMU devices itself to get a pointer to the omap_iommu
->   object in the debugfs support code is replaced by directly
->   using the omap_iommu structure while creating the debugfs
->   entries.
-> - The debugfs root directory is renamed from the generic name
->   "iommu" to a specific name "omap_iommu".
-> - Unneeded headers have also been cleaned up while at this.
-> - There will no longer be a omap-iommu-debug.ko module after
->   this patch.
-> - The OMAP_IOMMU_DEBUG Kconfig option is converted to boolean
->   only, the OMAP IOMMU debugfs support is built alongside the
->   OMAP IOMMU driver only when this option is enabled.
-> 
-> Signed-off-by: Suman Anna <s-anna@ti.com>
+We used to have arch_setup_msi_irq() which had a weak default
+implementation, and a strong arch-specific implementation here, and you're
+replacing that model with the new "msi-ops" model.  I don't know how you
+want to write that, but it's not that you're getting rid of the
+arch-specific code; you're keeping arch-specific code but structuring it
+differently.
 
-Acked-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-
+> Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 > ---
->  drivers/iommu/Kconfig            |  12 ++---
->  drivers/iommu/omap-iommu-debug.c | 100  ++++++++++-------------------------
->  drivers/iommu/omap-iommu.c       |  11 ++++-
->  drivers/iommu/omap-iommu.h       |  15 ++++++
->  4 files changed, 58 insertions(+), 80 deletions(-)
+>  arch/ia64/include/asm/pci.h |   10 ++++++++++
+>  arch/ia64/kernel/msi_ia64.c |   14 ++++++++++----
+>  arch/ia64/pci/pci.c         |    1 +
+>  3 files changed, 21 insertions(+), 4 deletions(-)
 > 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index dd51122..1d54996 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -144,13 +144,13 @@ config OMAP_IOMMU
->  	select IOMMU_API
-> 
->  config OMAP_IOMMU_DEBUG
-> -       tristate "Export OMAP IOMMU internals in DebugFS"
-> -       depends on OMAP_IOMMU && DEBUG_FS
-> -       help
-> -         Select this to see extensive information about
-> -         the internal state of OMAP IOMMU in debugfs.
-> +	bool "Export OMAP IOMMU internals in DebugFS"
-> +	depends on OMAP_IOMMU && DEBUG_FS
-> +	---help---
-> +	  Select this to see extensive information about
-> +	  the internal state of OMAP IOMMU in debugfs.
-> 
-> -         Say N unless you know you need this.
-> +	  Say N unless you know you need this.
-> 
->  config TEGRA_IOMMU_GART
->  	bool "Tegra GART IOMMU Support"
-> diff --git a/drivers/iommu/omap-iommu-debug.c
-> b/drivers/iommu/omap-iommu-debug.c index 28de657..4813d3a 100644
-> --- a/drivers/iommu/omap-iommu-debug.c
-> +++ b/drivers/iommu/omap-iommu-debug.c
-> @@ -10,15 +10,11 @@
->   * published by the Free Software Foundation.
->   */
-> 
-> -#include <linux/module.h>
->  #include <linux/err.h>
-> -#include <linux/clk.h>
->  #include <linux/io.h>
->  #include <linux/slab.h>
->  #include <linux/uaccess.h>
-> -#include <linux/platform_device.h>
->  #include <linux/debugfs.h>
-> -#include <linux/omap-iommu.h>
->  #include <linux/platform_data/iommu-omap.h>
-> 
->  #include "omap-iopgtable.h"
-> @@ -31,8 +27,7 @@ static struct dentry *iommu_debug_root;
->  static ssize_t debug_read_regs(struct file *file, char __user *userbuf,
->  			       size_t count, loff_t *ppos)
->  {
-> -	struct device *dev = file->private_data;
-> -	struct omap_iommu *obj = dev_to_omap_iommu(dev);
-> +	struct omap_iommu *obj = file->private_data;
->  	char *p, *buf;
->  	ssize_t bytes;
-> 
-> @@ -55,8 +50,7 @@ static ssize_t debug_read_regs(struct file *file, char
-> __user *userbuf, static ssize_t debug_read_tlb(struct file *file, char
-> __user *userbuf, size_t count, loff_t *ppos)
->  {
-> -	struct device *dev = file->private_data;
-> -	struct omap_iommu *obj = dev_to_omap_iommu(dev);
-> +	struct omap_iommu *obj = file->private_data;
->  	char *p, *buf;
->  	ssize_t bytes, rest;
-> 
-> @@ -141,8 +135,7 @@ out:
->  static ssize_t debug_read_pagetable(struct file *file, char __user
-> *userbuf, size_t count, loff_t *ppos)
->  {
-> -	struct device *dev = file->private_data;
-> -	struct omap_iommu *obj = dev_to_omap_iommu(dev);
-> +	struct omap_iommu *obj = file->private_data;
->  	char *p, *buf;
->  	size_t bytes;
-> 
-> @@ -181,93 +174,56 @@ DEBUG_FOPS_RO(pagetable);
->  #define __DEBUG_ADD_FILE(attr, mode)					\
->  	{								\
->  		struct dentry *dent;					\
-> -		dent = debugfs_create_file(#attr, mode, parent,		\
-> -					   dev, &debug_##attr##_fops);	\
-> +		dent = debugfs_create_file(#attr, mode, obj->debug_dir,	\
-> +					   obj, &debug_##attr##_fops);	\
->  		if (!dent)						\
-> -			return -ENOMEM;					\
-> +			goto err;					\
->  	}
-> 
->  #define DEBUG_ADD_FILE_RO(name) __DEBUG_ADD_FILE(name, 0400)
-> 
-> -static int iommu_debug_register(struct device *dev, void *data)
-> +void omap_iommu_debugfs_add(struct omap_iommu *obj)
->  {
-> -	struct platform_device *pdev = to_platform_device(dev);
-> -	struct omap_iommu *obj = platform_get_drvdata(pdev);
-> -	struct omap_iommu_arch_data *arch_data;
-> -	struct dentry *d, *parent;
-> -
-> -	if (!obj || !obj->dev)
-> -		return -EINVAL;
-> -
-> -	arch_data = kzalloc(sizeof(*arch_data), GFP_KERNEL);
-> -	if (!arch_data)
-> -		return -ENOMEM;
-> -
-> -	arch_data->iommu_dev = obj;
-> +	struct dentry *d;
-> 
-> -	dev->archdata.iommu = arch_data;
-> +	if (!iommu_debug_root)
-> +		return;
-> 
-> -	d = debugfs_create_dir(obj->name, iommu_debug_root);
-> -	if (!d)
-> -		goto nomem;
-> -	parent = d;
-> +	obj->debug_dir = debugfs_create_dir(obj->name, iommu_debug_root);
-> +	if (!obj->debug_dir)
-> +		return;
-> 
-> -	d = debugfs_create_u8("nr_tlb_entries", 0400, parent,
-> +	d = debugfs_create_u8("nr_tlb_entries", 0400, obj->debug_dir,
->  			      (u8 *)&obj->nr_tlb_entries);
->  	if (!d)
-> -		goto nomem;
-> +		return;
-> 
->  	DEBUG_ADD_FILE_RO(regs);
->  	DEBUG_ADD_FILE_RO(tlb);
->  	DEBUG_ADD_FILE_RO(pagetable);
-> 
-> -	return 0;
-> +	return;
-> 
-> -nomem:
-> -	kfree(arch_data);
-> -	return -ENOMEM;
-> +err:
-> +	debugfs_remove_recursive(obj->debug_dir);
->  }
-> 
-> -static int iommu_debug_unregister(struct device *dev, void *data)
-> +void omap_iommu_debugfs_remove(struct omap_iommu *obj)
->  {
-> -	if (!dev->archdata.iommu)
-> -		return 0;
-> -
-> -	kfree(dev->archdata.iommu);
-> -
-> -	dev->archdata.iommu = NULL;
-> +	if (!obj->debug_dir)
-> +		return;
-> 
-> -	return 0;
-> +	debugfs_remove_recursive(obj->debug_dir);
->  }
-> 
-> -static int __init iommu_debug_init(void)
-> +void __init omap_iommu_debugfs_init(void)
->  {
-> -	struct dentry *d;
-> -	int err;
-> -
-> -	d = debugfs_create_dir("iommu", NULL);
-> -	if (!d)
-> -		return -ENOMEM;
-> -	iommu_debug_root = d;
-> -
-> -	err = omap_foreach_iommu_device(d, iommu_debug_register);
-> -	if (err)
-> -		goto err_out;
-> -	return 0;
-> -
-> -err_out:
-> -	debugfs_remove_recursive(iommu_debug_root);
-> -	return err;
-> +	iommu_debug_root = debugfs_create_dir("omap_iommu", NULL);
-> +	if (!iommu_debug_root)
-> +		pr_err("can't create debugfs dir\n");
->  }
-> -module_init(iommu_debug_init)
-> 
-> -static void __exit iommu_debugfs_exit(void)
-> +void __exit omap_iommu_debugfs_exit(void)
->  {
-> -	debugfs_remove_recursive(iommu_debug_root);
-> -	omap_foreach_iommu_device(NULL, iommu_debug_unregister);
-> +	debugfs_remove(iommu_debug_root);
->  }
-> -module_exit(iommu_debugfs_exit)
-> -
-> -MODULE_DESCRIPTION("omap iommu: debugfs interface");
-> -MODULE_AUTHOR("Hiroshi DOYU <Hiroshi.DOYU@nokia.com>");
-> -MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index 91262fa..b92b6fc 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -472,7 +472,7 @@ static void flush_iotlb_all(struct omap_iommu *obj)
->  	pm_runtime_put_sync(obj->dev);
->  }
-> 
-> -#if defined(CONFIG_OMAP_IOMMU_DEBUG) ||
-> defined(CONFIG_OMAP_IOMMU_DEBUG_MODULE) +#ifdef CONFIG_OMAP_IOMMU_DEBUG
-> 
->  #define pr_reg(name)							\
->  	do {								\
-> @@ -602,7 +602,7 @@ int omap_foreach_iommu_device(void *data, int
-> (*fn)(struct device *, void *)) }
->  EXPORT_SYMBOL_GPL(omap_foreach_iommu_device);
-> 
-> -#endif /* CONFIG_OMAP_IOMMU_DEBUG_MODULE */
-> +#endif /* CONFIG_OMAP_IOMMU_DEBUG */
-> 
->  /*
->   *	H/W pagetable operations
-> @@ -1077,6 +1077,8 @@ static int omap_iommu_probe(struct platform_device
-> *pdev) pm_runtime_irq_safe(obj->dev);
->  	pm_runtime_enable(obj->dev);
-> 
-> +	omap_iommu_debugfs_add(obj);
-> +
->  	dev_info(&pdev->dev, "%s registered\n", obj->name);
->  	return 0;
->  }
-> @@ -1086,6 +1088,7 @@ static int omap_iommu_remove(struct platform_device
-> *pdev) struct omap_iommu *obj = platform_get_drvdata(pdev);
-> 
->  	iopgtable_clear_entry_all(obj);
-> +	omap_iommu_debugfs_remove(obj);
-> 
->  	pm_runtime_disable(obj->dev);
-> 
-> @@ -1403,6 +1406,8 @@ static int __init omap_iommu_init(void)
-> 
->  	bus_set_iommu(&platform_bus_type, &omap_iommu_ops);
-> 
-> +	omap_iommu_debugfs_init();
-> +
->  	return platform_driver_register(&omap_iommu_driver);
->  }
->  /* must be ready before omap3isp is probed */
-> @@ -1413,6 +1418,8 @@ static void __exit omap_iommu_exit(void)
->  	kmem_cache_destroy(iopte_cachep);
-> 
->  	platform_driver_unregister(&omap_iommu_driver);
-> +
-> +	omap_iommu_debugfs_exit();
->  }
->  module_exit(omap_iommu_exit);
-> 
-> diff --git a/drivers/iommu/omap-iommu.h b/drivers/iommu/omap-iommu.h
-> index 0516e0e..4783779 100644
-> --- a/drivers/iommu/omap-iommu.h
-> +++ b/drivers/iommu/omap-iommu.h
-> @@ -30,6 +30,7 @@ struct omap_iommu {
->  	void __iomem	*regbase;
->  	struct device	*dev;
->  	struct iommu_domain *domain;
-> +	struct dentry	*debug_dir;
-> 
->  	spinlock_t	iommu_lock;	/* global for this whole object */
-> 
-> @@ -197,11 +198,25 @@ omap_iopgtable_store_entry(struct omap_iommu *obj,
-> struct iotlb_entry *e); extern int omap_foreach_iommu_device(void *data,
->  				int (*fn)(struct device *, void *));
-> 
-> +#ifdef CONFIG_OMAP_IOMMU_DEBUG
->  extern ssize_t
->  omap_iommu_dump_ctx(struct omap_iommu *obj, char *buf, ssize_t len);
->  extern size_t
->  omap_dump_tlb_entries(struct omap_iommu *obj, char *buf, ssize_t len);
-> 
-> +void omap_iommu_debugfs_init(void);
-> +void omap_iommu_debugfs_exit(void);
-> +
-> +void omap_iommu_debugfs_add(struct omap_iommu *obj);
-> +void omap_iommu_debugfs_remove(struct omap_iommu *obj);
-> +#else
-> +static inline void omap_iommu_debugfs_init(void) { }
-> +static inline void omap_iommu_debugfs_exit(void) { }
-> +
-> +static inline void omap_iommu_debugfs_add(struct omap_iommu *obj) { }
-> +static inline void omap_iommu_debugfs_remove(struct omap_iommu *obj) { }
-> +#endif
-> +
->  /*
->   * register accessors
->   */
+> diff --git a/arch/ia64/include/asm/pci.h b/arch/ia64/include/asm/pci.h
+> index 52af5ed..907dcba 100644
+> --- a/arch/ia64/include/asm/pci.h
+> +++ b/arch/ia64/include/asm/pci.h
+> @@ -94,6 +94,7 @@ struct pci_controller {
+>  	int segment;
+>  	int node;		/* nearest node with memory or NUMA_NO_NODE for global allocation */
+>  
+> +	struct msi_chip *msi_chip;
+>  	void *platform_data;
+>  };
+>  
+> @@ -101,6 +102,15 @@ struct pci_controller {
+>  #define PCI_CONTROLLER(busdev) ((struct pci_controller *) busdev->sysdata)
+>  #define pci_domain_nr(busdev)    (PCI_CONTROLLER(busdev)->segment)
+>  
+> +extern struct msi_chip chip;
 
--- 
-Regards,
+Please make this name more descriptive.  "chip" is way too generic for a
+global name.
 
-Laurent Pinchart
+> +static inline struct msi_chip *pci_msi_chip(struct pci_bus *bus)
+> +{
+> +	struct pci_controller *ctrl = bus->sysdata;
+> +
+> +	return ctrl->msi_chip;
+> +}
+> +
+>  extern struct pci_ops pci_root_ops;
+>  
+>  static inline int pci_proc_domain(struct pci_bus *bus)
+> diff --git a/arch/ia64/kernel/msi_ia64.c b/arch/ia64/kernel/msi_ia64.c
+> index 8c3730c..401fc98 100644
+> --- a/arch/ia64/kernel/msi_ia64.c
+> +++ b/arch/ia64/kernel/msi_ia64.c
+> @@ -112,15 +112,16 @@ static struct irq_chip ia64_msi_chip = {
+>  };
+>  
+>  
+> -int arch_setup_msi_irq(struct pci_dev *pdev, struct msi_desc *desc)
+> +static int arch_ia64_setup_msi_irq(struct msi_chip *chip,
+> +		struct pci_dev *dev, struct msi_desc *desc)
+>  {
+>  	if (platform_setup_msi_irq)
+> -		return platform_setup_msi_irq(pdev, desc);
+> +		return platform_setup_msi_irq(dev, desc);
+>  
+> -	return ia64_setup_msi_irq(pdev, desc);
+> +	return ia64_setup_msi_irq(dev, desc);
 
+Please don't make gratuitous changes ("pdev" -> "dev") at the same time,
+especially since the rest of the file still uses "pdev".
+
+>  }
+>  
+> -void arch_teardown_msi_irq(unsigned int irq)
+> +static void arch_ia64_teardown_msi_irq(struct msi_chip *chip, unsigned int irq)
+>  {
+>  	if (platform_teardown_msi_irq)
+>  		return platform_teardown_msi_irq(irq);
+> @@ -128,6 +129,11 @@ void arch_teardown_msi_irq(unsigned int irq)
+>  	return ia64_teardown_msi_irq(irq);
+>  }
+>  
+> +struct msi_chip chip = {
+> +	.setup_irq = arch_ia64_setup_msi_irq,
+> +	.teardown_irq = arch_ia64_teardown_msi_irq,
+> +};
+> +
+>  #ifdef CONFIG_INTEL_IOMMU
+>  #ifdef CONFIG_SMP
+>  static int dmar_msi_set_affinity(struct irq_data *data,
+> diff --git a/arch/ia64/pci/pci.c b/arch/ia64/pci/pci.c
+> index 291a582..299b67d 100644
+> --- a/arch/ia64/pci/pci.c
+> +++ b/arch/ia64/pci/pci.c
+> @@ -437,6 +437,7 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
+>  
+>  	controller->companion = device;
+>  	controller->node = acpi_get_node(device->handle);
+> +	controller->msi_chip = &chip;
+>  
+>  	info = kzalloc(sizeof(*info), GFP_KERNEL);
+>  	if (!info) {
+> -- 
+> 1.7.1
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
