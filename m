@@ -1,72 +1,46 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH] arm: dma-mapping: fix compilation error when CONFIG_MMU is
-	not present
-Date: Thu, 23 Oct 2014 10:15:44 +0200
-Message-ID: <5448B930.7070800@samsung.com>
-References: <1413734340-53108-1-git-send-email-stefan.hengelein@fau.de>
-	<5444BCFF.8030803@samsung.com>
-	<CABv5NL_GdtZegpw8wxau9oD6xXWdX3GUySLqCaoaoa549Kg_GQ@mail.gmail.com>
-	<5445A345.7010401@codeaurora.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v2 00/17] OMAP IOMMU Cleanup & Consolidation
+Date: Thu, 23 Oct 2014 14:34:47 +0200
+Message-ID: <20141023123447.GA10053@8bytes.org>
+References: <1414016555-28067-1-git-send-email-s-anna@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <5445A345.7010401-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Stefan Hengelein <stefan.hengelein-d40JDW7QUjc@public.gmane.org>
-Cc: linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Valentin Rothberg <valentinrothberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1414016555-28067-1-git-send-email-s-anna@ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Suman Anna <s-anna@ti.com>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, iommu@lists.linux-foundation.org, linux-omap@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGVsbG8sCgpPbiAyMDE0LTEwLTIxIDAyOjA1LCBMYXVyYSBBYmJvdHQgd3JvdGU6Cj4gT24gMTAv
-MjAvMjAxNCA2OjUwIEFNLCBTdGVmYW4gSGVuZ2VsZWluIHdyb3RlOgo+PiBXZWxsLAo+Pgo+PiBh
-cmNoL2FybS9tbS9kbWEtbWFwcGluZy5jOiBJbiBmdW5jdGlvbiDigJhfX2F0b21pY19nZXRfcGFn
-ZXPigJk6Cj4+IGFyY2gvYXJtL21tL2RtYS1tYXBwaW5nLmM6MTI2NTozMTogZXJyb3I6IOKAmGF0
-b21pY19wb29s4oCZIHVuZGVjbGFyZWQKPj4gKGZpcnN0IHVzZSBpbiB0aGlzIGZ1bmN0aW9uKQo+
-Pgo+PiBhcmNoL2FybS9tbS9kbWEtbWFwcGluZy5jOiBJbiBmdW5jdGlvbiDigJhfX2lvbW11X2dl
-dF9wYWdlc+KAmToKPj4gYXJjaC9hcm0vbW0vZG1hLW1hcHBpbmcuYzoxMjc1OjI6IGVycm9yOiBp
-bXBsaWNpdCBkZWNsYXJhdGlvbiBvZgo+PiBmdW5jdGlvbiDigJhfX2luX2F0b21pY19wb29s4oCZ
-IFstV2Vycm9yPWltcGxpY2l0LWZ1bmN0aW9uLWRlY2xhcmF0aW9uXQo+Pgo+Pgo+PiBvdGhlcnM6
-Cj4+IGFyY2gvYXJtL21tL2RtYS1tYXBwaW5nLmM6IEluIGZ1bmN0aW9uIOKAmF9faW9tbXVfYWxs
-b2NfcmVtYXDigJk6Cj4+IGFyY2gvYXJtL21tL2RtYS1tYXBwaW5nLmM6MTIwMDo0OiBlcnJvcjog
-4oCYVk1fQVJNX0RNQV9DT05TSVNURU5U4oCZCj4+IHVuZGVjbGFyZWQgKGZpcnN0IHVzZSBpbiB0
-aGlzIGZ1bmN0aW9uKQo+PiBhcmNoL2FybS9tbS9kbWEtbWFwcGluZy5jOjEyMDA6NDogbm90ZTog
-ZWFjaCB1bmRlY2xhcmVkIGlkZW50aWZpZXIgaXMKPj4gcmVwb3J0ZWQgb25seSBvbmNlIGZvciBl
-YWNoIGZ1bmN0aW9uIGl0IGFwcGVhcnMgaW4KPj4KPj4gYXJjaC9hcm0vbW0vZG1hLW1hcHBpbmcu
-YzogSW4gZnVuY3Rpb24g4oCYX19pb21tdV9nZXRfcGFnZXPigJk6Cj4+IGFyY2gvYXJtL21tL2Rt
-YS1tYXBwaW5nLmM6MTI4MjoyOTogZXJyb3I6IOKAmFZNX0FSTV9ETUFfQ09OU0lTVEVOVOKAmQo+
-PiB1bmRlY2xhcmVkIChmaXJzdCB1c2UgaW4gdGhpcyBmdW5jdGlvbikKPj4gYXJjaC9hcm0vbW0v
-ZG1hLW1hcHBpbmcuYzogSW4gZnVuY3Rpb24g4oCYYXJtX2lvbW11X2ZyZWVfYXR0cnPigJk6Cj4+
-IGFyY2gvYXJtL21tL2RtYS1tYXBwaW5nLmM6MTQxMTo0OiBlcnJvcjog4oCYVk1fQVJNX0RNQV9D
-T05TSVNURU5U4oCZCj4+IHVuZGVjbGFyZWQgKGZpcnN0IHVzZSBpbiB0aGlzIGZ1bmN0aW9uKQo+
-Pgo+Pgo+PiBpJ3ZlIGF0dGFjaGVkIGEgY29uZmlndXJhdGlvbiB3aGVyZSBpdCBoYXBwZW5zLgo+
-PiB3aGVuIHlvdSBwbGFjZSB0aGUgY29uZmlndXJhdGlvbiBpbiB5b3VyIHRyZWUgYW5kIGNvbXBp
-bGUgdGhlIGZpbGUsCj4+IHRoZSBlcnJvcnMgc2hvdWxkIHNob3cgdXAuCj4+Cj4+IEhvd2V2ZXIs
-IHdpdGhpbiB0aGUgY29uZmlndXJhdGlvbiBDT05GSUdfQVJNX0RNQV9VU0VfSU9NTVUgaXMgZGVm
-aW5lZAo+PiBhbmQgQ09ORklHX01NVSBpcyBub3QuIEFGQUlVSSwgaWYgYm90aCBzaG91bGQgYmUg
-ZW5hYmxlZCB0b2dldGhlciwgaXQKPj4gc2hvdWxkIGJlIG1hcHBlZCBpbiBLY29uZmlnIHNvbWV3
-aGVyZSwgcmlnaHQ/Cj4KPiBUaGVyZSBpc24ndCBhIG5pY2Ugd2F5IHRvIGZpeHVwIHRoZSBkbWEg
-Y29uc2lzdGVudCBmbGFncyBzbyBJIHdvdWxkCj4gc2F5IHRoaXMgb3B0aW9uIHNob3VsZCBqdXN0
-IGRlcGVuZCBvbiBNTVUuCgpUaGUgcXVlc3Rpb24gaXMgd2hpY2ggb3B0aW9uIHNob3VsZCBkZXBl
-bmQgb24gTU1VPyBNYWtpbmcgCkNPTkZJR19BUk1fRE1BX1VTRV9JT01NVQp0byBkZXBlbmQgb24g
-TU1VIGRvZXNuJ3Qgc29sdmUgdGhpcyBjYXNlLiBJdCBvbmx5IGdpdmVzIGZvbGxvd2luZyAKd2Fy
-bmluZyB3aXRoIHRoZQptZW50aW9uZWQgLmNvbmZpZzoKd2FybmluZzogKFZJREVPX09NQVAzICYm
-IEVYWU5PU19JT01NVSAmJiBTSE1PQklMRV9JT01NVSAmJiBJUE1NVV9WTVNBICYmIApBUk1fU01N
-VSkgc2VsZWN0cyBBUk1fRE1BX1VTRV9JT01NVSB3aGljaCBoYXMgdW5tZXQgZGlyZWN0IGRlcGVu
-ZGVuY2llcyAKKE1NVSkKCklNSE8gdGhlIGJlc3Qgc29sdXRpb24gd2lsbCBiZSB0byBlaXRoZXIg
-bWFrZSB0aGUgd2hvbGUgSU9NTVUgc3Vic3lzdGVtIAp0byBkZXBlbmQKb24gTU1VIG9yIGFsdGVy
-bmF0aXZlbHksIGFkZCB0aGlzIGRlcGVuZGVuY3kgdG8gYWxsIElPTU1VIGRyaXZlcnMgd2hpY2gg
-CmNhbiBiZQplbmFibGVkIGJ5IENPTVBJTEVfVEVTVCBvcHRpb24gKGhlcmUgdGhlIGlzc3VlIGlz
-IGNhdXNlZCBieSAKU0hNT0JJTEVfSU9NTVUsIHdoaWNoCm90aGVyd2lzZSBjYW5ub3QgYmUgZW5h
-YmxlZCB3aGVuIG5vLW1tdSBzeXN0ZW1zIGFyZSBzZWxlY3RlZCkuCgpCZXN0IHJlZ2FyZHMKLS0g
-Ck1hcmVrIFN6eXByb3dza2ksIFBoRApTYW1zdW5nIFImRCBJbnN0aXR1dGUgUG9sYW5kCgpfX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
-IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
-eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Wed, Oct 22, 2014 at 05:22:18PM -0500, Suman Anna wrote:
+> Suman Anna (17):
+>   iommu/omap: Remove refcount field from omap_iommu object
+>   iommu/omap: Remove unused isr_priv field from omap_iommu
+>   iommu/omap: Remove duplicate declarations
+>   iommu/omap: Remove conditional definition of dev_to_omap_iommu()
+>   iommu/omap: Remove ver debugfs entry
+>   iommu/omap: Remove omap_iommu_arch_version() and version field
+>   iommu/omap: Remove bogus version check in context save/restore
+>   iommu/omap: Simplify omap2_iommu_fault_isr()
+>   iommu/omap: Consolidate OMAP IOMMU modules
+>   iommu/omap: Fix the permissions on nr_tlb_entries
+>   iommu/omap: Make pagetable debugfs entry read-only
+>   iommu/omap: Integrate omap-iommu-debug into omap-iommu
+>   iommu/omap: Remove couple of unused exported functions
+>   iommu/omap: Do not export unneeded functions
+>   iommu/omap: Reset the domain field upon detaching
+>   iommu/omap: Fix bus error on debugfs access of unattached IOMMU
+>   iommu/omap: Switch pagetable debugfs entry to use seq_file
+> 
+>  drivers/iommu/Kconfig            |  12 +-
+>  drivers/iommu/Makefile           |   1 -
+>  drivers/iommu/omap-iommu-debug.c | 242 ++++++++--------------------
+>  drivers/iommu/omap-iommu.c       | 306 ++++++++++++++++++++++-------------
+>  drivers/iommu/omap-iommu.h       |  98 ++++++------
+>  drivers/iommu/omap-iommu2.c      | 337 ---------------------------------------
+>  6 files changed, 312 insertions(+), 684 deletions(-)
+>  delete mode 100644 drivers/iommu/omap-iommu2.c
+
+Applied to arm/omap, thanks Suman.
+
