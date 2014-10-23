@@ -1,46 +1,56 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v2 00/17] OMAP IOMMU Cleanup & Consolidation
-Date: Thu, 23 Oct 2014 14:34:47 +0200
-Message-ID: <20141023123447.GA10053@8bytes.org>
-References: <1414016555-28067-1-git-send-email-s-anna@ti.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH linux-next] iommu: add iommu for s390 platform
+Date: Thu, 23 Oct 2014 14:41:15 +0200
+Message-ID: <20141023124115.GB10053@8bytes.org>
+References: <1413892645-37657-1-git-send-email-blaschka@linux.vnet.ibm.com>
+	<20141022141728.GG10074@8bytes.org>
+	<20141022154320.GA42442@tuxmaker.boeblingen.de.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-omap-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1414016555-28067-1-git-send-email-s-anna@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Suman Anna <s-anna@ti.com>
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, iommu@lists.linux-foundation.org, linux-omap@vger.kernel.org
+In-Reply-To: <20141022154320.GA42442-++28Fms/gMmXI4yAdoq52KN5r0PSdgG1zG2AekJRRhI@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Frank Blaschka <blaschka-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+Cc: linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, schwidefsky-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org, gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Oct 22, 2014 at 05:22:18PM -0500, Suman Anna wrote:
-> Suman Anna (17):
->   iommu/omap: Remove refcount field from omap_iommu object
->   iommu/omap: Remove unused isr_priv field from omap_iommu
->   iommu/omap: Remove duplicate declarations
->   iommu/omap: Remove conditional definition of dev_to_omap_iommu()
->   iommu/omap: Remove ver debugfs entry
->   iommu/omap: Remove omap_iommu_arch_version() and version field
->   iommu/omap: Remove bogus version check in context save/restore
->   iommu/omap: Simplify omap2_iommu_fault_isr()
->   iommu/omap: Consolidate OMAP IOMMU modules
->   iommu/omap: Fix the permissions on nr_tlb_entries
->   iommu/omap: Make pagetable debugfs entry read-only
->   iommu/omap: Integrate omap-iommu-debug into omap-iommu
->   iommu/omap: Remove couple of unused exported functions
->   iommu/omap: Do not export unneeded functions
->   iommu/omap: Reset the domain field upon detaching
->   iommu/omap: Fix bus error on debugfs access of unattached IOMMU
->   iommu/omap: Switch pagetable debugfs entry to use seq_file
+On Wed, Oct 22, 2014 at 05:43:20PM +0200, Frank Blaschka wrote:
+> Basically there are no limitations. Depending on the s390 maschine
+> generation a device starts its IOVA at a specific address (announced by
+> the HW). But as I already told each device starts at the same address.
+> I think this prevents having multiple devices on the same IOMMU domain.
+
+Why, each device has its own IOVA address space, so IOVA A could map to
+physical address X for one device and to Y for another, no? And if you
+point multiple devices to the same dma_table they share the mappings
+(and thus the address space). Or am I getting something wrong?
+
+> yes, you are absolutely right. There is a per-device dma_table.
+> There is no general IOMMU device but each pci device has its own IOMMU
+> translation capability.
+
+I see, in this way it is similar to ARM where there is often also one IOMMU
+per master device.
+
+> Is there a possibility the IOMMU domain can support e.g. something like
 > 
->  drivers/iommu/Kconfig            |  12 +-
->  drivers/iommu/Makefile           |   1 -
->  drivers/iommu/omap-iommu-debug.c | 242 ++++++++--------------------
->  drivers/iommu/omap-iommu.c       | 306 ++++++++++++++++++++++-------------
->  drivers/iommu/omap-iommu.h       |  98 ++++++------
->  drivers/iommu/omap-iommu2.c      | 337 ---------------------------------------
->  6 files changed, 312 insertions(+), 684 deletions(-)
->  delete mode 100644 drivers/iommu/omap-iommu2.c
+> VIOA 0x10000 -> pci device 1
+> VIOA 0x10000 -> pci device 2
 
-Applied to arm/omap, thanks Suman.
+A domain is basically an abstraction for a DMA page table (or a
+dma_table, as you call it on s390). So you can easily create similar
+mappings for more than one device with it.
 
+
+
+	Joerg
