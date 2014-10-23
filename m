@@ -1,15 +1,17 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu: Implement a dummy bus_set_iommu()
-Date: Thu, 23 Oct 2014 10:09:54 +0200
-Message-ID: <20141023080953.GA30397@ulmo>
-References: <1406897113-20099-1-git-send-email-thierry.reding@gmail.com>
-	<1406897113-20099-2-git-send-email-thierry.reding@gmail.com>
-	<20140818165750.GE9809@8bytes.org> <20141015091043.GA13162@ulmo>
-	<20141022142922.GH10074@8bytes.org>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH] arm: dma-mapping: fix compilation error when CONFIG_MMU is
+	not present
+Date: Thu, 23 Oct 2014 10:15:44 +0200
+Message-ID: <5448B930.7070800@samsung.com>
+References: <1413734340-53108-1-git-send-email-stefan.hengelein@fau.de>
+	<5444BCFF.8030803@samsung.com>
+	<CABv5NL_GdtZegpw8wxau9oD6xXWdX3GUySLqCaoaoa549Kg_GQ@mail.gmail.com>
+	<5445A345.7010401@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1960513411381422373=="
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20141022142922.GH10074-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-reply-to: <5445A345.7010401-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,80 +21,52 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Stefan Hengelein <stefan.hengelein-d40JDW7QUjc@public.gmane.org>
+Cc: linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, andreas.herrmann-bsGFqQB8/DxBDgjK7y7TUQ@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Valentin Rothberg <valentinrothberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
---===============1960513411381422373==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="PEIAKu/WMn1b1Hv9"
-Content-Disposition: inline
-
-
---PEIAKu/WMn1b1Hv9
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Oct 22, 2014 at 04:29:22PM +0200, Joerg Roedel wrote:
-> On Wed, Oct 15, 2014 at 11:10:44AM +0200, Thierry Reding wrote:
-> > It seems like I never got back to you on this. The reason here is that
-> > for Tegra the IOMMU is part of a larger IP block. The IP block is
-> > primarily a memory controller with a bunch of configuration knobs for
-> > arbitration, prioritization and whatnot. A smaller part of the device
-> > does the IOMMU translation. Therefore the IOMMU implementation would
-> > be part of a larger driver, and having this dummy would reduce the
-> > amount of #ifdefs required.
-> >=20
-> > bus_set_iommu() is also the only function in include/linux/iommu.h that
-> > doesn't have a dummy, so it seemed like a natural thing to do.
-> >=20
-> > That said, I can work around this being absent for !IOMMU_API.
->=20
-> Or you make this "larger driver" just depend on IOMMU_API? Otherwise you
-> need the #ifdefs anyway to not carry around the iommu-ops functions in
-> the driver without having the iommu core enabled, no?
-
-I can do that using IS_ENABLED() magic, which will cause the iommu_ops
-to be thrown away automatically when IOMMU_API is disabled. That allows
-the driver to be compiled with full coverage and still only include the
-needed parts in the final binary.
-
-Then again, going forward it doesn't seem likely that we'll ever want to
-disable IOMMU on Tegra once it's been enabled, so this isn't really a
-big issue.
-
-Thierry
-
---PEIAKu/WMn1b1Hv9
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJUSLfRAAoJEN0jrNd/PrOhrpUP/2X6qYRxRULeM/oV5GDviyn5
-L3jfLuRxUhnqEJtJOOGUrx6mzzGT2sj4aOc/lWcC3RAZSHEaZUGrsmcWHNIYAQCj
-OHefo6H4BClO4iyiIyqOv02Dj54jDe5mahfYgon5q/4IGuIOFZFdwoz9SUXqFfso
-bleiBTMxO52De6UptV9XMyD98yX6iOnLSsS6UDm3qgnxCT4wFHKVtLrq5pI5oV5e
-iwbAuPOoh77C9JL6qp9Tk6ixJeqyYSN/bsz7YmmMoCVi/8BRiNW5IuuTxxH2hmw1
-HUq5vjbcbsZI7QSMgWiG6aXhQndiLvCr/ekfJ5HT0lyOyDaoo06YTXZEM48C7v6R
-xJfMSZVegBTWVM1Ry8PgGcNFL58JccMvElkrV07VmotSDQtPv8jrXANG7Bu0Ya32
-z38cpBTHMRiW8RxisdT4qaOKN6fIZh/85iWH4jvOcDM1Da+eLeDs2ef2g7O4p60p
-hX3SqG/soy+IekbyoSu4SAa6q7bYxpfce1bg3hNi+tpNM/sekhEFwPJ9nlGexYFt
-bMm4ouU+SjKmOpDe+PTj8p03Ym4kU9+b8OBK2y8iNbmmCc8LJE2hXoxFxKvpyIvu
-DJpmOA/Rq87FEgA48yeS9rKa62KHLP261gxpH0+m4a9E8BTMpC8g0khgLn1QOo2c
-4GhpE2awi+8Ydr3dGPTr
-=n6kj
------END PGP SIGNATURE-----
-
---PEIAKu/WMn1b1Hv9--
-
---===============1960513411381422373==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============1960513411381422373==--
+SGVsbG8sCgpPbiAyMDE0LTEwLTIxIDAyOjA1LCBMYXVyYSBBYmJvdHQgd3JvdGU6Cj4gT24gMTAv
+MjAvMjAxNCA2OjUwIEFNLCBTdGVmYW4gSGVuZ2VsZWluIHdyb3RlOgo+PiBXZWxsLAo+Pgo+PiBh
+cmNoL2FybS9tbS9kbWEtbWFwcGluZy5jOiBJbiBmdW5jdGlvbiDigJhfX2F0b21pY19nZXRfcGFn
+ZXPigJk6Cj4+IGFyY2gvYXJtL21tL2RtYS1tYXBwaW5nLmM6MTI2NTozMTogZXJyb3I6IOKAmGF0
+b21pY19wb29s4oCZIHVuZGVjbGFyZWQKPj4gKGZpcnN0IHVzZSBpbiB0aGlzIGZ1bmN0aW9uKQo+
+Pgo+PiBhcmNoL2FybS9tbS9kbWEtbWFwcGluZy5jOiBJbiBmdW5jdGlvbiDigJhfX2lvbW11X2dl
+dF9wYWdlc+KAmToKPj4gYXJjaC9hcm0vbW0vZG1hLW1hcHBpbmcuYzoxMjc1OjI6IGVycm9yOiBp
+bXBsaWNpdCBkZWNsYXJhdGlvbiBvZgo+PiBmdW5jdGlvbiDigJhfX2luX2F0b21pY19wb29s4oCZ
+IFstV2Vycm9yPWltcGxpY2l0LWZ1bmN0aW9uLWRlY2xhcmF0aW9uXQo+Pgo+Pgo+PiBvdGhlcnM6
+Cj4+IGFyY2gvYXJtL21tL2RtYS1tYXBwaW5nLmM6IEluIGZ1bmN0aW9uIOKAmF9faW9tbXVfYWxs
+b2NfcmVtYXDigJk6Cj4+IGFyY2gvYXJtL21tL2RtYS1tYXBwaW5nLmM6MTIwMDo0OiBlcnJvcjog
+4oCYVk1fQVJNX0RNQV9DT05TSVNURU5U4oCZCj4+IHVuZGVjbGFyZWQgKGZpcnN0IHVzZSBpbiB0
+aGlzIGZ1bmN0aW9uKQo+PiBhcmNoL2FybS9tbS9kbWEtbWFwcGluZy5jOjEyMDA6NDogbm90ZTog
+ZWFjaCB1bmRlY2xhcmVkIGlkZW50aWZpZXIgaXMKPj4gcmVwb3J0ZWQgb25seSBvbmNlIGZvciBl
+YWNoIGZ1bmN0aW9uIGl0IGFwcGVhcnMgaW4KPj4KPj4gYXJjaC9hcm0vbW0vZG1hLW1hcHBpbmcu
+YzogSW4gZnVuY3Rpb24g4oCYX19pb21tdV9nZXRfcGFnZXPigJk6Cj4+IGFyY2gvYXJtL21tL2Rt
+YS1tYXBwaW5nLmM6MTI4MjoyOTogZXJyb3I6IOKAmFZNX0FSTV9ETUFfQ09OU0lTVEVOVOKAmQo+
+PiB1bmRlY2xhcmVkIChmaXJzdCB1c2UgaW4gdGhpcyBmdW5jdGlvbikKPj4gYXJjaC9hcm0vbW0v
+ZG1hLW1hcHBpbmcuYzogSW4gZnVuY3Rpb24g4oCYYXJtX2lvbW11X2ZyZWVfYXR0cnPigJk6Cj4+
+IGFyY2gvYXJtL21tL2RtYS1tYXBwaW5nLmM6MTQxMTo0OiBlcnJvcjog4oCYVk1fQVJNX0RNQV9D
+T05TSVNURU5U4oCZCj4+IHVuZGVjbGFyZWQgKGZpcnN0IHVzZSBpbiB0aGlzIGZ1bmN0aW9uKQo+
+Pgo+Pgo+PiBpJ3ZlIGF0dGFjaGVkIGEgY29uZmlndXJhdGlvbiB3aGVyZSBpdCBoYXBwZW5zLgo+
+PiB3aGVuIHlvdSBwbGFjZSB0aGUgY29uZmlndXJhdGlvbiBpbiB5b3VyIHRyZWUgYW5kIGNvbXBp
+bGUgdGhlIGZpbGUsCj4+IHRoZSBlcnJvcnMgc2hvdWxkIHNob3cgdXAuCj4+Cj4+IEhvd2V2ZXIs
+IHdpdGhpbiB0aGUgY29uZmlndXJhdGlvbiBDT05GSUdfQVJNX0RNQV9VU0VfSU9NTVUgaXMgZGVm
+aW5lZAo+PiBhbmQgQ09ORklHX01NVSBpcyBub3QuIEFGQUlVSSwgaWYgYm90aCBzaG91bGQgYmUg
+ZW5hYmxlZCB0b2dldGhlciwgaXQKPj4gc2hvdWxkIGJlIG1hcHBlZCBpbiBLY29uZmlnIHNvbWV3
+aGVyZSwgcmlnaHQ/Cj4KPiBUaGVyZSBpc24ndCBhIG5pY2Ugd2F5IHRvIGZpeHVwIHRoZSBkbWEg
+Y29uc2lzdGVudCBmbGFncyBzbyBJIHdvdWxkCj4gc2F5IHRoaXMgb3B0aW9uIHNob3VsZCBqdXN0
+IGRlcGVuZCBvbiBNTVUuCgpUaGUgcXVlc3Rpb24gaXMgd2hpY2ggb3B0aW9uIHNob3VsZCBkZXBl
+bmQgb24gTU1VPyBNYWtpbmcgCkNPTkZJR19BUk1fRE1BX1VTRV9JT01NVQp0byBkZXBlbmQgb24g
+TU1VIGRvZXNuJ3Qgc29sdmUgdGhpcyBjYXNlLiBJdCBvbmx5IGdpdmVzIGZvbGxvd2luZyAKd2Fy
+bmluZyB3aXRoIHRoZQptZW50aW9uZWQgLmNvbmZpZzoKd2FybmluZzogKFZJREVPX09NQVAzICYm
+IEVYWU5PU19JT01NVSAmJiBTSE1PQklMRV9JT01NVSAmJiBJUE1NVV9WTVNBICYmIApBUk1fU01N
+VSkgc2VsZWN0cyBBUk1fRE1BX1VTRV9JT01NVSB3aGljaCBoYXMgdW5tZXQgZGlyZWN0IGRlcGVu
+ZGVuY2llcyAKKE1NVSkKCklNSE8gdGhlIGJlc3Qgc29sdXRpb24gd2lsbCBiZSB0byBlaXRoZXIg
+bWFrZSB0aGUgd2hvbGUgSU9NTVUgc3Vic3lzdGVtIAp0byBkZXBlbmQKb24gTU1VIG9yIGFsdGVy
+bmF0aXZlbHksIGFkZCB0aGlzIGRlcGVuZGVuY3kgdG8gYWxsIElPTU1VIGRyaXZlcnMgd2hpY2gg
+CmNhbiBiZQplbmFibGVkIGJ5IENPTVBJTEVfVEVTVCBvcHRpb24gKGhlcmUgdGhlIGlzc3VlIGlz
+IGNhdXNlZCBieSAKU0hNT0JJTEVfSU9NTVUsIHdoaWNoCm90aGVyd2lzZSBjYW5ub3QgYmUgZW5h
+YmxlZCB3aGVuIG5vLW1tdSBzeXN0ZW1zIGFyZSBzZWxlY3RlZCkuCgpCZXN0IHJlZ2FyZHMKLS0g
+Ck1hcmVrIFN6eXByb3dza2ksIFBoRApTYW1zdW5nIFImRCBJbnN0aXR1dGUgUG9sYW5kCgpfX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
+IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
+eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
