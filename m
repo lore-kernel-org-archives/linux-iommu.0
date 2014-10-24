@@ -1,135 +1,69 @@
-From: Stefan Hengelein <stefan.hengelein@fau.de>
-Subject: Re: [PATCH] arm: dma-mapping: fix compilation error when CONFIG_MMU
- is not present
-Date: Fri, 24 Oct 2014 15:15:02 +0200
-Message-ID: <CABv5NL_E83CgBcHbAqo9xejWAEamO3oxX6ZjU+fo9X6k4cE_1w@mail.gmail.com>
-References: <1413734340-53108-1-git-send-email-stefan.hengelein@fau.de>
-	<5444BCFF.8030803@samsung.com>
-	<CABv5NL_GdtZegpw8wxau9oD6xXWdX3GUySLqCaoaoa549Kg_GQ@mail.gmail.com>
-	<5445A345.7010401@codeaurora.org>
-	<5448B930.7070800@samsung.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH linux-next] iommu: add iommu for s390 platform
+Date: Sat, 25 Oct 2014 01:33:29 +0200
+Message-ID: <20141024233329.GA6202@8bytes.org>
+References: <1413892645-37657-1-git-send-email-blaschka@linux.vnet.ibm.com>
+	<20141022141728.GG10074@8bytes.org>
+	<20141022154320.GA42442@tuxmaker.boeblingen.de.ibm.com>
+	<20141023124115.GB10053@8bytes.org>
+	<20141023140437.GA31009@tuxmaker.boeblingen.de.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5448B930.7070800@samsung.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>, Laura Abbott <lauraa@codeaurora.org>
-Cc: linux-kernel@vger.kernel.org, linux@arm.linux.org.uk, akpm@linux-foundation.org, linux-arm-kernel@lists.infradead.org, Valentin Rothberg <valentinrothberg@gmail.com>, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20141023140437.GA31009-++28Fms/gMmXI4yAdoq52KN5r0PSdgG1zG2AekJRRhI@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Frank Blaschka <blaschka-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+Cc: linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, schwidefsky-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org, gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+Hi Frank,
 
-adding a dependency to CONFIG_ARM_DMA_USE_IOMMU is probably not a good
-idea anyways.
-If you read the Documentation/kbuild/kconfig-language.txt, you will see=
- that:
-1. in general, selected options should have no prompt and no dependenci=
-es
-2. giving ARM_DMA_USE_IOMMU a dependency on MMU will and cannot solve
-the problem, since ARM_DMA_USE_IOMMU itself is selected by several
-sources and select will not enforce dependencies to be resolved (to be
-precise, it will simply ignore them). Thus, CONFIG_MMU will not be
-enabled (as you can see in your warning).
-If you want to ensure CONFIG_MMU is enabled when
-CONFIG_ARM_DMA_USE_IOMMU is selected, the selecting options (e.g.
-SHMOBILE_IOMMU) should have a dependency on MMU.
-However, i'm not sure if that's the right way to solve it, since it
-will hide these options when MMU is not enabled.
+On Thu, Oct 23, 2014 at 04:04:37PM +0200, Frank Blaschka wrote:
+> > A domain is basically an abstraction for a DMA page table (or a
+> > dma_table, as you call it on s390). So you can easily create similar
+> > mappings for more than one device with it.
+> >
+> the clp instructions reports a start/end dma address for the pci device.
+> on my system all devices report:
+> 
+> sdma = 0x100000000;
+> edma = 0x1ffffffffffffff;
 
-Making the whole IOMMU subsystem depend on MMU would probably also
-solve the problem. Is there any situation where it would make sense to
-use an IOMMU without an MMU?
+These values need to be reported through the IOMMU-API, so that the
+users know which address ranges they can map.
 
-Best Regards,
-Stefan Hengelein
+> dma mappings are created for each device separately starting from 0x100000000
+> and filling the the VIOA space for this device (until 0x1ffffffffffffff)
+> 
+> If we would like to have more then one device per domain I think:
+> 
+> we would have to slice the IOVA address space (0x100000000 - 0x1ffffffffffffff)
+> of the domain and report only a slice to the pci device (clp)
+> The iommu code would have to find the device by the dma (VIOA) address
+> and then program the entry to the table of the particular device (and only this
+> device).
 
-2014-10-23 10:15 GMT+02:00 Marek Szyprowski <m.szyprowski@samsung.com>:
-> Hello,
->
->
-> On 2014-10-21 02:05, Laura Abbott wrote:
->>
->> On 10/20/2014 6:50 AM, Stefan Hengelein wrote:
->>>
->>> Well,
->>>
->>> arch/arm/mm/dma-mapping.c: In function =E2=80=98__atomic_get_pages=E2=
-=80=99:
->>> arch/arm/mm/dma-mapping.c:1265:31: error: =E2=80=98atomic_pool=E2=80=
-=99 undeclared
->>> (first use in this function)
->>>
->>> arch/arm/mm/dma-mapping.c: In function =E2=80=98__iommu_get_pages=E2=
-=80=99:
->>> arch/arm/mm/dma-mapping.c:1275:2: error: implicit declaration of
->>> function =E2=80=98__in_atomic_pool=E2=80=99 [-Werror=3Dimplicit-fun=
-ction-declaration]
->>>
->>>
->>> others:
->>> arch/arm/mm/dma-mapping.c: In function =E2=80=98__iommu_alloc_remap=
-=E2=80=99:
->>> arch/arm/mm/dma-mapping.c:1200:4: error: =E2=80=98VM_ARM_DMA_CONSIS=
-TENT=E2=80=99
->>> undeclared (first use in this function)
->>> arch/arm/mm/dma-mapping.c:1200:4: note: each undeclared identifier =
-is
->>> reported only once for each function it appears in
->>>
->>> arch/arm/mm/dma-mapping.c: In function =E2=80=98__iommu_get_pages=E2=
-=80=99:
->>> arch/arm/mm/dma-mapping.c:1282:29: error: =E2=80=98VM_ARM_DMA_CONSI=
-STENT=E2=80=99
->>> undeclared (first use in this function)
->>> arch/arm/mm/dma-mapping.c: In function =E2=80=98arm_iommu_free_attr=
-s=E2=80=99:
->>> arch/arm/mm/dma-mapping.c:1411:4: error: =E2=80=98VM_ARM_DMA_CONSIS=
-TENT=E2=80=99
->>> undeclared (first use in this function)
->>>
->>>
->>> i've attached a configuration where it happens.
->>> when you place the configuration in your tree and compile the file,
->>> the errors should show up.
->>>
->>> However, within the configuration CONFIG_ARM_DMA_USE_IOMMU is defin=
-ed
->>> and CONFIG_MMU is not. AFAIUI, if both should be enabled together, =
-it
->>> should be mapped in Kconfig somewhere, right?
->>
->>
->> There isn't a nice way to fixup the dma consistent flags so I would
->> say this option should just depend on MMU.
->
->
-> The question is which option should depend on MMU? Making
-> CONFIG_ARM_DMA_USE_IOMMU
-> to depend on MMU doesn't solve this case. It only gives following war=
-ning
-> with the
-> mentioned .config:
-> warning: (VIDEO_OMAP3 && EXYNOS_IOMMU && SHMOBILE_IOMMU && IPMMU_VMSA=
- &&
-> ARM_SMMU) selects ARM_DMA_USE_IOMMU which has unmet direct dependenci=
-es
-> (MMU)
->
-> IMHO the best solution will be to either make the whole IOMMU subsyst=
-em to
-> depend
-> on MMU or alternatively, add this dependency to all IOMMU drivers whi=
-ch can
-> be
-> enabled by COMPILE_TEST option (here the issue is caused by SHMOBILE_=
-IOMMU,
-> which
-> otherwise cannot be enabled when no-mmu systems are selected).
->
->
-> Best regards
-> --
-> Marek Szyprowski, PhD
-> Samsung R&D Institute Poland
->
+Why do you need to splice an address space when more than one device is
+assigned to it? Does that come from the hardware?
+
+Usually its not problematic when devices share an address space. The
+partitioning of that address-space between devices is done by an address
+allocator which works on small chunks of memory (io-page-size
+granularity).
+
+But such an address allocator is part of the DMA-API, the IOMMU-API
+which you implement here only cares about the mappings itself, not about
+address allocation.
+
+
+	Joerg
