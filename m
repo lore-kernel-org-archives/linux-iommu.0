@@ -1,7 +1,8 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCH v2 3/6] vfio: introduce the VFIO_DMA_MAP_FLAG_NOEXEC flag
-Date: Mon, 27 Oct 2014 19:05:52 +0100
-Message-ID: <1414433155-31600-4-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [PATCH v2 5/6] vfio: type1: replace vfio_domains_have_iommu_cache
+	with generic function
+Date: Mon, 27 Oct 2014 19:05:54 +0100
+Message-ID: <1414433155-31600-6-git-send-email-a.motakis@virtualopensystems.com>
 References: <1414433155-31600-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,49 +19,79 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, "open list:ABI/API" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-We introduce the VFIO_DMA_MAP_FLAG_NOEXEC flag to the VFIO dma map call,
-and expose its availability via the capability VFIO_DMA_NOEXEC_IOMMU.
-This way the user can control whether the XN flag will be set on the
-requested mappings. The IOMMU_NOEXEC flag needs to be available for all
-the IOMMUs of the container used.
+Replace the function vfio_domains_have_iommu_cache() with a more generic
+function vfio_domains_have_iommu_cap() which allows to check all domains
+of an vfio_iommu structure for a given cached capability.
 
 Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 ---
- include/uapi/linux/vfio.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/vfio/vfio_iommu_type1.c | 37 +++++++++++++++++++------------------
+ 1 file changed, 19 insertions(+), 18 deletions(-)
 
-diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-index 1e39842..06d66c9 100644
---- a/include/uapi/linux/vfio.h
-+++ b/include/uapi/linux/vfio.h
-@@ -30,6 +30,7 @@ enum vfio_iommu_cap {
- 	VFIO_DMA_CC_IOMMU	= 4, /* IOMMU enforces DMA cache coherence
- 					(ex. PCIe NoSnoop stripping) */
- 	VFIO_EEH		= 5, /* Check if EEH is supported */
-+	VFIO_DMA_NOEXEC_IOMMU	= 6,
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index aefb3c0..34472e4 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -80,6 +80,23 @@ struct vfio_group {
+ 	struct list_head	next;
  };
  
++static int vfio_domains_have_iommu_cap(struct vfio_iommu *iommu, int cap)
++{
++	struct vfio_domain *domain;
++	int ret = 1;
++
++	mutex_lock(&iommu->lock);
++	list_for_each_entry(domain, &iommu->domain_list, next) {
++		if (!(domain->caps & cap)) {
++			ret = 0;
++			break;
++		}
++	}
++	mutex_unlock(&iommu->lock);
++
++	return ret;
++}
++
  /*
-@@ -394,12 +395,17 @@ struct vfio_iommu_type1_info {
-  *
-  * Map process virtual addresses to IO virtual addresses using the
-  * provided struct vfio_dma_map. Caller sets argsz. READ &/ WRITE required.
-+ *
-+ * To use the VFIO_DMA_MAP_FLAG_NOEXEC flag, the container must support the
-+ * VFIO_DMA_NOEXEC_IOMMU capability. If mappings are created using this flag,
-+ * any groups subsequently added to the container must support this capability.
-  */
- struct vfio_iommu_type1_dma_map {
- 	__u32	argsz;
- 	__u32	flags;
- #define VFIO_DMA_MAP_FLAG_READ (1 << 0)		/* readable from device */
- #define VFIO_DMA_MAP_FLAG_WRITE (1 << 1)	/* writable from device */
-+#define VFIO_DMA_MAP_FLAG_NOEXEC (1 << 2)	/* not executable from device */
- 	__u64	vaddr;				/* Process virtual address */
- 	__u64	iova;				/* IO virtual address */
- 	__u64	size;				/* Size of mapping (bytes) */
+  * This code handles mapping and unmapping of user data buffers
+  * into DMA'ble space using the IOMMU
+@@ -867,23 +884,6 @@ static void vfio_iommu_type1_release(void *iommu_data)
+ 	kfree(iommu);
+ }
+ 
+-static int vfio_domains_have_iommu_cache(struct vfio_iommu *iommu)
+-{
+-	struct vfio_domain *domain;
+-	int ret = 1;
+-
+-	mutex_lock(&iommu->lock);
+-	list_for_each_entry(domain, &iommu->domain_list, next) {
+-		if (!(domain->caps & IOMMU_CAP_CACHE_COHERENCY)) {
+-			ret = 0;
+-			break;
+-		}
+-	}
+-	mutex_unlock(&iommu->lock);
+-
+-	return ret;
+-}
+-
+ static long vfio_iommu_type1_ioctl(void *iommu_data,
+ 				   unsigned int cmd, unsigned long arg)
+ {
+@@ -898,7 +898,8 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+ 		case VFIO_DMA_CC_IOMMU:
+ 			if (!iommu)
+ 				return 0;
+-			return vfio_domains_have_iommu_cache(iommu);
++			return vfio_domains_have_iommu_cap(iommu,
++						  IOMMU_CAP_CACHE_COHERENCY);
+ 		default:
+ 			return 0;
+ 		}
 -- 
 2.1.1
