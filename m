@@ -1,99 +1,67 @@
-From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH 14/16] Sparc/MSI: Use MSI controller framework to configure MSI/MSI-X irq
-Date: Mon, 27 Oct 2014 21:22:20 +0800
-Message-ID: <1414416142-31239-15-git-send-email-wangyijing@huawei.com>
-References: <1414416142-31239-1-git-send-email-wangyijing@huawei.com>
+From: Gerald Schaefer <gerald.schaefer@de.ibm.com>
+Subject: Re: [PATCH linux-next] iommu: add iommu for s390 platform
+Date: Mon, 27 Oct 2014 15:32:01 +0100
+Message-ID: <20141027153201.517f4ff4@thinkpad>
+References: <1413892645-37657-1-git-send-email-blaschka@linux.vnet.ibm.com>
+ <20141022141728.GG10074@8bytes.org>
+ <20141022154320.GA42442@tuxmaker.boeblingen.de.ibm.com>
+ <20141023124115.GB10053@8bytes.org>
+ <20141023140437.GA31009@tuxmaker.boeblingen.de.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1414416142-31239-1-git-send-email-wangyijing@huawei.com>
+In-Reply-To: <20141023140437.GA31009@tuxmaker.boeblingen.de.ibm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org, Chris Metcalf <cmetcalf@tilera.com>, Ralf Baechle <ralf@linux-mips.org>, Lucas Stach <l.stach@pengutronix.de>, David Vrabel <david.vrabel@citrix.com>
+To: Frank Blaschka <blaschka@linux.vnet.ibm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, schwidefsky@de.ibm.com, linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org, iommu@lists.linux-foundation.org, sebott@linux.vnet.ibm.com
 List-Id: iommu@lists.linux-foundation.org
 
-Use MSI controller framework instead of arch MSI functions to configure
-MSI/MSI-X irq. So we can manage MSI/MSI-X irq in a unified framework.
+On Thu, 23 Oct 2014 16:04:37 +0200
+Frank Blaschka <blaschka@linux.vnet.ibm.com> wrote:
 
-Signed-off-by: Yijing Wang <wangyijing@huawei.com>
-Acked-by: David S. Miller <davem@davemloft.net>
----
- arch/sparc/kernel/pci.c      |   20 ++++++++++++++++++--
- arch/sparc/kernel/pci_impl.h |    3 +++
- 2 files changed, 21 insertions(+), 2 deletions(-)
+> On Thu, Oct 23, 2014 at 02:41:15PM +0200, Joerg Roedel wrote:
+> > On Wed, Oct 22, 2014 at 05:43:20PM +0200, Frank Blaschka wrote:
+> > > Basically there are no limitations. Depending on the s390 maschine
+> > > generation a device starts its IOVA at a specific address
+> > > (announced by the HW). But as I already told each device starts
+> > > at the same address. I think this prevents having multiple
+> > > devices on the same IOMMU domain.
+> > 
+> > Why, each device has its own IOVA address space, so IOVA A could
+> > map to physical address X for one device and to Y for another, no?
+> > And if you point multiple devices to the same dma_table they share
+> > the mappings (and thus the address space). Or am I getting
+> > something wrong?
+> > 
+> > > yes, you are absolutely right. There is a per-device dma_table.
+> > > There is no general IOMMU device but each pci device has its own
+> > > IOMMU translation capability.
+> > 
+> > I see, in this way it is similar to ARM where there is often also
+> > one IOMMU per master device.
+> > 
+> > > Is there a possibility the IOMMU domain can support e.g.
+> > > something like
+> > > 
+> > > VIOA 0x10000 -> pci device 1
+> > > VIOA 0x10000 -> pci device 2
+> > 
+> > A domain is basically an abstraction for a DMA page table (or a
+> > dma_table, as you call it on s390). So you can easily create similar
+> > mappings for more than one device with it.
+> >
+> ok, maybe I was too close to the existing s390 dma implementation or
+> simply wrong, maybe Sebastian or Gerald can give more background
 
-diff --git a/arch/sparc/kernel/pci.c b/arch/sparc/kernel/pci.c
-index b36365f..c691a10 100644
---- a/arch/sparc/kernel/pci.c
-+++ b/arch/sparc/kernel/pci.c
-@@ -656,6 +656,9 @@ struct pci_bus *pci_scan_one_pbm(struct pci_pbm_info *pbm,
- 
- 	printk("PCI: Scanning PBM %s\n", node->full_name);
- 
-+#ifdef CONFIG_PCI_MSI
-+	pbm->msi_ctrl = &sparc_msi_ctrl;
-+#endif
- 	pci_add_resource_offset(&resources, &pbm->io_space,
- 				pbm->io_space.start);
- 	pci_add_resource_offset(&resources, &pbm->mem_space,
-@@ -905,7 +908,15 @@ int pci_domain_nr(struct pci_bus *pbus)
- EXPORT_SYMBOL(pci_domain_nr);
- 
- #ifdef CONFIG_PCI_MSI
--int arch_setup_msi_irq(struct pci_dev *pdev, struct msi_desc *desc)
-+struct msi_controller *pcibios_msi_controller(struct pci_bus *bus)
-+{
-+	struct pci_pbm_info *pbm = bus->sysdata;
-+
-+	return pbm->msi_ctrl;
-+}
-+
-+static int sparc_setup_msi_irq(struct msi_controller *ctrl,
-+		struct pci_dev *pdev, struct msi_desc *desc)
- {
- 	struct pci_pbm_info *pbm = pdev->dev.archdata.host_controller;
- 	unsigned int irq;
-@@ -916,7 +927,7 @@ int arch_setup_msi_irq(struct pci_dev *pdev, struct msi_desc *desc)
- 	return pbm->setup_msi_irq(&irq, pdev, desc);
- }
- 
--void arch_teardown_msi_irq(unsigned int irq)
-+static void sparc_teardown_msi_irq(struct msi_controller *ctrl, unsigned int irq)
- {
- 	struct msi_desc *entry = irq_get_msi_desc(irq);
- 	struct pci_dev *pdev = entry->dev;
-@@ -925,6 +936,11 @@ void arch_teardown_msi_irq(unsigned int irq)
- 	if (pbm->teardown_msi_irq)
- 		pbm->teardown_msi_irq(irq, pdev);
- }
-+
-+struct msi_controller sparc_msi_ctrl = {
-+	.setup_irq = sparc_setup_msi_irq,
-+	.teardown_irq = sparc_teardown_msi_irq,
-+};
- #endif /* !(CONFIG_PCI_MSI) */
- 
- static void ali_sound_dma_hack(struct pci_dev *pdev, int set_bit)
-diff --git a/arch/sparc/kernel/pci_impl.h b/arch/sparc/kernel/pci_impl.h
-index 75803c7..e02642d 100644
---- a/arch/sparc/kernel/pci_impl.h
-+++ b/arch/sparc/kernel/pci_impl.h
-@@ -55,6 +55,8 @@ struct sparc64_msiq_cookie {
- 	struct pci_pbm_info *pbm;
- 	unsigned long msiqid;
- };
-+
-+extern struct msi_controller sparc_msi_ctrl;
- #endif
- 
- struct pci_pbm_info {
-@@ -132,6 +134,7 @@ struct pci_pbm_info {
- 	void				*msi_queues;
- 	unsigned long			*msi_bitmap;
- 	unsigned int			*msi_irq_table;
-+	struct msi_controller *msi_ctrl;
- 	int (*setup_msi_irq)(unsigned int *irq_p, struct pci_dev *pdev,
- 			     struct msi_desc *entry);
- 	void (*teardown_msi_irq)(unsigned int irq, struct pci_dev *pdev);
--- 
-1.7.1
+Not sure if I understood the concept of IOMMU domains right. But if this
+is about having multiple devices in the same domain, so that iommu_ops->map
+will establish the _same_ DMA mapping on _all_ registered devices, then
+this should be possible.
+
+We cannot have shared DMA tables because each device gets its own DMA table
+allocated during device initialization. But we could just keep all devices
+from one domain in a list and then call dma_update_trans() for all devices
+during iommu_ops->map/unmap.
+
+Gerald
