@@ -1,121 +1,113 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH 13/16] IA64/MSI: Use MSI controller framework to configure MSI/MSI-X irq
-Date: Mon, 27 Oct 2014 21:22:19 +0800
-Message-ID: <1414416142-31239-14-git-send-email-wangyijing@huawei.com>
-References: <1414416142-31239-1-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH 00/16] Use MSI controller framework to configure MSI/MSI-X
+Date: Mon, 27 Oct 2014 21:22:06 +0800
+Message-ID: <1414416142-31239-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1414416142-31239-1-git-send-email-wangyijing@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-mips-bounce@linux-mips.org>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org, Chris Metcalf <cmetcalf@tilera.com>, Ralf Baechle <ralf@linux-mips.org>, Lucas Stach <l.stach@pengutronix.de>, David Vrabel <david.vrabel@citrix.com>
+Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org, Chris Metcalf <cmetcalf@tilera.com>Ralf Baechle <r>
 List-Id: iommu@lists.linux-foundation.org
 
-Use MSI controller framework instead of arch MSI functions to configure
-MSI/MSI-X irq. So we can manage MSI/MSI-X irq in a unified framework.
+This series is based on "[PATCH 00/10] Save MSI chip in pci_sys_data",
+https://lkml.org/lkml/2014/10/27/85.
 
-Signed-off-by: Yijing Wang <wangyijing@huawei.com>
----
- arch/ia64/include/asm/pci.h |    3 ++-
- arch/ia64/kernel/msi_ia64.c |   24 ++++++++++++++++++------
- arch/ia64/pci/pci.c         |    1 +
- 3 files changed, 21 insertions(+), 7 deletions(-)
+This series is the v4 of "Use MSI chip framework to configure MSI/MSI-X in all platforms".
+I split it out and post it together.
 
-diff --git a/arch/ia64/include/asm/pci.h b/arch/ia64/include/asm/pci.h
-index 52af5ed..805bbc3 100644
---- a/arch/ia64/include/asm/pci.h
-+++ b/arch/ia64/include/asm/pci.h
-@@ -93,7 +93,7 @@ struct pci_controller {
- 	void *iommu;
- 	int segment;
- 	int node;		/* nearest node with memory or NUMA_NO_NODE for global allocation */
--
-+	struct msi_controller *msi_ctrl;
- 	void *platform_data;
- };
- 
-@@ -101,6 +101,7 @@ struct pci_controller {
- #define PCI_CONTROLLER(busdev) ((struct pci_controller *) busdev->sysdata)
- #define pci_domain_nr(busdev)    (PCI_CONTROLLER(busdev)->segment)
- 
-+extern struct msi_controller ia64_msi_ctrl;
- extern struct pci_ops pci_root_ops;
- 
- static inline int pci_proc_domain(struct pci_bus *bus)
-diff --git a/arch/ia64/kernel/msi_ia64.c b/arch/ia64/kernel/msi_ia64.c
-index 8c3730c..b92b8e2 100644
---- a/arch/ia64/kernel/msi_ia64.c
-+++ b/arch/ia64/kernel/msi_ia64.c
-@@ -42,7 +42,7 @@ static int ia64_set_msi_irq_affinity(struct irq_data *idata,
- }
- #endif /* CONFIG_SMP */
- 
--int ia64_setup_msi_irq(struct pci_dev *pdev, struct msi_desc *desc)
-+int __ia64_setup_msi_irq(struct pci_dev *pdev, struct msi_desc *desc)
- {
- 	struct msi_msg	msg;
- 	unsigned long	dest_phys_id;
-@@ -77,7 +77,7 @@ int ia64_setup_msi_irq(struct pci_dev *pdev, struct msi_desc *desc)
- 	return 0;
- }
- 
--void ia64_teardown_msi_irq(unsigned int irq)
-+void __ia64_teardown_msi_irq(unsigned int irq)
- {
- 	destroy_irq(irq);
- }
-@@ -111,23 +111,35 @@ static struct irq_chip ia64_msi_chip = {
- 	.irq_retrigger		= ia64_msi_retrigger_irq,
- };
- 
-+struct msi_controller *pcibios_msi_controller(struct pci_bus *bus)
-+{
-+	struct pci_controller *ctrl = bus->sysdata;
-+
-+	return ctrl->msi_ctrl;
-+}
- 
--int arch_setup_msi_irq(struct pci_dev *pdev, struct msi_desc *desc)
-+static int ia64_setup_msi_irq(struct msi_controller *ctrl,
-+		struct pci_dev *pdev, struct msi_desc *desc)
- {
- 	if (platform_setup_msi_irq)
- 		return platform_setup_msi_irq(pdev, desc);
- 
--	return ia64_setup_msi_irq(pdev, desc);
-+	return __ia64_setup_msi_irq(pdev, desc);
- }
- 
--void arch_teardown_msi_irq(unsigned int irq)
-+static void ia64_teardown_msi_irq(struct msi_controller *ctrl, unsigned int irq)
- {
- 	if (platform_teardown_msi_irq)
- 		return platform_teardown_msi_irq(irq);
- 
--	return ia64_teardown_msi_irq(irq);
-+	return __ia64_teardown_msi_irq(irq);
- }
- 
-+struct msi_controller ia64_msi_ctrl = {
-+	.setup_irq = ia64_setup_msi_irq,
-+	.teardown_irq = ia64_teardown_msi_irq,
-+};
-+
- #ifdef CONFIG_INTEL_IOMMU
- #ifdef CONFIG_SMP
- static int dmar_msi_set_affinity(struct irq_data *data,
-diff --git a/arch/ia64/pci/pci.c b/arch/ia64/pci/pci.c
-index 291a582..875f46a 100644
---- a/arch/ia64/pci/pci.c
-+++ b/arch/ia64/pci/pci.c
-@@ -437,6 +437,7 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
- 
- 	controller->companion = device;
- 	controller->node = acpi_get_node(device->handle);
-+	controller->msi_ctrl = &ia64_msi_ctrl;
- 
- 	info = kzalloc(sizeof(*info), GFP_KERNEL);
- 	if (!info) {
--- 
-1.7.1
+v3->new:
+Some trivial changes in "IA64/MSI: Use MSI controller framework to configure MSI/MSI-X irq".
+
+Old history:
+v2->v3:
+1. For patch "x86/xen/MSI: Eliminate...", introduce a new global flag "pci_msi_ignore_mask"
+to control the msi mask instead of replacing the irqchip->mask with nop function,
+the latter method has problem pointed out by Konrad Rzeszutek Wilk.
+2. Save msi chip in arch pci sysdata instead of associating msi chip to pci bus.
+Because pci devices under same host share the same msi chip, so I think associate
+msi chip to pci host/pci sysdata is better than to bother every pci bus/devices.
+A better solution suggested by Liviu is to rip out pci_host_bridge from pci_create_root_bus(), 
+then we can save some pci host common attributes like domain_nr, msi_chip, resources,
+into the generic pci_host_bridge. Because this changes to pci host bridge is also 
+a large series, so I think we should go step by step, I will try to post it in another
+series later.
+4. Clean up arm pcibios_add_bus() and pcibios_remove_bus() which were used to associate
+msi chip to pci bus.
+
+v1->v2:
+Add a patch to make s390 MSI code build happy between patch "x86/xen/MSI: E.."
+and "s390/MSI: Use MSI..". Fix several typo problems found by Lucas.
+
+RFC->v1: 
+Updated "[patch 4/21] x86/xen/MSI: Eliminate...", export msi_chip instead
+of #ifdef to fix MSI bug in xen running in x86. 
+Rename arch_get_match_msi_chip() to arch_find_msi_chip().
+Drop use struct device as the msi_chip argument, we will do that
+later in another patchset.
+
+Yijing Wang (16):
+  PCI/MSI: Refactor MSI controller to make it become more common
+  x86/MSI: Use MSI controller framework to configure MSI/MSI-X irq
+  x86/xen/MSI: Use MSI controller framework to configure MSI/MSI-X irq
+  Irq_remapping/MSI: Use MSI controller framework to configure
+    MSI/MSI-X irq
+  x86/MSI: Remove unused MSI weak arch functions
+  Mips/MSI: Save MSI controller in pci sysdata
+  MIPS/Octeon/MSI: Use MSI controller framework to configure MSI/MSI-X
+    irq
+  MIPS/Xlp/MSI: Use MSI controller framework to configure MSI/MSI-X irq
+  MIPS/Xlr/MSI: Use MSI controller framework to configure MSI/MSI-X irq
+  Powerpc/MSI: Use MSI controller framework to configure MSI/MSI-X irq
+  s390/MSI: Use MSI controller framework to configure MSI/MSI-X irq
+  arm/iop13xx/MSI: Use MSI controller framework to configure MSI/MSI-X
+    irq
+  IA64/MSI: Use MSI controller framework to configure MSI/MSI-X irq
+  Sparc/MSI: Use MSI controller framework to configure MSI/MSI-X irq
+  tile/MSI: Use MSI controller framework to configure MSI/MSI-X irq
+  PCI/MSI: Clean up unused MSI arch functions
+
+ arch/arm/mach-iop13xx/include/mach/pci.h        |    4 +
+ arch/arm/mach-iop13xx/iq81340mc.c               |    3 +
+ arch/arm/mach-iop13xx/iq81340sc.c               |    5 +-
+ arch/arm/mach-iop13xx/msi.c                     |   11 ++-
+ arch/ia64/include/asm/pci.h                     |    3 +-
+ arch/ia64/kernel/msi_ia64.c                     |   24 ++++--
+ arch/ia64/pci/pci.c                             |    1 +
+ arch/mips/include/asm/netlogic/xlp-hal/pcibus.h |    1 +
+ arch/mips/include/asm/octeon/pci-octeon.h       |    4 +
+ arch/mips/include/asm/pci.h                     |    3 +
+ arch/mips/pci/msi-octeon.c                      |   31 ++++---
+ arch/mips/pci/msi-xlp.c                         |   11 ++-
+ arch/mips/pci/pci-octeon.c                      |    3 +
+ arch/mips/pci/pci-xlp.c                         |    3 +
+ arch/mips/pci/pci-xlr.c                         |   17 ++++-
+ arch/mips/pci/pci.c                             |    9 ++
+ arch/powerpc/include/asm/pci-bridge.h           |    8 ++
+ arch/powerpc/kernel/msi.c                       |   19 ++++-
+ arch/powerpc/kernel/pci-common.c                |    3 +
+ arch/s390/include/asm/pci.h                     |    1 +
+ arch/s390/pci/pci.c                             |   19 ++++-
+ arch/sparc/kernel/pci.c                         |   20 ++++-
+ arch/sparc/kernel/pci_impl.h                    |    3 +
+ arch/tile/include/asm/pci.h                     |    2 +
+ arch/tile/kernel/pci_gx.c                       |   18 ++++-
+ arch/x86/include/asm/pci.h                      |    9 +-
+ arch/x86/include/asm/x86_init.h                 |    4 -
+ arch/x86/kernel/apic/io_apic.c                  |   18 ++++-
+ arch/x86/kernel/x86_init.c                      |   24 ------
+ arch/x86/pci/acpi.c                             |    1 +
+ arch/x86/pci/common.c                           |    3 +
+ arch/x86/pci/xen.c                              |   45 ++++++----
+ drivers/iommu/irq_remapping.c                   |   11 ++-
+ drivers/pci/msi.c                               |   97 ++++++++++------------
+ include/linux/msi.h                             |   19 ++---
+ 35 files changed, 301 insertions(+), 156 deletions(-)
