@@ -1,7 +1,8 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCH v2 2/6] vfio: type1: support for platform bus devices on ARM
-Date: Mon, 27 Oct 2014 19:05:51 +0100
-Message-ID: <1414433155-31600-3-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [PATCH v2 4/6] vfio: type1: replace domain wide protection flags with
+	supported capabilities
+Date: Mon, 27 Oct 2014 19:05:53 +0100
+Message-ID: <1414433155-31600-5-git-send-email-a.motakis@virtualopensystems.com>
 References: <1414433155-31600-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,27 +22,110 @@ To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9Q
 Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This allows to make use of the VFIO_IOMMU_TYPE1 driver with platform
-devices on ARM. The driver can then be used with an Exynos SMMU, or
-ARM SMMU driver.
+VFIO_IOMMU_TYPE1 keeps track for each domain it knows a list of protection
+flags it always applies to all mappings in the domain. This is used for
+domains that support IOMMU_CAP_CACHE_COHERENCY.
+
+Refactor this slightly, by keeping track instead that a given domain
+supports the capability, and applying the IOMMU_CACHE protection flag when
+doing the actual DMA mappings.
+
+This will allow us to reuse the behavior for IOMMU_CAP_NOEXEC, which we
+also want to keep track of, but without applying it to all domains that
+support it unless the user explicitly requests it.
 
 Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 ---
- drivers/vfio/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/vfio/vfio_iommu_type1.c | 25 +++++++++++++++++--------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
-index d8c5763..a0abe04 100644
---- a/drivers/vfio/Kconfig
-+++ b/drivers/vfio/Kconfig
-@@ -16,7 +16,7 @@ config VFIO_SPAPR_EEH
- menuconfig VFIO
- 	tristate "VFIO Non-Privileged userspace driver framework"
- 	depends on IOMMU_API
--	select VFIO_IOMMU_TYPE1 if X86
-+	select VFIO_IOMMU_TYPE1 if X86 || ARM
- 	select VFIO_IOMMU_SPAPR_TCE if (PPC_POWERNV || PPC_PSERIES)
- 	select VFIO_SPAPR_EEH if (PPC_POWERNV || PPC_PSERIES)
- 	select ANON_INODES
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index 562f686..aefb3c0 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -64,7 +64,7 @@ struct vfio_domain {
+ 	struct iommu_domain	*domain;
+ 	struct list_head	next;
+ 	struct list_head	group_list;
+-	int			prot;		/* IOMMU_CACHE */
++	int			caps;
+ };
+ 
+ struct vfio_dma {
+@@ -485,7 +485,7 @@ static int map_try_harder(struct vfio_domain *domain, dma_addr_t iova,
+ 	for (i = 0; i < npage; i++, pfn++, iova += PAGE_SIZE) {
+ 		ret = iommu_map(domain->domain, iova,
+ 				(phys_addr_t)pfn << PAGE_SHIFT,
+-				PAGE_SIZE, prot | domain->prot);
++				PAGE_SIZE, prot);
+ 		if (ret)
+ 			break;
+ 	}
+@@ -503,11 +503,16 @@ static int vfio_iommu_map(struct vfio_iommu *iommu, dma_addr_t iova,
+ 	int ret;
+ 
+ 	list_for_each_entry(d, &iommu->domain_list, next) {
++		int dprot = prot;
++
++		if (d->caps & IOMMU_CAP_CACHE_COHERENCY)
++			dprot |= IOMMU_CACHE;
++
+ 		ret = iommu_map(d->domain, iova, (phys_addr_t)pfn << PAGE_SHIFT,
+-				npage << PAGE_SHIFT, prot | d->prot);
++				npage << PAGE_SHIFT, dprot);
+ 		if (ret) {
+ 			if (ret != -EBUSY ||
+-			    map_try_harder(d, iova, pfn, npage, prot))
++			    map_try_harder(d, iova, pfn, npage, dprot))
+ 				goto unwind;
+ 		}
+ 	}
+@@ -620,6 +625,10 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
+ 	struct vfio_domain *d;
+ 	struct rb_node *n;
+ 	int ret;
++	int dprot = 0;
++
++	if (domain->caps & IOMMU_CAP_CACHE_COHERENCY)
++		dprot |= IOMMU_CACHE;
+ 
+ 	/* Arbitrarily pick the first domain in the list for lookups */
+ 	d = list_first_entry(&iommu->domain_list, struct vfio_domain, next);
+@@ -653,7 +662,7 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
+ 				size += PAGE_SIZE;
+ 
+ 			ret = iommu_map(domain->domain, iova, phys,
+-					size, dma->prot | domain->prot);
++					size, dma->prot | dprot);
+ 			if (ret)
+ 				return ret;
+ 
+@@ -721,7 +730,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	}
+ 
+ 	if (iommu_capable(bus, IOMMU_CAP_CACHE_COHERENCY))
+-		domain->prot |= IOMMU_CACHE;
++		domain->caps |= IOMMU_CAP_CACHE_COHERENCY;
+ 
+ 	/*
+ 	 * Try to match an existing compatible domain.  We don't want to
+@@ -732,7 +741,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	 */
+ 	list_for_each_entry(d, &iommu->domain_list, next) {
+ 		if (d->domain->ops == domain->domain->ops &&
+-		    d->prot == domain->prot) {
++		    d->caps == domain->caps) {
+ 			iommu_detach_group(domain->domain, iommu_group);
+ 			if (!iommu_attach_group(d->domain, iommu_group)) {
+ 				list_add(&group->next, &d->group_list);
+@@ -865,7 +874,7 @@ static int vfio_domains_have_iommu_cache(struct vfio_iommu *iommu)
+ 
+ 	mutex_lock(&iommu->lock);
+ 	list_for_each_entry(domain, &iommu->domain_list, next) {
+-		if (!(domain->prot & IOMMU_CACHE)) {
++		if (!(domain->caps & IOMMU_CAP_CACHE_COHERENCY)) {
+ 			ret = 0;
+ 			break;
+ 		}
 -- 
 2.1.1
