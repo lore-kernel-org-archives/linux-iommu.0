@@ -1,17 +1,16 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 Subject: Re: [RFC PATCH v3 5/7] dma-mapping: detect and configure IOMMU in
 	of_dma_configure
-Date: Mon, 27 Oct 2014 10:51:59 +0000
-Message-ID: <20141027105158.GE8768@arm.com>
+Date: Mon, 27 Oct 2014 12:12:38 +0100
+Message-ID: <544E28A6.8090209@samsung.com>
 References: <1410539695-29128-1-git-send-email-will.deacon@arm.com>
 	<20140922092909.GJ1470@ulmo> <20140922175027.GK7936@arm.com>
-	<4572757.M4IDlCz5Vc@avalon>
+	<4572757.M4IDlCz5Vc@avalon> <20141027105158.GE8768@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <4572757.M4IDlCz5Vc@avalon>
+In-reply-to: <20141027105158.GE8768-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,40 +20,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Oct 14, 2014 at 01:53:59PM +0100, Laurent Pinchart wrote:
-> Hi Will,
+Hello,
 
-Hi Laurent,
+On 2014-10-27 11:51, Will Deacon wrote:
+> On Tue, Oct 14, 2014 at 01:53:59PM +0100, Laurent Pinchart wrote:
+>> On Monday 22 September 2014 18:50:27 Will Deacon wrote:
+>>> On Mon, Sep 22, 2014 at 10:29:10AM +0100, Thierry Reding wrote:
+>>>> Agreed. I wonder how useful it is to know the set of IOMMU instances
+>>>> that each device can master through. Wouldn't it be more useful to keep
+>>>> a list of master interfaces for each device? The set of IOMMU instances
+>>>> can trivially be derived from that.
+>>> I'm struggling to think how that would look. What do you mean by `master
+>>> interfaces' in terms of the code we have in Linux? At the end of the day,
+>>> the list of IOMMU instances (i.e. iommu_dma_mapping) exists because you
+>>> and Laurent have use-cases involving devices mastering through multiple
+>>> IOMMUs. If it doesn't work for you, it might be best for you to send me
+>>> the patch ;)
+>> Just for the record, I've brought up the topic of masters being served by
+>> multiple IOMMUs, but don't have a use case for it (yet at least). I do have
+>> masters served through multiple streams with separate stream IDs, but all by
+>> the same IOMMU.
+> Ok. I spoke to Arnd, David and Joerg at LPC and the consensus was that the
+> DMA-mapping API should *not* be exposed to the details of masters that
+> master through multiple IOMMUs. Instead, that should be abstracted by the
+> device API by exposing that device as a single struct device.
+>
+> So, that's certainly an area that needs more work and I'll drop the limited
+> support I'd cooked up from this patch set in the next version.
 
-> On Monday 22 September 2014 18:50:27 Will Deacon wrote:
-> > On Mon, Sep 22, 2014 at 10:29:10AM +0100, Thierry Reding wrote:
-> > > Agreed. I wonder how useful it is to know the set of IOMMU instances
-> > > that each device can master through. Wouldn't it be more useful to keep
-> > > a list of master interfaces for each device? The set of IOMMU instances
-> > > can trivially be derived from that.
-> > 
-> > I'm struggling to think how that would look. What do you mean by `master
-> > interfaces' in terms of the code we have in Linux? At the end of the day,
-> > the list of IOMMU instances (i.e. iommu_dma_mapping) exists because you
-> > and Laurent have use-cases involving devices mastering through multiple
-> > IOMMUs. If it doesn't work for you, it might be best for you to send me
-> > the patch ;)
-> 
-> Just for the record, I've brought up the topic of masters being served by 
-> multiple IOMMUs, but don't have a use case for it (yet at least). I do have 
-> masters served through multiple streams with separate stream IDs, but all by 
-> the same IOMMU.
+Great! That's more or less something I've already implemented on top of your
+previous patchset, as I didn't have any good idea how to manage multiple 
+masters
+separately. I'm waiting for your next update and I will rebase my 
+patches soon.
 
-Ok. I spoke to Arnd, David and Joerg at LPC and the consensus was that the
-DMA-mapping API should *not* be exposed to the details of masters that
-master through multiple IOMMUs. Instead, that should be abstracted by the
-device API by exposing that device as a single struct device.
-
-So, that's certainly an area that needs more work and I'll drop the limited
-support I'd cooked up from this patch set in the next version.
-
-Will
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
