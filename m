@@ -1,7 +1,8 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCH v9 16/19] vfio: pass an opaque pointer on virqfd initialization
-Date: Mon, 27 Oct 2014 19:08:01 +0100
-Message-ID: <1414433284-31719-17-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [PATCH v9 17/19] vfio: virqfd: add vfio_ prefix to virqfd_enable and
+	virqfd_disable
+Date: Mon, 27 Oct 2014 19:08:02 +0100
+Message-ID: <1414433284-31719-18-git-send-email-a.motakis@virtualopensystems.com>
 References: <1414433284-31719-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,144 +22,116 @@ To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9Q
 Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alexander Gordeev <agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-VFIO_PCI passes the VFIO device structure *vdev via eventfd to the handler
-that implements masking/unmasking of IRQs via an eventfd. We can replace
-it in the virqfd infrastructure with an opaque type so we can make use
-of the mechanism from other VFIO bus drivers.
+The virqfd_enable and virqfd_disable functions are now global. Add the
+vfio_ prefix to those functions.
 
 Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 ---
- drivers/vfio/pci/vfio_pci_intrs.c | 11 +++++++----
- drivers/vfio/virqfd.c             | 17 ++++++++---------
- include/linux/vfio.h              | 12 ++++++------
- 3 files changed, 21 insertions(+), 19 deletions(-)
+ drivers/vfio/pci/vfio_pci_intrs.c | 18 +++++++++---------
+ drivers/vfio/virqfd.c             | 14 +++++++-------
+ include/linux/vfio.h              | 10 +++++-----
+ 3 files changed, 21 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/vfio/pci/vfio_pci_intrs.c b/drivers/vfio/pci/vfio_pci_intrs.c
-index e56c814..6ca22a8 100644
+index 6ca22a8..2aedff1 100644
 --- a/drivers/vfio/pci/vfio_pci_intrs.c
 +++ b/drivers/vfio/pci/vfio_pci_intrs.c
-@@ -27,8 +27,10 @@
- /*
-  * INTx
-  */
--static void vfio_send_intx_eventfd(struct vfio_pci_device *vdev, void *unused)
-+static void vfio_send_intx_eventfd(void *opaque, void *unused)
+@@ -228,8 +228,8 @@ static int vfio_intx_set_signal(struct vfio_pci_device *vdev, int fd)
+ static void vfio_intx_disable(struct vfio_pci_device *vdev)
  {
-+	struct vfio_pci_device *vdev = opaque;
-+
- 	if (likely(is_intx(vdev) && !vdev->virq_disabled))
- 		eventfd_signal(vdev->ctx[0].trigger, 1);
- }
-@@ -71,9 +73,9 @@ void vfio_pci_intx_mask(struct vfio_pci_device *vdev)
-  * a signal is necessary, which can then be handled via a work queue
-  * or directly depending on the caller.
-  */
--static int vfio_pci_intx_unmask_handler(struct vfio_pci_device *vdev,
--					void *unused)
-+static int vfio_pci_intx_unmask_handler(void *opaque, void *unused)
- {
-+	struct vfio_pci_device *vdev = opaque;
- 	struct pci_dev *pdev = vdev->pdev;
- 	unsigned long flags;
- 	int ret = 0;
-@@ -411,7 +413,8 @@ static int vfio_pci_set_intx_unmask(struct vfio_pci_device *vdev,
+ 	vfio_intx_set_signal(vdev, -1);
+-	virqfd_disable(&vdev->ctx[0].unmask);
+-	virqfd_disable(&vdev->ctx[0].mask);
++	vfio_virqfd_disable(&vdev->ctx[0].unmask);
++	vfio_virqfd_disable(&vdev->ctx[0].mask);
+ 	vdev->irq_type = VFIO_PCI_NUM_IRQS;
+ 	vdev->num_ctx = 0;
+ 	kfree(vdev->ctx);
+@@ -379,8 +379,8 @@ static void vfio_msi_disable(struct vfio_pci_device *vdev, bool msix)
+ 	vfio_msi_set_block(vdev, 0, vdev->num_ctx, NULL, msix);
+ 
+ 	for (i = 0; i < vdev->num_ctx; i++) {
+-		virqfd_disable(&vdev->ctx[i].unmask);
+-		virqfd_disable(&vdev->ctx[i].mask);
++		vfio_virqfd_disable(&vdev->ctx[i].unmask);
++		vfio_virqfd_disable(&vdev->ctx[i].mask);
+ 	}
+ 
+ 	if (msix) {
+@@ -413,12 +413,12 @@ static int vfio_pci_set_intx_unmask(struct vfio_pci_device *vdev,
  	} else if (flags & VFIO_IRQ_SET_DATA_EVENTFD) {
  		int32_t fd = *(int32_t *)data;
  		if (fd >= 0)
--			return virqfd_enable(vdev, vfio_pci_intx_unmask_handler,
-+			return virqfd_enable((void *) vdev,
-+					     vfio_pci_intx_unmask_handler,
- 					     vfio_send_intx_eventfd, NULL,
- 					     &vdev->ctx[0].unmask, fd);
+-			return virqfd_enable((void *) vdev,
+-					     vfio_pci_intx_unmask_handler,
+-					     vfio_send_intx_eventfd, NULL,
+-					     &vdev->ctx[0].unmask, fd);
++			return vfio_virqfd_enable((void *) vdev,
++						  vfio_pci_intx_unmask_handler,
++						  vfio_send_intx_eventfd, NULL,
++						  &vdev->ctx[0].unmask, fd);
  
+-		virqfd_disable(&vdev->ctx[0].unmask);
++		vfio_virqfd_disable(&vdev->ctx[0].unmask);
+ 	}
+ 
+ 	return 0;
 diff --git a/drivers/vfio/virqfd.c b/drivers/vfio/virqfd.c
-index 27fa2f0..ac63ec0 100644
+index ac63ec0..1794f07 100644
 --- a/drivers/vfio/virqfd.c
 +++ b/drivers/vfio/virqfd.c
-@@ -14,7 +14,6 @@
- #include <linux/eventfd.h>
- #include <linux/file.h>
- #include <linux/slab.h>
--#include "pci/vfio_pci_private.h"
- 
- static struct workqueue_struct *vfio_irqfd_cleanup_wq;
- static spinlock_t lock;
-@@ -49,7 +48,7 @@ static int virqfd_wakeup(wait_queue_t *wait, unsigned mode, int sync, void *key)
- 	if (flags & POLLIN) {
- 		/* An event has been signaled, call function */
- 		if ((!virqfd->handler ||
--		     virqfd->handler(virqfd->vdev, virqfd->data)) &&
-+		     virqfd->handler(virqfd->opaque, virqfd->data)) &&
- 		    virqfd->thread)
- 			schedule_work(&virqfd->inject);
- 	}
-@@ -99,13 +98,13 @@ static void virqfd_inject(struct work_struct *work)
- {
- 	struct virqfd *virqfd = container_of(work, struct virqfd, inject);
- 	if (virqfd->thread)
--		virqfd->thread(virqfd->vdev, virqfd->data);
-+		virqfd->thread(virqfd->opaque, virqfd->data);
+@@ -101,10 +101,10 @@ static void virqfd_inject(struct work_struct *work)
+ 		virqfd->thread(virqfd->opaque, virqfd->data);
  }
  
--int virqfd_enable(struct vfio_pci_device *vdev,
--			 int (*handler)(struct vfio_pci_device *, void *),
--			 void (*thread)(struct vfio_pci_device *, void *),
--			 void *data, struct virqfd **pvirqfd, int fd)
-+int virqfd_enable(void *opaque,
-+		  int (*handler)(void *, void *),
-+		  void (*thread)(void *, void *),
-+		  void *data, struct virqfd **pvirqfd, int fd)
+-int virqfd_enable(void *opaque,
+-		  int (*handler)(void *, void *),
+-		  void (*thread)(void *, void *),
+-		  void *data, struct virqfd **pvirqfd, int fd)
++int vfio_virqfd_enable(void *opaque,
++		       int (*handler)(void *, void *),
++		       void (*thread)(void *, void *),
++		       void *data, struct virqfd **pvirqfd, int fd)
  {
  	struct fd irqfd;
  	struct eventfd_ctx *ctx;
-@@ -118,7 +117,7 @@ int virqfd_enable(struct vfio_pci_device *vdev,
- 		return -ENOMEM;
+@@ -190,9 +190,9 @@ err_fd:
  
- 	virqfd->pvirqfd = pvirqfd;
--	virqfd->vdev = vdev;
-+	virqfd->opaque = opaque;
- 	virqfd->handler = handler;
- 	virqfd->thread = thread;
- 	virqfd->data = data;
-@@ -171,7 +170,7 @@ int virqfd_enable(struct vfio_pci_device *vdev,
- 	 * before we registered and trigger it as if we didn't miss it.
+ 	return ret;
+ }
+-EXPORT_SYMBOL_GPL(virqfd_enable);
++EXPORT_SYMBOL_GPL(vfio_virqfd_enable);
+ 
+-void virqfd_disable(struct virqfd **pvirqfd)
++void vfio_virqfd_disable(struct virqfd **pvirqfd)
+ {
+ 	unsigned long flags;
+ 
+@@ -212,4 +212,4 @@ void virqfd_disable(struct virqfd **pvirqfd)
  	 */
- 	if (events & POLLIN) {
--		if ((!handler || handler(vdev, data)) && thread)
-+		if ((!handler || handler(opaque, data)) && thread)
- 			schedule_work(&virqfd->inject);
- 	}
- 
+ 	flush_workqueue(vfio_irqfd_cleanup_wq);
+ }
+-EXPORT_SYMBOL_GPL(virqfd_disable);
++EXPORT_SYMBOL_GPL(vfio_virqfd_disable);
 diff --git a/include/linux/vfio.h b/include/linux/vfio.h
-index fb6037b..ce23a42 100644
+index ce23a42..378f320 100644
 --- a/include/linux/vfio.h
 +++ b/include/linux/vfio.h
-@@ -128,10 +128,10 @@ static inline long vfio_spapr_iommu_eeh_ioctl(struct iommu_group *group,
-  * IRQFD support
-  */
- struct virqfd {
--	struct vfio_pci_device	*vdev;
-+	void			*opaque;
- 	struct eventfd_ctx	*eventfd;
--	int			(*handler)(struct vfio_pci_device *, void *);
--	void			(*thread)(struct vfio_pci_device *, void *);
-+	int			(*handler)(void *, void *);
-+	void			(*thread)(void *, void *);
- 	void			*data;
- 	struct work_struct	inject;
- 	wait_queue_t		wait;
-@@ -142,9 +142,9 @@ struct virqfd {
+@@ -142,10 +142,10 @@ struct virqfd {
  
  extern int vfio_pci_virqfd_init(void);
  extern void vfio_pci_virqfd_exit(void);
--extern int virqfd_enable(struct vfio_pci_device *vdev,
--			 int (*handler)(struct vfio_pci_device *, void *),
--			 void (*thread)(struct vfio_pci_device *, void *),
-+extern int virqfd_enable(void *opaque,
-+			 int (*handler)(void *, void *),
-+			 void (*thread)(void *, void *),
- 			 void *data, struct virqfd **pvirqfd, int fd);
- extern void virqfd_disable(struct virqfd **pvirqfd);
+-extern int virqfd_enable(void *opaque,
+-			 int (*handler)(void *, void *),
+-			 void (*thread)(void *, void *),
+-			 void *data, struct virqfd **pvirqfd, int fd);
+-extern void virqfd_disable(struct virqfd **pvirqfd);
++extern int vfio_virqfd_enable(void *opaque,
++			      int (*handler)(void *, void *),
++			      void (*thread)(void *, void *),
++			      void *data, struct virqfd **pvirqfd, int fd);
++extern void vfio_virqfd_disable(struct virqfd **pvirqfd);
  
+ #endif /* VFIO_H */
 -- 
 2.1.1
