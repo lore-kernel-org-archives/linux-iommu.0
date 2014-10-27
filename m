@@ -1,8 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part1 v3 18/20] iommu/vt-d: Use helpers to access irq_cfg data
+Subject: [Patch Part1 v3 19/20] iommu/amd: Use helpers to access irq_cfg data
 	structure associated with IRQ
-Date: Mon, 27 Oct 2014 16:12:09 +0800
-Message-ID: <1414397531-28254-19-git-send-email-jiang.liu@linux.intel.com>
+Date: Mon, 27 Oct 2014 16:12:10 +0800
+Message-ID: <1414397531-28254-20-git-send-email-jiang.liu@linux.intel.com>
 References: <1414397531-28254-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -28,57 +28,75 @@ rewrite those helpers to support hierarchy irqdomain.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/iommu/amd_iommu.c |   14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 7c80661b35c1..fd181cf8a589 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -55,7 +55,7 @@ static int __init parse_ioapics_under_ir(void);
- 
- static struct irq_2_iommu *irq_2_iommu(unsigned int irq)
- {
--	struct irq_cfg *cfg = irq_get_chip_data(irq);
-+	struct irq_cfg *cfg = irq_cfg(irq);
- 	return cfg ? &cfg->irq_2_iommu : NULL;
- }
- 
-@@ -86,7 +86,7 @@ static int alloc_irte(struct intel_iommu *iommu, int irq, u16 count)
- {
- 	struct ir_table *table = iommu->ir_table;
- 	struct irq_2_iommu *irq_iommu = irq_2_iommu(irq);
--	struct irq_cfg *cfg = irq_get_chip_data(irq);
-+	struct irq_cfg *cfg = irq_cfg(irq);
- 	unsigned int mask = 0;
- 	unsigned long flags;
- 	int index;
-@@ -154,7 +154,7 @@ static int map_irq_to_irte_handle(int irq, u16 *sub_handle)
- static int set_irte_irq(int irq, struct intel_iommu *iommu, u16 index, u16 subhandle)
- {
- 	struct irq_2_iommu *irq_iommu = irq_2_iommu(irq);
--	struct irq_cfg *cfg = irq_get_chip_data(irq);
-+	struct irq_cfg *cfg = irq_cfg(irq);
- 	unsigned long flags;
- 
- 	if (!irq_iommu)
-@@ -1008,7 +1008,7 @@ static int
- intel_ioapic_set_affinity(struct irq_data *data, const struct cpumask *mask,
- 			  bool force)
- {
--	struct irq_cfg *cfg = data->chip_data;
-+	struct irq_cfg *cfg = irqd_cfg(data);
- 	unsigned int dest, irq = data->irq;
- 	struct irte irte;
- 	int err;
-@@ -1063,7 +1063,7 @@ static void intel_compose_msi_msg(struct pci_dev *pdev,
- 	u16 sub_handle = 0;
- 	int ir_index;
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 505a9adac2d5..6fda7cc789eb 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -4068,7 +4068,7 @@ static int setup_ioapic_entry(int irq, struct IO_APIC_route_entry *entry,
+ 	int devid;
+ 	int ret;
  
 -	cfg = irq_get_chip_data(irq);
 +	cfg = irq_cfg(irq);
+ 	if (!cfg)
+ 		return -EINVAL;
  
- 	ir_index = map_irq_to_irte_handle(irq, &sub_handle);
- 	BUG_ON(ir_index == -1);
+@@ -4131,7 +4131,7 @@ static int set_affinity(struct irq_data *data, const struct cpumask *mask,
+ 	if (!config_enabled(CONFIG_SMP))
+ 		return -1;
+ 
+-	cfg       = data->chip_data;
++	cfg       = irqd_cfg(data);
+ 	irq       = data->irq;
+ 	irte_info = &cfg->irq_2_irte;
+ 
+@@ -4169,7 +4169,7 @@ static int free_irq(int irq)
+ 	struct irq_2_irte *irte_info;
+ 	struct irq_cfg *cfg;
+ 
+-	cfg = irq_get_chip_data(irq);
++	cfg = irq_cfg(irq);
+ 	if (!cfg)
+ 		return -EINVAL;
+ 
+@@ -4188,7 +4188,7 @@ static void compose_msi_msg(struct pci_dev *pdev,
+ 	struct irq_cfg *cfg;
+ 	union irte irte;
+ 
+-	cfg = irq_get_chip_data(irq);
++	cfg = irq_cfg(irq);
+ 	if (!cfg)
+ 		return;
+ 
+@@ -4217,7 +4217,7 @@ static int msi_alloc_irq(struct pci_dev *pdev, int irq, int nvec)
+ 	if (!pdev)
+ 		return -EINVAL;
+ 
+-	cfg = irq_get_chip_data(irq);
++	cfg = irq_cfg(irq);
+ 	if (!cfg)
+ 		return -EINVAL;
+ 
+@@ -4237,7 +4237,7 @@ static int msi_setup_irq(struct pci_dev *pdev, unsigned int irq,
+ 	if (!pdev)
+ 		return -EINVAL;
+ 
+-	cfg = irq_get_chip_data(irq);
++	cfg = irq_cfg(irq);
+ 	if (!cfg)
+ 		return -EINVAL;
+ 
+@@ -4260,7 +4260,7 @@ static int alloc_hpet_msi(unsigned int irq, unsigned int id)
+ 	struct irq_cfg *cfg;
+ 	int index, devid;
+ 
+-	cfg = irq_get_chip_data(irq);
++	cfg = irq_cfg(irq);
+ 	if (!cfg)
+ 		return -EINVAL;
+ 
 -- 
 1.7.10.4
