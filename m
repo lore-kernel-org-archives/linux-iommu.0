@@ -1,7 +1,7 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH 09/16] MIPS/Xlr/MSI: Use MSI controller framework to configure MSI/MSI-X irq
-Date: Mon, 27 Oct 2014 21:22:15 +0800
-Message-ID: <1414416142-31239-10-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH 12/16] arm/iop13xx/MSI: Use MSI controller framework to configure MSI/MSI-X irq
+Date: Mon, 27 Oct 2014 21:22:18 +0800
+Message-ID: <1414416142-31239-13-git-send-email-wangyijing@huawei.com>
 References: <1414416142-31239-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -17,60 +17,85 @@ MSI/MSI-X irq. So we can manage MSI/MSI-X irq in a unified framework.
 
 Signed-off-by: Yijing Wang <wangyijing@huawei.com>
 ---
- arch/mips/pci/pci-xlr.c |   17 +++++++++++++++--
- 1 files changed, 15 insertions(+), 2 deletions(-)
+ arch/arm/mach-iop13xx/include/mach/pci.h |    4 ++++
+ arch/arm/mach-iop13xx/iq81340mc.c        |    3 +++
+ arch/arm/mach-iop13xx/iq81340sc.c        |    5 ++++-
+ arch/arm/mach-iop13xx/msi.c              |   11 +++++++++--
+ 4 files changed, 20 insertions(+), 3 deletions(-)
 
-diff --git a/arch/mips/pci/pci-xlr.c b/arch/mips/pci/pci-xlr.c
-index 0dde803..1e43c70 100644
---- a/arch/mips/pci/pci-xlr.c
-+++ b/arch/mips/pci/pci-xlr.c
-@@ -149,6 +149,8 @@ static struct resource nlm_pci_io_resource = {
- 	.flags		= IORESOURCE_IO,
- };
+diff --git a/arch/arm/mach-iop13xx/include/mach/pci.h b/arch/arm/mach-iop13xx/include/mach/pci.h
+index 59f42b5..c8f5caf 100644
+--- a/arch/arm/mach-iop13xx/include/mach/pci.h
++++ b/arch/arm/mach-iop13xx/include/mach/pci.h
+@@ -11,6 +11,10 @@ void iop13xx_atu_select(struct hw_pci *plat_pci);
+ void iop13xx_pci_init(void);
+ void iop13xx_map_pci_memory(void);
  
-+static struct msi_controller xlr_msi_ctrl;
-+
- struct pci_controller nlm_pci_controller = {
- 	.index		= 0,
- 	.pci_ops	= &nlm_pci_ops,
-@@ -156,6 +158,9 @@ struct pci_controller nlm_pci_controller = {
- 	.mem_offset	= 0x00000000UL,
- 	.io_resource	= &nlm_pci_io_resource,
- 	.io_offset	= 0x00000000UL,
 +#ifdef CONFIG_PCI_MSI
-+	.msi_ctrl = &xlr_msi_ctrl,
++extern struct msi_controller iop13xx_msi_ctrl;
++#endif
++
+ #define IOP_PCI_STATUS_ERROR (PCI_STATUS_PARITY |	     \
+ 			       PCI_STATUS_SIG_TARGET_ABORT | \
+ 			       PCI_STATUS_REC_TARGET_ABORT | \
+diff --git a/arch/arm/mach-iop13xx/iq81340mc.c b/arch/arm/mach-iop13xx/iq81340mc.c
+index 9cd07d3..7b802f5 100644
+--- a/arch/arm/mach-iop13xx/iq81340mc.c
++++ b/arch/arm/mach-iop13xx/iq81340mc.c
+@@ -59,6 +59,9 @@ static struct hw_pci iq81340mc_pci __initdata = {
+ 	.map_irq	= iq81340mc_pcix_map_irq,
+ 	.scan		= iop13xx_scan_bus,
+ 	.preinit	= iop13xx_pci_init,
++#ifdef CONFIG_PCI_MSI
++	.msi_ctrl	= &iop13xx_msi_ctrl,
 +#endif
  };
  
- /*
-@@ -214,11 +219,13 @@ static int get_irq_vector(const struct pci_dev *dev)
- }
+ static int __init iq81340mc_pci_init(void)
+diff --git a/arch/arm/mach-iop13xx/iq81340sc.c b/arch/arm/mach-iop13xx/iq81340sc.c
+index b3ec11c..934de2e 100644
+--- a/arch/arm/mach-iop13xx/iq81340sc.c
++++ b/arch/arm/mach-iop13xx/iq81340sc.c
+@@ -60,7 +60,10 @@ static struct hw_pci iq81340sc_pci __initdata = {
+ 	.setup		= iop13xx_pci_setup,
+ 	.scan		= iop13xx_scan_bus,
+ 	.map_irq	= iq81340sc_atux_map_irq,
+-	.preinit	= iop13xx_pci_init
++	.preinit	= iop13xx_pci_init,
++#ifdef CONFIG_PCI_MSI
++	.msi_ctrl	= &iop13xx_msi_ctrl,
++#endif
+ };
  
- #ifdef CONFIG_PCI_MSI
--void arch_teardown_msi_irq(unsigned int irq)
-+static void xlr_teardown_msi_irq(struct msi_controller *ctrl,
-+		unsigned int irq)
- {
- }
+ static int __init iq81340sc_pci_init(void)
+diff --git a/arch/arm/mach-iop13xx/msi.c b/arch/arm/mach-iop13xx/msi.c
+index e7730cf..07a512e 100644
+--- a/arch/arm/mach-iop13xx/msi.c
++++ b/arch/arm/mach-iop13xx/msi.c
+@@ -132,7 +132,8 @@ static struct irq_chip iop13xx_msi_chip = {
+ 	.irq_unmask = unmask_msi_irq,
+ };
  
--int arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
-+static int xlr_setup_msi_irq(struct msi_controller *ctrl,
+-int arch_setup_msi_irq(struct pci_dev *pdev, struct msi_desc *desc)
++static int iop13xx_setup_msi_irq(struct msi_controller *ctrl,
 +		struct pci_dev *dev, struct msi_desc *desc)
  {
+ 	int id, irq = irq_alloc_desc_from(IRQ_IOP13XX_MSI_0, -1);
  	struct msi_msg msg;
- 	struct pci_dev *lnk;
-@@ -263,6 +270,12 @@ int arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
- 	write_msi_msg(irq, &msg);
+@@ -159,7 +160,13 @@ int arch_setup_msi_irq(struct pci_dev *pdev, struct msi_desc *desc)
  	return 0;
  }
-+
-+static struct msi_controller xlr_msi_ctrl = {
-+	.setup_irq = xlr_setup_msi_irq,
-+	.teardown_irq = xlr_teardown_msi_irq,
-+};
-+
- #endif
  
- /* Extra ACK needed for XLR on chip PCI controller */
+-void arch_teardown_msi_irq(unsigned int irq)
++static void iop13xx_teardown_msi_irq(struct msi_controller *ctrl,
++		unsigned int irq)
+ {
+ 	irq_free_desc(irq);
+ }
++
++struct msi_controller iop13xx_msi_ctrl = {
++	.setup_irq = iop13xx_setup_msi_irq,
++	.teardown_irq = iop13xx_teardown_msi_irq,
++};
 -- 
 1.7.1
