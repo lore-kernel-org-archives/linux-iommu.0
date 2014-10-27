@@ -1,7 +1,7 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH 10/16] Powerpc/MSI: Use MSI controller framework to configure MSI/MSI-X irq
-Date: Mon, 27 Oct 2014 21:22:16 +0800
-Message-ID: <1414416142-31239-11-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH 05/16] x86/MSI: Remove unused MSI weak arch functions
+Date: Mon, 27 Oct 2014 21:22:11 +0800
+Message-ID: <1414416142-31239-6-git-send-email-wangyijing@huawei.com>
 References: <1414416142-31239-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,93 +12,137 @@ To: Bjorn Helgaas <bhelgaas@google.com>
 Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org, Chris Metcalf <cmetcalf@tilera.com>, Ralf Baechle <ralf@linux-mips.org>, Lucas Stach <l.stach@pengutronix.de>, David Vrabel <david.vrabel@citrix.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Use MSI controller framework instead of arch MSI functions to configure
-MSI/MSI-X irq. So we can manage MSI/MSI-X irq in a unified framework.
+Now we can clean up MSI weak arch functions in x86.
 
 Signed-off-by: Yijing Wang <wangyijing@huawei.com>
-Acked-by: Michael Ellerman <mpe@ellerman.id.au>
 ---
- arch/powerpc/include/asm/pci-bridge.h |    8 ++++++++
- arch/powerpc/kernel/msi.c             |   19 +++++++++++++++++--
- arch/powerpc/kernel/pci-common.c      |    3 +++
- 3 files changed, 28 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/pci.h      |    5 +----
+ arch/x86/include/asm/x86_init.h |    4 ----
+ arch/x86/kernel/apic/io_apic.c  |   21 +++++----------------
+ arch/x86/kernel/x86_init.c      |   24 ------------------------
+ 4 files changed, 6 insertions(+), 48 deletions(-)
 
-diff --git a/arch/powerpc/include/asm/pci-bridge.h b/arch/powerpc/include/asm/pci-bridge.h
-index 4ca90a3..f7d09d0 100644
---- a/arch/powerpc/include/asm/pci-bridge.h
-+++ b/arch/powerpc/include/asm/pci-bridge.h
-@@ -32,6 +32,10 @@ struct pci_controller {
- 	int self_busno;
- 	struct resource busn;
+diff --git a/arch/x86/include/asm/pci.h b/arch/x86/include/asm/pci.h
+index 1af3d77..21fe24f 100644
+--- a/arch/x86/include/asm/pci.h
++++ b/arch/x86/include/asm/pci.h
+@@ -99,14 +99,11 @@ extern void pci_iommu_alloc(void);
+ #ifdef CONFIG_PCI_MSI
+ /* implemented in arch/x86/kernel/apic/io_apic. */
+ struct msi_desc;
+-int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type);
+-void native_teardown_msi_irq(unsigned int irq);
+-void native_restore_msi_irqs(struct pci_dev *dev);
++void native_teardown_msi_irq(struct msi_controller *ctrl, unsigned int irq);
+ int setup_msi_irq(struct pci_dev *dev, struct msi_desc *msidesc,
+ 		  unsigned int irq_base, unsigned int irq_offset);
+ extern struct msi_controller *x86_msi_ctrl;
+ #else
+-#define native_setup_msi_irqs		NULL
+ #define native_teardown_msi_irq		NULL
+ #endif
  
-+#ifdef CONFIG_PCI_MSI
-+	struct msi_controller *msi_ctrl;
-+#endif
-+
- 	void __iomem *io_base_virt;
- #ifdef CONFIG_PPC64
- 	void *io_base_alloc;
-@@ -94,6 +98,10 @@ struct pci_controller {
- 	void *private_data;
+diff --git a/arch/x86/include/asm/x86_init.h b/arch/x86/include/asm/x86_init.h
+index f58a9c7..2514f67 100644
+--- a/arch/x86/include/asm/x86_init.h
++++ b/arch/x86/include/asm/x86_init.h
+@@ -174,13 +174,9 @@ struct pci_dev;
+ struct msi_msg;
+ 
+ struct x86_msi_ops {
+-	int (*setup_msi_irqs)(struct pci_dev *dev, int nvec, int type);
+ 	void (*compose_msi_msg)(struct pci_dev *dev, unsigned int irq,
+ 				unsigned int dest, struct msi_msg *msg,
+ 			       u8 hpet_id);
+-	void (*teardown_msi_irq)(unsigned int irq);
+-	void (*teardown_msi_irqs)(struct pci_dev *dev);
+-	void (*restore_msi_irqs)(struct pci_dev *dev);
+ 	int  (*setup_hpet_msi)(unsigned int irq, unsigned int id);
  };
  
-+#ifdef CONFIG_PCI_MSI
-+extern struct msi_controller ppc_msi_ctrl;
-+#endif
-+
- /* These are used for config access before all the PCI probing
-    has been done. */
- extern int early_read_config_byte(struct pci_controller *hose, int bus,
-diff --git a/arch/powerpc/kernel/msi.c b/arch/powerpc/kernel/msi.c
-index 71bd161..64a16f3 100644
---- a/arch/powerpc/kernel/msi.c
-+++ b/arch/powerpc/kernel/msi.c
-@@ -13,7 +13,15 @@
+diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
+index 8b8c671..04bf011 100644
+--- a/arch/x86/kernel/apic/io_apic.c
++++ b/arch/x86/kernel/apic/io_apic.c
+@@ -3207,7 +3207,8 @@ int setup_msi_irq(struct pci_dev *dev, struct msi_desc *msidesc,
+ 	return 0;
+ }
  
- #include <asm/machdep.h>
- 
--int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
-+struct msi_controller *pcibios_msi_controller(struct pci_bus *bus)
-+{
-+	struct pci_controller *hose = bus->sysdata;
-+
-+	return hose->msi_ctrl;
-+}
-+
-+static int ppc_setup_msi_irqs(struct msi_controller *ctrl,
+-int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
++static int native_setup_msi_irqs(struct msi_controller *ctrl,
 +		struct pci_dev *dev, int nvec, int type)
  {
- 	if (!ppc_md.setup_msi_irqs || !ppc_md.teardown_msi_irqs) {
- 		pr_debug("msi: Platform doesn't provide MSI callbacks.\n");
-@@ -27,7 +35,13 @@ int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
- 	return ppc_md.setup_msi_irqs(dev, nvec, type);
+ 	struct msi_desc *msidesc;
+ 	unsigned int irq;
+@@ -3234,26 +3235,14 @@ int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
+ 	return 0;
  }
  
--void arch_teardown_msi_irqs(struct pci_dev *dev)
-+static void ppc_teardown_msi_irqs(struct msi_controller *ctrl,
-+		struct pci_dev *dev)
+-static int __native_setup_msi_irqs(struct msi_controller *ctrl, 
+-		struct pci_dev *dev, int nvec, int type)
+-{
+-	return native_setup_msi_irqs(dev, nvec, type);
+-}
+-
+-void native_teardown_msi_irq(unsigned int irq)
++void native_teardown_msi_irq(struct msi_controller *ctrl, unsigned int irq)
  {
- 	ppc_md.teardown_msi_irqs(dev);
+ 	irq_free_hwirq(irq);
  }
-+
-+struct msi_controller ppc_msi_ctrl = {
-+	.setup_irqs = ppc_setup_msi_irqs,
-+	.teardown_irqs = ppc_teardown_msi_irqs,
-+};
-diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-common.c
-index e5dad9a..c3f28c5 100644
---- a/arch/powerpc/kernel/pci-common.c
-+++ b/arch/powerpc/kernel/pci-common.c
-@@ -1597,6 +1597,9 @@ void pcibios_scan_phb(struct pci_controller *hose)
- 	/* Wire up PHB bus resources */
- 	pcibios_setup_phb_resources(hose, &resources);
  
-+#ifdef CONFIG_PCI_MSI
-+	hose->msi_ctrl = &ppc_msi_ctrl;
-+#endif
- 	hose->busn.start = hose->first_busno;
- 	hose->busn.end	 = hose->last_busno;
- 	hose->busn.flags = IORESOURCE_BUS;
+-static void __native_teardown_msi_irq(struct msi_controller *ctrl, 
+-		unsigned int irq)
+-{
+-	native_teardown_msi_irq(irq);
+-}
+-
+ static struct msi_controller native_msi_ctrl = {
+-	.setup_irqs = __native_setup_msi_irqs,
+-	.teardown_irq = __native_teardown_msi_irq,
++	.setup_irqs = native_setup_msi_irqs,
++	.teardown_irq = native_teardown_msi_irq,
+ };
+ 
+ struct msi_controller *pcibios_msi_controller(struct pci_bus *bus)
+diff --git a/arch/x86/kernel/x86_init.c b/arch/x86/kernel/x86_init.c
+index 234b072..cc32568 100644
+--- a/arch/x86/kernel/x86_init.c
++++ b/arch/x86/kernel/x86_init.c
+@@ -110,34 +110,10 @@ EXPORT_SYMBOL_GPL(x86_platform);
+ 
+ #if defined(CONFIG_PCI_MSI)
+ struct x86_msi_ops x86_msi = {
+-	.setup_msi_irqs		= native_setup_msi_irqs,
+ 	.compose_msi_msg	= native_compose_msi_msg,
+-	.teardown_msi_irq	= native_teardown_msi_irq,
+-	.teardown_msi_irqs	= default_teardown_msi_irqs,
+-	.restore_msi_irqs	= default_restore_msi_irqs,
+ 	.setup_hpet_msi		= default_setup_hpet_msi,
+ };
+ 
+-/* MSI arch specific hooks */
+-int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
+-{
+-	return x86_msi.setup_msi_irqs(dev, nvec, type);
+-}
+-
+-void arch_teardown_msi_irqs(struct pci_dev *dev)
+-{
+-	x86_msi.teardown_msi_irqs(dev);
+-}
+-
+-void arch_teardown_msi_irq(unsigned int irq)
+-{
+-	x86_msi.teardown_msi_irq(irq);
+-}
+-
+-void arch_restore_msi_irqs(struct pci_dev *dev)
+-{
+-	x86_msi.restore_msi_irqs(dev);
+-}
+ #endif
+ 
+ struct x86_io_apic_ops x86_io_apic_ops = {
 -- 
 1.7.1
 
