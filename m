@@ -1,148 +1,168 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH 05/16] x86/MSI: Remove unused MSI weak arch functions
-Date: Mon, 27 Oct 2014 21:22:11 +0800
-Message-ID: <1414416142-31239-6-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH 07/16] MIPS/Octeon/MSI: Use MSI controller framework to configure MSI/MSI-X irq
+Date: Mon, 27 Oct 2014 21:22:13 +0800
+Message-ID: <1414416142-31239-8-git-send-email-wangyijing@huawei.com>
 References: <1414416142-31239-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <sparclinux-owner@vger.kernel.org>
+Return-path: <linux-mips-bounce@linux-mips.org>
 In-Reply-To: <1414416142-31239-1-git-send-email-wangyijing@huawei.com>
-Sender: sparclinux-owner@vger.kernel.org
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org, Chris Metcalf <cmetcalf@tilera.com>, Ralf Baechle <ralf@linux-mips.org>, Lucas Stach <l.stach@pengutronix.de>, David Vrabel <david.vrabel@citrix.com>
+Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Xinwei Hu <huxinwei@huawei.com>, Wuyun <wuyun.wu@huawei.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org, Chris Metcalf <cmetcalf@tilera.com>Ralf Baechle <r>
 List-Id: iommu@lists.linux-foundation.org
 
-Now we can clean up MSI weak arch functions in x86.
+Use MSI controller framework instead of arch MSI functions to configure
+MSI/MSI-X irq. So we can manage MSI/MSI-X irq in a unified framework.
 
 Signed-off-by: Yijing Wang <wangyijing@huawei.com>
 ---
- arch/x86/include/asm/pci.h      |    5 +----
- arch/x86/include/asm/x86_init.h |    4 ----
- arch/x86/kernel/apic/io_apic.c  |   21 +++++----------------
- arch/x86/kernel/x86_init.c      |   24 ------------------------
- 4 files changed, 6 insertions(+), 48 deletions(-)
+ arch/mips/include/asm/octeon/pci-octeon.h |    4 +++
+ arch/mips/pci/msi-octeon.c                |   31 ++++++++++++++++------------
+ arch/mips/pci/pci-octeon.c                |    3 ++
+ 3 files changed, 25 insertions(+), 13 deletions(-)
 
-diff --git a/arch/x86/include/asm/pci.h b/arch/x86/include/asm/pci.h
-index 1af3d77..21fe24f 100644
---- a/arch/x86/include/asm/pci.h
-+++ b/arch/x86/include/asm/pci.h
-@@ -99,14 +99,11 @@ extern void pci_iommu_alloc(void);
- #ifdef CONFIG_PCI_MSI
- /* implemented in arch/x86/kernel/apic/io_apic. */
- struct msi_desc;
--int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type);
--void native_teardown_msi_irq(unsigned int irq);
--void native_restore_msi_irqs(struct pci_dev *dev);
-+void native_teardown_msi_irq(struct msi_controller *ctrl, unsigned int irq);
- int setup_msi_irq(struct pci_dev *dev, struct msi_desc *msidesc,
- 		  unsigned int irq_base, unsigned int irq_offset);
- extern struct msi_controller *x86_msi_ctrl;
- #else
--#define native_setup_msi_irqs		NULL
- #define native_teardown_msi_irq		NULL
+diff --git a/arch/mips/include/asm/octeon/pci-octeon.h b/arch/mips/include/asm/octeon/pci-octeon.h
+index 64ba56a..61c038d 100644
+--- a/arch/mips/include/asm/octeon/pci-octeon.h
++++ b/arch/mips/include/asm/octeon/pci-octeon.h
+@@ -66,4 +66,8 @@ enum octeon_dma_bar_type {
+  */
+ extern enum octeon_dma_bar_type octeon_dma_bar_type;
+ 
++#ifdef CONFIG_PCI_MSI
++extern struct msi_controller octeon_msi_ctrl;
++#endif
++
  #endif
+diff --git a/arch/mips/pci/msi-octeon.c b/arch/mips/pci/msi-octeon.c
+index 63bbe07..30976da 100644
+--- a/arch/mips/pci/msi-octeon.c
++++ b/arch/mips/pci/msi-octeon.c
+@@ -57,7 +57,7 @@ static int msi_irq_size;
+  *
+  * Returns 0 on success.
+  */
+-int arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
++static int octeon_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
+ {
+ 	struct msi_msg msg;
+ 	u16 control;
+@@ -132,12 +132,12 @@ msi_irq_allocated:
+ 	/* Make sure the search for available interrupts didn't fail */
+ 	if (irq >= 64) {
+ 		if (request_private_bits) {
+-			pr_err("arch_setup_msi_irq: Unable to find %d free interrupts, trying just one",
+-			       1 << request_private_bits);
++			pr_err("%s: Unable to find %d free interrupts, trying just one",
++			       __func__, 1 << request_private_bits);
+ 			request_private_bits = 0;
+ 			goto try_only_one;
+ 		} else
+-			panic("arch_setup_msi_irq: Unable to find a free MSI interrupt");
++			panic("%s: Unable to find a free MSI interrupt", __func__);
+ 	}
  
-diff --git a/arch/x86/include/asm/x86_init.h b/arch/x86/include/asm/x86_init.h
-index f58a9c7..2514f67 100644
---- a/arch/x86/include/asm/x86_init.h
-+++ b/arch/x86/include/asm/x86_init.h
-@@ -174,13 +174,9 @@ struct pci_dev;
- struct msi_msg;
+ 	/* MSI interrupts start at logical IRQ OCTEON_IRQ_MSI_BIT0 */
+@@ -168,7 +168,7 @@ msi_irq_allocated:
+ 		msg.address_hi = (0 + CVMX_SLI_PCIE_MSI_RCV) >> 32;
+ 		break;
+ 	default:
+-		panic("arch_setup_msi_irq: Invalid octeon_dma_bar_type");
++		panic("%s: Invalid octeon_dma_bar_type", __func__);
+ 	}
+ 	msg.data = irq - OCTEON_IRQ_MSI_BIT0;
  
- struct x86_msi_ops {
--	int (*setup_msi_irqs)(struct pci_dev *dev, int nvec, int type);
- 	void (*compose_msi_msg)(struct pci_dev *dev, unsigned int irq,
- 				unsigned int dest, struct msi_msg *msg,
- 			       u8 hpet_id);
--	void (*teardown_msi_irq)(unsigned int irq);
--	void (*teardown_msi_irqs)(struct pci_dev *dev);
--	void (*restore_msi_irqs)(struct pci_dev *dev);
- 	int  (*setup_hpet_msi)(unsigned int irq, unsigned int id);
- };
- 
-diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-index 8b8c671..04bf011 100644
---- a/arch/x86/kernel/apic/io_apic.c
-+++ b/arch/x86/kernel/apic/io_apic.c
-@@ -3207,7 +3207,8 @@ int setup_msi_irq(struct pci_dev *dev, struct msi_desc *msidesc,
+@@ -182,7 +182,8 @@ msi_irq_allocated:
  	return 0;
  }
  
--int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
-+static int native_setup_msi_irqs(struct msi_controller *ctrl,
-+		struct pci_dev *dev, int nvec, int type)
- {
- 	struct msi_desc *msidesc;
- 	unsigned int irq;
-@@ -3234,26 +3235,14 @@ int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
- 	return 0;
- }
- 
--static int __native_setup_msi_irqs(struct msi_controller *ctrl, 
--		struct pci_dev *dev, int nvec, int type)
--{
--	return native_setup_msi_irqs(dev, nvec, type);
--}
--
--void native_teardown_msi_irq(unsigned int irq)
-+void native_teardown_msi_irq(struct msi_controller *ctrl, unsigned int irq)
- {
- 	irq_free_hwirq(irq);
- }
- 
--static void __native_teardown_msi_irq(struct msi_controller *ctrl, 
--		unsigned int irq)
--{
--	native_teardown_msi_irq(irq);
--}
--
- static struct msi_controller native_msi_ctrl = {
--	.setup_irqs = __native_setup_msi_irqs,
--	.teardown_irq = __native_teardown_msi_irq,
-+	.setup_irqs = native_setup_msi_irqs,
-+	.teardown_irq = native_teardown_msi_irq,
- };
- 
- struct msi_controller *pcibios_msi_controller(struct pci_bus *bus)
-diff --git a/arch/x86/kernel/x86_init.c b/arch/x86/kernel/x86_init.c
-index 234b072..cc32568 100644
---- a/arch/x86/kernel/x86_init.c
-+++ b/arch/x86/kernel/x86_init.c
-@@ -110,34 +110,10 @@ EXPORT_SYMBOL_GPL(x86_platform);
- 
- #if defined(CONFIG_PCI_MSI)
- struct x86_msi_ops x86_msi = {
--	.setup_msi_irqs		= native_setup_msi_irqs,
- 	.compose_msi_msg	= native_compose_msi_msg,
--	.teardown_msi_irq	= native_teardown_msi_irq,
--	.teardown_msi_irqs	= default_teardown_msi_irqs,
--	.restore_msi_irqs	= default_restore_msi_irqs,
- 	.setup_hpet_msi		= default_setup_hpet_msi,
- };
- 
--/* MSI arch specific hooks */
 -int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
--{
--	return x86_msi.setup_msi_irqs(dev, nvec, type);
--}
--
--void arch_teardown_msi_irqs(struct pci_dev *dev)
--{
--	x86_msi.teardown_msi_irqs(dev);
--}
--
--void arch_teardown_msi_irq(unsigned int irq)
--{
--	x86_msi.teardown_msi_irq(irq);
--}
--
--void arch_restore_msi_irqs(struct pci_dev *dev)
--{
--	x86_msi.restore_msi_irqs(dev);
--}
- #endif
++static int octeon_setup_msi_irqs(struct msi_controller *ctrl, struct pci_dev *dev,
++		int nvec, int type)
+ {
+ 	struct msi_desc *entry;
+ 	int ret;
+@@ -201,7 +202,7 @@ int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
+ 		return 1;
  
- struct x86_io_apic_ops x86_io_apic_ops = {
+ 	list_for_each_entry(entry, &dev->msi_list, list) {
+-		ret = arch_setup_msi_irq(dev, entry);
++		ret = octeon_setup_msi_irq(dev, entry);
+ 		if (ret < 0)
+ 			return ret;
+ 		if (ret > 0)
+@@ -210,14 +211,13 @@ int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
+ 
+ 	return 0;
+ }
+-
+ /**
+  * Called when a device no longer needs its MSI interrupts. All
+  * MSI interrupts for the device are freed.
+  *
+  * @irq:    The devices first irq number. There may be multple in sequence.
+  */
+-void arch_teardown_msi_irq(unsigned int irq)
++static void octeon_teardown_msi_irq(struct msi_controller *ctrl, unsigned int irq)
+ {
+ 	int number_irqs;
+ 	u64 bitmask;
+@@ -226,8 +226,8 @@ void arch_teardown_msi_irq(unsigned int irq)
+ 
+ 	if ((irq < OCTEON_IRQ_MSI_BIT0)
+ 		|| (irq > msi_irq_size + OCTEON_IRQ_MSI_BIT0))
+-		panic("arch_teardown_msi_irq: Attempted to teardown illegal "
+-		      "MSI interrupt (%d)", irq);
++		panic("%s: Attempted to teardown illegal "
++			"MSI interrupt (%d)", __func__, irq);
+ 
+ 	irq -= OCTEON_IRQ_MSI_BIT0;
+ 	index = irq / 64;
+@@ -249,8 +249,8 @@ void arch_teardown_msi_irq(unsigned int irq)
+ 	/* Shift the mask to the correct bit location */
+ 	bitmask <<= irq0;
+ 	if ((msi_free_irq_bitmask[index] & bitmask) != bitmask)
+-		panic("arch_teardown_msi_irq: Attempted to teardown MSI "
+-		      "interrupt (%d) not in use", irq);
++		panic("%s: Attempted to teardown MSI "
++			"interrupt (%d) not in use", __func__, irq);
+ 
+ 	/* Checks are done, update the in use bitmask */
+ 	spin_lock(&msi_free_irq_bitmask_lock);
+@@ -259,6 +259,11 @@ void arch_teardown_msi_irq(unsigned int irq)
+ 	spin_unlock(&msi_free_irq_bitmask_lock);
+ }
+ 
++struct msi_controller octeon_msi_ctrl = {
++	.setup_irqs = octeon_setup_msi_irqs,
++	.teardown_irq = octeon_teardown_msi_irq,
++};
++
+ static DEFINE_RAW_SPINLOCK(octeon_irq_msi_lock);
+ 
+ static u64 msi_rcv_reg[4];
+diff --git a/arch/mips/pci/pci-octeon.c b/arch/mips/pci/pci-octeon.c
+index 59cccd9..9935448 100644
+--- a/arch/mips/pci/pci-octeon.c
++++ b/arch/mips/pci/pci-octeon.c
+@@ -356,6 +356,9 @@ static struct pci_controller octeon_pci_controller = {
+ 	.io_resource = &octeon_pci_io_resource,
+ 	.io_offset = 0,
+ 	.io_map_base = OCTEON_PCI_IOSPACE_BASE,
++#ifdef CONFIG_PCI_MSI
++	.msi_ctrl = &octeon_msi_ctrl,
++#endif
+ };
+ 
+ 
 -- 
 1.7.1
-
