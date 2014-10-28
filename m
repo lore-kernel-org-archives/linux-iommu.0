@@ -1,46 +1,82 @@
-From: kiran.padwal-edOiRQu9Xnj5XLMNweQjbQ@public.gmane.org
-Subject: =?utf-8?Q?Re=3A_=5BPATCH=5D_iommu=3A_use_dev=5Fget=5Fplatdata=28=29?=
-Date: Tue, 28 Oct 2014 05:58:09 -0400 (EDT)
-Message-ID: <1414490289.8326098@apps.rackspace.com>
-References: <1412947870-10033-1-git-send-email-kiran.padwal@smartplayin.com>
-	<20141022143021.GI10074@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 0/3 v4] mmu_notifier: Allow to manage CPU external TLBs
+Date: Tue, 28 Oct 2014 18:13:57 +0100
+Message-ID: <1414516440-910-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20141022143021.GI10074-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Return-path: <owner-linux-mm@kvack.org>
+Sender: owner-linux-mm@kvack.org
+To: Andrew Morton <akpm@linux-foundation.org>, Andrea Arcangeli <aarcange@redhat.com>, Peter Zijlstra <a.p.zijlstra@chello.nl>, Rik van Riel <riel@redhat.com>, Hugh Dickins <hughd@google.com>, Mel Gorman <mgorman@suse.de>, Johannes Weiner <jweiner@redhat.com>
+Cc: Jerome Glisse <jglisse@redhat.com>, Jay.Cornwall@amd.com, Oded.Gabbay@amd.com, John.Bridgman@amd.com, Suravee.Suthikulpanit@amd.com, ben.sander@amd.com, Jesse Barnes <jbarnes@virtuousgeek.org>, David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, jroedel@suse.de, joro@8bytes.org
 List-Id: iommu@lists.linux-foundation.org
 
+From: Joerg Roedel <jroedel@suse.de>
 
+Changes V3->V4:
 
-On Wednesday, October 22, 2014 10:30am, "Joerg Roedel" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> said:
+* Rebased to v3.18-rc2
+* Updated patch description and some comments
 
-> On Fri, Oct 10, 2014 at 07:01:10PM +0530, Kiran Padwal wrote:
->> Use the wrapper function for retrieving the platform data instead of
->> accessing dev->platform_data directly.
->>
->> Signed-off-by: Kiran Padwal <kiran.padwal-edOiRQu9Xnj5XLMNweQjbQ@public.gmane.org>
->> ---
->>  drivers/iommu/msm_iommu_dev.c |    4 ++--
->>  drivers/iommu/omap-iommu.c    |    6 +++---
->>  2 files changed, 5 insertions(+), 5 deletions(-)
-> 
-> This touches 2 drivers, can you please split it up into per-driver
-> patches?
+Changes V2->V3:
 
-Sure, I will resent the separate patches.
-sorry for delayed response.
- 
+* Rebased to v3.17-rc4
+* Fixed compile error because pmdp_get_and_clear_notify was
+  missing
+
+Changes V1->V2:
+
+* Rebase to v3.16-rc7
+* Added call of ->invalidate_range to
+  __mmu_notifier_invalidate_end() so that the subsystem
+  doesn't need to register an ->invalidate_end() call-back,
+  subsystems will likely either register
+  invalidate_range_start/end or invalidate_range, so that
+  should be fine.
+* Re-orded declarations a bit to reflect that
+  invalidate_range is not only called between
+  invalidate_range_start/end
+* Updated documentation to cover the case where
+  invalidate_range is called outside of
+  invalidate_range_start/end to flush page-table pages out
+  of the TLB
+
+Hi,
+
+here is v4 of my patch-set which extends the mmu-notifiers
+to allow managing CPU external TLBs. A more in-depth
+description on the How and Why of this patch-set can be
+found in the description of patch 1/3.
+
+Any comments and review appreciated!
+
 Thanks,
---Kiran
+
+	Joerg
+
+Joerg Roedel (3):
+  mmu_notifier: Add mmu_notifier_invalidate_range()
+  mmu_notifier: Call mmu_notifier_invalidate_range() from VMM
+  mmu_notifier: Add the call-back for mmu_notifier_invalidate_range()
+
+ include/linux/mmu_notifier.h | 88 ++++++++++++++++++++++++++++++++++++++=
++++---
+ kernel/events/uprobes.c      |  2 +-
+ mm/fremap.c                  |  2 +-
+ mm/huge_memory.c             |  9 +++--
+ mm/hugetlb.c                 |  7 +++-
+ mm/ksm.c                     |  4 +-
+ mm/memory.c                  |  3 +-
+ mm/migrate.c                 |  3 +-
+ mm/mmu_notifier.c            | 25 +++++++++++++
+ mm/rmap.c                    |  2 +-
+ 10 files changed, 128 insertions(+), 17 deletions(-)
+
+--=20
+1.8.4.5
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=3Dmailto:"dont@kvack.org"> email@kvack.org </a>
