@@ -1,82 +1,94 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 0/3 v4] mmu_notifier: Allow to manage CPU external TLBs
-Date: Tue, 28 Oct 2014 18:13:57 +0100
-Message-ID: <1414516440-910-1-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 1/3] mmu_notifier: Add mmu_notifier_invalidate_range()
+Date: Tue, 28 Oct 2014 18:13:58 +0100
+Message-ID: <1414516440-910-2-git-send-email-joro@8bytes.org>
+References: <1414516440-910-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Return-path: <owner-linux-mm@kvack.org>
-Sender: owner-linux-mm@kvack.org
-To: Andrew Morton <akpm@linux-foundation.org>, Andrea Arcangeli <aarcange@redhat.com>, Peter Zijlstra <a.p.zijlstra@chello.nl>, Rik van Riel <riel@redhat.com>, Hugh Dickins <hughd@google.com>, Mel Gorman <mgorman@suse.de>, Johannes Weiner <jweiner@redhat.com>
-Cc: Jerome Glisse <jglisse@redhat.com>, Jay.Cornwall@amd.com, Oded.Gabbay@amd.com, John.Bridgman@amd.com, Suravee.Suthikulpanit@amd.com, ben.sander@amd.com, Jesse Barnes <jbarnes@virtuousgeek.org>, David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, jroedel@suse.de, joro@8bytes.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1414516440-910-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Andrea Arcangeli <aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Peter Zijlstra <a.p.zijlstra-/NLkJaSkS4VmR6Xm/wNWPw@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Hugh Dickins <hughd-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Mel Gorman <mgorman-l3A5Bk7waGM@public.gmane.org>, Johannes Weiner <jweiner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Jay.Cornwall-5C7GfCeVMHo@public.gmane.org, John.Bridgman-5C7GfCeVMHo@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jesse Barnes <jbarnes-Y1mF5jBUw70BENJcbMCuUQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, ben.sander-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
-
-Changes V3->V4:
-
-* Rebased to v3.18-rc2
-* Updated patch description and some comments
-
-Changes V2->V3:
-
-* Rebased to v3.17-rc4
-* Fixed compile error because pmdp_get_and_clear_notify was
-  missing
-
-Changes V1->V2:
-
-* Rebase to v3.16-rc7
-* Added call of ->invalidate_range to
-  __mmu_notifier_invalidate_end() so that the subsystem
-  doesn't need to register an ->invalidate_end() call-back,
-  subsystems will likely either register
-  invalidate_range_start/end or invalidate_range, so that
-  should be fine.
-* Re-orded declarations a bit to reflect that
-  invalidate_range is not only called between
-  invalidate_range_start/end
-* Updated documentation to cover the case where
-  invalidate_range is called outside of
-  invalidate_range_start/end to flush page-table pages out
-  of the TLB
-
-Hi,
-
-here is v4 of my patch-set which extends the mmu-notifiers
-to allow managing CPU external TLBs. A more in-depth
-description on the How and Why of this patch-set can be
-found in the description of patch 1/3.
-
-Any comments and review appreciated!
-
-Thanks,
-
-	Joerg
-
-Joerg Roedel (3):
-  mmu_notifier: Add mmu_notifier_invalidate_range()
-  mmu_notifier: Call mmu_notifier_invalidate_range() from VMM
-  mmu_notifier: Add the call-back for mmu_notifier_invalidate_range()
-
- include/linux/mmu_notifier.h | 88 ++++++++++++++++++++++++++++++++++++++=
-+++---
- kernel/events/uprobes.c      |  2 +-
- mm/fremap.c                  |  2 +-
- mm/huge_memory.c             |  9 +++--
- mm/hugetlb.c                 |  7 +++-
- mm/ksm.c                     |  4 +-
- mm/memory.c                  |  3 +-
- mm/migrate.c                 |  3 +-
- mm/mmu_notifier.c            | 25 +++++++++++++
- mm/rmap.c                    |  2 +-
- 10 files changed, 128 insertions(+), 17 deletions(-)
-
---=20
-1.8.4.5
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=3Dmailto:"dont@kvack.org"> email@kvack.org </a>
+RnJvbTogSm9lcmcgUm9lZGVsIDxqcm9lZGVsQHN1c2UuZGU+CgpUaGlzIG5vdGlmaWVyIGNsb3Nl
+cyBhbiBpbXBvcnRhbnQgZ2FwIGluIHRoZSBjdXJyZW50Cm1tdV9ub3RpZmllciBpbXBsZW1lbnRh
+dGlvbiwgdGhlIGV4aXN0aW5nIGNhbGwtYmFja3MgYXJlCmNhbGxlZCB0b28gZWFybHkgb3IgdG9v
+IGxhdGUgdG8gcmVsaWFibHkgbWFuYWdlIGEgbm9uLUNQVQpUTEIuICBTcGVjaWZpY2FsbHksIGlu
+dmFsaWRhdGVfcmFuZ2Vfc3RhcnQoKSBpcyBjYWxsZWQgd2hlbgphbGwgcGFnZXMgYXJlIHN0aWxs
+IG1hcHBlZCBhbmQgaW52YWxpZGF0ZV9yYW5nZV9lbmQoKSB3aGVuCmFsbCBwYWdlcyBhcmUgdW5t
+YXBwZWQgYW5kIHBvdGVudGlhbGx5IGZyZWVkLgoKVGhpcyBpcyBmaW5lIHdoZW4gdGhlIHVzZXJz
+IG9mIHRoZSBtbXVfbm90aWZpZXJzIG1hbmFnZQp0aGVpciBvd24gU29mdFRMQiwgbGlrZSBLVk0g
+ZG9lcy4gV2hlbiB0aGUgVExCIGlzIG1hbmFnZWQgaW4Kc29mdHdhcmUgaXQgaXMgZWFzeSB0byB3
+aXBlIG91dCBlbnRyaWVzIGZvciBhIGdpdmVuIHJhbmdlCmFuZCBwcmV2ZW50IG5ldyBlbnRyaWVz
+IHRvIGJlIGVzdGFibGlzaGVkIHVudGlsCmludmFsaWRhdGVfcmFuZ2VfZW5kIGlzIGNhbGxlZC4K
+CkJ1dCB3aGVuIHRoZSB1c2VyIG9mIG1tdV9ub3RpZmllcnMgaGFzIHRvIG1hbmFnZSBhIGhhcmR3
+YXJlClRMQiBpdCBjYW4gc3RpbGwgd2lwZSBvdXQgVExCIGVudHJpZXMgaW4KaW52YWxpZGF0ZV9y
+YW5nZV9zdGFydCwgYnV0IGl0IGNhbid0IG1ha2Ugc3VyZSB0aGF0IG5vIG5ldwpUTEIgZW50cmll
+cyBpbiB0aGUgZ2l2ZW4gcmFuZ2UgYXJlIGVzdGFibGlzaGVkIGJldHdlZW4KaW52YWxpZGF0ZV9y
+YW5nZV9zdGFydCBhbmQgaW52YWxpZGF0ZV9yYW5nZV9lbmQuCgpUbyBhdm9pZCBzaWxlbnQgZGF0
+YSBjb3JydXB0aW9uIHRoZSBlbnRyaWVzIGluIHRoZSBub24tQ1BVClRMQiBuZWVkIHRvIGJlIGZs
+dXNoZWQgd2hlbiB0aGUgcGFnZXMgYXJlIHVubWFwcGVkIChhdCB0aGlzCnBvaW50IGluIHRpbWUg
+bm8gX25ld18gVExCIGVudHJpZXMgY2FuIGJlIGVzdGFibGlzaGVkIGluIHRoZQpub24tQ1BVIFRM
+QikgYnV0IG5vdCB5ZXQgZnJlZWQgKGFzIHRoZSBub24tQ1BVIFRMQiBtYXkgc3RpbGwKaGF2ZSBf
+ZXhpc3RpbmdfIGVudHJpZXMgcG9pbnRpbmcgdG8gdGhlIHBhZ2VzIGFib3V0IHRvIGJlCmZyZWVk
+KS4KClRvIGZpeCB0aGlzIHByb2JsZW0gd2UgbmVlZCB0byBjYXRjaCB0aGUgbW9tZW50IHdoZW4g
+dGhlCkxpbnV4IFZNTSBmbHVzaGVzIHJlbW90ZSBUTEJzIChhcyBhIG5vbi1DUFUgVExCIGlzIG5v
+dCB2ZXJ5CmRpZmZlcmVudCBpbiBpdHMgZmx1c2hpbmcgcmVxdWlyZW1lbnRzIGZyb20gYW55IG90
+aGVyIHJlbW90ZQpDUFUgVExCKSwgYXMgdGhpcyBpcyB0aGUgcG9pbnQgaW4gdGltZSB3aGVuIHRo
+ZSBwYWdlcyBhcmUKdW5tYXBwZWQgYnV0IF9ub3RfIHlldCBmcmVlZC4KClRoZSBtbXVfbm90aWZp
+ZXJfaW52YWxpZGF0ZV9yYW5nZSgpIGZ1bmN0aW9uIGFpbXMgdG8gY2F0Y2gKdGhhdCBtb21lbnQu
+CgpJT01NVSBjb2RlIHdpbGwgYmUgb25lIHVzZXIgb2YgdGhlIG5vdGlmaWVyLWNhbGxiYWNrLgpD
+dXJyZW50bHkgdGhpcyBpcyBvbmx5IHRoZSBBTUQgSU9NTVV2MiBkcml2ZXIsIGJ1dCBpdHMgY29k
+ZQppcyBhYm91dCB0byBiZSBtb3JlIGdlbmVyYWxpemVkIGFuZCBjb252ZXJ0ZWQgdG8gYSBnZW5l
+cmljCklPTU1VLUFQSSBleHRlbnNpb24gdG8gZml0IHRoZSBuZWVkcyBvZiBzaW1pbGFyCmZ1bmN0
+aW9uYWxpdHkgaW4gb3RoZXIgSU9NTVVzIGFzIHdlbGwuCgpUaGUgY3VycmVudCBhdHRlbXB0IGlu
+IHRoZSBBTUQgSU9NTVV2MiBkcml2ZXIgdG8gd29yayBhcm91bmQKdGhlIGludmFsaWRhdGVfcmFu
+Z2Vfc3RhcnQvZW5kKCkgc2hvcnRjb21pbmcgaXMgdG8gYXNzaWduIGFuCmVtcHR5IHBhZ2UgdGFi
+bGUgdG8gdGhlIG5vbi1DUFUgVExCIGJldHdlZW4gYW55CmludmFsaWRhdGFfcmFuZ2Vfc3RhcnQv
+ZW5kIGNhbGxzLiBXaXRoIHRoZSBlbXB0eSBwYWdlLXRhYmxlCmFzc2lnbmVkLCBldmVyeSBwYWdl
+LXRhYmxlIHdhbGsgdG8gcmUtZmlsbCB0aGUgbm9uLUNQVSBUTEIKd2lsbCBjYXVzZSBhIHBhZ2Ut
+ZmF1bHQgcmVwb3J0ZWQgdG8gdGhlIElPTU1VIGRyaXZlciB2aWEgYW4KaW50ZXJydXB0LCBwb3Nz
+aWJseSBjYXVzaW5nIGludGVycnVwdCBzdG9ybXMuCgpUaGUgcGFnZS1mYXVsdCBoYW5kbGVyIGlu
+IHRoZSBBTUQgSU9NTVV2MiBkcml2ZXIgZG9lc24ndApoYW5kbGUgdGhlIGZhdWx0IGlmIGFuIGlu
+dmFsaWRhdGVfcmFuZ2Vfc3RhcnQvZW5kIHBhaXIgaXMKYWN0aXZlLCBpdCBqdXN0IHJlcG9ydHMg
+YmFjayBTVUNFU1MgdG8gdGhlIGRldmljZSBhbmQgbGV0IGl0CnJlZmF1bHQgdGhlIHBhZ2UuIEJ1
+dCBleGlzdGluZyBoYXJkd2FyZSAobmV3ZXIgUmFkZW9uIEdQVXMpCnRoYXQgbWFrZXMgdXNlIG9m
+IHRoaXMgZmVhdHVyZSBkb24ndCByZS1mYXVsdCBpbmRlZmluaXRseSwKYWZ0ZXIgYSBjZXJ0YWlu
+IG51bWJlciBvZiBmYXVsdHMgZm9yIHRoZSBzYW1lIGFkZHJlc3MgdGhlCmRldmljZSBlbnRlcnMg
+YSBmYWlsdXJlIHN0YXRlIGFuZCBuZWVkcyB0byBiZSByZXNldHRlZC4KClRvIGF2b2lkIHRoZSBH
+UFVzIGVudGVyaW5nIGEgZmFpbHVyZSBzdGF0ZSB3ZSBuZWVkIHRvIGdldApyaWQgb2YgdGhlIGVt
+cHR5LXBhZ2UtdGFibGUgd29ya2Fyb3VuZCBhbmQgdXNlIHRoZQptbXVfbm90aWZpZXJfaW52YWxp
+ZGF0ZV9yYW5nZSgpIGZ1bmN0aW9uIGludHJvZHVjZWQgd2l0aAp0aGlzIHBhdGNoLgoKUmV2aWV3
+ZWQtYnk6IEFuZHJlYSBBcmNhbmdlbGkgPGFhcmNhbmdlQHJlZGhhdC5jb20+ClJldmlld2VkLWJ5
+OiBKw6lyw7RtZSBHbGlzc2UgPGpnbGlzc2VAcmVkaGF0LmNvbT4KU2lnbmVkLW9mZi1ieTogSm9l
+cmcgUm9lZGVsIDxqcm9lZGVsQHN1c2UuZGU+Ci0tLQogaW5jbHVkZS9saW51eC9tbXVfbm90aWZp
+ZXIuaCB8IDEwICsrKysrKysrKysKIDEgZmlsZSBjaGFuZ2VkLCAxMCBpbnNlcnRpb25zKCspCgpk
+aWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9tbXVfbm90aWZpZXIuaCBiL2luY2x1ZGUvbGludXgv
+bW11X25vdGlmaWVyLmgKaW5kZXggODg3ODdiYi4uMTc5MDc5MCAxMDA2NDQKLS0tIGEvaW5jbHVk
+ZS9saW51eC9tbXVfbm90aWZpZXIuaAorKysgYi9pbmNsdWRlL2xpbnV4L21tdV9ub3RpZmllci5o
+CkBAIC0yNDIsNiArMjQyLDExIEBAIHN0YXRpYyBpbmxpbmUgdm9pZCBtbXVfbm90aWZpZXJfaW52
+YWxpZGF0ZV9yYW5nZV9lbmQoc3RydWN0IG1tX3N0cnVjdCAqbW0sCiAJCV9fbW11X25vdGlmaWVy
+X2ludmFsaWRhdGVfcmFuZ2VfZW5kKG1tLCBzdGFydCwgZW5kKTsKIH0KIAorc3RhdGljIGlubGlu
+ZSB2b2lkIG1tdV9ub3RpZmllcl9pbnZhbGlkYXRlX3JhbmdlKHN0cnVjdCBtbV9zdHJ1Y3QgKm1t
+LAorCQkJCSAgdW5zaWduZWQgbG9uZyBzdGFydCwgdW5zaWduZWQgbG9uZyBlbmQpCit7Cit9CisK
+IHN0YXRpYyBpbmxpbmUgdm9pZCBtbXVfbm90aWZpZXJfbW1faW5pdChzdHJ1Y3QgbW1fc3RydWN0
+ICptbSkKIHsKIAltbS0+bW11X25vdGlmaWVyX21tID0gTlVMTDsKQEAgLTM0Miw2ICszNDcsMTEg
+QEAgc3RhdGljIGlubGluZSB2b2lkIG1tdV9ub3RpZmllcl9pbnZhbGlkYXRlX3JhbmdlX2VuZChz
+dHJ1Y3QgbW1fc3RydWN0ICptbSwKIHsKIH0KIAorc3RhdGljIGlubGluZSB2b2lkIG1tdV9ub3Rp
+Zmllcl9pbnZhbGlkYXRlX3JhbmdlKHN0cnVjdCBtbV9zdHJ1Y3QgKm1tLAorCQkJCSAgdW5zaWdu
+ZWQgbG9uZyBzdGFydCwgdW5zaWduZWQgbG9uZyBlbmQpCit7Cit9CisKIHN0YXRpYyBpbmxpbmUg
+dm9pZCBtbXVfbm90aWZpZXJfbW1faW5pdChzdHJ1Y3QgbW1fc3RydWN0ICptbSkKIHsKIH0KLS0g
+CjEuOC40LjUKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+CmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRw
+czovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
