@@ -1,106 +1,36 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [Patch Part2 v3 15/24] x86, MSI: Use hierarchy irqdomain to
- manage MSI interrupts
-Date: Thu, 30 Oct 2014 11:39:49 +0100 (CET)
-Message-ID: <alpine.DEB.2.11.1410300947450.5308@nanos>
-References: <1414484803-10311-1-git-send-email-jiang.liu@linux.intel.com> <1414484803-10311-16-git-send-email-jiang.liu@linux.intel.com> <alpine.DEB.2.11.1410282046120.5308@nanos> <5450A9D8.108@linux.intel.com> <alpine.DEB.2.11.1410291017180.5308@nanos>
- <5451C379.1050508@linux.intel.com>
+From: =?windows-1252?Q?Terje_Bergstr=F6m?= <tbergstrom-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v4 05/12] memory: Add NVIDIA Tegra memory controller
+	support
+Date: Thu, 30 Oct 2014 13:04:02 +0200
+Message-ID: <54521B22.6070708@nvidia.com>
+References: <1413196434-5292-1-git-send-email-thierry.reding@gmail.com>
+	<1413196434-5292-5-git-send-email-thierry.reding@gmail.com>
+	<54520CFE.9060907@nvidia.com> <5452107D.8080207@nvidia.com>
+	<54521181.8080005@nvidia.com>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <5451C379.1050508@linux.intel.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Jiang Liu <jiang.liu@linux.intel.com>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Bjorn Helgaas <bhelgaas@google.com>, Randy Dunlap <rdunlap@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Borislav Petkov <bp@alien8.de>, Grant Likely <grant.likely@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>, x86@kernel.org, Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Andrew Morton <akpm@linux-foundation.org>, Tony Luck <tony.luck@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <54521181.8080005-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 30 Oct 2014, Jiang Liu wrote:
-> On 2014/10/29 17:19, Thomas Gleixner wrote:
-> >> IOAPIC runs into the same situation, but I need some more time
-> >> to find a solution:)
-> > 
-> > I'm sure you will!
-> Hi Thomas,
-> 	I have reviewed IOAPIC related change again, but the conclusion
-> may not be what you expect:(
-> 	Currently IOAPIC driver detects IRQ remapping for following
-> tasks:
-> 1) Issue different EOI command to IOAPIC chip for unammped and remapped
->    interrupts. It uses pin number instead of vector number for remapped
->    interrupts.
-> 2) Print different format for IOAPIC entries for unmapped and remapped
->    interrupts.
-> 3) ioapic_ack_level() uses different method for unmapped and remapped
->    interrupts
-> 4) create different IOAPIC entry content for unmapped and remapped
->    interrupts
-> 5) choose different flow handler for unmapped and remapped interrupts
+On 30.10.2014 12:22, Alexandre Courbot wrote:
+> So should I understand that the GPU group is for addresses without bit
+> 34 set (hence forcibly disabled) while GPUB is used when that bit is
+> set? Or is it something else?
 
-So todays code does 
+That's exactly correct. And only GPUB can be programmed to be SMMU
+translated.
 
-1/2/3 via irq_remap_modify_chip_defaults() and via
-      x86_io_apic_ops.eoi_ioapic_pin with convoluted back and forth
-      calls from remap to ioapic code.
-
-4)    is solved via x86_io_apic_ops.setup_entry
-
-5)    via setup_remapped_irq()
-
-Now with the stacked irq domains we end up with the following two
-scenarios:
-
-	ioapic_domain -> vector_domain
-
-	ioapic_domain -> remap_domain -> vector_domain
-
-So if you look at the various issues you want to solve:
-
-#1 Is simple to solve via:   	
-
-static void ioapic_eoi(struct irq_data *data)
-{
-	if (data->parent->chip->irq_eoi)
-		data->parent->chip->irq_eoi(data->parent);
-	else
-	    	plain_ioapic_eoi(data);
-}
-
-#2/3 Ditto
-
-#4/5 Should be solvable via the irq_startup callback in a similar way
-
-static int ioapic_startup(struct irq_data *data)
-{
-	if (data->parent->chip->irq_startup)
-		return data->parent->chip->irq_startup(data->parent);
-	else
-	    	return plain_ioapic_startup(data);
-}
-
-I.e. you set the entry and the handler from the startup function of
-ioapic or remap.
-
-It's probably not that simple as the above, but I'm pretty confident,
-that we can map it without adding a gazillion of new callbacks to
-irqchip.
-
-> For MSI, it only needs to solve task 4) above. For IOAPIC, it needs
-> to solve all five tasks above, which may cause big changes to irq_chip.
-> And it even may cause IRQ remapping driver call back into IOAPIC driver,
-> which breaks another rules that only the driver touches corresponding
-> interrupt controller.
-
-If the remap driver calls ioapic functions which are provided for that
-purpose then I think that's unavoidable and ok. But I really want to
-avoid the intermingled mess in the other code pathes which call back
-and forth.
- 
-> On the other hand, MSI is almost platform independent, so it's
-> reasonable to change public struct irq_chip to support MSI.
-
-Right, but I think we can get away without adding new functions to
-irqchip for the ioapic/remap thing.
-
-Thanks,
-
-	tglx
+Terje
