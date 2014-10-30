@@ -1,86 +1,35 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH v7 1/2] iopoll: Introduce memory-mapped IO polling macros
-Date: Thu, 30 Oct 2014 13:00:23 +0100
-Message-ID: <2369912.UOLoWKRnHU@wuerfel>
-References: <1414617220-21493-1-git-send-email-mitchelh@codeaurora.org>
-	<1414617220-21493-2-git-send-email-mitchelh@codeaurora.org>
-	<20141030114100.GB32589@arm.com>
+From: Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v4 05/12] memory: Add NVIDIA Tegra memory controller support
+Date: Thu, 30 Oct 2014 22:35:07 +0900
+Message-ID: <54523E8B.7000900@nvidia.com>
+References: <1413196434-5292-1-git-send-email-thierry.reding@gmail.com> <1413196434-5292-5-git-send-email-thierry.reding@gmail.com> <54520CFE.9060907@nvidia.com> <5452107D.8080207@nvidia.com> <54521181.8080005@nvidia.com> <54521B22.6070708@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20141030114100.GB32589-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset=windows-1252;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <54521B22.6070708-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: =?windows-1252?Q?Terje_Bergstr=F6m?= <tbergstrom-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thursday 30 October 2014 11:41:00 Will Deacon wrote:
-> > +
-> > +#define readl_poll_timeout(addr, val, cond, delay_us, timeout_us) \
-> > +	readx_poll_timeout(readl, addr, val, cond, delay_us, timeout_us)
-> > +
-> > +#define readl_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
-> > +	readx_poll_timeout_atomic(readl, addr, val, cond, delay_us, timeout_us)
-> > +
-> > +#define readb_poll_timeout(addr, val, cond, delay_us, timeout_us) \
-> > +	readx_poll_timeout(readb, addr, val, cond, delay_us, timeout_us)
-> > +
-> > +#define readb_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
-> > +	readx_poll_timeout_atomic(readb, addr, val, cond, delay_us, timeout_us)
-> > +
-> > +#define readw_poll_timeout(addr, val, cond, delay_us, timeout_us) \
-> > +	readx_poll_timeout(readw, addr, val, cond, delay_us, timeout_us)
-> > +
-> > +#define readw_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
-> > +	readx_poll_timeout_atomic(readw, addr, val, cond, delay_us, timeout_us)
-> > +
-> > +#define readq_poll_timeout(addr, val, cond, delay_us, timeout_us) \
-> > +	readx_poll_timeout(readq, addr, val, cond, delay_us, timeout_us)
-> > +
-> > +#define readq_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
-> > +	readx_poll_timeout_atomic(readq, addr, val, cond, delay_us, timeout_us)
+On 10/30/2014 08:04 PM, Terje Bergstr=F6m wrote:
+> On 30.10.2014 12:22, Alexandre Courbot wrote:
+>> So should I understand that the GPU group is for addresses without b=
+it
+>> 34 set (hence forcibly disabled) while GPUB is used when that bit is
+>> set? Or is it something else?
+>
+> That's exactly correct. And only GPUB can be programmed to be SMMU
+> translated.
 
-Sort these by size (b, w, l, q) maybe?
+Great, thanks for confirming!
 
-> > +#define ioread32_poll_timeout(addr, val, cond, delay_us, timeout_us) \
-> > +	readx_poll_timeout(ioread32, addr, val, cond, delay_us, timeout_us)
-> > +
-> > +#define ioread32_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
-> > +	readx_poll_timeout_atomic(ioread32, addr, val, cond, delay_us, timeout_us)
-> > +
-> > +#define ioread32b3_poll_timeout(addr, val, cond, delay_us, timeout_us) \
-> > +	readx_poll_timeout(ioread32b3, addr, val, cond, delay_us, timeout_us)
-> > +
-> > +#define ioread32b3_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
-> > +	readx_poll_timeout_atomic(ioread32b3, addr, val, cond, delay_us, timeout_us)
-
-What is ioread32b3?
-
-> > +#define inb_poll_timeout(addr, val, cond, delay_us, timeout_us) \
-> > +	readx_poll_timeout(inb, addr, val, cond, delay_us, timeout_us)
-> > +
-> > +#define inb_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
-> > +	readx_poll_timeout_atomic(inb, addr, val, cond, delay_us, timeout_us)
-> > +
-> > +#define inb_p_poll_timeout(addr, val, cond, delay_us, timeout_us) \
-> > +	readx_poll_timeout(inb_p, addr, val, cond, delay_us, timeout_us)
-> > +
-> > +#define inb_p_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
-> > +	readx_poll_timeout_atomic(inb_p, addr, val, cond, delay_us, timeout_us)
-
-I would leave out the _p variants, they are very rarely used anyway.
-
-Looking at the long list, I wonder if we should really define each variant,
-or just expect drivers to call readx_poll_timeout{,_atomic} directly and
-pass whichever accessor they want.
-
-	Arnd
+Thierry, how do you want to address this? We could change the register=20
+for the GPU group, or (maybe preferable if we want to reflect the actua=
+l=20
+hardware state) add the GPUB group. I don't know if that would be easy=20
+though since we would have the problem of the gpusrd and gpuswr clients=
+=20
+ownership (seems like they would belong to both groups?)
