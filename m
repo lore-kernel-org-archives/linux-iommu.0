@@ -1,193 +1,113 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [Patch Part2 v3 15/24] x86, MSI: Use hierarchy irqdomain to manage
-	MSI interrupts
-Date: Fri, 31 Oct 2014 20:04:23 +0800
-Message-ID: <54537AC7.90409@linux.intel.com>
-References: <1414484803-10311-1-git-send-email-jiang.liu@linux.intel.com>
-	<1414484803-10311-16-git-send-email-jiang.liu@linux.intel.com>
-	<alpine.DEB.2.11.1410282046120.5308@nanos>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v4 05/12] memory: Add NVIDIA Tegra memory controller
+ support
+Date: Fri, 31 Oct 2014 14:27:42 +0100
+Message-ID: <20141031132740.GA9371@ulmo.nvidia.com>
+References: <1413196434-5292-1-git-send-email-thierry.reding@gmail.com>
+ <1413196434-5292-5-git-send-email-thierry.reding@gmail.com>
+ <CAOesGMgDE_PZHrrEhntnce2AMsdtAb9+i5XuxP-Q7j--432zpw@mail.gmail.com>
+ <20141030150839.GG20072@ulmo.nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <alpine.DEB.2.11.1410282046120.5308@nanos>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Cc: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Q68bSM7Ycu6FN28Q"
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20141030150839.GG20072-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Cc: "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
+--Q68bSM7Ycu6FN28Q
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 2014/10/29 5:37, Thomas Gleixner wrote:
-> On Tue, 28 Oct 2014, Jiang Liu wrote:
->> @@ -166,25 +264,59 @@ int setup_msi_irq(struct pci_dev *dev, struct msi_desc *msidesc,
->>  
->>  int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
->>  {
->> -	struct msi_desc *msidesc;
->> -	int irq, ret;
->> +	int irq, cnt, nvec_pow2;
->> +	struct irq_domain *domain;
->> +	struct msi_desc *msidesc, *iter;
->> +	struct irq_alloc_info info;
->> +	int node = dev_to_node(&dev->dev);
->>  
->> -	/* Multiple MSI vectors only supported with interrupt remapping */
->> -	if (type == PCI_CAP_ID_MSI && nvec > 1)
->> -		return 1;
->> +	if (disable_apic)
->> +		return -ENOSYS;
->>  
->> -	list_for_each_entry(msidesc, &dev->msi_list, list) {
->> -		irq = irq_domain_alloc_irqs(NULL, 1, NUMA_NO_NODE, NULL);
->> +	init_irq_alloc_info(&info, NULL);
->> +	info.msi_dev = dev;
->> +	if (type == PCI_CAP_ID_MSI) {
->> +		msidesc = list_first_entry(&dev->msi_list,
->> +					   struct msi_desc, list);
->> +		WARN_ON(!list_is_singular(&dev->msi_list));
->> +		WARN_ON(msidesc->irq);
->> +		WARN_ON(msidesc->msi_attrib.multiple);
->> +		WARN_ON(msidesc->nvec_used);
->> +		info.type = X86_IRQ_ALLOC_TYPE_MSI;
->> +		cnt = nvec;
->> +	} else {
->> +		info.type = X86_IRQ_ALLOC_TYPE_MSIX;
->> +		cnt = 1;
->> +	}
-> 
-> We have a similar issue here.
-> 
->> +	domain = irq_remapping_get_irq_domain(&info);
-> 
-> We add domain specific knowledge to the MSI implementation. Not
-> necessary at all.
-> 
-> Again MSI is not an x86 problem and we really can move most of that to
-> the core code. The above sanity checks and the distinction between MSI
-> and MSIX can be handled in the core code. And every domain involved in
-> the MSI chain would need a alloc_msi() callback.
-Add alloc_msi() callback to irq_domain_ops seems a little overaction.
-I think the main idea is to make MSI code public as much as possible,
-so I have found another solution to move MSI irqdomain code into
-drivers/pci/msi.c and only following code are platform dependent now.
-How about this solution?
-------------------------------------------------------------------------
-int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
-{
-        struct irq_domain *domain;
-        struct irq_alloc_info info;
+On Thu, Oct 30, 2014 at 04:08:41PM +0100, Thierry Reding wrote:
+> On Wed, Oct 15, 2014 at 03:09:30PM -0700, Olof Johansson wrote:
+> > Hi,
+> >=20
+> > Oh, a few more comments:
+> >=20
+> > On Mon, Oct 13, 2014 at 3:33 AM, Thierry Reding
+> > <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> >=20
+> > > diff --git a/drivers/memory/Makefile b/drivers/memory/Makefile
+> > > index c32d31981be3..1c932e7e7b8d 100644
+> > > --- a/drivers/memory/Makefile
+> > > +++ b/drivers/memory/Makefile
+> > > @@ -12,4 +12,5 @@ obj-$(CONFIG_FSL_CORENET_CF)  +=3D fsl-corenet-cf.o
+> > >  obj-$(CONFIG_FSL_IFC)          +=3D fsl_ifc.o
+> > >  obj-$(CONFIG_MVEBU_DEVBUS)     +=3D mvebu-devbus.o
+> > >  obj-$(CONFIG_TEGRA20_MC)       +=3D tegra20-mc.o
+> > > -obj-$(CONFIG_TEGRA30_MC)       +=3D tegra30-mc.o
+> > > +
+> > > +obj-$(CONFIG_ARCH_TEGRA)       +=3D tegra/
+> > > diff --git a/drivers/memory/tegra/Makefile b/drivers/memory/tegra/Mak=
+efile
+> > > new file mode 100644
+> > > index 000000000000..51b9e8fcde1b
+> > > --- /dev/null
+> > > +++ b/drivers/memory/tegra/Makefile
+> > > @@ -0,0 +1,5 @@
+> > > +obj-y                                   =3D tegra-mc.o
+> > > +obj-$(CONFIG_ARCH_TEGRA_3x_SOC)                +=3D tegra30-mc.o
+> > > +obj-$(CONFIG_ARCH_TEGRA_114_SOC)       +=3D tegra114-mc.o
+> > > +obj-$(CONFIG_ARCH_TEGRA_124_SOC)       +=3D tegra124-mc.o
+> > > +obj-$(CONFIG_ARCH_TEGRA_132_SOC)       +=3D tegra124-mc.o
+> >=20
+> > You'll need a Kconfig and not just a makefile -- there are definitely
+> > dependencies on this driver (IOMMU in particular).
+>=20
+> This is handled within the tegra-mc driver by only setting up the IOMMU
+> when TEGRA_IOMMU_SMMU is enabled. That config option remains in place.
+>=20
+> > Also, the problem of having a global enable bit that is only under
+> > control of TrustZone FW is a big problem -- if the bit is not set, the
+> > driver will not work (and the machine will crash).
+> >=20
+> > I think you'll need to come up with a way to detect that in the
+> > driver. I don't have a good idea of how it can be done though.
+>=20
+> I don't think I ever got back to you on this. We discussed this
+> internally and it seems like there's no way to detect this properly, so
+> the best suggestion so far was to make it a requirement on the secure
+> firmware to enable IOMMU or not. Since there's no way for the kernel to
+> detect whether IOMMU was enabled or not, I think the firmware would
+> equally have to adjust the SMMU's device tree node's status property
+> appropriately.
 
-        init_irq_alloc_info(&info, NULL);
-        info.msi_dev = dev;
-        if (type == PCI_CAP_ID_MSI) {
-                info.type = X86_IRQ_ALLOC_TYPE_MSI;
-                info.flags |= X86_IRQ_ALLOC_CONTIGOUS_VECTORS;
-        } else {
-                info.type = X86_IRQ_ALLOC_TYPE_MSIX;
-        }
+The other option would be for the firmware not to touch the SMMU device
+tree node and the kernel simply assuming that if it's running in non-
+secure mode then there must be secure firmware and it has enabled the
+SMMU. Enabling the SMMU would become part of the contract between
+firmware and kernel, much like locking the VPR is required to get the
+GPU to work.
 
-        domain = irq_remapping_get_irq_domain(&info);
-        if (domain == NULL)
-                domain = msi_default_domain;
-        if (domain == NULL)
-                return -ENOSYS;
+Those are really the only two choices we have.
 
-        return msi_irq_domain_alloc_irqs(domain, type, dev, &info);
-}
+Thierry
 
-void native_teardown_msi_irq(unsigned int irq)
-{
-        irq_domain_free_irqs(irq, 1);
-}
+--Q68bSM7Ycu6FN28Q
+Content-Type: application/pgp-signature
 
-irq_hw_number_t arch_msi_irq_domain_get_hwirq(void *arg)
-{
-        struct irq_alloc_info *info = arg;
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
-        return info->msi_hwirq;
-}
+iQIcBAEBAgAGBQJUU45MAAoJEN0jrNd/PrOhNisP/R0zrGlIsP8WfNOyA99NL5Yf
+GTJjjvXqW/LacIty1tNF0yyK28t/cP+qrlOhbHcLSPX8GGBtU8ztSi6eu7Y+EnTU
+q8ifekChUDoUytIxkM30HrFGhWb0AQDEBGXfzFpzU1ZJ1tZ2wtfYu5SLPO3533dv
+Xgj1Aa0qbg0AdNu6ILVDp2hUPw0ZXpt/AcIEpYKULhTIpVt9qwUiz11oHqyPc9WM
+unHKhNl8QqDlm0zVZCMz9oSnyNN04SrES1cw9aqeOE/NI1hYeAUz9He0/5POMJEc
+yIdVzhyofxnOVdcZmdIzJVcjCF5lnnPcXeiYeTq0slMsi3nwrCNe19C7UsxN/cd+
+PKto6hKIJweBSi3wjSFNyF2FQhYvJxJKP1Wp6MGBl9AxRUPZJS5by7jO5qUuNhWv
++CKDS4rOafb1qlvA6k6T1dwq/1FYTTRm41jft/loXDGtzcjbCaqIWD86MfPc/TSU
+Hsp/nCh9tFUAEZoKEr/SLC6AOFjKGdSaUG84hqEsE3K6YhaUqAuuDTihn/5RWPEh
+5CE+/iNyg3IploHNnmYQEJ3rBzu7rRILnDvLyYUF1NM01Fx7DzlfLwZqkRsoZ57n
++XsliPj4/qqV29N9CS4D6izSL+iGCmzeiJsgE9C1m8O+W6gkGrHQcnn3ADsYeNqw
+pulkteMMoCmLTg5O8Ydx
+=Gxjd
+-----END PGP SIGNATURE-----
 
-void arch_msi_irq_domain_set_hwirq(void *arg, irq_hw_number_t hwirq)
-{
-        struct irq_alloc_info *info = arg;
-
-        info->msi_hwirq = hwirq;
-}
-
-void arch_init_msi_domain(struct irq_domain *parent)
-{
-        if (disable_apic)
-                return;
-
-        msi_default_domain = msi_create_irq_domain(parent);
-        if (!msi_default_domain)
-                pr_warn("failed to initialize irqdomain for MSI/MSI-x.\n");
-}
-
-#ifdef CONFIG_IRQ_REMAP
-struct irq_domain *arch_create_msi_irq_domain(struct irq_domain *parent)
-{
-        return msi_create_irq_domain(parent);
-}
-#endif
------------------------------------------------------------------
-
-> 
-> So native_setup_msi_irqs() would boil down to:
-> + {
-> +	if (disable_apic)
-> +		return -ENOSYS;
-> + 
-> +	return irq_domain_alloc_msi(msi_domain, dev, nvec, type);   
-> + }
-> 
-> Now that core function performs the sanity checks for the MSI case. In
-> fact it should not proceed when a warning condition is detected. Not a
-> x86 issue at all, its true for every MSI implementation.
-> 
-> Then it calls down the domain allocation chain. x86_msi_domain would
-> simply hand down to the parent domain. That would either be the remap
-> domain or the vector domain.
-The issue here is that, the hierarchy irqdomain maintains a tree
-topology and every irqdomain only supports one parent.
-
-In case of irq remapping, we need to build one irqdomain for each IOMMU
-unit to support hotplug and simplify the implementation. So we need to
-build one MSI irqdomain for each IOMMU unit too instead of using a
-common MSI irqdomain.
-
-Current design is that, a common MSI irqdomain to support all MSI when
-irq remapping is disabled, and one MSI irqdomain for each IOMMU unit
-when irq remapping is enabled.
-
-So we have the code below to choose the correct irqdomain for MSI.
-        domain = irq_remapping_get_irq_domain(&info);
-        if (domain == NULL)
-                domain = msi_default_domain;
-        if (domain == NULL)
-                return -ENOSYS;
-
-> 
-> The reject for the multi MSI would only be implemented in the vector
-> domain callback, while the remap domain can handle it. Once we gain
-> support for allocating consecutive vectors for multi-MSI in the vector
-> domain we would not have to change any of the MSI code at all. 
-I have worked out a working patch to make decision in vector domain,
-as you have suggested.
-
-> 
-> Thoughts?
-> 
-> Thanks,
-> 
-> 	tglx
-> 
+--Q68bSM7Ycu6FN28Q--
