@@ -1,52 +1,149 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [Patch Part2 v3 15/24] x86, MSI: Use hierarchy irqdomain to
- manage MSI interrupts
-Date: Fri, 31 Oct 2014 15:00:50 +0100 (CET)
-Message-ID: <alpine.DEB.2.11.1410311340000.5308@nanos>
-References: <1414484803-10311-1-git-send-email-jiang.liu@linux.intel.com> <1414484803-10311-16-git-send-email-jiang.liu@linux.intel.com> <alpine.DEB.2.11.1410282046120.5308@nanos> <54537AC7.90409@linux.intel.com>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: Re: [RFC PATCH v2 0/4] vfio: platform: return device tree info for a
+	platform device node
+Date: Fri, 31 Oct 2014 16:53:35 +0100
+Message-ID: <CAG8rG2yDLod8OGkraAbx8ydasS3oNqyeUoi3MZhYyZpQKowYnQ@mail.gmail.com>
+References: <1413474876-28544-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1414015019.4202.281.camel@ul30vt.home>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <54537AC7.90409@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jiang Liu <jiang.liu@linux.intel.com>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Bjorn Helgaas <bhelgaas@google.com>, Randy Dunlap <rdunlap@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Borislav Petkov <bp@alien8.de>, Grant Likely <grant.likely@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>, x86@kernel.org, Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Andrew Morton <akpm@linux-foundation.org>, Tony Luck <tony.luck@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1414015019.4202.281.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 31 Oct 2014, Jiang Liu wrote:
-> On 2014/10/29 5:37, Thomas Gleixner wrote:
-> > Then it calls down the domain allocation chain. x86_msi_domain would
-> > simply hand down to the parent domain. That would either be the remap
-> > domain or the vector domain.
-> The issue here is that, the hierarchy irqdomain maintains a tree
-> topology and every irqdomain only supports one parent.
-> 
-> In case of irq remapping, we need to build one irqdomain for each IOMMU
-> unit to support hotplug and simplify the implementation. So we need to
-> build one MSI irqdomain for each IOMMU unit too instead of using a
-> common MSI irqdomain.
+On Wed, Oct 22, 2014 at 11:56 PM, Alex Williamson
+<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+> On Thu, 2014-10-16 at 17:54 +0200, Antonios Motakis wrote:
+>> This RFC's intention is to show what an interface to access device node
+>> properties for the VFIO platform driver can look like.
+>>
+>> If a device tree node corresponding to a platform device bound by VFIO PLATFORM
+>> or VFIO AMBA is available, this patch series will allow the user to query the
+>> properties associated with this device node. This can be useful for userspace
+>> drivers to automatically query parameters related to the device.
+>>
+>> An API to return data from a device's device tree has been proposed before on
+>> these lists. The API proposed here is slightly different.
+>>
+>> Properties to parse from the device tree are not indexed by a numerical id.
+>> The host system doesn't guarantee any specific ordering for the available
+>> properties, or that those will remain the same; while this does not happen in
+>> practice, there is nothing from the host changing the device nodes during
+>> operation. For this reason in this RFC properties are accessed by property name.
+>>
+>> The type of the property accessed must also be known by the user. Properties
+>> types implemented in this RFC:
+>> - VFIO_DEVTREE_TYPE_STRINGS (strings sepparated by the null character)
+>> - VFIO_DEVTREE_TYPE_U32
+>> - VFIO_DEVTREE_TYPE_U16
+>> - VFIO_DEVTREE_TYPE_U8
+>>
+>> These can all be access by the ioctl VFIO_DEVICE_GET_DEVTREE_INFO. A new ioctl
+>> was preferred instead of shoehorning the functionality in VFIO_DEVICE_GET_INFO.
+>> The structure exchanged with userspace looks like this:
+>>
+>> /**
+>>  * VFIO_DEVICE_GET_DEVTREE_INFO - _IOR(VFIO_TYPE, VFIO_BASE + 16,
+>>  *                                            struct vfio_devtree_info)
+>>  *
+>>  * Retrieve information from the device's device tree, if available.
+>>  * Caller will initialize data[] with a single string with the requested
+>>  * devicetree property name, and type depending on whether a array of strings
+>>  * or an array of u32 values is expected. On success, data[] will be extended
+>>  * with the requested information, either as an array of u32, or with a list
+>>  * of strings sepparated by the NULL terminating character.
+>>  * Return: 0 on success, -errno on failure.
+>>  */
+>> struct vfio_devtree_info {
+>>       __u32   argsz;
+>>       __u32   type;
+>> #define VFIO_DEVTREE_PROP_LIST                0
+>> #define VFIO_DEVTREE_TYPE_STRINGS     1
+>> #define VFIO_DEVTREE_TYPE_U8          2
+>> #define VFIO_DEVTREE_TYPE_U16         3
+>> #define VFIO_DEVTREE_TYPE_U32         4
+>>       __u32   length;
+>>       __u8    data[];
+>> };
+>> #define VFIO_DEVICE_GET_DEVTREE_INFO  _IO(VFIO_TYPE, VFIO_BASE + 17)
+>
+> Seems pretty reasonable.  We should add a flags variable to
+> vfio_devtree_info as well.  General question, in order to get a VFIO
 
-That makes indeed a difference.
- 
-> Current design is that, a common MSI irqdomain to support all MSI when
-> irq remapping is disabled, and one MSI irqdomain for each IOMMU unit
-> when irq remapping is enabled.
+Hm, any idea what kind of flags we might want to add in the future?
+Generally what we have is key-value pairs of the above types.
 
-> So we have the code below to choose the correct irqdomain for MSI.
->         domain = irq_remapping_get_irq_domain(&info);
->         if (domain == NULL)
->                 domain = msi_default_domain;
->         if (domain == NULL)
->                 return -ENOSYS;
+> device file descriptor, the user already needs to know the name of the
+> device.  Presumably they'll get this from sysfs or otherwise just know
+> it in advance.  Is that redundant information to what we're providing
+> here?  What other information already exists in sysfs for device tree
+> devices that we're duplicating here for the sake of creating a VFIO
+> mechanism?  If it's not already exposed in sysfs, should it be?  Thanks,
 
-Right. I guess we need to keep it that way for now.
+Yeah, it is kinda redundant information, but maybe it is not necessary
+to explicitly mask the device name just because it is also available
+otherwise. The full_name though is not available, which includes the
+path on the device tree.
 
-But looking at the code makes me wonder why we actually need to call
-into the remap code and do a list walk to figure the domain out. The
-association of device and iommu should be known at startup/hotplug
-time already. That's out of the scope of this work, but should be
-fixed eventually.
+The information for a device is used by a driver for that device. For
+example for the PL330 DMA controller, the driver finds out from the
+device tree the number of DMA channels available and other
+configuration time parameters. This is information that might not be
+otherwise available from the device itself, so it should be exposed to
+the driver.
 
-Thanks,
+This information is also available in /proc/device-tree, but a VFIO
+driver shouldn't have to go through that in my view.
 
-	tglx
+>
+> Alex
+>
+>> The length of the property will be reported in length, so the user can reallocate
+>> the structure if the data does not fit the first time the call is used.
+>>
+>> Specifically for QEMU, reading the "compatible" property of the device tree
+>> node could be of use to find out what device is being assigned to the guest and
+>> handle appropriately a wider range of devices in the future, and to generate an
+>> appropriate device tree for the guest.
+>>
+>> TODOs:
+>>  - 64 bit values support
+>>  - We can consider to rebase this on the patch series by Rafael J. Wysocki:
+>>    "[PATCH v4 00/13] Add ACPI _DSD and unified device properties support"
+>>    This would make 64 bit support more straightforward as it already includes
+>>    the APIs we need for 64 bit OF values.
+>>
+>> Changes since v1:
+>>  - Updated for VFIO platform patch series v8:
+>>    VFIO AMBA devices now supported in addition to VFIO PLATFORM devices
+>>  - Refactored and cleaned up the code
+>>
+>> Antonios Motakis (4):
+>>   vfio: platform: add device tree info API and skeleton
+>>   vfio: platform: devtree: return available property names
+>>   vfio: platform: devtree: access property as a list of strings
+>>   vfio: platform: devtree: return arrays of u32, u16, or u8 data
+>>
+>>  drivers/vfio/platform/Makefile                |   3 +-
+>>  drivers/vfio/platform/devtree.c               | 199 ++++++++++++++++++++++++++
+>>  drivers/vfio/platform/vfio_platform_common.c  |  39 +++++
+>>  drivers/vfio/platform/vfio_platform_private.h |   6 +
+>>  include/uapi/linux/vfio.h                     |  26 ++++
+>>  5 files changed, 272 insertions(+), 1 deletion(-)
+>>  create mode 100644 drivers/vfio/platform/devtree.c
+>>
+>
+>
+>
