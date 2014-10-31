@@ -1,15 +1,14 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v9 07/19] vfio/platform: return info for device memory
-	mapped IO regions
-Date: Fri, 31 Oct 2014 12:58:56 -0600
-Message-ID: <1414781936.27420.317.camel@ul30vt.home>
+Subject: Re: [PATCH v9 12/19] vfio/platform: trigger an interrupt via eventfd
+Date: Fri, 31 Oct 2014 13:36:14 -0600
+Message-ID: <1414784174.27420.327.camel@ul30vt.home>
 References: <1414433284-31719-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1414433284-31719-8-git-send-email-a.motakis@virtualopensystems.com>
+	<1414433284-31719-13-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1414433284-31719-8-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+In-Reply-To: <1414433284-31719-13-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,211 +23,158 @@ Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.
 List-Id: iommu@lists.linux-foundation.org
 
 On Mon, 2014-10-27 at 19:07 +0100, Antonios Motakis wrote:
-> This patch enables the IOCTLs VFIO_DEVICE_GET_REGION_INFO ioctl call,
-> which allows the user to learn about the available MMIO resources of
-> a device.
+> This patch allows to set an eventfd for a patform device's interrupt,
+> and also to trigger the interrupt eventfd from userspace for testing.
+> Level sensitive interrupts are marked as maskable and are handled in
+> a later patch. Edge triggered interrupts are not advertised as maskable
+> and are implemented here using a simple and efficient IRQ handler.
 > 
 > Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 > ---
->  drivers/vfio/platform/vfio_platform_common.c  | 110 +++++++++++++++++++++++++-
->  drivers/vfio/platform/vfio_platform_private.h |  22 ++++++
->  2 files changed, 128 insertions(+), 4 deletions(-)
+>  drivers/vfio/platform/vfio_platform_irq.c     | 93 ++++++++++++++++++++++++++-
+>  drivers/vfio/platform/vfio_platform_private.h |  2 +
+>  2 files changed, 93 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/vfio/platform/vfio_platform_common.c b/drivers/vfio/platform/vfio_platform_common.c
-> index cb20526..82de752 100644
-> --- a/drivers/vfio/platform/vfio_platform_common.c
-> +++ b/drivers/vfio/platform/vfio_platform_common.c
-> @@ -27,17 +27,97 @@
->  
->  #include "vfio_platform_private.h"
->  
-> +static DEFINE_MUTEX(driver_lock);
-> +
-> +static int vfio_platform_regions_init(struct vfio_platform_device *vdev)
-> +{
-> +	int cnt = 0, i;
-> +
-> +	while (vdev->get_resource(vdev, cnt))
-> +		cnt++;
-> +
-> +	vdev->regions = kcalloc(cnt, sizeof(struct vfio_platform_region),
-> +				GFP_KERNEL);
-> +	if (!vdev->regions)
-> +		return -ENOMEM;
-> +
-> +	for (i = 0; i < cnt;  i++) {
-> +		struct resource *res =
-> +			vdev->get_resource(vdev, i);
-> +
-> +		if (!res)
-> +			goto err;
-> +
-> +		vdev->regions[i].addr = res->start;
-> +		vdev->regions[i].size = resource_size(res);
-> +		vdev->regions[i].flags = 0;
-> +
-> +		switch (resource_type(res)) {
-> +		case IORESOURCE_MEM:
-> +			vdev->regions[i].type = VFIO_PLATFORM_REGION_TYPE_MMIO;
-> +			break;
-> +		case IORESOURCE_IO:
-> +			vdev->regions[i].type = VFIO_PLATFORM_REGION_TYPE_PIO;
-> +			break;
-> +		default:
-> +			goto err;
-> +		}
-> +	}
-> +
-> +	vdev->num_regions = cnt;
-> +
-> +	return 0;
-> +err:
-> +	kfree(vdev->regions);
-> +	return -EINVAL;
-> +}
-> +
-> +static void vfio_platform_regions_cleanup(struct vfio_platform_device *vdev)
-> +{
-> +	vdev->num_regions = 0;
-> +	kfree(vdev->regions);
-> +}
-> +
->  static void vfio_platform_release(void *device_data)
->  {
-> +	struct vfio_platform_device *vdev = device_data;
-> +
-> +	mutex_lock(&driver_lock);
-> +
-> +	if (!(--vdev->refcnt)) {
-> +		vfio_platform_regions_cleanup(vdev);
-> +	}
-> +
-> +	mutex_unlock(&driver_lock);
-> +
->  	module_put(THIS_MODULE);
+> diff --git a/drivers/vfio/platform/vfio_platform_irq.c b/drivers/vfio/platform/vfio_platform_irq.c
+> index 007b386..2ac8ed7 100644
+> --- a/drivers/vfio/platform/vfio_platform_irq.c
+> +++ b/drivers/vfio/platform/vfio_platform_irq.c
+> @@ -45,11 +45,91 @@ static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
+>  	return -EINVAL;
 >  }
 >  
->  static int vfio_platform_open(void *device_data)
->  {
-> +	struct vfio_platform_device *vdev = device_data;
+> +static irqreturn_t vfio_irq_handler(int irq, void *dev_id)
+> +{
+> +	struct vfio_platform_irq *irq_ctx = dev_id;
+> +
+> +	eventfd_signal(irq_ctx->trigger, 1);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int vfio_set_trigger(struct vfio_platform_device *vdev, int index,
+> +			    int fd, irq_handler_t handler)
+> +{
+> +	struct vfio_platform_irq *irq = &vdev->irqs[index];
+> +	struct eventfd_ctx *trigger;
 > +	int ret;
 > +
->  	if (!try_module_get(THIS_MODULE))
->  		return -ENODEV;
->  
-> +	mutex_lock(&driver_lock);
-> +
-> +	if (!vdev->refcnt) {
-> +		ret = vfio_platform_regions_init(vdev);
-> +		if (ret)
-> +			goto err_reg;
+> +	if (irq->trigger) {
+> +		free_irq(irq->hwirq, irq);
+> +		kfree(irq->name);
+> +		eventfd_ctx_put(irq->trigger);
+> +		irq->trigger = NULL;
 > +	}
 > +
-> +	vdev->refcnt++;
+> +	if (fd < 0) /* Disable only */
+> +		return 0;
 > +
-> +	mutex_unlock(&driver_lock);
->  	return 0;
+> +	irq->name = kasprintf(GFP_KERNEL, "vfio-irq[%d](%s)",
+> +						irq->hwirq, vdev->name);
+> +	if (!irq->name)
+> +		return -ENOMEM;
 > +
-> +err_reg:
-> +	mutex_unlock(&driver_lock);
-> +	module_put(THIS_MODULE);
-> +	return ret;
->  }
->  
->  static long vfio_platform_ioctl(void *device_data,
-> @@ -58,15 +138,33 @@ static long vfio_platform_ioctl(void *device_data,
->  			return -EINVAL;
->  
->  		info.flags = vdev->flags;
-> -		info.num_regions = 0;
-> +		info.num_regions = vdev->num_regions;
->  		info.num_irqs = 0;
->  
->  		return copy_to_user((void __user *)arg, &info, minsz);
->  
-> -	} else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
-> -		return -EINVAL;
-> +	} else if (cmd == VFIO_DEVICE_GET_REGION_INFO) {
-> +		struct vfio_region_info info;
+> +	trigger = eventfd_ctx_fdget(fd);
+> +	if (IS_ERR(trigger)) {
+> +		kfree(irq->name);
+> +		return PTR_ERR(trigger);
+> +	}
 > +
-> +		minsz = offsetofend(struct vfio_region_info, offset);
+> +	irq->trigger = trigger;
 > +
-> +		if (copy_from_user(&info, (void __user *)arg, minsz))
-> +			return -EFAULT;
->  
-> -	else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
-> +		if (info.argsz < minsz)
-> +			return -EINVAL;
+> +	ret = request_irq(irq->hwirq, handler, 0, irq->name, irq);
+> +	if (ret) {
+> +		kfree(irq->name);
+> +		eventfd_ctx_put(trigger);
+> +		irq->trigger = NULL;
+> +		return ret;
+> +	}
 > +
-> +		if (info.index >= vdev->num_regions)
-> +			return -EINVAL;
+> +	return 0;
+> +}
 > +
-> +		/* map offset to the physical address  */
-> +		info.offset = VFIO_PLATFORM_INDEX_TO_OFFSET(info.index);
-> +		info.size = vdev->regions[info.index].size;
-> +		info.flags = vdev->regions[info.index].flags;
-> +
-> +		return copy_to_user((void __user *)arg, &info, minsz);
-> +
-> +	} else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
->  		return -EINVAL;
->  
->  	else if (cmd == VFIO_DEVICE_SET_IRQS)
-> @@ -134,10 +232,14 @@ struct vfio_platform_device *vfio_platform_remove_common(struct device *dev)
+>  static int vfio_platform_set_irq_trigger(struct vfio_platform_device *vdev,
+>  				     unsigned index, unsigned start,
+>  				     unsigned count, uint32_t flags, void *data)
 >  {
->  	struct vfio_platform_device *vdev;
->  
-> +	mutex_lock(&driver_lock);
+> -	return -EINVAL;
+> +	struct vfio_platform_irq *irq = &vdev->irqs[index];
+> +	irq_handler_t handler;
 > +
->  	vdev = vfio_del_group_dev(dev);
->  	if (vdev)
->  		iommu_group_put(dev->iommu_group);
->  
-> +	mutex_unlock(&driver_lock);
+> +	if (vdev->irqs[index].flags & VFIO_IRQ_INFO_MASKABLE)
+> +		return -EINVAL; /* not implemented */
+> +	else
+> +		handler = vfio_irq_handler;
 > +
-
-This is the same deadlock that vfio-pci recently removed.  Imagine that
-you attempt to unbind an in-use device from vfio-platform,
-vfio_del_group_dev() waits, holding the mutex, for the device to be
-unused.  vfio_platform_release() must acquire the mutex before it can
-run.  I don't think you need the mutex here.  Thanks,
-
-Alex
-
->  	return vdev;
+> +	if (!count && (flags & VFIO_IRQ_SET_DATA_NONE))
+> +		return vfio_set_trigger(vdev, index, -1, handler);
+> +
+> +	if (start != 0 || count != 1)
+> +		return -EINVAL;
+> +
+> +	if (flags & VFIO_IRQ_SET_DATA_EVENTFD) {
+> +		int32_t fd = *(int32_t *)data;
+> +
+> +		return vfio_set_trigger(vdev, index, fd, handler);
+> +	}
+> +
+> +	if (flags & VFIO_IRQ_SET_DATA_NONE) {
+> +		handler(irq->hwirq, irq);
+> +
+> +	} else if (flags & VFIO_IRQ_SET_DATA_BOOL) {
+> +		uint8_t trigger = *(uint8_t *)data;
+> +
+> +		if (trigger)
+> +			handler(irq->hwirq, irq);
+> +	}
+> +
+> +	return 0;
 >  }
->  EXPORT_SYMBOL_GPL(vfio_platform_remove_common);
+>  
+>  int vfio_platform_set_irqs_ioctl(struct vfio_platform_device *vdev,
+> @@ -95,7 +175,11 @@ int vfio_platform_irq_init(struct vfio_platform_device *vdev)
+>  		if (hwirq < 0)
+>  			goto err;
+>  
+> -		vdev->irqs[i].flags = 0;
+> +		vdev->irqs[i].flags = VFIO_IRQ_INFO_EVENTFD;
+> +
+> +		if (irq_get_trigger_type(hwirq) & IRQ_TYPE_LEVEL_MASK)
+> +			vdev->irqs[i].flags |= VFIO_IRQ_INFO_MASKABLE;
+
+This is a bit confusing because edge interrupts can support masking, but
+they don't require it.  Level interrupts really must support masking
+because we need to mask them on the host and therefore the user needs to
+be able to unmask them (ignoring the irq prioritization thing you guys
+can do on arm).  So this works, but I would really have expected
+VFIO_IRQ_INFO_AUTOMASKED here and in the above function.
+
+> +
+>  		vdev->irqs[i].count = 1;
+>  		vdev->irqs[i].hwirq = hwirq;
+>  	}
+> @@ -110,6 +194,11 @@ err:
+>  
+>  void vfio_platform_irq_cleanup(struct vfio_platform_device *vdev)
+>  {
+> +	int i;
+> +
+> +	for (i = 0; i < vdev->num_irqs; i++)
+> +		vfio_set_trigger(vdev, i, -1, NULL);
+> +
+>  	vdev->num_irqs = 0;
+>  	kfree(vdev->irqs);
+>  }
 > diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
-> index 062b92d..b24729f 100644
+> index ffa2459..a3f2411 100644
 > --- a/drivers/vfio/platform/vfio_platform_private.h
 > +++ b/drivers/vfio/platform/vfio_platform_private.h
-> @@ -15,7 +15,29 @@
->  #ifndef VFIO_PLATFORM_PRIVATE_H
->  #define VFIO_PLATFORM_PRIVATE_H
+> @@ -28,6 +28,8 @@ struct vfio_platform_irq {
+>  	u32			flags;
+>  	u32			count;
+>  	int			hwirq;
+> +	char			*name;
+> +	struct eventfd_ctx	*trigger;
+>  };
 >  
-> +#define VFIO_PLATFORM_OFFSET_SHIFT   40
-> +#define VFIO_PLATFORM_OFFSET_MASK (((u64)(1) << VFIO_PLATFORM_OFFSET_SHIFT) - 1)
-> +
-> +#define VFIO_PLATFORM_OFFSET_TO_INDEX(off)	\
-> +	(off >> VFIO_PLATFORM_OFFSET_SHIFT)
-> +
-> +#define VFIO_PLATFORM_INDEX_TO_OFFSET(index)	\
-> +	((u64)(index) << VFIO_PLATFORM_OFFSET_SHIFT)
-> +
-> +struct vfio_platform_region {
-> +	u64			addr;
-> +	resource_size_t		size;
-> +	u32			flags;
-> +	u32			type;
-> +#define VFIO_PLATFORM_REGION_TYPE_MMIO	1
-> +#define VFIO_PLATFORM_REGION_TYPE_PIO	2
-> +};
-> +
->  struct vfio_platform_device {
-> +	struct vfio_platform_region	*regions;
-> +	u32				num_regions;
-> +	int				refcnt;
-> +
->  	/*
->  	 * These fields should be filled by the bus specific binder
->  	 */
+>  struct vfio_platform_region {
