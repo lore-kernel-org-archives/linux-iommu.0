@@ -1,14 +1,15 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part2 v4 28/31] iommu/vt-d: Refine the interfaces to create
-	IRQ for DMAR unit
-Date: Tue,  4 Nov 2014 20:02:02 +0800
-Message-ID: <1415102525-9898-29-git-send-email-jiang.liu@linux.intel.com>
-References: <1415102525-9898-1-git-send-email-jiang.liu@linux.intel.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v6 1/1] iommu-api: Add map_sg function
+Date: Tue, 4 Nov 2014 14:57:16 +0100
+Message-ID: <20141104135716.GA14512@8bytes.org>
+References: <1414256116-26933-1-git-send-email-ohaugan@codeaurora.org>
+	<1414256116-26933-2-git-send-email-ohaugan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1415102525-9898-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1414256116-26933-2-git-send-email-ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,200 +19,90 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Refine the interfaces to create IRQ for DMAR unit. It's a preparation
-for converting DMAR IRQ to irqdomain on x86.
+On Sat, Oct 25, 2014 at 09:55:16AM -0700, Olav Haugan wrote:
+>  drivers/iommu/amd_iommu.c      |  1 +
+>  drivers/iommu/arm-smmu.c       |  1 +
+>  drivers/iommu/exynos-iommu.c   |  1 +
+>  drivers/iommu/intel-iommu.c    |  1 +
+>  drivers/iommu/iommu.c          | 25 +++++++++++++++++++++++++
+>  drivers/iommu/ipmmu-vmsa.c     |  1 +
+>  drivers/iommu/msm_iommu.c      |  1 +
+>  drivers/iommu/omap-iommu.c     |  1 +
+>  drivers/iommu/shmobile-iommu.c |  1 +
+>  drivers/iommu/tegra-smmu.c     |  1 +
+>  include/linux/iommu.h          | 22 ++++++++++++++++++++++
+>  11 files changed, 56 insertions(+)
 
-It also moves dmar_alloc_hwirq()/dmar_free_hwirq() from irq_remapping.h
-to dmar.h. They are not irq_remapping specific.
+Applied to the core branch in my tree, with the patch below on-top of
+it. Thanks, Olav.
 
-Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+>From 38ec010d9b04ed94845f8ff6f10d33eb6bbfe180 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Date: Tue, 4 Nov 2014 14:53:51 +0100
+Subject: [PATCH] iommu: Do more input validation in iommu_map_sg()
+
+The IOMMU-API works on page boundarys, unlike the DMA-API
+which can work with sub-page buffers. The sg->offset
+field does not make sense on the IOMMU level, so force it to
+be 0. Do some error-path consolidation while at it.
+
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- arch/ia64/include/asm/irq_remapping.h |    2 --
- arch/ia64/kernel/msi_ia64.c           |   30 +++++++++++++++++++-----------
- arch/x86/include/asm/irq_remapping.h  |    4 ----
- arch/x86/kernel/apic/msi.c            |   24 +++++++++++++-----------
- drivers/iommu/dmar.c                  |   19 +++++--------------
- include/linux/dmar.h                  |    3 ++-
- 6 files changed, 39 insertions(+), 43 deletions(-)
+ drivers/iommu/iommu.c | 29 ++++++++++++++++++-----------
+ 1 file changed, 18 insertions(+), 11 deletions(-)
 
-diff --git a/arch/ia64/include/asm/irq_remapping.h b/arch/ia64/include/asm/irq_remapping.h
-index e3b3556e2e1b..a8687b1d8906 100644
---- a/arch/ia64/include/asm/irq_remapping.h
-+++ b/arch/ia64/include/asm/irq_remapping.h
-@@ -1,6 +1,4 @@
- #ifndef __IA64_INTR_REMAPPING_H
- #define __IA64_INTR_REMAPPING_H
- #define irq_remapping_enabled 0
--#define dmar_alloc_hwirq	create_irq
--#define dmar_free_hwirq		destroy_irq
- #endif
-diff --git a/arch/ia64/kernel/msi_ia64.c b/arch/ia64/kernel/msi_ia64.c
-index 8c3730c3c63d..15032330573b 100644
---- a/arch/ia64/kernel/msi_ia64.c
-+++ b/arch/ia64/kernel/msi_ia64.c
-@@ -166,7 +166,7 @@ static struct irq_chip dmar_msi_type = {
- 	.irq_retrigger = ia64_msi_retrigger_irq,
- };
- 
--static int
-+static void
- msi_compose_msg(struct pci_dev *pdev, unsigned int irq, struct msi_msg *msg)
- {
- 	struct irq_cfg *cfg = irq_cfg + irq;
-@@ -188,21 +188,29 @@ msi_compose_msg(struct pci_dev *pdev, unsigned int irq, struct msi_msg *msg)
- 		MSI_DATA_LEVEL_ASSERT |
- 		MSI_DATA_DELIVERY_FIXED |
- 		MSI_DATA_VECTOR(cfg->vector);
--	return 0;
- }
- 
--int arch_setup_dmar_msi(unsigned int irq)
-+int dmar_alloc_hwirq(int id, int node, void *arg)
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 46727ce..08c53c5 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1127,26 +1127,33 @@ EXPORT_SYMBOL_GPL(iommu_unmap);
+ size_t default_iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+ 			 struct scatterlist *sg, unsigned int nents, int prot)
  {
 -	int ret;
-+	int irq;
- 	struct msi_msg msg;
++	struct scatterlist *s;
+ 	size_t mapped = 0;
+ 	unsigned int i;
+-	struct scatterlist *s;
++	int ret;
  
--	ret = msi_compose_msg(NULL, irq, &msg);
--	if (ret < 0)
--		return ret;
--	dmar_msi_write(irq, &msg);
--	irq_set_chip_and_handler_name(irq, &dmar_msi_type, handle_edge_irq,
--				      "edge");
--	return 0;
-+	irq = create_irq();
-+	if (irq > 0) {
-+		irq_set_handler_data(irq, arg);
-+		irq_set_chip_and_handler_name(irq, &dmar_msi_type,
-+					      handle_edge_irq, "edge");
-+		msi_compose_msg(NULL, irq, &msg);
-+		dmar_msi_write(irq, &msg);
-+	}
+ 	for_each_sg(sg, s, nents, i) {
+ 		phys_addr_t phys = page_to_phys(sg_page(s));
+-		size_t page_len = s->offset + s->length;
+ 
+-		ret = iommu_map(domain, iova + mapped, phys, page_len, prot);
+-		if (ret) {
+-			/* undo mappings already done */
+-			iommu_unmap(domain, iova, mapped);
+-			mapped = 0;
+-			break;
+-		}
+-		mapped += page_len;
++		/* We are mapping on page boundarys, so offset must be 0 */
++		if (s->offset)
++			goto out_err;
 +
-+	return irq;
-+}
++		ret = iommu_map(domain, iova + mapped, phys, s->length, prot);
++		if (ret)
++			goto out_err;
 +
-+void dmar_free_hwirq(int irq)
-+{
-+	irq_set_handler_data(irq, NULL);
-+	destroy_irq(irq);
- }
- #endif /* CONFIG_INTEL_IOMMU */
- 
-diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
-index 61c50e6e28c8..61ec9234c88e 100644
---- a/arch/x86/include/asm/irq_remapping.h
-+++ b/arch/x86/include/asm/irq_remapping.h
-@@ -124,8 +124,4 @@ irq_remapping_get_irq_domain(struct irq_alloc_info *info)
- 
- #define	irq_remapping_print_chip	NULL
- #endif /* CONFIG_IRQ_REMAP */
--
--extern int dmar_alloc_hwirq(void);
--extern void dmar_free_hwirq(int irq);
--
- #endif /* __X86_IRQ_REMAPPING_H */
-diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
-index 6bfe85e96c74..79fc6bb0d104 100644
---- a/arch/x86/kernel/apic/msi.c
-+++ b/arch/x86/kernel/apic/msi.c
-@@ -219,25 +219,27 @@ static struct irq_chip dmar_msi_type = {
-  	.flags			= IRQCHIP_SKIP_SET_WAKE,
- };
- 
--int arch_setup_dmar_msi(unsigned int irq)
-+int dmar_alloc_hwirq(int id, int node, void *arg)
- {
-+	int irq;
- 	struct msi_msg msg;
--	struct irq_cfg *cfg = irq_cfg(irq);
- 
--	native_compose_msi_msg(cfg, &msg);
--	dmar_msi_write(irq, &msg);
--	irq_set_chip_and_handler_name(irq, &dmar_msi_type, handle_edge_irq,
--				      "edge");
--	return 0;
--}
-+	irq = irq_domain_alloc_irqs(NULL, 1, node, NULL);
-+	if (irq > 0) {
-+		irq_set_handler_data(irq, arg);
-+		irq_set_chip_and_handler_name(irq, &dmar_msi_type,
-+					      handle_edge_irq, "edge");
-+		native_compose_msi_msg(irq_cfg(irq), &msg);
-+		dmar_msi_write(irq, &msg);
-+	}
- 
--int dmar_alloc_hwirq(void)
--{
--	return irq_domain_alloc_irqs(NULL, 1, NUMA_NO_NODE, NULL);
-+	return irq;
- }
- 
- void dmar_free_hwirq(int irq)
- {
-+	irq_set_handler_data(irq, NULL);
-+	irq_set_handler(irq, NULL);
- 	irq_domain_free_irqs(irq, 1);
- }
- #endif
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index c5c61cabd6e3..25f47937f1d5 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -1018,8 +1018,8 @@ static void free_iommu(struct intel_iommu *iommu)
- 
- 	if (iommu->irq) {
- 		free_irq(iommu->irq, iommu);
--		irq_set_handler_data(iommu->irq, NULL);
- 		dmar_free_hwirq(iommu->irq);
-+		iommu->irq = 0;
++		mapped += s->length;
  	}
  
- 	if (iommu->qi) {
-@@ -1572,23 +1572,14 @@ int dmar_set_interrupt(struct intel_iommu *iommu)
- 	if (iommu->irq)
- 		return 0;
+ 	return mapped;
++
++out_err:
++	/* undo mappings already done */
++	iommu_unmap(domain, iova, mapped);
++
++	return 0;
++
+ }
+ EXPORT_SYMBOL_GPL(default_iommu_map_sg);
  
--	irq = dmar_alloc_hwirq();
--	if (irq <= 0) {
-+	irq = dmar_alloc_hwirq(iommu->seq_id, iommu->node, iommu);
-+	if (irq > 0) {
-+		iommu->irq = irq;
-+	} else {
- 		pr_err("IOMMU: no free vectors\n");
- 		return -EINVAL;
- 	}
- 
--	irq_set_handler_data(irq, iommu);
--	iommu->irq = irq;
--
--	ret = arch_setup_dmar_msi(irq);
--	if (ret) {
--		irq_set_handler_data(irq, NULL);
--		iommu->irq = 0;
--		dmar_free_hwirq(irq);
--		return ret;
--	}
--
- 	ret = request_irq(irq, dmar_fault, IRQF_NO_THREAD, iommu->name, iommu);
- 	if (ret)
- 		pr_err("IOMMU: can't request irq\n");
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 593fff99e6bf..df3918482073 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -189,6 +189,7 @@ extern void dmar_msi_read(int irq, struct msi_msg *msg);
- extern void dmar_msi_write(int irq, struct msi_msg *msg);
- extern int dmar_set_interrupt(struct intel_iommu *iommu);
- extern irqreturn_t dmar_fault(int irq, void *dev_id);
--extern int arch_setup_dmar_msi(unsigned int irq);
-+extern int dmar_alloc_hwirq(int id, int node, void *arg);
-+extern void dmar_free_hwirq(int irq);
- 
- #endif /* __DMAR_H__ */
 -- 
-1.7.10.4
+1.8.4.5
