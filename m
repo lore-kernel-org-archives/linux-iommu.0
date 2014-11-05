@@ -1,16 +1,15 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: Re: [PATCH v9 15/19] vfio: add local lock in virqfd instead of
-	depending on VFIO PCI
-Date: Wed, 5 Nov 2014 11:04:21 +0100
-Message-ID: <CAG8rG2waTCCpL4eRy9aNd36Psd+7M1pmTZpOvhKi_iOzBer+YQ@mail.gmail.com>
+Subject: Re: [PATCH v9 12/19] vfio/platform: trigger an interrupt via eventfd
+Date: Wed, 5 Nov 2014 11:08:34 +0100
+Message-ID: <CAG8rG2wWEjr2ADayuqS9EKQp-2SP=X0QkD152W=jVsOGZVfeHg@mail.gmail.com>
 References: <1414433284-31719-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1414433284-31719-16-git-send-email-a.motakis@virtualopensystems.com>
-	<1414784583.27420.330.camel@ul30vt.home>
+	<1414433284-31719-13-git-send-email-a.motakis@virtualopensystems.com>
+	<1414784174.27420.327.camel@ul30vt.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1414784583.27420.330.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+In-Reply-To: <1414784174.27420.327.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,170 +20,171 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Alexander Gordeev <agordeev-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Oct 31, 2014 at 8:43 PM, Alex Williamson
+On Fri, Oct 31, 2014 at 8:36 PM, Alex Williamson
 <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> On Mon, 2014-10-27 at 19:08 +0100, Antonios Motakis wrote:
->> Virqfd just needs to keep accesses to any struct *virqfd safe, but this
->> comes into play only when creating or destroying eventfds, so sharing
->> the same spinlock with the VFIO bus driver is not necessary.
+> On Mon, 2014-10-27 at 19:07 +0100, Antonios Motakis wrote:
+>> This patch allows to set an eventfd for a patform device's interrupt,
+>> and also to trigger the interrupt eventfd from userspace for testing.
+>> Level sensitive interrupts are marked as maskable and are handled in
+>> a later patch. Edge triggered interrupts are not advertised as maskable
+>> and are implemented here using a simple and efficient IRQ handler.
 >>
 >> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 >> ---
->>  drivers/vfio/pci/vfio_pci_intrs.c | 10 +++++-----
->>  drivers/vfio/virqfd.c             | 24 +++++++++++++-----------
->>  include/linux/vfio.h              |  3 +--
->>  3 files changed, 19 insertions(+), 18 deletions(-)
+>>  drivers/vfio/platform/vfio_platform_irq.c     | 93 ++++++++++++++++++++++++++-
+>>  drivers/vfio/platform/vfio_platform_private.h |  2 +
+>>  2 files changed, 93 insertions(+), 2 deletions(-)
 >>
->> diff --git a/drivers/vfio/pci/vfio_pci_intrs.c b/drivers/vfio/pci/vfio_pci_intrs.c
->> index 3f909bb..e56c814 100644
->> --- a/drivers/vfio/pci/vfio_pci_intrs.c
->> +++ b/drivers/vfio/pci/vfio_pci_intrs.c
->> @@ -226,8 +226,8 @@ static int vfio_intx_set_signal(struct vfio_pci_device *vdev, int fd)
->>  static void vfio_intx_disable(struct vfio_pci_device *vdev)
->>  {
->>       vfio_intx_set_signal(vdev, -1);
->> -     virqfd_disable(vdev, &vdev->ctx[0].unmask);
->> -     virqfd_disable(vdev, &vdev->ctx[0].mask);
->> +     virqfd_disable(&vdev->ctx[0].unmask);
->> +     virqfd_disable(&vdev->ctx[0].mask);
->>       vdev->irq_type = VFIO_PCI_NUM_IRQS;
->>       vdev->num_ctx = 0;
->>       kfree(vdev->ctx);
->> @@ -377,8 +377,8 @@ static void vfio_msi_disable(struct vfio_pci_device *vdev, bool msix)
->>       vfio_msi_set_block(vdev, 0, vdev->num_ctx, NULL, msix);
+>> diff --git a/drivers/vfio/platform/vfio_platform_irq.c b/drivers/vfio/platform/vfio_platform_irq.c
+>> index 007b386..2ac8ed7 100644
+>> --- a/drivers/vfio/platform/vfio_platform_irq.c
+>> +++ b/drivers/vfio/platform/vfio_platform_irq.c
+>> @@ -45,11 +45,91 @@ static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
+>>       return -EINVAL;
+>>  }
 >>
->>       for (i = 0; i < vdev->num_ctx; i++) {
->> -             virqfd_disable(vdev, &vdev->ctx[i].unmask);
->> -             virqfd_disable(vdev, &vdev->ctx[i].mask);
->> +             virqfd_disable(&vdev->ctx[i].unmask);
->> +             virqfd_disable(&vdev->ctx[i].mask);
->>       }
->>
->>       if (msix) {
->> @@ -415,7 +415,7 @@ static int vfio_pci_set_intx_unmask(struct vfio_pci_device *vdev,
->>                                            vfio_send_intx_eventfd, NULL,
->>                                            &vdev->ctx[0].unmask, fd);
->>
->> -             virqfd_disable(vdev, &vdev->ctx[0].unmask);
->> +             virqfd_disable(&vdev->ctx[0].unmask);
->>       }
->>
->>       return 0;
->> diff --git a/drivers/vfio/virqfd.c b/drivers/vfio/virqfd.c
->> index 243eb61..27fa2f0 100644
->> --- a/drivers/vfio/virqfd.c
->> +++ b/drivers/vfio/virqfd.c
->> @@ -17,6 +17,7 @@
->>  #include "pci/vfio_pci_private.h"
->>
->>  static struct workqueue_struct *vfio_irqfd_cleanup_wq;
->> +static spinlock_t lock;
->
-> Define this as:
->
-> DEFINE_SPINLOCK(lock);
->
-> and we can avoid needing the init.
-
-Ack, thanks.
-
->
->>  int __init vfio_pci_virqfd_init(void)
->>  {
->> @@ -25,6 +26,8 @@ int __init vfio_pci_virqfd_init(void)
->>       if (!vfio_irqfd_cleanup_wq)
->>               return -ENOMEM;
->>
->> +     spin_lock_init(&lock);
+>> +static irqreturn_t vfio_irq_handler(int irq, void *dev_id)
+>> +{
+>> +     struct vfio_platform_irq *irq_ctx = dev_id;
 >> +
->>       return 0;
->>  }
->>
->> @@ -53,21 +56,21 @@ static int virqfd_wakeup(wait_queue_t *wait, unsigned mode, int sync, void *key)
->>
->>       if (flags & POLLHUP) {
->>               unsigned long flags;
->> -             spin_lock_irqsave(&virqfd->vdev->irqlock, flags);
->> +             spin_lock_irqsave(&lock, flags);
->>
->>               /*
->>                * The eventfd is closing, if the virqfd has not yet been
->>                * queued for release, as determined by testing whether the
->> -              * vdev pointer to it is still valid, queue it now.  As
->> +              * virqfd pointer to it is still valid, queue it now.  As
->>                * with kvm irqfds, we know we won't race against the virqfd
->> -              * going away because we hold wqh->lock to get here.
->> +              * going away because we hold the lock to get here.
->>                */
->>               if (*(virqfd->pvirqfd) == virqfd) {
->>                       *(virqfd->pvirqfd) = NULL;
->>                       virqfd_deactivate(virqfd);
->>               }
->>
->> -             spin_unlock_irqrestore(&virqfd->vdev->irqlock, flags);
->> +             spin_unlock_irqrestore(&lock, flags);
->>       }
->>
->>       return 0;
->> @@ -143,16 +146,16 @@ int virqfd_enable(struct vfio_pci_device *vdev,
->>        * we update the pointer to the virqfd under lock to avoid
->>        * pushing multiple jobs to release the same virqfd.
->>        */
->> -     spin_lock_irq(&vdev->irqlock);
->> +     spin_lock_irq(&lock);
->>
->>       if (*pvirqfd) {
->> -             spin_unlock_irq(&vdev->irqlock);
->> +             spin_unlock_irq(&lock);
->>               ret = -EBUSY;
->>               goto err_busy;
->>       }
->>       *pvirqfd = virqfd;
->>
->> -     spin_unlock_irq(&vdev->irqlock);
->> +     spin_unlock_irq(&lock);
->>
->>       /*
->>        * Install our own custom wake-up handling so we are notified via
->> @@ -190,19 +193,18 @@ err_fd:
->>  }
->>  EXPORT_SYMBOL_GPL(virqfd_enable);
->>
->> -void virqfd_disable(struct vfio_pci_device *vdev,
->> -                        struct virqfd **pvirqfd)
->> +void virqfd_disable(struct virqfd **pvirqfd)
+>> +     eventfd_signal(irq_ctx->trigger, 1);
+>> +
+>> +     return IRQ_HANDLED;
+>> +}
+>> +
+>> +static int vfio_set_trigger(struct vfio_platform_device *vdev, int index,
+>> +                         int fd, irq_handler_t handler)
+>> +{
+>> +     struct vfio_platform_irq *irq = &vdev->irqs[index];
+>> +     struct eventfd_ctx *trigger;
+>> +     int ret;
+>> +
+>> +     if (irq->trigger) {
+>> +             free_irq(irq->hwirq, irq);
+>> +             kfree(irq->name);
+>> +             eventfd_ctx_put(irq->trigger);
+>> +             irq->trigger = NULL;
+>> +     }
+>> +
+>> +     if (fd < 0) /* Disable only */
+>> +             return 0;
+>> +
+>> +     irq->name = kasprintf(GFP_KERNEL, "vfio-irq[%d](%s)",
+>> +                                             irq->hwirq, vdev->name);
+>> +     if (!irq->name)
+>> +             return -ENOMEM;
+>> +
+>> +     trigger = eventfd_ctx_fdget(fd);
+>> +     if (IS_ERR(trigger)) {
+>> +             kfree(irq->name);
+>> +             return PTR_ERR(trigger);
+>> +     }
+>> +
+>> +     irq->trigger = trigger;
+>> +
+>> +     ret = request_irq(irq->hwirq, handler, 0, irq->name, irq);
+>> +     if (ret) {
+>> +             kfree(irq->name);
+>> +             eventfd_ctx_put(trigger);
+>> +             irq->trigger = NULL;
+>> +             return ret;
+>> +     }
+>> +
+>> +     return 0;
+>> +}
+>> +
+>>  static int vfio_platform_set_irq_trigger(struct vfio_platform_device *vdev,
+>>                                    unsigned index, unsigned start,
+>>                                    unsigned count, uint32_t flags, void *data)
 >>  {
->>       unsigned long flags;
+>> -     return -EINVAL;
+>> +     struct vfio_platform_irq *irq = &vdev->irqs[index];
+>> +     irq_handler_t handler;
+>> +
+>> +     if (vdev->irqs[index].flags & VFIO_IRQ_INFO_MASKABLE)
+>> +             return -EINVAL; /* not implemented */
+>> +     else
+>> +             handler = vfio_irq_handler;
+>> +
+>> +     if (!count && (flags & VFIO_IRQ_SET_DATA_NONE))
+>> +             return vfio_set_trigger(vdev, index, -1, handler);
+>> +
+>> +     if (start != 0 || count != 1)
+>> +             return -EINVAL;
+>> +
+>> +     if (flags & VFIO_IRQ_SET_DATA_EVENTFD) {
+>> +             int32_t fd = *(int32_t *)data;
+>> +
+>> +             return vfio_set_trigger(vdev, index, fd, handler);
+>> +     }
+>> +
+>> +     if (flags & VFIO_IRQ_SET_DATA_NONE) {
+>> +             handler(irq->hwirq, irq);
+>> +
+>> +     } else if (flags & VFIO_IRQ_SET_DATA_BOOL) {
+>> +             uint8_t trigger = *(uint8_t *)data;
+>> +
+>> +             if (trigger)
+>> +                     handler(irq->hwirq, irq);
+>> +     }
+>> +
+>> +     return 0;
+>>  }
 >>
->> -     spin_lock_irqsave(&vdev->irqlock, flags);
->> +     spin_lock_irqsave(&lock, flags);
+>>  int vfio_platform_set_irqs_ioctl(struct vfio_platform_device *vdev,
+>> @@ -95,7 +175,11 @@ int vfio_platform_irq_init(struct vfio_platform_device *vdev)
+>>               if (hwirq < 0)
+>>                       goto err;
 >>
->>       if (*pvirqfd) {
->>               virqfd_deactivate(*pvirqfd);
->>               *pvirqfd = NULL;
+>> -             vdev->irqs[i].flags = 0;
+>> +             vdev->irqs[i].flags = VFIO_IRQ_INFO_EVENTFD;
+>> +
+>> +             if (irq_get_trigger_type(hwirq) & IRQ_TYPE_LEVEL_MASK)
+>> +                     vdev->irqs[i].flags |= VFIO_IRQ_INFO_MASKABLE;
+>
+> This is a bit confusing because edge interrupts can support masking, but
+> they don't require it.  Level interrupts really must support masking
+> because we need to mask them on the host and therefore the user needs to
+> be able to unmask them (ignoring the irq prioritization thing you guys
+> can do on arm).  So this works, but I would really have expected
+> VFIO_IRQ_INFO_AUTOMASKED here and in the above function.
+
+You're right, it will be clearer by using automasked as the defining
+property for level sensitive interrupts.
+
+>
+>> +
+>>               vdev->irqs[i].count = 1;
+>>               vdev->irqs[i].hwirq = hwirq;
 >>       }
+>> @@ -110,6 +194,11 @@ err:
 >>
->> -     spin_unlock_irqrestore(&vdev->irqlock, flags);
->> +     spin_unlock_irqrestore(&lock, flags);
+>>  void vfio_platform_irq_cleanup(struct vfio_platform_device *vdev)
+>>  {
+>> +     int i;
+>> +
+>> +     for (i = 0; i < vdev->num_irqs; i++)
+>> +             vfio_set_trigger(vdev, i, -1, NULL);
+>> +
+>>       vdev->num_irqs = 0;
+>>       kfree(vdev->irqs);
+>>  }
+>> diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
+>> index ffa2459..a3f2411 100644
+>> --- a/drivers/vfio/platform/vfio_platform_private.h
+>> +++ b/drivers/vfio/platform/vfio_platform_private.h
+>> @@ -28,6 +28,8 @@ struct vfio_platform_irq {
+>>       u32                     flags;
+>>       u32                     count;
+>>       int                     hwirq;
+>> +     char                    *name;
+>> +     struct eventfd_ctx      *trigger;
+>>  };
 >>
->>       /*
->>        * Block until we know all outstanding shutdown jobs have completed.
->> diff --git a/include/linux/vfio.h b/include/linux/vfio.h
->> index a077c48..fb6037b 100644
->> --- a/include/linux/vfio.h
->> +++ b/include/linux/vfio.h
->> @@ -146,7 +146,6 @@ extern int virqfd_enable(struct vfio_pci_device *vdev,
->>                        int (*handler)(struct vfio_pci_device *, void *),
->>                        void (*thread)(struct vfio_pci_device *, void *),
->>                        void *data, struct virqfd **pvirqfd, int fd);
->> -extern void virqfd_disable(struct vfio_pci_device *vdev,
->> -                        struct virqfd **pvirqfd);
->> +extern void virqfd_disable(struct virqfd **pvirqfd);
->>
->>  #endif /* VFIO_H */
+>>  struct vfio_platform_region {
 >
 >
 >
