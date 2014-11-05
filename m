@@ -1,15 +1,16 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: Re: [PATCH v9 04/19] vfio: amba: VFIO support for AMBA devices
-Date: Wed, 5 Nov 2014 10:50:37 +0100
-Message-ID: <CAG8rG2z-PMEN-9iZnv2jpcTrfugeA3+OUt=WUd75FLy7ZSDG1Q@mail.gmail.com>
+Subject: Re: [PATCH v9 07/19] vfio/platform: return info for device memory
+	mapped IO regions
+Date: Wed, 5 Nov 2014 10:50:46 +0100
+Message-ID: <CAG8rG2wNREAurf-gYD=3RTE9kWO5=gOvtydxQzvrn9TnxMj_1Q@mail.gmail.com>
 References: <1414433284-31719-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1414433284-31719-5-git-send-email-a.motakis@virtualopensystems.com>
-	<1414780819.27420.314.camel@ul30vt.home>
+	<1414433284-31719-8-git-send-email-a.motakis@virtualopensystems.com>
+	<1414781936.27420.317.camel@ul30vt.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1414780819.27420.314.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+In-Reply-To: <1414781936.27420.317.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,163 +21,223 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "open list:ABI/API" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Oct 31, 2014 at 7:40 PM, Alex Williamson
+On Fri, Oct 31, 2014 at 7:58 PM, Alex Williamson
 <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
 > On Mon, 2014-10-27 at 19:07 +0100, Antonios Motakis wrote:
->> Add support for discovering AMBA devices with VFIO and handle them
->> similarly to Linux platform devices.
+>> This patch enables the IOCTLs VFIO_DEVICE_GET_REGION_INFO ioctl call,
+>> which allows the user to learn about the available MMIO resources of
+>> a device.
 >>
 >> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 >> ---
->>  drivers/vfio/platform/vfio_amba.c | 116 ++++++++++++++++++++++++++++++++++++++
->>  include/uapi/linux/vfio.h         |   1 +
->>  2 files changed, 117 insertions(+)
->>  create mode 100644 drivers/vfio/platform/vfio_amba.c
+>>  drivers/vfio/platform/vfio_platform_common.c  | 110 +++++++++++++++++++++++++-
+>>  drivers/vfio/platform/vfio_platform_private.h |  22 ++++++
+>>  2 files changed, 128 insertions(+), 4 deletions(-)
 >>
->> diff --git a/drivers/vfio/platform/vfio_amba.c b/drivers/vfio/platform/vfio_amba.c
->> new file mode 100644
->> index 0000000..cf61324
->> --- /dev/null
->> +++ b/drivers/vfio/platform/vfio_amba.c
->> @@ -0,0 +1,116 @@
->> +/*
->> + * Copyright (C) 2013 - Virtual Open Systems
->> + * Author: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License, version 2, as
->> + * published by the Free Software Foundation.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->> + * GNU General Public License for more details.
->> + */
+>> diff --git a/drivers/vfio/platform/vfio_platform_common.c b/drivers/vfio/platform/vfio_platform_common.c
+>> index cb20526..82de752 100644
+>> --- a/drivers/vfio/platform/vfio_platform_common.c
+>> +++ b/drivers/vfio/platform/vfio_platform_common.c
+>> @@ -27,17 +27,97 @@
+>>
+>>  #include "vfio_platform_private.h"
+>>
+>> +static DEFINE_MUTEX(driver_lock);
 >> +
->> +#include <linux/device.h>
->> +#include <linux/interrupt.h>
->> +#include <linux/iommu.h>
->> +#include <linux/module.h>
->> +#include <linux/mutex.h>
->> +#include <linux/notifier.h>
->> +#include <linux/pm_runtime.h>
->> +#include <linux/slab.h>
->> +#include <linux/types.h>
->> +#include <linux/uaccess.h>
->> +#include <linux/vfio.h>
->> +#include <linux/io.h>
->> +#include <linux/irq.h>
->> +#include <linux/amba/bus.h>
->> +
->> +#include "vfio_platform_private.h"
->> +
->> +#define DRIVER_VERSION  "0.9"
->> +#define DRIVER_AUTHOR   "Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>"
->> +#define DRIVER_DESC     "VFIO for AMBA devices - User Level meta-driver"
->> +
->> +/* probing devices from the AMBA bus */
->> +
->> +static struct resource *get_amba_resource(struct vfio_platform_device *vdev,
->> +                                             int i)
+>> +static int vfio_platform_regions_init(struct vfio_platform_device *vdev)
 >> +{
->> +     struct amba_device *adev = (struct amba_device *) vdev->opaque;
+>> +     int cnt = 0, i;
 >> +
->> +     if (i == 0)
->> +             return &adev->res;
+>> +     while (vdev->get_resource(vdev, cnt))
+>> +             cnt++;
 >> +
->> +     return NULL;
->> +}
->> +
->> +static int get_amba_irq(struct vfio_platform_device *vdev, int i)
->> +{
->> +     struct amba_device *adev = (struct amba_device *) vdev->opaque;
->> +
->> +     if (i < AMBA_NR_IRQS)
->> +             return adev->irq[i];
->> +
->> +     return 0;
->> +}
->> +
->> +static int vfio_amba_probe(struct amba_device *adev, const struct amba_id *id)
->> +{
->> +
->> +     struct vfio_platform_device *vdev;
->> +     int ret;
->> +
->> +     vdev = kzalloc(sizeof(*vdev), GFP_KERNEL);
->> +     if (!vdev)
+>> +     vdev->regions = kcalloc(cnt, sizeof(struct vfio_platform_region),
+>> +                             GFP_KERNEL);
+>> +     if (!vdev->regions)
 >> +             return -ENOMEM;
 >> +
->> +     vdev->opaque = (void *) adev;
->> +     vdev->name = "vfio-amba-dev";
->
-> You need to actually allocate some memory here with something like
-> kasprintf.  Don't forget to free it on the error and remove path.
-
-Ack.
-
->
->> +     vdev->flags = VFIO_DEVICE_FLAGS_AMBA;
->> +     vdev->get_resource = get_amba_resource;
->> +     vdev->get_irq = get_amba_irq;
+>> +     for (i = 0; i < cnt;  i++) {
+>> +             struct resource *res =
+>> +                     vdev->get_resource(vdev, i);
 >> +
->> +     ret = vfio_platform_probe_common(vdev, &adev->dev);
->> +     if (ret)
->> +             kfree(vdev);
+>> +             if (!res)
+>> +                     goto err;
 >> +
->> +     return ret;
->> +}
+>> +             vdev->regions[i].addr = res->start;
+>> +             vdev->regions[i].size = resource_size(res);
+>> +             vdev->regions[i].flags = 0;
 >> +
->> +static int vfio_amba_remove(struct amba_device *adev)
->> +{
->> +     struct vfio_platform_device *vdev;
->> +
->> +     vdev = vfio_platform_remove_common(&adev->dev);
->> +     if(vdev) {
->> +             kfree(vdev);
->> +             return 0;
+>> +             switch (resource_type(res)) {
+>> +             case IORESOURCE_MEM:
+>> +                     vdev->regions[i].type = VFIO_PLATFORM_REGION_TYPE_MMIO;
+>> +                     break;
+>> +             case IORESOURCE_IO:
+>> +                     vdev->regions[i].type = VFIO_PLATFORM_REGION_TYPE_PIO;
+>> +                     break;
+>> +             default:
+>> +                     goto err;
+>> +             }
 >> +     }
 >> +
+>> +     vdev->num_regions = cnt;
+>> +
+>> +     return 0;
+>> +err:
+>> +     kfree(vdev->regions);
 >> +     return -EINVAL;
 >> +}
 >> +
->> +static struct amba_id pl330_ids[] = {
->> +     { 0, 0 },
+>> +static void vfio_platform_regions_cleanup(struct vfio_platform_device *vdev)
+>> +{
+>> +     vdev->num_regions = 0;
+>> +     kfree(vdev->regions);
+>> +}
+>> +
+>>  static void vfio_platform_release(void *device_data)
+>>  {
+>> +     struct vfio_platform_device *vdev = device_data;
+>> +
+>> +     mutex_lock(&driver_lock);
+>> +
+>> +     if (!(--vdev->refcnt)) {
+>> +             vfio_platform_regions_cleanup(vdev);
+>> +     }
+>> +
+>> +     mutex_unlock(&driver_lock);
+>> +
+>>       module_put(THIS_MODULE);
+>>  }
+>>
+>>  static int vfio_platform_open(void *device_data)
+>>  {
+>> +     struct vfio_platform_device *vdev = device_data;
+>> +     int ret;
+>> +
+>>       if (!try_module_get(THIS_MODULE))
+>>               return -ENODEV;
+>>
+>> +     mutex_lock(&driver_lock);
+>> +
+>> +     if (!vdev->refcnt) {
+>> +             ret = vfio_platform_regions_init(vdev);
+>> +             if (ret)
+>> +                     goto err_reg;
+>> +     }
+>> +
+>> +     vdev->refcnt++;
+>> +
+>> +     mutex_unlock(&driver_lock);
+>>       return 0;
+>> +
+>> +err_reg:
+>> +     mutex_unlock(&driver_lock);
+>> +     module_put(THIS_MODULE);
+>> +     return ret;
+>>  }
+>>
+>>  static long vfio_platform_ioctl(void *device_data,
+>> @@ -58,15 +138,33 @@ static long vfio_platform_ioctl(void *device_data,
+>>                       return -EINVAL;
+>>
+>>               info.flags = vdev->flags;
+>> -             info.num_regions = 0;
+>> +             info.num_regions = vdev->num_regions;
+>>               info.num_irqs = 0;
+>>
+>>               return copy_to_user((void __user *)arg, &info, minsz);
+>>
+>> -     } else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
+>> -             return -EINVAL;
+>> +     } else if (cmd == VFIO_DEVICE_GET_REGION_INFO) {
+>> +             struct vfio_region_info info;
+>> +
+>> +             minsz = offsetofend(struct vfio_region_info, offset);
+>> +
+>> +             if (copy_from_user(&info, (void __user *)arg, minsz))
+>> +                     return -EFAULT;
+>>
+>> -     else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
+>> +             if (info.argsz < minsz)
+>> +                     return -EINVAL;
+>> +
+>> +             if (info.index >= vdev->num_regions)
+>> +                     return -EINVAL;
+>> +
+>> +             /* map offset to the physical address  */
+>> +             info.offset = VFIO_PLATFORM_INDEX_TO_OFFSET(info.index);
+>> +             info.size = vdev->regions[info.index].size;
+>> +             info.flags = vdev->regions[info.index].flags;
+>> +
+>> +             return copy_to_user((void __user *)arg, &info, minsz);
+>> +
+>> +     } else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
+>>               return -EINVAL;
+>>
+>>       else if (cmd == VFIO_DEVICE_SET_IRQS)
+>> @@ -134,10 +232,14 @@ struct vfio_platform_device *vfio_platform_remove_common(struct device *dev)
+>>  {
+>>       struct vfio_platform_device *vdev;
+>>
+>> +     mutex_lock(&driver_lock);
+>> +
+>>       vdev = vfio_del_group_dev(dev);
+>>       if (vdev)
+>>               iommu_group_put(dev->iommu_group);
+>>
+>> +     mutex_unlock(&driver_lock);
+>> +
+>
+> This is the same deadlock that vfio-pci recently removed.  Imagine that
+> you attempt to unbind an in-use device from vfio-platform,
+> vfio_del_group_dev() waits, holding the mutex, for the device to be
+> unused.  vfio_platform_release() must acquire the mutex before it can
+> run.  I don't think you need the mutex here.  Thanks,
+
+Fair enough, no mutex for _release then.
+
+>
+> Alex
+>
+>>       return vdev;
+>>  }
+>>  EXPORT_SYMBOL_GPL(vfio_platform_remove_common);
+>> diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
+>> index 062b92d..b24729f 100644
+>> --- a/drivers/vfio/platform/vfio_platform_private.h
+>> +++ b/drivers/vfio/platform/vfio_platform_private.h
+>> @@ -15,7 +15,29 @@
+>>  #ifndef VFIO_PLATFORM_PRIVATE_H
+>>  #define VFIO_PLATFORM_PRIVATE_H
+>>
+>> +#define VFIO_PLATFORM_OFFSET_SHIFT   40
+>> +#define VFIO_PLATFORM_OFFSET_MASK (((u64)(1) << VFIO_PLATFORM_OFFSET_SHIFT) - 1)
+>> +
+>> +#define VFIO_PLATFORM_OFFSET_TO_INDEX(off)   \
+>> +     (off >> VFIO_PLATFORM_OFFSET_SHIFT)
+>> +
+>> +#define VFIO_PLATFORM_INDEX_TO_OFFSET(index) \
+>> +     ((u64)(index) << VFIO_PLATFORM_OFFSET_SHIFT)
+>> +
+>> +struct vfio_platform_region {
+>> +     u64                     addr;
+>> +     resource_size_t         size;
+>> +     u32                     flags;
+>> +     u32                     type;
+>> +#define VFIO_PLATFORM_REGION_TYPE_MMIO       1
+>> +#define VFIO_PLATFORM_REGION_TYPE_PIO        2
 >> +};
 >> +
->> +MODULE_DEVICE_TABLE(amba, pl330_ids);
+>>  struct vfio_platform_device {
+>> +     struct vfio_platform_region     *regions;
+>> +     u32                             num_regions;
+>> +     int                             refcnt;
 >> +
->> +static struct amba_driver vfio_amba_driver = {
->> +     .probe = vfio_amba_probe,
->> +     .remove = vfio_amba_remove,
->> +     .id_table = pl330_ids,
->> +     .drv = {
->> +             .name = "vfio-amba",
->> +             .owner = THIS_MODULE,
->> +     },
->> +};
->> +
->> +module_amba_driver(vfio_amba_driver);
->> +
->> +MODULE_VERSION(DRIVER_VERSION);
->> +MODULE_LICENSE("GPL v2");
->> +MODULE_AUTHOR(DRIVER_AUTHOR);
->> +MODULE_DESCRIPTION(DRIVER_DESC);
->> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
->> index 9db1056..92469e0 100644
->> --- a/include/uapi/linux/vfio.h
->> +++ b/include/uapi/linux/vfio.h
->> @@ -158,6 +158,7 @@ struct vfio_device_info {
->>  #define VFIO_DEVICE_FLAGS_RESET      (1 << 0)        /* Device supports reset */
->>  #define VFIO_DEVICE_FLAGS_PCI        (1 << 1)        /* vfio-pci device */
->>  #define VFIO_DEVICE_FLAGS_PLATFORM (1 << 2)  /* vfio-platform device */
->> +#define VFIO_DEVICE_FLAGS_AMBA  (1 << 3)     /* vfio-amba device */
->>       __u32   num_regions;    /* Max region index + 1 */
->>       __u32   num_irqs;       /* Max IRQ index + 1 */
->>  };
+>>       /*
+>>        * These fields should be filled by the bus specific binder
+>>        */
 >
 >
 >
