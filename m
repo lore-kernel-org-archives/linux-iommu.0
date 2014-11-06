@@ -1,186 +1,146 @@
-From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [Patch Part2 v4 13/31] x86: irq_remapping: Introduce new interfaces
- to support hierarchy irqdomain
-Date: Thu, 6 Nov 2014 19:43:19 +0800
-Message-ID: <545B5ED7.7090901@huawei.com>
-References: <1415102525-9898-1-git-send-email-jiang.liu@linux.intel.com> <1415102525-9898-14-git-send-email-jiang.liu@linux.intel.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH] iommu/amd: Use new invalidate_range mmu-notifier
+Date: Thu,  6 Nov 2014 13:40:08 +0100
+Message-ID: <1415277608-23688-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1415102525-9898-14-git-send-email-jiang.liu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jiang Liu <jiang.liu@linux.intel.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Bjorn Helgaas <bhelgaas@google.com>, Randy Dunlap <rdunlap@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Borislav Petkov <bp@alien8.de>, Grant Likely <grant.likely@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>, x86@kernel.org, Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Tony Luck <tony.luck@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-> +
-> +enum irq_alloc_type {
-> +	X86_IRQ_ALLOC_TYPE_IOAPIC = 1,
-> +	X86_IRQ_ALLOC_TYPE_HPET,
-> +	X86_IRQ_ALLOC_TYPE_MSI,
-> +	X86_IRQ_ALLOC_TYPE_MSIX,
-> +};
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Hi Gerry, why not to use X86_IRQ_ALLOC_TYPE_MSI to represent both MSI and MSI-X type?
-There are some differences to process MSI and MSI-X in irq remapping domain ?
+Make use of the new invalidate_range mmu_notifier call-back
+and remove the old logic of assigning an empty page-table
+between invalidate_range_start and invalidate_range_end.
 
->  
-> +extern struct irq_domain *irq_remapping_get_ir_irq_domain(
-> +				struct irq_alloc_info *info);
-> +extern struct irq_domain *irq_remapping_get_irq_domain(
-> +				struct irq_alloc_info *info);
+Tested-by: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/amd_iommu_v2.c | 61 +++++++-------------------------------------
+ 1 file changed, 9 insertions(+), 52 deletions(-)
 
-The two functions are too similar, and both get irq_domain by irq_alloc_info, possible to merge them ?
-
-> +extern void irq_remapping_print_chip(struct irq_data *data, struct seq_file *p);
-> +
-> +/*
-> + * Create MSI/MSIx irqdomain for interrupt remapping device, use @parent as
-> + * parent irqdomain.
-> + */
-> +static inline struct irq_domain *
-> +arch_create_msi_irq_domain(struct irq_domain *parent)
-> +{
-> +	return NULL;
-> +}
-> +
-> +/* Get parent irqdomain for interrupt remapping irqdomain */
-> +static inline struct irq_domain *arch_get_ir_parent_domain(void)
-> +{
-> +	return x86_vector_domain;
-> +}
-> +
->  #else  /* CONFIG_IRQ_REMAP */
->  
->  static inline void setup_irq_remapping_ops(void) { }
-> @@ -101,6 +126,20 @@ static inline bool setup_remapped_irq(int irq,
->  {
->  	return false;
->  }
-> +
-> +static inline struct irq_domain *
-> +irq_remapping_get_ir_irq_domain(struct irq_alloc_info *info)
-> +{
-> +	return NULL;
-> +}
-> +
-> +static inline struct irq_domain *
-> +irq_remapping_get_irq_domain(struct irq_alloc_info *info)
-> +{
-> +	return NULL;
-> +}
-> +
-> +#define	irq_remapping_print_chip	NULL
->  #endif /* CONFIG_IRQ_REMAP */
->  
->  extern int dmar_alloc_hwirq(void);
-> diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-> index 63886bafed9f..176ff4372b7d 100644
-> --- a/drivers/iommu/irq_remapping.c
-> +++ b/drivers/iommu/irq_remapping.c
-> @@ -377,7 +377,7 @@ void panic_if_irq_remap(const char *msg)
->  		panic(msg);
->  }
->  
-> -static void ir_ack_apic_edge(struct irq_data *data)
-> +void ir_ack_apic_edge(struct irq_data *data)
->  {
->  	ack_APIC_irq();
->  }
-> @@ -388,6 +388,19 @@ static void ir_ack_apic_level(struct irq_data *data)
->  	eoi_ioapic_irq(data->irq, irqd_cfg(data));
->  }
->  
-> +void irq_remapping_print_chip(struct irq_data *data, struct seq_file *p)
-> +{
-> +	/*
-> +	 * Assume interrupt is remapped if the parent irqdomain isn't the
-> +	 * vector domain, which is true for MSI, HPET and IOAPIC on x86
-> +	 * platforms.
-> +	 */
-> +	if (data->domain && data->domain->parent != arch_get_ir_parent_domain())
-> +		seq_printf(p, " IR-%s", data->chip->name);
-> +	else
-> +		seq_printf(p, " %s", data->chip->name);
-> +}
-> +
->  static void ir_print_prefix(struct irq_data *data, struct seq_file *p)
->  {
->  	seq_printf(p, " IR-%s", data->chip->name);
-> @@ -409,3 +422,36 @@ bool setup_remapped_irq(int irq, struct irq_cfg *cfg, struct irq_chip *chip)
->  	irq_remap_modify_chip_defaults(chip);
->  	return true;
->  }
-> +
-> +/**
-> + * irq_remapping_get_ir_irq_domain - Get the irqdomain associated the IOMMU
-> + *				     device serving @info
-> + * @info: interrupt allocation information, used to find the IOMMU device
-> + *
-> + * It's used to get parent irqdomain for HPET and IOAPIC domains.
-> + * Returns pointer to IRQ domain, or NULL on failure.
-> + */
-> +struct irq_domain *
-> +irq_remapping_get_ir_irq_domain(struct irq_alloc_info *info)
-> +{
-> +	if (!remap_ops || !remap_ops->get_ir_irq_domain)
-> +		return NULL;
-> +
-> +	return remap_ops->get_ir_irq_domain(info);
-> +}
-> +
-> +/**
-> + * irq_remapping_get_irq_domain - Get the irqdomain serving the MSI interrupt
-> + * @info: interrupt allocation information, used to find the IOMMU device
-> + *
-> + * It's used to get irqdomain for MSI/MSIx interrupt allocation.
-> + * Returns pointer to IRQ domain, or NULL on failure.
-> + */
-> +struct irq_domain *
-> +irq_remapping_get_irq_domain(struct irq_alloc_info *info)
-> +{
-> +	if (!remap_ops || !remap_ops->get_irq_domain)
-> +		return NULL;
-> +
-> +	return remap_ops->get_irq_domain(info);
-> +}
-> diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
-> index fde250f86e60..8c159d6fac46 100644
-> --- a/drivers/iommu/irq_remapping.h
-> +++ b/drivers/iommu/irq_remapping.h
-> @@ -30,6 +30,8 @@ struct irq_data;
->  struct cpumask;
->  struct pci_dev;
->  struct msi_msg;
-> +struct irq_domain;
-> +struct irq_alloc_info;
->  
->  extern int disable_irq_remap;
->  extern int irq_remap_broken;
-> @@ -81,11 +83,19 @@ struct irq_remap_ops {
->  
->  	/* Setup interrupt remapping for an HPET MSI */
->  	int (*alloc_hpet_msi)(unsigned int, unsigned int);
-> +
-> +	/* Get the irqdomain associated the IOMMU device */
-> +	struct irq_domain *(*get_ir_irq_domain)(struct irq_alloc_info *);
-> +
-> +	/* Get the MSI irqdomain associated with the IOMMU device */
-> +	struct irq_domain *(*get_irq_domain)(struct irq_alloc_info *);
->  };
->  
->  extern struct irq_remap_ops intel_irq_remap_ops;
->  extern struct irq_remap_ops amd_iommu_irq_ops;
->  
-> +extern void ir_ack_apic_edge(struct irq_data *data);
-> +
->  #else  /* CONFIG_IRQ_REMAP */
->  
->  #define irq_remapping_enabled 0
-> 
-
-
+diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
+index 90d734b..f724bdc 100644
+--- a/drivers/iommu/amd_iommu_v2.c
++++ b/drivers/iommu/amd_iommu_v2.c
+@@ -92,13 +92,6 @@ static spinlock_t state_lock;
+ 
+ static struct workqueue_struct *iommu_wq;
+ 
+-/*
+- * Empty page table - Used between
+- * mmu_notifier_invalidate_range_start and
+- * mmu_notifier_invalidate_range_end
+- */
+-static u64 *empty_page_table;
+-
+ static void free_pasid_states(struct device_state *dev_state);
+ 
+ static u16 device_id(struct pci_dev *pdev)
+@@ -418,46 +411,21 @@ static void mn_invalidate_page(struct mmu_notifier *mn,
+ 	__mn_flush_page(mn, address);
+ }
+ 
+-static void mn_invalidate_range_start(struct mmu_notifier *mn,
+-				      struct mm_struct *mm,
+-				      unsigned long start, unsigned long end)
+-{
+-	struct pasid_state *pasid_state;
+-	struct device_state *dev_state;
+-	unsigned long flags;
+-
+-	pasid_state = mn_to_state(mn);
+-	dev_state   = pasid_state->device_state;
+-
+-	spin_lock_irqsave(&pasid_state->lock, flags);
+-	if (pasid_state->mmu_notifier_count == 0) {
+-		amd_iommu_domain_set_gcr3(dev_state->domain,
+-					  pasid_state->pasid,
+-					  __pa(empty_page_table));
+-	}
+-	pasid_state->mmu_notifier_count += 1;
+-	spin_unlock_irqrestore(&pasid_state->lock, flags);
+-}
+-
+-static void mn_invalidate_range_end(struct mmu_notifier *mn,
+-				    struct mm_struct *mm,
+-				    unsigned long start, unsigned long end)
++static void mn_invalidate_range(struct mmu_notifier *mn,
++				struct mm_struct *mm,
++				unsigned long start, unsigned long end)
+ {
+ 	struct pasid_state *pasid_state;
+ 	struct device_state *dev_state;
+-	unsigned long flags;
+ 
+ 	pasid_state = mn_to_state(mn);
+ 	dev_state   = pasid_state->device_state;
+ 
+-	spin_lock_irqsave(&pasid_state->lock, flags);
+-	pasid_state->mmu_notifier_count -= 1;
+-	if (pasid_state->mmu_notifier_count == 0) {
+-		amd_iommu_domain_set_gcr3(dev_state->domain,
+-					  pasid_state->pasid,
+-					  __pa(pasid_state->mm->pgd));
+-	}
+-	spin_unlock_irqrestore(&pasid_state->lock, flags);
++	if ((start ^ (end - 1)) < PAGE_SIZE)
++		amd_iommu_flush_page(dev_state->domain, pasid_state->pasid,
++				     start);
++	else
++		amd_iommu_flush_tlb(dev_state->domain, pasid_state->pasid);
+ }
+ 
+ static void mn_release(struct mmu_notifier *mn, struct mm_struct *mm)
+@@ -482,8 +450,7 @@ static struct mmu_notifier_ops iommu_mn = {
+ 	.release		= mn_release,
+ 	.clear_flush_young      = mn_clear_flush_young,
+ 	.invalidate_page        = mn_invalidate_page,
+-	.invalidate_range_start = mn_invalidate_range_start,
+-	.invalidate_range_end   = mn_invalidate_range_end,
++	.invalidate_range       = mn_invalidate_range,
+ };
+ 
+ static void set_pri_tag_status(struct pasid_state *pasid_state,
+@@ -954,18 +921,10 @@ static int __init amd_iommu_v2_init(void)
+ 	if (iommu_wq == NULL)
+ 		goto out;
+ 
+-	ret = -ENOMEM;
+-	empty_page_table = (u64 *)get_zeroed_page(GFP_KERNEL);
+-	if (empty_page_table == NULL)
+-		goto out_destroy_wq;
+-
+ 	amd_iommu_register_ppr_notifier(&ppr_nb);
+ 
+ 	return 0;
+ 
+-out_destroy_wq:
+-	destroy_workqueue(iommu_wq);
+-
+ out:
+ 	return ret;
+ }
+@@ -999,8 +958,6 @@ static void __exit amd_iommu_v2_exit(void)
+ 	}
+ 
+ 	destroy_workqueue(iommu_wq);
+-
+-	free_page((unsigned long)empty_page_table);
+ }
+ 
+ module_init(amd_iommu_v2_init);
 -- 
-Thanks!
-Yijing
+1.9.1
