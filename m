@@ -1,301 +1,217 @@
-From: Jiang Liu <jiang.liu@linux.intel.com>
-Subject: [Patch Part2 v5 26/31] x86: irq_remapping: Clean up unused MSI related code
-Date: Thu,  6 Nov 2014 22:20:39 +0800
-Message-ID: <1415283644-2559-27-git-send-email-jiang.liu@linux.intel.com>
+From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [Patch Part2 v5 28/31] iommu/vt-d: Refine the interfaces to create
+	IRQ for DMAR unit
+Date: Thu,  6 Nov 2014 22:20:41 +0800
+Message-ID: <1415283644-2559-29-git-send-email-jiang.liu@linux.intel.com>
 References: <1415283644-2559-1-git-send-email-jiang.liu@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1415283644-2559-1-git-send-email-jiang.liu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Bjorn Helgaas <bhelgaas@google.com>, Randy Dunlap <rdunlap@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Borislav Petkov <bp@alien8.de>, Grant Likely <grant.likely@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>, x86@kernel.org, Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Jiang Liu <jiang.liu@linux.intel.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Tony Luck <tony.luck@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1415283644-2559-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Now MSI interrupt has been converted to new hierarchy irqdomain
-interfaces, so kill legacy MSI related code and interfaces.
+Refine the interfaces to create IRQ for DMAR unit. It's a preparation
+for converting DMAR IRQ to irqdomain on x86.
 
-Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
+It also moves dmar_alloc_hwirq()/dmar_free_hwirq() from irq_remapping.h
+to dmar.h. They are not irq_remapping specific.
+
+Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- arch/x86/include/asm/irq_remapping.h |   13 ---
- arch/x86/include/asm/pci.h           |    5 --
- arch/x86/kernel/x86_init.c           |    2 -
- drivers/iommu/irq_remapping.c        |  151 ----------------------------------
- drivers/iommu/irq_remapping.h        |   14 ----
- 5 files changed, 185 deletions(-)
+ arch/ia64/include/asm/irq_remapping.h |    2 --
+ arch/ia64/kernel/msi_ia64.c           |   30 +++++++++++++++++++-----------
+ arch/x86/include/asm/irq_remapping.h  |    4 ----
+ arch/x86/kernel/apic/msi.c            |   24 +++++++++++++-----------
+ drivers/iommu/dmar.c                  |   19 +++++--------------
+ include/linux/dmar.h                  |    3 ++-
+ 6 files changed, 39 insertions(+), 43 deletions(-)
 
+diff --git a/arch/ia64/include/asm/irq_remapping.h b/arch/ia64/include/asm/irq_remapping.h
+index e3b3556e2e1b..a8687b1d8906 100644
+--- a/arch/ia64/include/asm/irq_remapping.h
++++ b/arch/ia64/include/asm/irq_remapping.h
+@@ -1,6 +1,4 @@
+ #ifndef __IA64_INTR_REMAPPING_H
+ #define __IA64_INTR_REMAPPING_H
+ #define irq_remapping_enabled 0
+-#define dmar_alloc_hwirq	create_irq
+-#define dmar_free_hwirq		destroy_irq
+ #endif
+diff --git a/arch/ia64/kernel/msi_ia64.c b/arch/ia64/kernel/msi_ia64.c
+index 8c3730c3c63d..15032330573b 100644
+--- a/arch/ia64/kernel/msi_ia64.c
++++ b/arch/ia64/kernel/msi_ia64.c
+@@ -166,7 +166,7 @@ static struct irq_chip dmar_msi_type = {
+ 	.irq_retrigger = ia64_msi_retrigger_irq,
+ };
+ 
+-static int
++static void
+ msi_compose_msg(struct pci_dev *pdev, unsigned int irq, struct msi_msg *msg)
+ {
+ 	struct irq_cfg *cfg = irq_cfg + irq;
+@@ -188,21 +188,29 @@ msi_compose_msg(struct pci_dev *pdev, unsigned int irq, struct msi_msg *msg)
+ 		MSI_DATA_LEVEL_ASSERT |
+ 		MSI_DATA_DELIVERY_FIXED |
+ 		MSI_DATA_VECTOR(cfg->vector);
+-	return 0;
+ }
+ 
+-int arch_setup_dmar_msi(unsigned int irq)
++int dmar_alloc_hwirq(int id, int node, void *arg)
+ {
+-	int ret;
++	int irq;
+ 	struct msi_msg msg;
+ 
+-	ret = msi_compose_msg(NULL, irq, &msg);
+-	if (ret < 0)
+-		return ret;
+-	dmar_msi_write(irq, &msg);
+-	irq_set_chip_and_handler_name(irq, &dmar_msi_type, handle_edge_irq,
+-				      "edge");
+-	return 0;
++	irq = create_irq();
++	if (irq > 0) {
++		irq_set_handler_data(irq, arg);
++		irq_set_chip_and_handler_name(irq, &dmar_msi_type,
++					      handle_edge_irq, "edge");
++		msi_compose_msg(NULL, irq, &msg);
++		dmar_msi_write(irq, &msg);
++	}
++
++	return irq;
++}
++
++void dmar_free_hwirq(int irq)
++{
++	irq_set_handler_data(irq, NULL);
++	destroy_irq(irq);
+ }
+ #endif /* CONFIG_INTEL_IOMMU */
+ 
 diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
-index c4fa0d2291b8..61c50e6e28c8 100644
+index 61c50e6e28c8..61ec9234c88e 100644
 --- a/arch/x86/include/asm/irq_remapping.h
 +++ b/arch/x86/include/asm/irq_remapping.h
-@@ -50,10 +50,6 @@ extern int setup_ioapic_remapped_entry(int irq,
- 				       int vector,
- 				       struct io_apic_irq_attr *attr);
- extern void free_remapped_irq(int irq);
--extern void compose_remapped_msi_msg(struct pci_dev *pdev,
--				     unsigned int irq, unsigned int dest,
--				     struct msi_msg *msg, u8 hpet_id);
--extern int setup_hpet_msi_remapped(unsigned int irq, unsigned int id);
- extern void panic_if_irq_remap(const char *msg);
- extern bool setup_remapped_irq(int irq,
- 			       struct irq_cfg *cfg,
-@@ -98,15 +94,6 @@ static inline int setup_ioapic_remapped_entry(int irq,
- 	return -ENODEV;
- }
- static inline void free_remapped_irq(int irq) { }
--static inline void compose_remapped_msi_msg(struct pci_dev *pdev,
--					    unsigned int irq, unsigned int dest,
--					    struct msi_msg *msg, u8 hpet_id)
--{
--}
--static inline int setup_hpet_msi_remapped(unsigned int irq, unsigned int id)
--{
--	return -ENODEV;
--}
+@@ -124,8 +124,4 @@ irq_remapping_get_irq_domain(struct irq_alloc_info *info)
  
- static inline void panic_if_irq_remap(const char *msg)
- {
-diff --git a/arch/x86/include/asm/pci.h b/arch/x86/include/asm/pci.h
-index 4e370a5d8117..d8c80ff32e8c 100644
---- a/arch/x86/include/asm/pci.h
-+++ b/arch/x86/include/asm/pci.h
-@@ -96,15 +96,10 @@ extern void pci_iommu_alloc(void);
- #ifdef CONFIG_PCI_MSI
- /* implemented in arch/x86/kernel/apic/io_apic. */
- struct msi_desc;
--void native_compose_msi_msg(struct pci_dev *pdev, unsigned int irq,
--			    unsigned int dest, struct msi_msg *msg, u8 hpet_id);
- int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type);
- void native_teardown_msi_irq(unsigned int irq);
- void native_restore_msi_irqs(struct pci_dev *dev);
--int setup_msi_irq(struct pci_dev *dev, struct msi_desc *msidesc,
--		  unsigned int irq_base, unsigned int irq_offset);
- #else
--#define native_compose_msi_msg		NULL
- #define native_setup_msi_irqs		NULL
- #define native_teardown_msi_irq		NULL
- #endif
-diff --git a/arch/x86/kernel/x86_init.c b/arch/x86/kernel/x86_init.c
-index e48b674639cc..814fcbadaad1 100644
---- a/arch/x86/kernel/x86_init.c
-+++ b/arch/x86/kernel/x86_init.c
-@@ -111,11 +111,9 @@ EXPORT_SYMBOL_GPL(x86_platform);
- #if defined(CONFIG_PCI_MSI)
- struct x86_msi_ops x86_msi = {
- 	.setup_msi_irqs		= native_setup_msi_irqs,
--	.compose_msi_msg	= native_compose_msi_msg,
- 	.teardown_msi_irq	= native_teardown_msi_irq,
- 	.teardown_msi_irqs	= default_teardown_msi_irqs,
- 	.restore_msi_irqs	= default_restore_msi_irqs,
--	.setup_hpet_msi		= default_setup_hpet_msi,
- 	.msi_mask_irq		= default_msi_mask_irq,
- 	.msix_mask_irq		= default_msix_mask_irq,
+ #define	irq_remapping_print_chip	NULL
+ #endif /* CONFIG_IRQ_REMAP */
+-
+-extern int dmar_alloc_hwirq(void);
+-extern void dmar_free_hwirq(int irq);
+-
+ #endif /* __X86_IRQ_REMAPPING_H */
+diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
+index 49f02609a7e0..5fc3e61f1b16 100644
+--- a/arch/x86/kernel/apic/msi.c
++++ b/arch/x86/kernel/apic/msi.c
+@@ -219,25 +219,27 @@ static struct irq_chip dmar_msi_type = {
+ 	.flags			= IRQCHIP_SKIP_SET_WAKE,
  };
-diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index 414ab0cddbbc..782dea5e4233 100644
---- a/drivers/iommu/irq_remapping.c
-+++ b/drivers/iommu/irq_remapping.c
-@@ -26,9 +26,6 @@ int no_x2apic_optout;
  
- static struct irq_remap_ops *remap_ops;
- 
--static int msi_alloc_remapped_irq(struct pci_dev *pdev, int irq, int nvec);
--static int msi_setup_remapped_irq(struct pci_dev *pdev, unsigned int irq,
--				  int index, int sub_handle);
- static int set_remapped_irq_affinity(struct irq_data *data,
- 				     const struct cpumask *mask,
- 				     bool force);
-@@ -51,109 +48,6 @@ static void irq_remapping_disable_io_apic(void)
- 		disconnect_bsp_APIC(0);
- }
- 
--#ifndef CONFIG_GENERIC_IRQ_LEGACY_ALLOC_HWIRQ
--static unsigned int irq_alloc_hwirqs(int cnt, int node)
--{
--	return irq_domain_alloc_irqs(NULL, -1, cnt, node, NULL);
--}
--
--static void irq_free_hwirqs(unsigned int from, int cnt)
--{
--	irq_domain_free_irqs(from, cnt);
--}
--#endif
--
--static int do_setup_msi_irqs(struct pci_dev *dev, int nvec)
--{
--	int ret, sub_handle, nvec_pow2, index = 0;
--	unsigned int irq;
--	struct msi_desc *msidesc;
--
--	msidesc = list_entry(dev->msi_list.next, struct msi_desc, list);
--
--	irq = irq_alloc_hwirqs(nvec, dev_to_node(&dev->dev));
--	if (irq == 0)
--		return -ENOSPC;
--
--	nvec_pow2 = __roundup_pow_of_two(nvec);
--	for (sub_handle = 0; sub_handle < nvec; sub_handle++) {
--		if (!sub_handle) {
--			index = msi_alloc_remapped_irq(dev, irq, nvec_pow2);
--			if (index < 0) {
--				ret = index;
--				goto error;
--			}
--		} else {
--			ret = msi_setup_remapped_irq(dev, irq + sub_handle,
--						     index, sub_handle);
--			if (ret < 0)
--				goto error;
--		}
--		ret = setup_msi_irq(dev, msidesc, irq, sub_handle);
--		if (ret < 0)
--			goto error;
--	}
--	return 0;
--
--error:
--	irq_free_hwirqs(irq, nvec);
--
--	/*
--	 * Restore altered MSI descriptor fields and prevent just destroyed
--	 * IRQs from tearing down again in default_teardown_msi_irqs()
--	 */
--	msidesc->irq = 0;
--
--	return ret;
--}
--
--static int do_setup_msix_irqs(struct pci_dev *dev, int nvec)
--{
--	int node, ret, sub_handle, index = 0;
--	struct msi_desc *msidesc;
--	unsigned int irq;
--
--	node		= dev_to_node(&dev->dev);
--	sub_handle	= 0;
--
--	list_for_each_entry(msidesc, &dev->msi_list, list) {
--
--		irq = irq_alloc_hwirqs(1, node);
--		if (irq == 0)
--			return -1;
--
--		if (sub_handle == 0)
--			ret = index = msi_alloc_remapped_irq(dev, irq, nvec);
--		else
--			ret = msi_setup_remapped_irq(dev, irq, index, sub_handle);
--
--		if (ret < 0)
--			goto error;
--
--		ret = setup_msi_irq(dev, msidesc, irq, 0);
--		if (ret < 0)
--			goto error;
--
--		sub_handle += 1;
--		irq        += 1;
--	}
--
--	return 0;
--
--error:
--	irq_free_hwirqs(irq, 1);
--	return ret;
--}
--
--static int irq_remapping_setup_msi_irqs(struct pci_dev *dev,
--					int nvec, int type)
--{
--	if (type == PCI_CAP_ID_MSI)
--		return do_setup_msi_irqs(dev, nvec);
--	else
--		return do_setup_msix_irqs(dev, nvec);
--}
--
- static void eoi_ioapic_pin_remapped(int apic, int pin, int vector)
+-int arch_setup_dmar_msi(unsigned int irq)
++int dmar_alloc_hwirq(int id, int node, void *arg)
  {
- 	/*
-@@ -171,8 +65,6 @@ static void __init irq_remapping_modify_x86_ops(void)
- 	x86_io_apic_ops.set_affinity	= set_remapped_irq_affinity;
- 	x86_io_apic_ops.setup_entry	= setup_ioapic_remapped_entry;
- 	x86_io_apic_ops.eoi_ioapic_pin	= eoi_ioapic_pin_remapped;
--	x86_msi.setup_hpet_msi		= setup_hpet_msi_remapped;
--	x86_msi.compose_msi_msg		= compose_remapped_msi_msg;
- }
- 
- static __init int setup_nointremap(char *str)
-@@ -319,49 +211,6 @@ void free_remapped_irq(int irq)
- 		remap_ops->free_irq(irq);
- }
- 
--void compose_remapped_msi_msg(struct pci_dev *pdev,
--			      unsigned int irq, unsigned int dest,
--			      struct msi_msg *msg, u8 hpet_id)
--{
++	int irq;
+ 	struct msi_msg msg;
 -	struct irq_cfg *cfg = irq_cfg(irq);
--
--	if (!irq_remapped(cfg))
--		native_compose_msi_msg(pdev, irq, dest, msg, hpet_id);
--	else if (remap_ops && remap_ops->compose_msi_msg)
--		remap_ops->compose_msi_msg(pdev, irq, dest, msg, hpet_id);
+ 
+-	native_compose_msi_msg(cfg, &msg);
+-	dmar_msi_write(irq, &msg);
+-	irq_set_chip_and_handler_name(irq, &dmar_msi_type, handle_edge_irq,
+-				      "edge");
+-	return 0;
 -}
--
--static int msi_alloc_remapped_irq(struct pci_dev *pdev, int irq, int nvec)
++	irq = irq_domain_alloc_irqs(NULL, 1, node, NULL);
++	if (irq > 0) {
++		irq_set_handler_data(irq, arg);
++		irq_set_chip_and_handler_name(irq, &dmar_msi_type,
++					      handle_edge_irq, "edge");
++		native_compose_msi_msg(irq_cfg(irq), &msg);
++		dmar_msi_write(irq, &msg);
++	}
+ 
+-int dmar_alloc_hwirq(void)
 -{
--	if (!remap_ops || !remap_ops->msi_alloc_irq)
--		return -ENODEV;
--
--	return remap_ops->msi_alloc_irq(pdev, irq, nvec);
--}
--
--static int msi_setup_remapped_irq(struct pci_dev *pdev, unsigned int irq,
--				  int index, int sub_handle)
--{
--	if (!remap_ops || !remap_ops->msi_setup_irq)
--		return -ENODEV;
--
--	return remap_ops->msi_setup_irq(pdev, irq, index, sub_handle);
--}
--
--int setup_hpet_msi_remapped(unsigned int irq, unsigned int id)
--{
--	int ret;
--
--	if (!remap_ops || !remap_ops->alloc_hpet_msi)
--		return -ENODEV;
--
--	ret = remap_ops->alloc_hpet_msi(irq, id);
--	if (ret)
--		return -EINVAL;
--
--	return default_setup_hpet_msi(irq, id);
--}
--
- void panic_if_irq_remap(const char *msg)
+-	return irq_domain_alloc_irqs(NULL, 1, NUMA_NO_NODE, NULL);
++	return irq;
+ }
+ 
+ void dmar_free_hwirq(int irq)
  {
- 	if (irq_remapping_enabled)
-diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
-index 8c159d6fac46..95b19a6ef16a 100644
---- a/drivers/iommu/irq_remapping.h
-+++ b/drivers/iommu/irq_remapping.h
-@@ -70,20 +70,6 @@ struct irq_remap_ops {
- 	/* Free an IRQ */
- 	int (*free_irq)(int);
++	irq_set_handler_data(irq, NULL);
++	irq_set_handler(irq, NULL);
+ 	irq_domain_free_irqs(irq, 1);
+ }
+ #endif
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index c5c61cabd6e3..25f47937f1d5 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -1018,8 +1018,8 @@ static void free_iommu(struct intel_iommu *iommu)
  
--	/* Create MSI msg to use for interrupt remapping */
--	void (*compose_msi_msg)(struct pci_dev *,
--				unsigned int, unsigned int,
--				struct msi_msg *, u8);
--
--	/* Allocate remapping resources for MSI */
--	int (*msi_alloc_irq)(struct pci_dev *, int, int);
--
--	/* Setup the remapped MSI irq */
--	int (*msi_setup_irq)(struct pci_dev *, unsigned int, int, int);
--
--	/* Setup interrupt remapping for an HPET MSI */
--	int (*alloc_hpet_msi)(unsigned int, unsigned int);
--
- 	/* Get the irqdomain associated the IOMMU device */
- 	struct irq_domain *(*get_ir_irq_domain)(struct irq_alloc_info *);
+ 	if (iommu->irq) {
+ 		free_irq(iommu->irq, iommu);
+-		irq_set_handler_data(iommu->irq, NULL);
+ 		dmar_free_hwirq(iommu->irq);
++		iommu->irq = 0;
+ 	}
  
+ 	if (iommu->qi) {
+@@ -1572,23 +1572,14 @@ int dmar_set_interrupt(struct intel_iommu *iommu)
+ 	if (iommu->irq)
+ 		return 0;
+ 
+-	irq = dmar_alloc_hwirq();
+-	if (irq <= 0) {
++	irq = dmar_alloc_hwirq(iommu->seq_id, iommu->node, iommu);
++	if (irq > 0) {
++		iommu->irq = irq;
++	} else {
+ 		pr_err("IOMMU: no free vectors\n");
+ 		return -EINVAL;
+ 	}
+ 
+-	irq_set_handler_data(irq, iommu);
+-	iommu->irq = irq;
+-
+-	ret = arch_setup_dmar_msi(irq);
+-	if (ret) {
+-		irq_set_handler_data(irq, NULL);
+-		iommu->irq = 0;
+-		dmar_free_hwirq(irq);
+-		return ret;
+-	}
+-
+ 	ret = request_irq(irq, dmar_fault, IRQF_NO_THREAD, iommu->name, iommu);
+ 	if (ret)
+ 		pr_err("IOMMU: can't request irq\n");
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index 593fff99e6bf..df3918482073 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -189,6 +189,7 @@ extern void dmar_msi_read(int irq, struct msi_msg *msg);
+ extern void dmar_msi_write(int irq, struct msi_msg *msg);
+ extern int dmar_set_interrupt(struct intel_iommu *iommu);
+ extern irqreturn_t dmar_fault(int irq, void *dev_id);
+-extern int arch_setup_dmar_msi(unsigned int irq);
++extern int dmar_alloc_hwirq(int id, int node, void *arg);
++extern void dmar_free_hwirq(int irq);
+ 
+ #endif /* __DMAR_H__ */
 -- 
 1.7.10.4
