@@ -1,15 +1,11 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/1] iommu/amd: Use delayed mmu release notifier
-Date: Thu, 6 Nov 2014 23:51:50 +0100
-Message-ID: <20141106225150.GT10744@8bytes.org>
-References: <54418D7F.3050304@amd.com> <20141106133354.GP10744@8bytes.org>
-	<545B7C43.4020106@amd.com>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] iommu/arm-smmu: Play nice on non-ARM/SMMU systems
+Date: Fri,  7 Nov 2014 16:26:18 +0100
+Message-ID: <1415373978-16203-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <545B7C43.4020106-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,23 +15,46 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 06, 2014 at 03:48:51PM +0200, Oded Gabbay wrote:
-> What do you mean ? I don't see I change anything in the API. All the
-> changes are internal to amd_iommu_unbind_pasid(). I don't think
-> *anyone* calling to amd_iommu_unbind_pasid() will care or will
-> notice the slight change in timing of releasing the pasid_state
-> object (instead of immediate release, it is released after the
-> iteration on the mmu_notifier list has finished)
+From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-The API change is that this patch modifies amd_iommu_unbind_pasid() so
-that it could be called from an mmu_notifier_release call-back (which is
-not possible right now). It does that by adding just another layer of
-call-backs and complicates the code. I'd like to keep that outside of
-the IOMMUv2 driver.
+Currently the driver registers IOMMU bus operations for all busses even
+if no ARM SMMU is present on a system. Depending on the driver probing
+order this prevents the driver for the real IOMMU to register itself as
+the bus-wide IOMMU.
 
+Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-	Joerg
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 60558f794922..e154826d8b1d 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -2072,8 +2072,20 @@ static struct platform_driver arm_smmu_driver = {
+ 
+ static int __init arm_smmu_init(void)
+ {
++	struct device_node *np;
+ 	int ret;
+ 
++	/*
++	 * Play nice with systems that don't have an ARM SMMU by checking that
++	 * an ARM SMMU exists in the system before proceeding with the driver
++	 * and IOMMU bus operation registration.
++	 */
++	np = of_find_matching_node(NULL, arm_smmu_of_match);
++	if (!np)
++		return 0;
++
++	of_node_put(np);
++
+ 	ret = platform_driver_register(&arm_smmu_driver);
+ 	if (ret)
+ 		return ret;
+-- 
+2.1.3
