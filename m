@@ -1,8 +1,8 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v6 10/12] ARM: tegra: Enable IOMMU for display controllers on
-	Tegra114
-Date: Fri,  7 Nov 2014 17:01:01 +0100
-Message-ID: <1415376063-17205-11-git-send-email-thierry.reding@gmail.com>
+Subject: [PATCH v6 11/12] ARM: tegra: Enable IOMMU for display controllers on
+	Tegra124
+Date: Fri,  7 Nov 2014 17:01:02 +0100
+Message-ID: <1415376063-17205-12-git-send-email-thierry.reding@gmail.com>
 References: <1415376063-17205-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -25,43 +25,43 @@ List-Id: iommu@lists.linux-foundation.org
 From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
 Add iommus properties to the device tree nodes for the two display
-controllers found on Tegra114. This will allow the display controllers
+controllers found on Tegra124. This will allow the display controllers
 to map physically non-contiguous buffers to I/O virtual contiguous
 address spaces so that they can be used for scan-out.
 
 Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- arch/arm/boot/dts/tegra114.dtsi | 5 +++++
+ arch/arm/boot/dts/tegra124.dtsi | 5 +++++
  1 file changed, 5 insertions(+)
 
-diff --git a/arch/arm/boot/dts/tegra114.dtsi b/arch/arm/boot/dts/tegra114.dtsi
-index 2c26b07c11ed..c8c3b6438b4d 100644
---- a/arch/arm/boot/dts/tegra114.dtsi
-+++ b/arch/arm/boot/dts/tegra114.dtsi
+diff --git a/arch/arm/boot/dts/tegra124.dtsi b/arch/arm/boot/dts/tegra124.dtsi
+index afe9c6a34709..652f595784e1 100644
+--- a/arch/arm/boot/dts/tegra124.dtsi
++++ b/arch/arm/boot/dts/tegra124.dtsi
 @@ -1,5 +1,6 @@
- #include <dt-bindings/clock/tegra114-car.h>
+ #include <dt-bindings/clock/tegra124-car.h>
  #include <dt-bindings/gpio/tegra-gpio.h>
-+#include <dt-bindings/memory/tegra114-mc.h>
++#include <dt-bindings/memory/tegra124-mc.h>
  #include <dt-bindings/pinctrl/pinctrl-tegra.h>
+ #include <dt-bindings/pinctrl/pinctrl-tegra-xusb.h>
  #include <dt-bindings/interrupt-controller/arm-gic.h>
- 
-@@ -57,6 +58,8 @@
+@@ -102,6 +103,8 @@
  			resets = <&tegra_car 27>;
  			reset-names = "dc";
  
 +			iommus = <&mc TEGRA_SWGROUP_DC>;
 +
  			nvidia,head = <0>;
+ 		};
  
- 			rgb {
-@@ -74,6 +77,8 @@
+@@ -115,6 +118,8 @@
  			resets = <&tegra_car 26>;
  			reset-names = "dc";
  
 +			iommus = <&mc TEGRA_SWGROUP_DCB>;
 +
  			nvidia,head = <1>;
+ 		};
  
- 			rgb {
 -- 
 2.1.3
