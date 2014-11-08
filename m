@@ -1,7 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part3 v3 22/38] x86, irq: Kill irq_cfg.irq_remapped
-Date: Sun,  9 Nov 2014 02:13:22 +0800
-Message-ID: <1415470418-10874-23-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part3 v3 23/38] iommu/vt-d: Move struct irq_2_iommu into
+	intel_irq_remapping.c
+Date: Sun,  9 Nov 2014 02:13:23 +0800
+Message-ID: <1415470418-10874-24-git-send-email-jiang.liu@linux.intel.com>
 References: <1415470418-10874-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,58 +22,59 @@ To: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.o
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Now there is no user of irq_cfg.irq_remapped, so kill it.
+Now only intel_irq_remapping.c access irq_2_iommu, so move it from
+hw_irq.h into intel_irq_remapping.c.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- arch/x86/include/asm/hw_irq.h       |    1 -
- drivers/iommu/amd_iommu.c           |    1 -
- drivers/iommu/intel_irq_remapping.c |    2 --
- 3 files changed, 4 deletions(-)
+ arch/x86/include/asm/hw_irq.h       |    9 ---------
+ drivers/iommu/intel_irq_remapping.c |    7 +++++++
+ 2 files changed, 7 insertions(+), 9 deletions(-)
 
 diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
-index a007dae5feaf..7ad26bb42e57 100644
+index 7ad26bb42e57..8dd38c205719 100644
 --- a/arch/x86/include/asm/hw_irq.h
 +++ b/arch/x86/include/asm/hw_irq.h
-@@ -191,7 +191,6 @@ struct irq_cfg {
- 	u8			vector;
+@@ -95,14 +95,6 @@ extern void trace_call_function_single_interrupt(void);
+ #endif /* CONFIG_TRACING */
+ 
+ #ifdef CONFIG_IRQ_REMAP
+-/* Intel specific interrupt remapping information */
+-struct irq_2_iommu {
+-	struct intel_iommu *iommu;
+-	u16 irte_index;
+-	u16 sub_handle;
+-	u8  irte_mask;
+-};
+-
+ /* AMD specific interrupt remapping information */
+ struct irq_2_irte {
+ 	u16 devid; /* Device ID for IRTE table */
+@@ -192,7 +184,6 @@ struct irq_cfg {
  	u8			move_in_progress : 1;
  #ifdef CONFIG_IRQ_REMAP
--	u8			remapped : 1;
  	union {
- 		struct irq_2_iommu irq_2_iommu;
+-		struct irq_2_iommu irq_2_iommu;
  		struct irq_2_irte  irq_2_irte;
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 704c18e3eb63..2f76656a88ce 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -4129,7 +4129,6 @@ static void irq_remapping_prepare_irte(struct amd_ir_data *data,
- 	struct msi_msg *msg = &data->msi_entry;
- 	struct IO_APIC_route_entry *entry;
- 
--	irq_cfg->remapped = 1;
- 	data->irq_2_irte.devid = devid;
- 	data->irq_2_irte.index = index + sub_handle;
- 
+ 	};
+ #endif
 diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 0040d7899285..5e3e529e8d88 100644
+index 5e3e529e8d88..5bd9e6570099 100644
 --- a/drivers/iommu/intel_irq_remapping.c
 +++ b/drivers/iommu/intel_irq_remapping.c
-@@ -67,7 +67,6 @@ static int alloc_irte(struct intel_iommu *iommu, int irq,
- 		      struct irq_2_iommu *irq_iommu, u16 count)
- {
- 	struct ir_table *table = iommu->ir_table;
--	struct irq_cfg *cfg = irq_cfg(irq);
- 	unsigned int mask = 0;
- 	unsigned long flags;
- 	int index;
-@@ -94,7 +93,6 @@ static int alloc_irte(struct intel_iommu *iommu, int irq,
- 	if (index < 0) {
- 		pr_warn("IR%d: can't allocate an IRTE\n", iommu->seq_id);
- 	} else {
--		cfg->remapped = 1;
- 		irq_iommu->iommu = iommu;
- 		irq_iommu->irte_index =  index;
- 		irq_iommu->sub_handle = 0;
+@@ -32,6 +32,13 @@ struct hpet_scope {
+ 	unsigned int devfn;
+ };
+ 
++struct irq_2_iommu {
++	struct intel_iommu *iommu;
++	u16 irte_index;
++	u16 sub_handle;
++	u8  irte_mask;
++};
++
+ struct intel_ir_data {
+ 	struct irq_2_iommu			irq_2_iommu;
+ 	struct irte				irte_entry;
 -- 
 1.7.10.4
