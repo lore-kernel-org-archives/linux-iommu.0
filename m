@@ -1,8 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part3 v3 24/38] iommu/amd: Move struct irq_2_irte into
-	amd_iommu.c
-Date: Sun,  9 Nov 2014 02:13:24 +0800
-Message-ID: <1415470418-10874-25-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part3 v3 33/38] x86,
+	irq: Move check of cfg->move_in_progress into send_cleanup_vector()
+Date: Sun,  9 Nov 2014 02:13:33 +0800
+Message-ID: <1415470418-10874-34-git-send-email-jiang.liu@linux.intel.com>
 References: <1415470418-10874-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,61 +22,93 @@ To: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.o
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Now only amd_iommu.c access irq_2_irte, so move it from hw_irq.h into
-amd_iommu.c.
+Move check of cfg->move_in_progress into send_cleanup_vector() to
+prepare for simplifying struct irq_cfg.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- arch/x86/include/asm/hw_irq.h |   13 -------------
- drivers/iommu/amd_iommu.c     |    5 +++++
- 2 files changed, 5 insertions(+), 13 deletions(-)
+ arch/x86/kernel/apic/vector.c       |   10 ++++++++--
+ arch/x86/platform/uv/uv_irq.c       |    3 +--
+ drivers/iommu/amd_iommu.c           |    3 +--
+ drivers/iommu/intel_irq_remapping.c |    3 +--
+ 4 files changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
-index 8dd38c205719..a086893fa710 100644
---- a/arch/x86/include/asm/hw_irq.h
-+++ b/arch/x86/include/asm/hw_irq.h
-@@ -94,14 +94,6 @@ extern void trace_call_function_single_interrupt(void);
- #define trace_kvm_posted_intr_ipi kvm_posted_intr_ipi
- #endif /* CONFIG_TRACING */
- 
--#ifdef CONFIG_IRQ_REMAP
--/* AMD specific interrupt remapping information */
--struct irq_2_irte {
--	u16 devid; /* Device ID for IRTE table */
--	u16 index; /* Index into IRTE table*/
--};
--#endif	/* CONFIG_IRQ_REMAP */
--
- struct irq_domain;
- 
- #ifdef	CONFIG_X86_LOCAL_APIC
-@@ -182,11 +174,6 @@ struct irq_cfg {
- 	unsigned int		dest_apicid;
- 	u8			vector;
- 	u8			move_in_progress : 1;
--#ifdef CONFIG_IRQ_REMAP
--	union {
--		struct irq_2_irte  irq_2_irte;
--	};
--#endif
- 	union {
- #ifdef CONFIG_X86_IO_APIC
- 		struct {
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 2f76656a88ce..236cc7ee0b85 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3855,6 +3855,11 @@ union irte {
- 	} fields;
+diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
+index d56b4611c75a..76c82170f04f 100644
+--- a/arch/x86/kernel/apic/vector.c
++++ b/arch/x86/kernel/apic/vector.c
+@@ -495,7 +495,7 @@ static struct irq_chip vector_chip = {
  };
  
-+struct irq_2_irte {
-+	u16 devid; /* Device ID for IRTE table */
-+	u16 index; /* Index into IRTE table*/
-+};
+ #ifdef CONFIG_SMP
+-void send_cleanup_vector(struct irq_cfg *cfg)
++static void __send_cleanup_vector(struct irq_cfg *cfg)
+ {
+ 	cpumask_var_t cleanup_mask;
+ 
+@@ -513,6 +513,12 @@ void send_cleanup_vector(struct irq_cfg *cfg)
+ 	cfg->move_in_progress = 0;
+ }
+ 
++void send_cleanup_vector(struct irq_cfg *cfg)
++{
++	if (cfg->move_in_progress)
++		__send_cleanup_vector(cfg);
++}
 +
- struct amd_ir_data {
- 	struct irq_2_irte			irq_2_irte;
- 	union irte				irte_entry;
+ asmlinkage __visible void smp_irq_move_cleanup_interrupt(void)
+ {
+ 	unsigned vector, me;
+@@ -583,7 +589,7 @@ static void __irq_complete_move(struct irq_cfg *cfg, unsigned vector)
+ 	me = smp_processor_id();
+ 
+ 	if (vector == cfg->vector && cpumask_test_cpu(me, cfg->domain))
+-		send_cleanup_vector(cfg);
++		__send_cleanup_vector(cfg);
+ }
+ 
+ void irq_complete_move(struct irq_cfg *cfg)
+diff --git a/arch/x86/platform/uv/uv_irq.c b/arch/x86/platform/uv/uv_irq.c
+index 854e610a085f..66d531e71c9a 100644
+--- a/arch/x86/platform/uv/uv_irq.c
++++ b/arch/x86/platform/uv/uv_irq.c
+@@ -63,8 +63,7 @@ uv_set_irq_affinity(struct irq_data *data, const struct cpumask *mask,
+ 	ret = parent->chip->irq_set_affinity(parent, mask, force);
+ 	if (ret >= 0) {
+ 		uv_program_mmr(cfg, data->chip_data);
+-		if (cfg->move_in_progress)
+-			send_cleanup_vector(cfg);
++		send_cleanup_vector(cfg);
+ 	}
+ 
+ 	return ret;
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 236cc7ee0b85..02cb3637eb43 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -4331,8 +4331,7 @@ static int amd_ir_set_affinity(struct irq_data *data,
+ 	 * at the new destination. So, time to cleanup the previous
+ 	 * vector allocation.
+ 	 */
+-	if (cfg->move_in_progress)
+-		send_cleanup_vector(cfg);
++	send_cleanup_vector(cfg);
+ 
+ 	return IRQ_SET_MASK_OK_DONE;
+ }
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 5bd9e6570099..d3bfe3528504 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -947,8 +947,7 @@ intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
+ 	 * at the new destination. So, time to cleanup the previous
+ 	 * vector allocation.
+ 	 */
+-	if (cfg->move_in_progress)
+-		send_cleanup_vector(cfg);
++	send_cleanup_vector(cfg);
+ 
+ 	return IRQ_SET_MASK_OK_DONE;
+ }
 -- 
 1.7.10.4
