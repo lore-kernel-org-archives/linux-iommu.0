@@ -1,14 +1,11 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part3 V7 8/8] pci, ACPI,
-	iommu: Enhance pci_root to support DMAR device hotplug
-Date: Sun,  9 Nov 2014 22:48:03 +0800
-Message-ID: <1415544483-27990-9-git-send-email-jiang.liu@linux.intel.com>
-References: <1415544483-27990-1-git-send-email-jiang.liu@linux.intel.com>
+From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH 00/13] Add VT-d Posted-Interrupts support for KVM
+Date: Mon, 10 Nov 2014 14:26:39 +0800
+Message-ID: <1415600812-27773-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1415544483-27990-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,87 +15,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Len Brown <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hotplug-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+To: gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Finally enhance pci_root driver to support DMAR device hotplug when
-hot-plugging PCI host bridges.
+VT-d Posted-Interrupts is an enhancement to CPU side Posted-Interrupt.
+With VT-d Posted-Interrupts enabled, external interrupts from
+direct-assigned devices can be delivered to guests without VMM
+intervention when guest is running in non-root mode.
 
-Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Reviewed-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
----
- drivers/acpi/pci_root.c |   16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+You can find the VT-d Posted-Interrtups Spec. in the following URL:
+http://www.intel.com/content/www/us/en/intelligent-systems/intel-technology/vt-directed-io-spec.html
 
-diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
-index cd4de7e038ea..c6bcb8c719d8 100644
---- a/drivers/acpi/pci_root.c
-+++ b/drivers/acpi/pci_root.c
-@@ -33,6 +33,7 @@
- #include <linux/pci.h>
- #include <linux/pci-acpi.h>
- #include <linux/pci-aspm.h>
-+#include <linux/dmar.h>
- #include <linux/acpi.h>
- #include <linux/slab.h>
- #include <linux/dmi.h>
-@@ -525,6 +526,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
- 	struct acpi_pci_root *root;
- 	acpi_handle handle = device->handle;
- 	int no_aspm = 0, clear_aspm = 0;
-+	bool hotadd = system_state != SYSTEM_BOOTING;
- 
- 	root = kzalloc(sizeof(struct acpi_pci_root), GFP_KERNEL);
- 	if (!root)
-@@ -571,6 +573,11 @@ static int acpi_pci_root_add(struct acpi_device *device,
- 	strcpy(acpi_device_class(device), ACPI_PCI_ROOT_CLASS);
- 	device->driver_data = root;
- 
-+	if (hotadd && dmar_device_add(handle)) {
-+		result = -ENXIO;
-+		goto end;
-+	}
-+
- 	pr_info(PREFIX "%s [%s] (domain %04x %pR)\n",
- 	       acpi_device_name(device), acpi_device_bid(device),
- 	       root->segment, &root->secondary);
-@@ -597,7 +604,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
- 			root->segment, (unsigned int)root->secondary.start);
- 		device->driver_data = NULL;
- 		result = -ENODEV;
--		goto end;
-+		goto remove_dmar;
- 	}
- 
- 	if (clear_aspm) {
-@@ -611,7 +618,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
- 	if (device->wakeup.flags.run_wake)
- 		device_set_run_wake(root->bus->bridge, true);
- 
--	if (system_state != SYSTEM_BOOTING) {
-+	if (hotadd) {
- 		pcibios_resource_survey_bus(root->bus);
- 		pci_assign_unassigned_root_bus_resources(root->bus);
- 	}
-@@ -621,6 +628,9 @@ static int acpi_pci_root_add(struct acpi_device *device,
- 	pci_unlock_rescan_remove();
- 	return 1;
- 
-+remove_dmar:
-+	if (hotadd)
-+		dmar_device_remove(handle);
- end:
- 	kfree(root);
- 	return result;
-@@ -639,6 +649,8 @@ static void acpi_pci_root_remove(struct acpi_device *device)
- 
- 	pci_remove_root_bus(root->bus);
- 
-+	dmar_device_remove(device->handle);
-+
- 	pci_unlock_rescan_remove();
- 
- 	kfree(root);
--- 
-1.7.10.4
+Feng Wu (13):
+  iommu/vt-d: VT-d Posted-Interrupts feature detection
+  KVM: Initialize VT-d Posted-Interrtups Descriptor
+  KVM: Add KVM_CAP_PI to detect VT-d Posted-Interrtups
+  iommu/vt-d: Adjust 'struct irte' to better suit for VT-d
+    Posted-Interrupts
+  KVM: Update IRTE according to guest interrupt configuration changes
+  KVM: Add some helper functions for Posted-Interrupts
+  x86, irq: Define a global vector for VT-d Posted-Interrupts
+  KVM: Update Posted-Interrupts descriptor during VCPU scheduling
+  KVM: Change NDST field after VCPU scheduling
+  KVM: Add the handler for Wake-up Vector
+  KVM: Suppress posted-interrupt when 'SN' is set
+  iommu/vt-d: No need to migrating irq for VT-d Posted-Interrtups
+  iommu/vt-d: Add a command line parameter for VT-d posted-interrupts
+
+ arch/x86/include/asm/entry_arch.h    |    2 +
+ arch/x86/include/asm/hardirq.h       |    1 +
+ arch/x86/include/asm/hw_irq.h        |    2 +
+ arch/x86/include/asm/irq_remapping.h |    7 +
+ arch/x86/include/asm/irq_vectors.h   |    1 +
+ arch/x86/include/asm/kvm_host.h      |    9 ++
+ arch/x86/kernel/apic/apic.c          |    1 +
+ arch/x86/kernel/entry_64.S           |    2 +
+ arch/x86/kernel/irq.c                |   27 ++++
+ arch/x86/kernel/irqinit.c            |    2 +
+ arch/x86/kvm/vmx.c                   |  257 +++++++++++++++++++++++++++++++++-
+ arch/x86/kvm/x86.c                   |   53 ++++++-
+ drivers/iommu/amd_iommu.c            |    6 +
+ drivers/iommu/intel_irq_remapping.c  |   83 +++++++++--
+ drivers/iommu/irq_remapping.c        |   20 +++
+ drivers/iommu/irq_remapping.h        |    8 +
+ include/linux/dmar.h                 |   30 ++++-
+ include/linux/intel-iommu.h          |    1 +
+ include/linux/kvm_host.h             |   25 ++++
+ include/uapi/linux/kvm.h             |    2 +
+ virt/kvm/assigned-dev.c              |  141 +++++++++++++++++++
+ virt/kvm/irq_comm.c                  |    4 +-
+ virt/kvm/irqchip.c                   |   11 --
+ virt/kvm/kvm_main.c                  |   14 ++
+ 24 files changed, 667 insertions(+), 42 deletions(-)
