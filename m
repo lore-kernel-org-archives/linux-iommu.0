@@ -1,11 +1,14 @@
-From: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH] iommu/amd: fix accounting of device_state
-Date: Mon, 10 Nov 2014 12:21:39 +0200
-Message-ID: <1415614899-12602-1-git-send-email-oded.gabbay@amd.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu: Play nice on non-ARM/SMMU systems
+Date: Mon, 10 Nov 2014 17:25:39 +0000
+Message-ID: <20141110172539.GM23942@arm.com>
+References: <1415373978-16203-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1415373978-16203-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,56 +18,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch fixes a bug in the accounting of the device_state.
-In the current code, the device_state was put (decremented) too many times,
-which sometimes lead to the driver getting stuck permanently in
-put_device_state_wait(). That happen because the device_state->count would go
-below zero, which is never supposed to happen.
+On Fri, Nov 07, 2014 at 03:26:18PM +0000, Thierry Reding wrote:
+> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> 
+> Currently the driver registers IOMMU bus operations for all busses even
+> if no ARM SMMU is present on a system. Depending on the driver probing
+> order this prevents the driver for the real IOMMU to register itself as
+> the bus-wide IOMMU.
+> 
+> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/iommu/arm-smmu.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 60558f794922..e154826d8b1d 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -2072,8 +2072,20 @@ static struct platform_driver arm_smmu_driver = {
+>  
+>  static int __init arm_smmu_init(void)
+>  {
+> +	struct device_node *np;
+>  	int ret;
+>  
+> +	/*
+> +	 * Play nice with systems that don't have an ARM SMMU by checking that
+> +	 * an ARM SMMU exists in the system before proceeding with the driver
+> +	 * and IOMMU bus operation registration.
+> +	 */
+> +	np = of_find_matching_node(NULL, arm_smmu_of_match);
+> +	if (!np)
+> +		return 0;
+> +
+> +	of_node_put(np);
+> +
 
-The root cause is that the device_state was decremented in put_pasid_state()
-and put_pasid_state_wait() but also in all the functions that call those
-functions. Therefore, the device_state was decremented twice in each of these
-code paths.
+Hopefully, this will be solved shortly by the of_iommu_configure series I've
+been dragging my feet with recently. However, since that's not done yet,
+this looks like the best thing for now, even if it's a bit of a bodge.
 
-The fix is to decouple the device_state accounting from the pasid_state
-accounting - remove the call to put_device_state() from the
-put_pasid_state() and the put_pasid_state_wait())
+Have you checked/updated other IOMMMU drivers too?
 
-Signed-off-by: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
----
- drivers/iommu/amd_iommu_v2.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index 0d387db..7e0614b 100644
---- a/drivers/iommu/amd_iommu_v2.c
-+++ b/drivers/iommu/amd_iommu_v2.c
-@@ -272,10 +272,8 @@ static void free_pasid_state(struct pasid_state *pasid_state)
- 
- static void put_pasid_state(struct pasid_state *pasid_state)
- {
--	if (atomic_dec_and_test(&pasid_state->count)) {
--		put_device_state(pasid_state->device_state);
-+	if (atomic_dec_and_test(&pasid_state->count))
- 		wake_up(&pasid_state->wq);
--	}
- }
- 
- static void put_pasid_state_wait(struct pasid_state *pasid_state)
-@@ -284,9 +282,7 @@ static void put_pasid_state_wait(struct pasid_state *pasid_state)
- 
- 	prepare_to_wait(&pasid_state->wq, &wait, TASK_UNINTERRUPTIBLE);
- 
--	if (atomic_dec_and_test(&pasid_state->count))
--		put_device_state(pasid_state->device_state);
--	else
-+	if (!atomic_dec_and_test(&pasid_state->count))
- 		schedule();
- 
- 	finish_wait(&pasid_state->wq, &wait);
--- 
-1.9.1
+Will
