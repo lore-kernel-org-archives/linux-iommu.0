@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 01/13] iommu/vt-d: VT-d Posted-Interrupts feature detection
-Date: Mon, 10 Nov 2014 14:26:40 +0800
-Message-ID: <1415600812-27773-2-git-send-email-feng.wu@intel.com>
+Subject: [PATCH 02/13] KVM: Initialize VT-d Posted-Interrtups Descriptor
+Date: Mon, 10 Nov 2014 14:26:41 +0800
+Message-ID: <1415600812-27773-3-git-send-email-feng.wu@intel.com>
 References: <1415600812-27773-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,94 +21,131 @@ To: gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pbonzini-H+wXaHxf7aLQT0dZR+Alf
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-VT-d Posted-Interrupts is an enhancement to CPU side Posted-Interrupt.
-With VT-d Posted-Interrupts enabled, external interrupts from
-direct-assigned devices can be delivered to guests without VMM
-intervention when guest is running in non-root mode.
-
-This patch adds feature detection logic for VT-d posted-interrupt.
+This patch initialize the VT-d Posted-interrupt Descritpor.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c |   13 +++++++++++++
- drivers/iommu/irq_remapping.c       |    4 ++++
- drivers/iommu/irq_remapping.h       |    5 +++++
- include/linux/intel-iommu.h         |    1 +
- 4 files changed, 23 insertions(+), 0 deletions(-)
+ arch/x86/include/asm/irq_remapping.h |    1 +
+ arch/x86/kernel/apic/apic.c          |    1 +
+ arch/x86/kvm/vmx.c                   |   56 ++++++++++++++++++++++++++++++++-
+ 3 files changed, 56 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 7c80661..f99f0f1 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -580,6 +580,19 @@ static int __init intel_irq_remapping_supported(void)
- 		if (!ecap_ir_support(iommu->ecap))
- 			return 0;
+diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
+index b7747c4..a3cc437 100644
+--- a/arch/x86/include/asm/irq_remapping.h
++++ b/arch/x86/include/asm/irq_remapping.h
+@@ -57,6 +57,7 @@ extern bool setup_remapped_irq(int irq,
+ 			       struct irq_chip *chip);
  
-+	/* VT-d posted-interrupt feature detection*/
-+	if (disable_irq_post == 0)
-+		for_each_drhd_unit(drhd) {
-+			struct intel_iommu *iommu = drhd->iommu;
+ void irq_remap_modify_chip_defaults(struct irq_chip *chip);
++extern int irq_post_enabled;
+ 
+ #else  /* CONFIG_IRQ_REMAP */
+ 
+diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
+index ba6cc04..987408d 100644
+--- a/arch/x86/kernel/apic/apic.c
++++ b/arch/x86/kernel/apic/apic.c
+@@ -162,6 +162,7 @@ __setup("apicpmtimer", setup_apicpmtimer);
+ #endif
+ 
+ int x2apic_mode;
++EXPORT_SYMBOL_GPL(x2apic_mode);
+ #ifdef CONFIG_X86_X2APIC
+ /* x2apic enabled before OS handover */
+ int x2apic_preenabled;
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index 3e556c6..a4670d3 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -45,6 +45,7 @@
+ #include <asm/perf_event.h>
+ #include <asm/debugreg.h>
+ #include <asm/kexec.h>
++#include <asm/irq_remapping.h>
+ 
+ #include "trace.h"
+ 
+@@ -408,13 +409,32 @@ struct nested_vmx {
+ };
+ 
+ #define POSTED_INTR_ON  0
++#define POSTED_INTR_SN  1
 +
-+			if (!cap_pi_support(iommu->cap)) {
-+				irq_post_enabled = 0;
-+				disable_irq_post = 1;
-+				break;
-+			}
-+			irq_post_enabled = 1;
-+		}
+ /* Posted-Interrupt Descriptor */
+ struct pi_desc {
+ 	u32 pir[8];     /* Posted interrupt requested */
+-	u32 control;	/* bit 0 of control is outstanding notification bit */
+-	u32 rsvd[7];
++	union {
++		struct {
++			u64	on	: 1,
++				sn	: 1,
++				rsvd_1	: 13,
++				ndm	: 1,
++				nv	: 8,
++				rsvd_2	: 8,
++				ndst	: 32;
++		};
++		u64 control;
++	};
++	u32 rsvd[6];
+ } __aligned(64);
+ 
++static void pi_clear_sn(struct pi_desc *pi_desc)
++{
++	return clear_bit(POSTED_INTR_SN,
++			(unsigned long *)&pi_desc->control);
++}
 +
- 	return 1;
+ static bool pi_test_and_set_on(struct pi_desc *pi_desc)
+ {
+ 	return test_and_set_bit(POSTED_INTR_ON,
+@@ -4396,6 +4416,33 @@ static void ept_set_mmio_spte_mask(void)
+ 	kvm_mmu_set_mmio_spte_mask((0x3ull << 62) | 0x6ull);
  }
  
-diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index 74a1767..2f8ee00 100644
---- a/drivers/iommu/irq_remapping.c
-+++ b/drivers/iommu/irq_remapping.c
-@@ -23,6 +23,10 @@ int irq_remap_broken;
- int disable_sourceid_checking;
- int no_x2apic_optout;
- 
-+int disable_irq_post = 1;
-+int irq_post_enabled = 0;
-+EXPORT_SYMBOL_GPL(irq_post_enabled);
++static bool pi_desc_init(struct vcpu_vmx *vmx)
++{
++	unsigned int dest;
 +
- static struct irq_remap_ops *remap_ops;
- 
- static int msi_alloc_remapped_irq(struct pci_dev *pdev, int irq, int nvec);
-diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
-index fde250f..7bb5913 100644
---- a/drivers/iommu/irq_remapping.h
-+++ b/drivers/iommu/irq_remapping.h
-@@ -37,6 +37,9 @@ extern int disable_sourceid_checking;
- extern int no_x2apic_optout;
- extern int irq_remapping_enabled;
- 
-+extern int disable_irq_post;
-+extern int irq_post_enabled;
++	if (irq_post_enabled == 0)
++		return true;
 +
- struct irq_remap_ops {
- 	/* Check whether Interrupt Remapping is supported */
- 	int (*supported)(void);
-@@ -91,6 +94,8 @@ extern struct irq_remap_ops amd_iommu_irq_ops;
- #define irq_remapping_enabled 0
- #define disable_irq_remap     1
- #define irq_remap_broken      0
-+#define disable_irq_post      1
-+#define irq_post_enabled      0
- 
- #endif /* CONFIG_IRQ_REMAP */
- 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index a65208a..5b1a124 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -87,6 +87,7 @@ static inline void dmar_writeq(void __iomem *addr, u64 val)
++	/*
++	 * Initialize Posted-Interrupt Descriptor
++	 */
++
++	pi_clear_sn(&vmx->pi_desc);
++	vmx->pi_desc.nv = POSTED_INTR_VECTOR;
++
++	/* Physical mode for Notificaiton Event */
++	vmx->pi_desc.ndm = 0;
++	dest = cpu_physical_id(vmx->vcpu.cpu);
++
++	if (x2apic_mode)
++		vmx->pi_desc.ndst = dest;
++	else
++		vmx->pi_desc.ndst = (dest << 8) & 0xFF00;
++
++	return true;
++}
++
++
  /*
-  * Decoding Capability Register
+  * Sets up the vmcs for emulated real mode.
   */
-+#define cap_pi_support(c)	(((c) >> 59) & 1)
- #define cap_read_drain(c)	(((c) >> 55) & 1)
- #define cap_write_drain(c)	(((c) >> 54) & 1)
- #define cap_max_amask_val(c)	(((c) >> 48) & 0x3f)
+@@ -4439,6 +4486,11 @@ static int vmx_vcpu_setup(struct vcpu_vmx *vmx)
+ 
+ 		vmcs_write64(POSTED_INTR_NV, POSTED_INTR_VECTOR);
+ 		vmcs_write64(POSTED_INTR_DESC_ADDR, __pa((&vmx->pi_desc)));
++
++		if (!pi_desc_init(vmx)) {
++			printk(KERN_ERR "Initialize PI descriptor error!\n");
++			return 1;
++		}
+ 	}
+ 
+ 	if (ple_gap) {
 -- 
 1.7.1
