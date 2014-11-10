@@ -1,131 +1,60 @@
-From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 04/13] iommu/vt-d: Adjust 'struct irte' to better suit for
-	VT-d Posted-Interrupts
-Date: Mon, 10 Nov 2014 14:26:43 +0800
-Message-ID: <1415600812-27773-5-git-send-email-feng.wu@intel.com>
-References: <1415600812-27773-1-git-send-email-feng.wu@intel.com>
+From: Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v6 00/12] NVIDIA Tegra memory controller and IOMMU support
+Date: Mon, 10 Nov 2014 18:53:30 +0900
+Message-ID: <54608B1A.3010001@nvidia.com>
+References: <1415376063-17205-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1415600812-27773-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1415376063-17205-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, David Riley <davidriley-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Peter De Schrijver <pdeschrijver-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adjusts the definition of 'struct irte', so that we can
-add the VT-d Posted-Interrtups format in this structure later.
+On 11/08/2014 01:00 AM, Thierry Reding wrote:
+> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+>
+> This is the sixth installment in the Tegra IOMMU and memory controller
+> support series. This version addresses the final outstanding comments from
+> Olof about using proper Kconfig symbols to track the dependencies. It also
+> splits up the driver into one part that implements the memory controller
+> only and a second part that implements the SMMU. This plays nicely with
+> the new Kconfig options introduced.
+>
+> Patch 1 is a preparatory patch that exposes the memory controller clock.
+>
+> Patches 2 and 3 is a pair of precursory patches needed to make this all
+> work on 64-bit ARM in the future.
+>
+> The device tree binding for the Tegra memory controller is added in patch
+> 4 and patch 5 is the bulk of the series that move the existing memory
+> controller and IOMMU drivers into the new unified driver that supports
+> Tegra30, Tegra114 and Tegra124.
+>
+> Patches 6, 7 and 8 add the DT nodes for the memory controller/IOMMU on
+> Tegra30, Tegra114 and Tegra124.
+>
+> IOMMU support is enabled for the display controllers in patches 9, 10 and
+> 11. This will allow the display controllers to have their memory accesses
+> translated by the SMMU, which will enable non-contiguous buffers to be
+> used for scan-out.
+>
+> Finally patch 12 also adds support for Tegra132. It is kept separate because
+> none of the other Tegra132 patches have been merged yet, but I've included
+> it here for completeness.
+>
+> Because the patches are rather intertwined, I'd like to merge them all via
+> the Tegra tree. For that I'll need Acked-bys from Mike, Russell and Joerg
+> on patches 1, 2 and 3, and 5, respectively.
 
-Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
----
- drivers/iommu/intel_irq_remapping.c |   35 +++++++++++++++++++----------------
- include/linux/dmar.h                |    4 ++--
- 2 files changed, 21 insertions(+), 18 deletions(-)
+FWIW,
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index f99f0f1..776da10 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -310,9 +310,9 @@ static void set_irte_sid(struct irte *irte, unsigned int svt,
- {
- 	if (disable_sourceid_checking)
- 		svt = SVT_NO_VERIFY;
--	irte->svt = svt;
--	irte->sq = sq;
--	irte->sid = sid;
-+	irte->irq_remap_high.svt = svt;
-+	irte->irq_remap_high.sq = sq;
-+	irte->irq_remap_high.sid = sid;
- }
- 
- static int set_ioapic_sid(struct irte *irte, int apic)
-@@ -917,8 +917,8 @@ static void prepare_irte(struct irte *irte, int vector,
- {
- 	memset(irte, 0, sizeof(*irte));
- 
--	irte->present = 1;
--	irte->dst_mode = apic->irq_dest_mode;
-+	irte->irq_remap_low.present = 1;
-+	irte->irq_remap_low.dst_mode = apic->irq_dest_mode;
- 	/*
- 	 * Trigger mode in the IRTE will always be edge, and for IO-APIC, the
- 	 * actual level or edge trigger will be setup in the IO-APIC
-@@ -926,11 +926,11 @@ static void prepare_irte(struct irte *irte, int vector,
- 	 * For more details, see the comments (in io_apic.c) explainig IO-APIC
- 	 * irq migration in the presence of interrupt-remapping.
- 	*/
--	irte->trigger_mode = 0;
--	irte->dlvry_mode = apic->irq_delivery_mode;
--	irte->vector = vector;
--	irte->dest_id = IRTE_DEST(dest);
--	irte->redir_hint = 1;
-+	irte->irq_remap_low.trigger_mode = 0;
-+	irte->irq_remap_low.dlvry_mode = apic->irq_delivery_mode;
-+	irte->irq_remap_low.vector = vector;
-+	irte->irq_remap_low.dest_id = IRTE_DEST(dest);
-+	irte->irq_remap_low.redir_hint = 1;
- }
- 
- static int intel_setup_ioapic_entry(int irq,
-@@ -973,10 +973,13 @@ static int intel_setup_ioapic_entry(int irq,
- 		"Redir_hint:%d Trig_Mode:%d Dlvry_Mode:%X "
- 		"Avail:%X Vector:%02X Dest:%08X "
- 		"SID:%04X SQ:%X SVT:%X)\n",
--		attr->ioapic, irte.present, irte.fpd, irte.dst_mode,
--		irte.redir_hint, irte.trigger_mode, irte.dlvry_mode,
--		irte.avail, irte.vector, irte.dest_id,
--		irte.sid, irte.sq, irte.svt);
-+		attr->ioapic, irte.irq_remap_low.present,
-+		irte.irq_remap_low.fpd, irte.irq_remap_low.dst_mode,
-+		irte.irq_remap_low.redir_hint, irte.irq_remap_low.trigger_mode,
-+		irte.irq_remap_low.dlvry_mode, irte.irq_remap_low.avail,
-+		irte.irq_remap_low.vector, irte.irq_remap_low.dest_id,
-+		irte.irq_remap_high.sid, irte.irq_remap_high.sq,
-+		irte.irq_remap_high.svt);
- 
- 	entry = (struct IR_IO_APIC_route_entry *)route_entry;
- 	memset(entry, 0, sizeof(*entry));
-@@ -1046,8 +1049,8 @@ intel_ioapic_set_affinity(struct irq_data *data, const struct cpumask *mask,
- 		return err;
- 	}
- 
--	irte.vector = cfg->vector;
--	irte.dest_id = IRTE_DEST(dest);
-+	irte.irq_remap_low.vector = cfg->vector;
-+	irte.irq_remap_low.dest_id = IRTE_DEST(dest);
- 
- 	/*
- 	 * Atomically updates the IRTE with the new destination, vector
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 593fff9..8be5d42 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -159,7 +159,7 @@ struct irte {
- 				vector		: 8,
- 				__reserved_2	: 8,
- 				dest_id		: 32;
--		};
-+		} irq_remap_low;
- 		__u64 low;
- 	};
- 
-@@ -169,7 +169,7 @@ struct irte {
- 				sq		: 2,
- 				svt		: 2,
- 				__reserved_3	: 44;
--		};
-+		} irq_remap_high;
- 		__u64 high;
- 	};
- };
--- 
-1.7.1
+Tested-by: Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+
+Works nicely with both the display and GPU clients, which allows us to 
+remove the need for CMA on Tegra.
+
+Thanks,
+Alex.
