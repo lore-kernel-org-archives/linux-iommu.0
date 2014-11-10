@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 03/13] KVM: Add KVM_CAP_PI to detect VT-d Posted-Interrtups
-Date: Mon, 10 Nov 2014 14:26:42 +0800
-Message-ID: <1415600812-27773-4-git-send-email-feng.wu@intel.com>
+Subject: [PATCH 06/13] KVM: Add some helper functions for Posted-Interrupts
+Date: Mon, 10 Nov 2014 14:26:45 +0800
+Message-ID: <1415600812-27773-7-git-send-email-feng.wu@intel.com>
 References: <1415600812-27773-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,48 +21,42 @@ To: gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pbonzini-H+wXaHxf7aLQT0dZR+Alf
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds KVM_CAP_PI to detect VT-d Posted-Interrtups
-feature for QEMU.
+This patch adds three helper functions to manipulate the Posted-
+Interrtups Decriptor.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/kvm/x86.c       |    4 ++++
- include/uapi/linux/kvm.h |    1 +
- 2 files changed, 5 insertions(+), 0 deletions(-)
+ arch/x86/kvm/vmx.c |   18 ++++++++++++++++++
+ 1 files changed, 18 insertions(+), 0 deletions(-)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 0033df3..b447a98 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -63,6 +63,7 @@
- #include <asm/xcr.h>
- #include <asm/pvclock.h>
- #include <asm/div64.h>
-+#include <asm/irq_remapping.h>
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index ae91b72..f41111f 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -435,6 +435,24 @@ static void pi_clear_sn(struct pi_desc *pi_desc)
+ 			(unsigned long *)&pi_desc->control);
+ }
  
- #define MAX_IO_MSRS 256
- #define KVM_MAX_MCE_BANKS 32
-@@ -2775,6 +2776,9 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
- 	case KVM_CAP_TSC_DEADLINE_TIMER:
- 		r = boot_cpu_has(X86_FEATURE_TSC_DEADLINE_TIMER);
- 		break;
-+	case KVM_CAP_PI:
-+		r = irq_post_enabled;
-+		break;
- 	default:
- 		r = 0;
- 		break;
-diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-index 6076882..7593c52 100644
---- a/include/uapi/linux/kvm.h
-+++ b/include/uapi/linux/kvm.h
-@@ -761,6 +761,7 @@ struct kvm_ppc_smmu_info {
- #define KVM_CAP_PPC_FIXUP_HCALL 103
- #define KVM_CAP_PPC_ENABLE_HCALL 104
- #define KVM_CAP_CHECK_EXTENSION_VM 105
-+#define KVM_CAP_PI 106
- 
- #ifdef KVM_CAP_IRQ_ROUTING
- 
++static void pi_set_sn(struct pi_desc *pi_desc)
++{
++	return set_bit(POSTED_INTR_SN,
++			(unsigned long *)&pi_desc->control);
++}
++
++static int pi_test_on(struct pi_desc *pi_desc)
++{
++	return test_bit(POSTED_INTR_ON,
++			(unsigned long *)&pi_desc->control);
++}
++
++static int pi_test_sn(struct pi_desc *pi_desc)
++{
++	return test_bit(POSTED_INTR_SN,
++			(unsigned long *)&pi_desc->control);
++}
++
+ static bool pi_test_and_set_on(struct pi_desc *pi_desc)
+ {
+ 	return test_and_set_bit(POSTED_INTR_ON,
 -- 
 1.7.1
