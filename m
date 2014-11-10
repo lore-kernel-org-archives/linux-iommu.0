@@ -1,11 +1,13 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 00/13] Add VT-d Posted-Interrupts support for KVM
-Date: Mon, 10 Nov 2014 14:26:39 +0800
-Message-ID: <1415600812-27773-1-git-send-email-feng.wu@intel.com>
+Subject: [PATCH 01/13] iommu/vt-d: VT-d Posted-Interrupts feature detection
+Date: Mon, 10 Nov 2014 14:26:40 +0800
+Message-ID: <1415600812-27773-2-git-send-email-feng.wu@intel.com>
+References: <1415600812-27773-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1415600812-27773-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,47 +26,89 @@ With VT-d Posted-Interrupts enabled, external interrupts from
 direct-assigned devices can be delivered to guests without VMM
 intervention when guest is running in non-root mode.
 
-You can find the VT-d Posted-Interrtups Spec. in the following URL:
-http://www.intel.com/content/www/us/en/intelligent-systems/intel-technology/vt-directed-io-spec.html
+This patch adds feature detection logic for VT-d posted-interrupt.
 
-Feng Wu (13):
-  iommu/vt-d: VT-d Posted-Interrupts feature detection
-  KVM: Initialize VT-d Posted-Interrtups Descriptor
-  KVM: Add KVM_CAP_PI to detect VT-d Posted-Interrtups
-  iommu/vt-d: Adjust 'struct irte' to better suit for VT-d
-    Posted-Interrupts
-  KVM: Update IRTE according to guest interrupt configuration changes
-  KVM: Add some helper functions for Posted-Interrupts
-  x86, irq: Define a global vector for VT-d Posted-Interrupts
-  KVM: Update Posted-Interrupts descriptor during VCPU scheduling
-  KVM: Change NDST field after VCPU scheduling
-  KVM: Add the handler for Wake-up Vector
-  KVM: Suppress posted-interrupt when 'SN' is set
-  iommu/vt-d: No need to migrating irq for VT-d Posted-Interrtups
-  iommu/vt-d: Add a command line parameter for VT-d posted-interrupts
+Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+---
+ drivers/iommu/intel_irq_remapping.c |   13 +++++++++++++
+ drivers/iommu/irq_remapping.c       |    4 ++++
+ drivers/iommu/irq_remapping.h       |    5 +++++
+ include/linux/intel-iommu.h         |    1 +
+ 4 files changed, 23 insertions(+), 0 deletions(-)
 
- arch/x86/include/asm/entry_arch.h    |    2 +
- arch/x86/include/asm/hardirq.h       |    1 +
- arch/x86/include/asm/hw_irq.h        |    2 +
- arch/x86/include/asm/irq_remapping.h |    7 +
- arch/x86/include/asm/irq_vectors.h   |    1 +
- arch/x86/include/asm/kvm_host.h      |    9 ++
- arch/x86/kernel/apic/apic.c          |    1 +
- arch/x86/kernel/entry_64.S           |    2 +
- arch/x86/kernel/irq.c                |   27 ++++
- arch/x86/kernel/irqinit.c            |    2 +
- arch/x86/kvm/vmx.c                   |  257 +++++++++++++++++++++++++++++++++-
- arch/x86/kvm/x86.c                   |   53 ++++++-
- drivers/iommu/amd_iommu.c            |    6 +
- drivers/iommu/intel_irq_remapping.c  |   83 +++++++++--
- drivers/iommu/irq_remapping.c        |   20 +++
- drivers/iommu/irq_remapping.h        |    8 +
- include/linux/dmar.h                 |   30 ++++-
- include/linux/intel-iommu.h          |    1 +
- include/linux/kvm_host.h             |   25 ++++
- include/uapi/linux/kvm.h             |    2 +
- virt/kvm/assigned-dev.c              |  141 +++++++++++++++++++
- virt/kvm/irq_comm.c                  |    4 +-
- virt/kvm/irqchip.c                   |   11 --
- virt/kvm/kvm_main.c                  |   14 ++
- 24 files changed, 667 insertions(+), 42 deletions(-)
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 7c80661..f99f0f1 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -580,6 +580,19 @@ static int __init intel_irq_remapping_supported(void)
+ 		if (!ecap_ir_support(iommu->ecap))
+ 			return 0;
+ 
++	/* VT-d posted-interrupt feature detection*/
++	if (disable_irq_post == 0)
++		for_each_drhd_unit(drhd) {
++			struct intel_iommu *iommu = drhd->iommu;
++
++			if (!cap_pi_support(iommu->cap)) {
++				irq_post_enabled = 0;
++				disable_irq_post = 1;
++				break;
++			}
++			irq_post_enabled = 1;
++		}
++
+ 	return 1;
+ }
+ 
+diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+index 74a1767..2f8ee00 100644
+--- a/drivers/iommu/irq_remapping.c
++++ b/drivers/iommu/irq_remapping.c
+@@ -23,6 +23,10 @@ int irq_remap_broken;
+ int disable_sourceid_checking;
+ int no_x2apic_optout;
+ 
++int disable_irq_post = 1;
++int irq_post_enabled = 0;
++EXPORT_SYMBOL_GPL(irq_post_enabled);
++
+ static struct irq_remap_ops *remap_ops;
+ 
+ static int msi_alloc_remapped_irq(struct pci_dev *pdev, int irq, int nvec);
+diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
+index fde250f..7bb5913 100644
+--- a/drivers/iommu/irq_remapping.h
++++ b/drivers/iommu/irq_remapping.h
+@@ -37,6 +37,9 @@ extern int disable_sourceid_checking;
+ extern int no_x2apic_optout;
+ extern int irq_remapping_enabled;
+ 
++extern int disable_irq_post;
++extern int irq_post_enabled;
++
+ struct irq_remap_ops {
+ 	/* Check whether Interrupt Remapping is supported */
+ 	int (*supported)(void);
+@@ -91,6 +94,8 @@ extern struct irq_remap_ops amd_iommu_irq_ops;
+ #define irq_remapping_enabled 0
+ #define disable_irq_remap     1
+ #define irq_remap_broken      0
++#define disable_irq_post      1
++#define irq_post_enabled      0
+ 
+ #endif /* CONFIG_IRQ_REMAP */
+ 
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index a65208a..5b1a124 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -87,6 +87,7 @@ static inline void dmar_writeq(void __iomem *addr, u64 val)
+ /*
+  * Decoding Capability Register
+  */
++#define cap_pi_support(c)	(((c) >> 59) & 1)
+ #define cap_read_drain(c)	(((c) >> 55) & 1)
+ #define cap_write_drain(c)	(((c) >> 54) & 1)
+ #define cap_max_amask_val(c)	(((c) >> 48) & 0x3f)
+-- 
+1.7.1
