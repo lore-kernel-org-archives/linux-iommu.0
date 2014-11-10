@@ -1,7 +1,8 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 11/13] KVM: Suppress posted-interrupt when 'SN' is set
-Date: Mon, 10 Nov 2014 14:26:50 +0800
-Message-ID: <1415600812-27773-12-git-send-email-feng.wu@intel.com>
+Subject: [PATCH 04/13] iommu/vt-d: Adjust 'struct irte' to better suit for
+	VT-d Posted-Interrupts
+Date: Mon, 10 Nov 2014 14:26:43 +0800
+Message-ID: <1415600812-27773-5-git-send-email-feng.wu@intel.com>
 References: <1415600812-27773-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,43 +22,110 @@ To: gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pbonzini-H+wXaHxf7aLQT0dZR+Alf
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Currently, we don't support urgent interrupt, all interrupts
-are recognized as non-urgent interrupt, so we cannot send
-posted-interrupt when 'SN' is set.
+This patch adjusts the definition of 'struct irte', so that we can
+add the VT-d Posted-Interrtups format in this structure later.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/kvm/vmx.c |   11 +++++++++--
- 1 files changed, 9 insertions(+), 2 deletions(-)
+ drivers/iommu/intel_irq_remapping.c |   35 +++++++++++++++++++----------------
+ include/linux/dmar.h                |    4 ++--
+ 2 files changed, 21 insertions(+), 18 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-index 51d2c8a..495cfbd 100644
---- a/arch/x86/kvm/vmx.c
-+++ b/arch/x86/kvm/vmx.c
-@@ -4306,15 +4306,22 @@ static int vmx_vm_has_apicv(struct kvm *kvm)
- static void vmx_deliver_posted_interrupt(struct kvm_vcpu *vcpu, int vector)
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index f99f0f1..776da10 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -310,9 +310,9 @@ static void set_irte_sid(struct irte *irte, unsigned int svt,
  {
- 	struct vcpu_vmx *vmx = to_vmx(vcpu);
--	int r;
-+	int r, sn;
+ 	if (disable_sourceid_checking)
+ 		svt = SVT_NO_VERIFY;
+-	irte->svt = svt;
+-	irte->sq = sq;
+-	irte->sid = sid;
++	irte->irq_remap_high.svt = svt;
++	irte->irq_remap_high.sq = sq;
++	irte->irq_remap_high.sid = sid;
+ }
  
- 	if (pi_test_and_set_pir(vector, &vmx->pi_desc))
- 		return;
+ static int set_ioapic_sid(struct irte *irte, int apic)
+@@ -917,8 +917,8 @@ static void prepare_irte(struct irte *irte, int vector,
+ {
+ 	memset(irte, 0, sizeof(*irte));
  
-+	/*
-+	 * Currently, we don't support urgent interrupt, all interrupts
-+	 * are recognized as non-urgent interrupt, so we cannot send
-+	 * posted-interrupt when 'SN' is set.
-+	 */
-+	sn = pi_test_sn(&vmx->pi_desc);
-+
- 	r = pi_test_and_set_on(&vmx->pi_desc);
- 	kvm_make_request(KVM_REQ_EVENT, vcpu);
- #ifdef CONFIG_SMP
--	if (!r && (vcpu->mode == IN_GUEST_MODE))
-+	if (!r && !sn && (vcpu->mode == IN_GUEST_MODE))
- 		apic->send_IPI_mask(get_cpu_mask(vcpu->cpu),
- 				POSTED_INTR_VECTOR);
- 	else
+-	irte->present = 1;
+-	irte->dst_mode = apic->irq_dest_mode;
++	irte->irq_remap_low.present = 1;
++	irte->irq_remap_low.dst_mode = apic->irq_dest_mode;
+ 	/*
+ 	 * Trigger mode in the IRTE will always be edge, and for IO-APIC, the
+ 	 * actual level or edge trigger will be setup in the IO-APIC
+@@ -926,11 +926,11 @@ static void prepare_irte(struct irte *irte, int vector,
+ 	 * For more details, see the comments (in io_apic.c) explainig IO-APIC
+ 	 * irq migration in the presence of interrupt-remapping.
+ 	*/
+-	irte->trigger_mode = 0;
+-	irte->dlvry_mode = apic->irq_delivery_mode;
+-	irte->vector = vector;
+-	irte->dest_id = IRTE_DEST(dest);
+-	irte->redir_hint = 1;
++	irte->irq_remap_low.trigger_mode = 0;
++	irte->irq_remap_low.dlvry_mode = apic->irq_delivery_mode;
++	irte->irq_remap_low.vector = vector;
++	irte->irq_remap_low.dest_id = IRTE_DEST(dest);
++	irte->irq_remap_low.redir_hint = 1;
+ }
+ 
+ static int intel_setup_ioapic_entry(int irq,
+@@ -973,10 +973,13 @@ static int intel_setup_ioapic_entry(int irq,
+ 		"Redir_hint:%d Trig_Mode:%d Dlvry_Mode:%X "
+ 		"Avail:%X Vector:%02X Dest:%08X "
+ 		"SID:%04X SQ:%X SVT:%X)\n",
+-		attr->ioapic, irte.present, irte.fpd, irte.dst_mode,
+-		irte.redir_hint, irte.trigger_mode, irte.dlvry_mode,
+-		irte.avail, irte.vector, irte.dest_id,
+-		irte.sid, irte.sq, irte.svt);
++		attr->ioapic, irte.irq_remap_low.present,
++		irte.irq_remap_low.fpd, irte.irq_remap_low.dst_mode,
++		irte.irq_remap_low.redir_hint, irte.irq_remap_low.trigger_mode,
++		irte.irq_remap_low.dlvry_mode, irte.irq_remap_low.avail,
++		irte.irq_remap_low.vector, irte.irq_remap_low.dest_id,
++		irte.irq_remap_high.sid, irte.irq_remap_high.sq,
++		irte.irq_remap_high.svt);
+ 
+ 	entry = (struct IR_IO_APIC_route_entry *)route_entry;
+ 	memset(entry, 0, sizeof(*entry));
+@@ -1046,8 +1049,8 @@ intel_ioapic_set_affinity(struct irq_data *data, const struct cpumask *mask,
+ 		return err;
+ 	}
+ 
+-	irte.vector = cfg->vector;
+-	irte.dest_id = IRTE_DEST(dest);
++	irte.irq_remap_low.vector = cfg->vector;
++	irte.irq_remap_low.dest_id = IRTE_DEST(dest);
+ 
+ 	/*
+ 	 * Atomically updates the IRTE with the new destination, vector
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index 593fff9..8be5d42 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -159,7 +159,7 @@ struct irte {
+ 				vector		: 8,
+ 				__reserved_2	: 8,
+ 				dest_id		: 32;
+-		};
++		} irq_remap_low;
+ 		__u64 low;
+ 	};
+ 
+@@ -169,7 +169,7 @@ struct irte {
+ 				sq		: 2,
+ 				svt		: 2,
+ 				__reserved_3	: 44;
+-		};
++		} irq_remap_high;
+ 		__u64 high;
+ 	};
+ };
 -- 
 1.7.1
