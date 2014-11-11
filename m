@@ -1,15 +1,12 @@
 From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Subject: RE: [PATCH 05/13] KVM: Update IRTE according to guest interrupt
 	configuration changes
-Date: Tue, 11 Nov 2014 12:28:15 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F00226FEEA@SHSMSX104.ccr.corp.intel.com>
-References: <E959C4978C3B6342920538CF579893F00226EF05@SHSMSX104.ccr.corp.intel.com>
-	<5461EC99.1000101@redhat.com>
+Date: Tue, 11 Nov 2014 13:02:14 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F0022700C3@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5461EC99.1000101-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
