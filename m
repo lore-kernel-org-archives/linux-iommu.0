@@ -1,16 +1,12 @@
 From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: several messages
-Date: Tue, 11 Nov 2014 06:37:42 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F00226E47F@SHSMSX104.ccr.corp.intel.com>
-References: <1415600812-27773-1-git-send-email-feng.wu@intel.com>
-	<1415600812-27773-14-git-send-email-feng.wu@intel.com>
-	<alpine.DEB.2.11.1411101913340.3935@nanos>
-	<5461745F.2080703@linux.intel.com>
+Subject: RE: [PATCH 05/13] KVM: Update IRTE according to guest interrupt
+	configuration changes
+Date: Tue, 11 Nov 2014 09:20:45 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F00226EF05@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5461745F.2080703-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -21,47 +17,620 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
 
 > -----Original Message-----
-> From: Jiang Liu [mailto:jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org]
-> Sent: Tuesday, November 11, 2014 10:29 AM
-> To: Thomas Gleixner; Wu, Feng
-> Cc: gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; David Woodhouse;
-> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; H. Peter Anvin; x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org;
-> kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; LKML
-> Subject: Re: several messages
+> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> Sent: Tuesday, November 11, 2014 5:58 AM
+> To: Wu, Feng
+> Cc: gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org;
+> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org;
+> x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Subject: Re: [PATCH 05/13] KVM: Update IRTE according to guest interrupt
+> configuration changes
 > 
-> On 2014/11/11 2:15, Thomas Gleixner wrote:
-> > On Mon, 10 Nov 2014, Feng Wu wrote:
+> On Mon, 2014-11-10 at 14:26 +0800, Feng Wu wrote:
+> > When guest changes its interrupt configuration (such as, vector, etc.)
+> > for direct-assigned devices, we need to update the associated IRTE
+> > with the new guest vector, so external interrupts from the assigned
+> > devices can be injected to guests without VM-Exit.
 > >
-> >> VT-d Posted-Interrupts is an enhancement to CPU side Posted-Interrupt.
-> >> With VT-d Posted-Interrupts enabled, external interrupts from
-> >> direct-assigned devices can be delivered to guests without VMM
-> >> intervention when guest is running in non-root mode.
+> > The current method of handling guest lowest priority interrtups
+> > is to use a counter 'apic_arb_prio' for each VCPU, we choose the
+> > VCPU with smallest 'apic_arb_prio' and then increase it by 1.
+> > However, for VT-d PI, we cannot re-use this, since we no longer
+> > have control to 'apic_arb_prio' with posted interrupt direct
+> > delivery by Hardware.
 > >
-> > Can you please talk to Jiang and synchronize your work with his
-> > refactoring of the x86 interrupt handling subsystem.
+> > Here, we introduce a similiar way with 'apic_arb_prio' to handle
+> > guest lowest priority interrtups when VT-d PI is used. Here is the
+> > ideas:
+> > - Each VCPU has a counter 'round_robin_counter'.
+> > - When guests sets an interrupts to lowest priority, we choose
+> > the VCPU with smallest 'round_robin_counter' as the destination,
+> > then increase it.
 > >
-> > I want this stuff cleaned up first before we add new stuff to it.
-> Hi Thomas,
-> 	Just talked with Feng, we will focused on refactor first and
-> then add posted interrupt support.
-> Regards!
-> Gerry
+> > Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> > ---
+> >  arch/x86/include/asm/irq_remapping.h |    6 ++
+> >  arch/x86/include/asm/kvm_host.h      |    2 +
+> >  arch/x86/kvm/vmx.c                   |   12 +++
+> >  arch/x86/kvm/x86.c                   |   11 +++
+> >  drivers/iommu/amd_iommu.c            |    6 ++
+> >  drivers/iommu/intel_irq_remapping.c  |   28 +++++++
+> >  drivers/iommu/irq_remapping.c        |    9 ++
+> >  drivers/iommu/irq_remapping.h        |    3 +
+> >  include/linux/dmar.h                 |   26 ++++++
+> >  include/linux/kvm_host.h             |   22 +++++
+> >  include/uapi/linux/kvm.h             |    1 +
+> >  virt/kvm/assigned-dev.c              |  141
+> ++++++++++++++++++++++++++++++++++
+> >  virt/kvm/irq_comm.c                  |    4 +-
+> >  virt/kvm/irqchip.c                   |   11 ---
+> >  14 files changed, 269 insertions(+), 13 deletions(-)
+> >
+> > diff --git a/arch/x86/include/asm/irq_remapping.h
+> b/arch/x86/include/asm/irq_remapping.h
+> > index a3cc437..32d6cc4 100644
+> > --- a/arch/x86/include/asm/irq_remapping.h
+> > +++ b/arch/x86/include/asm/irq_remapping.h
+> > @@ -51,6 +51,7 @@ extern void compose_remapped_msi_msg(struct
+> pci_dev *pdev,
+> >  				     unsigned int irq, unsigned int dest,
+> >  				     struct msi_msg *msg, u8 hpet_id);
+> >  extern int setup_hpet_msi_remapped(unsigned int irq, unsigned int id);
+> > +extern int update_pi_irte(unsigned int irq, u64 pi_desc_addr, u32 vector);
+> >  extern void panic_if_irq_remap(const char *msg);
+> >  extern bool setup_remapped_irq(int irq,
+> >  			       struct irq_cfg *cfg,
+> > @@ -88,6 +89,11 @@ static inline int setup_hpet_msi_remapped(unsigned
+> int irq, unsigned int id)
+> >  	return -ENODEV;
+> >  }
+> >
+> > +static inline int update_pi_irte(unsigned int irq, u64 pi_desc_addr, u32
+> vector)
+> > +{
+> > +	return -ENODEV;
+> > +}
+> > +
+> >  static inline void panic_if_irq_remap(const char *msg)
+> >  {
+> >  }
+> > diff --git a/arch/x86/include/asm/kvm_host.h
+> b/arch/x86/include/asm/kvm_host.h
+> > index 6ed0c30..0630161 100644
+> > --- a/arch/x86/include/asm/kvm_host.h
+> > +++ b/arch/x86/include/asm/kvm_host.h
+> > @@ -358,6 +358,7 @@ struct kvm_vcpu_arch {
+> >  	struct kvm_lapic *apic;    /* kernel irqchip context */
+> >  	unsigned long apic_attention;
+> >  	int32_t apic_arb_prio;
+> > +	int32_t round_robin_counter;
+> >  	int mp_state;
+> >  	u64 ia32_misc_enable_msr;
+> >  	bool tpr_access_reporting;
+> > @@ -771,6 +772,7 @@ struct kvm_x86_ops {
+> >  	int (*check_nested_events)(struct kvm_vcpu *vcpu, bool external_intr);
+> >
+> >  	void (*sched_in)(struct kvm_vcpu *kvm, int cpu);
+> > +	u64 (*get_pi_desc_addr)(struct kvm_vcpu *vcpu);
+> >  };
+> >
+> >  struct kvm_arch_async_pf {
+> > diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+> > index a4670d3..ae91b72 100644
+> > --- a/arch/x86/kvm/vmx.c
+> > +++ b/arch/x86/kvm/vmx.c
+> > @@ -544,6 +544,11 @@ static inline struct vcpu_vmx *to_vmx(struct
+> kvm_vcpu *vcpu)
+> >  	return container_of(vcpu, struct vcpu_vmx, vcpu);
+> >  }
+> >
+> > +struct pi_desc *vcpu_to_pi_desc(struct kvm_vcpu *vcpu)
+> > +{
+> > +	return &(to_vmx(vcpu)->pi_desc);
+> > +}
+> > +
+> >  #define VMCS12_OFFSET(x) offsetof(struct vmcs12, x)
+> >  #define FIELD(number, name)	[number] = VMCS12_OFFSET(name)
+> >  #define FIELD64(number, name)	[number] = VMCS12_OFFSET(name), \
+> > @@ -4280,6 +4285,11 @@ static void vmx_sync_pir_to_irr_dummy(struct
+> kvm_vcpu *vcpu)
+> >  	return;
+> >  }
+> >
+> > +static u64 vmx_get_pi_desc_addr(struct kvm_vcpu *vcpu)
+> > +{
+> > +	return __pa((u64)vcpu_to_pi_desc(vcpu));
+> > +}
+> > +
+> >  /*
+> >   * Set up the vmcs's constant host-state fields, i.e., host-state fields that
+> >   * will not change in the lifetime of the guest.
+> > @@ -9232,6 +9242,8 @@ static struct kvm_x86_ops vmx_x86_ops = {
+> >  	.check_nested_events = vmx_check_nested_events,
+> >
+> >  	.sched_in = vmx_sched_in,
+> > +
+> > +	.get_pi_desc_addr = vmx_get_pi_desc_addr,
+> >  };
+> >
+> >  static int __init vmx_init(void)
+> > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> > index b447a98..0c19d15 100644
+> > --- a/arch/x86/kvm/x86.c
+> > +++ b/arch/x86/kvm/x86.c
+> > @@ -7735,6 +7735,17 @@ bool kvm_arch_has_noncoherent_dma(struct
+> kvm *kvm)
+> >  }
+> >  EXPORT_SYMBOL_GPL(kvm_arch_has_noncoherent_dma);
+> >
+> > +int kvm_update_pi_irte_common(struct kvm *kvm, struct kvm_vcpu *vcpu,
+> > +			u32 guest_vector, int host_irq)
+> > +{
+> > +	u64 pi_desc_addr = kvm_x86_ops->get_pi_desc_addr(vcpu);
+> > +
+> > +	if (update_pi_irte(host_irq, pi_desc_addr, guest_vector))
+> > +		return -1;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >  EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_exit);
+> >  EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_inj_virq);
+> >  EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_page_fault);
+> > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> > index 505a9ad..a36fdc7 100644
+> > --- a/drivers/iommu/amd_iommu.c
+> > +++ b/drivers/iommu/amd_iommu.c
+> > @@ -4280,6 +4280,11 @@ static int alloc_hpet_msi(unsigned int irq,
+> unsigned int id)
+> >  	return 0;
+> >  }
+> >
+> > +static int dummy_update_pi_irte(int irq, u64 pi_desc_addr, u32 vector)
+> > +{
+> > +	return -EINVAL;
+> > +}
+> > +
+> >  struct irq_remap_ops amd_iommu_irq_ops = {
+> >  	.supported		= amd_iommu_supported,
+> >  	.prepare		= amd_iommu_prepare,
+> > @@ -4294,5 +4299,6 @@ struct irq_remap_ops amd_iommu_irq_ops = {
+> >  	.msi_alloc_irq		= msi_alloc_irq,
+> >  	.msi_setup_irq		= msi_setup_irq,
+> >  	.alloc_hpet_msi		= alloc_hpet_msi,
+> > +	.update_pi_irte         = dummy_update_pi_irte,
+> >  };
+> >  #endif
+> > diff --git a/drivers/iommu/intel_irq_remapping.c
+> b/drivers/iommu/intel_irq_remapping.c
+> > index 776da10..87c02fe 100644
+> > --- a/drivers/iommu/intel_irq_remapping.c
+> > +++ b/drivers/iommu/intel_irq_remapping.c
+> > @@ -1172,6 +1172,33 @@ static int intel_alloc_hpet_msi(unsigned int irq,
+> unsigned int id)
+> >  	return ret;
+> >  }
+> >
+> > +static int intel_update_pi_irte(int irq, u64 pi_desc_addr, u32 vector)
+> > +{
+> > +	struct irte irte;
+> > +
+> > +	if (get_irte(irq, &irte))
+> > +		return -1;
+> > +
+> > +	irte.irq_post_low.urg = 0;
+> > +	irte.irq_post_low.vector = vector;
+> > +	irte.irq_post_low.pda_l = (pi_desc_addr >> (32 - PDA_LOW_BIT)) &
+> > +			~(-1UL << PDA_LOW_BIT);
+> > +	irte.irq_post_high.pda_h = (pi_desc_addr >> 32) &
+> > +			~(-1UL << PDA_HIGH_BIT);
+> > +
+> > +	irte.irq_post_low.__reserved_1 = 0;
+> > +	irte.irq_post_low.__reserved_2 = 0;
+> > +	irte.irq_post_low.__reserved_3 = 0;
+> > +	irte.irq_post_high.__reserved_4 = 0;
+> > +
+> > +	irte.irq_post_low.pst = 1;
+> > +
+> > +	if (modify_irte(irq, &irte))
+> > +		return -1;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >  struct irq_remap_ops intel_irq_remap_ops = {
+> >  	.supported		= intel_irq_remapping_supported,
+> >  	.prepare		= dmar_table_init,
+> > @@ -1186,4 +1213,5 @@ struct irq_remap_ops intel_irq_remap_ops = {
+> >  	.msi_alloc_irq		= intel_msi_alloc_irq,
+> >  	.msi_setup_irq		= intel_msi_setup_irq,
+> >  	.alloc_hpet_msi		= intel_alloc_hpet_msi,
+> > +	.update_pi_irte         = intel_update_pi_irte,
+> 
+> Extending irq_remap_ops should really be a separate patch from it's use
+> by KVM.
 
-No problem!
+Will do.
+
+> 
+> >  };
+> > diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+> > index 2f8ee00..0e36860 100644
+> > --- a/drivers/iommu/irq_remapping.c
+> > +++ b/drivers/iommu/irq_remapping.c
+> > @@ -362,6 +362,15 @@ int setup_hpet_msi_remapped(unsigned int irq,
+> unsigned int id)
+> >  	return default_setup_hpet_msi(irq, id);
+> >  }
+> >
+> > +int update_pi_irte(unsigned int irq, u64 pi_desc_addr, u32 vector)
+> > +{
+> > +	if (!remap_ops || !remap_ops->update_pi_irte)
+> > +		return -ENODEV;
+> > +
+> > +	return remap_ops->update_pi_irte(irq, pi_desc_addr, vector);
+> > +}
+> > +EXPORT_SYMBOL_GPL(update_pi_irte);
+> > +
+> >  void panic_if_irq_remap(const char *msg)
+> >  {
+> >  	if (irq_remapping_enabled)
+> > diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
+> > index 7bb5913..2d8f740 100644
+> > --- a/drivers/iommu/irq_remapping.h
+> > +++ b/drivers/iommu/irq_remapping.h
+> > @@ -84,6 +84,9 @@ struct irq_remap_ops {
+> >
+> >  	/* Setup interrupt remapping for an HPET MSI */
+> >  	int (*alloc_hpet_msi)(unsigned int, unsigned int);
+> > +
+> > +	/* Update IRTE for posted-interrupt */
+> > +	int (*update_pi_irte)(int irq, u64 pi_desc_addr, u32 vector);
+> >  };
+> >
+> >  extern struct irq_remap_ops intel_irq_remap_ops;
+> > diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+> > index 8be5d42..e1ff4f7 100644
+> > --- a/include/linux/dmar.h
+> > +++ b/include/linux/dmar.h
+> > @@ -160,6 +160,20 @@ struct irte {
+> >  				__reserved_2	: 8,
+> >  				dest_id		: 32;
+> >  		} irq_remap_low;
+> > +
+> > +		struct {
+> > +			__u64   present		: 1,
+> > +				fpd		: 1,
+> > +				__reserved_1	: 6,
+> > +				avail	: 4,
+> > +				__reserved_2	: 2,
+> > +				urg		: 1,
+> > +				pst		: 1,
+> > +				vector	: 8,
+> > +				__reserved_3	: 14,
+> > +				pda_l	: 26;
+> > +		} irq_post_low;
+> > +
+> >  		__u64 low;
+> >  	};
+> >
+> > @@ -170,10 +184,22 @@ struct irte {
+> >  				svt		: 2,
+> >  				__reserved_3	: 44;
+> >  		} irq_remap_high;
+> > +
+> > +		struct {
+> > +			__u64	sid:	16,
+> > +				sq:		2,
+> > +				svt:	2,
+> > +				__reserved_4:	12,
+> > +				pda_h:	32;
+> > +		} irq_post_high;
+> > +
+> >  		__u64 high;
+> >  	};
+> >  };
+> >
+> > +#define PDA_LOW_BIT    26
+> > +#define PDA_HIGH_BIT   32
+> > +
+> >  enum {
+> >  	IRQ_REMAP_XAPIC_MODE,
+> >  	IRQ_REMAP_X2APIC_MODE,
+> > diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+> > index ea53b04..6bb8287 100644
+> > --- a/include/linux/kvm_host.h
+> > +++ b/include/linux/kvm_host.h
+> > @@ -335,6 +335,25 @@ struct kvm_kernel_irq_routing_entry {
+> >  	struct hlist_node link;
+> >  };
+> >
+> > +#ifdef CONFIG_HAVE_KVM_IRQ_ROUTING
+> > +
+> > +struct kvm_irq_routing_table {
+> > +	int chip[KVM_NR_IRQCHIPS][KVM_IRQCHIP_NUM_PINS];
+> > +	struct kvm_kernel_irq_routing_entry *rt_entries;
+> > +	u32 nr_rt_entries;
+> > +	/*
+> > +	 * Array indexed by gsi. Each entry contains list of irq chips
+> > +	 * the gsi is connected to.
+> > +	 */
+> > +	struct hlist_head map[0];
+> > +};
+> > +
+> > +#else
+> > +
+> > +struct kvm_irq_routing_table {};
+> > +
+> > +#endif
+> > +
+> >  #ifndef KVM_PRIVATE_MEM_SLOTS
+> >  #define KVM_PRIVATE_MEM_SLOTS 0
+> >  #endif
+> > @@ -766,6 +785,9 @@ void kvm_unregister_irq_ack_notifier(struct kvm
+> *kvm,
+> >  				   struct kvm_irq_ack_notifier *kian);
+> >  int kvm_request_irq_source_id(struct kvm *kvm);
+> >  void kvm_free_irq_source_id(struct kvm *kvm, int irq_source_id);
+> > +void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
+> > +				   struct kvm_lapic_irq *irq);
+> > +bool kvm_is_dm_lowest_prio(struct kvm_lapic_irq *irq);
+> >
+> >  #ifdef CONFIG_KVM_DEVICE_ASSIGNMENT
+> >  int kvm_iommu_map_pages(struct kvm *kvm, struct kvm_memory_slot
+> *slot);
+> > diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+> > index 7593c52..509223a 100644
+> > --- a/include/uapi/linux/kvm.h
+> > +++ b/include/uapi/linux/kvm.h
+> > @@ -1027,6 +1027,7 @@ struct kvm_s390_ucas_mapping {
+> >  #define KVM_XEN_HVM_CONFIG        _IOW(KVMIO,  0x7a, struct
+> kvm_xen_hvm_config)
+> >  #define KVM_SET_CLOCK             _IOW(KVMIO,  0x7b, struct
+> kvm_clock_data)
+> >  #define KVM_GET_CLOCK             _IOR(KVMIO,  0x7c, struct
+> kvm_clock_data)
+> > +#define KVM_ASSIGN_DEV_PI_UPDATE  _IOR(KVMIO,  0x7d, __u32)
+> >  /* Available with KVM_CAP_PIT_STATE2 */
+> >  #define KVM_GET_PIT2              _IOR(KVMIO,  0x9f, struct
+> kvm_pit_state2)
+> >  #define KVM_SET_PIT2              _IOW(KVMIO,  0xa0, struct
+> kvm_pit_state2)
+> 
+> Needs an accompanying Documentation/virtual/kvm/api.txt update.
+> 
+> > diff --git a/virt/kvm/assigned-dev.c b/virt/kvm/assigned-dev.c
+> > index e05000e..e154009 100644
+> > --- a/virt/kvm/assigned-dev.c
+> > +++ b/virt/kvm/assigned-dev.c
+> 
+> 
+> Since legacy KVM device assignment is effectively deprecated, have you
+> considered how we might do this with VFIO?  Thanks,
+> 
+> Alex
+> 
+I haven't thought about how to enable this in VFIO so far. I think I can continue to
+implement that if needed after this patch set is finished. What do you think of this?
 
 Thanks,
 Feng
 
+
 > 
+> > @@ -326,6 +326,135 @@ void kvm_free_all_assigned_devices(struct kvm
+> *kvm)
+> >  	}
+> >  }
 > >
-> > Thanks,
+> > +int __weak kvm_update_pi_irte_common(struct kvm *kvm, struct kvm_vcpu
+> *vcpu,
+> > +					u32 guest_vector, int host_irq)
+> > +{
+> > +	return 0;
+> > +}
+> > +
+> > +int kvm_compare_rr_counter(struct kvm_vcpu *vcpu1, struct kvm_vcpu
+> *vcpu2)
+> > +{
+> > +	return vcpu1->arch.round_robin_counter -
+> > +			vcpu2->arch.round_robin_counter;
+> > +}
+> > +
+> > +bool kvm_pi_find_dest_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
+> > +				struct kvm_vcpu **dest_vcpu)
+> > +{
+> > +	int i, r = 0;
+> > +	struct kvm_vcpu *vcpu, *dest = NULL;
+> > +
+> > +	kvm_for_each_vcpu(i, vcpu, kvm) {
+> > +		if (!kvm_apic_present(vcpu))
+> > +			continue;
+> > +
+> > +		if (!kvm_apic_match_dest(vcpu, NULL, irq->shorthand,
+> > +					irq->dest_id, irq->dest_mode))
+> > +			continue;
+> > +
+> > +		if (!kvm_is_dm_lowest_prio(irq)) {
+> > +			r++;
+> > +			*dest_vcpu = vcpu;
+> > +		} else if (kvm_lapic_enabled(vcpu)) {
+> > +			if (!dest)
+> > +				dest = vcpu;
+> > +			else if (kvm_compare_rr_counter(vcpu, dest) < 0)
+> > +				dest = vcpu;
+> > +		}
+> > +	}
+> > +
+> > +	if (dest) {
+> > +		dest->arch.round_robin_counter++;
+> > +		*dest_vcpu = dest;
+> > +		return true;
+> > +	} else if (r == 1)
+> > +		return true;
+> > +
+> > +	return false;
+> > +}
+> > +
+> > +static int __kvm_update_pi_irte(struct kvm *kvm, int host_irq, int
+> guest_irq)
+> > +{
+> > +	struct kvm_kernel_irq_routing_entry *e;
+> > +	struct kvm_irq_routing_table *irq_rt;
+> > +	struct kvm_lapic_irq irq;
+> > +	struct kvm_vcpu *vcpu;
+> > +	int idx, ret = -EINVAL;
+> > +
+> > +	idx = srcu_read_lock(&kvm->irq_srcu);
+> > +	irq_rt = srcu_dereference(kvm->irq_routing, &kvm->irq_srcu);
+> > +	ASSERT(guest_irq < irq_rt->nr_rt_entries);
+> > +
+> > +	hlist_for_each_entry(e, &irq_rt->map[guest_irq], link) {
+> > +		if (e->type != KVM_IRQ_ROUTING_MSI)
+> > +			continue;
+> > +		/*
+> > +		 * VT-d posted-interrupt has the following
+> > +		 * limitations:
+> > +		 *  - No support for posting multicast/broadcast
+> > +		 *    interrupts to a VCPU
+> > +		 * Still use interrupt remapping for these
+> > +		 * kind of interrupts
+> > +		 */
+> > +
+> > +		kvm_set_msi_irq(e, &irq);
+> > +		if (!kvm_pi_find_dest_vcpu(kvm, &irq, &vcpu)) {
+> > +			printk(KERN_INFO "%s: can not find the target VCPU\n",
+> > +					__func__);
+> > +			ret = -EINVAL;
+> > +			goto out;
+> > +		}
+> > +
+> > +		if (kvm_update_pi_irte_common(kvm, vcpu, irq.vector,
+> > +				host_irq)) {
+> > +			printk(KERN_INFO "%s: failed to update PI IRTE\n",
+> > +					__func__);
+> > +			ret = -EINVAL;
+> > +			goto out;
+> > +		}
+> > +	}
+> > +
+> > +	ret = 0;
+> > +out:
+> > +	srcu_read_unlock(&kvm->irq_srcu, idx);
+> > +	return ret;
+> > +}
+> > +
+> > +int kvm_update_pi_irte(struct kvm *kvm, u32 dev_id)
+> > +{
+> > +	int i, rc = -1;
+> > +	struct kvm_assigned_dev_kernel *dev;
+> > +
+> > +	mutex_lock(&kvm->lock);
+> > +	dev = kvm_find_assigned_dev(&kvm->arch.assigned_dev_head, dev_id);
+> > +	if (!dev) {
+> > +		printk(KERN_INFO "%s: cannot find the assigned dev.\n",
+> > +				__func__);
+> > +		rc = -1;
+> > +		goto out;
+> > +	}
+> > +
+> > +	BUG_ON(dev->irq_requested_type == 0);
+> > +
+> > +	if ((dev->irq_requested_type & KVM_DEV_IRQ_HOST_MSI) &&
+> > +		(dev->dev->msi_enabled == 1)) {
+> > +			__kvm_update_pi_irte(kvm,
+> > +					dev->host_irq, dev->guest_irq);
+> > +	} else if ((dev->irq_requested_type & KVM_DEV_IRQ_HOST_MSIX) &&
+> > +		(dev->dev->msix_enabled == 1)) {
+> > +		for (i = 0; i < dev->entries_nr; i++) {
+> > +			__kvm_update_pi_irte(kvm,
+> > +					dev->host_msix_entries[i].vector,
+> > +					dev->guest_msix_entries[i].vector);
+> > +		}
+> > +	}
+> > +
+> > +out:
+> > +	rc = 0;
+> > +	mutex_unlock(&kvm->lock);
+> > +	return rc;
+> > +}
+> > +
+> >  static int assigned_device_enable_host_intx(struct kvm *kvm,
+> >  					    struct kvm_assigned_dev_kernel *dev)
+> >  {
+> > @@ -1017,6 +1146,18 @@ long kvm_vm_ioctl_assigned_device(struct kvm
+> *kvm, unsigned ioctl,
+> >  		r = kvm_vm_ioctl_set_pci_irq_mask(kvm, &assigned_dev);
+> >  		break;
+> >  	}
+> > +	case KVM_ASSIGN_DEV_PI_UPDATE: {
+> > +		u32 dev_id;
+> > +
+> > +		r = -EFAULT;
+> > +		if (copy_from_user(&dev_id, argp, sizeof(dev_id)))
+> > +			goto out;
+> > +		r = kvm_update_pi_irte(kvm, dev_id);
+> > +		if (r)
+> > +			goto out;
+> > +		break;
+> > +
+> > +	}
+> >  	default:
+> >  		r = -ENOTTY;
+> >  		break;
+> > diff --git a/virt/kvm/irq_comm.c b/virt/kvm/irq_comm.c
+> > index 963b899..f51aed3 100644
+> > --- a/virt/kvm/irq_comm.c
+> > +++ b/virt/kvm/irq_comm.c
+> > @@ -55,7 +55,7 @@ static int kvm_set_ioapic_irq(struct
+> kvm_kernel_irq_routing_entry *e,
+> >  				line_status);
+> >  }
 > >
-> > 	tglx
+> > -inline static bool kvm_is_dm_lowest_prio(struct kvm_lapic_irq *irq)
+> > +bool kvm_is_dm_lowest_prio(struct kvm_lapic_irq *irq)
+> >  {
+> >  #ifdef CONFIG_IA64
+> >  	return irq->delivery_mode ==
+> > @@ -106,7 +106,7 @@ int kvm_irq_delivery_to_apic(struct kvm *kvm,
+> struct kvm_lapic *src,
+> >  	return r;
+> >  }
 > >
+> > -static inline void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
+> > +void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
+> >  				   struct kvm_lapic_irq *irq)
+> >  {
+> >  	trace_kvm_msi_set_irq(e->msi.address_lo, e->msi.data);
+> > diff --git a/virt/kvm/irqchip.c b/virt/kvm/irqchip.c
+> > index 7f256f3..cdf29a6 100644
+> > --- a/virt/kvm/irqchip.c
+> > +++ b/virt/kvm/irqchip.c
+> > @@ -31,17 +31,6 @@
+> >  #include <trace/events/kvm.h>
+> >  #include "irq.h"
+> >
+> > -struct kvm_irq_routing_table {
+> > -	int chip[KVM_NR_IRQCHIPS][KVM_IRQCHIP_NUM_PINS];
+> > -	struct kvm_kernel_irq_routing_entry *rt_entries;
+> > -	u32 nr_rt_entries;
+> > -	/*
+> > -	 * Array indexed by gsi. Each entry contains list of irq chips
+> > -	 * the gsi is connected to.
+> > -	 */
+> > -	struct hlist_head map[0];
+> > -};
+> > -
+> >  int kvm_irq_map_gsi(struct kvm *kvm,
+> >  		    struct kvm_kernel_irq_routing_entry *entries, int gsi)
+> >  {
+> 
+> 
