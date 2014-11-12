@@ -1,16 +1,15 @@
-From: "Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH v9 03/19] vfio: platform: add the VFIO PLATFORM module to
-	Kconfig
-Date: Wed, 12 Nov 2014 10:05:00 +0000
-Message-ID: <d3c4a63eaa294f1987a797a39eed4650@BN3PR0301MB1265.namprd03.prod.outlook.com>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v9 01/19] vfio/platform: initial skeleton of VFIO support
+	for platform devices
+Date: Wed, 12 Nov 2014 11:05:18 +0100
+Message-ID: <546330DE.5010002@linaro.org>
 References: <1414433284-31719-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1414433284-31719-4-git-send-email-a.motakis@virtualopensystems.com>
-	<CAOhR-w2N3SF=3DTgFr22JfAKDXxzz0PASznJaRjK3oBrRTVcsw@mail.gmail.com>
+	<1414433284-31719-2-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1886105993178434335=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAOhR-w2N3SF=3DTgFr22JfAKDXxzz0PASznJaRjK3oBrRTVcsw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1414433284-31719-2-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,247 +19,212 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Hongbo Zhang <hongbo.zhang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>
+To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: VFIO DRIVER <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
---===============1886105993178434335==
-Content-Language: en-US
-Content-Type: multipart/alternative;
-	boundary="_000_d3c4a63eaa294f1987a797a39eed4650BN3PR0301MB1265namprd03_"
+Hi Antonios,
 
---_000_d3c4a63eaa294f1987a797a39eed4650BN3PR0301MB1265namprd03_
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+On 10/27/2014 07:07 PM, Antonios Motakis wrote:
+> This patch forms the common skeleton code for platform devices support
+> with VFIO. This will include the core functionality of VFIO_PLATFORM,
+> however binding to the device and discovering the device resources will
+> be done with the help of a separate file where any Linux platform bus
+> specific code will reside.
+> 
+> This will allow us to implement support for also discovering AMBA devices
+> and their resources, but still reuse a large part of the VFIO_PLATFORM
+> implementation.
+> 
+> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> ---
+>  drivers/vfio/platform/vfio_platform_common.c  | 126 ++++++++++++++++++++++++++
+>  drivers/vfio/platform/vfio_platform_private.h |  36 ++++++++
+>  2 files changed, 162 insertions(+)
+>  create mode 100644 drivers/vfio/platform/vfio_platform_common.c
+>  create mode 100644 drivers/vfio/platform/vfio_platform_private.h
+> 
+> diff --git a/drivers/vfio/platform/vfio_platform_common.c b/drivers/vfio/platform/vfio_platform_common.c
+> new file mode 100644
+> index 0000000..e0fdbc8
+> --- /dev/null
+> +++ b/drivers/vfio/platform/vfio_platform_common.c
+> @@ -0,0 +1,126 @@
+> +/*
+> + * Copyright (C) 2013 - Virtual Open Systems
+> + * Author: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License, version 2, as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + */
+> +
+> +#include <linux/device.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/iommu.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/notifier.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/slab.h>
+> +#include <linux/types.h>
+> +#include <linux/uaccess.h>
+> +#include <linux/vfio.h>
+> +#include <linux/io.h>
+not sure at that state all the above includes are needed.
+> +
+> +#include "vfio_platform_private.h"
+> +
+> +static void vfio_platform_release(void *device_data)
+> +{
+> +	module_put(THIS_MODULE);
+> +}
+> +
+> +static int vfio_platform_open(void *device_data)
+> +{
+> +	if (!try_module_get(THIS_MODULE))
+> +		return -ENODEV;
+> +
+> +	return 0;
+> +}
+> +
+> +static long vfio_platform_ioctl(void *device_data,
+> +			   unsigned int cmd, unsigned long arg)
+a minor style comment/question that applies on all the series. Shouldn't
+subsequent argument lines rather be aligned with the first char after
+"(", as done in PCI code?
+> +{
+> +	if (cmd == VFIO_DEVICE_GET_INFO)
+> +		return -EINVAL;
+> +
+> +	else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
+> +		return -EINVAL;
+> +
+> +	else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
+> +		return -EINVAL;
+> +
+> +	else if (cmd == VFIO_DEVICE_SET_IRQS)
+> +		return -EINVAL;
+> +
+> +	else if (cmd == VFIO_DEVICE_RESET)
+> +		return -EINVAL;
+> +
+> +	return -ENOTTY;
+> +}
+> +
+> +static ssize_t vfio_platform_read(void *device_data, char __user *buf,
+> +				  size_t count, loff_t *ppos)
+> +{
+> +	return -EINVAL;
+> +}
+> +
+> +static ssize_t vfio_platform_write(void *device_data, const char __user *buf,
+> +				   size_t count, loff_t *ppos)
+> +{
+> +	return -EINVAL;
+> +}
+> +
+> +static int vfio_platform_mmap(void *device_data, struct vm_area_struct *vma)
+> +{
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct vfio_device_ops vfio_platform_ops = {
+> +	.name		= "vfio-platform",
+> +	.open		= vfio_platform_open,
+> +	.release	= vfio_platform_release,
+> +	.ioctl		= vfio_platform_ioctl,
+> +	.read		= vfio_platform_read,
+> +	.write		= vfio_platform_write,
+> +	.mmap		= vfio_platform_mmap,
+> +};
+> +
+> +int vfio_platform_probe_common(struct vfio_platform_device *vdev,
+> +			       struct device *dev)
+> +{
+> +	struct iommu_group *group;
+> +	int ret;
+> +
+> +	if (!vdev)
+> +		return -EINVAL;
+> +
+> +	group = iommu_group_get(dev);
+> +	if (!group) {
+> +		pr_err("VFIO: No IOMMU group for device %s\n", vdev->name);
+> +		return -EINVAL;
+> +	}
+I saw the above check also is done at beginning of vfio_add_group_dev.
+Added value however is pr_err which is useful and PCI code does the
+check too.
 
-SGksDQoNClRoaXMgaXMgbm90IHlldCBzdXBwb3J0ZWQgb24gRnJlZXNjYWxlIFBvd2VyUEMuIEkg
-YW0gc3RpbGwgaW4gcHJvY2VzcyBvZiB1cHN0cmVhbWluZyB0aGUgRlNMIFBBTVUgc3BlY2lmaWMg
-cGF0Y2hlcyBmb3Igc2FtZS4NCkluaXRpYWwgcGxhbiBpcyB0byB0ZXN0IHdpdGggUENJZSBkZXZp
-Y2VzIGFuZCB0aGVuIHdpdGggUGxhdGZvcm0gZGV2aWNlcy4NCg0KVGhhbmtzDQotQmhhcmF0DQoN
-CkZyb206IGt2bWFybS1ib3VuY2VzQGxpc3RzLmNzLmNvbHVtYmlhLmVkdSBbbWFpbHRvOmt2bWFy
-bS1ib3VuY2VzQGxpc3RzLmNzLmNvbHVtYmlhLmVkdV0gT24gQmVoYWxmIE9mIEhvbmdibyBaaGFu
-Zw0KU2VudDogV2VkbmVzZGF5LCBOb3ZlbWJlciAxMiwgMjAxNCAzOjA4IFBNDQpUbzogQW50b25p
-b3MgTW90YWtpcw0KQ2M6IG9wZW4gbGlzdDpWRklPIERSSVZFUjsgd2lsbC5kZWFjb25AYXJtLmNv
-bTsgYWxleC53aWxsaWFtc29uQHJlZGhhdC5jb207IG9wZW4gbGlzdDsgaW9tbXVAbGlzdHMubGlu
-dXgtZm91bmRhdGlvbi5vcmc7IHRlY2hAdmlydHVhbG9wZW5zeXN0ZW1zLmNvbTsga3ZtYXJtQGxp
-c3RzLmNzLmNvbHVtYmlhLmVkdQ0KU3ViamVjdDogUmU6IFtQQVRDSCB2OSAwMy8xOV0gdmZpbzog
-cGxhdGZvcm06IGFkZCB0aGUgVkZJTyBQTEFURk9STSBtb2R1bGUgdG8gS2NvbmZpZw0KDQoNCg0K
-T24gMjggT2N0b2JlciAyMDE0IDAyOjA3LCBBbnRvbmlvcyBNb3Rha2lzIDxhLm1vdGFraXNAdmly
-dHVhbG9wZW5zeXN0ZW1zLmNvbTxtYWlsdG86YS5tb3Rha2lzQHZpcnR1YWxvcGVuc3lzdGVtcy5j
-b20+PiB3cm90ZToNCkVuYWJsZSBidWlsZGluZyB0aGUgVkZJTyBQTEFURk9STSBkcml2ZXIgdGhh
-dCBhbGxvd3MgdG8gdXNlIExpbnV4IHBsYXRmb3JtDQpkZXZpY2VzIHdpdGggVkZJTy4NCg0KU2ln
-bmVkLW9mZi1ieTogQW50b25pb3MgTW90YWtpcyA8YS5tb3Rha2lzQHZpcnR1YWxvcGVuc3lzdGVt
-cy5jb208bWFpbHRvOmEubW90YWtpc0B2aXJ0dWFsb3BlbnN5c3RlbXMuY29tPj4NCi0tLQ0KIGRy
-aXZlcnMvdmZpby9LY29uZmlnICAgICAgICAgICB8IDEgKw0KIGRyaXZlcnMvdmZpby9NYWtlZmls
-ZSAgICAgICAgICB8IDEgKw0KIGRyaXZlcnMvdmZpby9wbGF0Zm9ybS9LY29uZmlnICB8IDkgKysr
-KysrKysrDQogZHJpdmVycy92ZmlvL3BsYXRmb3JtL01ha2VmaWxlIHwgNCArKysrDQogNCBmaWxl
-cyBjaGFuZ2VkLCAxNSBpbnNlcnRpb25zKCspDQogY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMv
-dmZpby9wbGF0Zm9ybS9LY29uZmlnDQogY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvdmZpby9w
-bGF0Zm9ybS9NYWtlZmlsZQ0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy92ZmlvL0tjb25maWcgYi9k
-cml2ZXJzL3ZmaW8vS2NvbmZpZw0KaW5kZXggYTBhYmUwNC4uOTYyZmI4MCAxMDA2NDQNCi0tLSBh
-L2RyaXZlcnMvdmZpby9LY29uZmlnDQorKysgYi9kcml2ZXJzL3ZmaW8vS2NvbmZpZw0KQEAgLTI3
-LDMgKzI3LDQgQEAgbWVudWNvbmZpZyBWRklPDQogICAgICAgICAgSWYgeW91IGRvbid0IGtub3cg
-d2hhdCB0byBkbyBoZXJlLCBzYXkgTi4NCg0KIHNvdXJjZSAiZHJpdmVycy92ZmlvL3BjaS9LY29u
-ZmlnIg0KK3NvdXJjZSAiZHJpdmVycy92ZmlvL3BsYXRmb3JtL0tjb25maWciDQpkaWZmIC0tZ2l0
-IGEvZHJpdmVycy92ZmlvL01ha2VmaWxlIGIvZHJpdmVycy92ZmlvL01ha2VmaWxlDQppbmRleCAw
-YjAzNWIxLi5kYWRmMGNhIDEwMDY0NA0KLS0tIGEvZHJpdmVycy92ZmlvL01ha2VmaWxlDQorKysg
-Yi9kcml2ZXJzL3ZmaW8vTWFrZWZpbGUNCkBAIC0zLDMgKzMsNCBAQCBvYmotJChDT05GSUdfVkZJ
-T19JT01NVV9UWVBFMSkgKz0gdmZpb19pb21tdV90eXBlMS5vDQogb2JqLSQoQ09ORklHX1ZGSU9f
-SU9NTVVfU1BBUFJfVENFKSArPSB2ZmlvX2lvbW11X3NwYXByX3RjZS5vDQogb2JqLSQoQ09ORklH
-X1ZGSU9fU1BBUFJfRUVIKSArPSB2ZmlvX3NwYXByX2VlaC5vDQogb2JqLSQoQ09ORklHX1ZGSU9f
-UENJKSArPSBwY2kvDQorb2JqLSQoQ09ORklHX1ZGSU9fUExBVEZPUk0pICs9IHBsYXRmb3JtLw0K
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmZpby9wbGF0Zm9ybS9LY29uZmlnIGIvZHJpdmVycy92Zmlv
-L3BsYXRmb3JtL0tjb25maWcNCm5ldyBmaWxlIG1vZGUgMTAwNjQ0DQppbmRleCAwMDAwMDAwLi5j
-NTFhZjE3DQotLS0gL2Rldi9udWxsDQorKysgYi9kcml2ZXJzL3ZmaW8vcGxhdGZvcm0vS2NvbmZp
-Zw0KQEAgLTAsMCArMSw5IEBADQorY29uZmlnIFZGSU9fUExBVEZPUk0NCisgICAgICAgdHJpc3Rh
-dGUgIlZGSU8gc3VwcG9ydCBmb3IgcGxhdGZvcm0gZGV2aWNlcyINCisgICAgICAgZGVwZW5kcyBv
-biBWRklPICYmIEVWRU5URkQgJiYgQVJNDQoNCkhpIEFudG9uaW9zLA0KSXMgdGhpcyBvbmx5IGZv
-ciBBUk0/IGhvdyBhYm91dCBYODYgYW5kIFBvd2VyUEM/DQpPbiBGcmVlc2NhbGUncyBQb3dlclBD
-IHBsYXRmb3JtLCB0aGUgSU9NTVUgaXMgY2FsbGVkIFBBTVUgKFBlcmlwaGVyYWwgQWNjZXNzIE1h
-bmFnZW1lbnQgVW5pdCksIGFuZCBJIGFtIHRyeWluZyB0byB1c2UgdGhpcyBWRklPIGZyYW1ld29y
-ayBvbiBpdC4NCg0KKyAgICAgICBoZWxwDQorICAgICAgICAgU3VwcG9ydCBmb3IgcGxhdGZvcm0g
-ZGV2aWNlcyB3aXRoIFZGSU8uIFRoaXMgaXMgcmVxdWlyZWQgdG8gbWFrZQ0KKyAgICAgICAgIHVz
-ZSBvZiBwbGF0Zm9ybSBkZXZpY2VzIHByZXNlbnQgb24gdGhlIHN5c3RlbSB1c2luZyB0aGUgVkZJ
-Tw0KKyAgICAgICAgIGZyYW1ld29yay4NCisNCisgICAgICAgICBJZiB5b3UgZG9uJ3Qga25vdyB3
-aGF0IHRvIGRvIGhlcmUsIHNheSBOLg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmZpby9wbGF0Zm9y
-bS9NYWtlZmlsZSBiL2RyaXZlcnMvdmZpby9wbGF0Zm9ybS9NYWtlZmlsZQ0KbmV3IGZpbGUgbW9k
-ZSAxMDA2NDQNCmluZGV4IDAwMDAwMDAuLjI3OTg2MmINCi0tLSAvZGV2L251bGwNCisrKyBiL2Ry
-aXZlcnMvdmZpby9wbGF0Zm9ybS9NYWtlZmlsZQ0KQEAgLTAsMCArMSw0IEBADQorDQordmZpby1w
-bGF0Zm9ybS15IDo9IHZmaW9fcGxhdGZvcm0ubyB2ZmlvX3BsYXRmb3JtX2NvbW1vbi5vDQorDQor
-b2JqLSQoQ09ORklHX1ZGSU9fUExBVEZPUk0pICs9IHZmaW8tcGxhdGZvcm0ubw0KLS0NCjIuMS4x
-DQoNCi0tDQpUbyB1bnN1YnNjcmliZSBmcm9tIHRoaXMgbGlzdDogc2VuZCB0aGUgbGluZSAidW5z
-dWJzY3JpYmUgbGludXgta2VybmVsIiBpbg0KdGhlIGJvZHkgb2YgYSBtZXNzYWdlIHRvIG1ham9y
-ZG9tb0B2Z2VyLmtlcm5lbC5vcmc8bWFpbHRvOm1ham9yZG9tb0B2Z2VyLmtlcm5lbC5vcmc+DQpN
-b3JlIG1ham9yZG9tbyBpbmZvIGF0ICBodHRwOi8vdmdlci5rZXJuZWwub3JnL21ham9yZG9tby1p
-bmZvLmh0bWwNClBsZWFzZSByZWFkIHRoZSBGQVEgYXQgIGh0dHA6Ly93d3cudHV4Lm9yZy9sa21s
-Lw0KDQo=
-
---_000_d3c4a63eaa294f1987a797a39eed4650BN3PR0301MB1265namprd03_
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: base64
-
-PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
-bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
-YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
-cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
-VFIvUkVDLWh0bWw0MCI+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIg
-Y29udGVudD0idGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjxtZXRhIG5hbWU9IkdlbmVyYXRv
-ciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTIgKGZpbHRlcmVkIG1lZGl1bSkiPg0KPHN0eWxl
-PjwhLS0NCi8qIEZvbnQgRGVmaW5pdGlvbnMgKi8NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6
-IkNhbWJyaWEgTWF0aCI7DQoJcGFub3NlLTE6MiA0IDUgMyA1IDQgNiAzIDIgNDt9DQpAZm9udC1m
-YWNlDQoJe2ZvbnQtZmFtaWx5OkNhbGlicmk7DQoJcGFub3NlLTE6MiAxNSA1IDIgMiAyIDQgMyAy
-IDQ7fQ0KQGZvbnQtZmFjZQ0KCXtmb250LWZhbWlseTpUYWhvbWE7DQoJcGFub3NlLTE6MiAxMSA2
-IDQgMyA1IDQgNCAyIDQ7fQ0KLyogU3R5bGUgRGVmaW5pdGlvbnMgKi8NCnAuTXNvTm9ybWFsLCBs
-aS5Nc29Ob3JtYWwsIGRpdi5Nc29Ob3JtYWwNCgl7bWFyZ2luOjBpbjsNCgltYXJnaW4tYm90dG9t
-Oi4wMDAxcHQ7DQoJZm9udC1zaXplOjEyLjBwdDsNCglmb250LWZhbWlseToiVGltZXMgTmV3IFJv
-bWFuIiwic2VyaWYiO30NCmE6bGluaywgc3Bhbi5Nc29IeXBlcmxpbmsNCgl7bXNvLXN0eWxlLXBy
-aW9yaXR5Ojk5Ow0KCWNvbG9yOmJsdWU7DQoJdGV4dC1kZWNvcmF0aW9uOnVuZGVybGluZTt9DQph
-OnZpc2l0ZWQsIHNwYW4uTXNvSHlwZXJsaW5rRm9sbG93ZWQNCgl7bXNvLXN0eWxlLXByaW9yaXR5
-Ojk5Ow0KCWNvbG9yOnB1cnBsZTsNCgl0ZXh0LWRlY29yYXRpb246dW5kZXJsaW5lO30NCnNwYW4u
-aG9lbnpiDQoJe21zby1zdHlsZS1uYW1lOmhvZW56Yjt9DQpzcGFuLkVtYWlsU3R5bGUxOA0KCXtt
-c28tc3R5bGUtdHlwZTpwZXJzb25hbC1yZXBseTsNCglmb250LWZhbWlseToiQ2FsaWJyaSIsInNh
-bnMtc2VyaWYiOw0KCWNvbG9yOiMxRjQ5N0Q7fQ0KLk1zb0NocERlZmF1bHQNCgl7bXNvLXN0eWxl
-LXR5cGU6ZXhwb3J0LW9ubHk7fQ0KQHBhZ2UgV29yZFNlY3Rpb24xDQoJe3NpemU6OC41aW4gMTEu
-MGluOw0KCW1hcmdpbjoxLjBpbiAxLjBpbiAxLjBpbiAxLjBpbjt9DQpkaXYuV29yZFNlY3Rpb24x
-DQoJe3BhZ2U6V29yZFNlY3Rpb24xO30NCi0tPjwvc3R5bGU+PCEtLVtpZiBndGUgbXNvIDldPjx4
-bWw+DQo8bzpzaGFwZWRlZmF1bHRzIHY6ZXh0PSJlZGl0IiBzcGlkbWF4PSIxMDI2IiAvPg0KPC94
-bWw+PCFbZW5kaWZdLS0+PCEtLVtpZiBndGUgbXNvIDldPjx4bWw+DQo8bzpzaGFwZWxheW91dCB2
-OmV4dD0iZWRpdCI+DQo8bzppZG1hcCB2OmV4dD0iZWRpdCIgZGF0YT0iMSIgLz4NCjwvbzpzaGFw
-ZWxheW91dD48L3htbD48IVtlbmRpZl0tLT4NCjwvaGVhZD4NCjxib2R5IGxhbmc9IkVOLVVTIiBs
-aW5rPSJibHVlIiB2bGluaz0icHVycGxlIj4NCjxkaXYgY2xhc3M9IldvcmRTZWN0aW9uMSI+DQo8
-cCBjbGFzcz0iTXNvTm9ybWFsIj48c3BhbiBzdHlsZT0iZm9udC1zaXplOjExLjBwdDtmb250LWZh
-bWlseTomcXVvdDtDYWxpYnJpJnF1b3Q7LCZxdW90O3NhbnMtc2VyaWYmcXVvdDs7Y29sb3I6IzFG
-NDk3RCI+SGksPG86cD48L286cD48L3NwYW4+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PHNw
-YW4gc3R5bGU9ImZvbnQtc2l6ZToxMS4wcHQ7Zm9udC1mYW1pbHk6JnF1b3Q7Q2FsaWJyaSZxdW90
-OywmcXVvdDtzYW5zLXNlcmlmJnF1b3Q7O2NvbG9yOiMxRjQ5N0QiPjxvOnA+Jm5ic3A7PC9vOnA+
-PC9zcGFuPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIHN0eWxlPSJmb250LXNpemU6
-MTEuMHB0O2ZvbnQtZmFtaWx5OiZxdW90O0NhbGlicmkmcXVvdDssJnF1b3Q7c2Fucy1zZXJpZiZx
-dW90Oztjb2xvcjojMUY0OTdEIj5UaGlzIGlzIG5vdCB5ZXQgc3VwcG9ydGVkIG9uIEZyZWVzY2Fs
-ZSBQb3dlclBDLiBJIGFtIHN0aWxsIGluIHByb2Nlc3Mgb2YgdXBzdHJlYW1pbmcgdGhlIEZTTCBQ
-QU1VIHNwZWNpZmljIHBhdGNoZXMgZm9yIHNhbWUuPG86cD48L286cD48L3NwYW4+PC9wPg0KPHAg
-Y2xhc3M9Ik1zb05vcm1hbCI+PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZToxMS4wcHQ7Zm9udC1mYW1p
-bHk6JnF1b3Q7Q2FsaWJyaSZxdW90OywmcXVvdDtzYW5zLXNlcmlmJnF1b3Q7O2NvbG9yOiMxRjQ5
-N0QiPkluaXRpYWwgcGxhbiBpcyB0byB0ZXN0IHdpdGggUENJZSBkZXZpY2VzIGFuZCB0aGVuIHdp
-dGggUGxhdGZvcm0gZGV2aWNlcy48bzpwPjwvbzpwPjwvc3Bhbj48L3A+DQo8cCBjbGFzcz0iTXNv
-Tm9ybWFsIj48c3BhbiBzdHlsZT0iZm9udC1zaXplOjExLjBwdDtmb250LWZhbWlseTomcXVvdDtD
-YWxpYnJpJnF1b3Q7LCZxdW90O3NhbnMtc2VyaWYmcXVvdDs7Y29sb3I6IzFGNDk3RCI+PG86cD4m
-bmJzcDs8L286cD48L3NwYW4+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PHNwYW4gc3R5bGU9
-ImZvbnQtc2l6ZToxMS4wcHQ7Zm9udC1mYW1pbHk6JnF1b3Q7Q2FsaWJyaSZxdW90OywmcXVvdDtz
-YW5zLXNlcmlmJnF1b3Q7O2NvbG9yOiMxRjQ5N0QiPlRoYW5rczxvOnA+PC9vOnA+PC9zcGFuPjwv
-cD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIHN0eWxlPSJmb250LXNpemU6MTEuMHB0O2Zv
-bnQtZmFtaWx5OiZxdW90O0NhbGlicmkmcXVvdDssJnF1b3Q7c2Fucy1zZXJpZiZxdW90Oztjb2xv
-cjojMUY0OTdEIj4tQmhhcmF0PG86cD48L286cD48L3NwYW4+PC9wPg0KPHAgY2xhc3M9Ik1zb05v
-cm1hbCI+PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZToxMS4wcHQ7Zm9udC1mYW1pbHk6JnF1b3Q7Q2Fs
-aWJyaSZxdW90OywmcXVvdDtzYW5zLXNlcmlmJnF1b3Q7O2NvbG9yOiMxRjQ5N0QiPjxvOnA+Jm5i
-c3A7PC9vOnA+PC9zcGFuPjwvcD4NCjxkaXYgc3R5bGU9ImJvcmRlcjpub25lO2JvcmRlci1sZWZ0
-OnNvbGlkIGJsdWUgMS41cHQ7cGFkZGluZzowaW4gMGluIDBpbiA0LjBwdCI+DQo8ZGl2Pg0KPGRp
-diBzdHlsZT0iYm9yZGVyOm5vbmU7Ym9yZGVyLXRvcDpzb2xpZCAjQjVDNERGIDEuMHB0O3BhZGRp
-bmc6My4wcHQgMGluIDBpbiAwaW4iPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PGI+PHNwYW4gc3R5
-bGU9ImZvbnQtc2l6ZToxMC4wcHQ7Zm9udC1mYW1pbHk6JnF1b3Q7VGFob21hJnF1b3Q7LCZxdW90
-O3NhbnMtc2VyaWYmcXVvdDsiPkZyb206PC9zcGFuPjwvYj48c3BhbiBzdHlsZT0iZm9udC1zaXpl
-OjEwLjBwdDtmb250LWZhbWlseTomcXVvdDtUYWhvbWEmcXVvdDssJnF1b3Q7c2Fucy1zZXJpZiZx
-dW90OyI+IGt2bWFybS1ib3VuY2VzQGxpc3RzLmNzLmNvbHVtYmlhLmVkdSBbbWFpbHRvOmt2bWFy
-bS1ib3VuY2VzQGxpc3RzLmNzLmNvbHVtYmlhLmVkdV0NCjxiPk9uIEJlaGFsZiBPZiA8L2I+SG9u
-Z2JvIFpoYW5nPGJyPg0KPGI+U2VudDo8L2I+IFdlZG5lc2RheSwgTm92ZW1iZXIgMTIsIDIwMTQg
-MzowOCBQTTxicj4NCjxiPlRvOjwvYj4gQW50b25pb3MgTW90YWtpczxicj4NCjxiPkNjOjwvYj4g
-b3BlbiBsaXN0OlZGSU8gRFJJVkVSOyB3aWxsLmRlYWNvbkBhcm0uY29tOyBhbGV4LndpbGxpYW1z
-b25AcmVkaGF0LmNvbTsgb3BlbiBsaXN0OyBpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9y
-ZzsgdGVjaEB2aXJ0dWFsb3BlbnN5c3RlbXMuY29tOyBrdm1hcm1AbGlzdHMuY3MuY29sdW1iaWEu
-ZWR1PGJyPg0KPGI+U3ViamVjdDo8L2I+IFJlOiBbUEFUQ0ggdjkgMDMvMTldIHZmaW86IHBsYXRm
-b3JtOiBhZGQgdGhlIFZGSU8gUExBVEZPUk0gbW9kdWxlIHRvIEtjb25maWc8bzpwPjwvbzpwPjwv
-c3Bhbj48L3A+DQo8L2Rpdj4NCjwvZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PG86cD4mbmJz
-cDs8L286cD48L3A+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PG86cD4mbmJzcDs8L286
-cD48L3A+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PG86cD4mbmJzcDs8L286cD48L3A+
-DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+T24gMjggT2N0b2JlciAyMDE0IDAyOjA3LCBB
-bnRvbmlvcyBNb3Rha2lzICZsdDs8YSBocmVmPSJtYWlsdG86YS5tb3Rha2lzQHZpcnR1YWxvcGVu
-c3lzdGVtcy5jb20iIHRhcmdldD0iX2JsYW5rIj5hLm1vdGFraXNAdmlydHVhbG9wZW5zeXN0ZW1z
-LmNvbTwvYT4mZ3Q7IHdyb3RlOjxvOnA+PC9vOnA+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+
-RW5hYmxlIGJ1aWxkaW5nIHRoZSBWRklPIFBMQVRGT1JNIGRyaXZlciB0aGF0IGFsbG93cyB0byB1
-c2UgTGludXggcGxhdGZvcm08YnI+DQpkZXZpY2VzIHdpdGggVkZJTy48YnI+DQo8YnI+DQpTaWdu
-ZWQtb2ZmLWJ5OiBBbnRvbmlvcyBNb3Rha2lzICZsdDs8YSBocmVmPSJtYWlsdG86YS5tb3Rha2lz
-QHZpcnR1YWxvcGVuc3lzdGVtcy5jb20iPmEubW90YWtpc0B2aXJ0dWFsb3BlbnN5c3RlbXMuY29t
-PC9hPiZndDs8YnI+DQotLS08YnI+DQombmJzcDtkcml2ZXJzL3ZmaW8vS2NvbmZpZyZuYnNwOyAm
-bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7fCAxICYjNDM7PGJyPg0KJm5ic3A7ZHJp
-dmVycy92ZmlvL01ha2VmaWxlJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyB8IDEg
-JiM0Mzs8YnI+DQombmJzcDtkcml2ZXJzL3ZmaW8vcGxhdGZvcm0vS2NvbmZpZyZuYnNwOyB8IDkg
-JiM0MzsmIzQzOyYjNDM7JiM0MzsmIzQzOyYjNDM7JiM0MzsmIzQzOyYjNDM7PGJyPg0KJm5ic3A7
-ZHJpdmVycy92ZmlvL3BsYXRmb3JtL01ha2VmaWxlIHwgNCAmIzQzOyYjNDM7JiM0MzsmIzQzOzxi
-cj4NCiZuYnNwOzQgZmlsZXMgY2hhbmdlZCwgMTUgaW5zZXJ0aW9ucygmIzQzOyk8YnI+DQombmJz
-cDtjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy92ZmlvL3BsYXRmb3JtL0tjb25maWc8YnI+DQom
-bmJzcDtjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy92ZmlvL3BsYXRmb3JtL01ha2VmaWxlPGJy
-Pg0KPGJyPg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmZpby9LY29uZmlnIGIvZHJpdmVycy92Zmlv
-L0tjb25maWc8YnI+DQppbmRleCBhMGFiZTA0Li45NjJmYjgwIDEwMDY0NDxicj4NCi0tLSBhL2Ry
-aXZlcnMvdmZpby9LY29uZmlnPGJyPg0KJiM0MzsmIzQzOyYjNDM7IGIvZHJpdmVycy92ZmlvL0tj
-b25maWc8YnI+DQpAQCAtMjcsMyAmIzQzOzI3LDQgQEAgbWVudWNvbmZpZyBWRklPPGJyPg0KJm5i
-c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyBJZiB5b3UgZG9uJ3Qga25vdyB3aGF0IHRv
-IGRvIGhlcmUsIHNheSBOLjxicj4NCjxicj4NCiZuYnNwO3NvdXJjZSAmcXVvdDtkcml2ZXJzL3Zm
-aW8vcGNpL0tjb25maWcmcXVvdDs8YnI+DQomIzQzO3NvdXJjZSAmcXVvdDtkcml2ZXJzL3ZmaW8v
-cGxhdGZvcm0vS2NvbmZpZyZxdW90Ozxicj4NCmRpZmYgLS1naXQgYS9kcml2ZXJzL3ZmaW8vTWFr
-ZWZpbGUgYi9kcml2ZXJzL3ZmaW8vTWFrZWZpbGU8YnI+DQppbmRleCAwYjAzNWIxLi5kYWRmMGNh
-IDEwMDY0NDxicj4NCi0tLSBhL2RyaXZlcnMvdmZpby9NYWtlZmlsZTxicj4NCiYjNDM7JiM0Mzsm
-IzQzOyBiL2RyaXZlcnMvdmZpby9NYWtlZmlsZTxicj4NCkBAIC0zLDMgJiM0MzszLDQgQEAgb2Jq
-LSQoQ09ORklHX1ZGSU9fSU9NTVVfVFlQRTEpICYjNDM7PSB2ZmlvX2lvbW11X3R5cGUxLm88YnI+
-DQombmJzcDtvYmotJChDT05GSUdfVkZJT19JT01NVV9TUEFQUl9UQ0UpICYjNDM7PSB2ZmlvX2lv
-bW11X3NwYXByX3RjZS5vPGJyPg0KJm5ic3A7b2JqLSQoQ09ORklHX1ZGSU9fU1BBUFJfRUVIKSAm
-IzQzOz0gdmZpb19zcGFwcl9lZWgubzxicj4NCiZuYnNwO29iai0kKENPTkZJR19WRklPX1BDSSkg
-JiM0Mzs9IHBjaS88YnI+DQomIzQzO29iai0kKENPTkZJR19WRklPX1BMQVRGT1JNKSAmIzQzOz0g
-cGxhdGZvcm0vPGJyPg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmZpby9wbGF0Zm9ybS9LY29uZmln
-IGIvZHJpdmVycy92ZmlvL3BsYXRmb3JtL0tjb25maWc8YnI+DQpuZXcgZmlsZSBtb2RlIDEwMDY0
-NDxicj4NCmluZGV4IDAwMDAwMDAuLmM1MWFmMTc8YnI+DQotLS0gL2Rldi9udWxsPGJyPg0KJiM0
-MzsmIzQzOyYjNDM7IGIvZHJpdmVycy92ZmlvL3BsYXRmb3JtL0tjb25maWc8YnI+DQpAQCAtMCww
-ICYjNDM7MSw5IEBAPGJyPg0KJiM0Mztjb25maWcgVkZJT19QTEFURk9STTxicj4NCiYjNDM7Jm5i
-c3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7dHJpc3RhdGUgJnF1b3Q7VkZJTyBzdXBwb3J0IGZvciBw
-bGF0Zm9ybSBkZXZpY2VzJnF1b3Q7PGJyPg0KJiM0MzsmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
-cDtkZXBlbmRzIG9uIFZGSU8gJmFtcDsmYW1wOyBFVkVOVEZEICZhbXA7JmFtcDsgQVJNPG86cD48
-L286cD48L3A+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PG86cD4mbmJzcDs8L286cD48
-L3A+DQo8L2Rpdj4NCjxkaXY+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj5IaSBBbnRvbmlvcyw8bzpw
-PjwvbzpwPjwvcD4NCjwvZGl2Pg0KPGRpdj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPklzIHRoaXMg
-b25seSBmb3IgQVJNPyBob3cgYWJvdXQgWDg2IGFuZCBQb3dlclBDPzxvOnA+PC9vOnA+PC9wPg0K
-PC9kaXY+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+T24gRnJlZXNjYWxlJ3MgUG93ZXJQ
-QyBwbGF0Zm9ybSwgdGhlIElPTU1VIGlzIGNhbGxlZCBQQU1VIChQZXJpcGhlcmFsIEFjY2VzcyBN
-YW5hZ2VtZW50IFVuaXQpLCBhbmQgSSBhbSB0cnlpbmcgdG8gdXNlIHRoaXMgVkZJTyBmcmFtZXdv
-cmsgb24gaXQuPG86cD48L286cD48L3A+DQo8L2Rpdj4NCjxkaXY+DQo8cCBjbGFzcz0iTXNvTm9y
-bWFsIj4mbmJzcDs8bzpwPjwvbzpwPjwvcD4NCjwvZGl2Pg0KPGJsb2NrcXVvdGUgc3R5bGU9ImJv
-cmRlcjpub25lO2JvcmRlci1sZWZ0OnNvbGlkICNDQ0NDQ0MgMS4wcHQ7cGFkZGluZzowaW4gMGlu
-IDBpbiA2LjBwdDttYXJnaW4tbGVmdDo0LjhwdDttYXJnaW4tcmlnaHQ6MGluIj4NCjxwIGNsYXNz
-PSJNc29Ob3JtYWwiPiYjNDM7Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7aGVscDxicj4NCiYj
-NDM7Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwO1N1cHBvcnQgZm9yIHBsYXRmb3Jt
-IGRldmljZXMgd2l0aCBWRklPLiBUaGlzIGlzIHJlcXVpcmVkIHRvIG1ha2U8YnI+DQomIzQzOyZu
-YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDt1c2Ugb2YgcGxhdGZvcm0gZGV2aWNlcyBw
-cmVzZW50IG9uIHRoZSBzeXN0ZW0gdXNpbmcgdGhlIFZGSU88YnI+DQomIzQzOyZuYnNwOyAmbmJz
-cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDtmcmFtZXdvcmsuPGJyPg0KJiM0Mzs8YnI+DQomIzQzOyZu
-YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDtJZiB5b3UgZG9uJ3Qga25vdyB3aGF0IHRv
-IGRvIGhlcmUsIHNheSBOLjxicj4NCmRpZmYgLS1naXQgYS9kcml2ZXJzL3ZmaW8vcGxhdGZvcm0v
-TWFrZWZpbGUgYi9kcml2ZXJzL3ZmaW8vcGxhdGZvcm0vTWFrZWZpbGU8YnI+DQpuZXcgZmlsZSBt
-b2RlIDEwMDY0NDxicj4NCmluZGV4IDAwMDAwMDAuLjI3OTg2MmI8YnI+DQotLS0gL2Rldi9udWxs
-PGJyPg0KJiM0MzsmIzQzOyYjNDM7IGIvZHJpdmVycy92ZmlvL3BsYXRmb3JtL01ha2VmaWxlPGJy
-Pg0KQEAgLTAsMCAmIzQzOzEsNCBAQDxicj4NCiYjNDM7PGJyPg0KJiM0Mzt2ZmlvLXBsYXRmb3Jt
-LXkgOj0gdmZpb19wbGF0Zm9ybS5vIHZmaW9fcGxhdGZvcm1fY29tbW9uLm88YnI+DQomIzQzOzxi
-cj4NCiYjNDM7b2JqLSQoQ09ORklHX1ZGSU9fUExBVEZPUk0pICYjNDM7PSB2ZmlvLXBsYXRmb3Jt
-Lm88YnI+DQo8c3BhbiBjbGFzcz0iaG9lbnpiIj48c3BhbiBzdHlsZT0iY29sb3I6Izg4ODg4OCI+
-LS08L3NwYW4+PC9zcGFuPjxzcGFuIHN0eWxlPSJjb2xvcjojODg4ODg4Ij48YnI+DQo8c3BhbiBj
-bGFzcz0iaG9lbnpiIj4yLjEuMTwvc3Bhbj48YnI+DQo8YnI+DQo8c3BhbiBjbGFzcz0iaG9lbnpi
-Ij4tLTwvc3Bhbj48YnI+DQo8c3BhbiBjbGFzcz0iaG9lbnpiIj5UbyB1bnN1YnNjcmliZSBmcm9t
-IHRoaXMgbGlzdDogc2VuZCB0aGUgbGluZSAmcXVvdDt1bnN1YnNjcmliZSBsaW51eC1rZXJuZWwm
-cXVvdDsgaW48L3NwYW4+PGJyPg0KPHNwYW4gY2xhc3M9ImhvZW56YiI+dGhlIGJvZHkgb2YgYSBt
-ZXNzYWdlIHRvIDxhIGhyZWY9Im1haWx0bzptYWpvcmRvbW9Admdlci5rZXJuZWwub3JnIj4NCm1h
-am9yZG9tb0B2Z2VyLmtlcm5lbC5vcmc8L2E+PC9zcGFuPjxicj4NCjxzcGFuIGNsYXNzPSJob2Vu
-emIiPk1vcmUgbWFqb3Jkb21vIGluZm8gYXQmbmJzcDsgPGEgaHJlZj0iaHR0cDovL3ZnZXIua2Vy
-bmVsLm9yZy9tYWpvcmRvbW8taW5mby5odG1sIiB0YXJnZXQ9Il9ibGFuayI+DQpodHRwOi8vdmdl
-ci5rZXJuZWwub3JnL21ham9yZG9tby1pbmZvLmh0bWw8L2E+PC9zcGFuPjxicj4NCjxzcGFuIGNs
-YXNzPSJob2VuemIiPlBsZWFzZSByZWFkIHRoZSBGQVEgYXQmbmJzcDsgPGEgaHJlZj0iaHR0cDov
-L3d3dy50dXgub3JnL2xrbWwvIiB0YXJnZXQ9Il9ibGFuayI+DQpodHRwOi8vd3d3LnR1eC5vcmcv
-bGttbC88L2E+PC9zcGFuPjwvc3Bhbj48bzpwPjwvbzpwPjwvcD4NCjwvYmxvY2txdW90ZT4NCjwv
-ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PG86cD4mbmJzcDs8L286cD48L3A+DQo8L2Rpdj4N
-CjwvZGl2Pg0KPC9kaXY+DQo8L2Rpdj4NCjwvYm9keT4NCjwvaHRtbD4NCg==
-
---_000_d3c4a63eaa294f1987a797a39eed4650BN3PR0301MB1265namprd03_--
-
---===============1886105993178434335==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============1886105993178434335==--
+Eric
+> +
+> +	ret = vfio_add_group_dev(dev, &vfio_platform_ops, vdev);
+> +	if (ret) {
+> +		iommu_group_put(group);
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(vfio_platform_probe_common);
+> +
+> +struct vfio_platform_device *vfio_platform_remove_common(struct device *dev)
+> +{
+> +	struct vfio_platform_device *vdev;
+> +
+> +	vdev = vfio_del_group_dev(dev);
+> +	if (vdev)
+> +		iommu_group_put(dev->iommu_group);
+> +
+> +	return vdev;
+> +}
+> +EXPORT_SYMBOL_GPL(vfio_platform_remove_common);
+> diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
+> new file mode 100644
+> index 0000000..062b92d
+> --- /dev/null
+> +++ b/drivers/vfio/platform/vfio_platform_private.h
+> @@ -0,0 +1,36 @@
+> +/*
+> + * Copyright (C) 2013 - Virtual Open Systems
+> + * Author: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License, version 2, as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + */
+> +
+> +#ifndef VFIO_PLATFORM_PRIVATE_H
+> +#define VFIO_PLATFORM_PRIVATE_H
+> +
+> +struct vfio_platform_device {
+> +	/*
+> +	 * These fields should be filled by the bus specific binder
+> +	 */
+> +	void		*opaque;
+> +	const char	*name;
+> +	uint32_t	flags;
+> +	/* callbacks to discover device resources */
+> +	struct resource*
+> +		(*get_resource)(struct vfio_platform_device *vdev, int i);
+> +	int	(*get_irq)(struct vfio_platform_device *vdev, int i);
+> +};
+> +
+> +extern int vfio_platform_probe_common(struct vfio_platform_device *vdev,
+> +				      struct device *dev);
+> +extern struct vfio_platform_device *vfio_platform_remove_common
+> +				     (struct device *dev);
+> +
+> +#endif /* VFIO_PLATFORM_PRIVATE_H */
+> 
