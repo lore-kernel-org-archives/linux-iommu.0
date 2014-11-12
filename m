@@ -1,8 +1,8 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Subject: Re: [PATCH v9 13/19] vfio/platform: support for level sensitive
 	interrupts
-Date: Wed, 12 Nov 2014 16:03:30 +0100
-Message-ID: <546376C2.6050109@linaro.org>
+Date: Wed, 12 Nov 2014 16:03:36 +0100
+Message-ID: <546376C8.1040101@linaro.org>
 References: <1414433284-31719-1-git-send-email-a.motakis@virtualopensystems.com>	
 	<1414433284-31719-14-git-send-email-a.motakis@virtualopensystems.com>
 	<1414784196.27420.328.camel@ul30vt.home>
@@ -158,7 +158,7 @@ Antonios, Alex,
 When turning forwarded IRQ modality on/off, I guess I now should the
 swap the handlers (free_irq, request_irq) adding some extra complexity
 in the driver compared to the previous implementation. Do you confirm
-this is the prefered way?
+this is the preferred way?
 
 Thanks
 
