@@ -1,47 +1,26 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/amd: fix accounting of device_state
-Date: Wed, 12 Nov 2014 15:02:47 +0100
-Message-ID: <20141112140247.GU10744@8bytes.org>
-References: <1415614899-12602-1-git-send-email-oded.gabbay@amd.com>
+Subject: Re: [PATCH v6 05/12] memory: Add NVIDIA Tegra memory controller
+ support
+Date: Wed, 12 Nov 2014 15:21:50 +0100
+Message-ID: <20141112142150.GV10744@8bytes.org>
+References: <1415376063-17205-1-git-send-email-thierry.reding@gmail.com>
+ <1415376063-17205-6-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1415614899-12602-1-git-send-email-oded.gabbay-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <1415376063-17205-6-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, David Riley <davidriley-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Peter De Schrijver <pdeschrijver-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 10, 2014 at 12:21:39PM +0200, Oded Gabbay wrote:
-> This patch fixes a bug in the accounting of the device_state.
-> In the current code, the device_state was put (decremented) too many times,
-> which sometimes lead to the driver getting stuck permanently in
-> put_device_state_wait(). That happen because the device_state->count would go
-> below zero, which is never supposed to happen.
-> 
-> The root cause is that the device_state was decremented in put_pasid_state()
-> and put_pasid_state_wait() but also in all the functions that call those
-> functions. Therefore, the device_state was decremented twice in each of these
-> code paths.
-> 
-> The fix is to decouple the device_state accounting from the pasid_state
-> accounting - remove the call to put_device_state() from the
-> put_pasid_state() and the put_pasid_state_wait())
+On Fri, Nov 07, 2014 at 05:00:56PM +0100, Thierry Reding wrote:
+>  drivers/iommu/tegra-smmu.c               | 1295 ------------------------------
+>  drivers/memory/tegra/smmu.c              |  716 +++++++++++++++++
 
-Right, there was a double drop of the reference to device state. An
-alternative would have been to remove the put_device_state call at the
-end of the amd_iommu_unbind_pasid() function. But this patch works as
-well and is slightly better, so: Applied, thanks.
+This new smmu.c is an IOMMU driver, why do you put it in drivers/memory
+and not in drivers/iommu?
 
 
 	Joerg
