@@ -1,18 +1,16 @@
-From: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 05/13] KVM: Update IRTE according to guest interrupt
-	configuration changes
-Date: Wed, 12 Nov 2014 10:56:26 +0100
-Message-ID: <54632ECA.4070903@redhat.com>
-References: <E959C4978C3B6342920538CF579893F00226EF05@SHSMSX104.ccr.corp.intel.com>
-	<5461EC99.1000101@redhat.com>
-	<A9667DDFB95DB7438FA9D7D576C3D87E0ABDBB25@SHSMSX104.ccr.corp.intel.com>
-	<546324F4.8010002@redhat.com>
-	<E959C4978C3B6342920538CF579893F00227680F@SHSMSX104.ccr.corp.intel.com>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: Re: [PATCH v9 03/19] vfio: platform: add the VFIO PLATFORM module to
+	Kconfig
+Date: Wed, 12 Nov 2014 10:57:23 +0100
+Message-ID: <CAG8rG2y8T0i__-8JAnsscT3LRZOSsdSK5qJ5sPFaCirrmZZMqw@mail.gmail.com>
+References: <1414433284-31719-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1414433284-31719-4-git-send-email-a.motakis@virtualopensystems.com>
+	<CAOhR-w1nARQqtUX3nLBZYNg3PufDJMkOYeiJmpaz4fzPSZAmaQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <E959C4978C3B6342920538CF579893F00227680F-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+In-Reply-To: <CAOhR-w1nARQqtUX3nLBZYNg3PufDJMkOYeiJmpaz4fzPSZAmaQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,24 +20,93 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Hongbo Zhang <hongbo.zhang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hello Hongbo,
 
-
-On 12/11/2014 10:19, Wu, Feng wrote:
->> You can certainly backport these patches to distros that do not have
->> VFIO.  But upstream we should work on VFIO first.  VFIO has feature
->> parity with legacy device assignment, and adding a new feature that is
->> not in VFIO would be a bad idea.
+On Wed, Nov 12, 2014 at 10:52 AM, Hongbo Zhang <hongbo.zhang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+> On 28 October 2014 02:07, Antonios Motakis
+> <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org> wrote:
 >>
->> By the way, do you have benchmark results for it?  We have not been able
->> to see any performance improvement for APICv on e.g. netperf.
-> 
-> Do you mean benchmark results for APICv itself or VT-d Posted-Interrtups?
+>> Enable building the VFIO PLATFORM driver that allows to use Linux platform
+>> devices with VFIO.
+>>
+>> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+>> ---
+>>  drivers/vfio/Kconfig           | 1 +
+>>  drivers/vfio/Makefile          | 1 +
+>>  drivers/vfio/platform/Kconfig  | 9 +++++++++
+>>  drivers/vfio/platform/Makefile | 4 ++++
+>>  4 files changed, 15 insertions(+)
+>>  create mode 100644 drivers/vfio/platform/Kconfig
+>>  create mode 100644 drivers/vfio/platform/Makefile
+>>
+>> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+>> index a0abe04..962fb80 100644
+>> --- a/drivers/vfio/Kconfig
+>> +++ b/drivers/vfio/Kconfig
+>> @@ -27,3 +27,4 @@ menuconfig VFIO
+>>           If you don't know what to do here, say N.
+>>
+>>  source "drivers/vfio/pci/Kconfig"
+>> +source "drivers/vfio/platform/Kconfig"
+>> diff --git a/drivers/vfio/Makefile b/drivers/vfio/Makefile
+>> index 0b035b1..dadf0ca 100644
+>> --- a/drivers/vfio/Makefile
+>> +++ b/drivers/vfio/Makefile
+>> @@ -3,3 +3,4 @@ obj-$(CONFIG_VFIO_IOMMU_TYPE1) += vfio_iommu_type1.o
+>>  obj-$(CONFIG_VFIO_IOMMU_SPAPR_TCE) += vfio_iommu_spapr_tce.o
+>>  obj-$(CONFIG_VFIO_SPAPR_EEH) += vfio_spapr_eeh.o
+>>  obj-$(CONFIG_VFIO_PCI) += pci/
+>> +obj-$(CONFIG_VFIO_PLATFORM) += platform/
+>> diff --git a/drivers/vfio/platform/Kconfig b/drivers/vfio/platform/Kconfig
+>> new file mode 100644
+>> index 0000000..c51af17
+>> --- /dev/null
+>> +++ b/drivers/vfio/platform/Kconfig
+>> @@ -0,0 +1,9 @@
+>> +config VFIO_PLATFORM
+>> +       tristate "VFIO support for platform devices"
+>> +       depends on VFIO && EVENTFD && ARM
+>
+> Hi Antonios,
+> Is this only for ARM? how about X86 and PowerPC?
+> On Freescale's PowerPC platform, the IOMMU is called PAMU (Peripheral
+> Access Management Unit), and I am trying to use this VFIO framework on
+> it.
+>
 
-Especially for VT-d posted interrupts---but it'd be great to know which
-workloads see the biggest speedup from APICv.
+In principle it should be working on any platform with such devices;
+as long as you have a VFIO IOMMU driver for the PAMU (on ARM we use
+VFIO PLATFORM for the device, with VFIO IOMMU TYPE1 for the IOMMU).
 
-Paolo
+So if you have a suitable IOMMU driver for your target, feel free to
+test it, and let us know of the results.
+
+>>
+>> +       help
+>> +         Support for platform devices with VFIO. This is required to make
+>> +         use of platform devices present on the system using the VFIO
+>> +         framework.
+>> +
+>> +         If you don't know what to do here, say N.
+>> diff --git a/drivers/vfio/platform/Makefile b/drivers/vfio/platform/Makefile
+>> new file mode 100644
+>> index 0000000..279862b
+>> --- /dev/null
+>> +++ b/drivers/vfio/platform/Makefile
+>> @@ -0,0 +1,4 @@
+>> +
+>> +vfio-platform-y := vfio_platform.o vfio_platform_common.o
+>> +
+>> +obj-$(CONFIG_VFIO_PLATFORM) += vfio-platform.o
+>> --
+>> 2.1.1
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+>> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> Please read the FAQ at  http://www.tux.org/lkml/
