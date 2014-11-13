@@ -1,73 +1,76 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v7 02/12] amba: Add Kconfig file
-Date: Thu, 13 Nov 2014 10:32:27 +0100
-Message-ID: <1415871157-21968-3-git-send-email-thierry.reding@gmail.com>
+Subject: [PATCH v7 04/12] of: Add NVIDIA Tegra memory controller binding
+Date: Thu, 13 Nov 2014 10:32:29 +0100
+Message-ID: <1415871157-21968-5-git-send-email-thierry.reding@gmail.com>
 References: <1415871157-21968-1-git-send-email-thierry.reding@gmail.com>
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <1415871157-21968-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
-Cc: Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, David Riley <davidriley-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Peter De Schrijver <pdeschrijver-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, David Riley <davidriley-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Peter De Schrijver <pdeschrijver-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-Rather than duplicate the ARM_AMBA Kconfig symbol in both 32-bit and
-64-bit ARM architectures, move the common definition to drivers/amba
-where dependent drivers will be located.
+The memory controller on NVIDIA Tegra exposes various knobs that can be
+used to tune the behaviour of the clients attached to it.
+
+In addition, the memory controller implements an SMMU (IOMMU) which can
+translate I/O virtual addresses to physical addresses for clients. This
+is useful for scatter-gather operation on devices that don't support it
+natively and for virtualization or process separation.
 
 Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
-Hi Russell, Will, Catalin,
+Changes in v3:
+- add missing clocks and clock-names properties
+- add example
 
-As explained in the cover-letter there are tight dependencies between the
-patches in this series, so for simplicity I'd like to take this patch through
-the Tegra tree with your Acked-by.
+ .../memory-controllers/nvidia,tegra-mc.txt         | 36 ++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/memory-controllers/nvidia,tegra-mc.txt
 
-Thanks,
-Thierry
-
- arch/arm/Kconfig     | 3 ---
- arch/arm64/Kconfig   | 3 ---
- drivers/amba/Kconfig | 2 ++
- 3 files changed, 2 insertions(+), 6 deletions(-)
- create mode 100644 drivers/amba/Kconfig
-
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 9d580d0e89a9..21fbf144a9fd 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -1242,9 +1242,6 @@ source "arch/arm/common/Kconfig"
- 
- menu "Bus support"
- 
--config ARM_AMBA
--	bool
--
- config ISA
- 	bool
- 	help
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 58b657e41410..fbb2a148add4 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -169,9 +169,6 @@ endmenu
- 
- menu "Bus support"
- 
--config ARM_AMBA
--	bool
--
- config PCI
- 	bool "PCI support"
- 	help
-diff --git a/drivers/amba/Kconfig b/drivers/amba/Kconfig
+diff --git a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra-mc.txt b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra-mc.txt
 new file mode 100644
-index 000000000000..d1cba6a9b3b8
+index 000000000000..f3db93c85eea
 --- /dev/null
-+++ b/drivers/amba/Kconfig
-@@ -0,0 +1,2 @@
-+config ARM_AMBA
-+	bool
++++ b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra-mc.txt
+@@ -0,0 +1,36 @@
++NVIDIA Tegra Memory Controller device tree bindings
++===================================================
++
++Required properties:
++- compatible: Should be "nvidia,tegra<chip>-mc"
++- reg: Physical base address and length of the controller's registers.
++- clocks: Must contain an entry for each entry in clock-names.
++  See ../clocks/clock-bindings.txt for details.
++- clock-names: Must include the following entries:
++  - mc: the module's clock input
++- interrupts: The interrupt outputs from the controller.
++- #iommu-cells: Should be 1. The single cell of the IOMMU specifier defines
++  the SWGROUP of the master.
++
++This device implements an IOMMU that complies with the generic IOMMU binding.
++See ../iommu/iommu.txt for details.
++
++Example:
++--------
++
++	mc: memory-controller@0,70019000 {
++		compatible = "nvidia,tegra124-mc";
++		reg = <0x0 0x70019000 0x0 0x1000>;
++		clocks = <&tegra_car TEGRA124_CLK_MC>;
++		clock-names = "mc";
++
++		interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>;
++
++		#iommu-cells = <1>;
++	};
++
++	sdhci@0,700b0000 {
++		compatible = "nvidia,tegra124-sdhci";
++		...
++		iommus = <&mc TEGRA_SWGROUP_SDMMC1A>;
++	};
 -- 
 2.1.3
