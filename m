@@ -1,8 +1,8 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH v4 4/8] iommu: provide helper function to configure an
-	IOMMU for an of master
-Date: Fri, 14 Nov 2014 18:56:33 +0000
-Message-ID: <1415991397-9618-5-git-send-email-will.deacon@arm.com>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [RFC PATCH v4 0/8] Introduce automatic DMA configuration for
+	IOMMU masters
+Date: Fri, 14 Nov 2014 20:11:23 +0100
+Message-ID: <3630936.HRExZgJGyp@wuerfel>
 References: <1415991397-9618-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,116 +18,58 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The generic IOMMU device-tree bindings can be used to add arbitrary OF
-masters to an IOMMU with a compliant binding.
+On Friday 14 November 2014 18:56:29 Will Deacon wrote:
+> 
+> Here is the fourth iteration of the RFC I've previously posted here:
+> 
+>   RFCv1: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-August/283023.html
+>   RFCv2: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-September/283752.html
+>   RFCv3: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-September/287031.html
+> 
+> Changes since RFCv3 include:
+> 
+>   - Drastic simplification of the data structures, so that we no longer
+>     pass around lists of domains. Instead, dma-mapping is expected to
+>     allocate the domain (Joerg talked about adding a get_default_domain
+>     operation to iommu_ops).
+> 
+>   - iommu_ops is used to hold the per-instance IOMMU data
+> 
+>   - Configuration of DMA segments added to of_dma_configure
+> 
+> All feedback welcome.
+> 
+> 
 
-This patch introduces of_iommu_configure, which does exactly that.
+Overall I think this is really nice, and I don't mind this going in,
+I only have one issue with they way you use iommu_ops now:
 
-Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/Kconfig    |  2 +-
- drivers/iommu/of_iommu.c | 33 +++++++++++++++++++++++++++++++++
- include/linux/of_iommu.h |  6 ++++++
- 3 files changed, 40 insertions(+), 1 deletion(-)
+At the moment, iommu_ops is a structure that can get used for any
+number of iommus of the same type, but by putting per-device private
+data into the same structure you have to duplicate it per instance.
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index dd5112265cc9..6d13f962f156 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -15,7 +15,7 @@ if IOMMU_SUPPORT
- 
- config OF_IOMMU
-        def_bool y
--       depends on OF
-+       depends on OF && IOMMU_API
- 
- config FSL_PAMU
- 	bool "Freescale IOMMU support"
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 89b903406968..73236d3cc955 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -18,6 +18,7 @@
-  */
- 
- #include <linux/export.h>
-+#include <linux/iommu.h>
- #include <linux/limits.h>
- #include <linux/of.h>
- #include <linux/of_iommu.h>
-@@ -93,6 +94,38 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
- }
- EXPORT_SYMBOL_GPL(of_get_dma_window);
- 
-+struct iommu_ops *of_iommu_configure(struct device *dev)
-+{
-+	struct of_phandle_args iommu_spec;
-+	struct device_node *np;
-+	struct iommu_ops *ops = NULL;
-+	int idx = 0;
-+
-+	/*
-+	 * We don't currently walk up the tree looking for a parent IOMMU.
-+	 * See the `Notes:' section of
-+	 * Documentation/devicetree/bindings/iommu/iommu.txt
-+	 */
-+	while (!of_parse_phandle_with_args(dev->of_node, "iommus",
-+					   "#iommu-cells", idx,
-+					   &iommu_spec)) {
-+		np = iommu_spec.np;
-+		ops = of_iommu_get_ops(np);
-+
-+		if (!ops || !ops->of_xlate || ops->of_xlate(dev, &iommu_spec))
-+			goto err_put_node;
-+
-+		of_node_put(np);
-+		idx++;
-+	}
-+
-+	return ops;
-+
-+err_put_node:
-+	of_node_put(np);
-+	return NULL;
-+}
-+
- void __init of_iommu_init(void)
- {
- 	struct device_node *np;
-diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
-index 81447e0f68b5..7ded21c0ccdf 100644
---- a/include/linux/of_iommu.h
-+++ b/include/linux/of_iommu.h
-@@ -1,6 +1,7 @@
- #ifndef __OF_IOMMU_H
- #define __OF_IOMMU_H
- 
-+#include <linux/device.h>
- #include <linux/iommu.h>
- #include <linux/of.h>
- 
-@@ -11,6 +12,7 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
- 			     size_t *size);
- 
- extern void of_iommu_init(void);
-+extern struct iommu_ops *of_iommu_configure(struct device *dev);
- 
- #else
- 
-@@ -22,6 +24,10 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
- }
- 
- static inline void of_iommu_init(void) { }
-+static inline struct iommu_ops *of_iommu_configure(struct device *dev)
-+{
-+	return NULL;
-+}
- 
- #endif	/* CONFIG_OF_IOMMU */
- 
--- 
-2.1.1
+I think rather than adding a .priv pointer to iommu_ops, we should do
+the same thing that a lot of other subsystems have:
+
+/* generic structure */
+struct iommu {
+	struct iommu_ops *ops;
+	/* possibly other generic per-instance members */
+};
+
+/* driver specific structure */
+struct arm_smmu {
+	struct iommu iommu;
+
+	/* smmu specific members */
+};
+static inline struct arm_smmu *to_arm_smmu(struct iommu *iommu)
+{
+	return container_of(iommu, struct arm_smmu, iommu);
+}
+
+	Arnd
