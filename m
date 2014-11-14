@@ -1,8 +1,7 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH v4 3/8] iommu: add new iommu_ops callback for adding an OF
-	device
-Date: Fri, 14 Nov 2014 18:56:32 +0000
-Message-ID: <1415991397-9618-4-git-send-email-will.deacon@arm.com>
+Subject: [RFC PATCH v4 7/8] arm: call iommu_init before of_platform_populate
+Date: Fri, 14 Nov 2014 18:56:36 +0000
+Message-ID: <1415991397-9618-8-git-send-email-will.deacon@arm.com>
 References: <1415991397-9618-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,47 +21,35 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cu
 Cc: jroedel-l3A5Bk7waGM@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds a new function to the iommu_ops structure to allow an
-OF device to be added to a specific IOMMU instance using the recently
-merged generic devicetree binding for IOMMUs. The callback (of_xlate)
-takes a struct device representing the master and an of_phandle_args
-representing the IOMMU and the correspondong IDs for the new master.
+We need to ensure that the IOMMUs in the system have a chance to perform
+some basic initialisation before we start adding masters to them.
+
+This patch adds a call to of_iommu_init before of_platform_populate.
 
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- include/linux/iommu.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm/kernel/setup.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 7b83f9f8e11d..415c7613d02c 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -21,6 +21,7 @@
- 
- #include <linux/errno.h>
- #include <linux/err.h>
-+#include <linux/of.h>
- #include <linux/types.h>
- #include <trace/events/iommu.h>
- 
-@@ -102,6 +103,7 @@ enum iommu_attr {
-  * @remove_device: remove device from iommu grouping
-  * @domain_get_attr: Query domain attributes
-  * @domain_set_attr: Change domain attributes
-+ * @of_xlate: add OF master IDs to iommu grouping
-  * @pgsize_bitmap: bitmap of supported page sizes
-  * @priv: per-instance data private to the iommu driver
-  */
-@@ -133,6 +135,10 @@ struct iommu_ops {
- 	/* Get the numer of window per domain */
- 	u32 (*domain_get_windows)(struct iommu_domain *domain);
- 
-+#ifdef CONFIG_OF_IOMMU
-+	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
-+#endif
-+
- 	unsigned long pgsize_bitmap;
- 	void *priv;
- };
+diff --git a/arch/arm/kernel/setup.c b/arch/arm/kernel/setup.c
+index c03106378b49..1cfc94aa7fa2 100644
+--- a/arch/arm/kernel/setup.c
++++ b/arch/arm/kernel/setup.c
+@@ -18,6 +18,7 @@
+ #include <linux/bootmem.h>
+ #include <linux/seq_file.h>
+ #include <linux/screen_info.h>
++#include <linux/of_iommu.h>
+ #include <linux/of_platform.h>
+ #include <linux/init.h>
+ #include <linux/kexec.h>
+@@ -806,6 +807,7 @@ static int __init customize_machine(void)
+ 	 * machine from the device tree, if no callback is provided,
+ 	 * otherwise we would always need an init_machine callback.
+ 	 */
++	of_iommu_init();
+ 	if (machine_desc->init_machine)
+ 		machine_desc->init_machine();
+ #ifdef CONFIG_OF
 -- 
 2.1.1
