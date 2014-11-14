@@ -1,212 +1,240 @@
-From: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: Re: [PATCH 1/1] x86/iommu: fix incorrect bit operations in setting
-	values
-Date: Fri, 14 Nov 2014 09:29:51 +0800
-Message-ID: <54655B0F.5070204@hp.com>
-References: <1415172619-4801-1-git-send-email-zhen-hual@hp.com>
-	<20141112112832.GA3334@dhcp-17-108.nay.redhat.com>
-	<546474AF.2030902@hp.com>
-	<20141113133708.GA1678@dhcp-17-102.nay.redhat.com>
+From: Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v7 01/12] clk: tegra: Implement memory-controller clock
+Date: Thu, 13 Nov 2014 17:53:56 -0800
+Message-ID: <20141114015356.25314.26550@quantum>
+References: <1415871157-21968-1-git-send-email-thierry.reding@gmail.com>
+ <1415871157-21968-2-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20141113133708.GA1678-2coKmSd1Zb65/ot466HkER/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Minfei Huang <mhuang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1415871157-21968-2-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, David Riley <davidriley-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Peter De Schrijver <pdeschrijver-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/13/2014 09:37 PM, Baoquan He wrote:
-> On 11/13/14 at 05:06pm, Li, ZhenHua wrote:
->> Minfei,
->> Thanks for your testing.
->> On my system, I got error messages:
->>
->> [    8.019096] usb usb2: New USB device strings: Mfr=3, Product=2,
->> SerialNumber=1
->> [    8.019617] dmar: DRHD: handling fault status reg 102
->> [    8.019621] dmar: DMAR:[DMA Read] Request device [01:00.0] fault
->> addr fff6a000
->> [    8.019621] DMAR:[fault reason 06] PTE Read access is not set
->> [    8.019627] dmar: DRHD: handling fault status reg 202
->> [    8.019631] dmar: DMAR:[DMA Read] Request device [21:00.0] fault
->> addr fff6a000
->> [    8.019631] DMAR:[fault reason 06] PTE Read access is not set
->> [    8.019638] dmar: DRHD: handling fault status reg 202
->> [    8.019641] dmar: DMAR:[DMA Read] Request device [41:00.0] fault
->> addr fff6a000
->> [    8.019641] DMAR:[fault reason 06] PTE Read access is not set
->> [    8.019647] dmar: DRHD: handling fault status reg 202
->> [    8.019651] dmar: DMAR:[DMA Read] Request device [61:00.0] fault
->> addr fff6a000
->> [    8.019651] DMAR:[fault reason 06] PTE Read access is not set
->>
->> And this patch can fix this.
->>
->>
->> The reason you do not get error messages may be there is no ongoing DMA
->> request on your PCI devices when kdump kernel boots, I am not sure of
->> this.
->
-> I think Minfei means he applied this patch, so no error message is got.
-> The patches he listed includes this one:
->
-> 0006-x86-iommu-fix-incorrect-bit-operations-in-setting-va.patch
-Oh, thank you very much for your correction.
->
-> Hi Zhenhua,
->
-> Below is abstracted from Joerg's comments which he and David discussed
-> and get to this conclusion. So the 1st step is the same as your patches,
-> how do you think the 2nd step?
->
-> 	1. If the VT-d driver finds the IOMMU enabled, it reuses its
->             root-context table. This way the IOMMU must not be disabled
->             and re-enabled, eliminating the race we have now.
->             Other data structures like the context-entries are copied
->             over from the old kernel.  We basically keep all mappings
->             from the old kernel, allowing any in-flight DMA to succeed.
->             No memory or disk data corruption.
->             The issue here is, that we modify data from the old kernel
->             which is about to be dumped. But there are ways to work
->             around that.
->
->          2. When a device driver issues the first dma_map command for a
->             device, we assign a new and empty page-table, thus removing
->             all mappings from the old kernel for the device.
->             Rationale is, that at this point the device driver should
->             have reset the device to a point where all in-flight DMA is
->             canceled.
->
-1st step shows we should NOT disable the iommu when it is already 
-enabled. But current code does disable-enable. So there is still works 
-to do.
+Quoting Thierry Reding (2014-11-13 01:32:26)
+> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> 
+> The memory controller clock runs either at half or the same frequency as
+> the EMC clock.
+> 
+> Reviewed-By: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+> Mike, as I said in the cover letter there are tight dependencies between the
+> patches in this series, so I'd like to get your Acked-by on this one so I can
+> take it through the Tegra tree along with the others.
 
-I think step 2 is necessary, because when the driver initializes, the 
-device need a new map, and the old data from the old kernel can not be 
-used for the new driver.
+Acked-by: Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
-Now I am trying to implement these ideas.
-
-> Thanks
-> Baoquan
->
->>
->> Zhenhua
->> On 11/12/2014 07:28 PM, Minfei Huang wrote:
->>> The kdump starts 2nd kernel without any error message when I use
->>> 3.18.0-rc4 merged last 6 patchs. The following is the message which 2nd
->>> kernel prints during booting.
->>>
->>> Patchset:
->>> 	0001-iommu-vt-d-Update-iommu_attach_domain-and-its-caller.patch
->>> 	0002-iommu-vt-d-Items-required-for-kdump.patch
->>> 	0003-iommu-vt-d-data-types-and-functions-used-for-kdump.patch
->>> 	0004-iommu-vt-d-Add-domain-id-functions.patch
->>> 	0005-iommu-vt-d-enable-kdump-support-in-iommu-module.patch
->>> 	0006-x86-iommu-fix-incorrect-bit-operations-in-setting-va.patch
->>>
->>> log:
->>> [    1.689604] IOMMU intel_iommu_in_crashdump = true
->>> [    1.694310] IOMMU Skip disabling iommu hardware translations
->>> [    1.699987] DMAR: No ATSR found
->>> [    1.703151] IOMMU Copying translate tables from panicked kernel
->>> [    1.710786] IOMMU: root_new_virt:0xffff8800296ec000 phys:0x0000296ec000
->>> [    1.717401] IOMMU:0 Domain ids from panicked kernel:
->>> [    1.722364] DID did:13(0x000d)
->>> [    1.725424] DID did:12(0x000c)
->>> [    1.728482] DID did:11(0x000b)
->>> [    1.731542] DID did:10(0x000a)
->>> [    1.734603] DID did:6(0x0006)
->>> [    1.737574] DID did:7(0x0007)
->>> [    1.740549] DID did:5(0x0005)
->>> [    1.743522] DID did:9(0x0009)
->>> [    1.746495] DID did:8(0x0008)
->>> [    1.749467] DID did:4(0x0004)
->>> [    1.752439] DID did:3(0x0003)
->>> [    1.755413] DID did:2(0x0002)
->>> [    1.758385] DID did:0(0x0000)
->>> [    1.761357] DID did:1(0x0001)
->>> [    1.764331] ----------------------------------------
->>> [    1.769302] IOMMU 0 0xfed50000: using Queued invalidation
->>>
->>> On 11/05/14 at 03:30pm, Li, Zhen-Hua wrote:
->>>> The function context_set_address_root() and set_root_value are setting new
->>>> address in a wrong way, and this patch is trying to fix this problem.
->>>>
->>>> According to Intel Vt-d specs(Feb 2011, Revision 1.3), Chapter 9.1 and 9.2,
->>>> field ctp in root entry is using bits 12:63, field asr in context entry is
->>>> using bits 12:63.
->>>>
->>>> To set these fields, the following functions are used:
->>>> static inline void context_set_address_root(struct context_entry *context,
->>>>          unsigned long value);
->>>> and
->>>> static inline void set_root_value(struct root_entry *root, unsigned long value)
->>>>
->>>> But they are using an invalid method to set these fields, in current code, only
->>>> a '|' operator is used to set it. This will not set the asr to the expected
->>>> value if it has an old value.
->>>>
->>>> For example:
->>>> Before calling this function,
->>>> 	context->lo = 0x3456789012111;
->>>> 	value = 0x123456789abcef12;
->>>>
->>>> After we call context_set_address_root(context, value), expected result is
->>>> 	context->lo == 0x123456789abce111;
->>>>
->>>> But the actual result is:
->>>> 	context->lo == 0x1237577f9bbde111;
->>>>
->>>> So we need to clear bits 12:63 before setting the new value, this will fix
->>>> this problem.
->>>>
->>>> Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
->>>> ---
->>>>   drivers/iommu/intel-iommu.c | 2 ++
->>>>   1 file changed, 2 insertions(+)
->>>>
->>>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->>>> index a27d6cb..11ac47b 100644
->>>> --- a/drivers/iommu/intel-iommu.c
->>>> +++ b/drivers/iommu/intel-iommu.c
->>>> @@ -195,6 +195,7 @@ static inline void set_root_present(struct root_entry *root)
->>>>   }
->>>>   static inline void set_root_value(struct root_entry *root, unsigned long value)
->>>>   {
->>>> +	root->val &= ~VTD_PAGE_MASK;
->>>>   	root->val |= value & VTD_PAGE_MASK;
->>>>   }
->>>>
->>>> @@ -247,6 +248,7 @@ static inline void context_set_translation_type(struct context_entry *context,
->>>>   static inline void context_set_address_root(struct context_entry *context,
->>>>   					    unsigned long value)
->>>>   {
->>>> +	context->lo &= ~VTD_PAGE_MASK;
->>>>   	context->lo |= value & VTD_PAGE_MASK;
->>>>   }
->>>>
->>>> --
->>>> 2.0.0-rc0
->>>>
->>>> --
->>>> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
->>>> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
->>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>> Please read the FAQ at  http://www.tux.org/lkml/
->>
->>
->> _______________________________________________
->> kexec mailing list
->> kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
->> http://lists.infradead.org/mailman/listinfo/kexec
+> 
+> Thanks,
+> Thierry
+> 
+> Changes in v4:
+> - use name and parent name parameters passed in when registering clock
+> 
+> Changes in v3:
+> - split registration into a separate function that can be reused for all
+>   SoC generations, but pass in the name and parent parameters for
+>   clarity as well as the register address (in case it ever changes) and
+>   the EMC spin-lock since it isn't globally available
+> 
+>  drivers/clk/tegra/clk-divider.c          | 13 +++++++++++++
+>  drivers/clk/tegra/clk-tegra114.c         |  7 ++++++-
+>  drivers/clk/tegra/clk-tegra124.c         |  7 ++++++-
+>  drivers/clk/tegra/clk-tegra20.c          |  8 +++++++-
+>  drivers/clk/tegra/clk-tegra30.c          |  7 ++++++-
+>  drivers/clk/tegra/clk.h                  |  2 ++
+>  include/dt-bindings/clock/tegra114-car.h |  2 +-
+>  include/dt-bindings/clock/tegra124-car.h |  2 +-
+>  include/dt-bindings/clock/tegra20-car.h  |  2 +-
+>  9 files changed, 43 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/clk/tegra/clk-divider.c b/drivers/clk/tegra/clk-divider.c
+> index 290f9c1a3749..59a5714dfe18 100644
+> --- a/drivers/clk/tegra/clk-divider.c
+> +++ b/drivers/clk/tegra/clk-divider.c
+> @@ -185,3 +185,16 @@ struct clk *tegra_clk_register_divider(const char *name,
+>  
+>         return clk;
+>  }
+> +
+> +static const struct clk_div_table mc_div_table[] = {
+> +       { .val = 0, .div = 2 },
+> +       { .val = 1, .div = 1 },
+> +       { .val = 0, .div = 0 },
+> +};
+> +
+> +struct clk *tegra_clk_register_mc(const char *name, const char *parent_name,
+> +                                 void __iomem *reg, spinlock_t *lock)
+> +{
+> +       return clk_register_divider_table(NULL, name, parent_name, 0, reg,
+> +                                         16, 1, 0, mc_div_table, lock);
+> +}
+> diff --git a/drivers/clk/tegra/clk-tegra114.c b/drivers/clk/tegra/clk-tegra114.c
+> index f760f31d05c4..0b03d2cf7264 100644
+> --- a/drivers/clk/tegra/clk-tegra114.c
+> +++ b/drivers/clk/tegra/clk-tegra114.c
+> @@ -173,6 +173,7 @@ static DEFINE_SPINLOCK(pll_d_lock);
+>  static DEFINE_SPINLOCK(pll_d2_lock);
+>  static DEFINE_SPINLOCK(pll_u_lock);
+>  static DEFINE_SPINLOCK(pll_re_lock);
+> +static DEFINE_SPINLOCK(emc_lock);
+>  
+>  static struct div_nmp pllxc_nmp = {
+>         .divm_shift = 0,
+> @@ -1228,7 +1229,11 @@ static __init void tegra114_periph_clk_init(void __iomem *clk_base,
+>                                ARRAY_SIZE(mux_pllmcp_clkm),
+>                                CLK_SET_RATE_NO_REPARENT,
+>                                clk_base + CLK_SOURCE_EMC,
+> -                              29, 3, 0, NULL);
+> +                              29, 3, 0, &emc_lock);
+> +
+> +       clk = tegra_clk_register_mc("mc", "emc_mux", clk_base + CLK_SOURCE_EMC,
+> +                                   &emc_lock);
+> +       clks[TEGRA114_CLK_MC] = clk;
+>  
+>         for (i = 0; i < ARRAY_SIZE(tegra_periph_clk_list); i++) {
+>                 data = &tegra_periph_clk_list[i];
+> diff --git a/drivers/clk/tegra/clk-tegra124.c b/drivers/clk/tegra/clk-tegra124.c
+> index e3a85842ce0c..f5f9baca7bb6 100644
+> --- a/drivers/clk/tegra/clk-tegra124.c
+> +++ b/drivers/clk/tegra/clk-tegra124.c
+> @@ -132,6 +132,7 @@ static DEFINE_SPINLOCK(pll_d2_lock);
+>  static DEFINE_SPINLOCK(pll_e_lock);
+>  static DEFINE_SPINLOCK(pll_re_lock);
+>  static DEFINE_SPINLOCK(pll_u_lock);
+> +static DEFINE_SPINLOCK(emc_lock);
+>  
+>  /* possible OSC frequencies in Hz */
+>  static unsigned long tegra124_input_freq[] = {
+> @@ -1127,7 +1128,11 @@ static __init void tegra124_periph_clk_init(void __iomem *clk_base,
+>         clk = clk_register_mux(NULL, "emc_mux", mux_pllmcp_clkm,
+>                                ARRAY_SIZE(mux_pllmcp_clkm), 0,
+>                                clk_base + CLK_SOURCE_EMC,
+> -                              29, 3, 0, NULL);
+> +                              29, 3, 0, &emc_lock);
+> +
+> +       clk = tegra_clk_register_mc("mc", "emc_mux", clk_base + CLK_SOURCE_EMC,
+> +                                   &emc_lock);
+> +       clks[TEGRA124_CLK_MC] = clk;
+>  
+>         /* cml0 */
+>         clk = clk_register_gate(NULL, "cml0", "pll_e", 0, clk_base + PLLE_AUX,
+> diff --git a/drivers/clk/tegra/clk-tegra20.c b/drivers/clk/tegra/clk-tegra20.c
+> index dace2b1b5ae6..41272dcc9e22 100644
+> --- a/drivers/clk/tegra/clk-tegra20.c
+> +++ b/drivers/clk/tegra/clk-tegra20.c
+> @@ -140,6 +140,8 @@ static struct cpu_clk_suspend_context {
+>  static void __iomem *clk_base;
+>  static void __iomem *pmc_base;
+>  
+> +static DEFINE_SPINLOCK(emc_lock);
+> +
+>  #define TEGRA_INIT_DATA_MUX(_name, _parents, _offset,  \
+>                             _clk_num, _gate_flags, _clk_id)     \
+>         TEGRA_INIT_DATA(_name, NULL, NULL, _parents, _offset,   \
+> @@ -819,11 +821,15 @@ static void __init tegra20_periph_clk_init(void)
+>                                ARRAY_SIZE(mux_pllmcp_clkm),
+>                                CLK_SET_RATE_NO_REPARENT,
+>                                clk_base + CLK_SOURCE_EMC,
+> -                              30, 2, 0, NULL);
+> +                              30, 2, 0, &emc_lock);
+>         clk = tegra_clk_register_periph_gate("emc", "emc_mux", 0, clk_base, 0,
+>                                     57, periph_clk_enb_refcnt);
+>         clks[TEGRA20_CLK_EMC] = clk;
+>  
+> +       clk = tegra_clk_register_mc("mc", "emc_mux", clk_base + CLK_SOURCE_EMC,
+> +                                   &emc_lock);
+> +       clks[TEGRA20_CLK_MC] = clk;
+> +
+>         /* dsi */
+>         clk = tegra_clk_register_periph_gate("dsi", "pll_d", 0, clk_base, 0,
+>                                     48, periph_clk_enb_refcnt);
+> diff --git a/drivers/clk/tegra/clk-tegra30.c b/drivers/clk/tegra/clk-tegra30.c
+> index 5bbacd01094f..4b9d8bd3d0bf 100644
+> --- a/drivers/clk/tegra/clk-tegra30.c
+> +++ b/drivers/clk/tegra/clk-tegra30.c
+> @@ -177,6 +177,7 @@ static unsigned long input_freq;
+>  
+>  static DEFINE_SPINLOCK(cml_lock);
+>  static DEFINE_SPINLOCK(pll_d_lock);
+> +static DEFINE_SPINLOCK(emc_lock);
+>  
+>  #define TEGRA_INIT_DATA_MUX(_name, _parents, _offset,  \
+>                             _clk_num, _gate_flags, _clk_id)     \
+> @@ -1157,11 +1158,15 @@ static void __init tegra30_periph_clk_init(void)
+>                                ARRAY_SIZE(mux_pllmcp_clkm),
+>                                CLK_SET_RATE_NO_REPARENT,
+>                                clk_base + CLK_SOURCE_EMC,
+> -                              30, 2, 0, NULL);
+> +                              30, 2, 0, &emc_lock);
+>         clk = tegra_clk_register_periph_gate("emc", "emc_mux", 0, clk_base, 0,
+>                                     57, periph_clk_enb_refcnt);
+>         clks[TEGRA30_CLK_EMC] = clk;
+>  
+> +       clk = tegra_clk_register_mc("mc", "emc_mux", clk_base + CLK_SOURCE_EMC,
+> +                                   &emc_lock);
+> +       clks[TEGRA30_CLK_MC] = clk;
+> +
+>         /* cml0 */
+>         clk = clk_register_gate(NULL, "cml0", "pll_e", 0, clk_base + PLLE_AUX,
+>                                 0, 0, &cml_lock);
+> diff --git a/drivers/clk/tegra/clk.h b/drivers/clk/tegra/clk.h
+> index 16ec8d6bb87f..4e458aa8d45c 100644
+> --- a/drivers/clk/tegra/clk.h
+> +++ b/drivers/clk/tegra/clk.h
+> @@ -86,6 +86,8 @@ struct clk *tegra_clk_register_divider(const char *name,
+>                 const char *parent_name, void __iomem *reg,
+>                 unsigned long flags, u8 clk_divider_flags, u8 shift, u8 width,
+>                 u8 frac_width, spinlock_t *lock);
+> +struct clk *tegra_clk_register_mc(const char *name, const char *parent_name,
+> +                                 void __iomem *reg, spinlock_t *lock);
+>  
+>  /*
+>   * Tegra PLL:
+> diff --git a/include/dt-bindings/clock/tegra114-car.h b/include/dt-bindings/clock/tegra114-car.h
+> index fc12621fb432..534c03f8ad72 100644
+> --- a/include/dt-bindings/clock/tegra114-car.h
+> +++ b/include/dt-bindings/clock/tegra114-car.h
+> @@ -49,7 +49,7 @@
+>  #define TEGRA114_CLK_I2S0 30
+>  /* 31 */
+>  
+> -/* 32 */
+> +#define TEGRA114_CLK_MC 32
+>  /* 33 */
+>  #define TEGRA114_CLK_APBDMA 34
+>  /* 35 */
+> diff --git a/include/dt-bindings/clock/tegra124-car.h b/include/dt-bindings/clock/tegra124-car.h
+> index 6bac637fd635..af9bc9a3ddbc 100644
+> --- a/include/dt-bindings/clock/tegra124-car.h
+> +++ b/include/dt-bindings/clock/tegra124-car.h
+> @@ -48,7 +48,7 @@
+>  #define TEGRA124_CLK_I2S0 30
+>  /* 31 */
+>  
+> -/* 32 */
+> +#define TEGRA124_CLK_MC 32
+>  /* 33 */
+>  #define TEGRA124_CLK_APBDMA 34
+>  /* 35 */
+> diff --git a/include/dt-bindings/clock/tegra20-car.h b/include/dt-bindings/clock/tegra20-car.h
+> index 9406207cfac8..04500b243a4d 100644
+> --- a/include/dt-bindings/clock/tegra20-car.h
+> +++ b/include/dt-bindings/clock/tegra20-car.h
+> @@ -49,7 +49,7 @@
+>  /* 30 */
+>  #define TEGRA20_CLK_CACHE2 31
+>  
+> -#define TEGRA20_CLK_MEM 32
+> +#define TEGRA20_CLK_MC 32
+>  #define TEGRA20_CLK_AHBDMA 33
+>  #define TEGRA20_CLK_APBDMA 34
+>  /* 35 */
+> -- 
+> 2.1.3
+> 
