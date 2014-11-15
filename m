@@ -1,43 +1,26 @@
-From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH 5/6] iommu/arm-smmu: support buggy implementations with
-	invalidate-on-map
-Date: Fri, 14 Nov 2014 15:08:38 -0800
-Message-ID: <vnkwtx21s7m1.fsf@mitchelh-linux.qualcomm.com>
-References: <1407891099-24641-1-git-send-email-mitchelh@codeaurora.org>
-	<1407891099-24641-6-git-send-email-mitchelh@codeaurora.org>
-	<20141112182642.GH26437@arm.com>
-	<vnkwy4rg5jqu.fsf@mitchelh-linux.qualcomm.com>
-	<20141113094826.GA13350@arm.com>
+From: "Allan, Bruce W" <bruce.w.allan@intel.com>
+Subject: (unknown)
+Date: Sat, 15 Nov 2014 01:49:09 +0000
+Message-ID: <804857E1F29AAC47BF68C404FC60A1846586CB67@ORSMSX105.amr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20141113094826.GA13350-5wv7dgnIgG8@public.gmane.org> (Will Deacon's message of "Thu,
-	13 Nov 2014 09:48:26 +0000")
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pci-owner@vger.kernel.org>
+Subject: 
+Content-Language: en-US
+Sender: linux-pci-owner@vger.kernel.org
+To: "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 13 2014 at 01:48:26 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> Ha, damn, then I don't have a user of the shiny new quirks field I added!
-> I don't think I'll go as far as removing it altogether though...
+Let's try this again as plain text...
 
-I'm sure we'll be making liberal use of that field soon enough ;)
+For a PCIe device with SR-IOV support enabled (e.g. the PF device ID is 0xf001 at 0000:07:00.0 and the 16 VFs have device ID 0xf002 at 0000:07:01.0 through 0000:07:02.7), if the hardware attempts a DMA read/write of memory that was mapped by the PF devfn but instead uses a requester id of one of the VF devfns (enabled but not yet assigned to a VM) it fails and generates log messages similar to:
 
+[  416.800881] dmar: DRHD: handling fault status reg 2
+[  416.800887] dmar: DMAR:[DMA Read] Request device [07:02.2] fault addr ffff0000
+DMAR:[fault reason 02] Present bit in context entry is clear
 
+Shouldn't a DMA alias quirk that sets the PCI_DEV_FLAGS_DMA_ALIAS_DEVFN flag and dma_alias_devfn to the PF devfn for all VF devfns work-around this issue, or am I misunderstanding what a DMA alias quirk is supposed to do?  If a DMA alias quirk cannot resolve this, what is the most appropriate way to handle this?
 
--Mitch
-
--- 
-Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Thanks,
+Bruce.
