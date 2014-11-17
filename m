@@ -1,72 +1,65 @@
-From: David Vrabel <david.vrabel@citrix.com>
-Subject: Re: [Xen-devel] [RFC] add a struct page* parameter to dma_map_ops.unmap_page
-Date: Mon, 17 Nov 2014 14:43:46 +0000
-Message-ID: <546A09A2.9090704@citrix.com>
-References: <alpine.DEB.2.02.1411111644490.26318@kaball.uk.xensource.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] drivers/vfio: allow type-1 IOMMU instantiation on top
+	of an ARM SMMU
+Date: Mon, 17 Nov 2014 11:26:27 -0700
+Message-ID: <1416248787.27937.257.camel@ul30vt.home>
+References: <1415972325-7053-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
-In-Reply-To: <alpine.DEB.2.02.1411111644490.26318@kaball.uk.xensource.com>
-Sender: linux-parisc-owner@vger.kernel.org
-To: Stefano Stabellini <stefano.stabellini@eu.citrix.com>, gregkh@linuxfoundation.org
-Cc: linux-mips@linux-mips.org, airlied@linux.ie, dri-devel@lists.freedesktop.org, xen-devel@lists.xensource.com, linux@arm.linux.org.uk, vinod.koul@intel.com, deller@gmx.de, jejb@parisc-linux.org, Ian Campbell <Ian.Campbell@citrix.com>, alexander.deucher@amd.com, bhelgaas@google.com, linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org, dwmw2@infradead.org, linux-kernel@vger.kernel.org, ralf@linux-mips.org, iommu@lists.linux-foundation.org, David Vrabel <david.vrabel@citrix.com>, dmaengine@vger.kernel.org, torvalds@linux-foundation.org, christian.koenig@amd.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1415972325-7053-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 17/11/14 14:11, Stefano Stabellini wrote:
-> Hi all,
-> I am writing this email to ask for your advice.
+On Fri, 2014-11-14 at 13:38 +0000, Will Deacon wrote:
+> The ARM SMMU driver is compatible with the notion of a type-1 IOMMU in
+> VFIO.
 > 
-> On architectures where dma addresses are different from physical
-> addresses, it can be difficult to retrieve the physical address of a
-> page from its dma address.
+> This patch allows VFIO_IOMMU_TYPE1 to be selected if ARM_SMMU=y.
 > 
-> Specifically this is the case for Xen on arm and arm64 but I think that
-> other architectures might have the same issue.
+> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> ---
 > 
-> Knowing the physical address is necessary to be able to issue any
-> required cache maintenance operations when unmap_page,
-> sync_single_for_cpu and sync_single_for_device are called.
+> Alex: I'm wondering if we can't just drop the dependency clause here
+> altogether. What breaks if we allow VFIO_IOMMU_TYPE1 to be selected
+> anywhere?
+
+For me it's the same reason that you use the phrase "compatible with the
+notion of a type-1 IOMMU".  The type1 code itself is independent of
+architecture, but the assumptions and usage model of the IOMMU may not
+be.  If we require these sorts of trivial patches then we at least know
+that compatible hardware exists and someone has tried it.  So I guess I
+prefer to leave it.  Realistically, how many more archs would we really
+need anyway?
+
+>  drivers/vfio/Kconfig | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Adding a struct page* parameter to unmap_page, sync_single_for_cpu and
-> sync_single_for_device would make Linux dma handling on Xen on arm and
-> arm64 much easier and quicker.
+> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+> index d8c57636b9ce..437ab0bc2879 100644
+> --- a/drivers/vfio/Kconfig
+> +++ b/drivers/vfio/Kconfig
+> @@ -16,7 +16,7 @@ config VFIO_SPAPR_EEH
+>  menuconfig VFIO
+>  	tristate "VFIO Non-Privileged userspace driver framework"
+>  	depends on IOMMU_API
+> -	select VFIO_IOMMU_TYPE1 if X86
+> +	select VFIO_IOMMU_TYPE1 if X86 || ARM_SMMU
+>  	select VFIO_IOMMU_SPAPR_TCE if (PPC_POWERNV || PPC_PSERIES)
+>  	select VFIO_SPAPR_EEH if (PPC_POWERNV || PPC_PSERIES)
+>  	select ANON_INODES
 
-Using an opaque handle instead of struct page * would be more beneficial
-for the Intel IOMMU driver.  e.g.,
+Applied, thanks,
 
-typedef dma_addr_t dma_handle_t;
-
-dma_handle_t dma_map_single(struct device *dev,
-                            void *va, size_t size,
-                            enum dma_data_direction dir);
-void dma_unmap_single(struct device *dev,
-                      dma_handle_t handle, size_t size,
-                      enum dma_data_direction dir);
-
-etc.
-
-Drivers would then use:
-
-dma_addr_t dma_addr(dma_handle_t handle);
-
-To obtain the bus address from the handle.
-
-> I think that other drivers have similar problems, such as the Intel
-> IOMMU driver having to call find_iova and walking down an rbtree to get
-> the physical address in its implementation of unmap_page.
-> 
-> Callers have the struct page* in their hands already from the previous
-> map_page call so it shouldn't be an issue for them.  A problem does
-> exist however: there are about 280 callers of dma_unmap_page and
-> pci_unmap_page. We have even more callers of the dma_sync_single_for_*
-> functions.
-
-You will also need to fix dma_unmap_single() and pci_unmap_single()
-(another 1000+ callers).
-
-You may need to consider a parallel set of map/unmap API calls that
-return/accept a handle, and then converting drivers one-by-one as
-required, instead of trying to convert every single driver at once.
-
-David
+Alex
