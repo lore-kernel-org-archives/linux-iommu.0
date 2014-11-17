@@ -1,17 +1,20 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH v4 8/8] arm: dma-mapping: plumb our iommu mapping ops
-	into arch_setup_dma_ops
-Date: Mon, 17 Nov 2014 11:41:36 +0000
-Message-ID: <20141117114135.GI18061@arm.com>
-References: <1415991397-9618-1-git-send-email-will.deacon@arm.com>
-	<1415991397-9618-9-git-send-email-will.deacon@arm.com>
-	<5469DC13.6040700@arm.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 0/5] iommu/vt-d: Fix crash dump failure caused by legacy
+	DMA/IO
+Date: Mon, 17 Nov 2014 14:38:59 +0100
+Message-ID: <20141117133858.GA31920@8bytes.org>
+References: <1413878659-1383-1-git-send-email-zhen-hual@hp.com>
+	<20141022100525.GD9060@dhcp-16-116.nay.redhat.com>
+	<545ACF66.9050509@jp.fujitsu.com> <545AD061.4000102@hp.com>
+	<545AD353.8060207@jp.fujitsu.com> <545AD8D3.90709@hp.com>
+	<545B2885.8070009@jp.fujitsu.com> <545B2C07.1070701@hp.com>
+	<5465A0E0.4020001@hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <5469DC13.6040700-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <5465A0E0.4020001-VXdhtT5mjnY@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,89 +24,23 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Cc: bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tom.vaden-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 17, 2014 at 11:29:23AM +0000, Robin Murphy wrote:
-> On 14/11/14 18:56, Will Deacon wrote:
-> > This patch plumbs the existing ARM IOMMU DMA infrastructure (which isn't
-> > actually called outside of a few drivers) into arch_setup_dma_ops, so
-> > that we can use IOMMUs for DMA transfers in a more generic fashion.
-> >
-> > Since this significantly complicates the arch_setup_dma_ops function,
-> > it is moved out of line into dma-mapping.c. If CONFIG_ARM_DMA_USE_IOMMU
-> > is not set, the iommu parameter is ignored and the normal ops are used
-> > instead.
-> >
-> > Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+On Fri, Nov 14, 2014 at 02:27:44PM +0800, Li, ZhenHua wrote:
+> I am working following  your directions:
 > 
-> [...]
+> 1.  If the VT-d driver finds the IOMMU enabled, it reuses its root entry
+> table, and do NOT disable-enable iommu. Other data will be copied.
 > 
-> > +static bool arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size,
-> > +				    struct iommu_ops *iommu)
-> > +{
-> > +	struct dma_iommu_mapping *mapping;
-> > +
-> > +	mapping = arm_iommu_create_mapping(dev->bus, dma_base, size);
-> > +	if (IS_ERR(mapping)) {
-> > +		pr_warn("Failed to create %llu-byte IOMMU mapping for device %s\n",
-> > +				size, dev_name(dev));
-> > +		return false;
-> > +	}
-> > +
-> > +	if (arm_iommu_attach_device(dev, mapping)) {
-> > +		pr_warn("Failed to attached device %s to IOMMU_mapping\n",
-> > +				dev_name(dev));
-> > +		arm_iommu_release_mapping(mapping);
-> > +		return false;
-> > +	}
-> > +
-> > +	return true;
-> > +}
-> > +
-> > +static void arm_teardown_iommu_dma_ops(struct device *dev)
-> > +{
-> > +	struct dma_iommu_mapping *mapping = dev->archdata.mapping;
-> > +
-> > +	arm_iommu_detach_device(dev);
-> > +	arm_iommu_release_mapping(mapping);
-> > +}
-> > +
-> > +#else
-> > +
-> > +static bool arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size,
-> > +				    struct iommu_ops *iommu)
-> > +{
-> > +	return false;
-> > +}
-> > +
-> > +static void arm_teardown_iommu_dma_ops(struct device *dev) { }
-> > +
-> > +#define arm_get_iommu_dma_map_ops arm_get_dma_map_ops
-> > +
-> > +#endif	/* CONFIG_ARM_DMA_USE_IOMMU */
-> > +
-> > +static struct dma_map_ops *arm_get_dma_map_ops(bool coherent)
-> > +{
-> > +	return coherent ? &arm_coherent_dma_ops : &arm_dma_ops;
-> > +}
-> > +
-> > +void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-> > +			struct iommu_ops *iommu, bool coherent)
-> > +{
-> > +	struct dma_map_ops *dma_ops;
-> > +
-> > +	if (arm_setup_iommu_dma_ops(dev, dma_base, size, iommu))
+> 2. When a device driver issues the first dma_map command for a
+> device, we assign a new and empty page-table, thus removing all
+> mappings from the old kernel for the device.
 > 
-> Is the loss of a null check on iommu (compared to previous versions) 
-> intentional? It looks like you're always going to call 
-> arm_setup_iommu_dma_ops here for everything regardless, and given that 
-> that doesn't even look at the iommu parameter, relying on it to somehow 
-> fail correctly smells a bit off.
+> Please let me know if I get something wrong.
 
-Thanks, I'll fix that. I started writing a full implementation based off
-a hypothetical ->get_default_domain callback (as suggested by Joerg), so
-this is a hangover from that experiment.
+Yes, this sounds right. Happily waiting for patches :)
 
-Will
+
+	Joerg
