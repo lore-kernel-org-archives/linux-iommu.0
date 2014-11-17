@@ -1,75 +1,118 @@
-From: "Allan, Bruce W" <bruce.w.allan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: DMA_ALIAS_DEVFN issue
-Date: Sat, 15 Nov 2014 17:10:47 +0000
-Message-ID: <804857E1F29AAC47BF68C404FC60A1846586CE16@ORSMSX105.amr.corp.intel.com>
-References: <CAErSpo7m9xMy9buOmF==8H_VSkBBqPZD1_OCPYjEz_1Q1n4y0Q@mail.gmail.com>
-	<1416064996.27937.177.camel@ul30vt.home>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [RFC PATCH v4 8/8] arm: dma-mapping: plumb our iommu mapping
+ ops into arch_setup_dma_ops
+Date: Mon, 17 Nov 2014 11:29:23 +0000
+Message-ID: <5469DC13.6040700@arm.com>
+References: <1415991397-9618-1-git-send-email-will.deacon@arm.com>
+ <1415991397-9618-9-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1416064996.27937.177.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1415991397-9618-9-git-send-email-will.deacon@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Will Deacon <will.deacon@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Cc: "jroedel@suse.de" <jroedel@suse.de>, "arnd@arndb.de" <arnd@arndb.de>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "laurent.pinchart@ideasonboard.com" <laurent.pinchart@ideasonboard.com>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, "hdoyu@nvidia.com" <hdoyu@nvidia.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-> -----Original Message-----
-> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Saturday, November 15, 2014 7:23 AM
-> To: Bjorn Helgaas
-> Cc: Allan, Bruce W; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> foundation.org
-> Subject: Re: DMA_ALIAS_DEVFN issue
-> 
-> On Fri, 2014-11-14 at 21:25 -0700, Bjorn Helgaas wrote:
-> > [+cc Alex, add a subject]
-> >
-> > On Fri, Nov 14, 2014 at 6:49 PM, Allan, Bruce W <bruce.w.allan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> wrote:
-> > > Let's try this again as plain text...
-> > >
-> > > For a PCIe device with SR-IOV support enabled (e.g. the PF device ID
-> > is 0xf001 at 0000:07:00.0 and the 16 VFs have device ID 0xf002 at
-> > 0000:07:01.0 through 0000:07:02.7), if the hardware attempts a DMA
-> > read/write of memory that was mapped by the PF devfn but instead uses
-> > a requester id of one of the VF devfns (enabled but not yet assigned
-> > to a VM) it fails and generates log messages similar to:
-> > >
-> > > [  416.800881] dmar: DRHD: handling fault status reg 2
-> > > [  416.800887] dmar: DMAR:[DMA Read] Request device [07:02.2] fault
-> addr ffff0000
-> > > DMAR:[fault reason 02] Present bit in context entry is clear
-> 
-> This is exactly what IOMMU isolation is meant to do.  A buffer mapped
-> for one device should not be accessible from another device.  It really
-> doesn't matter if the devices are related as VF/PF, VF/VF, or PF/PF.
-> 
-> > > Shouldn't a DMA alias quirk that sets the
-> > PCI_DEV_FLAGS_DMA_ALIAS_DEVFN flag and dma_alias_devfn to the PF
-> devfn
-> > for all VF devfns work-around this issue, or am I misunderstanding
-> > what a DMA alias quirk is supposed to do?  If a DMA alias quirk cannot
-> > resolve this, what is the most appropriate way to handle this?
-> 
-> The buffer needs to be mapped for each VF.  If for some reason the VF
-> needs implicit access to a PF mapped buffer then this devices is
-> completely broken from an isolation perspective and using DMA aliases to
-> fix it means that individual VFs will never be assignable to guests.
-> Thanks,
-> 
-> Alex
+Hi Will,
 
-Hmm, that...is unfortunate.  Thanks Alex for the clarification, and thanks Bjorn for
-adding Alex and a proper subject to the thread.
+On 14/11/14 18:56, Will Deacon wrote:
+> This patch plumbs the existing ARM IOMMU DMA infrastructure (which isn't
+> actually called outside of a few drivers) into arch_setup_dma_ops, so
+> that we can use IOMMUs for DMA transfers in a more generic fashion.
+>
+> Since this significantly complicates the arch_setup_dma_ops function,
+> it is moved out of line into dma-mapping.c. If CONFIG_ARM_DMA_USE_IOMMU
+> is not set, the iommu parameter is ignored and the normal ops are used
+> instead.
+>
+> Signed-off-by: Will Deacon <will.deacon@arm.com>
 
-Bruce.
+[...]
+
+> +static bool arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> +				    struct iommu_ops *iommu)
+> +{
+> +	struct dma_iommu_mapping *mapping;
+> +
+> +	mapping = arm_iommu_create_mapping(dev->bus, dma_base, size);
+> +	if (IS_ERR(mapping)) {
+> +		pr_warn("Failed to create %llu-byte IOMMU mapping for device %s\n",
+> +				size, dev_name(dev));
+> +		return false;
+> +	}
+> +
+> +	if (arm_iommu_attach_device(dev, mapping)) {
+> +		pr_warn("Failed to attached device %s to IOMMU_mapping\n",
+> +				dev_name(dev));
+> +		arm_iommu_release_mapping(mapping);
+> +		return false;
+> +	}
+> +
+> +	return true;
+> +}
+> +
+> +static void arm_teardown_iommu_dma_ops(struct device *dev)
+> +{
+> +	struct dma_iommu_mapping *mapping = dev->archdata.mapping;
+> +
+> +	arm_iommu_detach_device(dev);
+> +	arm_iommu_release_mapping(mapping);
+> +}
+> +
+> +#else
+> +
+> +static bool arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> +				    struct iommu_ops *iommu)
+> +{
+> +	return false;
+> +}
+> +
+> +static void arm_teardown_iommu_dma_ops(struct device *dev) { }
+> +
+> +#define arm_get_iommu_dma_map_ops arm_get_dma_map_ops
+> +
+> +#endif	/* CONFIG_ARM_DMA_USE_IOMMU */
+> +
+> +static struct dma_map_ops *arm_get_dma_map_ops(bool coherent)
+> +{
+> +	return coherent ? &arm_coherent_dma_ops : &arm_dma_ops;
+> +}
+> +
+> +void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> +			struct iommu_ops *iommu, bool coherent)
+> +{
+> +	struct dma_map_ops *dma_ops;
+> +
+> +	if (arm_setup_iommu_dma_ops(dev, dma_base, size, iommu))
+
+Is the loss of a null check on iommu (compared to previous versions) 
+intentional? It looks like you're always going to call 
+arm_setup_iommu_dma_ops here for everything regardless, and given that 
+that doesn't even look at the iommu parameter, relying on it to somehow 
+fail correctly smells a bit off.
+
+
+Robin.
+
+> +		dma_ops = arm_get_iommu_dma_map_ops(coherent);
+> +	else
+> +		dma_ops = arm_get_dma_map_ops(coherent);
+> +
+> +	set_dma_ops(dev, dma_ops);
+> +}
+> +
+> +void arch_teardown_dma_ops(struct device *dev)
+> +{
+> +	arm_teardown_iommu_dma_ops(dev);
+> +}
+>
