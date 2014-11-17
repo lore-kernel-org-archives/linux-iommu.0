@@ -1,70 +1,83 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v7 05/12] memory: Add NVIDIA Tegra memory controller
-	support
-Date: Mon, 17 Nov 2014 14:47:07 +0100
-Message-ID: <20141117134707.GA3762@8bytes.org>
-References: <1415871157-21968-1-git-send-email-thierry.reding@gmail.com>
-	<1415871157-21968-6-git-send-email-thierry.reding@gmail.com>
+From: Stefano Stabellini <stefano.stabellini@eu.citrix.com>
+Subject: [RFC] add a struct page* parameter to dma_map_ops.unmap_page
+Date: Mon, 17 Nov 2014 14:11:51 +0000
+Message-ID: <alpine.DEB.2.02.1411111644490.26318@kaball.uk.xensource.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1415871157-21968-6-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Peter De Schrijver <pdeschrijver-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, David Riley <davidriley-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="US-ASCII"
+Return-path: <linux-parisc-owner@vger.kernel.org>
+Sender: linux-parisc-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: David Vrabel <david.vrabel@citrix.com>, Ian Campbell <Ian.Campbell@citrix.com>, konrad.wilk@oracle.com, linux-kernel@vger.kernel.org, xen-devel@lists.xensource.com, torvalds@linux-foundation.org, vinod.koul@intel.com, dmaengine@vger.kernel.org, Stefano Stabellini <Stefano.Stabellini@eu.citrix.com>, bhelgaas@google.com, jejb@parisc-linux.org, deller@gmx.de, linux-parisc@vger.kernel.org, iommu@lists.linux-foundation.org, airlied@linux.ie, dri-devel@lists.freedesktop.org, alexander.deucher@amd.com, christian.koenig@amd.com, linux@arm.linux.org.uk, linux-mips@linux-mips.org, ralf@linux-mips.org, linux-arm-kernel@lists.infradead.org, dwmw2@infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 13, 2014 at 10:32:30AM +0100, Thierry Reding wrote:
-> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> 
-> The memory controller on NVIDIA Tegra exposes various knobs that can be
-> used to tune the behaviour of the clients attached to it.
-> 
-> Currently this driver sets up the latency allowance registers to the HW
-> defaults. Eventually an API should be exported by this driver (via a
-> custom API or a generic subsystem) to allow clients to register latency
-> requirements.
-> 
-> This driver also registers an IOMMU (SMMU) that's implemented by the
-> memory controller. It is supported on Tegra30, Tegra114 and Tegra124
-> currently. Tegra20 has a GART instead.
-> 
-> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> ---
-> Hi Joerg,
-> 
-> As I mentioned in the cover-letter, I would like to take this whole series
-> through the Tegra tree to simplify dependency handling. Can I have your
-> Acked-by on this patch?
+Hi all,
+I am writing this email to ask for your advice.
 
-Sure!
+On architectures where dma addresses are different from physical
+addresses, it can be difficult to retrieve the physical address of a
+page from its dma address.
 
->  drivers/iommu/Kconfig                    |   12 +-
->  drivers/iommu/tegra-smmu.c               | 1601 ++++++++++--------------------
->  drivers/memory/Kconfig                   |   12 +-
->  drivers/memory/Makefile                  |    3 +-
->  drivers/memory/tegra/Kconfig             |    7 +
->  drivers/memory/tegra/Makefile            |    7 +
->  drivers/memory/tegra/mc.c                |  301 ++++++
->  drivers/memory/tegra/mc.h                |   53 +
->  drivers/memory/tegra/tegra114.c          |  948 ++++++++++++++++++
->  drivers/memory/tegra/tegra124.c          |  995 +++++++++++++++++++
->  drivers/memory/tegra/tegra30.c           |  970 ++++++++++++++++++
->  drivers/memory/tegra30-mc.c              |  377 -------
->  include/dt-bindings/memory/tegra114-mc.h |   25 +
->  include/dt-bindings/memory/tegra124-mc.h |   31 +
->  include/dt-bindings/memory/tegra30-mc.h  |   24 +
->  include/soc/tegra/mc.h                   |  107 ++
->  16 files changed, 3992 insertions(+), 1481 deletions(-)
+Specifically this is the case for Xen on arm and arm64 but I think that
+other architectures might have the same issue.
 
-Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Knowing the physical address is necessary to be able to issue any
+required cache maintenance operations when unmap_page,
+sync_single_for_cpu and sync_single_for_device are called.
+
+Adding a struct page* parameter to unmap_page, sync_single_for_cpu and
+sync_single_for_device would make Linux dma handling on Xen on arm and
+arm64 much easier and quicker.
+
+I think that other drivers have similar problems, such as the Intel
+IOMMU driver having to call find_iova and walking down an rbtree to get
+the physical address in its implementation of unmap_page.
+
+Callers have the struct page* in their hands already from the previous
+map_page call so it shouldn't be an issue for them.  A problem does
+exist however: there are about 280 callers of dma_unmap_page and
+pci_unmap_page. We have even more callers of the dma_sync_single_for_*
+functions.
+
+
+
+Is such a change even conceivable? How would one go about it?
+
+I think that Xen would not be the only one to gain from it, but I would
+like to have a confirmation from others: given the magnitude of the
+changes involved I would actually prefer to avoid them unless multiple
+drivers/archs/subsystems could really benefit from them.
+
+Cheers,
+
+Stefano
+
+
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index d5d3881..158a765 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -31,8 +31,9 @@ struct dma_map_ops {
+ 			       unsigned long offset, size_t size,
+ 			       enum dma_data_direction dir,
+ 			       struct dma_attrs *attrs);
+-	void (*unmap_page)(struct device *dev, dma_addr_t dma_handle,
+-			   size_t size, enum dma_data_direction dir,
++	void (*unmap_page)(struct device *dev, struct page *page,
++			   dma_addr_t dma_handle, size_t size,
++			   enum dma_data_direction dir,
+ 			   struct dma_attrs *attrs);
+ 	int (*map_sg)(struct device *dev, struct scatterlist *sg,
+ 		      int nents, enum dma_data_direction dir,
+@@ -41,10 +42,10 @@ struct dma_map_ops {
+ 			 struct scatterlist *sg, int nents,
+ 			 enum dma_data_direction dir,
+ 			 struct dma_attrs *attrs);
+-	void (*sync_single_for_cpu)(struct device *dev,
++	void (*sync_single_for_cpu)(struct device *dev, struct page *page,
+ 				    dma_addr_t dma_handle, size_t size,
+ 				    enum dma_data_direction dir);
+-	void (*sync_single_for_device)(struct device *dev,
++	void (*sync_single_for_device)(struct device *dev, struct page *page,
+ 				       dma_addr_t dma_handle, size_t size,
+ 				       enum dma_data_direction dir);
+ 	void (*sync_sg_for_cpu)(struct device *dev,
