@@ -1,189 +1,52 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [RFC PATCH v4 1/8] iommu: provide early initialisation hook for
-	IOMMU drivers
-Date: Tue, 18 Nov 2014 13:28:03 +0100
-Message-ID: <546B3B53.6030202@samsung.com>
-References: <1415991397-9618-1-git-send-email-will.deacon@arm.com>
-	<1415991397-9618-2-git-send-email-will.deacon@arm.com>
+From: Jiang Liu <jiang.liu@linux.intel.com>
+Subject: Re: [Patch Part3 V7 0/8] Enable support of Intel DMAR device hotplug
+Date: Tue, 18 Nov 2014 20:57:45 +0800
+Message-ID: <546B4249.7050502@linux.intel.com>
+References: <1415544483-27990-1-git-send-email-jiang.liu@linux.intel.com> <20141118102537.GB3762@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1415991397-9618-2-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20141118102537.GB3762@8bytes.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: David Woodhouse <dwmw2@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>, Ashok Raj <ashok.raj@intel.com>, Yijing Wang <wangyijing@huawei.com>, Tony Luck <tony.luck@intel.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-hotplug@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
-
-On 2014-11-14 19:56, Will Deacon wrote:
-> IOMMU drivers must be initialised before any of their upstream devices,
-> otherwise the relevant iommu_ops won't be configured for the bus in
-> question. To solve this, a number of IOMMU drivers use initcalls to
-> initialise the driver before anything has a chance to be probed.
->
-> Whilst this solves the immediate problem, it leaves the job of probing
-> the IOMMU completely separate from the iommu_ops to configure the IOMMU,
-> which are called on a per-bus basis and require the driver to figure out
-> exactly which instance of the IOMMU is being requested. In particular,
-> the add_device callback simply passes a struct device to the driver,
-> which then has to parse firmware tables or probe buses to identify the
-> relevant IOMMU instance.
->
-> This patch takes the first step in addressing this problem by adding an
-> early initialisation pass for IOMMU drivers, giving them the ability to
-> store some per-instance data in their iommu_ops structure and store that
-> in their of_node. This can later be used when parsing OF masters to
-> identify the IOMMU instance in question.
->
-> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> ---
->   drivers/iommu/of_iommu.c          | 17 +++++++++++++++++
->   include/asm-generic/vmlinux.lds.h |  2 ++
->   include/linux/iommu.h             |  2 ++
->   include/linux/of_iommu.h          | 25 +++++++++++++++++++++++++
->   4 files changed, 46 insertions(+)
->
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index e550ccb7634e..89b903406968 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -22,6 +22,9 @@
->   #include <linux/of.h>
->   #include <linux/of_iommu.h>
->   
-> +static const struct of_device_id __iommu_of_table_sentinel
-> +	__used __section(__iommu_of_table_end);
-> +
->   /**
->    * of_get_dma_window - Parse *dma-window property and returns 0 if found.
->    *
-> @@ -89,3 +92,17 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
->   	return 0;
->   }
->   EXPORT_SYMBOL_GPL(of_get_dma_window);
-> +
-> +void __init of_iommu_init(void)
-> +{
-> +	struct device_node *np;
-> +	const struct of_device_id *match, *matches = &__iommu_of_table;
-> +
-> +	for_each_matching_node_and_match(np, matches, &match) {
-> +		const of_iommu_init_fn init_fn = match->data;
-> +
-> +		if (init_fn(np))
-> +			pr_err("Failed to initialise IOMMU %s\n",
-> +				of_node_full_name(np));
-> +	}
-> +}
-> diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
-> index aa70cbda327c..bee5d683074d 100644
-> --- a/include/asm-generic/vmlinux.lds.h
-> +++ b/include/asm-generic/vmlinux.lds.h
-> @@ -164,6 +164,7 @@
->   #define CLKSRC_OF_TABLES()	OF_TABLE(CONFIG_CLKSRC_OF, clksrc)
->   #define IRQCHIP_OF_MATCH_TABLE() OF_TABLE(CONFIG_IRQCHIP, irqchip)
->   #define CLK_OF_TABLES()		OF_TABLE(CONFIG_COMMON_CLK, clk)
-> +#define IOMMU_OF_TABLES()	OF_TABLE(CONFIG_OF_IOMMU, iommu)
->   #define RESERVEDMEM_OF_TABLES()	OF_TABLE(CONFIG_OF_RESERVED_MEM, reservedmem)
->   #define CPU_METHOD_OF_TABLES()	OF_TABLE(CONFIG_SMP, cpu_method)
->   #define EARLYCON_OF_TABLES()	OF_TABLE(CONFIG_SERIAL_EARLYCON, earlycon)
-> @@ -497,6 +498,7 @@
->   	CLK_OF_TABLES()							\
->   	RESERVEDMEM_OF_TABLES()						\
->   	CLKSRC_OF_TABLES()						\
-> +	IOMMU_OF_TABLES()						\
->   	CPU_METHOD_OF_TABLES()						\
->   	KERNEL_DTB()							\
->   	IRQCHIP_OF_MATCH_TABLE()					\
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index e6a7c9ff72f2..7b83f9f8e11d 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -103,6 +103,7 @@ enum iommu_attr {
->    * @domain_get_attr: Query domain attributes
->    * @domain_set_attr: Change domain attributes
->    * @pgsize_bitmap: bitmap of supported page sizes
-> + * @priv: per-instance data private to the iommu driver
->    */
->   struct iommu_ops {
->   	bool (*capable)(enum iommu_cap);
-> @@ -133,6 +134,7 @@ struct iommu_ops {
->   	u32 (*domain_get_windows)(struct iommu_domain *domain);
->   
->   	unsigned long pgsize_bitmap;
-> +	void *priv;
->   };
->   
->   #define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
-> diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
-> index 51a560f34bca..81447e0f68b5 100644
-> --- a/include/linux/of_iommu.h
-> +++ b/include/linux/of_iommu.h
-> @@ -1,12 +1,17 @@
->   #ifndef __OF_IOMMU_H
->   #define __OF_IOMMU_H
->   
-> +#include <linux/iommu.h>
-> +#include <linux/of.h>
-> +
->   #ifdef CONFIG_OF_IOMMU
->   
->   extern int of_get_dma_window(struct device_node *dn, const char *prefix,
->   			     int index, unsigned long *busno, dma_addr_t *addr,
->   			     size_t *size);
->   
-> +extern void of_iommu_init(void);
-> +
->   #else
->   
->   static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
-> @@ -16,6 +21,26 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
->   	return -EINVAL;
->   }
->   
-> +static inline void of_iommu_init(void) { }
-> +
->   #endif	/* CONFIG_OF_IOMMU */
->   
-> +static inline void of_iommu_set_ops(struct device_node *np,
-> +				    struct iommu_ops *ops)
-
-I think it will be reasonable to change the second argument to "const 
-struct iommu_ops *ops" to match other code that uses it.
-
-> +{
-> +	np->data = ops;
-
-The above change require adding a cast:
-     np->data = (struct iommu_ops *)ops;
-
-> +}
-> +
-> +static inline struct iommu_ops *of_iommu_get_ops(struct device_node *np)
-> +{
-> +	return np->data;
-> +}
-> +
-> +extern struct of_device_id __iommu_of_table;
-> +
-> +typedef int (*of_iommu_init_fn)(struct device_node *);
-> +
-> +#define IOMMU_OF_DECLARE(name, compat, fn) \
-> +	_OF_DECLARE(iommu, name, compat, fn, of_iommu_init_fn)
-> +
->   #endif /* __OF_IOMMU_H */
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+On 2014/11/18 18:25, Joerg Roedel wrote:
+> Hi Jiang,
+> 
+> On Sun, Nov 09, 2014 at 10:47:55PM +0800, Jiang Liu wrote:
+>> Jiang Liu (8):
+>>   iommu/vt-d: Introduce helper function dmar_walk_resources()
+>>   iommu/vt-d: Dynamically allocate and free seq_id for DMAR units
+>>   iommu/vt-d: Implement DMAR unit hotplug framework
+>>   iommu/vt-d: Search for ACPI _DSM method for DMAR hotplug
+>>   iommu/vt-d: Enhance intel_irq_remapping driver to support DMAR unit
+>>     hotplug
+>>   iommu/vt-d: Enhance error recovery in function
+>>     intel_enable_irq_remapping()
+>>   iommu/vt-d: Enhance intel-iommu driver to support DMAR unit hotplug
+>>   pci, ACPI, iommu: Enhance pci_root to support DMAR device hotplug
+>>
+>>  drivers/acpi/pci_root.c             |   16 +-
+>>  drivers/iommu/dmar.c                |  532 ++++++++++++++++++++++++++++-------
+>>  drivers/iommu/intel-iommu.c         |  297 ++++++++++++++-----
+>>  drivers/iommu/intel_irq_remapping.c |  249 ++++++++++++----
+>>  include/linux/dmar.h                |   50 +++-
+>>  5 files changed, 897 insertions(+), 247 deletions(-)
+> 
+> The patches look good, but I need an ack from PCI/ACPI for patch 8
+> before I can merge it. Patches 1-7 are applied.
+Hi Joerg,
+	Thanks for support:)
+	Bjorn has given his acked-by for v6 at
+https://lkml.org/lkml/2014/9/24/975. But I forgot to carry this
+acked-by, sorry:(
+Regards!
+Gerry
+> 
+> Thanks,
+> 
+> 	Joerg
+> 
