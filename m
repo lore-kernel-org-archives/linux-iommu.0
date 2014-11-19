@@ -1,8 +1,7 @@
 From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v3 07/19] iommu: exynos: don't read version register on every
- tlb operation
-Date: Wed, 19 Nov 2014 12:15:36 +0100
-Message-ID: <1416395748-10731-8-git-send-email-m.szyprowski@samsung.com>
+Subject: [PATCH v3 03/19] arm: dma-mapping: add missing check for iommu
+Date: Wed, 19 Nov 2014 12:15:32 +0100
+Message-ID: <1416395748-10731-4-git-send-email-m.szyprowski@samsung.com>
 References: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com>
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 In-reply-to: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com>
@@ -11,72 +10,26 @@ To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-a
 Cc: Marek Szyprowski <m.szyprowski@samsung.com>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch removes reading of REG_MMU_VERSION register on every tlb
-operation and caches SYSMMU version in driver's internal data.
+There is no point trying to initialize dma_ops with
+arm_get_iommu_dma_map_ops() if no iommu has been provided.
 
 Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- drivers/iommu/exynos-iommu.c | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+ arch/arm/mm/dma-mapping.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 74233186f6f7..2912c4f9a8ad 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -212,6 +212,7 @@ struct sysmmu_drvdata {
- 	spinlock_t lock;
- 	struct iommu_domain *domain;
- 	phys_addr_t pgtable;
-+	int version;
- };
- 
- static bool set_sysmmu_active(struct sysmmu_drvdata *data)
-@@ -238,11 +239,6 @@ static void sysmmu_unblock(void __iomem *sfrbase)
- 	__raw_writel(CTRL_ENABLE, sfrbase + REG_MMU_CTRL);
- }
- 
--static unsigned int __raw_sysmmu_version(struct sysmmu_drvdata *data)
--{
--	return MMU_RAW_VER(__raw_readl(data->sfrbase + REG_MMU_VERSION));
--}
--
- static bool sysmmu_block(void __iomem *sfrbase)
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index f15eae5e0513..68040fd62166 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -2050,7 +2050,7 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
  {
- 	int i = 120;
-@@ -402,7 +398,7 @@ static void __sysmmu_init_config(struct sysmmu_drvdata *data)
- 	unsigned int cfg = CFG_LRU | CFG_QOS(15);
- 	unsigned int ver;
+ 	struct dma_map_ops *dma_ops;
  
--	ver = __raw_sysmmu_version(data);
-+	ver = MMU_RAW_VER(__raw_readl(data->sfrbase + REG_MMU_VERSION));
- 	if (MMU_MAJ_VER(ver) == 3) {
- 		if (MMU_MIN_VER(ver) >= 2) {
- 			cfg |= CFG_FLPDCACHE;
-@@ -416,6 +412,7 @@ static void __sysmmu_init_config(struct sysmmu_drvdata *data)
- 	}
- 
- 	__raw_writel(cfg, data->sfrbase + REG_MMU_CFG);
-+	data->version = ver;
- }
- 
- static void __sysmmu_enable_nocount(struct sysmmu_drvdata *data)
-@@ -525,7 +522,7 @@ static bool exynos_sysmmu_disable(struct device *dev)
- static void __sysmmu_tlb_invalidate_flpdcache(struct sysmmu_drvdata *data,
- 					      sysmmu_iova_t iova)
- {
--	if (__raw_sysmmu_version(data) == MAKE_MMU_VER(3, 3))
-+	if (data->version == MAKE_MMU_VER(3, 3))
- 		__raw_writel(iova | 0x1, data->sfrbase + REG_MMU_FLUSH_ENTRY);
- }
- 
-@@ -574,7 +571,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, sysmmu_iova_t iova,
- 		 * 1MB page can be cached in one of all sets.
- 		 * 64KB page can be one of 16 consecutive sets.
- 		 */
--		if (MMU_MAJ_VER(__raw_sysmmu_version(data)) == 2)
-+		if (MMU_MAJ_VER(data->version) == 2)
- 			num_inv = min_t(unsigned int, size / PAGE_SIZE, 64);
- 
- 		if (sysmmu_block(data->sfrbase)) {
+-	if (arm_setup_iommu_dma_ops(dev, dma_base, size, iommu))
++	if (iommu && arm_setup_iommu_dma_ops(dev, dma_base, size, iommu))
+ 		dma_ops = arm_get_iommu_dma_map_ops(coherent);
+ 	else
+ 		dma_ops = arm_get_dma_map_ops(coherent);
 -- 
 1.9.2
