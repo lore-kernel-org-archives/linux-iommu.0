@@ -1,70 +1,98 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v3 19/19] iommu: exynos: add callback for initializing devices
- from device tree
-Date: Wed, 19 Nov 2014 12:15:48 +0100
-Message-ID: <1416395748-10731-20-git-send-email-m.szyprowski@samsung.com>
-References: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [RFC PATCH v4 0/8] Introduce automatic DMA configuration for IOMMU
+	masters
+Date: Wed, 19 Nov 2014 12:21:26 +0100
+Message-ID: <546C7D36.7030400@samsung.com>
+References: <1415991397-9618-1-git-send-email-will.deacon@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <1415991397-9618-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds implementation of of_xlate callback, which prepares
-masters device for attaching to IOMMU. This callback is called during
-creating devices from device tree.
+Hello,
 
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
- drivers/iommu/exynos-iommu.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+On 2014-11-14 19:56, Will Deacon wrote:
+> Hello everybody,
+>
+> Here is the fourth iteration of the RFC I've previously posted here:
+>
+>    RFCv1: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-August/283023.html
+>    RFCv2: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-September/283752.html
+>    RFCv3: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-September/287031.html
+>
+> Changes since RFCv3 include:
+>
+>    - Drastic simplification of the data structures, so that we no longer
+>      pass around lists of domains. Instead, dma-mapping is expected to
+>      allocate the domain (Joerg talked about adding a get_default_domain
+>      operation to iommu_ops).
+>
+>    - iommu_ops is used to hold the per-instance IOMMU data
+>
+>    - Configuration of DMA segments added to of_dma_configure
+>
+> All feedback welcome.
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 88f9afe641a0..213db88ca52c 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -1078,6 +1078,33 @@ static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *iommu_domain,
- 	return phys;
- }
- 
-+static int exynos_iommu_of_xlate(struct device *dev,
-+				 struct of_phandle_args *spec)
-+{
-+	struct exynos_iommu_owner *owner = dev->archdata.iommu;
-+	struct platform_device *sysmmu = of_find_device_by_node(spec->np);
-+	struct sysmmu_drvdata *data;
-+
-+	if (!sysmmu)
-+		return -ENODEV;
-+
-+	data = platform_get_drvdata(sysmmu);
-+	if (!data)
-+		return -ENODEV;
-+
-+	if (!owner) {
-+		owner = kzalloc(sizeof(*owner), GFP_KERNEL);
-+		if (!owner)
-+			return -ENOMEM;
-+
-+		INIT_LIST_HEAD(&owner->clients);
-+		dev->archdata.iommu = owner;
-+	}
-+
-+	list_add_tail(&data->owner_node, &owner->clients);
-+	return 0;
-+}
-+
- static const struct iommu_ops exynos_iommu_ops = {
- 	.domain_init = exynos_iommu_domain_init,
- 	.domain_destroy = exynos_iommu_domain_destroy,
-@@ -1087,6 +1114,7 @@ static const struct iommu_ops exynos_iommu_ops = {
- 	.unmap = exynos_iommu_unmap,
- 	.iova_to_phys = exynos_iommu_iova_to_phys,
- 	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
-+	.of_xlate = exynos_iommu_of_xlate,
- };
- 
- static int init_done;
+I've rebased my Exynos SYSMMU patches on top of this patchset and it 
+works fine,
+You can find them in the "[PATCH v3 00/19] Exynos SYSMMU (IOMMU) 
+integration with DT
+and DMA-mapping subsystem" thread.
+
+You can add to all your patches:
+Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+
+I'm also interested in adding get_default_domain() callback, but I 
+assume that this
+can be done once the basic patchset get merged. Do you plan to work on 
+it, do you want
+me to implement it?
+
+> Cheers,
+>
+> Will
+>
+> --->8
+>
+> Will Deacon (8):
+>    iommu: provide early initialisation hook for IOMMU drivers
+>    dma-mapping: replace set_arch_dma_coherent_ops with arch_setup_dma_ops
+>    iommu: add new iommu_ops callback for adding an OF device
+>    iommu: provide helper function to configure an IOMMU for an of master
+>    dma-mapping: detect and configure IOMMU in of_dma_configure
+>    dma-mapping: set dma segment properties in of_dma_configure
+>    arm: call iommu_init before of_platform_populate
+>    arm: dma-mapping: plumb our iommu mapping ops into arch_setup_dma_ops
+>
+>   arch/arm/include/asm/dma-mapping.h | 12 +++---
+>   arch/arm/kernel/setup.c            |  2 +
+>   arch/arm/mm/dma-mapping.c          | 80 ++++++++++++++++++++++++++++++++++----
+>   drivers/iommu/Kconfig              |  2 +-
+>   drivers/iommu/of_iommu.c           | 50 ++++++++++++++++++++++++
+>   drivers/of/platform.c              | 54 +++++++++++++------------
+>   include/asm-generic/vmlinux.lds.h  |  2 +
+>   include/linux/amba/bus.h           |  1 +
+>   include/linux/dma-mapping.h        | 13 ++++---
+>   include/linux/iommu.h              |  8 ++++
+>   include/linux/of_iommu.h           | 31 +++++++++++++++
+>   include/linux/platform_device.h    |  2 +
+>   12 files changed, 214 insertions(+), 43 deletions(-)
+>
+
+Best regards
 -- 
-1.9.2
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
