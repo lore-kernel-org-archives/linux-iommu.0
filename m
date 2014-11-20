@@ -1,18 +1,15 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: Re: [PATCH v9 03/19] vfio: platform: add the VFIO PLATFORM module to
-	Kconfig
-Date: Thu, 20 Nov 2014 15:10:35 +0100
-Message-ID: <CAG8rG2ye9EBNhZtSRKJg6dTw858JTJZy-Kvfjq37i6S+hcGYuQ@mail.gmail.com>
+Subject: Re: [PATCH v9 06/19] vfio/platform: return info for bound device
+Date: Thu, 20 Nov 2014 15:10:50 +0100
+Message-ID: <CAG8rG2z_iCXEDGnfuZW_g+29NjhRXzUaDG3AUEVh1zvbf298BA@mail.gmail.com>
 References: <1414433284-31719-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1414433284-31719-4-git-send-email-a.motakis@virtualopensystems.com>
-	<CAOhR-w1nARQqtUX3nLBZYNg3PufDJMkOYeiJmpaz4fzPSZAmaQ@mail.gmail.com>
-	<CAG8rG2y8T0i__-8JAnsscT3LRZOSsdSK5qJ5sPFaCirrmZZMqw@mail.gmail.com>
-	<CAOhR-w3pB9AfXODFfzv0VthnkPwW0d5DPoW26u1xGVCR1_W6RQ@mail.gmail.com>
+	<1414433284-31719-7-git-send-email-a.motakis@virtualopensystems.com>
+	<5463373C.2010202@linaro.org> <1415810168.16601.353.camel@ul30vt.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAOhR-w3pB9AfXODFfzv0VthnkPwW0d5DPoW26u1xGVCR1_W6RQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <1415810168.16601.353.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,113 +19,64 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Hongbo Zhang <hongbo.zhang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: VFIO DRIVER <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 13, 2014 at 9:05 AM, Hongbo Zhang <hongbo.zhang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
-> On 12 November 2014 17:57, Antonios Motakis
-> <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org> wrote:
->> Hello Hongbo,
->>
->> On Wed, Nov 12, 2014 at 10:52 AM, Hongbo Zhang <hongbo.zhang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
->>> On 28 October 2014 02:07, Antonios Motakis
->>> <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org> wrote:
->>>>
->>>> Enable building the VFIO PLATFORM driver that allows to use Linux platform
->>>> devices with VFIO.
->>>>
->>>> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
->>>> ---
->>>>  drivers/vfio/Kconfig           | 1 +
->>>>  drivers/vfio/Makefile          | 1 +
->>>>  drivers/vfio/platform/Kconfig  | 9 +++++++++
->>>>  drivers/vfio/platform/Makefile | 4 ++++
->>>>  4 files changed, 15 insertions(+)
->>>>  create mode 100644 drivers/vfio/platform/Kconfig
->>>>  create mode 100644 drivers/vfio/platform/Makefile
->>>>
->>>> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
->>>> index a0abe04..962fb80 100644
->>>> --- a/drivers/vfio/Kconfig
->>>> +++ b/drivers/vfio/Kconfig
->>>> @@ -27,3 +27,4 @@ menuconfig VFIO
->>>>           If you don't know what to do here, say N.
->>>>
->>>>  source "drivers/vfio/pci/Kconfig"
->>>> +source "drivers/vfio/platform/Kconfig"
->>>> diff --git a/drivers/vfio/Makefile b/drivers/vfio/Makefile
->>>> index 0b035b1..dadf0ca 100644
->>>> --- a/drivers/vfio/Makefile
->>>> +++ b/drivers/vfio/Makefile
->>>> @@ -3,3 +3,4 @@ obj-$(CONFIG_VFIO_IOMMU_TYPE1) += vfio_iommu_type1.o
->>>>  obj-$(CONFIG_VFIO_IOMMU_SPAPR_TCE) += vfio_iommu_spapr_tce.o
->>>>  obj-$(CONFIG_VFIO_SPAPR_EEH) += vfio_spapr_eeh.o
->>>>  obj-$(CONFIG_VFIO_PCI) += pci/
->>>> +obj-$(CONFIG_VFIO_PLATFORM) += platform/
->>>> diff --git a/drivers/vfio/platform/Kconfig b/drivers/vfio/platform/Kconfig
->>>> new file mode 100644
->>>> index 0000000..c51af17
->>>> --- /dev/null
->>>> +++ b/drivers/vfio/platform/Kconfig
->>>> @@ -0,0 +1,9 @@
->>>> +config VFIO_PLATFORM
->>>> +       tristate "VFIO support for platform devices"
->>>> +       depends on VFIO && EVENTFD && ARM
->>>
->>> Hi Antonios,
->>> Is this only for ARM? how about X86 and PowerPC?
->>> On Freescale's PowerPC platform, the IOMMU is called PAMU (Peripheral
->>> Access Management Unit), and I am trying to use this VFIO framework on
->>> it.
->>>
->>
->> In principle it should be working on any platform with such devices;
->> as long as you have a VFIO IOMMU driver for the PAMU (on ARM we use
->> VFIO PLATFORM for the device, with VFIO IOMMU TYPE1 for the IOMMU).
->>
+On Wed, Nov 12, 2014 at 5:36 PM, Alex Williamson
+<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+> On Wed, 2014-11-12 at 11:32 +0100, Eric Auger wrote:
+>> On 10/27/2014 07:07 PM, Antonios Motakis wrote:
+>> > A VFIO userspace driver will start by opening the VFIO device
+>> > that corresponds to an IOMMU group, and will use the ioctl interface
+>> > to get the basic device info, such as number of memory regions and
+>> > interrupts, and their properties. This patch enables the
+>> > VFIO_DEVICE_GET_INFO ioctl call.
+>> >
+>> > Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+>> > ---
+>> >  drivers/vfio/platform/vfio_platform_common.c | 23 ++++++++++++++++++++---
+>> >  1 file changed, 20 insertions(+), 3 deletions(-)
+>> >
+>> > diff --git a/drivers/vfio/platform/vfio_platform_common.c b/drivers/vfio/platform/vfio_platform_common.c
+>> > index e0fdbc8..cb20526 100644
+>> > --- a/drivers/vfio/platform/vfio_platform_common.c
+>> > +++ b/drivers/vfio/platform/vfio_platform_common.c
+>> > @@ -43,10 +43,27 @@ static int vfio_platform_open(void *device_data)
+>> >  static long vfio_platform_ioctl(void *device_data,
+>> >                        unsigned int cmd, unsigned long arg)
+>> >  {
+>> > -   if (cmd == VFIO_DEVICE_GET_INFO)
+>> > -           return -EINVAL;
+>> > +   struct vfio_platform_device *vdev = device_data;
+>> > +   unsigned long minsz;
+>> > +
+>> > +   if (cmd == VFIO_DEVICE_GET_INFO) {
+>> > +           struct vfio_device_info info;
+>> > +
+>> > +           minsz = offsetofend(struct vfio_device_info, num_irqs);
+>> > +
+>> > +           if (copy_from_user(&info, (void __user *)arg, minsz))
+>> > +                   return -EFAULT;
+>> > +
+>> > +           if (info.argsz < minsz)
+>> > +                   return -EINVAL;
+>> > +
+>> > +           info.flags = vdev->flags;
+>> > +           info.num_regions = 0;
+>> > +           info.num_irqs = 0;
+>> Seems a bit weird to me to enable the modality but returning zeroed
+>> values. Shouldn't we put that patch after VFIO_DEVICE_GET_REGION_INFO
+>> and VFIO_DEVICE_GET_IRQ_INFO ones?
 >
-> Antonios,
-> As far as you know, on which ARM platform can I apply your patches directly?
-> My purpose is to apply you patches[1], and then implement a user space
-> driver to evaluate the performance.
+> I actually like how Antonios has started from a base framework, exposing
+> a device but none of the resources and then incrementally adds each
+> component.  It's also a good showcase of the VFIO ABI that we can do
+> things like this.  Thanks,
+
+I also agree with Alex with this. But of course I'm not married with
+any particular splitting style, in case we decide to change this.
+
 >
-
-In principle, if your target has a working IOMMU in front of a
-platform or AMBA device, then you should be able to use this.
-
-In practice, I have tested this on various fast models, and less
-extensively on Arndale in the past. Linaro as far as I know has tested
-this series on Calxeda devices with an xgmac NIC.
-
-> [1]  It is better without manually merging conflicts/dependencies etc,
-> I am vfio-platform user, not a iommu expert.
+> Alex
 >
->> So if you have a suitable IOMMU driver for your target, feel free to
->> test it, and let us know of the results.
->>
->>>>
->>>> +       help
->>>> +         Support for platform devices with VFIO. This is required to make
->>>> +         use of platform devices present on the system using the VFIO
->>>> +         framework.
->>>> +
->>>> +         If you don't know what to do here, say N.
->>>> diff --git a/drivers/vfio/platform/Makefile b/drivers/vfio/platform/Makefile
->>>> new file mode 100644
->>>> index 0000000..279862b
->>>> --- /dev/null
->>>> +++ b/drivers/vfio/platform/Makefile
->>>> @@ -0,0 +1,4 @@
->>>> +
->>>> +vfio-platform-y := vfio_platform.o vfio_platform_common.o
->>>> +
->>>> +obj-$(CONFIG_VFIO_PLATFORM) += vfio-platform.o
->>>> --
->>>> 2.1.1
->>>>
->>>> --
->>>> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
->>>> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
->>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>> Please read the FAQ at  http://www.tux.org/lkml/
