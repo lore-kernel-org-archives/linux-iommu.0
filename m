@@ -1,17 +1,17 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v9 12/19] vfio/platform: trigger an interrupt via eventfd
-Date: Thu, 20 Nov 2014 15:24:12 +0100
-Message-ID: <546DF98C.5040200@linaro.org>
+Subject: Re: [PATCH v9 06/19] vfio/platform: return info for bound device
+Date: Thu, 20 Nov 2014 15:26:12 +0100
+Message-ID: <546DFA04.9060901@linaro.org>
 References: <1414433284-31719-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1414433284-31719-13-git-send-email-a.motakis@virtualopensystems.com>
-	<1414784174.27420.327.camel@ul30vt.home>
-	<54636D25.6060009@linaro.org>
-	<CAG8rG2w6-1=BmU-AxtL6gvaC=H32O5E5V7WeDWTyjxHKKmwa=w@mail.gmail.com>
+	<1414433284-31719-7-git-send-email-a.motakis@virtualopensystems.com>
+	<5463373C.2010202@linaro.org>
+	<1415810168.16601.353.camel@ul30vt.home>
+	<CAG8rG2z_iCXEDGnfuZW_g+29NjhRXzUaDG3AUEVh1zvbf298BA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAG8rG2w6-1=BmU-AxtL6gvaC=H32O5E5V7WeDWTyjxHKKmwa=w@mail.gmail.com>
+In-Reply-To: <CAG8rG2z_iCXEDGnfuZW_g+29NjhRXzUaDG3AUEVh1zvbf298BA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,217 +21,70 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: VFIO DRIVER <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: VFIO DRIVER <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/20/2014 03:11 PM, Antonios Motakis wrote:
-> On Wed, Nov 12, 2014 at 3:22 PM, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
->> On 10/31/2014 08:36 PM, Alex Williamson wrote:
->>> On Mon, 2014-10-27 at 19:07 +0100, Antonios Motakis wrote:
->>>> This patch allows to set an eventfd for a patform device's interrupt,
->> platform device (typo)
-> 
-> Ack.
-> 
->>>> and also to trigger the interrupt eventfd from userspace for testing.
->>>> Level sensitive interrupts are marked as maskable and are handled in
->>>> a later patch. Edge triggered interrupts are not advertised as maskable
->>>> and are implemented here using a simple and efficient IRQ handler.
+On 11/20/2014 03:10 PM, Antonios Motakis wrote:
+> On Wed, Nov 12, 2014 at 5:36 PM, Alex Williamson
+> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+>> On Wed, 2014-11-12 at 11:32 +0100, Eric Auger wrote:
+>>> On 10/27/2014 07:07 PM, Antonios Motakis wrote:
+>>>> A VFIO userspace driver will start by opening the VFIO device
+>>>> that corresponds to an IOMMU group, and will use the ioctl interface
+>>>> to get the basic device info, such as number of memory regions and
+>>>> interrupts, and their properties. This patch enables the
+>>>> VFIO_DEVICE_GET_INFO ioctl call.
 >>>>
 >>>> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 >>>> ---
->>>>  drivers/vfio/platform/vfio_platform_irq.c     | 93 ++++++++++++++++++++++++++-
->>>>  drivers/vfio/platform/vfio_platform_private.h |  2 +
->>>>  2 files changed, 93 insertions(+), 2 deletions(-)
+>>>>  drivers/vfio/platform/vfio_platform_common.c | 23 ++++++++++++++++++++---
+>>>>  1 file changed, 20 insertions(+), 3 deletions(-)
 >>>>
->>>> diff --git a/drivers/vfio/platform/vfio_platform_irq.c b/drivers/vfio/platform/vfio_platform_irq.c
->>>> index 007b386..2ac8ed7 100644
->>>> --- a/drivers/vfio/platform/vfio_platform_irq.c
->>>> +++ b/drivers/vfio/platform/vfio_platform_irq.c
->>>> @@ -45,11 +45,91 @@ static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
->>>>      return -EINVAL;
->>>>  }
->>>>
->>>> +static irqreturn_t vfio_irq_handler(int irq, void *dev_id)
->>>> +{
->>>> +    struct vfio_platform_irq *irq_ctx = dev_id;
->>>> +
->>>> +    eventfd_signal(irq_ctx->trigger, 1);
->>>> +
->>>> +    return IRQ_HANDLED;
->>>> +}
->>>> +
->>>> +static int vfio_set_trigger(struct vfio_platform_device *vdev, int index,
->>>> +                        int fd, irq_handler_t handler)
->>>> +{
->>>> +    struct vfio_platform_irq *irq = &vdev->irqs[index];
->>>> +    struct eventfd_ctx *trigger;
->>>> +    int ret;
->>>> +
->>>> +    if (irq->trigger) {
->>>> +            free_irq(irq->hwirq, irq);
->>>> +            kfree(irq->name);
->>>> +            eventfd_ctx_put(irq->trigger);
->>>> +            irq->trigger = NULL;
->>>> +    }
->>>> +
->>>> +    if (fd < 0) /* Disable only */
->>>> +            return 0;
->>>> +
->>>> +    irq->name = kasprintf(GFP_KERNEL, "vfio-irq[%d](%s)",
->>>> +                                            irq->hwirq, vdev->name);
->>>> +    if (!irq->name)
->>>> +            return -ENOMEM;
->>>> +
->>>> +    trigger = eventfd_ctx_fdget(fd);
->>>> +    if (IS_ERR(trigger)) {
->>>> +            kfree(irq->name);
->>>> +            return PTR_ERR(trigger);
->>>> +    }
->>>> +
->>>> +    irq->trigger = trigger;
->>>> +
->>>> +    ret = request_irq(irq->hwirq, handler, 0, irq->name, irq);
->>>> +    if (ret) {
->>>> +            kfree(irq->name);
->>>> +            eventfd_ctx_put(trigger);
->>>> +            irq->trigger = NULL;
->>>> +            return ret;
->>>> +    }
->>>> +
->>>> +    return 0;
->> you may simply return ret here?
-> 
-> Indeed, ack.
-> 
->>>> +}
->>>> +
->>>>  static int vfio_platform_set_irq_trigger(struct vfio_platform_device *vdev,
->>>>                                   unsigned index, unsigned start,
->>>>                                   unsigned count, uint32_t flags, void *data)
+>>>> diff --git a/drivers/vfio/platform/vfio_platform_common.c b/drivers/vfio/platform/vfio_platform_common.c
+>>>> index e0fdbc8..cb20526 100644
+>>>> --- a/drivers/vfio/platform/vfio_platform_common.c
+>>>> +++ b/drivers/vfio/platform/vfio_platform_common.c
+>>>> @@ -43,10 +43,27 @@ static int vfio_platform_open(void *device_data)
+>>>>  static long vfio_platform_ioctl(void *device_data,
+>>>>                        unsigned int cmd, unsigned long arg)
 >>>>  {
->>>> -    return -EINVAL;
->>>> +    struct vfio_platform_irq *irq = &vdev->irqs[index];
->>>> +    irq_handler_t handler;
+>>>> -   if (cmd == VFIO_DEVICE_GET_INFO)
+>>>> -           return -EINVAL;
+>>>> +   struct vfio_platform_device *vdev = device_data;
+>>>> +   unsigned long minsz;
 >>>> +
->>>> +    if (vdev->irqs[index].flags & VFIO_IRQ_INFO_MASKABLE)
->>>> +            return -EINVAL; /* not implemented */
->>>> +    else
->>>> +            handler = vfio_irq_handler;
+>>>> +   if (cmd == VFIO_DEVICE_GET_INFO) {
+>>>> +           struct vfio_device_info info;
 >>>> +
->>>> +    if (!count && (flags & VFIO_IRQ_SET_DATA_NONE))
->>>> +            return vfio_set_trigger(vdev, index, -1, handler);
+>>>> +           minsz = offsetofend(struct vfio_device_info, num_irqs);
 >>>> +
->>>> +    if (start != 0 || count != 1)
->>>> +            return -EINVAL;
+>>>> +           if (copy_from_user(&info, (void __user *)arg, minsz))
+>>>> +                   return -EFAULT;
 >>>> +
->>>> +    if (flags & VFIO_IRQ_SET_DATA_EVENTFD) {
->>>> +            int32_t fd = *(int32_t *)data;
+>>>> +           if (info.argsz < minsz)
+>>>> +                   return -EINVAL;
 >>>> +
->>>> +            return vfio_set_trigger(vdev, index, fd, handler);
->>>> +    }
->>>> +
->>>> +    if (flags & VFIO_IRQ_SET_DATA_NONE) {
->>>> +            handler(irq->hwirq, irq);
->>>> +
->>>> +    } else if (flags & VFIO_IRQ_SET_DATA_BOOL) {
->>>> +            uint8_t trigger = *(uint8_t *)data;
->>>> +
->>>> +            if (trigger)
->>>> +                    handler(irq->hwirq, irq);
->>>> +    }
->>>> +
->>>> +    return 0;
->>>>  }
->>>>
->>>>  int vfio_platform_set_irqs_ioctl(struct vfio_platform_device *vdev,
->>>> @@ -95,7 +175,11 @@ int vfio_platform_irq_init(struct vfio_platform_device *vdev)
->>>>              if (hwirq < 0)
->>>>                      goto err;
->>>>
->>>> -            vdev->irqs[i].flags = 0;
->>>> +            vdev->irqs[i].flags = VFIO_IRQ_INFO_EVENTFD;
->>>> +
->>>> +            if (irq_get_trigger_type(hwirq) & IRQ_TYPE_LEVEL_MASK)
->>>> +                    vdev->irqs[i].flags |= VFIO_IRQ_INFO_MASKABLE;
->>>
->>> This is a bit confusing because edge interrupts can support masking, but
->>> they don't require it.  Level interrupts really must support masking
->>> because we need to mask them on the host and therefore the user needs to
->>> be able to unmask them (ignoring the irq prioritization thing you guys
->>> can do on arm).  So this works, but I would really have expected
->>> VFIO_IRQ_INFO_AUTOMASKED here and in the above function.
+>>>> +           info.flags = vdev->flags;
+>>>> +           info.num_regions = 0;
+>>>> +           info.num_irqs = 0;
+>>> Seems a bit weird to me to enable the modality but returning zeroed
+>>> values. Shouldn't we put that patch after VFIO_DEVICE_GET_REGION_INFO
+>>> and VFIO_DEVICE_GET_IRQ_INFO ones?
 >>
->> Shouldn't we have AUTOMASKED for level sensitive and MASKABLE for both
->> level & edge?
+>> I actually like how Antonios has started from a base framework, exposing
+>> a device but none of the resources and then incrementally adds each
+>> component.  It's also a good showcase of the VFIO ABI that we can do
+>> things like this.  Thanks,
 > 
-> I believe it was Alex's argument to expose edge triggered irqs as
-> non-MASKABLE so they can benefit from a more efficient interrupt
-> handler.
+> I also agree with Alex with this. But of course I'm not married with
+> any particular splitting style, in case we decide to change this.
+
 Hi Antonios,
-
-OK I understand. Please forget my comment and follow Alex recommendation.
-
-> 
-> Would it be acceptable to make them both maskable, but check for
-> masked status without a lock?
-
-> 
->>
->> For forwarded IRQ, may I enrich the external API with a new function
->> enabling to turn the automasked flag off? Would that make sense?
-> 
-> Are you thinking of an external function but internal to the kernel,
-> or the external user API?
-
-Actually I changed my mind and aligned to your dual handler strategy. I
-do not see real interest/use case in allowing the user to change
-forwarding state while the VFIO signaling mechanism is set. So I now
-reject any state change attempt if the VFIO handler is installed.
-
-by the way I am currently using v9 on 3.18rc5 and it runs fine with KVM
-passthrough use case.
-
+please keep as is. I also learn each day about splitting style ;-)
 Best Regards
-
 Eric
 > 
 >>
->> Thanks
->>
->> Eric
->>>
->>>> +
->>>>              vdev->irqs[i].count = 1;
->>>>              vdev->irqs[i].hwirq = hwirq;
->>>>      }
->>>> @@ -110,6 +194,11 @@ err:
->>>>
->>>>  void vfio_platform_irq_cleanup(struct vfio_platform_device *vdev)
->>>>  {
->>>> +    int i;
->>>> +
->>>> +    for (i = 0; i < vdev->num_irqs; i++)
->>>> +            vfio_set_trigger(vdev, i, -1, NULL);
->>>> +
->>>>      vdev->num_irqs = 0;
->>>>      kfree(vdev->irqs);
->>>>  }
->>>> diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
->>>> index ffa2459..a3f2411 100644
->>>> --- a/drivers/vfio/platform/vfio_platform_private.h
->>>> +++ b/drivers/vfio/platform/vfio_platform_private.h
->>>> @@ -28,6 +28,8 @@ struct vfio_platform_irq {
->>>>      u32                     flags;
->>>>      u32                     count;
->>>>      int                     hwirq;
->>>> +    char                    *name;
->>>> +    struct eventfd_ctx      *trigger;
->>>>  };
->>>>
->>>>  struct vfio_platform_region {
->>>
->>>
->>>
+>> Alex
 >>
