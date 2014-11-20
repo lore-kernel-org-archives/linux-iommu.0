@@ -1,12 +1,16 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [RFC Patch V1] genirq: Introduce irq_set_vcpu_affinity() to target an
-	interrupt to a VCPU
-Date: Thu, 20 Nov 2014 15:10:00 +0800
-Message-ID: <1416467404-5031-1-git-send-email-jiang.liu@linux.intel.com>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: Re: [PATCH v9 01/19] vfio/platform: initial skeleton of VFIO support
+	for platform devices
+Date: Thu, 20 Nov 2014 15:10:23 +0100
+Message-ID: <CAG8rG2xtVEoF_FQNeyU6uwdLndt40gkz4Eq0Z9nFUK793nqNqw@mail.gmail.com>
+References: <1414433284-31719-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1414433284-31719-2-git-send-email-a.motakis@virtualopensystems.com>
+	<546330DE.5010002@linaro.org> <1415810985.16601.361.camel@ul30vt.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1415810985.16601.361.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,111 +20,232 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: VFIO DRIVER <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-With Posted-Interrupts support in Intel CPU and IOMMU, an external
-interrupt from assigned-devices could be directly delivered to a
-virtual CPU in a virtual machine. Instead of hacking KVM and Intel
-IOMMU drivers, we propose a platform independent interface to target
-an interrupt to a specific virtual CPU in a virtual machine, or set
-virtual CPU affinity for an interrupt.
+On Wed, Nov 12, 2014 at 5:49 PM, Alex Williamson
+<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+>
+> On Wed, 2014-11-12 at 11:05 +0100, Eric Auger wrote:
+> > Hi Antonios,
+> >
+> > On 10/27/2014 07:07 PM, Antonios Motakis wrote:
+> > > This patch forms the common skeleton code for platform devices support
+> > > with VFIO. This will include the core functionality of VFIO_PLATFORM,
+> > > however binding to the device and discovering the device resources will
+> > > be done with the help of a separate file where any Linux platform bus
+> > > specific code will reside.
+> > >
+> > > This will allow us to implement support for also discovering AMBA devices
+> > > and their resources, but still reuse a large part of the VFIO_PLATFORM
+> > > implementation.
+> > >
+> > > Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> > > ---
+> > >  drivers/vfio/platform/vfio_platform_common.c  | 126 ++++++++++++++++++++++++++
+> > >  drivers/vfio/platform/vfio_platform_private.h |  36 ++++++++
+> > >  2 files changed, 162 insertions(+)
+> > >  create mode 100644 drivers/vfio/platform/vfio_platform_common.c
+> > >  create mode 100644 drivers/vfio/platform/vfio_platform_private.h
+> > >
+> > > diff --git a/drivers/vfio/platform/vfio_platform_common.c b/drivers/vfio/platform/vfio_platform_common.c
+> > > new file mode 100644
+> > > index 0000000..e0fdbc8
+> > > --- /dev/null
+> > > +++ b/drivers/vfio/platform/vfio_platform_common.c
+> > > @@ -0,0 +1,126 @@
+> > > +/*
+> > > + * Copyright (C) 2013 - Virtual Open Systems
+> > > + * Author: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> > > + *
+> > > + * This program is free software; you can redistribute it and/or modify
+> > > + * it under the terms of the GNU General Public License, version 2, as
+> > > + * published by the Free Software Foundation.
+> > > + *
+> > > + * This program is distributed in the hope that it will be useful,
+> > > + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> > > + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> > > + * GNU General Public License for more details.
+> > > + */
+> > > +
+> > > +#include <linux/device.h>
+> > > +#include <linux/interrupt.h>
+> > > +#include <linux/iommu.h>
+> > > +#include <linux/module.h>
+> > > +#include <linux/mutex.h>
+> > > +#include <linux/notifier.h>
+> > > +#include <linux/pm_runtime.h>
+> > > +#include <linux/slab.h>
+> > > +#include <linux/types.h>
+> > > +#include <linux/uaccess.h>
+> > > +#include <linux/vfio.h>
+> > > +#include <linux/io.h>
+> > not sure at that state all the above includes are needed.
+> > > +
+> > > +#include "vfio_platform_private.h"
+> > > +
+> > > +static void vfio_platform_release(void *device_data)
+> > > +{
+> > > +   module_put(THIS_MODULE);
+> > > +}
+> > > +
+> > > +static int vfio_platform_open(void *device_data)
+> > > +{
+> > > +   if (!try_module_get(THIS_MODULE))
+> > > +           return -ENODEV;
+> > > +
+> > > +   return 0;
+> > > +}
+> > > +
+> > > +static long vfio_platform_ioctl(void *device_data,
+> > > +                      unsigned int cmd, unsigned long arg)
+> > a minor style comment/question that applies on all the series. Shouldn't
+> > subsequent argument lines rather be aligned with the first char after
+> > "(", as done in PCI code?
+>
+> It's also my preferred style to indent to just after the open paren on
+> wrapped lines where possible, but I don't think there are hard rules in
+> CodingStyle or checkpatch that enforce this, so I often let it slide.
+> Thanks,
+>
 
-By adopting this new interface and the hierarchy irqdomain, we could
-easily support posted-interrupts on Intel platforms, and also provide
-flexible enough interfaces for other platforms to support similar
-features.
+You're right that there are no hard coding style rules for this, but I
+also like this style so I'll apply it more consistently.
 
-We may also cooperate between set_affinity() and set_vcpu_affinity()
-in IRQ core or irq chip drivers.
-
-Here is the usage scenario for this interface:
-Guest update MSI/MSI-X interrupt configuratoin
-	-->QEMU and KVM handle this
-	-->KVM call this interface (passing posted interrupts descriptor
-	   and guest vector)
-	-->irq core will transfer the control to IOMMU
-	-->IOMMU will do the real work of updating IRTE (IRTE has new
-	   format for VT-d Posted-Interrupts)
-
-You can find the VT-d Posted-Interrtups Spec. in the following URL:
-http://www.intel.com/content/www/us/en/intelligent-systems/intel-technology/vt-directed-io-spec.html
-
-Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
----
- include/linux/irq.h |    6 ++++++
- kernel/irq/manage.c |   19 +++++++++++++++++++
- 2 files changed, 25 insertions(+)
-
-diff --git a/include/linux/irq.h b/include/linux/irq.h
-index 8badf34baf0f..0a3c8ac38ffb 100644
---- a/include/linux/irq.h
-+++ b/include/linux/irq.h
-@@ -29,6 +29,7 @@
- struct seq_file;
- struct module;
- struct msi_msg;
-+struct irq_vcpu_id;
- 
- /*
-  * IRQ line status.
-@@ -323,6 +324,8 @@ static inline irq_hw_number_t irqd_to_hwirq(struct irq_data *d)
-  *				irq_request_resources
-  * @irq_compose_msi_msg:	optional to compose message content for MSI
-  * @irq_write_msi_msg:	optional to write message content for MSI
-+ * @irq_set_vcpu_affinity:	optional to target a virtual CPU in a virtual
-+ *				machine
-  * @flags:		chip specific flags
-  */
- struct irq_chip {
-@@ -362,6 +365,8 @@ struct irq_chip {
- 	void		(*irq_compose_msi_msg)(struct irq_data *data, struct msi_msg *msg);
- 	void		(*irq_write_msi_msg)(struct irq_data *data, struct msi_msg *msg);
- 
-+	int		(*irq_set_vcpu_affinity)(struct irq_data *data, struct irq_vcpu_id *vcpu_id);
-+
- 	unsigned long	flags;
- };
- 
-@@ -415,6 +420,7 @@ extern void irq_cpu_online(void);
- extern void irq_cpu_offline(void);
- extern int irq_set_affinity_locked(struct irq_data *data,
- 				   const struct cpumask *cpumask, bool force);
-+extern int irq_set_vcpu_affinity(unsigned int irq, struct irq_vcpu_id *vcpu_id);
- 
- #if defined(CONFIG_SMP) && defined(CONFIG_GENERIC_PENDING_IRQ)
- void irq_move_irq(struct irq_data *data);
-diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index 80692373abd6..4ae8f243293a 100644
---- a/kernel/irq/manage.c
-+++ b/kernel/irq/manage.c
-@@ -247,6 +247,25 @@ int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
- }
- EXPORT_SYMBOL_GPL(irq_set_affinity_hint);
- 
-+int irq_set_vcpu_affinity(unsigned int irq, struct irq_vcpu_id *vcpu_id)
-+{
-+	struct irq_desc *desc = irq_to_desc(irq);
-+	struct irq_chip *chip;
-+	unsigned long flags;
-+	int ret = -ENOSYS;
-+
-+	if (!desc)
-+		return -EINVAL;
-+
-+	raw_spin_lock_irqsave(&desc->lock, flags);
-+	chip = desc->irq_data.chip;
-+	if (chip && chip->irq_set_vcpu_affinity)
-+		ret = chip->irq_set_vcpu_affinity(&desc->irq_data, vcpu_id);
-+	raw_spin_unlock_irqrestore(&desc->lock, flags);
-+
-+	return ret;
-+}
-+
- static void irq_affinity_notify(struct work_struct *work)
- {
- 	struct irq_affinity_notify *notify =
--- 
-1.7.10.4
+> Alex
+>
+> > > +{
+> > > +   if (cmd == VFIO_DEVICE_GET_INFO)
+> > > +           return -EINVAL;
+> > > +
+> > > +   else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
+> > > +           return -EINVAL;
+> > > +
+> > > +   else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
+> > > +           return -EINVAL;
+> > > +
+> > > +   else if (cmd == VFIO_DEVICE_SET_IRQS)
+> > > +           return -EINVAL;
+> > > +
+> > > +   else if (cmd == VFIO_DEVICE_RESET)
+> > > +           return -EINVAL;
+> > > +
+> > > +   return -ENOTTY;
+> > > +}
+> > > +
+> > > +static ssize_t vfio_platform_read(void *device_data, char __user *buf,
+> > > +                             size_t count, loff_t *ppos)
+> > > +{
+> > > +   return -EINVAL;
+> > > +}
+> > > +
+> > > +static ssize_t vfio_platform_write(void *device_data, const char __user *buf,
+> > > +                              size_t count, loff_t *ppos)
+> > > +{
+> > > +   return -EINVAL;
+> > > +}
+> > > +
+> > > +static int vfio_platform_mmap(void *device_data, struct vm_area_struct *vma)
+> > > +{
+> > > +   return -EINVAL;
+> > > +}
+> > > +
+> > > +static const struct vfio_device_ops vfio_platform_ops = {
+> > > +   .name           = "vfio-platform",
+> > > +   .open           = vfio_platform_open,
+> > > +   .release        = vfio_platform_release,
+> > > +   .ioctl          = vfio_platform_ioctl,
+> > > +   .read           = vfio_platform_read,
+> > > +   .write          = vfio_platform_write,
+> > > +   .mmap           = vfio_platform_mmap,
+> > > +};
+> > > +
+> > > +int vfio_platform_probe_common(struct vfio_platform_device *vdev,
+> > > +                          struct device *dev)
+> > > +{
+> > > +   struct iommu_group *group;
+> > > +   int ret;
+> > > +
+> > > +   if (!vdev)
+> > > +           return -EINVAL;
+> > > +
+> > > +   group = iommu_group_get(dev);
+> > > +   if (!group) {
+> > > +           pr_err("VFIO: No IOMMU group for device %s\n", vdev->name);
+> > > +           return -EINVAL;
+> > > +   }
+> > I saw the above check also is done at beginning of vfio_add_group_dev.
+> > Added value however is pr_err which is useful and PCI code does the
+> > check too.
+> >
+> > Eric
+> > > +
+> > > +   ret = vfio_add_group_dev(dev, &vfio_platform_ops, vdev);
+> > > +   if (ret) {
+> > > +           iommu_group_put(group);
+> > > +           return ret;
+> > > +   }
+> > > +
+> > > +   return 0;
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(vfio_platform_probe_common);
+> > > +
+> > > +struct vfio_platform_device *vfio_platform_remove_common(struct device *dev)
+> > > +{
+> > > +   struct vfio_platform_device *vdev;
+> > > +
+> > > +   vdev = vfio_del_group_dev(dev);
+> > > +   if (vdev)
+> > > +           iommu_group_put(dev->iommu_group);
+> > > +
+> > > +   return vdev;
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(vfio_platform_remove_common);
+> > > diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
+> > > new file mode 100644
+> > > index 0000000..062b92d
+> > > --- /dev/null
+> > > +++ b/drivers/vfio/platform/vfio_platform_private.h
+> > > @@ -0,0 +1,36 @@
+> > > +/*
+> > > + * Copyright (C) 2013 - Virtual Open Systems
+> > > + * Author: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> > > + *
+> > > + * This program is free software; you can redistribute it and/or modify
+> > > + * it under the terms of the GNU General Public License, version 2, as
+> > > + * published by the Free Software Foundation.
+> > > + *
+> > > + * This program is distributed in the hope that it will be useful,
+> > > + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> > > + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> > > + * GNU General Public License for more details.
+> > > + */
+> > > +
+> > > +#ifndef VFIO_PLATFORM_PRIVATE_H
+> > > +#define VFIO_PLATFORM_PRIVATE_H
+> > > +
+> > > +struct vfio_platform_device {
+> > > +   /*
+> > > +    * These fields should be filled by the bus specific binder
+> > > +    */
+> > > +   void            *opaque;
+> > > +   const char      *name;
+> > > +   uint32_t        flags;
+> > > +   /* callbacks to discover device resources */
+> > > +   struct resource*
+> > > +           (*get_resource)(struct vfio_platform_device *vdev, int i);
+> > > +   int     (*get_irq)(struct vfio_platform_device *vdev, int i);
+> > > +};
+> > > +
+> > > +extern int vfio_platform_probe_common(struct vfio_platform_device *vdev,
+> > > +                                 struct device *dev);
+> > > +extern struct vfio_platform_device *vfio_platform_remove_common
+> > > +                                (struct device *dev);
+> > > +
+> > > +#endif /* VFIO_PLATFORM_PRIVATE_H */
+> > >
+> >
+>
+>
+>
