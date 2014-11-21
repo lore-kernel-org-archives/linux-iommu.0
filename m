@@ -1,31 +1,93 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [GIT PULL] iommu/arm-smmu: updates for 3.19
-Date: Fri, 21 Nov 2014 12:30:58 +0100
-Message-ID: <20141121113058.GF3762@8bytes.org>
-References: <20141119190006.GL15985@arm.com>
+From: Stefano Stabellini <stefano.stabellini@eu.citrix.com>
+Subject: Re: [RFC] add a struct page* parameter to dma_map_ops.unmap_page
+Date: Fri, 21 Nov 2014 11:48:33 +0000
+Message-ID: <alpine.DEB.2.02.1411211147450.12596@kaball.uk.xensource.com>
+References: <alpine.DEB.2.02.1411111644490.26318@kaball.uk.xensource.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20141119190006.GL15985-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="US-ASCII"
+Return-path: <linux-parisc-owner@vger.kernel.org>
+In-Reply-To: <alpine.DEB.2.02.1411111644490.26318@kaball.uk.xensource.com>
+Sender: linux-parisc-owner@vger.kernel.org
+To: Stefano Stabellini <stefano.stabellini@eu.citrix.com>
+Cc: gregkh@linuxfoundation.org, David Vrabel <david.vrabel@citrix.com>, Ian Campbell <Ian.Campbell@citrix.com>, konrad.wilk@oracle.com, linux-kernel@vger.kernel.org, xen-devel@lists.xensource.com, torvalds@linux-foundation.org, vinod.koul@intel.com, dmaengine@vger.kernel.org, bhelgaas@google.com, jejb@parisc-linux.org, deller@gmx.de, linux-parisc@vger.kernel.org, iommu@lists.linux-foundation.org, airlied@linux.ie, dri-devel@lists.freedesktop.org, alexander.deucher@amd.com, christian.koenig@amd.com, linux@arm.linux.org.uk, linux-mips@linux-mips.org, ralf@linux-mips.org, linux-arm-kernel@lists.infradead.org, dwmw2@infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Nov 19, 2014 at 07:00:06PM +0000, Will Deacon wrote:
-> Please can you pull these ARM SMMU changes for 3.19? As well as the
-> usual driver updates (enabling support for the new NESTING attribute),
-> there are also the IOMMU_NOEXEC patches from Antonios, which includes
-> a fix for a resulting compiler warning in the AMD IOMMU driver.
+On Mon, 17 Nov 2014, Stefano Stabellini wrote:
+> Hi all,
+> I am writing this email to ask for your advice.
+> 
+> On architectures where dma addresses are different from physical
+> addresses, it can be difficult to retrieve the physical address of a
+> page from its dma address.
+> 
+> Specifically this is the case for Xen on arm and arm64 but I think that
+> other architectures might have the same issue.
+> 
+> Knowing the physical address is necessary to be able to issue any
+> required cache maintenance operations when unmap_page,
+> sync_single_for_cpu and sync_single_for_device are called.
+> 
+> Adding a struct page* parameter to unmap_page, sync_single_for_cpu and
+> sync_single_for_device would make Linux dma handling on Xen on arm and
+> arm64 much easier and quicker.
+> 
+> I think that other drivers have similar problems, such as the Intel
+> IOMMU driver having to call find_iova and walking down an rbtree to get
+> the physical address in its implementation of unmap_page.
+> 
+> Callers have the struct page* in their hands already from the previous
+> map_page call so it shouldn't be an issue for them.  A problem does
+> exist however: there are about 280 callers of dma_unmap_page and
+> pci_unmap_page. We have even more callers of the dma_sync_single_for_*
+> functions.
+> 
+> 
+> 
+> Is such a change even conceivable? How would one go about it?
+> 
+> I think that Xen would not be the only one to gain from it, but I would
+> like to have a confirmation from others: given the magnitude of the
+> changes involved I would actually prefer to avoid them unless multiple
+> drivers/archs/subsystems could really benefit from them.
 
-Pulled, thanks Will.
+Given the lack of interest from the community, I am going to drop this
+idea.
+
+
+
+
+> Cheers,
+> 
+> Stefano
+> 
+> 
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index d5d3881..158a765 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -31,8 +31,9 @@ struct dma_map_ops {
+>  			       unsigned long offset, size_t size,
+>  			       enum dma_data_direction dir,
+>  			       struct dma_attrs *attrs);
+> -	void (*unmap_page)(struct device *dev, dma_addr_t dma_handle,
+> -			   size_t size, enum dma_data_direction dir,
+> +	void (*unmap_page)(struct device *dev, struct page *page,
+> +			   dma_addr_t dma_handle, size_t size,
+> +			   enum dma_data_direction dir,
+>  			   struct dma_attrs *attrs);
+>  	int (*map_sg)(struct device *dev, struct scatterlist *sg,
+>  		      int nents, enum dma_data_direction dir,
+> @@ -41,10 +42,10 @@ struct dma_map_ops {
+>  			 struct scatterlist *sg, int nents,
+>  			 enum dma_data_direction dir,
+>  			 struct dma_attrs *attrs);
+> -	void (*sync_single_for_cpu)(struct device *dev,
+> +	void (*sync_single_for_cpu)(struct device *dev, struct page *page,
+>  				    dma_addr_t dma_handle, size_t size,
+>  				    enum dma_data_direction dir);
+> -	void (*sync_single_for_device)(struct device *dev,
+> +	void (*sync_single_for_device)(struct device *dev, struct page *page,
+>  				       dma_addr_t dma_handle, size_t size,
+>  				       enum dma_data_direction dir);
+>  	void (*sync_sg_for_cpu)(struct device *dev,
+> 
