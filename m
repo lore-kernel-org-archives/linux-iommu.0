@@ -1,17 +1,13 @@
-From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v9 06/19] vfio/platform: return info for bound device
-Date: Thu, 20 Nov 2014 15:26:12 +0100
-Message-ID: <546DFA04.9060901@linaro.org>
-References: <1414433284-31719-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1414433284-31719-7-git-send-email-a.motakis@virtualopensystems.com>
-	<5463373C.2010202@linaro.org>
-	<1415810168.16601.353.camel@ul30vt.home>
-	<CAG8rG2z_iCXEDGnfuZW_g+29NjhRXzUaDG3AUEVh1zvbf298BA@mail.gmail.com>
+From: Sakari Ailus <sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [RFC 3/4] iommu: iova: Make the iova library buildable as a module
+Date: Fri, 21 Nov 2014 13:11:42 +0200
+Message-ID: <1416568303-677-4-git-send-email-sakari.ailus@linux.intel.com>
+References: <1416568303-677-1-git-send-email-sakari.ailus@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAG8rG2z_iCXEDGnfuZW_g+29NjhRXzUaDG3AUEVh1zvbf298BA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <1416568303-677-1-git-send-email-sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,70 +17,72 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: VFIO DRIVER <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, anil.s.keshavamurthy-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/20/2014 03:10 PM, Antonios Motakis wrote:
-> On Wed, Nov 12, 2014 at 5:36 PM, Alex Williamson
-> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
->> On Wed, 2014-11-12 at 11:32 +0100, Eric Auger wrote:
->>> On 10/27/2014 07:07 PM, Antonios Motakis wrote:
->>>> A VFIO userspace driver will start by opening the VFIO device
->>>> that corresponds to an IOMMU group, and will use the ioctl interface
->>>> to get the basic device info, such as number of memory regions and
->>>> interrupts, and their properties. This patch enables the
->>>> VFIO_DEVICE_GET_INFO ioctl call.
->>>>
->>>> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
->>>> ---
->>>>  drivers/vfio/platform/vfio_platform_common.c | 23 ++++++++++++++++++++---
->>>>  1 file changed, 20 insertions(+), 3 deletions(-)
->>>>
->>>> diff --git a/drivers/vfio/platform/vfio_platform_common.c b/drivers/vfio/platform/vfio_platform_common.c
->>>> index e0fdbc8..cb20526 100644
->>>> --- a/drivers/vfio/platform/vfio_platform_common.c
->>>> +++ b/drivers/vfio/platform/vfio_platform_common.c
->>>> @@ -43,10 +43,27 @@ static int vfio_platform_open(void *device_data)
->>>>  static long vfio_platform_ioctl(void *device_data,
->>>>                        unsigned int cmd, unsigned long arg)
->>>>  {
->>>> -   if (cmd == VFIO_DEVICE_GET_INFO)
->>>> -           return -EINVAL;
->>>> +   struct vfio_platform_device *vdev = device_data;
->>>> +   unsigned long minsz;
->>>> +
->>>> +   if (cmd == VFIO_DEVICE_GET_INFO) {
->>>> +           struct vfio_device_info info;
->>>> +
->>>> +           minsz = offsetofend(struct vfio_device_info, num_irqs);
->>>> +
->>>> +           if (copy_from_user(&info, (void __user *)arg, minsz))
->>>> +                   return -EFAULT;
->>>> +
->>>> +           if (info.argsz < minsz)
->>>> +                   return -EINVAL;
->>>> +
->>>> +           info.flags = vdev->flags;
->>>> +           info.num_regions = 0;
->>>> +           info.num_irqs = 0;
->>> Seems a bit weird to me to enable the modality but returning zeroed
->>> values. Shouldn't we put that patch after VFIO_DEVICE_GET_REGION_INFO
->>> and VFIO_DEVICE_GET_IRQ_INFO ones?
->>
->> I actually like how Antonios has started from a base framework, exposing
->> a device but none of the resources and then incrementally adds each
->> component.  It's also a good showcase of the VFIO ABI that we can do
->> things like this.  Thanks,
-> 
-> I also agree with Alex with this. But of course I'm not married with
-> any particular splitting style, in case we decide to change this.
+The iova library is usable elsewhere than just the intel-iommu driver, thus
+make it also buildable a module.
 
-Hi Antonios,
-please keep as is. I also learn each day about splitting style ;-)
-Best Regards
-Eric
-> 
->>
->> Alex
->>
+Signed-off-by: Sakari Ailus <sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+---
+ drivers/iommu/Kconfig  | 4 ++++
+ drivers/iommu/Makefile | 3 ++-
+ drivers/iommu/iova.c   | 4 ++++
+ 3 files changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index dd51122..b139748 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -87,11 +87,15 @@ config AMD_IOMMU_V2
+ config DMAR_TABLE
+ 	bool
+ 
++config IOMMU_IOVA
++	tristate
++
+ config INTEL_IOMMU
+ 	bool "Support for Intel IOMMU using DMA Remapping Devices"
+ 	depends on PCI_MSI && ACPI && (X86 || IA64_GENERIC)
+ 	select IOMMU_API
+ 	select DMAR_TABLE
++	select IOMMU_IOVA
+ 	help
+ 	  DMA remapping (DMAR) devices support enables independent address
+ 	  translations for Direct Memory Access (DMA) from devices.
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 16edef7..66668a6 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -7,7 +7,8 @@ obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o
+ obj-$(CONFIG_AMD_IOMMU_V2) += amd_iommu_v2.o
+ obj-$(CONFIG_ARM_SMMU) += arm-smmu.o
+ obj-$(CONFIG_DMAR_TABLE) += dmar.o
+-obj-$(CONFIG_INTEL_IOMMU) += iova.o intel-iommu.o
++obj-$(CONFIG_INTEL_IOMMU) += intel-iommu.o
++obj-$(CONFIG_IOMMU_IOVA) += iova.o
+ obj-$(CONFIG_IPMMU_VMSA) += ipmmu-vmsa.o
+ obj-$(CONFIG_IRQ_REMAP) += intel_irq_remapping.o irq_remapping.o
+ obj-$(CONFIG_OMAP_IOMMU) += omap-iommu.o
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index e9e62f4..c9142b2 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -18,6 +18,7 @@
+  */
+ 
+ #include <linux/iova.h>
++#include <linux/module.h>
+ #include <linux/slab.h>
+ 
+ void
+@@ -542,3 +543,6 @@ error:
+ 		free_iova_mem(prev);
+ 	return NULL;
+ }
++
++MODULE_AUTHOR("Anil S Keshavamurthy <anil.s.keshavamurthy-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>");
++MODULE_LICENSE("GPL");
+-- 
+2.1.0.231.g7484e3b
