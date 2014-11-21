@@ -1,8 +1,7 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 1/3] PCI/MSI: Initial hook for archs to declare multivector
-	MSI support
-Date: Fri, 21 Nov 2014 15:08:33 -0700
-Message-ID: <20141121220833.31095.12371.stgit@gimli.home>
+Subject: [PATCH 2/3] PCI/x86: Add arch_supports_multivector_msi() hook
+Date: Fri, 21 Nov 2014 15:08:40 -0700
+Message-ID: <20141121220839.31095.64245.stgit@gimli.home>
 References: <20141121213752.31095.30735.stgit@gimli.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,48 +21,68 @@ To: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
 Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-For the most part multivector MSI is not supported and drivers and
-hardware wanting multiple vectors opt for MSI-X instead.  It seems
-though that having the ability to query the arch/platform code to
-determine whether allocating multiple MSI vectors will ever succeed
-is a useful thing.  For instance, vfio-pci can use this to determine
-whether to expose multiple MSI vectors to the user.  If we know we
-cannot ever support more than one vector, we have a better shot at
-the userspace driver working, especially if it's a guest OS, if we
-only expose one vector as being available in the interface.
+x86 does support multivector MSI, but only when using interrupt
+remapping.  Extend x86_msi_ops to add an optional callback for
+this and assume unsupported when not present.
 
 Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
 
- drivers/pci/msi.c   |    5 +++++
- include/linux/msi.h |    1 +
- 2 files changed, 6 insertions(+)
+ arch/x86/include/asm/x86_init.h |    1 +
+ arch/x86/kernel/x86_init.c      |    6 ++++++
+ drivers/iommu/irq_remapping.c   |    6 ++++++
+ 3 files changed, 13 insertions(+)
 
-diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
-index 9fab30a..36b503a 100644
---- a/drivers/pci/msi.c
-+++ b/drivers/pci/msi.c
-@@ -79,6 +79,11 @@ int __weak arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
- 	return 0;
- }
+diff --git a/arch/x86/include/asm/x86_init.h b/arch/x86/include/asm/x86_init.h
+index e45e4da..28951c6 100644
+--- a/arch/x86/include/asm/x86_init.h
++++ b/arch/x86/include/asm/x86_init.h
+@@ -185,6 +185,7 @@ struct x86_msi_ops {
+ 	int  (*setup_hpet_msi)(unsigned int irq, unsigned int id);
+ 	u32 (*msi_mask_irq)(struct msi_desc *desc, u32 mask, u32 flag);
+ 	u32 (*msix_mask_irq)(struct msi_desc *desc, u32 flag);
++	bool (*supports_multivector)(struct pci_dev *dev);
+ };
  
-+bool __weak arch_supports_multivector_msi(struct pci_dev *dev)
+ struct IO_APIC_route_entry;
+diff --git a/arch/x86/kernel/x86_init.c b/arch/x86/kernel/x86_init.c
+index e48b674..d917410 100644
+--- a/arch/x86/kernel/x86_init.c
++++ b/arch/x86/kernel/x86_init.c
+@@ -148,6 +148,12 @@ u32 arch_msix_mask_irq(struct msi_desc *desc, u32 flag)
+ {
+ 	return x86_msi.msix_mask_irq(desc, flag);
+ }
++bool arch_supports_multivector_msi(struct pci_dev *dev)
 +{
++	if (x86_msi.supports_multivector)
++		return x86_msi.supports_multivector(dev);
 +	return false;
 +}
-+
- /*
-  * We have a default implementation available as a separate non-weak
-  * function, as it is used by the Xen x86 PCI code
-diff --git a/include/linux/msi.h b/include/linux/msi.h
-index 44f4746..2365c64 100644
---- a/include/linux/msi.h
-+++ b/include/linux/msi.h
-@@ -58,6 +58,7 @@ void arch_teardown_msi_irq(unsigned int irq);
- int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type);
- void arch_teardown_msi_irqs(struct pci_dev *dev);
- void arch_restore_msi_irqs(struct pci_dev *dev);
-+bool arch_supports_multivector_msi(struct pci_dev *dev);
+ #endif
  
- void default_teardown_msi_irqs(struct pci_dev *dev);
- void default_restore_msi_irqs(struct pci_dev *dev);
+ struct x86_io_apic_ops x86_io_apic_ops = {
+diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+index 74a1767..4310bfb 100644
+--- a/drivers/iommu/irq_remapping.c
++++ b/drivers/iommu/irq_remapping.c
+@@ -160,6 +160,11 @@ static void eoi_ioapic_pin_remapped(int apic, int pin, int vector)
+ 	io_apic_eoi(apic, pin);
+ }
+ 
++static bool remapped_supports_multivector(struct pci_dev *dev)
++{
++	return true;
++}
++
+ static void __init irq_remapping_modify_x86_ops(void)
+ {
+ 	x86_io_apic_ops.disable		= irq_remapping_disable_io_apic;
+@@ -169,6 +174,7 @@ static void __init irq_remapping_modify_x86_ops(void)
+ 	x86_msi.setup_msi_irqs		= irq_remapping_setup_msi_irqs;
+ 	x86_msi.setup_hpet_msi		= setup_hpet_msi_remapped;
+ 	x86_msi.compose_msi_msg		= compose_remapped_msi_msg;
++	x86_msi.supports_multivector	= remapped_supports_multivector;
+ }
+ 
+ static __init int setup_nointremap(char *str)
