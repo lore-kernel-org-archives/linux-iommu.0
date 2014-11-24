@@ -1,15 +1,17 @@
-From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: Re: [PATCH 1/3] PCI/MSI: Initial hook for archs to declare multivector
-	MSI support
-Date: Sun, 23 Nov 2014 21:20:21 +0100 (CET)
-Message-ID: <alpine.DEB.2.11.1411232109140.6439@nanos>
-References: <20141121213752.31095.30735.stgit@gimli.home>
-	<20141121220833.31095.12371.stgit@gimli.home>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: Re: [PATCH v9 07/19] vfio/platform: return info for device memory
+	mapped IO regions
+Date: Mon, 24 Nov 2014 16:53:13 +0100
+Message-ID: <CAG8rG2yAAQ62wyO6fyTo71+0VmS_PvP_BWWg=srvmtiJsvrg2Q@mail.gmail.com>
+References: <1414433284-31719-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1414433284-31719-8-git-send-email-a.motakis@virtualopensystems.com>
+	<54633D5B.4040204@linaro.org>
+	<CAG8rG2wngS7+8yVQFydQzQkzzMKc8i9hcs2eH3+fKh+KZqmReQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20141121220833.31095.12371.stgit-GCcqpEzw8uZBDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <CAG8rG2wngS7+8yVQFydQzQkzzMKc8i9hcs2eH3+fKh+KZqmReQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,57 +21,225 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
+To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "open list:VFIO DRIVER <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>,
+	open list" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 21 Nov 2014, Alex Williamson wrote:
-> For the most part multivector MSI is not supported and drivers and
-> hardware wanting multiple vectors opt for MSI-X instead.  It seems
-> though that having the ability to query the arch/platform code to
-> determine whether allocating multiple MSI vectors will ever succeed
-> is a useful thing.  For instance, vfio-pci can use this to determine
-> whether to expose multiple MSI vectors to the user.  If we know we
-> cannot ever support more than one vector, we have a better shot at
-> the userspace driver working, especially if it's a guest OS, if we
-> only expose one vector as being available in the interface.
-> 
-> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> ---
-> 
->  drivers/pci/msi.c   |    5 +++++
->  include/linux/msi.h |    1 +
->  2 files changed, 6 insertions(+)
-> 
-> diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
-> index 9fab30a..36b503a 100644
-> --- a/drivers/pci/msi.c
-> +++ b/drivers/pci/msi.c
-> @@ -79,6 +79,11 @@ int __weak arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
->  	return 0;
->  }
->  
-> +bool __weak arch_supports_multivector_msi(struct pci_dev *dev)
+On Thu, Nov 20, 2014 at 3:11 PM, Antonios Motakis
+<a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org> wrote:
+> On Wed, Nov 12, 2014 at 11:58 AM, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+>> On 10/27/2014 07:07 PM, Antonios Motakis wrote:
+>>> This patch enables the IOCTLs VFIO_DEVICE_GET_REGION_INFO ioctl call,
+>>> which allows the user to learn about the available MMIO resources of
+>>> a device.
+>>>
+>>> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+>>> ---
+>>>  drivers/vfio/platform/vfio_platform_common.c  | 110 +++++++++++++++++++++++++-
+>>>  drivers/vfio/platform/vfio_platform_private.h |  22 ++++++
+>>>  2 files changed, 128 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/drivers/vfio/platform/vfio_platform_common.c b/drivers/vfio/platform/vfio_platform_common.c
+>>> index cb20526..82de752 100644
+>>> --- a/drivers/vfio/platform/vfio_platform_common.c
+>>> +++ b/drivers/vfio/platform/vfio_platform_common.c
+>>> @@ -27,17 +27,97 @@
+>>>
+>>>  #include "vfio_platform_private.h"
+>>>
+>>> +static DEFINE_MUTEX(driver_lock);
+>>> +
+>>> +static int vfio_platform_regions_init(struct vfio_platform_device *vdev)
+>>> +{
+>>> +     int cnt = 0, i;
+>>> +
+>>> +     while (vdev->get_resource(vdev, cnt))
+>>> +             cnt++;
+>>> +
+>>> +     vdev->regions = kcalloc(cnt, sizeof(struct vfio_platform_region),
+>>> +                             GFP_KERNEL);
+>>> +     if (!vdev->regions)
+>>> +             return -ENOMEM;
+>>> +
+>>> +     for (i = 0; i < cnt;  i++) {
+>>> +             struct resource *res =
+>>> +                     vdev->get_resource(vdev, i);
+>>> +
+>>> +             if (!res)
+>>> +                     goto err;
+>>> +
+>>> +             vdev->regions[i].addr = res->start;
+>>> +             vdev->regions[i].size = resource_size(res);
+>>> +             vdev->regions[i].flags = 0;
+>>> +
+>>> +             switch (resource_type(res)) {
+>>> +             case IORESOURCE_MEM:
+>>> +                     vdev->regions[i].type = VFIO_PLATFORM_REGION_TYPE_MMIO;
+>>> +                     break;
+>>> +             case IORESOURCE_IO:
+>>> +                     vdev->regions[i].type = VFIO_PLATFORM_REGION_TYPE_PIO;
+>>> +                     break;
+>>> +             default:
+>>> +                     goto err;
+>>> +             }
+>>> +     }
+>>> +
+>>> +     vdev->num_regions = cnt;
+>>> +
+>>> +     return 0;
+>>> +err:
+>> Isn't it safer to reset vdev->num_regions here?
+>> I think in a next patch you will iounmap the num_regions in
+>> vfio_platform_regions_cleanup.
 
-Please not another weak arch function. We are in the process to reduce
-them not to extend them.
+Actually, num_regions is only set just before the successful return,
+so it seems there is no need to reset it.
 
-arch_supports is pretty much wrong here anyway. We are moving away
-from arch MSI dependencies simply because it's not a arch property per
-se.
 
-Multi MSI is a property of the underlying interrupt controllers and
-there might be several MSI interrupt domains on a given system. They
-can or cannot support multi MSI.
-
-The current x86 implementation is a tangled maze and Jiang is in the
-process to distangle it completely. Until thats done x86 is not going
-to add new ad hoc interfaces.
-
-Once we converted everything over to the new hierarchical irqdomains
-we can add such an interface to the code, but for now I'm not
-accepting anything like that into x86 msi related code.
-
-Thanks,
-
-	tglx
+>
+> Agreed!
+>
+>> -- Eric
+>>> +     kfree(vdev->regions);
+>>> +     return -EINVAL;
+>>> +}
+>>> +
+>>> +static void vfio_platform_regions_cleanup(struct vfio_platform_device *vdev)
+>>> +{
+>>> +     vdev->num_regions = 0;
+>>> +     kfree(vdev->regions);
+>>> +}
+>>> +
+>>>  static void vfio_platform_release(void *device_data)
+>>>  {
+>>> +     struct vfio_platform_device *vdev = device_data;
+>>> +
+>>> +     mutex_lock(&driver_lock);
+>>> +
+>>> +     if (!(--vdev->refcnt)) {
+>>> +             vfio_platform_regions_cleanup(vdev);
+>>> +     }
+>>> +
+>>> +     mutex_unlock(&driver_lock);
+>>> +
+>>>       module_put(THIS_MODULE);
+>>>  }
+>>>
+>>>  static int vfio_platform_open(void *device_data)
+>>>  {
+>>> +     struct vfio_platform_device *vdev = device_data;
+>>> +     int ret;
+>>> +
+>>>       if (!try_module_get(THIS_MODULE))
+>>>               return -ENODEV;
+>>>
+>>> +     mutex_lock(&driver_lock);
+>>> +
+>>> +     if (!vdev->refcnt) {
+>>> +             ret = vfio_platform_regions_init(vdev);
+>>> +             if (ret)
+>>> +                     goto err_reg;
+>>> +     }
+>>> +
+>>> +     vdev->refcnt++;
+>>> +
+>>> +     mutex_unlock(&driver_lock);
+>>>       return 0;
+>>> +
+>>> +err_reg:
+>>> +     mutex_unlock(&driver_lock);
+>>> +     module_put(THIS_MODULE);
+>>> +     return ret;
+>>>  }
+>>>
+>>>  static long vfio_platform_ioctl(void *device_data,
+>>> @@ -58,15 +138,33 @@ static long vfio_platform_ioctl(void *device_data,
+>>>                       return -EINVAL;
+>>>
+>>>               info.flags = vdev->flags;
+>>> -             info.num_regions = 0;
+>>> +             info.num_regions = vdev->num_regions;
+>>>               info.num_irqs = 0;
+>>>
+>>>               return copy_to_user((void __user *)arg, &info, minsz);
+>>>
+>>> -     } else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
+>>> -             return -EINVAL;
+>>> +     } else if (cmd == VFIO_DEVICE_GET_REGION_INFO) {
+>>> +             struct vfio_region_info info;
+>>> +
+>>> +             minsz = offsetofend(struct vfio_region_info, offset);
+>>> +
+>>> +             if (copy_from_user(&info, (void __user *)arg, minsz))
+>>> +                     return -EFAULT;
+>>>
+>>> -     else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
+>>> +             if (info.argsz < minsz)
+>>> +                     return -EINVAL;
+>>> +
+>>> +             if (info.index >= vdev->num_regions)
+>>> +                     return -EINVAL;
+>>> +
+>>> +             /* map offset to the physical address  */
+>>> +             info.offset = VFIO_PLATFORM_INDEX_TO_OFFSET(info.index);
+>>> +             info.size = vdev->regions[info.index].size;
+>>> +             info.flags = vdev->regions[info.index].flags;
+>>> +
+>>> +             return copy_to_user((void __user *)arg, &info, minsz);
+>>> +
+>>> +     } else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
+>>>               return -EINVAL;
+>>>
+>>>       else if (cmd == VFIO_DEVICE_SET_IRQS)
+>>> @@ -134,10 +232,14 @@ struct vfio_platform_device *vfio_platform_remove_common(struct device *dev)
+>>>  {
+>>>       struct vfio_platform_device *vdev;
+>>>
+>>> +     mutex_lock(&driver_lock);
+>>> +
+>>>       vdev = vfio_del_group_dev(dev);
+>>>       if (vdev)
+>>>               iommu_group_put(dev->iommu_group);
+>>>
+>>> +     mutex_unlock(&driver_lock);
+>>> +
+>>>       return vdev;
+>>>  }
+>>>  EXPORT_SYMBOL_GPL(vfio_platform_remove_common);
+>>> diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
+>>> index 062b92d..b24729f 100644
+>>> --- a/drivers/vfio/platform/vfio_platform_private.h
+>>> +++ b/drivers/vfio/platform/vfio_platform_private.h
+>>> @@ -15,7 +15,29 @@
+>>>  #ifndef VFIO_PLATFORM_PRIVATE_H
+>>>  #define VFIO_PLATFORM_PRIVATE_H
+>>>
+>>> +#define VFIO_PLATFORM_OFFSET_SHIFT   40
+>>> +#define VFIO_PLATFORM_OFFSET_MASK (((u64)(1) << VFIO_PLATFORM_OFFSET_SHIFT) - 1)
+>>> +
+>>> +#define VFIO_PLATFORM_OFFSET_TO_INDEX(off)   \
+>>> +     (off >> VFIO_PLATFORM_OFFSET_SHIFT)
+>>> +
+>>> +#define VFIO_PLATFORM_INDEX_TO_OFFSET(index) \
+>>> +     ((u64)(index) << VFIO_PLATFORM_OFFSET_SHIFT)
+>>> +
+>>> +struct vfio_platform_region {
+>>> +     u64                     addr;
+>>> +     resource_size_t         size;
+>>> +     u32                     flags;
+>>> +     u32                     type;
+>>> +#define VFIO_PLATFORM_REGION_TYPE_MMIO       1
+>>> +#define VFIO_PLATFORM_REGION_TYPE_PIO        2
+>>> +};
+>>> +
+>>>  struct vfio_platform_device {
+>>> +     struct vfio_platform_region     *regions;
+>>> +     u32                             num_regions;
+>>> +     int                             refcnt;
+>>> +
+>>>       /*
+>>>        * These fields should be filled by the bus specific binder
+>>>        */
+>>>
+>>
