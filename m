@@ -1,214 +1,73 @@
-From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH RESEND v8] iopoll: Introduce memory-mapped IO polling macros
-Date: Mon, 24 Nov 2014 12:14:52 -0800
-Message-ID: <1416860092-11620-1-git-send-email-mitchelh@codeaurora.org>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH 1/3] PCI/MSI: Initial hook for archs to declare
+ multivector MSI support
+Date: Mon, 24 Nov 2014 14:45:24 -0700
+Message-ID: <1416865524.11825.89.camel@bling.home>
+References: <20141121213752.31095.30735.stgit@gimli.home>
+	 <20141121220833.31095.12371.stgit@gimli.home>
+	 <alpine.DEB.2.11.1411232109140.6439@nanos>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <alpine.DEB.2.11.1411232109140.6439@nanos>
+Sender: linux-pci-owner@vger.kernel.org
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: bhelgaas@google.com, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, x86@kernel.org, mingo@redhat.com, hpa@zytor.com, joro@8bytes.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+On Sun, 2014-11-23 at 21:20 +0100, Thomas Gleixner wrote:
+> On Fri, 21 Nov 2014, Alex Williamson wrote:
+> > For the most part multivector MSI is not supported and drivers and
+> > hardware wanting multiple vectors opt for MSI-X instead.  It seems
+> > though that having the ability to query the arch/platform code to
+> > determine whether allocating multiple MSI vectors will ever succeed
+> > is a useful thing.  For instance, vfio-pci can use this to determine
+> > whether to expose multiple MSI vectors to the user.  If we know we
+> > cannot ever support more than one vector, we have a better shot at
+> > the userspace driver working, especially if it's a guest OS, if we
+> > only expose one vector as being available in the interface.
+> > 
+> > Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+> > ---
+> > 
+> >  drivers/pci/msi.c   |    5 +++++
+> >  include/linux/msi.h |    1 +
+> >  2 files changed, 6 insertions(+)
+> > 
+> > diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+> > index 9fab30a..36b503a 100644
+> > --- a/drivers/pci/msi.c
+> > +++ b/drivers/pci/msi.c
+> > @@ -79,6 +79,11 @@ int __weak arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
+> >  	return 0;
+> >  }
+> >  
+> > +bool __weak arch_supports_multivector_msi(struct pci_dev *dev)
+> 
+> Please not another weak arch function. We are in the process to reduce
+> them not to extend them.
+> 
+> arch_supports is pretty much wrong here anyway. We are moving away
+> from arch MSI dependencies simply because it's not a arch property per
+> se.
+> 
+> Multi MSI is a property of the underlying interrupt controllers and
+> there might be several MSI interrupt domains on a given system. They
+> can or cannot support multi MSI.
+> 
+> The current x86 implementation is a tangled maze and Jiang is in the
+> process to distangle it completely. Until thats done x86 is not going
+> to add new ad hoc interfaces.
+> 
+> Once we converted everything over to the new hierarchical irqdomains
+> we can add such an interface to the code, but for now I'm not
+> accepting anything like that into x86 msi related code.
 
-It is sometimes necessary to poll a memory-mapped register until its value
-satisfies some condition. Introduce a family of convenience macros that do
-this. Tight-looping, sleeping, and timing out can all be accomplished using
-these macros.
+Ok, I guess I can do some ugliness with associating the IOMMU IRQ
+remapping capability with multivector MSI support within an #ifdef x86
+block.  Gross, but I think that's as accurate as I can get w/o a hook
+through the MSI code.  Is there any target for the refactoring you
+mention?  Thanks,
 
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Signed-off-by: Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
-This patch was originally part of a series [1] for adding support for IOMMU
-address translations through an ARM SMMU hardware register.  The other
-patch in the series (the one that actually uses these macros and implements
-said hardware address translations) was Ack'd by the driver maintainer
-there (Will Deacon) so I've pulled this patch out to avoid resending an
-already Ack'd patch over and over again.
-
-In short, please see [1] for previous discussion and the first user of
-these macros.
-
-This patch has been resent previously here [2], here [3], and here [4] on
-2014-10-30, 2014-11-06, and 2014-11-17, respectively.  It has not changed
-since [2] and has not received any comments since [1] on 2014-10-19.
-Thanks to everyone who has taken a look at this.
-
-[1] http://thread.gmane.org/gmane.linux.kernel.iommu/7140
-[2] http://thread.gmane.org/gmane.linux.kernel/1818213
-[3] http://thread.gmane.org/gmane.linux.kernel/1823422
-[4] http://thread.gmane.org/gmane.linux.kernel.iommu/7394
-
-
-Changes since v7:
-  - sorted helper macros by size (b, w, l, q)
-  - removed some of the more esoteric (or flat-out bogus) helper macros
----
- include/linux/iopoll.h | 140 +++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 140 insertions(+)
- create mode 100644 include/linux/iopoll.h
-
-diff --git a/include/linux/iopoll.h b/include/linux/iopoll.h
-new file mode 100644
-index 0000000000..bd161dae2d
---- /dev/null
-+++ b/include/linux/iopoll.h
-@@ -0,0 +1,140 @@
-+/*
-+ * Copyright (c) 2012-2014 The Linux Foundation. All rights reserved.
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 and
-+ * only version 2 as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ */
-+
-+#ifndef _LINUX_IOPOLL_H
-+#define _LINUX_IOPOLL_H
-+
-+#include <linux/kernel.h>
-+#include <linux/types.h>
-+#include <linux/hrtimer.h>
-+#include <linux/delay.h>
-+#include <linux/errno.h>
-+#include <linux/io.h>
-+
-+/**
-+ * readx_poll_timeout - Periodically poll an address until a condition is met or a timeout occurs
-+ * @op: accessor function (takes @addr as its only argument)
-+ * @addr: Address to poll
-+ * @val: Variable to read the value into
-+ * @cond: Break condition (usually involving @val)
-+ * @sleep_us: Maximum time to sleep between reads in us (0 tight-loops)
-+ * @timeout_us: Timeout in us, 0 means never timeout
-+ *
-+ * Returns 0 on success and -ETIMEDOUT upon a timeout. In either
-+ * case, the last read value at @addr is stored in @val. Must not
-+ * be called from atomic context if sleep_us or timeout_us are used.
-+ *
-+ * When available, you'll probably want to use one of the specialized
-+ * macros defined below rather than this macro directly.
-+ */
-+#define readx_poll_timeout(op, addr, val, cond, sleep_us, timeout_us)	\
-+({ \
-+	ktime_t timeout = ktime_add_us(ktime_get(), timeout_us); \
-+	might_sleep_if(sleep_us); \
-+	for (;;) { \
-+		(val) = op(addr); \
-+		if (cond) \
-+			break; \
-+		if (timeout_us && ktime_compare(ktime_get(), timeout) > 0) { \
-+			(val) = op(addr); \
-+			break; \
-+		} \
-+		if (sleep_us) \
-+			usleep_range((sleep_us >> 2) + 1, sleep_us); \
-+	} \
-+	(cond) ? 0 : -ETIMEDOUT; \
-+})
-+
-+/**
-+ * readx_poll_timeout_atomic - Periodically poll an address until a condition is met or a timeout occurs
-+ * @op: accessor function (takes @addr as its only argument)
-+ * @addr: Address to poll
-+ * @val: Variable to read the value into
-+ * @cond: Break condition (usually involving @val)
-+ * @delay_us: Time to udelay between reads in us (0 tight-loops)
-+ * @timeout_us: Timeout in us, 0 means never timeout
-+ *
-+ * Returns 0 on success and -ETIMEDOUT upon a timeout. In either
-+ * case, the last read value at @addr is stored in @val.
-+ *
-+ * When available, you'll probably want to use one of the specialized
-+ * macros defined below rather than this macro directly.
-+ */
-+#define readx_poll_timeout_atomic(op, addr, val, cond, delay_us, timeout_us) \
-+({ \
-+	ktime_t timeout = ktime_add_us(ktime_get(), timeout_us); \
-+	for (;;) { \
-+		(val) = op(addr); \
-+		if (cond) \
-+			break; \
-+		if (timeout_us && ktime_compare(ktime_get(), timeout) > 0) { \
-+			(val) = op(addr); \
-+			break; \
-+		} \
-+		if (delay_us) \
-+			udelay(delay_us);	\
-+	} \
-+	(cond) ? 0 : -ETIMEDOUT; \
-+})
-+
-+
-+#define readb_poll_timeout(addr, val, cond, delay_us, timeout_us) \
-+	readx_poll_timeout(readb, addr, val, cond, delay_us, timeout_us)
-+
-+#define readb_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
-+	readx_poll_timeout_atomic(readb, addr, val, cond, delay_us, timeout_us)
-+
-+#define readw_poll_timeout(addr, val, cond, delay_us, timeout_us) \
-+	readx_poll_timeout(readw, addr, val, cond, delay_us, timeout_us)
-+
-+#define readw_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
-+	readx_poll_timeout_atomic(readw, addr, val, cond, delay_us, timeout_us)
-+
-+#define readl_poll_timeout(addr, val, cond, delay_us, timeout_us) \
-+	readx_poll_timeout(readl, addr, val, cond, delay_us, timeout_us)
-+
-+#define readl_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
-+	readx_poll_timeout_atomic(readl, addr, val, cond, delay_us, timeout_us)
-+
-+#define readq_poll_timeout(addr, val, cond, delay_us, timeout_us) \
-+	readx_poll_timeout(readq, addr, val, cond, delay_us, timeout_us)
-+
-+#define readq_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
-+	readx_poll_timeout_atomic(readq, addr, val, cond, delay_us, timeout_us)
-+
-+#define readb_relaxed_poll_timeout(addr, val, cond, delay_us, timeout_us) \
-+	readx_poll_timeout(readb_relaxed, addr, val, cond, delay_us, timeout_us)
-+
-+#define readb_relaxed_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
-+	readx_poll_timeout_atomic(readb_relaxed, addr, val, cond, delay_us, timeout_us)
-+
-+#define readw_relaxed_poll_timeout(addr, val, cond, delay_us, timeout_us) \
-+	readx_poll_timeout(readw_relaxed, addr, val, cond, delay_us, timeout_us)
-+
-+#define readw_relaxed_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
-+	readx_poll_timeout_atomic(readw_relaxed, addr, val, cond, delay_us, timeout_us)
-+
-+#define readl_relaxed_poll_timeout(addr, val, cond, delay_us, timeout_us) \
-+	readx_poll_timeout(readl_relaxed, addr, val, cond, delay_us, timeout_us)
-+
-+#define readl_relaxed_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
-+	readx_poll_timeout_atomic(readl_relaxed, addr, val, cond, delay_us, timeout_us)
-+
-+#define readq_relaxed_poll_timeout(addr, val, cond, delay_us, timeout_us) \
-+	readx_poll_timeout(readq_relaxed, addr, val, cond, delay_us, timeout_us)
-+
-+#define readq_relaxed_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
-+	readx_poll_timeout_atomic(readq_relaxed, addr, val, cond, delay_us, timeout_us)
-+
-+#endif /* _LINUX_IOPOLL_H */
--- 
-Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Alex
