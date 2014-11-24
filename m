@@ -1,17 +1,11 @@
-From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: Re: [PATCH v9 07/19] vfio/platform: return info for device memory
-	mapped IO regions
-Date: Mon, 24 Nov 2014 16:53:13 +0100
-Message-ID: <CAG8rG2yAAQ62wyO6fyTo71+0VmS_PvP_BWWg=srvmtiJsvrg2Q@mail.gmail.com>
-References: <1414433284-31719-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1414433284-31719-8-git-send-email-a.motakis@virtualopensystems.com>
-	<54633D5B.4040204@linaro.org>
-	<CAG8rG2wngS7+8yVQFydQzQkzzMKc8i9hcs2eH3+fKh+KZqmReQ@mail.gmail.com>
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH RESEND v8] iopoll: Introduce memory-mapped IO polling macros
+Date: Mon, 24 Nov 2014 12:14:52 -0800
+Message-ID: <1416860092-11620-1-git-send-email-mitchelh@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAG8rG2wngS7+8yVQFydQzQkzzMKc8i9hcs2eH3+fKh+KZqmReQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,225 +15,200 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "open list:VFIO DRIVER <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>,
-	open list" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 20, 2014 at 3:11 PM, Antonios Motakis
-<a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org> wrote:
-> On Wed, Nov 12, 2014 at 11:58 AM, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
->> On 10/27/2014 07:07 PM, Antonios Motakis wrote:
->>> This patch enables the IOCTLs VFIO_DEVICE_GET_REGION_INFO ioctl call,
->>> which allows the user to learn about the available MMIO resources of
->>> a device.
->>>
->>> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
->>> ---
->>>  drivers/vfio/platform/vfio_platform_common.c  | 110 +++++++++++++++++++++++++-
->>>  drivers/vfio/platform/vfio_platform_private.h |  22 ++++++
->>>  2 files changed, 128 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/drivers/vfio/platform/vfio_platform_common.c b/drivers/vfio/platform/vfio_platform_common.c
->>> index cb20526..82de752 100644
->>> --- a/drivers/vfio/platform/vfio_platform_common.c
->>> +++ b/drivers/vfio/platform/vfio_platform_common.c
->>> @@ -27,17 +27,97 @@
->>>
->>>  #include "vfio_platform_private.h"
->>>
->>> +static DEFINE_MUTEX(driver_lock);
->>> +
->>> +static int vfio_platform_regions_init(struct vfio_platform_device *vdev)
->>> +{
->>> +     int cnt = 0, i;
->>> +
->>> +     while (vdev->get_resource(vdev, cnt))
->>> +             cnt++;
->>> +
->>> +     vdev->regions = kcalloc(cnt, sizeof(struct vfio_platform_region),
->>> +                             GFP_KERNEL);
->>> +     if (!vdev->regions)
->>> +             return -ENOMEM;
->>> +
->>> +     for (i = 0; i < cnt;  i++) {
->>> +             struct resource *res =
->>> +                     vdev->get_resource(vdev, i);
->>> +
->>> +             if (!res)
->>> +                     goto err;
->>> +
->>> +             vdev->regions[i].addr = res->start;
->>> +             vdev->regions[i].size = resource_size(res);
->>> +             vdev->regions[i].flags = 0;
->>> +
->>> +             switch (resource_type(res)) {
->>> +             case IORESOURCE_MEM:
->>> +                     vdev->regions[i].type = VFIO_PLATFORM_REGION_TYPE_MMIO;
->>> +                     break;
->>> +             case IORESOURCE_IO:
->>> +                     vdev->regions[i].type = VFIO_PLATFORM_REGION_TYPE_PIO;
->>> +                     break;
->>> +             default:
->>> +                     goto err;
->>> +             }
->>> +     }
->>> +
->>> +     vdev->num_regions = cnt;
->>> +
->>> +     return 0;
->>> +err:
->> Isn't it safer to reset vdev->num_regions here?
->> I think in a next patch you will iounmap the num_regions in
->> vfio_platform_regions_cleanup.
+From: Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 
-Actually, num_regions is only set just before the successful return,
-so it seems there is no need to reset it.
+It is sometimes necessary to poll a memory-mapped register until its value
+satisfies some condition. Introduce a family of convenience macros that do
+this. Tight-looping, sleeping, and timing out can all be accomplished using
+these macros.
+
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Signed-off-by: Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+This patch was originally part of a series [1] for adding support for IOMMU
+address translations through an ARM SMMU hardware register.  The other
+patch in the series (the one that actually uses these macros and implements
+said hardware address translations) was Ack'd by the driver maintainer
+there (Will Deacon) so I've pulled this patch out to avoid resending an
+already Ack'd patch over and over again.
+
+In short, please see [1] for previous discussion and the first user of
+these macros.
+
+This patch has been resent previously here [2], here [3], and here [4] on
+2014-10-30, 2014-11-06, and 2014-11-17, respectively.  It has not changed
+since [2] and has not received any comments since [1] on 2014-10-19.
+Thanks to everyone who has taken a look at this.
+
+[1] http://thread.gmane.org/gmane.linux.kernel.iommu/7140
+[2] http://thread.gmane.org/gmane.linux.kernel/1818213
+[3] http://thread.gmane.org/gmane.linux.kernel/1823422
+[4] http://thread.gmane.org/gmane.linux.kernel.iommu/7394
 
 
->
-> Agreed!
->
->> -- Eric
->>> +     kfree(vdev->regions);
->>> +     return -EINVAL;
->>> +}
->>> +
->>> +static void vfio_platform_regions_cleanup(struct vfio_platform_device *vdev)
->>> +{
->>> +     vdev->num_regions = 0;
->>> +     kfree(vdev->regions);
->>> +}
->>> +
->>>  static void vfio_platform_release(void *device_data)
->>>  {
->>> +     struct vfio_platform_device *vdev = device_data;
->>> +
->>> +     mutex_lock(&driver_lock);
->>> +
->>> +     if (!(--vdev->refcnt)) {
->>> +             vfio_platform_regions_cleanup(vdev);
->>> +     }
->>> +
->>> +     mutex_unlock(&driver_lock);
->>> +
->>>       module_put(THIS_MODULE);
->>>  }
->>>
->>>  static int vfio_platform_open(void *device_data)
->>>  {
->>> +     struct vfio_platform_device *vdev = device_data;
->>> +     int ret;
->>> +
->>>       if (!try_module_get(THIS_MODULE))
->>>               return -ENODEV;
->>>
->>> +     mutex_lock(&driver_lock);
->>> +
->>> +     if (!vdev->refcnt) {
->>> +             ret = vfio_platform_regions_init(vdev);
->>> +             if (ret)
->>> +                     goto err_reg;
->>> +     }
->>> +
->>> +     vdev->refcnt++;
->>> +
->>> +     mutex_unlock(&driver_lock);
->>>       return 0;
->>> +
->>> +err_reg:
->>> +     mutex_unlock(&driver_lock);
->>> +     module_put(THIS_MODULE);
->>> +     return ret;
->>>  }
->>>
->>>  static long vfio_platform_ioctl(void *device_data,
->>> @@ -58,15 +138,33 @@ static long vfio_platform_ioctl(void *device_data,
->>>                       return -EINVAL;
->>>
->>>               info.flags = vdev->flags;
->>> -             info.num_regions = 0;
->>> +             info.num_regions = vdev->num_regions;
->>>               info.num_irqs = 0;
->>>
->>>               return copy_to_user((void __user *)arg, &info, minsz);
->>>
->>> -     } else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
->>> -             return -EINVAL;
->>> +     } else if (cmd == VFIO_DEVICE_GET_REGION_INFO) {
->>> +             struct vfio_region_info info;
->>> +
->>> +             minsz = offsetofend(struct vfio_region_info, offset);
->>> +
->>> +             if (copy_from_user(&info, (void __user *)arg, minsz))
->>> +                     return -EFAULT;
->>>
->>> -     else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
->>> +             if (info.argsz < minsz)
->>> +                     return -EINVAL;
->>> +
->>> +             if (info.index >= vdev->num_regions)
->>> +                     return -EINVAL;
->>> +
->>> +             /* map offset to the physical address  */
->>> +             info.offset = VFIO_PLATFORM_INDEX_TO_OFFSET(info.index);
->>> +             info.size = vdev->regions[info.index].size;
->>> +             info.flags = vdev->regions[info.index].flags;
->>> +
->>> +             return copy_to_user((void __user *)arg, &info, minsz);
->>> +
->>> +     } else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
->>>               return -EINVAL;
->>>
->>>       else if (cmd == VFIO_DEVICE_SET_IRQS)
->>> @@ -134,10 +232,14 @@ struct vfio_platform_device *vfio_platform_remove_common(struct device *dev)
->>>  {
->>>       struct vfio_platform_device *vdev;
->>>
->>> +     mutex_lock(&driver_lock);
->>> +
->>>       vdev = vfio_del_group_dev(dev);
->>>       if (vdev)
->>>               iommu_group_put(dev->iommu_group);
->>>
->>> +     mutex_unlock(&driver_lock);
->>> +
->>>       return vdev;
->>>  }
->>>  EXPORT_SYMBOL_GPL(vfio_platform_remove_common);
->>> diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
->>> index 062b92d..b24729f 100644
->>> --- a/drivers/vfio/platform/vfio_platform_private.h
->>> +++ b/drivers/vfio/platform/vfio_platform_private.h
->>> @@ -15,7 +15,29 @@
->>>  #ifndef VFIO_PLATFORM_PRIVATE_H
->>>  #define VFIO_PLATFORM_PRIVATE_H
->>>
->>> +#define VFIO_PLATFORM_OFFSET_SHIFT   40
->>> +#define VFIO_PLATFORM_OFFSET_MASK (((u64)(1) << VFIO_PLATFORM_OFFSET_SHIFT) - 1)
->>> +
->>> +#define VFIO_PLATFORM_OFFSET_TO_INDEX(off)   \
->>> +     (off >> VFIO_PLATFORM_OFFSET_SHIFT)
->>> +
->>> +#define VFIO_PLATFORM_INDEX_TO_OFFSET(index) \
->>> +     ((u64)(index) << VFIO_PLATFORM_OFFSET_SHIFT)
->>> +
->>> +struct vfio_platform_region {
->>> +     u64                     addr;
->>> +     resource_size_t         size;
->>> +     u32                     flags;
->>> +     u32                     type;
->>> +#define VFIO_PLATFORM_REGION_TYPE_MMIO       1
->>> +#define VFIO_PLATFORM_REGION_TYPE_PIO        2
->>> +};
->>> +
->>>  struct vfio_platform_device {
->>> +     struct vfio_platform_region     *regions;
->>> +     u32                             num_regions;
->>> +     int                             refcnt;
->>> +
->>>       /*
->>>        * These fields should be filled by the bus specific binder
->>>        */
->>>
->>
+Changes since v7:
+  - sorted helper macros by size (b, w, l, q)
+  - removed some of the more esoteric (or flat-out bogus) helper macros
+---
+ include/linux/iopoll.h | 140 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 140 insertions(+)
+ create mode 100644 include/linux/iopoll.h
+
+diff --git a/include/linux/iopoll.h b/include/linux/iopoll.h
+new file mode 100644
+index 0000000000..bd161dae2d
+--- /dev/null
++++ b/include/linux/iopoll.h
+@@ -0,0 +1,140 @@
++/*
++ * Copyright (c) 2012-2014 The Linux Foundation. All rights reserved.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 and
++ * only version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ */
++
++#ifndef _LINUX_IOPOLL_H
++#define _LINUX_IOPOLL_H
++
++#include <linux/kernel.h>
++#include <linux/types.h>
++#include <linux/hrtimer.h>
++#include <linux/delay.h>
++#include <linux/errno.h>
++#include <linux/io.h>
++
++/**
++ * readx_poll_timeout - Periodically poll an address until a condition is met or a timeout occurs
++ * @op: accessor function (takes @addr as its only argument)
++ * @addr: Address to poll
++ * @val: Variable to read the value into
++ * @cond: Break condition (usually involving @val)
++ * @sleep_us: Maximum time to sleep between reads in us (0 tight-loops)
++ * @timeout_us: Timeout in us, 0 means never timeout
++ *
++ * Returns 0 on success and -ETIMEDOUT upon a timeout. In either
++ * case, the last read value at @addr is stored in @val. Must not
++ * be called from atomic context if sleep_us or timeout_us are used.
++ *
++ * When available, you'll probably want to use one of the specialized
++ * macros defined below rather than this macro directly.
++ */
++#define readx_poll_timeout(op, addr, val, cond, sleep_us, timeout_us)	\
++({ \
++	ktime_t timeout = ktime_add_us(ktime_get(), timeout_us); \
++	might_sleep_if(sleep_us); \
++	for (;;) { \
++		(val) = op(addr); \
++		if (cond) \
++			break; \
++		if (timeout_us && ktime_compare(ktime_get(), timeout) > 0) { \
++			(val) = op(addr); \
++			break; \
++		} \
++		if (sleep_us) \
++			usleep_range((sleep_us >> 2) + 1, sleep_us); \
++	} \
++	(cond) ? 0 : -ETIMEDOUT; \
++})
++
++/**
++ * readx_poll_timeout_atomic - Periodically poll an address until a condition is met or a timeout occurs
++ * @op: accessor function (takes @addr as its only argument)
++ * @addr: Address to poll
++ * @val: Variable to read the value into
++ * @cond: Break condition (usually involving @val)
++ * @delay_us: Time to udelay between reads in us (0 tight-loops)
++ * @timeout_us: Timeout in us, 0 means never timeout
++ *
++ * Returns 0 on success and -ETIMEDOUT upon a timeout. In either
++ * case, the last read value at @addr is stored in @val.
++ *
++ * When available, you'll probably want to use one of the specialized
++ * macros defined below rather than this macro directly.
++ */
++#define readx_poll_timeout_atomic(op, addr, val, cond, delay_us, timeout_us) \
++({ \
++	ktime_t timeout = ktime_add_us(ktime_get(), timeout_us); \
++	for (;;) { \
++		(val) = op(addr); \
++		if (cond) \
++			break; \
++		if (timeout_us && ktime_compare(ktime_get(), timeout) > 0) { \
++			(val) = op(addr); \
++			break; \
++		} \
++		if (delay_us) \
++			udelay(delay_us);	\
++	} \
++	(cond) ? 0 : -ETIMEDOUT; \
++})
++
++
++#define readb_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(readb, addr, val, cond, delay_us, timeout_us)
++
++#define readb_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(readb, addr, val, cond, delay_us, timeout_us)
++
++#define readw_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(readw, addr, val, cond, delay_us, timeout_us)
++
++#define readw_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(readw, addr, val, cond, delay_us, timeout_us)
++
++#define readl_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(readl, addr, val, cond, delay_us, timeout_us)
++
++#define readl_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(readl, addr, val, cond, delay_us, timeout_us)
++
++#define readq_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(readq, addr, val, cond, delay_us, timeout_us)
++
++#define readq_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(readq, addr, val, cond, delay_us, timeout_us)
++
++#define readb_relaxed_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(readb_relaxed, addr, val, cond, delay_us, timeout_us)
++
++#define readb_relaxed_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(readb_relaxed, addr, val, cond, delay_us, timeout_us)
++
++#define readw_relaxed_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(readw_relaxed, addr, val, cond, delay_us, timeout_us)
++
++#define readw_relaxed_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(readw_relaxed, addr, val, cond, delay_us, timeout_us)
++
++#define readl_relaxed_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(readl_relaxed, addr, val, cond, delay_us, timeout_us)
++
++#define readl_relaxed_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(readl_relaxed, addr, val, cond, delay_us, timeout_us)
++
++#define readq_relaxed_poll_timeout(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout(readq_relaxed, addr, val, cond, delay_us, timeout_us)
++
++#define readq_relaxed_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
++	readx_poll_timeout_atomic(readq_relaxed, addr, val, cond, delay_us, timeout_us)
++
++#endif /* _LINUX_IOPOLL_H */
+-- 
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
