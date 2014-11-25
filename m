@@ -1,14 +1,11 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH v4 0/8] Introduce automatic DMA configuration for
-	IOMMU masters
-Date: Tue, 25 Nov 2014 13:15:55 +0000
-Message-ID: <5474810B.9030102@arm.com>
-References: <1415991397-9618-1-git-send-email-will.deacon@arm.com>
+Subject: [RFC PATCH 0/4] Genericise the IOVA allocator
+Date: Tue, 25 Nov 2014 17:27:24 +0000
+Message-ID: <cover.1416931258.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1415991397-9618-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,75 +15,43 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+Hi all,
 
-On 14/11/14 18:56, Will Deacon wrote:
-> Hello everybody,
->
-> Here is the fourth iteration of the RFC I've previously posted here:
->
->    RFCv1: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-August/283023.html
->    RFCv2: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-September/283752.html
->    RFCv3: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-September/287031.html
->
-> Changes since RFCv3 include:
->
->    - Drastic simplification of the data structures, so that we no longer
->      pass around lists of domains. Instead, dma-mapping is expected to
->      allocate the domain (Joerg talked about adding a get_default_domain
->      operation to iommu_ops).
->
->    - iommu_ops is used to hold the per-instance IOMMU data
->
->    - Configuration of DMA segments added to of_dma_configure
->
-> All feedback welcome.
->
+I've been implementing IOMMU DMA mapping for arm64, based on tidied-up
+parts of the existing arch/arm/mm/dma-mapping.c with a clear divide
+between the arch-specific parts and the general DMA-API to IOMMU-API layer
+so that that can be shared; similar to what Ritesh started before and was
+unable to complete[1], but working in the other direction.
 
-This proposal has been really useful in getting IOMMU DMA mapping 
-running on arm64, so with the proviso that patch 6 definitely causes 
-problems, and patches 7 and 8 ported to arm64 rather than used directly, 
-for the series:
+The first part of that tidy-up involved ripping out the homebrewed IOVA
+allocator and plumbing in iova.c, necessitating the changes presented here.
+The rest is currently sat under arch/arm64 for the sake of getting it
+working quickly with minimal impact - ideally I'd move it out and port
+arch/arm before merging, but I don't know quite how impatient people are.
+Regardless of that decision, this bit stands alone, so here it is.
 
-Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Feel free to ignore patches 1 and 2, since I see Sakari has recently
+posted a more thorough series for that[2], that frankly looks nicer ;)
+I've merely left them in as context here.
 
-Hopefully it's now stable enough that I can finish cleaning up my 
-hacked-up SMMU driver (oh, the rebasing pain :P)
+[1]:http://thread.gmane.org/gmane.linux.ports.arm.kernel/331299
+[2]:http://article.gmane.org/gmane.linux.kernel.iommu/7436
 
-Thanks,
-Robin.
+Robin Murphy (4):
+  iommu: build iova.c for any IOMMU
+  iommu: consolidate IOVA allocator code
+  iommu: make IOVA domain low limit flexible
+  iommu: make IOVA domain page size explicit
 
-> Cheers,
->
-> Will
->
-> --->8
->
-> Will Deacon (8):
->    iommu: provide early initialisation hook for IOMMU drivers
->    dma-mapping: replace set_arch_dma_coherent_ops with arch_setup_dma_ops
->    iommu: add new iommu_ops callback for adding an OF device
->    iommu: provide helper function to configure an IOMMU for an of master
->    dma-mapping: detect and configure IOMMU in of_dma_configure
->    dma-mapping: set dma segment properties in of_dma_configure
->    arm: call iommu_init before of_platform_populate
->    arm: dma-mapping: plumb our iommu mapping ops into arch_setup_dma_ops
->
->   arch/arm/include/asm/dma-mapping.h | 12 +++---
->   arch/arm/kernel/setup.c            |  2 +
->   arch/arm/mm/dma-mapping.c          | 80 ++++++++++++++++++++++++++++++++++----
->   drivers/iommu/Kconfig              |  2 +-
->   drivers/iommu/of_iommu.c           | 50 ++++++++++++++++++++++++
->   drivers/of/platform.c              | 54 +++++++++++++------------
->   include/asm-generic/vmlinux.lds.h  |  2 +
->   include/linux/amba/bus.h           |  1 +
->   include/linux/dma-mapping.h        | 13 ++++---
->   include/linux/iommu.h              |  8 ++++
->   include/linux/of_iommu.h           | 31 +++++++++++++++
->   include/linux/platform_device.h    |  2 +
->   12 files changed, 214 insertions(+), 43 deletions(-)
->
+ drivers/iommu/Makefile      |  4 ++--
+ drivers/iommu/intel-iommu.c | 45 ++++++++++-------------------------------
+ drivers/iommu/iova.c        | 49 +++++++++++++++++++++++++++++++++++++++++----
+ include/linux/iova.h        | 41 +++++++++++++++++++++++++++++++++----
+ 4 files changed, 95 insertions(+), 44 deletions(-)
+
+-- 
+1.9.1
