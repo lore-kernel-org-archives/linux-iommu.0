@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 2/4] iommu: consolidate IOVA allocator code
-Date: Tue, 25 Nov 2014 17:27:26 +0000
-Message-ID: <30e410d9f16d83d13bf1bf2f4b230018172a85a6.1416931258.git.robin.murphy@arm.com>
+Subject: [RFC PATCH 3/4] iommu: make IOVA domain low limit flexible
+Date: Tue, 25 Nov 2014 17:27:27 +0000
+Message-ID: <99c474e58e8ba1041ee927893d87327b939594a3.1416931258.git.robin.murphy@arm.com>
 References: <cover.1416931258.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,148 +21,132 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wE
 Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-In order to share the IOVA allocator with other architectures, break
-the unnecssary dependency on the Intel IOMMU driver and move the
-remaining IOVA internals to iova.c
+To share the IOVA allocator with other architectures, it needs to
+accommodate more general aperture restrictions; move the lower limit
+from a compile-time constant to a runtime domain property to allow
+IOVA domains with different requirements to co-exist.
+
+Also reword the slightly unclear description of alloc_iova since we're
+touching it anyway.
 
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 33 ++-------------------------------
- drivers/iommu/iova.c        | 35 +++++++++++++++++++++++++++++++++++
- include/linux/iova.h        |  3 +++
- 3 files changed, 40 insertions(+), 31 deletions(-)
+ drivers/iommu/intel-iommu.c |  9 ++++++---
+ drivers/iommu/iova.c        | 10 ++++++----
+ include/linux/iova.h        |  7 +++----
+ 3 files changed, 15 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index a27d6cb..9258860 100644
+index 9258860..daba0c2 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -490,7 +490,6 @@ __setup("intel_iommu=", intel_iommu_setup);
+@@ -71,6 +71,9 @@
+ 				__DOMAIN_MAX_PFN(gaw), (unsigned long)-1))
+ #define DOMAIN_MAX_ADDR(gaw)	(((uint64_t)__DOMAIN_MAX_PFN(gaw)) << VTD_PAGE_SHIFT)
  
- static struct kmem_cache *iommu_domain_cache;
- static struct kmem_cache *iommu_devinfo_cache;
--static struct kmem_cache *iommu_iova_cache;
++/* IO virtual address start page frame number */
++#define IOVA_START_PFN		(1)
++
+ #define IOVA_PFN(addr)		((addr) >> PAGE_SHIFT)
+ #define DMA_32BIT_PFN		IOVA_PFN(DMA_BIT_MASK(32))
+ #define DMA_64BIT_PFN		IOVA_PFN(DMA_BIT_MASK(64))
+@@ -1629,7 +1632,7 @@ static int dmar_init_reserved_ranges(void)
+ 	struct iova *iova;
+ 	int i;
  
- static inline void *alloc_pgtable_page(int node)
+-	init_iova_domain(&reserved_iova_list, DMA_32BIT_PFN);
++	init_iova_domain(&reserved_iova_list, IOVA_START_PFN, DMA_32BIT_PFN);
+ 
+ 	lockdep_set_class(&reserved_iova_list.iova_rbtree_lock,
+ 		&reserved_rbtree_key);
+@@ -1687,7 +1690,7 @@ static int domain_init(struct dmar_domain *domain, int guest_width)
+ 	int adjust_width, agaw;
+ 	unsigned long sagaw;
+ 
+-	init_iova_domain(&domain->iovad, DMA_32BIT_PFN);
++	init_iova_domain(&domain->iovad, IOVA_START_PFN, DMA_32BIT_PFN);
+ 	domain_reserve_special_ranges(domain);
+ 
+ 	/* calculate AGAW */
+@@ -4160,7 +4163,7 @@ static int md_domain_init(struct dmar_domain *domain, int guest_width)
  {
-@@ -528,16 +527,6 @@ static inline void free_devinfo_mem(void *vaddr)
- 	kmem_cache_free(iommu_devinfo_cache, vaddr);
- }
+ 	int adjust_width;
  
--struct iova *alloc_iova_mem(void)
--{
--	return kmem_cache_alloc(iommu_iova_cache, GFP_ATOMIC);
--}
--
--void free_iova_mem(struct iova *iova)
--{
--	kmem_cache_free(iommu_iova_cache, iova);
--}
--
- static inline int domain_type_is_vm(struct dmar_domain *domain)
- {
- 	return domain->flags & DOMAIN_FLAG_VIRTUAL_MACHINE;
-@@ -3429,23 +3418,6 @@ static inline int iommu_devinfo_cache_init(void)
- 	return ret;
- }
+-	init_iova_domain(&domain->iovad, DMA_32BIT_PFN);
++	init_iova_domain(&domain->iovad, IOVA_START_PFN, DMA_32BIT_PFN);
+ 	domain_reserve_special_ranges(domain);
  
--static inline int iommu_iova_cache_init(void)
--{
--	int ret = 0;
--
--	iommu_iova_cache = kmem_cache_create("iommu_iova",
--					 sizeof(struct iova),
--					 0,
--					 SLAB_HWCACHE_ALIGN,
--					 NULL);
--	if (!iommu_iova_cache) {
--		printk(KERN_ERR "Couldn't create iova cache\n");
--		ret = -ENOMEM;
--	}
--
--	return ret;
--}
--
- static int __init iommu_init_mempool(void)
- {
- 	int ret;
-@@ -3463,7 +3435,7 @@ static int __init iommu_init_mempool(void)
- 
- 	kmem_cache_destroy(iommu_domain_cache);
- domain_error:
--	kmem_cache_destroy(iommu_iova_cache);
-+	iommu_iova_cache_destroy();
- 
- 	return -ENOMEM;
- }
-@@ -3472,8 +3444,7 @@ static void __init iommu_exit_mempool(void)
- {
- 	kmem_cache_destroy(iommu_devinfo_cache);
- 	kmem_cache_destroy(iommu_domain_cache);
--	kmem_cache_destroy(iommu_iova_cache);
--
-+	iommu_iova_cache_destroy();
- }
- 
- static void quirk_ioat_snb_local_iommu(struct pci_dev *pdev)
+ 	/* calculate AGAW */
 diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index f6b17e6..520b8c8 100644
+index 520b8c8..a3dbba8 100644
 --- a/drivers/iommu/iova.c
 +++ b/drivers/iommu/iova.c
-@@ -18,6 +18,41 @@
-  */
- 
- #include <linux/iova.h>
-+#include <linux/slab.h>
-+
-+static struct kmem_cache *iommu_iova_cache;
-+
-+int iommu_iova_cache_init(void)
-+{
-+	int ret = 0;
-+
-+	iommu_iova_cache = kmem_cache_create("iommu_iova",
-+					 sizeof(struct iova),
-+					 0,
-+					 SLAB_HWCACHE_ALIGN,
-+					 NULL);
-+	if (!iommu_iova_cache) {
-+		pr_err("Couldn't create iova cache\n");
-+		ret = -ENOMEM;
-+	}
-+
-+	return ret;
-+}
-+
-+void iommu_iova_cache_destroy(void)
-+{
-+	kmem_cache_destroy(iommu_iova_cache);
-+}
-+
-+struct iova *alloc_iova_mem(void)
-+{
-+	return kmem_cache_alloc(iommu_iova_cache, GFP_ATOMIC);
-+}
-+
-+void free_iova_mem(struct iova *iova)
-+{
-+	kmem_cache_free(iommu_iova_cache, iova);
-+}
- 
- void
- init_iova_domain(struct iova_domain *iovad, unsigned long pfn_32bit)
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index 19e81d5..ad0507c 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -39,6 +39,9 @@ static inline unsigned long iova_size(struct iova *iova)
- 	return iova->pfn_hi - iova->pfn_lo + 1;
+@@ -55,11 +55,13 @@ void free_iova_mem(struct iova *iova)
  }
  
-+int iommu_iova_cache_init(void);
-+void iommu_iova_cache_destroy(void);
-+
- struct iova *alloc_iova_mem(void);
- void free_iova_mem(struct iova *iova);
- void free_iova(struct iova_domain *iovad, unsigned long pfn);
+ void
+-init_iova_domain(struct iova_domain *iovad, unsigned long pfn_32bit)
++init_iova_domain(struct iova_domain *iovad, unsigned long start_pfn,
++	unsigned long pfn_32bit)
+ {
+ 	spin_lock_init(&iovad->iova_rbtree_lock);
+ 	iovad->rbroot = RB_ROOT;
+ 	iovad->cached32_node = NULL;
++	iovad->start_pfn = start_pfn;
+ 	iovad->dma_32bit_pfn = pfn_32bit;
+ }
+ 
+@@ -162,7 +164,7 @@ move_left:
+ 	if (!curr) {
+ 		if (size_aligned)
+ 			pad_size = iova_get_pad_size(size, limit_pfn);
+-		if ((IOVA_START_PFN + size + pad_size) > limit_pfn) {
++		if ((iovad->start_pfn + size + pad_size) > limit_pfn) {
+ 			spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ 			return -ENOMEM;
+ 		}
+@@ -237,8 +239,8 @@ iova_insert_rbtree(struct rb_root *root, struct iova *iova)
+  * @size: - size of page frames to allocate
+  * @limit_pfn: - max limit address
+  * @size_aligned: - set if size_aligned address range is required
+- * This function allocates an iova in the range limit_pfn to IOVA_START_PFN
+- * looking from limit_pfn instead from IOVA_START_PFN. If the size_aligned
++ * This function allocates an iova in the range iovad->start_pfn to limit_pfn,
++ * searching top-down from limit_pfn to iovad->start_pfn. If the size_aligned
+  * flag is set then the allocated address iova->pfn_lo will be naturally
+  * aligned on roundup_power_of_two(size).
+  */
+diff --git a/include/linux/iova.h b/include/linux/iova.h
+index ad0507c..591b196 100644
+--- a/include/linux/iova.h
++++ b/include/linux/iova.h
+@@ -16,9 +16,6 @@
+ #include <linux/rbtree.h>
+ #include <linux/dma-mapping.h>
+ 
+-/* IO virtual address start page frame number */
+-#define IOVA_START_PFN		(1)
+-
+ /* iova structure */
+ struct iova {
+ 	struct rb_node	node;
+@@ -31,6 +28,7 @@ struct iova_domain {
+ 	spinlock_t	iova_rbtree_lock; /* Lock to protect update of rbtree */
+ 	struct rb_root	rbroot;		/* iova domain rbtree root */
+ 	struct rb_node	*cached32_node; /* Save last alloced node */
++	unsigned long	start_pfn;	/* Lower limit for this domain */
+ 	unsigned long	dma_32bit_pfn;
+ };
+ 
+@@ -52,7 +50,8 @@ struct iova *alloc_iova(struct iova_domain *iovad, unsigned long size,
+ struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
+ 	unsigned long pfn_hi);
+ void copy_reserved_iova(struct iova_domain *from, struct iova_domain *to);
+-void init_iova_domain(struct iova_domain *iovad, unsigned long pfn_32bit);
++void init_iova_domain(struct iova_domain *iovad, unsigned long start_pfn,
++	unsigned long pfn_32bit);
+ struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
+ void put_iova_domain(struct iova_domain *iovad);
+ struct iova *split_and_remove_iova(struct iova_domain *iovad,
 -- 
 1.9.1
