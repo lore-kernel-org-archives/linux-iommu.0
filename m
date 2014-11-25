@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 1/4] iommu: build iova.c for any IOMMU
-Date: Tue, 25 Nov 2014 17:27:25 +0000
-Message-ID: <90240865e7cc00d0f7e471605ba9d2478b81ea88.1416931258.git.robin.murphy@arm.com>
+Subject: [RFC PATCH 2/4] iommu: consolidate IOVA allocator code
+Date: Tue, 25 Nov 2014 17:27:26 +0000
+Message-ID: <30e410d9f16d83d13bf1bf2f4b230018172a85a6.1416931258.git.robin.murphy@arm.com>
 References: <cover.1416931258.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,32 +21,148 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wE
 Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-In preparation for sharing the IOVA allocator, build it for all
-IOMMU API users.
+In order to share the IOVA allocator with other architectures, break
+the unnecssary dependency on the Intel IOMMU driver and move the
+remaining IOVA internals to iova.c
 
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/intel-iommu.c | 33 ++-------------------------------
+ drivers/iommu/iova.c        | 35 +++++++++++++++++++++++++++++++++++
+ include/linux/iova.h        |  3 +++
+ 3 files changed, 40 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 16edef7..9f7910b 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -1,4 +1,4 @@
--obj-$(CONFIG_IOMMU_API) += iommu.o
-+obj-$(CONFIG_IOMMU_API) += iommu.o iova.o
- obj-$(CONFIG_IOMMU_API) += iommu-traces.o
- obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
- obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
-@@ -7,7 +7,7 @@ obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o
- obj-$(CONFIG_AMD_IOMMU_V2) += amd_iommu_v2.o
- obj-$(CONFIG_ARM_SMMU) += arm-smmu.o
- obj-$(CONFIG_DMAR_TABLE) += dmar.o
--obj-$(CONFIG_INTEL_IOMMU) += iova.o intel-iommu.o
-+obj-$(CONFIG_INTEL_IOMMU) += intel-iommu.o
- obj-$(CONFIG_IPMMU_VMSA) += ipmmu-vmsa.o
- obj-$(CONFIG_IRQ_REMAP) += intel_irq_remapping.o irq_remapping.o
- obj-$(CONFIG_OMAP_IOMMU) += omap-iommu.o
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index a27d6cb..9258860 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -490,7 +490,6 @@ __setup("intel_iommu=", intel_iommu_setup);
+ 
+ static struct kmem_cache *iommu_domain_cache;
+ static struct kmem_cache *iommu_devinfo_cache;
+-static struct kmem_cache *iommu_iova_cache;
+ 
+ static inline void *alloc_pgtable_page(int node)
+ {
+@@ -528,16 +527,6 @@ static inline void free_devinfo_mem(void *vaddr)
+ 	kmem_cache_free(iommu_devinfo_cache, vaddr);
+ }
+ 
+-struct iova *alloc_iova_mem(void)
+-{
+-	return kmem_cache_alloc(iommu_iova_cache, GFP_ATOMIC);
+-}
+-
+-void free_iova_mem(struct iova *iova)
+-{
+-	kmem_cache_free(iommu_iova_cache, iova);
+-}
+-
+ static inline int domain_type_is_vm(struct dmar_domain *domain)
+ {
+ 	return domain->flags & DOMAIN_FLAG_VIRTUAL_MACHINE;
+@@ -3429,23 +3418,6 @@ static inline int iommu_devinfo_cache_init(void)
+ 	return ret;
+ }
+ 
+-static inline int iommu_iova_cache_init(void)
+-{
+-	int ret = 0;
+-
+-	iommu_iova_cache = kmem_cache_create("iommu_iova",
+-					 sizeof(struct iova),
+-					 0,
+-					 SLAB_HWCACHE_ALIGN,
+-					 NULL);
+-	if (!iommu_iova_cache) {
+-		printk(KERN_ERR "Couldn't create iova cache\n");
+-		ret = -ENOMEM;
+-	}
+-
+-	return ret;
+-}
+-
+ static int __init iommu_init_mempool(void)
+ {
+ 	int ret;
+@@ -3463,7 +3435,7 @@ static int __init iommu_init_mempool(void)
+ 
+ 	kmem_cache_destroy(iommu_domain_cache);
+ domain_error:
+-	kmem_cache_destroy(iommu_iova_cache);
++	iommu_iova_cache_destroy();
+ 
+ 	return -ENOMEM;
+ }
+@@ -3472,8 +3444,7 @@ static void __init iommu_exit_mempool(void)
+ {
+ 	kmem_cache_destroy(iommu_devinfo_cache);
+ 	kmem_cache_destroy(iommu_domain_cache);
+-	kmem_cache_destroy(iommu_iova_cache);
+-
++	iommu_iova_cache_destroy();
+ }
+ 
+ static void quirk_ioat_snb_local_iommu(struct pci_dev *pdev)
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index f6b17e6..520b8c8 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -18,6 +18,41 @@
+  */
+ 
+ #include <linux/iova.h>
++#include <linux/slab.h>
++
++static struct kmem_cache *iommu_iova_cache;
++
++int iommu_iova_cache_init(void)
++{
++	int ret = 0;
++
++	iommu_iova_cache = kmem_cache_create("iommu_iova",
++					 sizeof(struct iova),
++					 0,
++					 SLAB_HWCACHE_ALIGN,
++					 NULL);
++	if (!iommu_iova_cache) {
++		pr_err("Couldn't create iova cache\n");
++		ret = -ENOMEM;
++	}
++
++	return ret;
++}
++
++void iommu_iova_cache_destroy(void)
++{
++	kmem_cache_destroy(iommu_iova_cache);
++}
++
++struct iova *alloc_iova_mem(void)
++{
++	return kmem_cache_alloc(iommu_iova_cache, GFP_ATOMIC);
++}
++
++void free_iova_mem(struct iova *iova)
++{
++	kmem_cache_free(iommu_iova_cache, iova);
++}
+ 
+ void
+ init_iova_domain(struct iova_domain *iovad, unsigned long pfn_32bit)
+diff --git a/include/linux/iova.h b/include/linux/iova.h
+index 19e81d5..ad0507c 100644
+--- a/include/linux/iova.h
++++ b/include/linux/iova.h
+@@ -39,6 +39,9 @@ static inline unsigned long iova_size(struct iova *iova)
+ 	return iova->pfn_hi - iova->pfn_lo + 1;
+ }
+ 
++int iommu_iova_cache_init(void);
++void iommu_iova_cache_destroy(void);
++
+ struct iova *alloc_iova_mem(void);
+ void free_iova_mem(struct iova *iova);
+ void free_iova(struct iova_domain *iovad, unsigned long pfn);
 -- 
 1.9.1
