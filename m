@@ -1,119 +1,92 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC PATCH v4 6/8] dma-mapping: set dma segment properties in
- of_dma_configure
-Date: Tue, 25 Nov 2014 13:05:36 +0000
-Message-ID: <54747EA0.1020001@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH v4 0/8] Introduce automatic DMA configuration for
+	IOMMU masters
+Date: Tue, 25 Nov 2014 13:15:55 +0000
+Message-ID: <5474810B.9030102@arm.com>
 References: <1415991397-9618-1-git-send-email-will.deacon@arm.com>
- <1415991397-9618-7-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1415991397-9618-7-git-send-email-will.deacon@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Will Deacon <will.deacon@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>
-Cc: "jroedel@suse.de" <jroedel@suse.de>, "arnd@arndb.de" <arnd@arndb.de>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "laurent.pinchart@ideasonboard.com" <laurent.pinchart@ideasonboard.com>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "hdoyu@nvidia.com" <hdoyu@nvidia.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1415991397-9618-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Will,
 
 On 14/11/14 18:56, Will Deacon wrote:
-> of_dma_configure determines the size of the DMA range for a device by
-> either parsing the dma-ranges property or inspecting the coherent DMA
-> mask. This same information can be used to initialise the max segment
-> size and boundary_mask to a default value.
+> Hello everybody,
 >
-> Signed-off-by: Will Deacon <will.deacon@arm.com>
+> Here is the fourth iteration of the RFC I've previously posted here:
+>
+>    RFCv1: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-August/283023.html
+>    RFCv2: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-September/283752.html
+>    RFCv3: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-September/287031.html
+>
+> Changes since RFCv3 include:
+>
+>    - Drastic simplification of the data structures, so that we no longer
+>      pass around lists of domains. Instead, dma-mapping is expected to
+>      allocate the domain (Joerg talked about adding a get_default_domain
+>      operation to iommu_ops).
+>
+>    - iommu_ops is used to hold the per-instance IOMMU data
+>
+>    - Configuration of DMA segments added to of_dma_configure
+>
+> All feedback welcome.
+>
 
-Sadly, NAK on this one. After a thorough investigation and testing, 
-generic code really shouldn't be touching dma_parms like this, and I 
-have some corrupted files on my USB filesystem to prove it ;) It seems 
-it's a bad idea to effectively change the default segment size 
-universally unless you really want to go through the entire block layer 
-(and who-knows-what-else) to find and fix everything that relies on it 
-being 64k.
+This proposal has been really useful in getting IOMMU DMA mapping 
+running on arm64, so with the proviso that patch 6 definitely causes 
+problems, and patches 7 and 8 ported to arm64 rather than used directly, 
+for the series:
 
-Simply dropping this patch and letting the existing defaults in 
-dma_set_max_seg_size and dma_get_seg_boundary stand seems like the 
-correct action.
+Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
+Hopefully it's now stable enough that I can finish cleaning up my 
+hacked-up SMMU driver (oh, the rebasing pain :P)
 
-Marek, I believe you may have some use case for this - if so, as I 
-understand it your individual drivers should be setting up their own 
-dma_parms directly, to tell the IOMMU they can handle it merging 
-scatterlists into arbitrarily long segments, without affecting the other 
-drivers that assume they'll never see >64k segments and go wrong if they 
-do (including the generic USB stack, apparently).
-
-
+Thanks,
 Robin.
 
-> ---
->   drivers/of/platform.c           | 4 ++++
->   include/linux/amba/bus.h        | 1 +
->   include/linux/platform_device.h | 2 ++
->   3 files changed, 7 insertions(+)
+> Cheers,
 >
-> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
-> index b89caf8c7586..0a2842d91db4 100644
-> --- a/drivers/of/platform.c
-> +++ b/drivers/of/platform.c
-> @@ -191,6 +191,8 @@ static void of_dma_configure(struct device *dev)
->   		dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", dev->dma_pfn_offset);
->   	}
->   	dev->dma_pfn_offset = offset;
-> +	dma_set_max_seg_size(dev, size);
-> +	dma_set_seg_boundary(dev, size);
+> Will
 >
->   	coherent = of_dma_is_coherent(dev->of_node);
->   	dev_dbg(dev, "device is%sdma coherent\n",
-> @@ -236,6 +238,7 @@ static struct platform_device *of_platform_device_create_pdata(
+> --->8
 >
->   	dev->dev.bus = &platform_bus_type;
->   	dev->dev.platform_data = platform_data;
-> +	dev->dev.dma_parms = &dev->dma_parms;
->   	of_dma_configure(&dev->dev);
+> Will Deacon (8):
+>    iommu: provide early initialisation hook for IOMMU drivers
+>    dma-mapping: replace set_arch_dma_coherent_ops with arch_setup_dma_ops
+>    iommu: add new iommu_ops callback for adding an OF device
+>    iommu: provide helper function to configure an IOMMU for an of master
+>    dma-mapping: detect and configure IOMMU in of_dma_configure
+>    dma-mapping: set dma segment properties in of_dma_configure
+>    arm: call iommu_init before of_platform_populate
+>    arm: dma-mapping: plumb our iommu mapping ops into arch_setup_dma_ops
 >
->   	if (of_device_add(dev) != 0) {
-> @@ -295,6 +298,7 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
->   	dev->dev.of_node = of_node_get(node);
->   	dev->dev.parent = parent;
->   	dev->dev.platform_data = platform_data;
-> +	dev->dev.dma_parms = &dev->dma_parms;
->   	if (bus_id)
->   		dev_set_name(&dev->dev, "%s", bus_id);
->   	else
-> diff --git a/include/linux/amba/bus.h b/include/linux/amba/bus.h
-> index c324f5700d1a..9b232eeb6c20 100644
-> --- a/include/linux/amba/bus.h
-> +++ b/include/linux/amba/bus.h
-> @@ -32,6 +32,7 @@ struct amba_device {
->   	struct clk		*pclk;
->   	unsigned int		periphid;
->   	unsigned int		irq[AMBA_NR_IRQS];
-> +	struct device_dma_parameters dma_parms;
->   };
->
->   struct amba_driver {
-> diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
-> index 153d303af7eb..8dc48487b34b 100644
-> --- a/include/linux/platform_device.h
-> +++ b/include/linux/platform_device.h
-> @@ -27,6 +27,8 @@ struct platform_device {
->   	u32		num_resources;
->   	struct resource	*resource;
->
-> +	struct device_dma_parameters dma_parms;
-> +
->   	const struct platform_device_id	*id_entry;
->   	char *driver_override; /* Driver name to force a match */
->
+>   arch/arm/include/asm/dma-mapping.h | 12 +++---
+>   arch/arm/kernel/setup.c            |  2 +
+>   arch/arm/mm/dma-mapping.c          | 80 ++++++++++++++++++++++++++++++++++----
+>   drivers/iommu/Kconfig              |  2 +-
+>   drivers/iommu/of_iommu.c           | 50 ++++++++++++++++++++++++
+>   drivers/of/platform.c              | 54 +++++++++++++------------
+>   include/asm-generic/vmlinux.lds.h  |  2 +
+>   include/linux/amba/bus.h           |  1 +
+>   include/linux/dma-mapping.h        | 13 ++++---
+>   include/linux/iommu.h              |  8 ++++
+>   include/linux/of_iommu.h           | 31 +++++++++++++++
+>   include/linux/platform_device.h    |  2 +
+>   12 files changed, 214 insertions(+), 43 deletions(-)
 >
