@@ -1,104 +1,119 @@
-From: Jiang Liu <jiang.liu@linux.intel.com>
-Subject: [Patch Part3 v4 33/38] x86, irq: Move check of cfg->move_in_progress into send_cleanup_vector()
-Date: Tue, 25 Nov 2014 15:49:57 +0800
-Message-ID: <1416901802-24211-34-git-send-email-jiang.liu@linux.intel.com>
-References: <1416901802-24211-1-git-send-email-jiang.liu@linux.intel.com>
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1416901802-24211-1-git-send-email-jiang.liu@linux.intel.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Randy Dunlap <rdunlap@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Borislav Petkov <bp@alien8.de>, x86@kernel.org, Joerg Roedel <joro@8bytes.org>, Jiang Liu <jiang.liu@linux.intel.com>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Andrew Morton <akpm@linux-foundation.org>, Tony Luck <tony.luck@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [RFC PATCH v4 6/8] dma-mapping: set dma segment properties in
+ of_dma_configure
+Date: Tue, 25 Nov 2014 13:05:36 +0000
+Message-ID: <54747EA0.1020001@arm.com>
+References: <1415991397-9618-1-git-send-email-will.deacon@arm.com>
+ <1415991397-9618-7-git-send-email-will.deacon@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1415991397-9618-7-git-send-email-will.deacon@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Will Deacon <will.deacon@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>
+Cc: "jroedel@suse.de" <jroedel@suse.de>, "arnd@arndb.de" <arnd@arndb.de>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "laurent.pinchart@ideasonboard.com" <laurent.pinchart@ideasonboard.com>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "hdoyu@nvidia.com" <hdoyu@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Move check of cfg->move_in_progress into send_cleanup_vector() to
-prepare for simplifying struct irq_cfg.
+Hi Will,
 
-Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
-Tested-by: Joerg Roedel <jroedel@suse.de>
----
- arch/x86/kernel/apic/vector.c       |   10 ++++++++--
- arch/x86/platform/uv/uv_irq.c       |    3 +--
- drivers/iommu/amd_iommu.c           |    3 +--
- drivers/iommu/intel_irq_remapping.c |    3 +--
- 4 files changed, 11 insertions(+), 8 deletions(-)
+On 14/11/14 18:56, Will Deacon wrote:
+> of_dma_configure determines the size of the DMA range for a device by
+> either parsing the dma-ranges property or inspecting the coherent DMA
+> mask. This same information can be used to initialise the max segment
+> size and boundary_mask to a default value.
+>
+> Signed-off-by: Will Deacon <will.deacon@arm.com>
 
-diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
-index 436a3400d9ac..a5ce2eef0528 100644
---- a/arch/x86/kernel/apic/vector.c
-+++ b/arch/x86/kernel/apic/vector.c
-@@ -495,7 +495,7 @@ static struct irq_chip lapic_controller = {
- };
- 
- #ifdef CONFIG_SMP
--void send_cleanup_vector(struct irq_cfg *cfg)
-+static void __send_cleanup_vector(struct irq_cfg *cfg)
- {
- 	cpumask_var_t cleanup_mask;
- 
-@@ -513,6 +513,12 @@ void send_cleanup_vector(struct irq_cfg *cfg)
- 	cfg->move_in_progress = 0;
- }
- 
-+void send_cleanup_vector(struct irq_cfg *cfg)
-+{
-+	if (cfg->move_in_progress)
-+		__send_cleanup_vector(cfg);
-+}
-+
- asmlinkage __visible void smp_irq_move_cleanup_interrupt(void)
- {
- 	unsigned vector, me;
-@@ -583,7 +589,7 @@ static void __irq_complete_move(struct irq_cfg *cfg, unsigned vector)
- 	me = smp_processor_id();
- 
- 	if (vector == cfg->vector && cpumask_test_cpu(me, cfg->domain))
--		send_cleanup_vector(cfg);
-+		__send_cleanup_vector(cfg);
- }
- 
- void irq_complete_move(struct irq_cfg *cfg)
-diff --git a/arch/x86/platform/uv/uv_irq.c b/arch/x86/platform/uv/uv_irq.c
-index c237ed34a498..b242e0aada19 100644
---- a/arch/x86/platform/uv/uv_irq.c
-+++ b/arch/x86/platform/uv/uv_irq.c
-@@ -63,8 +63,7 @@ uv_set_irq_affinity(struct irq_data *data, const struct cpumask *mask,
- 	ret = parent->chip->irq_set_affinity(parent, mask, force);
- 	if (ret >= 0) {
- 		uv_program_mmr(cfg, data->chip_data);
--		if (cfg->move_in_progress)
--			send_cleanup_vector(cfg);
-+		send_cleanup_vector(cfg);
- 	}
- 
- 	return ret;
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 2e8bbe5e164d..a5c59b434c77 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -4331,8 +4331,7 @@ static int amd_ir_set_affinity(struct irq_data *data,
- 	 * at the new destination. So, time to cleanup the previous
- 	 * vector allocation.
- 	 */
--	if (cfg->move_in_progress)
--		send_cleanup_vector(cfg);
-+	send_cleanup_vector(cfg);
- 
- 	return IRQ_SET_MASK_OK_DONE;
- }
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index acff8493191e..f6da3b2651c0 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -997,8 +997,7 @@ intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
- 	 * at the new destination. So, time to cleanup the previous
- 	 * vector allocation.
- 	 */
--	if (cfg->move_in_progress)
--		send_cleanup_vector(cfg);
-+	send_cleanup_vector(cfg);
- 
- 	return IRQ_SET_MASK_OK_DONE;
- }
--- 
-1.7.10.4
+Sadly, NAK on this one. After a thorough investigation and testing, 
+generic code really shouldn't be touching dma_parms like this, and I 
+have some corrupted files on my USB filesystem to prove it ;) It seems 
+it's a bad idea to effectively change the default segment size 
+universally unless you really want to go through the entire block layer 
+(and who-knows-what-else) to find and fix everything that relies on it 
+being 64k.
 
+Simply dropping this patch and letting the existing defaults in 
+dma_set_max_seg_size and dma_get_seg_boundary stand seems like the 
+correct action.
+
+
+Marek, I believe you may have some use case for this - if so, as I 
+understand it your individual drivers should be setting up their own 
+dma_parms directly, to tell the IOMMU they can handle it merging 
+scatterlists into arbitrarily long segments, without affecting the other 
+drivers that assume they'll never see >64k segments and go wrong if they 
+do (including the generic USB stack, apparently).
+
+
+Robin.
+
+> ---
+>   drivers/of/platform.c           | 4 ++++
+>   include/linux/amba/bus.h        | 1 +
+>   include/linux/platform_device.h | 2 ++
+>   3 files changed, 7 insertions(+)
+>
+> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+> index b89caf8c7586..0a2842d91db4 100644
+> --- a/drivers/of/platform.c
+> +++ b/drivers/of/platform.c
+> @@ -191,6 +191,8 @@ static void of_dma_configure(struct device *dev)
+>   		dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", dev->dma_pfn_offset);
+>   	}
+>   	dev->dma_pfn_offset = offset;
+> +	dma_set_max_seg_size(dev, size);
+> +	dma_set_seg_boundary(dev, size);
+>
+>   	coherent = of_dma_is_coherent(dev->of_node);
+>   	dev_dbg(dev, "device is%sdma coherent\n",
+> @@ -236,6 +238,7 @@ static struct platform_device *of_platform_device_create_pdata(
+>
+>   	dev->dev.bus = &platform_bus_type;
+>   	dev->dev.platform_data = platform_data;
+> +	dev->dev.dma_parms = &dev->dma_parms;
+>   	of_dma_configure(&dev->dev);
+>
+>   	if (of_device_add(dev) != 0) {
+> @@ -295,6 +298,7 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
+>   	dev->dev.of_node = of_node_get(node);
+>   	dev->dev.parent = parent;
+>   	dev->dev.platform_data = platform_data;
+> +	dev->dev.dma_parms = &dev->dma_parms;
+>   	if (bus_id)
+>   		dev_set_name(&dev->dev, "%s", bus_id);
+>   	else
+> diff --git a/include/linux/amba/bus.h b/include/linux/amba/bus.h
+> index c324f5700d1a..9b232eeb6c20 100644
+> --- a/include/linux/amba/bus.h
+> +++ b/include/linux/amba/bus.h
+> @@ -32,6 +32,7 @@ struct amba_device {
+>   	struct clk		*pclk;
+>   	unsigned int		periphid;
+>   	unsigned int		irq[AMBA_NR_IRQS];
+> +	struct device_dma_parameters dma_parms;
+>   };
+>
+>   struct amba_driver {
+> diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
+> index 153d303af7eb..8dc48487b34b 100644
+> --- a/include/linux/platform_device.h
+> +++ b/include/linux/platform_device.h
+> @@ -27,6 +27,8 @@ struct platform_device {
+>   	u32		num_resources;
+>   	struct resource	*resource;
+>
+> +	struct device_dma_parameters dma_parms;
+> +
+>   	const struct platform_device_id	*id_entry;
+>   	char *driver_override; /* Driver name to force a match */
+>
+>
