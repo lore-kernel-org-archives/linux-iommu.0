@@ -1,73 +1,57 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH 1/3] PCI/MSI: Initial hook for archs to declare
- multivector MSI support
-Date: Mon, 24 Nov 2014 14:45:24 -0700
-Message-ID: <1416865524.11825.89.camel@bling.home>
-References: <20141121213752.31095.30735.stgit@gimli.home>
-	 <20141121220833.31095.12371.stgit@gimli.home>
-	 <alpine.DEB.2.11.1411232109140.6439@nanos>
+From: "Elliott, Robert (Server Storage)" <Elliott@hp.com>
+Subject: RE: [PATCH RESEND v8] iopoll: Introduce memory-mapped IO polling
+ macros
+Date: Tue, 25 Nov 2014 00:53:19 +0000
+Message-ID: <94D0CD8314A33A4D9D801C0FE68B4029593C5E1F@G9W0745.americas.hpqcorp.net>
+References: <1416860092-11620-1-git-send-email-mitchelh@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <alpine.DEB.2.11.1411232109140.6439@nanos>
-Sender: linux-pci-owner@vger.kernel.org
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: bhelgaas@google.com, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, x86@kernel.org, mingo@redhat.com, hpa@zytor.com, joro@8bytes.org, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1416860092-11620-1-git-send-email-mitchelh@codeaurora.org>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Mitchel Humpherys <mitchelh@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Thierry Reding <thierry.reding@gmail.com>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>
+Cc: Matt Wagantall <mattw@codeaurora.org>, "Don Brace (PMC)" <Don.Brace@pmcs.com>, "Scales, Webb" <webb.scales@hp.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, 2014-11-23 at 21:20 +0100, Thomas Gleixner wrote:
-> On Fri, 21 Nov 2014, Alex Williamson wrote:
-> > For the most part multivector MSI is not supported and drivers and
-> > hardware wanting multiple vectors opt for MSI-X instead.  It seems
-> > though that having the ability to query the arch/platform code to
-> > determine whether allocating multiple MSI vectors will ever succeed
-> > is a useful thing.  For instance, vfio-pci can use this to determine
-> > whether to expose multiple MSI vectors to the user.  If we know we
-> > cannot ever support more than one vector, we have a better shot at
-> > the userspace driver working, especially if it's a guest OS, if we
-> > only expose one vector as being available in the interface.
-> > 
-> > Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
-> > ---
-> > 
-> >  drivers/pci/msi.c   |    5 +++++
-> >  include/linux/msi.h |    1 +
-> >  2 files changed, 6 insertions(+)
-> > 
-> > diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
-> > index 9fab30a..36b503a 100644
-> > --- a/drivers/pci/msi.c
-> > +++ b/drivers/pci/msi.c
-> > @@ -79,6 +79,11 @@ int __weak arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
-> >  	return 0;
-> >  }
-> >  
-> > +bool __weak arch_supports_multivector_msi(struct pci_dev *dev)
-> 
-> Please not another weak arch function. We are in the process to reduce
-> them not to extend them.
-> 
-> arch_supports is pretty much wrong here anyway. We are moving away
-> from arch MSI dependencies simply because it's not a arch property per
-> se.
-> 
-> Multi MSI is a property of the underlying interrupt controllers and
-> there might be several MSI interrupt domains on a given system. They
-> can or cannot support multi MSI.
-> 
-> The current x86 implementation is a tangled maze and Jiang is in the
-> process to distangle it completely. Until thats done x86 is not going
-> to add new ad hoc interfaces.
-> 
-> Once we converted everything over to the new hierarchical irqdomains
-> we can add such an interface to the code, but for now I'm not
-> accepting anything like that into x86 msi related code.
 
-Ok, I guess I can do some ugliness with associating the IOMMU IRQ
-remapping capability with multivector MSI support within an #ifdef x86
-block.  Gross, but I think that's as accurate as I can get w/o a hook
-through the MSI code.  Is there any target for the refactoring you
-mention?  Thanks,
 
-Alex
+> -----Original Message-----
+> From: linux-kernel-owner@vger.kernel.org [mailto:linux-kernel-
+> owner@vger.kernel.org] On Behalf Of Mitchel Humpherys
+> Sent: Monday, 24 November, 2014 2:15 PM
+...
+> From: Matt Wagantall <mattw@codeaurora.org>
+> 
+> It is sometimes necessary to poll a memory-mapped register until its value
+> satisfies some condition. Introduce a family of convenience macros that do
+> this. Tight-looping, sleeping, and timing out can all be accomplished
+> using these macros.
+> 
+...
+> +#define readx_poll_timeout(op, addr, val, cond, sleep_us, timeout_us)	\
+> +({ \
+> +	ktime_t timeout = ktime_add_us(ktime_get(), timeout_us); \
+> +	might_sleep_if(sleep_us); \
+> +	for (;;) { \
+> +		(val) = op(addr); \
+> +		if (cond) \
+> +			break; \
+> +		if (timeout_us && ktime_compare(ktime_get(), timeout) > 0) {
+> \
+> +			(val) = op(addr); \
+> +			break; \
+> +		} \
+> +		if (sleep_us) \
+> +			usleep_range((sleep_us >> 2) + 1, sleep_us); \
+
+The hpsa SCSI driver used to use usleep_range in a loop like 
+that, but we found that it caused scheduler problems during
+boots because it uses TASK_UNINTERRUPTIBLE:
+[    9.260668] [sched_delayed] sched: RT throttling activated
+
+msleep() worked much better.
+
+---
+Rob Elliott    HP Server Storage
