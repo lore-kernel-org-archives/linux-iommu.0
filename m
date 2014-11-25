@@ -1,88 +1,124 @@
-From: Jiang Liu <jiang.liu@linux.intel.com>
-Subject: Re: [PATCH 1/3] PCI/MSI: Initial hook for archs to declare multivector
- MSI support
-Date: Tue, 25 Nov 2014 11:22:23 +0800
-Message-ID: <5473F5EF.4060007@linux.intel.com>
-References: <20141121213752.31095.30735.stgit@gimli.home>	 <20141121220833.31095.12371.stgit@gimli.home>	 <alpine.DEB.2.11.1411232109140.6439@nanos> <1416865524.11825.89.camel@bling.home>
+From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [Patch Part2 v6 07/27] x86,
+	dmar: Use new irqdomain interfaces to allocate/free IRQ
+Date: Tue, 25 Nov 2014 13:53:16 +0800
+Message-ID: <1416894816-23245-8-git-send-email-jiang.liu@linux.intel.com>
+References: <1416894816-23245-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1416865524.11825.89.camel@bling.home>
-Sender: linux-pci-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>, Thomas Gleixner <tglx@linutronix.de>
-Cc: bhelgaas@google.com, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, x86@kernel.org, mingo@redhat.com, hpa@zytor.com, joro@8bytes.org, iommu@lists.linux-foundation.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1416894816-23245-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2014/11/25 5:45, Alex Williamson wrote:
-> On Sun, 2014-11-23 at 21:20 +0100, Thomas Gleixner wrote:
->> On Fri, 21 Nov 2014, Alex Williamson wrote:
->>> For the most part multivector MSI is not supported and drivers and
->>> hardware wanting multiple vectors opt for MSI-X instead.  It seems
->>> though that having the ability to query the arch/platform code to
->>> determine whether allocating multiple MSI vectors will ever succeed
->>> is a useful thing.  For instance, vfio-pci can use this to determine
->>> whether to expose multiple MSI vectors to the user.  If we know we
->>> cannot ever support more than one vector, we have a better shot at
->>> the userspace driver working, especially if it's a guest OS, if we
->>> only expose one vector as being available in the interface.
->>>
->>> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
->>> ---
->>>
->>>  drivers/pci/msi.c   |    5 +++++
->>>  include/linux/msi.h |    1 +
->>>  2 files changed, 6 insertions(+)
->>>
->>> diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
->>> index 9fab30a..36b503a 100644
->>> --- a/drivers/pci/msi.c
->>> +++ b/drivers/pci/msi.c
->>> @@ -79,6 +79,11 @@ int __weak arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
->>>  	return 0;
->>>  }
->>>  
->>> +bool __weak arch_supports_multivector_msi(struct pci_dev *dev)
->>
->> Please not another weak arch function. We are in the process to reduce
->> them not to extend them.
->>
->> arch_supports is pretty much wrong here anyway. We are moving away
->> from arch MSI dependencies simply because it's not a arch property per
->> se.
->>
->> Multi MSI is a property of the underlying interrupt controllers and
->> there might be several MSI interrupt domains on a given system. They
->> can or cannot support multi MSI.
->>
->> The current x86 implementation is a tangled maze and Jiang is in the
->> process to distangle it completely. Until thats done x86 is not going
->> to add new ad hoc interfaces.
->>
->> Once we converted everything over to the new hierarchical irqdomains
->> we can add such an interface to the code, but for now I'm not
->> accepting anything like that into x86 msi related code.
-> 
-> Ok, I guess I can do some ugliness with associating the IOMMU IRQ
-> remapping capability with multivector MSI support within an #ifdef x86
-> block.  Gross, but I think that's as accurate as I can get w/o a hook
-> through the MSI code.  Is there any target for the refactoring you
-> mention?  Thanks,
-Hi Alex,
-	The hierarchy irqdomain framework and some preparation work
-for PCI MSI refactor will be merged into v3.19, there are already in
-tip tree. If thing goes smoothly, we may finish PCI MSI refactoring
-on x86 platform for the merging window after 3.19, not sure 3.20 or
-4.0:)
-Regards!
-Gerry
-> 
-> Alex
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
-> 
+Use new irqdomain interfaces to allocate/free IRQ for DMAR and interrupt
+remapping, so we could kill GENERIC_IRQ_LEGACY_ALLOC_HWIRQ later.
+
+The private definition of irq_alloc_hwirqs()/irq_free_hwirqs() are
+temporary solution, it will be removed once we have converted interrupt
+remapping driver to use irqdomain framework.
+
+Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+---
+ arch/x86/include/asm/irq_remapping.h |    4 ++--
+ arch/x86/kernel/apic/msi.c           |   10 ++++++++++
+ drivers/iommu/irq_remapping.c        |   17 +++++++++++++++--
+ 3 files changed, 27 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
+index b7747c4c2cf2..230dde9b695e 100644
+--- a/arch/x86/include/asm/irq_remapping.h
++++ b/arch/x86/include/asm/irq_remapping.h
+@@ -103,7 +103,7 @@ static inline bool setup_remapped_irq(int irq,
+ }
+ #endif /* CONFIG_IRQ_REMAP */
+ 
+-#define dmar_alloc_hwirq()	irq_alloc_hwirq(-1)
+-#define dmar_free_hwirq		irq_free_hwirq
++extern int dmar_alloc_hwirq(void);
++extern void dmar_free_hwirq(int irq);
+ 
+ #endif /* __X86_IRQ_REMAPPING_H */
+diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
+index d5def489ca5b..328cf7fbbdc4 100644
+--- a/arch/x86/kernel/apic/msi.c
++++ b/arch/x86/kernel/apic/msi.c
+@@ -223,6 +223,16 @@ int arch_setup_dmar_msi(unsigned int irq)
+ 				      "edge");
+ 	return 0;
+ }
++
++int dmar_alloc_hwirq(void)
++{
++	return irq_domain_alloc_irqs(NULL, 1, NUMA_NO_NODE, NULL);
++}
++
++void dmar_free_hwirq(int irq)
++{
++	irq_domain_free_irqs(irq, 1);
++}
+ #endif
+ 
+ /*
+diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+index 89c4846683be..d29a53e036a2 100644
+--- a/drivers/iommu/irq_remapping.c
++++ b/drivers/iommu/irq_remapping.c
+@@ -6,6 +6,7 @@
+ #include <linux/msi.h>
+ #include <linux/irq.h>
+ #include <linux/pci.h>
++#include <linux/irqdomain.h>
+ 
+ #include <asm/hw_irq.h>
+ #include <asm/irq_remapping.h>
+@@ -50,6 +51,18 @@ static void irq_remapping_disable_io_apic(void)
+ 		disconnect_bsp_APIC(0);
+ }
+ 
++#ifndef CONFIG_GENERIC_IRQ_LEGACY_ALLOC_HWIRQ
++static unsigned int irq_alloc_hwirqs(int cnt, int node)
++{
++	return irq_domain_alloc_irqs(NULL, -1, cnt, node, NULL);
++}
++
++static void irq_free_hwirqs(unsigned int from, int cnt)
++{
++	irq_domain_free_irqs(from, cnt);
++}
++#endif
++
+ static int do_setup_msi_irqs(struct pci_dev *dev, int nvec)
+ {
+ 	int ret, sub_handle, nvec_pow2, index = 0;
+@@ -105,7 +118,7 @@ static int do_setup_msix_irqs(struct pci_dev *dev, int nvec)
+ 
+ 	list_for_each_entry(msidesc, &dev->msi_list, list) {
+ 
+-		irq = irq_alloc_hwirq(node);
++		irq = irq_alloc_hwirqs(1, node);
+ 		if (irq == 0)
+ 			return -1;
+ 
+@@ -128,7 +141,7 @@ static int do_setup_msix_irqs(struct pci_dev *dev, int nvec)
+ 	return 0;
+ 
+ error:
+-	irq_free_hwirq(irq);
++	irq_free_hwirqs(irq, 1);
+ 	return ret;
+ }
+ 
+-- 
+1.7.10.4
