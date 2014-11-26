@@ -1,15 +1,15 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH 1/4] iommu: build iova.c for any IOMMU
-Date: Wed, 26 Nov 2014 12:19:36 +0000
-Message-ID: <5475C558.9060600@arm.com>
+Subject: Re: [RFC PATCH 4/4] iommu: make IOVA domain page size explicit
+Date: Wed, 26 Nov 2014 13:31:41 +0000
+Message-ID: <5475D63D.1050405@arm.com>
 References: <cover.1416931258.git.robin.murphy@arm.com>
-	<90240865e7cc00d0f7e471605ba9d2478b81ea88.1416931258.git.robin.murphy@arm.com>
-	<54757A20.2090609@huawei.com>
+	<3774c76c45b21820b6a6acf582b8f441b639ffe9.1416931258.git.robin.murphy@arm.com>
+	<54757E98.9010006@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <54757A20.2090609-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <54757E98.9010006-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,61 +25,134 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi,
 
-On 26/11/14 06:58, leizhen wrote:
-> On 2014/11/26 1:27, Robin Murphy wrote:
->> In preparation for sharing the IOVA allocator, build it for all
->> IOMMU API users.
+On 26/11/14 07:17, leizhen wrote:
+[...]
+>> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+>> index a3dbba8..9e50625 100644
+>> --- a/drivers/iommu/iova.c
+>> +++ b/drivers/iommu/iova.c
+>> @@ -55,12 +55,16 @@ void free_iova_mem(struct iova *iova)
+>>   }
 >>
->> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> ---
->>   drivers/iommu/Makefile | 4 ++--
->>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>   void
+>> -init_iova_domain(struct iova_domain *iovad, unsigned long start_pfn,
+>> -	unsigned long pfn_32bit)
+>> +init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+>> +	unsigned long start_pfn, unsigned long pfn_32bit)
+>>   {
+>> +	/* IOMMUs must support at least the CPU page size */
+>> +	BUG_ON(granule > PAGE_SIZE);
+>
+> ??? BUG_ON(granule < PAGE_SIZE);
+>
+
+Granule represents the smallest page size that the IOMMU can map - we'd 
+never allocate less IOVA space than a single page, so we don't need a 
+unit smaller than that, and a bigger unit would make it problematic to 
+allocate IOVA space for individual pages.
+
+If, for instance, the CPU has 64k pages, and the IOMMU supports 1k tiny 
+pages, granule would be less than PAGE_SIZE, but the IOMMU could happily 
+that 64k as 64 contiguous tiny pages, even if it's a waste of TLB space.
+
+However, say the IOMMU only supports 16k pages and we try to map two 
+noncontiguous 4k CPU pages as a contiguous 8k buffer in IOVA space - 
+this can't work, hence why the _minimum_ IOMMU page size, and thus 
+granule, may never be _bigger_ than a CPU page.
+
+>> +
+>>   	spin_lock_init(&iovad->iova_rbtree_lock);
+>>   	iovad->rbroot = RB_ROOT;
+>>   	iovad->cached32_node = NULL;
+>> +	iovad->granule = granule;
+>
+> Do you need to check granule is 2^n ?
+>
+
+Yes, that would make a lot of sense.
+
+>>   	iovad->start_pfn = start_pfn;
+>>   	iovad->dma_32bit_pfn = pfn_32bit;
+>>   }
+>> diff --git a/include/linux/iova.h b/include/linux/iova.h
+>> index 591b196..3920a19 100644
+>> --- a/include/linux/iova.h
+>> +++ b/include/linux/iova.h
+>> @@ -28,6 +28,7 @@ struct iova_domain {
+>>   	spinlock_t	iova_rbtree_lock; /* Lock to protect update of rbtree */
+>>   	struct rb_root	rbroot;		/* iova domain rbtree root */
+>>   	struct rb_node	*cached32_node; /* Save last alloced node */
+>> +	unsigned long	granule;	/* pfn granularity for this domain */
+>>   	unsigned long	start_pfn;	/* Lower limit for this domain */
+>>   	unsigned long	dma_32bit_pfn;
+>>   };
+>> @@ -37,6 +38,36 @@ static inline unsigned long iova_size(struct iova *iova)
+>>   	return iova->pfn_hi - iova->pfn_lo + 1;
+>>   }
 >>
->> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
->> index 16edef7..9f7910b 100644
->> --- a/drivers/iommu/Makefile
->> +++ b/drivers/iommu/Makefile
->> @@ -1,4 +1,4 @@
->> -obj-$(CONFIG_IOMMU_API) += iommu.o
->> +obj-$(CONFIG_IOMMU_API) += iommu.o iova.o
+>> +static inline unsigned long iova_shift(struct iova_domain *iovad)
+>> +{
+>> +	return __ffs(iovad->granule);
 >
-> I'm not a maintainer, so just code review comment.
+> I think it's good to save the result to a struct member. If we caculate it ervertime, it's too slow.
 >
-> I don't known whether or not you will apply iova to all iommu drivers. But if only x86 and arm/arm64,
-> it's no good to force other iommu drivers to include iova.o, because they have not used it yet.
 
-I agree, the "build it anyway and rely on the linker to throw it away" 
-approach is very hacky. As I mentioned in the cover letter, the other 
-series which appeared as I was cleaning this up for posting duplicates 
-patch 1 and 2 here, but in a nicer way, so I'm fully expecting to simply 
-rebase patches 3 and 4 on top of that series.
+I did give some consideration at the time to which of size, shift and 
+mask to store - given the redundancy between them storing more than one 
+seems excessively wasteful - and this made for the nicest-looking code 
+IMO. These IOVA operations are going to be mostly used in map/unmap 
+situations leading to an IOMMU TLB flush anyway, so I'm not sure how 
+performance-critical they really are.
 
-Thanks,
+Are we likely to see this code used on architectures where __ffs takes 
+more than a few cycles and has more impact than the general memory bloat 
+of making structures bigger?
+
+
+Thanks for the review,
 Robin.
 
->
-> Maybe it's good to define a new config, like CONFIG_IOMMU_IOVA.
->
-> config INTEL_IOMMU
-> 	select IOMMU_IOVA
->
-> config ARM_SMMU
-> 	select IOMMU_IOVA
->
-> obj-$(CONFIG_IOMMU_IOVA) += iova.o
->
->>   obj-$(CONFIG_IOMMU_API) += iommu-traces.o
->>   obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
->>   obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
->> @@ -7,7 +7,7 @@ obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o
->>   obj-$(CONFIG_AMD_IOMMU_V2) += amd_iommu_v2.o
->>   obj-$(CONFIG_ARM_SMMU) += arm-smmu.o
->>   obj-$(CONFIG_DMAR_TABLE) += dmar.o
->> -obj-$(CONFIG_INTEL_IOMMU) += iova.o intel-iommu.o
->> +obj-$(CONFIG_INTEL_IOMMU) += intel-iommu.o
->>   obj-$(CONFIG_IPMMU_VMSA) += ipmmu-vmsa.o
->>   obj-$(CONFIG_IRQ_REMAP) += intel_irq_remapping.o irq_remapping.o
->>   obj-$(CONFIG_OMAP_IOMMU) += omap-iommu.o
+>> +}
+>> +
+>> +static inline unsigned long iova_mask(struct iova_domain *iovad)
+>> +{
+>> +	return iovad->granule - 1;
+>> +}
+>> +
+>> +static inline size_t iova_offset(struct iova_domain *iovad, dma_addr_t iova)
+>> +{
+>> +	return iova & iova_mask(iovad);
+>> +}
+>> +
+>> +static inline size_t iova_align(struct iova_domain *iovad, size_t size)
+>> +{
+>> +	return ALIGN(size, iovad->granule);
+>> +}
+>> +
+>> +static inline dma_addr_t iova_dma_addr(struct iova_domain *iovad, struct iova *iova)
+>> +{
+>> +	return (dma_addr_t)iova->pfn_lo << iova_shift(iovad);
+>> +}
+>> +
+>> +static inline unsigned long iova_pfn(struct iova_domain *iovad, dma_addr_t iova)
+>> +{
+>> +	return iova >> iova_shift(iovad);
+>> +}
+>> +
+>>   int iommu_iova_cache_init(void);
+>>   void iommu_iova_cache_destroy(void);
+>>
+>> @@ -50,8 +81,8 @@ struct iova *alloc_iova(struct iova_domain *iovad, unsigned long size,
+>>   struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
+>>   	unsigned long pfn_hi);
+>>   void copy_reserved_iova(struct iova_domain *from, struct iova_domain *to);
+>> -void init_iova_domain(struct iova_domain *iovad, unsigned long start_pfn,
+>> -	unsigned long pfn_32bit);
+>> +void init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+>> +	unsigned long start_pfn, unsigned long pfn_32bit);
+>>   struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
+>>   void put_iova_domain(struct iova_domain *iovad);
+>>   struct iova *split_and_remove_iova(struct iova_domain *iovad,
 >>
 >
 >
