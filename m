@@ -1,7 +1,7 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH] iommu: Decouple iommu_map_sg from CPU page size
-Date: Tue, 25 Nov 2014 17:50:55 +0000
-Message-ID: <2d38d270a532b52f73a720572f8f085dfa08321e.1416936761.git.robin.murphy@arm.com>
+From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH] iommu/vt-d: Fix an off-by-one bug in __domain_mapping()
+Date: Wed, 26 Nov 2014 09:42:10 +0800
+Message-ID: <1416966130-866-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -15,65 +15,60 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-If the IOMMU supports pages smaller than the CPU page size, segments
-which lie at offsets within the CPU page may be mapped based on the
-finer-grained IOMMU page boundaries. This minimises the amount of
-non-buffer memory between the CPU page boundary and the start of the
-segment which must be mapped and therefore exposed to the device, and
-brings the default iommu_map_sg implementation in line with
-iommu_map/unmap with respect to alignment.
+There's an off-by-one bug in function __domain_mapping(), which may
+trigger the BUG_ON(nr_pages < lvl_pages) when
+	(nr_pages + 1) & superpage_mask == 0
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+The issue was introduced by commit 9051aa0268dc "intel-iommu: Combine
+domain_pfn_mapping() and domain_sg_mapping()", which sets sg_res to
+"nr_pages + 1" to avoid some of the 'sg_res==0' code paths.
+
+It's safe to remove extra "+1" because sg_res is only used to calculate
+page size now.
+
+Reported-And-Tested-by: Sudeep Dutt <sudeep.dutt-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org> # 3.1
 ---
+Hi David and Joerg,
+	This issue was introduced in v2.6.31, but intel-iommu.c has
+been moved into drivers/iommu in v3.1. So what's the preferred way
+to deal with stable kernels between v2.6.31 and v3.1?
+Thanks!
+Gerry
+---
+ drivers/iommu/intel-iommu.c |    8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-Hi Joerg,
-
-I noticed this whilst wiring up DMA mapping to this new API - on arm64
-we anticipate running 4k IOMMU pages with 64k CPU pages, in which case
-the alignment check ends up being unnecessarily strict.
-
-Regards,
-Robin.
-
- drivers/iommu/iommu.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 08c53c5..5c4101a 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1129,14 +1129,24 @@ size_t default_iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index a27d6cb1a793..b26ad10ec697 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1983,7 +1983,7 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
  {
- 	struct scatterlist *s;
- 	size_t mapped = 0;
--	unsigned int i;
-+	unsigned int i, min_pagesz;
- 	int ret;
+ 	struct dma_pte *first_pte = NULL, *pte = NULL;
+ 	phys_addr_t uninitialized_var(pteval);
+-	unsigned long sg_res;
++	unsigned long sg_res = 0;
+ 	unsigned int largepage_lvl = 0;
+ 	unsigned long lvl_pages = 0;
  
-+	if (unlikely(domain->ops->pgsize_bitmap == 0UL))
-+		return 0;
-+
-+	min_pagesz = 1 << __ffs(domain->ops->pgsize_bitmap);
-+
- 	for_each_sg(sg, s, nents, i) {
--		phys_addr_t phys = page_to_phys(sg_page(s));
-+		phys_addr_t phys = page_to_phys(sg_page(s)) + s->offset;
+@@ -1994,10 +1994,8 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
  
--		/* We are mapping on page boundarys, so offset must be 0 */
--		if (s->offset)
-+		/*
-+		 * We are mapping on IOMMU page boundaries, so offset within
-+		 * the page must be 0. However, the IOMMU may support pages
-+		 * smaller than PAGE_SIZE, so s->offset may still represent
-+		 * an offset of that boundary within the CPU page.
-+		 */
-+		if (!IS_ALIGNED(s->offset, min_pagesz))
- 			goto out_err;
+ 	prot &= DMA_PTE_READ | DMA_PTE_WRITE | DMA_PTE_SNP;
  
- 		ret = iommu_map(domain, iova + mapped, phys, s->length, prot);
+-	if (sg)
+-		sg_res = 0;
+-	else {
+-		sg_res = nr_pages + 1;
++	if (!sg) {
++		sg_res = nr_pages;
+ 		pteval = ((phys_addr_t)phys_pfn << VTD_PAGE_SHIFT) | prot;
+ 	}
+ 
 -- 
-1.9.1
+1.7.10.4
