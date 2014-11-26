@@ -1,74 +1,327 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH] iommu/vt-d: Fix an off-by-one bug in __domain_mapping()
-Date: Wed, 26 Nov 2014 09:42:10 +0800
-Message-ID: <1416966130-866-1-git-send-email-jiang.liu@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Jiang Liu <jiang.liu@linux.intel.com>
+Subject: [Patch Part3 v4] x86, PCI, MSI: Use hierarchy irqdomain to manage MSI interrupts
+Date: Wed, 26 Nov 2014 10:22:23 +0800
+Message-ID: <1416968570-5826-1-git-send-email-jiang.liu@linux.intel.com>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Randy Dunlap <rdunlap@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Borislav Petkov <bp@alien8.de>, x86@kernel.org, Joerg Roedel <joro@8bytes.org>, Jiang Liu <jiang.liu@linux.intel.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Andrew Morton <akpm@linux-foundation.org>, Tony Luck <tony.luck@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-There's an off-by-one bug in function __domain_mapping(), which may
-trigger the BUG_ON(nr_pages < lvl_pages) when
-	(nr_pages + 1) & superpage_mask == 0
+Enhance MSI code to support hierarchy irqdomain, it helps to make
+the architecture more clear.
 
-The issue was introduced by commit 9051aa0268dc "intel-iommu: Combine
-domain_pfn_mapping() and domain_sg_mapping()", which sets sg_res to
-"nr_pages + 1" to avoid some of the 'sg_res==0' code paths.
-
-It's safe to remove extra "+1" because sg_res is only used to calculate
-page size now.
-
-Reported-And-Tested-by: Sudeep Dutt <sudeep.dutt-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org> # 3.1
+Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
 ---
-Hi David and Joerg,
-	This issue was introduced in v2.6.31, but intel-iommu.c has
-been moved into drivers/iommu in v3.1. So what's the preferred way
-to deal with stable kernels between v2.6.31 and v3.1?
-Thanks!
+Hi Thomas,
+	Sorry, my branch hasn't been updated to the latest tip/x86/apic
+branch. With this patch rebased, all following patches should apply
+cleanly without conflicts.
+Regards!
 Gerry
 ---
- drivers/iommu/intel-iommu.c |    8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ arch/x86/Kconfig                     |    1 +
+ arch/x86/include/asm/hw_irq.h        |    9 ++-
+ arch/x86/include/asm/irq_remapping.h |    6 +-
+ arch/x86/include/asm/msi.h           |    7 ++
+ arch/x86/kernel/apic/msi.c           |  141 ++++++++++++++++++----------------
+ arch/x86/kernel/apic/vector.c        |    2 +
+ drivers/iommu/irq_remapping.c        |    1 -
+ 7 files changed, 94 insertions(+), 73 deletions(-)
+ create mode 100644 arch/x86/include/asm/msi.h
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index a27d6cb1a793..b26ad10ec697 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1983,7 +1983,7 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 14385ebfd560..e05be74d713d 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -883,6 +883,7 @@ config X86_LOCAL_APIC
+ 	depends on X86_64 || SMP || X86_32_NON_STANDARD || X86_UP_APIC || PCI_MSI
+ 	select GENERIC_IRQ_LEGACY_ALLOC_HWIRQ
+ 	select IRQ_DOMAIN_HIERARCHY
++	select PCI_MSI_IRQ_DOMAIN if PCI_MSI
+ 
+ config X86_IO_APIC
+ 	def_bool X86_64 || SMP || X86_32_NON_STANDARD || X86_UP_IOAPIC
+diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
+index bd7881c5a57a..270c432971f8 100644
+--- a/arch/x86/include/asm/hw_irq.h
++++ b/arch/x86/include/asm/hw_irq.h
+@@ -110,9 +110,10 @@ struct irq_2_irte {
+ };
+ #endif	/* CONFIG_IRQ_REMAP */
+ 
++struct irq_domain;
++
+ #ifdef	CONFIG_X86_LOCAL_APIC
+ struct irq_data;
+-struct irq_domain;
+ struct pci_dev;
+ struct msi_desc;
+ 
+@@ -214,6 +215,12 @@ static inline void lock_vector_lock(void) {}
+ static inline void unlock_vector_lock(void) {}
+ #endif	/* CONFIG_X86_LOCAL_APIC */
+ 
++#ifdef	CONFIG_PCI_MSI
++extern void arch_init_msi_domain(struct irq_domain *domain);
++#else
++static inline void arch_init_msi_domain(struct irq_domain *domain) { }
++#endif
++
+ /* Statistics */
+ extern atomic_t irq_err_count;
+ extern atomic_t irq_mis_count;
+diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
+index 3421f10456d8..3b11f5a3e092 100644
+--- a/arch/x86/include/asm/irq_remapping.h
++++ b/arch/x86/include/asm/irq_remapping.h
+@@ -68,11 +68,7 @@ irq_remapping_get_irq_domain(struct irq_alloc_info *info);
+ extern void irq_remapping_print_chip(struct irq_data *data, struct seq_file *p);
+ 
+ /* Create PCI MSI/MSIx irqdomain, use @parent as the parent irqdomain. */
+-static inline struct irq_domain *
+-arch_create_msi_irq_domain(struct irq_domain *parent)
+-{
+-	return NULL;
+-}
++extern struct irq_domain *arch_create_msi_irq_domain(struct irq_domain *parent);
+ 
+ /* Get parent irqdomain for interrupt remapping irqdomain */
+ static inline struct irq_domain *arch_get_ir_parent_domain(void)
+diff --git a/arch/x86/include/asm/msi.h b/arch/x86/include/asm/msi.h
+new file mode 100644
+index 000000000000..93724cc62177
+--- /dev/null
++++ b/arch/x86/include/asm/msi.h
+@@ -0,0 +1,7 @@
++#ifndef _ASM_X86_MSI_H
++#define _ASM_X86_MSI_H
++#include <asm/hw_irq.h>
++
++typedef struct irq_alloc_info msi_alloc_info_t;
++
++#endif /* _ASM_X86_MSI_H */
+diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
+index 10d9ae8f2166..e82ab7973477 100644
+--- a/arch/x86/kernel/apic/msi.c
++++ b/arch/x86/kernel/apic/msi.c
+@@ -3,6 +3,8 @@
+  *
+  * Copyright (C) 1997, 1998, 1999, 2000, 2009 Ingo Molnar, Hajnalka Szabo
+  *	Moved from arch/x86/kernel/apic/io_apic.c.
++ * Jiang Liu <jiang.liu@linux.intel.com>
++ *	Convert to hierarchy irqdomain
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License version 2 as
+@@ -21,6 +23,8 @@
+ #include <asm/apic.h>
+ #include <asm/irq_remapping.h>
+ 
++static struct irq_domain *msi_default_domain;
++
+ void native_compose_msi_msg(struct pci_dev *pdev,
+ 			    unsigned int irq, unsigned int dest,
+ 			    struct msi_msg *msg, u8 hpet_id)
+@@ -114,102 +118,107 @@ static int msi_compose_msg(struct pci_dev *pdev, unsigned int irq,
+ 	return 0;
+ }
+ 
+-static int
+-msi_set_affinity(struct irq_data *data, const struct cpumask *mask, bool force)
+-{
+-	struct irq_cfg *cfg = irqd_cfg(data);
+-	struct msi_msg msg;
+-	unsigned int dest;
+-	int ret;
+-
+-	ret = apic_set_affinity(data, mask, &dest);
+-	if (ret)
+-		return ret;
+-
+-	__get_cached_msi_msg(data->msi_desc, &msg);
+-
+-	msg.data &= ~MSI_DATA_VECTOR_MASK;
+-	msg.data |= MSI_DATA_VECTOR(cfg->vector);
+-	msg.address_lo &= ~MSI_ADDR_DEST_ID_MASK;
+-	msg.address_lo |= MSI_ADDR_DEST_ID(dest);
+-
+-	__pci_write_msi_msg(data->msi_desc, &msg);
+-
+-	return IRQ_SET_MASK_OK_NOCOPY;
+-}
+-
+ /*
+  * IRQ Chip for MSI PCI/PCI-X/PCI-Express Devices,
+  * which implement the MSI or MSI-X Capability Structure.
+  */
+-static struct irq_chip msi_chip = {
++static struct irq_chip pci_msi_controller = {
+ 	.name			= "PCI-MSI",
+ 	.irq_unmask		= pci_msi_unmask_irq,
+ 	.irq_mask		= pci_msi_mask_irq,
+-	.irq_ack		= apic_ack_edge,
+-	.irq_set_affinity	= msi_set_affinity,
+-	.irq_retrigger		= apic_retrigger_irq,
++	.irq_ack		= irq_chip_ack_parent,
++	.irq_set_affinity	= msi_domain_set_affinity,
++	.irq_retrigger		= irq_chip_retrigger_hierarchy,
++	.irq_print_chip		= irq_remapping_print_chip,
++	.irq_compose_msi_msg	= irq_msi_compose_msg,
++	.irq_write_msi_msg	= pci_msi_domain_write_msg,
+ 	.flags			= IRQCHIP_SKIP_SET_WAKE,
+ };
+ 
+-int setup_msi_irq(struct pci_dev *dev, struct msi_desc *msidesc,
+-		  unsigned int irq_base, unsigned int irq_offset)
++int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
  {
- 	struct dma_pte *first_pte = NULL, *pte = NULL;
- 	phys_addr_t uninitialized_var(pteval);
--	unsigned long sg_res;
-+	unsigned long sg_res = 0;
- 	unsigned int largepage_lvl = 0;
- 	unsigned long lvl_pages = 0;
+-	struct irq_chip *chip = &msi_chip;
+-	struct msi_msg msg;
+-	unsigned int irq = irq_base + irq_offset;
+-	int ret;
++	struct irq_domain *domain;
++	struct irq_alloc_info info;
  
-@@ -1994,10 +1994,8 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+-	ret = msi_compose_msg(dev, irq, &msg, -1);
+-	if (ret < 0)
+-		return ret;
++	init_irq_alloc_info(&info, NULL);
++	info.type = X86_IRQ_ALLOC_TYPE_MSI;
++	info.msi_dev = dev;
  
- 	prot &= DMA_PTE_READ | DMA_PTE_WRITE | DMA_PTE_SNP;
+-	irq_set_msi_desc_off(irq_base, irq_offset, msidesc);
++	domain = irq_remapping_get_irq_domain(&info);
++	if (domain == NULL)
++		domain = msi_default_domain;
++	if (domain == NULL)
++		return -ENOSYS;
  
--	if (sg)
--		sg_res = 0;
--	else {
--		sg_res = nr_pages + 1;
-+	if (!sg) {
-+		sg_res = nr_pages;
- 		pteval = ((phys_addr_t)phys_pfn << VTD_PAGE_SHIFT) | prot;
- 	}
+-	/*
+-	 * MSI-X message is written per-IRQ, the offset is always 0.
+-	 * MSI message denotes a contiguous group of IRQs, written for 0th IRQ.
+-	 */
+-	if (!irq_offset)
+-		pci_write_msi_msg(irq, &msg);
++	return pci_msi_domain_alloc_irqs(domain, dev, nvec, type);
++}
  
+-	setup_remapped_irq(irq, irq_cfg(irq), chip);
++void native_teardown_msi_irq(unsigned int irq)
++{
++	irq_domain_free_irqs(irq, 1);
++}
+ 
+-	irq_set_chip_and_handler_name(irq, chip, handle_edge_irq, "edge");
++static irq_hw_number_t pci_msi_get_hwirq(struct msi_domain_info *info,
++					 msi_alloc_info_t *arg)
++{
++	return arg->msi_hwirq;
++}
+ 
+-	dev_dbg(&dev->dev, "irq %d for MSI/MSI-X\n", irq);
++static int pci_msi_prepare(struct irq_domain *domain, struct device *dev,
++			   int nvec, msi_alloc_info_t *arg)
++{
++	struct pci_dev *pdev = to_pci_dev(dev);
++	struct msi_desc *desc = first_pci_msi_entry(pdev);
++
++	init_irq_alloc_info(arg, NULL);
++	arg->msi_dev = pdev;
++	if (desc->msi_attrib.is_msix) {
++		arg->type = X86_IRQ_ALLOC_TYPE_MSIX;
++	} else {
++		arg->type = X86_IRQ_ALLOC_TYPE_MSI;
++		arg->flags |= X86_IRQ_ALLOC_CONTIGOUS_VECTORS;
++	}
+ 
+ 	return 0;
+ }
+ 
+-int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
++static void pci_msi_set_desc(msi_alloc_info_t *arg, struct msi_desc *desc)
+ {
+-	struct msi_desc *msidesc;
+-	int irq, ret;
++	arg->msi_hwirq = pci_msi_domain_calc_hwirq(arg->msi_dev, desc);
++}
+ 
+-	/* Multiple MSI vectors only supported with interrupt remapping */
+-	if (type == PCI_CAP_ID_MSI && nvec > 1)
+-		return 1;
++static struct msi_domain_ops pci_msi_domain_ops = {
++	.get_hwirq	= pci_msi_get_hwirq,
++	.msi_prepare	= pci_msi_prepare,
++	.set_desc	= pci_msi_set_desc,
++};
+ 
+-	list_for_each_entry(msidesc, &dev->msi_list, list) {
+-		irq = irq_domain_alloc_irqs(NULL, 1, NUMA_NO_NODE, NULL);
+-		if (irq <= 0)
+-			return -ENOSPC;
++static struct msi_domain_info pci_msi_domain_info = {
++	.flags		= MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS |
++			  MSI_FLAG_MULTI_PCI_MSI | MSI_FLAG_PCI_MSIX,
++	.ops		= &pci_msi_domain_ops,
++	.chip		= &pci_msi_controller,
++	.handler	= handle_edge_irq,
++	.handler_name	= "edge",
++};
+ 
+-		ret = setup_msi_irq(dev, msidesc, irq, 0);
+-		if (ret < 0) {
+-			irq_domain_free_irqs(irq, 1);
+-			return ret;
+-		}
++void arch_init_msi_domain(struct irq_domain *parent)
++{
++	if (disable_apic)
++		return;
+ 
+-	}
+-	return 0;
++	msi_default_domain = pci_msi_create_irq_domain(NULL,
++					&pci_msi_domain_info, parent);
++	if (!msi_default_domain)
++		pr_warn("failed to initialize irqdomain for MSI/MSI-x.\n");
+ }
+ 
+-void native_teardown_msi_irq(unsigned int irq)
++#ifdef CONFIG_IRQ_REMAP
++struct irq_domain *arch_create_msi_irq_domain(struct irq_domain *parent)
+ {
+-	irq_domain_free_irqs(irq, 1);
++	return msi_create_irq_domain(NULL, &pci_msi_domain_info, parent);
+ }
++#endif
+ 
+ #ifdef CONFIG_DMAR_TABLE
+ static int
+diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
+index f8340c72546f..e971c87f7858 100644
+--- a/arch/x86/kernel/apic/vector.c
++++ b/arch/x86/kernel/apic/vector.c
+@@ -364,6 +364,8 @@ int __init arch_early_irq_init(void)
+ 	BUG_ON(x86_vector_domain == NULL);
+ 	irq_set_default_host(x86_vector_domain);
+ 
++	arch_init_msi_domain(x86_vector_domain);
++
+ 	return arch_early_ioapic_init();
+ }
+ 
+diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+index 04ea5212cc28..6ec0099a16d1 100644
+--- a/drivers/iommu/irq_remapping.c
++++ b/drivers/iommu/irq_remapping.c
+@@ -171,7 +171,6 @@ static void __init irq_remapping_modify_x86_ops(void)
+ 	x86_io_apic_ops.set_affinity	= set_remapped_irq_affinity;
+ 	x86_io_apic_ops.setup_entry	= setup_ioapic_remapped_entry;
+ 	x86_io_apic_ops.eoi_ioapic_pin	= eoi_ioapic_pin_remapped;
+-	x86_msi.setup_msi_irqs		= irq_remapping_setup_msi_irqs;
+ 	x86_msi.setup_hpet_msi		= setup_hpet_msi_remapped;
+ 	x86_msi.compose_msi_msg		= compose_remapped_msi_msg;
+ }
 -- 
 1.7.10.4
+
