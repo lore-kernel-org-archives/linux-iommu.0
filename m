@@ -1,7 +1,7 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCH v3 1/6] vfio: implement iommu driver capabilities with an enum
-Date: Thu, 27 Nov 2014 18:22:51 +0100
-Message-ID: <1417108976-10113-2-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [PATCH v3 2/6] vfio: type1: support for ARM SMMUs
+Date: Thu, 27 Nov 2014 18:22:52 +0100
+Message-ID: <1417108976-10113-3-git-send-email-a.motakis@virtualopensystems.com>
 References: <1417108976-10113-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,54 +18,30 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, "open list:ABI/API" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Currently a VFIO driver's IOMMU capabilities are encoded as a series of
-numerical defines. Replace this with an enum for future maintainability.
+This allows to make use of the VFIO_IOMMU_TYPE1 driver with devices
+behind an IOMMU on ARM platforms. The driver can then be used with
+an Exynos SMMU, or ARM SMMU driver.
 
 Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 ---
- include/uapi/linux/vfio.h | 24 +++++++++++-------------
- 1 file changed, 11 insertions(+), 13 deletions(-)
+ drivers/vfio/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-index 29715d2..59d516f 100644
---- a/include/uapi/linux/vfio.h
-+++ b/include/uapi/linux/vfio.h
-@@ -19,22 +19,20 @@
- 
- /* Kernel & User level defines for VFIO IOCTLs. */
- 
--/* Extensions */
--
--#define VFIO_TYPE1_IOMMU		1
--#define VFIO_SPAPR_TCE_IOMMU		2
--#define VFIO_TYPE1v2_IOMMU		3
- /*
-- * IOMMU enforces DMA cache coherence (ex. PCIe NoSnoop stripping).  This
-- * capability is subject to change as groups are added or removed.
-+ * Capabilities exposed by the VFIO IOMMU driver. Some capabilities are subject
-+ * to change as groups are added or removed.
-  */
--#define VFIO_DMA_CC_IOMMU		4
--
--/* Check if EEH is supported */
--#define VFIO_EEH			5
-+enum vfio_iommu_cap {
-+	VFIO_TYPE1_IOMMU = 1,
-+	VFIO_SPAPR_TCE_IOMMU = 2,
-+	VFIO_TYPE1v2_IOMMU = 3,
-+	VFIO_DMA_CC_IOMMU = 4,		/* IOMMU enforces DMA cache coherence
-+					   (ex. PCIe NoSnoop stripping) */
-+	VFIO_EEH = 5,			/* Check if EEH is supported */
-+	VFIO_TYPE1_NESTING_IOMMU = 6,	/* Two-stage IOMMU, implies v2  */
-+};
- 
--/* Two-stage IOMMU */
--#define VFIO_TYPE1_NESTING_IOMMU	6	/* Implies v2 */
- 
- /*
-  * The IOCTL interface is designed for extensibility by embedding the
+diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+index d8c5763..a0abe04 100644
+--- a/drivers/vfio/Kconfig
++++ b/drivers/vfio/Kconfig
+@@ -16,7 +16,7 @@ config VFIO_SPAPR_EEH
+ menuconfig VFIO
+ 	tristate "VFIO Non-Privileged userspace driver framework"
+ 	depends on IOMMU_API
+-	select VFIO_IOMMU_TYPE1 if X86
++	select VFIO_IOMMU_TYPE1 if X86 || ARM
+ 	select VFIO_IOMMU_SPAPR_TCE if (PPC_POWERNV || PPC_PSERIES)
+ 	select VFIO_SPAPR_EEH if (PPC_POWERNV || PPC_PSERIES)
+ 	select ANON_INODES
 -- 
 2.1.3
