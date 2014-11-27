@@ -1,7 +1,8 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCH v10 12/20] vfio/platform: trigger an interrupt via eventfd
-Date: Thu, 27 Nov 2014 18:32:52 +0100
-Message-ID: <1417109580-10505-13-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [PATCH v10 13/20] vfio/platform: support for level sensitive
+	interrupts
+Date: Thu, 27 Nov 2014 18:32:53 +0100
+Message-ID: <1417109580-10505-14-git-send-email-a.motakis@virtualopensystems.com>
 References: <1417109580-10505-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,151 +22,168 @@ To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9Q
 Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch allows to set an eventfd for a platform device's interrupt,
-and also to trigger the interrupt eventfd from userspace for testing.
-Level sensitive interrupts are marked as maskable and are handled in
-a later patch. Edge triggered interrupts are not advertised as maskable
-and are implemented here using a simple and efficient IRQ handler.
+Level sensitive interrupts are exposed as maskable and automasked
+interrupts and are masked and disabled automatically when they fire.
 
 Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 ---
- drivers/vfio/platform/vfio_platform_irq.c     | 93 ++++++++++++++++++++++++++-
+ drivers/vfio/platform/vfio_platform_irq.c     | 99 ++++++++++++++++++++++++++-
  drivers/vfio/platform/vfio_platform_private.h |  2 +
- 2 files changed, 93 insertions(+), 2 deletions(-)
+ 2 files changed, 98 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/vfio/platform/vfio_platform_irq.c b/drivers/vfio/platform/vfio_platform_irq.c
-index df5c919..414b4c5 100644
+index 414b4c5..1765b6c 100644
 --- a/drivers/vfio/platform/vfio_platform_irq.c
 +++ b/drivers/vfio/platform/vfio_platform_irq.c
-@@ -39,12 +39,91 @@ static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
- 	return -EINVAL;
- }
+@@ -23,12 +23,59 @@
  
-+static irqreturn_t vfio_irq_handler(int irq, void *dev_id)
+ #include "vfio_platform_private.h"
+ 
++static void vfio_platform_mask(struct vfio_platform_irq *irq_ctx)
 +{
-+	struct vfio_platform_irq *irq_ctx = dev_id;
++	unsigned long flags;
 +
-+	eventfd_signal(irq_ctx->trigger, 1);
++	spin_lock_irqsave(&irq_ctx->lock, flags);
 +
-+	return IRQ_HANDLED;
++	if (!irq_ctx->masked) {
++		disable_irq(irq_ctx->hwirq);
++		irq_ctx->masked = true;
++	}
++
++	spin_unlock_irqrestore(&irq_ctx->lock, flags);
 +}
 +
-+static int vfio_set_trigger(struct vfio_platform_device *vdev, int index,
-+			    int fd, irq_handler_t handler)
-+{
-+	struct vfio_platform_irq *irq = &vdev->irqs[index];
-+	struct eventfd_ctx *trigger;
-+	int ret;
-+
-+	if (irq->trigger) {
-+		free_irq(irq->hwirq, irq);
-+		kfree(irq->name);
-+		eventfd_ctx_put(irq->trigger);
-+		irq->trigger = NULL;
-+	}
-+
-+	if (fd < 0) /* Disable only */
-+		return 0;
-+
-+	irq->name = kasprintf(GFP_KERNEL, "vfio-irq[%d](%s)",
-+						irq->hwirq, vdev->name);
-+	if (!irq->name)
-+		return -ENOMEM;
-+
-+	trigger = eventfd_ctx_fdget(fd);
-+	if (IS_ERR(trigger)) {
-+		kfree(irq->name);
-+		return PTR_ERR(trigger);
-+	}
-+
-+	irq->trigger = trigger;
-+
-+	ret = request_irq(irq->hwirq, handler, 0, irq->name, irq);
-+	if (ret) {
-+		kfree(irq->name);
-+		eventfd_ctx_put(trigger);
-+		irq->trigger = NULL;
-+	}
-+
-+	return ret;
-+}
-+
- static int vfio_platform_set_irq_trigger(struct vfio_platform_device *vdev,
- 					 unsigned index, unsigned start,
- 					 unsigned count, uint32_t flags,
- 					 void *data)
+ static int vfio_platform_set_irq_mask(struct vfio_platform_device *vdev,
+ 				      unsigned index, unsigned start,
+ 				      unsigned count, uint32_t flags,
+ 				      void *data)
  {
 -	return -EINVAL;
-+	struct vfio_platform_irq *irq = &vdev->irqs[index];
-+	irq_handler_t handler;
-+
-+	if (vdev->irqs[index].flags & VFIO_IRQ_INFO_AUTOMASKED)
-+		return -EINVAL; /* not implemented */
-+	else
-+		handler = vfio_irq_handler;
-+
-+	if (!count && (flags & VFIO_IRQ_SET_DATA_NONE))
-+		return vfio_set_trigger(vdev, index, -1, handler);
-+
 +	if (start != 0 || count != 1)
 +		return -EINVAL;
 +
-+	if (flags & VFIO_IRQ_SET_DATA_EVENTFD) {
-+		int32_t fd = *(int32_t *)data;
++	if (!(vdev->irqs[index].flags & VFIO_IRQ_INFO_MASKABLE))
++		return -EINVAL;
 +
-+		return vfio_set_trigger(vdev, index, fd, handler);
-+	}
++	if (flags & VFIO_IRQ_SET_DATA_EVENTFD)
++		return -EINVAL; /* not implemented yet */
 +
 +	if (flags & VFIO_IRQ_SET_DATA_NONE) {
-+		handler(irq->hwirq, irq);
++		vfio_platform_mask(&vdev->irqs[index]);
 +
 +	} else if (flags & VFIO_IRQ_SET_DATA_BOOL) {
-+		uint8_t trigger = *(uint8_t *)data;
++		uint8_t mask = *(uint8_t *)data;
 +
-+		if (trigger)
-+			handler(irq->hwirq, irq);
++		if (mask)
++			vfio_platform_mask(&vdev->irqs[index]);
 +	}
 +
 +	return 0;
++}
++
++static void vfio_platform_unmask(struct vfio_platform_irq *irq_ctx)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&irq_ctx->lock, flags);
++
++	if (irq_ctx->masked) {
++		enable_irq(irq_ctx->hwirq);
++		irq_ctx->masked = false;
++	}
++
++	spin_unlock_irqrestore(&irq_ctx->lock, flags);
  }
  
- int vfio_platform_set_irqs_ioctl(struct vfio_platform_device *vdev,
-@@ -90,7 +169,12 @@ int vfio_platform_irq_init(struct vfio_platform_device *vdev)
+ static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
+@@ -36,7 +83,50 @@ static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
+ 					unsigned count, uint32_t flags,
+ 					void *data)
+ {
+-	return -EINVAL;
++	if (start != 0 || count != 1)
++		return -EINVAL;
++
++	if (!(vdev->irqs[index].flags & VFIO_IRQ_INFO_MASKABLE))
++		return -EINVAL;
++
++	if (flags & VFIO_IRQ_SET_DATA_EVENTFD)
++		return -EINVAL; /* not implemented yet */
++
++	if (flags & VFIO_IRQ_SET_DATA_NONE) {
++		vfio_platform_unmask(&vdev->irqs[index]);
++
++	} else if (flags & VFIO_IRQ_SET_DATA_BOOL) {
++		uint8_t unmask = *(uint8_t *)data;
++
++		if (unmask)
++			vfio_platform_unmask(&vdev->irqs[index]);
++	}
++
++	return 0;
++}
++
++static irqreturn_t vfio_automasked_irq_handler(int irq, void *dev_id)
++{
++	struct vfio_platform_irq *irq_ctx = dev_id;
++	unsigned long flags;
++	int ret = IRQ_NONE;
++
++	spin_lock_irqsave(&irq_ctx->lock, flags);
++
++	if (!irq_ctx->masked) {
++		ret = IRQ_HANDLED;
++
++		/* automask maskable interrupts */
++		disable_irq_nosync(irq_ctx->hwirq);
++		irq_ctx->masked = true;
++	}
++
++	spin_unlock_irqrestore(&irq_ctx->lock, flags);
++
++	if (ret == IRQ_HANDLED)
++		eventfd_signal(irq_ctx->trigger, 1);
++
++	return ret;
+ }
+ 
+ static irqreturn_t vfio_irq_handler(int irq, void *dev_id)
+@@ -97,7 +187,7 @@ static int vfio_platform_set_irq_trigger(struct vfio_platform_device *vdev,
+ 	irq_handler_t handler;
+ 
+ 	if (vdev->irqs[index].flags & VFIO_IRQ_INFO_AUTOMASKED)
+-		return -EINVAL; /* not implemented */
++		handler = vfio_automasked_irq_handler;
+ 	else
+ 		handler = vfio_irq_handler;
+ 
+@@ -169,6 +259,8 @@ int vfio_platform_irq_init(struct vfio_platform_device *vdev)
  		if (hwirq < 0)
  			goto err;
  
--		vdev->irqs[i].flags = 0;
-+		vdev->irqs[i].flags = VFIO_IRQ_INFO_EVENTFD;
++		spin_lock_init(&vdev->irqs[i].lock);
 +
-+		if (irq_get_trigger_type(hwirq) & IRQ_TYPE_LEVEL_MASK)
-+			vdev->irqs[i].flags |= VFIO_IRQ_INFO_MASKABLE
-+						| VFIO_IRQ_INFO_AUTOMASKED;
-+
+ 		vdev->irqs[i].flags = VFIO_IRQ_INFO_EVENTFD;
+ 
+ 		if (irq_get_trigger_type(hwirq) & IRQ_TYPE_LEVEL_MASK)
+@@ -177,6 +269,7 @@ int vfio_platform_irq_init(struct vfio_platform_device *vdev)
+ 
  		vdev->irqs[i].count = 1;
  		vdev->irqs[i].hwirq = hwirq;
++		vdev->irqs[i].masked = false;
  	}
-@@ -105,6 +189,11 @@ err:
  
- void vfio_platform_irq_cleanup(struct vfio_platform_device *vdev)
- {
-+	int i;
-+
-+	for (i = 0; i < vdev->num_irqs; i++)
-+		vfio_set_trigger(vdev, i, -1, NULL);
-+
- 	vdev->num_irqs = 0;
- 	kfree(vdev->irqs);
- }
+ 	vdev->num_irqs = cnt;
 diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
-index 61f3ed4..b705f17 100644
+index b705f17..eef6d1b 100644
 --- a/drivers/vfio/platform/vfio_platform_private.h
 +++ b/drivers/vfio/platform/vfio_platform_private.h
-@@ -28,6 +28,8 @@ struct vfio_platform_irq {
- 	u32			flags;
- 	u32			count;
+@@ -30,6 +30,8 @@ struct vfio_platform_irq {
  	int			hwirq;
-+	char			*name;
-+	struct eventfd_ctx	*trigger;
+ 	char			*name;
+ 	struct eventfd_ctx	*trigger;
++	bool			masked;
++	spinlock_t		lock;
  };
  
  struct vfio_platform_region {
