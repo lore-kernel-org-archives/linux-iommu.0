@@ -1,13 +1,12 @@
-From: Sakari Ailus <sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [RFC PATCH 0/4] Genericise the IOVA allocator
-Date: Thu, 27 Nov 2014 14:43:00 +0200
-Message-ID: <54771C54.5080100@linux.intel.com>
-References: <cover.1416931258.git.robin.murphy@arm.com>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: [PATCH v3 0/6] vfio: type1: support for ARM SMMUS with
+	VFIO_IOMMU_TYPE1
+Date: Thu, 27 Nov 2014 18:22:50 +0100
+Message-ID: <1417108976-10113-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1416931258.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,43 +16,39 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+This patch series makes the VFIO_IOMMU_TYPE1 driver buildable on ARM, so it
+may be used with ARM SMMUs. It also adds support for the IOMMU_NOEXEC flag
+supported by SMMUs adhering to the ARM SMMU specification so the VFIO user can
+specify whether the target memory can be executed by the device behind the
+SMMU.
 
-Robin Murphy wrote:
-> Hi all,
->
-> I've been implementing IOMMU DMA mapping for arm64, based on tidied-up
-> parts of the existing arch/arm/mm/dma-mapping.c with a clear divide
-> between the arch-specific parts and the general DMA-API to IOMMU-API layer
-> so that that can be shared; similar to what Ritesh started before and was
-> unable to complete[1], but working in the other direction.
->
-> The first part of that tidy-up involved ripping out the homebrewed IOVA
-> allocator and plumbing in iova.c, necessitating the changes presented here.
-> The rest is currently sat under arch/arm64 for the sake of getting it
-> working quickly with minimal impact - ideally I'd move it out and port
-> arch/arm before merging, but I don't know quite how impatient people are.
-> Regardless of that decision, this bit stands alone, so here it is.
->
-> Feel free to ignore patches 1 and 2, since I see Sakari has recently
-> posted a more thorough series for that[2], that frankly looks nicer ;)
-> I've merely left them in as context here.
+This applies on top of the branch 'next' by Joerg Roedel available at
+git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
 
-Thank you. Could you review the set, please? I've gotten no comments on 
-it so far.
+Changes from v2:
+ - Rebased on latest iommu/next branch by Joerg Roedel
+Changes from v1:
+ - Bugfixes and corrected some typos
+ - Use enum for VFIO IOMMU driver capabilities
 
-You probably wouldn't need the 4th patch, and probably this isn't the 
-right list to get that forward anyway.
+Antonios Motakis (6):
+  vfio: implement iommu driver capabilities with an enum
+  vfio: type1: support for ARM SMMUs
+  vfio: introduce the VFIO_DMA_MAP_FLAG_NOEXEC flag
+  vfio: type1: replace domain wide protection flags with supported
+    capabilities
+  vfio: type1: replace vfio_domains_have_iommu_cache with generic
+    function
+  vfio: type1: implement the VFIO_DMA_MAP_FLAG_NOEXEC flag
 
-> [1]:http://thread.gmane.org/gmane.linux.ports.arm.kernel/331299
-> [2]:http://article.gmane.org/gmane.linux.kernel.iommu/7436
+ drivers/vfio/Kconfig            |  2 +-
+ drivers/vfio/vfio_iommu_type1.c | 85 ++++++++++++++++++++++++++++-------------
+ include/uapi/linux/vfio.h       | 30 ++++++++-------
+ 3 files changed, 77 insertions(+), 40 deletions(-)
 
 -- 
-Kind regards,
-
-Sakari Ailus
-sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+2.1.3
