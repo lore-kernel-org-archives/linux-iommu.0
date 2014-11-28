@@ -1,14 +1,13 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v5 1/8] iommu: provide early initialisation hook for IOMMU
-	drivers
-Date: Fri, 28 Nov 2014 13:29:39 +0000
-Message-ID: <1417181386-18142-2-git-send-email-will.deacon@arm.com>
-References: <1417181386-18142-1-git-send-email-will.deacon@arm.com>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v10 00/20] VFIO support for platform and ARM AMBA devices
+Date: Fri, 28 Nov 2014 19:05:23 +0100
+Message-ID: <5478B963.5050707@linaro.org>
+References: <1417109580-10505-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1417181386-18142-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1417109580-10505-1-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,160 +17,132 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-IOMMU drivers must be initialised before any of their upstream devices,
-otherwise the relevant iommu_ops won't be configured for the bus in
-question. To solve this, a number of IOMMU drivers use initcalls to
-initialise the driver before anything has a chance to be probed.
+Hi Antonios,
 
-Whilst this solves the immediate problem, it leaves the job of probing
-the IOMMU completely separate from the iommu_ops to configure the IOMMU,
-which are called on a per-bus basis and require the driver to figure out
-exactly which instance of the IOMMU is being requested. In particular,
-the add_device callback simply passes a struct device to the driver,
-which then has to parse firmware tables or probe buses to identify the
-relevant IOMMU instance.
+you can add Tested-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
-This patch takes the first step in addressing this problem by adding an
-early initialisation pass for IOMMU drivers, giving them the ability to
-store some per-instance data in their iommu_ops structure and store that
-in their of_node. This can later be used when parsing OF masters to
-identify the IOMMU instance in question.
+I added some patches related to IOMMU_CAP_NOEXEC cap to compile your 2
+series with v3.18-rc5, maybe due to the fact I did not use some
+iommu/vt-d stuff? See my 3.18-rc6-v10 on my kernel git branch.
 
-Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/of_iommu.c          | 17 +++++++++++++++++
- include/asm-generic/vmlinux.lds.h |  2 ++
- include/linux/iommu.h             |  2 ++
- include/linux/of_iommu.h          | 25 +++++++++++++++++++++++++
- 4 files changed, 46 insertions(+)
+Best Regards
 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index e550ccb7634e..89b903406968 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -22,6 +22,9 @@
- #include <linux/of.h>
- #include <linux/of_iommu.h>
- 
-+static const struct of_device_id __iommu_of_table_sentinel
-+	__used __section(__iommu_of_table_end);
-+
- /**
-  * of_get_dma_window - Parse *dma-window property and returns 0 if found.
-  *
-@@ -89,3 +92,17 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(of_get_dma_window);
-+
-+void __init of_iommu_init(void)
-+{
-+	struct device_node *np;
-+	const struct of_device_id *match, *matches = &__iommu_of_table;
-+
-+	for_each_matching_node_and_match(np, matches, &match) {
-+		const of_iommu_init_fn init_fn = match->data;
-+
-+		if (init_fn(np))
-+			pr_err("Failed to initialise IOMMU %s\n",
-+				of_node_full_name(np));
-+	}
-+}
-diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
-index aa70cbda327c..bee5d683074d 100644
---- a/include/asm-generic/vmlinux.lds.h
-+++ b/include/asm-generic/vmlinux.lds.h
-@@ -164,6 +164,7 @@
- #define CLKSRC_OF_TABLES()	OF_TABLE(CONFIG_CLKSRC_OF, clksrc)
- #define IRQCHIP_OF_MATCH_TABLE() OF_TABLE(CONFIG_IRQCHIP, irqchip)
- #define CLK_OF_TABLES()		OF_TABLE(CONFIG_COMMON_CLK, clk)
-+#define IOMMU_OF_TABLES()	OF_TABLE(CONFIG_OF_IOMMU, iommu)
- #define RESERVEDMEM_OF_TABLES()	OF_TABLE(CONFIG_OF_RESERVED_MEM, reservedmem)
- #define CPU_METHOD_OF_TABLES()	OF_TABLE(CONFIG_SMP, cpu_method)
- #define EARLYCON_OF_TABLES()	OF_TABLE(CONFIG_SERIAL_EARLYCON, earlycon)
-@@ -497,6 +498,7 @@
- 	CLK_OF_TABLES()							\
- 	RESERVEDMEM_OF_TABLES()						\
- 	CLKSRC_OF_TABLES()						\
-+	IOMMU_OF_TABLES()						\
- 	CPU_METHOD_OF_TABLES()						\
- 	KERNEL_DTB()							\
- 	IRQCHIP_OF_MATCH_TABLE()					\
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index e6a7c9ff72f2..7b83f9f8e11d 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -103,6 +103,7 @@ enum iommu_attr {
-  * @domain_get_attr: Query domain attributes
-  * @domain_set_attr: Change domain attributes
-  * @pgsize_bitmap: bitmap of supported page sizes
-+ * @priv: per-instance data private to the iommu driver
-  */
- struct iommu_ops {
- 	bool (*capable)(enum iommu_cap);
-@@ -133,6 +134,7 @@ struct iommu_ops {
- 	u32 (*domain_get_windows)(struct iommu_domain *domain);
- 
- 	unsigned long pgsize_bitmap;
-+	void *priv;
- };
- 
- #define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
-diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
-index 51a560f34bca..5762cdc8effe 100644
---- a/include/linux/of_iommu.h
-+++ b/include/linux/of_iommu.h
-@@ -1,12 +1,17 @@
- #ifndef __OF_IOMMU_H
- #define __OF_IOMMU_H
- 
-+#include <linux/iommu.h>
-+#include <linux/of.h>
-+
- #ifdef CONFIG_OF_IOMMU
- 
- extern int of_get_dma_window(struct device_node *dn, const char *prefix,
- 			     int index, unsigned long *busno, dma_addr_t *addr,
- 			     size_t *size);
- 
-+extern void of_iommu_init(void);
-+
- #else
- 
- static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
-@@ -16,6 +21,26 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
- 	return -EINVAL;
- }
- 
-+static inline void of_iommu_init(void) { }
-+
- #endif	/* CONFIG_OF_IOMMU */
- 
-+static inline void of_iommu_set_ops(struct device_node *np,
-+				    const struct iommu_ops *ops)
-+{
-+	np->data = (struct iommu_ops *)ops;
-+}
-+
-+static inline struct iommu_ops *of_iommu_get_ops(struct device_node *np)
-+{
-+	return np->data;
-+}
-+
-+extern struct of_device_id __iommu_of_table;
-+
-+typedef int (*of_iommu_init_fn)(struct device_node *);
-+
-+#define IOMMU_OF_DECLARE(name, compat, fn) \
-+	_OF_DECLARE(iommu, name, compat, fn, of_iommu_init_fn)
-+
- #endif /* __OF_IOMMU_H */
--- 
-2.1.1
+Eric
+
+On 11/27/2014 06:32 PM, Antonios Motakis wrote:
+> This patch series aims to implement VFIO support for platform devices that
+> reside behind an IOMMU. Examples of such devices are devices behind an ARM
+> SMMU, or behind a Samsung Exynos System MMU.
+> 
+> The API used is based on the existing VFIO API that is also used with PCI
+> devices. Only devices that include a basic set of IRQs and memory regions are
+> targeted; devices with complex relationships with other devices on a device
+> tree are not taken into account at this stage.
+> 
+> This patch series may be applied on the following series/patches:
+>  - [PATCH] driver core: amba: add device binding path 'driver_override'
+>  - [PATCH v3 0/6] vfio: type1: support for ARM SMMUS with VFIO_IOMMU_TYPE1
+> 
+> A copy can be cloned from the branch vfio-platform-v10 at:
+> git-9UaJU3cA/F/QT0dZR+AlfA@public.gmane.org:virtualopensystems/linux-kvm-arm.git
+> 
+> Changes since v9:
+>  - Reworked the splitting of the patches that decouple virqfd from PCI
+>  - Some styling issues and typos
+>  - Removed superfluous includes
+>  - AMBA devices are now named vfio-amba- suffixed by the AMBA device id
+>  - Several other cleanups and fixes
+> Changes since v8:
+>  - Separate irq handler for edge and level triggered interrupts
+>  - Mutex based lock for VFIO fd open/release
+>  - Fixed bug where the first region of a platform device wasn't exposed
+>  - Read only regions can be MMAPed only read only
+>  - Code cleanups
+> Changes since v7:
+>  - Some initial placeholder functionality for PIO resources
+>  - Cleaned up code for IRQ triggering, masking and unmasking
+>  - Some functionality has been removed from this series and posted separately:
+>    - VFIO_IOMMU_TYPE1 support for ARM SMMUs
+>    - IOMMU NOEXEC patches
+>    - driver_override functionality for AMBA devices
+>  - Several fixes
+> Changes since v6:
+>  - Integrated support for AMBA devices
+>  - Numerous cleanups and fixes
+> Changes since v5:
+>  - Full eventfd support for IRQ masking and unmasking.
+>  - Changed IOMMU_EXEC to IOMMU_NOEXEC, along with related flags in VFIO.
+>  - Other fixes based on reviewer comments.
+> Changes since v4:
+>  - Use static offsets for each region in the VFIO device fd
+>  - Include patch in the series for the ARM SMMU to expose IOMMU_EXEC
+>    availability via IOMMU_CAP_DMA_EXEC
+>  - Rebased on VFIO multi domain support:
+>    - IOMMU_EXEC is now available if at least one IOMMU in the container
+>      supports it
+>    - Expose IOMMU_EXEC if available via the capability VFIO_IOMMU_PROT_EXEC
+>  - Some bug fixes
+> Changes since v3:
+>  - Use Kim Phillips' driver_probe_device()
+> Changes since v2:
+>  - Fixed Read/Write and MMAP on device regions
+>  - Removed dependency on Device Tree
+>  - Interrupts support
+>  - Interrupt masking/unmasking
+>  - Automask level sensitive interrupts
+>  - Introduced VFIO_DMA_MAP_FLAG_EXEC
+>  - Code clean ups
+> 
+> Antonios Motakis (20):
+>   vfio/platform: initial skeleton of VFIO support for platform devices
+>   vfio: platform: probe to devices on the platform bus
+>   vfio: platform: add the VFIO PLATFORM module to Kconfig
+>   vfio: amba: VFIO support for AMBA devices
+>   vfio: amba: add the VFIO for AMBA devices module to Kconfig
+>   vfio/platform: return info for bound device
+>   vfio/platform: return info for device memory mapped IO regions
+>   vfio/platform: read and write support for the device fd
+>   vfio/platform: support MMAP of MMIO regions
+>   vfio/platform: return IRQ info
+>   vfio/platform: initial interrupts support code
+>   vfio/platform: trigger an interrupt via eventfd
+>   vfio/platform: support for level sensitive interrupts
+>   vfio: add a vfio_ prefix to virqfd_enable and virqfd_disable and
+>     export
+>   vfio: virqfd: rename vfio_pci_virqfd_init and vfio_pci_virqfd_exit
+>   vfio: add local lock for virqfd instead of depending on VFIO PCI
+>   vfio: pass an opaque pointer on virqfd initialization
+>   vfio: move eventfd support code for VFIO_PCI to a separate file
+>   vfio: initialize the virqfd workqueue in VFIO generic code
+>   vfio/platform: implement IRQ masking/unmasking via an eventfd
+> 
+>  drivers/vfio/Kconfig                          |   1 +
+>  drivers/vfio/Makefile                         |   5 +-
+>  drivers/vfio/pci/vfio_pci.c                   |   8 -
+>  drivers/vfio/pci/vfio_pci_intrs.c             | 238 +-----------
+>  drivers/vfio/pci/vfio_pci_private.h           |   3 -
+>  drivers/vfio/platform/Kconfig                 |  19 +
+>  drivers/vfio/platform/Makefile                |   8 +
+>  drivers/vfio/platform/vfio_amba.c             | 110 ++++++
+>  drivers/vfio/platform/vfio_platform.c         | 103 +++++
+>  drivers/vfio/platform/vfio_platform_common.c  | 520 ++++++++++++++++++++++++++
+>  drivers/vfio/platform/vfio_platform_irq.c     | 331 ++++++++++++++++
+>  drivers/vfio/platform/vfio_platform_private.h |  82 ++++
+>  drivers/vfio/vfio.c                           |   8 +
+>  drivers/vfio/virqfd.c                         | 213 +++++++++++
+>  include/linux/vfio.h                          |  27 ++
+>  include/uapi/linux/vfio.h                     |   2 +
+>  16 files changed, 1442 insertions(+), 236 deletions(-)
+>  create mode 100644 drivers/vfio/platform/Kconfig
+>  create mode 100644 drivers/vfio/platform/Makefile
+>  create mode 100644 drivers/vfio/platform/vfio_amba.c
+>  create mode 100644 drivers/vfio/platform/vfio_platform.c
+>  create mode 100644 drivers/vfio/platform/vfio_platform_common.c
+>  create mode 100644 drivers/vfio/platform/vfio_platform_irq.c
+>  create mode 100644 drivers/vfio/platform/vfio_platform_private.h
+>  create mode 100644 drivers/vfio/virqfd.c
+> 
