@@ -1,16 +1,14 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v5 0/8] Introduce automatic DMA configuration for IOMMU
-	masters
-Date: Mon, 1 Dec 2014 15:05:04 +0000
-Message-ID: <20141201150503.GG18466@arm.com>
-References: <1417181386-18142-1-git-send-email-will.deacon@arm.com>
-	<2496335.D95hVHbola@wuerfel>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: Fix an off-by-one bug in __domain_mapping()
+Date: Mon, 1 Dec 2014 17:27:40 +0100
+Message-ID: <20141201162740.GK3762@8bytes.org>
+References: <1416966130-866-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <2496335.D95hVHbola@wuerfel>
+In-Reply-To: <1416966130-866-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,64 +18,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Dec 01, 2014 at 01:52:57PM +0000, Arnd Bergmann wrote:
-> On Friday 28 November 2014 13:29:38 Will Deacon wrote:
-> > Here is v5 of the patches I've previously sent here:
-> > 
-> >   RFCv1: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-August/283023.html
-> >   RFCv2: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-September/283752.html
-> >   RFCv3: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-September/287031.html
-> >   RFCv4: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-November/302711.html
-> > 
-> > Changes since RFCv4 include:
-> > 
-> >   - Dropped the RFC tag, since has been used by a couple of people now
-> > 
-> >   - Dropped the DMA segment configuration from of_dma_configure, as there
-> >     appear to be assumptions about 64k segments elsewhere in the kernel
-> > 
-> >   - Added acks/tested-bys (thanks to everybody who reviewed the series)
-> > 
-> >   - A few small fixes for issues found by Marek
-> > 
-> > Arnd: Is this too late for 3.19? We could merge the first 6 patches
-> > with no issues, since there aren't any callers of of_iommu_init
-> > without patch 7 anyway.
-> > 
-> > Up to you.
+On Wed, Nov 26, 2014 at 09:42:10AM +0800, Jiang Liu wrote:
+> There's an off-by-one bug in function __domain_mapping(), which may
+> trigger the BUG_ON(nr_pages < lvl_pages) when
+> 	(nr_pages + 1) & superpage_mask == 0
+
+What is the superpage_mask?
+
+> The issue was introduced by commit 9051aa0268dc "intel-iommu: Combine
+> domain_pfn_mapping() and domain_sg_mapping()", which sets sg_res to
+> "nr_pages + 1" to avoid some of the 'sg_res==0' code paths.
 > 
-> I think this looks great overall. My only feedback is the exact same
-> comment that Joerg already made:
-> 
-> On Friday 28 November 2014 14:03:36 jroedel-l3A5Bk7waGM@public.gmane.org wrote:
-> > Hmm, I don't like the idea of storing private data in iommu_ops. But
-> > given that this is already an improvement we can build on later, here is
-> > my
-> > 
-> >         Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> > 
-> > To further improve this we should probably introduce a seperate
-> > iommu-descriptor data-structure later which then describes a single
-> > hardware iommu device.
-> 
-> so I second that and add my
-> 
-> Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+> It's safe to remove extra "+1" because sg_res is only used to calculate
+> page size now.
 
-Yup, I'll take a look at that as part of a separate series, since I really
-want to have different pgsize_bitmaps anyway.
+>From your description and the (hard to read) code in __domain_mapping I
+don't really understand the issue yet. Can you please elaborate on this
+issue can be triggered?
 
-> Now, who should merge this series? I think someone should put all eight
-> patches into linux-next now, and if something goes wrong with the last
-> two, then we skip them for 3.19.
+Is the BUG_ON the only issue and, if yes, can that be fixed by just
+changing the BUG_ON condition?
 
-I think it makes most sense to go via arm-soc, but we'd need rmk's ack
-on the last two patches.
+> 	This issue was introduced in v2.6.31, but intel-iommu.c has
+> been moved into drivers/iommu in v3.1. So what's the preferred way
+> to deal with stable kernels between v2.6.31 and v3.1?
 
-Russell, are you ok with that plan?
+Just remove the kernel version marker from the stable tag. The stable
+kernel maintainers for kernels >3.1 will ask you to backport the patch
+or just backport it by themselfes.
 
-Will
+
+	Joerg
