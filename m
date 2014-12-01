@@ -1,8 +1,7 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v6 4/8] iommu: provide helper function to configure an IOMMU
-	for an of master
-Date: Mon,  1 Dec 2014 16:57:10 +0000
-Message-ID: <1417453034-21379-5-git-send-email-will.deacon@arm.com>
+Subject: [PATCH v6 5/8] iommu: fix initialization without 'add_device' callback
+Date: Mon,  1 Dec 2014 16:57:11 +0000
+Message-ID: <1417453034-21379-6-git-send-email-will.deacon@arm.com>
 References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,116 +21,31 @@ To: arnd-r2nGTMty4D4@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+
 Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The generic IOMMU device-tree bindings can be used to add arbitrary OF
-masters to an IOMMU with a compliant binding.
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 
-This patch introduces of_iommu_configure, which does exactly that.
+IOMMU drivers can be initialized from of_iommu helpers. Such drivers don't
+need to provide device_add callbacks to operate properly, so there is no
+need to fail initialization if the callback is missing.
 
 Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/Kconfig    |  2 +-
- drivers/iommu/of_iommu.c | 33 +++++++++++++++++++++++++++++++++
- include/linux/of_iommu.h |  6 ++++++
- 3 files changed, 40 insertions(+), 1 deletion(-)
+ drivers/iommu/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index dd5112265cc9..6d13f962f156 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -15,7 +15,7 @@ if IOMMU_SUPPORT
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index ed8b04867b1f..02f798b7e295 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -737,7 +737,7 @@ static int add_iommu_group(struct device *dev, void *data)
+ 	const struct iommu_ops *ops = cb->ops;
  
- config OF_IOMMU
-        def_bool y
--       depends on OF
-+       depends on OF && IOMMU_API
+ 	if (!ops->add_device)
+-		return -ENODEV;
++		return 0;
  
- config FSL_PAMU
- 	bool "Freescale IOMMU support"
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 89b903406968..73236d3cc955 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -18,6 +18,7 @@
-  */
- 
- #include <linux/export.h>
-+#include <linux/iommu.h>
- #include <linux/limits.h>
- #include <linux/of.h>
- #include <linux/of_iommu.h>
-@@ -93,6 +94,38 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
- }
- EXPORT_SYMBOL_GPL(of_get_dma_window);
- 
-+struct iommu_ops *of_iommu_configure(struct device *dev)
-+{
-+	struct of_phandle_args iommu_spec;
-+	struct device_node *np;
-+	struct iommu_ops *ops = NULL;
-+	int idx = 0;
-+
-+	/*
-+	 * We don't currently walk up the tree looking for a parent IOMMU.
-+	 * See the `Notes:' section of
-+	 * Documentation/devicetree/bindings/iommu/iommu.txt
-+	 */
-+	while (!of_parse_phandle_with_args(dev->of_node, "iommus",
-+					   "#iommu-cells", idx,
-+					   &iommu_spec)) {
-+		np = iommu_spec.np;
-+		ops = of_iommu_get_ops(np);
-+
-+		if (!ops || !ops->of_xlate || ops->of_xlate(dev, &iommu_spec))
-+			goto err_put_node;
-+
-+		of_node_put(np);
-+		idx++;
-+	}
-+
-+	return ops;
-+
-+err_put_node:
-+	of_node_put(np);
-+	return NULL;
-+}
-+
- void __init of_iommu_init(void)
- {
- 	struct device_node *np;
-diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
-index 5762cdc8effe..d03abbb11c34 100644
---- a/include/linux/of_iommu.h
-+++ b/include/linux/of_iommu.h
-@@ -1,6 +1,7 @@
- #ifndef __OF_IOMMU_H
- #define __OF_IOMMU_H
- 
-+#include <linux/device.h>
- #include <linux/iommu.h>
- #include <linux/of.h>
- 
-@@ -11,6 +12,7 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
- 			     size_t *size);
- 
- extern void of_iommu_init(void);
-+extern struct iommu_ops *of_iommu_configure(struct device *dev);
- 
- #else
- 
-@@ -22,6 +24,10 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
- }
- 
- static inline void of_iommu_init(void) { }
-+static inline struct iommu_ops *of_iommu_configure(struct device *dev)
-+{
-+	return NULL;
-+}
- 
- #endif	/* CONFIG_OF_IOMMU */
+ 	WARN_ON(dev->iommu_group);
  
 -- 
 2.1.1
