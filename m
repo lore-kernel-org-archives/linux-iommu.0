@@ -1,15 +1,16 @@
-From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v10 00/20] VFIO support for platform and ARM AMBA devices
-Date: Mon, 01 Dec 2014 15:29:43 +0100
-Message-ID: <547C7B57.7030809@linaro.org>
-References: <1417109580-10505-1-git-send-email-a.motakis@virtualopensystems.com>
-	<5478B963.5050707@linaro.org>
-	<CAG8rG2wAt-wa26wBPA+2stb+Xn=B52thd8osRHWQm9WeQZbO1Q@mail.gmail.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v5 0/8] Introduce automatic DMA configuration for IOMMU
+	masters
+Date: Mon, 1 Dec 2014 15:05:04 +0000
+Message-ID: <20141201150503.GG18466@arm.com>
+References: <1417181386-18142-1-git-send-email-will.deacon@arm.com>
+	<2496335.D95hVHbola@wuerfel>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAG8rG2wAt-wa26wBPA+2stb+Xn=B52thd8osRHWQm9WeQZbO1Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <2496335.D95hVHbola@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,156 +20,64 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 12/01/2014 01:45 PM, Antonios Motakis wrote:
-> Hello Eric,
+On Mon, Dec 01, 2014 at 01:52:57PM +0000, Arnd Bergmann wrote:
+> On Friday 28 November 2014 13:29:38 Will Deacon wrote:
+> > Here is v5 of the patches I've previously sent here:
+> > 
+> >   RFCv1: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-August/283023.html
+> >   RFCv2: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-September/283752.html
+> >   RFCv3: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-September/287031.html
+> >   RFCv4: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-November/302711.html
+> > 
+> > Changes since RFCv4 include:
+> > 
+> >   - Dropped the RFC tag, since has been used by a couple of people now
+> > 
+> >   - Dropped the DMA segment configuration from of_dma_configure, as there
+> >     appear to be assumptions about 64k segments elsewhere in the kernel
+> > 
+> >   - Added acks/tested-bys (thanks to everybody who reviewed the series)
+> > 
+> >   - A few small fixes for issues found by Marek
+> > 
+> > Arnd: Is this too late for 3.19? We could merge the first 6 patches
+> > with no issues, since there aren't any callers of of_iommu_init
+> > without patch 7 anyway.
+> > 
+> > Up to you.
 > 
-> On Fri, Nov 28, 2014 at 7:05 PM, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
->> Hi Antonios,
->>
->> you can add Tested-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
->>
+> I think this looks great overall. My only feedback is the exact same
+> comment that Joerg already made:
 > 
-> Thanks!
+> On Friday 28 November 2014 14:03:36 jroedel-l3A5Bk7waGM@public.gmane.org wrote:
+> > Hmm, I don't like the idea of storing private data in iommu_ops. But
+> > given that this is already an improvement we can build on later, here is
+> > my
+> > 
+> >         Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> > 
+> > To further improve this we should probably introduce a seperate
+> > iommu-descriptor data-structure later which then describes a single
+> > hardware iommu device.
 > 
->> I added some patches related to IOMMU_CAP_NOEXEC cap to compile your 2
->> series with v3.18-rc5, maybe due to the fact I did not use some
->> iommu/vt-d stuff? See my 3.18-rc6-v10 on my kernel git branch.
->>
+> so I second that and add my
 > 
-> The IOMMU_NOEXEC stuff no lives in Joerg Roedel's iommu/next branch;
-> see https://git.kernel.org/cgit/linux/kernel/git/joro/iommu.git/log/?h=next
-> 
-> As mentioned in the cover of the first patch series, you will have to
-> apply the rest of the patches on that, until eventually they are
-> pulled in mainline. There are also some other dependencies in there as
-> well for the new type1 for ARM patch series.
+> Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
 
-ok thanks,
+Yup, I'll take a look at that as part of a separate series, since I really
+want to have different pgsize_bitmaps anyway.
 
-Eric
-> 
-> Best regards
-> Antonios
-> 
->> Best Regards
->>
->> Eric
->>
->> On 11/27/2014 06:32 PM, Antonios Motakis wrote:
->>> This patch series aims to implement VFIO support for platform devices that
->>> reside behind an IOMMU. Examples of such devices are devices behind an ARM
->>> SMMU, or behind a Samsung Exynos System MMU.
->>>
->>> The API used is based on the existing VFIO API that is also used with PCI
->>> devices. Only devices that include a basic set of IRQs and memory regions are
->>> targeted; devices with complex relationships with other devices on a device
->>> tree are not taken into account at this stage.
->>>
->>> This patch series may be applied on the following series/patches:
->>>  - [PATCH] driver core: amba: add device binding path 'driver_override'
->>>  - [PATCH v3 0/6] vfio: type1: support for ARM SMMUS with VFIO_IOMMU_TYPE1
->>>
->>> A copy can be cloned from the branch vfio-platform-v10 at:
->>> git-9UaJU3cA/F/QT0dZR+AlfA@public.gmane.org:virtualopensystems/linux-kvm-arm.git
->>>
->>> Changes since v9:
->>>  - Reworked the splitting of the patches that decouple virqfd from PCI
->>>  - Some styling issues and typos
->>>  - Removed superfluous includes
->>>  - AMBA devices are now named vfio-amba- suffixed by the AMBA device id
->>>  - Several other cleanups and fixes
->>> Changes since v8:
->>>  - Separate irq handler for edge and level triggered interrupts
->>>  - Mutex based lock for VFIO fd open/release
->>>  - Fixed bug where the first region of a platform device wasn't exposed
->>>  - Read only regions can be MMAPed only read only
->>>  - Code cleanups
->>> Changes since v7:
->>>  - Some initial placeholder functionality for PIO resources
->>>  - Cleaned up code for IRQ triggering, masking and unmasking
->>>  - Some functionality has been removed from this series and posted separately:
->>>    - VFIO_IOMMU_TYPE1 support for ARM SMMUs
->>>    - IOMMU NOEXEC patches
->>>    - driver_override functionality for AMBA devices
->>>  - Several fixes
->>> Changes since v6:
->>>  - Integrated support for AMBA devices
->>>  - Numerous cleanups and fixes
->>> Changes since v5:
->>>  - Full eventfd support for IRQ masking and unmasking.
->>>  - Changed IOMMU_EXEC to IOMMU_NOEXEC, along with related flags in VFIO.
->>>  - Other fixes based on reviewer comments.
->>> Changes since v4:
->>>  - Use static offsets for each region in the VFIO device fd
->>>  - Include patch in the series for the ARM SMMU to expose IOMMU_EXEC
->>>    availability via IOMMU_CAP_DMA_EXEC
->>>  - Rebased on VFIO multi domain support:
->>>    - IOMMU_EXEC is now available if at least one IOMMU in the container
->>>      supports it
->>>    - Expose IOMMU_EXEC if available via the capability VFIO_IOMMU_PROT_EXEC
->>>  - Some bug fixes
->>> Changes since v3:
->>>  - Use Kim Phillips' driver_probe_device()
->>> Changes since v2:
->>>  - Fixed Read/Write and MMAP on device regions
->>>  - Removed dependency on Device Tree
->>>  - Interrupts support
->>>  - Interrupt masking/unmasking
->>>  - Automask level sensitive interrupts
->>>  - Introduced VFIO_DMA_MAP_FLAG_EXEC
->>>  - Code clean ups
->>>
->>> Antonios Motakis (20):
->>>   vfio/platform: initial skeleton of VFIO support for platform devices
->>>   vfio: platform: probe to devices on the platform bus
->>>   vfio: platform: add the VFIO PLATFORM module to Kconfig
->>>   vfio: amba: VFIO support for AMBA devices
->>>   vfio: amba: add the VFIO for AMBA devices module to Kconfig
->>>   vfio/platform: return info for bound device
->>>   vfio/platform: return info for device memory mapped IO regions
->>>   vfio/platform: read and write support for the device fd
->>>   vfio/platform: support MMAP of MMIO regions
->>>   vfio/platform: return IRQ info
->>>   vfio/platform: initial interrupts support code
->>>   vfio/platform: trigger an interrupt via eventfd
->>>   vfio/platform: support for level sensitive interrupts
->>>   vfio: add a vfio_ prefix to virqfd_enable and virqfd_disable and
->>>     export
->>>   vfio: virqfd: rename vfio_pci_virqfd_init and vfio_pci_virqfd_exit
->>>   vfio: add local lock for virqfd instead of depending on VFIO PCI
->>>   vfio: pass an opaque pointer on virqfd initialization
->>>   vfio: move eventfd support code for VFIO_PCI to a separate file
->>>   vfio: initialize the virqfd workqueue in VFIO generic code
->>>   vfio/platform: implement IRQ masking/unmasking via an eventfd
->>>
->>>  drivers/vfio/Kconfig                          |   1 +
->>>  drivers/vfio/Makefile                         |   5 +-
->>>  drivers/vfio/pci/vfio_pci.c                   |   8 -
->>>  drivers/vfio/pci/vfio_pci_intrs.c             | 238 +-----------
->>>  drivers/vfio/pci/vfio_pci_private.h           |   3 -
->>>  drivers/vfio/platform/Kconfig                 |  19 +
->>>  drivers/vfio/platform/Makefile                |   8 +
->>>  drivers/vfio/platform/vfio_amba.c             | 110 ++++++
->>>  drivers/vfio/platform/vfio_platform.c         | 103 +++++
->>>  drivers/vfio/platform/vfio_platform_common.c  | 520 ++++++++++++++++++++++++++
->>>  drivers/vfio/platform/vfio_platform_irq.c     | 331 ++++++++++++++++
->>>  drivers/vfio/platform/vfio_platform_private.h |  82 ++++
->>>  drivers/vfio/vfio.c                           |   8 +
->>>  drivers/vfio/virqfd.c                         | 213 +++++++++++
->>>  include/linux/vfio.h                          |  27 ++
->>>  include/uapi/linux/vfio.h                     |   2 +
->>>  16 files changed, 1442 insertions(+), 236 deletions(-)
->>>  create mode 100644 drivers/vfio/platform/Kconfig
->>>  create mode 100644 drivers/vfio/platform/Makefile
->>>  create mode 100644 drivers/vfio/platform/vfio_amba.c
->>>  create mode 100644 drivers/vfio/platform/vfio_platform.c
->>>  create mode 100644 drivers/vfio/platform/vfio_platform_common.c
->>>  create mode 100644 drivers/vfio/platform/vfio_platform_irq.c
->>>  create mode 100644 drivers/vfio/platform/vfio_platform_private.h
->>>  create mode 100644 drivers/vfio/virqfd.c
->>>
->>
+> Now, who should merge this series? I think someone should put all eight
+> patches into linux-next now, and if something goes wrong with the last
+> two, then we skip them for 3.19.
+
+I think it makes most sense to go via arm-soc, but we'd need rmk's ack
+on the last two patches.
+
+Russell, are you ok with that plan?
+
+Will
