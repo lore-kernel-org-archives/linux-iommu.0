@@ -1,14 +1,11 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: Fix an off-by-one bug in __domain_mapping()
-Date: Mon, 1 Dec 2014 17:27:40 +0100
-Message-ID: <20141201162740.GK3762@8bytes.org>
-References: <1416966130-866-1-git-send-email-jiang.liu@linux.intel.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v6 0/8] Introduce automatic DMA configuration for IOMMU masters
+Date: Mon,  1 Dec 2014 16:57:06 +0000
+Message-ID: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1416966130-866-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,38 +15,57 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: arnd-r2nGTMty4D4@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Nov 26, 2014 at 09:42:10AM +0800, Jiang Liu wrote:
-> There's an off-by-one bug in function __domain_mapping(), which may
-> trigger the BUG_ON(nr_pages < lvl_pages) when
-> 	(nr_pages + 1) & superpage_mask == 0
+Hello again,
 
-What is the superpage_mask?
+This is version 6 of the patches previously posted here:
 
-> The issue was introduced by commit 9051aa0268dc "intel-iommu: Combine
-> domain_pfn_mapping() and domain_sg_mapping()", which sets sg_res to
-> "nr_pages + 1" to avoid some of the 'sg_res==0' code paths.
-> 
-> It's safe to remove extra "+1" because sg_res is only used to calculate
-> page size now.
+  RFCv1: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-August/283023.html
+  RFCv2: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-September/283752.html
+  RFCv3: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-September/287031.html
+  RFCv4: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-November/302711.html
+     v5: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-November/307213.html
 
->From your description and the (hard to read) code in __domain_mapping I
-don't really understand the issue yet. Can you please elaborate on this
-issue can be triggered?
+The only change since v5 is the addition of acks from various maintainers.
 
-Is the BUG_ON the only issue and, if yes, can that be fixed by just
-changing the BUG_ON condition?
+Now that the ARM bits have rmk's ack and the IOMMU bits have joro's ack,
+I think this is good for merging via the arm-soc tree.
 
-> 	This issue was introduced in v2.6.31, but intel-iommu.c has
-> been moved into drivers/iommu in v3.1. So what's the preferred way
-> to deal with stable kernels between v2.6.31 and v3.1?
+Please let me know if a pull request would be preferable.
 
-Just remove the kernel version marker from the stable tag. The stable
-kernel maintainers for kernels >3.1 will ask you to backport the patch
-or just backport it by themselfes.
+Cheers,
 
+Will
 
-	Joerg
+--->8
+
+Marek Szyprowski (1):
+  iommu: fix initialization without 'add_device' callback
+
+Will Deacon (7):
+  iommu: provide early initialisation hook for IOMMU drivers
+  dma-mapping: replace set_arch_dma_coherent_ops with arch_setup_dma_ops
+  iommu: add new iommu_ops callback for adding an OF device
+  iommu: provide helper function to configure an IOMMU for an of master
+  dma-mapping: detect and configure IOMMU in of_dma_configure
+  arm: call iommu_init before of_platform_populate
+  arm: dma-mapping: plumb our iommu mapping ops into arch_setup_dma_ops
+
+ arch/arm/include/asm/dma-mapping.h | 12 +++---
+ arch/arm/kernel/setup.c            |  2 +
+ arch/arm/mm/dma-mapping.c          | 83 ++++++++++++++++++++++++++++++++++----
+ drivers/iommu/Kconfig              |  2 +-
+ drivers/iommu/iommu.c              |  2 +-
+ drivers/iommu/of_iommu.c           | 50 +++++++++++++++++++++++
+ drivers/of/platform.c              | 50 ++++++++++++-----------
+ include/asm-generic/vmlinux.lds.h  |  2 +
+ include/linux/dma-mapping.h        | 13 +++---
+ include/linux/iommu.h              |  8 ++++
+ include/linux/of_iommu.h           | 31 ++++++++++++++
+ 11 files changed, 211 insertions(+), 44 deletions(-)
+
+-- 
+2.1.1
