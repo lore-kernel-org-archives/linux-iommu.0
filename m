@@ -1,15 +1,14 @@
-From: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v6 1/8] iommu: provide early initialisation hook for IOMMU
-	drivers
-Date: Mon, 1 Dec 2014 17:54:27 -0600
-Message-ID: <CAL_JsqKHvh9KSTYrrs1Pts5Kg=8dA1V6NiW57_2vdDH173qQGg@mail.gmail.com>
-References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
-	<1417453034-21379-2-git-send-email-will.deacon@arm.com>
+From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: Fix an off-by-one bug in __domain_mapping()
+Date: Tue, 02 Dec 2014 08:06:09 +0800
+Message-ID: <547D0271.4040009@linux.intel.com>
+References: <1416966130-866-1-git-send-email-jiang.liu@linux.intel.com>
+	<20141201162740.GK3762@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1417453034-21379-2-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20141201162740.GK3762-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,164 +18,58 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Pantelis Antoniou <pantelis.antoniou-OWPKS81ov/FWk0Htik3J/w@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Adding Grant and Pantelis...
 
-On Mon, Dec 1, 2014 at 10:57 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> IOMMU drivers must be initialised before any of their upstream devices,
-> otherwise the relevant iommu_ops won't be configured for the bus in
-> question. To solve this, a number of IOMMU drivers use initcalls to
-> initialise the driver before anything has a chance to be probed.
->
-> Whilst this solves the immediate problem, it leaves the job of probing
-> the IOMMU completely separate from the iommu_ops to configure the IOMMU,
-> which are called on a per-bus basis and require the driver to figure out
-> exactly which instance of the IOMMU is being requested. In particular,
-> the add_device callback simply passes a struct device to the driver,
-> which then has to parse firmware tables or probe buses to identify the
-> relevant IOMMU instance.
->
-> This patch takes the first step in addressing this problem by adding an
-> early initialisation pass for IOMMU drivers, giving them the ability to
-> store some per-instance data in their iommu_ops structure and store that
-> in their of_node. This can later be used when parsing OF masters to
-> identify the IOMMU instance in question.
->
-> Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-> Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/iommu/of_iommu.c          | 17 +++++++++++++++++
->  include/asm-generic/vmlinux.lds.h |  2 ++
->  include/linux/iommu.h             |  2 ++
->  include/linux/of_iommu.h          | 25 +++++++++++++++++++++++++
->  4 files changed, 46 insertions(+)
->
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index e550ccb7634e..89b903406968 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -22,6 +22,9 @@
->  #include <linux/of.h>
->  #include <linux/of_iommu.h>
->
-> +static const struct of_device_id __iommu_of_table_sentinel
-> +       __used __section(__iommu_of_table_end);
-> +
->  /**
->   * of_get_dma_window - Parse *dma-window property and returns 0 if found.
->   *
-> @@ -89,3 +92,17 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
->         return 0;
->  }
->  EXPORT_SYMBOL_GPL(of_get_dma_window);
-> +
-> +void __init of_iommu_init(void)
-> +{
-> +       struct device_node *np;
-> +       const struct of_device_id *match, *matches = &__iommu_of_table;
-> +
-> +       for_each_matching_node_and_match(np, matches, &match) {
-> +               const of_iommu_init_fn init_fn = match->data;
-> +
-> +               if (init_fn(np))
-> +                       pr_err("Failed to initialise IOMMU %s\n",
-> +                               of_node_full_name(np));
-> +       }
-> +}
-> diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
-> index aa70cbda327c..bee5d683074d 100644
-> --- a/include/asm-generic/vmlinux.lds.h
-> +++ b/include/asm-generic/vmlinux.lds.h
-> @@ -164,6 +164,7 @@
->  #define CLKSRC_OF_TABLES()     OF_TABLE(CONFIG_CLKSRC_OF, clksrc)
->  #define IRQCHIP_OF_MATCH_TABLE() OF_TABLE(CONFIG_IRQCHIP, irqchip)
->  #define CLK_OF_TABLES()                OF_TABLE(CONFIG_COMMON_CLK, clk)
-> +#define IOMMU_OF_TABLES()      OF_TABLE(CONFIG_OF_IOMMU, iommu)
->  #define RESERVEDMEM_OF_TABLES()        OF_TABLE(CONFIG_OF_RESERVED_MEM, reservedmem)
->  #define CPU_METHOD_OF_TABLES() OF_TABLE(CONFIG_SMP, cpu_method)
->  #define EARLYCON_OF_TABLES()   OF_TABLE(CONFIG_SERIAL_EARLYCON, earlycon)
-> @@ -497,6 +498,7 @@
->         CLK_OF_TABLES()                                                 \
->         RESERVEDMEM_OF_TABLES()                                         \
->         CLKSRC_OF_TABLES()                                              \
-> +       IOMMU_OF_TABLES()                                               \
->         CPU_METHOD_OF_TABLES()                                          \
->         KERNEL_DTB()                                                    \
->         IRQCHIP_OF_MATCH_TABLE()                                        \
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index e6a7c9ff72f2..7b83f9f8e11d 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -103,6 +103,7 @@ enum iommu_attr {
->   * @domain_get_attr: Query domain attributes
->   * @domain_set_attr: Change domain attributes
->   * @pgsize_bitmap: bitmap of supported page sizes
-> + * @priv: per-instance data private to the iommu driver
->   */
->  struct iommu_ops {
->         bool (*capable)(enum iommu_cap);
-> @@ -133,6 +134,7 @@ struct iommu_ops {
->         u32 (*domain_get_windows)(struct iommu_domain *domain);
->
->         unsigned long pgsize_bitmap;
-> +       void *priv;
->  };
->
->  #define IOMMU_GROUP_NOTIFY_ADD_DEVICE          1 /* Device added */
-> diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
-> index 51a560f34bca..5762cdc8effe 100644
-> --- a/include/linux/of_iommu.h
-> +++ b/include/linux/of_iommu.h
-> @@ -1,12 +1,17 @@
->  #ifndef __OF_IOMMU_H
->  #define __OF_IOMMU_H
->
-> +#include <linux/iommu.h>
-> +#include <linux/of.h>
-> +
->  #ifdef CONFIG_OF_IOMMU
->
->  extern int of_get_dma_window(struct device_node *dn, const char *prefix,
->                              int index, unsigned long *busno, dma_addr_t *addr,
->                              size_t *size);
->
-> +extern void of_iommu_init(void);
-> +
->  #else
->
->  static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
-> @@ -16,6 +21,26 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
->         return -EINVAL;
->  }
->
-> +static inline void of_iommu_init(void) { }
-> +
->  #endif /* CONFIG_OF_IOMMU */
->
-> +static inline void of_iommu_set_ops(struct device_node *np,
-> +                                   const struct iommu_ops *ops)
-> +{
-> +       np->data = (struct iommu_ops *)ops;
-> +}
-> +
-> +static inline struct iommu_ops *of_iommu_get_ops(struct device_node *np)
-> +{
-> +       return np->data;
-> +}
 
-This may collide with other users. While use of it is rare, PPC uses
-it in its PCI code. The OF_DYNAMIC code frees it but never actually
-sets it. There may be some coming usage with the DT overlay code or
-that's just a bug. Pantelis or Grant can comment. If not, I think we
-really should try to get rid of this pointer rather than expand it's
-usage.
+On 2014/12/2 0:27, Joerg Roedel wrote:
+> On Wed, Nov 26, 2014 at 09:42:10AM +0800, Jiang Liu wrote:
+>> There's an off-by-one bug in function __domain_mapping(), which may
+>> trigger the BUG_ON(nr_pages < lvl_pages) when
+>> 	(nr_pages + 1) & superpage_mask == 0
+> 
+> What is the superpage_mask?
+Hi Joerg,
+	Sorry for the confusion. The really story is:
+1) sg_res is set to nr_pages + 1 at the beginning of __domain_mapping()
+2) then sg_res is used to choose super page by function
+   hardware_largepage_caps(domain, iov_pfn, phys_pfn, sg_res).
+The condition to trigger the issue is:
+__domain_mapping is called by domain_pfn_mapping() with nr_pages
+of 511, so sg_res is 512 and hardware_largepage_caps() will
+choose a wrong super page size of 2M, which then trigger
+BUG_ON(sg_res < lvl_pages).
 
-I didn't see a user of this. I'm guessing that is coming in a SMMU patch?
+So it's not only a BUG_ON() issue, but also causes incorrect super page
+selection.
+Thanks!
+Gerry
 
-Rob
+> 
+>> The issue was introduced by commit 9051aa0268dc "intel-iommu: Combine
+>> domain_pfn_mapping() and domain_sg_mapping()", which sets sg_res to
+>> "nr_pages + 1" to avoid some of the 'sg_res==0' code paths.
+>>
+>> It's safe to remove extra "+1" because sg_res is only used to calculate
+>> page size now.
+> 
+> From your description and the (hard to read) code in __domain_mapping I
+> don't really understand the issue yet. Can you please elaborate on this
+> issue can be triggered?
+> 
+> Is the BUG_ON the only issue and, if yes, can that be fixed by just
+> changing the BUG_ON condition?
+> 
+>> 	This issue was introduced in v2.6.31, but intel-iommu.c has
+>> been moved into drivers/iommu in v3.1. So what's the preferred way
+>> to deal with stable kernels between v2.6.31 and v3.1?
+> 
+> Just remove the kernel version marker from the stable tag. The stable
+> kernel maintainers for kernels >3.1 will ask you to backport the patch
+> or just backport it by themselfes.
+> 
+> 
+> 	Joerg
+> 
