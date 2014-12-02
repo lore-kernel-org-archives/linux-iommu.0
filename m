@@ -1,16 +1,16 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 0/4] Generic IOMMU page table framework
-Date: Tue, 2 Dec 2014 13:53:56 +0000
-Message-ID: <20141202135356.GF9917@arm.com>
-References: <1417089078-22900-1-git-send-email-will.deacon@arm.com>
-	<6034238.mfQ54vFFKj@avalon> <20141201120534.GC18466@arm.com>
-	<1669896.md3tuDH5WL@avalon>
+From: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v6 1/8] iommu: provide early initialisation hook for IOMMU
+	drivers
+Date: Tue, 2 Dec 2014 14:16:57 +0000
+Message-ID: <CACxGe6vyMkyE9ZRj_FQzi19ESEo7OV_RQoVV65xBYpdQV8cRGQ@mail.gmail.com>
+References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
+	<1417453034-21379-2-git-send-email-will.deacon@arm.com>
+	<CAL_JsqKHvh9KSTYrrs1Pts5Kg=8dA1V6NiW57_2vdDH173qQGg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1669896.md3tuDH5WL@avalon>
+In-Reply-To: <CAL_JsqKHvh9KSTYrrs1Pts5Kg=8dA1V6NiW57_2vdDH173qQGg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,61 +20,172 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Pantelis Antoniou <pantelis.antoniou-OWPKS81ov/FWk0Htik3J/w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Dec 02, 2014 at 01:47:41PM +0000, Laurent Pinchart wrote:
-> On Monday 01 December 2014 12:05:34 Will Deacon wrote:
-> > On Sun, Nov 30, 2014 at 10:03:08PM +0000, Laurent Pinchart wrote:
-> > > On Thursday 27 November 2014 11:51:14 Will Deacon wrote:
-> > > > The LPAE code implements support for 4k/2M/1G, 16k/32M and 64k/512M
-> > > > mappings, but I decided not to implement the contiguous bit in the
-> > > > interest of trying to keep the code semi-readable. This could always be
-> > > > added later, if needed.
-> > > 
-> > > Do you have any idea how much the contiguous bit can improve performances
-> > > in real use cases ?
-> > 
-> > It depends on the TLB, really. Given that the contiguous sized map directly
-> > onto block sizes using different granules, I didn't see that the complexity
-> > was worth it.
-> > 
-> > For example:
-> > 
-> >    4k granule : 16 contiguous entries => {64k, 32M, 16G}
-> >   16k granule : 128 contiguous lvl3 entries => 2M
-> >                 32 contiguous lvl2 entries => 1G
-> >   64k granule : 32 contiguous entries => {2M, 16G}
-> > 
-> > If we use block mappings, then we get:
-> > 
-> >    4k granule : 2M @ lvl2, 1G @ lvl1
-> >   16k granule : 32M @ lvl2
-> >   64k granule : 512M @ lvl2
-> > 
-> > so really, we only miss the ability to create 16G mappings.
-> 
-> In the general case maybe, but as far as I know my IOMMU only supports 4kB 
-> granule. Without support for the contiguous bit I loose the ability to create 
-> 64kB mappings, which I believe (but haven't test yet) will have a noticeable 
-> impact.
+On Mon, Dec 1, 2014 at 11:54 PM, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> Adding Grant and Pantelis...
+>
+> On Mon, Dec 1, 2014 at 10:57 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+>> IOMMU drivers must be initialised before any of their upstream devices,
+>> otherwise the relevant iommu_ops won't be configured for the bus in
+>> question. To solve this, a number of IOMMU drivers use initcalls to
+>> initialise the driver before anything has a chance to be probed.
+>>
+>> Whilst this solves the immediate problem, it leaves the job of probing
+>> the IOMMU completely separate from the iommu_ops to configure the IOMMU,
+>> which are called on a per-bus basis and require the driver to figure out
+>> exactly which instance of the IOMMU is being requested. In particular,
+>> the add_device callback simply passes a struct device to the driver,
+>> which then has to parse firmware tables or probe buses to identify the
+>> relevant IOMMU instance.
+>>
+>> This patch takes the first step in addressing this problem by adding an
+>> early initialisation pass for IOMMU drivers, giving them the ability to
+>> store some per-instance data in their iommu_ops structure and store that
+>> in their of_node. This can later be used when parsing OF masters to
+>> identify the IOMMU instance in question.
+>>
+>> Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+>> Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+>> Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+>> Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+>> ---
+>>  drivers/iommu/of_iommu.c          | 17 +++++++++++++++++
+>>  include/asm-generic/vmlinux.lds.h |  2 ++
+>>  include/linux/iommu.h             |  2 ++
+>>  include/linux/of_iommu.h          | 25 +++++++++++++++++++++++++
+>>  4 files changed, 46 insertions(+)
+>>
+>> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+>> index e550ccb7634e..89b903406968 100644
+>> --- a/drivers/iommu/of_iommu.c
+>> +++ b/drivers/iommu/of_iommu.c
+>> @@ -22,6 +22,9 @@
+>>  #include <linux/of.h>
+>>  #include <linux/of_iommu.h>
+>>
+>> +static const struct of_device_id __iommu_of_table_sentinel
+>> +       __used __section(__iommu_of_table_end);
+>> +
+>>  /**
+>>   * of_get_dma_window - Parse *dma-window property and returns 0 if found.
+>>   *
+>> @@ -89,3 +92,17 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
+>>         return 0;
+>>  }
+>>  EXPORT_SYMBOL_GPL(of_get_dma_window);
+>> +
+>> +void __init of_iommu_init(void)
+>> +{
+>> +       struct device_node *np;
+>> +       const struct of_device_id *match, *matches = &__iommu_of_table;
+>> +
+>> +       for_each_matching_node_and_match(np, matches, &match) {
+>> +               const of_iommu_init_fn init_fn = match->data;
+>> +
+>> +               if (init_fn(np))
+>> +                       pr_err("Failed to initialise IOMMU %s\n",
+>> +                               of_node_full_name(np));
+>> +       }
+>> +}
+>> diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
+>> index aa70cbda327c..bee5d683074d 100644
+>> --- a/include/asm-generic/vmlinux.lds.h
+>> +++ b/include/asm-generic/vmlinux.lds.h
+>> @@ -164,6 +164,7 @@
+>>  #define CLKSRC_OF_TABLES()     OF_TABLE(CONFIG_CLKSRC_OF, clksrc)
+>>  #define IRQCHIP_OF_MATCH_TABLE() OF_TABLE(CONFIG_IRQCHIP, irqchip)
+>>  #define CLK_OF_TABLES()                OF_TABLE(CONFIG_COMMON_CLK, clk)
+>> +#define IOMMU_OF_TABLES()      OF_TABLE(CONFIG_OF_IOMMU, iommu)
+>>  #define RESERVEDMEM_OF_TABLES()        OF_TABLE(CONFIG_OF_RESERVED_MEM, reservedmem)
+>>  #define CPU_METHOD_OF_TABLES() OF_TABLE(CONFIG_SMP, cpu_method)
+>>  #define EARLYCON_OF_TABLES()   OF_TABLE(CONFIG_SERIAL_EARLYCON, earlycon)
+>> @@ -497,6 +498,7 @@
+>>         CLK_OF_TABLES()                                                 \
+>>         RESERVEDMEM_OF_TABLES()                                         \
+>>         CLKSRC_OF_TABLES()                                              \
+>> +       IOMMU_OF_TABLES()                                               \
+>>         CPU_METHOD_OF_TABLES()                                          \
+>>         KERNEL_DTB()                                                    \
+>>         IRQCHIP_OF_MATCH_TABLE()                                        \
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index e6a7c9ff72f2..7b83f9f8e11d 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -103,6 +103,7 @@ enum iommu_attr {
+>>   * @domain_get_attr: Query domain attributes
+>>   * @domain_set_attr: Change domain attributes
+>>   * @pgsize_bitmap: bitmap of supported page sizes
+>> + * @priv: per-instance data private to the iommu driver
+>>   */
+>>  struct iommu_ops {
+>>         bool (*capable)(enum iommu_cap);
+>> @@ -133,6 +134,7 @@ struct iommu_ops {
+>>         u32 (*domain_get_windows)(struct iommu_domain *domain);
+>>
+>>         unsigned long pgsize_bitmap;
+>> +       void *priv;
+>>  };
+>>
+>>  #define IOMMU_GROUP_NOTIFY_ADD_DEVICE          1 /* Device added */
+>> diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+>> index 51a560f34bca..5762cdc8effe 100644
+>> --- a/include/linux/of_iommu.h
+>> +++ b/include/linux/of_iommu.h
+>> @@ -1,12 +1,17 @@
+>>  #ifndef __OF_IOMMU_H
+>>  #define __OF_IOMMU_H
+>>
+>> +#include <linux/iommu.h>
+>> +#include <linux/of.h>
+>> +
+>>  #ifdef CONFIG_OF_IOMMU
+>>
+>>  extern int of_get_dma_window(struct device_node *dn, const char *prefix,
+>>                              int index, unsigned long *busno, dma_addr_t *addr,
+>>                              size_t *size);
+>>
+>> +extern void of_iommu_init(void);
+>> +
+>>  #else
+>>
+>>  static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
+>> @@ -16,6 +21,26 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
+>>         return -EINVAL;
+>>  }
+>>
+>> +static inline void of_iommu_init(void) { }
+>> +
+>>  #endif /* CONFIG_OF_IOMMU */
+>>
+>> +static inline void of_iommu_set_ops(struct device_node *np,
+>> +                                   const struct iommu_ops *ops)
+>> +{
+>> +       np->data = (struct iommu_ops *)ops;
+>> +}
+>> +
+>> +static inline struct iommu_ops *of_iommu_get_ops(struct device_node *np)
+>> +{
+>> +       return np->data;
+>> +}
+>
+> This may collide with other users. While use of it is rare, PPC uses
+> it in its PCI code. The OF_DYNAMIC code frees it but never actually
+> sets it. There may be some coming usage with the DT overlay code or
+> that's just a bug. Pantelis or Grant can comment. If not, I think we
+> really should try to get rid of this pointer rather than expand it's
+> usage.
+>
+> I didn't see a user of this. I'm guessing that is coming in a SMMU patch?
 
-It would be good if you could confirm that. I'd have thought that you'd end
-up using 2MB mappings most of the time for DMA buffers.
+Good catch. This is not good. The data pointer should be avoided since
+there are no controls over its use. Until a better solution can be
+implemented, probably the safest thing to do is add a struct iommu_ops
+pointer to struct device_node. However, assuming that only a small
+portion of nodes will actually have iommu_ops set, I'd rather see a
+separate registry that matches device_nodes to iommu_ops.
 
-> > I doubt that hardware even implements that size in the TLB (the contiguous
-> > bit is only a hint).
-> >
-> > On top of that, the contiguous bit leads to additional expense on unmap,
-> > since you have extra TLB invalidation splitting the thing into non-
-> > contiguous pages before you can do anything.
-> 
-> That will only be required when doing partial unmaps, which shouldn't be that 
-> frequent. When unmapping a 64kB block there's no need to split the mapping 
-> beforehand.
-
-Sure. I'm not against having support for the contiguous bit, I just don't
-plan to implement it myself :)
-
-Will
+g.
