@@ -1,14 +1,15 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: Fix an off-by-one bug in __domain_mapping()
-Date: Tue, 02 Dec 2014 08:06:09 +0800
-Message-ID: <547D0271.4040009@linux.intel.com>
-References: <1416966130-866-1-git-send-email-jiang.liu@linux.intel.com>
-	<20141201162740.GK3762@8bytes.org>
+From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [Patch Part3 v4 18/38] x86: irq_remapping: Clean up unsued code
+Date: Mon, 1 Dec 2014 17:21:46 -0700
+Message-ID: <20141202002146.GA5825@google.com>
+References: <1416901802-24211-1-git-send-email-jiang.liu@linux.intel.com>
+	<1416901802-24211-19-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20141201162740.GK3762-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1416901802-24211-19-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,58 +19,154 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+s/unsued/unused/ in subject (here and other patches).
 
+"Clean up" is slightly ambiguous; it could mean either "make better" or
+"remove."  "Remove unused code" would be less ambiguous.
 
-On 2014/12/2 0:27, Joerg Roedel wrote:
-> On Wed, Nov 26, 2014 at 09:42:10AM +0800, Jiang Liu wrote:
->> There's an off-by-one bug in function __domain_mapping(), which may
->> trigger the BUG_ON(nr_pages < lvl_pages) when
->> 	(nr_pages + 1) & superpage_mask == 0
+On Tue, Nov 25, 2014 at 03:49:42PM +0800, Jiang Liu wrote:
+> Now we have converted to hierarchy irqdomain, so clean up unused code.
 > 
-> What is the superpage_mask?
-Hi Joerg,
-	Sorry for the confusion. The really story is:
-1) sg_res is set to nr_pages + 1 at the beginning of __domain_mapping()
-2) then sg_res is used to choose super page by function
-   hardware_largepage_caps(domain, iov_pfn, phys_pfn, sg_res).
-The condition to trigger the issue is:
-__domain_mapping is called by domain_pfn_mapping() with nr_pages
-of 511, so sg_res is 512 and hardware_largepage_caps() will
-choose a wrong super page size of 2M, which then trigger
-BUG_ON(sg_res < lvl_pages).
-
-So it's not only a BUG_ON() issue, but also causes incorrect super page
-selection.
-Thanks!
-Gerry
-
+> Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Tested-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> ---
+>  arch/x86/include/asm/irq_remapping.h |   23 ----------------------
+>  arch/x86/kernel/apic/vector.c        |    1 -
+>  drivers/iommu/irq_remapping.c        |   36 ----------------------------------
+>  3 files changed, 60 deletions(-)
 > 
->> The issue was introduced by commit 9051aa0268dc "intel-iommu: Combine
->> domain_pfn_mapping() and domain_sg_mapping()", which sets sg_res to
->> "nr_pages + 1" to avoid some of the 'sg_res==0' code paths.
->>
->> It's safe to remove extra "+1" because sg_res is only used to calculate
->> page size now.
-> 
-> From your description and the (hard to read) code in __domain_mapping I
-> don't really understand the issue yet. Can you please elaborate on this
-> issue can be triggered?
-> 
-> Is the BUG_ON the only issue and, if yes, can that be fixed by just
-> changing the BUG_ON condition?
-> 
->> 	This issue was introduced in v2.6.31, but intel-iommu.c has
->> been moved into drivers/iommu in v3.1. So what's the preferred way
->> to deal with stable kernels between v2.6.31 and v3.1?
-> 
-> Just remove the kernel version marker from the stable tag. The stable
-> kernel maintainers for kernels >3.1 will ask you to backport the patch
-> or just backport it by themselfes.
-> 
-> 
-> 	Joerg
+> diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
+> index de8470b6f36a..6ba243126b3b 100644
+> --- a/arch/x86/include/asm/irq_remapping.h
+> +++ b/arch/x86/include/asm/irq_remapping.h
+> @@ -26,12 +26,7 @@
+>  #include <asm/hw_irq.h>
+>  #include <asm/io_apic.h>
+>  
+> -struct IO_APIC_route_entry;
+> -struct io_apic_irq_attr;
+> -struct irq_chip;
+>  struct msi_msg;
+> -struct pci_dev;
+> -struct irq_cfg;
+>  struct irq_alloc_info;
+>  
+>  #ifdef CONFIG_IRQ_REMAP
+> @@ -44,13 +39,7 @@ extern int irq_remapping_enable(void);
+>  extern void irq_remapping_disable(void);
+>  extern int irq_remapping_reenable(int);
+>  extern int irq_remap_enable_fault_handling(void);
+> -extern void free_remapped_irq(int irq);
+>  extern void panic_if_irq_remap(const char *msg);
+> -extern bool setup_remapped_irq(int irq,
+> -			       struct irq_cfg *cfg,
+> -			       struct irq_chip *chip);
+> -
+> -void irq_remap_modify_chip_defaults(struct irq_chip *chip);
+>  
+>  extern struct irq_domain *
+>  irq_remapping_get_ir_irq_domain( struct irq_alloc_info *info);
+> @@ -77,23 +66,11 @@ static inline int irq_remapping_enable(void) { return -ENODEV; }
+>  static inline void irq_remapping_disable(void) { }
+>  static inline int irq_remapping_reenable(int eim) { return -ENODEV; }
+>  static inline int irq_remap_enable_fault_handling(void) { return -ENODEV; }
+> -static inline void free_remapped_irq(int irq) { }
+>  
+>  static inline void panic_if_irq_remap(const char *msg)
+>  {
+>  }
+>  
+> -static inline void irq_remap_modify_chip_defaults(struct irq_chip *chip)
+> -{
+> -}
+> -
+> -static inline bool setup_remapped_irq(int irq,
+> -				      struct irq_cfg *cfg,
+> -				      struct irq_chip *chip)
+> -{
+> -	return false;
+> -}
+> -
+>  static inline struct irq_domain *
+>  irq_remapping_get_ir_irq_domain(struct irq_alloc_info *info)
+>  {
+> diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
+> index 31dc4a871673..ca30365507a0 100644
+> --- a/arch/x86/kernel/apic/vector.c
+> +++ b/arch/x86/kernel/apic/vector.c
+> @@ -283,7 +283,6 @@ static void x86_vector_free_irqs(struct irq_domain *domain,
+>  	for (i = 0; i < nr_irqs; i++) {
+>  		irq_data = irq_domain_get_irq_data(x86_vector_domain, virq + i);
+>  		if (irq_data && irq_data->chip_data) {
+> -			free_remapped_irq(virq);
+>  			clear_irq_vector(virq + i, irq_data->chip_data);
+>  			free_irq_cfg(irq_data->chip_data);
+>  #ifdef	CONFIG_X86_IO_APIC
+> diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+> index d175d6911821..3c3da04da8c5 100644
+> --- a/drivers/iommu/irq_remapping.c
+> +++ b/drivers/iommu/irq_remapping.c
+> @@ -26,11 +26,6 @@ int no_x2apic_optout;
+>  
+>  static struct irq_remap_ops *remap_ops;
+>  
+> -static bool irq_remapped(struct irq_cfg *cfg)
+> -{
+> -	return (cfg->remapped == 1);
+> -}
+> -
+>  static void irq_remapping_disable_io_apic(void)
+>  {
+>  	/*
+> @@ -160,17 +155,6 @@ int __init irq_remap_enable_fault_handling(void)
+>  	return remap_ops->enable_faulting();
+>  }
+>  
+> -void free_remapped_irq(int irq)
+> -{
+> -	struct irq_cfg *cfg = irq_cfg(irq);
+> -
+> -	if (!remap_ops || !remap_ops->free_irq)
+> -		return;
+> -
+> -	if (irq_remapped(cfg))
+> -		remap_ops->free_irq(irq);
+> -}
+> -
+>  void panic_if_irq_remap(const char *msg)
+>  {
+>  	if (irq_remapping_enabled)
+> @@ -195,26 +179,6 @@ void irq_remapping_print_chip(struct irq_data *data, struct seq_file *p)
+>  		seq_printf(p, " %s", data->chip->name);
+>  }
+>  
+> -static void ir_print_prefix(struct irq_data *data, struct seq_file *p)
+> -{
+> -	seq_printf(p, " IR-%s", data->chip->name);
+> -}
+> -
+> -void irq_remap_modify_chip_defaults(struct irq_chip *chip)
+> -{
+> -	chip->irq_print_chip = ir_print_prefix;
+> -	chip->irq_ack = ir_ack_apic_edge;
+> -}
+> -
+> -bool setup_remapped_irq(int irq, struct irq_cfg *cfg, struct irq_chip *chip)
+> -{
+> -	if (!irq_remapped(cfg))
+> -		return false;
+> -	irq_set_status_flags(irq, IRQ_MOVE_PCNTXT);
+> -	irq_remap_modify_chip_defaults(chip);
+> -	return true;
+> -}
+> -
+>  /**
+>   * irq_remapping_get_ir_irq_domain - Get the irqdomain associated with the IOMMU
+>   *				     device serving request @info
+> -- 
+> 1.7.10.4
 > 
