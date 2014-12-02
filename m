@@ -1,16 +1,15 @@
-From: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v6 1/8] iommu: provide early initialisation hook for IOMMU
-	drivers
-Date: Tue, 2 Dec 2014 14:16:57 +0000
-Message-ID: <CACxGe6vyMkyE9ZRj_FQzi19ESEo7OV_RQoVV65xBYpdQV8cRGQ@mail.gmail.com>
-References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
-	<1417453034-21379-2-git-send-email-will.deacon@arm.com>
-	<CAL_JsqKHvh9KSTYrrs1Pts5Kg=8dA1V6NiW57_2vdDH173qQGg@mail.gmail.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH RESEND v8] iopoll: Introduce memory-mapped IO polling
+	macros
+Date: Tue, 2 Dec 2014 16:55:56 +0000
+Message-ID: <20141202165556.GH9917@arm.com>
+References: <1416860092-11620-1-git-send-email-mitchelh@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAL_JsqKHvh9KSTYrrs1Pts5Kg=8dA1V6NiW57_2vdDH173qQGg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1416860092-11620-1-git-send-email-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,172 +19,211 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Pantelis Antoniou <pantelis.antoniou-OWPKS81ov/FWk0Htik3J/w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Dec 1, 2014 at 11:54 PM, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> Adding Grant and Pantelis...
->
-> On Mon, Dec 1, 2014 at 10:57 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
->> IOMMU drivers must be initialised before any of their upstream devices,
->> otherwise the relevant iommu_ops won't be configured for the bus in
->> question. To solve this, a number of IOMMU drivers use initcalls to
->> initialise the driver before anything has a chance to be probed.
->>
->> Whilst this solves the immediate problem, it leaves the job of probing
->> the IOMMU completely separate from the iommu_ops to configure the IOMMU,
->> which are called on a per-bus basis and require the driver to figure out
->> exactly which instance of the IOMMU is being requested. In particular,
->> the add_device callback simply passes a struct device to the driver,
->> which then has to parse firmware tables or probe buses to identify the
->> relevant IOMMU instance.
->>
->> This patch takes the first step in addressing this problem by adding an
->> early initialisation pass for IOMMU drivers, giving them the ability to
->> store some per-instance data in their iommu_ops structure and store that
->> in their of_node. This can later be used when parsing OF masters to
->> identify the IOMMU instance in question.
->>
->> Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
->> Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
->> Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
->> Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
->> ---
->>  drivers/iommu/of_iommu.c          | 17 +++++++++++++++++
->>  include/asm-generic/vmlinux.lds.h |  2 ++
->>  include/linux/iommu.h             |  2 ++
->>  include/linux/of_iommu.h          | 25 +++++++++++++++++++++++++
->>  4 files changed, 46 insertions(+)
->>
->> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
->> index e550ccb7634e..89b903406968 100644
->> --- a/drivers/iommu/of_iommu.c
->> +++ b/drivers/iommu/of_iommu.c
->> @@ -22,6 +22,9 @@
->>  #include <linux/of.h>
->>  #include <linux/of_iommu.h>
->>
->> +static const struct of_device_id __iommu_of_table_sentinel
->> +       __used __section(__iommu_of_table_end);
->> +
->>  /**
->>   * of_get_dma_window - Parse *dma-window property and returns 0 if found.
->>   *
->> @@ -89,3 +92,17 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
->>         return 0;
->>  }
->>  EXPORT_SYMBOL_GPL(of_get_dma_window);
->> +
->> +void __init of_iommu_init(void)
->> +{
->> +       struct device_node *np;
->> +       const struct of_device_id *match, *matches = &__iommu_of_table;
->> +
->> +       for_each_matching_node_and_match(np, matches, &match) {
->> +               const of_iommu_init_fn init_fn = match->data;
->> +
->> +               if (init_fn(np))
->> +                       pr_err("Failed to initialise IOMMU %s\n",
->> +                               of_node_full_name(np));
->> +       }
->> +}
->> diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
->> index aa70cbda327c..bee5d683074d 100644
->> --- a/include/asm-generic/vmlinux.lds.h
->> +++ b/include/asm-generic/vmlinux.lds.h
->> @@ -164,6 +164,7 @@
->>  #define CLKSRC_OF_TABLES()     OF_TABLE(CONFIG_CLKSRC_OF, clksrc)
->>  #define IRQCHIP_OF_MATCH_TABLE() OF_TABLE(CONFIG_IRQCHIP, irqchip)
->>  #define CLK_OF_TABLES()                OF_TABLE(CONFIG_COMMON_CLK, clk)
->> +#define IOMMU_OF_TABLES()      OF_TABLE(CONFIG_OF_IOMMU, iommu)
->>  #define RESERVEDMEM_OF_TABLES()        OF_TABLE(CONFIG_OF_RESERVED_MEM, reservedmem)
->>  #define CPU_METHOD_OF_TABLES() OF_TABLE(CONFIG_SMP, cpu_method)
->>  #define EARLYCON_OF_TABLES()   OF_TABLE(CONFIG_SERIAL_EARLYCON, earlycon)
->> @@ -497,6 +498,7 @@
->>         CLK_OF_TABLES()                                                 \
->>         RESERVEDMEM_OF_TABLES()                                         \
->>         CLKSRC_OF_TABLES()                                              \
->> +       IOMMU_OF_TABLES()                                               \
->>         CPU_METHOD_OF_TABLES()                                          \
->>         KERNEL_DTB()                                                    \
->>         IRQCHIP_OF_MATCH_TABLE()                                        \
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index e6a7c9ff72f2..7b83f9f8e11d 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -103,6 +103,7 @@ enum iommu_attr {
->>   * @domain_get_attr: Query domain attributes
->>   * @domain_set_attr: Change domain attributes
->>   * @pgsize_bitmap: bitmap of supported page sizes
->> + * @priv: per-instance data private to the iommu driver
->>   */
->>  struct iommu_ops {
->>         bool (*capable)(enum iommu_cap);
->> @@ -133,6 +134,7 @@ struct iommu_ops {
->>         u32 (*domain_get_windows)(struct iommu_domain *domain);
->>
->>         unsigned long pgsize_bitmap;
->> +       void *priv;
->>  };
->>
->>  #define IOMMU_GROUP_NOTIFY_ADD_DEVICE          1 /* Device added */
->> diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
->> index 51a560f34bca..5762cdc8effe 100644
->> --- a/include/linux/of_iommu.h
->> +++ b/include/linux/of_iommu.h
->> @@ -1,12 +1,17 @@
->>  #ifndef __OF_IOMMU_H
->>  #define __OF_IOMMU_H
->>
->> +#include <linux/iommu.h>
->> +#include <linux/of.h>
->> +
->>  #ifdef CONFIG_OF_IOMMU
->>
->>  extern int of_get_dma_window(struct device_node *dn, const char *prefix,
->>                              int index, unsigned long *busno, dma_addr_t *addr,
->>                              size_t *size);
->>
->> +extern void of_iommu_init(void);
->> +
->>  #else
->>
->>  static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
->> @@ -16,6 +21,26 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
->>         return -EINVAL;
->>  }
->>
->> +static inline void of_iommu_init(void) { }
->> +
->>  #endif /* CONFIG_OF_IOMMU */
->>
->> +static inline void of_iommu_set_ops(struct device_node *np,
->> +                                   const struct iommu_ops *ops)
->> +{
->> +       np->data = (struct iommu_ops *)ops;
->> +}
->> +
->> +static inline struct iommu_ops *of_iommu_get_ops(struct device_node *np)
->> +{
->> +       return np->data;
->> +}
->
-> This may collide with other users. While use of it is rare, PPC uses
-> it in its PCI code. The OF_DYNAMIC code frees it but never actually
-> sets it. There may be some coming usage with the DT overlay code or
-> that's just a bug. Pantelis or Grant can comment. If not, I think we
-> really should try to get rid of this pointer rather than expand it's
-> usage.
->
-> I didn't see a user of this. I'm guessing that is coming in a SMMU patch?
+On Mon, Nov 24, 2014 at 08:14:52PM +0000, Mitchel Humpherys wrote:
+> From: Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> 
+> It is sometimes necessary to poll a memory-mapped register until its value
+> satisfies some condition. Introduce a family of convenience macros that do
+> this. Tight-looping, sleeping, and timing out can all be accomplished using
+> these macros.
+> 
+> Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+> Cc: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+> Signed-off-by: Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> ---
+> This patch was originally part of a series [1] for adding support for IOMMU
+> address translations through an ARM SMMU hardware register.  The other
+> patch in the series (the one that actually uses these macros and implements
+> said hardware address translations) was Ack'd by the driver maintainer
+> there (Will Deacon) so I've pulled this patch out to avoid resending an
+> already Ack'd patch over and over again.
+> 
+> In short, please see [1] for previous discussion and the first user of
+> these macros.
+> 
+> This patch has been resent previously here [2], here [3], and here [4] on
+> 2014-10-30, 2014-11-06, and 2014-11-17, respectively.  It has not changed
+> since [2] and has not received any comments since [1] on 2014-10-19.
+> Thanks to everyone who has taken a look at this.
+> 
+> [1] http://thread.gmane.org/gmane.linux.kernel.iommu/7140
+> [2] http://thread.gmane.org/gmane.linux.kernel/1818213
+> [3] http://thread.gmane.org/gmane.linux.kernel/1823422
+> [4] http://thread.gmane.org/gmane.linux.kernel.iommu/7394
 
-Good catch. This is not good. The data pointer should be avoided since
-there are no controls over its use. Until a better solution can be
-implemented, probably the safest thing to do is add a struct iommu_ops
-pointer to struct device_node. However, assuming that only a small
-portion of nodes will actually have iommu_ops set, I'd rather see a
-separate registry that matches device_nodes to iommu_ops.
+Did this ever get queued? It would be pretty useful for a bunch of drivers
+that seem to copy-paste this sort of code.
 
-g.
+If it helps:
+
+  Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+
+Will
+
+> Changes since v7:
+>   - sorted helper macros by size (b, w, l, q)
+>   - removed some of the more esoteric (or flat-out bogus) helper macros
+> ---
+>  include/linux/iopoll.h | 140 +++++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 140 insertions(+)
+>  create mode 100644 include/linux/iopoll.h
+> 
+> diff --git a/include/linux/iopoll.h b/include/linux/iopoll.h
+> new file mode 100644
+> index 0000000000..bd161dae2d
+> --- /dev/null
+> +++ b/include/linux/iopoll.h
+> @@ -0,0 +1,140 @@
+> +/*
+> + * Copyright (c) 2012-2014 The Linux Foundation. All rights reserved.
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 and
+> + * only version 2 as published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + *
+> + */
+> +
+> +#ifndef _LINUX_IOPOLL_H
+> +#define _LINUX_IOPOLL_H
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/types.h>
+> +#include <linux/hrtimer.h>
+> +#include <linux/delay.h>
+> +#include <linux/errno.h>
+> +#include <linux/io.h>
+> +
+> +/**
+> + * readx_poll_timeout - Periodically poll an address until a condition is met or a timeout occurs
+> + * @op: accessor function (takes @addr as its only argument)
+> + * @addr: Address to poll
+> + * @val: Variable to read the value into
+> + * @cond: Break condition (usually involving @val)
+> + * @sleep_us: Maximum time to sleep between reads in us (0 tight-loops)
+> + * @timeout_us: Timeout in us, 0 means never timeout
+> + *
+> + * Returns 0 on success and -ETIMEDOUT upon a timeout. In either
+> + * case, the last read value at @addr is stored in @val. Must not
+> + * be called from atomic context if sleep_us or timeout_us are used.
+> + *
+> + * When available, you'll probably want to use one of the specialized
+> + * macros defined below rather than this macro directly.
+> + */
+> +#define readx_poll_timeout(op, addr, val, cond, sleep_us, timeout_us)	\
+> +({ \
+> +	ktime_t timeout = ktime_add_us(ktime_get(), timeout_us); \
+> +	might_sleep_if(sleep_us); \
+> +	for (;;) { \
+> +		(val) = op(addr); \
+> +		if (cond) \
+> +			break; \
+> +		if (timeout_us && ktime_compare(ktime_get(), timeout) > 0) { \
+> +			(val) = op(addr); \
+> +			break; \
+> +		} \
+> +		if (sleep_us) \
+> +			usleep_range((sleep_us >> 2) + 1, sleep_us); \
+> +	} \
+> +	(cond) ? 0 : -ETIMEDOUT; \
+> +})
+> +
+> +/**
+> + * readx_poll_timeout_atomic - Periodically poll an address until a condition is met or a timeout occurs
+> + * @op: accessor function (takes @addr as its only argument)
+> + * @addr: Address to poll
+> + * @val: Variable to read the value into
+> + * @cond: Break condition (usually involving @val)
+> + * @delay_us: Time to udelay between reads in us (0 tight-loops)
+> + * @timeout_us: Timeout in us, 0 means never timeout
+> + *
+> + * Returns 0 on success and -ETIMEDOUT upon a timeout. In either
+> + * case, the last read value at @addr is stored in @val.
+> + *
+> + * When available, you'll probably want to use one of the specialized
+> + * macros defined below rather than this macro directly.
+> + */
+> +#define readx_poll_timeout_atomic(op, addr, val, cond, delay_us, timeout_us) \
+> +({ \
+> +	ktime_t timeout = ktime_add_us(ktime_get(), timeout_us); \
+> +	for (;;) { \
+> +		(val) = op(addr); \
+> +		if (cond) \
+> +			break; \
+> +		if (timeout_us && ktime_compare(ktime_get(), timeout) > 0) { \
+> +			(val) = op(addr); \
+> +			break; \
+> +		} \
+> +		if (delay_us) \
+> +			udelay(delay_us);	\
+> +	} \
+> +	(cond) ? 0 : -ETIMEDOUT; \
+> +})
+> +
+> +
+> +#define readb_poll_timeout(addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout(readb, addr, val, cond, delay_us, timeout_us)
+> +
+> +#define readb_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout_atomic(readb, addr, val, cond, delay_us, timeout_us)
+> +
+> +#define readw_poll_timeout(addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout(readw, addr, val, cond, delay_us, timeout_us)
+> +
+> +#define readw_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout_atomic(readw, addr, val, cond, delay_us, timeout_us)
+> +
+> +#define readl_poll_timeout(addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout(readl, addr, val, cond, delay_us, timeout_us)
+> +
+> +#define readl_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout_atomic(readl, addr, val, cond, delay_us, timeout_us)
+> +
+> +#define readq_poll_timeout(addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout(readq, addr, val, cond, delay_us, timeout_us)
+> +
+> +#define readq_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout_atomic(readq, addr, val, cond, delay_us, timeout_us)
+> +
+> +#define readb_relaxed_poll_timeout(addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout(readb_relaxed, addr, val, cond, delay_us, timeout_us)
+> +
+> +#define readb_relaxed_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout_atomic(readb_relaxed, addr, val, cond, delay_us, timeout_us)
+> +
+> +#define readw_relaxed_poll_timeout(addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout(readw_relaxed, addr, val, cond, delay_us, timeout_us)
+> +
+> +#define readw_relaxed_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout_atomic(readw_relaxed, addr, val, cond, delay_us, timeout_us)
+> +
+> +#define readl_relaxed_poll_timeout(addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout(readl_relaxed, addr, val, cond, delay_us, timeout_us)
+> +
+> +#define readl_relaxed_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout_atomic(readl_relaxed, addr, val, cond, delay_us, timeout_us)
+> +
+> +#define readq_relaxed_poll_timeout(addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout(readq_relaxed, addr, val, cond, delay_us, timeout_us)
+> +
+> +#define readq_relaxed_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout_atomic(readq_relaxed, addr, val, cond, delay_us, timeout_us)
+> +
+> +#endif /* _LINUX_IOPOLL_H */
+> -- 
+> Qualcomm Innovation Center, Inc.
+> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+> a Linux Foundation Collaborative Project
+> 
+> 
