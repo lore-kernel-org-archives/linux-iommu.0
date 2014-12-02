@@ -1,16 +1,15 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: Fix an off-by-one bug in __domain_mapping()
-Date: Tue, 2 Dec 2014 13:04:30 +0100
-Message-ID: <20141202120430.GA32294@8bytes.org>
-References: <1416966130-866-1-git-send-email-jiang.liu@linux.intel.com>
-	<20141201162740.GK3762@8bytes.org>
-	<1417516475.5525.57.camel@infradead.org>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v6 1/8] iommu: provide early initialisation hook for
+	IOMMU drivers
+Date: Tue, 2 Dec 2014 13:05:24 +0100
+Message-ID: <20141202120523.GA7134@ulmo>
+References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
+	<CAL_JsqKHvh9KSTYrrs1Pts5Kg=8dA1V6NiW57_2vdDH173qQGg@mail.gmail.com>
+	<547D84F4.8030204@samsung.com> <2039644.fesfKXTybP@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============5407219640190893059=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1417516475.5525.57.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+In-Reply-To: <2039644.fesfKXTybP@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,52 +19,94 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Pantelis Antoniou <pantelis.antoniou-OWPKS81ov/FWk0Htik3J/w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Dec 02, 2014 at 10:34:35AM +0000, David Woodhouse wrote:
-> __domain_mapping() is an amalgamation of the old domain_pfn_mapping()
-> and domain_sg_mapping() functions. When I did that, in commit 9051aa026,
-> the 'sg_res' variable was used *only* for tracking how many pages were
-> left in the current scatterlist element, before we had to get the next
-> one from the sglist.
-> 
-> For reasons which are lost now, in the case of a simple pfn range I was
-> setting 'sg_res = nr_pages + 1' to ensure that we *never* got down to
-> sg_res=0 and tried to look for more from the (non-existent, in this
-> case) sglist.
-> 
-> Later in commit 6dd9a7c73 we added large page support, using sg_res in a
-> way which actually required it to be accurate. And now we have an
-> off-by-one because we'll actually *try* to use a 2GiB large page for a
-> mapping of size 0x1ff000, because of that '+1'.
-> 
-> The BUG_ON is entirely correct here, and correctly highlighted the
-> problem.
-> 
-> However, the +1 is no longer necessary, because the check that needed it
-> was also modified to read 'if (sg_res && nr_pages)', which is perfectly
-> sufficient and arguably how it should have been done in the first place.
-> 
-> I had an almost identical patch last week for internal testing, because
-> I stupidly hadn't noticed that Jiang had beaten me to it.
-> 
-> Acked-By: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> 
-> > > 	This issue was introduced in v2.6.31, but intel-iommu.c has
-> > > been moved into drivers/iommu in v3.1. So what's the preferred way
-> > > to deal with stable kernels between v2.6.31 and v3.1?
-> > 
-> > Just remove the kernel version marker from the stable tag. The stable
-> > kernel maintainers for kernels >3.1 will ask you to backport the patch
-> > or just backport it by themselfes.
-> 
-> I think this is only an issue since commit 6dd9a7c737 added super page
-> support in 3.0, isn't it? Before that, the +1 was *needed*.
 
-Okay guys, thanks for the explanations. I applied the patch to the
-x86/vt-d branch and changed the stable tag to >= 3.0.
+--===============5407219640190893059==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="envbJBWh7q8WU6mo"
+Content-Disposition: inline
 
 
-	Joerg
+--envbJBWh7q8WU6mo
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, Dec 02, 2014 at 10:36:59AM +0100, Arnd Bergmann wrote:
+> On Tuesday 02 December 2014 10:23:00 Marek Szyprowski wrote:
+> > >> +static inline void of_iommu_set_ops(struct device_node *np,
+> > >> +                                   const struct iommu_ops *ops)
+> > >> +{
+> > >> +       np->data =3D (struct iommu_ops *)ops;
+> > >> +}
+> > >> +
+> > >> +static inline struct iommu_ops *of_iommu_get_ops(struct device_node=
+ *np)
+> > >> +{
+> > >> +       return np->data;
+> > >> +}
+> > > This may collide with other users. While use of it is rare, PPC uses
+> > > it in its PCI code. The OF_DYNAMIC code frees it but never actually
+> > > sets it. There may be some coming usage with the DT overlay code or
+> > > that's just a bug. Pantelis or Grant can comment. If not, I think we
+> > > really should try to get rid of this pointer rather than expand it's
+> > > usage.
+> >=20
+> > I think that for the initial version it is ok to use np->data. When=20
+> > per-iommu
+> > controller structure is introduced later, it can be reused also for=20
+> > performing
+> > of_node to iommu_ops lookup, because IOMMU framework will need to keep =
+track
+> > on all such iommu controllers anyway.
+>=20
+> Agreed. I think in the long run, we will have a 'struct iommu' that is
+> added into a global linked list and that contains (among other things)
+> an iommu_ops pointer and a device_node pointer. The of_iommu_get_ops
+> function then walks the list to find the right iommu instance.
+
+If we end up doing that, how is this any different from what Hiroshi and
+I initially proposed over a year ago (and then again earlier this year)?
+
+The only remaining difference would be that this current proposal needs
+IOMMUs to be registered even before other devices are instantiated for
+no apparent reason other than ordering. The original proposal allowed
+the IOMMU driver to register just like any other driver and ordering to
+be handled via deferred probing.
+
+Thierry
+
+--envbJBWh7q8WU6mo
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJUfasDAAoJEN0jrNd/PrOhx0oP/1+H6DleTHzi/ueblhUp9lTd
+1OjufAVAxkYN1MxM4y0AFE99nW2y8ZrLlEe6FQiNHrh69tKOJtzOlc2w1/JSALyX
+wE/mHmT0R1Dm5QY6A+0qSBmd/lMbTgvHToxK1SZEPLKwMH9+Wq3813SoKBs88KBJ
+ap+nQgxH25mDcfUGmS+n0hMvR54dwmdaiB1Vj3Y8t9ko8MqI5bPAchmsBlxp6CKR
+WwT377BlGT0wB+ROPr1IYMs14UL3drhu0FXmegAN2oi/Xkhi+r+sZRP1uXJvTCEE
++M+jLCeueZOevVbruqAWa0EnvQP7E3JAsj+23CvyoNkI+TeNjhpyC8LzJdtGSE37
+50Ib9ufy3hjtaUm0ZUfj5hhfKhtXdZ6Uod7WzVratEW7kH7W5iZ//h8Znuu+xBuq
+k2a+Fl4OO2I8weWAom9TLZuvyE9bfdLb70apUwoxYXDEAGyfn7fi7nVm8Bat3atu
+1vCSkkI4+FFkXCKjxTX0vp7520hvjAV0EJl/543bP5dQ7tpMwIsfXIKNyXqcLFk2
+dXuaI5OBVQoX+FpmffjSTxI0Gsfur7gk/XBVQa91+SaAAL6FegycZ9bKJXsYaWaI
+OT1FTSX4aCg3N0UkRkHakNPyQG2LO6XEfKqfSJwcaB99zIY6NWRmGUTS1gzjXu1d
+10u62jJKwCBfTL9kUS+r
+=Klb3
+-----END PGP SIGNATURE-----
+
+--envbJBWh7q8WU6mo--
+
+--===============5407219640190893059==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============5407219640190893059==--
