@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v2 10/25] KVM: change struct pi_desc for VT-d Posted-Interrupts
-Date: Wed,  3 Dec 2014 15:39:39 +0800
-Message-ID: <1417592394-24343-11-git-send-email-feng.wu@intel.com>
+Subject: [v2 11/25] KVM: Add some helper functions for Posted-Interrupts
+Date: Wed,  3 Dec 2014 15:39:40 +0800
+Message-ID: <1417592394-24343-12-git-send-email-feng.wu@intel.com>
 References: <1417592394-24343-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,38 +21,57 @@ To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@p
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Change struct pi_desc for VT-d Posted-Interrupts.
+This patch adds some helper functions to manipulate the
+Posted-Interrupts Descriptor.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/kvm/vmx.c |   15 +++++++++++++--
- 1 files changed, 13 insertions(+), 2 deletions(-)
+ arch/x86/kvm/vmx.c |   26 ++++++++++++++++++++++++++
+ 1 files changed, 26 insertions(+), 0 deletions(-)
 
 diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-index 3e556c6..abdb84f 100644
+index abdb84f..0b1383e 100644
 --- a/arch/x86/kvm/vmx.c
 +++ b/arch/x86/kvm/vmx.c
-@@ -411,8 +411,19 @@ struct nested_vmx {
+@@ -408,6 +408,8 @@ struct nested_vmx {
+ };
+ 
+ #define POSTED_INTR_ON  0
++#define POSTED_INTR_SN  1
++
  /* Posted-Interrupt Descriptor */
  struct pi_desc {
  	u32 pir[8];     /* Posted interrupt requested */
--	u32 control;	/* bit 0 of control is outstanding notification bit */
--	u32 rsvd[7];
-+	union {
-+		struct {
-+			u64	on	: 1,
-+				sn	: 1,
-+				rsvd_1	: 13,
-+				ndm	: 1,
-+				nv	: 8,
-+				rsvd_2	: 8,
-+				ndst	: 32;
-+		};
-+		u64 control;
-+	};
-+	u32 rsvd[6];
- } __aligned(64);
+@@ -443,6 +445,30 @@ static int pi_test_and_set_pir(int vector, struct pi_desc *pi_desc)
+ 	return test_and_set_bit(vector, (unsigned long *)pi_desc->pir);
+ }
  
- static bool pi_test_and_set_on(struct pi_desc *pi_desc)
++static void pi_clear_sn(struct pi_desc *pi_desc)
++{
++	return clear_bit(POSTED_INTR_SN,
++			(unsigned long *)&pi_desc->control);
++}
++
++static void pi_set_sn(struct pi_desc *pi_desc)
++{
++	return set_bit(POSTED_INTR_SN,
++			(unsigned long *)&pi_desc->control);
++}
++
++static int pi_test_on(struct pi_desc *pi_desc)
++{
++	return test_bit(POSTED_INTR_ON,
++			(unsigned long *)&pi_desc->control);
++}
++
++static int pi_test_sn(struct pi_desc *pi_desc)
++{
++	return test_bit(POSTED_INTR_SN,
++			(unsigned long *)&pi_desc->control);
++}
++
+ struct vcpu_vmx {
+ 	struct kvm_vcpu       vcpu;
+ 	unsigned long         host_rsp;
 -- 
 1.7.1
