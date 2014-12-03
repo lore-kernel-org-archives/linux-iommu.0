@@ -1,7 +1,8 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v2 02/25] iommu: Add new member capability to struct irq_remap_ops
-Date: Wed,  3 Dec 2014 15:39:31 +0800
-Message-ID: <1417592394-24343-3-git-send-email-feng.wu@intel.com>
+Subject: [v2 03/25] iommu,
+	x86: Define new irte structure for VT-d Posted-Interrupts
+Date: Wed,  3 Dec 2014 15:39:32 +0800
+Message-ID: <1417592394-24343-4-git-send-email-feng.wu@intel.com>
 References: <1417592394-24343-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,53 +22,56 @@ To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@p
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds a new member capability to struct irq_remap_ops,
-this new function ops can be used to check whether some
-features are supported, such as VT-d Posted-Interrupts.
+Add a new irte_pi structure for VT-d Posted-Interrupts.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- arch/x86/include/asm/irq_remapping.h |    4 ++++
- drivers/iommu/irq_remapping.h        |    4 ++++
- 2 files changed, 8 insertions(+), 0 deletions(-)
+ include/linux/dmar.h |   32 ++++++++++++++++++++++++++++++++
+ 1 files changed, 32 insertions(+), 0 deletions(-)
 
-diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
-index 6ba2431..f67ae08 100644
---- a/arch/x86/include/asm/irq_remapping.h
-+++ b/arch/x86/include/asm/irq_remapping.h
-@@ -31,6 +31,10 @@ struct irq_alloc_info;
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index 8473756..c7f9cda 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -212,6 +212,38 @@ struct irte {
+ 	};
+ };
  
- #ifdef CONFIG_IRQ_REMAP
- 
-+enum irq_remap_cap {
-+	IRQ_POSTING_CAP = 0,
++struct irte_pi {
++	union {
++		struct {
++			__u64   present		: 1,
++				fpd		: 1,
++				__reserved_1	: 6,
++				avail		: 4,
++				__reserved_2	: 2,
++				urg		: 1,
++				pst		: 1,
++				vector		: 8,
++				__reserved_3	: 14,
++				pda_l		: 26;
++		};
++		__u64 low;
++	};
++
++	union {
++		struct {
++			__u64	sid		: 16,
++				sq		: 2,
++				svt		: 2,
++				__reserved_4	: 12,
++				pda_h		: 32;
++		};
++		__u64 high;
++	};
 +};
 +
- extern void setup_irq_remapping_ops(void);
- extern int irq_remapping_supported(void);
- extern void set_irq_remapping_broken(void);
-diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
-index 4bd791d..2d991b2 100644
---- a/drivers/iommu/irq_remapping.h
-+++ b/drivers/iommu/irq_remapping.h
-@@ -28,6 +28,7 @@ struct irq_data;
- struct msi_msg;
- struct irq_domain;
- struct irq_alloc_info;
-+enum irq_remap_cap;
- 
- extern int disable_irq_remap;
- extern int irq_remap_broken;
-@@ -39,6 +40,9 @@ struct irq_remap_ops {
- 	/* Check whether Interrupt Remapping is supported */
- 	int (*supported)(void);
- 
-+	/* Check some capability is supported */
-+	bool (*capability)(enum irq_remap_cap);
++#define PDA_LOW_BIT    26
++#define PDA_HIGH_BIT   32
 +
- 	/* Initializes hardware and makes it ready for remapping interrupts */
- 	int  (*prepare)(void);
- 
+ enum {
+ 	IRQ_REMAP_XAPIC_MODE,
+ 	IRQ_REMAP_X2APIC_MODE,
 -- 
 1.7.1
