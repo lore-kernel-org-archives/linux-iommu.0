@@ -1,7 +1,8 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v2 12/25] KVM: Initialize VT-d Posted-Interrupts Descriptor
-Date: Wed,  3 Dec 2014 15:39:41 +0800
-Message-ID: <1417592394-24343-13-git-send-email-feng.wu@intel.com>
+Subject: [v2 13/25] KVM: Define a new interface kvm_find_dest_vcpu() for VT-d
+	PI
+Date: Wed,  3 Dec 2014 15:39:42 +0800
+Message-ID: <1417592394-24343-14-git-send-email-feng.wu@intel.com>
 References: <1417592394-24343-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,64 +22,105 @@ To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@p
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch initializes the VT-d Posted-Interrupts Descriptor.
+This patch defines a new interface kvm_find_dest_vcpu for
+VT-d PI, which can returns the destination vCPU of the
+interrupt for guests.
+
+Since VT-d PI cannot handle broadcast/multicast interrupt,
+Here we only handle Fixed and Lowest priority interrupts.
+
+The current method of handling guest lowest priority interrtups
+is to use a counter 'apic_arb_prio' for each vCPU, we choose the
+vCPU with smallest 'apic_arb_prio' and then increase it by 1.
+However, for VT-d PI, we cannot re-use this, since we no longer
+have control to 'apic_arb_prio' with posted interrupt direct
+delivery by Hardware.
+
+Here, we introduce a similar way with 'apic_arb_prio' to handle
+guest lowest priority interrtups when VT-d PI is used. Here is the
+ideas:
+- Each vCPU has a counter 'round_robin_counter'.
+- When guests sets an interrupts to lowest priority, we choose
+the vCPU with smallest 'round_robin_counter' as the destination,
+then increase it.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/kvm/vmx.c |   27 +++++++++++++++++++++++++++
- 1 files changed, 27 insertions(+), 0 deletions(-)
+ arch/x86/include/asm/kvm_host.h |    4 +++
+ virt/kvm/irq_comm.c             |   41 +++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 45 insertions(+), 0 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-index 0b1383e..66ca275 100644
---- a/arch/x86/kvm/vmx.c
-+++ b/arch/x86/kvm/vmx.c
-@@ -45,6 +45,7 @@
- #include <asm/perf_event.h>
- #include <asm/debugreg.h>
- #include <asm/kexec.h>
-+#include <asm/irq_remapping.h>
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 6ed0c30..7a41808 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -358,6 +358,7 @@ struct kvm_vcpu_arch {
+ 	struct kvm_lapic *apic;    /* kernel irqchip context */
+ 	unsigned long apic_attention;
+ 	int32_t apic_arb_prio;
++	int32_t round_robin_counter;
+ 	int mp_state;
+ 	u64 ia32_misc_enable_msr;
+ 	bool tpr_access_reporting;
+@@ -1093,4 +1094,7 @@ int kvm_pmu_read_pmc(struct kvm_vcpu *vcpu, unsigned pmc, u64 *data);
+ void kvm_handle_pmu_event(struct kvm_vcpu *vcpu);
+ void kvm_deliver_pmi(struct kvm_vcpu *vcpu);
  
- #include "trace.h"
- 
-@@ -4433,6 +4434,30 @@ static void ept_set_mmio_spte_mask(void)
- 	kvm_mmu_set_mmio_spte_mask((0x3ull << 62) | 0x6ull);
++bool kvm_find_dest_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
++			struct kvm_vcpu **dest_vcpu);
++
+ #endif /* _ASM_X86_KVM_HOST_H */
+diff --git a/virt/kvm/irq_comm.c b/virt/kvm/irq_comm.c
+index 963b899..f3c5d69 100644
+--- a/virt/kvm/irq_comm.c
++++ b/virt/kvm/irq_comm.c
+@@ -317,6 +317,47 @@ out:
+ 	return r;
  }
  
-+static void pi_desc_init(struct vcpu_vmx *vmx)
++int kvm_compare_rr_counter(struct kvm_vcpu *vcpu1, struct kvm_vcpu *vcpu2)
 +{
-+	unsigned int dest;
-+
-+	if (!irq_remapping_cap(IRQ_POSTING_CAP))
-+		return;
-+
-+	/*
-+	 * Initialize Posted-Interrupt Descriptor
-+	 */
-+
-+	pi_clear_sn(&vmx->pi_desc);
-+	vmx->pi_desc.nv = POSTED_INTR_VECTOR;
-+
-+	/* Physical mode for Notificaiton Event */
-+	vmx->pi_desc.ndm = 0;
-+	dest = cpu_physical_id(vmx->vcpu.cpu);
-+
-+	if (x2apic_enabled())
-+		vmx->pi_desc.ndst = dest;
-+	else
-+		vmx->pi_desc.ndst = (dest << 8) & 0xFF00;
++	return vcpu1->arch.round_robin_counter -
++			vcpu2->arch.round_robin_counter;
 +}
 +
- /*
-  * Sets up the vmcs for emulated real mode.
-  */
-@@ -4476,6 +4501,8 @@ static int vmx_vcpu_setup(struct vcpu_vmx *vmx)
- 
- 		vmcs_write64(POSTED_INTR_NV, POSTED_INTR_VECTOR);
- 		vmcs_write64(POSTED_INTR_DESC_ADDR, __pa((&vmx->pi_desc)));
++bool kvm_find_dest_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
++				struct kvm_vcpu **dest_vcpu)
++{
++	int i, r = 0;
++	struct kvm_vcpu *vcpu, *dest = NULL;
 +
-+		pi_desc_init(vmx);
- 	}
- 
- 	if (ple_gap) {
++	kvm_for_each_vcpu(i, vcpu, kvm) {
++		if (!kvm_apic_present(vcpu))
++			continue;
++
++		if (!kvm_apic_match_dest(vcpu, NULL, irq->shorthand,
++					irq->dest_id, irq->dest_mode))
++			continue;
++
++		if (!kvm_is_dm_lowest_prio(irq)) {
++			r++;
++			*dest_vcpu = vcpu;
++		} else if (kvm_lapic_enabled(vcpu)) {
++			if (!dest)
++				dest = vcpu;
++			else if (kvm_compare_rr_counter(vcpu, dest) < 0)
++				dest = vcpu;
++		}
++	}
++
++	if (dest) {
++		dest->arch.round_robin_counter++;
++		*dest_vcpu = dest;
++		return true;
++	} else if (r == 1)
++		return true;
++
++	return false;
++}
++
+ #define IOAPIC_ROUTING_ENTRY(irq) \
+ 	{ .gsi = irq, .type = KVM_IRQ_ROUTING_IRQCHIP,	\
+ 	  .u.irqchip = { .irqchip = KVM_IRQCHIP_IOAPIC, .pin = (irq) } }
 -- 
 1.7.1
