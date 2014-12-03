@@ -1,8 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v2 01/25] genirq: Introduce irq_set_vcpu_affinity() to target an
-	interrupt to a VCPU
-Date: Wed,  3 Dec 2014 15:39:30 +0800
-Message-ID: <1417592394-24343-2-git-send-email-feng.wu@intel.com>
+Subject: [v2 02/25] iommu: Add new member capability to struct irq_remap_ops
+Date: Wed,  3 Dec 2014 15:39:31 +0800
+Message-ID: <1417592394-24343-3-git-send-email-feng.wu@intel.com>
 References: <1417592394-24343-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,124 +21,53 @@ To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@p
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+This patch adds a new member capability to struct irq_remap_ops,
+this new function ops can be used to check whether some
+features are supported, such as VT-d Posted-Interrupts.
 
-With Posted-Interrupts support in Intel CPU and IOMMU, an external
-interrupt from assigned-devices could be directly delivered to a
-virtual CPU in a virtual machine. Instead of hacking KVM and Intel
-IOMMU drivers, we propose a platform independent interface to target
-an interrupt to a specific virtual CPU in a virtual machine, or set
-virtual CPU affinity for an interrupt.
-
-By adopting this new interface and the hierarchy irqdomain, we could
-easily support posted-interrupts on Intel platforms, and also provide
-flexible enough interfaces for other platforms to support similar
-features.
-
-We may also cooperate between set_affinity() and set_vcpu_affinity()
-in IRQ core or irq chip drivers.
-
-Here is the usage scenario for this interface:
-Guest update MSI/MSI-X interrupt configuration
-	-->QEMU and KVM handle this
-	-->KVM call this interface (passing posted interrupts descriptor
-	   and guest vector)
-	-->irq core will transfer the control to IOMMU
-	-->IOMMU will do the real work of updating IRTE (IRTE has new
-	   format for VT-d Posted-Interrupts)
-
-Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- include/linux/irq.h |    4 ++++
- kernel/irq/chip.c   |   14 ++++++++++++++
- kernel/irq/manage.c |   20 ++++++++++++++++++++
- 3 files changed, 38 insertions(+), 0 deletions(-)
+ arch/x86/include/asm/irq_remapping.h |    4 ++++
+ drivers/iommu/irq_remapping.h        |    4 ++++
+ 2 files changed, 8 insertions(+), 0 deletions(-)
 
-diff --git a/include/linux/irq.h b/include/linux/irq.h
-index f26e736..83abafc 100644
---- a/include/linux/irq.h
-+++ b/include/linux/irq.h
-@@ -324,6 +324,8 @@ static inline irq_hw_number_t irqd_to_hwirq(struct irq_data *d)
-  *				irq_request_resources
-  * @irq_compose_msi_msg:	optional to compose message content for MSI
-  * @irq_write_msi_msg:	optional to write message content for MSI
-+ * @irq_set_vcpu_affinity:	optional to target a virtual CPU in a virtual
-+ *				machine
-  * @flags:		chip specific flags
-  */
- struct irq_chip {
-@@ -362,6 +364,7 @@ struct irq_chip {
+diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
+index 6ba2431..f67ae08 100644
+--- a/arch/x86/include/asm/irq_remapping.h
++++ b/arch/x86/include/asm/irq_remapping.h
+@@ -31,6 +31,10 @@ struct irq_alloc_info;
  
- 	void		(*irq_compose_msi_msg)(struct irq_data *data, struct msi_msg *msg);
- 	void		(*irq_write_msi_msg)(struct irq_data *data, struct msi_msg *msg);
-+	int		(*irq_set_vcpu_affinity)(struct irq_data *data, void *vcpu_info);
+ #ifdef CONFIG_IRQ_REMAP
  
- 	unsigned long	flags;
- };
-@@ -416,6 +419,7 @@ extern void irq_cpu_online(void);
- extern void irq_cpu_offline(void);
- extern int irq_set_affinity_locked(struct irq_data *data,
- 				   const struct cpumask *cpumask, bool force);
-+extern int irq_set_vcpu_affinity(unsigned int irq, void *vcpu_info);
- 
- #if defined(CONFIG_SMP) && defined(CONFIG_GENERIC_PENDING_IRQ)
- void irq_move_irq(struct irq_data *data);
-diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-index 6f1c7a5..fe0908f 100644
---- a/kernel/irq/chip.c
-+++ b/kernel/irq/chip.c
-@@ -948,6 +948,20 @@ int irq_chip_retrigger_hierarchy(struct irq_data *data)
- 
- 	return -ENOSYS;
- }
++enum irq_remap_cap {
++	IRQ_POSTING_CAP = 0,
++};
 +
-+/**
-+ * irq_chip_set_vcpu_affinity_parent - Set vcpu affinity on the parent interrupt
-+ * @data:	Pointer to interrupt specific data
-+ * @dest:	The vcpu affinity information
-+ */
-+int irq_chip_set_vcpu_affinity_parent(struct irq_data *data, void *vcpu_info)
-+{
-+	data = data->parent_data;
-+	if (data->chip->irq_set_vcpu_affinity)
-+		return data->chip->irq_set_vcpu_affinity(data, vcpu_info);
-+
-+	return -ENOSYS;
-+}
- #endif
+ extern void setup_irq_remapping_ops(void);
+ extern int irq_remapping_supported(void);
+ extern void set_irq_remapping_broken(void);
+diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
+index 4bd791d..2d991b2 100644
+--- a/drivers/iommu/irq_remapping.h
++++ b/drivers/iommu/irq_remapping.h
+@@ -28,6 +28,7 @@ struct irq_data;
+ struct msi_msg;
+ struct irq_domain;
+ struct irq_alloc_info;
++enum irq_remap_cap;
  
- /**
-diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index 8069237..bd3a1ba 100644
---- a/kernel/irq/manage.c
-+++ b/kernel/irq/manage.c
-@@ -247,6 +247,26 @@ int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
- }
- EXPORT_SYMBOL_GPL(irq_set_affinity_hint);
+ extern int disable_irq_remap;
+ extern int irq_remap_broken;
+@@ -39,6 +40,9 @@ struct irq_remap_ops {
+ 	/* Check whether Interrupt Remapping is supported */
+ 	int (*supported)(void);
  
-+int irq_set_vcpu_affinity(unsigned int irq, void *vcpu_info)
-+{
-+	struct irq_desc *desc = irq_to_desc(irq);
-+	struct irq_chip *chip;
-+	unsigned long flags;
-+	int ret = -ENOSYS;
++	/* Check some capability is supported */
++	bool (*capability)(enum irq_remap_cap);
 +
-+	if (!desc)
-+		return -EINVAL;
-+
-+	raw_spin_lock_irqsave(&desc->lock, flags);
-+	chip = desc->irq_data.chip;
-+	if (chip && chip->irq_set_vcpu_affinity)
-+		ret = chip->irq_set_vcpu_affinity(irq_desc_get_irq_data(desc),
-+						  vcpu_info);
-+	raw_spin_unlock_irqrestore(&desc->lock, flags);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(irq_set_vcpu_affinity);
-+
- static void irq_affinity_notify(struct work_struct *work)
- {
- 	struct irq_affinity_notify *notify =
+ 	/* Initializes hardware and makes it ready for remapping interrupts */
+ 	int  (*prepare)(void);
+ 
 -- 
 1.7.1
