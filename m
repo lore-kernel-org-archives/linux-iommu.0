@@ -1,8 +1,8 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v2 03/25] iommu,
-	x86: Define new irte structure for VT-d Posted-Interrupts
-Date: Wed,  3 Dec 2014 15:39:32 +0800
-Message-ID: <1417592394-24343-4-git-send-email-feng.wu@intel.com>
+Subject: [v2 05/25] x86,
+	irq: Implement irq_set_vcpu_affinity for pci_msi_ir_controller
+Date: Wed,  3 Dec 2014 15:39:34 +0800
+Message-ID: <1417592394-24343-6-git-send-email-feng.wu@intel.com>
 References: <1417592394-24343-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,56 +22,40 @@ To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@p
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add a new irte_pi structure for VT-d Posted-Interrupts.
+Implement irq_set_vcpu_affinity for pci_msi_ir_controller.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- include/linux/dmar.h |   32 ++++++++++++++++++++++++++++++++
- 1 files changed, 32 insertions(+), 0 deletions(-)
+ arch/x86/kernel/apic/msi.c |    1 +
+ include/linux/irq.h        |    3 +++
+ 2 files changed, 4 insertions(+), 0 deletions(-)
 
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 8473756..c7f9cda 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -212,6 +212,38 @@ struct irte {
- 	};
+diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
+index da163da..b0ed073 100644
+--- a/arch/x86/kernel/apic/msi.c
++++ b/arch/x86/kernel/apic/msi.c
+@@ -152,6 +152,7 @@ static struct irq_chip pci_msi_ir_controller = {
+ 	.irq_mask		= pci_msi_mask_irq,
+ 	.irq_ack		= irq_chip_ack_parent,
+ 	.irq_retrigger		= irq_chip_retrigger_hierarchy,
++	.irq_set_vcpu_affinity	= irq_chip_set_vcpu_affinity_parent,
+ 	.flags			= IRQCHIP_SKIP_SET_WAKE,
  };
  
-+struct irte_pi {
-+	union {
-+		struct {
-+			__u64   present		: 1,
-+				fpd		: 1,
-+				__reserved_1	: 6,
-+				avail		: 4,
-+				__reserved_2	: 2,
-+				urg		: 1,
-+				pst		: 1,
-+				vector		: 8,
-+				__reserved_3	: 14,
-+				pda_l		: 26;
-+		};
-+		__u64 low;
-+	};
+diff --git a/include/linux/irq.h b/include/linux/irq.h
+index 83abafc..5dcaa7f 100644
+--- a/include/linux/irq.h
++++ b/include/linux/irq.h
+@@ -464,6 +464,9 @@ extern void irq_chip_eoi_parent(struct irq_data *data);
+ extern int irq_chip_set_affinity_parent(struct irq_data *data,
+ 					const struct cpumask *dest,
+ 					bool force);
++extern int irq_chip_set_vcpu_affinity_parent(struct irq_data *data,
++					     void *vcpu_info);
 +
-+	union {
-+		struct {
-+			__u64	sid		: 16,
-+				sq		: 2,
-+				svt		: 2,
-+				__reserved_4	: 12,
-+				pda_h		: 32;
-+		};
-+		__u64 high;
-+	};
-+};
-+
-+#define PDA_LOW_BIT    26
-+#define PDA_HIGH_BIT   32
-+
- enum {
- 	IRQ_REMAP_XAPIC_MODE,
- 	IRQ_REMAP_X2APIC_MODE,
+ #endif
+ 
+ static inline void irq_chip_write_msi_msg(struct irq_data *data,
 -- 
 1.7.1
