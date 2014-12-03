@@ -1,15 +1,11 @@
-From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH 2/4] iommu: add ARM LPAE page table allocator
-Date: Tue, 02 Dec 2014 14:41:52 -0800
-Message-ID: <vnkw8uipznbj.fsf@mitchelh-linux.qualcomm.com>
-References: <1417089078-22900-1-git-send-email-will.deacon@arm.com>
-	<1417089078-22900-3-git-send-email-will.deacon@arm.com>
+From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [v2 00/25] Add VT-d Posted-Interrupts support
+Date: Wed,  3 Dec 2014 15:39:29 +0800
+Message-ID: <1417592394-24343-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1417089078-22900-3-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org> (Will
-	Deacon's message of "Thu, 27 Nov 2014 11:51:16 +0000")
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,48 +15,92 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, Robin.Murphy-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 27 2014 at 03:51:16 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> A number of IOMMUs found in ARM SoCs can walk architecture-compatible
-> page tables.
->
-> This patch adds a generic allocator for Stage-1 and Stage-2 v7/v8
-> long-descriptor page tables. 4k, 16k and 64k pages are supported, with
-> up to 4-levels of walk to cover a 48-bit address space.
->
-> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> ---
+VT-d Posted-Interrupts is an enhancement to CPU side Posted-Interrupt.
+With VT-d Posted-Interrupts enabled, external interrupts from
+direct-assigned devices can be delivered to guests without VMM
+intervention when guest is running in non-root mode.
 
-[...]
+You can find the VT-d Posted-Interrtups Spec. in the following URL:
+http://www.intel.com/content/www/us/en/intelligent-systems/intel-technology/vt-directed-io-spec.html
 
-> +static struct io_pgtable *arm_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg,
-> +						    void *cookie)
-> +{
-> +	u64 reg;
-> +	struct arm_lpae_io_pgtable *data = arm_lpae_alloc_pgtable(cfg);
-> +
-> +	if (!data)
-> +		return NULL;
-> +
-> +	/* TCR */
-> +	reg = ARM_LPAE_TCR_EAE |
-> +	     (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
-> +	     (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT) |
-> +	     (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
+v1->v2:
+* Use VFIO framework to enable this feature, the VFIO part of this series is
+  base on Eric's patch "[PATCH v3 0/8] KVM-VFIO IRQ forward control"
+* Rebase this patchset on git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git,
+  then revise some irq logic based on the new hierarchy irqdomain patches provided
+  by Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 
-TCR has different definitions depending on whether we're using v7l or
-v8l.  For example, bit 31 is TG1[1] (not EAE) when CBA2R.VA64=1.  Are we
-expecting to have an io-pgtable-arm64.c or something?  Seems like that
-would be mostly redundant with this file...  (We have this problem in
-the current arm-smmu driver today).
+This patch series is made of the following groups:
+1-6: Some preparation changes in iommu and irq component, this is based on the
+     new hierarchy irqdomain logic.
+7-9, 25: IOMMU changes for VT-d Posted-Interrupts, such as, feature detection,
+          command line parameter.
+10-16, 21-24: Changes related to KVM itself.
+17-19: Changes in VFIO component, this part was previously sent out as
+"[RFC PATCH v2 0/2] kvm-vfio: implement the vfio skeleton for VT-d Posted-Interrupts"
+20: x86 irq related changes
 
+Feng Wu (25):
+  genirq: Introduce irq_set_vcpu_affinity() to target an interrupt to a
+    VCPU
+  iommu: Add new member capability to struct irq_remap_ops
+  iommu, x86: Define new irte structure for VT-d Posted-Interrupts
+  iommu, x86: Implement irq_set_vcpu_affinity for intel_ir_chip
+  x86, irq: Implement irq_set_vcpu_affinity for pci_msi_ir_controller
+  iommu, x86: No need to migrating irq for VT-d Posted-Interrupts
+  iommu, x86: Add cap_pi_support() to detect VT-d PI capability
+  iommu, x86: Add intel_irq_remapping_capability() for Intel
+  iommu, x86: define irq_remapping_cap()
+  KVM: change struct pi_desc for VT-d Posted-Interrupts
+  KVM: Add some helper functions for Posted-Interrupts
+  KVM: Initialize VT-d Posted-Interrupts Descriptor
+  KVM: Define a new interface kvm_find_dest_vcpu() for VT-d PI
+  KVM: Get Posted-Interrupts descriptor address from struct kvm_vcpu
+  KVM: Make struct kvm_irq_routing_table accessible
+  KVM: make kvm_set_msi_irq() public
+  KVM: kvm-vfio: User API for VT-d Posted-Interrupts
+  KVM: kvm-vfio: implement the VFIO skeleton for VT-d Posted-Interrupts
+  KVM: x86: kvm-vfio: VT-d posted-interrupts setup
+  x86, irq: Define a global vector for VT-d Posted-Interrupts
+  KVM: Update Posted-Interrupts descriptor during vCPU scheduling
+  KVM: Change NDST field after vCPU scheduling
+  KVM: Add the handler for Wake-up Vector
+  KVM: Suppress posted-interrupt when 'SN' is set
+  iommu/vt-d: Add a command line parameter for VT-d posted-interrupts
 
--Mitch
-
--- 
-Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+ Documentation/kernel-parameters.txt        |    1 +
+ Documentation/virtual/kvm/devices/vfio.txt |    9 +
+ arch/x86/include/asm/entry_arch.h          |    2 +
+ arch/x86/include/asm/hardirq.h             |    1 +
+ arch/x86/include/asm/hw_irq.h              |    2 +
+ arch/x86/include/asm/irq_remapping.h       |   11 ++
+ arch/x86/include/asm/irq_vectors.h         |    1 +
+ arch/x86/include/asm/kvm_host.h            |   14 ++
+ arch/x86/kernel/apic/msi.c                 |    1 +
+ arch/x86/kernel/entry_64.S                 |    2 +
+ arch/x86/kernel/irq.c                      |   27 +++
+ arch/x86/kernel/irqinit.c                  |    2 +
+ arch/x86/kvm/Makefile                      |    2 +-
+ arch/x86/kvm/kvm_vfio_x86.c                |   68 ++++++++
+ arch/x86/kvm/vmx.c                         |  251 +++++++++++++++++++++++++++-
+ arch/x86/kvm/x86.c                         |   38 ++++-
+ drivers/iommu/intel_irq_remapping.c        |   64 +++++++
+ drivers/iommu/irq_remapping.c              |   24 +++-
+ drivers/iommu/irq_remapping.h              |    8 +
+ include/linux/dmar.h                       |   32 ++++
+ include/linux/intel-iommu.h                |    1 +
+ include/linux/irq.h                        |    7 +
+ include/linux/kvm_host.h                   |   43 +++++
+ include/uapi/linux/kvm.h                   |   10 +
+ kernel/irq/chip.c                          |   14 ++
+ kernel/irq/manage.c                        |   20 +++
+ virt/kvm/irq_comm.c                        |   43 +++++-
+ virt/kvm/irqchip.c                         |   11 --
+ virt/kvm/kvm_main.c                        |   14 ++
+ virt/kvm/vfio.c                            |  103 ++++++++++++
+ 30 files changed, 799 insertions(+), 27 deletions(-)
+ create mode 100644 arch/x86/kvm/kvm_vfio_x86.c
