@@ -1,18 +1,15 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v6 1/8] iommu: provide early initialisation hook for
-	IOMMU drivers
-Date: Thu, 4 Dec 2014 15:49:26 +0100
-Message-ID: <20141204144925.GB31464@ulmo.nvidia.com>
-References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
-	<CAL_JsqKHvh9KSTYrrs1Pts5Kg=8dA1V6NiW57_2vdDH173qQGg@mail.gmail.com>
-	<CACxGe6vyMkyE9ZRj_FQzi19ESEo7OV_RQoVV65xBYpdQV8cRGQ@mail.gmail.com>
-	<2579924.PPXuLn3o19@wuerfel> <54805312.6000402@arm.com>
-	<CACxGe6uR5J4Cjdh_xYhBPoQRgeYwHPv5=AnuRmQKSD3yZrMK9Q@mail.gmail.com>
-	<54806504.20507@arm.com>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [v2 18/25] KVM: kvm-vfio: implement the VFIO skeleton for VT-d
+	Posted-Interrupts
+Date: Thu, 04 Dec 2014 16:35:56 +0100
+Message-ID: <54807F5C.4050607@linaro.org>
+References: <1417592394-24343-1-git-send-email-feng.wu@intel.com>
+	<1417592394-24343-19-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============2725624764978060755=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <54806504.20507-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1417592394-24343-19-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,104 +19,200 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, Pantelis Antoniou <pantelis.antoniou-OWPKS81ov/FWk0Htik3J/w@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Feng,
 
---===============2725624764978060755==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="tjCHc7DPkfUGtrlw"
-Content-Disposition: inline
-
-
---tjCHc7DPkfUGtrlw
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, Dec 04, 2014 at 01:43:32PM +0000, Robin Murphy wrote:
-> Hi Grant, thanks for the advice - silly micro-optimisations removed, and
-> I'll make a note to do so from my in-development code, too ;)
->=20
-> I didn't much like the casting either, so rather than push it elsewhere or
-> out to the caller I've just changed the prototype to obviate it completel=
-y.
-> Since we're also expecting to churn this again to use something more
-> suitable than iommu_ops as the private data, I think keeping things simple
-> wins over const-correctness for now.
->=20
-> Thanks,
-> Robin
->=20
-> --->8---
-> From b2e8c91ac49bef4008661e4628cd6b7249d84af5 Mon Sep 17 00:00:00 2001
-> Message-Id: <b2e8c91ac49bef4008661e4628cd6b7249d84af5.1417698001.git.robi=
-n.murphy-5wv7dgnIgG8@public.gmane.org>
-> From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> Date: Thu, 4 Dec 2014 11:53:13 +0000
-> Subject: [PATCH v2] iommu: store DT-probed IOMMU data privately
->=20
-> Since the data pointer in the DT node is public and may be overwritten
-> by conflicting code, move the DT-probed IOMMU ops to a private list
-> where they will be safe.
->=20
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+On 12/03/2014 08:39 AM, Feng Wu wrote:
+> This patch adds the kvm-vfio interface for VT-d Posted-Interrrupts.
+> When guests updates MSI/MSI-x information for an assigned-device,
+update
+> QEMU will use KVM_DEV_VFIO_DEVICE_POSTING_IRQ attribute to setup
+> IRTE for VT-d PI. This patch implement this IRQ attribute.
+s/implement/implements
+> 
+> Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 > ---
->  drivers/iommu/of_iommu.c | 40 ++++++++++++++++++++++++++++++++++++++++
->  include/linux/of_iommu.h | 12 ++----------
->  2 files changed, 42 insertions(+), 10 deletions(-)
->=20
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index 73236d3..c7078f6 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -94,6 +94,46 @@ int of_get_dma_window(struct device_node *dn, const ch=
-ar
-> *prefix, int index,
+>  include/linux/kvm_host.h |   19 ++++++++
+>  virt/kvm/vfio.c          |  103 ++++++++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 122 insertions(+), 0 deletions(-)
+> 
+> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+> index 5cd4420..8d06678 100644
+> --- a/include/linux/kvm_host.h
+> +++ b/include/linux/kvm_host.h
+> @@ -1134,6 +1134,25 @@ static inline int kvm_arch_vfio_set_forward(struct kvm_fwd_irq *fwd_irq,
 >  }
->  EXPORT_SYMBOL_GPL(of_get_dma_window);
->=20
-> +struct of_iommu_node {
-> +	struct list_head list;
-> +	struct device_node *np;
-> +	struct iommu_ops *ops;
+>  #endif
+>  
+> +#ifdef __KVM_HAVE_ARCH_KVM_VFIO_POSTING
+> +/*
+> + * kvm_arch_vfio_update_pi_irte - set IRTE for Posted-Interrupts
+> + *
+> + * @kvm: kvm
+> + * @host_irq: host irq of the interrupt
+> + * @guest_irq: gsi of the interrupt
+> + * returns 0 on success, < 0 on failure
+> + */
+> +int kvm_arch_vfio_update_pi_irte(struct kvm *kvm, unsigned int host_irq,
+> +				 uint32_t guest_irq);
+> +#else
+> +static int kvm_arch_vfio_update_pi_irte(struct kvm *kvm, unsigned int host_irq,
+> +					uint32_t guest_irq)
+> +{
+> +	return 0;
+> +}
+> +#endif
+> +
+>  #ifdef CONFIG_HAVE_KVM_CPU_RELAX_INTERCEPT
+>  
+>  static inline void kvm_vcpu_set_in_spin_loop(struct kvm_vcpu *vcpu, bool val)
+> diff --git a/virt/kvm/vfio.c b/virt/kvm/vfio.c
+> index 6bc7001..5e5515f 100644
+> --- a/virt/kvm/vfio.c
+> +++ b/virt/kvm/vfio.c
+> @@ -446,6 +446,99 @@ out:
+>  	return ret;
+>  }
+>  
+> +static int kvm_vfio_pci_get_irq_count(struct pci_dev *pdev, int irq_type)
+> +{
+> +	if (irq_type == VFIO_PCI_INTX_IRQ_INDEX) {
+> +		u8 pin;
+> +
+> +		pci_read_config_byte(pdev, PCI_INTERRUPT_PIN, &pin);
+> +		if (pin)
+> +			return 1;
+> +	} else if (irq_type == VFIO_PCI_MSI_IRQ_INDEX)
+> +		return pci_msi_vec_count(pdev);
+> +	else if (irq_type == VFIO_PCI_MSIX_IRQ_INDEX)
+> +		return pci_msix_vec_count(pdev);
+> +
+> +	return 0;
+> +}
+for platform case I was asked to move the retrieval of absolute irq
+number to the architecture specific part. I don't know if it should
+apply to PCI stuff as well? This explains why I need to pass the VFIO
+device (or struct device handle) to the arch specific part. Actually we
+do the same job, we provide a phys/virt IRQ mapping to KVM, right? So to
+me our architecture specific API should look quite similar?
 
-Why can't this be const? Why would anyone ever need to modify it? Also
-drivers do define their iommu_ops structures const these days, so you'll
-either still have to cast away at some point or the compiler will
-complain once you start calling this from drivers.
+> +
+> +static int kvm_vfio_set_pi(struct kvm_device *kdev, int32_t __user *argp)
+> +{
+> +	struct kvm_vfio_dev_irq pi_info;
+> +	uint32_t *gsi;
+> +	unsigned long minsz;
+> +	struct vfio_device *vdev;
+> +	struct msi_desc *entry;
+> +	struct device *dev;
+> +	struct pci_dev *pdev;
+> +	int i, max, ret;
+> +
+> +	minsz = offsetofend(struct kvm_vfio_dev_irq, count);
+> +
+> +	if (copy_from_user(&pi_info, (void __user *)argp, minsz))
+> +		return -EFAULT;
+> +
+> +	if (pi_info.argsz < minsz || pi_info.index >= VFIO_PCI_NUM_IRQS)
+PCI specific check, same remark as above but I will let Alex further
+comment on this and possibly invalidate this commeny ;-)
+> +		return -EINVAL;
+> +
+> +	vdev = kvm_vfio_get_vfio_device(pi_info.fd);
+> +	if (IS_ERR(vdev))
+> +		return PTR_ERR(vdev);
+> +
+> +	dev = kvm_vfio_external_base_device(vdev);
+> +	if (!dev || !dev_is_pci(dev)) {
+> +		ret = -EFAULT;
+> +		goto put_vfio_device;
+> +	}
+> +
+> +	pdev = to_pci_dev(dev);
+> +
+> +	max = kvm_vfio_pci_get_irq_count(pdev, pi_info.index);
+> +	if (max <= 0) {
+> +		ret = -EFAULT;
+> +		goto put_vfio_device;
+> +	}
+> +
+> +	if (pi_info.argsz - minsz < pi_info.count * sizeof(int) ||
+shouldn' we use the actual datatype?
+> +	    pi_info.start >= max || pi_info.start + pi_info.count > max) {
+> +		ret = -EINVAL;
+> +		goto put_vfio_device;
+> +	}
+> +
+> +	gsi = memdup_user((void __user *)((unsigned long)argp + minsz),
+> +			   pi_info.count * sizeof(int));
+same question as above
+> +	if (IS_ERR(gsi)) {
+> +		ret = PTR_ERR(gsi);
+> +		goto put_vfio_device;
+> +	}
+> +
+> +#ifdef CONFIG_PCI_MSI
+> +	for (i = 0; i < pi_info.count; i++) {
+> +		list_for_each_entry(entry, &pdev->msi_list, list) {
+> +			if (entry->msi_attrib.entry_nr != pi_info.start+i)
+> +				continue;
+> +
+> +			ret = kvm_arch_vfio_update_pi_irte(kdev->kvm,
+> +							   entry->irq,
+> +							   gsi[i]);
+> +			if (ret) {
+> +				ret = -EFAULT;
+why -EFAULT? and not propagation of original error code?
+you may have posting set for part of the subindexes and unset for rest.
+Isn't it an issue?
 
-Thierry
+Best Regards
 
---tjCHc7DPkfUGtrlw
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJUgHR1AAoJEN0jrNd/PrOhEqwQAI1VP6gaLa826GZsts7CINcU
-k0THn+vNMNY4UXeueidiDIwinXbKY6l8dJTpqWp0cviROMOdrtjw6E83eW8i6uvJ
-IhfSlOEJA2MX3lKvmA8GznCJAW8TDRKq1nHfqFFXOl6qNVL0zzKCbJqX1fnPpAha
-YcmKiR/VDFq5vZyNobwxLBvLnrtvFpu7UxntmhxIKbBGMubCWIoEoQ9QJ8rrgkJC
-ff1TUPkC3rXlBKXijpRPpq8pzNNyr8jZBloKT9PLc0/hNHgdmv9sud5iGExU8gWx
-a2NvQ8AMejcvOc0Y6MIzHw2JWNiyCVy94FTv9c/jvk2tmTO56FTKW+M2GFBfflvE
-XGaD/EHUTwrXCcjVf8j4jCXLFjIFc9J6B4CNslpcHhIe9XeYK3lOnuS5PDm9f7pU
-C+ey5ez2xsSvjCVx0VAgG4RqrhHE23SFFUhw8DZOu0YMj7rl7w6MfDoIuQUAgynH
-1b2gRKYeGIMkM0NF6p5S5sjxM15MSU1G4fTDwtkBQyvnwXYs/5G+wAkDwghV5Zg1
-taMhK9ePlPbyyqWSIz4hJXEcQOe/7LSDW0YxZUsP5mVrIO4WTGWjd9FqPi64AtOp
-AH3k64tS74XpPPmzsiEBX+jCYM9sx2YA8tWOmws8Gtgt6gOyFGWvS1Giqmn+/RJ8
-zzcRRYN0mLhF/JX1pKwQ
-=9LLm
------END PGP SIGNATURE-----
-
---tjCHc7DPkfUGtrlw--
-
---===============2725624764978060755==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============2725624764978060755==--
+Eric
+> +				goto free_gsi;
+> +			}
+> +		}
+> +	}
+> +#endif
+> +
+> +	ret = 0;
+> +
+> +free_gsi:
+> +	kfree(gsi);
+> +
+> +put_vfio_device:
+> +	kvm_vfio_put_vfio_device(vdev);
+> +	return ret;
+> +}
+> +
+>  static int kvm_vfio_set_device(struct kvm_device *kdev, long attr, u64 arg)
+>  {
+>  	int32_t __user *argp = (int32_t __user *)(unsigned long)arg;
+> @@ -456,6 +549,11 @@ static int kvm_vfio_set_device(struct kvm_device *kdev, long attr, u64 arg)
+>  	case KVM_DEV_VFIO_DEVICE_UNFORWARD_IRQ:
+>  		ret = kvm_vfio_control_irq_forward(kdev, attr, argp);
+>  		break;
+> +#ifdef __KVM_HAVE_ARCH_KVM_VFIO_POSTING
+> +	case KVM_DEV_VFIO_DEVICE_POSTING_IRQ:
+> +		ret = kvm_vfio_set_pi(kdev, argp);
+> +		break;
+> +#endif
+>  	default:
+>  		ret = -ENXIO;
+>  	}
+> @@ -511,6 +609,11 @@ static int kvm_vfio_has_attr(struct kvm_device *dev,
+>  		case KVM_DEV_VFIO_DEVICE_UNFORWARD_IRQ:
+>  			return 0;
+>  #endif
+> +#ifdef __KVM_HAVE_ARCH_KVM_VFIO_POSTING
+> +		case KVM_DEV_VFIO_DEVICE_POSTING_IRQ:
+> +			return 0;
+> +#endif
+> +
+>  		}
+>  		break;
+>  	}
+> 
