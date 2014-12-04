@@ -1,18 +1,17 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v6 1/8] iommu: provide early initialisation hook for
-	IOMMU drivers
-Date: Thu, 4 Dec 2014 11:52:55 +0000
-Message-ID: <20141204115254.GF14519@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v6 1/8] iommu: provide early initialisation hook for IOMMU
+	drivers
+Date: Thu, 04 Dec 2014 12:26:58 +0000
+Message-ID: <54805312.6000402@arm.com>
 References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
-	<3152553.esaQuZiCgi@wuerfel> <20141204102127.GF13224@arm.com>
-	<5643715.BADzWxcqOQ@wuerfel>
-	<CACxGe6v4ZVHHGcc3Lhp8+FgKakyCkJFRAT2ufj-3DGWa=wmGkA@mail.gmail.com>
+	<CAL_JsqKHvh9KSTYrrs1Pts5Kg=8dA1V6NiW57_2vdDH173qQGg@mail.gmail.com>
+	<CACxGe6vyMkyE9ZRj_FQzi19ESEo7OV_RQoVV65xBYpdQV8cRGQ@mail.gmail.com>
+	<2579924.PPXuLn3o19@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CACxGe6v4ZVHHGcc3Lhp8+FgKakyCkJFRAT2ufj-3DGWa=wmGkA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <2579924.PPXuLn3o19@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,120 +21,129 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Pantelis Antoniou <pantelis.antoniou-OWPKS81ov/FWk0Htik3J/w@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Pantelis Antoniou <pantelis.antoniou-OWPKS81ov/FWk0Htik3J/w@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Dec 04, 2014 at 11:25:35AM +0000, Grant Likely wrote:
-> On Thu, Dec 4, 2014 at 11:19 AM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
-> > On Thursday 04 December 2014 10:21:27 Will Deacon wrote:
-> >> > > Sure, I'll add this to my list of stuff to do for 3.20.
-> >> >
-> >> > Does that mean the we don't get any of the patches for 3.19 despite the
-> >> > Acks?
-> >>
-> >> Hmm, I don't know how useful they are without the get/set ops and I don't
-> >> think I can get those ready for 3.19 given where we currently are.
-> >>
-> >> Grant's suggestion of adding an iommu_ops pointer to device_node would work
-> >> as a temporary hack, but anything more advanced is going to need proper
-> >> review.
-> >
-> > Right. I guess it doesn't hurt much if we put the new pointer inside
-> > #ifdef CONFIG_OF_IOMMU, then at least there is no significant size
-> > increase in most DT based platforms.
-> 
-> Yes, I can live with that hack on the proviso that it will be removed by v3.20
-> 
-> Oh, and please put an ugly /* */ comment block in the #ifdef
-> CONFIG_OF_IOMMU section that makes it really clear that it is an ugly
-> hack and will be removed in the next release. I don't want anyone
-> getting ideas that adding pointers to struct device_node is a good
-> idea.
+Hi Arnd,
 
-Something like the mess below?
+On 03/12/14 19:57, Arnd Bergmann wrote:
+[...]
+>> Good catch. This is not good. The data pointer should be avoided since
+>> there are no controls over its use. Until a better solution can be
+>> implemented, probably the safest thing to do is add a struct iommu_ops
+>> pointer to struct device_node. However, assuming that only a small
+>> portion of nodes will actually have iommu_ops set, I'd rather see a
+>> separate registry that matches device_nodes to iommu_ops.
+>
+> Fair enough. Will, can you take a copy of drivers/dma/of-dma.c and
+> adapt it as needed? It should be exactly what we need to start
+> out and can be extended and generalized later.
 
-Will
+I'm quite keen to see this series go in, since I'm depending on it to 
+make arm64 IOMMU DMA ops "just work". Will and I came to the conclusion 
+the other day that we pretty much need to build up some kind of bus 
+abstraction based on the probe data in order to be able to assign IOMMU 
+groups correctly, which can also subsume this particular problem in the 
+long run. Since I've made a start on that already, I've hacked the 
+following short-term fix out of it. Tested on my Juno - admittedly with 
+only two SMMUs and one master (EHCI) being probed, but it didn't blow up 
+or regress anything.
 
---->8
+Regards,
+Robin.
 
-diff --git a/include/linux/of.h b/include/linux/of.h
-index 29f0adc5f3e4..6f85c02bc1a6 100644
---- a/include/linux/of.h
-+++ b/include/linux/of.h
-@@ -43,6 +43,9 @@ struct property {
- #if defined(CONFIG_SPARC)
- struct of_irq_controller;
- #endif
-+#ifdef CONFIG_OF_IOMMU
-+struct iommu_ops;
-+#endif
- 
- struct device_node {
- 	const char *name;
-@@ -65,6 +68,19 @@ struct device_node {
- 	unsigned int unique_id;
- 	struct of_irq_controller *irq_trans;
- #endif
-+#ifdef CONFIG_OF_IOMMU
-+/*
-+ * HACK! HACK! HACK!
-+ *
-+ * This is a temporary hack to associate a device_node for an
-+ * IOMMU with its set of iommu_ops so that we can probe its upstream DMA
-+ * masters on the platform bus by parsing the "iommus" property directly.
-+ *
-+ * This is going away in 3.20. Please use the of_iommu_{get,set}_ops
-+ * functions to get hold of this data.
-+ */
-+	struct iommu_ops *__iommu_ops_use_accessors;
-+#endif
- };
- 
- #define MAX_PHANDLE_ARGS 16
+--->8---
+ From 1f3d2612682c239e53f2c20e2ac5d19ef3f5387c Mon Sep 17 00:00:00 2001
+Message-Id: 
+<1f3d2612682c239e53f2c20e2ac5d19ef3f5387c.1417695078.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Date: Thu, 4 Dec 2014 11:53:13 +0000
+Subject: [PATCH] iommu: store DT-probed IOMMU data privately
+
+Since the data pointer in the DT node is public and may be overwritten
+by conflicting code, move the DT-probed IOMMU ops to a private list
+where they will be safe.
+
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+  drivers/iommu/of_iommu.c | 38 ++++++++++++++++++++++++++++++++++++++
+  include/linux/of_iommu.h | 12 ++----------
+  2 files changed, 40 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 73236d3..5cd451c 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -94,6 +94,44 @@ int of_get_dma_window(struct device_node *dn, const 
+char *prefix, int index,
+  }
+  EXPORT_SYMBOL_GPL(of_get_dma_window);
+
++struct of_iommu_node {
++	struct hlist_node list;
++	struct device_node *np;
++	const struct iommu_ops *ops;
++};
++static HLIST_HEAD(of_iommu_list);
++static DEFINE_SPINLOCK(of_iommu_lock);
++
++void of_iommu_set_ops(struct device_node *np, const struct iommu_ops *ops)
++{
++	struct of_iommu_node *iommu = kmalloc(sizeof(*iommu), GFP_KERNEL);
++
++	if (!iommu)
++		return;
++
++	INIT_HLIST_NODE(&iommu->list);
++	iommu->np = np;
++	iommu->ops = ops;
++	spin_lock(&of_iommu_lock);
++	hlist_add_head(&iommu->list, &of_iommu_list);
++	spin_unlock(&of_iommu_lock);
++}
++
++struct iommu_ops *of_iommu_get_ops(struct device_node *np)
++{
++	struct of_iommu_node *node;
++	const struct iommu_ops *ops = NULL;
++
++	spin_lock(&of_iommu_lock);
++	hlist_for_each_entry(node, &of_iommu_list, list)
++		if (node->np == np) {
++			ops = node->ops;
++			break;
++		}
++	spin_unlock(&of_iommu_lock);
++	return (struct iommu_ops *)ops;
++}
++
+  struct iommu_ops *of_iommu_configure(struct device *dev)
+  {
+  	struct of_phandle_args iommu_spec;
 diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
-index d03abbb11c34..392ec5f212db 100644
+index d03abbb..e27c53a 100644
 --- a/include/linux/of_iommu.h
 +++ b/include/linux/of_iommu.h
-@@ -14,6 +14,17 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
- extern void of_iommu_init(void);
- extern struct iommu_ops *of_iommu_configure(struct device *dev);
- 
-+static inline void of_iommu_set_ops(struct device_node *np,
-+				    const struct iommu_ops *ops)
-+{
-+	np->__iommu_ops_use_accessors = ops;
-+}
-+
-+static inline struct iommu_ops *of_iommu_get_ops(struct device_node *np)
-+{
-+	return np->__iommu_ops_use_accessors;
-+}
-+
- #else
- 
- static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
-@@ -29,19 +40,15 @@ static inline struct iommu_ops *of_iommu_configure(struct device *dev)
- 	return NULL;
- }
- 
--#endif	/* CONFIG_OF_IOMMU */
--
- static inline void of_iommu_set_ops(struct device_node *np,
+@@ -31,16 +31,8 @@ static inline struct iommu_ops 
+*of_iommu_configure(struct device *dev)
+
+  #endif	/* CONFIG_OF_IOMMU */
+
+-static inline void of_iommu_set_ops(struct device_node *np,
 -				    const struct iommu_ops *ops)
 -{
 -	np->data = (struct iommu_ops *)ops;
 -}
 -
-+				    const struct iommu_ops *ops) { }
- static inline struct iommu_ops *of_iommu_get_ops(struct device_node *np)
- {
+-static inline struct iommu_ops *of_iommu_get_ops(struct device_node *np)
+-{
 -	return np->data;
-+	return NULL;
- }
- 
-+#endif	/* CONFIG_OF_IOMMU */
-+
- extern struct of_device_id __iommu_of_table;
- 
- typedef int (*of_iommu_init_fn)(struct device_node *);
+-}
++void of_iommu_set_ops(struct device_node *np, const struct iommu_ops *ops);
++struct iommu_ops *of_iommu_get_ops(struct device_node *np);
+
+  extern struct of_device_id __iommu_of_table;
+
+-- 
+1.9.1
