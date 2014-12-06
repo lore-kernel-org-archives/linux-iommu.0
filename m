@@ -1,16 +1,12 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 2/4] iommu: add ARM LPAE page table allocator
-Date: Fri, 5 Dec 2014 18:48:38 +0000
-Message-ID: <20141205184838.GI1203@arm.com>
-References: <1417089078-22900-1-git-send-email-will.deacon@arm.com>
-	<2303317.ZEDe4Fptcu@avalon> <20141202094156.GB9917@arm.com>
-	<3393414.BkWUUqodng@avalon>
+From: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: [patch] iommu/amd: fix a small leak in irq_remapping_alloc()
+Date: Sat, 6 Dec 2014 16:52:57 +0300
+Message-ID: <20141206135257.GB17278@mwanda>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <3393414.BkWUUqodng@avalon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,73 +16,79 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kernel-janitors-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Dec 02, 2014 at 11:47:36AM +0000, Laurent Pinchart wrote:
-> On Tuesday 02 December 2014 09:41:56 Will Deacon wrote:
-> > On Mon, Dec 01, 2014 at 08:21:58PM +0000, Laurent Pinchart wrote:
-> > > On Monday 01 December 2014 17:23:15 Will Deacon wrote:
-> > > > On Sun, Nov 30, 2014 at 11:29:46PM +0000, Laurent Pinchart wrote:
-> > > > > On Thursday 27 November 2014 11:51:16 Will Deacon wrote:
-> > > > > > +     /* Looking good; allocate a pgd */
-> > > > > > +     data->pgd = alloc_pages_exact(1UL << data->pg_shift,
-> > > > > > +                                   GFP_KERNEL | __GFP_ZERO);
-> > > > > 
-> > > > > data->pg_shift is computed as __ffs(cfg->pgsize_bitmap). 1UL <<
-> > > > > data->pg_shift will thus be equal to the smallest page size supported
-> > > > > by the IOMMU. This will thus allocate 4kB, 16kB or 64kB depending on
-> > > > > the IOMMU configuration. However, if I'm not mistaken the top-level
-> > > > > directory needs to store one entry per largest supported page size.
-> > > > > That's 4, 128 or 8 entries depending on the configuration. You're thus
-> > > > > over-allocating.
-> > > > 
-> > > > Yeah, I'll take a closer look at this. The size of the pgd really
-> > > > depends on the TxSZ configuration, which in turn depends on the ias and
-> > > > the page size. There are also alignment constraints to bear in mind, but
-> > > > I'll see what I can do (as it stands, over-allocating will always work).
-> > > 
-> > > Beside wasting memory, the code also doesn't reflect the requirements. It
-> > > works by chance, meaning it could break later.
-> > 
-> > It won't break, as the maximum size *is* bounded by a page for stage-1
-> > and we already handle stage-2 concatenation correctly.
-> 
-> What I mean is that there's no correlation between the required size and the 
-> allocated size in the current code. It happens to work, but if the driver gets 
-> extended later to support more IOMMU configurations subtle bugs may crop up.
-> 
-> > > That's why I'd like to see this
-> > > being fixed. Can't the size be computed with something like
-> > > 
-> > > 	size = (1 << (ias - data->levels * data->pg_shift))
-> > > 	
-> > > 	     * sizeof(arm_lpae_iopte);
-> > > 
-> > > (please add a proper detailed comment to explain the computation, as the
-> > > meaning is not straightforward)
-> > 
-> > That's actually the easy part. The harder part is getting the correct
-> > alignment, which means managing by own kmem_cache on a per-ops basis. That
-> > feels like overkill to me and we also need to make sure that we don't screw
-> > up the case of concatenated pgds at stage-2. On top of that, since each
-> > cache would be per-ops, I'm not even sure we'd save anything (the slab
-> > allocators all operate on pages afaict).
-> > 
-> > If I use alloc_page_exact, we'll still have some wasteage, but it would
-> > be less for the case where the CPU page size is smaller than the SMMU page
-> > size. Do you think that's worth the extra complexity? We allocate full pages
-> > at all levels after the pgd, so the wasteage is relatively small.
-> > 
-> > An alternative would be preinitialising some caches for `likely' pgd sizes,
-> > but that's also horrible, especially if the kernel decides that it doesn't
-> > need a bunch of the configurations at runtime.
-> 
-> How about just computing the right size, align it to a page size, and using 
-> alloc_page_exact ? The waste is small, so it doesn't justify anything more 
-> complex than that.
+There is a memory leak here that was detected by Smatch:
 
-Ok, I'll have a go at that.
+	drivers/iommu/amd_iommu.c:4261 irq_remapping_alloc()
+	warn: possible memory leak of 'data'
 
-Will
+It happens if you hit the "if (!irq_data || !cfg) {" on the first
+iteration through the loop.  The original code was a bit weird.  For
+example, it treated the first allocation as a special case for some
+reason. Anyway I cleaned it up a bit.
+
+Fixes: ecf87b38d902 ('iommu/amd: Enhance AMD IR driver to suppport hierarchy irqdomain')
+Signed-off-by: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+---
+Please review this carefully.  I haven't tested it.
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 35a38db..3bb69e4 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -4208,11 +4208,6 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = -ENOMEM;
+-	data = kzalloc(sizeof(*data), GFP_KERNEL);
+-	if (!data)
+-		goto out_free_parent;
+-
+ 	if (info->type == X86_IRQ_ALLOC_TYPE_IOAPIC) {
+ 		if (get_irq_table(devid, true))
+ 			index = info->ioapic_pin;
+@@ -4223,7 +4218,6 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
+ 	}
+ 	if (index < 0) {
+ 		pr_warn("Failed to allocate IRTE\n");
+-		kfree(data);
+ 		goto out_free_parent;
+ 	}
+ 
+@@ -4232,14 +4226,16 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
+ 		cfg = irqd_cfg(irq_data);
+ 		if (!irq_data || !cfg) {
+ 			ret = -EINVAL;
+-			goto out_free_data;
++			goto out_unwind_loop;
+ 		}
+ 
+-		if (i > 0) {
+-			data = kzalloc(sizeof(*data), GFP_KERNEL);
+-			if (!data)
+-				goto out_free_data;
++
++		data = kzalloc(sizeof(*data), GFP_KERNEL);
++		if (!data) {
++			ret = -ENOMEM;
++			goto out_unwind_loop;
+ 		}
++
+ 		irq_data->hwirq = (devid << 16) + i;
+ 		irq_data->chip_data = data;
+ 		irq_data->chip = &amd_ir_chip;
+@@ -4248,8 +4244,8 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
+ 	}
+ 	return 0;
+ 
+-out_free_data:
+-	for (i--; i >= 0; i--) {
++out_unwind_loop:
++	while (--i >= 0) {
+ 		irq_data = irq_domain_get_irq_data(domain, virq + i);
+ 		if (irq_data)
+ 			kfree(irq_data->chip_data);
