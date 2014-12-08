@@ -1,13 +1,17 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v10 00/20] VFIO support for platform and ARM AMBA devices
-Date: Sun, 07 Dec 2014 12:12:45 -0700
-Message-ID: <1417979565.1095.22.camel@bling.home>
-References: <1417109580-10505-1-git-send-email-a.motakis@virtualopensystems.com>
+From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [v2 18/25] KVM: kvm-vfio: implement the VFIO skeleton for VT-d
+	Posted-Interrupts
+Date: Mon, 8 Dec 2014 04:58:31 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F0022E2DC0@SHSMSX104.ccr.corp.intel.com>
+References: <1417592394-24343-1-git-send-email-feng.wu@intel.com>
+	<1417592394-24343-19-git-send-email-feng.wu@intel.com>
+	<54807F5C.4050607@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1417109580-10505-1-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+In-Reply-To: <54807F5C.4050607-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,136 +21,240 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2014-11-27 at 18:32 +0100, Antonios Motakis wrote:
-> This patch series aims to implement VFIO support for platform devices that
-> reside behind an IOMMU. Examples of such devices are devices behind an ARM
-> SMMU, or behind a Samsung Exynos System MMU.
-> 
-> The API used is based on the existing VFIO API that is also used with PCI
-> devices. Only devices that include a basic set of IRQs and memory regions are
-> targeted; devices with complex relationships with other devices on a device
-> tree are not taken into account at this stage.
-> 
-> This patch series may be applied on the following series/patches:
->  - [PATCH] driver core: amba: add device binding path 'driver_override'
->  - [PATCH v3 0/6] vfio: type1: support for ARM SMMUS with VFIO_IOMMU_TYPE1
-> 
-> A copy can be cloned from the branch vfio-platform-v10 at:
-> git-9UaJU3cA/F/QT0dZR+AlfA@public.gmane.org:virtualopensystems/linux-kvm-arm.git
 
-Hi Antonios,
 
-Sorry for the delay in reviewing.  Between this and your v3 0/6 series,
-the only nits I have are:
-
-      * 2/6 is unneeded, Will already provided a patch to enable type1
-        on ARM that's currently in -next.  That patch is easily dropped
-        with no modification to the series, no need to resend.
-      * 04/20 has a kasprintf() with unchecked return value.
-
-If you want to just send a new 04/20 with that trivial fix, that'd be
-fine.  Looks like I'll need to wait until Joerg's next branch pull is
-accepted before I can merge these in.  Thanks,
-
-Alex
-
-> Changes since v9:
->  - Reworked the splitting of the patches that decouple virqfd from PCI
->  - Some styling issues and typos
->  - Removed superfluous includes
->  - AMBA devices are now named vfio-amba- suffixed by the AMBA device id
->  - Several other cleanups and fixes
-> Changes since v8:
->  - Separate irq handler for edge and level triggered interrupts
->  - Mutex based lock for VFIO fd open/release
->  - Fixed bug where the first region of a platform device wasn't exposed
->  - Read only regions can be MMAPed only read only
->  - Code cleanups
-> Changes since v7:
->  - Some initial placeholder functionality for PIO resources
->  - Cleaned up code for IRQ triggering, masking and unmasking
->  - Some functionality has been removed from this series and posted separately:
->    - VFIO_IOMMU_TYPE1 support for ARM SMMUs
->    - IOMMU NOEXEC patches
->    - driver_override functionality for AMBA devices
->  - Several fixes
-> Changes since v6:
->  - Integrated support for AMBA devices
->  - Numerous cleanups and fixes
-> Changes since v5:
->  - Full eventfd support for IRQ masking and unmasking.
->  - Changed IOMMU_EXEC to IOMMU_NOEXEC, along with related flags in VFIO.
->  - Other fixes based on reviewer comments.
-> Changes since v4:
->  - Use static offsets for each region in the VFIO device fd
->  - Include patch in the series for the ARM SMMU to expose IOMMU_EXEC
->    availability via IOMMU_CAP_DMA_EXEC
->  - Rebased on VFIO multi domain support:
->    - IOMMU_EXEC is now available if at least one IOMMU in the container
->      supports it
->    - Expose IOMMU_EXEC if available via the capability VFIO_IOMMU_PROT_EXEC
->  - Some bug fixes
-> Changes since v3:
->  - Use Kim Phillips' driver_probe_device()
-> Changes since v2:
->  - Fixed Read/Write and MMAP on device regions
->  - Removed dependency on Device Tree
->  - Interrupts support
->  - Interrupt masking/unmasking
->  - Automask level sensitive interrupts
->  - Introduced VFIO_DMA_MAP_FLAG_EXEC
->  - Code clean ups
+> -----Original Message-----
+> From: Eric Auger [mailto:eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org]
+> Sent: Thursday, December 04, 2014 11:36 PM
+> To: Wu, Feng; tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org;
+> x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
+> dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
+> jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+> Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Subject: Re: [v2 18/25] KVM: kvm-vfio: implement the VFIO skeleton for VT-d
+> Posted-Interrupts
 > 
-> Antonios Motakis (20):
->   vfio/platform: initial skeleton of VFIO support for platform devices
->   vfio: platform: probe to devices on the platform bus
->   vfio: platform: add the VFIO PLATFORM module to Kconfig
->   vfio: amba: VFIO support for AMBA devices
->   vfio: amba: add the VFIO for AMBA devices module to Kconfig
->   vfio/platform: return info for bound device
->   vfio/platform: return info for device memory mapped IO regions
->   vfio/platform: read and write support for the device fd
->   vfio/platform: support MMAP of MMIO regions
->   vfio/platform: return IRQ info
->   vfio/platform: initial interrupts support code
->   vfio/platform: trigger an interrupt via eventfd
->   vfio/platform: support for level sensitive interrupts
->   vfio: add a vfio_ prefix to virqfd_enable and virqfd_disable and
->     export
->   vfio: virqfd: rename vfio_pci_virqfd_init and vfio_pci_virqfd_exit
->   vfio: add local lock for virqfd instead of depending on VFIO PCI
->   vfio: pass an opaque pointer on virqfd initialization
->   vfio: move eventfd support code for VFIO_PCI to a separate file
->   vfio: initialize the virqfd workqueue in VFIO generic code
->   vfio/platform: implement IRQ masking/unmasking via an eventfd
+> Hi Feng,
 > 
->  drivers/vfio/Kconfig                          |   1 +
->  drivers/vfio/Makefile                         |   5 +-
->  drivers/vfio/pci/vfio_pci.c                   |   8 -
->  drivers/vfio/pci/vfio_pci_intrs.c             | 238 +-----------
->  drivers/vfio/pci/vfio_pci_private.h           |   3 -
->  drivers/vfio/platform/Kconfig                 |  19 +
->  drivers/vfio/platform/Makefile                |   8 +
->  drivers/vfio/platform/vfio_amba.c             | 110 ++++++
->  drivers/vfio/platform/vfio_platform.c         | 103 +++++
->  drivers/vfio/platform/vfio_platform_common.c  | 520 ++++++++++++++++++++++++++
->  drivers/vfio/platform/vfio_platform_irq.c     | 331 ++++++++++++++++
->  drivers/vfio/platform/vfio_platform_private.h |  82 ++++
->  drivers/vfio/vfio.c                           |   8 +
->  drivers/vfio/virqfd.c                         | 213 +++++++++++
->  include/linux/vfio.h                          |  27 ++
->  include/uapi/linux/vfio.h                     |   2 +
->  16 files changed, 1442 insertions(+), 236 deletions(-)
->  create mode 100644 drivers/vfio/platform/Kconfig
->  create mode 100644 drivers/vfio/platform/Makefile
->  create mode 100644 drivers/vfio/platform/vfio_amba.c
->  create mode 100644 drivers/vfio/platform/vfio_platform.c
->  create mode 100644 drivers/vfio/platform/vfio_platform_common.c
->  create mode 100644 drivers/vfio/platform/vfio_platform_irq.c
->  create mode 100644 drivers/vfio/platform/vfio_platform_private.h
->  create mode 100644 drivers/vfio/virqfd.c
+> On 12/03/2014 08:39 AM, Feng Wu wrote:
+> > This patch adds the kvm-vfio interface for VT-d Posted-Interrrupts.
+> > When guests updates MSI/MSI-x information for an assigned-device,
+> update
+> > QEMU will use KVM_DEV_VFIO_DEVICE_POSTING_IRQ attribute to setup
+> > IRTE for VT-d PI. This patch implement this IRQ attribute.
+> s/implement/implements
+> >
+> > Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> > ---
+> >  include/linux/kvm_host.h |   19 ++++++++
+> >  virt/kvm/vfio.c          |  103
+> ++++++++++++++++++++++++++++++++++++++++++++++
+> >  2 files changed, 122 insertions(+), 0 deletions(-)
+> >
+> > diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+> > index 5cd4420..8d06678 100644
+> > --- a/include/linux/kvm_host.h
+> > +++ b/include/linux/kvm_host.h
+> > @@ -1134,6 +1134,25 @@ static inline int
+> kvm_arch_vfio_set_forward(struct kvm_fwd_irq *fwd_irq,
+> >  }
+> >  #endif
+> >
+> > +#ifdef __KVM_HAVE_ARCH_KVM_VFIO_POSTING
+> > +/*
+> > + * kvm_arch_vfio_update_pi_irte - set IRTE for Posted-Interrupts
+> > + *
+> > + * @kvm: kvm
+> > + * @host_irq: host irq of the interrupt
+> > + * @guest_irq: gsi of the interrupt
+> > + * returns 0 on success, < 0 on failure
+> > + */
+> > +int kvm_arch_vfio_update_pi_irte(struct kvm *kvm, unsigned int host_irq,
+> > +				 uint32_t guest_irq);
+> > +#else
+> > +static int kvm_arch_vfio_update_pi_irte(struct kvm *kvm, unsigned int
+> host_irq,
+> > +					uint32_t guest_irq)
+> > +{
+> > +	return 0;
+> > +}
+> > +#endif
+> > +
+> >  #ifdef CONFIG_HAVE_KVM_CPU_RELAX_INTERCEPT
+> >
+> >  static inline void kvm_vcpu_set_in_spin_loop(struct kvm_vcpu *vcpu, bool
+> val)
+> > diff --git a/virt/kvm/vfio.c b/virt/kvm/vfio.c
+> > index 6bc7001..5e5515f 100644
+> > --- a/virt/kvm/vfio.c
+> > +++ b/virt/kvm/vfio.c
+> > @@ -446,6 +446,99 @@ out:
+> >  	return ret;
+> >  }
+> >
+> > +static int kvm_vfio_pci_get_irq_count(struct pci_dev *pdev, int irq_type)
+> > +{
+> > +	if (irq_type == VFIO_PCI_INTX_IRQ_INDEX) {
+> > +		u8 pin;
+> > +
+> > +		pci_read_config_byte(pdev, PCI_INTERRUPT_PIN, &pin);
+> > +		if (pin)
+> > +			return 1;
+> > +	} else if (irq_type == VFIO_PCI_MSI_IRQ_INDEX)
+> > +		return pci_msi_vec_count(pdev);
+> > +	else if (irq_type == VFIO_PCI_MSIX_IRQ_INDEX)
+> > +		return pci_msix_vec_count(pdev);
+> > +
+> > +	return 0;
+> > +}
+> for platform case I was asked to move the retrieval of absolute irq
+> number to the architecture specific part. I don't know if it should
+> apply to PCI stuff as well? This explains why I need to pass the VFIO
+> device (or struct device handle) to the arch specific part. Actually we
+> do the same job, we provide a phys/virt IRQ mapping to KVM, right? So to
+> me our architecture specific API should look quite similar?
+
+In my patch, QEMU passes IRQ type(MSI/MSIx in my case), VFIO device index,
+and sub-index via "struct kvm_vfio_dev_irq" to KVM, then KVM will find the
+real host irq from the VFIO device index and the IRQ type. Is this something
+similar with your patch?
+
 > 
+> > +
+> > +static int kvm_vfio_set_pi(struct kvm_device *kdev, int32_t __user *argp)
+> > +{
+> > +	struct kvm_vfio_dev_irq pi_info;
+> > +	uint32_t *gsi;
+> > +	unsigned long minsz;
+> > +	struct vfio_device *vdev;
+> > +	struct msi_desc *entry;
+> > +	struct device *dev;
+> > +	struct pci_dev *pdev;
+> > +	int i, max, ret;
+> > +
+> > +	minsz = offsetofend(struct kvm_vfio_dev_irq, count);
+> > +
+> > +	if (copy_from_user(&pi_info, (void __user *)argp, minsz))
+> > +		return -EFAULT;
+> > +
+> > +	if (pi_info.argsz < minsz || pi_info.index >= VFIO_PCI_NUM_IRQS)
+> PCI specific check, same remark as above but I will let Alex further
+> comment on this and possibly invalidate this commeny ;-)
+> > +		return -EINVAL;
+> > +
+> > +	vdev = kvm_vfio_get_vfio_device(pi_info.fd);
+> > +	if (IS_ERR(vdev))
+> > +		return PTR_ERR(vdev);
+> > +
+> > +	dev = kvm_vfio_external_base_device(vdev);
+> > +	if (!dev || !dev_is_pci(dev)) {
+> > +		ret = -EFAULT;
+> > +		goto put_vfio_device;
+> > +	}
+> > +
+> > +	pdev = to_pci_dev(dev);
+> > +
+> > +	max = kvm_vfio_pci_get_irq_count(pdev, pi_info.index);
+> > +	if (max <= 0) {
+> > +		ret = -EFAULT;
+> > +		goto put_vfio_device;
+> > +	}
+> > +
+> > +	if (pi_info.argsz - minsz < pi_info.count * sizeof(int) ||
+> shouldn' we use the actual datatype?
+
+I am afraid I don't get this, could you please be more specific? Thanks a lot!
+
+> > +	    pi_info.start >= max || pi_info.start + pi_info.count > max) {
+> > +		ret = -EINVAL;
+> > +		goto put_vfio_device;
+> > +	}
+> > +
+> > +	gsi = memdup_user((void __user *)((unsigned long)argp + minsz),
+> > +			   pi_info.count * sizeof(int));
+> same question as above
+> > +	if (IS_ERR(gsi)) {
+> > +		ret = PTR_ERR(gsi);
+> > +		goto put_vfio_device;
+> > +	}
+> > +
+> > +#ifdef CONFIG_PCI_MSI
+> > +	for (i = 0; i < pi_info.count; i++) {
+> > +		list_for_each_entry(entry, &pdev->msi_list, list) {
+> > +			if (entry->msi_attrib.entry_nr != pi_info.start+i)
+> > +				continue;
+> > +
+> > +			ret = kvm_arch_vfio_update_pi_irte(kdev->kvm,
+> > +							   entry->irq,
+> > +							   gsi[i]);
+> > +			if (ret) {
+> > +				ret = -EFAULT;
+> why -EFAULT? and not propagation of original error code?
+Yes, you are right. Thanks for the comments!
+
+> you may have posting set for part of the subindexes and unset for rest.
+> Isn't it an issue?
+
+QEMU will always set the posting for all the sub-indexes for MSI/MSIx,
+once the guest updates the configuration of some sub-indexes, KVM will
+update it accordingly. So in which case will what you mentioned above
+happen?
+
+Thanks,
+Feng
+
+> 
+> Best Regards
+> 
+> Eric
+> > +				goto free_gsi;
+> > +			}
+> > +		}
+> > +	}
+> > +#endif
+> > +
+> > +	ret = 0;
+> > +
+> > +free_gsi:
+> > +	kfree(gsi);
+> > +
+> > +put_vfio_device:
+> > +	kvm_vfio_put_vfio_device(vdev);
+> > +	return ret;
+> > +}
+> > +
+> >  static int kvm_vfio_set_device(struct kvm_device *kdev, long attr, u64 arg)
+> >  {
+> >  	int32_t __user *argp = (int32_t __user *)(unsigned long)arg;
+> > @@ -456,6 +549,11 @@ static int kvm_vfio_set_device(struct kvm_device
+> *kdev, long attr, u64 arg)
+> >  	case KVM_DEV_VFIO_DEVICE_UNFORWARD_IRQ:
+> >  		ret = kvm_vfio_control_irq_forward(kdev, attr, argp);
+> >  		break;
+> > +#ifdef __KVM_HAVE_ARCH_KVM_VFIO_POSTING
+> > +	case KVM_DEV_VFIO_DEVICE_POSTING_IRQ:
+> > +		ret = kvm_vfio_set_pi(kdev, argp);
+> > +		break;
+> > +#endif
+> >  	default:
+> >  		ret = -ENXIO;
+> >  	}
+> > @@ -511,6 +609,11 @@ static int kvm_vfio_has_attr(struct kvm_device
+> *dev,
+> >  		case KVM_DEV_VFIO_DEVICE_UNFORWARD_IRQ:
+> >  			return 0;
+> >  #endif
+> > +#ifdef __KVM_HAVE_ARCH_KVM_VFIO_POSTING
+> > +		case KVM_DEV_VFIO_DEVICE_POSTING_IRQ:
+> > +			return 0;
+> > +#endif
+> > +
+> >  		}
+> >  		break;
+> >  	}
+> >
