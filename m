@@ -1,156 +1,250 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [v2 17/25] KVM: kvm-vfio: User API for VT-d Posted-Interrupts
-Date: Sun, 07 Dec 2014 22:21:16 -0700
-Message-ID: <1418016076.1095.30.camel@bling.home>
-References: <1417592394-24343-1-git-send-email-feng.wu@intel.com>
-	<1417592394-24343-18-git-send-email-feng.wu@intel.com>
-	<548069F6.7020308@linaro.org>
-	<E959C4978C3B6342920538CF579893F0022E2DD7@SHSMSX104.ccr.corp.intel.com>
+From: Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] memory: Add NVIDIA SMMU suspend/resume support
+Date: Mon, 8 Dec 2014 14:20:56 +0800
+Message-ID: <1418019656-6893-1-git-send-email-markz@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <E959C4978C3B6342920538CF579893F0022E2DD7-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2014-12-08 at 04:58 +0000, Wu, Feng wrote:
-> 
-> > -----Original Message-----
-> > From: kvm-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org [mailto:kvm-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org] On
-> > Behalf Of Eric Auger
-> > Sent: Thursday, December 04, 2014 10:05 PM
-> > To: Wu, Feng; tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org;
-> > x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
-> > dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
-> > jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
-> > Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> > kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > Subject: Re: [v2 17/25] KVM: kvm-vfio: User API for VT-d Posted-Interrupts
-> > 
-> > Hi Feng,
-> > On 12/03/2014 08:39 AM, Feng Wu wrote:
-> > > This patch adds and documents a new attribute
-> > > KVM_DEV_VFIO_DEVICE_POSTING_IRQ in KVM_DEV_VFIO_DEVICE group.
-> > > This new attribute is used for VT-d Posted-Interrupts.
-> > >
-> > > When guest OS changes the interrupt configuration for an
-> > > assigned device, such as, MSI/MSIx data/address fields,
-> > > QEMU will use this IRQ attribute to tell KVM to update the
-> > > related IRTE according the VT-d Posted-Interrrupts Specification,
-> > > such as, the guest vector should be updated in the related IRTE.
-> > >
-> > > Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> > > ---
-> > >  Documentation/virtual/kvm/devices/vfio.txt |    9 +++++++++
-> > >  include/uapi/linux/kvm.h                   |   10 ++++++++++
-> > >  2 files changed, 19 insertions(+), 0 deletions(-)
-> > >
-> > > diff --git a/Documentation/virtual/kvm/devices/vfio.txt
-> > b/Documentation/virtual/kvm/devices/vfio.txt
-> > > index f7aff29..41e12b7 100644
-> > > --- a/Documentation/virtual/kvm/devices/vfio.txt
-> > > +++ b/Documentation/virtual/kvm/devices/vfio.txt
-> > > @@ -42,3 +42,12 @@ activated before VFIO_DEVICE_SET_IRQS has been
-> > called to trigger the IRQ
-> > >  or associate an eventfd to it. Unforwarding can only be called while the
-> > >  signaling has been disabled with VFIO_DEVICE_SET_IRQS. If this condition
-> > is
-> > >  not satisfied, the command returns an -EBUSY.
-> > > +
-> > > +  KVM_DEV_VFIO_DEVICE_POSTING_IRQ: Use posted interrtups
-> > mechanism to post
-> > typo
-> > > +                                   the IRQ to guests.
-> > > +For this attribute, kvm_device_attr.addr points to a kvm_vfio_dev_irq
-> > struct.
-> > > +
-> > > +When guest OS changes the interrupt configuration for an assigned device,
-> > > +such as, MSI/MSIx data/address fields, QEMU will use this IRQ attribute
-> > > +to tell KVM to update the related IRTE according the VT-d
-> > Posted-Interrrupts
-> > > +Specification, such as, the guest vector should be updated in the related
-> > IRTE.
-> > For my curiosity are there any restrictions about the instant at which
-> > the change can be done?
-> > I do not get here how you deactivate the posting?
-> 
-> The current method is if the hardware supports interrupts posting, we will
-> use it instead of interrupts remapping, since it has good performance. Why
-> do I need deactivate interrupts posting?
-> 
-> Here is the reply to Alex for the same question:
-> "In fact, I don't think we need to stop the posted-interrupts. For setting
-> posted interrupts, we update the related IRTE according to the new
-> format. If the guest reboots, or unload the drivers, or some other
-> operations, the msi/msix will be disabled first, in this path, the irq
-> will be disabled the related IRTE is not used anymore."
+This patch adds suspend/resume support for NVIDIA SMMU.
+This patch is created on top of Thierry Reding's patch set:
 
-Right, and I'm still not sure I agree with that reasoning.  We need to
-build the kernel interface to be generic, not tailored for a specific
-userspace.  I don't really feel comfortable having something that can't
-be disabled via a similar path to it being enabled.  For instance, what
-about a dynamic debug interface where we want to enable tracing and see
-each interrupt injected into the guest.  At that point we'd want to
-disabled posted interrupts and direct KVM injection and route via QEMU.
-Thanks,
+"[PATCH v7 00/12] NVIDIA Tegra memory controller and IOMMU support"
 
-Alex
+Signed-off-by: Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/tegra-smmu.c | 79 +++++++++++++++++++++++++++++++++++++++++++++-
+ drivers/memory/tegra/mc.c  | 21 ++++++++++++
+ drivers/memory/tegra/mc.h  |  4 +++
+ 3 files changed, 103 insertions(+), 1 deletion(-)
 
-> > > diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-> > > index a269a42..7d98650 100644
-> > > --- a/include/uapi/linux/kvm.h
-> > > +++ b/include/uapi/linux/kvm.h
-> > > @@ -949,6 +949,7 @@ struct kvm_device_attr {
-> > >  #define  KVM_DEV_VFIO_DEVICE			2
-> > >  #define   KVM_DEV_VFIO_DEVICE_FORWARD_IRQ			1
-> > >  #define   KVM_DEV_VFIO_DEVICE_UNFORWARD_IRQ			2
-> > > +#define   KVM_DEV_VFIO_DEVICE_POSTING_IRQ			3
-> > Maybe we should align our naming verb vs verbing here?
-> > Best Regards
-> > Eric
-> 
-> No problem, I will align my patch in the next version. Thanks!
-> 
-> Thanks,
-> Feng
-> 
-> > >
-> > >  enum kvm_device_type {
-> > >  	KVM_DEV_TYPE_FSL_MPIC_20	= 1,
-> > > @@ -973,6 +974,15 @@ struct kvm_arch_forwarded_irq {
-> > >  	__u32 gsi; /* gsi, ie. virtual IRQ number */
-> > >  };
-> > >
-> > > +struct kvm_vfio_dev_irq {
-> > > +	__u32	argsz;
-> > > +	__u32	fd;		/* file descriptor of the VFIO device */
-> > > +	__u32	index;		/* VFIO device IRQ index */
-> > > +	__u32	start;
-> > > +	__u32	count;
-> > > +	__u32	gsi[];		/* gsi, ie. virtual IRQ number */
-> > > +};
-> > > +
-> > >  /*
-> > >   * ioctls for VM fds
-> > >   */
-> > >
-> > 
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe kvm" in
-> > the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> --
-> To unsubscribe from this list: send the line "unsubscribe kvm" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 0909e0bae9ec..ab38805055a4 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -17,6 +17,8 @@
+ #include <soc/tegra/ahb.h>
+ #include <soc/tegra/mc.h>
+ 
++struct tegra_smmu_as;
++
+ struct tegra_smmu {
+ 	void __iomem *regs;
+ 	struct device *dev;
+@@ -25,9 +27,10 @@ struct tegra_smmu {
+ 	const struct tegra_smmu_soc *soc;
+ 
+ 	unsigned long *asids;
++	struct tegra_smmu_as **as;
+ 	struct mutex lock;
+ 
+-	struct list_head list;
++	struct list_head swgroup_asid_list;
+ };
+ 
+ struct tegra_smmu_as {
+@@ -40,6 +43,12 @@ struct tegra_smmu_as {
+ 	u32 attr;
+ };
+ 
++struct tegra_smmu_swgroup_asid {
++	struct list_head list;
++	unsigned swgroup_id;
++	unsigned asid;
++};
++
+ static inline void smmu_writel(struct tegra_smmu *smmu, u32 value,
+ 			       unsigned long offset)
+ {
+@@ -376,6 +385,7 @@ static int tegra_smmu_as_prepare(struct tegra_smmu *smmu,
+ 	as->smmu = smmu;
+ 	as->use_count++;
+ 
++	smmu->as[as->id] = as;
+ 	return 0;
+ }
+ 
+@@ -386,6 +396,7 @@ static void tegra_smmu_as_unprepare(struct tegra_smmu *smmu,
+ 		return;
+ 
+ 	tegra_smmu_free_asid(smmu, as->id);
++	smmu->as[as->id] = NULL;
+ 	as->smmu = NULL;
+ }
+ 
+@@ -398,6 +409,7 @@ static int tegra_smmu_attach_dev(struct iommu_domain *domain,
+ 	struct of_phandle_args args;
+ 	unsigned int index = 0;
+ 	int err = 0;
++	struct tegra_smmu_swgroup_asid *sa = NULL;
+ 
+ 	while (!of_parse_phandle_with_args(np, "iommus", "#iommu-cells", index,
+ 					   &args)) {
+@@ -411,6 +423,14 @@ static int tegra_smmu_attach_dev(struct iommu_domain *domain,
+ 			return err;
+ 
+ 		tegra_smmu_enable(smmu, swgroup, as->id);
++
++		sa = kzalloc(sizeof(struct tegra_smmu_swgroup_asid),
++				GFP_KERNEL);
++		INIT_LIST_HEAD(&sa->list);
++		sa->swgroup_id = swgroup;
++		sa->asid = as->id;
++		list_add_tail(&sa->list, &smmu->swgroup_asid_list);
++
+ 		index++;
+ 	}
+ 
+@@ -427,6 +447,7 @@ static void tegra_smmu_detach_dev(struct iommu_domain *domain, struct device *de
+ 	struct tegra_smmu *smmu = as->smmu;
+ 	struct of_phandle_args args;
+ 	unsigned int index = 0;
++	struct tegra_smmu_swgroup_asid *sa = NULL;
+ 
+ 	while (of_parse_phandle_with_args(np, "iommus", "#iommu-cells", index,
+ 					  &args)) {
+@@ -435,6 +456,13 @@ static void tegra_smmu_detach_dev(struct iommu_domain *domain, struct device *de
+ 		if (args.np != smmu->dev->of_node)
+ 			continue;
+ 
++		list_for_each_entry(sa, &smmu->swgroup_asid_list, list) {
++			if (sa->asid == as->id && sa->swgroup_id == swgroup)
++				break;
++		}
++		list_del(&sa->list);
++		kfree(sa);
++
+ 		tegra_smmu_disable(smmu, swgroup, as->id);
+ 		tegra_smmu_as_unprepare(smmu, as);
+ 		index++;
+@@ -651,6 +679,48 @@ static void tegra_smmu_ahb_enable(void)
+ 	}
+ }
+ 
++void tegra_smmu_resume(struct tegra_smmu *smmu)
++{
++	struct tegra_smmu_as *as = NULL;
++	unsigned int bit;
++	u32 value;
++	struct tegra_smmu_swgroup_asid *sa = NULL;
++
++	for_each_set_bit(bit, smmu->asids, smmu->soc->num_asids) {
++		as = smmu->as[bit];
++		smmu->soc->ops->flush_dcache(as->pd, 0, SMMU_SIZE_PD);
++
++		smmu_writel(smmu, as->id & 0x7f, SMMU_PTB_ASID);
++		value = SMMU_PTB_DATA_VALUE(as->pd, as->attr);
++		smmu_writel(smmu, value, SMMU_PTB_DATA);
++	}
++
++	list_for_each_entry(sa, &smmu->swgroup_asid_list, list)
++		tegra_smmu_enable(smmu, sa->swgroup_id, sa->asid);
++
++	value = SMMU_PTC_CONFIG_ENABLE | SMMU_PTC_CONFIG_INDEX_MAP(0x3f);
++
++	if (smmu->soc->supports_request_limit)
++		value |= SMMU_PTC_CONFIG_REQ_LIMIT(8);
++
++	smmu_writel(smmu, value, SMMU_PTC_CONFIG);
++
++	value = SMMU_TLB_CONFIG_HIT_UNDER_MISS |
++		SMMU_TLB_CONFIG_ACTIVE_LINES(0x20);
++
++	if (smmu->soc->supports_round_robin_arbitration)
++		value |= SMMU_TLB_CONFIG_ROUND_ROBIN_ARBITRATION;
++
++	smmu_writel(smmu, value, SMMU_TLB_CONFIG);
++
++	smmu_flush_ptc(smmu, NULL, 0);
++	smmu_flush_tlb(smmu);
++	smmu_writel(smmu, SMMU_CONFIG_ENABLE, SMMU_CONFIG);
++	smmu_flush(smmu);
++
++	tegra_smmu_ahb_enable();
++}
++
+ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
+ 				    const struct tegra_smmu_soc *soc,
+ 				    struct tegra_mc *mc)
+@@ -684,7 +754,14 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
+ 	if (!smmu->asids)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	smmu->as = devm_kzalloc(dev,
++				sizeof(struct tegra_smmu_as *) * soc->num_asids,
++				GFP_KERNEL);
++	if (!smmu->as)
++		return ERR_PTR(-ENOMEM);
++
+ 	mutex_init(&smmu->lock);
++	INIT_LIST_HEAD(&smmu->swgroup_asid_list);
+ 
+ 	smmu->regs = mc->regs;
+ 	smmu->soc = soc;
+diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
+index 9b7c1645fd59..aa0c59ccd33a 100644
+--- a/drivers/memory/tegra/mc.c
++++ b/drivers/memory/tegra/mc.c
+@@ -283,6 +283,23 @@ static int tegra_mc_probe(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_PM
++static int tegra_mc_suspend(struct platform_device *pdev, pm_message_t state)
++{
++	return 0;
++}
++
++static int tegra_mc_resume(struct platform_device *pdev)
++{
++	struct tegra_mc *mc = platform_get_drvdata(pdev);
++
++	if (IS_ENABLED(CONFIG_TEGRA_IOMMU_SMMU))
++		tegra_smmu_resume(mc->smmu);
++
++	return 0;
++}
++#endif
++
+ static struct platform_driver tegra_mc_driver = {
+ 	.driver = {
+ 		.name = "tegra-mc",
+@@ -291,6 +308,10 @@ static struct platform_driver tegra_mc_driver = {
+ 	},
+ 	.prevent_deferred_probe = true,
+ 	.probe = tegra_mc_probe,
++#ifdef CONFIG_PM
++	.suspend = tegra_mc_suspend,
++	.resume = tegra_mc_resume,
++#endif
+ };
+ 
+ static int tegra_mc_init(void)
+diff --git a/drivers/memory/tegra/mc.h b/drivers/memory/tegra/mc.h
+index f714c309b960..cbf538b3f995 100644
+--- a/drivers/memory/tegra/mc.h
++++ b/drivers/memory/tegra/mc.h
+@@ -29,6 +29,7 @@ static inline void mc_writel(struct tegra_mc *mc, u32 value,
+ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
+ 				    const struct tegra_smmu_soc *soc,
+ 				    struct tegra_mc *mc);
++void tegra_smmu_resume(struct tegra_smmu *smmu);
+ #else
+ static inline struct tegra_smmu *
+ tegra_smmu_probe(struct device *dev, const struct tegra_smmu_soc *soc,
+@@ -36,6 +37,9 @@ tegra_smmu_probe(struct device *dev, const struct tegra_smmu_soc *soc,
+ {
+ 	return NULL;
+ }
++void tegra_smmu_resume(struct tegra_smmu *smmu)
++{
++}
+ #endif
+ 
+ #ifdef CONFIG_ARCH_TEGRA_3x_SOC
+-- 
+1.8.1.5
