@@ -1,19 +1,18 @@
-From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [v2 18/25] KVM: kvm-vfio: implement the VFIO skeleton for VT-d
-	Posted-Interrupts
-Date: Tue, 9 Dec 2014 11:51:27 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F0022E8F61@SHSMSX104.ccr.corp.intel.com>
-References: <1417592394-24343-1-git-send-email-feng.wu@intel.com>
-	<1417592394-24343-19-git-send-email-feng.wu@intel.com>
-	<54807F5C.4050607@linaro.org>
-	<E959C4978C3B6342920538CF579893F0022E2DC0@SHSMSX104.ccr.corp.intel.com>
-	<1418015529.1095.26.camel@bling.home> <54857A4A.5030003@linaro.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 2/2] iommu/vt-d: Only remove domain when device is removed
+Date: Tue, 9 Dec 2014 13:15:25 +0100
+Message-ID: <20141209121525.GM3762@8bytes.org>
+References: <1412074923-6342-1-git-send-email-joro@8bytes.org>
+	<1412074923-6342-3-git-send-email-joro@8bytes.org>
+	<1415117537.27420.428.camel@ul30vt.home>
+	<20141106125405.GI8354@suse.de>
+	<1415290565.16601.92.camel@ul30vt.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <54857A4A.5030003-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1415290565.16601.92.camel-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,293 +22,66 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Myron Stowe <mstowe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On Thu, Nov 06, 2014 at 09:16:05AM -0700, Alex Williamson wrote:
+> But the domains are unlinked from device_domain_list using
+> unlink_domain_info() which is called from both domain_remove_dev_info()
+> and domain_remove_one_dev_info() which are both part of that more
+> likely, unlikely branch in intel_iommu_attach_device().  So it seems
+> like any time we switch a device from the DMA-API to the IOMMU-API, we
+> lose the reference to the domain.  Is that incorrect?  I'll try to test.
 
+Okay, I thought a while about that and it looks like a real fix needs a
+rewrite of the domain handling code in the VT-d driver to better handle
+domain lifetime. We'll get this for free when we add default domains and
+more domain handling logic to the iommu core, so I think we don't need
+to start rewriting the VT-d driver for this.
+But for the time being, here is a simple fix for the leak in
+iommu_attach_domain:
 
-> -----Original Message-----
-> From: Eric Auger [mailto:eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org]
-> Sent: Monday, December 08, 2014 6:16 PM
-> To: Alex Williamson; Wu, Feng
-> Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org; x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org;
-> gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org;
-> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [v2 18/25] KVM: kvm-vfio: implement the VFIO skeleton for VT-d
-> Posted-Interrupts
-> 
-> On 12/08/2014 06:12 AM, Alex Williamson wrote:
-> > On Mon, 2014-12-08 at 04:58 +0000, Wu, Feng wrote:
-> >>
-> >>> -----Original Message-----
-> >>> From: Eric Auger [mailto:eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org]
-> >>> Sent: Thursday, December 04, 2014 11:36 PM
-> >>> To: Wu, Feng; tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org;
-> >>> x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
-> >>> dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
-> >>> jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
-> >>> Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> >>> kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> >>> Subject: Re: [v2 18/25] KVM: kvm-vfio: implement the VFIO skeleton for
-> VT-d
-> >>> Posted-Interrupts
-> >>>
-> >>> Hi Feng,
-> >>>
-> >>> On 12/03/2014 08:39 AM, Feng Wu wrote:
-> >>>> This patch adds the kvm-vfio interface for VT-d Posted-Interrrupts.
-> >>>> When guests updates MSI/MSI-x information for an assigned-device,
-> >>> update
-> >>>> QEMU will use KVM_DEV_VFIO_DEVICE_POSTING_IRQ attribute to setup
-> >>>> IRTE for VT-d PI. This patch implement this IRQ attribute.
-> >>> s/implement/implements
-> >>>>
-> >>>> Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> >>>> ---
-> >>>>  include/linux/kvm_host.h |   19 ++++++++
-> >>>>  virt/kvm/vfio.c          |  103
-> >>> ++++++++++++++++++++++++++++++++++++++++++++++
-> >>>>  2 files changed, 122 insertions(+), 0 deletions(-)
-> >>>>
-> >>>> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-> >>>> index 5cd4420..8d06678 100644
-> >>>> --- a/include/linux/kvm_host.h
-> >>>> +++ b/include/linux/kvm_host.h
-> >>>> @@ -1134,6 +1134,25 @@ static inline int
-> >>> kvm_arch_vfio_set_forward(struct kvm_fwd_irq *fwd_irq,
-> >>>>  }
-> >>>>  #endif
-> >>>>
-> >>>> +#ifdef __KVM_HAVE_ARCH_KVM_VFIO_POSTING
-> >>>> +/*
-> >>>> + * kvm_arch_vfio_update_pi_irte - set IRTE for Posted-Interrupts
-> >>>> + *
-> >>>> + * @kvm: kvm
-> >>>> + * @host_irq: host irq of the interrupt
-> >>>> + * @guest_irq: gsi of the interrupt
-> >>>> + * returns 0 on success, < 0 on failure
-> >>>> + */
-> >>>> +int kvm_arch_vfio_update_pi_irte(struct kvm *kvm, unsigned int
-> host_irq,
-> >>>> +				 uint32_t guest_irq);
-> >>>> +#else
-> >>>> +static int kvm_arch_vfio_update_pi_irte(struct kvm *kvm, unsigned int
-> >>> host_irq,
-> >>>> +					uint32_t guest_irq)
-> >>>> +{
-> >>>> +	return 0;
-> >>>> +}
-> >>>> +#endif
-> >>>> +
-> >>>>  #ifdef CONFIG_HAVE_KVM_CPU_RELAX_INTERCEPT
-> >>>>
-> >>>>  static inline void kvm_vcpu_set_in_spin_loop(struct kvm_vcpu *vcpu,
-> bool
-> >>> val)
-> >>>> diff --git a/virt/kvm/vfio.c b/virt/kvm/vfio.c
-> >>>> index 6bc7001..5e5515f 100644
-> >>>> --- a/virt/kvm/vfio.c
-> >>>> +++ b/virt/kvm/vfio.c
-> >>>> @@ -446,6 +446,99 @@ out:
-> >>>>  	return ret;
-> >>>>  }
-> >>>>
-> >>>> +static int kvm_vfio_pci_get_irq_count(struct pci_dev *pdev, int irq_type)
-> >>>> +{
-> >>>> +	if (irq_type == VFIO_PCI_INTX_IRQ_INDEX) {
-> >>>> +		u8 pin;
-> >>>> +
-> >>>> +		pci_read_config_byte(pdev, PCI_INTERRUPT_PIN, &pin);
-> >>>> +		if (pin)
-> >>>> +			return 1;
-> >>>> +	} else if (irq_type == VFIO_PCI_MSI_IRQ_INDEX)
-> >>>> +		return pci_msi_vec_count(pdev);
-> >>>> +	else if (irq_type == VFIO_PCI_MSIX_IRQ_INDEX)
-> >>>> +		return pci_msix_vec_count(pdev);
-> >>>> +
-> >>>> +	return 0;
-> >>>> +}
-> >>> for platform case I was asked to move the retrieval of absolute irq
-> >>> number to the architecture specific part. I don't know if it should
-> >>> apply to PCI stuff as well? This explains why I need to pass the VFIO
-> >>> device (or struct device handle) to the arch specific part. Actually we
-> >>> do the same job, we provide a phys/virt IRQ mapping to KVM, right? So to
-> >>> me our architecture specific API should look quite similar?
-> >>
-> >> In my patch, QEMU passes IRQ type(MSI/MSIx in my case), VFIO device
-> index,
-> >> and sub-index via "struct kvm_vfio_dev_irq" to KVM, then KVM will find the
-> >> real host irq from the VFIO device index and the IRQ type. Is this something
-> >> similar with your patch?
-> >>
-> >>>
-> >>>> +
-> >>>> +static int kvm_vfio_set_pi(struct kvm_device *kdev, int32_t __user
-> *argp)
-> >>>> +{
-> >>>> +	struct kvm_vfio_dev_irq pi_info;
-> >>>> +	uint32_t *gsi;
-> >>>> +	unsigned long minsz;
-> >>>> +	struct vfio_device *vdev;
-> >>>> +	struct msi_desc *entry;
-> >>>> +	struct device *dev;
-> >>>> +	struct pci_dev *pdev;
-> >>>> +	int i, max, ret;
-> >>>> +
-> >>>> +	minsz = offsetofend(struct kvm_vfio_dev_irq, count);
-> >>>> +
-> >>>> +	if (copy_from_user(&pi_info, (void __user *)argp, minsz))
-> >>>> +		return -EFAULT;
-> >>>> +
-> >>>> +	if (pi_info.argsz < minsz || pi_info.index >= VFIO_PCI_NUM_IRQS)
-> >>> PCI specific check, same remark as above but I will let Alex further
-> >>> comment on this and possibly invalidate this commeny ;-)
-> >>>> +		return -EINVAL;
-> >>>> +
-> >>>> +	vdev = kvm_vfio_get_vfio_device(pi_info.fd);
-> >>>> +	if (IS_ERR(vdev))
-> >>>> +		return PTR_ERR(vdev);
-> >>>> +
-> >>>> +	dev = kvm_vfio_external_base_device(vdev);
-> >>>> +	if (!dev || !dev_is_pci(dev)) {
-> >>>> +		ret = -EFAULT;
-> >>>> +		goto put_vfio_device;
-> >>>> +	}
-> >>>> +
-> >>>> +	pdev = to_pci_dev(dev);
-> >>>> +
-> >>>> +	max = kvm_vfio_pci_get_irq_count(pdev, pi_info.index);
-> >>>> +	if (max <= 0) {
-> >>>> +		ret = -EFAULT;
-> >>>> +		goto put_vfio_device;
-> >>>> +	}
-> >>>> +
-> >>>> +	if (pi_info.argsz - minsz < pi_info.count * sizeof(int) ||
-> >>> shouldn' we use the actual datatype?
-> >>
-> >> I am afraid I don't get this, could you please be more specific? Thanks a lot!
-> >
-> > We could have a platform that supports 64bit INTs.
-> yes this is what I meant (struct datatype is __u32).
-> 
-> Thanks
-> 
-> Eric
+>From d65b236d0f27fe3ef7ac4d12cceb0da67aec86ce Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Date: Tue, 9 Dec 2014 12:56:45 +0100
+Subject: [PATCH] iommu/vt-d: Fix dmar_domain leak in iommu_attach_device
 
-Oh, I got it. In fact, I changed the type of gsi[] from "int" to "u32" in
-struct kvm_vfio_dev_irq, but I forgot to change this place. I will correct it.
-Thanks for the comments!
+Since commit 1196c2f a domain is only destroyed in the
+notifier path if it is hot-unplugged. This caused a
+domain leakage in iommu_attach_device when a driver was
+unbound from the device and bound to VFIO. In this case the
+device is attached to a new domain and unlinked from the old
+domain. At this point nothing points to the old domain
+anymore and its memory is leaked.
+Fix this by explicitly freeing the old domain in
+iommu_attach_domain.
 
-> >
-> >>>> +	    pi_info.start >= max || pi_info.start + pi_info.count > max) {
-> >>>> +		ret = -EINVAL;
-> >>>> +		goto put_vfio_device;
-> >>>> +	}
-> >>>> +
-> >>>> +	gsi = memdup_user((void __user *)((unsigned long)argp + minsz),
-> >>>> +			   pi_info.count * sizeof(int));
-> >>> same question as above
-> >>>> +	if (IS_ERR(gsi)) {
-> >>>> +		ret = PTR_ERR(gsi);
-> >>>> +		goto put_vfio_device;
-> >>>> +	}
-> >>>> +
-> >>>> +#ifdef CONFIG_PCI_MSI
-> >>>> +	for (i = 0; i < pi_info.count; i++) {
-> >>>> +		list_for_each_entry(entry, &pdev->msi_list, list) {
-> >>>> +			if (entry->msi_attrib.entry_nr != pi_info.start+i)
-> >>>> +				continue;
-> >>>> +
-> >>>> +			ret = kvm_arch_vfio_update_pi_irte(kdev->kvm,
-> >>>> +							   entry->irq,
-> >>>> +							   gsi[i]);
-> >>>> +			if (ret) {
-> >>>> +				ret = -EFAULT;
-> >>> why -EFAULT? and not propagation of original error code?
-> >> Yes, you are right. Thanks for the comments!
-> >>
-> >>> you may have posting set for part of the subindexes and unset for rest.
-> >>> Isn't it an issue?
-> >>
-> >> QEMU will always set the posting for all the sub-indexes for MSI/MSIx,
-> >> once the guest updates the configuration of some sub-indexes, KVM will
-> >> update it accordingly. So in which case will what you mentioned above
-> >> happen?
-> 
-> Was pointing out you handle the case where kvm_arch_vfio_update_pi_irte
-> could fail and you still continue looping thru the other indexes. So
-> theoretically you could have a mixed of non posted IRQs and posted IRQs.
-> 
+Fixes: 1196c2f 'iommu/vt-d: Only remove domain when device is removed'
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-Okay, I got your point. In fact, remapped IRQs and Posted IRQs are independent.
-We can make some of the IRQ posted and the rest remapped. They are using
-different IRTEs in the remapped structure.
-
-Thanks,
-Feng
-
-> Best Regards
-> 
-> Eric
-> >
-> > QEMU is just one userspace, not necessarily the only userspace.  The
-> > kernel shouldn't expect a specific userspace behavior.
-> >
-> >>>> +				goto free_gsi;
-> >>>> +			}
-> >>>> +		}
-> >>>> +	}
-> >>>> +#endif
-> >>>> +
-> >>>> +	ret = 0;
-> >>>> +
-> >>>> +free_gsi:
-> >>>> +	kfree(gsi);
-> >>>> +
-> >>>> +put_vfio_device:
-> >>>> +	kvm_vfio_put_vfio_device(vdev);
-> >>>> +	return ret;
-> >>>> +}
-> >>>> +
-> >>>>  static int kvm_vfio_set_device(struct kvm_device *kdev, long attr, u64
-> arg)
-> >>>>  {
-> >>>>  	int32_t __user *argp = (int32_t __user *)(unsigned long)arg;
-> >>>> @@ -456,6 +549,11 @@ static int kvm_vfio_set_device(struct
-> kvm_device
-> >>> *kdev, long attr, u64 arg)
-> >>>>  	case KVM_DEV_VFIO_DEVICE_UNFORWARD_IRQ:
-> >>>>  		ret = kvm_vfio_control_irq_forward(kdev, attr, argp);
-> >>>>  		break;
-> >>>> +#ifdef __KVM_HAVE_ARCH_KVM_VFIO_POSTING
-> >>>> +	case KVM_DEV_VFIO_DEVICE_POSTING_IRQ:
-> >>>> +		ret = kvm_vfio_set_pi(kdev, argp);
-> >>>> +		break;
-> >>>> +#endif
-> >>>>  	default:
-> >>>>  		ret = -ENXIO;
-> >>>>  	}
-> >>>> @@ -511,6 +609,11 @@ static int kvm_vfio_has_attr(struct kvm_device
-> >>> *dev,
-> >>>>  		case KVM_DEV_VFIO_DEVICE_UNFORWARD_IRQ:
-> >>>>  			return 0;
-> >>>>  #endif
-> >>>> +#ifdef __KVM_HAVE_ARCH_KVM_VFIO_POSTING
-> >>>> +		case KVM_DEV_VFIO_DEVICE_POSTING_IRQ:
-> >>>> +			return 0;
-> >>>> +#endif
-> >>>> +
-> >>>>  		}
-> >>>>  		break;
-> >>>>  	}
-> >>>>
-> >>
-> >> --
-> >> To unsubscribe from this list: send the line "unsubscribe kvm" in
-> >> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> >> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> >
-> >
-> >
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 1232336..9ef8e89 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4424,10 +4424,13 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+ 
+ 		old_domain = find_domain(dev);
+ 		if (old_domain) {
+-			if (domain_type_is_vm_or_si(dmar_domain))
++			if (domain_type_is_vm_or_si(dmar_domain)) {
+ 				domain_remove_one_dev_info(old_domain, dev);
+-			else
++			} else {
+ 				domain_remove_dev_info(old_domain);
++				if (list_empty(&old_domain->devices))
++					domain_exit(old_domain);
++			}
+ 		}
+ 	}
+ 
+-- 
+1.8.4.5
