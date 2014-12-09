@@ -1,13 +1,17 @@
 From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [v2 00/25] Add VT-d Posted-Interrupts support
-Date: Mon, 8 Dec 2014 13:36:43 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F0022E5C76@SHSMSX104.ccr.corp.intel.com>
+Subject: RE: [v2 17/25] KVM: kvm-vfio: User API for VT-d Posted-Interrupts
+Date: Tue, 9 Dec 2014 11:38:05 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F0022E8ECD@SHSMSX104.ccr.corp.intel.com>
 References: <1417592394-24343-1-git-send-email-feng.wu@intel.com>
+	<1417592394-24343-18-git-send-email-feng.wu@intel.com>
+	<548069F6.7020308@linaro.org>
+	<E959C4978C3B6342920538CF579893F0022E2DD7@SHSMSX104.ccr.corp.intel.com>
+	<1418016076.1095.30.camel@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1417592394-24343-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1418016076.1095.30.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -18,113 +22,161 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Ping...
+
+
+> -----Original Message-----
+> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> Sent: Monday, December 08, 2014 1:21 PM
+> To: Wu, Feng
+> Cc: Eric Auger; tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org;
+> x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
+> dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org;
+> linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Subject: Re: [v2 17/25] KVM: kvm-vfio: User API for VT-d Posted-Interrupts
+> 
+> On Mon, 2014-12-08 at 04:58 +0000, Wu, Feng wrote:
+> >
+> > > -----Original Message-----
+> > > From: kvm-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org [mailto:kvm-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org]
+> On
+> > > Behalf Of Eric Auger
+> > > Sent: Thursday, December 04, 2014 10:05 PM
+> > > To: Wu, Feng; tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org;
+> > > x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
+> > > dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
+> > > jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+> > > Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> > > kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > > Subject: Re: [v2 17/25] KVM: kvm-vfio: User API for VT-d Posted-Interrupts
+> > >
+> > > Hi Feng,
+> > > On 12/03/2014 08:39 AM, Feng Wu wrote:
+> > > > This patch adds and documents a new attribute
+> > > > KVM_DEV_VFIO_DEVICE_POSTING_IRQ in KVM_DEV_VFIO_DEVICE
+> group.
+> > > > This new attribute is used for VT-d Posted-Interrupts.
+> > > >
+> > > > When guest OS changes the interrupt configuration for an
+> > > > assigned device, such as, MSI/MSIx data/address fields,
+> > > > QEMU will use this IRQ attribute to tell KVM to update the
+> > > > related IRTE according the VT-d Posted-Interrrupts Specification,
+> > > > such as, the guest vector should be updated in the related IRTE.
+> > > >
+> > > > Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> > > > ---
+> > > >  Documentation/virtual/kvm/devices/vfio.txt |    9 +++++++++
+> > > >  include/uapi/linux/kvm.h                   |   10 ++++++++++
+> > > >  2 files changed, 19 insertions(+), 0 deletions(-)
+> > > >
+> > > > diff --git a/Documentation/virtual/kvm/devices/vfio.txt
+> > > b/Documentation/virtual/kvm/devices/vfio.txt
+> > > > index f7aff29..41e12b7 100644
+> > > > --- a/Documentation/virtual/kvm/devices/vfio.txt
+> > > > +++ b/Documentation/virtual/kvm/devices/vfio.txt
+> > > > @@ -42,3 +42,12 @@ activated before VFIO_DEVICE_SET_IRQS has been
+> > > called to trigger the IRQ
+> > > >  or associate an eventfd to it. Unforwarding can only be called while the
+> > > >  signaling has been disabled with VFIO_DEVICE_SET_IRQS. If this
+> condition
+> > > is
+> > > >  not satisfied, the command returns an -EBUSY.
+> > > > +
+> > > > +  KVM_DEV_VFIO_DEVICE_POSTING_IRQ: Use posted interrtups
+> > > mechanism to post
+> > > typo
+> > > > +                                   the IRQ to guests.
+> > > > +For this attribute, kvm_device_attr.addr points to a kvm_vfio_dev_irq
+> > > struct.
+> > > > +
+> > > > +When guest OS changes the interrupt configuration for an assigned
+> device,
+> > > > +such as, MSI/MSIx data/address fields, QEMU will use this IRQ attribute
+> > > > +to tell KVM to update the related IRTE according the VT-d
+> > > Posted-Interrrupts
+> > > > +Specification, such as, the guest vector should be updated in the related
+> > > IRTE.
+> > > For my curiosity are there any restrictions about the instant at which
+> > > the change can be done?
+> > > I do not get here how you deactivate the posting?
+> >
+> > The current method is if the hardware supports interrupts posting, we will
+> > use it instead of interrupts remapping, since it has good performance. Why
+> > do I need deactivate interrupts posting?
+> >
+> > Here is the reply to Alex for the same question:
+> > "In fact, I don't think we need to stop the posted-interrupts. For setting
+> > posted interrupts, we update the related IRTE according to the new
+> > format. If the guest reboots, or unload the drivers, or some other
+> > operations, the msi/msix will be disabled first, in this path, the irq
+> > will be disabled the related IRTE is not used anymore."
+> 
+> Right, and I'm still not sure I agree with that reasoning.  We need to
+> build the kernel interface to be generic, not tailored for a specific
+> userspace.  I don't really feel comfortable having something that can't
+> be disabled via a similar path to it being enabled.  For instance, what
+> about a dynamic debug interface where we want to enable tracing and see
+> each interrupt injected into the guest.  At that point we'd want to
+> disabled posted interrupts and direct KVM injection and route via QEMU.
+> Thanks,
+> 
+> Alex
+
+Okay, I will think about this.
 
 Thanks,
 Feng
-
-> -----Original Message-----
-> From: Wu, Feng
-> Sent: Wednesday, December 03, 2014 3:39 PM
-> To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org; x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org;
-> gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org;
-> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
-> Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wu, Feng
-> Subject: [v2 00/25] Add VT-d Posted-Interrupts support
 > 
-> VT-d Posted-Interrupts is an enhancement to CPU side Posted-Interrupt.
-> With VT-d Posted-Interrupts enabled, external interrupts from
-> direct-assigned devices can be delivered to guests without VMM
-> intervention when guest is running in non-root mode.
+> > > > diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+> > > > index a269a42..7d98650 100644
+> > > > --- a/include/uapi/linux/kvm.h
+> > > > +++ b/include/uapi/linux/kvm.h
+> > > > @@ -949,6 +949,7 @@ struct kvm_device_attr {
+> > > >  #define  KVM_DEV_VFIO_DEVICE			2
+> > > >  #define   KVM_DEV_VFIO_DEVICE_FORWARD_IRQ			1
+> > > >  #define   KVM_DEV_VFIO_DEVICE_UNFORWARD_IRQ			2
+> > > > +#define   KVM_DEV_VFIO_DEVICE_POSTING_IRQ			3
+> > > Maybe we should align our naming verb vs verbing here?
+> > > Best Regards
+> > > Eric
+> >
+> > No problem, I will align my patch in the next version. Thanks!
+> >
+> > Thanks,
+> > Feng
+> >
+> > > >
+> > > >  enum kvm_device_type {
+> > > >  	KVM_DEV_TYPE_FSL_MPIC_20	= 1,
+> > > > @@ -973,6 +974,15 @@ struct kvm_arch_forwarded_irq {
+> > > >  	__u32 gsi; /* gsi, ie. virtual IRQ number */
+> > > >  };
+> > > >
+> > > > +struct kvm_vfio_dev_irq {
+> > > > +	__u32	argsz;
+> > > > +	__u32	fd;		/* file descriptor of the VFIO device */
+> > > > +	__u32	index;		/* VFIO device IRQ index */
+> > > > +	__u32	start;
+> > > > +	__u32	count;
+> > > > +	__u32	gsi[];		/* gsi, ie. virtual IRQ number */
+> > > > +};
+> > > > +
+> > > >  /*
+> > > >   * ioctls for VM fds
+> > > >   */
+> > > >
+> > >
+> > > --
+> > > To unsubscribe from this list: send the line "unsubscribe kvm" in
+> > > the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe kvm" in
+> > the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
-> You can find the VT-d Posted-Interrtups Spec. in the following URL:
-> http://www.intel.com/content/www/us/en/intelligent-systems/intel-technolog
-> y/vt-directed-io-spec.html
 > 
-> v1->v2:
-> * Use VFIO framework to enable this feature, the VFIO part of this series is
->   base on Eric's patch "[PATCH v3 0/8] KVM-VFIO IRQ forward control"
-> * Rebase this patchset on
-> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git,
->   then revise some irq logic based on the new hierarchy irqdomain patches
-> provided
->   by Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> 
-> This patch series is made of the following groups:
-> 1-6: Some preparation changes in iommu and irq component, this is based on
-> the
->      new hierarchy irqdomain logic.
-> 7-9, 25: IOMMU changes for VT-d Posted-Interrupts, such as, feature detection,
->           command line parameter.
-> 10-16, 21-24: Changes related to KVM itself.
-> 17-19: Changes in VFIO component, this part was previously sent out as
-> "[RFC PATCH v2 0/2] kvm-vfio: implement the vfio skeleton for VT-d
-> Posted-Interrupts"
-> 20: x86 irq related changes
-> 
-> Feng Wu (25):
->   genirq: Introduce irq_set_vcpu_affinity() to target an interrupt to a
->     VCPU
->   iommu: Add new member capability to struct irq_remap_ops
->   iommu, x86: Define new irte structure for VT-d Posted-Interrupts
->   iommu, x86: Implement irq_set_vcpu_affinity for intel_ir_chip
->   x86, irq: Implement irq_set_vcpu_affinity for pci_msi_ir_controller
->   iommu, x86: No need to migrating irq for VT-d Posted-Interrupts
->   iommu, x86: Add cap_pi_support() to detect VT-d PI capability
->   iommu, x86: Add intel_irq_remapping_capability() for Intel
->   iommu, x86: define irq_remapping_cap()
->   KVM: change struct pi_desc for VT-d Posted-Interrupts
->   KVM: Add some helper functions for Posted-Interrupts
->   KVM: Initialize VT-d Posted-Interrupts Descriptor
->   KVM: Define a new interface kvm_find_dest_vcpu() for VT-d PI
->   KVM: Get Posted-Interrupts descriptor address from struct kvm_vcpu
->   KVM: Make struct kvm_irq_routing_table accessible
->   KVM: make kvm_set_msi_irq() public
->   KVM: kvm-vfio: User API for VT-d Posted-Interrupts
->   KVM: kvm-vfio: implement the VFIO skeleton for VT-d Posted-Interrupts
->   KVM: x86: kvm-vfio: VT-d posted-interrupts setup
->   x86, irq: Define a global vector for VT-d Posted-Interrupts
->   KVM: Update Posted-Interrupts descriptor during vCPU scheduling
->   KVM: Change NDST field after vCPU scheduling
->   KVM: Add the handler for Wake-up Vector
->   KVM: Suppress posted-interrupt when 'SN' is set
->   iommu/vt-d: Add a command line parameter for VT-d posted-interrupts
-> 
->  Documentation/kernel-parameters.txt        |    1 +
->  Documentation/virtual/kvm/devices/vfio.txt |    9 +
->  arch/x86/include/asm/entry_arch.h          |    2 +
->  arch/x86/include/asm/hardirq.h             |    1 +
->  arch/x86/include/asm/hw_irq.h              |    2 +
->  arch/x86/include/asm/irq_remapping.h       |   11 ++
->  arch/x86/include/asm/irq_vectors.h         |    1 +
->  arch/x86/include/asm/kvm_host.h            |   14 ++
->  arch/x86/kernel/apic/msi.c                 |    1 +
->  arch/x86/kernel/entry_64.S                 |    2 +
->  arch/x86/kernel/irq.c                      |   27 +++
->  arch/x86/kernel/irqinit.c                  |    2 +
->  arch/x86/kvm/Makefile                      |    2 +-
->  arch/x86/kvm/kvm_vfio_x86.c                |   68 ++++++++
->  arch/x86/kvm/vmx.c                         |  251
-> +++++++++++++++++++++++++++-
->  arch/x86/kvm/x86.c                         |   38 ++++-
->  drivers/iommu/intel_irq_remapping.c        |   64 +++++++
->  drivers/iommu/irq_remapping.c              |   24 +++-
->  drivers/iommu/irq_remapping.h              |    8 +
->  include/linux/dmar.h                       |   32 ++++
->  include/linux/intel-iommu.h                |    1 +
->  include/linux/irq.h                        |    7 +
->  include/linux/kvm_host.h                   |   43 +++++
->  include/uapi/linux/kvm.h                   |   10 +
->  kernel/irq/chip.c                          |   14 ++
->  kernel/irq/manage.c                        |   20 +++
->  virt/kvm/irq_comm.c                        |   43 +++++-
->  virt/kvm/irqchip.c                         |   11 --
->  virt/kvm/kvm_main.c                        |   14 ++
->  virt/kvm/vfio.c                            |  103 ++++++++++++
->  30 files changed, 799 insertions(+), 27 deletions(-)
->  create mode 100644 arch/x86/kvm/kvm_vfio_x86.c
