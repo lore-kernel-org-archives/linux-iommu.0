@@ -1,20 +1,16 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 0/5] iommu/vt-d: Fix crash dump failure caused by legacy
-	DMA/IO
-Date: Wed, 10 Dec 2014 16:46:52 +0800
-Message-ID: <20141210084652.GA25091@dhcp-16-105.nay.redhat.com>
-References: <1413878659-1383-1-git-send-email-zhen-hual@hp.com>
-	<20141022100525.GD9060@dhcp-16-116.nay.redhat.com>
-	<545ACF66.9050509@jp.fujitsu.com> <545AD061.4000102@hp.com>
-	<545AD353.8060207@jp.fujitsu.com> <545AD8D3.90709@hp.com>
-	<545B2885.8070009@jp.fujitsu.com> <545B2C07.1070701@hp.com>
-	<5465A0E0.4020001@hp.com> <20141117133858.GA31920@8bytes.org>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: Re: [PATCH v10 00/20] VFIO support for platform and ARM AMBA devices
+Date: Wed, 10 Dec 2014 15:00:12 +0100
+Message-ID: <CAG8rG2wX9zOHMqF=u20CqF77ODsSFWg2WMbMnhSMpuCMNk+Sgw@mail.gmail.com>
+References: <1417109580-10505-1-git-send-email-a.motakis@virtualopensystems.com>
+	<1417979565.1095.22.camel@bling.home>
+	<CAG8rG2wB9KtjYGEL91TDS9AiKFHjPHJKjqyRPJj7wqKP6c+Knw@mail.gmail.com>
+	<1418137697.1095.126.camel@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20141117133858.GA31920-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1418137697.1095.126.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,34 +20,168 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Li,
-	ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg, ZhenHua,
+Hello Alex,
 
-This issue happens on AMD iommu too, do you have any plans or
-thoughts on that?
+In fact I need to add fixes to patches 12 and 13 as well.
 
-Thanks
-Baoquan
+In the first case, if the user masks an interrupt before setting an
+eventfd handler, then the IRQ will not be properly disabled, causing
+problems. This needs to be checked for when setting a trigger, as is
+done in PCI.
 
-On 11/17/14 at 02:38pm, Joerg Roedel wrote:
-> On Fri, Nov 14, 2014 at 02:27:44PM +0800, Li, ZhenHua wrote:
-> > I am working following  your directions:
-> > 
-> > 1.  If the VT-d driver finds the IOMMU enabled, it reuses its root entry
-> > table, and do NOT disable-enable iommu. Other data will be copied.
-> > 
-> > 2. When a device driver issues the first dma_map command for a
-> > device, we assign a new and empty page-table, thus removing all
-> > mappings from the old kernel for the device.
-> > 
-> > Please let me know if I get something wrong.
-> 
-> Yes, this sounds right. Happily waiting for patches :)
-> 
-> 
-> 	Joerg
-> 
+In patch 13, I believe I need to use disable_irq_nosync instead of disable_irq.
+
+Would it be easier for you if I repost just 12 and 13 in addition to
+04 I already posted, or does it justify to make a v11?
+
+On Tue, Dec 9, 2014 at 4:08 PM, Alex Williamson
+<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+> On Tue, 2014-12-09 at 15:24 +0100, Antonios Motakis wrote:
+>> On Sun, Dec 7, 2014 at 8:12 PM, Alex Williamson
+>> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+>> >
+>> > On Thu, 2014-11-27 at 18:32 +0100, Antonios Motakis wrote:
+>> > > This patch series aims to implement VFIO support for platform devices that
+>> > > reside behind an IOMMU. Examples of such devices are devices behind an ARM
+>> > > SMMU, or behind a Samsung Exynos System MMU.
+>> > >
+>> > > The API used is based on the existing VFIO API that is also used with PCI
+>> > > devices. Only devices that include a basic set of IRQs and memory regions are
+>> > > targeted; devices with complex relationships with other devices on a device
+>> > > tree are not taken into account at this stage.
+>> > >
+>> > > This patch series may be applied on the following series/patches:
+>> > >  - [PATCH] driver core: amba: add device binding path 'driver_override'
+>> > >  - [PATCH v3 0/6] vfio: type1: support for ARM SMMUS with VFIO_IOMMU_TYPE1
+>> > >
+>> > > A copy can be cloned from the branch vfio-platform-v10 at:
+>> > > git-9UaJU3cA/F/QT0dZR+AlfA@public.gmane.org:virtualopensystems/linux-kvm-arm.git
+>> >
+>> > Hi Antonios,
+>> >
+>> > Sorry for the delay in reviewing.  Between this and your v3 0/6 series,
+>> > the only nits I have are:
+>> >
+>> >       * 2/6 is unneeded, Will already provided a patch to enable type1
+>> >         on ARM that's currently in -next.  That patch is easily dropped
+>> >         with no modification to the series, no need to resend.
+>> >       * 04/20 has a kasprintf() with unchecked return value.
+>> >
+>> > If you want to just send a new 04/20 with that trivial fix, that'd be
+>> > fine.  Looks like I'll need to wait until Joerg's next branch pull is
+>> > accepted before I can merge these in.  Thanks,
+>>
+>> Done. However if I'm not missing something, it seems this would still
+>> be blocked by the patch "driver core: amba: add device binding path
+>> 'driver_override'" (at least the AMBA part).
+>
+> If you want to wait for that to be accepted, it's fine by me.  Thanks,
+>
+> Alex
+>
+>> > > Changes since v9:
+>> > >  - Reworked the splitting of the patches that decouple virqfd from PCI
+>> > >  - Some styling issues and typos
+>> > >  - Removed superfluous includes
+>> > >  - AMBA devices are now named vfio-amba- suffixed by the AMBA device id
+>> > >  - Several other cleanups and fixes
+>> > > Changes since v8:
+>> > >  - Separate irq handler for edge and level triggered interrupts
+>> > >  - Mutex based lock for VFIO fd open/release
+>> > >  - Fixed bug where the first region of a platform device wasn't exposed
+>> > >  - Read only regions can be MMAPed only read only
+>> > >  - Code cleanups
+>> > > Changes since v7:
+>> > >  - Some initial placeholder functionality for PIO resources
+>> > >  - Cleaned up code for IRQ triggering, masking and unmasking
+>> > >  - Some functionality has been removed from this series and posted separately:
+>> > >    - VFIO_IOMMU_TYPE1 support for ARM SMMUs
+>> > >    - IOMMU NOEXEC patches
+>> > >    - driver_override functionality for AMBA devices
+>> > >  - Several fixes
+>> > > Changes since v6:
+>> > >  - Integrated support for AMBA devices
+>> > >  - Numerous cleanups and fixes
+>> > > Changes since v5:
+>> > >  - Full eventfd support for IRQ masking and unmasking.
+>> > >  - Changed IOMMU_EXEC to IOMMU_NOEXEC, along with related flags in VFIO.
+>> > >  - Other fixes based on reviewer comments.
+>> > > Changes since v4:
+>> > >  - Use static offsets for each region in the VFIO device fd
+>> > >  - Include patch in the series for the ARM SMMU to expose IOMMU_EXEC
+>> > >    availability via IOMMU_CAP_DMA_EXEC
+>> > >  - Rebased on VFIO multi domain support:
+>> > >    - IOMMU_EXEC is now available if at least one IOMMU in the container
+>> > >      supports it
+>> > >    - Expose IOMMU_EXEC if available via the capability VFIO_IOMMU_PROT_EXEC
+>> > >  - Some bug fixes
+>> > > Changes since v3:
+>> > >  - Use Kim Phillips' driver_probe_device()
+>> > > Changes since v2:
+>> > >  - Fixed Read/Write and MMAP on device regions
+>> > >  - Removed dependency on Device Tree
+>> > >  - Interrupts support
+>> > >  - Interrupt masking/unmasking
+>> > >  - Automask level sensitive interrupts
+>> > >  - Introduced VFIO_DMA_MAP_FLAG_EXEC
+>> > >  - Code clean ups
+>> > >
+>> > > Antonios Motakis (20):
+>> > >   vfio/platform: initial skeleton of VFIO support for platform devices
+>> > >   vfio: platform: probe to devices on the platform bus
+>> > >   vfio: platform: add the VFIO PLATFORM module to Kconfig
+>> > >   vfio: amba: VFIO support for AMBA devices
+>> > >   vfio: amba: add the VFIO for AMBA devices module to Kconfig
+>> > >   vfio/platform: return info for bound device
+>> > >   vfio/platform: return info for device memory mapped IO regions
+>> > >   vfio/platform: read and write support for the device fd
+>> > >   vfio/platform: support MMAP of MMIO regions
+>> > >   vfio/platform: return IRQ info
+>> > >   vfio/platform: initial interrupts support code
+>> > >   vfio/platform: trigger an interrupt via eventfd
+>> > >   vfio/platform: support for level sensitive interrupts
+>> > >   vfio: add a vfio_ prefix to virqfd_enable and virqfd_disable and
+>> > >     export
+>> > >   vfio: virqfd: rename vfio_pci_virqfd_init and vfio_pci_virqfd_exit
+>> > >   vfio: add local lock for virqfd instead of depending on VFIO PCI
+>> > >   vfio: pass an opaque pointer on virqfd initialization
+>> > >   vfio: move eventfd support code for VFIO_PCI to a separate file
+>> > >   vfio: initialize the virqfd workqueue in VFIO generic code
+>> > >   vfio/platform: implement IRQ masking/unmasking via an eventfd
+>> > >
+>> > >  drivers/vfio/Kconfig                          |   1 +
+>> > >  drivers/vfio/Makefile                         |   5 +-
+>> > >  drivers/vfio/pci/vfio_pci.c                   |   8 -
+>> > >  drivers/vfio/pci/vfio_pci_intrs.c             | 238 +-----------
+>> > >  drivers/vfio/pci/vfio_pci_private.h           |   3 -
+>> > >  drivers/vfio/platform/Kconfig                 |  19 +
+>> > >  drivers/vfio/platform/Makefile                |   8 +
+>> > >  drivers/vfio/platform/vfio_amba.c             | 110 ++++++
+>> > >  drivers/vfio/platform/vfio_platform.c         | 103 +++++
+>> > >  drivers/vfio/platform/vfio_platform_common.c  | 520 ++++++++++++++++++++++++++
+>> > >  drivers/vfio/platform/vfio_platform_irq.c     | 331 ++++++++++++++++
+>> > >  drivers/vfio/platform/vfio_platform_private.h |  82 ++++
+>> > >  drivers/vfio/vfio.c                           |   8 +
+>> > >  drivers/vfio/virqfd.c                         | 213 +++++++++++
+>> > >  include/linux/vfio.h                          |  27 ++
+>> > >  include/uapi/linux/vfio.h                     |   2 +
+>> > >  16 files changed, 1442 insertions(+), 236 deletions(-)
+>> > >  create mode 100644 drivers/vfio/platform/Kconfig
+>> > >  create mode 100644 drivers/vfio/platform/Makefile
+>> > >  create mode 100644 drivers/vfio/platform/vfio_amba.c
+>> > >  create mode 100644 drivers/vfio/platform/vfio_platform.c
+>> > >  create mode 100644 drivers/vfio/platform/vfio_platform_common.c
+>> > >  create mode 100644 drivers/vfio/platform/vfio_platform_irq.c
+>> > >  create mode 100644 drivers/vfio/platform/vfio_platform_private.h
+>> > >  create mode 100644 drivers/vfio/virqfd.c
+>> > >
+>> >
+>> >
+>> >
+>
+>
+>
