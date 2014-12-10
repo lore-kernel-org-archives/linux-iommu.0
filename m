@@ -1,14 +1,15 @@
-From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: Re: [REPORT PATCH] driver core: amba: add device binding path
-	'driver_override'
-Date: Wed, 10 Dec 2014 15:47:35 +0100
-Message-ID: <CAG8rG2w=0C=r9WjsyxrGG=6i=Ww1-tD7Q2sLvHWYCN9xwnz1AA@mail.gmail.com>
-References: <1417109154-10331-1-git-send-email-a.motakis@virtualopensystems.com>
+From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v6 6/8] dma-mapping: detect and configure IOMMU in
+	of_dma_configure
+Date: Wed, 10 Dec 2014 09:52:56 -0500
+Message-ID: <CAF6AEGs6dZauq1QxY_OqBPUs0xHYjjGTi+H7Vm-mNvJtmTAHRA@mail.gmail.com>
+References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
+	<1417453034-21379-7-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1417109154-10331-1-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+In-Reply-To: <1417453034-21379-7-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,156 +19,131 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-Cc: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "open list:ABI/API" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Dear Russel,
-
-Do you think this patch can be included eventually?
-
-If not, what would we still need to change, or is there another
-approach you would accept?
-
-Thanks and best regards,
-Antonios
-
-On Thu, Nov 27, 2014 at 6:25 PM, Antonios Motakis
-<a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org> wrote:
-> As already demonstrated with PCI [1] and the platform bus [2], a
-> driver_override property in sysfs can be used to bypass the id matching
-> of a device to a AMBA driver. This can be used by VFIO to bind to any AMBA
-> device requested by the user.
+On Mon, Dec 1, 2014 at 11:57 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> This patch extends of_dma_configure so that it sets up the IOMMU for a
+> device, as well as the coherent/non-coherent DMA mapping ops.
 >
-> [1] http://lists-archives.com/linux-kernel/28030441-pci-introduce-new-device-binding-path-using-pci_dev-driver_override.html
-> [2] https://www.redhat.com/archives/libvir-list/2014-April/msg00382.html
->
-> Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-> Reviewed-by: Kim Phillips <kim.phillips-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+> Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+> Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 > ---
->  Documentation/ABI/testing/sysfs-bus-amba | 20 ++++++++++++++
->  drivers/amba/bus.c                       | 47 ++++++++++++++++++++++++++++++++
->  include/linux/amba/bus.h                 |  1 +
->  3 files changed, 68 insertions(+)
->  create mode 100644 Documentation/ABI/testing/sysfs-bus-amba
+>  arch/arm/include/asm/dma-mapping.h |  4 +++-
+>  drivers/of/platform.c              | 21 ++++++++++++++-------
+>  include/linux/dma-mapping.h        |  8 +++++++-
+>  3 files changed, 24 insertions(+), 9 deletions(-)
 >
-> diff --git a/Documentation/ABI/testing/sysfs-bus-amba b/Documentation/ABI/testing/sysfs-bus-amba
-> new file mode 100644
-> index 0000000..e7b5467
-> --- /dev/null
-> +++ b/Documentation/ABI/testing/sysfs-bus-amba
-> @@ -0,0 +1,20 @@
-> +What:          /sys/bus/amba/devices/.../driver_override
-> +Date:          September 2014
-> +Contact:       Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-> +Description:
-> +               This file allows the driver for a device to be specified which
-> +               will override standard OF, ACPI, ID table, and name matching.
-> +               When specified, only a driver with a name matching the value
-> +               written to driver_override will have an opportunity to bind to
-> +               the device. The override is specified by writing a string to the
-> +               driver_override file (echo vfio-amba > driver_override) and may
-> +               be cleared with an empty string (echo > driver_override).
-> +               This returns the device to standard matching rules binding.
-> +               Writing to driver_override does not automatically unbind the
-> +               device from its current driver or make any attempt to
-> +               automatically load the specified driver. If no driver with a
-> +               matching name is currently loaded in the kernel, the device will
-> +               not bind to any driver. This also allows devices to opt-out of
-> +               driver binding using a driver_override name such as "none".
-> +               Only a single driver may be specified in the override, there is
-> +               no support for parsing delimiters.
-> diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
-> index 47bbdc1..14bb08b 100644
-> --- a/drivers/amba/bus.c
-> +++ b/drivers/amba/bus.c
-> @@ -18,6 +18,7 @@
->  #include <linux/pm_domain.h>
->  #include <linux/amba/bus.h>
->  #include <linux/sizes.h>
-> +#include <linux/limits.h>
->
->  #include <asm/irq.h>
->
-> @@ -43,6 +44,10 @@ static int amba_match(struct device *dev, struct device_driver *drv)
->         struct amba_device *pcdev = to_amba_device(dev);
->         struct amba_driver *pcdrv = to_amba_driver(drv);
->
-> +       /* When driver_override is set, only bind to the matching driver */
-> +       if (pcdev->driver_override)
-> +               return !strcmp(pcdev->driver_override, drv->name);
-> +
->         return amba_lookup(pcdrv->id_table, pcdev) != NULL;
+> diff --git a/arch/arm/include/asm/dma-mapping.h b/arch/arm/include/asm/dma-mapping.h
+> index dc3420e77758..f3c0d953f6a2 100644
+> --- a/arch/arm/include/asm/dma-mapping.h
+> +++ b/arch/arm/include/asm/dma-mapping.h
+> @@ -121,7 +121,9 @@ static inline unsigned long dma_max_pfn(struct device *dev)
 >  }
+>  #define dma_max_pfn(dev) dma_max_pfn(dev)
 >
-> @@ -59,6 +64,47 @@ static int amba_uevent(struct device *dev, struct kobj_uevent_env *env)
->         return retval;
->  }
+> -static inline void arch_setup_dma_ops(struct device *dev, bool coherent)
+> +static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
+> +                                     u64 size, struct iommu_ops *iommu,
+> +                                     bool coherent)
+>  {
+>         if (coherent)
+>                 set_dma_ops(dev, &arm_coherent_dma_ops);
+> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+> index ff1f4e9afccb..b89caf8c7586 100644
+> --- a/drivers/of/platform.c
+> +++ b/drivers/of/platform.c
+> @@ -19,6 +19,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/of_address.h>
+>  #include <linux/of_device.h>
+> +#include <linux/of_iommu.h>
+>  #include <linux/of_irq.h>
+>  #include <linux/of_platform.h>
+>  #include <linux/platform_device.h>
+> @@ -166,6 +167,7 @@ static void of_dma_configure(struct device *dev)
+>         int ret;
+>         bool coherent;
+>         unsigned long offset;
+> +       struct iommu_ops *iommu;
 >
-> +static ssize_t driver_override_show(struct device *_dev,
-> +                                   struct device_attribute *attr, char *buf)
-> +{
-> +       struct amba_device *dev = to_amba_device(_dev);
+>         /*
+>          * Set default dma-mask to 32 bit. Drivers are expected to setup
+> @@ -194,7 +196,16 @@ static void of_dma_configure(struct device *dev)
+>         dev_dbg(dev, "device is%sdma coherent\n",
+>                 coherent ? " " : " not ");
+>
+> -       arch_setup_dma_ops(dev, coherent);
+> +       iommu = of_iommu_configure(dev);
+> +       dev_dbg(dev, "device is%sbehind an iommu\n",
+> +               iommu ? " " : " not ");
 > +
-> +       if (!dev->driver_override)
-> +               return 0;
-> +
-> +       return sprintf(buf, "%s\n", dev->driver_override);
+> +       arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
+
+
+so, what is the way for a driver that explicitly wants to manage it's
+own device virtual address space to opt out of this?  I suspect that
+won't be the common case, but for a gpu, if dma layer all of a sudden
+thinks it is in control of the gpu's virtual address space, things are
+going to end in tears..
+
+BR,
+-R
+
+
 > +}
 > +
-> +static ssize_t driver_override_store(struct device *_dev,
-> +                                    struct device_attribute *attr,
-> +                                    const char *buf, size_t count)
+> +static void of_dma_deconfigure(struct device *dev)
 > +{
-> +       struct amba_device *dev = to_amba_device(_dev);
-> +       char *driver_override, *old = dev->driver_override, *cp;
-> +
-> +       if (count > PATH_MAX)
-> +               return -EINVAL;
-> +
-> +       driver_override = kstrndup(buf, count, GFP_KERNEL);
-> +       if (!driver_override)
-> +               return -ENOMEM;
-> +
-> +       cp = strchr(driver_override, '\n');
-> +       if (cp)
-> +               *cp = '\0';
-> +
-> +       if (strlen(driver_override)) {
-> +               dev->driver_override = driver_override;
-> +       } else {
-> +              kfree(driver_override);
-> +              dev->driver_override = NULL;
-> +       }
-> +
-> +       kfree(old);
-> +
-> +       return count;
-> +}
-> +
->  #define amba_attr_func(name,fmt,arg...)                                        \
->  static ssize_t name##_show(struct device *_dev,                                \
->                            struct device_attribute *attr, char *buf)    \
-> @@ -81,6 +127,7 @@ amba_attr_func(resource, "\t%016llx\t%016llx\t%016lx\n",
->  static struct device_attribute amba_dev_attrs[] = {
->         __ATTR_RO(id),
->         __ATTR_RO(resource),
-> +       __ATTR_RW(driver_override),
->         __ATTR_NULL,
->  };
+> +       arch_teardown_dma_ops(dev);
+>  }
 >
-> diff --git a/include/linux/amba/bus.h b/include/linux/amba/bus.h
-> index c324f57..34a7004 100644
-> --- a/include/linux/amba/bus.h
-> +++ b/include/linux/amba/bus.h
-> @@ -32,6 +32,7 @@ struct amba_device {
->         struct clk              *pclk;
->         unsigned int            periphid;
->         unsigned int            irq[AMBA_NR_IRQS];
-> +       char                    *driver_override;
->  };
+>  /**
+> @@ -223,16 +234,12 @@ static struct platform_device *of_platform_device_create_pdata(
+>         if (!dev)
+>                 goto err_clear_flag;
 >
->  struct amba_driver {
+> -       of_dma_configure(&dev->dev);
+>         dev->dev.bus = &platform_bus_type;
+>         dev->dev.platform_data = platform_data;
+> -
+> -       /* We do not fill the DMA ops for platform devices by default.
+> -        * This is currently the responsibility of the platform code
+> -        * to do such, possibly using a device notifier
+> -        */
+> +       of_dma_configure(&dev->dev);
+>
+>         if (of_device_add(dev) != 0) {
+> +               of_dma_deconfigure(&dev->dev);
+>                 platform_device_put(dev);
+>                 goto err_clear_flag;
+>         }
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index 8a1560f95d4a..c3007cb4bfa6 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -130,7 +130,13 @@ static inline int dma_coerce_mask_and_coherent(struct device *dev, u64 mask)
+>  extern u64 dma_get_required_mask(struct device *dev);
+>
+>  #ifndef arch_setup_dma_ops
+> -static inline void arch_setup_dma_ops(struct device *dev, bool coherent) { }
+> +static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
+> +                                     u64 size, struct iommu_ops *iommu,
+> +                                     bool coherent) { }
+> +#endif
+> +
+> +#ifndef arch_teardown_dma_ops
+> +static inline void arch_teardown_dma_ops(struct device *dev) { }
+>  #endif
+>
+>  static inline unsigned int dma_get_max_seg_size(struct device *dev)
 > --
-> 2.1.3
+> 2.1.1
 >
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
