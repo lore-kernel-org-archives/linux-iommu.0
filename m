@@ -1,15 +1,11 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v10 00/20] VFIO support for platform and ARM AMBA devices
-Date: Tue, 09 Dec 2014 08:08:17 -0700
-Message-ID: <1418137697.1095.126.camel@bling.home>
-References: <1417109580-10505-1-git-send-email-a.motakis@virtualopensystems.com>
-	<1417979565.1095.22.camel@bling.home>
-	<CAG8rG2wB9KtjYGEL91TDS9AiKFHjPHJKjqyRPJj7wqKP6c+Knw@mail.gmail.com>
+From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [RFC Patch V1 0/9] Simplify initialization of IR on x86 platforms
+Date: Wed, 10 Dec 2014 14:47:42 +0800
+Message-ID: <1418194071-13785-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAG8rG2wB9KtjYGEL91TDS9AiKFHjPHJKjqyRPJj7wqKP6c+Knw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,149 +15,55 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2014-12-09 at 15:24 +0100, Antonios Motakis wrote:
-> On Sun, Dec 7, 2014 at 8:12 PM, Alex Williamson
-> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> >
-> > On Thu, 2014-11-27 at 18:32 +0100, Antonios Motakis wrote:
-> > > This patch series aims to implement VFIO support for platform devices that
-> > > reside behind an IOMMU. Examples of such devices are devices behind an ARM
-> > > SMMU, or behind a Samsung Exynos System MMU.
-> > >
-> > > The API used is based on the existing VFIO API that is also used with PCI
-> > > devices. Only devices that include a basic set of IRQs and memory regions are
-> > > targeted; devices with complex relationships with other devices on a device
-> > > tree are not taken into account at this stage.
-> > >
-> > > This patch series may be applied on the following series/patches:
-> > >  - [PATCH] driver core: amba: add device binding path 'driver_override'
-> > >  - [PATCH v3 0/6] vfio: type1: support for ARM SMMUS with VFIO_IOMMU_TYPE1
-> > >
-> > > A copy can be cloned from the branch vfio-platform-v10 at:
-> > > git-9UaJU3cA/F/QT0dZR+AlfA@public.gmane.org:virtualopensystems/linux-kvm-arm.git
-> >
-> > Hi Antonios,
-> >
-> > Sorry for the delay in reviewing.  Between this and your v3 0/6 series,
-> > the only nits I have are:
-> >
-> >       * 2/6 is unneeded, Will already provided a patch to enable type1
-> >         on ARM that's currently in -next.  That patch is easily dropped
-> >         with no modification to the series, no need to resend.
-> >       * 04/20 has a kasprintf() with unchecked return value.
-> >
-> > If you want to just send a new 04/20 with that trivial fix, that'd be
-> > fine.  Looks like I'll need to wait until Joerg's next branch pull is
-> > accepted before I can merge these in.  Thanks,
-> 
-> Done. However if I'm not missing something, it seems this would still
-> be blocked by the patch "driver core: amba: add device binding path
-> 'driver_override'" (at least the AMBA part).
+This is a following-on patch set to simplify initialization of interrupt
+remapping subsystem on x86 platforms. Please refer to
+	https://lkml.org/lkml/2014/12/5/114
+for the whole story.
 
-If you want to wait for that to be accepted, it's fine by me.  Thanks,
+With this patch set applied, there are three steps to initialize IR on x86:
+1) "Detect" stage to detect ACPI table for IR at early booting stage
+2) "Prepare" stage to allocate resources for IR
+3) "Enable" stage to program hardware device to enable IR
 
-Alex
+Patch 1-3 clean up the code to initialize IR and X2APIC on x86
+Patch 4-5 kill the irq_remapping_supported() and related code
+Patch 6-9 clean up IR code further.
 
-> > > Changes since v9:
-> > >  - Reworked the splitting of the patches that decouple virqfd from PCI
-> > >  - Some styling issues and typos
-> > >  - Removed superfluous includes
-> > >  - AMBA devices are now named vfio-amba- suffixed by the AMBA device id
-> > >  - Several other cleanups and fixes
-> > > Changes since v8:
-> > >  - Separate irq handler for edge and level triggered interrupts
-> > >  - Mutex based lock for VFIO fd open/release
-> > >  - Fixed bug where the first region of a platform device wasn't exposed
-> > >  - Read only regions can be MMAPed only read only
-> > >  - Code cleanups
-> > > Changes since v7:
-> > >  - Some initial placeholder functionality for PIO resources
-> > >  - Cleaned up code for IRQ triggering, masking and unmasking
-> > >  - Some functionality has been removed from this series and posted separately:
-> > >    - VFIO_IOMMU_TYPE1 support for ARM SMMUs
-> > >    - IOMMU NOEXEC patches
-> > >    - driver_override functionality for AMBA devices
-> > >  - Several fixes
-> > > Changes since v6:
-> > >  - Integrated support for AMBA devices
-> > >  - Numerous cleanups and fixes
-> > > Changes since v5:
-> > >  - Full eventfd support for IRQ masking and unmasking.
-> > >  - Changed IOMMU_EXEC to IOMMU_NOEXEC, along with related flags in VFIO.
-> > >  - Other fixes based on reviewer comments.
-> > > Changes since v4:
-> > >  - Use static offsets for each region in the VFIO device fd
-> > >  - Include patch in the series for the ARM SMMU to expose IOMMU_EXEC
-> > >    availability via IOMMU_CAP_DMA_EXEC
-> > >  - Rebased on VFIO multi domain support:
-> > >    - IOMMU_EXEC is now available if at least one IOMMU in the container
-> > >      supports it
-> > >    - Expose IOMMU_EXEC if available via the capability VFIO_IOMMU_PROT_EXEC
-> > >  - Some bug fixes
-> > > Changes since v3:
-> > >  - Use Kim Phillips' driver_probe_device()
-> > > Changes since v2:
-> > >  - Fixed Read/Write and MMAP on device regions
-> > >  - Removed dependency on Device Tree
-> > >  - Interrupts support
-> > >  - Interrupt masking/unmasking
-> > >  - Automask level sensitive interrupts
-> > >  - Introduced VFIO_DMA_MAP_FLAG_EXEC
-> > >  - Code clean ups
-> > >
-> > > Antonios Motakis (20):
-> > >   vfio/platform: initial skeleton of VFIO support for platform devices
-> > >   vfio: platform: probe to devices on the platform bus
-> > >   vfio: platform: add the VFIO PLATFORM module to Kconfig
-> > >   vfio: amba: VFIO support for AMBA devices
-> > >   vfio: amba: add the VFIO for AMBA devices module to Kconfig
-> > >   vfio/platform: return info for bound device
-> > >   vfio/platform: return info for device memory mapped IO regions
-> > >   vfio/platform: read and write support for the device fd
-> > >   vfio/platform: support MMAP of MMIO regions
-> > >   vfio/platform: return IRQ info
-> > >   vfio/platform: initial interrupts support code
-> > >   vfio/platform: trigger an interrupt via eventfd
-> > >   vfio/platform: support for level sensitive interrupts
-> > >   vfio: add a vfio_ prefix to virqfd_enable and virqfd_disable and
-> > >     export
-> > >   vfio: virqfd: rename vfio_pci_virqfd_init and vfio_pci_virqfd_exit
-> > >   vfio: add local lock for virqfd instead of depending on VFIO PCI
-> > >   vfio: pass an opaque pointer on virqfd initialization
-> > >   vfio: move eventfd support code for VFIO_PCI to a separate file
-> > >   vfio: initialize the virqfd workqueue in VFIO generic code
-> > >   vfio/platform: implement IRQ masking/unmasking via an eventfd
-> > >
-> > >  drivers/vfio/Kconfig                          |   1 +
-> > >  drivers/vfio/Makefile                         |   5 +-
-> > >  drivers/vfio/pci/vfio_pci.c                   |   8 -
-> > >  drivers/vfio/pci/vfio_pci_intrs.c             | 238 +-----------
-> > >  drivers/vfio/pci/vfio_pci_private.h           |   3 -
-> > >  drivers/vfio/platform/Kconfig                 |  19 +
-> > >  drivers/vfio/platform/Makefile                |   8 +
-> > >  drivers/vfio/platform/vfio_amba.c             | 110 ++++++
-> > >  drivers/vfio/platform/vfio_platform.c         | 103 +++++
-> > >  drivers/vfio/platform/vfio_platform_common.c  | 520 ++++++++++++++++++++++++++
-> > >  drivers/vfio/platform/vfio_platform_irq.c     | 331 ++++++++++++++++
-> > >  drivers/vfio/platform/vfio_platform_private.h |  82 ++++
-> > >  drivers/vfio/vfio.c                           |   8 +
-> > >  drivers/vfio/virqfd.c                         | 213 +++++++++++
-> > >  include/linux/vfio.h                          |  27 ++
-> > >  include/uapi/linux/vfio.h                     |   2 +
-> > >  16 files changed, 1442 insertions(+), 236 deletions(-)
-> > >  create mode 100644 drivers/vfio/platform/Kconfig
-> > >  create mode 100644 drivers/vfio/platform/Makefile
-> > >  create mode 100644 drivers/vfio/platform/vfio_amba.c
-> > >  create mode 100644 drivers/vfio/platform/vfio_platform.c
-> > >  create mode 100644 drivers/vfio/platform/vfio_platform_common.c
-> > >  create mode 100644 drivers/vfio/platform/vfio_platform_irq.c
-> > >  create mode 100644 drivers/vfio/platform/vfio_platform_private.h
-> > >  create mode 100644 drivers/vfio/virqfd.c
-> > >
-> >
-> >
-> >
+It's based on tip/x86/apic branch and could be pulled from:
+https://github.com/jiangliu/linux.git irq_remapping_v1
+
+It has been tested on Intel platform with X2APIC enabled and disabled.
+It also passes Fengguang's 0day test suite. Tests on AMD platform are
+welcomed!
+
+Jiang Liu (9):
+  x86, apic: Kill useless variable x2apic_enabled in function
+    enable_IR_x2apic()
+  x86, apic: Correctly detect X2APIC status in function enable_IR()
+  x86, apic: Refine enable_IR_x2apic() and related functions
+  iommu/vt-d: Prepare for killing function irq_remapping_supported()
+  iommu/irq_remapping: Kill function irq_remapping_supported() and
+    related code
+  iommu/irq_remapping: Refine function irq_remapping_prepare() for
+    maintenance
+  iommu/irq_remapping: Change variable disable_irq_remap to be static
+  iommu/irq_remapping: Normailize the way to detect whether IR is
+    enabled
+  iommu/irq_remapping: Kill unused function irq_remapping_print_chip()
+
+ arch/x86/include/asm/irq_remapping.h |    4 --
+ arch/x86/kernel/apic/apic.c          |   89 +++++++++++++++-------------------
+ drivers/iommu/amd_iommu.c            |    1 -
+ drivers/iommu/amd_iommu_init.c       |   10 +---
+ drivers/iommu/amd_iommu_proto.h      |    1 -
+ drivers/iommu/intel_irq_remapping.c  |   59 ++++++++--------------
+ drivers/iommu/irq_remapping.c        |   74 +++++++++-------------------
+ drivers/iommu/irq_remapping.h        |    5 --
+ 8 files changed, 84 insertions(+), 159 deletions(-)
+
+-- 
+1.7.10.4
