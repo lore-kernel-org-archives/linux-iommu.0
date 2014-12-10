@@ -1,9 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [RFC Patch V1 1/9] x86,
-	apic: Kill useless variable x2apic_enabled in function
-	enable_IR_x2apic()
-Date: Wed, 10 Dec 2014 14:47:43 +0800
-Message-ID: <1418194071-13785-2-git-send-email-jiang.liu@linux.intel.com>
+Subject: [RFC Patch V1 2/9] x86,
+	apic: Correctly detect X2APIC status in function enable_IR()
+Date: Wed, 10 Dec 2014 14:47:44 +0800
+Message-ID: <1418194071-13785-3-git-send-email-jiang.liu@linux.intel.com>
 References: <1418194071-13785-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,35 +22,27 @@ To: "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Thomas Gleix
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "H. Peter Anvin" <hpa-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Local variable x2apic_enabled has been assigned to but never referred,
-so kill it.
+X2APIC will be disabled if user specifies "nox2apic" on kernel command
+line, even when x2apic_preenabled is true. So correctly detect X2APIC
+status by using x2apic_enabled() instead of x2apic_preenabled.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- arch/x86/kernel/apic/apic.c |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ arch/x86/kernel/apic/apic.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-index 141f1031013d..e7a426a589df 100644
+index e7a426a589df..b6c473b97c5c 100644
 --- a/arch/x86/kernel/apic/apic.c
 +++ b/arch/x86/kernel/apic/apic.c
-@@ -1594,7 +1594,7 @@ int __init enable_IR(void)
- void __init enable_IR_x2apic(void)
- {
- 	unsigned long flags;
--	int ret, x2apic_enabled = 0;
-+	int ret;
- 	int hardware_init_ret;
- 
- 	hardware_init_ret = irq_remapping_prepare();
-@@ -1644,8 +1644,6 @@ void __init enable_IR_x2apic(void)
- 		goto skip_x2apic;
+@@ -1580,7 +1580,7 @@ int __init enable_IR(void)
+ 		return -1;
  	}
  
--	x2apic_enabled = 1;
--
- 	if (x2apic_supported() && !x2apic_mode) {
- 		x2apic_mode = 1;
- 		enable_x2apic();
+-	if (!x2apic_preenabled && skip_ioapic_setup) {
++	if (!x2apic_enabled() && skip_ioapic_setup) {
+ 		pr_info("Skipped enabling intr-remap because of skipping "
+ 			"io-apic setup\n");
+ 		return -1;
 -- 
 1.7.10.4
