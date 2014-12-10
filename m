@@ -1,14 +1,20 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [RFC Patch V1 9/9] iommu/irq_remapping: Kill unused function
-	irq_remapping_print_chip()
-Date: Wed, 10 Dec 2014 14:47:51 +0800
-Message-ID: <1418194071-13785-10-git-send-email-jiang.liu@linux.intel.com>
-References: <1418194071-13785-1-git-send-email-jiang.liu@linux.intel.com>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 0/5] iommu/vt-d: Fix crash dump failure caused by legacy
+	DMA/IO
+Date: Wed, 10 Dec 2014 16:46:52 +0800
+Message-ID: <20141210084652.GA25091@dhcp-16-105.nay.redhat.com>
+References: <1413878659-1383-1-git-send-email-zhen-hual@hp.com>
+	<20141022100525.GD9060@dhcp-16-116.nay.redhat.com>
+	<545ACF66.9050509@jp.fujitsu.com> <545AD061.4000102@hp.com>
+	<545AD353.8060207@jp.fujitsu.com> <545AD8D3.90709@hp.com>
+	<545B2885.8070009@jp.fujitsu.com> <545B2C07.1070701@hp.com>
+	<5465A0E0.4020001@hp.com> <20141117133858.GA31920@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1418194071-13785-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20141117133858.GA31920-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,60 +24,34 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Li,
+	ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Now there's no user of irq_remapping_print_chip(), so kill it.
+Hi Joerg, ZhenHua,
 
-Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
----
- arch/x86/include/asm/irq_remapping.h |    2 --
- drivers/iommu/irq_remapping.c        |   13 -------------
- 2 files changed, 15 deletions(-)
+This issue happens on AMD iommu too, do you have any plans or
+thoughts on that?
 
-diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
-index f2f52a8bb14e..022cb635c294 100644
---- a/arch/x86/include/asm/irq_remapping.h
-+++ b/arch/x86/include/asm/irq_remapping.h
-@@ -43,7 +43,6 @@ extern struct irq_domain *
- irq_remapping_get_ir_irq_domain( struct irq_alloc_info *info);
- extern struct irq_domain *
- irq_remapping_get_irq_domain(struct irq_alloc_info *info);
--extern void irq_remapping_print_chip(struct irq_data *data, struct seq_file *p);
- 
- /* Create PCI MSI/MSIx irqdomain, use @parent as the parent irqdomain. */
- extern struct irq_domain *arch_create_msi_irq_domain(struct irq_domain *parent);
-@@ -79,6 +78,5 @@ irq_remapping_get_irq_domain(struct irq_alloc_info *info)
- 	return NULL;
- }
- 
--#define	irq_remapping_print_chip	NULL
- #endif /* CONFIG_IRQ_REMAP */
- #endif /* __X86_IRQ_REMAPPING_H */
-diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index c7ef51a2555a..981f068154de 100644
---- a/drivers/iommu/irq_remapping.c
-+++ b/drivers/iommu/irq_remapping.c
-@@ -146,19 +146,6 @@ void ir_ack_apic_edge(struct irq_data *data)
- 	ack_APIC_irq();
- }
- 
--void irq_remapping_print_chip(struct irq_data *data, struct seq_file *p)
--{
--	/*
--	 * Assume interrupt is remapped if the parent irqdomain isn't the
--	 * vector domain, which is true for MSI, HPET and IOAPIC on x86
--	 * platforms.
--	 */
--	if (data->domain && data->domain->parent != arch_get_ir_parent_domain())
--		seq_printf(p, " IR-%s", data->chip->name);
--	else
--		seq_printf(p, " %s", data->chip->name);
--}
--
- /**
-  * irq_remapping_get_ir_irq_domain - Get the irqdomain associated with the IOMMU
-  *				     device serving request @info
--- 
-1.7.10.4
+Thanks
+Baoquan
+
+On 11/17/14 at 02:38pm, Joerg Roedel wrote:
+> On Fri, Nov 14, 2014 at 02:27:44PM +0800, Li, ZhenHua wrote:
+> > I am working following  your directions:
+> > 
+> > 1.  If the VT-d driver finds the IOMMU enabled, it reuses its root entry
+> > table, and do NOT disable-enable iommu. Other data will be copied.
+> > 
+> > 2. When a device driver issues the first dma_map command for a
+> > device, we assign a new and empty page-table, thus removing all
+> > mappings from the old kernel for the device.
+> > 
+> > Please let me know if I get something wrong.
+> 
+> Yes, this sounds right. Happily waiting for patches :)
+> 
+> 
+> 	Joerg
+> 
