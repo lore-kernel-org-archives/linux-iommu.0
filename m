@@ -1,187 +1,57 @@
-From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [v2 17/25] KVM: kvm-vfio: User API for VT-d Posted-Interrupts
-Date: Thu, 11 Dec 2014 05:55:15 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F0022EFA1E@SHSMSX104.ccr.corp.intel.com>
-References: <1417592394-24343-1-git-send-email-feng.wu@intel.com>
-	<1417592394-24343-18-git-send-email-feng.wu@intel.com>
-	<548069F6.7020308@linaro.org>
-	<E959C4978C3B6342920538CF579893F0022E2DD7@SHSMSX104.ccr.corp.intel.com>
-	<1418016076.1095.30.camel@bling.home>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1418016076.1095.30.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+From: Tomasz Figa <tfiga@chromium.org>
+Subject: [RFC PATCH 0/2] Fix rockchip IOMMU driver vs PM issues
+Date: Thu, 11 Dec 2014 17:26:25 +0900
+Message-ID: <1418286387-9663-1-git-send-email-tfiga@chromium.org>
+Return-path: <linux-pm-owner@vger.kernel.org>
+Sender: linux-pm-owner@vger.kernel.org
+To: linux-rockchip@lists.infradead.org
+Cc: linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>, Heiko Stuebner <heiko@sntech.de>, Joerg Roedel <joro@8bytes.org>, Ulf Hansson <ulf.hansson@linaro.org>, Kevin Hilman <khilman@linaro.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Daniel Kurtz <djkurtz@chromium.org>, Tomasz Figa <tfiga@chromium.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On Rockchip SoCs, the IOMMUs are located inside the same power domains as
+IP blocks using them. This means that as soon as we runtime suspend such
+IP block, causing the power domain to be powered off, the IOMMU would also
+be powered off, losing all its state.
 
+This means that whenever the power domain is being powered off, the IOMMU
+driver needs to be able to deinitialize the hardware and whenever the domain
+is being powered on, it needs to restore all the state, so the consumer
+device is able to perform memory transactions.
 
-> -----Original Message-----
-> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Monday, December 08, 2014 1:21 PM
-> To: Wu, Feng
-> Cc: Eric Auger; tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org;
-> x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
-> dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org;
-> linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [v2 17/25] KVM: kvm-vfio: User API for VT-d Posted-Interrupts
-> 
-> On Mon, 2014-12-08 at 04:58 +0000, Wu, Feng wrote:
-> >
-> > > -----Original Message-----
-> > > From: kvm-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org [mailto:kvm-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org]
-> On
-> > > Behalf Of Eric Auger
-> > > Sent: Thursday, December 04, 2014 10:05 PM
-> > > To: Wu, Feng; tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org;
-> > > x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
-> > > dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
-> > > jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
-> > > Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> > > kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > > Subject: Re: [v2 17/25] KVM: kvm-vfio: User API for VT-d Posted-Interrupts
-> > >
-> > > Hi Feng,
-> > > On 12/03/2014 08:39 AM, Feng Wu wrote:
-> > > > This patch adds and documents a new attribute
-> > > > KVM_DEV_VFIO_DEVICE_POSTING_IRQ in KVM_DEV_VFIO_DEVICE
-> group.
-> > > > This new attribute is used for VT-d Posted-Interrupts.
-> > > >
-> > > > When guest OS changes the interrupt configuration for an
-> > > > assigned device, such as, MSI/MSIx data/address fields,
-> > > > QEMU will use this IRQ attribute to tell KVM to update the
-> > > > related IRTE according the VT-d Posted-Interrrupts Specification,
-> > > > such as, the guest vector should be updated in the related IRTE.
-> > > >
-> > > > Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> > > > ---
-> > > >  Documentation/virtual/kvm/devices/vfio.txt |    9 +++++++++
-> > > >  include/uapi/linux/kvm.h                   |   10 ++++++++++
-> > > >  2 files changed, 19 insertions(+), 0 deletions(-)
-> > > >
-> > > > diff --git a/Documentation/virtual/kvm/devices/vfio.txt
-> > > b/Documentation/virtual/kvm/devices/vfio.txt
-> > > > index f7aff29..41e12b7 100644
-> > > > --- a/Documentation/virtual/kvm/devices/vfio.txt
-> > > > +++ b/Documentation/virtual/kvm/devices/vfio.txt
-> > > > @@ -42,3 +42,12 @@ activated before VFIO_DEVICE_SET_IRQS has
-> been
-> > > called to trigger the IRQ
-> > > >  or associate an eventfd to it. Unforwarding can only be called while the
-> > > >  signaling has been disabled with VFIO_DEVICE_SET_IRQS. If this
-> condition
-> > > is
-> > > >  not satisfied, the command returns an -EBUSY.
-> > > > +
-> > > > +  KVM_DEV_VFIO_DEVICE_POSTING_IRQ: Use posted interrtups
-> > > mechanism to post
-> > > typo
-> > > > +                                   the IRQ to guests.
-> > > > +For this attribute, kvm_device_attr.addr points to a kvm_vfio_dev_irq
-> > > struct.
-> > > > +
-> > > > +When guest OS changes the interrupt configuration for an assigned
-> device,
-> > > > +such as, MSI/MSIx data/address fields, QEMU will use this IRQ attribute
-> > > > +to tell KVM to update the related IRTE according the VT-d
-> > > Posted-Interrrupts
-> > > > +Specification, such as, the guest vector should be updated in the related
-> > > IRTE.
-> > > For my curiosity are there any restrictions about the instant at which
-> > > the change can be done?
-> > > I do not get here how you deactivate the posting?
-> >
-> > The current method is if the hardware supports interrupts posting, we will
-> > use it instead of interrupts remapping, since it has good performance. Why
-> > do I need deactivate interrupts posting?
-> >
-> > Here is the reply to Alex for the same question:
-> > "In fact, I don't think we need to stop the posted-interrupts. For setting
-> > posted interrupts, we update the related IRTE according to the new
-> > format. If the guest reboots, or unload the drivers, or some other
-> > operations, the msi/msix will be disabled first, in this path, the irq
-> > will be disabled the related IRTE is not used anymore."
-> 
-> Right, and I'm still not sure I agree with that reasoning.  We need to
-> build the kernel interface to be generic, not tailored for a specific
-> userspace.  I don't really feel comfortable having something that can't
-> be disabled via a similar path to it being enabled.  For instance, what
-> about a dynamic debug interface where we want to enable tracing and see
-> each interrupt injected into the guest.  At that point we'd want to
-> disabled posted interrupts and direct KVM injection and route via QEMU.
-> Thanks,
-> 
-> Alex
+The solution proposed here revives the idea of PM domain notifiers submitted
+originally by Samsung's Sylwester Nawrocki and Marek Szyprowski in [1].
+The main benefit of this idea that it is very simple, adding just 84 lines
+of code, but effective and also useful for other purposes, what can be seen
+in thread [2] and [3]. Moreover, it lets us avoid adding device specific
+code (in this case specific to single IOMMU type) to power domain drivers,
+which can be used for more devices than just IOMMU and which may vary
+between platforms using the same IOMMU driver.
 
-I am not quite understand why we need to debug the software
-delivery path for interrupt when PI is used, in this case, the software
-injection code will have no chance to execute. If we don't want the use
-PI, we can disable it from kernel command line.
+The IOMMU-specific part of the solution simply uses the pre-power-off and
+post-power-on notifications to do the necessary setup without the need
+of any action from inside drivers of devices behind the IOMMU, so all the
+code specific to this particular IOMMU type stays outside other drivers
+that should not rely on being run with a particular type of IOMMU (and
+often even SoC).
 
-Thanks,
-Feng
+Tested with a custom board based on RK3288 SoC.
 
-> 
-> > > > diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-> > > > index a269a42..7d98650 100644
-> > > > --- a/include/uapi/linux/kvm.h
-> > > > +++ b/include/uapi/linux/kvm.h
-> > > > @@ -949,6 +949,7 @@ struct kvm_device_attr {
-> > > >  #define  KVM_DEV_VFIO_DEVICE			2
-> > > >  #define   KVM_DEV_VFIO_DEVICE_FORWARD_IRQ			1
-> > > >  #define   KVM_DEV_VFIO_DEVICE_UNFORWARD_IRQ			2
-> > > > +#define   KVM_DEV_VFIO_DEVICE_POSTING_IRQ			3
-> > > Maybe we should align our naming verb vs verbing here?
-> > > Best Regards
-> > > Eric
-> >
-> > No problem, I will align my patch in the next version. Thanks!
-> >
-> > Thanks,
-> > Feng
-> >
-> > > >
-> > > >  enum kvm_device_type {
-> > > >  	KVM_DEV_TYPE_FSL_MPIC_20	= 1,
-> > > > @@ -973,6 +974,15 @@ struct kvm_arch_forwarded_irq {
-> > > >  	__u32 gsi; /* gsi, ie. virtual IRQ number */
-> > > >  };
-> > > >
-> > > > +struct kvm_vfio_dev_irq {
-> > > > +	__u32	argsz;
-> > > > +	__u32	fd;		/* file descriptor of the VFIO device */
-> > > > +	__u32	index;		/* VFIO device IRQ index */
-> > > > +	__u32	start;
-> > > > +	__u32	count;
-> > > > +	__u32	gsi[];		/* gsi, ie. virtual IRQ number */
-> > > > +};
-> > > > +
-> > > >  /*
-> > > >   * ioctls for VM fds
-> > > >   */
-> > > >
-> > >
-> > > --
-> > > To unsubscribe from this list: send the line "unsubscribe kvm" in
-> > > the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe kvm" in
-> > the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-> 
+[1] http://thread.gmane.org/gmane.linux.kernel.samsung-soc/36079/focus=346956
+[2] http://thread.gmane.org/gmane.linux.power-management.general/51993/focus=39158
+[3] http://marc.info/?l=linux-pm&m=136448756308203&w=2
+
+Sylwester Nawrocki (1):
+  pm: Add PM domain notifications
+
+Tomasz Figa (1):
+  iommu: rockchip: Handle system-wide and runtime PM
+
+ Documentation/power/notifiers.txt |  14 +++
+ drivers/base/power/domain.c       |  50 +++++++++
+ drivers/iommu/rockchip-iommu.c    | 208 +++++++++++++++++++++++++++++++-------
+ include/linux/pm_domain.h         |  20 ++++
+ 4 files changed, 256 insertions(+), 36 deletions(-)
+
+-- 
+2.2.0.rc0.207.ga3a616c
+
