@@ -1,15 +1,18 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH v6 6/8] dma-mapping: detect and configure IOMMU in
-	of_dma_configure
-Date: Wed, 10 Dec 2014 17:56:44 +0200
-Message-ID: <2132309.AcRQihKBMv@avalon>
-References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
-	<20141210150853.GH23639@arm.com> <54886CA2.3040406@arm.com>
+From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [v2 17/25] KVM: kvm-vfio: User API for VT-d Posted-Interrupts
+Date: Thu, 11 Dec 2014 05:55:15 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F0022EFA1E@SHSMSX104.ccr.corp.intel.com>
+References: <1417592394-24343-1-git-send-email-feng.wu@intel.com>
+	<1417592394-24343-18-git-send-email-feng.wu@intel.com>
+	<548069F6.7020308@linaro.org>
+	<E959C4978C3B6342920538CF579893F0022E2DD7@SHSMSX104.ccr.corp.intel.com>
+	<1418016076.1095.30.camel@bling.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <54886CA2.3040406-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1418016076.1095.30.camel-xdHQ/5r00wBBDLzU/O5InQ@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,121 +22,166 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
 
-On Wednesday 10 December 2014 15:54:10 Robin Murphy wrote:
-> On 10/12/14 15:08, Will Deacon wrote:
-> > On Wed, Dec 10, 2014 at 02:52:56PM +0000, Rob Clark wrote:
-> >> On Mon, Dec 1, 2014 at 11:57 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> >>> This patch extends of_dma_configure so that it sets up the IOMMU for a
-> >>> device, as well as the coherent/non-coherent DMA mapping ops.
-> >>> 
-> >>> Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-> >>> Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> >>> Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> >>> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> >>> ---
-> >>> 
-> >>>   arch/arm/include/asm/dma-mapping.h |  4 +++-
-> >>>   drivers/of/platform.c              | 21 ++++++++++++++-------
-> >>>   include/linux/dma-mapping.h        |  8 +++++++-
-> >>>   3 files changed, 24 insertions(+), 9 deletions(-)
-> >>> 
-> >>> diff --git a/arch/arm/include/asm/dma-mapping.h
-> >>> b/arch/arm/include/asm/dma-mapping.h index dc3420e77758..f3c0d953f6a2
-> >>> 100644
-> >>> --- a/arch/arm/include/asm/dma-mapping.h
-> >>> +++ b/arch/arm/include/asm/dma-mapping.h
-> >>> @@ -121,7 +121,9 @@ static inline unsigned long dma_max_pfn(struct
-> >>> device *dev)>>> 
-> >>>   }
-> >>>   #define dma_max_pfn(dev) dma_max_pfn(dev)
-> >>> 
-> >>> -static inline void arch_setup_dma_ops(struct device *dev, bool
-> >>> coherent)
-> >>> +static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
-> >>> +                                     u64 size, struct iommu_ops *iommu,
-> >>> +                                     bool coherent)
-> >>> 
-> >>>   {
-> >>>   
-> >>>          if (coherent)
-> >>>          
-> >>>                  set_dma_ops(dev, &arm_coherent_dma_ops);
-> >>> 
-> >>> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
-> >>> index ff1f4e9afccb..b89caf8c7586 100644
-> >>> --- a/drivers/of/platform.c
-> >>> +++ b/drivers/of/platform.c
-> >>> @@ -19,6 +19,7 @@
-> >>> 
-> >>>   #include <linux/slab.h>
-> >>>   #include <linux/of_address.h>
-> >>>   #include <linux/of_device.h>
-> >>> 
-> >>> +#include <linux/of_iommu.h>
-> >>> 
-> >>>   #include <linux/of_irq.h>
-> >>>   #include <linux/of_platform.h>
-> >>>   #include <linux/platform_device.h>
-> >>> 
-> >>> @@ -166,6 +167,7 @@ static void of_dma_configure(struct device *dev)
-> >>> 
-> >>>          int ret;
-> >>>          bool coherent;
-> >>>          unsigned long offset;
-> >>> 
-> >>> +       struct iommu_ops *iommu;
-> >>> 
-> >>>          /*
-> >>>          
-> >>>           * Set default dma-mask to 32 bit. Drivers are expected to
-> >>>           setup
-> >>> 
-> >>> @@ -194,7 +196,16 @@ static void of_dma_configure(struct device *dev)
-> >>> 
-> >>>          dev_dbg(dev, "device is%sdma coherent\n",
-> >>>          
-> >>>                  coherent ? " " : " not ");
-> >>> 
-> >>> -       arch_setup_dma_ops(dev, coherent);
-> >>> +       iommu = of_iommu_configure(dev);
-> >>> +       dev_dbg(dev, "device is%sbehind an iommu\n",
-> >>> +               iommu ? " " : " not ");
-> >>> +
-> >>> +       arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
-> >> 
-> >> so, what is the way for a driver that explicitly wants to manage it's
-> >> own device virtual address space to opt out of this?  I suspect that
-> >> won't be the common case, but for a gpu, if dma layer all of a sudden
-> >> thinks it is in control of the gpu's virtual address space, things are
-> >> going to end in tears..
-> > 
-> > I think you'll need to detach from the DMA domain, then have the driver
-> > manage everything itself. As you say, it's not the common case, so you
-> > may need to add some hooks for detaching from the default domain and
-> > swizzling your DMA ops.
+
+> -----Original Message-----
+> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> Sent: Monday, December 08, 2014 1:21 PM
+> To: Wu, Feng
+> Cc: Eric Auger; tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org;
+> x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
+> dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org;
+> linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Subject: Re: [v2 17/25] KVM: kvm-vfio: User API for VT-d Posted-Interrupts
 > 
-> Surely if that's a problem then it's an existing one anyway? If the
-> IOMMU driver wants to do its own thing here all it has to do is return
-> -ENOTHANKSIDRATHERNOT from its of_xlate call (or be even more boring and
-> simply not implement it), and the device gets whatever default DMA ops
-> the old of_dma_configure would have given it, with zero impact from this
-> series. I only see a potential issue if you have one driver running
-> multiple IOMMUs, some of which are happy to pass off control to DMA
-> mapping and some not, in which case either you make the driver clever
-> enough to identify its clients and handle of_xlate correctly, or work
-> around it with the DT representation.
+> On Mon, 2014-12-08 at 04:58 +0000, Wu, Feng wrote:
+> >
+> > > -----Original Message-----
+> > > From: kvm-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org [mailto:kvm-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org]
+> On
+> > > Behalf Of Eric Auger
+> > > Sent: Thursday, December 04, 2014 10:05 PM
+> > > To: Wu, Feng; tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org;
+> > > x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
+> > > dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
+> > > jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+> > > Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> > > kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > > Subject: Re: [v2 17/25] KVM: kvm-vfio: User API for VT-d Posted-Interrupts
+> > >
+> > > Hi Feng,
+> > > On 12/03/2014 08:39 AM, Feng Wu wrote:
+> > > > This patch adds and documents a new attribute
+> > > > KVM_DEV_VFIO_DEVICE_POSTING_IRQ in KVM_DEV_VFIO_DEVICE
+> group.
+> > > > This new attribute is used for VT-d Posted-Interrupts.
+> > > >
+> > > > When guest OS changes the interrupt configuration for an
+> > > > assigned device, such as, MSI/MSIx data/address fields,
+> > > > QEMU will use this IRQ attribute to tell KVM to update the
+> > > > related IRTE according the VT-d Posted-Interrrupts Specification,
+> > > > such as, the guest vector should be updated in the related IRTE.
+> > > >
+> > > > Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> > > > ---
+> > > >  Documentation/virtual/kvm/devices/vfio.txt |    9 +++++++++
+> > > >  include/uapi/linux/kvm.h                   |   10 ++++++++++
+> > > >  2 files changed, 19 insertions(+), 0 deletions(-)
+> > > >
+> > > > diff --git a/Documentation/virtual/kvm/devices/vfio.txt
+> > > b/Documentation/virtual/kvm/devices/vfio.txt
+> > > > index f7aff29..41e12b7 100644
+> > > > --- a/Documentation/virtual/kvm/devices/vfio.txt
+> > > > +++ b/Documentation/virtual/kvm/devices/vfio.txt
+> > > > @@ -42,3 +42,12 @@ activated before VFIO_DEVICE_SET_IRQS has
+> been
+> > > called to trigger the IRQ
+> > > >  or associate an eventfd to it. Unforwarding can only be called while the
+> > > >  signaling has been disabled with VFIO_DEVICE_SET_IRQS. If this
+> condition
+> > > is
+> > > >  not satisfied, the command returns an -EBUSY.
+> > > > +
+> > > > +  KVM_DEV_VFIO_DEVICE_POSTING_IRQ: Use posted interrtups
+> > > mechanism to post
+> > > typo
+> > > > +                                   the IRQ to guests.
+> > > > +For this attribute, kvm_device_attr.addr points to a kvm_vfio_dev_irq
+> > > struct.
+> > > > +
+> > > > +When guest OS changes the interrupt configuration for an assigned
+> device,
+> > > > +such as, MSI/MSIx data/address fields, QEMU will use this IRQ attribute
+> > > > +to tell KVM to update the related IRTE according the VT-d
+> > > Posted-Interrrupts
+> > > > +Specification, such as, the guest vector should be updated in the related
+> > > IRTE.
+> > > For my curiosity are there any restrictions about the instant at which
+> > > the change can be done?
+> > > I do not get here how you deactivate the posting?
+> >
+> > The current method is if the hardware supports interrupts posting, we will
+> > use it instead of interrupts remapping, since it has good performance. Why
+> > do I need deactivate interrupts posting?
+> >
+> > Here is the reply to Alex for the same question:
+> > "In fact, I don't think we need to stop the posted-interrupts. For setting
+> > posted interrupts, we update the related IRTE according to the new
+> > format. If the guest reboots, or unload the drivers, or some other
+> > operations, the msi/msix will be disabled first, in this path, the irq
+> > will be disabled the related IRTE is not used anymore."
+> 
+> Right, and I'm still not sure I agree with that reasoning.  We need to
+> build the kernel interface to be generic, not tailored for a specific
+> userspace.  I don't really feel comfortable having something that can't
+> be disabled via a similar path to it being enabled.  For instance, what
+> about a dynamic debug interface where we want to enable tracing and see
+> each interrupt injected into the guest.  At that point we'd want to
+> disabled posted interrupts and direct KVM injection and route via QEMU.
+> Thanks,
+> 
+> Alex
 
-Exactly for that reason, wouldn't it be better to let the client device 
-whether it wants to use the DMA mapping API abstraction or manually control 
-the IOMMU mappings ?
+I am not quite understand why we need to debug the software
+delivery path for interrupt when PI is used, in this case, the software
+injection code will have no chance to execute. If we don't want the use
+PI, we can disable it from kernel command line.
 
--- 
-Regards,
+Thanks,
+Feng
 
-Laurent Pinchart
+> 
+> > > > diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+> > > > index a269a42..7d98650 100644
+> > > > --- a/include/uapi/linux/kvm.h
+> > > > +++ b/include/uapi/linux/kvm.h
+> > > > @@ -949,6 +949,7 @@ struct kvm_device_attr {
+> > > >  #define  KVM_DEV_VFIO_DEVICE			2
+> > > >  #define   KVM_DEV_VFIO_DEVICE_FORWARD_IRQ			1
+> > > >  #define   KVM_DEV_VFIO_DEVICE_UNFORWARD_IRQ			2
+> > > > +#define   KVM_DEV_VFIO_DEVICE_POSTING_IRQ			3
+> > > Maybe we should align our naming verb vs verbing here?
+> > > Best Regards
+> > > Eric
+> >
+> > No problem, I will align my patch in the next version. Thanks!
+> >
+> > Thanks,
+> > Feng
+> >
+> > > >
+> > > >  enum kvm_device_type {
+> > > >  	KVM_DEV_TYPE_FSL_MPIC_20	= 1,
+> > > > @@ -973,6 +974,15 @@ struct kvm_arch_forwarded_irq {
+> > > >  	__u32 gsi; /* gsi, ie. virtual IRQ number */
+> > > >  };
+> > > >
+> > > > +struct kvm_vfio_dev_irq {
+> > > > +	__u32	argsz;
+> > > > +	__u32	fd;		/* file descriptor of the VFIO device */
+> > > > +	__u32	index;		/* VFIO device IRQ index */
+> > > > +	__u32	start;
+> > > > +	__u32	count;
+> > > > +	__u32	gsi[];		/* gsi, ie. virtual IRQ number */
+> > > > +};
+> > > > +
+> > > >  /*
+> > > >   * ioctls for VM fds
+> > > >   */
+> > > >
+> > >
+> > > --
+> > > To unsubscribe from this list: send the line "unsubscribe kvm" in
+> > > the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe kvm" in
+> > the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+> 
