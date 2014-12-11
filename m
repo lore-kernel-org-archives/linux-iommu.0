@@ -1,17 +1,20 @@
-From: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC PATCH 2/2] iommu: rockchip: Handle system-wide and runtime PM
-Date: Thu, 11 Dec 2014 16:51:37 +0100
-Message-ID: <CAPDyKFo6zH4__Odm+RiJCbvXquAQqaLyCAiXrSN6s3KfQhok=A@mail.gmail.com>
-References: <1418286387-9663-1-git-send-email-tfiga@chromium.org>
-	<1418286387-9663-3-git-send-email-tfiga@chromium.org>
-	<CAPDyKFoBRxFh+BzHTakij6=NvLm0C-S8eX8+p2odpSwtdTrvoA@mail.gmail.com>
-	<CAAFQd5CA374MF-_w=3zqsZctwTcBHz9J_0Ygg4fD_wjg8kLATg@mail.gmail.com>
-	<7h8uiemce7.fsf@deeprootsystems.com>
+From: Jerry Hoemann <jerry.hoemann-VXdhtT5mjnY@public.gmane.org>
+Subject: Re: [PATCH 2/2] iommu/vt-d: Only remove domain when device is removed
+Date: Thu, 11 Dec 2014 09:35:34 -0700
+Message-ID: <20141211163534.GA4765@anatevka.fc.hp.com>
+References: <1412074923-6342-1-git-send-email-joro@8bytes.org>
+	<1412074923-6342-3-git-send-email-joro@8bytes.org>
+	<1415117537.27420.428.camel@ul30vt.home>
+	<20141106125405.GI8354@suse.de>
+	<1415290565.16601.92.camel@ul30vt.home>
+	<20141209121525.GM3762@8bytes.org>
+Reply-To: Jerry.Hoemann-VXdhtT5mjnY@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <7h8uiemce7.fsf-1D3HCaltpLuhEniVeURVKkEOCMrvLtNR@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20141209121525.GM3762-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,80 +24,121 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Len Brown <len.brown-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, "linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Myron Stowe <mstowe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 11 December 2014 at 16:31, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
-> [+ Laurent Pinchart]
->
-> Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> writes:
->
->> On Thu, Dec 11, 2014 at 8:58 PM, Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
->
-> [...]
->
->>>> @@ -988,11 +1107,28 @@ static int rk_iommu_probe(struct platform_device *pdev)
->>>>                 return -ENXIO;
->>>>         }
->>>>
->>>> +       pm_runtime_no_callbacks(dev);
->>>> +       pm_runtime_enable(dev);
->>>> +
->>>> +       /* Synchronize state of the domain with driver data. */
->>>> +       pm_runtime_get_sync(dev);
->>>> +       iommu->is_powered = true;
->>>
->>> Doesn't the runtime PM status reflect the value of "is_powered", thus
->>> why do you need to have a copy of it? Could it perpahps be that you
->>> try to cope with the case when CONFIG_PM is unset?
->>>
->>
->> It's worth noting that this driver fully relies on status of other
->> devices in the power domain the IOMMU is in and does not enforce the
->> status on its own. So in general, as far as my understanding of PM
->> runtime subsystem, the status of the IOMMU device will be always
->> suspended, because nobody will call pm_runtime_get() on it (except the
->> get and put pair in probe). So is_powered is here to track status of
->> the domain, not the device. Feel free to suggest a better way, though.
->
-> I still don't like these notifiers.  I think they add ways to bypass
-> having proper runtime PM implemented for devices/subsystems.
+On Tue, Dec 09, 2014 at 01:15:25PM +0100, Joerg Roedel wrote:
+> On Thu, Nov 06, 2014 at 09:16:05AM -0700, Alex Williamson wrote:
+> > But the domains are unlinked from device_domain_list using
+> > unlink_domain_info() which is called from both domain_remove_dev_info()
+> > and domain_remove_one_dev_info() which are both part of that more
+> > likely, unlikely branch in intel_iommu_attach_device().  So it seems
+> > like any time we switch a device from the DMA-API to the IOMMU-API, we
+> > lose the reference to the domain.  Is that incorrect?  I'll try to test.
+> 
+> Okay, I thought a while about that and it looks like a real fix needs a
+> rewrite of the domain handling code in the VT-d driver to better handle
+> domain lifetime. We'll get this for free when we add default domains and
+> more domain handling logic to the iommu core, so I think we don't need
+> to start rewriting the VT-d driver for this.
+> But for the time being, here is a simple fix for the leak in
+> iommu_attach_domain:
 
-I do agree, but I haven't found another good solution to the problem.
 
->
-> From a high-level, the IOMMU is just another device inside the PM
-> domain, so ideally it should be doing it's own _get() and _put() calls
-> so the PM domain code would just do the right thing without the need for
-> notifiers.
+Joerg,
 
-As I understand it, the IOMMU (or for other similar cases) shouldn't
-be doing any get() and put() at all because there are no IO API to
-serve request from.
+This patch doesn't seem to be fixing the memory leak.
 
-In principle we could consider these kind devices as "parent" devices
-to those other devices that needs them. Then runtime PM core would
-take care of things for us, right!?
+I am testing with a 3.18.0-rc7 kernel applied to a RHEL 7.0 system.
 
-Now, I am not so sure using the "parent" approach is actually viable,
-since it will likely have other complications, but I haven't
-thoroughly thought it though yet.
+I added printk in free_domain_mem and alloc_domain to first reproduce
+Alex's observation.  I created a VM and assigned a PCI NIC w/ no associated
+RMRR to the VM.
 
->
-> No knowing a lot about the IOMMU API, I'm guessing the reason you're not
-> doing that is because the IOMMU API currently doesn't have an easy way
-> to keep track of *active* users so it's not obvious where to put those
-> _get and _put calls.  If that doesn't exist, perhaps a simple
-> iommu_get() and iommu_put() API needs to be introduced (which inside the
-> IOMMU core would just do runtime PM calls) so that users of the IOMMU
-> could inform the subsystem that the IOMMU is needed and it should not be
-> powered off.
->
-> I Cc'd Laurent because I know he's thought about this before from the
-> IOMMU side, and not sure if he came up with a solution.
+The pattern I see is when starting the VM is:
+alloc_domain -> X
 
-Cool, let's see then.
+When powering off the VM:
+free_domain_mem(X)
+alloc_domain -> Y
 
-Kind regards
-Uffe
+I then applied the patch below and I still see the same pattern of two
+alloc_domain and one free_domain_mem when powering on/off the VM.
+
+I added some additional instrumentation and I do not see the new call
+to domain_exit being executed.  (See inline comments below.)
+
+
+
+Jerry
+
+
+> 
+> >From d65b236d0f27fe3ef7ac4d12cceb0da67aec86ce Mon Sep 17 00:00:00 2001
+> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> Date: Tue, 9 Dec 2014 12:56:45 +0100
+> Subject: [PATCH] iommu/vt-d: Fix dmar_domain leak in iommu_attach_device
+> 
+> Since commit 1196c2f a domain is only destroyed in the
+> notifier path if it is hot-unplugged. This caused a
+> domain leakage in iommu_attach_device when a driver was
+> unbound from the device and bound to VFIO. In this case the
+> device is attached to a new domain and unlinked from the old
+> domain. At this point nothing points to the old domain
+> anymore and its memory is leaked.
+> Fix this by explicitly freeing the old domain in
+> iommu_attach_domain.
+> 
+> Fixes: 1196c2f 'iommu/vt-d: Only remove domain when device is removed'
+> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> ---
+>  drivers/iommu/intel-iommu.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 1232336..9ef8e89 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -4424,10 +4424,13 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+>  
+>  		old_domain = find_domain(dev);
+>  		if (old_domain) {
+> -			if (domain_type_is_vm_or_si(dmar_domain))
+> +			if (domain_type_is_vm_or_si(dmar_domain)) {
+
+
+JAH>  This path is executed when starting the VM.
+
+
+>  				domain_remove_one_dev_info(old_domain, dev);
+> -			else
+> +			} else {
+
+
+JAH>  I don't see this path being executed.
+
+>  				domain_remove_dev_info(old_domain);
+> +				if (list_empty(&old_domain->devices))
+> +					domain_exit(old_domain);
+> +			}
+>  		}
+>  	}
+>  
+> -- 
+> 1.8.4.5
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
+-- 
+
+----------------------------------------------------------------------------
+Jerry Hoemann            Software Engineer              Hewlett-Packard
+
+3404 E Harmony Rd. MS 36                        phone:  (970) 898-1022
+Ft. Collins, CO 80528                           FAX:    (970) 898-0707
+                                                email:  jerry.hoemann-VXdhtT5mjnY@public.gmane.org
+----------------------------------------------------------------------------
