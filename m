@@ -1,18 +1,17 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [v2 17/25] KVM: kvm-vfio: User API for VT-d Posted-Interrupts
-Date: Thu, 11 Dec 2014 08:45:26 -0700
-Message-ID: <1418312726.1095.162.camel@bling.home>
-References: <1417592394-24343-1-git-send-email-feng.wu@intel.com>
-	<1417592394-24343-18-git-send-email-feng.wu@intel.com>
-	<548069F6.7020308@linaro.org>
-	<E959C4978C3B6342920538CF579893F0022E2DD7@SHSMSX104.ccr.corp.intel.com>
-	<1418016076.1095.30.camel@bling.home>
-	<E959C4978C3B6342920538CF579893F0022EFA1E@SHSMSX104.ccr.corp.intel.com>
+From: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC PATCH 2/2] iommu: rockchip: Handle system-wide and runtime PM
+Date: Thu, 11 Dec 2014 16:51:37 +0100
+Message-ID: <CAPDyKFo6zH4__Odm+RiJCbvXquAQqaLyCAiXrSN6s3KfQhok=A@mail.gmail.com>
+References: <1418286387-9663-1-git-send-email-tfiga@chromium.org>
+	<1418286387-9663-3-git-send-email-tfiga@chromium.org>
+	<CAPDyKFoBRxFh+BzHTakij6=NvLm0C-S8eX8+p2odpSwtdTrvoA@mail.gmail.com>
+	<CAAFQd5CA374MF-_w=3zqsZctwTcBHz9J_0Ygg4fD_wjg8kLATg@mail.gmail.com>
+	<7h8uiemce7.fsf@deeprootsystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <E959C4978C3B6342920538CF579893F0022EFA1E-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+In-Reply-To: <7h8uiemce7.fsf-1D3HCaltpLuhEniVeURVKkEOCMrvLtNR@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,177 +21,80 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+To: Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Len Brown <len.brown-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, "linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2014-12-11 at 05:55 +0000, Wu, Feng wrote:
-> 
-> > -----Original Message-----
-> > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > Sent: Monday, December 08, 2014 1:21 PM
-> > To: Wu, Feng
-> > Cc: Eric Auger; tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org;
-> > x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
-> > dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org;
-> > linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> > kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > Subject: Re: [v2 17/25] KVM: kvm-vfio: User API for VT-d Posted-Interrupts
-> > 
-> > On Mon, 2014-12-08 at 04:58 +0000, Wu, Feng wrote:
-> > >
-> > > > -----Original Message-----
-> > > > From: kvm-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org [mailto:kvm-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org]
-> > On
-> > > > Behalf Of Eric Auger
-> > > > Sent: Thursday, December 04, 2014 10:05 PM
-> > > > To: Wu, Feng; tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org;
-> > > > x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
-> > > > dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
-> > > > jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
-> > > > Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> > > > kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > > > Subject: Re: [v2 17/25] KVM: kvm-vfio: User API for VT-d Posted-Interrupts
-> > > >
-> > > > Hi Feng,
-> > > > On 12/03/2014 08:39 AM, Feng Wu wrote:
-> > > > > This patch adds and documents a new attribute
-> > > > > KVM_DEV_VFIO_DEVICE_POSTING_IRQ in KVM_DEV_VFIO_DEVICE
-> > group.
-> > > > > This new attribute is used for VT-d Posted-Interrupts.
-> > > > >
-> > > > > When guest OS changes the interrupt configuration for an
-> > > > > assigned device, such as, MSI/MSIx data/address fields,
-> > > > > QEMU will use this IRQ attribute to tell KVM to update the
-> > > > > related IRTE according the VT-d Posted-Interrrupts Specification,
-> > > > > such as, the guest vector should be updated in the related IRTE.
-> > > > >
-> > > > > Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> > > > > ---
-> > > > >  Documentation/virtual/kvm/devices/vfio.txt |    9 +++++++++
-> > > > >  include/uapi/linux/kvm.h                   |   10 ++++++++++
-> > > > >  2 files changed, 19 insertions(+), 0 deletions(-)
-> > > > >
-> > > > > diff --git a/Documentation/virtual/kvm/devices/vfio.txt
-> > > > b/Documentation/virtual/kvm/devices/vfio.txt
-> > > > > index f7aff29..41e12b7 100644
-> > > > > --- a/Documentation/virtual/kvm/devices/vfio.txt
-> > > > > +++ b/Documentation/virtual/kvm/devices/vfio.txt
-> > > > > @@ -42,3 +42,12 @@ activated before VFIO_DEVICE_SET_IRQS has
-> > been
-> > > > called to trigger the IRQ
-> > > > >  or associate an eventfd to it. Unforwarding can only be called while the
-> > > > >  signaling has been disabled with VFIO_DEVICE_SET_IRQS. If this
-> > condition
-> > > > is
-> > > > >  not satisfied, the command returns an -EBUSY.
-> > > > > +
-> > > > > +  KVM_DEV_VFIO_DEVICE_POSTING_IRQ: Use posted interrtups
-> > > > mechanism to post
-> > > > typo
-> > > > > +                                   the IRQ to guests.
-> > > > > +For this attribute, kvm_device_attr.addr points to a kvm_vfio_dev_irq
-> > > > struct.
-> > > > > +
-> > > > > +When guest OS changes the interrupt configuration for an assigned
-> > device,
-> > > > > +such as, MSI/MSIx data/address fields, QEMU will use this IRQ attribute
-> > > > > +to tell KVM to update the related IRTE according the VT-d
-> > > > Posted-Interrrupts
-> > > > > +Specification, such as, the guest vector should be updated in the related
-> > > > IRTE.
-> > > > For my curiosity are there any restrictions about the instant at which
-> > > > the change can be done?
-> > > > I do not get here how you deactivate the posting?
-> > >
-> > > The current method is if the hardware supports interrupts posting, we will
-> > > use it instead of interrupts remapping, since it has good performance. Why
-> > > do I need deactivate interrupts posting?
-> > >
-> > > Here is the reply to Alex for the same question:
-> > > "In fact, I don't think we need to stop the posted-interrupts. For setting
-> > > posted interrupts, we update the related IRTE according to the new
-> > > format. If the guest reboots, or unload the drivers, or some other
-> > > operations, the msi/msix will be disabled first, in this path, the irq
-> > > will be disabled the related IRTE is not used anymore."
-> > 
-> > Right, and I'm still not sure I agree with that reasoning.  We need to
-> > build the kernel interface to be generic, not tailored for a specific
-> > userspace.  I don't really feel comfortable having something that can't
-> > be disabled via a similar path to it being enabled.  For instance, what
-> > about a dynamic debug interface where we want to enable tracing and see
-> > each interrupt injected into the guest.  At that point we'd want to
-> > disabled posted interrupts and direct KVM injection and route via QEMU.
-> > Thanks,
-> > 
-> > Alex
-> 
-> I am not quite understand why we need to debug the software
-> delivery path for interrupt when PI is used, in this case, the software
-> injection code will have no chance to execute. If we don't want the use
-> PI, we can disable it from kernel command line.
+On 11 December 2014 at 16:31, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+> [+ Laurent Pinchart]
+>
+> Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> writes:
+>
+>> On Thu, Dec 11, 2014 at 8:58 PM, Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+>
+> [...]
+>
+>>>> @@ -988,11 +1107,28 @@ static int rk_iommu_probe(struct platform_device *pdev)
+>>>>                 return -ENXIO;
+>>>>         }
+>>>>
+>>>> +       pm_runtime_no_callbacks(dev);
+>>>> +       pm_runtime_enable(dev);
+>>>> +
+>>>> +       /* Synchronize state of the domain with driver data. */
+>>>> +       pm_runtime_get_sync(dev);
+>>>> +       iommu->is_powered = true;
+>>>
+>>> Doesn't the runtime PM status reflect the value of "is_powered", thus
+>>> why do you need to have a copy of it? Could it perpahps be that you
+>>> try to cope with the case when CONFIG_PM is unset?
+>>>
+>>
+>> It's worth noting that this driver fully relies on status of other
+>> devices in the power domain the IOMMU is in and does not enforce the
+>> status on its own. So in general, as far as my understanding of PM
+>> runtime subsystem, the status of the IOMMU device will be always
+>> suspended, because nobody will call pm_runtime_get() on it (except the
+>> get and put pair in probe). So is_powered is here to track status of
+>> the domain, not the device. Feel free to suggest a better way, though.
+>
+> I still don't like these notifiers.  I think they add ways to bypass
+> having proper runtime PM implemented for devices/subsystems.
 
-Well, first off, I think it's just good interface design that if we
-introduce the ability to enable something we also provide the ability to
-disable it without making assumption about how a specific userspace is
-expected to make use of the interface.  In this specific case, you're
-missing the "dynamic" aspect of the switch.  What if we want to attach
-gdb to the guest and at that point disable all KVM accelerations for an
-assigned device so that we can see every register access and every
-interrupt?  I don't think the interface proposed here allows for that
-because it expects the guest to switch to a different interrupt mode for
-the device in order to disable PI.  Don't design the interface tailored
-only for a specific use case.  Thanks,
+I do agree, but I haven't found another good solution to the problem.
 
-Alex
+>
+> From a high-level, the IOMMU is just another device inside the PM
+> domain, so ideally it should be doing it's own _get() and _put() calls
+> so the PM domain code would just do the right thing without the need for
+> notifiers.
 
-> > > > > diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-> > > > > index a269a42..7d98650 100644
-> > > > > --- a/include/uapi/linux/kvm.h
-> > > > > +++ b/include/uapi/linux/kvm.h
-> > > > > @@ -949,6 +949,7 @@ struct kvm_device_attr {
-> > > > >  #define  KVM_DEV_VFIO_DEVICE			2
-> > > > >  #define   KVM_DEV_VFIO_DEVICE_FORWARD_IRQ			1
-> > > > >  #define   KVM_DEV_VFIO_DEVICE_UNFORWARD_IRQ			2
-> > > > > +#define   KVM_DEV_VFIO_DEVICE_POSTING_IRQ			3
-> > > > Maybe we should align our naming verb vs verbing here?
-> > > > Best Regards
-> > > > Eric
-> > >
-> > > No problem, I will align my patch in the next version. Thanks!
-> > >
-> > > Thanks,
-> > > Feng
-> > >
-> > > > >
-> > > > >  enum kvm_device_type {
-> > > > >  	KVM_DEV_TYPE_FSL_MPIC_20	= 1,
-> > > > > @@ -973,6 +974,15 @@ struct kvm_arch_forwarded_irq {
-> > > > >  	__u32 gsi; /* gsi, ie. virtual IRQ number */
-> > > > >  };
-> > > > >
-> > > > > +struct kvm_vfio_dev_irq {
-> > > > > +	__u32	argsz;
-> > > > > +	__u32	fd;		/* file descriptor of the VFIO device */
-> > > > > +	__u32	index;		/* VFIO device IRQ index */
-> > > > > +	__u32	start;
-> > > > > +	__u32	count;
-> > > > > +	__u32	gsi[];		/* gsi, ie. virtual IRQ number */
-> > > > > +};
-> > > > > +
-> > > > >  /*
-> > > > >   * ioctls for VM fds
-> > > > >   */
-> > > > >
-> > > >
-> > > > --
-> > > > To unsubscribe from this list: send the line "unsubscribe kvm" in
-> > > > the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > > > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> > > --
-> > > To unsubscribe from this list: send the line "unsubscribe kvm" in
-> > > the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> > 
-> > 
-> 
+As I understand it, the IOMMU (or for other similar cases) shouldn't
+be doing any get() and put() at all because there are no IO API to
+serve request from.
+
+In principle we could consider these kind devices as "parent" devices
+to those other devices that needs them. Then runtime PM core would
+take care of things for us, right!?
+
+Now, I am not so sure using the "parent" approach is actually viable,
+since it will likely have other complications, but I haven't
+thoroughly thought it though yet.
+
+>
+> No knowing a lot about the IOMMU API, I'm guessing the reason you're not
+> doing that is because the IOMMU API currently doesn't have an easy way
+> to keep track of *active* users so it's not obvious where to put those
+> _get and _put calls.  If that doesn't exist, perhaps a simple
+> iommu_get() and iommu_put() API needs to be introduced (which inside the
+> IOMMU core would just do runtime PM calls) so that users of the IOMMU
+> could inform the subsystem that the IOMMU is needed and it should not be
+> powered off.
+>
+> I Cc'd Laurent because I know he's thought about this before from the
+> IOMMU side, and not sure if he came up with a solution.
+
+Cool, let's see then.
+
+Kind regards
+Uffe
