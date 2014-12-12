@@ -1,13 +1,11 @@
-From: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] memory: Add NVIDIA SMMU suspend/resume support
-Date: Fri, 12 Dec 2014 17:18:12 +0900
-Message-ID: <CAAVeFu+1B44vxuQK8+uH2PzRJQgHAHAYGkTMT9vTi6TTrXf2RA@mail.gmail.com>
-References: <1418019656-6893-1-git-send-email-markz@nvidia.com>
+From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [v3 00/26] Add VT-d Posted-Interrupts support
+Date: Fri, 12 Dec 2014 23:14:34 +0800
+Message-ID: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1418019656-6893-1-git-send-email-markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,179 +15,105 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Mark,
+VT-d Posted-Interrupts is an enhancement to CPU side Posted-Interrupt.
+With VT-d Posted-Interrupts enabled, external interrupts from
+direct-assigned devices can be delivered to guests without VMM
+intervention when guest is running in non-root mode.
 
-On Mon, Dec 8, 2014 at 3:20 PM, Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
-> This patch adds suspend/resume support for NVIDIA SMMU.
+You can find the VT-d Posted-Interrtups Spec. in the following URL:
+http://www.intel.com/content/www/us/en/intelligent-systems/intel-technology/vt-directed-io-spec.html
 
+v1->v2:
+* Use VFIO framework to enable this feature, the VFIO part of this series is
+  base on Eric's patch "[PATCH v3 0/8] KVM-VFIO IRQ forward control"
+* Rebase this patchset on git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git,
+  then revise some irq logic based on the new hierarchy irqdomain patches provided
+  by Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 
-> This patch is created on top of Thierry Reding's patch set:
->
-> "[PATCH v7 00/12] NVIDIA Tegra memory controller and IOMMU support"
+v2->v3:
+* Adjust the Posted-interrupts Descriptor updating logic when vCPU is
+  preempted or blocked.
+* KVM_DEV_VFIO_DEVICE_POSTING_IRQ --> KVM_DEV_VFIO_DEVICE_POST_IRQ
+* __KVM_HAVE_ARCH_KVM_VFIO_POSTING --> __KVM_HAVE_ARCH_KVM_VFIO_POST
+* Add KVM_DEV_VFIO_DEVICE_UNPOST_IRQ attribute for VFIO irq, which
+  can be used to change back to remapping mode.
+* Fix typo
 
-You should have this comment under the "---" as we don't need it to
-persist once this patch is merged.
+This patch series is made of the following groups:
+1-6: Some preparation changes in iommu and irq component, this is based on the
+     new hierarchy irqdomain logic.
+7-9, 26: IOMMU changes for VT-d Posted-Interrupts, such as, feature detection,
+          command line parameter.
+10-17, 22-25: Changes related to KVM itself.
+18-20: Changes in VFIO component, this part was previously sent out as
+"[RFC PATCH v2 0/2] kvm-vfio: implement the vfio skeleton for VT-d Posted-Interrupts"
+21: x86 irq related changes
 
->
-> Signed-off-by: Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/iommu/tegra-smmu.c | 79 +++++++++++++++++++++++++++++++++++++++++++++-
->  drivers/memory/tegra/mc.c  | 21 ++++++++++++
->  drivers/memory/tegra/mc.h  |  4 +++
->  3 files changed, 103 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-> index 0909e0bae9ec..ab38805055a4 100644
-> --- a/drivers/iommu/tegra-smmu.c
-> +++ b/drivers/iommu/tegra-smmu.c
-> @@ -17,6 +17,8 @@
->  #include <soc/tegra/ahb.h>
->  #include <soc/tegra/mc.h>
->
-> +struct tegra_smmu_as;
-> +
->  struct tegra_smmu {
->         void __iomem *regs;
->         struct device *dev;
-> @@ -25,9 +27,10 @@ struct tegra_smmu {
->         const struct tegra_smmu_soc *soc;
->
->         unsigned long *asids;
-> +       struct tegra_smmu_as **as;
->         struct mutex lock;
->
-> -       struct list_head list;
-> +       struct list_head swgroup_asid_list;
->  };
->
->  struct tegra_smmu_as {
-> @@ -40,6 +43,12 @@ struct tegra_smmu_as {
->         u32 attr;
->  };
->
-> +struct tegra_smmu_swgroup_asid {
-> +       struct list_head list;
-> +       unsigned swgroup_id;
-> +       unsigned asid;
-> +};
-> +
->  static inline void smmu_writel(struct tegra_smmu *smmu, u32 value,
->                                unsigned long offset)
->  {
-> @@ -376,6 +385,7 @@ static int tegra_smmu_as_prepare(struct tegra_smmu *smmu,
->         as->smmu = smmu;
->         as->use_count++;
->
-> +       smmu->as[as->id] = as;
->         return 0;
->  }
->
-> @@ -386,6 +396,7 @@ static void tegra_smmu_as_unprepare(struct tegra_smmu *smmu,
->                 return;
->
->         tegra_smmu_free_asid(smmu, as->id);
-> +       smmu->as[as->id] = NULL;
->         as->smmu = NULL;
->  }
->
-> @@ -398,6 +409,7 @@ static int tegra_smmu_attach_dev(struct iommu_domain *domain,
->         struct of_phandle_args args;
->         unsigned int index = 0;
->         int err = 0;
-> +       struct tegra_smmu_swgroup_asid *sa = NULL;
+Feng Wu (26):
+  genirq: Introduce irq_set_vcpu_affinity() to target an interrupt to a
+    VCPU
+  iommu: Add new member capability to struct irq_remap_ops
+  iommu, x86: Define new irte structure for VT-d Posted-Interrupts
+  iommu, x86: Implement irq_set_vcpu_affinity for intel_ir_chip
+  x86, irq: Implement irq_set_vcpu_affinity for pci_msi_ir_controller
+  iommu, x86: No need to migrating irq for VT-d Posted-Interrupts
+  iommu, x86: Add cap_pi_support() to detect VT-d PI capability
+  iommu, x86: Add intel_irq_remapping_capability() for Intel
+  iommu, x86: define irq_remapping_cap()
+  KVM: change struct pi_desc for VT-d Posted-Interrupts
+  KVM: Add some helper functions for Posted-Interrupts
+  KVM: Initialize VT-d Posted-Interrupts Descriptor
+  KVM: Define a new interface kvm_find_dest_vcpu() for VT-d PI
+  KVM: Get Posted-Interrupts descriptor address from struct kvm_vcpu
+  KVM: add interfaces to control PI outside vmx
+  KVM: Make struct kvm_irq_routing_table accessible
+  KVM: make kvm_set_msi_irq() public
+  KVM: kvm-vfio: User API for VT-d Posted-Interrupts
+  KVM: kvm-vfio: implement the VFIO skeleton for VT-d Posted-Interrupts
+  KVM: x86: kvm-vfio: VT-d posted-interrupts setup
+  x86, irq: Define a global vector for VT-d Posted-Interrupts
+  KVM: Define a wakeup worker thread for vCPU
+  KVM: Update Posted-Interrupts Descriptor when vCPU is preempted
+  KVM: Update Posted-Interrupts Descriptor when vCPU is blocked
+  KVM: Suppress posted-interrupt when 'SN' is set
+  iommu/vt-d: Add a command line parameter for VT-d posted-interrupts
 
-This initialization is unneeded. Actually this declaration would
-probably be better placed in the while() loop below since its usage is
-local to it.
+ Documentation/kernel-parameters.txt        |   1 +
+ Documentation/virtual/kvm/devices/vfio.txt |   9 ++
+ arch/x86/include/asm/entry_arch.h          |   2 +
+ arch/x86/include/asm/hardirq.h             |   1 +
+ arch/x86/include/asm/hw_irq.h              |   2 +
+ arch/x86/include/asm/irq_remapping.h       |  11 ++
+ arch/x86/include/asm/irq_vectors.h         |   1 +
+ arch/x86/include/asm/kvm_host.h            |  12 ++
+ arch/x86/kernel/apic/msi.c                 |   1 +
+ arch/x86/kernel/entry_64.S                 |   2 +
+ arch/x86/kernel/irq.c                      |  27 ++++
+ arch/x86/kernel/irqinit.c                  |   2 +
+ arch/x86/kvm/Makefile                      |   2 +-
+ arch/x86/kvm/kvm_vfio_x86.c                |  77 +++++++++
+ arch/x86/kvm/vmx.c                         | 244 ++++++++++++++++++++++++++++-
+ arch/x86/kvm/x86.c                         |  22 ++-
+ drivers/iommu/intel_irq_remapping.c        |  68 +++++++-
+ drivers/iommu/irq_remapping.c              |  24 ++-
+ drivers/iommu/irq_remapping.h              |   8 +
+ include/linux/dmar.h                       |  32 ++++
+ include/linux/intel-iommu.h                |   1 +
+ include/linux/irq.h                        |   7 +
+ include/linux/kvm_host.h                   |  46 ++++++
+ include/uapi/linux/kvm.h                   |  11 ++
+ kernel/irq/chip.c                          |  14 ++
+ kernel/irq/manage.c                        |  20 +++
+ virt/kvm/irq_comm.c                        |  43 ++++-
+ virt/kvm/irqchip.c                         |  11 --
+ virt/kvm/kvm_main.c                        |  15 ++
+ virt/kvm/vfio.c                            | 107 +++++++++++++
+ 30 files changed, 795 insertions(+), 28 deletions(-)
+ create mode 100644 arch/x86/kvm/kvm_vfio_x86.c
 
->
->         while (!of_parse_phandle_with_args(np, "iommus", "#iommu-cells", index,
->                                            &args)) {
-> @@ -411,6 +423,14 @@ static int tegra_smmu_attach_dev(struct iommu_domain *domain,
->                         return err;
->
->                 tegra_smmu_enable(smmu, swgroup, as->id);
-> +
-> +               sa = kzalloc(sizeof(struct tegra_smmu_swgroup_asid),
-> +                               GFP_KERNEL);
-> +               INIT_LIST_HEAD(&sa->list);
-
-You don't need to call INIT_LIST_HEAD on this, list_add_tail() will
-effectively overwrite any initialization done by this macro (see
-include/linux/list.h).
-
-> +               sa->swgroup_id = swgroup;
-> +               sa->asid = as->id;
-> +               list_add_tail(&sa->list, &smmu->swgroup_asid_list);
-> +
->                 index++;
->         }
->
-> @@ -427,6 +447,7 @@ static void tegra_smmu_detach_dev(struct iommu_domain *domain, struct device *de
->         struct tegra_smmu *smmu = as->smmu;
->         struct of_phandle_args args;
->         unsigned int index = 0;
-> +       struct tegra_smmu_swgroup_asid *sa = NULL;
-
-Same here, move the declaration into the while() loop and remove the
-initialization.
-
->
->         while (of_parse_phandle_with_args(np, "iommus", "#iommu-cells", index,
->                                           &args)) {
-> @@ -435,6 +456,13 @@ static void tegra_smmu_detach_dev(struct iommu_domain *domain, struct device *de
->                 if (args.np != smmu->dev->of_node)
->                         continue;
->
-> +               list_for_each_entry(sa, &smmu->swgroup_asid_list, list) {
-> +                       if (sa->asid == as->id && sa->swgroup_id == swgroup)
-> +                               break;
-> +               }
-> +               list_del(&sa->list);
-> +               kfree(sa);
-> +
->                 tegra_smmu_disable(smmu, swgroup, as->id);
->                 tegra_smmu_as_unprepare(smmu, as);
->                 index++;
-> @@ -651,6 +679,48 @@ static void tegra_smmu_ahb_enable(void)
->         }
->  }
->
-> +void tegra_smmu_resume(struct tegra_smmu *smmu)
-> +{
-> +       struct tegra_smmu_as *as = NULL;
-> +       unsigned int bit;
-> +       u32 value;
-> +       struct tegra_smmu_swgroup_asid *sa = NULL;
-
-Again no need to initialize to NULL here.
-
-> +
-> +       for_each_set_bit(bit, smmu->asids, smmu->soc->num_asids) {
-> +               as = smmu->as[bit];
-> +               smmu->soc->ops->flush_dcache(as->pd, 0, SMMU_SIZE_PD);
-> +
-> +               smmu_writel(smmu, as->id & 0x7f, SMMU_PTB_ASID);
-> +               value = SMMU_PTB_DATA_VALUE(as->pd, as->attr);
-> +               smmu_writel(smmu, value, SMMU_PTB_DATA);
-> +       }
-> +
-> +       list_for_each_entry(sa, &smmu->swgroup_asid_list, list)
-> +               tegra_smmu_enable(smmu, sa->swgroup_id, sa->asid);
-
-Actually I wonder if you could not do completely without the list
-here. How about the following:
-
-1) add a "unsigned swgroup_id" member to tegra_smmu_as, set it in
-tegra_smmu_attach_dev() instead of sa->asid
-2) in the "for_each_bit" loop above, call tegra_smmu_enable(smmu,
-as->swgroup_id, as->id) after the last smmu_writel()
-
-Would that work? It would allow you to get rid of the
-tegra_smmu_swgroup_asid struct as well as a few memory allocations. I
-don't know if that kind of 1:1 matching between as and and swgroup
-makes sense for the SMMU though, maybe Thierry or Hiroshi can confirm?
+-- 
+1.9.1
