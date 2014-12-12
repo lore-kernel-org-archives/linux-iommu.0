@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v3 22/26] KVM: Define a wakeup worker thread for vCPU
-Date: Fri, 12 Dec 2014 23:14:56 +0800
-Message-ID: <1418397300-10870-23-git-send-email-feng.wu@intel.com>
+Subject: [v3 21/26] x86, irq: Define a global vector for VT-d Posted-Interrupts
+Date: Fri, 12 Dec 2014 23:14:55 +0800
+Message-ID: <1418397300-10870-22-git-send-email-feng.wu@intel.com>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,52 +21,150 @@ To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@p
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Define a wakeup worker thread for a vCPU.
+Currently, we use a global vector as the Posted-Interrupts
+Notification Event for all the vCPUs in the system. We need
+to introduce another global vector for VT-d Posted-Interrtups,
+which will be used to wakeup the sleep vCPU when an external
+interrupt from a direct-assigned device happens for that vCPU.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- include/linux/kvm_host.h | 1 +
- virt/kvm/kvm_main.c      | 9 +++++++++
- 2 files changed, 10 insertions(+)
+ arch/x86/include/asm/entry_arch.h  |  2 ++
+ arch/x86/include/asm/hardirq.h     |  1 +
+ arch/x86/include/asm/hw_irq.h      |  2 ++
+ arch/x86/include/asm/irq_vectors.h |  1 +
+ arch/x86/kernel/entry_64.S         |  2 ++
+ arch/x86/kernel/irq.c              | 27 +++++++++++++++++++++++++++
+ arch/x86/kernel/irqinit.c          |  2 ++
+ 7 files changed, 37 insertions(+)
 
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index ca9a393..3d7242c 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -249,6 +249,7 @@ struct kvm_vcpu {
- 	int sigset_active;
- 	sigset_t sigset;
- 	struct kvm_vcpu_stat stat;
-+	struct work_struct wakeup_worker;
+diff --git a/arch/x86/include/asm/entry_arch.h b/arch/x86/include/asm/entry_arch.h
+index dc5fa66..27ca0af 100644
+--- a/arch/x86/include/asm/entry_arch.h
++++ b/arch/x86/include/asm/entry_arch.h
+@@ -23,6 +23,8 @@ BUILD_INTERRUPT(x86_platform_ipi, X86_PLATFORM_IPI_VECTOR)
+ #ifdef CONFIG_HAVE_KVM
+ BUILD_INTERRUPT3(kvm_posted_intr_ipi, POSTED_INTR_VECTOR,
+ 		 smp_kvm_posted_intr_ipi)
++BUILD_INTERRUPT3(kvm_posted_intr_wakeup_ipi, POSTED_INTR_WAKEUP_VECTOR,
++		 smp_kvm_posted_intr_wakeup_ipi)
+ #endif
  
- #ifdef CONFIG_HAS_IOMEM
- 	int mmio_needed;
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 25ffac9..ba53fd6 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -211,6 +211,13 @@ void kvm_make_scan_ioapic_request(struct kvm *kvm)
- 	kvm_make_all_cpus_request(kvm, KVM_REQ_SCAN_IOAPIC);
+ /*
+diff --git a/arch/x86/include/asm/hardirq.h b/arch/x86/include/asm/hardirq.h
+index 0f5fb6b..9866065 100644
+--- a/arch/x86/include/asm/hardirq.h
++++ b/arch/x86/include/asm/hardirq.h
+@@ -14,6 +14,7 @@ typedef struct {
+ #endif
+ #ifdef CONFIG_HAVE_KVM
+ 	unsigned int kvm_posted_intr_ipis;
++	unsigned int kvm_posted_intr_wakeup_ipis;
+ #endif
+ 	unsigned int x86_platform_ipis;	/* arch dependent */
+ 	unsigned int apic_perf_irqs;
+diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
+index e7ae6eb..38fac9b 100644
+--- a/arch/x86/include/asm/hw_irq.h
++++ b/arch/x86/include/asm/hw_irq.h
+@@ -29,6 +29,7 @@
+ extern asmlinkage void apic_timer_interrupt(void);
+ extern asmlinkage void x86_platform_ipi(void);
+ extern asmlinkage void kvm_posted_intr_ipi(void);
++extern asmlinkage void kvm_posted_intr_wakeup_ipi(void);
+ extern asmlinkage void error_interrupt(void);
+ extern asmlinkage void irq_work_interrupt(void);
+ 
+@@ -92,6 +93,7 @@ extern void trace_call_function_single_interrupt(void);
+ #define trace_irq_move_cleanup_interrupt  irq_move_cleanup_interrupt
+ #define trace_reboot_interrupt  reboot_interrupt
+ #define trace_kvm_posted_intr_ipi kvm_posted_intr_ipi
++#define trace_kvm_posted_intr_wakeup_ipi kvm_posted_intr_wakeup_ipi
+ #endif /* CONFIG_TRACING */
+ 
+ struct irq_domain;
+diff --git a/arch/x86/include/asm/irq_vectors.h b/arch/x86/include/asm/irq_vectors.h
+index b26cb12..dca94f2 100644
+--- a/arch/x86/include/asm/irq_vectors.h
++++ b/arch/x86/include/asm/irq_vectors.h
+@@ -105,6 +105,7 @@
+ /* Vector for KVM to deliver posted interrupt IPI */
+ #ifdef CONFIG_HAVE_KVM
+ #define POSTED_INTR_VECTOR		0xf2
++#define POSTED_INTR_WAKEUP_VECTOR	0xf1
+ #endif
+ 
+ /*
+diff --git a/arch/x86/kernel/entry_64.S b/arch/x86/kernel/entry_64.S
+index e61c14a..a598447 100644
+--- a/arch/x86/kernel/entry_64.S
++++ b/arch/x86/kernel/entry_64.S
+@@ -960,6 +960,8 @@ apicinterrupt X86_PLATFORM_IPI_VECTOR \
+ #ifdef CONFIG_HAVE_KVM
+ apicinterrupt3 POSTED_INTR_VECTOR \
+ 	kvm_posted_intr_ipi smp_kvm_posted_intr_ipi
++apicinterrupt3 POSTED_INTR_WAKEUP_VECTOR \
++	kvm_posted_intr_wakeup_ipi smp_kvm_posted_intr_wakeup_ipi
+ #endif
+ 
+ #ifdef CONFIG_X86_MCE_THRESHOLD
+diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c
+index 922d285..47408c3 100644
+--- a/arch/x86/kernel/irq.c
++++ b/arch/x86/kernel/irq.c
+@@ -237,6 +237,9 @@ __visible void smp_x86_platform_ipi(struct pt_regs *regs)
  }
  
-+static void wakeup_thread(struct work_struct *work)
+ #ifdef CONFIG_HAVE_KVM
++void (*wakeup_handler_callback)(void) = NULL;
++EXPORT_SYMBOL_GPL(wakeup_handler_callback);
++
+ /*
+  * Handler for POSTED_INTERRUPT_VECTOR.
+  */
+@@ -256,6 +259,30 @@ __visible void smp_kvm_posted_intr_ipi(struct pt_regs *regs)
+ 
+ 	set_irq_regs(old_regs);
+ }
++
++/*
++ * Handler for POSTED_INTERRUPT_WAKEUP_VECTOR.
++ */
++__visible void smp_kvm_posted_intr_wakeup_ipi(struct pt_regs *regs)
 +{
-+	struct kvm_vcpu *vcpu = container_of(work, struct kvm_vcpu,
-+				wakeup_worker);
-+	kvm_vcpu_kick(vcpu);
++	struct pt_regs *old_regs = set_irq_regs(regs);
++
++	ack_APIC_irq();
++
++	irq_enter();
++
++	exit_idle();
++
++	inc_irq_stat(kvm_posted_intr_wakeup_ipis);
++
++	if (wakeup_handler_callback)
++		wakeup_handler_callback();
++
++	irq_exit();
++
++	set_irq_regs(old_regs);
 +}
 +
- int kvm_vcpu_init(struct kvm_vcpu *vcpu, struct kvm *kvm, unsigned id)
- {
- 	struct page *page;
-@@ -224,6 +231,8 @@ int kvm_vcpu_init(struct kvm_vcpu *vcpu, struct kvm *kvm, unsigned id)
- 	init_waitqueue_head(&vcpu->wq);
- 	kvm_async_pf_vcpu_init(vcpu);
+ #endif
  
-+	INIT_WORK(&vcpu->wakeup_worker, wakeup_thread);
-+
- 	page = alloc_page(GFP_KERNEL | __GFP_ZERO);
- 	if (!page) {
- 		r = -ENOMEM;
+ __visible void smp_trace_x86_platform_ipi(struct pt_regs *regs)
+diff --git a/arch/x86/kernel/irqinit.c b/arch/x86/kernel/irqinit.c
+index 70e181e..844673c 100644
+--- a/arch/x86/kernel/irqinit.c
++++ b/arch/x86/kernel/irqinit.c
+@@ -144,6 +144,8 @@ static void __init apic_intr_init(void)
+ #ifdef CONFIG_HAVE_KVM
+ 	/* IPI for KVM to deliver posted interrupt */
+ 	alloc_intr_gate(POSTED_INTR_VECTOR, kvm_posted_intr_ipi);
++	/* IPI for KVM to deliver interrupt to wake up tasks */
++	alloc_intr_gate(POSTED_INTR_WAKEUP_VECTOR, kvm_posted_intr_wakeup_ipi);
+ #endif
+ 
+ 	/* IPI vectors for APIC spurious and error interrupts */
 -- 
 1.9.1
