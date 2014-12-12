@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v3 12/26] KVM: Initialize VT-d Posted-Interrupts Descriptor
-Date: Fri, 12 Dec 2014 23:14:46 +0800
-Message-ID: <1418397300-10870-13-git-send-email-feng.wu@intel.com>
+Subject: [v3 11/26] KVM: Add some helper functions for Posted-Interrupts
+Date: Fri, 12 Dec 2014 23:14:45 +0800
+Message-ID: <1418397300-10870-12-git-send-email-feng.wu@intel.com>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,64 +21,57 @@ To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@p
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch initializes the VT-d Posted-Interrupts Descriptor.
+This patch adds some helper functions to manipulate the
+Posted-Interrupts Descriptor.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/kvm/vmx.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ arch/x86/kvm/vmx.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
 diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-index 0b1383e..66ca275 100644
+index abdb84f..0b1383e 100644
 --- a/arch/x86/kvm/vmx.c
 +++ b/arch/x86/kvm/vmx.c
-@@ -45,6 +45,7 @@
- #include <asm/perf_event.h>
- #include <asm/debugreg.h>
- #include <asm/kexec.h>
-+#include <asm/irq_remapping.h>
+@@ -408,6 +408,8 @@ struct nested_vmx {
+ };
  
- #include "trace.h"
- 
-@@ -4433,6 +4434,30 @@ static void ept_set_mmio_spte_mask(void)
- 	kvm_mmu_set_mmio_spte_mask((0x3ull << 62) | 0x6ull);
+ #define POSTED_INTR_ON  0
++#define POSTED_INTR_SN  1
++
+ /* Posted-Interrupt Descriptor */
+ struct pi_desc {
+ 	u32 pir[8];     /* Posted interrupt requested */
+@@ -443,6 +445,30 @@ static int pi_test_and_set_pir(int vector, struct pi_desc *pi_desc)
+ 	return test_and_set_bit(vector, (unsigned long *)pi_desc->pir);
  }
  
-+static void pi_desc_init(struct vcpu_vmx *vmx)
++static void pi_clear_sn(struct pi_desc *pi_desc)
 +{
-+	unsigned int dest;
-+
-+	if (!irq_remapping_cap(IRQ_POSTING_CAP))
-+		return;
-+
-+	/*
-+	 * Initialize Posted-Interrupt Descriptor
-+	 */
-+
-+	pi_clear_sn(&vmx->pi_desc);
-+	vmx->pi_desc.nv = POSTED_INTR_VECTOR;
-+
-+	/* Physical mode for Notificaiton Event */
-+	vmx->pi_desc.ndm = 0;
-+	dest = cpu_physical_id(vmx->vcpu.cpu);
-+
-+	if (x2apic_enabled())
-+		vmx->pi_desc.ndst = dest;
-+	else
-+		vmx->pi_desc.ndst = (dest << 8) & 0xFF00;
++	return clear_bit(POSTED_INTR_SN,
++			(unsigned long *)&pi_desc->control);
 +}
 +
- /*
-  * Sets up the vmcs for emulated real mode.
-  */
-@@ -4476,6 +4501,8 @@ static int vmx_vcpu_setup(struct vcpu_vmx *vmx)
- 
- 		vmcs_write64(POSTED_INTR_NV, POSTED_INTR_VECTOR);
- 		vmcs_write64(POSTED_INTR_DESC_ADDR, __pa((&vmx->pi_desc)));
++static void pi_set_sn(struct pi_desc *pi_desc)
++{
++	return set_bit(POSTED_INTR_SN,
++			(unsigned long *)&pi_desc->control);
++}
 +
-+		pi_desc_init(vmx);
- 	}
- 
- 	if (ple_gap) {
++static int pi_test_on(struct pi_desc *pi_desc)
++{
++	return test_bit(POSTED_INTR_ON,
++			(unsigned long *)&pi_desc->control);
++}
++
++static int pi_test_sn(struct pi_desc *pi_desc)
++{
++	return test_bit(POSTED_INTR_SN,
++			(unsigned long *)&pi_desc->control);
++}
++
+ struct vcpu_vmx {
+ 	struct kvm_vcpu       vcpu;
+ 	unsigned long         host_rsp;
 -- 
 1.9.1
