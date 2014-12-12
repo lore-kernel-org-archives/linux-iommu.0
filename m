@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v3 16/26] KVM: Make struct kvm_irq_routing_table accessible
-Date: Fri, 12 Dec 2014 23:14:50 +0800
-Message-ID: <1418397300-10870-17-git-send-email-feng.wu@intel.com>
+Subject: [v3 17/26] KVM: make kvm_set_msi_irq() public
+Date: Fri, 12 Dec 2014 23:14:51 +0800
+Message-ID: <1418397300-10870-18-git-send-email-feng.wu@intel.com>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,66 +21,39 @@ To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@p
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Move struct kvm_irq_routing_table from irqchip.c to kvm_host.h,
-so we can use it outside of irqchip.c.
+Make kvm_set_msi_irq() public, we can use this function outside.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- include/linux/kvm_host.h | 19 +++++++++++++++++++
- virt/kvm/irqchip.c       | 11 -----------
- 2 files changed, 19 insertions(+), 11 deletions(-)
+ include/linux/kvm_host.h | 2 ++
+ virt/kvm/irq_comm.c      | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index 0b9659d..cfa85ac 100644
+index cfa85ac..5cd4420 100644
 --- a/include/linux/kvm_host.h
 +++ b/include/linux/kvm_host.h
-@@ -335,6 +335,25 @@ struct kvm_kernel_irq_routing_entry {
- 	struct hlist_node link;
- };
+@@ -785,6 +785,8 @@ void kvm_unregister_irq_ack_notifier(struct kvm *kvm,
+ 				   struct kvm_irq_ack_notifier *kian);
+ int kvm_request_irq_source_id(struct kvm *kvm);
+ void kvm_free_irq_source_id(struct kvm *kvm, int irq_source_id);
++void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
++		     struct kvm_lapic_irq *irq);
  
-+#ifdef CONFIG_HAVE_KVM_IRQ_ROUTING
-+
-+struct kvm_irq_routing_table {
-+	int chip[KVM_NR_IRQCHIPS][KVM_IRQCHIP_NUM_PINS];
-+	struct kvm_kernel_irq_routing_entry *rt_entries;
-+	u32 nr_rt_entries;
-+	/*
-+	 * Array indexed by gsi. Each entry contains list of irq chips
-+	 * the gsi is connected to.
-+	 */
-+	struct hlist_head map[0];
-+};
-+
-+#else
-+
-+struct kvm_irq_routing_table {};
-+
-+#endif
-+
- #ifndef KVM_PRIVATE_MEM_SLOTS
- #define KVM_PRIVATE_MEM_SLOTS 0
- #endif
-diff --git a/virt/kvm/irqchip.c b/virt/kvm/irqchip.c
-index 7f256f3..cdf29a6 100644
---- a/virt/kvm/irqchip.c
-+++ b/virt/kvm/irqchip.c
-@@ -31,17 +31,6 @@
- #include <trace/events/kvm.h>
- #include "irq.h"
+ #ifdef CONFIG_KVM_DEVICE_ASSIGNMENT
+ int kvm_iommu_map_pages(struct kvm *kvm, struct kvm_memory_slot *slot);
+diff --git a/virt/kvm/irq_comm.c b/virt/kvm/irq_comm.c
+index f3c5d69..231671a 100644
+--- a/virt/kvm/irq_comm.c
++++ b/virt/kvm/irq_comm.c
+@@ -106,7 +106,7 @@ int kvm_irq_delivery_to_apic(struct kvm *kvm, struct kvm_lapic *src,
+ 	return r;
+ }
  
--struct kvm_irq_routing_table {
--	int chip[KVM_NR_IRQCHIPS][KVM_IRQCHIP_NUM_PINS];
--	struct kvm_kernel_irq_routing_entry *rt_entries;
--	u32 nr_rt_entries;
--	/*
--	 * Array indexed by gsi. Each entry contains list of irq chips
--	 * the gsi is connected to.
--	 */
--	struct hlist_head map[0];
--};
--
- int kvm_irq_map_gsi(struct kvm *kvm,
- 		    struct kvm_kernel_irq_routing_entry *entries, int gsi)
+-static inline void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
++void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
+ 				   struct kvm_lapic_irq *irq)
  {
+ 	trace_kvm_msi_set_irq(e->msi.address_lo, e->msi.data);
 -- 
 1.9.1
