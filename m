@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v3 17/26] KVM: make kvm_set_msi_irq() public
-Date: Fri, 12 Dec 2014 23:14:51 +0800
-Message-ID: <1418397300-10870-18-git-send-email-feng.wu@intel.com>
+Subject: [v3 18/26] KVM: kvm-vfio: User API for VT-d Posted-Interrupts
+Date: Fri, 12 Dec 2014 23:14:52 +0800
+Message-ID: <1418397300-10870-19-git-send-email-feng.wu@intel.com>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,39 +21,68 @@ To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@p
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Make kvm_set_msi_irq() public, we can use this function outside.
+This patch adds and documents two new attributes
+KVM_DEV_VFIO_DEVICE_POST_IRQ and KVM_DEV_VFIO_DEVICE_UNPOST_IRQ
+in KVM_DEV_VFIO_DEVICE group. The new attributes are used for
+VT-d Posted-Interrupts.
+
+When guest OS changes the interrupt configuration for an
+assigned device, such as, MSI/MSIx data/address fields,
+QEMU will use this IRQ attribute to tell KVM to update the
+related IRTE according the VT-d Posted-Interrrupts Specification,
+such as, the guest vector should be updated in the related IRTE.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- include/linux/kvm_host.h | 2 ++
- virt/kvm/irq_comm.c      | 2 +-
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ Documentation/virtual/kvm/devices/vfio.txt |  9 +++++++++
+ include/uapi/linux/kvm.h                   | 11 +++++++++++
+ 2 files changed, 20 insertions(+)
 
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index cfa85ac..5cd4420 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -785,6 +785,8 @@ void kvm_unregister_irq_ack_notifier(struct kvm *kvm,
- 				   struct kvm_irq_ack_notifier *kian);
- int kvm_request_irq_source_id(struct kvm *kvm);
- void kvm_free_irq_source_id(struct kvm *kvm, int irq_source_id);
-+void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
-+		     struct kvm_lapic_irq *irq);
+diff --git a/Documentation/virtual/kvm/devices/vfio.txt b/Documentation/virtual/kvm/devices/vfio.txt
+index f7aff29..ecfbf61 100644
+--- a/Documentation/virtual/kvm/devices/vfio.txt
++++ b/Documentation/virtual/kvm/devices/vfio.txt
+@@ -42,3 +42,12 @@ activated before VFIO_DEVICE_SET_IRQS has been called to trigger the IRQ
+ or associate an eventfd to it. Unforwarding can only be called while the
+ signaling has been disabled with VFIO_DEVICE_SET_IRQS. If this condition is
+ not satisfied, the command returns an -EBUSY.
++
++  KVM_DEV_VFIO_DEVICE_POST_IRQ: set a VFIO device IRQ as posted
++  KVM_DEV_VFIO_DEVICE_UNPOST_IRQ: set a VFIO device IRQ as remapped
++For this attribute, kvm_device_attr.addr points to a kvm_vfio_dev_irq struct.
++
++When guest OS changes the interrupt configuration for an assigned device,
++such as, MSI/MSIx data/address fields, QEMU will use this IRQ attribute
++to tell KVM to update the related IRTE according the VT-d Posted-Interrrupts
++Specification, such as, the guest vector should be updated in the related IRTE.
+diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+index a269a42..8f51487 100644
+--- a/include/uapi/linux/kvm.h
++++ b/include/uapi/linux/kvm.h
+@@ -949,6 +949,8 @@ struct kvm_device_attr {
+ #define  KVM_DEV_VFIO_DEVICE			2
+ #define   KVM_DEV_VFIO_DEVICE_FORWARD_IRQ			1
+ #define   KVM_DEV_VFIO_DEVICE_UNFORWARD_IRQ			2
++#define   KVM_DEV_VFIO_DEVICE_POST_IRQ				3
++#define   KVM_DEV_VFIO_DEVICE_UNPOST_IRQ			4
  
- #ifdef CONFIG_KVM_DEVICE_ASSIGNMENT
- int kvm_iommu_map_pages(struct kvm *kvm, struct kvm_memory_slot *slot);
-diff --git a/virt/kvm/irq_comm.c b/virt/kvm/irq_comm.c
-index f3c5d69..231671a 100644
---- a/virt/kvm/irq_comm.c
-+++ b/virt/kvm/irq_comm.c
-@@ -106,7 +106,7 @@ int kvm_irq_delivery_to_apic(struct kvm *kvm, struct kvm_lapic *src,
- 	return r;
- }
+ enum kvm_device_type {
+ 	KVM_DEV_TYPE_FSL_MPIC_20	= 1,
+@@ -973,6 +975,15 @@ struct kvm_arch_forwarded_irq {
+ 	__u32 gsi; /* gsi, ie. virtual IRQ number */
+ };
  
--static inline void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
-+void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
- 				   struct kvm_lapic_irq *irq)
- {
- 	trace_kvm_msi_set_irq(e->msi.address_lo, e->msi.data);
++struct kvm_vfio_dev_irq {
++	__u32	argsz;
++	__u32	fd;		/* file descriptor of the VFIO device */
++	__u32	index;		/* VFIO device IRQ index */
++	__u32	start;
++	__u32	count;
++	__u32	gsi[];		/* gsi, ie. virtual IRQ number */
++};
++
+ /*
+  * ioctls for VM fds
+  */
 -- 
 1.9.1
