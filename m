@@ -1,138 +1,195 @@
-From: Tomasz Figa <tfiga@chromium.org>
-Subject: Re: [RFC PATCH 2/2] iommu: rockchip: Handle system-wide and runtime PM
-Date: Fri, 12 Dec 2014 13:15:51 +0900
-Message-ID: <CAAFQd5B28WiWUqmbmROJUa3H25R=Y774NuemTZDvkoa=CvZUsw@mail.gmail.com>
-References: <1418286387-9663-1-git-send-email-tfiga@chromium.org>
- <7h8uiemce7.fsf@deeprootsystems.com> <CAPDyKFo6zH4__Odm+RiJCbvXquAQqaLyCAiXrSN6s3KfQhok=A@mail.gmail.com>
- <1576771.dIVCOxU0se@vostro.rjw.lan>
+From: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] memory: Add NVIDIA SMMU suspend/resume support
+Date: Fri, 12 Dec 2014 17:18:12 +0900
+Message-ID: <CAAVeFu+1B44vxuQK8+uH2PzRJQgHAHAYGkTMT9vTi6TTrXf2RA@mail.gmail.com>
+References: <1418019656-6893-1-git-send-email-markz@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pm-owner@vger.kernel.org>
-In-Reply-To: <1576771.dIVCOxU0se@vostro.rjw.lan>
-Sender: linux-pm-owner@vger.kernel.org
-To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>, Kevin Hilman <khilman@kernel.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>, Heiko Stuebner <heiko@sntech.de>, Joerg Roedel <joro@8bytes.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Daniel Kurtz <djkurtz@chromium.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1418019656-6893-1-git-send-email-markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Rafael,
+Hi Mark,
 
-On Fri, Dec 12, 2014 at 5:48 AM, Rafael J. Wysocki <rjw@rjwysocki.net> wrote:
-> On Thursday, December 11, 2014 04:51:37 PM Ulf Hansson wrote:
->> On 11 December 2014 at 16:31, Kevin Hilman <khilman@kernel.org> wrote:
->> > [+ Laurent Pinchart]
->> >
->> > Tomasz Figa <tfiga@chromium.org> writes:
->> >
->> >> On Thu, Dec 11, 2014 at 8:58 PM, Ulf Hansson <ulf.hansson@linaro.org> wrote:
->> >
->> > [...]
->> >
->> >>>> @@ -988,11 +1107,28 @@ static int rk_iommu_probe(struct platform_device *pdev)
->> >>>>                 return -ENXIO;
->> >>>>         }
->> >>>>
->> >>>> +       pm_runtime_no_callbacks(dev);
->> >>>> +       pm_runtime_enable(dev);
->> >>>> +
->> >>>> +       /* Synchronize state of the domain with driver data. */
->> >>>> +       pm_runtime_get_sync(dev);
->> >>>> +       iommu->is_powered = true;
->> >>>
->> >>> Doesn't the runtime PM status reflect the value of "is_powered", thus
->> >>> why do you need to have a copy of it? Could it perpahps be that you
->> >>> try to cope with the case when CONFIG_PM is unset?
->> >>>
->> >>
->> >> It's worth noting that this driver fully relies on status of other
->> >> devices in the power domain the IOMMU is in and does not enforce the
->> >> status on its own. So in general, as far as my understanding of PM
->> >> runtime subsystem, the status of the IOMMU device will be always
->> >> suspended, because nobody will call pm_runtime_get() on it (except the
->> >> get and put pair in probe). So is_powered is here to track status of
->> >> the domain, not the device. Feel free to suggest a better way, though.
->> >
->> > I still don't like these notifiers.  I think they add ways to bypass
->> > having proper runtime PM implemented for devices/subsystems.
->>
->> I do agree, but I haven't found another good solution to the problem.
+On Mon, Dec 8, 2014 at 3:20 PM, Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
+> This patch adds suspend/resume support for NVIDIA SMMU.
+
+
+> This patch is created on top of Thierry Reding's patch set:
 >
-> For the record, I'm not liking this mostly because it "fixes" a generic problem
-> in a way that's hidden in the genpd code and very indirect.
+> "[PATCH v7 00/12] NVIDIA Tegra memory controller and IOMMU support"
 
-Well, that's true. This is indeed a generic problem of PM dependencies
-between devices (other than those represented by parent-child
-relation), which in fact doesn't have much to do with genpd, but
-rather with those devices directly. It is just that genpd is the most
-convenient location to solve this in current code and in a simple way.
-In other words, I see this solution as a reasonable way to get the
-problem solved quickly for now, so that we can start thinking about a
-more elegant solution.
+You should have this comment under the "---" as we don't need it to
+persist once this patch is merged.
 
 >
->> > From a high-level, the IOMMU is just another device inside the PM
->> > domain, so ideally it should be doing it's own _get() and _put() calls
->> > so the PM domain code would just do the right thing without the need for
->> > notifiers.
->>
->> As I understand it, the IOMMU (or for other similar cases) shouldn't
->> be doing any get() and put() at all because there are no IO API to
->> serve request from.
->>
->> In principle we could consider these kind devices as "parent" devices
->> to those other devices that needs them. Then runtime PM core would
->> take care of things for us, right!?
->>
->> Now, I am not so sure using the "parent" approach is actually viable,
->> since it will likely have other complications, but I haven't
->> thoroughly thought it though yet.
+> Signed-off-by: Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/iommu/tegra-smmu.c | 79 +++++++++++++++++++++++++++++++++++++++++++++-
+>  drivers/memory/tegra/mc.c  | 21 ++++++++++++
+>  drivers/memory/tegra/mc.h  |  4 +++
+>  3 files changed, 103 insertions(+), 1 deletion(-)
 >
-> That actually need not be a "parent".
+> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+> index 0909e0bae9ec..ab38805055a4 100644
+> --- a/drivers/iommu/tegra-smmu.c
+> +++ b/drivers/iommu/tegra-smmu.c
+> @@ -17,6 +17,8 @@
+>  #include <soc/tegra/ahb.h>
+>  #include <soc/tegra/mc.h>
 >
-> What's needed in this case is to do a pm_runtime_get_sync() on a device
-> depended on every time a dependent device is runtime-resumed (and analogously
-> for suspending).
+> +struct tegra_smmu_as;
+> +
+>  struct tegra_smmu {
+>         void __iomem *regs;
+>         struct device *dev;
+> @@ -25,9 +27,10 @@ struct tegra_smmu {
+>         const struct tegra_smmu_soc *soc;
 >
-> The core doesn't have a way to do that, but it looks like we'll need to add
-> it anyway for various reasons (ACPI _DEP is one of them as I mentioned some
-> time ago, but people dismissed it basically as not their problem).
+>         unsigned long *asids;
+> +       struct tegra_smmu_as **as;
+>         struct mutex lock;
+>
+> -       struct list_head list;
+> +       struct list_head swgroup_asid_list;
+>  };
+>
+>  struct tegra_smmu_as {
+> @@ -40,6 +43,12 @@ struct tegra_smmu_as {
+>         u32 attr;
+>  };
+>
+> +struct tegra_smmu_swgroup_asid {
+> +       struct list_head list;
+> +       unsigned swgroup_id;
+> +       unsigned asid;
+> +};
+> +
+>  static inline void smmu_writel(struct tegra_smmu *smmu, u32 value,
+>                                unsigned long offset)
+>  {
+> @@ -376,6 +385,7 @@ static int tegra_smmu_as_prepare(struct tegra_smmu *smmu,
+>         as->smmu = smmu;
+>         as->use_count++;
+>
+> +       smmu->as[as->id] = as;
+>         return 0;
+>  }
+>
+> @@ -386,6 +396,7 @@ static void tegra_smmu_as_unprepare(struct tegra_smmu *smmu,
+>                 return;
+>
+>         tegra_smmu_free_asid(smmu, as->id);
+> +       smmu->as[as->id] = NULL;
+>         as->smmu = NULL;
+>  }
+>
+> @@ -398,6 +409,7 @@ static int tegra_smmu_attach_dev(struct iommu_domain *domain,
+>         struct of_phandle_args args;
+>         unsigned int index = 0;
+>         int err = 0;
+> +       struct tegra_smmu_swgroup_asid *sa = NULL;
 
-Let me show you our exact use case.
+This initialization is unneeded. Actually this declaration would
+probably be better placed in the while() loop below since its usage is
+local to it.
 
-We have a power domain, which contains an IOMMU and an IP block, which
-can do bus transactions through that IOMMU. Of course the IP block is
-not aware of the IOMMU, because this is just an integration detail and
-on other platforms using the same IP block the IOMMU might not be
-there. This implies that the driver for this IP block should not be
-aware of the IOMMU either, which, on the buffer allocation and mapping
-side, is achieved by DMA mapping subsystem. We would also want the
-IOMMU to be fully transparent to that driver on PM side.
+>
+>         while (!of_parse_phandle_with_args(np, "iommus", "#iommu-cells", index,
+>                                            &args)) {
+> @@ -411,6 +423,14 @@ static int tegra_smmu_attach_dev(struct iommu_domain *domain,
+>                         return err;
+>
+>                 tegra_smmu_enable(smmu, swgroup, as->id);
+> +
+> +               sa = kzalloc(sizeof(struct tegra_smmu_swgroup_asid),
+> +                               GFP_KERNEL);
+> +               INIT_LIST_HEAD(&sa->list);
 
-Now, for PM related details, they are located in the same power
-domain, which means that whenever the power domain is turned off, the
-CPU can't access their registers and all the hardware state is gone.
-To make the case more interesting, there is no point in programming
-the IOMMU unless the device using it is powered on. Similarly, there
-is no point in powering the domain on to just access the IOMMU. This
-implies that the power domain should be fully controlled by the
-stand-alone IP block, while the peripheral IOMMU shouldn't affect its
-state and its driver only respond to operations performed by driver of
-that stand-alone IP block.
+You don't need to call INIT_LIST_HEAD on this, list_add_tail() will
+effectively overwrite any initialization done by this macro (see
+include/linux/list.h).
 
-A solution like below could work for the above:
+> +               sa->swgroup_id = swgroup;
+> +               sa->asid = as->id;
+> +               list_add_tail(&sa->list, &smmu->swgroup_asid_list);
+> +
+>                 index++;
+>         }
+>
+> @@ -427,6 +447,7 @@ static void tegra_smmu_detach_dev(struct iommu_domain *domain, struct device *de
+>         struct tegra_smmu *smmu = as->smmu;
+>         struct of_phandle_args args;
+>         unsigned int index = 0;
+> +       struct tegra_smmu_swgroup_asid *sa = NULL;
 
-- There is a per-device list of peripheral devices, which need to be
-powered on for this device to work.
-- Whenever the IOMMU subsystem/driver binds an IOMMU to a device, it
-adds the IOMMU device to the list of peripheral devices of that device
-(and similarly for removal).
-- A runtime PM operation on a device will also perform the same
-operation on all its peripheral devices.
+Same here, move the declaration into the while() loop and remove the
+initialization.
 
-Another way would be to extend what the PM runtime core does with
-parent-child relations to handle the whole list of peripheral devices
-instead of just the parent.
+>
+>         while (of_parse_phandle_with_args(np, "iommus", "#iommu-cells", index,
+>                                           &args)) {
+> @@ -435,6 +456,13 @@ static void tegra_smmu_detach_dev(struct iommu_domain *domain, struct device *de
+>                 if (args.np != smmu->dev->of_node)
+>                         continue;
+>
+> +               list_for_each_entry(sa, &smmu->swgroup_asid_list, list) {
+> +                       if (sa->asid == as->id && sa->swgroup_id == swgroup)
+> +                               break;
+> +               }
+> +               list_del(&sa->list);
+> +               kfree(sa);
+> +
+>                 tegra_smmu_disable(smmu, swgroup, as->id);
+>                 tegra_smmu_as_unprepare(smmu, as);
+>                 index++;
+> @@ -651,6 +679,48 @@ static void tegra_smmu_ahb_enable(void)
+>         }
+>  }
+>
+> +void tegra_smmu_resume(struct tegra_smmu *smmu)
+> +{
+> +       struct tegra_smmu_as *as = NULL;
+> +       unsigned int bit;
+> +       u32 value;
+> +       struct tegra_smmu_swgroup_asid *sa = NULL;
 
-Would this design sound somehow reasonable to you?
+Again no need to initialize to NULL here.
 
-Best regards,
-Tomasz
+> +
+> +       for_each_set_bit(bit, smmu->asids, smmu->soc->num_asids) {
+> +               as = smmu->as[bit];
+> +               smmu->soc->ops->flush_dcache(as->pd, 0, SMMU_SIZE_PD);
+> +
+> +               smmu_writel(smmu, as->id & 0x7f, SMMU_PTB_ASID);
+> +               value = SMMU_PTB_DATA_VALUE(as->pd, as->attr);
+> +               smmu_writel(smmu, value, SMMU_PTB_DATA);
+> +       }
+> +
+> +       list_for_each_entry(sa, &smmu->swgroup_asid_list, list)
+> +               tegra_smmu_enable(smmu, sa->swgroup_id, sa->asid);
+
+Actually I wonder if you could not do completely without the list
+here. How about the following:
+
+1) add a "unsigned swgroup_id" member to tegra_smmu_as, set it in
+tegra_smmu_attach_dev() instead of sa->asid
+2) in the "for_each_bit" loop above, call tegra_smmu_enable(smmu,
+as->swgroup_id, as->id) after the last smmu_writel()
+
+Would that work? It would allow you to get rid of the
+tegra_smmu_swgroup_asid struct as well as a few memory allocations. I
+don't know if that kind of 1:1 matching between as and and swgroup
+makes sense for the SMMU though, maybe Thierry or Hiroshi can confirm?
