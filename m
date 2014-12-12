@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v3 15/26] KVM: add interfaces to control PI outside vmx
-Date: Fri, 12 Dec 2014 23:14:49 +0800
-Message-ID: <1418397300-10870-16-git-send-email-feng.wu@intel.com>
+Subject: [v3 16/26] KVM: Make struct kvm_irq_routing_table accessible
+Date: Fri, 12 Dec 2014 23:14:50 +0800
+Message-ID: <1418397300-10870-17-git-send-email-feng.wu@intel.com>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,59 +21,66 @@ To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@p
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds pi_clear_sn and pi_set_sn to struct kvm_x86_ops,
-so we can set/clear SN outside vmx.
+Move struct kvm_irq_routing_table from irqchip.c to kvm_host.h,
+so we can use it outside of irqchip.c.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/include/asm/kvm_host.h |  3 +++
- arch/x86/kvm/vmx.c              | 13 +++++++++++++
- 2 files changed, 16 insertions(+)
+ include/linux/kvm_host.h | 19 +++++++++++++++++++
+ virt/kvm/irqchip.c       | 11 -----------
+ 2 files changed, 19 insertions(+), 11 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 9b45b78..cd4b174 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -773,6 +773,9 @@ struct kvm_x86_ops {
- 
- 	void (*sched_in)(struct kvm_vcpu *kvm, int cpu);
- 	u64 (*get_pi_desc_addr)(struct kvm_vcpu *vcpu);
-+
-+	void (*pi_clear_sn)(struct kvm_vcpu *vcpu);
-+	void (*pi_set_sn)(struct kvm_vcpu *vcpu);
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index 0b9659d..cfa85ac 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -335,6 +335,25 @@ struct kvm_kernel_irq_routing_entry {
+ 	struct hlist_node link;
  };
  
- struct kvm_arch_async_pf {
-diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-index 81f239b..ee3b735 100644
---- a/arch/x86/kvm/vmx.c
-+++ b/arch/x86/kvm/vmx.c
-@@ -567,6 +567,16 @@ struct pi_desc *vcpu_to_pi_desc(struct kvm_vcpu *vcpu)
- 	return &(to_vmx(vcpu)->pi_desc);
- }
- 
-+static void vmx_pi_clear_sn(struct kvm_vcpu *vcpu)
-+{
-+	pi_clear_sn(vcpu_to_pi_desc(vcpu));
-+}
++#ifdef CONFIG_HAVE_KVM_IRQ_ROUTING
 +
-+static void vmx_pi_set_sn(struct kvm_vcpu *vcpu)
-+{
-+	pi_set_sn(vcpu_to_pi_desc(vcpu));
-+}
++struct kvm_irq_routing_table {
++	int chip[KVM_NR_IRQCHIPS][KVM_IRQCHIP_NUM_PINS];
++	struct kvm_kernel_irq_routing_entry *rt_entries;
++	u32 nr_rt_entries;
++	/*
++	 * Array indexed by gsi. Each entry contains list of irq chips
++	 * the gsi is connected to.
++	 */
++	struct hlist_head map[0];
++};
 +
- #define VMCS12_OFFSET(x) offsetof(struct vmcs12, x)
- #define FIELD(number, name)	[number] = VMCS12_OFFSET(name)
- #define FIELD64(number, name)	[number] = VMCS12_OFFSET(name), \
-@@ -9256,6 +9266,9 @@ static struct kvm_x86_ops vmx_x86_ops = {
- 	.sched_in = vmx_sched_in,
- 
- 	.get_pi_desc_addr = vmx_get_pi_desc_addr,
++#else
 +
-+	.pi_clear_sn = vmx_pi_clear_sn,
-+	.pi_set_sn = vmx_pi_set_sn,
- };
++struct kvm_irq_routing_table {};
++
++#endif
++
+ #ifndef KVM_PRIVATE_MEM_SLOTS
+ #define KVM_PRIVATE_MEM_SLOTS 0
+ #endif
+diff --git a/virt/kvm/irqchip.c b/virt/kvm/irqchip.c
+index 7f256f3..cdf29a6 100644
+--- a/virt/kvm/irqchip.c
++++ b/virt/kvm/irqchip.c
+@@ -31,17 +31,6 @@
+ #include <trace/events/kvm.h>
+ #include "irq.h"
  
- static int __init vmx_init(void)
+-struct kvm_irq_routing_table {
+-	int chip[KVM_NR_IRQCHIPS][KVM_IRQCHIP_NUM_PINS];
+-	struct kvm_kernel_irq_routing_entry *rt_entries;
+-	u32 nr_rt_entries;
+-	/*
+-	 * Array indexed by gsi. Each entry contains list of irq chips
+-	 * the gsi is connected to.
+-	 */
+-	struct hlist_head map[0];
+-};
+-
+ int kvm_irq_map_gsi(struct kvm *kvm,
+ 		    struct kvm_kernel_irq_routing_entry *entries, int gsi)
+ {
 -- 
 1.9.1
