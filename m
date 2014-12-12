@@ -1,8 +1,8 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v3 05/26] x86,
-	irq: Implement irq_set_vcpu_affinity for pci_msi_ir_controller
-Date: Fri, 12 Dec 2014 23:14:39 +0800
-Message-ID: <1418397300-10870-6-git-send-email-feng.wu@intel.com>
+Subject: [v3 06/26] iommu,
+	x86: No need to migrating irq for VT-d Posted-Interrupts
+Date: Fri, 12 Dec 2014 23:14:40 +0800
+Message-ID: <1418397300-10870-7-git-send-email-feng.wu@intel.com>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,40 +22,44 @@ To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@p
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Implement irq_set_vcpu_affinity for pci_msi_ir_controller.
+We don't need to migrate the irqs for VT-d Posted-Interrupts here.
+When 'pst' is set in IRTE, the associated irq will be posted to
+guests instead of interrupt remapping. The destination of the
+interrupt is set in Posted-Interrupts Descriptor, and the migration
+happens during vCPU scheduling.
+
+However, we still update the cached irte here, which can be used
+when changing back to remapping mode.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- arch/x86/kernel/apic/msi.c | 1 +
- include/linux/irq.h        | 3 +++
- 2 files changed, 4 insertions(+)
+ drivers/iommu/intel_irq_remapping.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
-index da163da..b0ed073 100644
---- a/arch/x86/kernel/apic/msi.c
-+++ b/arch/x86/kernel/apic/msi.c
-@@ -152,6 +152,7 @@ static struct irq_chip pci_msi_ir_controller = {
- 	.irq_mask		= pci_msi_mask_irq,
- 	.irq_ack		= irq_chip_ack_parent,
- 	.irq_retrigger		= irq_chip_retrigger_hierarchy,
-+	.irq_set_vcpu_affinity	= irq_chip_set_vcpu_affinity_parent,
- 	.flags			= IRQCHIP_SKIP_SET_WAKE,
- };
- 
-diff --git a/include/linux/irq.h b/include/linux/irq.h
-index 83abafc..5dcaa7f 100644
---- a/include/linux/irq.h
-+++ b/include/linux/irq.h
-@@ -464,6 +464,9 @@ extern void irq_chip_eoi_parent(struct irq_data *data);
- extern int irq_chip_set_affinity_parent(struct irq_data *data,
- 					const struct cpumask *dest,
- 					bool force);
-+extern int irq_chip_set_vcpu_affinity_parent(struct irq_data *data,
-+					     void *vcpu_info);
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 48c2051..ab9057a 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -977,6 +977,7 @@ intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
+ {
+ 	struct intel_ir_data *ir_data = data->chip_data;
+ 	struct irte *irte = &ir_data->irte_entry;
++	struct irte_pi *irte_pi = (struct irte_pi *)irte;
+ 	struct irq_cfg *cfg = irqd_cfg(data);
+ 	struct irq_data *parent = data->parent_data;
+ 	int ret;
+@@ -991,7 +992,10 @@ intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
+ 	 */
+ 	irte->vector = cfg->vector;
+ 	irte->dest_id = IRTE_DEST(cfg->dest_apicid);
+-	modify_irte(&ir_data->irq_2_iommu, irte);
 +
- #endif
++	/* We don't need to modify irte if the interrupt is for posting. */
++	if (irte_pi->pst != 1)
++		modify_irte(&ir_data->irq_2_iommu, irte);
  
- static inline void irq_chip_write_msi_msg(struct irq_data *data,
+ 	/*
+ 	 * After this point, all the interrupts will start arriving
 -- 
 1.9.1
