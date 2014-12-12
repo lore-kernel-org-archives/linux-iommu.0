@@ -1,88 +1,62 @@
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Subject: Re: [RFC PATCH 2/2] iommu: rockchip: Handle system-wide and runtime PM
-Date: Thu, 11 Dec 2014 21:48:17 +0100
-Message-ID: <1576771.dIVCOxU0se@vostro.rjw.lan>
-References: <1418286387-9663-1-git-send-email-tfiga@chromium.org> <7h8uiemce7.fsf@deeprootsystems.com> <CAPDyKFo6zH4__Odm+RiJCbvXquAQqaLyCAiXrSN6s3KfQhok=A@mail.gmail.com>
+From: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Subject: Re: [PATCH 0/5] iommu/vt-d: Fix crash dump failure caused by legacy
+	DMA/IO
+Date: Fri, 12 Dec 2014 10:25:31 +0800
+Message-ID: <548A521B.5020705@hp.com>
+References: <1413878659-1383-1-git-send-email-zhen-hual@hp.com>
+	<20141022100525.GD9060@dhcp-16-116.nay.redhat.com>
+	<545ACF66.9050509@jp.fujitsu.com> <545AD061.4000102@hp.com>
+	<545AD353.8060207@jp.fujitsu.com> <545AD8D3.90709@hp.com>
+	<545B2885.8070009@jp.fujitsu.com> <545B2C07.1070701@hp.com>
+	<5465A0E0.4020001@hp.com> <20141117133858.GA31920@8bytes.org>
+	<20141210084652.GA25091@dhcp-16-105.nay.redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-pm-owner@vger.kernel.org>
-In-Reply-To: <CAPDyKFo6zH4__Odm+RiJCbvXquAQqaLyCAiXrSN6s3KfQhok=A@mail.gmail.com>
-Sender: linux-pm-owner@vger.kernel.org
-To: Ulf Hansson <ulf.hansson@linaro.org>
-Cc: Kevin Hilman <khilman@kernel.org>, Tomasz Figa <tfiga@chromium.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>, Heiko Stuebner <heiko@sntech.de>, Joerg Roedel <joro@8bytes.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Daniel Kurtz <djkurtz@chromium.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20141210084652.GA25091-je1gSBvt1TeLcxizHhUEZR/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thursday, December 11, 2014 04:51:37 PM Ulf Hansson wrote:
-> On 11 December 2014 at 16:31, Kevin Hilman <khilman@kernel.org> wrote:
-> > [+ Laurent Pinchart]
-> >
-> > Tomasz Figa <tfiga@chromium.org> writes:
-> >
-> >> On Thu, Dec 11, 2014 at 8:58 PM, Ulf Hansson <ulf.hansson@linaro.org> wrote:
-> >
-> > [...]
-> >
-> >>>> @@ -988,11 +1107,28 @@ static int rk_iommu_probe(struct platform_device *pdev)
-> >>>>                 return -ENXIO;
-> >>>>         }
-> >>>>
-> >>>> +       pm_runtime_no_callbacks(dev);
-> >>>> +       pm_runtime_enable(dev);
-> >>>> +
-> >>>> +       /* Synchronize state of the domain with driver data. */
-> >>>> +       pm_runtime_get_sync(dev);
-> >>>> +       iommu->is_powered = true;
-> >>>
-> >>> Doesn't the runtime PM status reflect the value of "is_powered", thus
-> >>> why do you need to have a copy of it? Could it perpahps be that you
-> >>> try to cope with the case when CONFIG_PM is unset?
-> >>>
-> >>
-> >> It's worth noting that this driver fully relies on status of other
-> >> devices in the power domain the IOMMU is in and does not enforce the
-> >> status on its own. So in general, as far as my understanding of PM
-> >> runtime subsystem, the status of the IOMMU device will be always
-> >> suspended, because nobody will call pm_runtime_get() on it (except the
-> >> get and put pair in probe). So is_powered is here to track status of
-> >> the domain, not the device. Feel free to suggest a better way, though.
-> >
-> > I still don't like these notifiers.  I think they add ways to bypass
-> > having proper runtime PM implemented for devices/subsystems.
-> 
-> I do agree, but I haven't found another good solution to the problem.
+Sorry I have no plan yet.
+Could you send me your logs on your AMD system?
 
-For the record, I'm not liking this mostly because it "fixes" a generic problem
-in a way that's hidden in the genpd code and very indirect.
-
-> > From a high-level, the IOMMU is just another device inside the PM
-> > domain, so ideally it should be doing it's own _get() and _put() calls
-> > so the PM domain code would just do the right thing without the need for
-> > notifiers.
-> 
-> As I understand it, the IOMMU (or for other similar cases) shouldn't
-> be doing any get() and put() at all because there are no IO API to
-> serve request from.
-> 
-> In principle we could consider these kind devices as "parent" devices
-> to those other devices that needs them. Then runtime PM core would
-> take care of things for us, right!?
-> 
-> Now, I am not so sure using the "parent" approach is actually viable,
-> since it will likely have other complications, but I haven't
-> thoroughly thought it though yet.
-
-That actually need not be a "parent".
-
-What's needed in this case is to do a pm_runtime_get_sync() on a device
-depended on every time a dependent device is runtime-resumed (and analogously
-for suspending).
-
-The core doesn't have a way to do that, but it looks like we'll need to add
-it anyway for various reasons (ACPI _DEP is one of them as I mentioned some
-time ago, but people dismissed it basically as not their problem).
-
-
--- 
-I speak only for myself.
-Rafael J. Wysocki, Intel Open Source Technology Center.
+Thanks
+Zhenhua
+On 12/10/2014 04:46 PM, Baoquan He wrote:
+> Hi Joerg, ZhenHua,
+>
+> This issue happens on AMD iommu too, do you have any plans or
+> thoughts on that?
+>
+> Thanks
+> Baoquan
+>
+> On 11/17/14 at 02:38pm, Joerg Roedel wrote:
+>> On Fri, Nov 14, 2014 at 02:27:44PM +0800, Li, ZhenHua wrote:
+>>> I am working following  your directions:
+>>>
+>>> 1.  If the VT-d driver finds the IOMMU enabled, it reuses its root entry
+>>> table, and do NOT disable-enable iommu. Other data will be copied.
+>>>
+>>> 2. When a device driver issues the first dma_map command for a
+>>> device, we assign a new and empty page-table, thus removing all
+>>> mappings from the old kernel for the device.
+>>>
+>>> Please let me know if I get something wrong.
+>>
+>> Yes, this sounds right. Happily waiting for patches :)
+>>
+>>
+>> 	Joerg
+>>
