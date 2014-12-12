@@ -1,7 +1,8 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v3 11/26] KVM: Add some helper functions for Posted-Interrupts
-Date: Fri, 12 Dec 2014 23:14:45 +0800
-Message-ID: <1418397300-10870-12-git-send-email-feng.wu@intel.com>
+Subject: [v3 13/26] KVM: Define a new interface kvm_find_dest_vcpu() for VT-d
+	PI
+Date: Fri, 12 Dec 2014 23:14:47 +0800
+Message-ID: <1418397300-10870-14-git-send-email-feng.wu@intel.com>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,57 +22,105 @@ To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@p
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds some helper functions to manipulate the
-Posted-Interrupts Descriptor.
+This patch defines a new interface kvm_find_dest_vcpu for
+VT-d PI, which can returns the destination vCPU of the
+interrupt for guests.
+
+Since VT-d PI cannot handle broadcast/multicast interrupt,
+Here we only handle Fixed and Lowest priority interrupts.
+
+The current method of handling guest lowest priority interrtups
+is to use a counter 'apic_arb_prio' for each vCPU, we choose the
+vCPU with smallest 'apic_arb_prio' and then increase it by 1.
+However, for VT-d PI, we cannot re-use this, since we no longer
+have control to 'apic_arb_prio' with posted interrupt direct
+delivery by Hardware.
+
+Here, we introduce a similar way with 'apic_arb_prio' to handle
+guest lowest priority interrtups when VT-d PI is used. Here is the
+ideas:
+- Each vCPU has a counter 'round_robin_counter'.
+- When guests sets an interrupts to lowest priority, we choose
+the vCPU with smallest 'round_robin_counter' as the destination,
+then increase it.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/kvm/vmx.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ arch/x86/include/asm/kvm_host.h |  4 ++++
+ virt/kvm/irq_comm.c             | 41 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 45 insertions(+)
 
-diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-index abdb84f..0b1383e 100644
---- a/arch/x86/kvm/vmx.c
-+++ b/arch/x86/kvm/vmx.c
-@@ -408,6 +408,8 @@ struct nested_vmx {
- };
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 6ed0c30..7a41808 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -358,6 +358,7 @@ struct kvm_vcpu_arch {
+ 	struct kvm_lapic *apic;    /* kernel irqchip context */
+ 	unsigned long apic_attention;
+ 	int32_t apic_arb_prio;
++	int32_t round_robin_counter;
+ 	int mp_state;
+ 	u64 ia32_misc_enable_msr;
+ 	bool tpr_access_reporting;
+@@ -1093,4 +1094,7 @@ int kvm_pmu_read_pmc(struct kvm_vcpu *vcpu, unsigned pmc, u64 *data);
+ void kvm_handle_pmu_event(struct kvm_vcpu *vcpu);
+ void kvm_deliver_pmi(struct kvm_vcpu *vcpu);
  
- #define POSTED_INTR_ON  0
-+#define POSTED_INTR_SN  1
++bool kvm_find_dest_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
++			struct kvm_vcpu **dest_vcpu);
 +
- /* Posted-Interrupt Descriptor */
- struct pi_desc {
- 	u32 pir[8];     /* Posted interrupt requested */
-@@ -443,6 +445,30 @@ static int pi_test_and_set_pir(int vector, struct pi_desc *pi_desc)
- 	return test_and_set_bit(vector, (unsigned long *)pi_desc->pir);
+ #endif /* _ASM_X86_KVM_HOST_H */
+diff --git a/virt/kvm/irq_comm.c b/virt/kvm/irq_comm.c
+index 963b899..f3c5d69 100644
+--- a/virt/kvm/irq_comm.c
++++ b/virt/kvm/irq_comm.c
+@@ -317,6 +317,47 @@ out:
+ 	return r;
  }
  
-+static void pi_clear_sn(struct pi_desc *pi_desc)
++int kvm_compare_rr_counter(struct kvm_vcpu *vcpu1, struct kvm_vcpu *vcpu2)
 +{
-+	return clear_bit(POSTED_INTR_SN,
-+			(unsigned long *)&pi_desc->control);
++	return vcpu1->arch.round_robin_counter -
++			vcpu2->arch.round_robin_counter;
 +}
 +
-+static void pi_set_sn(struct pi_desc *pi_desc)
++bool kvm_find_dest_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
++				struct kvm_vcpu **dest_vcpu)
 +{
-+	return set_bit(POSTED_INTR_SN,
-+			(unsigned long *)&pi_desc->control);
++	int i, r = 0;
++	struct kvm_vcpu *vcpu, *dest = NULL;
++
++	kvm_for_each_vcpu(i, vcpu, kvm) {
++		if (!kvm_apic_present(vcpu))
++			continue;
++
++		if (!kvm_apic_match_dest(vcpu, NULL, irq->shorthand,
++					irq->dest_id, irq->dest_mode))
++			continue;
++
++		if (!kvm_is_dm_lowest_prio(irq)) {
++			r++;
++			*dest_vcpu = vcpu;
++		} else if (kvm_lapic_enabled(vcpu)) {
++			if (!dest)
++				dest = vcpu;
++			else if (kvm_compare_rr_counter(vcpu, dest) < 0)
++				dest = vcpu;
++		}
++	}
++
++	if (dest) {
++		dest->arch.round_robin_counter++;
++		*dest_vcpu = dest;
++		return true;
++	} else if (r == 1)
++		return true;
++
++	return false;
 +}
 +
-+static int pi_test_on(struct pi_desc *pi_desc)
-+{
-+	return test_bit(POSTED_INTR_ON,
-+			(unsigned long *)&pi_desc->control);
-+}
-+
-+static int pi_test_sn(struct pi_desc *pi_desc)
-+{
-+	return test_bit(POSTED_INTR_SN,
-+			(unsigned long *)&pi_desc->control);
-+}
-+
- struct vcpu_vmx {
- 	struct kvm_vcpu       vcpu;
- 	unsigned long         host_rsp;
+ #define IOAPIC_ROUTING_ENTRY(irq) \
+ 	{ .gsi = irq, .type = KVM_IRQ_ROUTING_IRQCHIP,	\
+ 	  .u.irqchip = { .irqchip = KVM_IRQCHIP_IOAPIC, .pin = (irq) } }
 -- 
 1.9.1
