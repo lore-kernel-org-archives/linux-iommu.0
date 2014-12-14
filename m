@@ -1,168 +1,51 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [RFC PATCH 2/2] iommu: rockchip: Handle system-wide and runtime PM
-Date: Fri, 12 Dec 2014 22:47:15 +0200
-Message-ID: <1508486.LLFuttrbI2@avalon>
-References: <1418286387-9663-1-git-send-email-tfiga@chromium.org>
-	<1576771.dIVCOxU0se@vostro.rjw.lan>
-	<CAAFQd5B28WiWUqmbmROJUa3H25R=Y774NuemTZDvkoa=CvZUsw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAAFQd5B28WiWUqmbmROJUa3H25R=Y774NuemTZDvkoa=CvZUsw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: Len Brown <len.brown-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, "linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH] iommu/ipmmu-vmsa: change IOMMU_EXEC to IOMMU_NOEXEC
+Date: Sun, 14 Dec 2014 02:55:03 +0200
+Message-ID: <1418518503-20250-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Joerg Roedel <joro@8bytes.org>, Antonios Motakis <a.motakis@virtualopensystems.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+The IOMMU_EXEC flag has been renamed to IOMMU_NOEXEC by commit
+a720b41c41f5a7e4 ("iommu/arm-smmu: change IOMMU_EXEC to IOMMU_NOEXEC").
+Update the driver accordingly.
 
-On Friday 12 December 2014 13:15:51 Tomasz Figa wrote:
-> On Fri, Dec 12, 2014 at 5:48 AM, Rafael J. Wysocki wrote:
-> > On Thursday, December 11, 2014 04:51:37 PM Ulf Hansson wrote:
-> >> On 11 December 2014 at 16:31, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
-> >> > [+ Laurent Pinchart]
-> >> > 
-> >> > Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> writes:
-> >> >> On Thu, Dec 11, 2014 at 8:58 PM, Ulf Hansson wrote:
-> >> > [...]
-> >> > 
-> >> >>>> @@ -988,11 +1107,28 @@ static int rk_iommu_probe(struct
-> >> >>>> platform_device *pdev)>> >>>> 
-> >> >>>>                 return -ENXIO;
-> >> >>>>         
-> >> >>>>         }
-> >> >>>> 
-> >> >>>> +       pm_runtime_no_callbacks(dev);
-> >> >>>> +       pm_runtime_enable(dev);
-> >> >>>> +
-> >> >>>> +       /* Synchronize state of the domain with driver data. */
-> >> >>>> +       pm_runtime_get_sync(dev);
-> >> >>>> +       iommu->is_powered = true;
-> >> >>> 
-> >> >>> Doesn't the runtime PM status reflect the value of "is_powered", thus
-> >> >>> why do you need to have a copy of it? Could it perpahps be that you
-> >> >>> try to cope with the case when CONFIG_PM is unset?
-> >> >> 
-> >> >> It's worth noting that this driver fully relies on status of other
-> >> >> devices in the power domain the IOMMU is in and does not enforce the
-> >> >> status on its own. So in general, as far as my understanding of PM
-> >> >> runtime subsystem, the status of the IOMMU device will be always
-> >> >> suspended, because nobody will call pm_runtime_get() on it (except the
-> >> >> get and put pair in probe). So is_powered is here to track status of
-> >> >> the domain, not the device. Feel free to suggest a better way, though.
-> >> > 
-> >> > I still don't like these notifiers.  I think they add ways to bypass
-> >> > having proper runtime PM implemented for devices/subsystems.
-> >> 
-> >> I do agree, but I haven't found another good solution to the problem.
-> > 
-> > For the record, I'm not liking this mostly because it "fixes" a generic
-> > problem in a way that's hidden in the genpd code and very indirect.
-> 
-> Well, that's true. This is indeed a generic problem of PM dependencies
-> between devices (other than those represented by parent-child
-> relation), which in fact doesn't have much to do with genpd, but
-> rather with those devices directly. It is just that genpd is the most
-> convenient location to solve this in current code and in a simple way.
-> In other words, I see this solution as a reasonable way to get the
-> problem solved quickly for now, so that we can start thinking about a
-> more elegant solution.
-> 
-> >> > From a high-level, the IOMMU is just another device inside the PM
-> >> > domain, so ideally it should be doing it's own _get() and _put() calls
-> >> > so the PM domain code would just do the right thing without the need
-> >> > for notifiers.
-> >> 
-> >> As I understand it, the IOMMU (or for other similar cases) shouldn't
-> >> be doing any get() and put() at all because there are no IO API to
-> >> serve request from.
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+---
+ drivers/iommu/ipmmu-vmsa.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Speaking purely from an IOMMU point of view that's not entirely tree. IOMMU 
-drivers expose map and unmap operations, so they can track whether any memory 
-is mapped. From a bus master point of view the IOMMU map and unmap operations 
-are hidden by the DMA mapping API. The IOMMU can thus track the existence of 
-mappings without any IOMMU awareness in the bus master driver.
+This fixes a build breakage in Linus' master branch introduce by the commit
+mentioned above.
 
-If no mapping exist the IOMMU shouldn't receive any translation request. An 
-IOMMU driver could thus call pm_runtime_get_sync() in the map handler when 
-creating the first mapping, and pm_runtime_put() in the unmap handler when 
-tearing the last mapping down.
-
-One could argue that the IOMMU would end up being powered more often than 
-strictly needed, as bus masters drivers, even when written properly, could 
-keep mappings around at times they don't perform bus access. This is true, and 
-that's an argument I've raised during the last kernel summit. The general 
-response (including Linus Torvald's) was that micro-optimizing power 
-management might not be worth it, and that measurements proving that the gain 
-is worth it are required before introducing new APIs to solve the problem. I 
-can't disagree with that argument.
-
-> >> In principle we could consider these kind devices as "parent" devices
-> >> to those other devices that needs them. Then runtime PM core would
-> >> take care of things for us, right!?
-> >> 
-> >> Now, I am not so sure using the "parent" approach is actually viable,
-> >> since it will likely have other complications, but I haven't
-> >> thoroughly thought it though yet.
-> > 
-> > That actually need not be a "parent".
-> > 
-> > What's needed in this case is to do a pm_runtime_get_sync() on a device
-> > depended on every time a dependent device is runtime-resumed (and
-> > analogously for suspending).
-> > 
-> > The core doesn't have a way to do that, but it looks like we'll need to
-> > add it anyway for various reasons (ACPI _DEP is one of them as I mentioned
-> > some time ago, but people dismissed it basically as not their problem).
-> 
-> Let me show you our exact use case.
-> 
-> We have a power domain, which contains an IOMMU and an IP block, which
-> can do bus transactions through that IOMMU. Of course the IP block is
-> not aware of the IOMMU, because this is just an integration detail and
-> on other platforms using the same IP block the IOMMU might not be
-> there. This implies that the driver for this IP block should not be
-> aware of the IOMMU either, which, on the buffer allocation and mapping
-> side, is achieved by DMA mapping subsystem. We would also want the
-> IOMMU to be fully transparent to that driver on PM side.
-> 
-> Now, for PM related details, they are located in the same power
-> domain, which means that whenever the power domain is turned off, the
-> CPU can't access their registers and all the hardware state is gone.
-> To make the case more interesting, there is no point in programming
-> the IOMMU unless the device using it is powered on. Similarly, there
-> is no point in powering the domain on to just access the IOMMU. This
-> implies that the power domain should be fully controlled by the
-> stand-alone IP block, while the peripheral IOMMU shouldn't affect its
-> state and its driver only respond to operations performed by driver of
-> that stand-alone IP block.
-> 
-> A solution like below could work for the above:
-> 
-> - There is a per-device list of peripheral devices, which need to be
-> powered on for this device to work.
-> - Whenever the IOMMU subsystem/driver binds an IOMMU to a device, it
-> adds the IOMMU device to the list of peripheral devices of that device
-> (and similarly for removal).
-> - A runtime PM operation on a device will also perform the same
-> operation on all its peripheral devices.
-> 
-> Another way would be to extend what the PM runtime core does with
-> parent-child relations to handle the whole list of peripheral devices
-> instead of just the parent.
-> 
-> Would this design sound somehow reasonable to you?
-
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index e5ed0216929f..7a1bcf6627b6 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -558,7 +558,7 @@ static pmd_t *ipmmu_alloc_pmd(struct ipmmu_vmsa_device *mmu, pgd_t *pgd,
+ 
+ static u64 ipmmu_page_prot(unsigned int prot, u64 type)
+ {
+-	u64 pgprot = ARM_VMSA_PTE_XN | ARM_VMSA_PTE_nG | ARM_VMSA_PTE_AF
++	u64 pgprot = ARM_VMSA_PTE_nG | ARM_VMSA_PTE_AF
+ 		   | ARM_VMSA_PTE_SH_IS | ARM_VMSA_PTE_AP_UNPRIV
+ 		   | ARM_VMSA_PTE_NS | type;
+ 
+@@ -568,8 +568,8 @@ static u64 ipmmu_page_prot(unsigned int prot, u64 type)
+ 	if (prot & IOMMU_CACHE)
+ 		pgprot |= IMMAIR_ATTR_IDX_WBRWA << ARM_VMSA_PTE_ATTRINDX_SHIFT;
+ 
+-	if (prot & IOMMU_EXEC)
+-		pgprot &= ~ARM_VMSA_PTE_XN;
++	if (prot & IOMMU_NOEXEC)
++		pgprot |= ARM_VMSA_PTE_XN;
+ 	else if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
+ 		/* If no access create a faulting entry to avoid TLB fills. */
+ 		pgprot &= ~ARM_VMSA_PTE_PAGE;
 -- 
 Regards,
 
 Laurent Pinchart
+
