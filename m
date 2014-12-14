@@ -1,73 +1,120 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH v3 18/19] iommu: exynos: init from dt-specific callback instead of initcall
-Date: Sun, 14 Dec 2014 14:45:36 +0200
-Message-ID: <1826772.xgprzQcfXd@avalon>
-References: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com> <1416395748-10731-19-git-send-email-m.szyprowski@samsung.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH v6 6/8] dma-mapping: detect and configure IOMMU in
+	of_dma_configure
+Date: Sun, 14 Dec 2014 17:49:34 +0200
+Message-ID: <6860089.2Ca399bIPK@avalon>
+References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
+	<CAF6AEGs6dZauq1QxY_OqBPUs0xHYjjGTi+H7Vm-mNvJtmTAHRA@mail.gmail.com>
+	<20141210150853.GH23639@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <1416395748-10731-19-git-send-email-m.szyprowski@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, Rob Herring <robh@kernel.org>, Thierry Reding <treding@nvidia.com>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Inki Dae <inki.dae@samsung.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Tomasz Figa <tomasz.figa@gmail.com>, linaro-mm-sig@lists.linaro.org, Kyungmin Park <kyungmin.park@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>, Olof Johansson <olof@lixom.net>, Cho KyongHo <pullip.cho@samsung.com>, David Wodhouse <dwmw2@infradead.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20141210150853.GH23639-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Marek,
+Hi Will,
 
-Thank you for the patch.
-
-On Wednesday 19 November 2014 12:15:47 Marek Szyprowski wrote:
-> This patch introduces IOMMU_OF_DECLARE-based initialization to the
-> driver, which replaces subsys_initcall-based procedure.
-> exynos_iommu_of_setup ensures that each sysmmu controller is probed
-> before its master device.
+On Wednesday 10 December 2014 15:08:53 Will Deacon wrote:
+> On Wed, Dec 10, 2014 at 02:52:56PM +0000, Rob Clark wrote:
+> > On Mon, Dec 1, 2014 at 11:57 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> > > This patch extends of_dma_configure so that it sets up the IOMMU for a
+> > > device, as well as the coherent/non-coherent DMA mapping ops.
+> > > 
+> > > Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+> > > Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> > > Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> > > Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> > > ---
+> > > 
+> > >  arch/arm/include/asm/dma-mapping.h |  4 +++-
+> > >  drivers/of/platform.c              | 21 ++++++++++++++-------
+> > >  include/linux/dma-mapping.h        |  8 +++++++-
+> > >  3 files changed, 24 insertions(+), 9 deletions(-)
+> > > 
+> > > diff --git a/arch/arm/include/asm/dma-mapping.h
+> > > b/arch/arm/include/asm/dma-mapping.h index dc3420e77758..f3c0d953f6a2
+> > > 100644
+> > > --- a/arch/arm/include/asm/dma-mapping.h
+> > > +++ b/arch/arm/include/asm/dma-mapping.h
+> > > @@ -121,7 +121,9 @@ static inline unsigned long dma_max_pfn(struct
+> > > device *dev)> > 
+> > >  }
+> > >  #define dma_max_pfn(dev) dma_max_pfn(dev)
+> > > 
+> > > -static inline void arch_setup_dma_ops(struct device *dev, bool
+> > > coherent)
+> > > +static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
+> > > +                                     u64 size, struct iommu_ops *iommu,
+> > > +                                     bool coherent)
+> > >  {
+> > >         if (coherent)
+> > >                 set_dma_ops(dev, &arm_coherent_dma_ops);
+> > > diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+> > > index ff1f4e9afccb..b89caf8c7586 100644
+> > > --- a/drivers/of/platform.c
+> > > +++ b/drivers/of/platform.c
+> > > @@ -19,6 +19,7 @@
+> > >  #include <linux/slab.h>
+> > >  #include <linux/of_address.h>
+> > >  #include <linux/of_device.h>
+> > > +#include <linux/of_iommu.h>
+> > >  #include <linux/of_irq.h>
+> > >  #include <linux/of_platform.h>
+> > >  #include <linux/platform_device.h>
+> > > @@ -166,6 +167,7 @@ static void of_dma_configure(struct device *dev)
+> > >         int ret;
+> > >         bool coherent;
+> > >         unsigned long offset;
+> > > +       struct iommu_ops *iommu;
+> > > 
+> > >         /*
+> > >          * Set default dma-mask to 32 bit. Drivers are expected to setup
+> > > @@ -194,7 +196,16 @@ static void of_dma_configure(struct device *dev)
+> > >         dev_dbg(dev, "device is%sdma coherent\n",
+> > >                 coherent ? " " : " not ");
+> > > 
+> > > -       arch_setup_dma_ops(dev, coherent);
+> > > +       iommu = of_iommu_configure(dev);
+> > > +       dev_dbg(dev, "device is%sbehind an iommu\n",
+> > > +               iommu ? " " : " not ");
+> > > +
+> > > +       arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
+> > 
+> > so, what is the way for a driver that explicitly wants to manage it's
+> > own device virtual address space to opt out of this?  I suspect that
+> > won't be the common case, but for a gpu, if dma layer all of a sudden
+> > thinks it is in control of the gpu's virtual address space, things are
+> > going to end in tears..
 > 
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> ---
->  drivers/iommu/exynos-iommu.c | 28 +++++++++++++++++++++++++++-
->  1 file changed, 27 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index cd28dc09db39..88f9afe641a0 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
+> I think you'll need to detach from the DMA domain, then have the driver
+> manage everything itself. As you say, it's not the common case, so you
+> may need to add some hooks for detaching from the default domain and
+> swizzling your DMA ops.
 
-[snip]
+I'm wondering if it's such an exotic case after all. I can see two reasons not 
+to use the default domain. In addition to special requirements coming from the 
+bus master side, the IOMMU itself might not support one domain per bus master 
+(I'm of course raising the issue from a very selfish Renesas IPMMU point of 
+view).
 
-> @@ -1125,4 +1134,21 @@ err_reg_driver:
->  	kmem_cache_destroy(lv2table_kmem_cache);
->  	return ret;
->  }
-> -subsys_initcall(exynos_iommu_init);
-> +
-> +static int __init exynos_iommu_of_setup(struct device_node *np)
-> +{
-> +	struct platform_device *pdev;
-> +
-> +	if (!init_done)
-> +		exynos_iommu_init();
-> +
-> +	pdev = of_platform_device_create(np, NULL, platform_bus_type.dev_root);
-> +	if (IS_ERR(pdev))
-> +		return PTR_ERR(pdev);
-
-If we end up having to create the IOMMU platform devices from within the 
-drivers, the introduction of IOMMU_OF_DECLARE starts to feel like a workaround 
-to me. I wonder whether it wouldn't then be better to let the driver core 
-instantiate the IOMMU platform device from DT as for all other devices, and 
-use device notifiers to defer probe of the bus masters until the required 
-IOMMU(s) are registered.
-
-Will, what's your opinion on that ?
-
-> +
-> +	of_iommu_set_ops(np, &exynos_iommu_ops);
-> +	return 0;
-> +}
-> +
-> +IOMMU_OF_DECLARE(exynos_iommu_of, "samsung,exynos-sysmmu",
-> +		 exynos_iommu_of_setup);
+In that case the IOMMU driver can still detach the device from the default 
+domain in the .of_xlate() callback and attach it to its private domain. I'm 
+however wondering whether this case isn't common enough to avoid creating 
+default domains in common code in the first place. IOMMU drivers that support 
+one domain per master would then create device domain in their .of_xlate() 
+callback.
 
 -- 
 Regards,
