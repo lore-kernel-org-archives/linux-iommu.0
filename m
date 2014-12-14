@@ -1,15 +1,15 @@
 From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 Subject: Re: [PATCH v6 6/8] dma-mapping: detect and configure IOMMU in
 	of_dma_configure
-Date: Sun, 14 Dec 2014 17:51:13 +0200
-Message-ID: <6311849.8NniZ58Jf1@avalon>
+Date: Sun, 14 Dec 2014 17:59:38 +0200
+Message-ID: <1427076.5uVd9K6nak@avalon>
 References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
-	<1417453034-21379-7-git-send-email-will.deacon@arm.com>
+	<20141210150853.GH23639@arm.com> <6860089.2Ca399bIPK@avalon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1417453034-21379-7-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <6860089.2Ca399bIPK@avalon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,122 +20,109 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Will,
 
-On Monday 01 December 2014 16:57:12 Will Deacon wrote:
-> This patch extends of_dma_configure so that it sets up the IOMMU for a
-> device, as well as the coherent/non-coherent DMA mapping ops.
+On Sunday 14 December 2014 17:49:34 Laurent Pinchart wrote:
+> On Wednesday 10 December 2014 15:08:53 Will Deacon wrote:
+> > On Wed, Dec 10, 2014 at 02:52:56PM +0000, Rob Clark wrote:
+> > > On Mon, Dec 1, 2014 at 11:57 AM, Will Deacon wrote:
+> > > > This patch extends of_dma_configure so that it sets up the IOMMU for a
+> > > > device, as well as the coherent/non-coherent DMA mapping ops.
+> > > > 
+> > > > Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+> > > > Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> > > > Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> > > > Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> > > > ---
+> > > > 
+> > > >  arch/arm/include/asm/dma-mapping.h |  4 +++-
+> > > >  drivers/of/platform.c              | 21 ++++++++++++++-------
+> > > >  include/linux/dma-mapping.h        |  8 +++++++-
+> > > >  3 files changed, 24 insertions(+), 9 deletions(-)
+> > > > 
+> > > > diff --git a/arch/arm/include/asm/dma-mapping.h
+> > > > b/arch/arm/include/asm/dma-mapping.h index dc3420e77758..f3c0d953f6a2
+> > > > 100644
+> > > > --- a/arch/arm/include/asm/dma-mapping.h
+> > > > +++ b/arch/arm/include/asm/dma-mapping.h
+> > > > @@ -121,7 +121,9 @@ static inline unsigned long dma_max_pfn(struct
+> > > > device *dev)
+> > > >  }
+> > > >  #define dma_max_pfn(dev) dma_max_pfn(dev)
+> > > > 
+> > > > -static inline void arch_setup_dma_ops(struct device *dev, bool
+> > > > coherent)
+> > > > +static inline void arch_setup_dma_ops(struct device *dev, u64
+> > > > dma_base,
+> > > > +                                     u64 size, struct iommu_ops
+> > > > *iommu,
+> > > > +                                     bool coherent)
+> > > >  {
+> > > >         if (coherent)
+> > > >                 set_dma_ops(dev, &arm_coherent_dma_ops);
+> > > > diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+> > > > index ff1f4e9afccb..b89caf8c7586 100644
+> > > > --- a/drivers/of/platform.c
+> > > > +++ b/drivers/of/platform.c
+> > > > @@ -19,6 +19,7 @@
+> > > >  #include <linux/slab.h>
+> > > >  #include <linux/of_address.h>
+> > > >  #include <linux/of_device.h>
+> > > > +#include <linux/of_iommu.h>
+> > > >  #include <linux/of_irq.h>
+> > > >  #include <linux/of_platform.h>
+> > > >  #include <linux/platform_device.h>
+> > > > @@ -166,6 +167,7 @@ static void of_dma_configure(struct device *dev)
+> > > >         int ret;
+> > > >         bool coherent;
+> > > >         unsigned long offset;
+> > > > +       struct iommu_ops *iommu;
+> > > >         /*
+> > > >          * Set default dma-mask to 32 bit. Drivers are expected to
+> > > >          setup
+> > > > @@ -194,7 +196,16 @@ static void of_dma_configure(struct device *dev)
+> > > >         dev_dbg(dev, "device is%sdma coherent\n",
+> > > >                 coherent ? " " : " not ");
+> > > > -       arch_setup_dma_ops(dev, coherent);
+> > > > +       iommu = of_iommu_configure(dev);
+> > > > +       dev_dbg(dev, "device is%sbehind an iommu\n",
+> > > > +               iommu ? " " : " not ");
+> > > > +
+> > > > +       arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
+> > > 
+> > > so, what is the way for a driver that explicitly wants to manage it's
+> > > own device virtual address space to opt out of this?  I suspect that
+> > > won't be the common case, but for a gpu, if dma layer all of a sudden
+> > > thinks it is in control of the gpu's virtual address space, things are
+> > > going to end in tears..
+> > 
+> > I think you'll need to detach from the DMA domain, then have the driver
+> > manage everything itself. As you say, it's not the common case, so you
+> > may need to add some hooks for detaching from the default domain and
+> > swizzling your DMA ops.
 > 
-> Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-> Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> ---
->  arch/arm/include/asm/dma-mapping.h |  4 +++-
->  drivers/of/platform.c              | 21 ++++++++++++++-------
->  include/linux/dma-mapping.h        |  8 +++++++-
->  3 files changed, 24 insertions(+), 9 deletions(-)
+> I'm wondering if it's such an exotic case after all. I can see two reasons
+> not to use the default domain. In addition to special requirements coming
+> from the bus master side, the IOMMU itself might not support one domain per
+> bus master (I'm of course raising the issue from a very selfish Renesas
+> IPMMU point of view).
 > 
-> diff --git a/arch/arm/include/asm/dma-mapping.h
-> b/arch/arm/include/asm/dma-mapping.h index dc3420e77758..f3c0d953f6a2
-> 100644
-> --- a/arch/arm/include/asm/dma-mapping.h
-> +++ b/arch/arm/include/asm/dma-mapping.h
-> @@ -121,7 +121,9 @@ static inline unsigned long dma_max_pfn(struct device
-> *dev) }
->  #define dma_max_pfn(dev) dma_max_pfn(dev)
-> 
-> -static inline void arch_setup_dma_ops(struct device *dev, bool coherent)
-> +static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
-> +				      u64 size, struct iommu_ops *iommu,
-> +				      bool coherent)
->  {
->  	if (coherent)
->  		set_dma_ops(dev, &arm_coherent_dma_ops);
-> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
-> index ff1f4e9afccb..b89caf8c7586 100644
-> --- a/drivers/of/platform.c
-> +++ b/drivers/of/platform.c
-> @@ -19,6 +19,7 @@
->  #include <linux/slab.h>
->  #include <linux/of_address.h>
->  #include <linux/of_device.h>
-> +#include <linux/of_iommu.h>
->  #include <linux/of_irq.h>
->  #include <linux/of_platform.h>
->  #include <linux/platform_device.h>
-> @@ -166,6 +167,7 @@ static void of_dma_configure(struct device *dev)
->  	int ret;
->  	bool coherent;
->  	unsigned long offset;
-> +	struct iommu_ops *iommu;
-> 
->  	/*
->  	 * Set default dma-mask to 32 bit. Drivers are expected to setup
-> @@ -194,7 +196,16 @@ static void of_dma_configure(struct device *dev)
->  	dev_dbg(dev, "device is%sdma coherent\n",
->  		coherent ? " " : " not ");
-> 
-> -	arch_setup_dma_ops(dev, coherent);
-> +	iommu = of_iommu_configure(dev);
-> +	dev_dbg(dev, "device is%sbehind an iommu\n",
-> +		iommu ? " " : " not ");
-> +
-> +	arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
-> +}
-> +
-> +static void of_dma_deconfigure(struct device *dev)
-> +{
-> +	arch_teardown_dma_ops(dev);
->  }
-> 
->  /**
-> @@ -223,16 +234,12 @@ static struct platform_device
-> *of_platform_device_create_pdata( if (!dev)
->  		goto err_clear_flag;
-> 
-> -	of_dma_configure(&dev->dev);
->  	dev->dev.bus = &platform_bus_type;
->  	dev->dev.platform_data = platform_data;
-> -
-> -	/* We do not fill the DMA ops for platform devices by default.
-> -	 * This is currently the responsibility of the platform code
-> -	 * to do such, possibly using a device notifier
-> -	 */
-> +	of_dma_configure(&dev->dev);
-> 
->  	if (of_device_add(dev) != 0) {
-> +		of_dma_deconfigure(&dev->dev);
+> In that case the IOMMU driver can still detach the device from the default
+> domain in the .of_xlate() callback and attach it to its private domain.
 
-Don't you also need to call of_dma_deconfigure() when the device is destroyed 
-? Otherwise the default domain created by arch_setup_dma_ops() will be leaked.
+I actually spoke too fast, the .of_xlate() callback is called before 
+arch_setup_dma_ops(). The operation could be performed in the .add_device() 
+callback. I'm having trouble understanding how you envision .add_device, 
+.remove_device and .of_xlate working together in the DT case. Could you please 
+detail what you think each callback should be responsible of exactly ?
 
->  		platform_device_put(dev);
->  		goto err_clear_flag;
->  	}
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index 8a1560f95d4a..c3007cb4bfa6 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -130,7 +130,13 @@ static inline int dma_coerce_mask_and_coherent(struct
-> device *dev, u64 mask) extern u64 dma_get_required_mask(struct device
-> *dev);
-> 
->  #ifndef arch_setup_dma_ops
-> -static inline void arch_setup_dma_ops(struct device *dev, bool coherent) {
-> } +static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
-> +				      u64 size, struct iommu_ops *iommu,
-> +				      bool coherent) { }
-> +#endif
-> +
-> +#ifndef arch_teardown_dma_ops
-> +static inline void arch_teardown_dma_ops(struct device *dev) { }
->  #endif
-> 
->  static inline unsigned int dma_get_max_seg_size(struct device *dev)
+> I'm however wondering whether this case isn't common enough to avoid
+> creating default domains in common code in the first place. IOMMU drivers
+> that support one domain per master would then create device domain in their
+> .of_xlate() callback.
 
 -- 
 Regards,
