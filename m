@@ -1,15 +1,17 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH v6 6/8] dma-mapping: detect and configure IOMMU in
-	of_dma_configure
-Date: Sun, 14 Dec 2014 17:59:38 +0200
-Message-ID: <1427076.5uVd9K6nak@avalon>
-References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
-	<20141210150853.GH23639@arm.com> <6860089.2Ca399bIPK@avalon>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 2/4] iommu: add ARM LPAE page table allocator
+Date: Sun, 14 Dec 2014 17:45:49 +0000
+Message-ID: <BN3PR0301MB1219D3161E4E9DB314FDD8FAEA6E0@BN3PR0301MB1219.namprd03.prod.outlook.com>
+References: <1417089078-22900-1-git-send-email-will.deacon@arm.com>
+	<1417089078-22900-3-git-send-email-will.deacon@arm.com>
+	<BN3PR0301MB12198CE5D736CDC6A221EDC2EA790@BN3PR0301MB1219.namprd03.prod.outlook.com>
+	<20141205184802.GH1203@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <6860089.2Ca399bIPK@avalon>
+In-Reply-To: <20141205184802.GH1203-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,112 +21,261 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Will,
+Please find my response inline. Search for "varun".
 
-On Sunday 14 December 2014 17:49:34 Laurent Pinchart wrote:
-> On Wednesday 10 December 2014 15:08:53 Will Deacon wrote:
-> > On Wed, Dec 10, 2014 at 02:52:56PM +0000, Rob Clark wrote:
-> > > On Mon, Dec 1, 2014 at 11:57 AM, Will Deacon wrote:
-> > > > This patch extends of_dma_configure so that it sets up the IOMMU for a
-> > > > device, as well as the coherent/non-coherent DMA mapping ops.
-> > > > 
-> > > > Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-> > > > Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> > > > Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> > > > Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> > > > ---
-> > > > 
-> > > >  arch/arm/include/asm/dma-mapping.h |  4 +++-
-> > > >  drivers/of/platform.c              | 21 ++++++++++++++-------
-> > > >  include/linux/dma-mapping.h        |  8 +++++++-
-> > > >  3 files changed, 24 insertions(+), 9 deletions(-)
-> > > > 
-> > > > diff --git a/arch/arm/include/asm/dma-mapping.h
-> > > > b/arch/arm/include/asm/dma-mapping.h index dc3420e77758..f3c0d953f6a2
-> > > > 100644
-> > > > --- a/arch/arm/include/asm/dma-mapping.h
-> > > > +++ b/arch/arm/include/asm/dma-mapping.h
-> > > > @@ -121,7 +121,9 @@ static inline unsigned long dma_max_pfn(struct
-> > > > device *dev)
-> > > >  }
-> > > >  #define dma_max_pfn(dev) dma_max_pfn(dev)
-> > > > 
-> > > > -static inline void arch_setup_dma_ops(struct device *dev, bool
-> > > > coherent)
-> > > > +static inline void arch_setup_dma_ops(struct device *dev, u64
-> > > > dma_base,
-> > > > +                                     u64 size, struct iommu_ops
-> > > > *iommu,
-> > > > +                                     bool coherent)
-> > > >  {
-> > > >         if (coherent)
-> > > >                 set_dma_ops(dev, &arm_coherent_dma_ops);
-> > > > diff --git a/drivers/of/platform.c b/drivers/of/platform.c
-> > > > index ff1f4e9afccb..b89caf8c7586 100644
-> > > > --- a/drivers/of/platform.c
-> > > > +++ b/drivers/of/platform.c
-> > > > @@ -19,6 +19,7 @@
-> > > >  #include <linux/slab.h>
-> > > >  #include <linux/of_address.h>
-> > > >  #include <linux/of_device.h>
-> > > > +#include <linux/of_iommu.h>
-> > > >  #include <linux/of_irq.h>
-> > > >  #include <linux/of_platform.h>
-> > > >  #include <linux/platform_device.h>
-> > > > @@ -166,6 +167,7 @@ static void of_dma_configure(struct device *dev)
-> > > >         int ret;
-> > > >         bool coherent;
-> > > >         unsigned long offset;
-> > > > +       struct iommu_ops *iommu;
-> > > >         /*
-> > > >          * Set default dma-mask to 32 bit. Drivers are expected to
-> > > >          setup
-> > > > @@ -194,7 +196,16 @@ static void of_dma_configure(struct device *dev)
-> > > >         dev_dbg(dev, "device is%sdma coherent\n",
-> > > >                 coherent ? " " : " not ");
-> > > > -       arch_setup_dma_ops(dev, coherent);
-> > > > +       iommu = of_iommu_configure(dev);
-> > > > +       dev_dbg(dev, "device is%sbehind an iommu\n",
-> > > > +               iommu ? " " : " not ");
-> > > > +
-> > > > +       arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
-> > > 
-> > > so, what is the way for a driver that explicitly wants to manage it's
-> > > own device virtual address space to opt out of this?  I suspect that
-> > > won't be the common case, but for a gpu, if dma layer all of a sudden
-> > > thinks it is in control of the gpu's virtual address space, things are
-> > > going to end in tears..
-> > 
-> > I think you'll need to detach from the DMA domain, then have the driver
-> > manage everything itself. As you say, it's not the common case, so you
-> > may need to add some hooks for detaching from the default domain and
-> > swizzling your DMA ops.
+-----Original Message-----
+From: Will Deacon [mailto:will.deacon-5wv7dgnIgG8@public.gmane.org] 
+Sent: Saturday, December 06, 2014 12:18 AM
+To: Sethi Varun-B16395
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org; Robin Murphy; lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org; mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org; laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+Subject: Re: [PATCH 2/4] iommu: add ARM LPAE page table allocator
+
+On Fri, Dec 05, 2014 at 10:55:11AM +0000, Varun Sethi wrote:
+> Hi Will,
+
+Hi Varun,
+
+Thanks for the review!
+
+> +static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+> +                            unsigned long iova, phys_addr_t paddr,
+> +                            arm_lpae_iopte prot, int lvl,
+> +                            arm_lpae_iopte *ptep) {
+> +       arm_lpae_iopte pte = prot;
+> +
+> +       /* We require an unmap first */
+> +       if (iopte_leaf(*ptep, lvl))
+> +               return -EEXIST;
+> [varun] Instead of returning an error, how about displaying a warning 
+> and replacing the entry?
+
+I'd be ok with displaying a warning, but I don't think we should just continue. It indicates a misuse of the IOMMU API and probably a missing TLBI.
+
+
+[[varun]] May not apply now, but what if we are dealing with a case where memory is not pinned? It may be possible to hookup (without an unmap) an iova to a different physical address. Offcourse, tlb invalidation would be required. Could this scenario be relevant in case of stall mode?
+
+> +static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
+> +                         phys_addr_t paddr, size_t size, arm_lpae_iopte prot,
+> +                         int lvl, arm_lpae_iopte *ptep) {
+> +       arm_lpae_iopte *cptep, pte;
+> +       void *cookie = data->iop.cookie;
+> +       size_t block_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
+> +
+> +       /* Find our entry at the current level */
+> +       ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
+> +
+> +       /* If we can install a leaf entry at this level, then do so */
+> +       if (size == block_size && (size & data->iop.cfg.pgsize_bitmap))
+> +               return arm_lpae_init_pte(data, iova, paddr, prot, lvl, 
+> + ptep);
+> +
+> +       /* We can't allocate tables at the final level */
+> +       if (WARN_ON(lvl >= ARM_LPAE_MAX_LEVELS - 1))
+> +               return -EINVAL;
 > 
-> I'm wondering if it's such an exotic case after all. I can see two reasons
-> not to use the default domain. In addition to special requirements coming
-> from the bus master side, the IOMMU itself might not support one domain per
-> bus master (I'm of course raising the issue from a very selfish Renesas
-> IPMMU point of view).
+> [varun] A warning message would be helpful.
+
+Sure, I can add one.
+
+> +static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+> +                                          int prot) {
+> +       arm_lpae_iopte pte;
+> +
+> +       if (data->iop.fmt == ARM_LPAE_S1) {
+> +               pte = ARM_LPAE_PTE_AP_UNPRIV | ARM_LPAE_PTE_nG;
+> +
+> +               if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
+> +                       pte |= ARM_LPAE_PTE_AP_RDONLY;
+> +
+> +               if (prot & IOMMU_CACHE)
+> +                       pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
+> +                               << ARM_LPAE_PTE_ATTRINDX_SHIFT);
+> +       } else {
+> +               pte = ARM_LPAE_PTE_HAP_FAULT;
+> +               if (prot & IOMMU_READ)
+> +                       pte |= ARM_LPAE_PTE_HAP_READ;
+> +               if (prot & IOMMU_WRITE)
+> +                       pte |= ARM_LPAE_PTE_HAP_WRITE;
+> +               if (prot & IOMMU_CACHE)
+> +                       pte |= ARM_LPAE_PTE_MEMATTR_OIWB;
+> +               else
+> +                       pte |= ARM_LPAE_PTE_MEMATTR_NC;
+> +       }
+> +
+> +       if (prot & IOMMU_NOEXEC)
+> +               pte |= ARM_LPAE_PTE_XN;
+> +
+> +       return pte;
+> +}
+> [[varun]] Do you plan to add a flag to indicate device memory? We had 
+> a discussion about this on the patch submitted by me. May be you can 
+> include that as a part of this patch.
+
+That needs to go in as a separate patch. I think you should continue to push that separately!
+
+> +static int arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+> +                                   unsigned long iova, size_t size,
+> +                                   arm_lpae_iopte prot, int lvl,
+> +                                   arm_lpae_iopte *ptep, size_t blk_size) {
+> +       unsigned long blk_start, blk_end;
+> +       phys_addr_t blk_paddr;
+> +       arm_lpae_iopte table = 0;
+> +       void *cookie = data->iop.cookie;
+> +       struct iommu_gather_ops *tlb = data->iop.cfg.tlb;
+> +
+> +       blk_start = iova & ~(blk_size - 1);
+> +       blk_end = blk_start + blk_size;
+> +       blk_paddr = iopte_to_pfn(*ptep, data) << data->pg_shift;
+> +
+> +       for (; blk_start < blk_end; blk_start += size, blk_paddr += size) {
+> +               arm_lpae_iopte *tablep;
+> +
+> +               /* Unmap! */
+> +               if (blk_start == iova)
+> +                       continue;
+> +
+> +               /* __arm_lpae_map expects a pointer to the start of the table */
+> +               tablep = &table - ARM_LPAE_LVL_IDX(blk_start, lvl, 
+> + data);
 > 
-> In that case the IOMMU driver can still detach the device from the default
-> domain in the .of_xlate() callback and attach it to its private domain.
+> 
+> [[varun]] Not clear what's happening here. May be I am missing 
+> something, but where is the table allocated?
 
-I actually spoke too fast, the .of_xlate() callback is called before 
-arch_setup_dma_ops(). The operation could be performed in the .add_device() 
-callback. I'm having trouble understanding how you envision .add_device, 
-.remove_device and .of_xlate working together in the DT case. Could you please 
-detail what you think each callback should be responsible of exactly ?
+It is allocated in __arm_lpae_map, because the pte will be 0. The subtraction above is to avoid us having to allocate a whole level, just for a single invalid pte.
+> 
+> +               if (__arm_lpae_map(data, blk_start, blk_paddr, size, prot, lvl,
+> +                                  tablep) < 0) {
+> 
+> 
+> [[varun]] Again not clear how are we unmapping the range. Index at the 
+> current level should point to a page table (with contiguous block 
+> mappings). Unmap would applied to the mappings at the next level. 
+> Unmap can happen anywhere in the contiguous range. It seems that you 
+> are just creating a subset of the block mapping.
 
-> I'm however wondering whether this case isn't common enough to avoid
-> creating default domains in common code in the first place. IOMMU drivers
-> that support one domain per master would then create device domain in their
-> .of_xlate() callback.
+We will be unmapping a single entry at the next level, so we basically create a table, then map everything at the next level apart from the part we need to unmap.
 
--- 
-Regards,
 
-Laurent Pinchart
+[varun] ok, but you could potentially end up splitting mapping to the least possible page size e.g. 4K. You, don't seem to take in to account the possibility of using the block size at the next level. For example, take a case where we have a huge page mapping using 1G page size and we have an unmap request for 4K. We could still split maximum part of the mapping using 2M pages at the next level. The entry where we need to unmap the 4K region would potentially go to the next level.
+ 
+> +static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+> +                           unsigned long iova, size_t size, int lvl,
+> +                           arm_lpae_iopte *ptep) {
+> +       arm_lpae_iopte pte;
+> +       struct iommu_gather_ops *tlb = data->iop.cfg.tlb;
+> +       void *cookie = data->iop.cookie;
+> +       size_t blk_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
+> +
+> +       ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
+> +       pte = *ptep;
+> +
+> +       /* Something went horribly wrong and we ran out of page table */
+> +       if (WARN_ON(!pte || (lvl == ARM_LPAE_MAX_LEVELS)))
+> +               return 0;
+> +
+> +       /* If the size matches this level, we're in the right place */
+> +       if (size == blk_size) {
+> +               *ptep = 0;
+> +               tlb->flush_pgtable(ptep, sizeof(*ptep), cookie);
+> +
+> +               if (!iopte_leaf(pte, lvl)) {
+> +                       /* Also flush any partial walks */
+> +                       tlb->tlb_add_flush(iova, size, false, cookie);
+> +                       tlb->tlb_sync(data->iop.cookie);
+> +                       ptep = iopte_deref(pte, data);
+> +                       __arm_lpae_free_pgtable(data, lvl + 1, ptep);
+> +               } else {
+> +                       tlb->tlb_add_flush(iova, size, true, cookie);
+> +               }
+> +
+> +               return size;
+> +       } else if (iopte_leaf(pte, lvl)) {
+> +               /*
+> +                * Insert a table at the next level to map the old region,
+> +                * minus the part we want to unmap
+> +                */
+> [[varun]]  Minus could be somwhere in between the contiguous chunk? We 
+> should first break the entire block mapping in to a next level page 
+> mapping and then unmap a chunk.
+
+The amount to unmap will match exactly one entry at the next level -- that's enforced by the IOMMU API (and it will also be aligned as such).
+
+> +static struct arm_lpae_io_pgtable *
+> +arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg) {
+> +       unsigned long va_bits;
+> +       struct arm_lpae_io_pgtable *data;
+> +
+> +       arm_lpae_restrict_pgsizes(cfg);
+> +
+> +       if (!(cfg->pgsize_bitmap & (SZ_4K | SZ_16K | SZ_64K)))
+> +               return NULL;
+> +
+> +       if (cfg->ias > ARM_LPAE_MAX_ADDR_BITS)
+> +               return NULL;
+> +
+> +       if (cfg->oas > ARM_LPAE_MAX_ADDR_BITS)
+> +               return NULL;
+> +
+> +       data = kmalloc(sizeof(*data), GFP_KERNEL);
+> +       if (!data)
+> +               return NULL;
+> +
+> +       data->pages_per_pgd = 1;
+> +       data->pg_shift = __ffs(cfg->pgsize_bitmap);
+> +       data->bits_per_level = data->pg_shift - 
+> + ilog2(sizeof(arm_lpae_iopte));
+> +
+> +       va_bits = cfg->ias - data->pg_shift;
+> +       data->levels = DIV_ROUND_UP(va_bits, data->bits_per_level);
+> 
+> [[varun]]  Not related to the patch, but this would be applicable to 
+> the CPU tables as well i.e, we can't support 48bit VA with 64 KB page 
+> tables, right? The AR64 memory maps shows possibility of using 6 bits 
+> for the first level page table.
+
+Sure we can support 48-bit VAs with 64k pages. Why do you think we can't?
+
+[varun]  My concern was with respect to the bits per level, which is uneven for the 64 K page sizes. Just wondering how would things work with 64K pages when we do a 3 level page lookup.
+
+> +static struct io_pgtable *arm_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg,
+> +                                                   void *cookie) {
+> +       u64 reg, sl;
+> +       size_t pgd_size;
+> +       struct arm_lpae_io_pgtable *data = 
+> +arm_lpae_alloc_pgtable(cfg);
+> +
+> +       if (!data)
+> +               return NULL;
+> +
+> +       /*
+> +        * Concatenate PGDs at level 1 if possible in order to reduce
+> +        * the depth of the stage-2 walk.
+> +        */
+> +       if (data->levels == ARM_LPAE_MAX_LEVELS) {
+> +               unsigned long pgd_bits, pgd_pages;
+> +               unsigned long va_bits = cfg->ias - data->pg_shift;
+> +
+> +               pgd_bits = data->bits_per_level * (data->levels - 1);
+> +               pgd_pages = 1 << (va_bits - pgd_bits);
+> +               if (pgd_pages <= ARM_LPAE_S2_MAX_CONCAT_PAGES) {
+> +                       data->pages_per_pgd = pgd_pages;
+> +                       data->levels--;
+> +               }
+> +       }
+> +
+> [[varun]] Can you point me to some documentation regarding stage 2 
+> page concatenation. Not sure why this is required?
+
+It's all in the ARM ARM. The idea is to reduce the depth of the stage-2 walk, since that can have an impact on performance when it gets too deep (remember that stage-1 table walks are themselves subjected to stage-2 translation).
+
+
+[varun] Just curious, why not consider concatenation at stage 1?
+
+Thanks,
+Varun
