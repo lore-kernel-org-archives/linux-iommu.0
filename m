@@ -1,17 +1,15 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 2/4] iommu: add ARM LPAE page table allocator
-Date: Sun, 14 Dec 2014 17:45:49 +0000
-Message-ID: <BN3PR0301MB1219D3161E4E9DB314FDD8FAEA6E0@BN3PR0301MB1219.namprd03.prod.outlook.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH 1/4] iommu: introduce generic page table allocation
+	framework
+Date: Mon, 15 Dec 2014 01:46:30 +0200
+Message-ID: <1610022.OYQk9afzNc@avalon>
 References: <1417089078-22900-1-git-send-email-will.deacon@arm.com>
-	<1417089078-22900-3-git-send-email-will.deacon@arm.com>
-	<BN3PR0301MB12198CE5D736CDC6A221EDC2EA790@BN3PR0301MB1219.namprd03.prod.outlook.com>
-	<20141205184802.GH1203@arm.com>
+	<1417089078-22900-2-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20141205184802.GH1203-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1417089078-22900-2-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,261 +19,113 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Robin.Murphy-5wv7dgnIgG8@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Will,
-Please find my response inline. Search for "varun".
 
------Original Message-----
-From: Will Deacon [mailto:will.deacon-5wv7dgnIgG8@public.gmane.org] 
-Sent: Saturday, December 06, 2014 12:18 AM
-To: Sethi Varun-B16395
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org; Robin Murphy; lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org; mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org; laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
-Subject: Re: [PATCH 2/4] iommu: add ARM LPAE page table allocator
+Please see below for another small comment.
 
-On Fri, Dec 05, 2014 at 10:55:11AM +0000, Varun Sethi wrote:
-> Hi Will,
-
-Hi Varun,
-
-Thanks for the review!
-
-> +static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
-> +                            unsigned long iova, phys_addr_t paddr,
-> +                            arm_lpae_iopte prot, int lvl,
-> +                            arm_lpae_iopte *ptep) {
-> +       arm_lpae_iopte pte = prot;
-> +
-> +       /* We require an unmap first */
-> +       if (iopte_leaf(*ptep, lvl))
-> +               return -EEXIST;
-> [varun] Instead of returning an error, how about displaying a warning 
-> and replacing the entry?
-
-I'd be ok with displaying a warning, but I don't think we should just continue. It indicates a misuse of the IOMMU API and probably a missing TLBI.
-
-
-[[varun]] May not apply now, but what if we are dealing with a case where memory is not pinned? It may be possible to hookup (without an unmap) an iova to a different physical address. Offcourse, tlb invalidation would be required. Could this scenario be relevant in case of stall mode?
-
-> +static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
-> +                         phys_addr_t paddr, size_t size, arm_lpae_iopte prot,
-> +                         int lvl, arm_lpae_iopte *ptep) {
-> +       arm_lpae_iopte *cptep, pte;
-> +       void *cookie = data->iop.cookie;
-> +       size_t block_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
-> +
-> +       /* Find our entry at the current level */
-> +       ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
-> +
-> +       /* If we can install a leaf entry at this level, then do so */
-> +       if (size == block_size && (size & data->iop.cfg.pgsize_bitmap))
-> +               return arm_lpae_init_pte(data, iova, paddr, prot, lvl, 
-> + ptep);
-> +
-> +       /* We can't allocate tables at the final level */
-> +       if (WARN_ON(lvl >= ARM_LPAE_MAX_LEVELS - 1))
-> +               return -EINVAL;
+On Thursday 27 November 2014 11:51:15 Will Deacon wrote:
+> This patch introduces a generic framework for allocating page tables for
+> an IOMMU. There are a number of reasons we want to do this:
 > 
-> [varun] A warning message would be helpful.
-
-Sure, I can add one.
-
-> +static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
-> +                                          int prot) {
-> +       arm_lpae_iopte pte;
-> +
-> +       if (data->iop.fmt == ARM_LPAE_S1) {
-> +               pte = ARM_LPAE_PTE_AP_UNPRIV | ARM_LPAE_PTE_nG;
-> +
-> +               if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
-> +                       pte |= ARM_LPAE_PTE_AP_RDONLY;
-> +
-> +               if (prot & IOMMU_CACHE)
-> +                       pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
-> +                               << ARM_LPAE_PTE_ATTRINDX_SHIFT);
-> +       } else {
-> +               pte = ARM_LPAE_PTE_HAP_FAULT;
-> +               if (prot & IOMMU_READ)
-> +                       pte |= ARM_LPAE_PTE_HAP_READ;
-> +               if (prot & IOMMU_WRITE)
-> +                       pte |= ARM_LPAE_PTE_HAP_WRITE;
-> +               if (prot & IOMMU_CACHE)
-> +                       pte |= ARM_LPAE_PTE_MEMATTR_OIWB;
-> +               else
-> +                       pte |= ARM_LPAE_PTE_MEMATTR_NC;
-> +       }
-> +
-> +       if (prot & IOMMU_NOEXEC)
-> +               pte |= ARM_LPAE_PTE_XN;
-> +
-> +       return pte;
-> +}
-> [[varun]] Do you plan to add a flag to indicate device memory? We had 
-> a discussion about this on the patch submitted by me. May be you can 
-> include that as a part of this patch.
-
-That needs to go in as a separate patch. I think you should continue to push that separately!
-
-> +static int arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
-> +                                   unsigned long iova, size_t size,
-> +                                   arm_lpae_iopte prot, int lvl,
-> +                                   arm_lpae_iopte *ptep, size_t blk_size) {
-> +       unsigned long blk_start, blk_end;
-> +       phys_addr_t blk_paddr;
-> +       arm_lpae_iopte table = 0;
-> +       void *cookie = data->iop.cookie;
-> +       struct iommu_gather_ops *tlb = data->iop.cfg.tlb;
-> +
-> +       blk_start = iova & ~(blk_size - 1);
-> +       blk_end = blk_start + blk_size;
-> +       blk_paddr = iopte_to_pfn(*ptep, data) << data->pg_shift;
-> +
-> +       for (; blk_start < blk_end; blk_start += size, blk_paddr += size) {
-> +               arm_lpae_iopte *tablep;
-> +
-> +               /* Unmap! */
-> +               if (blk_start == iova)
-> +                       continue;
-> +
-> +               /* __arm_lpae_map expects a pointer to the start of the table */
-> +               tablep = &table - ARM_LPAE_LVL_IDX(blk_start, lvl, 
-> + data);
+>   - It avoids duplication of complex table management code in IOMMU
+>     drivers that use the same page table format
 > 
+>   - It removes any coupling with the CPU table format (and even the
+>     architecture!)
 > 
-> [[varun]] Not clear what's happening here. May be I am missing 
-> something, but where is the table allocated?
-
-It is allocated in __arm_lpae_map, because the pte will be 0. The subtraction above is to avoid us having to allocate a whole level, just for a single invalid pte.
+>   - It defines an API for IOMMU TLB maintenance
 > 
-> +               if (__arm_lpae_map(data, blk_start, blk_paddr, size, prot, lvl,
-> +                                  tablep) < 0) {
-> 
-> 
-> [[varun]] Again not clear how are we unmapping the range. Index at the 
-> current level should point to a page table (with contiguous block 
-> mappings). Unmap would applied to the mappings at the next level. 
-> Unmap can happen anywhere in the contiguous range. It seems that you 
-> are just creating a subset of the block mapping.
+> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/iommu/Kconfig      |  8 ++++++
+>  drivers/iommu/Makefile     |  1 +
+>  drivers/iommu/io-pgtable.c | 71 +++++++++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/io-pgtable.h | 65 ++++++++++++++++++++++++++++++++++++++++++
+>  4 files changed, 145 insertions(+)
+>  create mode 100644 drivers/iommu/io-pgtable.c
+>  create mode 100644 drivers/iommu/io-pgtable.h
 
-We will be unmapping a single entry at the next level, so we basically create a table, then map everything at the next level apart from the part we need to unmap.
+[snip]
 
+> diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+> new file mode 100644
+> index 000000000000..5ae75d9cae50
+> --- /dev/null
+> +++ b/drivers/iommu/io-pgtable.h
+> @@ -0,0 +1,65 @@
+> +#ifndef __IO_PGTABLE_H
+> +#define __IO_PGTABLE_H
+> +
+> +struct io_pgtable_ops {
+> +	int (*map)(struct io_pgtable_ops *ops, unsigned long iova,
+> +		   phys_addr_t paddr, size_t size, int prot);
+> +	int (*unmap)(struct io_pgtable_ops *ops, unsigned long iova,
+> +		     size_t size);
+> +	phys_addr_t (*iova_to_phys)(struct io_pgtable_ops *ops,
+> +				    unsigned long iova);
+> +};
+> +
+> +struct iommu_gather_ops {
+> +	/* Synchronously invalidate the entire TLB context */
+> +	void (*tlb_flush_all)(void *cookie);
+> +
+> +	/* Queue up a TLB invalidation for a virtual address range */
+> +	void (*tlb_add_flush)(unsigned long iova, size_t size, bool leaf,
+> +			      void *cookie);
+> +	/* Ensure any queued TLB invalidation has taken effect */
+> +	void (*tlb_sync)(void *cookie);
+> +
+> +	/* Ensure page tables updates are visible to the IOMMU */
+> +	void (*flush_pgtable)(void *ptr, size_t size, void *cookie);
+> +};
+> +
+> +struct io_pgtable_cfg {
+> +	int			quirks; /* IO_PGTABLE_QUIRK_* */
+> +	unsigned long		pgsize_bitmap;
+> +	unsigned int		ias;
+> +	unsigned int		oas;
+> +	struct iommu_gather_ops	*tlb;
 
-[varun] ok, but you could potentially end up splitting mapping to the least possible page size e.g. 4K. You, don't seem to take in to account the possibility of using the block size at the next level. For example, take a case where we have a huge page mapping using 1G page size and we have an unmap request for 4K. We could still split maximum part of the mapping using 2M pages at the next level. The entry where we need to unmap the 4K region would potentially go to the next level.
- 
-> +static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
-> +                           unsigned long iova, size_t size, int lvl,
-> +                           arm_lpae_iopte *ptep) {
-> +       arm_lpae_iopte pte;
-> +       struct iommu_gather_ops *tlb = data->iop.cfg.tlb;
-> +       void *cookie = data->iop.cookie;
-> +       size_t blk_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
-> +
-> +       ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
-> +       pte = *ptep;
-> +
-> +       /* Something went horribly wrong and we ran out of page table */
-> +       if (WARN_ON(!pte || (lvl == ARM_LPAE_MAX_LEVELS)))
-> +               return 0;
-> +
-> +       /* If the size matches this level, we're in the right place */
-> +       if (size == blk_size) {
-> +               *ptep = 0;
-> +               tlb->flush_pgtable(ptep, sizeof(*ptep), cookie);
-> +
-> +               if (!iopte_leaf(pte, lvl)) {
-> +                       /* Also flush any partial walks */
-> +                       tlb->tlb_add_flush(iova, size, false, cookie);
-> +                       tlb->tlb_sync(data->iop.cookie);
-> +                       ptep = iopte_deref(pte, data);
-> +                       __arm_lpae_free_pgtable(data, lvl + 1, ptep);
-> +               } else {
-> +                       tlb->tlb_add_flush(iova, size, true, cookie);
-> +               }
-> +
-> +               return size;
-> +       } else if (iopte_leaf(pte, lvl)) {
-> +               /*
-> +                * Insert a table at the next level to map the old region,
-> +                * minus the part we want to unmap
-> +                */
-> [[varun]]  Minus could be somwhere in between the contiguous chunk? We 
-> should first break the entire block mapping in to a next level page 
-> mapping and then unmap a chunk.
+Could you make this pointer const ?
 
-The amount to unmap will match exactly one entry at the next level -- that's enforced by the IOMMU API (and it will also be aligned as such).
+> +	/* Low-level data specific to the table format */
+> +	union {
+> +	};
+> +};
+> +
+> +enum io_pgtable_fmt {
+> +	IO_PGTABLE_NUM_FMTS,
+> +};
+> +
+> +struct io_pgtable {
+> +	enum io_pgtable_fmt	fmt;
+> +	void			*cookie;
+> +	struct io_pgtable_cfg	cfg;
+> +	struct io_pgtable_ops	ops;
+> +};
+> +
+> +struct io_pgtable_init_fns {
+> +	struct io_pgtable *(*alloc)(struct io_pgtable_cfg *cfg, void *cookie);
+> +	void (*free)(struct io_pgtable *iop);
+> +};
+> +
+> +struct io_pgtable_ops *alloc_io_pgtable_ops(enum io_pgtable_fmt fmt,
+> +					    struct io_pgtable_cfg *cfg,
+> +					    void *cookie);
+> +
+> +/*
+> + * Free an io_pgtable_ops structure. The caller *must* ensure that the
+> + * page table is no longer live, but the TLB can be dirty.
+> + */
+> +void free_io_pgtable_ops(struct io_pgtable_ops *ops);
+> +
+> +#endif /* __IO_PGTABLE_H */
 
-> +static struct arm_lpae_io_pgtable *
-> +arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg) {
-> +       unsigned long va_bits;
-> +       struct arm_lpae_io_pgtable *data;
-> +
-> +       arm_lpae_restrict_pgsizes(cfg);
-> +
-> +       if (!(cfg->pgsize_bitmap & (SZ_4K | SZ_16K | SZ_64K)))
-> +               return NULL;
-> +
-> +       if (cfg->ias > ARM_LPAE_MAX_ADDR_BITS)
-> +               return NULL;
-> +
-> +       if (cfg->oas > ARM_LPAE_MAX_ADDR_BITS)
-> +               return NULL;
-> +
-> +       data = kmalloc(sizeof(*data), GFP_KERNEL);
-> +       if (!data)
-> +               return NULL;
-> +
-> +       data->pages_per_pgd = 1;
-> +       data->pg_shift = __ffs(cfg->pgsize_bitmap);
-> +       data->bits_per_level = data->pg_shift - 
-> + ilog2(sizeof(arm_lpae_iopte));
-> +
-> +       va_bits = cfg->ias - data->pg_shift;
-> +       data->levels = DIV_ROUND_UP(va_bits, data->bits_per_level);
-> 
-> [[varun]]  Not related to the patch, but this would be applicable to 
-> the CPU tables as well i.e, we can't support 48bit VA with 64 KB page 
-> tables, right? The AR64 memory maps shows possibility of using 6 bits 
-> for the first level page table.
+-- 
+Regards,
 
-Sure we can support 48-bit VAs with 64k pages. Why do you think we can't?
-
-[varun]  My concern was with respect to the bits per level, which is uneven for the 64 K page sizes. Just wondering how would things work with 64K pages when we do a 3 level page lookup.
-
-> +static struct io_pgtable *arm_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg,
-> +                                                   void *cookie) {
-> +       u64 reg, sl;
-> +       size_t pgd_size;
-> +       struct arm_lpae_io_pgtable *data = 
-> +arm_lpae_alloc_pgtable(cfg);
-> +
-> +       if (!data)
-> +               return NULL;
-> +
-> +       /*
-> +        * Concatenate PGDs at level 1 if possible in order to reduce
-> +        * the depth of the stage-2 walk.
-> +        */
-> +       if (data->levels == ARM_LPAE_MAX_LEVELS) {
-> +               unsigned long pgd_bits, pgd_pages;
-> +               unsigned long va_bits = cfg->ias - data->pg_shift;
-> +
-> +               pgd_bits = data->bits_per_level * (data->levels - 1);
-> +               pgd_pages = 1 << (va_bits - pgd_bits);
-> +               if (pgd_pages <= ARM_LPAE_S2_MAX_CONCAT_PAGES) {
-> +                       data->pages_per_pgd = pgd_pages;
-> +                       data->levels--;
-> +               }
-> +       }
-> +
-> [[varun]] Can you point me to some documentation regarding stage 2 
-> page concatenation. Not sure why this is required?
-
-It's all in the ARM ARM. The idea is to reduce the depth of the stage-2 walk, since that can have an impact on performance when it gets too deep (remember that stage-1 table walks are themselves subjected to stage-2 translation).
-
-
-[varun] Just curious, why not consider concatenation at stage 1?
-
-Thanks,
-Varun
+Laurent Pinchart
