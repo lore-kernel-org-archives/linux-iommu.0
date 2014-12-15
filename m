@@ -1,115 +1,71 @@
-From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH 10/10] iommu/vt-d: Use old irte in kdump kernel
-Date: Mon, 15 Dec 2014 17:53:06 +0800
-Message-ID: <1418637186-9988-11-git-send-email-zhen-hual@hp.com>
-References: <1418637186-9988-1-git-send-email-zhen-hual@hp.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] iommu/ipmmu-vmsa: change IOMMU_EXEC to IOMMU_NOEXEC
+Date: Mon, 15 Dec 2014 11:45:27 +0100
+Message-ID: <CAMuHMdW9s+VKqz=TWV0H+cqNGY8amZsHAwHHSvM9q033sh-j3Q@mail.gmail.com>
+References: <1418518503-20250-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1418637186-9988-1-git-send-email-zhen-hual-VXdhtT5mjnY@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, zhen-hual-VXdhtT5mjnY@public.gmane.org
-Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1418518503-20250-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc: iommu@lists.linux-foundation.org, Linux-sh list <linux-sh@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Joerg Roedel <joro@8bytes.org>, Antonios Motakis <a.motakis@virtualopensystems.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Fix the intr-remapping fault.
+Hi Laurent,
 
-[1.594890] dmar: DRHD: handling fault status reg 2
-[1.594894] dmar: INTR-REMAP: Request device [[41:00.0] fault index 4d
-[1.594894] INTR-REMAP:[fault reason 34] Present field in the IRTE entry
-is clear
+On Sun, Dec 14, 2014 at 1:55 AM, Laurent Pinchart
+<laurent.pinchart+renesas@ideasonboard.com> wrote:
+> The IOMMU_EXEC flag has been renamed to IOMMU_NOEXEC by commit
 
-Use old irte in kdump kernel, do not disable and re-enable interrupt
-remapping.
+... inverted and replaced by ...
 
-Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
----
- drivers/iommu/intel_irq_remapping.c | 42 ++++++++++++++++++++++++++++++++-----
- 1 file changed, 37 insertions(+), 5 deletions(-)
+At first I hadn't noticed this, and was wondering about the seemingly unrelated
+change in the first hunk.
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 090ba32..fee7d66 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -198,6 +198,11 @@ static int modify_irte(int irq, struct irte *irte_modified)
- 
- 	set_64bit(&irte->low, irte_modified->low);
- 	set_64bit(&irte->high, irte_modified->high);
-+
-+#ifdef CONFIG_CRASH_DUMP
-+	if (is_kdump_kernel())
-+		__iommu_update_old_irte(iommu, index);
-+#endif
- 	__iommu_flush_cache(iommu, irte, sizeof(*irte));
- 
- 	rc = qi_flush_iec(iommu, index, 0);
-@@ -259,6 +264,11 @@ static int clear_entries(struct irq_2_iommu *irq_iommu)
- 	bitmap_release_region(iommu->ir_table->bitmap, index,
- 			      irq_iommu->irte_mask);
- 
-+#ifdef CONFIG_CRASH_DUMP
-+	if (is_kdump_kernel())
-+		__iommu_update_old_irte(iommu, -1);
-+#endif
-+
- 	return qi_flush_iec(iommu, index, irq_iommu->irte_mask);
- }
- 
-@@ -640,11 +650,20 @@ static int __init intel_enable_irq_remapping(void)
- 		 */
- 		dmar_fault(-1, iommu);
- 
--		/*
--		 * Disable intr remapping and queued invalidation, if already
--		 * enabled prior to OS handover.
--		 */
--		iommu_disable_irq_remapping(iommu);
-+#ifdef CONFIG_CRASH_DUMP
-+		if (is_kdump_kernel()) {
-+			/* Do notdisable irq and then re-enable again. */
-+		} else {
-+#endif
-+			/*
-+			 * Disable intr remapping and queued invalidation,
-+			 * if already enabled prior to OS handover.
-+			 */
-+			iommu_disable_irq_remapping(iommu);
-+
-+#ifdef CONFIG_CRASH_DUMP
-+		}
-+#endif
- 
- 		dmar_disable_qi(iommu);
- 	}
-@@ -687,7 +706,20 @@ static int __init intel_enable_irq_remapping(void)
- 		if (intel_setup_irq_remapping(iommu))
- 			goto error;
- 
-+#ifdef CONFIG_CRASH_DUMP
-+	if (is_kdump_kernel()) {
-+		unsigned long long q;
-+
-+		q = dmar_readq(iommu->reg + DMAR_IRTA_REG);
-+		iommu->ir_table->base_old_phys = q & VTD_PAGE_MASK;
-+		iommu->ir_table->base_old_virt = ioremap_cache(
-+				iommu->ir_table->base_old_phys,
-+				INTR_REMAP_TABLE_ENTRIES*sizeof(struct irte));
-+		__iommu_load_old_irte(iommu);
-+	} else
-+#endif
- 		iommu_set_irq_remapping(iommu, eim);
-+
- 		setup = 1;
- 	}
- 
--- 
-2.0.0-rc0
+> a720b41c41f5a7e4 ("iommu/arm-smmu: change IOMMU_EXEC to IOMMU_NOEXEC").
+> Update the driver accordingly.
+>
+> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+> ---
+>  drivers/iommu/ipmmu-vmsa.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> This fixes a build breakage in Linus' master branch introduce by the commit
+> mentioned above.
+>
+> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+> index e5ed0216929f..7a1bcf6627b6 100644
+> --- a/drivers/iommu/ipmmu-vmsa.c
+> +++ b/drivers/iommu/ipmmu-vmsa.c
+> @@ -558,7 +558,7 @@ static pmd_t *ipmmu_alloc_pmd(struct ipmmu_vmsa_device *mmu, pgd_t *pgd,
+>
+>  static u64 ipmmu_page_prot(unsigned int prot, u64 type)
+>  {
+> -       u64 pgprot = ARM_VMSA_PTE_XN | ARM_VMSA_PTE_nG | ARM_VMSA_PTE_AF
+> +       u64 pgprot = ARM_VMSA_PTE_nG | ARM_VMSA_PTE_AF
+>                    | ARM_VMSA_PTE_SH_IS | ARM_VMSA_PTE_AP_UNPRIV
+>                    | ARM_VMSA_PTE_NS | type;
+>
+> @@ -568,8 +568,8 @@ static u64 ipmmu_page_prot(unsigned int prot, u64 type)
+>         if (prot & IOMMU_CACHE)
+>                 pgprot |= IMMAIR_ATTR_IDX_WBRWA << ARM_VMSA_PTE_ATTRINDX_SHIFT;
+>
+> -       if (prot & IOMMU_EXEC)
+> -               pgprot &= ~ARM_VMSA_PTE_XN;
+> +       if (prot & IOMMU_NOEXEC)
+> +               pgprot |= ARM_VMSA_PTE_XN;
+>         else if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
+>                 /* If no access create a faulting entry to avoid TLB fills. */
+>                 pgprot &= ~ARM_VMSA_PTE_PAGE;
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
