@@ -1,7 +1,7 @@
 From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH 03/10] iommu/vt-d: Add domain-id functions
-Date: Mon, 15 Dec 2014 17:52:59 +0800
-Message-ID: <1418637186-9988-4-git-send-email-zhen-hual@hp.com>
+Subject: [PATCH 05/10] iommu/vt-d: Add functions to load and save old re
+Date: Mon, 15 Dec 2014 17:53:01 +0800
+Message-ID: <1418637186-9988-6-git-send-email-zhen-hual@hp.com>
 References: <1418637186-9988-1-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,90 +21,101 @@ To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtd
 Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Interfaces for when a new domain in the crashdump kernel needs some
-values from the panicked kernel's context entries.
+Add functions to load root entry table from old kernel, and to save updated
+root entry table.
+Add two member in struct intel_iommu, to store the RTA in old kernel, and
+the mapped virt address of it.
 
-Signed-off-by: Bill Sumner <billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+We use the old RTA in dump kernel, and when the iommu->root_entry is used as
+a cache in kdump kernel, its phys address will not be save to RTA register,
+but when its data is changed, we will save the new data to old root entry table.
+
+Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 62 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 62 insertions(+)
+ drivers/iommu/intel-iommu.c | 49 +++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/intel-iommu.h |  5 +++++
+ 2 files changed, 54 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 5ce2850..c0bebd6 100644
+index 8a7ad72..126294db 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -381,6 +381,13 @@ struct domain_values_entry {
- 					   2 == 1GiB, 3 == 512GiB, 4 == 1TiB */
- };
+@@ -388,6 +388,10 @@ static int intel_iommu_get_dids_from_old_kernel(struct intel_iommu *iommu);
  
-+static struct domain_values_entry *intel_iommu_did_to_domain_values_entry(
-+		int did, struct intel_iommu *iommu);
-+
-+static int intel_iommu_get_dids_from_old_kernel(struct intel_iommu *iommu);
-+
-+static int device_to_domain_id(struct intel_iommu *iommu, u8 bus, u8 devfn);
-+
- #endif /* CONFIG_CRASH_DUMP */
+ static int device_to_domain_id(struct intel_iommu *iommu, u8 bus, u8 devfn);
  
- /*
-@@ -4832,3 +4839,58 @@ static void __init check_tylersburg_isoch(void)
- 	printk(KERN_WARNING "DMAR: Recommended TLB entries for ISOCH unit is 16; your BIOS set %d\n",
- 	       vtisochctrl);
++static void __iommu_load_old_root_entry(struct intel_iommu *iommu);
++
++static void __iommu_update_old_root_entry(struct intel_iommu *iommu, int index);
++
+ struct iommu_remapped_entry {
+ 	struct list_head list;
+ 	void __iomem *mem;
+@@ -4990,4 +4994,49 @@ static int device_to_domain_id(struct intel_iommu *iommu, u8 bus, u8 devfn)
+ 	return did;
  }
-+
-+#ifdef CONFIG_CRASH_DUMP
+ 
++/*
++ * Load the old root entry table to new root entry table.
++ */
++static void __iommu_load_old_root_entry(struct intel_iommu *iommu)
++{
++	if ((!iommu)
++		|| (!iommu->root_entry)
++		|| (!iommu->root_entry_old_virt)
++		|| (!iommu->root_entry_old_phys))
++		return;
++	memcpy(iommu->root_entry, iommu->root_entry_old_virt, PAGE_SIZE);
++}
 +
 +/*
-+ * Interfaces for when a new domain in the crashdump kernel needs some
-+ * values from the panicked kernel's context entries
-+ *
++ * When the data in new root entry table is changed, this function
++ * must be called to save the updated data to old root entry table.
 + */
-+static struct domain_values_entry *intel_iommu_did_to_domain_values_entry(
-+		int did, struct intel_iommu *iommu)
++static void __iommu_update_old_root_entry(struct intel_iommu *iommu, int index)
 +{
-+	struct domain_values_entry *dve;	/* iterator */
++	u8 start;
++	unsigned long size;
++	void __iomem *to;
++	void *from;
 +
-+	list_for_each_entry(dve, &domain_values_list[iommu->seq_id], link)
-+		if (dve->did == did)
-+			return dve;
-+	return NULL;
-+}
++	if ((!iommu)
++		|| (!iommu->root_entry)
++		|| (!iommu->root_entry_old_virt)
++		|| (!iommu->root_entry_old_phys))
++		return;
 +
-+/* Mark domain-id's from old kernel as in-use on this iommu so that a new
-+ * domain-id is allocated in the case where there is a device in the new kernel
-+ * that was not in the old kernel -- and therefore a new domain-id is needed.
-+ */
-+static int intel_iommu_get_dids_from_old_kernel(struct intel_iommu *iommu)
-+{
-+	struct domain_values_entry *dve;	/* iterator */
++	if (index < -1 || index >= ROOT_ENTRY_NR)
++		return;
 +
-+	pr_info("IOMMU:%d Domain ids from panicked kernel:\n", iommu->seq_id);
-+
-+	list_for_each_entry(dve, &domain_values_list[iommu->seq_id], link) {
-+		set_bit(dve->did, iommu->domain_ids);
-+		pr_info("DID did:%d(0x%4.4x)\n", dve->did, dve->did);
++	if (index == -1) {
++		start = 0;
++		size = ROOT_ENTRY_NR * sizeof(struct root_entry);
++	} else {
++		start = index * sizeof(struct root_entry);
++		size = sizeof(struct root_entry);
 +	}
-+
-+	pr_info("----------------------------------------\n");
-+	return 0;
++	to = iommu->root_entry_old_virt;
++	from = iommu->root_entry;
++	memcpy(to + start, from + start, size);
 +}
 +
-+static int device_to_domain_id(struct intel_iommu *iommu, u8 bus, u8 devfn)
-+{
-+	int did = -1;			/* domain-id returned */
-+	struct root_entry *root;
-+	struct context_entry *context;
-+	unsigned long flags;
+ #endif /* CONFIG_CRASH_DUMP */
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 8ffa523..8e29b97 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -329,6 +329,11 @@ struct intel_iommu {
+ 	spinlock_t	lock; /* protect context, domain ids */
+ 	struct root_entry *root_entry; /* virtual address */
+ 
++#ifdef CONFIG_CRASH_DUMP
++	void __iomem *root_entry_old_virt; /* mapped from old root entry */
++	unsigned long root_entry_old_phys; /* root entry in old kernel */
++#endif
 +
-+	spin_lock_irqsave(&iommu->lock, flags);
-+	root = &iommu->root_entry[bus];
-+	context = get_context_addr_from_root(root);
-+	if (context && context_present(context+devfn))
-+		did = context_domain_id(context+devfn);
-+	spin_unlock_irqrestore(&iommu->lock, flags);
-+	return did;
-+}
-+
-+#endif /* CONFIG_CRASH_DUMP */
+ 	struct iommu_flush flush;
+ #endif
+ 	struct q_inval  *qi;            /* Queued invalidation info */
 -- 
 2.0.0-rc0
