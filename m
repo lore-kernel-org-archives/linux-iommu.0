@@ -1,7 +1,7 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 10/10] ARM: shmobile: r8a7791: Add IPMMU DT nodes
-Date: Mon, 15 Dec 2014 02:13:49 +0200
-Message-ID: <1418602429-11276-11-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 09/10] ARM: shmobile: r8a7790: Add IPMMU DT nodes
+Date: Mon, 15 Dec 2014 02:13:48 +0200
+Message-ID: <1418602429-11276-10-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1418602429-11276-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1418602429-11276-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
@@ -10,22 +10,23 @@ To: iommu@lists.linux-foundation.org
 Cc: linux-sh@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add the seven IPMMU instances found in the r8a7791 to DT with a disabled
+Add the six IPMMU instances found in the r8a7790 to DT with a disabled
 status.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- arch/arm/boot/dts/r8a7791.dtsi | 56 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 56 insertions(+)
+ arch/arm/boot/dts/r8a7790.dtsi | 48 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
 
-diff --git a/arch/arm/boot/dts/r8a7791.dtsi b/arch/arm/boot/dts/r8a7791.dtsi
-index 78d637135e77..fb4803084742 100644
---- a/arch/arm/boot/dts/r8a7791.dtsi
-+++ b/arch/arm/boot/dts/r8a7791.dtsi
-@@ -1384,6 +1384,62 @@
- 		status = "disabled";
+diff --git a/arch/arm/boot/dts/r8a7790.dtsi b/arch/arm/boot/dts/r8a7790.dtsi
+index ffeff98fa16e..430bb67216fd 100644
+--- a/arch/arm/boot/dts/r8a7790.dtsi
++++ b/arch/arm/boot/dts/r8a7790.dtsi
+@@ -1459,4 +1459,52 @@
+ 			ssi9: ssi@9 { interrupts = <0 379 IRQ_TYPE_LEVEL_HIGH>; };
+ 		};
  	};
- 
++
 +	ipmmu_sy0: mmu@e6280800 {
 +		compatible = "renesas,ipmmu-vmsa";
 +		reg = <0 0xe6280800 0 0x800>;
@@ -73,18 +74,7 @@ index 78d637135e77..fb4803084742 100644
 +		#iommu-cells = <1>;
 +		status = "disabled";
 +	};
-+
-+	ipmmu_gp: mmu@e62a0800 {
-+		compatible = "renesas,ipmmu-vmsa";
-+		reg = <0 0xe62a0800 0 0x800>;
-+		interrupts = <0 260 IRQ_TYPE_LEVEL_HIGH>;
-+		#iommu-cells = <1>;
-+		status = "disabled";
-+	};
-+
- 	rcar_sound: rcar_sound@ec500000 {
- 		#sound-dai-cells = <1>;
- 		compatible =  "renesas,rcar_sound-r8a7791", "renesas,rcar_sound-gen2", "renesas,rcar_sound";
+ };
 -- 
 2.0.4
 
