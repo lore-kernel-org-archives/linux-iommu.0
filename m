@@ -1,14 +1,11 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 3/5] iommu/vt-d: Move supported-checks to
-	intel_prepare_irq_remapping()
-Date: Mon, 15 Dec 2014 16:13:22 +0100
-Message-ID: <1418656404-28575-4-git-send-email-joro@8bytes.org>
-References: <1418656404-28575-1-git-send-email-joro@8bytes.org>
+Subject: [PATCH 0/5] Fix Intel IRQ remapping initialization order
+Date: Mon, 15 Dec 2014 16:13:19 +0100
+Message-ID: <1418656404-28575-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1418656404-28575-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,85 +16,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Hi,
 
-The checks for IRQ remapping support rely on ordering with
-dmar_table_init(), which is called in
-intel_prepare_irq_remapping(). Move the checks for IRQ
-remapping support to this function to ensure the right
-ordering.
+here is a patch-set against tip/x86/apic to fix an initialization order
+problem with the IRQ remapping code.  The problem is in the ordering of
+the irq_remapping_prepare and irq_remapping_supported functions.
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/intel_irq_remapping.c | 39 +++++++++++++++++++++----------------
- 1 file changed, 22 insertions(+), 17 deletions(-)
+Currently the call-order is irq_remapping_prepare ->
+irq_remapping_supported, so that 'prepare' can succeed but 'supported'
+fails, so that interrupt remapping gets initialized but not enabled.
+This causes a broken interrupt setup on affected systems (machines with
+an Intel IOMMU without, or broken, IRQ remapping support). The result
+are lost interrupts and a non-bootable system.
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 45223ea..0c9226f 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -512,23 +512,6 @@ static int __init dmar_x2apic_optout(void)
- 
- static int __init intel_irq_remapping_supported(void)
- {
--	if (disable_irq_remap)
--		return 0;
--	if (irq_remap_broken) {
--		printk(KERN_WARNING
--			"This system BIOS has enabled interrupt remapping\n"
--			"on a chipset that contains an erratum making that\n"
--			"feature unstable.  To maintain system stability\n"
--			"interrupt remapping is being disabled.  Please\n"
--			"contact your BIOS vendor for an update\n");
--		add_taint(TAINT_FIRMWARE_WORKAROUND, LOCKDEP_STILL_OK);
--		disable_irq_remap = 1;
--		return 0;
--	}
--
--	if (!dmar_ir_support())
--		return 0;
--
- 	return 1;
- }
- 
-@@ -553,6 +536,24 @@ static int __init intel_prepare_irq_remapping(void)
- 	struct dmar_drhd_unit *drhd;
- 	struct intel_iommu *iommu;
- 
-+	/* First check whether IRQ remapping should be enabled */
-+	if (disable_irq_remap)
-+		return -1;
-+
-+	/* Are we running on sane hardware? */
-+	if (irq_remap_broken) {
-+		printk(KERN_WARNING
-+			"This system BIOS has enabled interrupt remapping\n"
-+			"on a chipset that contains an erratum making that\n"
-+			"feature unstable.  To maintain system stability\n"
-+			"interrupt remapping is being disabled.  Please\n"
-+			"contact your BIOS vendor for an update\n");
-+		add_taint(TAINT_FIRMWARE_WORKAROUND, LOCKDEP_STILL_OK);
-+		disable_irq_remap = 1;
-+		return -1;
-+	}
-+
-+	/* Everthing seems fine so far, parse the DMAR table */
- 	if (dmar_table_init() < 0)
- 		return -1;
- 
-@@ -561,6 +562,10 @@ static int __init intel_prepare_irq_remapping(void)
- 		goto error;
- 	}
- 
-+	/* Is interrupt remapping supported by hardware? */
-+	if (!dmar_ir_support())
-+		return 0;
-+
- 	/* First make sure all IOMMUs support IRQ remapping */
- 	for_each_iommu(iommu, drhd)
- 		if (!ecap_ir_support(iommu->ecap))
+Both functions do checks whether IRQ remapping can be enabled on the
+machine.  The reason for this is that some checks rely on
+dmar_table_init() and thus have to be done in irq_remapping_prepare().
+
+This patch-set moves all these checks into the irq_remapping_prepare()
+path with the right ordering and removes the irq_remapping_supported()
+function and its call-backs. This fixes the initializion order problem
+and simplifies the exported API from the IOMMU code.
+
+Please review.
+
+Thanks,
+
+	Joerg
+
+Joerg Roedel (5):
+  iommu/vt-d: Allocate IRQ remapping data structures only for all IOMMUs
+  iommu/vt-d: Don't check for ecap_ir_support in
+    intel_irq_remapping_supported
+  iommu/vt-d: Move supported-checks to intel_prepare_irq_remapping()
+  iommu/amd: Check for irq-remap support amd_iommu_prepare()
+  iommu, x86, apic: Remove irq_remapping_supported()
+
+ arch/x86/kernel/apic/apic.c         |  5 ---
+ drivers/iommu/amd_iommu.c           |  1 -
+ drivers/iommu/amd_iommu_init.c      |  8 ++---
+ drivers/iommu/amd_iommu_proto.h     |  1 -
+ drivers/iommu/intel_irq_remapping.c | 62 +++++++++++++++++--------------------
+ drivers/iommu/irq_remapping.c       | 11 -------
+ drivers/iommu/irq_remapping.h       |  3 --
+ 7 files changed, 31 insertions(+), 60 deletions(-)
+
 -- 
 1.9.1
