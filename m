@@ -1,7 +1,7 @@
 From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH 02/10] iommu/vt-d: Items required for kdump
-Date: Mon, 15 Dec 2014 17:52:58 +0800
-Message-ID: <1418637186-9988-3-git-send-email-zhen-hual@hp.com>
+Subject: [PATCH 04/10] iommu/vt-d: functions to copy data from old mem
+Date: Mon, 15 Dec 2014 17:53:00 +0800
+Message-ID: <1418637186-9988-5-git-send-email-zhen-hual@hp.com>
 References: <1418637186-9988-1-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,123 +21,158 @@ To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtd
 Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add structure type domain_values_entry used for kdump;
-Add context entry functions needed for kdump.
+Add some functions to copy the data from old kernel.
+These functions are used to copy context tables and page tables.
 
-Bill Sumner:
-    Original version;
+To avoid calling iounmap between spin_lock_irqsave and spin_unlock_irqrestore,
+use a link here, store the pointers , and then use iounmap to free them in
+another place.
 
-Li, Zhenhua:
-    Changed the name of new functions, make them consistent with current
-    context get/set functions.
-
-Signed-off-by: Bill Sumner <billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 70 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 70 insertions(+)
+ drivers/iommu/intel-iommu.c | 97 +++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/intel-iommu.h |  9 +++++
+ 2 files changed, 106 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 2dc6250..5ce2850 100644
+index c0bebd6..8a7ad72 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -40,6 +40,7 @@
- #include <linux/pci-ats.h>
- #include <linux/memblock.h>
- #include <linux/dma-contiguous.h>
-+#include <linux/crash_dump.h>
- #include <asm/irq_remapping.h>
- #include <asm/cacheflush.h>
- #include <asm/iommu.h>
-@@ -208,6 +209,12 @@ get_context_addr_from_root(struct root_entry *root)
- 		NULL);
- }
+@@ -388,6 +388,13 @@ static int intel_iommu_get_dids_from_old_kernel(struct intel_iommu *iommu);
  
-+static inline unsigned long
-+get_context_phys_from_root(struct root_entry *root)
-+{
-+	return  root_present(root) ? (root->val & VTD_PAGE_MASK) : 0;
-+}
+ static int device_to_domain_id(struct intel_iommu *iommu, u8 bus, u8 devfn);
+ 
++struct iommu_remapped_entry {
++	struct list_head list;
++	void __iomem *mem;
++};
++static LIST_HEAD(__iommu_remapped_mem);
++static DEFINE_MUTEX(__iommu_mem_list_lock);
 +
+ #endif /* CONFIG_CRASH_DUMP */
+ 
  /*
-  * low 64 bits:
-  * 0: present
-@@ -228,6 +235,32 @@ static inline bool context_present(struct context_entry *context)
- {
- 	return (context->lo & 1);
- }
-+
-+static inline int context_fault_enable(struct context_entry *c)
-+{
-+	return((c->lo >> 1) & 0x1);
-+}
-+
-+static inline int context_translation_type(struct context_entry *c)
-+{
-+	return((c->lo >> 2) & 0x3);
-+}
-+
-+static inline u64 context_address_root(struct context_entry *c)
-+{
-+	return((c->lo >> VTD_PAGE_SHIFT));
-+}
-+
-+static inline int context_address_width(struct context_entry *c)
-+{
-+	return((c->hi >> 0) & 0x7);
-+}
-+
-+static inline int context_domain_id(struct context_entry *c)
-+{
-+	return((c->hi >> 8) & 0xffff);
-+}
-+
- static inline void context_set_present(struct context_entry *context)
- {
- 	context->lo |= 1;
-@@ -313,6 +346,43 @@ static inline int first_pte_in_page(struct dma_pte *pte)
- 	return !((unsigned long)pte & ~VTD_PAGE_MASK);
- }
+@@ -4843,6 +4850,96 @@ static void __init check_tylersburg_isoch(void)
+ #ifdef CONFIG_CRASH_DUMP
  
+ /*
++ * Copy memory from a physically-addressed area into a virtually-addressed area
++ */
++int __iommu_load_from_oldmem(void *to, unsigned long from, unsigned long size)
++{
++	unsigned long pfn;		/* Page Frame Number */
++	size_t csize = (size_t)size;	/* Num(bytes to copy) */
++	unsigned long offset;		/* Lower 12 bits of to */
++	void __iomem *virt_mem;
++	struct iommu_remapped_entry *mapped;
 +
-+#ifdef CONFIG_CRASH_DUMP
++	pfn = from >> VTD_PAGE_SHIFT;
++	offset = from & (~VTD_PAGE_MASK);
++
++	if (page_is_ram(pfn)) {
++		memcpy(to, pfn_to_kaddr(pfn) + offset, csize);
++	} else{
++
++		mapped = kzalloc(sizeof(struct iommu_remapped_entry),
++				GFP_KERNEL);
++		if (!mapped)
++			return -ENOMEM;
++
++		virt_mem = ioremap_cache((unsigned long)from, size);
++		if (!virt_mem) {
++			kfree(mapped);
++			return -ENOMEM;
++		}
++		memcpy(to, virt_mem, size);
++
++		mutex_lock(&__iommu_mem_list_lock);
++		mapped->mem = virt_mem;
++		list_add_tail(&mapped->list, &__iommu_remapped_mem);
++		mutex_unlock(&__iommu_mem_list_lock);
++	}
++	return size;
++}
 +
 +/*
-+ * Fix Crashdump failure caused by leftover DMA through a hardware IOMMU
-+ *
-+ * Fixes the crashdump kernel to deal with an active iommu and legacy
-+ * DMA from the (old) panicked kernel in a manner similar to how legacy
-+ * DMA is handled when no hardware iommu was in use by the old kernel --
-+ * allow the legacy DMA to continue into its current buffers.
-+ *
-+ * In the crashdump kernel, this code:
-+ * 1. skips disabling the IOMMU's translating of IO Virtual Addresses (IOVA).
-+ * 2. Do not re-enable IOMMU's translating.
-+ * 3. In kdump kernel, use the old root entry table.
-+ * 4. Leaves the current translations in-place so that legacy DMA will
-+ *    continue to use its current buffers.
-+ * 5. Allocates to the device drivers in the crashdump kernel
-+ *    portions of the iova address ranges that are different
-+ *    from the iova address ranges that were being used by the old kernel
-+ *    at the time of the panic.
-+ *
++ * Copy memory from a virtually-addressed area into a physically-addressed area
 + */
++int __iommu_save_to_oldmem(unsigned long to, void *from, unsigned long size)
++{
++	unsigned long pfn;		/* Page Frame Number */
++	size_t csize = (size_t)size;	/* Num(bytes to copy) */
++	unsigned long offset;		/* Lower 12 bits of to */
++	void __iomem *virt_mem;
++	struct iommu_remapped_entry *mapped;
 +
-+struct domain_values_entry {
-+	struct list_head link;		/* link entries into a list */
-+	struct iova_domain iovad;	/* iova's that belong to this domain */
-+	struct dma_pte	*pgd;		/* virtual address */
-+	int    did;			/* domain id */
-+	int    gaw;			/* max guest address width */
-+	int    iommu_superpage;		/* Level of superpages supported:
-+					   0 == 4KiB (no superpages), 1 == 2MiB,
-+					   2 == 1GiB, 3 == 512GiB, 4 == 1TiB */
-+};
++	pfn = to >> VTD_PAGE_SHIFT;
++	offset = to & (~VTD_PAGE_MASK);
 +
++	if (page_is_ram(pfn)) {
++		memcpy(pfn_to_kaddr(pfn) + offset, from, csize);
++	} else{
++		mapped = kzalloc(sizeof(struct iommu_remapped_entry),
++				GFP_KERNEL);
++		if (!mapped)
++			return -ENOMEM;
++
++		virt_mem = ioremap_cache((unsigned long)to, size);
++		if (!virt_mem) {
++			kfree(mapped);
++			return -ENOMEM;
++		}
++		memcpy(virt_mem, from, size);
++		mutex_lock(&__iommu_mem_list_lock);
++		mapped->mem = virt_mem;
++		list_add_tail(&mapped->list, &__iommu_remapped_mem);
++		mutex_unlock(&__iommu_mem_list_lock);
++	}
++	return size;
++}
++
++/*
++ * Free the mapped memory for ioremap;
++ */
++int __iommu_free_mapped_mem(void)
++{
++	struct iommu_remapped_entry *mem_entry, *tmp;
++
++	mutex_lock(&__iommu_mem_list_lock);
++	list_for_each_entry_safe(mem_entry, tmp, &__iommu_remapped_mem, list) {
++		iounmap(mem_entry->mem);
++		list_del(&mem_entry->list);
++		kfree(mem_entry);
++	}
++	mutex_unlock(&__iommu_mem_list_lock);
++	return 0;
++}
++/*
+  * Interfaces for when a new domain in the crashdump kernel needs some
+  * values from the panicked kernel's context entries
+  *
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index a65208a..8ffa523 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -26,6 +26,7 @@
+ #include <linux/iova.h>
+ #include <linux/io.h>
+ #include <linux/dma_remapping.h>
++#include <linux/crash_dump.h>
+ #include <asm/cacheflush.h>
+ #include <asm/iommu.h>
+ 
+@@ -368,4 +369,12 @@ extern int dmar_ir_support(void);
+ 
+ extern const struct attribute_group *intel_iommu_groups[];
+ 
++#ifdef CONFIG_CRASH_DUMP
++extern int __iommu_load_from_oldmem(void *to, unsigned long from,
++					unsigned long size);
++extern int __iommu_save_to_oldmem(unsigned long to, void *from,
++					unsigned long size);
++extern int __iommu_free_mapped_mem(void);
 +#endif /* CONFIG_CRASH_DUMP */
 +
- /*
-  * This domain is a statically identity mapping domain.
-  *	1. This domain creats a static 1:1 mapping to all usable memory.
+ #endif
 -- 
 2.0.0-rc0
