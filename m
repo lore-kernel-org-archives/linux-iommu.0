@@ -1,122 +1,57 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 0/4] Generic IOMMU page table framework
-Date: Mon, 15 Dec 2014 16:10:52 +0000
-Message-ID: <20141215161052.GM20738@arm.com>
+From: Varun Sethi <Varun.Sethi@freescale.com>
+Subject: RE: [PATCH 2/4] iommu: add ARM LPAE page table allocator
+Date: Mon, 15 Dec 2014 16:35:12 +0000
+Message-ID: <BN3PR0301MB12194A8F5CFF870B7A124623EA6F0@BN3PR0301MB1219.namprd03.prod.outlook.com>
 References: <1417089078-22900-1-git-send-email-will.deacon@arm.com>
-	<2133922.nksBEtjI2q@avalon>
+ <1417089078-22900-3-git-send-email-will.deacon@arm.com>
+ <BN3PR0301MB12198CE5D736CDC6A221EDC2EA790@BN3PR0301MB1219.namprd03.prod.outlook.com>
+ <20141205184802.GH1203@arm.com>
+ <BN3PR0301MB1219D3161E4E9DB314FDD8FAEA6E0@BN3PR0301MB1219.namprd03.prod.outlook.com>
+ <20141215133020.GJ20738@arm.com> <20141215154317.GL20738@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <2133922.nksBEtjI2q@avalon>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20141215154317.GL20738@arm.com>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: "lauraa@codeaurora.org" <lauraa@codeaurora.org>, "mitchelh@codeaurora.org" <mitchelh@codeaurora.org>, "joro@8bytes.org" <joro@8bytes.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "laurent.pinchart@ideasonboard.com" <laurent.pinchart@ideasonboard.com>, "prem.mallappa@broadcom.com" <prem.mallappa@broadcom.com>, Robin Murphy <Robin.Murphy@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, Dec 14, 2014 at 11:49:30PM +0000, Laurent Pinchart wrote:
-> Hi Will,
+Hi Will,
 
-Hi Laurent,
+-----Original Message-----
+From: Will Deacon [mailto:will.deacon@arm.com] 
+Sent: Monday, December 15, 2014 9:13 PM
+To: Sethi Varun-B16395
+Cc: linux-arm-kernel@lists.infradead.org; iommu@lists.linux-foundation.org; prem.mallappa@broadcom.com; Robin Murphy; lauraa@codeaurora.org; mitchelh@codeaurora.org; laurent.pinchart@ideasonboard.com; joro@8bytes.org; m.szyprowski@samsung.com
+Subject: Re: [PATCH 2/4] iommu: add ARM LPAE page table allocator
 
-> On Thursday 27 November 2014 11:51:14 Will Deacon wrote:
-> > This series introduces a generic IOMMU page table allocation framework,
-> > implements support for ARM long-descriptors and then ports the arm-smmu
-> > driver over to the new code.
-
-[...]
-
-> > All feedback welcome.
+On Mon, Dec 15, 2014 at 01:30:20PM +0000, Will Deacon wrote:
+> On Sun, Dec 14, 2014 at 05:45:49PM +0000, Varun Sethi wrote:
+> > [varun] ok, but you could potentially end up splitting mapping to 
+> > the least possible page size e.g. 4K. You, don't seem to take in to 
+> > account the possibility of using the block size at the next level. 
+> > For example, take a case where we have a huge page mapping using 1G 
+> > page size and we have an unmap request for 4K. We could still split 
+> > maximum part of the mapping using 2M pages at the next level. The 
+> > entry where we need to unmap the 4K region would potentially go to the next level.
 > 
-> I've successfully tested the patch set with the Renesas IPMMU-VMSA driver with
-> the following extension to the allocator.
-> 
-> Tested-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> Aha, I see what you mean here, thanks. I'll take a look...
 
-Wahey, that's really cool, thanks! I have a few minor comments on your patch
-below. If you don't object, then I can make them locally and include your
-patch on top of my v2 series?
+Scratch that, I think the code is fine as it is. For the case you highlight, we iterate over the 1GB region remapping it using 4k pages, but skipping the one we want to unmap, so I don't think there's a problem (__arm_lpae_map will create the relevant table entries).
 
-> From 4bebb7f3a5a48541d4c89ce7c61e6ff66686c3a9 Mon Sep 17 00:00:00 2001
-> From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-> Date: Sun, 14 Dec 2014 23:34:50 +0200
-> Subject: [PATCH] iommu: io-pgtable-arm: Add Non-Secure quirk
-> 
-> The quirk causes the Non-Secure bit to be set in all page table entries.
-> 
-> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-> ---
->  drivers/iommu/io-pgtable-arm.c | 7 +++++++
->  drivers/iommu/io-pgtable.h     | 3 +++
->  2 files changed, 10 insertions(+)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 669e322a83a4..b6910e142734 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -80,11 +80,13 @@
->  #define ARM_LPAE_PTE_TYPE_TABLE		3
->  #define ARM_LPAE_PTE_TYPE_PAGE		3
->  
-> +#define ARM_LPAE_PTE_NSTABLE		(((arm_lpae_iopte)1) << 63)
->  #define ARM_LPAE_PTE_XN			(((arm_lpae_iopte)3) << 53)
->  #define ARM_LPAE_PTE_AF			(((arm_lpae_iopte)1) << 10)
->  #define ARM_LPAE_PTE_SH_NS		(((arm_lpae_iopte)0) << 8)
->  #define ARM_LPAE_PTE_SH_OS		(((arm_lpae_iopte)2) << 8)
->  #define ARM_LPAE_PTE_SH_IS		(((arm_lpae_iopte)3) << 8)
-> +#define ARM_LPAE_PTE_NS			(((arm_lpae_iopte)1) << 5)
->  #define ARM_LPAE_PTE_VALID		(((arm_lpae_iopte)1) << 0)
->  
->  #define ARM_LPAE_PTE_ATTR_LO_MASK	(((arm_lpae_iopte)0x3ff) << 2)
-> @@ -201,6 +203,9 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
->  	if (iopte_leaf(*ptep, lvl))
->  		return -EEXIST;
->  
-> +	if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_NON_SECURE)
-> +		pte |= ARM_LPAE_PTE_NS;
-> +
->  	if (lvl == ARM_LPAE_MAX_LEVELS - 1)
->  		pte |= ARM_LPAE_PTE_TYPE_PAGE;
->  	else
-> @@ -244,6 +249,8 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
->  		data->iop.cfg.tlb->flush_pgtable(cptep, 1UL << data->pg_shift,
->  						 cookie);
->  		pte = __pa(cptep) | ARM_LPAE_PTE_TYPE_TABLE;
-> +		if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_NON_SECURE)
-> +			pte |= ARM_LPAE_PTE_NSTABLE;
->  		*ptep = pte;
->  		data->iop.cfg.tlb->flush_pgtable(ptep, sizeof(*ptep), cookie);
->  	} else {
-> diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-> index c1cff3d045db..a41a15d30596 100644
-> --- a/drivers/iommu/io-pgtable.h
-> +++ b/drivers/iommu/io-pgtable.h
-> @@ -24,6 +24,9 @@ struct iommu_gather_ops {
->  	void (*flush_pgtable)(void *ptr, size_t size, void *cookie);
->  };
->  
-> +/* Set the Non-Secure bit in the PTEs */
-> +#define IO_PGTABLE_QUIRK_NON_SECURE	(1 << 0)
 
-I think I'd stick an _ARM_ somewhere in here, so maybe
-IO_PGTABLE_QUIRK_ARM_NS?
+[[varun]]  But you can split 1G in 2M mappings and then split up the unmapped region using 4K pages. In this case you split up the entire region using 4K pages.
 
-> +
->  struct io_pgtable_cfg {
-
-and I'd put the #define here, next to the member.
-
->  	int			quirks; /* IO_PGTABLE_QUIRK_* */
->  	unsigned long		pgsize_bitmap;
-> -- 
-
-Will
+Thanks,
+Varun
