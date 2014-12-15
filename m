@@ -1,19 +1,17 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 2/4] iommu: add ARM LPAE page table allocator
-Date: Mon, 15 Dec 2014 16:43:59 +0000
-Message-ID: <BN3PR0301MB12199C5CAD33E745CC7E51F4EA6F0@BN3PR0301MB1219.namprd03.prod.outlook.com>
-References: <1417089078-22900-1-git-send-email-will.deacon@arm.com>
-	<1417089078-22900-3-git-send-email-will.deacon@arm.com>
-	<BN3PR0301MB12198CE5D736CDC6A221EDC2EA790@BN3PR0301MB1219.namprd03.prod.outlook.com>
-	<20141205184802.GH1203@arm.com>
-	<BN3PR0301MB1219D3161E4E9DB314FDD8FAEA6E0@BN3PR0301MB1219.namprd03.prod.outlook.com>
-	<20141215133020.GJ20738@arm.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v6 6/8] dma-mapping: detect and configure IOMMU in
+	of_dma_configure
+Date: Mon, 15 Dec 2014 17:10:13 +0000
+Message-ID: <20141215171013.GO20738@arm.com>
+References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
+	<20141210150853.GH23639@arm.com> <6860089.2Ca399bIPK@avalon>
+	<1427076.5uVd9K6nak@avalon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20141215133020.GJ20738-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1427076.5uVd9K6nak@avalon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,62 +21,68 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
------Original Message-----
-From: Will Deacon [mailto:will.deacon-5wv7dgnIgG8@public.gmane.org] 
-Sent: Monday, December 15, 2014 7:00 PM
-To: Sethi Varun-B16395
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org; Robin Murphy; lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org; mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org; laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
-Subject: Re: [PATCH 2/4] iommu: add ARM LPAE page table allocator
-
-On Sun, Dec 14, 2014 at 05:45:49PM +0000, Varun Sethi wrote:
-> Please find my response inline. Search for "varun".
-
-This is getting fiddly now that you've already replied once. Any chance you could sort your mail client out, please?
-
-
-[[varun]]  Yes I need to do that, this is painful.
-
-> > +       if (!data)
-> > +               return NULL;
-> > +
-> > +       data->pages_per_pgd = 1;
-> > +       data->pg_shift = __ffs(cfg->pgsize_bitmap);
-> > +       data->bits_per_level = data->pg_shift - 
-> > + ilog2(sizeof(arm_lpae_iopte));
-> > +
-> > +       va_bits = cfg->ias - data->pg_shift;
-> > +       data->levels = DIV_ROUND_UP(va_bits, data->bits_per_level);
-> >
-> > [[varun]]  Not related to the patch, but this would be applicable to 
-> > the CPU tables as well i.e, we can't support 48bit VA with 64 KB 
-> > page tables, right? The AR64 memory maps shows possibility of using 
-> > 6 bits for the first level page table.
+On Sun, Dec 14, 2014 at 03:59:38PM +0000, Laurent Pinchart wrote:
+> On Sunday 14 December 2014 17:49:34 Laurent Pinchart wrote:
+> > On Wednesday 10 December 2014 15:08:53 Will Deacon wrote:
+> > > On Wed, Dec 10, 2014 at 02:52:56PM +0000, Rob Clark wrote:
+> > > > so, what is the way for a driver that explicitly wants to manage it's
+> > > > own device virtual address space to opt out of this?  I suspect that
+> > > > won't be the common case, but for a gpu, if dma layer all of a sudden
+> > > > thinks it is in control of the gpu's virtual address space, things are
+> > > > going to end in tears..
+> > > 
+> > > I think you'll need to detach from the DMA domain, then have the driver
+> > > manage everything itself. As you say, it's not the common case, so you
+> > > may need to add some hooks for detaching from the default domain and
+> > > swizzling your DMA ops.
+> > 
+> > I'm wondering if it's such an exotic case after all. I can see two reasons
+> > not to use the default domain. In addition to special requirements coming
+> > from the bus master side, the IOMMU itself might not support one domain per
+> > bus master (I'm of course raising the issue from a very selfish Renesas
+> > IPMMU point of view).
+> > 
+> > In that case the IOMMU driver can still detach the device from the default
+> > domain in the .of_xlate() callback and attach it to its private domain.
 > 
-> Sure we can support 48-bit VAs with 64k pages. Why do you think we can't?
-> 
-> [varun]  My concern was with respect to the bits per level, which is 
-> uneven for the 64 K page sizes. Just wondering how would things work 
-> with 64K pages when we do a 3 level page lookup.
+> I actually spoke too fast, the .of_xlate() callback is called before 
+> arch_setup_dma_ops(). The operation could be performed in the .add_device() 
+> callback. I'm having trouble understanding how you envision .add_device, 
+> .remove_device and .of_xlate working together in the DT case. Could you please 
+> detail what you think each callback should be responsible of exactly ?
 
-Well, it's uneven (9) for the 4k case too. Do you actually see an issue here?
+I think the sequence goes something like:
 
-48-bit VA with 64k pages gives us:
 
-  va_bits = (48 - 16) = 32
-  bits_per_level = (16 - 3) = 13
-  levels = ceil(32/13) = 3
+1: of_iommu_init: early initialisiation of IOMMU driver, stashes its private
+                  data via of_iommu_set_ops
 
-so the starting level is 1, which resolves 32-(13*2) = 6 bits.
+2: ->of_xlate: called for each master upstream of the IOMMU before the master
+               has probed. Passes back the DT info, which can be used to
+	       get hold of the private data from earlier. Per-device data
+	       can be stored in archdata.iommu (but I'd like to change this,
+	       see below).
 
-Does that make sense?
+3. ->domain_init: called from dma-mapping to create default domain (this
+                  should be replaced by ->get_default_domain in future).
 
-[[varun]]Yes, but what I meant was, is that in case of 4K pages you have 9 bits per level, but for 64K pages you have 6 bits for the first  level and 13 each for second and third. So, bits per level would not work in case of 64 K pages?
+3. ->attach_device: called by dma-mapping to attach device to the default
+                    domain
 
-Thanks,
-Varun
+4. ->add_device: called just before the master is probed
+
+
+Now, the thing missing here is the instantiation of iommu_groups. They
+require a fully initialised struct device because of some sysfs magic
+that goes on in iommu_group_add_device. The questions I have are:
+
+  - How should we describe/create iommu_groups for platform devices?
+
+  - When do the groups actually need to be initialised (currently likely
+    to be in add_device).
+
+Will
