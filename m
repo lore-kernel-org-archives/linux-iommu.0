@@ -1,15 +1,11 @@
-From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v3 18/19] iommu: exynos: init from dt-specific callback
-	instead of initcall
-Date: Mon, 15 Dec 2014 10:47:16 +0100
-Message-ID: <20141215094714.GA517@ulmo.nvidia.com>
-References: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com>
-	<1416395748-10731-19-git-send-email-m.szyprowski@samsung.com>
-	<1826772.xgprzQcfXd@avalon>
+From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Subject: [PATCH 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
+Date: Mon, 15 Dec 2014 17:52:56 +0800
+Message-ID: <1418637186-9988-1-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============4618587188833617635=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1826772.xgprzQcfXd@avalon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,121 +15,121 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, zhen-hual-VXdhtT5mjnY@public.gmane.org
+Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
---===============4618587188833617635==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="u3/rZRmxL6MmkK24"
-Content-Disposition: inline
+This patchset is an update of Bill Sumner's patchset, implements a fix for:
+If a kernel boots with intel_iommu=on on a system that supports intel vt-d, 
+when a panic happens, the kdump kernel will boot with these faults:
 
---u3/rZRmxL6MmkK24
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+    dmar: DRHD: handling fault status reg 102
+    dmar: DMAR:[DMA Read] Request device [01:00.0] fault addr fff80000
+    DMAR:[fault reason 01] Present bit in root entry is clear
 
-On Sun, Dec 14, 2014 at 02:45:36PM +0200, Laurent Pinchart wrote:
-> Hi Marek,
->=20
-> Thank you for the patch.
->=20
-> On Wednesday 19 November 2014 12:15:47 Marek Szyprowski wrote:
-> > This patch introduces IOMMU_OF_DECLARE-based initialization to the
-> > driver, which replaces subsys_initcall-based procedure.
-> > exynos_iommu_of_setup ensures that each sysmmu controller is probed
-> > before its master device.
-> >=20
-> > Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> > ---
-> >  drivers/iommu/exynos-iommu.c | 28 +++++++++++++++++++++++++++-
-> >  1 file changed, 27 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> > index cd28dc09db39..88f9afe641a0 100644
-> > --- a/drivers/iommu/exynos-iommu.c
-> > +++ b/drivers/iommu/exynos-iommu.c
->=20
-> [snip]
->=20
-> > @@ -1125,4 +1134,21 @@ err_reg_driver:
-> >  	kmem_cache_destroy(lv2table_kmem_cache);
-> >  	return ret;
-> >  }
-> > -subsys_initcall(exynos_iommu_init);
-> > +
-> > +static int __init exynos_iommu_of_setup(struct device_node *np)
-> > +{
-> > +	struct platform_device *pdev;
-> > +
-> > +	if (!init_done)
-> > +		exynos_iommu_init();
-> > +
-> > +	pdev =3D of_platform_device_create(np, NULL, platform_bus_type.dev_ro=
-ot);
-> > +	if (IS_ERR(pdev))
-> > +		return PTR_ERR(pdev);
->=20
-> If we end up having to create the IOMMU platform devices from within the=
-=20
-> drivers, the introduction of IOMMU_OF_DECLARE starts to feel like a worka=
-round=20
-> to me. I wonder whether it wouldn't then be better to let the driver core=
-=20
-> instantiate the IOMMU platform device from DT as for all other devices, a=
-nd=20
-> use device notifiers to defer probe of the bus masters until the required=
-=20
-> IOMMU(s) are registered.
+    dmar: DRHD: handling fault status reg 2
+    dmar: INTR-REMAP: Request device [[61:00.0] fault index 42
+    INTR-REMAP:[fault reason 34] Present field in the IRTE entry is clear
 
-Notifiers don't work very well for this. Notifier blocks are supposed to
-return a very limited number of values, so sneaking in a -EPROBE_DEFER
-isn't likely to work out very well.
+On some system, the interrupt remapping fault will also happen even if the 
+intel_iommu is not set to on, because the interrupt remapping will be enabled 
+when x2apic is needed by the system.
 
-This was in fact one of Hiroshi's proposals over a year ago and got
-refused because of those reasons. The next solution was to introduce a
-function, not very much unlike the of_iommu_configure() that would be
-called in the core prior to calling into the driver's ->probe() callback
-so that it could handle this at probe time (as opposed to device
-creation time). That way the core can easily defer probe if the IOMMU is
-not there yet. At the same time it can simply use the driver model
-without requiring per-architecture hacks or workarounds.
+The cause of the DMA fault is described in Bill's original version, and the 
+INTR-Remap fault is caused by a similar reason. In short, the initialization 
+of vt-d drivers causes the in-flight DMA and interrupt requests get wrong 
+response.
 
-Note that there is really no need for any of this configuration or
-initialization to happen at device creation time. Drivers won't be able
-to use the IOMMU or DMA APIs until their .probe(), so handling this any
-earlier is completely unnecessary.
+To fix this problem, we modifies the behaviors of the intel vt-d in the 
+crashdump kernel:
 
-Thierry
+For DMA Remapping:
+1. To accept the vt-d hardware in an active state,
+2. Do not disable and re-enable the translation, keep it enabled.
+3. Use the old root entry table, do not rewrite the RTA register.
+4. Malloc and use new context entry table and page table, copy data from the 
+   old ones that used by the old kernel.
+5. to use different portions of the iova address ranges for the device drivers
+   in the crashdump kernel than the iova ranges that were in-use at the time
+   of the panic.  
+6. After device driver is loaded, when it issues the first dma_map command, 
+   free the dmar_domain structure for this device, and generate a new one, so 
+   that the device can be assigned a new and empty page table. 
+7. When a new context entry table is generated, we also save its address to 
+   the old root entry table.
 
---u3/rZRmxL6MmkK24
-Content-Type: application/pgp-signature
+For Interrupt Remapping:
+1. To accept the vt-d hardware in an active state,
+2. Do not disable and re-enable the interrupt remapping, keep it enabled.
+3. Use the old interrupt remapping table, do not rewrite the IRTA register.
+4. When ioapic entry is setup, the interrupt remapping table is changed, and 
+   the updated data will be stored to the old interrupt remapping table.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+Advantages of this approach:
+1. All manipulation of the IO-device is done by the Linux device-driver
+   for that device.
+2. This approach behaves in a manner very similar to operation without an
+   active iommu.
+3. Any activity between the IO-device and its RMRR areas is handled by the
+   device-driver in the same manner as during a non-kdump boot.
+4. If an IO-device has no driver in the kdump kernel, it is simply left alone.
+   This supports the practice of creating a special kdump kernel without
+   drivers for any devices that are not required for taking a crashdump. 
+5. Minimal code-changes among the existing mainline intel vt-d code.
 
-iQIcBAEBAgAGBQJUjq4iAAoJEN0jrNd/PrOhMZ0P/3FhbAIe0ty1xTVoIPG/D/z1
-akYj8ACysJv3J7OJjUAG/HGWw6nC2UvXeuaHgkb/MAAUyUJR6FsVAu6cVbtHORFI
-35yNX0Q+Sly4hPF9oQVkobVbfFIHGehvf9alLMjCm/K6y2r0f9wA+ith6jdrqYrL
-0jCcQKFjITgfEfEhR2r3xBR3HBzKapGs6/LK+DAw+7Aktk6N644qSAftDekE3YmZ
-zVba/PpWtv4NFsk6y83qv856eIsn4up2PpGm+oDcVsR7z5Tkdd1/9N3BiKRyyyA8
-Wt6kxLzQ6K0ZizNpsT9ETvuaRY4q9D8ACmqO7N0JtVzririYdsarpFY5rJOjplkh
-i3n+jD+42ewF0iLITtRXeaTFuPPosR5AZXYyeT9LnqIO4ngOmofyIkIANSL6xzBN
-Dv30D3iZk8QWBAM5xZcH3EAlnlqL4mQR8+CsSJ8ibFS8f4MaAiRrsJxj7BXZFhsL
-1rFTEGmvtu1MFwVvgRhha8ZxBzhS11dO71M0q3BMJJLdA/Z9/vEFsw8geoiSoAjm
-mGB9cCkQ0Tk3nMR80LxmodouGLO0YI7JZZoxMMgmrgevFBMYHfPKsv+oM5dhoZo0
-26mmcEqmDA+1PVzjvsbg/WPQyOAIyUqLbLK5QBRFOF3g/Q/S0p3javLzN9IhkdGN
-Q28HozFdlnXjddVYOIKi
-=pCgd
------END PGP SIGNATURE-----
+Summary of changes in this patch set:
+1. Added some useful function for root entry table in code intel-iommu.c
+2. Added new members to struct root_entry and struct irte;
+3. Functions to load old root entry table to iommu->root_entry from the memory 
+   of old kernel.
+4. Functions to malloc new context entry table and page table and copy the data
+   from the old ones to the malloced new ones.
+5. Functions to enable support for DMA remapping in kdump kernel.
+6. Functions to load old irte data from the old kernel to the kdump kernel.
+7. Some code changes that support other behaviours that have been listed.
+8. In the new functions, use physical address as "unsigned long" type, not 
+   pointers.
 
---u3/rZRmxL6MmkK24--
+Original version by Bill Sumner:
+        https://lkml.org/lkml/2014/1/10/518
+        https://lkml.org/lkml/2014/4/15/716
+        https://lkml.org/lkml/2014/4/24/836
 
---===============4618587188833617635==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Zhenhua's last of Bill's patchset:
+        https://lkml.org/lkml/2014/10/21/134
 
+Changed in this version:
+1. Do not disable and re-enable traslation and interrupt remapping. 
+2. Use old root entry table.
+3. Use old interrupt remapping table.
 
---===============4618587188833617635==--
+This patchset should be applied with this one together:
+	https://lkml.org/lkml/2014/11/5/43
+	x86/iommu: fix incorrect bit operations in setting values
+
+Bill Sumner (5):
+  iommu/vt-d: Update iommu_attach_domain() and its callers
+  iommu/vt-d: Items required for kdump
+  iommu/vt-d: data types and functions used for kdump
+  iommu/vt-d: Add domain-id functions
+  iommu/vt-d: enable kdump support in iommu module
+
+Li, Zhen-Hua (10):
+  iommu/vt-d: Update iommu_attach_domain() and its callers
+  iommu/vt-d: Items required for kdump
+  iommu/vt-d: Add domain-id functions
+  iommu/vt-d: functions to copy data from old mem
+  iommu/vt-d: Add functions to load and save old re
+  iommu/vt-d: datatypes and functions used for kdump
+  iommu/vt-d: enable kdump support in iommu module
+  iommu/vtd: assign new page table for dma_map
+  iommu/vt-d: Copy functions for irte
+  iommu/vt-d: Use old irte in kdump kernel
+
+ drivers/iommu/intel-iommu.c         | 1023 +++++++++++++++++++++++++++++++++--
+ drivers/iommu/intel_irq_remapping.c |   99 +++-
+ include/linux/intel-iommu.h         |   18 +
+ 3 files changed, 1097 insertions(+), 43 deletions(-)
+
+-- 
+2.0.0-rc0
