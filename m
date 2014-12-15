@@ -1,38 +1,33 @@
 From: Suman Tripathi <stripathi-qTEPVZfXA3Y@public.gmane.org>
-Subject: [PATCH 2/3] arm64: dts: Add the APM X-Gene AHBC IOMMU DTS node.
-Date: Mon, 15 Dec 2014 22:25:22 +0530
-Message-ID: <1418662523-8458-3-git-send-email-stripathi@apm.com>
-References: <1418662523-8458-1-git-send-email-stripathi@apm.com>
+Subject: [PATCH 0/3] Add support for APM X-Gene SoC AHBC IOMMU driver.
+Date: Mon, 15 Dec 2014 22:25:20 +0530
+Message-ID: <1418662523-8458-1-git-send-email-stripathi@apm.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1418662523-8458-1-git-send-email-stripathi-qTEPVZfXA3Y@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, patches-qTEPVZfXA3Y@public.gmane.org, Suman Tripathi <stripathi-qTEPVZfXA3Y@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds the device tree node for APM X-Gene AHBC IOMMU.
+This patch adds the support for the APM X-Gene SoC AHBC IOMMU driver.
 
 Signed-off-by: Suman Tripathi <stripathi-qTEPVZfXA3Y@public.gmane.org>
 ---
- arch/arm64/boot/dts/apm-storm.dtsi | 5 +++++
- 1 file changed, 5 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/apm-storm.dtsi b/arch/arm64/boot/dts/apm-storm.dtsi
-index c0aceef..f0a6b71 100644
---- a/arch/arm64/boot/dts/apm-storm.dtsi
-+++ b/arch/arm64/boot/dts/apm-storm.dtsi
-@@ -389,6 +389,11 @@
- 			phy-names = "sata-phy";
- 		};
+Suman Tripathi (3):
+  xgene-ahbc-iommu: Add support for APM X-Gene SoC AHBC IOMMU driver.
+  arm64: dts: Add the APM X-Gene AHBC IOMMU DTS node.
+  Documentation: dt-bindings: Add the binding info for APM X-Gene AHBC
+    IOMMU driver.
 
-+		ahbc_iommu: ahbc_iommu@0x1f2a0080 {
-+			compatible = "apm,xgene-ahbc-iommu";
-+			reg = <0x0 0x1f2a0080 0x0 0x90>;
-+		};
-+
- 		rtc: rtc@10510000 {
- 			compatible = "apm,xgene-rtc";
- 			reg = <0x0 0x10510000 0x0 0x400>;
+ .../devicetree/bindings/iommu/xgene,ahbc-iommu.txt |  17 ++
+ arch/arm64/boot/dts/apm-storm.dtsi                 |   5 +
+ drivers/iommu/Kconfig                              |  10 +
+ drivers/iommu/Makefile                             |   1 +
+ drivers/iommu/xgene-ahbc-iommu.c                   | 336 +++++++++++++++++++++
+ 5 files changed, 369 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/xgene,ahbc-iommu.txt
+ create mode 100644 drivers/iommu/xgene-ahbc-iommu.c
+
 --
 1.8.2.1
 
