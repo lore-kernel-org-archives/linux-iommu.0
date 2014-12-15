@@ -1,37 +1,40 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: [PATCH] iommu/exynos: Fix arm64 allmodconfig build
-Date: Mon, 15 Dec 2014 13:00:13 +0000
-Message-ID: <1418648413-32013-1-git-send-email-broonie@kernel.org>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>
-Cc: linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, Mark Brown <broonie@kernel.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 10/10] ARM: shmobile: r8a7791: Add IPMMU DT nodes
+Date: Mon, 15 Dec 2014 14:07:52 +0100
+Message-ID: <CAMuHMdWtkk=Q=Mfcyz03LBzXMuBOr8BZGNyCsQb9bwDty-4OiQ@mail.gmail.com>
+References: <1418602429-11276-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+	<1418602429-11276-11-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1418602429-11276-11-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc: iommu@lists.linux-foundation.org, Linux-sh list <linux-sh@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The Exynos IOMMU driver uses the ARM specific dmac_flush_range() and
-outer_flush_range() functions. This breaks the build on arm64 allmodconfig
-in -next since support has been merged for some Exynos ARMv8 SoCs. Add a
-dependency on ARM to keep things building until either the driver has the
-ARM dependencies removed or the ARMv8 architecture code implements these
-ARM specific APIs.
+On Mon, Dec 15, 2014 at 1:13 AM, Laurent Pinchart
+<laurent.pinchart+renesas@ideasonboard.com> wrote:
+> Add the seven IPMMU instances found in the r8a7791 to DT with a disabled
+> status.
+>
+> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
----
- drivers/iommu/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The addresses and interrupt numbers look OK to me.
+However, my comment about the "0x800" offset is still valid.
+Shouldn't we have two register blocks, and let the driver use only the
+second one?
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 01e8bfae569b..325188eef1c1 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -187,7 +187,7 @@ config TEGRA_IOMMU_SMMU
- 
- config EXYNOS_IOMMU
- 	bool "Exynos IOMMU Support"
--	depends on ARCH_EXYNOS
-+	depends on ARCH_EXYNOS && ARM
- 	select IOMMU_API
- 	select ARM_DMA_USE_IOMMU
- 	help
--- 
-2.1.3
+If you ignore, feel free to add my
+Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
