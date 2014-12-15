@@ -1,12 +1,15 @@
 From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: [PATCH FOR v3.19 - v2] iommu/ipmmu-vmsa: change IOMMU_EXEC to
-	IOMMU_NOEXEC
-Date: Mon, 15 Dec 2014 20:41:13 +0200
-Message-ID: <1418668873-5091-1-git-send-email-laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 10/10] ARM: shmobile: r8a7791: Add IPMMU DT nodes
+Date: Mon, 15 Dec 2014 20:44:29 +0200
+Message-ID: <1521122.WC5DkGVrBt@avalon>
+References: <1418602429-11276-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+	<1418602429-11276-11-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+	<CAMuHMdWtkk=Q=Mfcyz03LBzXMuBOr8BZGNyCsQb9bwDty-4OiQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAMuHMdWtkk=Q=Mfcyz03LBzXMuBOr8BZGNyCsQb9bwDty-4OiQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,52 +19,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Linux-sh list <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Hi Geert,
 
-Commit a720b41c41f5a7e4 ("iommu/arm-smmu: change IOMMU_EXEC to
-IOMMU_NOEXEC") has inverted and replaced the IOMMU_EXEC flag with
-IOMMU_NOEXEC. Update the driver accordingly.
+On Monday 15 December 2014 14:07:52 Geert Uytterhoeven wrote:
+> On Mon, Dec 15, 2014 at 1:13 AM, Laurent Pinchart wrote:
+> > Add the seven IPMMU instances found in the r8a7791 to DT with a disabled
+> > status.
+> > 
+> > Signed-off-by: Laurent Pinchart
+> > <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> 
+> The addresses and interrupt numbers look OK to me.
+> However, my comment about the "0x800" offset is still valid.
+> Shouldn't we have two register blocks, and let the driver use only the
+> second one?
+> 
+> If you ignore, feel free to add my
+> Acked-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
----
- drivers/iommu/ipmmu-vmsa.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+I don't want to ignore your comment, but I don't know what to do here :-/ The 
+datasheet lacks detailed information about secure vs. non-secure mode and how 
+the two register sets are supposed to interoperate and be handled by the 
+operating system.
 
-Changes since v1:
-
-- Rewrote the commit message
-
-Joerg, this is a compilation breakage fix for v3.19. Could you please take it
-in your tree and submit it early during the -rc cycle ?
-
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 68dfb0f..7486931 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -558,7 +558,7 @@ static pmd_t *ipmmu_alloc_pmd(struct ipmmu_vmsa_device *mmu, pgd_t *pgd,
- 
- static u64 ipmmu_page_prot(unsigned int prot, u64 type)
- {
--	u64 pgprot = ARM_VMSA_PTE_XN | ARM_VMSA_PTE_nG | ARM_VMSA_PTE_AF
-+	u64 pgprot = ARM_VMSA_PTE_nG | ARM_VMSA_PTE_AF
- 		   | ARM_VMSA_PTE_SH_IS | ARM_VMSA_PTE_AP_UNPRIV
- 		   | ARM_VMSA_PTE_NS | type;
- 
-@@ -568,8 +568,8 @@ static u64 ipmmu_page_prot(unsigned int prot, u64 type)
- 	if (prot & IOMMU_CACHE)
- 		pgprot |= IMMAIR_ATTR_IDX_WBRWA << ARM_VMSA_PTE_ATTRINDX_SHIFT;
- 
--	if (prot & IOMMU_EXEC)
--		pgprot &= ~ARM_VMSA_PTE_XN;
-+	if (prot & IOMMU_NOEXEC)
-+		pgprot |= ARM_VMSA_PTE_XN;
- 	else if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
- 		/* If no access create a faulting entry to avoid TLB fills. */
- 		pgprot &= ~ARM_VMSA_PTE_PAGE;
 -- 
 Regards,
 
