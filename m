@@ -1,15 +1,20 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [RFC PATCH v4 0/8] Introduce automatic DMA configuration for
-	IOMMU masters
-Date: Mon, 15 Dec 2014 19:55:03 +0200
-Message-ID: <4224425.qspa1hv2H3@avalon>
-References: <1415991397-9618-1-git-send-email-will.deacon@arm.com>
-	<1775535.qgYBmCEZS0@avalon> <20141215173416.GS20738@arm.com>
+From: Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC PATCH 2/2] iommu: rockchip: Handle system-wide and runtime PM
+Date: Mon, 15 Dec 2014 10:06:51 -0800
+Message-ID: <7hr3w0iy84.fsf@deeprootsystems.com>
+References: <1418286387-9663-1-git-send-email-tfiga@chromium.org>
+	<7h8uiemce7.fsf@deeprootsystems.com>
+	<CAPDyKFo6zH4__Odm+RiJCbvXquAQqaLyCAiXrSN6s3KfQhok=A@mail.gmail.com>
+	<1576771.dIVCOxU0se@vostro.rjw.lan>
+	<CAAFQd5B28WiWUqmbmROJUa3H25R=Y774NuemTZDvkoa=CvZUsw@mail.gmail.com>
+	<7ha92sk533.fsf@deeprootsystems.com>
+	<CAMuHMdVpCgK-hNqZ=JWjFGS53g+ZUQ5t=uBxtN1qGXJhoRg8BQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20141215173416.GS20738-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <CAMuHMdVpCgK-hNqZ=JWjFGS53g+ZUQ5t=uBxtN1qGXJhoRg8BQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+	(Geert Uytterhoeven's message of "Mon, 15 Dec 2014 09:35:09 +0100")
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,63 +24,22 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Cc: Len Brown <len.brown-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, "linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Sylwester Nawrocki <s.nawrocki-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org> writes:
 
-On Monday 15 December 2014 17:34:16 Will Deacon wrote:
-> On Mon, Dec 15, 2014 at 05:21:16PM +0000, Laurent Pinchart wrote:
-> > On Wednesday 19 November 2014 11:41:50 Will Deacon wrote:
-> > > +static void __remove_iommu_mapping_entry(struct kref *kref)
-> > > +{
-> > > +	struct dma_iommu_mapping_entry *entry;
-> > > +
-> > > +	entry = container_of(kref, struct dma_iommu_mapping_entry, kref);
-> > > +	list_del(&entry->list);
-> > > +}
-> > > +
-> > > +static bool arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base,
-> > > u64
-> > > size,
-> > > +				    struct iommu_ops *iommu)
-> > > +{
-> > > +	struct iommu_domain *domain;
-> > > +	struct dma_iommu_mapping_entry *entry = NULL;
-> > > +
-> > > +	if (!iommu->get_default_domain)
-> > > +		return false;
-> > > +
-> > > +	domain = iommu->get_default_domain(dev);
-> > > +	if (!domain)
-> > > +		return false;
-> > > +
-> > > +	spin_lock(&dma_iommu_mapping_lock);
-> > > +
-> > > +	list_for_each_entry(entry, &dma_iommu_mapping_table, list) {
-> > > +		if (entry->domain == domain)
-> > > +			break;
-> > > +	}
-> > 
-> > That might be a stupid question (fighting my impostor syndrome again
-> > here), but is there a fundamental reason why we can't store the VA
-> > allocation data (probably using iova) in the domain instead of having to
-> > go through hoops and loops here to associate that data to the domain ?
-> 
-> Well, this was very much a work-in-progress that I ended up abandoning :)
-> 
-> Ultimately, I'd really like to see the default domain management moved into
-> core code, at which point extending struct iommu_domain seems perfectly
-> plausible to me (not sure if we'd have a new structure for that).
-> 
-> Then we'd have a fairly clean device -> group -> domain -> allocator
-> abstraction for each master.
+> On Fri, Dec 12, 2014 at 9:04 PM, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+>> An even more exciting problem exists when a CPU is in the same domain as
+>> other peripherals, those peripherals are all idle and the power domain
+>> is gated. :)
+>
+> We do have pm_genpd_attach_cpuidle() and pm_genpd_name_attach_cpuidle()?
 
-I like that. Thank you for confirming that some of my questions are sensible 
-:-)
+Exactly.  
 
--- 
-Regards,
+And I think to solve this problem, we need to generalize the attaching
+of dependent devices to a PM domain.
 
-Laurent Pinchart
+Kevin
