@@ -1,75 +1,52 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH v3 18/19] iommu: exynos: init from dt-specific callback instead of initcall
-Date: Mon, 15 Dec 2014 20:19:57 +0200
-Message-ID: <1582013.9WDR2r2f3r@avalon>
-References: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com> <4894156.QdIh4JzSl0@avalon> <20141215181323.GX20738@arm.com>
+From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [Bug 89751] New: Allocating domain for fallback device failed
+Date: Mon, 15 Dec 2014 11:25:33 -0700
+Message-ID: <CAErSpo4_SvU+SX09NKdi1jc3gQT-3vbAaiGPMShURm-hRny=_w@mail.gmail.com>
+References: <bug-89751-41252@https.bugzilla.kernel.org/>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <20141215181323.GX20738@arm.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Marek Szyprowski <m.szyprowski@samsung.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Rob Herring <robh@kernel.org>, Thierry Reding <treding@nvidia.com>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Inki Dae <inki.dae@samsung.com>, Joerg Roedel <joro@8bytes.org>, Tomasz Figa <tomasz.figa@gmail.com>, "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>, Kyungmin Park <kyungmin.park@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>, Olof Johansson <olof@lixom.net>, Cho KyongHo <pullip.cho@samsung.com>, David Wodhouse <dwmw2@infradead.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <bug-89751-41252-3bo0kxnWaOQUvHkbgXJLS5sdmw4N0Rt+2LY78lusg7I@public.gmane.org/>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, rwarsow-Mmb7MZpHnFY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Monday 15 December 2014 18:13:23 Will Deacon wrote:
-> On Mon, Dec 15, 2014 at 05:53:48PM +0000, Laurent Pinchart wrote:
-> > Hi Will,
-> 
-> Hello again :)
-> 
-> > On Monday 15 December 2014 17:43:02 Will Deacon wrote:
-> > > On Mon, Dec 15, 2014 at 05:27:30PM +0000, Laurent Pinchart wrote:
-> > > > On Monday 15 December 2014 17:17:00 Will Deacon wrote:
-> > > > > Creating the platform device manually for the IOMMU is indeed
-> > > > > grotty, but I don't really understand why it's needed. Interrupt
-> > > > > controllers, for example, seem to get by without one.
-> > > > 
-> > > > There's several reasons, one of the most compelling ones I can think
-> > > > of at the moment is runtime PM. IRQ controllers close to the CPU use
-> > > > CPU PM notifiers instead. Note that IRQ controllers that are further
-> > > > away from the CPU (such as GPIO-based IRQ controllers) are real
-> > > > platform devices and use runtime PM.
-> > > 
-> > > Ok, that's a good point, but the IOMMU will still probe later anyway,
-> > > right?
-> >
-> > That depends on the driver implementation, using OF node match an IOMMU
-> > driver doesn't have to register a struct driver. Assuming we require
-> > IOMMU drivers to register a struct driver, a platform device should then
-> > be probed at a later time.
-> > 
-> > However, if we wait until the IOMMU gets probed to initialize runtime PM
-> > and make it functional, we'll be back in square one if the IOMMU gets
-> > probed after the bus master, as the bus master could start issuing bus
-> > requests at probe time with the IOMMU not powered yet.
-> 
-> True, but couldn't the early init code do enough to get the thing
-> functional? That said, I'm showing my ignorance here as I'm not familiar
-> with the PM code (and the software models I have for the SMMU clearly don't
-> implement anything in this regard).
+[+to David, +cc iommu list, Joerg]
 
-We're reaching the limits of my knowledge as well. If the IOMMU is in a power 
-domain different than the bus masters the driver would at least need to ensure 
-that the power domain is turned on, which might be a bit hackish without 
-runtime PM.
+On Sun, Dec 14, 2014 at 7:44 AM,  <bugzilla-daemon-590EEB7GvNiWaY/ihj7yzEB+6BGkLq7r@public.gmane.org> wrote:
+> https://bugzilla.kernel.org/show_bug.cgi?id=89751
+>
+>             Bug ID: 89751
+>            Summary: Allocating domain for fallback device failed
+>            Product: Drivers
+>            Version: 2.5
+>     Kernel Version: 3.18
+>           Hardware: x86-64
+>                 OS: Linux
+>               Tree: Mainline
+>             Status: NEW
+>           Severity: normal
+>           Priority: P1
+>          Component: PCI
+>           Assignee: drivers_pci-ztI5WcYan/vQLgFONoPN62D2FQJk+8+b@public.gmane.org
+>           Reporter: rwarsow-Mmb7MZpHnFY@public.gmane.org
+>         Regression: No
+>
+> Created attachment 160531
+>   --> https://bugzilla.kernel.org/attachment.cgi?id=160531&action=edit
+> dmesg
+>
+> Since enabling INTEL_IOMMU_DEFAULT_ON I see "Allocating domain for fallback
+> device failed" in my logs.
 
-> > > > IOMMUs are not as low-level as system interrupt controllers or system
-> > > > clocks. I'm beginning to agree with Thierry that they should be
-> > > > treated as normal platform devices as they're not required earlier
-> > > > than probe time of their bus master devices.
-> > > 
-> > > Well, I think you'd have to propose patches for discussion since I'm
-> > > certainly not wed to the current approach; I just want something that
-> > > allows of_{dma,iommu}_configure to run with the information it needs.
-> > 
-> > Do we need of_dma_configure() to run when the device is created, or could
-> > we postpone it to just before probe time ?
-> 
-> I'm not sure I can answer that one... Arnd?
-
--- 
-Regards,
-
-Laurent Pinchart
+Ronald, do you know whether this is a regression?
