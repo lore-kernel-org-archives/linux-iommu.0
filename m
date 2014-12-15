@@ -1,7 +1,7 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 08/10] iommu/ipmmu-vmsa: Remove platform data support
-Date: Mon, 15 Dec 2014 02:13:47 +0200
-Message-ID: <1418602429-11276-9-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 10/10] ARM: shmobile: r8a7791: Add IPMMU DT nodes
+Date: Mon, 15 Dec 2014 02:13:49 +0200
+Message-ID: <1418602429-11276-11-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1418602429-11276-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1418602429-11276-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
@@ -10,102 +10,81 @@ To: iommu@lists.linux-foundation.org
 Cc: linux-sh@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-No board file instantiates the IPMMU using platform data. Now that we
-have DT support, get rid of platform data.
+Add the seven IPMMU instances found in the r8a7791 to DT with a disabled
+status.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- drivers/iommu/ipmmu-vmsa.c               | 24 ------------------------
- include/linux/platform_data/ipmmu-vmsa.h | 24 ------------------------
- 2 files changed, 48 deletions(-)
- delete mode 100644 include/linux/platform_data/ipmmu-vmsa.h
+ arch/arm/boot/dts/r8a7791.dtsi | 56 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 56 insertions(+)
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 5a99fad5c30f..aa44a93e8a17 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -17,7 +17,6 @@
- #include <linux/iommu.h>
- #include <linux/module.h>
- #include <linux/of.h>
--#include <linux/platform_data/ipmmu-vmsa.h>
- #include <linux/platform_device.h>
- #include <linux/sizes.h>
- #include <linux/slab.h>
-@@ -30,7 +29,6 @@ struct ipmmu_vmsa_device {
- 	void __iomem *base;
- 	struct list_head list;
+diff --git a/arch/arm/boot/dts/r8a7791.dtsi b/arch/arm/boot/dts/r8a7791.dtsi
+index 78d637135e77..fb4803084742 100644
+--- a/arch/arm/boot/dts/r8a7791.dtsi
++++ b/arch/arm/boot/dts/r8a7791.dtsi
+@@ -1384,6 +1384,62 @@
+ 		status = "disabled";
+ 	};
  
--	const struct ipmmu_vmsa_platform_data *pdata;
- 	unsigned int num_utlbs;
- 
- 	struct dma_iommu_mapping *mapping;
-@@ -1013,27 +1011,6 @@ static int ipmmu_find_utlbs(struct ipmmu_vmsa_device *mmu, struct device *dev,
- 	unsigned int i;
- 	int count;
- 
--	if (mmu->pdata) {
--		const struct ipmmu_vmsa_master *master = mmu->pdata->masters;
--		const char *devname = dev_name(dev);
--		unsigned int i;
--
--		for (i = 0; i < mmu->pdata->num_masters; ++i, ++master) {
--			if (strcmp(master->name, devname) == 0) {
--				utlbs = kmalloc(sizeof(*utlbs), GFP_KERNEL);
--				if (!utlbs)
--					return -ENOMEM;
--
--				utlbs[0] = master->utlb;
--
--				*_utlbs = utlbs;
--				return 1;
--			}
--		}
--
--		return -EINVAL;
--	}
--
- 	count = of_count_phandle_with_args(dev->of_node, "iommus",
- 					   "#iommu-cells");
- 	if (count < 0)
-@@ -1243,7 +1220,6 @@ static int ipmmu_probe(struct platform_device *pdev)
- 	}
- 
- 	mmu->dev = &pdev->dev;
--	mmu->pdata = pdev->dev.platform_data;
- 	mmu->num_utlbs = 32;
- 
- 	/* Map I/O memory and request IRQ. */
-diff --git a/include/linux/platform_data/ipmmu-vmsa.h b/include/linux/platform_data/ipmmu-vmsa.h
-deleted file mode 100644
-index 5275b3ac6d37..000000000000
---- a/include/linux/platform_data/ipmmu-vmsa.h
-+++ /dev/null
-@@ -1,24 +0,0 @@
--/*
-- * IPMMU VMSA Platform Data
-- *
-- * Copyright (C) 2014 Renesas Electronics Corporation
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; version 2 of the License.
-- */
--
--#ifndef __IPMMU_VMSA_H__
--#define __IPMMU_VMSA_H__
--
--struct ipmmu_vmsa_master {
--	const char *name;
--	unsigned int utlb;
--};
--
--struct ipmmu_vmsa_platform_data {
--	const struct ipmmu_vmsa_master *masters;
--	unsigned int num_masters;
--};
--
--#endif /* __IPMMU_VMSA_H__ */
++	ipmmu_sy0: mmu@e6280800 {
++		compatible = "renesas,ipmmu-vmsa";
++		reg = <0 0xe6280800 0 0x800>;
++		interrupts = <0 223 IRQ_TYPE_LEVEL_HIGH>;
++		#iommu-cells = <1>;
++		status = "disabled";
++	};
++
++	ipmmu_sy1: mmu@e6290800 {
++		compatible = "renesas,ipmmu-vmsa";
++		reg = <0 0xe6290800 0 0x800>;
++		interrupts = <0 225 IRQ_TYPE_LEVEL_HIGH>;
++		#iommu-cells = <1>;
++		status = "disabled";
++	};
++
++	ipmmu_ds: mmu@e6740800 {
++		compatible = "renesas,ipmmu-vmsa";
++		reg = <0 0xe6740800 0 0x800>;
++		interrupts = <0 198 IRQ_TYPE_LEVEL_HIGH>;
++		#iommu-cells = <1>;
++		status = "disabled";
++	};
++
++	ipmmu_mp: mmu@ec680800 {
++		compatible = "renesas,ipmmu-vmsa";
++		reg = <0 0xec680800 0 0x800>;
++		interrupts = <0 226 IRQ_TYPE_LEVEL_HIGH>;
++		#iommu-cells = <1>;
++		status = "disabled";
++	};
++
++	ipmmu_mx: mmu@fe951800 {
++		compatible = "renesas,ipmmu-vmsa";
++		reg = <0 0xfe951800 0 0x800>;
++		interrupts = <0 222 IRQ_TYPE_LEVEL_HIGH>;
++		#iommu-cells = <1>;
++		status = "disabled";
++	};
++
++	ipmmu_rt: mmu@ffc80800 {
++		compatible = "renesas,ipmmu-vmsa";
++		reg = <0 0xffc80800 0 0x800>;
++		interrupts = <0 307 IRQ_TYPE_LEVEL_HIGH>;
++		#iommu-cells = <1>;
++		status = "disabled";
++	};
++
++	ipmmu_gp: mmu@e62a0800 {
++		compatible = "renesas,ipmmu-vmsa";
++		reg = <0 0xe62a0800 0 0x800>;
++		interrupts = <0 260 IRQ_TYPE_LEVEL_HIGH>;
++		#iommu-cells = <1>;
++		status = "disabled";
++	};
++
+ 	rcar_sound: rcar_sound@ec500000 {
+ 		#sound-dai-cells = <1>;
+ 		compatible =  "renesas,rcar_sound-r8a7791", "renesas,rcar_sound-gen2", "renesas,rcar_sound";
 -- 
 2.0.4
 
