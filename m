@@ -1,55 +1,122 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH] iommu/exynos: Fix arm64 allmodconfig build
-Date: Mon, 15 Dec 2014 15:56:15 +0000
-Message-ID: <20141215155615.GD11764@sirena.org.uk>
-References: <1418648413-32013-1-git-send-email-broonie@kernel.org>
- <548EDDCD.4060203@samsung.com>
- <20141215153529.GC11764@sirena.org.uk>
- <20141215153804.GK20738@arm.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 0/4] Generic IOMMU page table framework
+Date: Mon, 15 Dec 2014 16:10:52 +0000
+Message-ID: <20141215161052.GM20738@arm.com>
+References: <1417089078-22900-1-git-send-email-will.deacon@arm.com>
+	<2133922.nksBEtjI2q@avalon>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="i9pGKxSHTiGLjQSm"
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20141215153804.GK20738@arm.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: Krzysztof =?utf-8?Q?Koz=C5=82owski?= <k.kozlowski@samsung.com>, Joerg Roedel <joro@8bytes.org>, Catalin Marinas <Catalin.Marinas@arm.com>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <2133922.nksBEtjI2q@avalon>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On Sun, Dec 14, 2014 at 11:49:30PM +0000, Laurent Pinchart wrote:
+> Hi Will,
 
---i9pGKxSHTiGLjQSm
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Hi Laurent,
 
-On Mon, Dec 15, 2014 at 03:38:04PM +0000, Will Deacon wrote:
-> On Mon, Dec 15, 2014 at 03:35:29PM +0000, Mark Brown wrote:
+> On Thursday 27 November 2014 11:51:14 Will Deacon wrote:
+> > This series introduces a generic IOMMU page table allocation framework,
+> > implements support for ARM long-descriptors and then ports the arm-smmu
+> > driver over to the new code.
 
-> > I don't mind either way, it just seemed to be easier to report the bug
-> > with a patch.  If Jeorg is busy perhaps it can go via the arm64 tree,
-> > the issue is triggered by the addition of the platform there?
+[...]
 
-> Can I pass the buck to arm-soc, as they're handling arm64 platform code?
+> > All feedback welcome.
+> 
+> I've successfully tested the patch set with the Renesas IPMMU-VMSA driver with
+> the following extension to the allocator.
+> 
+> Tested-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 
-> It seems sensible to merge the fix via the same tree that introduced the
-> breakage.
+Wahey, that's really cool, thanks! I have a few minor comments on your patch
+below. If you don't object, then I can make them locally and include your
+patch on top of my v2 series?
 
-Sure, just resending to them...
+> From 4bebb7f3a5a48541d4c89ce7c61e6ff66686c3a9 Mon Sep 17 00:00:00 2001
+> From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> Date: Sun, 14 Dec 2014 23:34:50 +0200
+> Subject: [PATCH] iommu: io-pgtable-arm: Add Non-Secure quirk
+> 
+> The quirk causes the Non-Secure bit to be set in all page table entries.
+> 
+> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> ---
+>  drivers/iommu/io-pgtable-arm.c | 7 +++++++
+>  drivers/iommu/io-pgtable.h     | 3 +++
+>  2 files changed, 10 insertions(+)
+> 
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index 669e322a83a4..b6910e142734 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -80,11 +80,13 @@
+>  #define ARM_LPAE_PTE_TYPE_TABLE		3
+>  #define ARM_LPAE_PTE_TYPE_PAGE		3
+>  
+> +#define ARM_LPAE_PTE_NSTABLE		(((arm_lpae_iopte)1) << 63)
+>  #define ARM_LPAE_PTE_XN			(((arm_lpae_iopte)3) << 53)
+>  #define ARM_LPAE_PTE_AF			(((arm_lpae_iopte)1) << 10)
+>  #define ARM_LPAE_PTE_SH_NS		(((arm_lpae_iopte)0) << 8)
+>  #define ARM_LPAE_PTE_SH_OS		(((arm_lpae_iopte)2) << 8)
+>  #define ARM_LPAE_PTE_SH_IS		(((arm_lpae_iopte)3) << 8)
+> +#define ARM_LPAE_PTE_NS			(((arm_lpae_iopte)1) << 5)
+>  #define ARM_LPAE_PTE_VALID		(((arm_lpae_iopte)1) << 0)
+>  
+>  #define ARM_LPAE_PTE_ATTR_LO_MASK	(((arm_lpae_iopte)0x3ff) << 2)
+> @@ -201,6 +203,9 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+>  	if (iopte_leaf(*ptep, lvl))
+>  		return -EEXIST;
+>  
+> +	if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_NON_SECURE)
+> +		pte |= ARM_LPAE_PTE_NS;
+> +
+>  	if (lvl == ARM_LPAE_MAX_LEVELS - 1)
+>  		pte |= ARM_LPAE_PTE_TYPE_PAGE;
+>  	else
+> @@ -244,6 +249,8 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
+>  		data->iop.cfg.tlb->flush_pgtable(cptep, 1UL << data->pg_shift,
+>  						 cookie);
+>  		pte = __pa(cptep) | ARM_LPAE_PTE_TYPE_TABLE;
+> +		if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_NON_SECURE)
+> +			pte |= ARM_LPAE_PTE_NSTABLE;
+>  		*ptep = pte;
+>  		data->iop.cfg.tlb->flush_pgtable(ptep, sizeof(*ptep), cookie);
+>  	} else {
+> diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+> index c1cff3d045db..a41a15d30596 100644
+> --- a/drivers/iommu/io-pgtable.h
+> +++ b/drivers/iommu/io-pgtable.h
+> @@ -24,6 +24,9 @@ struct iommu_gather_ops {
+>  	void (*flush_pgtable)(void *ptr, size_t size, void *cookie);
+>  };
+>  
+> +/* Set the Non-Secure bit in the PTEs */
+> +#define IO_PGTABLE_QUIRK_NON_SECURE	(1 << 0)
 
---i9pGKxSHTiGLjQSm
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+I think I'd stick an _ARM_ somewhere in here, so maybe
+IO_PGTABLE_QUIRK_ARM_NS?
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+> +
+>  struct io_pgtable_cfg {
 
-iQEcBAEBAgAGBQJUjwSeAAoJECTWi3JdVIfQAh4H/igjZphGnBpSx7WiFI6UCfEk
-qF+s/XNUlk5WtzwcfyW/3Gcy5mWf0lEA5RsoeQbsOO9nQhw8rIx819+/GxzahAbO
-TnZZme24FBUalkZkaq9v1crlVc5SI+sLix84Vm99Mxn80UdHofEAtpv0fnunheNI
-32L3Qw2ijMqZIWwPaQARY0NF1snQw17cZ+e6Bd3/u1sSk2iuL4uzETIDCTe8HVqK
-S2yYYyJhL1DPaLKOhkPdH4hOShC+VEFLNd7OQlSJ/TbQJ0xCf5LtdM4G3X6Epwit
-7/5VFctT4qKC77kwN1aq3AcNJ7nlq9y7YO3vBvsJI2TG08kiXjf55CzPv722fbs=
-=0lyc
------END PGP SIGNATURE-----
+and I'd put the #define here, next to the member.
 
---i9pGKxSHTiGLjQSm--
+>  	int			quirks; /* IO_PGTABLE_QUIRK_* */
+>  	unsigned long		pgsize_bitmap;
+> -- 
+
+Will
