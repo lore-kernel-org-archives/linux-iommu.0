@@ -1,103 +1,111 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 06/10] iommu/ipmmu-vmsa: Add device tree support
-Date: Mon, 15 Dec 2014 02:13:45 +0200
-Message-ID: <1418602429-11276-7-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 08/10] iommu/ipmmu-vmsa: Remove platform data support
+Date: Mon, 15 Dec 2014 02:13:47 +0200
+Message-ID: <1418602429-11276-9-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1418602429-11276-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1418602429-11276-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Sender: linux-sh-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org
-Cc: linux-sh@vger.kernel.org, devicetree@vger.kernel.org
+Cc: linux-sh@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Make platform data optional when the device is instantiated from DT and
-look up the micro-TLB number in the bus master DT node.
+No board file instantiates the IPMMU using platform data. Now that we
+have DT support, get rid of platform data.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- drivers/iommu/ipmmu-vmsa.c | 39 +++++++++++++++++++++++++++++++--------
- 1 file changed, 31 insertions(+), 8 deletions(-)
-
-Cc: devicetree@vger.kernel.org
+ drivers/iommu/ipmmu-vmsa.c               | 24 ------------------------
+ include/linux/platform_data/ipmmu-vmsa.h | 24 ------------------------
+ 2 files changed, 48 deletions(-)
+ delete mode 100644 include/linux/platform_data/ipmmu-vmsa.h
 
 diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 70bb5ba2aa51..dbbdb76d5a6b 100644
+index 5a99fad5c30f..aa44a93e8a17 100644
 --- a/drivers/iommu/ipmmu-vmsa.c
 +++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -16,6 +16,7 @@
- #include <linux/io.h>
+@@ -17,7 +17,6 @@
  #include <linux/iommu.h>
  #include <linux/module.h>
-+#include <linux/of.h>
- #include <linux/platform_data/ipmmu-vmsa.h>
+ #include <linux/of.h>
+-#include <linux/platform_data/ipmmu-vmsa.h>
  #include <linux/platform_device.h>
  #include <linux/sizes.h>
-@@ -1002,16 +1003,33 @@ static phys_addr_t ipmmu_iova_to_phys(struct iommu_domain *io_domain,
+ #include <linux/slab.h>
+@@ -30,7 +29,6 @@ struct ipmmu_vmsa_device {
+ 	void __iomem *base;
+ 	struct list_head list;
  
- static int ipmmu_find_utlb(struct ipmmu_vmsa_device *mmu, struct device *dev)
- {
--	const struct ipmmu_vmsa_master *master = mmu->pdata->masters;
--	const char *devname = dev_name(dev);
--	unsigned int i;
-+	struct of_phandle_args args;
-+	int ret;
-+
-+	if (mmu->pdata) {
-+		const struct ipmmu_vmsa_master *master = mmu->pdata->masters;
-+		const char *devname = dev_name(dev);
-+		unsigned int i;
+-	const struct ipmmu_vmsa_platform_data *pdata;
+ 	unsigned int num_utlbs;
  
--	for (i = 0; i < mmu->pdata->num_masters; ++i, ++master) {
--		if (strcmp(master->name, devname) == 0)
--			return master->utlb;
-+		for (i = 0; i < mmu->pdata->num_masters; ++i, ++master) {
-+			if (strcmp(master->name, devname) == 0)
-+				return master->utlb;
-+		}
-+
-+		return -1;
+ 	struct dma_iommu_mapping *mapping;
+@@ -1013,27 +1011,6 @@ static int ipmmu_find_utlbs(struct ipmmu_vmsa_device *mmu, struct device *dev,
+ 	unsigned int i;
+ 	int count;
+ 
+-	if (mmu->pdata) {
+-		const struct ipmmu_vmsa_master *master = mmu->pdata->masters;
+-		const char *devname = dev_name(dev);
+-		unsigned int i;
+-
+-		for (i = 0; i < mmu->pdata->num_masters; ++i, ++master) {
+-			if (strcmp(master->name, devname) == 0) {
+-				utlbs = kmalloc(sizeof(*utlbs), GFP_KERNEL);
+-				if (!utlbs)
+-					return -ENOMEM;
+-
+-				utlbs[0] = master->utlb;
+-
+-				*_utlbs = utlbs;
+-				return 1;
+-			}
+-		}
+-
+-		return -EINVAL;
+-	}
+-
+ 	count = of_count_phandle_with_args(dev->of_node, "iommus",
+ 					   "#iommu-cells");
+ 	if (count < 0)
+@@ -1243,7 +1220,6 @@ static int ipmmu_probe(struct platform_device *pdev)
  	}
  
--	return -1;
-+	ret = of_parse_phandle_with_args(dev->of_node, "iommus",
-+					 "#iommu-cells", 0, &args);
-+	if (ret < 0)
-+		return -1;
-+
-+	of_node_put(args.np);
-+
-+	if (args.np != mmu->dev->of_node || args.args_count != 1)
-+		return -1;
-+
-+	return args.args[0];
- }
+ 	mmu->dev = &pdev->dev;
+-	mmu->pdata = pdev->dev.platform_data;
+ 	mmu->num_utlbs = 32;
  
- static int ipmmu_add_device(struct device *dev)
-@@ -1156,7 +1174,7 @@ static int ipmmu_probe(struct platform_device *pdev)
- 	int irq;
- 	int ret;
- 
--	if (!pdev->dev.platform_data) {
-+	if (!IS_ENABLED(CONFIG_OF) && !pdev->dev.platform_data) {
- 		dev_err(&pdev->dev, "missing platform data\n");
- 		return -EINVAL;
- 	}
-@@ -1222,10 +1240,15 @@ static int ipmmu_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
-+static const struct of_device_id ipmmu_of_ids[] = {
-+	{ .compatible = "renesas,ipmmu-vmsa", },
-+};
-+
- static struct platform_driver ipmmu_driver = {
- 	.driver = {
- 		.owner = THIS_MODULE,
- 		.name = "ipmmu-vmsa",
-+		.of_match_table = of_match_ptr(ipmmu_of_ids),
- 	},
- 	.probe = ipmmu_probe,
- 	.remove	= ipmmu_remove,
+ 	/* Map I/O memory and request IRQ. */
+diff --git a/include/linux/platform_data/ipmmu-vmsa.h b/include/linux/platform_data/ipmmu-vmsa.h
+deleted file mode 100644
+index 5275b3ac6d37..000000000000
+--- a/include/linux/platform_data/ipmmu-vmsa.h
++++ /dev/null
+@@ -1,24 +0,0 @@
+-/*
+- * IPMMU VMSA Platform Data
+- *
+- * Copyright (C) 2014 Renesas Electronics Corporation
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; version 2 of the License.
+- */
+-
+-#ifndef __IPMMU_VMSA_H__
+-#define __IPMMU_VMSA_H__
+-
+-struct ipmmu_vmsa_master {
+-	const char *name;
+-	unsigned int utlb;
+-};
+-
+-struct ipmmu_vmsa_platform_data {
+-	const struct ipmmu_vmsa_master *masters;
+-	unsigned int num_masters;
+-};
+-
+-#endif /* __IPMMU_VMSA_H__ */
 -- 
 2.0.4
 
