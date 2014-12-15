@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 4/5] iommu/amd: Check for irq-remap support amd_iommu_prepare()
-Date: Mon, 15 Dec 2014 16:13:23 +0100
-Message-ID: <1418656404-28575-5-git-send-email-joro@8bytes.org>
+Subject: [PATCH 3/5] iommu/vt-d: Move supported-checks to
+	intel_prepare_irq_remapping()
+Date: Mon, 15 Dec 2014 16:13:22 +0100
+Message-ID: <1418656404-28575-4-git-send-email-joro@8bytes.org>
 References: <1418656404-28575-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,28 +24,80 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-This allows to get rid of the irq_remapping_supported()
-function and all its call-backs into the Intel and AMD
-IOMMU drivers.
+The checks for IRQ remapping support rely on ordering with
+dmar_table_init(), which is called in
+intel_prepare_irq_remapping(). Move the checks for IRQ
+remapping support to this function to ensure the right
+ordering.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iommu/intel_irq_remapping.c | 39 +++++++++++++++++++++----------------
+ 1 file changed, 22 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index de3390a..fa63016 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -2127,6 +2127,9 @@ static int __init iommu_go_to_state(enum iommu_init_state state)
- #ifdef CONFIG_IRQ_REMAP
- int __init amd_iommu_prepare(void)
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 45223ea..0c9226f 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -512,23 +512,6 @@ static int __init dmar_x2apic_optout(void)
+ 
+ static int __init intel_irq_remapping_supported(void)
  {
-+	if (!amd_iommu_irq_remap)
-+		return -1;
-+
- 	return iommu_go_to_state(IOMMU_ACPI_FINISHED);
+-	if (disable_irq_remap)
+-		return 0;
+-	if (irq_remap_broken) {
+-		printk(KERN_WARNING
+-			"This system BIOS has enabled interrupt remapping\n"
+-			"on a chipset that contains an erratum making that\n"
+-			"feature unstable.  To maintain system stability\n"
+-			"interrupt remapping is being disabled.  Please\n"
+-			"contact your BIOS vendor for an update\n");
+-		add_taint(TAINT_FIRMWARE_WORKAROUND, LOCKDEP_STILL_OK);
+-		disable_irq_remap = 1;
+-		return 0;
+-	}
+-
+-	if (!dmar_ir_support())
+-		return 0;
+-
+ 	return 1;
  }
  
+@@ -553,6 +536,24 @@ static int __init intel_prepare_irq_remapping(void)
+ 	struct dmar_drhd_unit *drhd;
+ 	struct intel_iommu *iommu;
+ 
++	/* First check whether IRQ remapping should be enabled */
++	if (disable_irq_remap)
++		return -1;
++
++	/* Are we running on sane hardware? */
++	if (irq_remap_broken) {
++		printk(KERN_WARNING
++			"This system BIOS has enabled interrupt remapping\n"
++			"on a chipset that contains an erratum making that\n"
++			"feature unstable.  To maintain system stability\n"
++			"interrupt remapping is being disabled.  Please\n"
++			"contact your BIOS vendor for an update\n");
++		add_taint(TAINT_FIRMWARE_WORKAROUND, LOCKDEP_STILL_OK);
++		disable_irq_remap = 1;
++		return -1;
++	}
++
++	/* Everthing seems fine so far, parse the DMAR table */
+ 	if (dmar_table_init() < 0)
+ 		return -1;
+ 
+@@ -561,6 +562,10 @@ static int __init intel_prepare_irq_remapping(void)
+ 		goto error;
+ 	}
+ 
++	/* Is interrupt remapping supported by hardware? */
++	if (!dmar_ir_support())
++		return 0;
++
+ 	/* First make sure all IOMMUs support IRQ remapping */
+ 	for_each_iommu(iommu, drhd)
+ 		if (!ecap_ir_support(iommu->ecap))
 -- 
 1.9.1
