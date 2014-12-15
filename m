@@ -1,8 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 1/5] iommu/vt-d: Allocate IRQ remapping data structures only
-	for all IOMMUs
-Date: Mon, 15 Dec 2014 16:13:20 +0100
-Message-ID: <1418656404-28575-2-git-send-email-joro@8bytes.org>
+Subject: [PATCH 2/5] iommu/vt-d: Don't check for ecap_ir_support in
+	intel_irq_remapping_supported
+Date: Mon, 15 Dec 2014 16:13:21 +0100
+Message-ID: <1418656404-28575-3-git-send-email-joro@8bytes.org>
 References: <1418656404-28575-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,39 +24,38 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-IRQ remapping is only supported when all IOMMUs in the
-system support it. So check if all IOMMUs in the system
-support IRQ remapping before doing the allocations.
+This check needs an initialized dmar-table and is already
+done in intel_prepare_irq_remapping().
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/iommu/intel_irq_remapping.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
 diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index ff35b03..3ef63b8 100644
+index 3ef63b8..45223ea 100644
 --- a/drivers/iommu/intel_irq_remapping.c
 +++ b/drivers/iommu/intel_irq_remapping.c
-@@ -568,14 +568,16 @@ static int __init intel_prepare_irq_remapping(void)
- 		goto error;
- 	}
+@@ -512,9 +512,6 @@ static int __init dmar_x2apic_optout(void)
  
--	for_each_iommu(iommu, drhd) {
-+	/* First make sure all IOMMUs support IRQ remapping */
-+	for_each_iommu(iommu, drhd)
- 		if (!ecap_ir_support(iommu->ecap))
--			continue;
-+			goto error;
+ static int __init intel_irq_remapping_supported(void)
+ {
+-	struct dmar_drhd_unit *drhd;
+-	struct intel_iommu *iommu;
+-
+ 	if (disable_irq_remap)
+ 		return 0;
+ 	if (irq_remap_broken) {
+@@ -532,10 +529,6 @@ static int __init intel_irq_remapping_supported(void)
+ 	if (!dmar_ir_support())
+ 		return 0;
  
--		/* Do the allocations early */
-+	/* Do the allocations early */
-+	for_each_iommu(iommu, drhd)
- 		if (intel_setup_irq_remapping(iommu))
- 			goto error;
--	}
-+
- 	return 0;
- error:
- 	intel_cleanup_irq_remapping();
+-	for_each_iommu(iommu, drhd)
+-		if (!ecap_ir_support(iommu->ecap))
+-			return 0;
+-
+ 	return 1;
+ }
+ 
 -- 
 1.9.1
