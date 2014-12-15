@@ -1,80 +1,66 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 09/10] ARM: shmobile: r8a7790: Add IPMMU DT nodes
-Date: Mon, 15 Dec 2014 02:13:48 +0200
-Message-ID: <1418602429-11276-10-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 05/10] iommu/ipmmu-vmsa: Add device tree bindings documentation
+Date: Mon, 15 Dec 2014 02:13:44 +0200
+Message-ID: <1418602429-11276-6-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1418602429-11276-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <1418602429-11276-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Sender: linux-sh-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org
-Cc: linux-sh@vger.kernel.org
+Cc: linux-sh@vger.kernel.org, devicetree@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
-
-Add the six IPMMU instances found in the r8a7790 to DT with a disabled
-status.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- arch/arm/boot/dts/r8a7790.dtsi | 48 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 48 insertions(+)
+ .../bindings/iommu/renesas,ipmmu-vmsa.txt          | 37 ++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
 
-diff --git a/arch/arm/boot/dts/r8a7790.dtsi b/arch/arm/boot/dts/r8a7790.dtsi
-index ffeff98fa16e..430bb67216fd 100644
---- a/arch/arm/boot/dts/r8a7790.dtsi
-+++ b/arch/arm/boot/dts/r8a7790.dtsi
-@@ -1459,4 +1459,52 @@
- 			ssi9: ssi@9 { interrupts = <0 379 IRQ_TYPE_LEVEL_HIGH>; };
- 		};
- 	};
+Cc: devicetree@vger.kernel.org
+
+diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+new file mode 100644
+index 000000000000..88b5bacc8c7f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+@@ -0,0 +1,37 @@
++* Renesas VMSA-Compatible IOMMU
 +
-+	ipmmu_sy0: mmu@e6280800 {
-+		compatible = "renesas,ipmmu-vmsa";
-+		reg = <0 0xe6280800 0 0x800>;
-+		interrupts = <0 223 IRQ_TYPE_LEVEL_HIGH>;
-+		#iommu-cells = <1>;
-+		status = "disabled";
-+	};
++The IPMMU is an IOMMU implementation compatible with the ARM VMSA page tables.
++It provides address translation for bus masters outside of the CPU, each
++connected to the IPMMU through a port called micro-TLB.
 +
-+	ipmmu_sy1: mmu@e6290800 {
-+		compatible = "renesas,ipmmu-vmsa";
-+		reg = <0 0xe6290800 0 0x800>;
-+		interrupts = <0 225 IRQ_TYPE_LEVEL_HIGH>;
-+		#iommu-cells = <1>;
-+		status = "disabled";
-+	};
 +
-+	ipmmu_ds: mmu@e6740800 {
-+		compatible = "renesas,ipmmu-vmsa";
-+		reg = <0 0xe6740800 0 0x800>;
-+		interrupts = <0 198 IRQ_TYPE_LEVEL_HIGH>;
-+		#iommu-cells = <1>;
-+		status = "disabled";
-+	};
++Required Properties:
 +
-+	ipmmu_mp: mmu@ec680800 {
-+		compatible = "renesas,ipmmu-vmsa";
-+		reg = <0 0xec680800 0 0x800>;
-+		interrupts = <0 226 IRQ_TYPE_LEVEL_HIGH>;
-+		#iommu-cells = <1>;
-+		status = "disabled";
-+	};
++  - compatible: Must contain "renesas,ipmmu-vmsa".
++  - reg: Base address and size of the IPMMU registers.
++  - interrupts: Specifier for the MMU fault interrupt.
++
++  - #iommu-cells: Must be 1.
++
++Each bus master connected to an IPMMU must reference the IPMMU in its device
++node with the following property:
++
++  - iommus: A reference to the IPMMU in two cells. The first cell is a phandle
++    to the IPMMU and the second cell the number of the micro-TLB that the
++    device is connected to.
++
++
++Example: R8A7791 IPMMU-MX and VSP1-D0 bus master
 +
 +	ipmmu_mx: mmu@fe951800 {
-+		compatible = "renesas,ipmmu-vmsa";
++		compatible = "renasas,ipmmu-vmsa";
 +		reg = <0 0xfe951800 0 0x800>;
 +		interrupts = <0 222 IRQ_TYPE_LEVEL_HIGH>;
 +		#iommu-cells = <1>;
-+		status = "disabled";
 +	};
 +
-+	ipmmu_rt: mmu@ffc80800 {
-+		compatible = "renesas,ipmmu-vmsa";
-+		reg = <0 0xffc80800 0 0x800>;
-+		interrupts = <0 307 IRQ_TYPE_LEVEL_HIGH>;
-+		#iommu-cells = <1>;
-+		status = "disabled";
++	vsp1@fe928000 {
++		...
++		iommus = <&ipmmu_mx 13>;
++		...
 +	};
- };
 -- 
 2.0.4
 
