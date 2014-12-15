@@ -1,74 +1,60 @@
-From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 02/10] iommu/ipmmu-vmsa: Flush P[UM]D entry before freeing the child page table
-Date: Mon, 15 Dec 2014 02:13:41 +0200
-Message-ID: <1418602429-11276-3-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: [PATCH 01/10] iommu/ipmmu-vmsa: Cleanup failures of ARM mapping
+	creation or attachment
+Date: Mon, 15 Dec 2014 02:13:40 +0200
+Message-ID: <1418602429-11276-2-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1418602429-11276-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1418602429-11276-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-sh@vger.kernel.org
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1418602429-11276-1-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When clearing PUD or PMD entries the child page table (if any) is freed
-and the PUD or PMD entry is then cleared. This result in a small race
-condition window during which a free page table could be accessed by the
-IPMMU.
+The ARM IOMMU mapping needs to be released when attaching the device
+fails. Add arm_iommu_release_mapping() to the error code path. This is
+safe to call with a NULL mapping, so no specific check is needed.
 
-Fix it by clearing and flushing the PUD or PMD entry before freeing the
-child page table.
+Cleanup is also missing when failing to create a mapping. Jump to the
+error code path in that case instead of returning immediately.
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 ---
- drivers/iommu/ipmmu-vmsa.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index f7036adb5634..fcb603d8b041 100644
+index 7dab5cbcc775..f7036adb5634 100644
 --- a/drivers/iommu/ipmmu-vmsa.c
 +++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -678,30 +678,33 @@ done:
+@@ -1090,7 +1090,8 @@ static int ipmmu_add_device(struct device *dev)
+ 						   SZ_1G, SZ_2G);
+ 		if (IS_ERR(mapping)) {
+ 			dev_err(mmu->dev, "failed to create ARM IOMMU mapping\n");
+-			return PTR_ERR(mapping);
++			ret = PTR_ERR(mapping);
++			goto error;
+ 		}
  
- static void ipmmu_clear_pud(struct ipmmu_vmsa_device *mmu, pud_t *pud)
- {
--	/* Free the page table. */
- 	pgtable_t table = pud_pgtable(*pud);
--	__free_page(table);
+ 		mmu->mapping = mapping;
+@@ -1106,6 +1107,7 @@ static int ipmmu_add_device(struct device *dev)
+ 	return 0;
  
- 	/* Clear the PUD. */
- 	*pud = __pud(0);
- 	ipmmu_flush_pgtable(mmu, pud, sizeof(*pud));
-+
-+	/* Free the page table. */
-+	__free_page(table);
- }
- 
- static void ipmmu_clear_pmd(struct ipmmu_vmsa_device *mmu, pud_t *pud,
- 			    pmd_t *pmd)
- {
-+	pmd_t pmdval = *pmd;
- 	unsigned int i;
- 
--	/* Free the page table. */
--	if (pmd_table(*pmd)) {
--		pgtable_t table = pmd_pgtable(*pmd);
--		__free_page(table);
--	}
--
- 	/* Clear the PMD. */
- 	*pmd = __pmd(0);
- 	ipmmu_flush_pgtable(mmu, pmd, sizeof(*pmd));
- 
-+	/* Free the page table. */
-+	if (pmd_table(pmdval)) {
-+		pgtable_t table = pmd_pgtable(pmdval);
-+
-+		__free_page(table);
-+	}
-+
- 	/* Check whether the PUD is still needed. */
- 	pmd = pmd_offset(pud, 0);
- 	for (i = 0; i < IPMMU_PTRS_PER_PMD; ++i) {
+ error:
++	arm_iommu_release_mapping(mmu->mapping);
+ 	kfree(dev->archdata.iommu);
+ 	dev->archdata.iommu = NULL;
+ 	iommu_group_remove_device(dev);
 -- 
 2.0.4
-
