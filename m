@@ -1,34 +1,34 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v2 09/10] ARM: shmobile: r8a7790: Add IPMMU DT nodes
-Date: Tue, 16 Dec 2014 16:43:40 +0100
-Message-ID: <CAMuHMdW4duOKygGxWRAbkK1w40_W8TbWHkJPYtCiZy3u0T4R6Q@mail.gmail.com>
-References: <1418737457-22042-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-	<1418737457-22042-10-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] iommu/exynos: Fix arm64 allmodconfig build
+Date: Tue, 16 Dec 2014 21:40:48 +0100
+Message-ID: <2060329.N1WYSODiQy@wuerfel>
+References: <1418658882-14809-1-git-send-email-broonie@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1418737457-22042-10-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Cc: iommu@lists.linux-foundation.org, Linux-sh list <linux-sh@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <1418658882-14809-1-git-send-email-broonie@kernel.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Mark Brown <broonie@kernel.org>, Will Deacon <will.deacon@arm.com>, Krzysztof =?utf-8?B?S296xYJvd3NraQ==?= <k.kozlowski@samsung.com>, Joerg Roedel <joro@8bytes.org>, Olof Johansson <olof@lixom.net>, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Dec 16, 2014 at 2:44 PM, Laurent Pinchart
-<laurent.pinchart+renesas@ideasonboard.com> wrote:
-> Add the six IPMMU instances found in the r8a7790 to DT with a disabled
-> status.
->
-> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+On Monday 15 December 2014 15:54:42 Mark Brown wrote:
+> The Exynos IOMMU driver uses the ARM specific dmac_flush_range() and
+> outer_flush_range() functions. This breaks the build on arm64 allmodconfig
+> in -next since support has been merged for some Exynos ARMv8 SoCs. Add a
+> dependency on ARM to keep things building until either the driver has the
+> ARM dependencies removed or the ARMv8 architecture code implements these
+> ARM specific APIs.
+> 
+> Signed-off-by: Mark Brown <broonie@kernel.org>
+> ---
+> 
+> Resending to the arm-soc people since the addition of the Exynos
+> platform for ARMv8 went via them, Krzysztof also sent a fix for this
+> earlier but it there's been no response.
+> 
 
-Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Applied to fixes branch, thansk!
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+	Arnd
