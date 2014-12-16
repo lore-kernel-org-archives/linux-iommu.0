@@ -1,52 +1,73 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v3 18/19] iommu: exynos: init from dt-specific callback instead of initcall
-Date: Tue, 16 Dec 2014 12:40:28 +0100
-Message-ID: <1681211.YVY9bd22gV@wuerfel>
-References: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com> <4894156.QdIh4JzSl0@avalon> <20141215181323.GX20738@arm.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 10/10] ARM: shmobile: r8a7791: Add IPMMU DT nodes
+Date: Tue, 16 Dec 2014 13:47:53 +0200
+Message-ID: <11086003.zET0ejo4os@avalon>
+References: <1418602429-11276-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <1521122.WC5DkGVrBt@avalon> <CAMuHMdWnOgN+rmDTo7S+o3AS2hyjgzKEza0vuUYnWz7CbksfSA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7Bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <20141215181323.GX20738@arm.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Will Deacon <will.deacon@arm.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Shaik Ameer Basha <shaik.ameer@samsung.com>, David Wodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, Tomasz Figa <tomasz.figa@gmail.com>, Cho KyongHo <pullip.cho@samsung.com>, Inki Dae <inki.dae@samsung.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Kukjin Kim <kgene.kim@samsung.com>, Olof Johansson <olof@lixom.net>, Kyungmin Park <kyungmin.park@samsung.com>, Thierry Reding <treding@nvidia.com>, "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>, Marek Szyprowski <m.szyprowski@samsung.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <CAMuHMdWnOgN+rmDTo7S+o3AS2hyjgzKEza0vuUYnWz7CbksfSA@mail.gmail.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>, iommu@lists.linux-foundation.org
+Cc: Linux-sh list <linux-sh@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Monday 15 December 2014 18:13:23 Will Deacon wrote:
-> > > > IOMMUs are not as low-level as system interrupt controllers or system
-> > > > clocks. I'm beginning to agree with Thierry that they should be treated
-> > > > as normal platform devices as they're not required earlier than probe
-> > > > time of their bus master devices.
-> > > 
-> > > Well, I think you'd have to propose patches for discussion since I'm
-> > > certainly not wed to the current approach; I just want something that
-> > > allows of_{dma,iommu}_configure to run with the information it needs.
+Hi Geert,
+
+On Tuesday 16 December 2014 11:02:03 Geert Uytterhoeven wrote:
+> On Mon, Dec 15, 2014 at 7:44 PM, Laurent Pinchart wrote:
+> > On Monday 15 December 2014 14:07:52 Geert Uytterhoeven wrote:
+> >> On Mon, Dec 15, 2014 at 1:13 AM, Laurent Pinchart wrote:
+> >> > Add the seven IPMMU instances found in the r8a7791 to DT with a
+> >> > disabled status.
+> >> > 
+> >> > Signed-off-by: Laurent Pinchart
+> >> > <laurent.pinchart+renesas@ideasonboard.com>
+> >> 
+> >> The addresses and interrupt numbers look OK to me.
+> >> However, my comment about the "0x800" offset is still valid.
+> >> Shouldn't we have two register blocks, and let the driver use only the
+> >> second one?
+> >> 
+> >> If you ignore, feel free to add my
+> >> Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
 > > 
-> > Do we need of_dma_configure() to run when the device is created, or could we 
-> > postpone it to just before probe time ?
+> > I don't want to ignore your comment, but I don't know what to do here :-/
+> > The datasheet lacks detailed information about secure vs. non-secure mode
+> > and how the two register sets are supposed to interoperate and be handled
+> > by the operating system.
 > 
-> I'm not sure I can answer that one... Arnd?
+> When in doubt, the safest thing to do is "describe the hardware in DT".
+> 
+> The datasheet says there are two register sets of size 0x800, so IMHO we
+> should have both in DT. Whether the driver only uses the second bank due to
+> our limited understanding of the hardware is something different. We can
+> still fix the driver later, if needed. Fixing the DT is, ... well...
+> complicated ;-)
 
-I believe we could postpone it to probe time, but I'd rather not.
-The way I see the arguments in favor, we have mainly cosmetic arguments:
+According to the datasheet there are two register sets sharing the same base 
+address, banked through secure mode. There's additionally an alias at a 
+different base address for non-secure registers access when running in secure 
+mode. The hardware description thus depends on whether we're running in secure 
+or non-secure mode, which doesn't play nicely with DT.
 
-- Doing it at probe time would eliminate the ugly section magic hack
-- iommu drivers could be implemented as loadable modules with platform
-  drivers, for consistency with most other drivers
+Additionally, I've tried to disable secure mode at boot time to test non-
+secure mode at the base address, but it didn't seem to make any difference. I 
+might have done something wrong though.
 
-On the other hand, I see:
+For these reasons I don't really like the idea of having two resources for 
+secure and non-secure mode. Extending the single resource to cover the base 
+address and the aliases should be fine though, I'll give it a go.
 
-- DMA configuration is traditionally done at device creation time, and
-  changing that is more likely to introduce bugs than leaving it
-  where it is.
-- On a lot of machines, the IOMMU is optional, and the probe function
-  cannot know the difference between an IOMMU driver that is left out
-  of the kernel and one that will be initialized later, using a fixed
-  entry point for initializing the IOMMU makes the behavior consistent
+> Following the rule "describe the hardware in DT", I would also add the
+> second interrupt (marked "SEC") for the DS0, MX, SY0, and GP IPMMU
+> instances.
 
-There is a third option in theory, which is to only enable the IOMMU
-as part of dma_set_mask(). I've done that in the past on powerpc, but
-the new approach seems cleaner.
+Agreed, I'll do that.
 
-	Arnd
+-- 
+Regards,
+
+Laurent Pinchart
+
