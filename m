@@ -1,73 +1,65 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+From: Magnus Damm <magnus.damm@gmail.com>
 Subject: Re: [PATCH 10/10] ARM: shmobile: r8a7791: Add IPMMU DT nodes
-Date: Tue, 16 Dec 2014 13:47:53 +0200
-Message-ID: <11086003.zET0ejo4os@avalon>
-References: <1418602429-11276-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <1521122.WC5DkGVrBt@avalon> <CAMuHMdWnOgN+rmDTo7S+o3AS2hyjgzKEza0vuUYnWz7CbksfSA@mail.gmail.com>
+Date: Tue, 16 Dec 2014 20:54:50 +0900
+Message-ID: <CANqRtoT6uBZAThYsKH0pmpd2zCzi5k0AheCDOC8Br27czSx-cw@mail.gmail.com>
+References: <1418602429-11276-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+	<1521122.WC5DkGVrBt@avalon>
+	<CANqRtoSYX10aaWu0r9GOPe+EvO2NkS4UJdLbST-aoHrv4XjG4A@mail.gmail.com>
+	<13017667.c6lii1vn0L@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdWnOgN+rmDTo7S+o3AS2hyjgzKEza0vuUYnWz7CbksfSA@mail.gmail.com>
+In-Reply-To: <13017667.c6lii1vn0L@avalon>
 Sender: linux-sh-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>, iommu@lists.linux-foundation.org
-Cc: Linux-sh list <linux-sh@vger.kernel.org>
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, iommu@lists.linux-foundation.org, Linux-sh list <linux-sh@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Geert,
+Hi Laurent,
 
-On Tuesday 16 December 2014 11:02:03 Geert Uytterhoeven wrote:
-> On Mon, Dec 15, 2014 at 7:44 PM, Laurent Pinchart wrote:
-> > On Monday 15 December 2014 14:07:52 Geert Uytterhoeven wrote:
-> >> On Mon, Dec 15, 2014 at 1:13 AM, Laurent Pinchart wrote:
-> >> > Add the seven IPMMU instances found in the r8a7791 to DT with a
-> >> > disabled status.
-> >> > 
-> >> > Signed-off-by: Laurent Pinchart
-> >> > <laurent.pinchart+renesas@ideasonboard.com>
-> >> 
-> >> The addresses and interrupt numbers look OK to me.
-> >> However, my comment about the "0x800" offset is still valid.
-> >> Shouldn't we have two register blocks, and let the driver use only the
-> >> second one?
-> >> 
-> >> If you ignore, feel free to add my
-> >> Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > 
-> > I don't want to ignore your comment, but I don't know what to do here :-/
-> > The datasheet lacks detailed information about secure vs. non-secure mode
-> > and how the two register sets are supposed to interoperate and be handled
-> > by the operating system.
-> 
-> When in doubt, the safest thing to do is "describe the hardware in DT".
-> 
-> The datasheet says there are two register sets of size 0x800, so IMHO we
-> should have both in DT. Whether the driver only uses the second bank due to
-> our limited understanding of the hardware is something different. We can
-> still fix the driver later, if needed. Fixing the DT is, ... well...
-> complicated ;-)
+On Tue, Dec 16, 2014 at 8:16 AM, Laurent Pinchart
+<laurent.pinchart@ideasonboard.com> wrote:
+> Hi Magnus,
+>
+> On Tuesday 16 December 2014 07:44:32 Magnus Damm wrote:
+>> On Tue, Dec 16, 2014 at 3:44 AM, Laurent Pinchart wrote:
+>> > On Monday 15 December 2014 14:07:52 Geert Uytterhoeven wrote:
+>> >> On Mon, Dec 15, 2014 at 1:13 AM, Laurent Pinchart wrote:
+>> >> > Add the seven IPMMU instances found in the r8a7791 to DT with a
+>> >> > disabled status.
+>> >> >
+>> >> > Signed-off-by: Laurent Pinchart
+>> >> > <laurent.pinchart+renesas@ideasonboard.com>
+>> >>
+>> >> The addresses and interrupt numbers look OK to me.
+>> >> However, my comment about the "0x800" offset is still valid.
+>> >> Shouldn't we have two register blocks, and let the driver use only the
+>> >> second one?
+>> >>
+>> >> If you ignore, feel free to add my
+>> >> Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>> >
+>> > I don't want to ignore your comment, but I don't know what to do here :-/
+>> > The datasheet lacks detailed information about secure vs. non-secure mode
+>> > and how the two register sets are supposed to interoperate and be handled
+>> > by the operating system.
+>>
+>> I don't know about that either.
+>>
+>> But how about differences within R-Car Gen2 series so far? If there
+>> are known differences then perhaps we should use part number in the
+>> compatible string?
+>
+> I haven't noticed differences between H2 and M2. V2 and E2 are extended with
+> IOMMU performance monitoring registers, so a specific compatible string is
+> needed.
 
-According to the datasheet there are two register sets sharing the same base 
-address, banked through secure mode. There's additionally an alias at a 
-different base address for non-secure registers access when running in secure 
-mode. The hardware description thus depends on whether we're running in secure 
-or non-secure mode, which doesn't play nicely with DT.
+Ok!
 
-Additionally, I've tried to disable secure mode at boot time to test non-
-secure mode at the base address, but it didn't seem to make any difference. I 
-might have done something wrong though.
+> "renesas,ipmmu-vmsa" should be the default fallback compatible string. I was
+> thinking about playing with the newer SoCs first to see how the IOMMU react
+> and then most likely add SoC-specific compatible strings.
 
-For these reasons I don't really like the idea of having two resources for 
-secure and non-secure mode. Extending the single resource to cover the base 
-address and the aliases should be fine though, I'll give it a go.
+Sounds good, thanks!
 
-> Following the rule "describe the hardware in DT", I would also add the
-> second interrupt (marked "SEC") for the DS0, MX, SY0, and GP IPMMU
-> instances.
-
-Agreed, I'll do that.
-
--- 
-Regards,
-
-Laurent Pinchart
-
+/ magnus
