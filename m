@@ -1,65 +1,66 @@
-From: Magnus Damm <magnus.damm@gmail.com>
-Subject: Re: [PATCH 10/10] ARM: shmobile: r8a7791: Add IPMMU DT nodes
-Date: Tue, 16 Dec 2014 20:54:50 +0900
-Message-ID: <CANqRtoT6uBZAThYsKH0pmpd2zCzi5k0AheCDOC8Br27czSx-cw@mail.gmail.com>
-References: <1418602429-11276-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-	<1521122.WC5DkGVrBt@avalon>
-	<CANqRtoSYX10aaWu0r9GOPe+EvO2NkS4UJdLbST-aoHrv4XjG4A@mail.gmail.com>
-	<13017667.c6lii1vn0L@avalon>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH v3 18/19] iommu: exynos: init from dt-specific callback instead of initcall
+Date: Tue, 16 Dec 2014 14:07:11 +0200
+Message-ID: <24892200.rsOlz53AM6@avalon>
+References: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com> <20141215181323.GX20738@arm.com> <1681211.YVY9bd22gV@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <13017667.c6lii1vn0L@avalon>
-Sender: linux-sh-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, iommu@lists.linux-foundation.org, Linux-sh list <linux-sh@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <1681211.YVY9bd22gV@wuerfel>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-arm-kernel@lists.infradead.org, Will Deacon <will.deacon@arm.com>, Rob Herring <robh@kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Shaik Ameer Basha <shaik.ameer@samsung.com>, David Wodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, Tomasz Figa <tomasz.figa@gmail.com>, Cho KyongHo <pullip.cho@samsung.com>, Inki Dae <inki.dae@samsung.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Kukjin Kim <kgene.kim@samsung.com>, Olof Johansson <olof@lixom.net>, Kyungmin Park <kyungmin.park@samsung.com>, Thierry Reding <treding@nvidia.com>, "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Laurent,
+Hi Arnd,
 
-On Tue, Dec 16, 2014 at 8:16 AM, Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
-> Hi Magnus,
->
-> On Tuesday 16 December 2014 07:44:32 Magnus Damm wrote:
->> On Tue, Dec 16, 2014 at 3:44 AM, Laurent Pinchart wrote:
->> > On Monday 15 December 2014 14:07:52 Geert Uytterhoeven wrote:
->> >> On Mon, Dec 15, 2014 at 1:13 AM, Laurent Pinchart wrote:
->> >> > Add the seven IPMMU instances found in the r8a7791 to DT with a
->> >> > disabled status.
->> >> >
->> >> > Signed-off-by: Laurent Pinchart
->> >> > <laurent.pinchart+renesas@ideasonboard.com>
->> >>
->> >> The addresses and interrupt numbers look OK to me.
->> >> However, my comment about the "0x800" offset is still valid.
->> >> Shouldn't we have two register blocks, and let the driver use only the
->> >> second one?
->> >>
->> >> If you ignore, feel free to add my
->> >> Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
->> >
->> > I don't want to ignore your comment, but I don't know what to do here :-/
->> > The datasheet lacks detailed information about secure vs. non-secure mode
->> > and how the two register sets are supposed to interoperate and be handled
->> > by the operating system.
->>
->> I don't know about that either.
->>
->> But how about differences within R-Car Gen2 series so far? If there
->> are known differences then perhaps we should use part number in the
->> compatible string?
->
-> I haven't noticed differences between H2 and M2. V2 and E2 are extended with
-> IOMMU performance monitoring registers, so a specific compatible string is
-> needed.
+On Tuesday 16 December 2014 12:40:28 Arnd Bergmann wrote:
+> On Monday 15 December 2014 18:13:23 Will Deacon wrote:
+> >>>> IOMMUs are not as low-level as system interrupt controllers or
+> >>>> system clocks. I'm beginning to agree with Thierry that they should
+> >>>> be treated as normal platform devices as they're not required
+> >>>> earlier than probe time of their bus master devices.
+> >>> 
+> >>> Well, I think you'd have to propose patches for discussion since I'm
+> >>> certainly not wed to the current approach; I just want something that
+> >>> allows of_{dma,iommu}_configure to run with the information it needs.
+> >> 
+> >> Do we need of_dma_configure() to run when the device is created, or
+> >> could we postpone it to just before probe time ?
+> > 
+> > I'm not sure I can answer that one... Arnd?
+> 
+> I believe we could postpone it to probe time, but I'd rather not.
+> The way I see the arguments in favor, we have mainly cosmetic arguments:
+> 
+> - Doing it at probe time would eliminate the ugly section magic hack
+> - iommu drivers could be implemented as loadable modules with platform
+>   drivers, for consistency with most other drivers
 
-Ok!
+The main argument, from my point of view, is that handling IOMMUs are normal 
+platform devices allow using all the kernel infrastructure that depends on a 
+struct device. The dev_* print helpers are nice to have, but what would make a 
+big difference is the ability to use runtime PM.
 
-> "renesas,ipmmu-vmsa" should be the default fallback compatible string. I was
-> thinking about playing with the newer SoCs first to see how the IOMMU react
-> and then most likely add SoC-specific compatible strings.
+> On the other hand, I see:
+> 
+> - DMA configuration is traditionally done at device creation time, and
+>   changing that is more likely to introduce bugs than leaving it
+>   where it is.
+> - On a lot of machines, the IOMMU is optional, and the probe function
+>   cannot know the difference between an IOMMU driver that is left out
+>   of the kernel and one that will be initialized later, using a fixed
+>   entry point for initializing the IOMMU makes the behavior consistent
 
-Sounds good, thanks!
+I'm not advocating for IOMMU support being built as a loadable module. It 
+might be nice from a development point of view, but that's about it.
 
-/ magnus
+> There is a third option in theory, which is to only enable the IOMMU
+> as part of dma_set_mask(). I've done that in the past on powerpc, but
+> the new approach seems cleaner.
+
+-- 
+Regards,
+
+Laurent Pinchart
