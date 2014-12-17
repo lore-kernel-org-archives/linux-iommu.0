@@ -1,8 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch v1 02/17] iommu,
-	x86: Restructure setup of the irq remapping feature
-Date: Wed, 17 Dec 2014 12:35:33 +0800
-Message-ID: <1418790948-22804-3-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch v1 05/17] x86/apic: Panic if kernel doesn't support x2apic but
+	BIOS has enabled x2apic
+Date: Wed, 17 Dec 2014 12:35:36 +0800
+Message-ID: <1418790948-22804-6-git-send-email-jiang.liu@linux.intel.com>
 References: <1418790948-22804-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,122 +19,77 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, HATAYAMA Daisuke <d.hatayama-+CUm20s59erQFUHtdCDX3A@public.gmane.org>, Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>, Oren Twaig <oren-Yzr3oMT/Kq5BDgjK7y7TUQ@public.gmane.org>
-Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, "H. Peter Anvin" <hpa-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "H. Peter Anvin" <hpa-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+When kernel doesn't support X2APIC but BIOS has enabled X2APIC, system
+may panic or hang without useful messages. On the other hand, it's
+hard to dynamically disable X2APIC when CONFIG_X86_X2APIC is disabled.
+So panic with a clear message in such a case.
 
-enable_IR_x2apic() calls setup_irq_remapping_ops() which by default
-installs the intel dmar remapping ops and then calls the amd iommu irq
-remapping prepare callback to figure out whether we are running on an
-AMD machine with irq remapping hardware.
+System panics as below when X2APIC is disabled and interrupt remapping
+is enabled:
+[    0.316118] LAPIC pending interrupts after 512 EOI
+[    0.322126] ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
+[    0.368655] Kernel panic - not syncing: timer doesn't work through Interrupt-remapped IO-APIC
+[    0.378300] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 3.18.0+ #340
+[    0.385300] Hardware name: Intel Corporation BRICKLAND/BRICKLAND, BIOS BRIVTIN1.86B.0051.L05.1406240953 06/24/2014
+[    0.396997]  ffff88046dc03000 ffff88046c307dd8 ffffffff8179dada 00000000000043f2
+[    0.405629]  ffffffff81a92158 ffff88046c307e58 ffffffff8179b757 0000000000000002
+[    0.414261]  0000000000000008 ffff88046c307e68 ffff88046c307e08 ffffffff813ad82b
+[    0.422890] Call Trace:
+[    0.425711]  [<ffffffff8179dada>] dump_stack+0x45/0x57
+[    0.431533]  [<ffffffff8179b757>] panic+0xc1/0x1f5
+[    0.436978]  [<ffffffff813ad82b>] ? delay_tsc+0x3b/0x70
+[    0.442910]  [<ffffffff8166fa2c>] panic_if_irq_remap+0x1c/0x20
+[    0.449524]  [<ffffffff81d73645>] setup_IO_APIC+0x405/0x82e
+[    0.464979]  [<ffffffff81d6fcc2>] native_smp_prepare_cpus+0x2d9/0x31c
+[    0.472274]  [<ffffffff81d5d0ac>] kernel_init_freeable+0xd6/0x223
+[    0.479170]  [<ffffffff81792ad0>] ? rest_init+0x80/0x80
+[    0.485099]  [<ffffffff81792ade>] kernel_init+0xe/0xf0
+[    0.490932]  [<ffffffff817a537c>] ret_from_fork+0x7c/0xb0
+[    0.497054]  [<ffffffff81792ad0>] ? rest_init+0x80/0x80
+[    0.502983] ---[ end Kernel panic - not syncing: timer doesn't work through Interrupt-remapped IO-APIC
 
-Right after that it calls irq_remapping_prepare() which pointlessly
-checks:
-	if (!remap_ops || !remap_ops->prepare)
-               return -ENODEV;
-and then calls
+System hangs as below when X2APIC and interrupt remapping are both disabled:
+[    1.102782] pci 0000:00:02.0: System wakeup disabled by ACPI
+[    1.109351] pci 0000:00:03.0: System wakeup disabled by ACPI
+[    1.115915] pci 0000:00:03.2: System wakeup disabled by ACPI
+[    1.122479] pci 0000:00:03.3: System wakeup disabled by ACPI
+[    1.132274] pci 0000:00:1c.0: Enabling MPC IRBNCE
+[    1.137620] pci 0000:00:1c.0: Intel PCH root port ACS workaround enabled
+[    1.145239] pci 0000:00:1c.0: System wakeup disabled by ACPI
+[    1.151790] pci 0000:00:1c.7: Enabling MPC IRBNCE
+[    1.157128] pci 0000:00:1c.7: Intel PCH root port ACS workaround enabled
+[    1.164748] pci 0000:00:1c.7: System wakeup disabled by ACPI
+[    1.171447] pci 0000:00:1e.0: System wakeup disabled by ACPI
+[    1.178612] acpiphp: Slot [8] registered
+[    1.183095] pci 0000:00:02.0: PCI bridge to [bus 01]
+[    1.188867] acpiphp: Slot [2] registered
 
-    remap_ops->prepare()
-
-which is silly in the AMD case as it got called from
-setup_irq_remapping_ops() already a few microseconds ago.
-
-Simplify this and just collapse everything into
-irq_remapping_prepare().
-
-The irq_remapping_prepare() remains still silly as it assigns blindly
-the intel ops, but that's not scope of this patch.
-
-The scope here is to move the preperatory work, i.e. memory
-allocations out of the atomic section which is required to enable irq
-remapping.
-
-Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Tested-by: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Acked-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Link: http://lkml.kernel.org/r/20141205084147.232633738-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org
-Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- arch/x86/include/asm/irq_remapping.h |    2 --
- arch/x86/kernel/apic/apic.c          |    3 ---
- drivers/iommu/irq_remapping.c        |   19 +++++++------------
- 3 files changed, 7 insertions(+), 17 deletions(-)
+ arch/x86/kernel/apic/apic.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
-index b7747c4c2cf2..f1b619e5a50d 100644
---- a/arch/x86/include/asm/irq_remapping.h
-+++ b/arch/x86/include/asm/irq_remapping.h
-@@ -33,7 +33,6 @@ struct irq_cfg;
- 
- #ifdef CONFIG_IRQ_REMAP
- 
--extern void setup_irq_remapping_ops(void);
- extern int irq_remapping_supported(void);
- extern void set_irq_remapping_broken(void);
- extern int irq_remapping_prepare(void);
-@@ -60,7 +59,6 @@ void irq_remap_modify_chip_defaults(struct irq_chip *chip);
- 
- #else  /* CONFIG_IRQ_REMAP */
- 
--static inline void setup_irq_remapping_ops(void) { }
- static inline int irq_remapping_supported(void) { return 0; }
- static inline void set_irq_remapping_broken(void) { }
- static inline int irq_remapping_prepare(void) { return -ENODEV; }
 diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-index ba6cc041edb1..5fd533a4c7a5 100644
+index 5fd533a4c7a5..9c43899433e3 100644
 --- a/arch/x86/kernel/apic/apic.c
 +++ b/arch/x86/kernel/apic/apic.c
-@@ -1597,9 +1597,6 @@ void __init enable_IR_x2apic(void)
+@@ -1597,6 +1597,14 @@ void __init enable_IR_x2apic(void)
  	int ret, x2apic_enabled = 0;
  	int hardware_init_ret;
  
--	/* Make sure irq_remap_ops are initialized */
--	setup_irq_remapping_ops();
--
++	if (!IS_ENABLED(CONFIG_X86_X2APIC)) {
++		u64 msr;
++
++		rdmsrl(MSR_IA32_APICBASE, msr);
++		if (msr & X2APIC_ENABLE)
++			panic("BIOS has enabled x2apic but kernel doesn't support x2apic, please disable x2apic in BIOS.\n");
++	}
++
  	hardware_init_ret = irq_remapping_prepare();
  	if (hardware_init_ret && !x2apic_supported())
  		return;
-diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index 2c3f5ad01098..5829131aa34a 100644
---- a/drivers/iommu/irq_remapping.c
-+++ b/drivers/iommu/irq_remapping.c
-@@ -194,16 +194,6 @@ static __init int setup_irqremap(char *str)
- }
- early_param("intremap", setup_irqremap);
- 
--void __init setup_irq_remapping_ops(void)
--{
--	remap_ops = &intel_irq_remap_ops;
--
--#ifdef CONFIG_AMD_IOMMU
--	if (amd_iommu_irq_ops.prepare() == 0)
--		remap_ops = &amd_iommu_irq_ops;
--#endif
--}
--
- void set_irq_remapping_broken(void)
- {
- 	irq_remap_broken = 1;
-@@ -222,9 +212,14 @@ int irq_remapping_supported(void)
- 
- int __init irq_remapping_prepare(void)
- {
--	if (!remap_ops || !remap_ops->prepare)
--		return -ENODEV;
-+	remap_ops = &intel_irq_remap_ops;
- 
-+#ifdef CONFIG_AMD_IOMMU
-+	if (amd_iommu_irq_ops.prepare() == 0) {
-+		remap_ops = &amd_iommu_irq_ops;
-+		return 0;
-+	}
-+#endif
- 	return remap_ops->prepare();
- }
- 
 -- 
 1.7.10.4
