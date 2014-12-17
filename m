@@ -1,63 +1,86 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [Linaro-mm-sig] [PATCH v3 18/19] iommu: exynos: init from dt-specific callback instead of initcall
-Date: Wed, 17 Dec 2014 18:02:51 +0200
-Message-ID: <3147207.bM49L5sBIQ@avalon>
-References: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com> <1652261.Tf8nxQyMRf@avalon> <2560037.PCKFDiopkL@wuerfel>
+From: Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [v3 16/26] KVM: Make struct kvm_irq_routing_table accessible
+Date: Wed, 17 Dec 2014 17:17:45 +0100
+Message-ID: <5491ACA9.5020507@redhat.com>
+References: <1418397300-10870-1-git-send-email-feng.wu@intel.com> <1418397300-10870-17-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <2560037.PCKFDiopkL@wuerfel>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: linaro-mm-sig@lists.linaro.org, Rob Herring <robh@kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Tomasz Figa <tomasz.figa@gmail.com>, Inki Dae <inki.dae@samsung.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Kukjin Kim <kgene.kim@samsung.com>, Olof Johansson <olof@lixom.net>, Kyungmin Park <kyungmin.park@samsung.com>, Thierry Reding <treding@nvidia.com>, Cho KyongHo <pullip.cho@samsung.com>, David Wodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1418397300-10870-17-git-send-email-feng.wu@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: iommu@lists.linux-foundation.org, kvm@vger.kernel.orgkvm@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Arnd,
 
-On Wednesday 17 December 2014 16:41:33 Arnd Bergmann wrote:
-> On Wednesday 17 December 2014 16:39:02 Laurent Pinchart wrote:
-> > On Wednesday 17 December 2014 15:27:36 Arnd Bergmann wrote:
-> > > On Wednesday 17 December 2014 01:24:42 Laurent Pinchart wrote:
-> > > > If we forbid the IOMMU driver from being compiled as a module can't we
-> > > > just rely on deferred probing ? The bus master driver will just be
-> > > > reprobed after the IOMMU gets probed, like for other devices.
-> > > > 
-> > > > This could fail in case the IOMMU device permanently fails to probe.
-> > > > There
-> > > > would be something very wrong in the system in that case, Enabling the
-> > > > bus
-> > > > masters totally transparently without IOMMU support could not be such
-> > > > a
-> > > > good idea.
-> > > 
-> > > I believe in the majority of cases today, the IOMMU is entirely
-> > > optional.
-> > > There are valid reasons for not including the IOMMU driver in the
-> > > kernel,
-> > > e.g. when you know that all the machines with that driver can DMA to
-> > > all of their RAM and you want to avoid the overhead of IOTLB misses.
-> > 
-> > Should that really be controlled by compiling the IOMMU driver out,
-> > wouldn't it be better to disable the IOMMU devices in DT in that case ?
+
+On 12/12/2014 16:14, Feng Wu wrote:
+> Move struct kvm_irq_routing_table from irqchip.c to kvm_host.h,
+> so we can use it outside of irqchip.c.
 > 
-> It's a policy decision that should only depend on the user. Modifying the
-> DT is wrong here IMHO because the device is still connected to the IOMMU
-> in hardware and we should correctly represent that.
+> Signed-off-by: Feng Wu <feng.wu@intel.com>
+> ---
+>  include/linux/kvm_host.h | 19 +++++++++++++++++++
+>  virt/kvm/irqchip.c       | 11 -----------
+>  2 files changed, 19 insertions(+), 11 deletions(-)
+> 
+> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+> index 0b9659d..cfa85ac 100644
+> --- a/include/linux/kvm_host.h
+> +++ b/include/linux/kvm_host.h
+> @@ -335,6 +335,25 @@ struct kvm_kernel_irq_routing_entry {
+>  	struct hlist_node link;
+>  };
+>  
+> +#ifdef CONFIG_HAVE_KVM_IRQ_ROUTING
+> +
+> +struct kvm_irq_routing_table {
+> +	int chip[KVM_NR_IRQCHIPS][KVM_IRQCHIP_NUM_PINS];
+> +	struct kvm_kernel_irq_routing_entry *rt_entries;
+> +	u32 nr_rt_entries;
+> +	/*
+> +	 * Array indexed by gsi. Each entry contains list of irq chips
+> +	 * the gsi is connected to.
+> +	 */
+> +	struct hlist_head map[0];
+> +};
+> +
+> +#else
+> +
+> +struct kvm_irq_routing_table {};
 
-I was thinking about setting status = "disabled" on the IOMMU nodes, not 
-removing the IOMMU references in the bus master nodes.
+If possible, just make this "struct kvm_irq_routing_table;" and pull
+this line to include/linux/kvm_types.h.
 
-> You can normally set 'iommu=off' or 'iommu=force' on the command line
-> to force it on or off rather than letting the IOMMU driver decide whether
-> the device turns it on. Not enabling the IOMMU at all should really just
-> behave the same way as 'iommu=off', anything else would be very confusing.
+Paolo
 
-Setting iommu=off sounds fine to me. The IOMMU core would then return a "no 
-IOMMU present" error instead of -EPROBE_DEFER, and probing of the bus masters 
-would continue without IOMMU support.
-
--- 
-Regards,
-
-Laurent Pinchart
+> +
+> +#endif
+> +
+>  #ifndef KVM_PRIVATE_MEM_SLOTS
+>  #define KVM_PRIVATE_MEM_SLOTS 0
+>  #endif
+> diff --git a/virt/kvm/irqchip.c b/virt/kvm/irqchip.c
+> index 7f256f3..cdf29a6 100644
+> --- a/virt/kvm/irqchip.c
+> +++ b/virt/kvm/irqchip.c
+> @@ -31,17 +31,6 @@
+>  #include <trace/events/kvm.h>
+>  #include "irq.h"
+>  
+> -struct kvm_irq_routing_table {
+> -	int chip[KVM_NR_IRQCHIPS][KVM_IRQCHIP_NUM_PINS];
+> -	struct kvm_kernel_irq_routing_entry *rt_entries;
+> -	u32 nr_rt_entries;
+> -	/*
+> -	 * Array indexed by gsi. Each entry contains list of irq chips
+> -	 * the gsi is connected to.
+> -	 */
+> -	struct hlist_head map[0];
+> -};
+> -
+>  int kvm_irq_map_gsi(struct kvm *kvm,
+>  		    struct kvm_kernel_irq_routing_entry *entries, int gsi)
+>  {
+> 
