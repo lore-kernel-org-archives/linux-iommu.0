@@ -1,133 +1,162 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH v6 6/8] dma-mapping: detect and configure IOMMU in
-	of_dma_configure
-Date: Wed, 17 Dec 2014 02:05:05 +0200
-Message-ID: <3351702.svo5za0hNC@avalon>
-References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
-	<1612493.xCj1Tx0M4k@avalon> <20141215180933.GW20738@arm.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [RFC PATCH 2/2] iommu: rockchip: Handle system-wide and runtime PM
+Date: Wed, 17 Dec 2014 02:15:31 +0200
+Message-ID: <2249350.4v5So9DQ9Z@avalon>
+References: <1418286387-9663-1-git-send-email-tfiga@chromium.org>
+ <1994723.9H6BPHKqxP@avalon>
+ <CAAFQd5BO0cU-cbGMGg5aJ79Th-8a-QC0Qces9cuuGPvwUc5yhw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20141215180933.GW20738-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CAAFQd5BO0cU-cbGMGg5aJ79Th-8a-QC0Qces9cuuGPvwUc5yhw@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Tomasz Figa <tfiga@chromium.org>
+Cc: Len Brown <len.brown@intel.com>, Ulf Hansson <ulf.hansson@linaro.org>, Heiko Stuebner <heiko@sntech.de>, Geert Uytterhoeven <geert+renesas@glider.be>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, Kevin Hilman <khilman@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Daniel Kurtz <djkurtz@chromium.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, iommu@lists.linux-foundation.org, Pavel Machek <pavel@ucw.cz>, Sylwester Nawrocki <s.nawrocki@samsung.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+Hi Tomasz,
 
-On Monday 15 December 2014 18:09:33 Will Deacon wrote:
-> On Mon, Dec 15, 2014 at 05:16:50PM +0000, Laurent Pinchart wrote:
-> > On Monday 15 December 2014 16:40:41 Will Deacon wrote:
-> >> On Sun, Dec 14, 2014 at 03:49:34PM +0000, Laurent Pinchart wrote:
-> >>> On Wednesday 10 December 2014 15:08:53 Will Deacon wrote:
-> >>>> On Wed, Dec 10, 2014 at 02:52:56PM +0000, Rob Clark wrote:
-> >>>>> so, what is the way for a driver that explicitly wants to manage
-> >>>>> it's own device virtual address space to opt out of this?  I
-> >>>>> suspect that won't be the common case, but for a gpu, if dma layer
-> >>>>> all of a sudden thinks it is in control of the gpu's virtual
-> >>>>> address space, things are going to end in tears..
+On Tuesday 16 December 2014 11:18:33 Tomasz Figa wrote:
+> On Tue, Dec 16, 2014 at 4:53 AM, Laurent Pinchart wrote:
+> > On Monday 15 December 2014 11:39:01 Tomasz Figa wrote:
+> >> On Sat, Dec 13, 2014 at 5:47 AM, Laurent Pinchart wrote:
+> >>> On Friday 12 December 2014 13:15:51 Tomasz Figa wrote:
+> >>>> On Fri, Dec 12, 2014 at 5:48 AM, Rafael J. Wysocki wrote:
+> >>>>> On Thursday, December 11, 2014 04:51:37 PM Ulf Hansson wrote:
+> >>>>>> On 11 December 2014 at 16:31, Kevin Hilman wrote:
+> >>>>>>> [+ Laurent Pinchart]
+> >>>>>>> 
+> >>>>>>> Tomasz Figa <tfiga@chromium.org> writes:
+> >>>>>>>> On Thu, Dec 11, 2014 at 8:58 PM, Ulf Hansson wrote:
+> >>>>>>> [...]
+> >>>>>>> 
+> >>>>>>>>>> @@ -988,11 +1107,28 @@ static int rk_iommu_probe(struct
+> >>>>>>>>>> platform_device *pdev)
+> >>>>>>>>>>                 return -ENXIO;
+> >>>>>>>>>>         }
+> >>>>>>>>>> 
+> >>>>>>>>>> +       pm_runtime_no_callbacks(dev);
+> >>>>>>>>>> +       pm_runtime_enable(dev);
+> >>>>>>>>>> +
+> >>>>>>>>>> +       /* Synchronize state of the domain with driver data. */
+> >>>>>>>>>> +       pm_runtime_get_sync(dev);
+> >>>>>>>>>> +       iommu->is_powered = true;
+> >>>>>>>>> 
+> >>>>>>>>> Doesn't the runtime PM status reflect the value of "is_powered",
+> >>>>>>>>> thus why do you need to have a copy of it? Could it perpahps be
+> >>>>>>>>> that you try to cope with the case when CONFIG_PM is unset?
+> >>>>>>>> 
+> >>>>>>>> It's worth noting that this driver fully relies on status of other
+> >>>>>>>> devices in the power domain the IOMMU is in and does not enforce
+> >>>>>>>> the status on its own. So in general, as far as my understanding
+> >>>>>>>> of PM runtime subsystem, the status of the IOMMU device will be
+> >>>>>>>> always suspended, because nobody will call pm_runtime_get() on it
+> >>>>>>>> (except the get and put pair in probe). So is_powered is here to
+> >>>>>>>> track status of the domain, not the device. Feel free to suggest a
+> >>>>>>>> better way, though.
+> >>>>>>> 
+> >>>>>>> I still don't like these notifiers.  I think they add ways to
+> >>>>>>> bypass having proper runtime PM implemented for devices/subsystems.
+> >>>>>> 
+> >>>>>> I do agree, but I haven't found another good solution to the
+> >>>>>> problem.
+> >>>>> 
+> >>>>> For the record, I'm not liking this mostly because it "fixes" a
+> >>>>> generic problem in a way that's hidden in the genpd code and very
+> >>>>> indirect.
 > >>>> 
-> >>>> I think you'll need to detach from the DMA domain, then have the
-> >>>> driver manage everything itself. As you say, it's not the common
-> >>>> case, so you may need to add some hooks for detaching from the
-> >>>> default domain and swizzling your DMA ops.
+> >>>> Well, that's true. This is indeed a generic problem of PM dependencies
+> >>>> between devices (other than those represented by parent-child
+> >>>> relation), which in fact doesn't have much to do with genpd, but
+> >>>> rather with those devices directly. It is just that genpd is the most
+> >>>> convenient location to solve this in current code and in a simple way.
+> >>>> In other words, I see this solution as a reasonable way to get the
+> >>>> problem solved quickly for now, so that we can start thinking about a
+> >>>> more elegant solution.
+> >>>> 
+> >>>>>>> From a high-level, the IOMMU is just another device inside the PM
+> >>>>>>> domain, so ideally it should be doing it's own _get() and _put()
+> >>>>>>> calls so the PM domain code would just do the right thing without
+> >>>>>>> the need for notifiers.
+> >>>>>> 
+> >>>>>> As I understand it, the IOMMU (or for other similar cases)
+> >>>>>> shouldn't be doing any get() and put() at all because there are no
+> >>>>>> IO API to serve request from.
 > >>> 
-> >>> I'm wondering if it's such an exotic case after all. I can see two
-> >>> reasons not to use the default domain. In addition to special
-> >>> requirements coming from the bus master side, the IOMMU itself might
-> >>> not support one domain per bus master (I'm of course raising the issue
-> >>> from a very selfish Renesas IPMMU point of view).
+> >>> Speaking purely from an IOMMU point of view that's not entirely tree.
+> >>> IOMMU drivers expose map and unmap operations, so they can track
+> >>> whether any memory is mapped. From a bus master point of view the IOMMU
+> >>> map and unmap operations are hidden by the DMA mapping API. The IOMMU
+> >>> can thus track the existence of mappings without any IOMMU awareness in
+> >>> the bus master driver.
+> >>> 
+> >>> If no mapping exist the IOMMU shouldn't receive any translation
+> >>> request. An IOMMU driver could thus call pm_runtime_get_sync() in the
+> >>> map handler when creating the first mapping, and pm_runtime_put() in
+> >>> the unmap handler when tearing the last mapping down.
+> >>> 
+> >>> One could argue that the IOMMU would end up being powered more often
+> >>> than strictly needed, as bus masters drivers, even when written
+> >>> properly, could keep mappings around at times they don't perform bus
+> >>> access. This is true, and that's an argument I've raised during the
+> >>> last kernel summit. The general response (including Linus Torvald's)
+> >>> was that micro-optimizing power management might not be worth it, and
+> >>> that measurements proving that the gain is worth it are required before
+> >>> introducing new APIs to solve the problem. I can't disagree with that
+> >>> argument.
 > >> 
-> >> Do you mean that certain masters must be grouped into the same domain,
-> >> or that the IOMMU can fail with -ENOSPC?
+> >> This would be a micro optimization if the IOMMU was located in its own
+> >> power domain. Unfortunately in most cases it is not, so keeping all
+> >> the devices in the domain powered on, because one of them have a
+> >> mapping created doesn't sound like a good idea.
+> >> 
+> >> Moreover, most of the drivers will keep the mapping for much longer
+> >> than one run cycle. Please take a look at V4L2's videobuf2 subsystem
+> >> (which I guess you are more familiar with than me;)), which will keep
+> >> MMAP buffers mapped in IOMMU address space for their whole lifetime. I
+> >> believe similar is the case for DRM drivers.
 > > 
-> > My IOMMU has hardware supports for 4 domains, and serves N masters (where
-> > N is dependent on the SoC but is > 4). In its current form the driver
-> > supports a single domain and thus detaches devices from the default
-> > domain in the add_device callback:
->
-> Hmm, ok. Ideally, you wouldn't need to do any of that in the driver, but I
-> can understand why you decided to go down that route.
+> > Yes, but that doesn't mean it gets out of control. Buffers shouldn't be
+> > allocated if they won't be used. Granted, they could be preallocated (or
+> > rather premapped) slightly before being used, but in sane use cases that
+> > shouldn't be long before the hardware needs to be turned on.
+> 
+> Assuming that we don't have a third party, called "user", involved.
 
-I'm of course open to alternative suggestions :-)
+Who needs that ? :-D
 
-> > 	/*
-> > 	 * Detach the device from the default ARM VA mapping and attach it to
-> > 	 * our private mapping.
-> > 	 */
-> > 	arm_iommu_detach_device(dev);
-> > 	ret = arm_iommu_attach_device(dev, mmu->mapping);
-> > 	if (ret < 0) {
-> > 	
-> > 		dev_err(dev, "Failed to attach device to VA mapping\n");
-> > 		return ret;
-> > 	
-> > 	}
-> > 
-> > I would have implemented that in the of_xlate callback, but that's too
-> > early as the ARM default domain isn't created yet at that point.
-> 
-> Yup, the mythical ->get_default_domain might be the right place instead.
-> 
-> > Using a single domain is a bit of a waste of resources in my case, so an
-> > evolution would be to create four domains and assign devices to them based
-> > on a policy. The policy could be fixed (round-robin for instance), or
-> > configurable (possibly through DT, although it's really a policy, not a
-> > hardware description).
-> 
-> I think having one default domain, which is home to all of the masters that
-> don't have any DMA restrictions is a good use of the hardware. That then
-> leaves you with three domains to cover VFIO, devices with DMA limitations
-> and potentially device isolation (if we had a way to describe that).
-> 
-> >> For the former, we need a way to represent IOMMU groups for the platform
-> >> bus.
-> > 
-> > To be honest I'm not entirely sure how IOMMU groups are supposed to be
-> > used. I understand they can be used by VFIO to group several masters that
-> > will be able to see each other's memory through the same page table, and
-> > also that a page table could be shared between multiple groups. When it
-> > comes to group creation, though, things get fuzzy. I started with
-> > creating one group per master in my driver, which is probably not the
-> > thing to do. The Exynos IOMMU driver used to do the same, until Marek's
-> > patch series converting it to DT- based instantiation (on top of your
-> > patch set) has removed groups altogether. Groups seem to be more or less
-> > optional, except in a couple of places (for instance the remove_device
-> > callback will not be called by the BUS_NOTIFY_DEL_DEVICE notifier if the
-> > device isn't part of an iommu group).
-> > 
-> > I'd appreciate if someone could clarify this to help me make an informed
-> > opinion on the topic.
-> 
-> Ok, an iommu_group is the minimum granularity for which a specific IOMMU
-> can offer address translation. So, if your IPMMU can isolate an arbitrary
-> device (assuming there is a domain available), then each device is in its
-> own iommu_group. This isn't always the case, for example if two masters are
-> behind some sort of bridge that makes them indistinguishable to the IOMMU
-> (perhaps they appear to have the same master ID), then they would have to
-> be in the same iommu_group. Essentially, iommu_groups are a property of
-> the hardware and should be instantiated by the bus. PCI does this, but
-> we don't yet have anything for the platform bus.
-> 
-> VFIO puts multiple groups (now called vfio_groups) into a container. The
-> container is synoymous to an iommu_domain (i.e. a shared address space).
+> A simple use case is video playback pause. Usually all the software state
+> (including output buffers that can be used as reference for decoding next
+> frames) needs to be preserved to continue decoding after resume, but it
+> would be nice to power off the decoder, if it is unused for some period. In
+> addition, we would like the pause/resume operation to be fast, so
+> unmapping/freeing buffers and then exactly the opposite on resume doesn't
+> sound like a good idea.
 
-Thank you for the explanation, that was very informative. It would be nice to 
-capture that somewhere in Documentation/ ;-)
+OK, then we have one possible use case. I expect people to still want to see 
+power consumption numbers though.
 
-I'll thus create one group per bus master in the of_xlate function, as my 
-platforms don't have masters indistinguishable to the IOMMUs (at least not to 
-my knowledge).
+You can call me annoying, but I'm not sure whether a generic PM dependency 
+implementation, while it could be a good idea in general, is the best solution 
+here, especially if the bus master and the IOMMU are in a different power 
+domain. The bus master could provide functions that don't require DMA access. 
+For instance a camera controller could feed its output to the display 
+directly, without going through memory. In that case we probably don't want to 
+power the IOMMU and its complete power domain on when using the camera 
+controller in that mode.
+
+One alternative solution would be to extend the DMA mapping API with two 
+functions to signal that DMA is about to be started and that DMA has now 
+finished. It might be considered too ad-hoc though.
 
 -- 
 Regards,
