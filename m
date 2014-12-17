@@ -1,8 +1,7 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch v1 11/17] iommu/vt-d: Allow IR works in XAPIC mode though CPU
-	works in X2APIC mode
-Date: Wed, 17 Dec 2014 12:35:42 +0800
-Message-ID: <1418790948-22804-12-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch v1 12/17] x86/apic: Only disable CPU x2apic mode when necessary
+Date: Wed, 17 Dec 2014 12:35:43 +0800
+Message-ID: <1418790948-22804-13-git-send-email-jiang.liu@linux.intel.com>
 References: <1418790948-22804-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,70 +17,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, HATAYAMA Daisuke <d.hatayama-+CUm20s59erQFUHtdCDX3A@public.gmane.org>, Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>, Oren Twaig <oren-Yzr3oMT/Kq5BDgjK7y7TUQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "H. Peter Anvin" <hpa-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Currently if CPU supports X2APIC, IR hardware must work in X2APIC mode
-or disabled. Change the code to support IR working in XAPIC mode when
-CPU supports X2APIC. Then the CPU APIC driver will decide how to handle
-such as configuration by:
-1) Disabling X2APIC mode
-2) Forcing X2APIC physical mode
+When interrupt remapping hardware is not in X2APIC, CPU X2APIC mode
+will be disabled if:
+1) Maximum CPU APIC ID is bigger than 255
+2) hypervisior doesn't support x2apic mode.
 
-This change also fixes a live locking when
-1) BIOS enables CPU X2APIC
-2) DMAR table disables X2APIC mode or IR hardware doesn't support X2APIC
-with following messages:
-[   37.863463] dmar: INTR-REMAP: Request device [[f0:1f.7] fault index 2
-[   37.863463] INTR-REMAP:[fault reason 36] Detected reserved fields in the IRTE entry
-[   37.879372] dmar: INTR-REMAP: Request device [[f0:1f.7] fault index 2
-[   37.879372] INTR-REMAP:[fault reason 36] Detected reserved fields in the IRTE entry
-[   37.895282] dmar: INTR-REMAP: Request device [[f0:1f.7] fault index 2
-[   37.895282] INTR-REMAP:[fault reason 36] Detected reserved fields in the IRTE entry
-[   37.911192] dmar: INTR-REMAP: Request device [[f0:1f.7] fault index 2
+But we should only check whether hypervisor supports X2APIC mode when
+hypervisor(CONFIG_HYPERVISOR_GUEST) is enabled, otherwise X2APIC will
+always be disabled when CONFIG_HYPERVISOR_GUEST is disabled and IR
+doesn't work in X2APIC mode.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ arch/x86/kernel/apic/apic.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index a47cb31f198e..caf803ab1abc 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -32,8 +32,9 @@ struct hpet_scope {
- };
- 
- #define IR_X2APIC_MODE(mode) (mode ? (1 << 11) : 0)
--#define IRTE_DEST(dest) ((x2apic_mode) ? dest : dest << 8)
-+#define IRTE_DEST(dest) ((eim_mode) ? dest : dest << 8)
- 
-+static int __read_mostly eim_mode;
- static struct ioapic_scope ir_ioapic[MAX_IO_APICS];
- static struct hpet_scope ir_hpet[MAX_HPET_TBS];
- 
-@@ -644,8 +645,6 @@ static int __init intel_enable_irq_remapping(void)
- 	int eim = 0;
- 
- 	if (x2apic_supported()) {
--		pr_info("Queued invalidation will be enabled to support x2apic and Intr-remapping.\n");
--
- 		eim = !dmar_x2apic_optout();
- 		if (!eim)
- 			printk(KERN_WARNING
-@@ -683,8 +682,11 @@ static int __init intel_enable_irq_remapping(void)
- 		if (eim && !ecap_eim_support(iommu->ecap)) {
- 			printk(KERN_INFO "DRHD %Lx: EIM not supported by DRHD, "
- 			       " ecap %Lx\n", drhd->reg_base_addr, iommu->ecap);
--			goto error;
-+			eim = 0;
- 		}
-+	eim_mode = eim;
-+	if (eim)
-+		pr_info("Queued invalidation will be enabled to support x2apic and Intr-remapping.\n");
- 
- 	/*
- 	 * Enable queued invalidation for all the DRHD's.
+diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
+index c6204eab3d1b..95ed9e7e7548 100644
+--- a/arch/x86/kernel/apic/apic.c
++++ b/arch/x86/kernel/apic/apic.c
+@@ -1601,7 +1601,8 @@ static __init void try_to_enable_x2apic(int ir_stat)
+ 		 * under KVM
+ 		 */
+ 		if (max_physical_apicid > 255 ||
+-		    !hypervisor_x2apic_available()) {
++		    (IS_ENABLED(CONFIG_HYPERVISOR_GUEST) &&
++		     !hypervisor_x2apic_available())) {
+ 			pr_info("IRQ remapping doesn't support X2APIC mode, disable x2apic.\n");
+ 			if (x2apic_preenabled)
+ 				disable_x2apic();
 -- 
 1.7.10.4
