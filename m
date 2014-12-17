@@ -1,162 +1,90 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [RFC PATCH 2/2] iommu: rockchip: Handle system-wide and runtime PM
-Date: Wed, 17 Dec 2014 02:15:31 +0200
-Message-ID: <2249350.4v5So9DQ9Z@avalon>
-References: <1418286387-9663-1-git-send-email-tfiga@chromium.org>
- <1994723.9H6BPHKqxP@avalon>
- <CAAFQd5BO0cU-cbGMGg5aJ79Th-8a-QC0Qces9cuuGPvwUc5yhw@mail.gmail.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH v6 6/8] dma-mapping: detect and configure IOMMU in
+	of_dma_configure
+Date: Wed, 17 Dec 2014 02:19:45 +0200
+Message-ID: <35498434.EVQZ75aAeX@avalon>
+References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
+	<6311849.8NniZ58Jf1@avalon> <20141215113252.GH20738@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CAAFQd5BO0cU-cbGMGg5aJ79Th-8a-QC0Qces9cuuGPvwUc5yhw@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Tomasz Figa <tfiga@chromium.org>
-Cc: Len Brown <len.brown@intel.com>, Ulf Hansson <ulf.hansson@linaro.org>, Heiko Stuebner <heiko@sntech.de>, Geert Uytterhoeven <geert+renesas@glider.be>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, Kevin Hilman <khilman@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Daniel Kurtz <djkurtz@chromium.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, iommu@lists.linux-foundation.org, Pavel Machek <pavel@ucw.cz>, Sylwester Nawrocki <s.nawrocki@samsung.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20141215113252.GH20738-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Tomasz,
+Hi Will,
 
-On Tuesday 16 December 2014 11:18:33 Tomasz Figa wrote:
-> On Tue, Dec 16, 2014 at 4:53 AM, Laurent Pinchart wrote:
-> > On Monday 15 December 2014 11:39:01 Tomasz Figa wrote:
-> >> On Sat, Dec 13, 2014 at 5:47 AM, Laurent Pinchart wrote:
-> >>> On Friday 12 December 2014 13:15:51 Tomasz Figa wrote:
-> >>>> On Fri, Dec 12, 2014 at 5:48 AM, Rafael J. Wysocki wrote:
-> >>>>> On Thursday, December 11, 2014 04:51:37 PM Ulf Hansson wrote:
-> >>>>>> On 11 December 2014 at 16:31, Kevin Hilman wrote:
-> >>>>>>> [+ Laurent Pinchart]
-> >>>>>>> 
-> >>>>>>> Tomasz Figa <tfiga@chromium.org> writes:
-> >>>>>>>> On Thu, Dec 11, 2014 at 8:58 PM, Ulf Hansson wrote:
-> >>>>>>> [...]
-> >>>>>>> 
-> >>>>>>>>>> @@ -988,11 +1107,28 @@ static int rk_iommu_probe(struct
-> >>>>>>>>>> platform_device *pdev)
-> >>>>>>>>>>                 return -ENXIO;
-> >>>>>>>>>>         }
-> >>>>>>>>>> 
-> >>>>>>>>>> +       pm_runtime_no_callbacks(dev);
-> >>>>>>>>>> +       pm_runtime_enable(dev);
-> >>>>>>>>>> +
-> >>>>>>>>>> +       /* Synchronize state of the domain with driver data. */
-> >>>>>>>>>> +       pm_runtime_get_sync(dev);
-> >>>>>>>>>> +       iommu->is_powered = true;
-> >>>>>>>>> 
-> >>>>>>>>> Doesn't the runtime PM status reflect the value of "is_powered",
-> >>>>>>>>> thus why do you need to have a copy of it? Could it perpahps be
-> >>>>>>>>> that you try to cope with the case when CONFIG_PM is unset?
-> >>>>>>>> 
-> >>>>>>>> It's worth noting that this driver fully relies on status of other
-> >>>>>>>> devices in the power domain the IOMMU is in and does not enforce
-> >>>>>>>> the status on its own. So in general, as far as my understanding
-> >>>>>>>> of PM runtime subsystem, the status of the IOMMU device will be
-> >>>>>>>> always suspended, because nobody will call pm_runtime_get() on it
-> >>>>>>>> (except the get and put pair in probe). So is_powered is here to
-> >>>>>>>> track status of the domain, not the device. Feel free to suggest a
-> >>>>>>>> better way, though.
-> >>>>>>> 
-> >>>>>>> I still don't like these notifiers.  I think they add ways to
-> >>>>>>> bypass having proper runtime PM implemented for devices/subsystems.
-> >>>>>> 
-> >>>>>> I do agree, but I haven't found another good solution to the
-> >>>>>> problem.
-> >>>>> 
-> >>>>> For the record, I'm not liking this mostly because it "fixes" a
-> >>>>> generic problem in a way that's hidden in the genpd code and very
-> >>>>> indirect.
-> >>>> 
-> >>>> Well, that's true. This is indeed a generic problem of PM dependencies
-> >>>> between devices (other than those represented by parent-child
-> >>>> relation), which in fact doesn't have much to do with genpd, but
-> >>>> rather with those devices directly. It is just that genpd is the most
-> >>>> convenient location to solve this in current code and in a simple way.
-> >>>> In other words, I see this solution as a reasonable way to get the
-> >>>> problem solved quickly for now, so that we can start thinking about a
-> >>>> more elegant solution.
-> >>>> 
-> >>>>>>> From a high-level, the IOMMU is just another device inside the PM
-> >>>>>>> domain, so ideally it should be doing it's own _get() and _put()
-> >>>>>>> calls so the PM domain code would just do the right thing without
-> >>>>>>> the need for notifiers.
-> >>>>>> 
-> >>>>>> As I understand it, the IOMMU (or for other similar cases)
-> >>>>>> shouldn't be doing any get() and put() at all because there are no
-> >>>>>> IO API to serve request from.
-> >>> 
-> >>> Speaking purely from an IOMMU point of view that's not entirely tree.
-> >>> IOMMU drivers expose map and unmap operations, so they can track
-> >>> whether any memory is mapped. From a bus master point of view the IOMMU
-> >>> map and unmap operations are hidden by the DMA mapping API. The IOMMU
-> >>> can thus track the existence of mappings without any IOMMU awareness in
-> >>> the bus master driver.
-> >>> 
-> >>> If no mapping exist the IOMMU shouldn't receive any translation
-> >>> request. An IOMMU driver could thus call pm_runtime_get_sync() in the
-> >>> map handler when creating the first mapping, and pm_runtime_put() in
-> >>> the unmap handler when tearing the last mapping down.
-> >>> 
-> >>> One could argue that the IOMMU would end up being powered more often
-> >>> than strictly needed, as bus masters drivers, even when written
-> >>> properly, could keep mappings around at times they don't perform bus
-> >>> access. This is true, and that's an argument I've raised during the
-> >>> last kernel summit. The general response (including Linus Torvald's)
-> >>> was that micro-optimizing power management might not be worth it, and
-> >>> that measurements proving that the gain is worth it are required before
-> >>> introducing new APIs to solve the problem. I can't disagree with that
-> >>> argument.
-> >> 
-> >> This would be a micro optimization if the IOMMU was located in its own
-> >> power domain. Unfortunately in most cases it is not, so keeping all
-> >> the devices in the domain powered on, because one of them have a
-> >> mapping created doesn't sound like a good idea.
-> >> 
-> >> Moreover, most of the drivers will keep the mapping for much longer
-> >> than one run cycle. Please take a look at V4L2's videobuf2 subsystem
-> >> (which I guess you are more familiar with than me;)), which will keep
-> >> MMAP buffers mapped in IOMMU address space for their whole lifetime. I
-> >> believe similar is the case for DRM drivers.
-> > 
-> > Yes, but that doesn't mean it gets out of control. Buffers shouldn't be
-> > allocated if they won't be used. Granted, they could be preallocated (or
-> > rather premapped) slightly before being used, but in sane use cases that
-> > shouldn't be long before the hardware needs to be turned on.
+On Monday 15 December 2014 11:32:52 Will Deacon wrote:
+> On Sun, Dec 14, 2014 at 03:51:13PM +0000, Laurent Pinchart wrote:
+> > On Monday 01 December 2014 16:57:12 Will Deacon wrote:
+> > > This patch extends of_dma_configure so that it sets up the IOMMU for a
+> > > device, as well as the coherent/non-coherent DMA mapping ops.
+> > > 
+> > > Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+> > > Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> > > Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> > > Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 > 
-> Assuming that we don't have a third party, called "user", involved.
+> [...]
+> 
+> > > +static void of_dma_deconfigure(struct device *dev)
+> > > +{
+> > > +	arch_teardown_dma_ops(dev);
+> > >  }
+> > >  
+> > >  /**
+> > > @@ -223,16 +234,12 @@ static struct platform_device
+> > > *of_platform_device_create_pdata( if (!dev)
+> > > 
+> > >  		goto err_clear_flag;
+> > > 
+> > > -	of_dma_configure(&dev->dev);
+> > >  	dev->dev.bus = &platform_bus_type;
+> > >  	dev->dev.platform_data = platform_data;
+ > > -
+> > > -	/* We do not fill the DMA ops for platform devices by default.
+> > > -	 * This is currently the responsibility of the platform code
+> > > -	 * to do such, possibly using a device notifier
+> > > -	 */
+> > > +	of_dma_configure(&dev->dev);
+> > >  	if (of_device_add(dev) != 0) {
+> > > +		of_dma_deconfigure(&dev->dev);
+> > 
+> > Don't you also need to call of_dma_deconfigure() when the device is
+> > destroyed ? Otherwise the default domain created by arch_setup_dma_ops()
+> > will be leaked.
+>
+> Something like below?
 
-Who needs that ? :-D
+Yes, something like that. This will however cause a dev_warn("Not attached") 
+message to be printed for devices that have no IOMMU, that should be fixed in 
+the arch code.
 
-> A simple use case is video playback pause. Usually all the software state
-> (including output buffers that can be used as reference for decoding next
-> frames) needs to be preserved to continue decoding after resume, but it
-> would be nice to power off the decoder, if it is unused for some period. In
-> addition, we would like the pause/resume operation to be fast, so
-> unmapping/freeing buffers and then exactly the opposite on resume doesn't
-> sound like a good idea.
-
-OK, then we have one possible use case. I expect people to still want to see 
-power consumption numbers though.
-
-You can call me annoying, but I'm not sure whether a generic PM dependency 
-implementation, while it could be a good idea in general, is the best solution 
-here, especially if the bus master and the IOMMU are in a different power 
-domain. The bus master could provide functions that don't require DMA access. 
-For instance a camera controller could feed its output to the display 
-directly, without going through memory. In that case we probably don't want to 
-power the IOMMU and its complete power domain on when using the camera 
-controller in that mode.
-
-One alternative solution would be to extend the DMA mapping API with two 
-functions to signal that DMA is about to be started and that DMA has now 
-finished. It might be considered too ad-hoc though.
+> --->8
+> 
+> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+> index b89caf8c7586..ec29c25b4fce 100644
+> --- a/drivers/of/platform.c
+> +++ b/drivers/of/platform.c
+> @@ -525,6 +525,7 @@ static int of_platform_device_destroy(struct device
+> *dev, void *data) amba_device_unregister(to_amba_device(dev));
+>  #endif
+> 
+> +       of_dma_deconfigure(dev);
+>         of_node_clear_flag(dev->of_node, OF_POPULATED);
+>         of_node_clear_flag(dev->of_node, OF_POPULATED_BUS);
+>         return 0;
 
 -- 
 Regards,
