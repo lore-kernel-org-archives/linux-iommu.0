@@ -1,115 +1,95 @@
-From: Arnd Bergmann <arnd@arndb.de>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
 Subject: Re: [PATCH v6 6/8] dma-mapping: detect and configure IOMMU in
- of_dma_configure
-Date: Wed, 17 Dec 2014 16:35:29 +0100
-Message-ID: <2299294.lPnEQgl4lK@wuerfel>
+	of_dma_configure
+Date: Wed, 17 Dec 2014 16:38:22 +0100
+Message-ID: <1926348.VsVWqO766S@wuerfel>
 References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
- <3099591.NlcSS8Qjlv@wuerfel> <20141217144518.GE870@arm.com>
+	<549192D2.10008@arm.com> <20141217150158.GF870@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20141217144518.GE870@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Joerg Roedel <jroedel@suse.de>, Will Deacon <will.deacon@arm.com>, Rob Clark <robdclark@gmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Thierry Reding <thierry.reding@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Varun Sethi <Varun.Sethi@freescale.com>, David Woodhouse <dwmw2@infradead.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20141217150158.GF870-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wednesday 17 December 2014 14:45:18 Will Deacon wrote:
-> On Wed, Dec 17, 2014 at 02:15:12PM +0000, Arnd Bergmann wrote:
-> > On Wednesday 17 December 2014 12:09:49 Will Deacon wrote:
-> > > On Tue, Dec 16, 2014 at 12:08:15PM +0000, Arnd Bergmann wrote:
-> > > > On Monday 15 December 2014 18:09:33 Will Deacon wrote:
-> > > For iommu_group creation, that could be done in the of code by treating the
-> > > master IDs as bus IDs on a per-IOMMU bus; when a new device is probed, we
-> > > can look at the set of devices with intersecting IDs and create a group
-> > > containing those. This is similar to walking a PCI topology to establish DMA
-> > > aliases.
-> > > 
+On Wednesday 17 December 2014 15:01:58 Will Deacon wrote:
+> On Wed, Dec 17, 2014 at 02:27:30PM +0000, Robin Murphy wrote:
+> > On 17/12/14 12:09, Will Deacon wrote:
+> > > I think that's a slightly different case. The `grouping' in the DT, is on a
+> > > per-master basis where a master may have a set of StreamIDs, which can be
+> > > expressed in a more efficient (per-IOMMU) manner that cannot easily be
+> > > determined at runtime.
+> > 
+> > I'm pretty convinced that automatic SMR allocation is solvable; I was 
+> > planning to take a look at it soon, once I've finished warming up the 
+> > dormant mathematician in me on implementing the OF group allocator. So 
+> > far I'm lucky that stream indexing is sufficient for the bits of our 
+> > hardware that actually work.
+> 
+> Hmm, a few of us have looked at that and failed, so I'm all ears if you
+> think you can do it. The main issue is that you need *complete* knowledge
+> of the allocated StreamID space before you can safely create any SMR entry
+> unless you restrict yourself to consecutive, power-of-2 sized ID regions
+> for each master (which doesn't match reality, unfortunately).
+
+Right, scanning the entire device tree in the SMMU driver is
+definitely something to avoid.
+
 > > > The problem with all of this is how we distinguish the different ID formats
 > > > in the `iommus' device-tree property. For the ARM SMMU, we could have:
-> > > 
-> > >   (1) [easy case] A device has a list of StreamIDs
-> > > 
-> > >   (2) A device has a list of SMR mask/value pairs
-> > 
-> > I was under the impression that using the format from (2), we could
-> > describe all devices that fall into (1). In the worst case, we would
-> > create an iommu group that is somewhat larger than one using discrete
-> > StreamID values, but I would hope that this does not cause actual
-> > troubles.
-> 
-> The icky part is that an ARM SMMU can have one of two indexing schemes in
-> hardware:
-> 
->   (1) The StreamID is used as a linear index into an (MMIO) table, which
->       has pointers to contexts (translation tables)
-> 
->   (2) The StreamID is matched against a mask/value pair, which generates
->       an index into the same table mentioned above
-> 
-> Currently, the driver probes ID registers at runtime to figure out which
-> indexing scheme is implemented. If we start encoding scheme-specific data in
-> the device-tree, then the binding will differ based on hardware properties
-> that aren't otherwise described. Is there precedent for this sort of thing
-> elsewhere?
-
-We should probably have different compatible strings in that case.
-Is it always hardwired which scheme gets used, or can the SMMU
-be reconfigured between the two?
-
-> > If all devices on each iommu fall into either 1 or 2, but you never mix
-> > the two on one iommu, this could be handled by supporting either
-> > #iommu-cells=<1> or <2> in the smmu driver. That way, the xlate function
-> > will know which method to apply by looking at the iommu's #iommu-cells
-> > property.
-> 
-> Yes, that would work if you're ok with the above (i.e. we never see a mix
-> on the same IOMMU instance).
-
-Ok
-
-> > >   (3) A (bus) device has a range translation for a downstream bus (e.g.
-> > >       a PCI host controller which needs to convert RequesterID to StreamID).
-> > > 
-> > > From the SMMU driver's perspective, they will all look like of_xlate calls
+> > >
+> > >    (1) [easy case] A device has a list of StreamIDs
+> > >
+> > >    (2) A device has a list of SMR mask/value pairs
+> > >
+> > >    (3) A (bus) device has a range translation for a downstream bus (e.g.
+> > >        a PCI host controller which needs to convert RequesterID to StreamID).
+> > >
+> > >  From the SMMU driver's perspective, they will all look like of_xlate calls
 > > > unless we augment the generic IOMMU bindings with extra properties to
 > > > identify the format. It also makes it difficult to pick a sensible value for
 > > > #iommu-cells, as it depends on the format.
 > > 
-> > I would hope that PCI is the only case we need to worry about for a while.
-> > This means we just need to come up with another property or a set of properties
-> > that we can put into a PCI host controller device node in order to describe
-> > the mapping. These properties could be iommu-specific, so we add something
-> > to the PCI core that calls a new iommu callback function that takes the
-> > device node of the PCI host and the bus/device/function number as inputs.
+> > I thoroughly dislike the idea, but one /could/ simply abuse the generic 
+> > bindings well within the current framework, e.g.
 > > 
-> > In arm_setup_iommu_dma_ops(), we can then do something like
+> > #1: iommus = <&smmu 0 streamID 0 0>, <&smmu 0 streamID 0 0>, ...;
+> > #2: iommus = <&smmu 1 mask value 0>;
+> > #3: iommus = <&smmu 2 start end offset>;
 > > 
-> > 	if (dev_is_pci(dev)) {
-> > 		struct pci_dev *pdev = to_pci_dev(dev);
-> > 		struct device_node *node;
-> > 		unsigned int bdf;
+> > and have a big complicated of_xlate that knows the secret. I don't think 
+> > it would be unreasonable to constrain all masters on the same SMMU to 
+> > use the same format either - that way you can lose the type indicator 
+> > and the padding and the driver simply inspects #iommu-cells in 
+> > of_iommu_init and sets up that instance to take the right path in its 
+> > of_xlate calls later. Having a handful of single-stream-ID masters 
+> > behind the same SMMU as a whacking great bus controller with a massive 
+> > range seems like the kind of system-designer-insanity we should 
+> > emphatically NOT be looking to accommodate if we can possibly help it.
 > > 
-> > 		node = find_pci_host_bridge(pdev->bus)->parent->of_node;
-> > 		bdf = PCI_DEVID(pdev->bus->number, dev->devfn);
-> > 
-> > 		iommu_setup_pci_dev(pdev, node, bdf);
-> > 	}
+> > That said, for the time being I see definite use-cases for #1, which 
+> > already works, and #3, for which I really think we should be looking to 
+> > add a parallel generic "iommu-ranges" or "iommu-bus-range" binding for 
+> > bus controllers, rather than trying to overload "iommus" beyond 
+> > describing actual bus masters.
 > 
-> The other way to do this is have the IOMMU driver check dev_is_pci(dev)
-> in add_device, then call an of_xlate_pci_bdf library function which could
-> do the translation on-demand.
+> Yeah, let's avoid overloading the current bindings too much. Adding the
+> ranges property makes perfect sense, I'm just trying to to straighten
+> out how the "iommus" property should differ depending on the presence of
+> SMR groups.
 
-We'd still need to find the device node for the host controller in
-common code, otherwise we don't have an of_xlate function to call.
+Is a range something that is defined in the hardware spec, or is that
+just what you expect the PCI host controllers to use? 
 
 	Arnd
