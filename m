@@ -1,73 +1,80 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH v6 6/8] dma-mapping: detect and configure IOMMU in
-	of_dma_configure
-Date: Wed, 17 Dec 2014 20:48:29 +0100
-Message-ID: <2983977.dWWQcFZRoJ@wuerfel>
-References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
-	<2299294.lPnEQgl4lK@wuerfel> <20141217171752.GB30307@arm.com>
+From: Jerry Hoemann <jerry.hoemann@hp.com>
+Subject: Re: [PATCH 1/2] iommu/vt-d: Fix dmar_domain leak in
+ iommu_attach_device
+Date: Wed, 17 Dec 2014 14:37:47 -0700
+Message-ID: <20141217213747.GA11569@anatevka.fc.hp.com>
+References: <1418813017-24888-1-git-send-email-joro@8bytes.org>
+Reply-To: Jerry.Hoemann@hp.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20141217171752.GB30307-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <stable-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1418813017-24888-1-git-send-email-joro@8bytes.org>
+Sender: stable-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, stable@vger.kernel.org, Myron Stowe <mstowe@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wednesday 17 December 2014 17:17:52 Will Deacon wrote:
-> > > > I would hope that PCI is the only case we need to worry about for a while.
-> > > > This means we just need to come up with another property or a set of properties
-> > > > that we can put into a PCI host controller device node in order to describe
-> > > > the mapping. These properties could be iommu-specific, so we add something
-> > > > to the PCI core that calls a new iommu callback function that takes the
-> > > > device node of the PCI host and the bus/device/function number as inputs.
-> > > > 
-> > > > In arm_setup_iommu_dma_ops(), we can then do something like
-> > > > 
-> > > >   if (dev_is_pci(dev)) {
-> > > >           struct pci_dev *pdev = to_pci_dev(dev);
-> > > >           struct device_node *node;
-> > > >           unsigned int bdf;
-> > > > 
-> > > >           node = find_pci_host_bridge(pdev->bus)->parent->of_node;
-> > > >           bdf = PCI_DEVID(pdev->bus->number, dev->devfn);
-> > > > 
-> > > >           iommu_setup_pci_dev(pdev, node, bdf);
-> > > >   }
-> > > 
-> > > The other way to do this is have the IOMMU driver check dev_is_pci(dev)
-> > > in add_device, then call an of_xlate_pci_bdf library function which could
-> > > do the translation on-demand.
-> > 
-> > We'd still need to find the device node for the host controller in
-> > common code, otherwise we don't have an of_xlate function to call.
+On Wed, Dec 17, 2014 at 11:43:36AM +0100, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel@suse.de>
 > 
-> I guess I was hoping that the translation code could be generic. I don't
-> really see anything special about adding a constant to a magic number to
-> obtain another magic number.
+> Since commit 1196c2f a domain is only destroyed in the
+> notifier path if it is hot-unplugged. This caused a
+> domain leakage in iommu_attach_device when a driver was
+> unbound from the device and bound to VFIO. In this case the
+> device is attached to a new domain and unlinked from the old
+> domain. At this point nothing points to the old domain
+> anymore and its memory is leaked.
+> Fix this by explicitly freeing the old domain in
+> iommu_attach_domain.
 > 
+> Fixes: 1196c2f (iommu/vt-d: Fix dmar_domain leak in iommu_attach_device)
+> Cc: <stable@vger.kernel.org> # v3.18
+> Signed-off-by: Joerg Roedel <jroedel@suse.de>
+> ---
+>  drivers/iommu/intel-iommu.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 1232336..7610121 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -4428,6 +4428,10 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+>  				domain_remove_one_dev_info(old_domain, dev);
+>  			else
+>  				domain_remove_dev_info(old_domain);
+> +
+> +			if (!domain_type_is_vm_or_si(old_domain) &&
+> +			     list_empty(&old_domain->devices))
+> +				domain_exit(old_domain);
+>  		}
+>  	}
+>  
+> -- 
+> 1.9.1
 
-If that's all we need, that's fine.
+Joerg,
 
-I was fearing that we'd get different host controllers using different
-parts of the bdf number. E.g. one might pass down just bus/device
-while another uses bus/device/function, so we'd need a shift and
-an offset.
+Before applying this change on a 3.18-rc7 kernel layered on a
+RHEL 7.0 root disk, I was able to reproduce the memory
+leak that Alex reported when powering on/off a VM w/ a PCI
+device assigned to it.
 
-As part of the AMD review I found out that their SMMU implementation
-only has 15 bits of address space, while bdf is 16 bits, so they
-cut off the top bit and get aliasing between bus 0+n and bus 128+n.
+After applying this change, I don't see the memory leak anymore.
+Instrumentation shows the new code is being invoked during power on
+of the VM.
 
-Another SoC might have more aliasing if they have multiple domains.
+Looks good.
 
+Thanks!
 
-	Arnd
+Tested-by: Jerry Hoemann <jerry.hoemann@hp.com>
+-- 
+
+----------------------------------------------------------------------------
+Jerry Hoemann            Software Engineer              Hewlett-Packard
+
+3404 E Harmony Rd. MS 36                        phone:  (970) 898-1022
+Ft. Collins, CO 80528                           FAX:    (970) 898-0707
+                                                email:  jerry.hoemann@hp.com
+----------------------------------------------------------------------------
