@@ -1,11 +1,17 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 1/2] iommu/vt-d: Fix dmar_domain leak in iommu_attach_device
-Date: Wed, 17 Dec 2014 11:43:36 +0100
-Message-ID: <1418813017-24888-1-git-send-email-joro@8bytes.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v6 6/8] dma-mapping: detect and configure IOMMU in
+	of_dma_configure
+Date: Wed, 17 Dec 2014 11:14:38 +0000
+Message-ID: <20141217111438.GC3461@arm.com>
+References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
+	<6311849.8NniZ58Jf1@avalon> <20141215113252.GH20738@arm.com>
+	<35498434.EVQZ75aAeX@avalon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <35498434.EVQZ75aAeX@avalon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,43 +21,47 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+On Wed, Dec 17, 2014 at 12:19:45AM +0000, Laurent Pinchart wrote:
+> On Monday 15 December 2014 11:32:52 Will Deacon wrote:
+> > On Sun, Dec 14, 2014 at 03:51:13PM +0000, Laurent Pinchart wrote:
+> > > On Monday 01 December 2014 16:57:12 Will Deacon wrote:
+> > > > +	of_dma_configure(&dev->dev);
+> > > >  	if (of_device_add(dev) != 0) {
+> > > > +		of_dma_deconfigure(&dev->dev);
+> > > 
+> > > Don't you also need to call of_dma_deconfigure() when the device is
+> > > destroyed ? Otherwise the default domain created by arch_setup_dma_ops()
+> > > will be leaked.
+> >
+> > Something like below?
+> 
+> Yes, something like that. This will however cause a dev_warn("Not attached") 
+> message to be printed for devices that have no IOMMU, that should be fixed in 
+> the arch code.
 
-Since commit 1196c2f a domain is only destroyed in the
-notifier path if it is hot-unplugged. This caused a
-domain leakage in iommu_attach_device when a driver was
-unbound from the device and bound to VFIO. In this case the
-device is attached to a new domain and unlinked from the old
-domain. At this point nothing points to the old domain
-anymore and its memory is leaked.
-Fix this by explicitly freeing the old domain in
-iommu_attach_domain.
+Good catch, additional patch below to fix that up.
 
-Fixes: 1196c2f (iommu/vt-d: Fix dmar_domain leak in iommu_attach_device)
-Cc: <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org> # v3.18
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/intel-iommu.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Will
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 1232336..7610121 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4428,6 +4428,10 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
- 				domain_remove_one_dev_info(old_domain, dev);
- 			else
- 				domain_remove_dev_info(old_domain);
-+
-+			if (!domain_type_is_vm_or_si(old_domain) &&
-+			     list_empty(&old_domain->devices))
-+				domain_exit(old_domain);
- 		}
- 	}
+--->8
+
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index 09645f00bd17..c757f3d2d01e 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -2023,7 +2023,10 @@ static bool arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size,
  
--- 
-1.9.1
+ static void arm_teardown_iommu_dma_ops(struct device *dev)
+ {
+-       struct dma_iommu_mapping *mapping = dev->archdata.mapping;
++       struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
++
++       if (!mapping)
++               return;
+ 
+        arm_iommu_detach_device(dev);
+        arm_iommu_release_mapping(mapping);
