@@ -1,15 +1,12 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH v6 6/8] dma-mapping: detect and configure IOMMU in
-	of_dma_configure
-Date: Wed, 17 Dec 2014 02:19:45 +0200
-Message-ID: <35498434.EVQZ75aAeX@avalon>
-References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
-	<6311849.8NniZ58Jf1@avalon> <20141215113252.GH20738@arm.com>
+From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [Patch v1 00/17] Refine IR initialization flow and fixes bugs related
+	to X2APIC
+Date: Wed, 17 Dec 2014 12:35:31 +0800
+Message-ID: <1418790948-22804-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20141215113252.GH20738-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,74 +16,103 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+When converting x86 to new hierarchy irqdoamin framework, Thomas noticed
+that the interrupt remapping initialization flow is a little complex and
+has troubles in memory allocation. Then there is a joint force to
+simplify IR initialization flow, please refer to related threads at:
+https://lkml.org/lkml/2014/12/5/114
+https://lkml.org/lkml/2014/12/10/20
+https://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg788792.html
 
-On Monday 15 December 2014 11:32:52 Will Deacon wrote:
-> On Sun, Dec 14, 2014 at 03:51:13PM +0000, Laurent Pinchart wrote:
-> > On Monday 01 December 2014 16:57:12 Will Deacon wrote:
-> > > This patch extends of_dma_configure so that it sets up the IOMMU for a
-> > > device, as well as the coherent/non-coherent DMA mapping ops.
-> > > 
-> > > Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-> > > Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> > > Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> > > Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> 
-> [...]
-> 
-> > > +static void of_dma_deconfigure(struct device *dev)
-> > > +{
-> > > +	arch_teardown_dma_ops(dev);
-> > >  }
-> > >  
-> > >  /**
-> > > @@ -223,16 +234,12 @@ static struct platform_device
-> > > *of_platform_device_create_pdata( if (!dev)
-> > > 
-> > >  		goto err_clear_flag;
-> > > 
-> > > -	of_dma_configure(&dev->dev);
-> > >  	dev->dev.bus = &platform_bus_type;
-> > >  	dev->dev.platform_data = platform_data;
- > > -
-> > > -	/* We do not fill the DMA ops for platform devices by default.
-> > > -	 * This is currently the responsibility of the platform code
-> > > -	 * to do such, possibly using a device notifier
-> > > -	 */
-> > > +	of_dma_configure(&dev->dev);
-> > >  	if (of_device_add(dev) != 0) {
-> > > +		of_dma_deconfigure(&dev->dev);
-> > 
-> > Don't you also need to call of_dma_deconfigure() when the device is
-> > destroyed ? Otherwise the default domain created by arch_setup_dma_ops()
-> > will be leaked.
->
-> Something like below?
+This patch set is based on latest mainstream kernel and I will rebased
+it onto v3.19-rc1 once v3.19-rc1 is out. And you may access it at:
+https://github.com/jiangliu/linux.git ir_init_v1
 
-Yes, something like that. This will however cause a dev_warn("Not attached") 
-message to be printed for devices that have no IOMMU, that should be fixed in 
-the arch code.
+This patch set combimes above three patches to simplify IR initalization
+flow and solves memory allocation issues. While at it, this patch set
+also refines CPU X2APIC initialization code for maintenance. It also
+fixes two bugs related to X2APIC support.
+1) System hangs or panics if BIOS enables CPU X2APIC mode but kernel
+   doesn't support X2APIC.
+2) System livelocks if BIOS enables CPU X2APIC but opt-outs IR X2APIC.
 
-> --->8
-> 
-> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
-> index b89caf8c7586..ec29c25b4fce 100644
-> --- a/drivers/of/platform.c
-> +++ b/drivers/of/platform.c
-> @@ -525,6 +525,7 @@ static int of_platform_device_destroy(struct device
-> *dev, void *data) amba_device_unregister(to_amba_device(dev));
->  #endif
-> 
-> +       of_dma_deconfigure(dev);
->         of_node_clear_flag(dev->of_node, OF_POPULATED);
->         of_node_clear_flag(dev->of_node, OF_POPULATED_BUS);
->         return 0;
+This patch set has been tested with on an Intel 4-socket system with
+following configuration:
+---------------------------------------------------------------------------
+[CPU X2APIC]	[IR X2APIC]	[Linux IR]	[Linux X2APIC]	[Result]
+1     D		    /		    D		    D		  OK
+2     D		    /		    E		    D		  OK
+3     D		    /		    E		    E		  OK
+4     P		    /		    E		    E		  OK
+5     P		    /		    D		    D		  Panic(expected)
+6     P		    /		    E		    D		  Panic(expected)
+7     P		    H		    E		    E		  OK
+----------------------------------------------------------------------------
+CPU X2APIC: whether CPU X2APIC is enabled by hardware and BIOS
+IR X2APIC: whether interrupt remapping hardware supports X2APIC mode
+Linux IR: whether interrupt remapping is enabled by Linux kernel
+Linux X2APIC: whether X2APIC is supported by Linux kernel
+D: disabled
+E: enabled
+/: Not care
+P: CPU X2APIC pre-enabled by BIOS
+H: Hard-coded to opt-out X2APIC support in interrupt remapping hardware
+
+The patch set changes the behevior of the last three rows:
+1) Row 5 and 6 panics with clear messages instead of random hang or panic.
+2) Row 7 boots successfully instead of livelocking.
+
+The patch set also passes Fengguang's 0day test suites.
+
+Due to lack of hardware platforms for tests, tests on AMD platform are
+welcomed!
+
+Jiang Liu (11):
+  x86/apic: Panic if kernel doesn't support x2apic but BIOS has enabled
+    x2apic
+  x86/apic: Kill useless variable x2apic_enabled in function
+    enable_IR_x2apic()
+  x86/apic: Correctly detect X2APIC status in function enable_IR()
+  x86/apic: Refine enable_IR_x2apic() and related functions
+  iommu/vt-d: Prepare for killing function irq_remapping_supported()
+  iommu/vt-d: Allow IR works in XAPIC mode though CPU works in X2APIC
+    mode
+  x86/apic: Only disable CPU x2apic mode when necessary
+  iommu/irq_remapping: Kill function irq_remapping_supported() and
+    related code
+  iommu/irq_remapping: Refine function irq_remapping_prepare() for
+    maintenance
+  iommu/irq_remapping: Change variable disable_irq_remap to be static
+  iommu/irq_remapping: Normailize the way to detect whether IR is
+    enabled
+
+Joerg Roedel (2):
+  iommu/vt-d: Allocate IRQ remapping data structures only for all
+    IOMMUs
+  iommu/amd: Check for irq-remap support amd_iommu_prepare()
+
+Thomas Gleixner (4):
+  x86, smpboot: Remove pointless preempt_disable() in
+    native_smp_prepare_cpus()
+  iommu, x86: Restructure setup of the irq remapping feature
+  iommu/vt-d: Move iommu preparatory allocations to
+    irq_remap_ops.prepare
+  iommu/vt-d: Convert allocations to GFP_KERNEL
+
+ arch/x86/include/asm/irq_remapping.h |    4 --
+ arch/x86/kernel/apic/apic.c          |  104 ++++++++++++++++------------------
+ arch/x86/kernel/smpboot.c            |    8 +--
+ drivers/iommu/amd_iommu.c            |    1 -
+ drivers/iommu/amd_iommu_init.c       |   10 +---
+ drivers/iommu/amd_iommu_proto.h      |    1 -
+ drivers/iommu/intel_irq_remapping.c  |   96 ++++++++++++++++---------------
+ drivers/iommu/irq_remapping.c        |   74 ++++++++----------------
+ drivers/iommu/irq_remapping.h        |    5 --
+ 9 files changed, 129 insertions(+), 174 deletions(-)
 
 -- 
-Regards,
-
-Laurent Pinchart
+1.7.10.4
