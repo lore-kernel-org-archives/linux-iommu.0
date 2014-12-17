@@ -1,15 +1,16 @@
 From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
 Subject: Re: [Linaro-mm-sig] [PATCH v3 18/19] iommu: exynos: init from
 	dt-specific callback instead of initcall
-Date: Wed, 17 Dec 2014 16:41:33 +0100
-Message-ID: <2560037.PCKFDiopkL@wuerfel>
+Date: Wed, 17 Dec 2014 16:56:53 +0100
+Message-ID: <5219064.gvW43bShnl@wuerfel>
 References: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com>
-	<3015182.XtvMmOW5GD@wuerfel> <1652261.Tf8nxQyMRf@avalon>
+	<3015182.XtvMmOW5GD@wuerfel>
+	<1418828005.3347.7.camel@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1652261.Tf8nxQyMRf@avalon>
+In-Reply-To: <1418828005.3347.7.camel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,38 +20,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wednesday 17 December 2014 16:39:02 Laurent Pinchart wrote:
-> 
-> On Wednesday 17 December 2014 15:27:36 Arnd Bergmann wrote:
+On Wednesday 17 December 2014 15:53:25 Lucas Stach wrote:
+> Am Mittwoch, den 17.12.2014, 15:27 +0100 schrieb Arnd Bergmann:
 > > On Wednesday 17 December 2014 01:24:42 Laurent Pinchart wrote:
-> > > If we forbid the IOMMU driver from being compiled as a module can't we
-> > > just rely on deferred probing ? The bus master driver will just be
-> > > reprobed after the IOMMU gets probed, like for other devices.
 > > > 
-> > > This could fail in case the IOMMU device permanently fails to probe. There
-> > > would be something very wrong in the system in that case, Enabling the bus
-> > > masters totally transparently without IOMMU support could not be such a
-> > > good idea.
+> > > If we forbid the IOMMU driver from being compiled as a module can't we just 
+> > > rely on deferred probing ? The bus master driver will just be reprobed after 
+> > > the IOMMU gets probed, like for other devices.
+> > > 
+> > > This could fail in case the IOMMU device permanently fails to probe. There 
+> > > would be something very wrong in the system in that case, Enabling the bus 
+> > > masters totally transparently without IOMMU support could not be such a good 
+> > > idea.
 > > 
 > > I believe in the majority of cases today, the IOMMU is entirely optional.
 > > There are valid reasons for not including the IOMMU driver in the kernel,
 > > e.g. when you know that all the machines with that driver can DMA to
 > > all of their RAM and you want to avoid the overhead of IOTLB misses.
+> > 
+> This is similar to the problems we discussed with the componentized
+> device framework and in the end everybody agreed on a simple rule:
+> if the device node is enabled in the DT there must be a driver bound to
+> it before other devices depending on this node can be probed.
 > 
-> Should that really be controlled by compiling the IOMMU driver out, wouldn't 
-> it be better to disable the IOMMU devices in DT in that case ?
+> If we apply the same logic to the IOMMU situation we get two
+> possibilities to allow bypassing the IOMMU:
+> 1. completely disable the IOMMU node in the DT
+> 2. leave node enabled in DT, but add a bypass property
+> 
+> Obviously the second option still requires to have the IOMMU driver
+> available, but is more flexible. Right now everything depends on the
+> IOMMU being in passthrough mode at reset with no driver bound. If a
+> device comes around where this isn't the case thing will break with the
+> current assumptions or the first option.
+> 
+> Having the IOMMU node enabled in DT with no driver available to the
+> kernel seems like an invalid configuration which should be expected to
+> break. Exactly the same thing as with componentized devices...
 
-It's a policy decision that should only depend on the user. Modifying the
-DT is wrong here IMHO because the device is still connected to the IOMMU
-in hardware and we should correctly represent that.
-
-You can normally set 'iommu=off' or 'iommu=force' on the command line
-to force it on or off rather than letting the IOMMU driver decide whether
-the device turns it on. Not enabling the IOMMU at all should really just
-behave the same way as 'iommu=off', anything else would be very confusing.
+One differences here is that for the IOMMU, we should generally be able
+to fall back to swiotlb (currently only on ARM64, not ARM32, until
+someone adds support). I can see your point regarding machines that
+have a mandatory IOMMU with no fallback when there is no driver, but
+we can support them by making the iommu driver selected through Kconfig
+for that platform, while still allowing other platforms to work with
+drivers left out of the kernel.
 
 	Arnd
