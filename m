@@ -1,15 +1,15 @@
 From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH v6 6/8] dma-mapping: detect and configure IOMMU in
-	of_dma_configure
-Date: Wed, 17 Dec 2014 16:38:22 +0100
-Message-ID: <1926348.VsVWqO766S@wuerfel>
-References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
-	<549192D2.10008@arm.com> <20141217150158.GF870@arm.com>
+Subject: Re: [Linaro-mm-sig] [PATCH v3 18/19] iommu: exynos: init from
+	dt-specific callback instead of initcall
+Date: Wed, 17 Dec 2014 16:41:33 +0100
+Message-ID: <2560037.PCKFDiopkL@wuerfel>
+References: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com>
+	<3015182.XtvMmOW5GD@wuerfel> <1652261.Tf8nxQyMRf@avalon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20141217150158.GF870-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1652261.Tf8nxQyMRf@avalon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,77 +19,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wednesday 17 December 2014 15:01:58 Will Deacon wrote:
-> On Wed, Dec 17, 2014 at 02:27:30PM +0000, Robin Murphy wrote:
-> > On 17/12/14 12:09, Will Deacon wrote:
-> > > I think that's a slightly different case. The `grouping' in the DT, is on a
-> > > per-master basis where a master may have a set of StreamIDs, which can be
-> > > expressed in a more efficient (per-IOMMU) manner that cannot easily be
-> > > determined at runtime.
-> > 
-> > I'm pretty convinced that automatic SMR allocation is solvable; I was 
-> > planning to take a look at it soon, once I've finished warming up the 
-> > dormant mathematician in me on implementing the OF group allocator. So 
-> > far I'm lucky that stream indexing is sufficient for the bits of our 
-> > hardware that actually work.
+On Wednesday 17 December 2014 16:39:02 Laurent Pinchart wrote:
 > 
-> Hmm, a few of us have looked at that and failed, so I'm all ears if you
-> think you can do it. The main issue is that you need *complete* knowledge
-> of the allocated StreamID space before you can safely create any SMR entry
-> unless you restrict yourself to consecutive, power-of-2 sized ID regions
-> for each master (which doesn't match reality, unfortunately).
-
-Right, scanning the entire device tree in the SMMU driver is
-definitely something to avoid.
-
-> > > The problem with all of this is how we distinguish the different ID formats
-> > > in the `iommus' device-tree property. For the ARM SMMU, we could have:
-> > >
-> > >    (1) [easy case] A device has a list of StreamIDs
-> > >
-> > >    (2) A device has a list of SMR mask/value pairs
-> > >
-> > >    (3) A (bus) device has a range translation for a downstream bus (e.g.
-> > >        a PCI host controller which needs to convert RequesterID to StreamID).
-> > >
-> > >  From the SMMU driver's perspective, they will all look like of_xlate calls
-> > > unless we augment the generic IOMMU bindings with extra properties to
-> > > identify the format. It also makes it difficult to pick a sensible value for
-> > > #iommu-cells, as it depends on the format.
+> On Wednesday 17 December 2014 15:27:36 Arnd Bergmann wrote:
+> > On Wednesday 17 December 2014 01:24:42 Laurent Pinchart wrote:
+> > > If we forbid the IOMMU driver from being compiled as a module can't we
+> > > just rely on deferred probing ? The bus master driver will just be
+> > > reprobed after the IOMMU gets probed, like for other devices.
+> > > 
+> > > This could fail in case the IOMMU device permanently fails to probe. There
+> > > would be something very wrong in the system in that case, Enabling the bus
+> > > masters totally transparently without IOMMU support could not be such a
+> > > good idea.
 > > 
-> > I thoroughly dislike the idea, but one /could/ simply abuse the generic 
-> > bindings well within the current framework, e.g.
-> > 
-> > #1: iommus = <&smmu 0 streamID 0 0>, <&smmu 0 streamID 0 0>, ...;
-> > #2: iommus = <&smmu 1 mask value 0>;
-> > #3: iommus = <&smmu 2 start end offset>;
-> > 
-> > and have a big complicated of_xlate that knows the secret. I don't think 
-> > it would be unreasonable to constrain all masters on the same SMMU to 
-> > use the same format either - that way you can lose the type indicator 
-> > and the padding and the driver simply inspects #iommu-cells in 
-> > of_iommu_init and sets up that instance to take the right path in its 
-> > of_xlate calls later. Having a handful of single-stream-ID masters 
-> > behind the same SMMU as a whacking great bus controller with a massive 
-> > range seems like the kind of system-designer-insanity we should 
-> > emphatically NOT be looking to accommodate if we can possibly help it.
-> > 
-> > That said, for the time being I see definite use-cases for #1, which 
-> > already works, and #3, for which I really think we should be looking to 
-> > add a parallel generic "iommu-ranges" or "iommu-bus-range" binding for 
-> > bus controllers, rather than trying to overload "iommus" beyond 
-> > describing actual bus masters.
+> > I believe in the majority of cases today, the IOMMU is entirely optional.
+> > There are valid reasons for not including the IOMMU driver in the kernel,
+> > e.g. when you know that all the machines with that driver can DMA to
+> > all of their RAM and you want to avoid the overhead of IOTLB misses.
 > 
-> Yeah, let's avoid overloading the current bindings too much. Adding the
-> ranges property makes perfect sense, I'm just trying to to straighten
-> out how the "iommus" property should differ depending on the presence of
-> SMR groups.
+> Should that really be controlled by compiling the IOMMU driver out, wouldn't 
+> it be better to disable the IOMMU devices in DT in that case ?
 
-Is a range something that is defined in the hardware spec, or is that
-just what you expect the PCI host controllers to use? 
+It's a policy decision that should only depend on the user. Modifying the
+DT is wrong here IMHO because the device is still connected to the IOMMU
+in hardware and we should correctly represent that.
+
+You can normally set 'iommu=off' or 'iommu=force' on the command line
+to force it on or off rather than letting the IOMMU driver decide whether
+the device turns it on. Not enabling the IOMMU at all should really just
+behave the same way as 'iommu=off', anything else would be very confusing.
 
 	Arnd
