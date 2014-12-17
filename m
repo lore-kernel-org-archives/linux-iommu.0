@@ -1,8 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch v1 13/17] iommu/amd: Check for irq-remap support
-	amd_iommu_prepare()
-Date: Wed, 17 Dec 2014 12:35:44 +0800
-Message-ID: <1418790948-22804-14-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch v1 10/17] iommu/vt-d: Allocate IRQ remapping data structures
+	only for all IOMMUs
+Date: Wed, 17 Dec 2014 12:35:41 +0800
+Message-ID: <1418790948-22804-11-git-send-email-jiang.liu@linux.intel.com>
 References: <1418790948-22804-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,29 +24,71 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-This allows to get rid of the irq_remapping_supported()
-function and all its call-backs into the Intel and AMD
-IOMMU drivers.
+IRQ remapping is only supported when all IOMMUs in the
+system support it. So check if all IOMMUs in the system
+support IRQ remapping before doing the allocations.
+
+[Jiang]
+1) Rebased onto v3.19.
+2) Remove redundant check of ecap_ir_support(iommu->ecap) in function
+   intel_enable_irq_remapping().
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iommu/intel_irq_remapping.c |   19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index b0522f15730f..0039f87f48b8 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -2123,6 +2123,9 @@ static int __init iommu_go_to_state(enum iommu_init_state state)
- #ifdef CONFIG_IRQ_REMAP
- int __init amd_iommu_prepare(void)
- {
-+	if (!amd_iommu_irq_remap)
-+		return -1;
-+
- 	return iommu_go_to_state(IOMMU_ACPI_FINISHED);
- }
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index b7ce4f458b29..a47cb31f198e 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -619,10 +619,16 @@ static int __init intel_prepare_irq_remapping(void)
+ 		goto error;
+ 	}
  
++	/* First make sure all IOMMUs support IRQ remapping */
+ 	for_each_iommu(iommu, drhd)
+-		if (!ecap_ir_support(iommu->ecap) ||
+-		    intel_setup_irq_remapping(iommu))
++		if (!ecap_ir_support(iommu->ecap))
++			goto error;
++
++	/* Do the allocations early */
++	for_each_iommu(iommu, drhd)
++		if (intel_setup_irq_remapping(iommu))
+ 			goto error;
++
+ 	return 0;
+ 
+ error:
+@@ -673,16 +679,12 @@ static int __init intel_enable_irq_remapping(void)
+ 	/*
+ 	 * check for the Interrupt-remapping support
+ 	 */
+-	for_each_iommu(iommu, drhd) {
+-		if (!ecap_ir_support(iommu->ecap))
+-			continue;
+-
++	for_each_iommu(iommu, drhd)
+ 		if (eim && !ecap_eim_support(iommu->ecap)) {
+ 			printk(KERN_INFO "DRHD %Lx: EIM not supported by DRHD, "
+ 			       " ecap %Lx\n", drhd->reg_base_addr, iommu->ecap);
+ 			goto error;
+ 		}
+-	}
+ 
+ 	/*
+ 	 * Enable queued invalidation for all the DRHD's.
+@@ -702,9 +704,6 @@ static int __init intel_enable_irq_remapping(void)
+ 	 * Setup Interrupt-remapping for all the DRHD's now.
+ 	 */
+ 	for_each_iommu(iommu, drhd) {
+-		if (!ecap_ir_support(iommu->ecap))
+-			continue;
+-
+ 		iommu_set_irq_remapping(iommu, eim);
+ 		setup = 1;
+ 	}
 -- 
 1.7.10.4
