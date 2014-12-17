@@ -1,62 +1,73 @@
-From: Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is set
-Date: Wed, 17 Dec 2014 18:42:55 +0100
-Message-ID: <5491C09F.9010409@redhat.com>
-References: <1418397300-10870-1-git-send-email-feng.wu@intel.com> <1418397300-10870-26-git-send-email-feng.wu@intel.com>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH v6 6/8] dma-mapping: detect and configure IOMMU in
+	of_dma_configure
+Date: Wed, 17 Dec 2014 20:48:29 +0100
+Message-ID: <2983977.dWWQcFZRoJ@wuerfel>
+References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
+	<2299294.lPnEQgl4lK@wuerfel> <20141217171752.GB30307@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <1418397300-10870-26-git-send-email-feng.wu@intel.com>
-Sender: kvm-owner@vger.kernel.org
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, KVM list <kvm@vger.kernel.org>, Eric Auger <eric.auger@linaro.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20141217171752.GB30307-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 12/12/2014 16:14, Feng Wu wrote:
-> Currently, we don't support urgent interrupt, all interrupts
-> are recognized as non-urgent interrupt, so we cannot send
-> posted-interrupt when 'SN' is set.
-
-Can this happen?  If the vcpu is in guest mode, it cannot have been
-scheduled out, and that's the only case when SN is set.
-
-Paolo
-
-> Signed-off-by: Feng Wu <feng.wu@intel.com>
-> ---
->  arch/x86/kvm/vmx.c | 11 +++++++++--
->  1 file changed, 9 insertions(+), 2 deletions(-)
+On Wednesday 17 December 2014 17:17:52 Will Deacon wrote:
+> > > > I would hope that PCI is the only case we need to worry about for a while.
+> > > > This means we just need to come up with another property or a set of properties
+> > > > that we can put into a PCI host controller device node in order to describe
+> > > > the mapping. These properties could be iommu-specific, so we add something
+> > > > to the PCI core that calls a new iommu callback function that takes the
+> > > > device node of the PCI host and the bus/device/function number as inputs.
+> > > > 
+> > > > In arm_setup_iommu_dma_ops(), we can then do something like
+> > > > 
+> > > >   if (dev_is_pci(dev)) {
+> > > >           struct pci_dev *pdev = to_pci_dev(dev);
+> > > >           struct device_node *node;
+> > > >           unsigned int bdf;
+> > > > 
+> > > >           node = find_pci_host_bridge(pdev->bus)->parent->of_node;
+> > > >           bdf = PCI_DEVID(pdev->bus->number, dev->devfn);
+> > > > 
+> > > >           iommu_setup_pci_dev(pdev, node, bdf);
+> > > >   }
+> > > 
+> > > The other way to do this is have the IOMMU driver check dev_is_pci(dev)
+> > > in add_device, then call an of_xlate_pci_bdf library function which could
+> > > do the translation on-demand.
+> > 
+> > We'd still need to find the device node for the host controller in
+> > common code, otherwise we don't have an of_xlate function to call.
 > 
-> diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-> index a1c83a2..0aee151 100644
-> --- a/arch/x86/kvm/vmx.c
-> +++ b/arch/x86/kvm/vmx.c
-> @@ -4401,15 +4401,22 @@ static int vmx_vm_has_apicv(struct kvm *kvm)
->  static void vmx_deliver_posted_interrupt(struct kvm_vcpu *vcpu, int vector)
->  {
->  	struct vcpu_vmx *vmx = to_vmx(vcpu);
-> -	int r;
-> +	int r, sn;
->  
->  	if (pi_test_and_set_pir(vector, &vmx->pi_desc))
->  		return;
->  
-> +	/*
-> +	 * Currently, we don't support urgent interrupt, all interrupts
-> +	 * are recognized as non-urgent interrupt, so we cannot send
-> +	 * posted-interrupt when 'SN' is set.
-> +	 */
-> +	sn = pi_test_sn(&vmx->pi_desc);
-> +
->  	r = pi_test_and_set_on(&vmx->pi_desc);
->  	kvm_make_request(KVM_REQ_EVENT, vcpu);
->  #ifdef CONFIG_SMP
-> -	if (!r && (vcpu->mode == IN_GUEST_MODE))
-> +	if (!r && !sn && (vcpu->mode == IN_GUEST_MODE))
->  		apic->send_IPI_mask(get_cpu_mask(vcpu->cpu),
->  				POSTED_INTR_VECTOR);
->  	else
-> -- 
+> I guess I was hoping that the translation code could be generic. I don't
+> really see anything special about adding a constant to a magic number to
+> obtain another magic number.
+> 
 
+If that's all we need, that's fine.
+
+I was fearing that we'd get different host controllers using different
+parts of the bdf number. E.g. one might pass down just bus/device
+while another uses bus/device/function, so we'd need a shift and
+an offset.
+
+As part of the AMD review I found out that their SMMU implementation
+only has 15 bits of address space, while bdf is 16 bits, so they
+cut off the top bit and get aliasing between bus 0+n and bus 128+n.
+
+Another SoC might have more aliasing if they have multiple domains.
+
+
+	Arnd
