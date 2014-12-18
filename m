@@ -1,159 +1,63 @@
 From: "Zhang, Yang Z" <yang.z.zhang@intel.com>
-Subject: RE: [v3 21/26] x86, irq: Define a global vector for VT-d
- Posted-Interrupts
-Date: Thu, 18 Dec 2014 14:54:55 +0000
-Message-ID: <A9667DDFB95DB7438FA9D7D576C3D87E0AC048BF@SHSMSX104.ccr.corp.intel.com>
+Subject: RE: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is set
+Date: Thu, 18 Dec 2014 15:09:48 +0000
+Message-ID: <A9667DDFB95DB7438FA9D7D576C3D87E0AC04938@SHSMSX104.ccr.corp.intel.com>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
- <1418397300-10870-22-git-send-email-feng.wu@intel.com>
+	<1418397300-10870-26-git-send-email-feng.wu@intel.com>
+	<5491C0A2.7040503@redhat.com>
+ <E959C4978C3B6342920538CF579893F002307C4A@SHSMSX104.ccr.corp.intel.com>
+ <5492926E.8070207@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1418397300-10870-22-git-send-email-feng.wu@intel.com>
+In-Reply-To: <5492926E.8070207@redhat.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: "tglx@linutronix.de" <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>, "hpa@zytor.com" <hpa@zytor.com>, "x86@kernel.org" <x86@kernel.org>, "gleb@kernel.org" <gleb@kernel.org>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>
-Cc: "eric.auger@linaro.org" <eric.auger@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Wu, Feng" <feng.wu@intel.com>
+To: Paolo Bonzini <pbonzini@redhat.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Feng Wu wrote on 2014-12-12:
-> Currently, we use a global vector as the Posted-Interrupts
-> Notification Event for all the vCPUs in the system. We need to
-> introduce another global vector for VT-d Posted-Interrtups, which will
-> be used to wakeup the sleep vCPU when an external interrupt from a direct-assigned device happens for that vCPU.
+Paolo Bonzini wrote on 2014-12-18:
 > 
+> 
+> On 18/12/2014 04:14, Wu, Feng wrote:
+>> 
+>> 
+>> linux-kernel-owner@vger.kernel.org wrote on mailto:linux-kernel-owner@vger.kernel.org] On Behalf Of Paolo:
+>>> x86@kernel.org; Gleb Natapov; Paolo Bonzini; dwmw2@infradead.org;
+>>> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; Alex Williamson;
+>>> joro-zLv9SwRftAIdnm+Jiang
+>>> Liu
+>>> Cc: iommu@lists.linux-foundation.org;
+>>> linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; KVM list;
+>>> Eric Auger
+>>> Subject: Re: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is
+>>> set
+>>> 
+>>> 
+>>> 
+>>> On 12/12/2014 16:14, Feng Wu wrote:
+>>>> Currently, we don't support urgent interrupt, all interrupts are
+>>>> recognized as non-urgent interrupt, so we cannot send
+>>>> posted-interrupt when 'SN' is set.
+>>> 
+>>> Can this happen?  If the vcpu is in guest mode, it cannot have been
+>>> scheduled out, and that's the only case when SN is set.
+>>> 
+>>> Paolo
+>> 
+>> Currently, the only place where SN is set is vCPU is preempted and
 
-Hi Feng, 
+If the vCPU is preempted, shouldn't the subsequent be ignored? What happens if a PI is occurs when vCPU is preempted?
 
-Since the idea of two global vectors mechanism is from me, please add me to the comments.
-
-> Signed-off-by: Feng Wu <feng.wu@intel.com>
-> ---
->  arch/x86/include/asm/entry_arch.h  |  2 ++
->  arch/x86/include/asm/hardirq.h     |  1 +
->  arch/x86/include/asm/hw_irq.h      |  2 ++
->  arch/x86/include/asm/irq_vectors.h |  1 +
->  arch/x86/kernel/entry_64.S         |  2 ++
->  arch/x86/kernel/irq.c              | 27 +++++++++++++++++++++++++++
->  arch/x86/kernel/irqinit.c          |  2 ++
->  7 files changed, 37 insertions(+)
-> diff --git a/arch/x86/include/asm/entry_arch.h
-> b/arch/x86/include/asm/entry_arch.h index dc5fa66..27ca0af 100644 ---
-> a/arch/x86/include/asm/entry_arch.h +++
-> b/arch/x86/include/asm/entry_arch.h @@ -23,6 +23,8 @@
-> BUILD_INTERRUPT(x86_platform_ipi, X86_PLATFORM_IPI_VECTOR)  #ifdef
-> CONFIG_HAVE_KVM BUILD_INTERRUPT3(kvm_posted_intr_ipi, POSTED_INTR_VECTOR,
->  		 smp_kvm_posted_intr_ipi)
-> +BUILD_INTERRUPT3(kvm_posted_intr_wakeup_ipi, POSTED_INTR_WAKEUP_VECTOR,
-> +		 smp_kvm_posted_intr_wakeup_ipi)
->  #endif
->  
->  /*
-> diff --git a/arch/x86/include/asm/hardirq.h
-> b/arch/x86/include/asm/hardirq.h index 0f5fb6b..9866065 100644
-> --- a/arch/x86/include/asm/hardirq.h
-> +++ b/arch/x86/include/asm/hardirq.h
-> @@ -14,6 +14,7 @@ typedef struct {
->  #endif #ifdef CONFIG_HAVE_KVM 	unsigned int kvm_posted_intr_ipis;
->  +	unsigned int kvm_posted_intr_wakeup_ipis; #endif 	unsigned int
->  x86_platform_ipis;	/* arch dependent */ 	unsigned int apic_perf_irqs;
-> diff --git a/arch/x86/include/asm/hw_irq.h
-> b/arch/x86/include/asm/hw_irq.h index e7ae6eb..38fac9b 100644
-> --- a/arch/x86/include/asm/hw_irq.h
-> +++ b/arch/x86/include/asm/hw_irq.h
-> @@ -29,6 +29,7 @@
->  extern asmlinkage void apic_timer_interrupt(void);  extern asmlinkage
-> void x86_platform_ipi(void);  extern asmlinkage void
-> kvm_posted_intr_ipi(void); +extern asmlinkage void
-> kvm_posted_intr_wakeup_ipi(void);
->  extern asmlinkage void error_interrupt(void);  extern asmlinkage void
-> irq_work_interrupt(void);
+>> waiting for the next scheduling in the runqueue. But I am not sure
+>> whether we need to set SN for other purpose in future. Adding SN
+>> checking here is just to follow the Spec. non-urgent interrupts are
+>> suppressed
+> when SN is set.
 > 
-> @@ -92,6 +93,7 @@ extern void
-> trace_call_function_single_interrupt(void);
->  #define trace_irq_move_cleanup_interrupt  irq_move_cleanup_interrupt
-> #define trace_reboot_interrupt  reboot_interrupt  #define
-> trace_kvm_posted_intr_ipi kvm_posted_intr_ipi
-> +#define trace_kvm_posted_intr_wakeup_ipi kvm_posted_intr_wakeup_ipi
->  #endif /* CONFIG_TRACING */
->  
->  struct irq_domain;
-> diff --git a/arch/x86/include/asm/irq_vectors.h
-> b/arch/x86/include/asm/irq_vectors.h index b26cb12..dca94f2 100644 ---
-> a/arch/x86/include/asm/irq_vectors.h +++
-> b/arch/x86/include/asm/irq_vectors.h @@ -105,6 +105,7 @@
->  /* Vector for KVM to deliver posted interrupt IPI */  #ifdef
->  CONFIG_HAVE_KVM #define POSTED_INTR_VECTOR		0xf2 +#define
->  POSTED_INTR_WAKEUP_VECTOR	0xf1 #endif
->  
->  /*
-> diff --git a/arch/x86/kernel/entry_64.S b/arch/x86/kernel/entry_64.S
-> index e61c14a..a598447 100644 --- a/arch/x86/kernel/entry_64.S +++
-> b/arch/x86/kernel/entry_64.S @@ -960,6 +960,8 @@ apicinterrupt
-> X86_PLATFORM_IPI_VECTOR \  #ifdef CONFIG_HAVE_KVM
->  apicinterrupt3 POSTED_INTR_VECTOR \
->  	kvm_posted_intr_ipi smp_kvm_posted_intr_ipi
-> +apicinterrupt3 POSTED_INTR_WAKEUP_VECTOR \
-> +	kvm_posted_intr_wakeup_ipi smp_kvm_posted_intr_wakeup_ipi
->  #endif
->  
->  #ifdef CONFIG_X86_MCE_THRESHOLD
-> diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c index
-> 922d285..47408c3 100644
-> --- a/arch/x86/kernel/irq.c
-> +++ b/arch/x86/kernel/irq.c
-> @@ -237,6 +237,9 @@ __visible void smp_x86_platform_ipi(struct pt_regs
-> *regs)  }
-> 
->  #ifdef CONFIG_HAVE_KVM
-> +void (*wakeup_handler_callback)(void) = NULL;
-> +EXPORT_SYMBOL_GPL(wakeup_handler_callback); +
->  /*
->   * Handler for POSTED_INTERRUPT_VECTOR.
->   */
-> @@ -256,6 +259,30 @@ __visible void smp_kvm_posted_intr_ipi(struct
-> pt_regs *regs)
-> 
->  	set_irq_regs(old_regs);
->  }
-> +
-> +/*
-> + * Handler for POSTED_INTERRUPT_WAKEUP_VECTOR.
-> + */
-> +__visible void smp_kvm_posted_intr_wakeup_ipi(struct pt_regs *regs) {
-> +	struct pt_regs *old_regs = set_irq_regs(regs);
-> +
-> +	ack_APIC_irq();
-> +
-> +	irq_enter();
-> +
-> +	exit_idle();
-> +
-> +	inc_irq_stat(kvm_posted_intr_wakeup_ipis);
-> +
-> +	if (wakeup_handler_callback)
-> +		wakeup_handler_callback();
-> +
-> +	irq_exit();
-> +
-> +	set_irq_regs(old_regs);
-> +}
-> +
->  #endif
->  
->  __visible void smp_trace_x86_platform_ipi(struct pt_regs *regs) diff
-> --git a/arch/x86/kernel/irqinit.c b/arch/x86/kernel/irqinit.c index
-> 70e181e..844673c 100644 --- a/arch/x86/kernel/irqinit.c +++
-> b/arch/x86/kernel/irqinit.c @@ -144,6 +144,8 @@ static void __init
-> apic_intr_init(void)  #ifdef CONFIG_HAVE_KVM
->  	/* IPI for KVM to deliver posted interrupt */
->  	alloc_intr_gate(POSTED_INTR_VECTOR, kvm_posted_intr_ipi);
-> +	/* IPI for KVM to deliver interrupt to wake up tasks */
-> +	alloc_intr_gate(POSTED_INTR_WAKEUP_VECTOR,
-> +kvm_posted_intr_wakeup_ipi);
->  #endif
->  
->  	/* IPI vectors for APIC spurious and error interrupts */
+> I would change that to a WARN_ON_ONCE then.
 
 
 Best regards,
