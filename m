@@ -1,15 +1,16 @@
 From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is set
-Date: Thu, 18 Dec 2014 03:14:59 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F002307C4A@SHSMSX104.ccr.corp.intel.com>
+Subject: RE: [v3 23/26] KVM: Update Posted-Interrupts Descriptor when vCPU
+	is preempted
+Date: Thu, 18 Dec 2014 03:15:37 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F002307C66@SHSMSX104.ccr.corp.intel.com>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
-	<1418397300-10870-26-git-send-email-feng.wu@intel.com>
-	<5491C0A2.7040503@redhat.com>
+	<1418397300-10870-24-git-send-email-feng.wu@intel.com>
+	<5491B924.3090200@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5491C0A2.7040503-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <5491B924.3090200-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -20,83 +21,93 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "H. Peter Anvin" <hpa-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Gleb Natapov <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+To: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "H. Peter Anvin" <hpa-VuQAYsv1563Yd54FQh9/CA-XMD5yJDbdMReXY1tMh2IBg@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Gleb Natapov <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <public-jiang.liu-VuQAYsv1563Yd54FQh9/CA-wOFGN7rlS/M9smdsby/KFg@public.gmane.org>
 Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, KVM list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
 
 > -----Original Message-----
-> From: linux-kernel-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> [mailto:linux-kernel-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org] On Behalf Of Paolo Bonzini
-> Sent: Thursday, December 18, 2014 1:43 AM
+> From: Paolo Bonzini [mailto:paolo.bonzini-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org] On Behalf Of Paolo
+> Bonzini
+> Sent: Thursday, December 18, 2014 1:11 AM
 > To: Wu, Feng; Thomas Gleixner; Ingo Molnar; H. Peter Anvin; x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org;
 > Gleb Natapov; Paolo Bonzini; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; Alex
-> Williamson; Jiang Liu
+> Williamson; jiang.liu-VuQAYsv1563Yd54FQh9/CA-XMD5yJDbdMReXY1tMh2IBg@public.gmane.org
 > Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; KVM list;
 > Eric Auger
-> Subject: Re: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is set
+> Subject: Re: [v3 23/26] KVM: Update Posted-Interrupts Descriptor when vCPU
+> is preempted
 > 
 > 
 > 
 > On 12/12/2014 16:14, Feng Wu wrote:
-> > Currently, we don't support urgent interrupt, all interrupts
-> > are recognized as non-urgent interrupt, so we cannot send
-> > posted-interrupt when 'SN' is set.
+> > +	if (irq_remapping_cap(IRQ_POSTING_CAP)) {
+> > +		struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
+> > +		struct pi_desc old, new;
+> > +		unsigned int dest;
+> > +
+> > +		memset(&old, 0, sizeof(old));
+> > +		memset(&new, 0, sizeof(new));
 > 
-> Can this happen?  If the vcpu is in guest mode, it cannot have been
-> scheduled out, and that's the only case when SN is set.
+> This is quite expensive.  Just use an u64 for old_control and
+> new_control, instead of a full struct.
 > 
-> Paolo
+> >
+> > +			pi_clear_sn(&new);
+> 
+> This can be simply new.sn = 0.  It does not need atomic operations.
 
-Currently, the only place where SN is set is vCPU is preempted and waiting for
-the next scheduling in the runqueue. But I am not sure whether we need to
-set SN for other purpose in future. Adding SN checking here is just to follow
-the Spec. non-urgent interrupts are suppressed when SN is set.
+Thanks for your comments, Paolo!
+
+If we use u64 new_control, we cannot use new.sn any more.
+Maybe we can change the struct pi_desc {} like this:
+
+typedef struct pid_control{
+        u64     on      : 1,
+        sn      : 1,
+        rsvd_1  : 13,
+        ndm     : 1,
+        nv      : 8,
+        rsvd_2  : 8,
+        ndst    : 32;
+}pid_control_t;
+
+struct pi_desc {
+        u32 pir[8];     /* Posted interrupt requested */
+		pid_control_t control;
+        u32 rsvd[6];
+} __aligned(64);
+
+
+Then we can define pid_control_t new_control, old_control. And use new_control.sn = 0.
+
+What is your opinon?
 
 Thanks,
 Feng
 
 > 
-> > Signed-off-by: Feng Wu
-> <feng.wu-ral2JQCrhuEAvxtiuMwx3w-XMD5yJDbdMReXY1tMh2IBg@public.gmane.org>
-> > ---
-> >  arch/x86/kvm/vmx.c | 11 +++++++++--
-> >  1 file changed, 9 insertions(+), 2 deletions(-)
+> Same in patch 24 (if needed at all there---see the reply there).
+> 
 > >
-> > diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-> > index a1c83a2..0aee151 100644
-> > --- a/arch/x86/kvm/vmx.c
-> > +++ b/arch/x86/kvm/vmx.c
-> > @@ -4401,15 +4401,22 @@ static int vmx_vm_has_apicv(struct kvm *kvm)
-> >  static void vmx_deliver_posted_interrupt(struct kvm_vcpu *vcpu, int
-> vector)
-> >  {
-> >  	struct vcpu_vmx *vmx = to_vmx(vcpu);
-> > -	int r;
-> > +	int r, sn;
-> >
-> >  	if (pi_test_and_set_pir(vector, &vmx->pi_desc))
-> >  		return;
-> >
-> > +	/*
-> > +	 * Currently, we don't support urgent interrupt, all interrupts
-> > +	 * are recognized as non-urgent interrupt, so we cannot send
-> > +	 * posted-interrupt when 'SN' is set.
-> > +	 */
-> > +	sn = pi_test_sn(&vmx->pi_desc);
+> > +	if (irq_remapping_cap(IRQ_POSTING_CAP)) {
+> > +		struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
+> > +		struct pi_desc old, new;
 > > +
-> >  	r = pi_test_and_set_on(&vmx->pi_desc);
-> >  	kvm_make_request(KVM_REQ_EVENT, vcpu);
-> >  #ifdef CONFIG_SMP
-> > -	if (!r && (vcpu->mode == IN_GUEST_MODE))
-> > +	if (!r && !sn && (vcpu->mode == IN_GUEST_MODE))
-> >  		apic->send_IPI_mask(get_cpu_mask(vcpu->cpu),
-> >  				POSTED_INTR_VECTOR);
-> >  	else
-> > --
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+> > +		memset(&old, 0, sizeof(old));
+> > +		memset(&new, 0, sizeof(new));
+> > +
+> 
+> Here you do not need old/new at all because...
+> 
+> > +		if (vcpu->preempted) {
+> > +			do {
+> > +				old.control = new.control = pi_desc->control;
+> > +				pi_set_sn(&new);
+> > +			} while (cmpxchg(&pi_desc->control, old.control,
+> > +					new.control) != old.control);
+> 
+> this can do pi_set_sn directly on pi_desc, without the cmpxchg.
+> 
+> Paolo
