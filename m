@@ -1,98 +1,71 @@
-From: Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is set
-Date: Thu, 18 Dec 2014 09:38:06 +0100
-Message-ID: <5492926E.8070207@redhat.com>
-References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>	<1418397300-10870-26-git-send-email-feng.wu@intel.com>	<5491C0A2.7040503@redhat.com> <E959C4978C3B6342920538CF579893F002307C4A@SHSMSX104.ccr.corp.intel.com>
+From: "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [v3 06/26] iommu, x86: No need to migrating irq for VT-d
+	Posted-Interrupts
+Date: Thu, 18 Dec 2014 14:26:24 +0000
+Message-ID: <A9667DDFB95DB7438FA9D7D576C3D87E0AC0486D@SHSMSX104.ccr.corp.intel.com>
+References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
+	<1418397300-10870-7-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <E959C4978C3B6342920538CF579893F002307C4A@SHSMSX104.ccr.corp.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: iommu@lists.linux-foundation.org, kvm@vger.kernel.orgkvm@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1418397300-10870-7-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 18/12/2014 04:14, Wu, Feng wrote:
+Feng Wu wrote on 2014-12-12:
+> We don't need to migrate the irqs for VT-d Posted-Interrupts here.
+> When 'pst' is set in IRTE, the associated irq will be posted to guests
+> instead of interrupt remapping. The destination of the interrupt is
+> set in Posted-Interrupts Descriptor, and the migration happens during
+> vCPU scheduling.
 > 
+> However, we still update the cached irte here, which can be used when
+> changing back to remapping mode.
 > 
->> -----Original Message-----
->> From: linux-kernel-owner@vger.kernel.org
->> [mailto:linux-kernel-owner@vger.kernel.org] On Behalf Of Paolo Bonzini
->> Sent: Thursday, December 18, 2014 1:43 AM
->> To: Wu, Feng; Thomas Gleixner; Ingo Molnar; H. Peter Anvin; x86@kernel.org;
->> Gleb Natapov; Paolo Bonzini; dwmw2@infradead.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; Alex
->> Williamson; Jiang Liu
->> Cc: iommu@lists.linux-foundation.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; KVM list;
->> Eric Auger
->> Subject: Re: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is set
->>
->>
->>
->> On 12/12/2014 16:14, Feng Wu wrote:
->>> Currently, we don't support urgent interrupt, all interrupts
->>> are recognized as non-urgent interrupt, so we cannot send
->>> posted-interrupt when 'SN' is set.
->>
->> Can this happen?  If the vcpu is in guest mode, it cannot have been
->> scheduled out, and that's the only case when SN is set.
->>
->> Paolo
+> Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> ---
+>  drivers/iommu/intel_irq_remapping.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> diff --git a/drivers/iommu/intel_irq_remapping.c
+> b/drivers/iommu/intel_irq_remapping.c index 48c2051..ab9057a 100644 ---
+> a/drivers/iommu/intel_irq_remapping.c +++
+> b/drivers/iommu/intel_irq_remapping.c @@ -977,6 +977,7 @@
+> intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
+>  {
+>  	struct intel_ir_data *ir_data = data->chip_data; 	struct irte *irte =
+>  &ir_data->irte_entry; +	struct irte_pi *irte_pi = (struct irte_pi
+>  *)irte; 	struct irq_cfg *cfg = irqd_cfg(data); 	struct irq_data *parent
+>  = data->parent_data; 	int ret;
+> @@ -991,7 +992,10 @@ intel_ir_set_affinity(struct irq_data *data,
+> const struct cpumask *mask,
+>  	 */
+>  	irte->vector = cfg->vector;
+>  	irte->dest_id = IRTE_DEST(cfg->dest_apicid);
+> -	modify_irte(&ir_data->irq_2_iommu, irte);
+> +
+> +	/* We don't need to modify irte if the interrupt is for posting. */
+> +	if (irte_pi->pst != 1)
+> +		modify_irte(&ir_data->irq_2_iommu, irte);
+
+What happens if user changes the IRQ affinity manually?
+
 > 
-> Currently, the only place where SN is set is vCPU is preempted and waiting for
-> the next scheduling in the runqueue. But I am not sure whether we need to
-> set SN for other purpose in future. Adding SN checking here is just to follow
-> the Spec. non-urgent interrupts are suppressed when SN is set.
+>  	/*
+>  	 * After this point, all the interrupts will start arriving
 
-I would change that to a WARN_ON_ONCE then.
 
-Paolo
-
-> Thanks,
-> Feng
-> 
->>
->>> Signed-off-by: Feng Wu
->> <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
->>> ---
->>>  arch/x86/kvm/vmx.c | 11 +++++++++--
->>>  1 file changed, 9 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
->>> index a1c83a2..0aee151 100644
->>> --- a/arch/x86/kvm/vmx.c
->>> +++ b/arch/x86/kvm/vmx.c
->>> @@ -4401,15 +4401,22 @@ static int vmx_vm_has_apicv(struct kvm *kvm)
->>>  static void vmx_deliver_posted_interrupt(struct kvm_vcpu *vcpu, int
->> vector)
->>>  {
->>>  	struct vcpu_vmx *vmx = to_vmx(vcpu);
->>> -	int r;
->>> +	int r, sn;
->>>
->>>  	if (pi_test_and_set_pir(vector, &vmx->pi_desc))
->>>  		return;
->>>
->>> +	/*
->>> +	 * Currently, we don't support urgent interrupt, all interrupts
->>> +	 * are recognized as non-urgent interrupt, so we cannot send
->>> +	 * posted-interrupt when 'SN' is set.
->>> +	 */
->>> +	sn = pi_test_sn(&vmx->pi_desc);
->>> +
->>>  	r = pi_test_and_set_on(&vmx->pi_desc);
->>>  	kvm_make_request(KVM_REQ_EVENT, vcpu);
->>>  #ifdef CONFIG_SMP
->>> -	if (!r && (vcpu->mode == IN_GUEST_MODE))
->>> +	if (!r && !sn && (vcpu->mode == IN_GUEST_MODE))
->>>  		apic->send_IPI_mask(get_cpu_mask(vcpu->cpu),
->>>  				POSTED_INTR_VECTOR);
->>>  	else
->>> --
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->> Please read the FAQ at  http://www.tux.org/lkml/
+Best regards,
+Yang
