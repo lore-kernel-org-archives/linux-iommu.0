@@ -1,15 +1,16 @@
-From: "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [v3 12/26] KVM: Initialize VT-d Posted-Interrupts Descriptor
-Date: Thu, 18 Dec 2014 15:19:40 +0000
-Message-ID: <A9667DDFB95DB7438FA9D7D576C3D87E0AC04985@SHSMSX104.ccr.corp.intel.com>
+From: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [v3 13/26] KVM: Define a new interface kvm_find_dest_vcpu() for
+	VT-d PI
+Date: Thu, 18 Dec 2014 17:58:13 +0100
+Message-ID: <549307A5.3060305@redhat.com>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
-	<1418397300-10870-13-git-send-email-feng.wu@intel.com>
+	<1418397300-10870-14-git-send-email-feng.wu@intel.com>
+	<A9667DDFB95DB7438FA9D7D576C3D87E0AC048A2@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1418397300-10870-13-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <A9667DDFB95DB7438FA9D7D576C3D87E0AC048A2-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,72 +20,29 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+To: "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Feng Wu wrote on 2014-12-12:
-> This patch initializes the VT-d Posted-Interrupts Descriptor.
+
+
+On 18/12/2014 15:49, Zhang, Yang Z wrote:
+>>> Here, we introduce a similar way with 'apic_arb_prio' to handle
+>>> guest lowest priority interrtups when VT-d PI is used. Here is
+>>> the ideas: - Each vCPU has a counter 'round_robin_counter'. -
+>>> When guests sets an interrupts to lowest priority, we choose the
+>>> vCPU with smallest 'round_robin_counter' as the destination, then
+>>> increase it.
 > 
-> Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> ---
->  arch/x86/kvm/vmx.c | 27 +++++++++++++++++++++++++++
->  1 file changed, 27 insertions(+)
-> diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c index
-> 0b1383e..66ca275 100644 --- a/arch/x86/kvm/vmx.c +++
-> b/arch/x86/kvm/vmx.c @@ -45,6 +45,7 @@
->  #include <asm/perf_event.h>
->  #include <asm/debugreg.h>
->  #include <asm/kexec.h>
-> +#include <asm/irq_remapping.h>
-> 
->  #include "trace.h"
-> @@ -4433,6 +4434,30 @@ static void ept_set_mmio_spte_mask(void)
->  	kvm_mmu_set_mmio_spte_mask((0x3ull << 62) | 0x6ull);  }
-> +static void pi_desc_init(struct vcpu_vmx *vmx) {
-> +	unsigned int dest;
-> +
-> +	if (!irq_remapping_cap(IRQ_POSTING_CAP))
-> +		return;
-> +
-> +	/*
-> +	 * Initialize Posted-Interrupt Descriptor
-> +	 */
-> +
-> +	pi_clear_sn(&vmx->pi_desc);
-> +	vmx->pi_desc.nv = POSTED_INTR_VECTOR;
+> How this can work well? All subsequent interrupts are delivered to
+> one vCPU? It shouldn't be the best solution, need more consideration.
 
-Here.
+Well, it's a hardware limitation.  The alternative (which is easy to
+implement) is to only do PI for single-CPU interrupts.  This should work
+well for multiqueue NICs (and of course for UP guests :)), so perhaps
+it's a good idea to only support that as a first attempt.
 
-> +
-> +	/* Physical mode for Notificaiton Event */
-> +	vmx->pi_desc.ndm = 0;
+Paolo
 
-And from here..
-
-> +	dest = cpu_physical_id(vmx->vcpu.cpu);
-> +
-> +	if (x2apic_enabled())
-> +		vmx->pi_desc.ndst = dest;
-> +	else
-> +		vmx->pi_desc.ndst = (dest << 8) & 0xFF00; }
-> +
-
-..to here are useless. The right place to update PI descriptor is where vcpu got loaded not in initialization.
-
->  /*
->   * Sets up the vmcs for emulated real mode.
->   */
-> @@ -4476,6 +4501,8 @@ static int vmx_vcpu_setup(struct vcpu_vmx *vmx)
-> 
->  		vmcs_write64(POSTED_INTR_NV, POSTED_INTR_VECTOR);
->  		vmcs_write64(POSTED_INTR_DESC_ADDR, __pa((&vmx->pi_desc)));
-> +
-> +		pi_desc_init(vmx);
->  	}
->  
->  	if (ple_gap) {
-
-
-Best regards,
-Yang
+> Also, I think you should take the apic_arb_prio into consider since
+> the priority is for the whole vCPU not for one interrupt.
