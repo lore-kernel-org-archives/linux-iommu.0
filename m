@@ -1,63 +1,89 @@
-From: "Zhang, Yang Z" <yang.z.zhang@intel.com>
-Subject: RE: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is set
-Date: Thu, 18 Dec 2014 15:09:48 +0000
-Message-ID: <A9667DDFB95DB7438FA9D7D576C3D87E0AC04938@SHSMSX104.ccr.corp.intel.com>
+From: "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [v3 12/26] KVM: Initialize VT-d Posted-Interrupts Descriptor
+Date: Thu, 18 Dec 2014 15:19:40 +0000
+Message-ID: <A9667DDFB95DB7438FA9D7D576C3D87E0AC04985@SHSMSX104.ccr.corp.intel.com>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
-	<1418397300-10870-26-git-send-email-feng.wu@intel.com>
-	<5491C0A2.7040503@redhat.com>
- <E959C4978C3B6342920538CF579893F002307C4A@SHSMSX104.ccr.corp.intel.com>
- <5492926E.8070207@redhat.com>
+	<1418397300-10870-13-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5492926E.8070207@redhat.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1418397300-10870-13-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Paolo Bonzini <pbonzini@redhat.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Paolo Bonzini wrote on 2014-12-18:
+Feng Wu wrote on 2014-12-12:
+> This patch initializes the VT-d Posted-Interrupts Descriptor.
 > 
+> Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> ---
+>  arch/x86/kvm/vmx.c | 27 +++++++++++++++++++++++++++
+>  1 file changed, 27 insertions(+)
+> diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c index
+> 0b1383e..66ca275 100644 --- a/arch/x86/kvm/vmx.c +++
+> b/arch/x86/kvm/vmx.c @@ -45,6 +45,7 @@
+>  #include <asm/perf_event.h>
+>  #include <asm/debugreg.h>
+>  #include <asm/kexec.h>
+> +#include <asm/irq_remapping.h>
 > 
-> On 18/12/2014 04:14, Wu, Feng wrote:
->> 
->> 
->> linux-kernel-owner@vger.kernel.org wrote on mailto:linux-kernel-owner@vger.kernel.org] On Behalf Of Paolo:
->>> x86@kernel.org; Gleb Natapov; Paolo Bonzini; dwmw2@infradead.org;
->>> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; Alex Williamson;
->>> joro-zLv9SwRftAIdnm+Jiang
->>> Liu
->>> Cc: iommu@lists.linux-foundation.org;
->>> linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; KVM list;
->>> Eric Auger
->>> Subject: Re: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is
->>> set
->>> 
->>> 
->>> 
->>> On 12/12/2014 16:14, Feng Wu wrote:
->>>> Currently, we don't support urgent interrupt, all interrupts are
->>>> recognized as non-urgent interrupt, so we cannot send
->>>> posted-interrupt when 'SN' is set.
->>> 
->>> Can this happen?  If the vcpu is in guest mode, it cannot have been
->>> scheduled out, and that's the only case when SN is set.
->>> 
->>> Paolo
->> 
->> Currently, the only place where SN is set is vCPU is preempted and
+>  #include "trace.h"
+> @@ -4433,6 +4434,30 @@ static void ept_set_mmio_spte_mask(void)
+>  	kvm_mmu_set_mmio_spte_mask((0x3ull << 62) | 0x6ull);  }
+> +static void pi_desc_init(struct vcpu_vmx *vmx) {
+> +	unsigned int dest;
+> +
+> +	if (!irq_remapping_cap(IRQ_POSTING_CAP))
+> +		return;
+> +
+> +	/*
+> +	 * Initialize Posted-Interrupt Descriptor
+> +	 */
+> +
+> +	pi_clear_sn(&vmx->pi_desc);
+> +	vmx->pi_desc.nv = POSTED_INTR_VECTOR;
 
-If the vCPU is preempted, shouldn't the subsequent be ignored? What happens if a PI is occurs when vCPU is preempted?
+Here.
 
->> waiting for the next scheduling in the runqueue. But I am not sure
->> whether we need to set SN for other purpose in future. Adding SN
->> checking here is just to follow the Spec. non-urgent interrupts are
->> suppressed
-> when SN is set.
+> +
+> +	/* Physical mode for Notificaiton Event */
+> +	vmx->pi_desc.ndm = 0;
+
+And from here..
+
+> +	dest = cpu_physical_id(vmx->vcpu.cpu);
+> +
+> +	if (x2apic_enabled())
+> +		vmx->pi_desc.ndst = dest;
+> +	else
+> +		vmx->pi_desc.ndst = (dest << 8) & 0xFF00; }
+> +
+
+..to here are useless. The right place to update PI descriptor is where vcpu got loaded not in initialization.
+
+>  /*
+>   * Sets up the vmcs for emulated real mode.
+>   */
+> @@ -4476,6 +4501,8 @@ static int vmx_vcpu_setup(struct vcpu_vmx *vmx)
 > 
-> I would change that to a WARN_ON_ONCE then.
+>  		vmcs_write64(POSTED_INTR_NV, POSTED_INTR_VECTOR);
+>  		vmcs_write64(POSTED_INTR_DESC_ADDR, __pa((&vmx->pi_desc)));
+> +
+> +		pi_desc_init(vmx);
+>  	}
+>  
+>  	if (ple_gap) {
 
 
 Best regards,
