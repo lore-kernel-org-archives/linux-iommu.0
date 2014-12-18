@@ -1,15 +1,15 @@
 From: "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [v3 06/26] iommu, x86: No need to migrating irq for VT-d
-	Posted-Interrupts
-Date: Thu, 18 Dec 2014 14:26:24 +0000
-Message-ID: <A9667DDFB95DB7438FA9D7D576C3D87E0AC0486D@SHSMSX104.ccr.corp.intel.com>
+Subject: RE: [v3 13/26] KVM: Define a new interface kvm_find_dest_vcpu() for
+	VT-d PI
+Date: Thu, 18 Dec 2014 14:49:22 +0000
+Message-ID: <A9667DDFB95DB7438FA9D7D576C3D87E0AC048A2@SHSMSX104.ccr.corp.intel.com>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
-	<1418397300-10870-7-git-send-email-feng.wu@intel.com>
+	<1418397300-10870-14-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1418397300-10870-7-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1418397300-10870-14-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -25,47 +25,27 @@ Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-
 List-Id: iommu@lists.linux-foundation.org
 
 Feng Wu wrote on 2014-12-12:
-> We don't need to migrate the irqs for VT-d Posted-Interrupts here.
-> When 'pst' is set in IRTE, the associated irq will be posted to guests
-> instead of interrupt remapping. The destination of the interrupt is
-> set in Posted-Interrupts Descriptor, and the migration happens during
-> vCPU scheduling.
+> This patch defines a new interface kvm_find_dest_vcpu for
+> VT-d PI, which can returns the destination vCPU of the
+> interrupt for guests.
 > 
-> However, we still update the cached irte here, which can be used when
-> changing back to remapping mode.
+> Since VT-d PI cannot handle broadcast/multicast interrupt,
+> Here we only handle Fixed and Lowest priority interrupts.
 > 
-> Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> ---
->  drivers/iommu/intel_irq_remapping.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> diff --git a/drivers/iommu/intel_irq_remapping.c
-> b/drivers/iommu/intel_irq_remapping.c index 48c2051..ab9057a 100644 ---
-> a/drivers/iommu/intel_irq_remapping.c +++
-> b/drivers/iommu/intel_irq_remapping.c @@ -977,6 +977,7 @@
-> intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
->  {
->  	struct intel_ir_data *ir_data = data->chip_data; 	struct irte *irte =
->  &ir_data->irte_entry; +	struct irte_pi *irte_pi = (struct irte_pi
->  *)irte; 	struct irq_cfg *cfg = irqd_cfg(data); 	struct irq_data *parent
->  = data->parent_data; 	int ret;
-> @@ -991,7 +992,10 @@ intel_ir_set_affinity(struct irq_data *data,
-> const struct cpumask *mask,
->  	 */
->  	irte->vector = cfg->vector;
->  	irte->dest_id = IRTE_DEST(cfg->dest_apicid);
-> -	modify_irte(&ir_data->irq_2_iommu, irte);
-> +
-> +	/* We don't need to modify irte if the interrupt is for posting. */
-> +	if (irte_pi->pst != 1)
-> +		modify_irte(&ir_data->irq_2_iommu, irte);
-
-What happens if user changes the IRQ affinity manually?
-
+> The current method of handling guest lowest priority interrtups
+> is to use a counter 'apic_arb_prio' for each vCPU, we choose the
+> vCPU with smallest 'apic_arb_prio' and then increase it by 1.
+> However, for VT-d PI, we cannot re-use this, since we no longer
+> have control to 'apic_arb_prio' with posted interrupt direct
+> delivery by Hardware.
 > 
->  	/*
->  	 * After this point, all the interrupts will start arriving
-
+> Here, we introduce a similar way with 'apic_arb_prio' to handle guest
+> lowest priority interrtups when VT-d PI is used. Here is the ideas: -
+> Each vCPU has a counter 'round_robin_counter'. - When guests sets an
+> interrupts to lowest priority, we choose the vCPU with smallest
+> 'round_robin_counter' as the destination, then increase it.
+ 
+How this can work well? All subsequent interrupts are delivered to one vCPU? It shouldn't be the best solution, need more consideration. Also, I think you should take the apic_arb_prio into consider since the priority is for the whole vCPU not for one interrupt.
 
 Best regards,
 Yang
