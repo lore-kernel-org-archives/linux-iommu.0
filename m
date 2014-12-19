@@ -1,78 +1,52 @@
-From: "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [v3 13/26] KVM: Define a new interface kvm_find_dest_vcpu() for
-	VT-d PI
-Date: Fri, 19 Dec 2014 01:47:54 +0000
-Message-ID: <A9667DDFB95DB7438FA9D7D576C3D87E0AC04E94@SHSMSX104.ccr.corp.intel.com>
-References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
-	<1418397300-10870-14-git-send-email-feng.wu@intel.com>
-	<A9667DDFB95DB7438FA9D7D576C3D87E0AC048A2@SHSMSX104.ccr.corp.intel.com>
-	<549307A5.3060305@redhat.com>
-	<E959C4978C3B6342920538CF579893F00230A5F8@SHSMSX104.ccr.corp.intel.com>
+From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Subject: Re: [RFC PATCH 2/2] iommu: rockchip: Handle system-wide and runtime PM
+Date: Fri, 19 Dec 2014 03:27:35 +0100
+Message-ID: <8712967.RZO6JKCTcJ@vostro.rjw.lan>
+References: <1418286387-9663-1-git-send-email-tfiga@chromium.org> <7hppbg7j9r.fsf@deeprootsystems.com> <1649547.QECLmuJenN@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <E959C4978C3B6342920538CF579893F00230A5F8-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Sankaran, Rajesh" <rajesh.sankaran-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-pm-owner@vger.kernel.org>
+In-Reply-To: <1649547.QECLmuJenN@avalon>
+Sender: linux-pm-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Kevin Hilman <khilman@kernel.org>, Tomasz Figa <tfiga@chromium.org>, Ulf Hansson <ulf.hansson@linaro.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>, Heiko Stuebner <heiko@sntech.de>, Joerg Roedel <joro@8bytes.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Daniel Kurtz <djkurtz@chromium.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Wu, Feng wrote on 2014-12-19:
+On Thursday, December 18, 2014 11:28:58 PM Laurent Pinchart wrote:
+> Hi Kevin,
 > 
-> 
-> Paolo Bonzini wrote on 2014-12-19:
->> jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
->> Cc: eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
->> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
->> Subject: Re: [v3 13/26] KVM: Define a new interface
->> kvm_find_dest_vcpu() for VT-d PI
->> 
->> 
->> 
->> On 18/12/2014 15:49, Zhang, Yang Z wrote:
->>>>> Here, we introduce a similar way with 'apic_arb_prio' to handle
->>>>> guest lowest priority interrtups when VT-d PI is used. Here is
->>>>> the
->>>>> ideas: - Each vCPU has a counter 'round_robin_counter'. - When
->>>>> guests sets an interrupts to lowest priority, we choose the vCPU
->>>>> with smallest 'round_robin_counter' as the destination, then
->>>>> increase it.
->>> 
->>> How this can work well? All subsequent interrupts are delivered to
->>> one vCPU? It shouldn't be the best solution, need more consideration.
->> 
->> Well, it's a hardware limitation.  The alternative (which is easy to
->> implement) is to only do PI for single-CPU interrupts.  This should
->> work well for multiqueue NICs (and of course for UP guests :)), so
->> perhaps it's a good idea to only support that as a first attempt.
->> 
->> Paolo
-> 
-> Paolo, what do you mean by "single-CPU interrupts"? Do you mean we
 
-It should be same idea as I mentioned on another thread: deliver the interrupt to a single CPU(maybe the first matched VCPU?)
+[cut]
 
-> don't support lowest priority interrupts for PI? But Linux OS uses
-> lowest priority for most of the case? If so, we can hardly get benefit
-> from this feature for Linux guest OS.
+> > >> 
+> > >> It would be better to be able to reference count the DMA engine from the
+> > >> bus master IMO and arguably you can use the runtime PM framework for
+> > >> that. Namely, give bus masters someting like
+> > >> 
+> > >> 	pm_runtime_get_my_DMA_engine(bus_master_device)
+> > >> 	pm_runtime_put_my_DMA_engine(bus_master_device)
+> > >> 
+> > >> and let them call these as they see fit.
+> > > 
+> > > Please note that we're not talking about DMA engines here, but about
+> > > IOMMUs. DMA is involved through the DMA mapping API which hides the IOMMU
+> > > completely from the bus master drivers, not the DMA engine API.
+> > > 
+> > > Exposing the IOMMU is something we want to avoid, but DMA mapping
+> > > start/stop operations could certainly be implemented.
+> > 
+> > The problem with that is it only solves the IOMMU problem.  We have a
+> > more generic PM dependency problem of which this IOMMU example is only a
+> > subset, so I think we need a more generic solution.
 > 
-> Thanks,
-> Feng
-> 
->> 
->>> Also, I think you should take the apic_arb_prio into consider
->>> since the priority is for the whole vCPU not for one interrupt.
+> I agree that a more generic solution is needed at least to support ACPI _DEP, 
+> but that might not be optimal in the IOMMU use case as explained above.
+
+Well, since we need it anyway, why don't we implement it and then figure out
+if anything more specific needs to be done for the IOMMU case?
 
 
-Best regards,
-Yang
+-- 
+I speak only for myself.
+Rafael J. Wysocki, Intel Open Source Technology Center.
