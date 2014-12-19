@@ -1,17 +1,16 @@
 From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [v3 13/26] KVM: Define a new interface kvm_find_dest_vcpu() for
-	VT-d PI
-Date: Fri, 19 Dec 2014 01:30:46 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F00230A5F8@SHSMSX104.ccr.corp.intel.com>
+Subject: RE: [v3 06/26] iommu, x86: No need to migrating irq for VT-d
+	Posted-Interrupts
+Date: Fri, 19 Dec 2014 01:40:41 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F00230A649@SHSMSX104.ccr.corp.intel.com>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
-	<1418397300-10870-14-git-send-email-feng.wu@intel.com>
-	<A9667DDFB95DB7438FA9D7D576C3D87E0AC048A2@SHSMSX104.ccr.corp.intel.com>
-	<549307A5.3060305@redhat.com>
+	<1418397300-10870-7-git-send-email-feng.wu@intel.com>
+	<A9667DDFB95DB7438FA9D7D576C3D87E0AC0486D@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <549307A5.3060305-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <A9667DDFB95DB7438FA9D7D576C3D87E0AC0486D-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -22,51 +21,74 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Sankaran, Rajesh" <rajesh.sankaran-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
 
 > -----Original Message-----
-> From: Paolo Bonzini [mailto:pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Friday, December 19, 2014 12:58 AM
-> To: Zhang, Yang Z; Wu, Feng; tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
-> hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org; x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org;
-> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+> From: Zhang, Yang Z
+> Sent: Thursday, December 18, 2014 10:26 PM
+> To: Wu, Feng; tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org;
+> x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
+> dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
+> jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
 > Cc: eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [v3 13/26] KVM: Define a new interface kvm_find_dest_vcpu() for
-> VT-d PI
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wu, Feng
+> Subject: RE: [v3 06/26] iommu, x86: No need to migrating irq for VT-d
+> Posted-Interrupts
 > 
-> 
-> 
-> On 18/12/2014 15:49, Zhang, Yang Z wrote:
-> >>> Here, we introduce a similar way with 'apic_arb_prio' to handle
-> >>> guest lowest priority interrtups when VT-d PI is used. Here is
-> >>> the ideas: - Each vCPU has a counter 'round_robin_counter'. -
-> >>> When guests sets an interrupts to lowest priority, we choose the
-> >>> vCPU with smallest 'round_robin_counter' as the destination, then
-> >>> increase it.
+> Feng Wu wrote on 2014-12-12:
+> > We don't need to migrate the irqs for VT-d Posted-Interrupts here.
+> > When 'pst' is set in IRTE, the associated irq will be posted to guests
+> > instead of interrupt remapping. The destination of the interrupt is
+> > set in Posted-Interrupts Descriptor, and the migration happens during
+> > vCPU scheduling.
 > >
-> > How this can work well? All subsequent interrupts are delivered to
-> > one vCPU? It shouldn't be the best solution, need more consideration.
+> > However, we still update the cached irte here, which can be used when
+> > changing back to remapping mode.
+> >
+> > Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> > Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> > ---
+> >  drivers/iommu/intel_irq_remapping.c | 6 +++++-
+> >  1 file changed, 5 insertions(+), 1 deletion(-)
+> > diff --git a/drivers/iommu/intel_irq_remapping.c
+> > b/drivers/iommu/intel_irq_remapping.c index 48c2051..ab9057a 100644 ---
+> > a/drivers/iommu/intel_irq_remapping.c +++
+> > b/drivers/iommu/intel_irq_remapping.c @@ -977,6 +977,7 @@
+> > intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
+> >  {
+> >  	struct intel_ir_data *ir_data = data->chip_data; 	struct irte *irte =
+> >  &ir_data->irte_entry; +	struct irte_pi *irte_pi = (struct irte_pi
+> >  *)irte; 	struct irq_cfg *cfg = irqd_cfg(data); 	struct irq_data *parent
+> >  = data->parent_data; 	int ret;
+> > @@ -991,7 +992,10 @@ intel_ir_set_affinity(struct irq_data *data,
+> > const struct cpumask *mask,
+> >  	 */
+> >  	irte->vector = cfg->vector;
+> >  	irte->dest_id = IRTE_DEST(cfg->dest_apicid);
+> > -	modify_irte(&ir_data->irq_2_iommu, irte);
+> > +
+> > +	/* We don't need to modify irte if the interrupt is for posting. */
+> > +	if (irte_pi->pst != 1)
+> > +		modify_irte(&ir_data->irq_2_iommu, irte);
 > 
-> Well, it's a hardware limitation.  The alternative (which is easy to
-> implement) is to only do PI for single-CPU interrupts.  This should work
-> well for multiqueue NICs (and of course for UP guests :)), so perhaps
-> it's a good idea to only support that as a first attempt.
-> 
-> Paolo
+> What happens if user changes the IRQ affinity manually?
 
-Paolo, what do you mean by "single-CPU interrupts"? Do you mean we don't
-support lowest priority interrupts for PI? But Linux OS uses lowest priority
-for most of the case? If so, we can hardly get benefit from this feature for
-Linux guest OS.
+If the IRQ is posted, its affinity is controlled by guest (irq <---> vCPU <----> pCPU),
+it has no effect when host changes its affinity.
 
 Thanks,
 Feng
 
 > 
-> > Also, I think you should take the apic_arb_prio into consider since
-> > the priority is for the whole vCPU not for one interrupt.
+> >
+> >  	/*
+> >  	 * After this point, all the interrupts will start arriving
+> 
+> 
+> Best regards,
+> Yang
+> 
