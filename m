@@ -1,8 +1,8 @@
 From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [RFC PATCH v3 2/3] vfio: platform: access device property as a list
-	of strings
-Date: Fri, 19 Dec 2014 22:20:30 +0100
-Message-ID: <1419024032-1269-3-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [RFC PATCH v3 3/3] vfio: platform: return device properties as arrays
+	of unsigned integers
+Date: Fri, 19 Dec 2014 22:20:31 +0100
+Message-ID: <1419024032-1269-4-git-send-email-a.motakis@virtualopensystems.com>
 References: <1419024032-1269-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,68 +22,87 @@ To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9Q
 Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Certain device properties (e.g. the device node name, the compatible
-string), are available as a list of strings (separated by the null
-terminating character). Let the VFIO user query this type of properties.
+Certain properties of a device are accessible as an array of unsigned
+integers, either u64, u32, u16, or u8. Let the VFIO user query this
+type of device properties.
 
 Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 ---
- drivers/vfio/platform/properties.c | 43 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 42 insertions(+), 1 deletion(-)
+ drivers/vfio/platform/properties.c | 62 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 61 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/vfio/platform/properties.c b/drivers/vfio/platform/properties.c
-index 8b90465..39c6342 100644
+index 39c6342..645f6e5c 100644
 --- a/drivers/vfio/platform/properties.c
 +++ b/drivers/vfio/platform/properties.c
-@@ -7,7 +7,48 @@ static int dev_property_get_strings(struct device *dev,
- 				    char *name, unsigned *lenp,
- 				    void __user *datap, unsigned long datasz)
+@@ -55,7 +55,67 @@ static int dev_property_get_uint(struct device *dev, char *name,
+ 				 uint32_t type, unsigned *lenp,
+ 				 void __user *datap, unsigned long datasz)
  {
 -	return -EINVAL;
-+	const char **val;
-+	int n, i, ret;
++	int ret, n;
++	u8 *out;
++	size_t sz;
++	int (*func)(const struct device *, const char *, void *, size_t)
++		= NULL;
 +
-+	*lenp = 0;
++	switch (type) {
++	case VFIO_DEV_PROPERTY_TYPE_U64:
++		sz = sizeof(u64);
++		func = (int (*)(const struct device *,
++				const char *, void *, size_t))
++			device_property_read_u64_array;
++		break;
++	case VFIO_DEV_PROPERTY_TYPE_U32:
++		sz = sizeof(u32);
++		func = (int (*)(const struct device *,
++				const char *, void *, size_t))
++			device_property_read_u32_array;
++		break;
++	case VFIO_DEV_PROPERTY_TYPE_U16:
++		sz = sizeof(u16);
++		func = (int (*)(const struct device *,
++				const char *, void *, size_t))
++			device_property_read_u16_array;
++		break;
++	case VFIO_DEV_PROPERTY_TYPE_U8:
++		sz = sizeof(u8);
++		func = (int (*)(const struct device *,
++				const char *, void *, size_t))
++			device_property_read_u8_array;
++		break;
 +
-+	n = device_property_read_string_array(dev, name, NULL, 0);
++	default:
++		return -EINVAL;
++	}
++
++	/* get size of array */
++	n = func(dev, name, NULL, 0);
 +	if (n < 0)
 +		return n;
 +
-+	val = kcalloc(n, sizeof(char*), GFP_KERNEL);
-+	if (!val)
-+		return -ENOMEM;
++	if (lenp)
++		*lenp = n * sz;
 +
-+	ret = device_property_read_string_array(dev, name, val, n);
-+	if (ret < 0)
++	if (n * sz > datasz)
++		return -EOVERFLOW;
++
++	out = kcalloc(n, sz, GFP_KERNEL);
++	if (!out)
++		return -EFAULT;
++
++	ret = func(dev, name, out, n);
++	if (ret)
 +		goto out;
 +
-+	ret = 0;
-+
-+	for (i = 0; i < n; i++) {
-+		size_t len = strlen(val[i]) + 1;
-+
-+		if (datasz < len) {
-+			ret = -EOVERFLOW;
-+			while (i < n)
-+				*lenp += strlen(val[i++]) + 1;
-+			goto out;
-+		}
-+
-+		if (copy_to_user(datap, val[i], len)) {
-+			ret = -EFAULT;
-+			goto out;
-+		}
-+
-+		*lenp += len;
-+		datap += len;
-+		datasz -= len;
-+	}
++	if (copy_to_user(datap, out, n * sz))
++		ret = -EFAULT;
 +
 +out:
-+	kfree(val);
++	kfree(out);
 +	return ret;
  }
  
- static int dev_property_get_uint(struct device *dev, char *name,
+ int vfio_platform_dev_properties(struct device *dev,
 -- 
 2.1.3
