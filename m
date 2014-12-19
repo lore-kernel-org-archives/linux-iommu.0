@@ -1,201 +1,49 @@
-From: "Zhang, Yang Z" <yang.z.zhang@intel.com>
-Subject: RE: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is set
-Date: Fri, 19 Dec 2014 07:04:10 +0000
-Message-ID: <A9667DDFB95DB7438FA9D7D576C3D87E0AC05187@SHSMSX104.ccr.corp.intel.com>
-References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
-	<1418397300-10870-26-git-send-email-feng.wu@intel.com>
-	<5491C0A2.7040503@redhat.com>
-	<E959C4978C3B6342920538CF579893F002307C4A@SHSMSX104.ccr.corp.intel.com>
-	<5492926E.8070207@redhat.com>
- <A9667DDFB95DB7438FA9D7D576C3D87E0AC04938@SHSMSX104.ccr.corp.intel.com>
- <E959C4978C3B6342920538CF579893F00230ABEB@SHSMSX104.ccr.corp.intel.com>
- <A9667DDFB95DB7438FA9D7D576C3D87E0AC04FED@SHSMSX104.ccr.corp.intel.com>
- <E959C4978C3B6342920538CF579893F00230ADA0@SHSMSX104.ccr.corp.intel.com>
- <A9667DDFB95DB7438FA9D7D576C3D87E0AC05059@SHSMSX104.ccr.corp.intel.com>
- <E959C4978C3B6342920538CF579893F00230AE04@SHSMSX104.ccr.corp.intel.com>
- <A9667DDFB95DB7438FA9D7D576C3D87E0AC050B1@SHSMSX104.ccr.corp.intel.com>
- <E959C4978C3B6342920538CF579893F00230AED8@SHSMSX104.ccr.corp.intel.com>
+From: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [v3 13/26] KVM: Define a new interface kvm_find_dest_vcpu() for
+	VT-d PI
+Date: Fri, 19 Dec 2014 12:59:26 +0100
+Message-ID: <5494131E.9030505@redhat.com>
+References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>	<1418397300-10870-14-git-send-email-feng.wu@intel.com>	<A9667DDFB95DB7438FA9D7D576C3D87E0AC048A2@SHSMSX104.ccr.corp.intel.com>	<549307A5.3060305@redhat.com>
+	<E959C4978C3B6342920538CF579893F00230A5F8@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <E959C4978C3B6342920538CF579893F00230AED8@SHSMSX104.ccr.corp.intel.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Wu, Feng" <feng.wu@intel.com>, Paolo Bonzini <pbonzini@redhat.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <E959C4978C3B6342920538CF579893F00230A5F8-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Yang Zhang <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "H. Peter Anvin" <hpa-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Gleb Natapov <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jiang Liu <public-jiang.liu-VuQAYsv1563Yd54FQh9/CA-wOFGN7rlS/M9smdsby/KFg@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, KVM list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Wu, Feng wrote on 2014-12-19:
-> 
-> 
-> Zhang, Yang Z wrote on 2014-12-19:
->> Subject: RE: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is
->> set
->> 
->> Wu, Feng wrote on 2014-12-19:
->>> 
->>> 
->>> Zhang, Yang Z wrote on 2014-12-19:
->>>> Subject: RE: [v3 25/26] KVM: Suppress posted-interrupt when 'SN'
->>>> is set
->>>> 
->>>> Wu, Feng wrote on 2014-12-19:
->>>>> 
->>>>> 
->>>>> Zhang, Yang Z wrote on 2014-12-19:
->>>>>> Subject: RE: [v3 25/26] KVM: Suppress posted-interrupt when 'SN'
->>>>>> is set
->>>>>> 
->>>>>> Wu, Feng wrote on 2014-12-19:
->>>>>>> 
->>>>>>> 
->>>>>>> iommu-bounces@lists.linux-foundation.org wrote on
->>>>>> mailto:iommu-bounces@lists.linux-foundation.org] On Behalf Of:
->>>>>>>> Cc: iommu@lists.linux-foundation.org;
->>>>>>>> linux-kernel@vger.kernel.org; kvm@vger.kernel.org
->>>>>>>> Subject: RE: [v3 25/26] KVM: Suppress posted-interrupt when 'SN'
->>>>>>>> is set
->>>>>>>> 
->>>>>>>> Paolo Bonzini wrote on 2014-12-18:
->>>>>>>>> 
->>>>>>>>> 
->>>>>>>>> On 18/12/2014 04:14, Wu, Feng wrote:
->>>>>>>>>> 
->>>>>>>>>> 
->>>>>>>>>> linux-kernel-owner@vger.kernel.org wrote on
->>>>>>>> mailto:linux-kernel-owner@vger.kernel.org] On Behalf Of Paolo:
->>>>>>>>>>> x86@kernel.org; Gleb Natapov; Paolo Bonzini;
->>>>>>>>>>> dwmw2@infradead.org;
->>>>>>>>>>> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; Alex Williamson;
->>>>>>>>>>> joro-zLv9SwRftAIdnm+Jiang Liu Cc:
->>>>>>>>>>> iommu@lists.linux-foundation.org;
->>>>>>>>>>> linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> KVM
->> list;
->>>>>>>>>>> Eric Auger Subject: Re: [v3 25/26] KVM: Suppress
->>>>>>>>>>> posted-interrupt when 'SN' is set
->>>>>>>>>>> 
->>>>>>>>>>> 
->>>>>>>>>>> 
->>>>>>>>>>> On 12/12/2014 16:14, Feng Wu wrote:
->>>>>>>>>>>> Currently, we don't support urgent interrupt, all
->>>>>>>>>>>> interrupts are recognized as non-urgent interrupt, so we
->>>>>>>>>>>> cannot send posted-interrupt when 'SN' is set.
->>>>>>>>>>> 
->>>>>>>>>>> Can this happen?  If the vcpu is in guest mode, it cannot
->>>>>>>>>>> have been scheduled out, and that's the only case when SN is set.
->>>>>>>>>>> 
->>>>>>>>>>> Paolo
->>>>>>>>>> 
->>>>>>>>>> Currently, the only place where SN is set is vCPU is
->>>>>>>>>> preempted and
->>>>>>>> 
->>>>>>>> If the vCPU is preempted, shouldn't the subsequent be ignored?
->>>>>>>> What happens if a PI is occurs when vCPU is preempted?
->>>>>>> 
->>>>>>> If a vCPU is preempted, the 'SN' bit is set, the subsequent
->>>>>>> interrupts are suppressed for posting.
->>>>>> 
->>>>>> I mean what happens if we don't set SN bit. From my point, if
->>>>>> preempter already disabled the interrupt, it is ok to leave SN
->>>>>> bit as zero. But if preempter enabled the interrupt, doesn't
->>>>>> this mean he allow interrupt to happen? BTW, since there
->>>>>> already has ON bit, so this means there only have one interrupt
->>>>>> arrived at most and it doesn't hurt performance. Do we really need to set SN bit?
->>>>> 
->>>>> 
->>>>> See this scenario:
->>>>> vCPU0 is running on pCPU0
->>>>> --> vCPU0 is preempted by vCPU1
->>>>> --> Then vCPU1 is running on pCPU0 and vCPU0 is waiting for
->>>>> --> schedule in runqueue
->>>>> 
->>>>> If the we don't set SN for vCPU0, then all subsequent interrupts
->>>>> for
->>>>> vCPU0 is posted to vCPU1, this will consume hardware and
->>>>> software
->>>> 
->>>> The PI vector for vCPU1 is notification vector, but the PI vector
->>>> for
->>>> vCPU0 should be wakeup vector. Why vCPU1 will consume this PI event?
->>> 
->>> Wakeup vector is only used for blocking case, when vCPU is
->>> preempted and waiting in the runqueue, the NV is the notification vector.
->> 
->> I see your point. But from performance point, if we can schedule the
->> vCPU to another PCPU to handle the interrupt, it would helpful. But I
->> remember current KVM will not schedule the vCPU in run queue (even
->> though it got preempted) to another pCPU to run(Am I right?). So it may
->> hard to do it.
->> 
-> 
-> KVM is using the Linux scheduler, when the preempted vCPU (in
-> runqueue) is scheduled again depends on the scheduling algorithm
-> itself, I think it is a little hard for us to get involved.
-> 
-> I think what you mentioned is a little like the urgent interrupt in VT-d PI Spec.
-> For this kind of interrupts, if an interrupt is coming for an
-> preempted vCPU (waiting in the run queue), we need to schedule the
-> vCPU immediately. This is some real time things. And we don't support urgent interrupt so far.
 
-Yes. IIRC, if we use two global vectors mechanism properly, there should no need to use hardware urgent interrupt mechanism. :)
 
-> 
-> Thanks,
-> Feng
-> 
->>> 
->>> Thanks,
->>> Feng
->>> 
->>>> 
->>>>> efforts and in fact it is not needed at all. If SN is set for
->>>>> vCPU0, VT-d hardware will not issue Notification Event for vCPU0
->>>>> when an interrupt is for it, but just setting the related PIR bit.
->>>>> 
->>>>> Thanks,
->>>>> Feng
->>>>> 
->>>>>> 
->>>>>>> 
->>>>>>> Thanks,
->>>>>>> Feng
->>>>>>> 
->>>>>>>> 
->>>>>>>>>> waiting for the next scheduling in the runqueue. But I am
->>>>>>>>>> not sure whether we need to set SN for other purpose in future.
->>>>>>>>>> Adding SN checking here is just to follow the Spec.
->>>>>>>>>> non-urgent interrupts are suppressed
->>>>>>>>> when SN is set.
->>>>>>>>> 
->>>>>>>>> I would change that to a WARN_ON_ONCE then.
->>>>>>>> 
->>>>>>>> 
->>>>>>>> Best regards,
->>>>>>>> Yang
->>>>>>>> 
->>>>>>>> 
->>>>>>>> _______________________________________________
->>>>>>>> iommu mailing list
->>>>>>>> iommu@lists.linux-foundation.org
->>>>>>>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->>>>>> 
->>>>>> 
->>>>>> Best regards,
->>>>>> Yang
->>>>>> 
->>>> 
->>>> 
->>>> Best regards,
->>>> Yang
->>>> 
->> 
->> 
->> Best regards,
->> Yang
+On 19/12/2014 02:30, Wu, Feng wrote:
+>>> How this can work well? All subsequent interrupts are delivered to
+>>> one vCPU? It shouldn't be the best solution, need more consideration.
 >>
+>> Well, it's a hardware limitation.  The alternative (which is easy to
+>> implement) is to only do PI for single-CPU interrupts.  This should work
+>> well for multiqueue NICs (and of course for UP guests :)), so perhaps
+>> it's a good idea to only support that as a first attempt.
+>>
+>> Paolo
+> 
+> Paolo, what do you mean by "single-CPU interrupts"? Do you mean we don't
+> support lowest priority interrupts for PI? But Linux OS uses lowest priority
+> for most of the case? If so, we can hardly get benefit from this feature for
+> Linux guest OS.
 
+You can post lowest priority interrupts if they are delivered to a
+single CPU, in which case they are effectively fixed priority.
 
-Best regards,
-Yang
+If they are broadcast to multiple CPUs, do not post them.
+
+Paolo
