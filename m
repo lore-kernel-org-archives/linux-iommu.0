@@ -1,18 +1,18 @@
 From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU
-	is blocked
-Date: Fri, 19 Dec 2014 02:51:46 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F00230ABD1@SHSMSX104.ccr.corp.intel.com>
+Subject: RE: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is set
+Date: Fri, 19 Dec 2014 02:58:01 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F00230ABEB@SHSMSX104.ccr.corp.intel.com>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
-	<1418397300-10870-25-git-send-email-feng.wu@intel.com>
-	<5491B8DD.5020000@redhat.com>
-	<E959C4978C3B6342920538CF579893F002307C7B@SHSMSX104.ccr.corp.intel.com>
-	<54929240.6050306@redhat.com>
+	<1418397300-10870-26-git-send-email-feng.wu@intel.com>
+	<5491C0A2.7040503@redhat.com>
+	<E959C4978C3B6342920538CF579893F002307C4A@SHSMSX104.ccr.corp.intel.com>
+	<5492926E.8070207@redhat.com>
+	<A9667DDFB95DB7438FA9D7D576C3D87E0AC04938@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <54929240.6050306-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <A9667DDFB95DB7438FA9D7D576C3D87E0AC04938-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -23,151 +23,77 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
 
 > -----Original Message-----
-> From: linux-kernel-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> [mailto:linux-kernel-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org] On Behalf Of Paolo Bonzini
-> Sent: Thursday, December 18, 2014 4:37 PM
-> To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU
-> is blocked
+> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> [mailto:iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Zhang, Yang Z
+> Sent: Thursday, December 18, 2014 11:10 PM
+> To: Paolo Bonzini; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Subject: RE: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is set
 > 
-> 
-> 
-> On 18/12/2014 04:16, Wu, Feng wrote:
-> >>> pre-block:
-> >>> - Add the vCPU to the blocked per-CPU list
-> >>> - Clear 'SN'
+> Paolo Bonzini wrote on 2014-12-18:
+> >
+> >
+> > On 18/12/2014 04:14, Wu, Feng wrote:
 > >>
-> >> Should SN be already clear (and NV set to POSTED_INTR_VECTOR)?
-> >
-> > I think the SN bit should be clear here, Adding it here is just to make sure
-> > SN is clear when vCPU is blocked, so it can receive wakeup notification event
-> later.
-> 
-> Then, please, WARN if the SN bit is set inside the if (vcpu->blocked).
-> Inside that if you can just add the vCPU to the blocked list on vcpu_put.
-> 
-> >> Can it
-> >> happen that you go from sched-out to blocked without doing a sched-in
-> first?
 > >>
-> >
-> > I cannot imagine this scenario, can you please be more specific? Thanks a lot!
+> >> linux-kernel-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org wrote on
+> mailto:linux-kernel-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org] On Behalf Of Paolo:
+> >>> x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; Gleb Natapov; Paolo Bonzini; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org;
+> >>> joro-zLv9SwRftAIdnm+yROfE0A-XMD5yJDbdMReXY1tMh2IBg@public.gmane.org; Alex Williamson;
+> >>> joro-zLv9SwRftAIdnm+Jiang
+> >>> Liu
+> >>> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> >>> linux-kernel-u79uwXL29TY76Z2rM5mHXA-XMD5yJDbdMReXY1tMh2IBg@public.gmane.org; KVM list;
+> >>> Eric Auger
+> >>> Subject: Re: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is
+> >>> set
+> >>>
+> >>>
+> >>>
+> >>> On 12/12/2014 16:14, Feng Wu wrote:
+> >>>> Currently, we don't support urgent interrupt, all interrupts are
+> >>>> recognized as non-urgent interrupt, so we cannot send
+> >>>> posted-interrupt when 'SN' is set.
+> >>>
+> >>> Can this happen?  If the vcpu is in guest mode, it cannot have been
+> >>> scheduled out, and that's the only case when SN is set.
+> >>>
+> >>> Paolo
+> >>
+> >> Currently, the only place where SN is set is vCPU is preempted and
 > 
-> I cannot either. :)  But it would be the case where SN is not cleared.
-> So we agree that it cannot happen.
-> 
-> >> In fact, if this is possible, what happens if vcpu->preempted &&
-> >> vcpu->blocked?
-> >
-> > In fact, vcpu->preempted && vcpu->blocked happens sometimes, but I think
-> there is
-> > no issues. Please refer to the following case:
-> 
-> I agree that there should be no issues.  But if it can happen, it's better:
-> 
-> 1) to separate the handling of preemption and blocking: preemption
-> handles SN/NV/NDST, blocking handles the wakeup list.
-> 
-Sorry, I don't quite understand this.
+> If the vCPU is preempted, shouldn't the subsequent be ignored? What happens
+> if a PI is occurs when vCPU is preempted?
 
-I think handling of preemption and blocking is separated in vmx_vcpu_put().
-For vmx_vcpu_load(), the handling of SN/NV/NDST is common for preemption
-and blocking.
+If a vCPU is preempted, the 'SN' bit is set, the subsequent interrupts are
+suppressed for posting.
 
 Thanks,
 Feng
 
-> 2) to change this
 > 
-> +		} else if (vcpu->blocked) {
-> +			/*
-> +			 * The vcpu is blocked on the wait queue.
-> +			 * Store the blocked vCPU on the list of the
-> +			 * vcpu->wakeup_cpu, which is the destination
-> +			 * of the wake-up notification event.
+> >> waiting for the next scheduling in the runqueue. But I am not sure
+> >> whether we need to set SN for other purpose in future. Adding SN
+> >> checking here is just to follow the Spec. non-urgent interrupts are
+> >> suppressed
+> > when SN is set.
+> >
+> > I would change that to a WARN_ON_ONCE then.
 > 
-> to just
 > 
-> 		}
-> 		if (vcpu->blocked) {
-> 			...
-> 		}
-> > kvm_vcpu_block()
-> > 	-> vcpu->blocked = true;
-> > 	-> prepare_to_wait(&vcpu->wq, &wait, TASK_INTERRUPTIBLE);
-> >
-> > 	before schedule() is called, this vcpu is woken up by another guy, so
-> > 	the state of the vcpu associated thread is changed to TASK_RUNNING,
-> > 	then preemption happens after interrupts or the following schedule() is
-> > 	hit, this will call kvm_sched_out(), in which current->state ==
-> TASK_RUNNING
-> > 	and vcpu->preempted is set to true. So now vcpu->preempted and
-> vcpu->blocked
-> > 	are both true. In vmx_vcpu_put(), we will check vcpu->preempted first, so
-> > 	the vCPU will not be blocked, and the vcpu->blocked will be set the false in
-> > 	vmx_vcpu_load().
-> >
-> > 	But maybe I need do a little change to the vmx_vcpu_load() like below:
-> >
-> >                 /*
-> >                  * Delete the vCPU from the related wakeup queue
-> >                  * if we are resuming from blocked state
-> >                  */
-> >                 if (vcpu->blocked) {
-> >                         vcpu->blocked = false;
-> > +						/* if wakeup_cpu == -1, the vcpu is currently not
-> blocked on any
-> > +						  pCPU, don't need dequeue here */
-> > +						if (vcpu->wakeup_cpu != -1) {
-> >
-> spin_lock_irqsave(&per_cpu(blocked_vcpu_on_cpu_lock,
-> >                                 vcpu->wakeup_cpu), flags);
-> >                     	     list_del(&vcpu->blocked_vcpu_list);
-> >
-> spin_unlock_irqrestore(&per_cpu(blocked_vcpu_on_cpu_lock,
-> >                                 vcpu->wakeup_cpu), flags);
-> >                         	 vcpu->wakeup_cpu = -1;
-> > +						}
-> >                 }
+> Best regards,
+> Yang
 > 
-> Good idea.
 > 
-> Paolo
-> 
-> > Any ideas about this? Thanks a lot!
-> >
-> > Thanks,
-> > Feng
-> >
-> >
-> > 	-> schedule();
-> >
-> >
-> >>
-> >>> - Set 'NV' to POSTED_INTR_WAKEUP_VECTOR
-> >>>
-> >>> post-block:
-> >>> - Remove the vCPU from the per-CPU list
-> >>
-> >> Paolo
-> >>
-> >>> Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> >> --
-> >> To unsubscribe from this list: send the line "unsubscribe kvm" in
-> >> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> >> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
