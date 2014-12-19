@@ -1,98 +1,113 @@
-From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [v3 23/26] KVM: Update Posted-Interrupts Descriptor when vCPU
-	is preempted
-Date: Fri, 19 Dec 2014 02:09:54 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F00230A86A@SHSMSX104.ccr.corp.intel.com>
+From: "Wu, Feng" <feng.wu@intel.com>
+Subject: RE: [v3 16/26] KVM: Make struct kvm_irq_routing_table accessible
+Date: Fri, 19 Dec 2014 02:19:09 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F00230A97C@SHSMSX104.ccr.corp.intel.com>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
-	<1418397300-10870-24-git-send-email-feng.wu@intel.com>
-	<5491B924.3090200@redhat.com>
-	<E959C4978C3B6342920538CF579893F002307C66@SHSMSX104.ccr.corp.intel.com>
-	<5492911D.3000900@redhat.com>
+ <1418397300-10870-17-git-send-email-feng.wu@intel.com>
+ <5491ACA9.5020507@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5492911D.3000900-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5491ACA9.5020507@redhat.com>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paolo Bonzini <pbonzini@redhat.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Wu, Feng" <feng.wu@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
 
 
 > -----Original Message-----
-> From: linux-kernel-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> [mailto:linux-kernel-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org] On Behalf Of Paolo Bonzini
-> Sent: Thursday, December 18, 2014 4:32 PM
-> To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [v3 23/26] KVM: Update Posted-Interrupts Descriptor when vCPU
-> is preempted
+> From: linux-kernel-owner@vger.kernel.org
+> [mailto:linux-kernel-owner@vger.kernel.org] On Behalf Of Paolo Bonzini
+> Sent: Thursday, December 18, 2014 12:18 AM
+> To: linux-kernel@vger.kernel.org
+> Cc: iommu@lists.linux-foundation.org; kvm@vger.kernel.org;
+> linux-kernel@vger.kernel.org; kvm@vger.kernel.org
+> Subject: Re: [v3 16/26] KVM: Make struct kvm_irq_routing_table accessible
 > 
 > 
 > 
-> On 18/12/2014 04:15, Wu, Feng wrote:
-> > Thanks for your comments, Paolo!
+> On 12/12/2014 16:14, Feng Wu wrote:
+> > Move struct kvm_irq_routing_table from irqchip.c to kvm_host.h,
+> > so we can use it outside of irqchip.c.
 > >
-> > If we use u64 new_control, we cannot use new.sn any more.
-> > Maybe we can change the struct pi_desc {} like this:
+> > Signed-off-by: Feng Wu <feng.wu@intel.com>
+> > ---
+> >  include/linux/kvm_host.h | 19 +++++++++++++++++++
+> >  virt/kvm/irqchip.c       | 11 -----------
+> >  2 files changed, 19 insertions(+), 11 deletions(-)
 > >
-> > typedef struct pid_control{
-> >         u64     on      : 1,
-> >         sn      : 1,
-> >         rsvd_1  : 13,
-> >         ndm     : 1,
-> >         nv      : 8,
-> >         rsvd_2  : 8,
-> >         ndst    : 32;
-> > }pid_control_t;
+> > diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+> > index 0b9659d..cfa85ac 100644
+> > --- a/include/linux/kvm_host.h
+> > +++ b/include/linux/kvm_host.h
+> > @@ -335,6 +335,25 @@ struct kvm_kernel_irq_routing_entry {
+> >  	struct hlist_node link;
+> >  };
 > >
-> > struct pi_desc {
-> >         u32 pir[8];     /* Posted interrupt requested */
-> > 		pid_control_t control;
+> > +#ifdef CONFIG_HAVE_KVM_IRQ_ROUTING
+> > +
+> > +struct kvm_irq_routing_table {
+> > +	int chip[KVM_NR_IRQCHIPS][KVM_IRQCHIP_NUM_PINS];
+> > +	struct kvm_kernel_irq_routing_entry *rt_entries;
+> > +	u32 nr_rt_entries;
+> > +	/*
+> > +	 * Array indexed by gsi. Each entry contains list of irq chips
+> > +	 * the gsi is connected to.
+> > +	 */
+> > +	struct hlist_head map[0];
+> > +};
+> > +
+> > +#else
+> > +
+> > +struct kvm_irq_routing_table {};
 > 
-> Probably something like this to keep the union:
-> 
-> typedef union pid_control {
-> 	u64 full;
-> 	struct {
-> 		u64 on : 1,
-> 		...
-> 	} fields;
-> };
-> 
-> >         u32 rsvd[6];
-> > } __aligned(64);
-> >
-> >
-> > Then we can define pid_control_t new_control, old_control. And use
-> new_control.sn = 0.
-> >
-> > What is your opinon?
-> 
-> Sure.  Alternatively, keep using struct pi_desc new; just
-> do not zero it, nor access any field outide the control word.
+> If possible, just make this "struct kvm_irq_routing_table;" and pull
+> this line to include/linux/kvm_types.h.
 > 
 > Paolo
 
-Yes, this is also a good idea. Thanks!
+Do you mean move the definition of struct kvm_irq_routing_table
+to include/linux/kvm_types.h and add a declaration here?
 
 Thanks,
 Feng
 
 > 
+> > +
+> > +#endif
+> > +
+> >  #ifndef KVM_PRIVATE_MEM_SLOTS
+> >  #define KVM_PRIVATE_MEM_SLOTS 0
+> >  #endif
+> > diff --git a/virt/kvm/irqchip.c b/virt/kvm/irqchip.c
+> > index 7f256f3..cdf29a6 100644
+> > --- a/virt/kvm/irqchip.c
+> > +++ b/virt/kvm/irqchip.c
+> > @@ -31,17 +31,6 @@
+> >  #include <trace/events/kvm.h>
+> >  #include "irq.h"
+> >
+> > -struct kvm_irq_routing_table {
+> > -	int chip[KVM_NR_IRQCHIPS][KVM_IRQCHIP_NUM_PINS];
+> > -	struct kvm_kernel_irq_routing_entry *rt_entries;
+> > -	u32 nr_rt_entries;
+> > -	/*
+> > -	 * Array indexed by gsi. Each entry contains list of irq chips
+> > -	 * the gsi is connected to.
+> > -	 */
+> > -	struct hlist_head map[0];
+> > -};
+> > -
+> >  int kvm_irq_map_gsi(struct kvm *kvm,
+> >  		    struct kvm_kernel_irq_routing_entry *entries, int gsi)
+> >  {
+> >
+> 
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > Please read the FAQ at  http://www.tux.org/lkml/
