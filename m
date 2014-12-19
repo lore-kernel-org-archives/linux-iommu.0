@@ -1,18 +1,19 @@
-From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+From: "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Subject: RE: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is set
-Date: Fri, 19 Dec 2014 02:58:01 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F00230ABEB@SHSMSX104.ccr.corp.intel.com>
+Date: Fri, 19 Dec 2014 03:32:51 +0000
+Message-ID: <A9667DDFB95DB7438FA9D7D576C3D87E0AC04FED@SHSMSX104.ccr.corp.intel.com>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
 	<1418397300-10870-26-git-send-email-feng.wu@intel.com>
 	<5491C0A2.7040503@redhat.com>
 	<E959C4978C3B6342920538CF579893F002307C4A@SHSMSX104.ccr.corp.intel.com>
 	<5492926E.8070207@redhat.com>
 	<A9667DDFB95DB7438FA9D7D576C3D87E0AC04938@SHSMSX104.ccr.corp.intel.com>
+	<E959C4978C3B6342920538CF579893F00230ABEB@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <A9667DDFB95DB7438FA9D7D576C3D87E0AC04938-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+In-Reply-To: <E959C4978C3B6342920538CF579893F00230ABEB-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -23,77 +24,84 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Wu, Feng wrote on 2014-12-19:
+> 
+> 
+> iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org wrote on mailto:iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of:
+>> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+>> kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+>> Subject: RE: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is
+>> set
+>> 
+>> Paolo Bonzini wrote on 2014-12-18:
+>>> 
+>>> 
+>>> On 18/12/2014 04:14, Wu, Feng wrote:
+>>>> 
+>>>> 
+>>>> linux-kernel-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org wrote on
+>> mailto:linux-kernel-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org] On Behalf Of Paolo:
+>>>>> x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; Gleb Natapov; Paolo Bonzini;
+>>>>> dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org;
+>>>>> joro-zLv9SwRftAIdnm+yROfE0A-XMD5yJDbdMReXY1tMh2IBg@public.gmane.org; Alex Williamson;
+>>>>> joro-zLv9SwRftAIdnm+Jiang
+>>>>> Liu
+>>>>> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+>>>>> linux-kernel-u79uwXL29TY76Z2rM5mHXA-XMD5yJDbdMReXY1tMh2IBg@public.gmane.org; KVM list;
+>>>>> Eric Auger
+>>>>> Subject: Re: [v3 25/26] KVM: Suppress posted-interrupt when 'SN'
+>>>>> is set
+>>>>> 
+>>>>> 
+>>>>> 
+>>>>> On 12/12/2014 16:14, Feng Wu wrote:
+>>>>>> Currently, we don't support urgent interrupt, all interrupts
+>>>>>> are recognized as non-urgent interrupt, so we cannot send
+>>>>>> posted-interrupt when 'SN' is set.
+>>>>> 
+>>>>> Can this happen?  If the vcpu is in guest mode, it cannot have
+>>>>> been scheduled out, and that's the only case when SN is set.
+>>>>> 
+>>>>> Paolo
+>>>> 
+>>>> Currently, the only place where SN is set is vCPU is preempted
+>>>> and
+>> 
+>> If the vCPU is preempted, shouldn't the subsequent be ignored? What
+>> happens if a PI is occurs when vCPU is preempted?
+> 
+> If a vCPU is preempted, the 'SN' bit is set, the subsequent interrupts
+> are suppressed for posting.
+
+I mean what happens if we don't set SN bit. From my point, if preempter already disabled the interrupt, it is ok to leave SN bit as zero. But if preempter enabled the interrupt, doesn't this mean he allow interrupt to happen? BTW, since there already has ON bit, so this means there only have one interrupt arrived at most and it doesn't hurt performance. Do we really need to set SN bit?
+
+> 
+> Thanks,
+> Feng
+> 
+>> 
+>>>> waiting for the next scheduling in the runqueue. But I am not
+>>>> sure whether we need to set SN for other purpose in future.
+>>>> Adding SN checking here is just to follow the Spec. non-urgent
+>>>> interrupts are suppressed
+>>> when SN is set.
+>>> 
+>>> I would change that to a WARN_ON_ONCE then.
+>> 
+>> 
+>> Best regards,
+>> Yang
+>> 
+>> 
+>> _______________________________________________
+>> iommu mailing list
+>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 
 
-> -----Original Message-----
-> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> [mailto:iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Zhang, Yang Z
-> Sent: Thursday, December 18, 2014 11:10 PM
-> To: Paolo Bonzini; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: RE: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is set
-> 
-> Paolo Bonzini wrote on 2014-12-18:
-> >
-> >
-> > On 18/12/2014 04:14, Wu, Feng wrote:
-> >>
-> >>
-> >> linux-kernel-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org wrote on
-> mailto:linux-kernel-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org] On Behalf Of Paolo:
-> >>> x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; Gleb Natapov; Paolo Bonzini; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org;
-> >>> joro-zLv9SwRftAIdnm+yROfE0A-XMD5yJDbdMReXY1tMh2IBg@public.gmane.org; Alex Williamson;
-> >>> joro-zLv9SwRftAIdnm+Jiang
-> >>> Liu
-> >>> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> >>> linux-kernel-u79uwXL29TY76Z2rM5mHXA-XMD5yJDbdMReXY1tMh2IBg@public.gmane.org; KVM list;
-> >>> Eric Auger
-> >>> Subject: Re: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is
-> >>> set
-> >>>
-> >>>
-> >>>
-> >>> On 12/12/2014 16:14, Feng Wu wrote:
-> >>>> Currently, we don't support urgent interrupt, all interrupts are
-> >>>> recognized as non-urgent interrupt, so we cannot send
-> >>>> posted-interrupt when 'SN' is set.
-> >>>
-> >>> Can this happen?  If the vcpu is in guest mode, it cannot have been
-> >>> scheduled out, and that's the only case when SN is set.
-> >>>
-> >>> Paolo
-> >>
-> >> Currently, the only place where SN is set is vCPU is preempted and
-> 
-> If the vCPU is preempted, shouldn't the subsequent be ignored? What happens
-> if a PI is occurs when vCPU is preempted?
-
-If a vCPU is preempted, the 'SN' bit is set, the subsequent interrupts are
-suppressed for posting.
-
-Thanks,
-Feng
-
-> 
-> >> waiting for the next scheduling in the runqueue. But I am not sure
-> >> whether we need to set SN for other purpose in future. Adding SN
-> >> checking here is just to follow the Spec. non-urgent interrupts are
-> >> suppressed
-> > when SN is set.
-> >
-> > I would change that to a WARN_ON_ONCE then.
-> 
-> 
-> Best regards,
-> Yang
-> 
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Best regards,
+Yang
