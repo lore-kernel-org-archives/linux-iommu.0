@@ -1,15 +1,17 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [Linaro-mm-sig] [PATCH v3 18/19] iommu: exynos: init from
-	dt-specific callback instead of initcall
-Date: Fri, 19 Dec 2014 00:21:59 +0100
-Message-ID: <1793344.bWpPveHxzq@wuerfel>
-References: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com>
-	<5219064.gvW43bShnl@wuerfel> <1518515.QutUfiWrAf@avalon>
+From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [v3 21/26] x86, irq: Define a global vector for VT-d
+	Posted-Interrupts
+Date: Fri, 19 Dec 2014 00:52:12 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F00230A53F@SHSMSX104.ccr.corp.intel.com>
+References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
+	<1418397300-10870-22-git-send-email-feng.wu@intel.com>
+	<A9667DDFB95DB7438FA9D7D576C3D87E0AC048BF@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1518515.QutUfiWrAf@avalon>
+In-Reply-To: <A9667DDFB95DB7438FA9D7D576C3D87E0AC048BF-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,54 +21,176 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+To: "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thursday 18 December 2014 22:36:14 Laurent Pinchart wrote:
+
+
+> -----Original Message-----
+> From: Zhang, Yang Z
+> Sent: Thursday, December 18, 2014 10:55 PM
+> To: Wu, Feng; tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org;
+> x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
+> dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
+> jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+> Cc: eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wu, Feng
+> Subject: RE: [v3 21/26] x86, irq: Define a global vector for VT-d
+> Posted-Interrupts
 > 
-> > (currently only on ARM64, not ARM32, until someone adds support). I can see
-> > your point regarding machines that have a mandatory IOMMU with no fallback
-> > when there is no driver, but we can support them by making the iommu driver
-> > selected through Kconfig for that platform, while still allowing other
-> > platforms to work with drivers left out of the kernel.
+> Feng Wu wrote on 2014-12-12:
+> > Currently, we use a global vector as the Posted-Interrupts
+> > Notification Event for all the vCPUs in the system. We need to
+> > introduce another global vector for VT-d Posted-Interrtups, which will
+> > be used to wakeup the sleep vCPU when an external interrupt from a
+> direct-assigned device happens for that vCPU.
+> >
 > 
-> The question is how to tell the kernel not to wait for an IOMMU that will 
-> never be there. Would a kernel command line argument be an acceptable solution 
-> or do we need something more automatic ?
+> Hi Feng,
+> 
+> Since the idea of two global vectors mechanism is from me, please add me to
+> the comments.
 
-I would hope that we can find an automatic solution without relying on
-the command line.
+No problem, Yang, I will add a "suggested-by Yang Zhang <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>"
+in this patch. Thanks a lot!
 
-Unfortunately, I also remembered one case in support of what Lucas mentioned
-and that would break this: There is at least one SoC that uses cache-coherent
-DMA only when the IOMMU (ARM SMMU IIRC)is enabled, but is non-coherent
-otherwise. We can't really express that in DT, so we actually do rely on
-the IOMMU driver to be present on this machine when any "iommus" properties
-are used, as they would always come in combination with "dma-coherent"
-properties that are otherwise wrong.
+Thanks,
+Feng
 
-We can still enforce this by requiring the smmu driver to be built into
-the kernel on this platform, but simply saying that the device cannot
-support DMA as long as there is an iommus property but no driver for
-it does make a lot of sense.
-
-Note that there are more than two ways that the kernel could treat
-the situation of probing a device with a valid iommus reference but
-no driver loaded for the iommu:
-
-a) assume all iommu drivers are initialized early, so use linear or
-   swiotlb dma_map_ops, and probe the driver normally. This breaks
-   the scenario with conditionally coherent devices, and requires doing
-   the iommu init early
-b) assume all iommu drivers are initialized early, so disallow any DMA
-   by setting a zero dma_mask but allow the driver to be probed using
-   polling I/O mode (useful for slow devices like UART or SPI)
-   This breaks devices that require DMA but can fall back to linear
-   or swiotlb mappings, and requires doing the iommu init early.
-c) defer probing until an iommu driver is gets initialized. This breaks
-   both the cases where we could fall back to a sane behavior without
-   iommu, but it would let us use a proper driver with regular power
-   management etc.
-
-	Arnd
+> 
+> > Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> > ---
+> >  arch/x86/include/asm/entry_arch.h  |  2 ++
+> >  arch/x86/include/asm/hardirq.h     |  1 +
+> >  arch/x86/include/asm/hw_irq.h      |  2 ++
+> >  arch/x86/include/asm/irq_vectors.h |  1 +
+> >  arch/x86/kernel/entry_64.S         |  2 ++
+> >  arch/x86/kernel/irq.c              | 27
+> +++++++++++++++++++++++++++
+> >  arch/x86/kernel/irqinit.c          |  2 ++
+> >  7 files changed, 37 insertions(+)
+> > diff --git a/arch/x86/include/asm/entry_arch.h
+> > b/arch/x86/include/asm/entry_arch.h index dc5fa66..27ca0af 100644 ---
+> > a/arch/x86/include/asm/entry_arch.h +++
+> > b/arch/x86/include/asm/entry_arch.h @@ -23,6 +23,8 @@
+> > BUILD_INTERRUPT(x86_platform_ipi, X86_PLATFORM_IPI_VECTOR)  #ifdef
+> > CONFIG_HAVE_KVM BUILD_INTERRUPT3(kvm_posted_intr_ipi,
+> POSTED_INTR_VECTOR,
+> >  		 smp_kvm_posted_intr_ipi)
+> > +BUILD_INTERRUPT3(kvm_posted_intr_wakeup_ipi,
+> POSTED_INTR_WAKEUP_VECTOR,
+> > +		 smp_kvm_posted_intr_wakeup_ipi)
+> >  #endif
+> >
+> >  /*
+> > diff --git a/arch/x86/include/asm/hardirq.h
+> > b/arch/x86/include/asm/hardirq.h index 0f5fb6b..9866065 100644
+> > --- a/arch/x86/include/asm/hardirq.h
+> > +++ b/arch/x86/include/asm/hardirq.h
+> > @@ -14,6 +14,7 @@ typedef struct {
+> >  #endif #ifdef CONFIG_HAVE_KVM 	unsigned int kvm_posted_intr_ipis;
+> >  +	unsigned int kvm_posted_intr_wakeup_ipis; #endif 	unsigned int
+> >  x86_platform_ipis;	/* arch dependent */ 	unsigned int apic_perf_irqs;
+> > diff --git a/arch/x86/include/asm/hw_irq.h
+> > b/arch/x86/include/asm/hw_irq.h index e7ae6eb..38fac9b 100644
+> > --- a/arch/x86/include/asm/hw_irq.h
+> > +++ b/arch/x86/include/asm/hw_irq.h
+> > @@ -29,6 +29,7 @@
+> >  extern asmlinkage void apic_timer_interrupt(void);  extern asmlinkage
+> > void x86_platform_ipi(void);  extern asmlinkage void
+> > kvm_posted_intr_ipi(void); +extern asmlinkage void
+> > kvm_posted_intr_wakeup_ipi(void);
+> >  extern asmlinkage void error_interrupt(void);  extern asmlinkage void
+> > irq_work_interrupt(void);
+> >
+> > @@ -92,6 +93,7 @@ extern void
+> > trace_call_function_single_interrupt(void);
+> >  #define trace_irq_move_cleanup_interrupt  irq_move_cleanup_interrupt
+> > #define trace_reboot_interrupt  reboot_interrupt  #define
+> > trace_kvm_posted_intr_ipi kvm_posted_intr_ipi
+> > +#define trace_kvm_posted_intr_wakeup_ipi kvm_posted_intr_wakeup_ipi
+> >  #endif /* CONFIG_TRACING */
+> >
+> >  struct irq_domain;
+> > diff --git a/arch/x86/include/asm/irq_vectors.h
+> > b/arch/x86/include/asm/irq_vectors.h index b26cb12..dca94f2 100644 ---
+> > a/arch/x86/include/asm/irq_vectors.h +++
+> > b/arch/x86/include/asm/irq_vectors.h @@ -105,6 +105,7 @@
+> >  /* Vector for KVM to deliver posted interrupt IPI */  #ifdef
+> >  CONFIG_HAVE_KVM #define POSTED_INTR_VECTOR		0xf2 +#define
+> >  POSTED_INTR_WAKEUP_VECTOR	0xf1 #endif
+> >
+> >  /*
+> > diff --git a/arch/x86/kernel/entry_64.S b/arch/x86/kernel/entry_64.S
+> > index e61c14a..a598447 100644 --- a/arch/x86/kernel/entry_64.S +++
+> > b/arch/x86/kernel/entry_64.S @@ -960,6 +960,8 @@ apicinterrupt
+> > X86_PLATFORM_IPI_VECTOR \  #ifdef CONFIG_HAVE_KVM
+> >  apicinterrupt3 POSTED_INTR_VECTOR \
+> >  	kvm_posted_intr_ipi smp_kvm_posted_intr_ipi
+> > +apicinterrupt3 POSTED_INTR_WAKEUP_VECTOR \
+> > +	kvm_posted_intr_wakeup_ipi smp_kvm_posted_intr_wakeup_ipi
+> >  #endif
+> >
+> >  #ifdef CONFIG_X86_MCE_THRESHOLD
+> > diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c index
+> > 922d285..47408c3 100644
+> > --- a/arch/x86/kernel/irq.c
+> > +++ b/arch/x86/kernel/irq.c
+> > @@ -237,6 +237,9 @@ __visible void smp_x86_platform_ipi(struct pt_regs
+> > *regs)  }
+> >
+> >  #ifdef CONFIG_HAVE_KVM
+> > +void (*wakeup_handler_callback)(void) = NULL;
+> > +EXPORT_SYMBOL_GPL(wakeup_handler_callback); +
+> >  /*
+> >   * Handler for POSTED_INTERRUPT_VECTOR.
+> >   */
+> > @@ -256,6 +259,30 @@ __visible void smp_kvm_posted_intr_ipi(struct
+> > pt_regs *regs)
+> >
+> >  	set_irq_regs(old_regs);
+> >  }
+> > +
+> > +/*
+> > + * Handler for POSTED_INTERRUPT_WAKEUP_VECTOR.
+> > + */
+> > +__visible void smp_kvm_posted_intr_wakeup_ipi(struct pt_regs *regs) {
+> > +	struct pt_regs *old_regs = set_irq_regs(regs);
+> > +
+> > +	ack_APIC_irq();
+> > +
+> > +	irq_enter();
+> > +
+> > +	exit_idle();
+> > +
+> > +	inc_irq_stat(kvm_posted_intr_wakeup_ipis);
+> > +
+> > +	if (wakeup_handler_callback)
+> > +		wakeup_handler_callback();
+> > +
+> > +	irq_exit();
+> > +
+> > +	set_irq_regs(old_regs);
+> > +}
+> > +
+> >  #endif
+> >
+> >  __visible void smp_trace_x86_platform_ipi(struct pt_regs *regs) diff
+> > --git a/arch/x86/kernel/irqinit.c b/arch/x86/kernel/irqinit.c index
+> > 70e181e..844673c 100644 --- a/arch/x86/kernel/irqinit.c +++
+> > b/arch/x86/kernel/irqinit.c @@ -144,6 +144,8 @@ static void __init
+> > apic_intr_init(void)  #ifdef CONFIG_HAVE_KVM
+> >  	/* IPI for KVM to deliver posted interrupt */
+> >  	alloc_intr_gate(POSTED_INTR_VECTOR, kvm_posted_intr_ipi);
+> > +	/* IPI for KVM to deliver interrupt to wake up tasks */
+> > +	alloc_intr_gate(POSTED_INTR_WAKEUP_VECTOR,
+> > +kvm_posted_intr_wakeup_ipi);
+> >  #endif
+> >
+> >  	/* IPI vectors for APIC spurious and error interrupts */
+> 
+> 
+> Best regards,
+> Yang
+> 
