@@ -1,14 +1,26 @@
-From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [RFC PATCH v3 3/3] vfio: platform: return device properties as arrays
-	of unsigned integers
-Date: Fri, 19 Dec 2014 22:20:31 +0100
-Message-ID: <1419024032-1269-4-git-send-email-a.motakis@virtualopensystems.com>
-References: <1419024032-1269-1-git-send-email-a.motakis@virtualopensystems.com>
+From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is set
+Date: Fri, 19 Dec 2014 23:34:51 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F00230CFA7@SHSMSX104.ccr.corp.intel.com>
+References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
+	<1418397300-10870-26-git-send-email-feng.wu@intel.com>
+	<5491C0A2.7040503@redhat.com>
+	<E959C4978C3B6342920538CF579893F002307C4A@SHSMSX104.ccr.corp.intel.com>
+	<5492926E.8070207@redhat.com>
+	<A9667DDFB95DB7438FA9D7D576C3D87E0AC04938@SHSMSX104.ccr.corp.intel.com>
+	<E959C4978C3B6342920538CF579893F00230ABEB@SHSMSX104.ccr.corp.intel.com>
+	<A9667DDFB95DB7438FA9D7D576C3D87E0AC04FED@SHSMSX104.ccr.corp.intel.com>
+	<E959C4978C3B6342920538CF579893F00230ADA0@SHSMSX104.ccr.corp.intel.com>
+	<A9667DDFB95DB7438FA9D7D576C3D87E0AC05059@SHSMSX104.ccr.corp.intel.com>
+	<E959C4978C3B6342920538CF579893F00230AE04@SHSMSX104.ccr.corp.intel.com>
+	<A9667DDFB95DB7438FA9D7D576C3D87E0AC050B1@SHSMSX104.ccr.corp.intel.com>
+	<54941365.60604@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1419024032-1269-1-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+In-Reply-To: <54941365.60604-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,91 +30,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+To: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, KVM list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Certain properties of a device are accessible as an array of unsigned
-integers, either u64, u32, u16, or u8. Let the VFIO user query this
-type of device properties.
 
-Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
----
- drivers/vfio/platform/properties.c | 62 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 61 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/vfio/platform/properties.c b/drivers/vfio/platform/properties.c
-index 39c6342..645f6e5c 100644
---- a/drivers/vfio/platform/properties.c
-+++ b/drivers/vfio/platform/properties.c
-@@ -55,7 +55,67 @@ static int dev_property_get_uint(struct device *dev, char *name,
- 				 uint32_t type, unsigned *lenp,
- 				 void __user *datap, unsigned long datasz)
- {
--	return -EINVAL;
-+	int ret, n;
-+	u8 *out;
-+	size_t sz;
-+	int (*func)(const struct device *, const char *, void *, size_t)
-+		= NULL;
-+
-+	switch (type) {
-+	case VFIO_DEV_PROPERTY_TYPE_U64:
-+		sz = sizeof(u64);
-+		func = (int (*)(const struct device *,
-+				const char *, void *, size_t))
-+			device_property_read_u64_array;
-+		break;
-+	case VFIO_DEV_PROPERTY_TYPE_U32:
-+		sz = sizeof(u32);
-+		func = (int (*)(const struct device *,
-+				const char *, void *, size_t))
-+			device_property_read_u32_array;
-+		break;
-+	case VFIO_DEV_PROPERTY_TYPE_U16:
-+		sz = sizeof(u16);
-+		func = (int (*)(const struct device *,
-+				const char *, void *, size_t))
-+			device_property_read_u16_array;
-+		break;
-+	case VFIO_DEV_PROPERTY_TYPE_U8:
-+		sz = sizeof(u8);
-+		func = (int (*)(const struct device *,
-+				const char *, void *, size_t))
-+			device_property_read_u8_array;
-+		break;
-+
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	/* get size of array */
-+	n = func(dev, name, NULL, 0);
-+	if (n < 0)
-+		return n;
-+
-+	if (lenp)
-+		*lenp = n * sz;
-+
-+	if (n * sz > datasz)
-+		return -EOVERFLOW;
-+
-+	out = kcalloc(n, sz, GFP_KERNEL);
-+	if (!out)
-+		return -EFAULT;
-+
-+	ret = func(dev, name, out, n);
-+	if (ret)
-+		goto out;
-+
-+	if (copy_to_user(datap, out, n * sz))
-+		ret = -EFAULT;
-+
-+out:
-+	kfree(out);
-+	return ret;
- }
- 
- int vfio_platform_dev_properties(struct device *dev,
--- 
-2.1.3
+> -----Original Message-----
+> From: Paolo Bonzini [mailto:paolo.bonzini-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org] On Behalf Of Paolo
+> Bonzini
+> Sent: Friday, December 19, 2014 8:01 PM
+> To: Zhang, Yang Z; Wu, Feng; Paolo Bonzini; KVM list
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Subject: Re: [v3 25/26] KVM: Suppress posted-interrupt when 'SN' is set
+> 
+> 
+> 
+> On 19/12/2014 06:25, Zhang, Yang Z wrote:
+> > I see your point. But from performance point, if we can schedule the
+> > vCPU to another PCPU to handle the interrupt, it would helpful. But I
+> > remember current KVM will not schedule the vCPU in run queue (even
+> > though it got preempted) to another pCPU to run(Am I right?). So it
+> > may hard to do it.
+> 
+> Yes.  If the vCPU is in the run queue, it means it exhausted its
+> quantum.  As Feng said, the scheduler can decide to migrate it to
+> another pCPU, or it can decide to leave it runnable but not start it.
+> KVM doesn't try to force the scheduler one way or the other.
+> 
+> If the vCPU is I/O bound, it will not exhaust its quantum and will not
+> be preempted.  It will block, and the wakeup vector will restart it.
+> 
+> I don't think urgent notifications are interesting.  If you want to do
+> real time work, pin the vCPU to a physical CPU, and isolate the pCPU
+> with isolcpus.  Then the vCPU will always be running.
+> 
+> Paolo
+
+I agree, thanks Paolo!
+
+Thanks,
+Feng
