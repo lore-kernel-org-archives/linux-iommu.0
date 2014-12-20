@@ -1,13 +1,14 @@
-From: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH] iommu/amd: Track when amd_iommu_v2 init is complete
-Date: Sat, 20 Dec 2014 22:27:02 +0200
-Message-ID: <5495DB96.6070608@amd.com>
-References: <1419106352-6486-1-git-send-email-oded.gabbay@amd.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PING] [PATCH FOR v3.19 - v2] iommu/ipmmu-vmsa: change IOMMU_EXEC
+	to IOMMU_NOEXEC
+Date: Sat, 20 Dec 2014 21:07:33 +0200
+Message-ID: <7279717.KWmNDRjuSk__49235.4513648481$1419110730$gmane$org@avalon>
+References: <1418668873-5091-1-git-send-email-laurent.pinchart@ideasonboard.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1419106352-6486-1-git-send-email-oded.gabbay-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <1418668873-5091-1-git-send-email-laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,97 +18,61 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, John Bridgman <John.Bridgman-5C7GfCeVMHo@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 12/20/2014 10:12 PM, Oded Gabbay wrote:
-> This patch adds a new exported function to amd_iommu_v2, which returns 1 if the
-> amd_iommu_v2 initialization function has completed, and 0 otherwise.
-> 
-> This is necessary for the case when amd_iommu_v2 is compiled inside the kernel
-> image (not as module) and another module (e.g. amdkfd), which is also compiled
-> inside the kernel image, is dependent on amd_iommu_v2 functionality.
-> 
-> In that case, there is no mechanism in the kernel that enforces the order of
-> loading between the two modules. Therefore, If the amd_iommu_v2 is loaded
-> _after_ the other module, and the other module calls one of
-> amd_iommu_v2 exported functions _before_ amd_iommu_v2 is loaded, than that
-> function will fail, and as a result, the calling module may fail as well.
-> 
-> Note that when the two modules are compiled as modules, this situation can't
-> occur as the kernel enforces the order of loading.
-> 
-> Signed-off-by: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
-> ---
->  drivers/iommu/amd_iommu_v2.c | 11 +++++++++++
->  include/linux/amd-iommu.h    |  2 ++
->  2 files changed, 13 insertions(+)
-> 
-> diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-> index 1e6360e..2456f18 100644
-> --- a/drivers/iommu/amd_iommu_v2.c
-> +++ b/drivers/iommu/amd_iommu_v2.c
-> @@ -895,6 +895,14 @@ out_unlock:
->  }
->  EXPORT_SYMBOL(amd_iommu_set_invalidate_ctx_cb);
->  
-> +static int iommu_v2_init_completed;
-> +
-> +int amd_iommu_v2_is_init_completed(void)
-> +{
-> +	return iommu_v2_init_completed;
-> +}
-> +EXPORT_SYMBOL(amd_iommu_v2_is_init_completed);
-> +
->  static int __init amd_iommu_v2_init(void)
->  {
->  	int ret;
-> @@ -903,6 +911,7 @@ static int __init amd_iommu_v2_init(void)
->  
->  	if (!amd_iommu_v2_supported()) {
->  		pr_info("AMD IOMMUv2 functionality not available on this system\n");
-> +		iommu_v2_init_completed = 1;
->  		/*
->  		 * Load anyway to provide the symbols to other modules
->  		 * which may use AMD IOMMUv2 optionally.
-> @@ -919,6 +928,8 @@ static int __init amd_iommu_v2_init(void)
->  
->  	amd_iommu_register_ppr_notifier(&ppr_nb);
->  
-> +	iommu_v2_init_completed = 1;
-> +
->  	return 0;
->  
->  out:
-> diff --git a/include/linux/amd-iommu.h b/include/linux/amd-iommu.h
-> index 2b08e79..115c03a 100644
-> --- a/include/linux/amd-iommu.h
-> +++ b/include/linux/amd-iommu.h
-> @@ -169,6 +169,8 @@ typedef void (*amd_iommu_invalidate_ctx)(struct pci_dev *pdev, int pasid);
->  extern int amd_iommu_set_invalidate_ctx_cb(struct pci_dev *pdev,
->  					   amd_iommu_invalidate_ctx cb);
->  
-> +extern int amd_iommu_v2_is_init_completed(void);
-> +
->  #else
->  
->  static inline int amd_iommu_detect(void) { return -ENODEV; }
-> 
-
 Hi Joerg,
-This patch follows our IRC conversations from the last week.
-Last update from me was that using subsys_initcall instead of module_init
-does enforce amd_iommu_v2 to load _before_ amdkfd (apparently I didn't check
-it correctly the first time). However, this won't help us because:
-1. I don't know what effect this has when amd_iommu_v2 is compiled as module.
-2. amd_iommu_v2 depends on amd_iommu which is not subsys, so amd_iommu_v2
-init function fails when it is called this early, and thus, amd_iommu_v2
-doesn't work.
 
-I want to fix this situation in rc1/2, so I'm sending the complementary
-patches to dri-devel in the meantime.
+Ping ?
 
-	Oded
+On Monday 15 December 2014 20:41:13 Laurent Pinchart wrote:
+> From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> 
+> Commit a720b41c41f5a7e4 ("iommu/arm-smmu: change IOMMU_EXEC to
+> IOMMU_NOEXEC") has inverted and replaced the IOMMU_EXEC flag with
+> IOMMU_NOEXEC. Update the driver accordingly.
+> 
+> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> ---
+>  drivers/iommu/ipmmu-vmsa.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> Changes since v1:
+> 
+> - Rewrote the commit message
+> 
+> Joerg, this is a compilation breakage fix for v3.19. Could you please take
+> it in your tree and submit it early during the -rc cycle ?
+> 
+> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+> index 68dfb0f..7486931 100644
+> --- a/drivers/iommu/ipmmu-vmsa.c
+> +++ b/drivers/iommu/ipmmu-vmsa.c
+> @@ -558,7 +558,7 @@ static pmd_t *ipmmu_alloc_pmd(struct ipmmu_vmsa_device
+> *mmu, pgd_t *pgd,
+> 
+>  static u64 ipmmu_page_prot(unsigned int prot, u64 type)
+>  {
+> -	u64 pgprot = ARM_VMSA_PTE_XN | ARM_VMSA_PTE_nG | ARM_VMSA_PTE_AF
+> +	u64 pgprot = ARM_VMSA_PTE_nG | ARM_VMSA_PTE_AF
+> 
+>  		   | ARM_VMSA_PTE_SH_IS | ARM_VMSA_PTE_AP_UNPRIV
+>  		   | ARM_VMSA_PTE_NS | type;
+> 
+> @@ -568,8 +568,8 @@ static u64 ipmmu_page_prot(unsigned int prot, u64 type)
+>  	if (prot & IOMMU_CACHE)
+>  		pgprot |= IMMAIR_ATTR_IDX_WBRWA << ARM_VMSA_PTE_ATTRINDX_SHIFT;
+> 
+> -	if (prot & IOMMU_EXEC)
+> -		pgprot &= ~ARM_VMSA_PTE_XN;
+> +	if (prot & IOMMU_NOEXEC)
+> +		pgprot |= ARM_VMSA_PTE_XN;
+>  	else if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
+>  		/* If no access create a faulting entry to avoid TLB fills. */
+>  		pgprot &= ~ARM_VMSA_PTE_PAGE;
+
+-- 
+Regards,
+
+Laurent Pinchart
