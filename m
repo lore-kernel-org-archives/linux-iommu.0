@@ -1,88 +1,135 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v6 6/8] dma-mapping: detect and configure IOMMU in
-	of_dma_configure
-Date: Sun, 21 Dec 2014 10:04:51 +0000
-Message-ID: <20141221100451.GA23242@arm.com>
-References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
-	<2299294.lPnEQgl4lK@wuerfel> <20141217171752.GB30307@arm.com>
-	<2983977.dWWQcFZRoJ@wuerfel>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <2983977.dWWQcFZRoJ@wuerfel>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+From: Wolfram Sang <wsa@the-dreams.de>
+Subject: [PATCH 00/28] remove .owner for most platform_drivers: the missing bits
+Date: Sun, 21 Dec 2014 22:14:21 +0100
+Message-ID: <1419196495-9626-1-git-send-email-wsa@the-dreams.de>
+Return-path: <linux-pci-owner@vger.kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Wolfram Sang <wsa@the-dreams.de>, alsa-devel@alsa-project.org, ath5k-devel@lists.ath5k.org, Dan Williams <dan.j.williams@intel.com>, devicetree@vger.kernel.org, dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, linux-mips@linux-mips.org, linux-omap@vger.kernel.org, linux-pci@vger.kernel.org, linux-pm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-rockchip@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-wireless@vger.kernel.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rtc-linux@googlegroups.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Dec 17, 2014 at 07:48:29PM +0000, Arnd Bergmann wrote:
-> On Wednesday 17 December 2014 17:17:52 Will Deacon wrote:
-> > > > > I would hope that PCI is the only case we need to worry about for a while.
-> > > > > This means we just need to come up with another property or a set of properties
-> > > > > that we can put into a PCI host controller device node in order to describe
-> > > > > the mapping. These properties could be iommu-specific, so we add something
-> > > > > to the PCI core that calls a new iommu callback function that takes the
-> > > > > device node of the PCI host and the bus/device/function number as inputs.
-> > > > > 
-> > > > > In arm_setup_iommu_dma_ops(), we can then do something like
-> > > > > 
-> > > > >   if (dev_is_pci(dev)) {
-> > > > >           struct pci_dev *pdev = to_pci_dev(dev);
-> > > > >           struct device_node *node;
-> > > > >           unsigned int bdf;
-> > > > > 
-> > > > >           node = find_pci_host_bridge(pdev->bus)->parent->of_node;
-> > > > >           bdf = PCI_DEVID(pdev->bus->number, dev->devfn);
-> > > > > 
-> > > > >           iommu_setup_pci_dev(pdev, node, bdf);
-> > > > >   }
-> > > > 
-> > > > The other way to do this is have the IOMMU driver check dev_is_pci(dev)
-> > > > in add_device, then call an of_xlate_pci_bdf library function which could
-> > > > do the translation on-demand.
-> > > 
-> > > We'd still need to find the device node for the host controller in
-> > > common code, otherwise we don't have an of_xlate function to call.
-> > 
-> > I guess I was hoping that the translation code could be generic. I don't
-> > really see anything special about adding a constant to a magic number to
-> > obtain another magic number.
-> > 
-> 
-> If that's all we need, that's fine.
-> 
-> I was fearing that we'd get different host controllers using different
-> parts of the bdf number. E.g. one might pass down just bus/device
-> while another uses bus/device/function, so we'd need a shift and
-> an offset.
+Generated with coccinelle. The big cleanup was pulled in this merge window.
+This series catches the bits fallen through. The patches shall go in via the
+subsystem trees. If possible for 3.19 to increase consistency I'd say, but you
+decide, of course.
 
-We could still encode that as adding a constant, modulo the streamid
-width though, right? I agree that it would be nasty, because we'd have to
-list a whole bunch of offsets for each function rather than group things
-into ranges. Still, it gives us something to start with.
+cocci-file used:
 
-FWIW, this (adding an offset) is also the direction that the ACPI IORT
-description is going in, so at least we have parity there.
+@match1@
+declarer name module_platform_driver;
+declarer name module_platform_driver_probe;
+declarer name for_each_node_by_type;
+identifier __driver;
+@@
+(
+	module_platform_driver(__driver);
+|
+	module_platform_driver_probe(__driver, ...);
+)
 
-> As part of the AMD review I found out that their SMMU implementation
-> only has 15 bits of address space, while bdf is 16 bits, so they
-> cut off the top bit and get aliasing between bus 0+n and bus 128+n.
-> 
-> Another SoC might have more aliasing if they have multiple domains.
+@fix1 depends on match1@
+identifier match1.__driver;
+@@
+	static struct platform_driver __driver = {
+		.driver = {
+-			.owner = THIS_MODULE,
+		}
+	};
 
-This particular aliasing is probably going to be pretty common; the ARM
-SMMU typically only supports 15-bit StreamIDs (there is an extension to
-16-bit, but I haven't seen one built yet and the driver doesn't even support
-it).
+@match2@
+identifier __driver;
+@@
+(
+	platform_driver_register(&__driver)
+|
+	platform_driver_probe(&__driver, ...)
+|
+	platform_create_bundle(&__driver, ...)
+)
 
-Will
+@fix2 depends on match2@
+identifier match2.__driver;
+@@
+	static struct platform_driver __driver = {
+		.driver = {
+-			.owner = THIS_MODULE,
+		}
+	};
+
+Thanks again to Julia Lawall for support. And hey, we fixed a coccinelle bug on
+the way :)
+
+
+Wolfram Sang (28):
+  ARM: mach-exynos: drop owner assignment from platform_drivers
+  mips: lantiq: xway: drop owner assignment from platform_drivers
+  mips: pci: drop owner assignment from platform_drivers
+  char: ipmi: drop owner assignment from platform_drivers
+  cpufreq: drop owner assignment from platform_drivers
+  dma: drop owner assignment from platform_drivers
+  gpio: drop owner assignment from platform_drivers
+  gpu: drm: rockchip: drop owner assignment from platform_drivers
+  iommu: drop owner assignment from platform_drivers
+  net: ethernet: stmicro: stmmac: drop owner assignment from
+    platform_drivers
+  net: wireless: ath: ath5k: drop owner assignment from platform_drivers
+  of: drop owner assignment from platform_drivers
+  pci: host: drop owner assignment from platform_drivers
+  phy: drop owner assignment from platform_drivers
+  pinctrl: intel: drop owner assignment from platform_drivers
+  rtc: drop owner assignment from platform_drivers
+  scsi: drop owner assignment from platform_drivers
+  thermal: drop owner assignment from platform_drivers
+  thermal: int340x_thermal: drop owner assignment from platform_drivers
+  tty: serial: 8250: drop owner assignment from platform_drivers
+  usb: gadget: udc: bdc: drop owner assignment from platform_drivers
+  watchdog: drop owner assignment from platform_drivers
+  ASoC: intel: drop owner assignment from platform_drivers
+  ASoC: intel: sst: drop owner assignment from platform_drivers
+  ASoC: omap: drop owner assignment from platform_drivers
+  ASoC: pxa: drop owner assignment from platform_drivers
+  ASoC: samsung: drop owner assignment from platform_drivers
+  macintosh: drop owner assignment from platform_drivers
+
+ arch/arm/mach-exynos/pmu.c                            | 1 -
+ arch/mips/lantiq/xway/vmmc.c                          | 1 -
+ arch/mips/pci/pci-ar2315.c                            | 1 -
+ arch/mips/pci/pci-rt2880.c                            | 1 -
+ drivers/char/ipmi/ipmi_powernv.c                      | 1 -
+ drivers/cpufreq/ls1x-cpufreq.c                        | 1 -
+ drivers/dma/at_xdmac.c                                | 1 -
+ drivers/gpio/gpio-vf610.c                             | 1 -
+ drivers/gpu/drm/rockchip/rockchip_drm_drv.c           | 1 -
+ drivers/iommu/rockchip-iommu.c                        | 1 -
+ drivers/macintosh/windfarm_pm112.c                    | 1 -
+ drivers/macintosh/windfarm_pm72.c                     | 1 -
+ drivers/macintosh/windfarm_rm31.c                     | 1 -
+ drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 1 -
+ drivers/net/wireless/ath/ath5k/ahb.c                  | 1 -
+ drivers/of/unittest.c                                 | 1 -
+ drivers/pci/host/pci-layerscape.c                     | 1 -
+ drivers/phy/phy-armada375-usb2.c                      | 1 -
+ drivers/phy/phy-berlin-usb.c                          | 1 -
+ drivers/phy/phy-miphy28lp.c                           | 1 -
+ drivers/pinctrl/intel/pinctrl-cherryview.c            | 1 -
+ drivers/rtc/rtc-opal.c                                | 1 -
+ drivers/scsi/atari_scsi.c                             | 1 -
+ drivers/scsi/mac_scsi.c                               | 1 -
+ drivers/scsi/sun3_scsi.c                              | 1 -
+ drivers/thermal/int340x_thermal/int3400_thermal.c     | 1 -
+ drivers/thermal/int340x_thermal/int3402_thermal.c     | 1 -
+ drivers/thermal/rockchip_thermal.c                    | 1 -
+ drivers/tty/serial/8250/8250_omap.c                   | 1 -
+ drivers/usb/gadget/udc/bdc/bdc_core.c                 | 1 -
+ drivers/watchdog/cadence_wdt.c                        | 1 -
+ drivers/watchdog/meson_wdt.c                          | 1 -
+ sound/soc/intel/bytcr_dpcm_rt5640.c                   | 1 -
+ sound/soc/intel/cht_bsw_rt5672.c                      | 1 -
+ sound/soc/intel/sst/sst_acpi.c                        | 1 -
+ sound/soc/omap/omap-hdmi-audio.c                      | 1 -
+ sound/soc/pxa/spitz.c                                 | 1 -
+ sound/soc/samsung/arndale_rt5631.c                    | 1 -
+ 38 files changed, 38 deletions(-)
+
+-- 
+2.1.3
