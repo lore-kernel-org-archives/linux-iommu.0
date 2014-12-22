@@ -1,68 +1,105 @@
-From: =?ISO-8859-15?Q?Christian_K=F6nig?= <christian.koenig@amd.com>
-Subject: Re: [PATCH 0/2] Change order of linkage in kernel makefiles for amdkfd
-Date: Mon, 22 Dec 2014 12:56:14 +0100
-Message-ID: <549806DE.2080703@amd.com>
-References: <1419246435-7050-1-git-send-email-oded.gabbay@amd.com>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH v6 6/8] dma-mapping: detect and configure IOMMU in
+	of_dma_configure
+Date: Mon, 22 Dec 2014 14:36:01 +0100
+Message-ID: <7693528.krAZff0s6I@wuerfel>
+References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
+	<2983977.dWWQcFZRoJ@wuerfel> <20141221100451.GA23242@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1419246435-7050-1-git-send-email-oded.gabbay@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Oded Gabbay <oded.gabbay@amd.com>, David Airlie <airlied@linux.ie>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>, Jerome Glisse <j.glisse@gmail.com>, John Bridgman <John.Bridgman@amd.com>, Alexander Deucher <Alexander.Deucher@amd.com>, Dana Elifaz <Dana.Elifaz@amd.com>, Geert Uytterhoeven <geert+renesas@glider.be>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20141221100451.GA23242-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-=46or this series: Reviewed-by: Christian K=F6nig <christian.koenig@amd=
-=2Ecom>
+On Sunday 21 December 2014 10:04:51 Will Deacon wrote:
+> On Wed, Dec 17, 2014 at 07:48:29PM +0000, Arnd Bergmann wrote:
+> > On Wednesday 17 December 2014 17:17:52 Will Deacon wrote:
+> > > > > > I would hope that PCI is the only case we need to worry about for a while.
+> > > > > > This means we just need to come up with another property or a set of properties
+> > > > > > that we can put into a PCI host controller device node in order to describe
+> > > > > > the mapping. These properties could be iommu-specific, so we add something
+> > > > > > to the PCI core that calls a new iommu callback function that takes the
+> > > > > > device node of the PCI host and the bus/device/function number as inputs.
+> > > > > > 
+> > > > > > In arm_setup_iommu_dma_ops(), we can then do something like
+> > > > > > 
+> > > > > >   if (dev_is_pci(dev)) {
+> > > > > >           struct pci_dev *pdev = to_pci_dev(dev);
+> > > > > >           struct device_node *node;
+> > > > > >           unsigned int bdf;
+> > > > > > 
+> > > > > >           node = find_pci_host_bridge(pdev->bus)->parent->of_node;
+> > > > > >           bdf = PCI_DEVID(pdev->bus->number, dev->devfn);
+> > > > > > 
+> > > > > >           iommu_setup_pci_dev(pdev, node, bdf);
+> > > > > >   }
+> > > > > 
+> > > > > The other way to do this is have the IOMMU driver check dev_is_pci(dev)
+> > > > > in add_device, then call an of_xlate_pci_bdf library function which could
+> > > > > do the translation on-demand.
+> > > > 
+> > > > We'd still need to find the device node for the host controller in
+> > > > common code, otherwise we don't have an of_xlate function to call.
+> > > 
+> > > I guess I was hoping that the translation code could be generic. I don't
+> > > really see anything special about adding a constant to a magic number to
+> > > obtain another magic number.
+> > > 
+> > 
+> > If that's all we need, that's fine.
+> > 
+> > I was fearing that we'd get different host controllers using different
+> > parts of the bdf number. E.g. one might pass down just bus/device
+> > while another uses bus/device/function, so we'd need a shift and
+> > an offset.
+> 
+> We could still encode that as adding a constant, modulo the streamid
+> width though, right? I agree that it would be nasty, because we'd have to
+> list a whole bunch of offsets for each function rather than group things
+> into ranges. Still, it gives us something to start with.
+> 
+> FWIW, this (adding an offset) is also the direction that the ACPI IORT
+> description is going in, so at least we have parity there.
 
-Am 22.12.2014 um 12:07 schrieb Oded Gabbay:
-> This small patch-set, was created to solve the bug described at
-> https://bugzilla.kernel.org/show_bug.cgi?id=3D89661 (Kernel panic whe=
-n
-> trying use amdkfd driver on Kaveri). It replaces the previous patch-s=
-et called
-> [PATCH 0/3] Use workqueue for device init in amdkfd
-> (http://lists.freedesktop.org/archives/dri-devel/2014-December/074401=
-=2Ehtml)
->
-> That bug appears only when radeon, amdkfd and amd_iommu_v2 are compil=
-ed
-> inside the kernel (not as modules). In that case, the correct loading
-> order, as determined by the exported symbol used by each driver, is
-> not enforced anymore and the kernel loads them based on who was linke=
-d
-> first. That makes radeon load first, amdkfd second and amd_iommu_v2
-> third.
->
-> Because the initialization of a device in amdkfd is initiated by rade=
-on,
-> and can only be completed if amdkfd and amd_iommu_v2 were loaded and
-> initialized, then in the case mentioned above, this initalization fai=
-ls
-> and there is a kernel panic as some pointers are not initialized but
-> used nontheless.
->
-> To solve this bug, this patch-set moves iommu/ before gpu/ in drivers=
-/Makefile
-> and also moves amdkfd/ before radeon/ in drivers/gpu/drm/Makefile.
->
-> The rationale is that in general, AMD GPU devices are dependent on AM=
-D IOMMU
-> controller functionality to allow the GPU to access a process's virtu=
-al memory
-> address space, without the need for pinning the memory. That's why it=
- makes
-> sense to initialize the iommu/ subsystem ahead of the gpu/ subsystem.
->
-> 	Oded
->
-> Oded Gabbay (2):
->    drivers: Move iommu/ before gpu/ in Makefile
->    drm: Put amdkfd before radeon in drm Makefile
->
->   drivers/Makefile         | 6 ++++--
->   drivers/gpu/drm/Makefile | 2 +-
->   2 files changed, 5 insertions(+), 3 deletions(-)
->
+Ok, in that case, I think just using the 'iommus' property would work,
+with yet another format to cover the SMMU case of passing a range
+of StreamIDs. With #iommu-cells=<3>, we can have a tuple of
+mask/value/length that would be able to cover all cases.
+
+> > As part of the AMD review I found out that their SMMU implementation
+> > only has 15 bits of address space, while bdf is 16 bits, so they
+> > cut off the top bit and get aliasing between bus 0+n and bus 128+n.
+> > 
+> > Another SoC might have more aliasing if they have multiple domains.
+> 
+> This particular aliasing is probably going to be pretty common; the ARM
+> SMMU typically only supports 15-bit StreamIDs (there is an extension to
+> 16-bit, but I haven't seen one built yet and the driver doesn't even support
+> it).
+
+In case of AMD, I asked the maintainers to put a bus-range = <0 127> into
+the PCI host node to address that. I've seen something similar while
+discussing another SoC that had multiple PCI hosts connected to the
+same SMMU and my comment back then was a recommendation to not have distinct
+bus-range properties in each one (e.g. <0 31>, <32 63>, <64 95>, <96 127>
+for four hosts), but I suppose that is actually the cleanest way to deal
+with it.
+
+Do you think it's possible that we might have to deal with a single PCI host
+that is connected two different SMMU instances for the purposes of extending
+the StreamID space from 15 to 16 bits? I think we would have trouble
+expressing this with the current syntax.
+
+	Arnd
