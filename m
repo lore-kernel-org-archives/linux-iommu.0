@@ -1,50 +1,59 @@
-From: Oded Gabbay <oded.gabbay@amd.com>
-Subject: [PATCH 1/2] drivers: Move iommu/ before gpu/ in Makefile
-Date: Mon, 22 Dec 2014 13:07:14 +0200
-Message-ID: <1419246435-7050-2-git-send-email-oded.gabbay@amd.com>
+From: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH 2/2] drm: Put amdkfd before radeon in drm Makefile
+Date: Mon, 22 Dec 2014 13:07:15 +0200
+Message-ID: <1419246435-7050-3-git-send-email-oded.gabbay@amd.com>
 References: <1419246435-7050-1-git-send-email-oded.gabbay@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1419246435-7050-1-git-send-email-oded.gabbay@amd.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: David Airlie <airlied@linux.ie>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Dana Elifaz <Dana.Elifaz@amd.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Alexander Deucher <Alexander.Deucher@amd.com>, iommu@lists.linux-foundation.org, =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1419246435-7050-1-git-send-email-oded.gabbay-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, John Bridgman <John.Bridgman-5C7GfCeVMHo@public.gmane.org>, Dana Elifaz <Dana.Elifaz-5C7GfCeVMHo@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Alexander Deucher <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-QU1EIEdQVSBkZXZpY2VzIGFyZSBkZXBlbmRlbnQgb24gQU1EIElPTU1VIGNvbnRyb2xsZXIgZnVu
-Y3Rpb25hbGl0eSB0byBhbGxvdwp0aGUgR1BVIHRvIGFjY2VzcyBhIHByb2Nlc3MncyB2aXJ0dWFs
-IG1lbW9yeSBhZGRyZXNzIHNwYWNlLCB3aXRob3V0IHRoZSBuZWVkCmZvciBwaW5uaW5nIHRoZSBt
-ZW1vcnkuCgpUaGlzIHBhdGNoIGNoYW5nZXMgdGhlIG9yZGVyIGluIHRoZSBkcml2ZXJzIG1ha2Vm
-aWxlLCBzbyBpb21tdS8gc3Vic3lzdGVtIGlzCmxpbmtlZCBiZWZvcmUgZ3B1LyBzdWJzeXN0ZW0u
-IFRoYXQgd2F5LCBpZiB0aGUgZ3B1IGFuZCBpb21tdSBkcml2ZXJzIGFyZQpjb21waWxlZCBpbnNp
-ZGUgdGhlIGtlcm5lbCBpbWFnZSAobm90IGFzIG1vZHVsZXMpLCB0aGUgY29ycmVjdCBvcmRlciBv
-ZiBkZXZpY2UKbG9hZGluZyBpcyBzdGlsbCBtYWludGFpbmVkIChpb21tdSBtb2R1bGUgaXMgbG9h
-ZGVkIGJlZm9yZSBncHUgbW9kdWxlKS4KClNpZ25lZC1vZmYtYnk6IE9kZWQgR2FiYmF5IDxvZGVk
-LmdhYmJheUBhbWQuY29tPgotLS0KIGRyaXZlcnMvTWFrZWZpbGUgfCA2ICsrKystLQogMSBmaWxl
-IGNoYW5nZWQsIDQgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9k
-cml2ZXJzL01ha2VmaWxlIGIvZHJpdmVycy9NYWtlZmlsZQppbmRleCBlYmVlNTU1Li4xMDYyMDBm
-IDEwMDY0NAotLS0gYS9kcml2ZXJzL01ha2VmaWxlCisrKyBiL2RyaXZlcnMvTWFrZWZpbGUKQEAg
-LTUwLDcgKzUwLDEwIEBAIG9iai0kKENPTkZJR19SRVNFVF9DT05UUk9MTEVSKQkrPSByZXNldC8K
-IG9iai15CQkJCSs9IHR0eS8KIG9iai15CQkJCSs9IGNoYXIvCiAKLSMgZ3B1LyBjb21lcyBhZnRl
-ciBjaGFyIGZvciBBR1AgdnMgRFJNIHN0YXJ0dXAKKyMgaW9tbXUvIGNvbWVzIGJlZm9yZSBncHUg
-YXMgZ3B1IGFyZSB1c2luZyBpb21tdSBjb250cm9sbGVycworb2JqLSQoQ09ORklHX0lPTU1VX1NV
-UFBPUlQpCSs9IGlvbW11LworCisjIGdwdS8gY29tZXMgYWZ0ZXIgY2hhciBmb3IgQUdQIHZzIERS
-TSBzdGFydHVwIGFuZCBhZnRlciBpb21tdQogb2JqLXkJCQkJKz0gZ3B1LwogCiBvYmotJChDT05G
-SUdfQ09OTkVDVE9SKQkJKz0gY29ubmVjdG9yLwpAQCAtMTQxLDcgKzE0NCw2IEBAIG9iai15CQkJ
-CSs9IGNsay8KIAogb2JqLSQoQ09ORklHX01BSUxCT1gpCQkrPSBtYWlsYm94Lwogb2JqLSQoQ09O
-RklHX0hXU1BJTkxPQ0spCSs9IGh3c3BpbmxvY2svCi1vYmotJChDT05GSUdfSU9NTVVfU1VQUE9S
-VCkJKz0gaW9tbXUvCiBvYmotJChDT05GSUdfUkVNT1RFUFJPQykJKz0gcmVtb3RlcHJvYy8KIG9i
-ai0kKENPTkZJR19SUE1TRykJCSs9IHJwbXNnLwogCi0tIAoxLjkuMQoKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApk
-cmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5v
-cmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+When amdkfd and radeon are compiled inside the kernel image (not as modules),
+radeon will load before amdkfd, which will cause a bug when radeon will probe
+the GPUs.
+
+When the two drivers are compiled as modules, amdkfd is loaded after radeon is
+loaded but before radeon starts probing the GPUs. This is done because radeon
+loads the amdkfd module through symbol_request function.
+
+This patch makes amdkfd load before radeon when they are both compiled inside
+the kernel image, which makes the behavior similar to the case when they are
+modules, and prevents the kernel bug.
+
+Signed-off-by: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
+---
+ drivers/gpu/drm/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/Makefile b/drivers/gpu/drm/Makefile
+index 66e4039..e620807 100644
+--- a/drivers/gpu/drm/Makefile
++++ b/drivers/gpu/drm/Makefile
+@@ -37,6 +37,7 @@ obj-$(CONFIG_DRM_MIPI_DSI) += drm_mipi_dsi.o
+ obj-$(CONFIG_DRM_TTM)	+= ttm/
+ obj-$(CONFIG_DRM_TDFX)	+= tdfx/
+ obj-$(CONFIG_DRM_R128)	+= r128/
++obj-$(CONFIG_HSA_AMD) += amd/amdkfd/
+ obj-$(CONFIG_DRM_RADEON)+= radeon/
+ obj-$(CONFIG_DRM_MGA)	+= mga/
+ obj-$(CONFIG_DRM_I810)	+= i810/
+@@ -67,4 +68,3 @@ obj-$(CONFIG_DRM_IMX) += imx/
+ obj-y			+= i2c/
+ obj-y			+= panel/
+ obj-y			+= bridge/
+-obj-$(CONFIG_HSA_AMD) += amd/amdkfd/
+-- 
+1.9.1
