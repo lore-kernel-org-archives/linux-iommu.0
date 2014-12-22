@@ -1,68 +1,54 @@
-From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [v3 13/26] KVM: Define a new interface kvm_find_dest_vcpu() for
-	VT-d PI
-Date: Mon, 22 Dec 2014 11:04:25 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F002310D51@SHSMSX104.ccr.corp.intel.com>
-References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
-	<1418397300-10870-14-git-send-email-feng.wu@intel.com>
-	<A9667DDFB95DB7438FA9D7D576C3D87E0AC048A2@SHSMSX104.ccr.corp.intel.com>
-	<549307A5.3060305@redhat.com>
-	<E959C4978C3B6342920538CF579893F00230A5F8@SHSMSX104.ccr.corp.intel.com>
-	<5494131E.9030505@redhat.com>
-	<E959C4978C3B6342920538CF579893F00230D036@SHSMSX104.ccr.corp.intel.com>
-	<549576C7.4030800@redhat.com>
-	<E959C4978C3B6342920538CF579893F0023103FB@SHSMSX104.ccr.corp.intel.com>
-	<5497E41F.50301@redhat.com>
+From: Oded Gabbay <oded.gabbay@amd.com>
+Subject: [PATCH 0/2] Change order of linkage in kernel makefiles for amdkfd
+Date: Mon, 22 Dec 2014 13:07:13 +0200
+Message-ID: <1419246435-7050-1-git-send-email-oded.gabbay@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5497E41F.50301-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "H. Peter Anvin" <hpa-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Gleb Natapov <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jiang Liu <public-jiang.liu-VuQAYsv1563Yd54FQh9/CA-wOFGN7rlS/M9smdsby/KFg@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, KVM list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: David Airlie <airlied@linux.ie>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Dana Elifaz <Dana.Elifaz@amd.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Alexander Deucher <Alexander.Deucher@amd.com>, iommu@lists.linux-foundation.org, =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-> -----Original Message-----
-> From: Paolo Bonzini [mailto:pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Monday, December 22, 2014 5:28 PM
-> To: Wu, Feng; Zhang, Yang Z; Thomas Gleixner; Ingo Molnar; H. Peter Anvin;
-> x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; Gleb Natapov; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org;
-> Alex Williamson; Jiang Liu
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; KVM list;
-> Eric Auger
-> Subject: Re: [v3 13/26] KVM: Define a new interface kvm_find_dest_vcpu() for
-> VT-d PI
-> 
-> 
-> 
-> On 22/12/2014 05:48, Wu, Feng wrote:
-> > Do you mean we don't support Lowest priority interrupts? As I mentioned
-> before,
-> > Lowest priority interrupts is widely used in Linux, so I think supporting lowest
-> priority
-> > interrupts is very important for Linux guest OS. Do you have any
-> ideas/suggestions about
-> > how to support Lowest priority interrupts for PI? Thanks a lot!
-> 
-> Can you support them only if the destination is a single CPU?
-
-Sorry, I am not quite understand this. I still don't understand the "single CPU" here.
-Lowest priority interrupts always have a cpumask which contains multiple CPU.
-
-Thanks,
-Feng
-
-> 
-> Paolo
+VGhpcyBzbWFsbCBwYXRjaC1zZXQsIHdhcyBjcmVhdGVkIHRvIHNvbHZlIHRoZSBidWcgZGVzY3Jp
+YmVkIGF0IApodHRwczovL2J1Z3ppbGxhLmtlcm5lbC5vcmcvc2hvd19idWcuY2dpP2lkPTg5NjYx
+IChLZXJuZWwgcGFuaWMgd2hlbiAKdHJ5aW5nIHVzZSBhbWRrZmQgZHJpdmVyIG9uIEthdmVyaSku
+IEl0IHJlcGxhY2VzIHRoZSBwcmV2aW91cyBwYXRjaC1zZXQgY2FsbGVkIApbUEFUQ0ggMC8zXSBV
+c2Ugd29ya3F1ZXVlIGZvciBkZXZpY2UgaW5pdCBpbiBhbWRrZmQKKGh0dHA6Ly9saXN0cy5mcmVl
+ZGVza3RvcC5vcmcvYXJjaGl2ZXMvZHJpLWRldmVsLzIwMTQtRGVjZW1iZXIvMDc0NDAxLmh0bWwp
+CgpUaGF0IGJ1ZyBhcHBlYXJzIG9ubHkgd2hlbiByYWRlb24sIGFtZGtmZCBhbmQgYW1kX2lvbW11
+X3YyIGFyZSBjb21waWxlZCAKaW5zaWRlIHRoZSBrZXJuZWwgKG5vdCBhcyBtb2R1bGVzKS4gSW4g
+dGhhdCBjYXNlLCB0aGUgY29ycmVjdCBsb2FkaW5nIApvcmRlciwgYXMgZGV0ZXJtaW5lZCBieSB0
+aGUgZXhwb3J0ZWQgc3ltYm9sIHVzZWQgYnkgZWFjaCBkcml2ZXIsIGlzIApub3QgZW5mb3JjZWQg
+YW55bW9yZSBhbmQgdGhlIGtlcm5lbCBsb2FkcyB0aGVtIGJhc2VkIG9uIHdobyB3YXMgbGlua2Vk
+IApmaXJzdC4gVGhhdCBtYWtlcyByYWRlb24gbG9hZCBmaXJzdCwgYW1ka2ZkIHNlY29uZCBhbmQg
+YW1kX2lvbW11X3YyIAp0aGlyZC4KCkJlY2F1c2UgdGhlIGluaXRpYWxpemF0aW9uIG9mIGEgZGV2
+aWNlIGluIGFtZGtmZCBpcyBpbml0aWF0ZWQgYnkgcmFkZW9uLCAKYW5kIGNhbiBvbmx5IGJlIGNv
+bXBsZXRlZCBpZiBhbWRrZmQgYW5kIGFtZF9pb21tdV92MiB3ZXJlIGxvYWRlZCBhbmQgCmluaXRp
+YWxpemVkLCB0aGVuIGluIHRoZSBjYXNlIG1lbnRpb25lZCBhYm92ZSwgdGhpcyBpbml0YWxpemF0
+aW9uIGZhaWxzIAphbmQgdGhlcmUgaXMgYSBrZXJuZWwgcGFuaWMgYXMgc29tZSBwb2ludGVycyBh
+cmUgbm90IGluaXRpYWxpemVkIGJ1dCAKdXNlZCBub250aGVsZXNzLgoKVG8gc29sdmUgdGhpcyBi
+dWcsIHRoaXMgcGF0Y2gtc2V0IG1vdmVzIGlvbW11LyBiZWZvcmUgZ3B1LyBpbiBkcml2ZXJzL01h
+a2VmaWxlIAphbmQgYWxzbyBtb3ZlcyBhbWRrZmQvIGJlZm9yZSByYWRlb24vIGluIGRyaXZlcnMv
+Z3B1L2RybS9NYWtlZmlsZS4KClRoZSByYXRpb25hbGUgaXMgdGhhdCBpbiBnZW5lcmFsLCBBTUQg
+R1BVIGRldmljZXMgYXJlIGRlcGVuZGVudCBvbiBBTUQgSU9NTVUgCmNvbnRyb2xsZXIgZnVuY3Rp
+b25hbGl0eSB0byBhbGxvdyB0aGUgR1BVIHRvIGFjY2VzcyBhIHByb2Nlc3MncyB2aXJ0dWFsIG1l
+bW9yeSAKYWRkcmVzcyBzcGFjZSwgd2l0aG91dCB0aGUgbmVlZCBmb3IgcGlubmluZyB0aGUgbWVt
+b3J5LiBUaGF0J3Mgd2h5IGl0IG1ha2VzIApzZW5zZSB0byBpbml0aWFsaXplIHRoZSBpb21tdS8g
+c3Vic3lzdGVtIGFoZWFkIG9mIHRoZSBncHUvIHN1YnN5c3RlbS4KCglPZGVkCgpPZGVkIEdhYmJh
+eSAoMik6CiAgZHJpdmVyczogTW92ZSBpb21tdS8gYmVmb3JlIGdwdS8gaW4gTWFrZWZpbGUKICBk
+cm06IFB1dCBhbWRrZmQgYmVmb3JlIHJhZGVvbiBpbiBkcm0gTWFrZWZpbGUKCiBkcml2ZXJzL01h
+a2VmaWxlICAgICAgICAgfCA2ICsrKystLQogZHJpdmVycy9ncHUvZHJtL01ha2VmaWxlIHwgMiAr
+LQogMiBmaWxlcyBjaGFuZ2VkLCA1IGluc2VydGlvbnMoKyksIDMgZGVsZXRpb25zKC0pCgotLSAK
+MS45LjEKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRy
+aS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRw
+Oi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
