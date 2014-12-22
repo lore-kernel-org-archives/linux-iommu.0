@@ -1,13 +1,19 @@
-From: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 2/2] drm: Put amdkfd before radeon in drm Makefile
-Date: Mon, 22 Dec 2014 13:07:15 +0200
-Message-ID: <1419246435-7050-3-git-send-email-oded.gabbay@amd.com>
-References: <1419246435-7050-1-git-send-email-oded.gabbay@amd.com>
+From: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [v3 13/26] KVM: Define a new interface kvm_find_dest_vcpu() for
+	VT-d PI
+Date: Mon, 22 Dec 2014 12:06:56 +0100
+Message-ID: <5497FB50.1080606@redhat.com>
+References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>	<1418397300-10870-14-git-send-email-feng.wu@intel.com>	<A9667DDFB95DB7438FA9D7D576C3D87E0AC048A2@SHSMSX104.ccr.corp.intel.com>	<549307A5.3060305@redhat.com>	<E959C4978C3B6342920538CF579893F00230A5F8@SHSMSX104.ccr.corp.intel.com>	<5494131E.9030505@redhat.com>
+	<E959C4978C3B6342920538CF579893F00230D036@SHSMSX104.ccr.corp.intel.com>
+	<549576C7.4030800@redhat.com>
+	<E959C4978C3B6342920538CF579893F0023103FB@SHSMSX104.ccr.corp.intel.com>
+	<5497E41F.50301@redhat.com>
+	<E959C4978C3B6342920538CF579893F002310D51@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1419246435-7050-1-git-send-email-oded.gabbay-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <E959C4978C3B6342920538CF579893F002310D51-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,43 +23,19 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, John Bridgman <John.Bridgman-5C7GfCeVMHo@public.gmane.org>, Dana Elifaz <Dana.Elifaz-5C7GfCeVMHo@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Alexander Deucher <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+To: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "H. Peter Anvin" <hpa-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Gleb Natapov <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jiang Liu <public-jiang.liu-VuQAYsv1563Yd54FQh9/CA-wOFGN7rlS/M9smdsby/KFg@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, KVM list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-When amdkfd and radeon are compiled inside the kernel image (not as modules),
-radeon will load before amdkfd, which will cause a bug when radeon will probe
-the GPUs.
 
-When the two drivers are compiled as modules, amdkfd is loaded after radeon is
-loaded but before radeon starts probing the GPUs. This is done because radeon
-loads the amdkfd module through symbol_request function.
 
-This patch makes amdkfd load before radeon when they are both compiled inside
-the kernel image, which makes the behavior similar to the case when they are
-modules, and prevents the kernel bug.
+On 22/12/2014 12:04, Wu, Feng wrote:
+> > Can you support them only if the destination is a single CPU?
+>
+> Sorry, I am not quite understand this. I still don't understand the "single CPU" here.
+> Lowest priority interrupts always have a cpumask which contains multiple CPU.
 
-Signed-off-by: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
----
- drivers/gpu/drm/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Yes, and those need not be accelerated.  But what if you set affinity to
+a single CPU?
 
-diff --git a/drivers/gpu/drm/Makefile b/drivers/gpu/drm/Makefile
-index 66e4039..e620807 100644
---- a/drivers/gpu/drm/Makefile
-+++ b/drivers/gpu/drm/Makefile
-@@ -37,6 +37,7 @@ obj-$(CONFIG_DRM_MIPI_DSI) += drm_mipi_dsi.o
- obj-$(CONFIG_DRM_TTM)	+= ttm/
- obj-$(CONFIG_DRM_TDFX)	+= tdfx/
- obj-$(CONFIG_DRM_R128)	+= r128/
-+obj-$(CONFIG_HSA_AMD) += amd/amdkfd/
- obj-$(CONFIG_DRM_RADEON)+= radeon/
- obj-$(CONFIG_DRM_MGA)	+= mga/
- obj-$(CONFIG_DRM_I810)	+= i810/
-@@ -67,4 +68,3 @@ obj-$(CONFIG_DRM_IMX) += imx/
- obj-y			+= i2c/
- obj-y			+= panel/
- obj-y			+= bridge/
--obj-$(CONFIG_HSA_AMD) += amd/amdkfd/
--- 
-1.9.1
+Paolo
