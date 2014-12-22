@@ -1,44 +1,47 @@
-From: Yong Wang <yong.y.wang@linux.intel.com>
-Subject: Re: [v3 13/26] KVM: Define a new interface kvm_find_dest_vcpu() for
- VT-d PI
-Date: Mon, 22 Dec 2014 22:13:18 +0800
-Message-ID: <20141222141318.GA12171@ywang-linux>
-References: <E959C4978C3B6342920538CF579893F00230A5F8@SHSMSX104.ccr.corp.intel.com>
- <5494131E.9030505@redhat.com>
- <E959C4978C3B6342920538CF579893F00230D036@SHSMSX104.ccr.corp.intel.com>
- <549576C7.4030800@redhat.com>
- <E959C4978C3B6342920538CF579893F0023103FB@SHSMSX104.ccr.corp.intel.com>
- <5497E41F.50301@redhat.com>
- <E959C4978C3B6342920538CF579893F002310D51@SHSMSX104.ccr.corp.intel.com>
- <5497FB50.1080606@redhat.com>
- <E959C4978C3B6342920538CF579893F002310DAB@SHSMSX104.ccr.corp.intel.com>
- <5497FF38.3040503@redhat.com>
+From: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: =?utf-8?B?UkU6IFt2MyAxMy8yNl0gS1ZNOiBEZWZpbmUgYSBuZXcgaW50ZXJmYWNlIGt2bV9maW5kX2Rlc3Rf?=
+	=?utf-8?B?dmNwdSgpIGZvciBWVC1kIFBJ?=
+Date: Mon, 22 Dec 2014 11:37:51 -0500 (EST)
+Message-ID: <1415059685.1337085.1419266271242.JavaMail.zimbra@zmail13.collab.prod.int.phx2.redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5497FF38.3040503@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Paolo Bonzini <pbonzini@redhat.com>
-Cc: "Wu, Feng" <feng.wu@intel.com>, "Zhang, Yang Z" <yang.z.zhang@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@kernel.org>, "H. Peter Anvin" <hpa@linux.intel.com>, "x86@kernel.org" <x86@kernel.org>, Gleb Natapov <gleb@kernel.org>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "joro@8bytes.org" <joro@8bytes.org>, Alex Williamson <alex.williamson@redhat.com>, Jiang Liu <public-jiang.liu-VuQAYsv1563Yd54FQh9/CA@plane.gmane.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, KVM list <kvm@vger.kernel.org>, Eric Auger <eric.auger@linaro.org>
+Content-Type: multipart/mixed; boundary="__1419266268837TOUCHDOWN_BOUNDARY__"
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: yong.y.wang-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+Cc: public-jiang.liu-VuQAYsv1563Yd54FQh9/CA-wOFGN7rlS/M9smdsby/KFg@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, hpa-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Dec 22, 2014 at 12:23:36PM +0100, Paolo Bonzini wrote:
-> 
-> 
-> On 22/12/2014 12:17, Wu, Feng wrote:
-> >> Yes, and those need not be accelerated.  But what if you set
-> >> affinity to a single CPU?
-> >
-> > How do I set affinity to a single CPU if guest configure a lowest
-> > priority interrupt? Thanks a lot!
-> 
-> I mean if the guest (via irqbalance and /proc/irq/) configures affinity
-> to a single vCPU.  In that case, you can use PI.
-> 
+--__1419266268837TOUCHDOWN_BOUNDARY__
+Content-Type: multipart/alternative;
+	boundary="__1419266268837TOUCHDOWN_BODY_BOUNDARY__"
 
-The problem is we still need to support PI with lowest priority delivery mode
-even if guest does not configure irq affinity via /proc/irq/. Don't we?
+--__1419266268837TOUCHDOWN_BODY_BOUNDARY__
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-Thanks
--Yong
+PiBUaGUgcHJvYmxlbSBpcyB3ZSBzdGlsbCBuZWVkIHRvIHN1cHBvcnQgUEkgd2l0aCBsb3dlc3Qg
+cHJpb3JpdHkgZGVsaXZlcnkgbW9kZSBldmVuIGlmIGd1ZXN0IGRvZXMgbm90IGNvbmZpZ3VyZSBp
+cnEgYWZmaW5pdHkgdmlhIC9wcm9jL2lycS8uIERvbid0IHdlPw0KDQpZZXMsIGJ1dCB3ZSBjYW4g
+Z2V0IHRoZSBiYXNpYyBzdXBwb3J0IHdvcmtpbmcgZmlyc3QuDQoNCkkgYW5kIEZlbmcgdGFsa2Vk
+IG9uIGlyYyBhbmQgYWdyZWVkIHRvIHN0YXJ0IHdpdGggYSBzaW1wbGUgaW1wbGVtZW50YXRpb24u
+IFRoZW4gaGUgY2FuIGFkZCBzdXBwb3J0IGZvciB2ZWN0b3IgaGFzaGluZyBmb3IgYWxsIGludGVy
+cnVwdHMsIGJvdGggdnQtZCBwaSBhbmQgbm9ybWFsIExBUElDIGludGVycnVwdHMuDQoNClBhb2xv
+IA0KDQoNCg==
+--__1419266268837TOUCHDOWN_BODY_BOUNDARY__--
+
+--__1419266268837TOUCHDOWN_BOUNDARY__
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--__1419266268837TOUCHDOWN_BOUNDARY__--
