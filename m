@@ -1,134 +1,124 @@
-From: "Li, ZhenHua" <zhen-hual@hp.com>
-Subject: Re: [PATCH 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
-Date: Mon, 22 Dec 2014 17:43:38 +0800
-Message-ID: <5497E7CA.1030504@hp.com>
-References: <1419239729-26529-1-git-send-email-zhen-hual@hp.com>
+From: Oded Gabbay <oded.gabbay@amd.com>
+Subject: Re: [PATCH] iommu/amd: Track when amd_iommu_v2 init is complete
+Date: Mon, 22 Dec 2014 12:23:44 +0200
+Message-ID: <5497F130.7040508@amd.com>
+References: <1419106352-6486-1-git-send-email-oded.gabbay@amd.com>
+ <5495DB96.6070608@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1419239729-26529-1-git-send-email-zhen-hual@hp.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: "Li, Zhen-Hua" <zhen-hual@hp.com>
-Cc: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, joro@8bytes.org, vgoyal@redhat.com, dyoung@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5495DB96.6070608@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
+Cc: linux-kernel@vger.kernel.org, John Bridgman <John.Bridgman@amd.com>, "Elifaz, Dana" <Dana.Elifaz@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This version works for 3.19.0-rc1.
 
-Zhenhua
-On 12/22/2014 05:15 PM, Li, Zhen-Hua wrote:
-> This patchset is an update of Bill Sumner's patchset, implements a fix for:
-> If a kernel boots with intel_iommu=on on a system that supports intel vt-d,
-> when a panic happens, the kdump kernel will boot with these faults:
+
+On 12/20/2014 10:27 PM, Oded Gabbay wrote:
 >
->      dmar: DRHD: handling fault status reg 102
->      dmar: DMAR:[DMA Read] Request device [01:00.0] fault addr fff80000
->      DMAR:[fault reason 01] Present bit in root entry is clear
 >
->      dmar: DRHD: handling fault status reg 2
->      dmar: INTR-REMAP: Request device [[61:00.0] fault index 42
->      INTR-REMAP:[fault reason 34] Present field in the IRTE entry is clear
+> On 12/20/2014 10:12 PM, Oded Gabbay wrote:
+>> This patch adds a new exported function to amd_iommu_v2, which returns 1 if the
+>> amd_iommu_v2 initialization function has completed, and 0 otherwise.
+>>
+>> This is necessary for the case when amd_iommu_v2 is compiled inside the kernel
+>> image (not as module) and another module (e.g. amdkfd), which is also compiled
+>> inside the kernel image, is dependent on amd_iommu_v2 functionality.
+>>
+>> In that case, there is no mechanism in the kernel that enforces the order of
+>> loading between the two modules. Therefore, If the amd_iommu_v2 is loaded
+>> _after_ the other module, and the other module calls one of
+>> amd_iommu_v2 exported functions _before_ amd_iommu_v2 is loaded, than that
+>> function will fail, and as a result, the calling module may fail as well.
+>>
+>> Note that when the two modules are compiled as modules, this situation can't
+>> occur as the kernel enforces the order of loading.
+>>
+>> Signed-off-by: Oded Gabbay <oded.gabbay@amd.com>
+>> ---
+>>   drivers/iommu/amd_iommu_v2.c | 11 +++++++++++
+>>   include/linux/amd-iommu.h    |  2 ++
+>>   2 files changed, 13 insertions(+)
+>>
+>> diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
+>> index 1e6360e..2456f18 100644
+>> --- a/drivers/iommu/amd_iommu_v2.c
+>> +++ b/drivers/iommu/amd_iommu_v2.c
+>> @@ -895,6 +895,14 @@ out_unlock:
+>>   }
+>>   EXPORT_SYMBOL(amd_iommu_set_invalidate_ctx_cb);
+>>
+>> +static int iommu_v2_init_completed;
+>> +
+>> +int amd_iommu_v2_is_init_completed(void)
+>> +{
+>> +	return iommu_v2_init_completed;
+>> +}
+>> +EXPORT_SYMBOL(amd_iommu_v2_is_init_completed);
+>> +
+>>   static int __init amd_iommu_v2_init(void)
+>>   {
+>>   	int ret;
+>> @@ -903,6 +911,7 @@ static int __init amd_iommu_v2_init(void)
+>>
+>>   	if (!amd_iommu_v2_supported()) {
+>>   		pr_info("AMD IOMMUv2 functionality not available on this system\n");
+>> +		iommu_v2_init_completed = 1;
+>>   		/*
+>>   		 * Load anyway to provide the symbols to other modules
+>>   		 * which may use AMD IOMMUv2 optionally.
+>> @@ -919,6 +928,8 @@ static int __init amd_iommu_v2_init(void)
+>>
+>>   	amd_iommu_register_ppr_notifier(&ppr_nb);
+>>
+>> +	iommu_v2_init_completed = 1;
+>> +
+>>   	return 0;
+>>
+>>   out:
+>> diff --git a/include/linux/amd-iommu.h b/include/linux/amd-iommu.h
+>> index 2b08e79..115c03a 100644
+>> --- a/include/linux/amd-iommu.h
+>> +++ b/include/linux/amd-iommu.h
+>> @@ -169,6 +169,8 @@ typedef void (*amd_iommu_invalidate_ctx)(struct pci_dev *pdev, int pasid);
+>>   extern int amd_iommu_set_invalidate_ctx_cb(struct pci_dev *pdev,
+>>   					   amd_iommu_invalidate_ctx cb);
+>>
+>> +extern int amd_iommu_v2_is_init_completed(void);
+>> +
+>>   #else
+>>
+>>   static inline int amd_iommu_detect(void) { return -ENODEV; }
+>>
 >
-> On some system, the interrupt remapping fault will also happen even if the
-> intel_iommu is not set to on, because the interrupt remapping will be enabled
-> when x2apic is needed by the system.
+> Hi Joerg,
+> This patch follows our IRC conversations from the last week.
+> Last update from me was that using subsys_initcall instead of module_init
+> does enforce amd_iommu_v2 to load _before_ amdkfd (apparently I didn't check
+> it correctly the first time). However, this won't help us because:
+> 1. I don't know what effect this has when amd_iommu_v2 is compiled as module.
+> 2. amd_iommu_v2 depends on amd_iommu which is not subsys, so amd_iommu_v2
+> init function fails when it is called this early, and thus, amd_iommu_v2
+> doesn't work.
 >
-> The cause of the DMA fault is described in Bill's original version, and the
-> INTR-Remap fault is caused by a similar reason. In short, the initialization
-> of vt-d drivers causes the in-flight DMA and interrupt requests get wrong
-> response.
+> I want to fix this situation in rc1/2, so I'm sending the complementary
+> patches to dri-devel in the meantime.
 >
-> To fix this problem, we modifies the behaviors of the intel vt-d in the
-> crashdump kernel:
+> 	Oded
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 >
-> For DMA Remapping:
-> 1. To accept the vt-d hardware in an active state,
-> 2. Do not disable and re-enable the translation, keep it enabled.
-> 3. Use the old root entry table, do not rewrite the RTA register.
-> 4. Malloc and use new context entry table and page table, copy data from the
->     old ones that used by the old kernel.
-> 5. to use different portions of the iova address ranges for the device drivers
->     in the crashdump kernel than the iova ranges that were in-use at the time
->     of the panic.
-> 6. After device driver is loaded, when it issues the first dma_map command,
->     free the dmar_domain structure for this device, and generate a new one, so
->     that the device can be assigned a new and empty page table.
-> 7. When a new context entry table is generated, we also save its address to
->     the old root entry table.
->
-> For Interrupt Remapping:
-> 1. To accept the vt-d hardware in an active state,
-> 2. Do not disable and re-enable the interrupt remapping, keep it enabled.
-> 3. Use the old interrupt remapping table, do not rewrite the IRTA register.
-> 4. When ioapic entry is setup, the interrupt remapping table is changed, and
->     the updated data will be stored to the old interrupt remapping table.
->
-> Advantages of this approach:
-> 1. All manipulation of the IO-device is done by the Linux device-driver
->     for that device.
-> 2. This approach behaves in a manner very similar to operation without an
->     active iommu.
-> 3. Any activity between the IO-device and its RMRR areas is handled by the
->     device-driver in the same manner as during a non-kdump boot.
-> 4. If an IO-device has no driver in the kdump kernel, it is simply left alone.
->     This supports the practice of creating a special kdump kernel without
->     drivers for any devices that are not required for taking a crashdump.
-> 5. Minimal code-changes among the existing mainline intel vt-d code.
->
-> Summary of changes in this patch set:
-> 1. Added some useful function for root entry table in code intel-iommu.c
-> 2. Added new members to struct root_entry and struct irte;
-> 3. Functions to load old root entry table to iommu->root_entry from the memory
->     of old kernel.
-> 4. Functions to malloc new context entry table and page table and copy the data
->     from the old ones to the malloced new ones.
-> 5. Functions to enable support for DMA remapping in kdump kernel.
-> 6. Functions to load old irte data from the old kernel to the kdump kernel.
-> 7. Some code changes that support other behaviours that have been listed.
-> 8. In the new functions, use physical address as "unsigned long" type, not
->     pointers.
->
-> Original version by Bill Sumner:
->      https://lkml.org/lkml/2014/1/10/518
->      https://lkml.org/lkml/2014/4/15/716
->      https://lkml.org/lkml/2014/4/24/836
->
-> Zhenhua's last of Bill's patchset:
->      https://lkml.org/lkml/2014/10/21/134
->      https://lkml.org/lkml/2014/12/15/121
->
-> Changed in this version:
-> 1. Do not disable and re-enable traslation and interrupt remapping.
-> 2. Use old root entry table.
-> 3. Use old interrupt remapping table.
-> 4. Use "unsigned long" as physical address.
-> 5. Use intel_unmap to unmap the old dma;
->
-> This patchset should be applied with this one together:
->      https://lkml.org/lkml/2014/11/5/43
->      x86/iommu: fix incorrect bit operations in setting values
->
-> Bill Sumner (5):
->    iommu/vt-d: Update iommu_attach_domain() and its callers
->    iommu/vt-d: Items required for kdump
->    iommu/vt-d: data types and functions used for kdump
->    iommu/vt-d: Add domain-id functions
->    iommu/vt-d: enable kdump support in iommu module
->
-> Li, Zhen-Hua (10):
->    iommu/vt-d: Update iommu_attach_domain() and its callers
->    iommu/vt-d: Items required for kdump
->    iommu/vt-d: Add domain-id functions
->    iommu/vt-d: functions to copy data from old mem
->    iommu/vt-d: Add functions to load and save old re
->    iommu/vt-d: datatypes and functions used for kdump
->    iommu/vt-d: enable kdump support in iommu module
->    iommu/vtd: assign new page table for dma_map
->    iommu/vt-d: Copy functions for irte
->    iommu/vt-d: Use old irte in kdump kernel
->
->   drivers/iommu/intel-iommu.c         | 1050 +++++++++++++++++++++++++++++++++--
->   drivers/iommu/intel_irq_remapping.c |   99 +++-
->   include/linux/intel-iommu.h         |   18 +
->   3 files changed, 1123 insertions(+), 44 deletions(-)
->
+
+Hi,
+The drm guys suggested we move iommu/ subsystem before gpu/ subsystem in 
+drivers/Makefile instead of the above patch (and the complementing patch-set in 
+amdkfd).
+
+I did that and it works, so please see this patch as discarded for now.
+I will send a new patch-set shortly.
+
+	ODed
