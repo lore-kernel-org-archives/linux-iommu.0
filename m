@@ -1,7 +1,7 @@
 From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH 08/10] iommu/vtd: assign new page table for dma_map
-Date: Mon, 22 Dec 2014 17:15:27 +0800
-Message-ID: <1419239729-26529-9-git-send-email-zhen-hual@hp.com>
+Subject: [PATCH 09/10] iommu/vt-d: Copy functions for irte
+Date: Mon, 22 Dec 2014 17:15:28 +0800
+Message-ID: <1419239729-26529-10-git-send-email-zhen-hual@hp.com>
 References: <1419239729-26529-1-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,100 +21,107 @@ To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtd
 Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, zhen-hual-VXdhtT5mjnY@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When a device driver issues the first dma_map command for a
-device, we assign a new and empty page-table, thus removing all
-mappings from the old kernel for the device.
+Functions to copy the irte data from the old kernel into the kdump kernel.
 
 Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 56 ++++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 48 insertions(+), 8 deletions(-)
+ drivers/iommu/intel_irq_remapping.c | 57 +++++++++++++++++++++++++++++++++++++
+ include/linux/intel-iommu.h         |  4 +++
+ 2 files changed, 61 insertions(+)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 4efed7c..7f8b546 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -44,6 +44,7 @@
- #include <asm/irq_remapping.h>
- #include <asm/cacheflush.h>
- #include <asm/iommu.h>
-+#include <linux/dma-mapping.h>
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index a55b207..13f2034 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -8,6 +8,7 @@
+ #include <linux/irq.h>
+ #include <linux/intel-iommu.h>
+ #include <linux/acpi.h>
++#include <linux/crash_dump.h>
+ #include <asm/io_apic.h>
+ #include <asm/smp.h>
+ #include <asm/cpu.h>
+@@ -17,6 +18,11 @@
  
  #include "irq_remapping.h"
  
-@@ -455,6 +456,8 @@ static int copy_root_entry_table(struct intel_iommu *iommu, void *ppap);
- static int intel_iommu_load_translation_tables(struct dmar_drhd_unit *drhd,
- 		int g_num_of_iommus);
- 
-+static void unmap_device_dma(struct dmar_domain *domain, struct device *dev);
-+
- #endif /* CONFIG_CRASH_DUMP */
- 
- /*
-@@ -3199,14 +3202,30 @@ static struct dmar_domain *__get_valid_domain_for_dev(struct device *dev)
- 		return NULL;
- 	}
- 
--	/* make sure context mapping is ok */
--	if (unlikely(!domain_context_mapped(dev))) {
--		ret = domain_context_mapping(domain, dev, CONTEXT_TT_MULTI_LEVEL);
--		if (ret) {
--			printk(KERN_ERR "Domain context map for %s failed",
--			       dev_name(dev));
--			return NULL;
--		}
-+	/* if in kdump kernel, we need to unmap the mapped dma pages,
-+	 * detach this device first.
-+	 */
-+	if (likely(domain_context_mapped(dev))) {
 +#ifdef CONFIG_CRASH_DUMP
-+		if (is_kdump_kernel()) {
-+			unmap_device_dma(domain, dev);
-+			domain = get_domain_for_dev(dev,
-+				DEFAULT_DOMAIN_ADDRESS_WIDTH);
-+			if (!domain) {
-+				pr_err("Allocating domain for %s failed",
-+				       dev_name(dev));
-+				return NULL;
-+			}
-+		} else
-+#endif
-+			return domain;
-+	}
++static int __iommu_load_old_irte(struct intel_iommu *iommu);
++static int __iommu_update_old_irte(struct intel_iommu *iommu, int index);
++#endif /* CONFIG_CRASH_DUMP */
 +
-+	ret = domain_context_mapping(domain, dev, CONTEXT_TT_MULTI_LEVEL);
-+	if (ret) {
-+		pr_err("Domain context map for %s failed",
-+		       dev_name(dev));
-+		return NULL;
- 	}
+ struct ioapic_scope {
+ 	struct intel_iommu *iommu;
+ 	unsigned int id;
+@@ -1296,3 +1302,54 @@ int dmar_ir_hotplug(struct dmar_drhd_unit *dmaru, bool insert)
  
- 	return domain;
-@@ -5687,4 +5706,25 @@ static int intel_iommu_load_translation_tables(struct dmar_drhd_unit *drhd,
- 	return 0;
+ 	return ret;
  }
- 
-+static void unmap_device_dma(struct dmar_domain *domain, struct device *dev)
++
++#ifdef CONFIG_CRASH_DUMP
++
++static int __iommu_load_old_irte(struct intel_iommu *iommu)
 +{
-+	struct intel_iommu *iommu;
-+	struct context_entry *ce;
-+	struct iova *iova;
-+	u8 bus, devfn;
-+	phys_addr_t phys_addr;
-+	dma_addr_t dev_addr;
++	if ((!iommu)
++		|| (!iommu->ir_table)
++		|| (!iommu->ir_table->base)
++		|| (!iommu->ir_table->base_old_phys)
++		|| (!iommu->ir_table->base_old_virt))
++		return -1;
 +
-+	iommu = device_to_iommu(dev, &bus, &devfn);
-+	ce = device_to_context_entry(iommu, bus, devfn);
-+	phys_addr = context_address_root(ce) << VTD_PAGE_SHIFT;
-+	dev_addr = phys_to_dma(dev, phys_addr);
++	memcpy(iommu->ir_table->base,
++		iommu->ir_table->base_old_virt,
++		INTR_REMAP_TABLE_ENTRIES*sizeof(struct irte));
 +
-+	iova = find_iova(&domain->iovad, IOVA_PFN(dev_addr));
-+	if (iova)
-+		intel_unmap(dev, dev_addr);
-+
-+	domain_remove_one_dev_info(domain, dev);
++	return 0;
 +}
 +
- #endif /* CONFIG_CRASH_DUMP */
++static int __iommu_update_old_irte(struct intel_iommu *iommu, int index)
++{
++	int start;
++	unsigned long size;
++	void __iomem *to;
++	void *from;
++
++	if ((!iommu)
++		|| (!iommu->ir_table)
++		|| (!iommu->ir_table->base)
++		|| (!iommu->ir_table->base_old_phys)
++		|| (!iommu->ir_table->base_old_virt))
++		return -1;
++
++	if (index < -1 || index >= INTR_REMAP_TABLE_ENTRIES)
++		return -1;
++
++	if (index == -1) {
++		start = 0;
++		size = INTR_REMAP_TABLE_ENTRIES * sizeof(struct irte);
++	} else {
++		start = index * sizeof(struct irte);
++		size = sizeof(struct irte);
++	}
++
++	to = iommu->ir_table->base_old_virt;
++	from = iommu->ir_table->base;
++	memcpy(to + start, from + start, size);
++
++	return 0;
++}
++#endif /* CONFIG_CRASH_DUMP */
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 8e29b97..76c6ea5 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -290,6 +290,10 @@ struct q_inval {
+ struct ir_table {
+ 	struct irte *base;
+ 	unsigned long *bitmap;
++#ifdef CONFIG_CRASH_DUMP
++	void __iomem *base_old_virt;
++	unsigned long base_old_phys;
++#endif
+ };
+ #endif
+ 
 -- 
 2.0.0-rc0
