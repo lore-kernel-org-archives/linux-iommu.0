@@ -1,124 +1,68 @@
-From: Oded Gabbay <oded.gabbay@amd.com>
-Subject: Re: [PATCH] iommu/amd: Track when amd_iommu_v2 init is complete
-Date: Mon, 22 Dec 2014 12:23:44 +0200
-Message-ID: <5497F130.7040508@amd.com>
-References: <1419106352-6486-1-git-send-email-oded.gabbay@amd.com>
- <5495DB96.6070608@amd.com>
+From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [v3 13/26] KVM: Define a new interface kvm_find_dest_vcpu() for
+	VT-d PI
+Date: Mon, 22 Dec 2014 11:04:25 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F002310D51@SHSMSX104.ccr.corp.intel.com>
+References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
+	<1418397300-10870-14-git-send-email-feng.wu@intel.com>
+	<A9667DDFB95DB7438FA9D7D576C3D87E0AC048A2@SHSMSX104.ccr.corp.intel.com>
+	<549307A5.3060305@redhat.com>
+	<E959C4978C3B6342920538CF579893F00230A5F8@SHSMSX104.ccr.corp.intel.com>
+	<5494131E.9030505@redhat.com>
+	<E959C4978C3B6342920538CF579893F00230D036@SHSMSX104.ccr.corp.intel.com>
+	<549576C7.4030800@redhat.com>
+	<E959C4978C3B6342920538CF579893F0023103FB@SHSMSX104.ccr.corp.intel.com>
+	<5497E41F.50301@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5495DB96.6070608@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
-Cc: linux-kernel@vger.kernel.org, John Bridgman <John.Bridgman@amd.com>, "Elifaz, Dana" <Dana.Elifaz@amd.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5497E41F.50301-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "H. Peter Anvin" <hpa-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Gleb Natapov <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jiang Liu <public-jiang.liu-VuQAYsv1563Yd54FQh9/CA-wOFGN7rlS/M9smdsby/KFg@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, KVM list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
 
-On 12/20/2014 10:27 PM, Oded Gabbay wrote:
->
->
-> On 12/20/2014 10:12 PM, Oded Gabbay wrote:
->> This patch adds a new exported function to amd_iommu_v2, which returns 1 if the
->> amd_iommu_v2 initialization function has completed, and 0 otherwise.
->>
->> This is necessary for the case when amd_iommu_v2 is compiled inside the kernel
->> image (not as module) and another module (e.g. amdkfd), which is also compiled
->> inside the kernel image, is dependent on amd_iommu_v2 functionality.
->>
->> In that case, there is no mechanism in the kernel that enforces the order of
->> loading between the two modules. Therefore, If the amd_iommu_v2 is loaded
->> _after_ the other module, and the other module calls one of
->> amd_iommu_v2 exported functions _before_ amd_iommu_v2 is loaded, than that
->> function will fail, and as a result, the calling module may fail as well.
->>
->> Note that when the two modules are compiled as modules, this situation can't
->> occur as the kernel enforces the order of loading.
->>
->> Signed-off-by: Oded Gabbay <oded.gabbay@amd.com>
->> ---
->>   drivers/iommu/amd_iommu_v2.c | 11 +++++++++++
->>   include/linux/amd-iommu.h    |  2 ++
->>   2 files changed, 13 insertions(+)
->>
->> diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
->> index 1e6360e..2456f18 100644
->> --- a/drivers/iommu/amd_iommu_v2.c
->> +++ b/drivers/iommu/amd_iommu_v2.c
->> @@ -895,6 +895,14 @@ out_unlock:
->>   }
->>   EXPORT_SYMBOL(amd_iommu_set_invalidate_ctx_cb);
->>
->> +static int iommu_v2_init_completed;
->> +
->> +int amd_iommu_v2_is_init_completed(void)
->> +{
->> +	return iommu_v2_init_completed;
->> +}
->> +EXPORT_SYMBOL(amd_iommu_v2_is_init_completed);
->> +
->>   static int __init amd_iommu_v2_init(void)
->>   {
->>   	int ret;
->> @@ -903,6 +911,7 @@ static int __init amd_iommu_v2_init(void)
->>
->>   	if (!amd_iommu_v2_supported()) {
->>   		pr_info("AMD IOMMUv2 functionality not available on this system\n");
->> +		iommu_v2_init_completed = 1;
->>   		/*
->>   		 * Load anyway to provide the symbols to other modules
->>   		 * which may use AMD IOMMUv2 optionally.
->> @@ -919,6 +928,8 @@ static int __init amd_iommu_v2_init(void)
->>
->>   	amd_iommu_register_ppr_notifier(&ppr_nb);
->>
->> +	iommu_v2_init_completed = 1;
->> +
->>   	return 0;
->>
->>   out:
->> diff --git a/include/linux/amd-iommu.h b/include/linux/amd-iommu.h
->> index 2b08e79..115c03a 100644
->> --- a/include/linux/amd-iommu.h
->> +++ b/include/linux/amd-iommu.h
->> @@ -169,6 +169,8 @@ typedef void (*amd_iommu_invalidate_ctx)(struct pci_dev *pdev, int pasid);
->>   extern int amd_iommu_set_invalidate_ctx_cb(struct pci_dev *pdev,
->>   					   amd_iommu_invalidate_ctx cb);
->>
->> +extern int amd_iommu_v2_is_init_completed(void);
->> +
->>   #else
->>
->>   static inline int amd_iommu_detect(void) { return -ENODEV; }
->>
->
-> Hi Joerg,
-> This patch follows our IRC conversations from the last week.
-> Last update from me was that using subsys_initcall instead of module_init
-> does enforce amd_iommu_v2 to load _before_ amdkfd (apparently I didn't check
-> it correctly the first time). However, this won't help us because:
-> 1. I don't know what effect this has when amd_iommu_v2 is compiled as module.
-> 2. amd_iommu_v2 depends on amd_iommu which is not subsys, so amd_iommu_v2
-> init function fails when it is called this early, and thus, amd_iommu_v2
-> doesn't work.
->
-> I want to fix this situation in rc1/2, so I'm sending the complementary
-> patches to dri-devel in the meantime.
->
-> 	Oded
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->
+> -----Original Message-----
+> From: Paolo Bonzini [mailto:pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> Sent: Monday, December 22, 2014 5:28 PM
+> To: Wu, Feng; Zhang, Yang Z; Thomas Gleixner; Ingo Molnar; H. Peter Anvin;
+> x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; Gleb Natapov; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org;
+> Alex Williamson; Jiang Liu
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; KVM list;
+> Eric Auger
+> Subject: Re: [v3 13/26] KVM: Define a new interface kvm_find_dest_vcpu() for
+> VT-d PI
+> 
+> 
+> 
+> On 22/12/2014 05:48, Wu, Feng wrote:
+> > Do you mean we don't support Lowest priority interrupts? As I mentioned
+> before,
+> > Lowest priority interrupts is widely used in Linux, so I think supporting lowest
+> priority
+> > interrupts is very important for Linux guest OS. Do you have any
+> ideas/suggestions about
+> > how to support Lowest priority interrupts for PI? Thanks a lot!
+> 
+> Can you support them only if the destination is a single CPU?
 
-Hi,
-The drm guys suggested we move iommu/ subsystem before gpu/ subsystem in 
-drivers/Makefile instead of the above patch (and the complementing patch-set in 
-amdkfd).
+Sorry, I am not quite understand this. I still don't understand the "single CPU" here.
+Lowest priority interrupts always have a cpumask which contains multiple CPU.
 
-I did that and it works, so please see this patch as discarded for now.
-I will send a new patch-set shortly.
+Thanks,
+Feng
 
-	ODed
+> 
+> Paolo
