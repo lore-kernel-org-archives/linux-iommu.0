@@ -1,64 +1,57 @@
-From: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [v3 06/26] iommu,
-	x86: No need to migrating irq for VT-d Posted-Interrupts
-Date: Tue, 23 Dec 2014 10:34:05 +0100
-Message-ID: <5499370D.8000703@redhat.com>
-References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>	<1418397300-10870-7-git-send-email-feng.wu@intel.com>	<A9667DDFB95DB7438FA9D7D576C3D87E0AC0486D@SHSMSX104.ccr.corp.intel.com>	<E959C4978C3B6342920538CF579893F00230A649@SHSMSX104.ccr.corp.intel.com>	<A9667DDFB95DB7438FA9D7D576C3D87E0AC04E77@SHSMSX104.ccr.corp.intel.com>	<54941326.4080405@redhat.com>
-	<A9667DDFB95DB7438FA9D7D576C3D87E0AC06282@SHSMSX104.ccr.corp.intel.com>
-	<54992C2C.5030305@redhat.com>
-	<E959C4978C3B6342920538CF579893F002314236@SHSMSX104.ccr.corp.intel.com>
+From: Oded Gabbay <oded.gabbay@amd.com>
+Subject: Re: [PATCH 1/2] drivers: Move iommu/ before gpu/ in Makefile
+Date: Tue, 23 Dec 2014 14:09:07 +0200
+Message-ID: <54995B63.5090808@amd.com>
+References: <1419246435-7050-1-git-send-email-oded.gabbay@amd.com>
+ <1419246435-7050-2-git-send-email-oded.gabbay@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <E959C4978C3B6342920538CF579893F002314236-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "H. Peter Anvin" <hpa-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Gleb Natapov <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, KVM list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <1419246435-7050-2-git-send-email-oded.gabbay@amd.com>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Dana Elifaz <Dana.Elifaz@amd.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org, Alexander Deucher <Alexander.Deucher@amd.com>, =?UTF-8?B?Q2hyaXN0aWFuIEvDtm5pZw==?= <christian.koenig@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 23/12/2014 10:07, Wu, Feng wrote:
->> On 23/12/2014 01:37, Zhang, Yang Z wrote:
->>> I don't quite understand it. If user set an interrupt's affinity to a
->>> CPU, but he still see the interrupt delivers to other CPUs in host.
->>> Do you think it is a right behavior?
->>
->> No, the interrupt is not delivered at all in the host.  Normally you'd have:
->>
->> - interrupt delivered to CPU from host affinity
->>
->> - VFIO interrupt handler writes to irqfd
->>
->> - interrupt delivered to vCPU from guest affinity
->>
->> Here, you just skip the first two steps.  The interrupt is delivered to
->> the thread that is running the vCPU directly, so the host affinity is
->> bypassed entirely.
->>
->> ... unless you are considering the case where the vCPU is blocked and
->> the host is processing the posted interrupt wakeup vector.  In that case
->> yes, it would be better to set NDST to a CPU matching the host affinity.
-> 
-> In my understanding, wakeup vector should have no relationship with the
-> host affinity of the irq. Wakeup notification event should be delivered to
-> the pCPU which the vCPU was blocked on. And in kernel's point of view,
-> the irq is not associated with the wakeup vector, right?
-
-That is correct indeed.  It is not associated to the wakeup vector,
-hence this patch is right, I think.
-
-However, the wakeup vector has the same function as the VFIO interrupt
-handler, so you could argue that it is tied to the host affinity rather
-than the guest.  Let's wait for Yang to answer.
-
-Paolo
+SGVsbG8gTGludXMsCkRhdmUgQWlybGllIGFza2VkIG1lIHRvIHNlbmQgdGhpcyBwYXRjaCB0byB5
+b3UgZm9yIHJldmlldy4KU2VlIGxpbmsgYmVsb3cgZm9yIGNvdmVyLWxldHRlciBmb3IgdGhpcyBw
+YXRjaCB0aGF0IGV4cGxhaW5zIHRoZSBiYWNrZ3JvdW5kIGEgCmJpdCBtb3JlOgpodHRwOi8vbGlz
+dHMuZnJlZWRlc2t0b3Aub3JnL2FyY2hpdmVzL2RyaS1kZXZlbC8yMDE0LURlY2VtYmVyLzA3NDQ1
+Mi5odG1sCgpUaGFua3MsCglPZGVkCgoKT24gMTIvMjIvMjAxNCAwMTowNyBQTSwgT2RlZCBHYWJi
+YXkgd3JvdGU6Cj4gQU1EIEdQVSBkZXZpY2VzIGFyZSBkZXBlbmRlbnQgb24gQU1EIElPTU1VIGNv
+bnRyb2xsZXIgZnVuY3Rpb25hbGl0eSB0byBhbGxvdwo+IHRoZSBHUFUgdG8gYWNjZXNzIGEgcHJv
+Y2VzcydzIHZpcnR1YWwgbWVtb3J5IGFkZHJlc3Mgc3BhY2UsIHdpdGhvdXQgdGhlIG5lZWQKPiBm
+b3IgcGlubmluZyB0aGUgbWVtb3J5Lgo+Cj4gVGhpcyBwYXRjaCBjaGFuZ2VzIHRoZSBvcmRlciBp
+biB0aGUgZHJpdmVycyBtYWtlZmlsZSwgc28gaW9tbXUvIHN1YnN5c3RlbSBpcwo+IGxpbmtlZCBi
+ZWZvcmUgZ3B1LyBzdWJzeXN0ZW0uIFRoYXQgd2F5LCBpZiB0aGUgZ3B1IGFuZCBpb21tdSBkcml2
+ZXJzIGFyZQo+IGNvbXBpbGVkIGluc2lkZSB0aGUga2VybmVsIGltYWdlIChub3QgYXMgbW9kdWxl
+cyksIHRoZSBjb3JyZWN0IG9yZGVyIG9mIGRldmljZQo+IGxvYWRpbmcgaXMgc3RpbGwgbWFpbnRh
+aW5lZCAoaW9tbXUgbW9kdWxlIGlzIGxvYWRlZCBiZWZvcmUgZ3B1IG1vZHVsZSkuCj4KPiBTaWdu
+ZWQtb2ZmLWJ5OiBPZGVkIEdhYmJheSA8b2RlZC5nYWJiYXlAYW1kLmNvbT4KPiAtLS0KPiAgIGRy
+aXZlcnMvTWFrZWZpbGUgfCA2ICsrKystLQo+ICAgMSBmaWxlIGNoYW5nZWQsIDQgaW5zZXJ0aW9u
+cygrKSwgMiBkZWxldGlvbnMoLSkKPgo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL01ha2VmaWxlIGIv
+ZHJpdmVycy9NYWtlZmlsZQo+IGluZGV4IGViZWU1NTUuLjEwNjIwMGYgMTAwNjQ0Cj4gLS0tIGEv
+ZHJpdmVycy9NYWtlZmlsZQo+ICsrKyBiL2RyaXZlcnMvTWFrZWZpbGUKPiBAQCAtNTAsNyArNTAs
+MTAgQEAgb2JqLSQoQ09ORklHX1JFU0VUX0NPTlRST0xMRVIpCSs9IHJlc2V0Lwo+ICAgb2JqLXkJ
+CQkJKz0gdHR5Lwo+ICAgb2JqLXkJCQkJKz0gY2hhci8KPgo+IC0jIGdwdS8gY29tZXMgYWZ0ZXIg
+Y2hhciBmb3IgQUdQIHZzIERSTSBzdGFydHVwCj4gKyMgaW9tbXUvIGNvbWVzIGJlZm9yZSBncHUg
+YXMgZ3B1IGFyZSB1c2luZyBpb21tdSBjb250cm9sbGVycwo+ICtvYmotJChDT05GSUdfSU9NTVVf
+U1VQUE9SVCkJKz0gaW9tbXUvCj4gKwo+ICsjIGdwdS8gY29tZXMgYWZ0ZXIgY2hhciBmb3IgQUdQ
+IHZzIERSTSBzdGFydHVwIGFuZCBhZnRlciBpb21tdQo+ICAgb2JqLXkJCQkJKz0gZ3B1Lwo+Cj4g
+ICBvYmotJChDT05GSUdfQ09OTkVDVE9SKQkJKz0gY29ubmVjdG9yLwo+IEBAIC0xNDEsNyArMTQ0
+LDYgQEAgb2JqLXkJCQkJKz0gY2xrLwo+Cj4gICBvYmotJChDT05GSUdfTUFJTEJPWCkJCSs9IG1h
+aWxib3gvCj4gICBvYmotJChDT05GSUdfSFdTUElOTE9DSykJKz0gaHdzcGlubG9jay8KPiAtb2Jq
+LSQoQ09ORklHX0lPTU1VX1NVUFBPUlQpCSs9IGlvbW11Lwo+ICAgb2JqLSQoQ09ORklHX1JFTU9U
+RVBST0MpCSs9IHJlbW90ZXByb2MvCj4gICBvYmotJChDT05GSUdfUlBNU0cpCQkrPSBycG1zZy8K
+Pgo+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1k
+ZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwOi8v
+bGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
