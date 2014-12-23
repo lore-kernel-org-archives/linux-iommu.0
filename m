@@ -1,57 +1,53 @@
-From: Oded Gabbay <oded.gabbay@amd.com>
-Subject: Re: [PATCH 1/2] drivers: Move iommu/ before gpu/ in Makefile
-Date: Tue, 23 Dec 2014 14:09:07 +0200
-Message-ID: <54995B63.5090808@amd.com>
-References: <1419246435-7050-1-git-send-email-oded.gabbay@amd.com>
- <1419246435-7050-2-git-send-email-oded.gabbay@amd.com>
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH] iommu/arm-smmu: don't touch the secure STLBIALL register
+Date: Tue, 23 Dec 2014 09:39:22 -0800
+Message-ID: <1419356362-27343-1-git-send-email-mitchelh@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1419246435-7050-2-git-send-email-oded.gabbay@amd.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Dana Elifaz <Dana.Elifaz@amd.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org, Alexander Deucher <Alexander.Deucher@amd.com>, =?UTF-8?B?Q2hyaXN0aWFuIEvDtm5pZw==?= <christian.koenig@amd.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGVsbG8gTGludXMsCkRhdmUgQWlybGllIGFza2VkIG1lIHRvIHNlbmQgdGhpcyBwYXRjaCB0byB5
-b3UgZm9yIHJldmlldy4KU2VlIGxpbmsgYmVsb3cgZm9yIGNvdmVyLWxldHRlciBmb3IgdGhpcyBw
-YXRjaCB0aGF0IGV4cGxhaW5zIHRoZSBiYWNrZ3JvdW5kIGEgCmJpdCBtb3JlOgpodHRwOi8vbGlz
-dHMuZnJlZWRlc2t0b3Aub3JnL2FyY2hpdmVzL2RyaS1kZXZlbC8yMDE0LURlY2VtYmVyLzA3NDQ1
-Mi5odG1sCgpUaGFua3MsCglPZGVkCgoKT24gMTIvMjIvMjAxNCAwMTowNyBQTSwgT2RlZCBHYWJi
-YXkgd3JvdGU6Cj4gQU1EIEdQVSBkZXZpY2VzIGFyZSBkZXBlbmRlbnQgb24gQU1EIElPTU1VIGNv
-bnRyb2xsZXIgZnVuY3Rpb25hbGl0eSB0byBhbGxvdwo+IHRoZSBHUFUgdG8gYWNjZXNzIGEgcHJv
-Y2VzcydzIHZpcnR1YWwgbWVtb3J5IGFkZHJlc3Mgc3BhY2UsIHdpdGhvdXQgdGhlIG5lZWQKPiBm
-b3IgcGlubmluZyB0aGUgbWVtb3J5Lgo+Cj4gVGhpcyBwYXRjaCBjaGFuZ2VzIHRoZSBvcmRlciBp
-biB0aGUgZHJpdmVycyBtYWtlZmlsZSwgc28gaW9tbXUvIHN1YnN5c3RlbSBpcwo+IGxpbmtlZCBi
-ZWZvcmUgZ3B1LyBzdWJzeXN0ZW0uIFRoYXQgd2F5LCBpZiB0aGUgZ3B1IGFuZCBpb21tdSBkcml2
-ZXJzIGFyZQo+IGNvbXBpbGVkIGluc2lkZSB0aGUga2VybmVsIGltYWdlIChub3QgYXMgbW9kdWxl
-cyksIHRoZSBjb3JyZWN0IG9yZGVyIG9mIGRldmljZQo+IGxvYWRpbmcgaXMgc3RpbGwgbWFpbnRh
-aW5lZCAoaW9tbXUgbW9kdWxlIGlzIGxvYWRlZCBiZWZvcmUgZ3B1IG1vZHVsZSkuCj4KPiBTaWdu
-ZWQtb2ZmLWJ5OiBPZGVkIEdhYmJheSA8b2RlZC5nYWJiYXlAYW1kLmNvbT4KPiAtLS0KPiAgIGRy
-aXZlcnMvTWFrZWZpbGUgfCA2ICsrKystLQo+ICAgMSBmaWxlIGNoYW5nZWQsIDQgaW5zZXJ0aW9u
-cygrKSwgMiBkZWxldGlvbnMoLSkKPgo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL01ha2VmaWxlIGIv
-ZHJpdmVycy9NYWtlZmlsZQo+IGluZGV4IGViZWU1NTUuLjEwNjIwMGYgMTAwNjQ0Cj4gLS0tIGEv
-ZHJpdmVycy9NYWtlZmlsZQo+ICsrKyBiL2RyaXZlcnMvTWFrZWZpbGUKPiBAQCAtNTAsNyArNTAs
-MTAgQEAgb2JqLSQoQ09ORklHX1JFU0VUX0NPTlRST0xMRVIpCSs9IHJlc2V0Lwo+ICAgb2JqLXkJ
-CQkJKz0gdHR5Lwo+ICAgb2JqLXkJCQkJKz0gY2hhci8KPgo+IC0jIGdwdS8gY29tZXMgYWZ0ZXIg
-Y2hhciBmb3IgQUdQIHZzIERSTSBzdGFydHVwCj4gKyMgaW9tbXUvIGNvbWVzIGJlZm9yZSBncHUg
-YXMgZ3B1IGFyZSB1c2luZyBpb21tdSBjb250cm9sbGVycwo+ICtvYmotJChDT05GSUdfSU9NTVVf
-U1VQUE9SVCkJKz0gaW9tbXUvCj4gKwo+ICsjIGdwdS8gY29tZXMgYWZ0ZXIgY2hhciBmb3IgQUdQ
-IHZzIERSTSBzdGFydHVwIGFuZCBhZnRlciBpb21tdQo+ICAgb2JqLXkJCQkJKz0gZ3B1Lwo+Cj4g
-ICBvYmotJChDT05GSUdfQ09OTkVDVE9SKQkJKz0gY29ubmVjdG9yLwo+IEBAIC0xNDEsNyArMTQ0
-LDYgQEAgb2JqLXkJCQkJKz0gY2xrLwo+Cj4gICBvYmotJChDT05GSUdfTUFJTEJPWCkJCSs9IG1h
-aWxib3gvCj4gICBvYmotJChDT05GSUdfSFdTUElOTE9DSykJKz0gaHdzcGlubG9jay8KPiAtb2Jq
-LSQoQ09ORklHX0lPTU1VX1NVUFBPUlQpCSs9IGlvbW11Lwo+ICAgb2JqLSQoQ09ORklHX1JFTU9U
-RVBST0MpCSs9IHJlbW90ZXByb2MvCj4gICBvYmotJChDT05GSUdfUlBNU0cpCQkrPSBycG1zZy8K
-Pgo+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1k
-ZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwOi8v
-bGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+Currently we do a STLBIALL when we initialize the SMMU.  However, in
+some configurations that register is not supposed to be touched and is
+marked as "Secure only" in the spec.  Rip it out.
+
+Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 60558f794922..9170bbced5e5 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -173,7 +173,6 @@
+ #define PIDR2_ARCH_MASK			0xf
+ 
+ /* Global TLB invalidation */
+-#define ARM_SMMU_GR0_STLBIALL		0x60
+ #define ARM_SMMU_GR0_TLBIVMID		0x64
+ #define ARM_SMMU_GR0_TLBIALLNSNH	0x68
+ #define ARM_SMMU_GR0_TLBIALLH		0x6c
+@@ -1686,7 +1685,6 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 	}
+ 
+ 	/* Invalidate the TLB, just in case */
+-	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_STLBIALL);
+ 	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLH);
+ 	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLNSNH);
+ 
+-- 
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
