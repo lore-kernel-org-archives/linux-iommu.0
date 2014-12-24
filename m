@@ -1,219 +1,81 @@
-From: Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2] memory: Add NVIDIA SMMU suspend/resume support
-Date: Wed, 24 Dec 2014 09:10:41 +0800
-Message-ID: <1419383441-18242-1-git-send-email-markz@nvidia.com>
+From: "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [v3 06/26] iommu, x86: No need to migrating irq for VT-d
+	Posted-Interrupts
+Date: Wed, 24 Dec 2014 01:38:18 +0000
+Message-ID: <A9667DDFB95DB7438FA9D7D576C3D87E0AC06DF9@SHSMSX104.ccr.corp.intel.com>
+References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
+	<1418397300-10870-7-git-send-email-feng.wu@intel.com>
+	<A9667DDFB95DB7438FA9D7D576C3D87E0AC0486D@SHSMSX104.ccr.corp.intel.com>
+	<E959C4978C3B6342920538CF579893F00230A649@SHSMSX104.ccr.corp.intel.com>
+	<A9667DDFB95DB7438FA9D7D576C3D87E0AC04E77@SHSMSX104.ccr.corp.intel.com>
+	<54941326.4080405@redhat.com>
+	<A9667DDFB95DB7438FA9D7D576C3D87E0AC06282@SHSMSX104.ccr.corp.intel.com>
+	<54992C2C.5030305@redhat.com>
+	<E959C4978C3B6342920538CF579893F002314236@SHSMSX104.ccr.corp.intel.com>
+	<5499370D.8000703@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5499370D.8000703-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "H.
+	Peter Anvin" <hpa-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Gleb
+	Natapov <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, KVM list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds suspend/resume support for NVIDIA SMMU.
+Paolo Bonzini wrote on 2014-12-23:
+> 
+> 
+> On 23/12/2014 10:07, Wu, Feng wrote:
+>>> On 23/12/2014 01:37, Zhang, Yang Z wrote:
+>>>> I don't quite understand it. If user set an interrupt's affinity
+>>>> to a CPU, but he still see the interrupt delivers to other CPUs in host.
+>>>> Do you think it is a right behavior?
+>>> 
+>>> No, the interrupt is not delivered at all in the host.  Normally you'd have:
+>>> 
+>>> - interrupt delivered to CPU from host affinity
+>>> 
+>>> - VFIO interrupt handler writes to irqfd
+>>> 
+>>> - interrupt delivered to vCPU from guest affinity
+>>> 
+>>> Here, you just skip the first two steps.  The interrupt is
+>>> delivered to the thread that is running the vCPU directly, so the
+>>> host affinity is bypassed entirely.
+>>> 
+>>> ... unless you are considering the case where the vCPU is blocked
+>>> and the host is processing the posted interrupt wakeup vector.  In
+>>> that case yes, it would be better to set NDST to a CPU matching the host affinity.
+>> 
+>> In my understanding, wakeup vector should have no relationship with
+>> the host affinity of the irq. Wakeup notification event should be
+>> delivered to the pCPU which the vCPU was blocked on. And in kernel's
+>> point of view, the irq is not associated with the wakeup vector, right?
+> 
+> That is correct indeed.  It is not associated to the wakeup vector,
+> hence this patch is right, I think.
+> 
+> However, the wakeup vector has the same function as the VFIO interrupt
+> handler, so you could argue that it is tied to the host affinity
+> rather than the guest.  Let's wait for Yang to answer.
 
-Signed-off-by: Mark Zhang <markz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
-Hi Alex/Olof/Thierry/Hiroshi,
+Actually, that's my original question too. I am wondering what happens if the user changes the assigned device's affinity in host's /proc/irq/? If ignore it is acceptable, then this patch is ok. But it seems the discussion out of my scope, need some experts to tell us their idea since it will impact the user experience. 
 
-This patch is created on top of Thierry Reding's patch set:
-"[PATCH v7 00/12] NVIDIA Tegra memory controller and IOMMU support"
+> 
+> Paolo
 
-Changes since v1:
-- Remove the list which saves "tegra_smmu_swgroup_asid" instances
-- Save all ASID registers when suspend then restore them when resume
 
- drivers/iommu/tegra-smmu.c | 71 ++++++++++++++++++++++++++++++++++++++++++++++
- drivers/memory/tegra/mc.c  | 24 ++++++++++++++++
- drivers/memory/tegra/mc.h  |  8 ++++++
- 3 files changed, 103 insertions(+)
-
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 0909e0bae9ec..e735840d35d8 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -17,6 +17,8 @@
- #include <soc/tegra/ahb.h>
- #include <soc/tegra/mc.h>
- 
-+struct tegra_smmu_as;
-+
- struct tegra_smmu {
- 	void __iomem *regs;
- 	struct device *dev;
-@@ -25,8 +27,11 @@ struct tegra_smmu {
- 	const struct tegra_smmu_soc *soc;
- 
- 	unsigned long *asids;
-+	struct tegra_smmu_as **as;
- 	struct mutex lock;
- 
-+	u32 *asid_reg_save;
-+
- 	struct list_head list;
- };
- 
-@@ -376,6 +381,7 @@ static int tegra_smmu_as_prepare(struct tegra_smmu *smmu,
- 	as->smmu = smmu;
- 	as->use_count++;
- 
-+	smmu->as[as->id] = as;
- 	return 0;
- }
- 
-@@ -386,6 +392,7 @@ static void tegra_smmu_as_unprepare(struct tegra_smmu *smmu,
- 		return;
- 
- 	tegra_smmu_free_asid(smmu, as->id);
-+	smmu->as[as->id] = NULL;
- 	as->smmu = NULL;
- }
- 
-@@ -651,6 +658,58 @@ static void tegra_smmu_ahb_enable(void)
- 	}
- }
- 
-+void tegra_smmu_suspend(struct tegra_smmu *smmu)
-+{
-+	int i;
-+
-+	for (i = 0; i < smmu->soc->num_swgroups; i++)
-+		smmu->asid_reg_save[i] = smmu_readl(smmu,
-+			smmu->soc->swgroups[i].reg);
-+}
-+
-+void tegra_smmu_resume(struct tegra_smmu *smmu)
-+{
-+	struct tegra_smmu_as *as;
-+	unsigned int bit;
-+	u32 value;
-+	int i;
-+
-+	for_each_set_bit(bit, smmu->asids, smmu->soc->num_asids) {
-+		as = smmu->as[bit];
-+		smmu->soc->ops->flush_dcache(as->pd, 0, SMMU_SIZE_PD);
-+
-+		smmu_writel(smmu, as->id & 0x7f, SMMU_PTB_ASID);
-+		value = SMMU_PTB_DATA_VALUE(as->pd, as->attr);
-+		smmu_writel(smmu, value, SMMU_PTB_DATA);
-+	}
-+
-+	for (i = 0; i < smmu->soc->num_swgroups; i++)
-+		smmu_writel(smmu, smmu->asid_reg_save[i],
-+				smmu->soc->swgroups[i].reg);
-+
-+	value = SMMU_PTC_CONFIG_ENABLE | SMMU_PTC_CONFIG_INDEX_MAP(0x3f);
-+
-+	if (smmu->soc->supports_request_limit)
-+		value |= SMMU_PTC_CONFIG_REQ_LIMIT(8);
-+
-+	smmu_writel(smmu, value, SMMU_PTC_CONFIG);
-+
-+	value = SMMU_TLB_CONFIG_HIT_UNDER_MISS |
-+		SMMU_TLB_CONFIG_ACTIVE_LINES(0x20);
-+
-+	if (smmu->soc->supports_round_robin_arbitration)
-+		value |= SMMU_TLB_CONFIG_ROUND_ROBIN_ARBITRATION;
-+
-+	smmu_writel(smmu, value, SMMU_TLB_CONFIG);
-+
-+	smmu_flush_ptc(smmu, NULL, 0);
-+	smmu_flush_tlb(smmu);
-+	smmu_writel(smmu, SMMU_CONFIG_ENABLE, SMMU_CONFIG);
-+	smmu_flush(smmu);
-+
-+	tegra_smmu_ahb_enable();
-+}
-+
- struct tegra_smmu *tegra_smmu_probe(struct device *dev,
- 				    const struct tegra_smmu_soc *soc,
- 				    struct tegra_mc *mc)
-@@ -684,6 +743,18 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
- 	if (!smmu->asids)
- 		return ERR_PTR(-ENOMEM);
- 
-+	smmu->asid_reg_save = devm_kzalloc(dev,
-+				sizeof(u32) * smmu->soc->num_swgroups,
-+				GFP_KERNEL);
-+	if (!smmu->asid_reg_save)
-+		return ERR_PTR(-ENOMEM);
-+
-+	smmu->as = devm_kzalloc(dev,
-+				sizeof(struct tegra_smmu_as *) * soc->num_asids,
-+				GFP_KERNEL);
-+	if (!smmu->as)
-+		return ERR_PTR(-ENOMEM);
-+
- 	mutex_init(&smmu->lock);
- 
- 	smmu->regs = mc->regs;
-diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
-index 9b7c1645fd59..f48368fca423 100644
---- a/drivers/memory/tegra/mc.c
-+++ b/drivers/memory/tegra/mc.c
-@@ -283,6 +283,28 @@ static int tegra_mc_probe(struct platform_device *pdev)
- 	return 0;
- }
- 
-+#ifdef CONFIG_PM_SLEEP
-+static int tegra_mc_suspend(struct platform_device *pdev, pm_message_t state)
-+{
-+	struct tegra_mc *mc = platform_get_drvdata(pdev);
-+
-+	if (IS_ENABLED(CONFIG_TEGRA_IOMMU_SMMU))
-+		tegra_smmu_suspend(mc->smmu);
-+
-+	return 0;
-+}
-+
-+static int tegra_mc_resume(struct platform_device *pdev)
-+{
-+	struct tegra_mc *mc = platform_get_drvdata(pdev);
-+
-+	if (IS_ENABLED(CONFIG_TEGRA_IOMMU_SMMU))
-+		tegra_smmu_resume(mc->smmu);
-+
-+	return 0;
-+}
-+#endif
-+
- static struct platform_driver tegra_mc_driver = {
- 	.driver = {
- 		.name = "tegra-mc",
-@@ -291,6 +313,8 @@ static struct platform_driver tegra_mc_driver = {
- 	},
- 	.prevent_deferred_probe = true,
- 	.probe = tegra_mc_probe,
-+	.suspend = tegra_mc_suspend,
-+	.resume = tegra_mc_resume,
- };
- 
- static int tegra_mc_init(void)
-diff --git a/drivers/memory/tegra/mc.h b/drivers/memory/tegra/mc.h
-index f714c309b960..efc45ceed5ba 100644
---- a/drivers/memory/tegra/mc.h
-+++ b/drivers/memory/tegra/mc.h
-@@ -29,6 +29,8 @@ static inline void mc_writel(struct tegra_mc *mc, u32 value,
- struct tegra_smmu *tegra_smmu_probe(struct device *dev,
- 				    const struct tegra_smmu_soc *soc,
- 				    struct tegra_mc *mc);
-+void tegra_smmu_suspend(struct tegra_smmu *smmu);
-+void tegra_smmu_resume(struct tegra_smmu *smmu);
- #else
- static inline struct tegra_smmu *
- tegra_smmu_probe(struct device *dev, const struct tegra_smmu_soc *soc,
-@@ -36,6 +38,12 @@ tegra_smmu_probe(struct device *dev, const struct tegra_smmu_soc *soc,
- {
- 	return NULL;
- }
-+void tegra_smmu_suspend(struct tegra_smmu *smmu)
-+{
-+}
-+void tegra_smmu_resume(struct tegra_smmu *smmu)
-+{
-+}
- #endif
- 
- #ifdef CONFIG_ARCH_TEGRA_3x_SOC
--- 
-1.8.1.5
+Best regards,
+Yang
