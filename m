@@ -1,120 +1,121 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [v3 06/26] iommu,
-	x86: No need to migrating irq for VT-d Posted-Interrupts
-Date: Wed, 24 Dec 2014 12:54:32 +0800
-Message-ID: <549A4708.90808@linux.intel.com>
-References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>	<1418397300-10870-7-git-send-email-feng.wu@intel.com>	<A9667DDFB95DB7438FA9D7D576C3D87E0AC0486D@SHSMSX104.ccr.corp.intel.com>	<E959C4978C3B6342920538CF579893F00230A649@SHSMSX104.ccr.corp.intel.com>	<A9667DDFB95DB7438FA9D7D576C3D87E0AC04E77@SHSMSX104.ccr.corp.intel.com>	<54941326.4080405@redhat.com>
-	<A9667DDFB95DB7438FA9D7D576C3D87E0AC06282@SHSMSX104.ccr.corp.intel.com>
-	<54992C2C.5030305@redhat.com>
-	<E959C4978C3B6342920538CF579893F002314236@SHSMSX104.ccr.corp.intel.com>
-	<5499370D.8000703@redhat.com>
-	<A9667DDFB95DB7438FA9D7D576C3D87E0AC06DF9@SHSMSX104.ccr.corp.intel.com>
-	<549A211A.30508@linux.intel.com>
-	<A9667DDFB95DB7438FA9D7D576C3D87E0AC06E9B@SHSMSX104.ccr.corp.intel.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 0/2] Change order of linkage in kernel makefiles for amdkfd
+Date: Thu, 25 Dec 2014 14:20:59 +0100
+Message-ID: <20141225132058.GA32005@mithrandir>
+References: <1419246435-7050-1-git-send-email-oded.gabbay@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <A9667DDFB95DB7438FA9D7D576C3D87E0AC06E9B-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Zhang, Yang Z" <yang.z.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "H. Peter Anvin" <hpa-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Gleb Natapov <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, KVM list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Content-Type: multipart/mixed; boundary="===============0170948307=="
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <1419246435-7050-1-git-send-email-oded.gabbay@amd.com>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Oded Gabbay <oded.gabbay@amd.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Dana Elifaz <Dana.Elifaz@amd.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org, Laurent Pinchart <Laurent.pinchart@ideasonboard.com>, Alexander Deucher <Alexander.Deucher@amd.com>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2014/12/24 10:32, Zhang, Yang Z wrote:
-> Jiang Liu wrote on 2014-12-24:
->> On 2014/12/24 9:38, Zhang, Yang Z wrote:
->>> Paolo Bonzini wrote on 2014-12-23:
->>>>
->>>>
->>>> On 23/12/2014 10:07, Wu, Feng wrote:
->>>>>> On 23/12/2014 01:37, Zhang, Yang Z wrote:
->>>>>>> I don't quite understand it. If user set an interrupt's affinity
->>>>>>> to a CPU, but he still see the interrupt delivers to other CPUs in host.
->>>>>>> Do you think it is a right behavior?
->>>>>>
->>>>>> No, the interrupt is not delivered at all in the host.  Normally you'd have:
->>>>>>
->>>>>> - interrupt delivered to CPU from host affinity
->>>>>>
->>>>>> - VFIO interrupt handler writes to irqfd
->>>>>>
->>>>>> - interrupt delivered to vCPU from guest affinity
->>>>>>
->>>>>> Here, you just skip the first two steps.  The interrupt is
->>>>>> delivered to the thread that is running the vCPU directly, so the
->>>>>> host affinity is bypassed entirely.
->>>>>>
->>>>>> ... unless you are considering the case where the vCPU is blocked
->>>>>> and the host is processing the posted interrupt wakeup vector.
->>>>>> In that case yes, it would be better to set NDST to a CPU
->>>>>> matching the host
->> affinity.
->>>>>
->>>>> In my understanding, wakeup vector should have no relationship
->>>>> with the host affinity of the irq. Wakeup notification event
->>>>> should be delivered to the pCPU which the vCPU was blocked on. And
->>>>> in kernel's point of view, the irq is not associated with the wakeup vector, right?
->>>>
->>>> That is correct indeed.  It is not associated to the wakeup vector,
->>>> hence this patch is right, I think.
->>>>
->>>> However, the wakeup vector has the same function as the VFIO
->>>> interrupt handler, so you could argue that it is tied to the host
->>>> affinity rather than the guest.  Let's wait for Yang to answer.
->>>
->>> Actually, that's my original question too. I am wondering what
->>> happens if the
->> user changes the assigned device's affinity in host's /proc/irq/? If
->> ignore it is acceptable, then this patch is ok. But it seems the
->> discussion out of my scope, need some experts to tell us their idea since it will impact the user experience.
->> Hi Yang,
-> 
-> Hi Jiang,
-> 
->> 	Originally we have a proposal to return failure when user sets IRQ
->> affinity through native OS interfaces if an IRQ is in PI mode. But
->> that proposal will break CPU hot-removal because OS needs to migrate
->> away all IRQs binding to the CPU to be offlined. Then we propose
->> saving user IRQ affinity setting without changing hardware
->> configuration (keeping PI configuration). Later when PI mode is
->> disabled, the cached affinity setting will be used to setup IRQ
->> destination for native OS. On the other hand, for IRQ in PI mode, it
->> won't be delivered to native OS, so user may not sense that the IRQ is delivered to CPUs other than those in the affinity set.
-> 
-> The IRQ is still there but will be delivered to host in the form of PI event(if the VCPU is running in root-mode). I am not sure whether those interrupts should be reflected in /proc/interrupts? If the answer is yes, then which entries should be used, a new PI entry or use the original IRQ entry?
 
-You are right, the native interrupt statistics will become inaccurate.
-Maybe some document about this behavior is preferred.
+--===============0170948307==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="AhhlLboLdkugWU4S"
+Content-Disposition: inline
 
-> 
->> In that aspect, I think it's acceptable:) Regards!
-> 
-> Yes, if all of you guys(especially the IRQ maintainer) are think it is acceptable then we can follow current implementation and document it.
-Good suggestion, we will send an email to Thomas for advice after New
-Year.
-> 
->> Gerry
->>>
->>>>
->>>> Paolo
->>>
->>>
->>> Best regards,
->>> Yang
->>>
->>>
-> 
-> 
-> Best regards,
-> Yang
-> 
-> 
+
+--AhhlLboLdkugWU4S
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, Dec 22, 2014 at 01:07:13PM +0200, Oded Gabbay wrote:
+> This small patch-set, was created to solve the bug described at=20
+> https://bugzilla.kernel.org/show_bug.cgi?id=3D89661 (Kernel panic when=20
+> trying use amdkfd driver on Kaveri). It replaces the previous patch-set c=
+alled=20
+> [PATCH 0/3] Use workqueue for device init in amdkfd
+> (http://lists.freedesktop.org/archives/dri-devel/2014-December/074401.htm=
+l)
+>=20
+> That bug appears only when radeon, amdkfd and amd_iommu_v2 are compiled=
+=20
+> inside the kernel (not as modules). In that case, the correct loading=20
+> order, as determined by the exported symbol used by each driver, is=20
+> not enforced anymore and the kernel loads them based on who was linked=20
+> first. That makes radeon load first, amdkfd second and amd_iommu_v2=20
+> third.
+>=20
+> Because the initialization of a device in amdkfd is initiated by radeon,=
+=20
+> and can only be completed if amdkfd and amd_iommu_v2 were loaded and=20
+> initialized, then in the case mentioned above, this initalization fails=
+=20
+> and there is a kernel panic as some pointers are not initialized but=20
+> used nontheless.
+>=20
+> To solve this bug, this patch-set moves iommu/ before gpu/ in drivers/Mak=
+efile=20
+> and also moves amdkfd/ before radeon/ in drivers/gpu/drm/Makefile.
+>=20
+> The rationale is that in general, AMD GPU devices are dependent on AMD IO=
+MMU=20
+> controller functionality to allow the GPU to access a process's virtual m=
+emory=20
+> address space, without the need for pinning the memory. That's why it mak=
+es=20
+> sense to initialize the iommu/ subsystem ahead of the gpu/ subsystem.
+
+I strongly object to this patch set. This makes assumptions about how
+the build system influences probe order. That's bad because seemingly
+unrelated changes could easily break this in the future.
+
+We already have ways to solve this kind of dependency (driver probe
+deferral), and I think you should be using it to solve this particular
+problem rather than some linking order hack.
+
+Coincidentally there's a separate thread currently going on that deals
+with IOMMUs and probe order. The solution being worked on is currently
+somewhat ARM-specific, so adding a couple of folks for visibility. It
+looks like we're going to need something more generic since this is a
+problem that even the "big" architectures need to solve.
+
+Thierry
+
+--AhhlLboLdkugWU4S
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJUnA85AAoJEN0jrNd/PrOhOhQP/R2/gjyWpSmrLjCdAmt2V1os
+8zRPbOetLNjLMPX/BZF9B1nmldGR7rVeXIwFtbd1rb79mJ1Lqi+E1c8r5gJjB6JL
+VYvEV7EDmhz9wk7ffpNmP4dIjb/pAdRlEdh9LgHO3Z6yXXo1gzvmdbhwCl/5XQJW
+17WUvFtGcVtbiyHVmShmtXB8kBjT1TFfecez91e03kL4br+A4lCW7GdNluEtgmKG
+G2tP2H+Bd2UJ0P4IV8qu3W4xM33FyQTs9RC9ejy7h6nhEJ+yjflxdFWYL11M4hEg
+da2DBh1DEs8UwVtblB+Sh8I/tXoqZukdZpUZZrhroUxdUCjtDNrHXUcGsE4GiT7H
+qqybCotE+JNnJb6VVx6I7/60elxYnnBbhviGbweztoQHtg5R2R1+1+z0/sPYzZm2
+7H2UpeBK6odTVMt0s6BykxrDSIcGF5z+y0E7cJZhfOsdqcqxmm7Rdai7s37c4soL
+r+vIa9jgWL82L17qEVsQWyhl68BdsMTZmsLKKLyxzpW2OMAGqF3K4Vs4FeNGZDQi
+snNdka12KJmb1Gi2k/75vxzUwvHAZ/OgW9RkBrAPFNg/6n0Ku12iYx1qwwdlj9Xo
+2jzdxzSn66XTB2uO7HseaJ5iOFeo1Y1ZnIbTbsE6sgO4sQhEiyqw4O27Ygkc6SNI
+TFemNK1eWgMyI4yWtMAT
+=FLwM
+-----END PGP SIGNATURE-----
+
+--AhhlLboLdkugWU4S--
+
+--===============0170948307==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVs
+IG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0
+cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+
+--===============0170948307==--
