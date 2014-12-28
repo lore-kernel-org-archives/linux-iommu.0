@@ -1,77 +1,94 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+From: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
 Subject: Re: [PATCH 0/2] Change order of linkage in kernel makefiles for amdkfd
-Date: Fri, 26 Dec 2014 11:19 +0200
-Message-ID: <1621810.aTt9O4Ghzs@avalon>
+Date: Sun, 28 Dec 2014 13:36:50 +0200
+Message-ID: <549FEB52.4020103@amd.com>
 References: <1419246435-7050-1-git-send-email-oded.gabbay@amd.com>
- <20141225132058.GA32005@mithrandir>
+	<20141225132058.GA32005@mithrandir> <1621810.aTt9O4Ghzs@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20141225132058.GA32005@mithrandir>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, dri-devel@lists.freedesktop.org, Alexander Deucher <Alexander.Deucher@amd.com>, Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1621810.aTt9O4Ghzs@avalon>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Dana Elifaz <Dana.Elifaz-5C7GfCeVMHo@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Alexander Deucher <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, =?windows-1252?Q?Christian_K=F6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgVGhpZXJyeSwKCk9uIFRodXJzZGF5IDI1IERlY2VtYmVyIDIwMTQgMTQ6MjA6NTkgVGhpZXJy
-eSBSZWRpbmcgd3JvdGU6Cj4gT24gTW9uLCBEZWMgMjIsIDIwMTQgYXQgMDE6MDc6MTNQTSArMDIw
-MCwgT2RlZCBHYWJiYXkgd3JvdGU6Cj4gPiBUaGlzIHNtYWxsIHBhdGNoLXNldCwgd2FzIGNyZWF0
-ZWQgdG8gc29sdmUgdGhlIGJ1ZyBkZXNjcmliZWQgYXQKPiA+IGh0dHBzOi8vYnVnemlsbGEua2Vy
-bmVsLm9yZy9zaG93X2J1Zy5jZ2k/aWQ9ODk2NjEgKEtlcm5lbCBwYW5pYyB3aGVuCj4gPiB0cnlp
-bmcgdXNlIGFtZGtmZCBkcml2ZXIgb24gS2F2ZXJpKS4gSXQgcmVwbGFjZXMgdGhlIHByZXZpb3Vz
-IHBhdGNoLXNldAo+ID4gY2FsbGVkIFtQQVRDSCAwLzNdIFVzZSB3b3JrcXVldWUgZm9yIGRldmlj
-ZSBpbml0IGluIGFtZGtmZAo+ID4gKGh0dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvYXJjaGl2
-ZXMvZHJpLWRldmVsLzIwMTQtRGVjZW1iZXIvMDc0NDAxLmh0bWwKPiA+ICkKPiA+IAo+ID4gVGhh
-dCBidWcgYXBwZWFycyBvbmx5IHdoZW4gcmFkZW9uLCBhbWRrZmQgYW5kIGFtZF9pb21tdV92MiBh
-cmUgY29tcGlsZWQKPiA+IGluc2lkZSB0aGUga2VybmVsIChub3QgYXMgbW9kdWxlcykuIEluIHRo
-YXQgY2FzZSwgdGhlIGNvcnJlY3QgbG9hZGluZwo+ID4gb3JkZXIsIGFzIGRldGVybWluZWQgYnkg
-dGhlIGV4cG9ydGVkIHN5bWJvbCB1c2VkIGJ5IGVhY2ggZHJpdmVyLCBpcwo+ID4gbm90IGVuZm9y
-Y2VkIGFueW1vcmUgYW5kIHRoZSBrZXJuZWwgbG9hZHMgdGhlbSBiYXNlZCBvbiB3aG8gd2FzIGxp
-bmtlZAo+ID4gZmlyc3QuIFRoYXQgbWFrZXMgcmFkZW9uIGxvYWQgZmlyc3QsIGFtZGtmZCBzZWNv
-bmQgYW5kIGFtZF9pb21tdV92Mgo+ID4gdGhpcmQuCj4gPiAKPiA+IEJlY2F1c2UgdGhlIGluaXRp
-YWxpemF0aW9uIG9mIGEgZGV2aWNlIGluIGFtZGtmZCBpcyBpbml0aWF0ZWQgYnkgcmFkZW9uLAo+
-ID4gYW5kIGNhbiBvbmx5IGJlIGNvbXBsZXRlZCBpZiBhbWRrZmQgYW5kIGFtZF9pb21tdV92MiB3
-ZXJlIGxvYWRlZCBhbmQKPiA+IGluaXRpYWxpemVkLCB0aGVuIGluIHRoZSBjYXNlIG1lbnRpb25l
-ZCBhYm92ZSwgdGhpcyBpbml0YWxpemF0aW9uIGZhaWxzCj4gPiBhbmQgdGhlcmUgaXMgYSBrZXJu
-ZWwgcGFuaWMgYXMgc29tZSBwb2ludGVycyBhcmUgbm90IGluaXRpYWxpemVkIGJ1dAo+ID4gdXNl
-ZCBub250aGVsZXNzLgo+ID4gCj4gPiBUbyBzb2x2ZSB0aGlzIGJ1ZywgdGhpcyBwYXRjaC1zZXQg
-bW92ZXMgaW9tbXUvIGJlZm9yZSBncHUvIGluCj4gPiBkcml2ZXJzL01ha2VmaWxlIGFuZCBhbHNv
-IG1vdmVzIGFtZGtmZC8gYmVmb3JlIHJhZGVvbi8gaW4KPiA+IGRyaXZlcnMvZ3B1L2RybS9NYWtl
-ZmlsZS4KPiA+IAo+ID4gVGhlIHJhdGlvbmFsZSBpcyB0aGF0IGluIGdlbmVyYWwsIEFNRCBHUFUg
-ZGV2aWNlcyBhcmUgZGVwZW5kZW50IG9uIEFNRAo+ID4gSU9NTVUgY29udHJvbGxlciBmdW5jdGlv
-bmFsaXR5IHRvIGFsbG93IHRoZSBHUFUgdG8gYWNjZXNzIGEgcHJvY2VzcydzCj4gPiB2aXJ0dWFs
-IG1lbW9yeSBhZGRyZXNzIHNwYWNlLCB3aXRob3V0IHRoZSBuZWVkIGZvciBwaW5uaW5nIHRoZSBt
-ZW1vcnkuCj4gPiBUaGF0J3Mgd2h5IGl0IG1ha2VzIHNlbnNlIHRvIGluaXRpYWxpemUgdGhlIGlv
-bW11LyBzdWJzeXN0ZW0gYWhlYWQgb2YgdGhlCj4gPiBncHUvIHN1YnN5c3RlbS4KPgo+IEkgc3Ry
-b25nbHkgb2JqZWN0IHRvIHRoaXMgcGF0Y2ggc2V0LiBUaGlzIG1ha2VzIGFzc3VtcHRpb25zIGFi
-b3V0IGhvdwo+IHRoZSBidWlsZCBzeXN0ZW0gaW5mbHVlbmNlcyBwcm9iZSBvcmRlci4gVGhhdCdz
-IGJhZCBiZWNhdXNlIHNlZW1pbmdseQo+IHVucmVsYXRlZCBjaGFuZ2VzIGNvdWxkIGVhc2lseSBi
-cmVhayB0aGlzIGluIHRoZSBmdXR1cmUuCj4gCj4gV2UgYWxyZWFkeSBoYXZlIHdheXMgdG8gc29s
-dmUgdGhpcyBraW5kIG9mIGRlcGVuZGVuY3kgKGRyaXZlciBwcm9iZQo+IGRlZmVycmFsKSwgYW5k
-IEkgdGhpbmsgeW91IHNob3VsZCBiZSB1c2luZyBpdCB0byBzb2x2ZSB0aGlzIHBhcnRpY3VsYXIK
-PiBwcm9ibGVtIHJhdGhlciB0aGFuIHNvbWUgbGlua2luZyBvcmRlciBoYWNrLgoKV2hpbGUgSSBh
-Z3JlZSB3aXRoIHlvdSB0aGF0IHByb2JlIGRlZmVycmFsIGlzIHRoZSB3YXkgdG8gZ28sIEkgYmVs
-aWV2ZSBsaW5rYWdlIApvcmRlcmluZyBjYW4gc3RpbGwgYmUgdXNlZCBhcyBhbiBvcHRpbWl6YXRp
-b24gdG8gYXZvaWQgZGVmZXJyaW5nIHByb2JlIGluIHRoZSAKbW9zdCBjb21tb24gY2FzZXMuIEkn
-bSB0aHVzIG5vdCBvcHBvc2VkIHRvIG1vdmluZyBpb21tdS8gZWFybGllciBpbiBsaW5rIG9yZGVy
-IAoocHJvdmlkZWQgd2UgY2FuIHByb3Blcmx5IHRlc3QgZm9yIHNpZGUgZWZmZWN0cywgYXMgdGhl
-IGp1bXAgaXMgcHJldHR5IGxhcmdlKSwgCmJ1dCBub3QgYXMgYSByZXBsYWNlbWVudCBmb3IgcHJv
-YmUgZGVmZXJyYWwuCgo+IENvaW5jaWRlbnRhbGx5IHRoZXJlJ3MgYSBzZXBhcmF0ZSB0aHJlYWQg
-Y3VycmVudGx5IGdvaW5nIG9uIHRoYXQgZGVhbHMKPiB3aXRoIElPTU1VcyBhbmQgcHJvYmUgb3Jk
-ZXIuIFRoZSBzb2x1dGlvbiBiZWluZyB3b3JrZWQgb24gaXMgY3VycmVudGx5Cj4gc29tZXdoYXQg
-QVJNLXNwZWNpZmljLCBzbyBhZGRpbmcgYSBjb3VwbGUgb2YgZm9sa3MgZm9yIHZpc2liaWxpdHku
-IEl0Cj4gbG9va3MgbGlrZSB3ZSdyZSBnb2luZyB0byBuZWVkIHNvbWV0aGluZyBtb3JlIGdlbmVy
-aWMgc2luY2UgdGhpcyBpcyBhCj4gcHJvYmxlbSB0aGF0IGV2ZW4gdGhlICJiaWciIGFyY2hpdGVj
-dHVyZXMgbmVlZCB0byBzb2x2ZS4KCi0tIApSZWdhcmRzLAoKTGF1cmVudCBQaW5jaGFydAoKX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1h
-aWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0cy5m
-cmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+
+
+On 12/26/2014 11:19 AM, Laurent Pinchart wrote:
+> Hi Thierry,
+>
+> On Thursday 25 December 2014 14:20:59 Thierry Reding wrote:
+>> On Mon, Dec 22, 2014 at 01:07:13PM +0200, Oded Gabbay wrote:
+>>> This small patch-set, was created to solve the bug described at
+>>> https://bugzilla.kernel.org/show_bug.cgi?id=89661 (Kernel panic when
+>>> trying use amdkfd driver on Kaveri). It replaces the previous patch-set
+>>> called [PATCH 0/3] Use workqueue for device init in amdkfd
+>>> (http://lists.freedesktop.org/archives/dri-devel/2014-December/074401.html
+>>> )
+>>>
+>>> That bug appears only when radeon, amdkfd and amd_iommu_v2 are compiled
+>>> inside the kernel (not as modules). In that case, the correct loading
+>>> order, as determined by the exported symbol used by each driver, is
+>>> not enforced anymore and the kernel loads them based on who was linked
+>>> first. That makes radeon load first, amdkfd second and amd_iommu_v2
+>>> third.
+>>>
+>>> Because the initialization of a device in amdkfd is initiated by radeon,
+>>> and can only be completed if amdkfd and amd_iommu_v2 were loaded and
+>>> initialized, then in the case mentioned above, this initalization fails
+>>> and there is a kernel panic as some pointers are not initialized but
+>>> used nontheless.
+>>>
+>>> To solve this bug, this patch-set moves iommu/ before gpu/ in
+>>> drivers/Makefile and also moves amdkfd/ before radeon/ in
+>>> drivers/gpu/drm/Makefile.
+>>>
+>>> The rationale is that in general, AMD GPU devices are dependent on AMD
+>>> IOMMU controller functionality to allow the GPU to access a process's
+>>> virtual memory address space, without the need for pinning the memory.
+>>> That's why it makes sense to initialize the iommu/ subsystem ahead of the
+>>> gpu/ subsystem.
+>>
+>> I strongly object to this patch set. This makes assumptions about how
+>> the build system influences probe order. That's bad because seemingly
+>> unrelated changes could easily break this in the future.
+>>
+>> We already have ways to solve this kind of dependency (driver probe
+>> deferral), and I think you should be using it to solve this particular
+>> problem rather than some linking order hack.
+>
+> While I agree with you that probe deferral is the way to go, I believe linkage
+> ordering can still be used as an optimization to avoid deferring probe in the
+> most common cases. I'm thus not opposed to moving iommu/ earlier in link order
+> (provided we can properly test for side effects, as the jump is pretty large),
+> but not as a replacement for probe deferral.
+
+My thoughts exactly. If this was some extreme use case, than it would be 
+justified to solve it with probe deferral. But I think that for most common 
+cases, GPU are dependent on IOMMU and *not* vice-versa.
+
+BTW, my first try at solving this was to use probe deferral (using workqueue), 
+but the feedback I got from Christian and Dave was that moving iommu/ linkage 
+before gpu/ was a much more simpler solution.
+
+In addition, Linus said he doesn't object to this "band-aid". See: 
+https://lkml.org/lkml/2014/12/25/152
+
+	Oded
+>
+>> Coincidentally there's a separate thread currently going on that deals
+>> with IOMMUs and probe order. The solution being worked on is currently
+>> somewhat ARM-specific, so adding a couple of folks for visibility. It
+>> looks like we're going to need something more generic since this is a
+>> problem that even the "big" architectures need to solve.
+>
