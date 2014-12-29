@@ -1,14 +1,14 @@
-From: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH 0/2] Change order of linkage in kernel makefiles for amdkfd
-Date: Sun, 28 Dec 2014 13:36:50 +0200
-Message-ID: <549FEB52.4020103@amd.com>
-References: <1419246435-7050-1-git-send-email-oded.gabbay@amd.com>
-	<20141225132058.GA32005@mithrandir> <1621810.aTt9O4Ghzs@avalon>
+From: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Subject: Re: [PATCH 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
+Date: Mon, 29 Dec 2014 11:15:45 +0800
+Message-ID: <54A0C761.5060604@hp.com>
+References: <1419239729-26529-1-git-send-email-zhen-hual@hp.com>
+	<549CEE8F.2090209@jp.fujitsu.com> <549D0459.4080202@hp.com>
+	<549D0DEE.8000301@jp.fujitsu.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="------------070905000603000005030008"
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1621810.aTt9O4Ghzs@avalon>
+In-Reply-To: <549D0DEE.8000301-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,77 +18,304 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Dana Elifaz <Dana.Elifaz-5C7GfCeVMHo@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Alexander Deucher <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, =?windows-1252?Q?Christian_K=F6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+To: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+Cc: bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tom.vaden-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+This is a multi-part message in MIME format.
+--------------070905000603000005030008
+Content-Type: text/plain; charset=Shift_JIS
+Content-Transfer-Encoding: 7bit
+
+Hi Takao Indoh,
+
+Happy New Year, and thank you very much for you help.  The flush is quite
+ a problem,  as there are several places the flush function should be called, 
+I think the flush should be placed in functions like __iommu_update_old_*.  
+Created a small patch for this, it is attached.
 
 
-On 12/26/2014 11:19 AM, Laurent Pinchart wrote:
-> Hi Thierry,
->
-> On Thursday 25 December 2014 14:20:59 Thierry Reding wrote:
->> On Mon, Dec 22, 2014 at 01:07:13PM +0200, Oded Gabbay wrote:
->>> This small patch-set, was created to solve the bug described at
->>> https://bugzilla.kernel.org/show_bug.cgi?id=89661 (Kernel panic when
->>> trying use amdkfd driver on Kaveri). It replaces the previous patch-set
->>> called [PATCH 0/3] Use workqueue for device init in amdkfd
->>> (http://lists.freedesktop.org/archives/dri-devel/2014-December/074401.html
->>> )
->>>
->>> That bug appears only when radeon, amdkfd and amd_iommu_v2 are compiled
->>> inside the kernel (not as modules). In that case, the correct loading
->>> order, as determined by the exported symbol used by each driver, is
->>> not enforced anymore and the kernel loads them based on who was linked
->>> first. That makes radeon load first, amdkfd second and amd_iommu_v2
->>> third.
->>>
->>> Because the initialization of a device in amdkfd is initiated by radeon,
->>> and can only be completed if amdkfd and amd_iommu_v2 were loaded and
->>> initialized, then in the case mentioned above, this initalization fails
->>> and there is a kernel panic as some pointers are not initialized but
->>> used nontheless.
->>>
->>> To solve this bug, this patch-set moves iommu/ before gpu/ in
->>> drivers/Makefile and also moves amdkfd/ before radeon/ in
->>> drivers/gpu/drm/Makefile.
->>>
->>> The rationale is that in general, AMD GPU devices are dependent on AMD
->>> IOMMU controller functionality to allow the GPU to access a process's
->>> virtual memory address space, without the need for pinning the memory.
->>> That's why it makes sense to initialize the iommu/ subsystem ahead of the
->>> gpu/ subsystem.
+
+As I cannot reproduce your problems on my system, so could you please try 
+these steps?
+1. Apply the latest patchset, including 9/10 and 10/10, and then apply the 
+attached patch_for_flush.patch.  And then test the kernel.
+
+2.  If 1 does not fix the DMAR fault  problems, then it might be caused by 
+7/10, so please *unpatch* it from the kernel (others and the  attached one
+should be patched), and then test the kernel.
+
+Regards
+Zhenhua
+
+On 12/26/2014 03:27 PM, Takao Indoh wrote:
+> On 2014/12/26 15:46, Li, ZhenHua wrote:
+>> Hi Takao Indoh,
 >>
->> I strongly object to this patch set. This makes assumptions about how
->> the build system influences probe order. That's bad because seemingly
->> unrelated changes could easily break this in the future.
+>> Thank you very much for your testing. I will add your update in next
+>> version.
+>> Also I think a flush for __iommu_update_old_root_entry is also necessary.
 >>
->> We already have ways to solve this kind of dependency (driver probe
->> deferral), and I think you should be using it to solve this particular
->> problem rather than some linking order hack.
+>> Currently I have no idea about your fault, does it happen before or
+>> during its loading? Could you send me your full kernel log as an
+>> attachment?
+> Sure, see attached file.
 >
-> While I agree with you that probe deferral is the way to go, I believe linkage
-> ordering can still be used as an optimization to avoid deferring probe in the
-> most common cases. I'm thus not opposed to moving iommu/ earlier in link order
-> (provided we can properly test for side effects, as the jump is pretty large),
-> but not as a replacement for probe deferral.
-
-My thoughts exactly. If this was some extreme use case, than it would be 
-justified to solve it with probe deferral. But I think that for most common 
-cases, GPU are dependent on IOMMU and *not* vice-versa.
-
-BTW, my first try at solving this was to use probe deferral (using workqueue), 
-but the feedback I got from Christian and Dave was that moving iommu/ linkage 
-before gpu/ was a much more simpler solution.
-
-In addition, Linus said he doesn't object to this "band-aid". See: 
-https://lkml.org/lkml/2014/12/25/152
-
-	Oded
+> I removed 9/10 and 10/10 patches from my kernel to avoid panic problem I
+> reported in previous mail, and then tested kdump. So please ignore
+> intr-remap fault message in log file. Also please ignore stack trace
+> starting with the following message, it's a problem of my box.
 >
->> Coincidentally there's a separate thread currently going on that deals
->> with IOMMUs and probe order. The solution being worked on is currently
->> somewhat ARM-specific, so adding a couple of folks for visibility. It
->> looks like we're going to need something more generic since this is a
->> problem that even the "big" architectures need to solve.
+>   Flags mismatch irq 0. 00000080 (i801_smbus) vs. 00015a00 (timer)
 >
+> Thanks,
+> Takao Indoh
+>
+>> Regards and Merry Christmas.
+>> Zhenhua
+>>
+>> On 12/26/2014 01:13 PM, Takao Indoh wrote:
+>>> Hi Zhen-Hua,
+>>>
+>>> I tested your patch and found two problems.
+>>>
+>>> [1]
+>>> Kenel panic occurs during 2nd kernel boot.
+>>>
+>>> ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
+>>> Kernel panic - not syncing: timer doesn't work through Interrupt-remapped IO-APIC
+>>> CPU: 0 PID: 1 Comm: swapper/0 Not tainted 3.18.0 #25
+>>> Hardware name: FUJITSU-SV PRIMERGY BX920 S2/D3030, BIOS 080015 Rev.3D81.3030 02/10/2012
+>>>   0000000000000002 ffff880036167d08 ffffffff815b1c6a 0000000000000000
+>>>   ffffffff817f7670 ffff880036167d88 ffffffff815b19f1 0000000000000008
+>>>   ffff880036167d98 ffff880036167d38 ffffffff810a5d2f ffff880036167d98
+>>> Call Trace:
+>>>   [<ffffffff815b1c6a>] dump_stack+0x48/0x5e
+>>>   [<ffffffff815b19f1>] panic+0xbb/0x1fa
+>>>   [<ffffffff810a5d2f>] ? vprintk_default+0x1f/0x30
+>>>   [<ffffffff814c6a6c>] panic_if_irq_remap+0x1c/0x20
+>>>   [<ffffffff81b53985>] check_timer+0x1e7/0x5ed
+>>>   [<ffffffff8129bd9d>] ? radix_tree_lookup+0xd/0x10
+>>>   [<ffffffff81b5413b>] setup_IO_APIC+0x261/0x292
+>>>   [<ffffffff81b50302>] native_smp_prepare_cpus+0x214/0x25d
+>>>   [<ffffffff81b41c65>] kernel_init_freeable+0x1dc/0x28c
+>>>   [<ffffffff815aaf00>] ? rest_init+0x80/0x80
+>>>   [<ffffffff815aaf0e>] kernel_init+0xe/0xf0
+>>>   [<ffffffff815b5d2c>] ret_from_fork+0x7c/0xb0
+>>>   [<ffffffff815aaf00>] ? rest_init+0x80/0x80
+>>> ---[ end Kernel panic - not syncing: timer doesn't work through Interrupt-remapped IO-APIC
+>>>
+>>>
+>>> This panic seems to be related to unflushed cache. I confirmed this
+>>> problem was fixed by the following patch.
+>>>
+>>> --- a/drivers/iommu/intel_irq_remapping.c
+>>> +++ b/drivers/iommu/intel_irq_remapping.c
+>>> @@ -200,8 +200,13 @@ static int modify_irte(int irq, struct irte *irte_modified)
+>>>   	set_64bit(&irte->high, irte_modified->high);
+>>>   
+>>>   #ifdef CONFIG_CRASH_DUMP
+>>> -	if (is_kdump_kernel())
+>>> +	if (is_kdump_kernel()) {
+>>>   		__iommu_update_old_irte(iommu, index);
+>>> +		__iommu_flush_cache(iommu,
+>>> +			iommu->ir_table->base_old_virt +
+>>> +			index * sizeof(struct irte),
+>>> +			sizeof(struct irte));
+>>> +	}
+>>>   #endif
+>>>   	__iommu_flush_cache(iommu, irte, sizeof(*irte));
+>>>   
+>>>
+>>> [2]
+>>> Some DMAR error messages are still found in 2nd kernel boot.
+>>>
+>>> dmar: DRHD: handling fault status reg 2
+>>> dmar: DMAR:[DMA Write] Request device [01:00.0] fault addr ffded000
+>>> DMAR:[fault reason 01] Present bit in root entry is clear
+>>>
+>>> I confiremd your commit 1a2262 was already applied. Any idea?
+>>>
+>>> Thanks,
+>>> Takao Indoh
+>>>
+>>>
+>>> On 2014/12/22 18:15, Li, Zhen-Hua wrote:
+>>>> This patchset is an update of Bill Sumner's patchset, implements a fix for:
+>>>> If a kernel boots with intel_iommu=on on a system that supports intel vt-d,
+>>>> when a panic happens, the kdump kernel will boot with these faults:
+>>>>
+>>>>       dmar: DRHD: handling fault status reg 102
+>>>>       dmar: DMAR:[DMA Read] Request device [01:00.0] fault addr fff80000
+>>>>       DMAR:[fault reason 01] Present bit in root entry is clear
+>>>>
+>>>>       dmar: DRHD: handling fault status reg 2
+>>>>       dmar: INTR-REMAP: Request device [[61:00.0] fault index 42
+>>>>       INTR-REMAP:[fault reason 34] Present field in the IRTE entry is clear
+>>>>
+>>>> On some system, the interrupt remapping fault will also happen even if the
+>>>> intel_iommu is not set to on, because the interrupt remapping will be enabled
+>>>> when x2apic is needed by the system.
+>>>>
+>>>> The cause of the DMA fault is described in Bill's original version, and the
+>>>> INTR-Remap fault is caused by a similar reason. In short, the initialization
+>>>> of vt-d drivers causes the in-flight DMA and interrupt requests get wrong
+>>>> response.
+>>>>
+>>>> To fix this problem, we modifies the behaviors of the intel vt-d in the
+>>>> crashdump kernel:
+>>>>
+>>>> For DMA Remapping:
+>>>> 1. To accept the vt-d hardware in an active state,
+>>>> 2. Do not disable and re-enable the translation, keep it enabled.
+>>>> 3. Use the old root entry table, do not rewrite the RTA register.
+>>>> 4. Malloc and use new context entry table and page table, copy data from the
+>>>>      old ones that used by the old kernel.
+>>>> 5. to use different portions of the iova address ranges for the device drivers
+>>>>      in the crashdump kernel than the iova ranges that were in-use at the time
+>>>>      of the panic.
+>>>> 6. After device driver is loaded, when it issues the first dma_map command,
+>>>>      free the dmar_domain structure for this device, and generate a new one, so
+>>>>      that the device can be assigned a new and empty page table.
+>>>> 7. When a new context entry table is generated, we also save its address to
+>>>>      the old root entry table.
+>>>>
+>>>> For Interrupt Remapping:
+>>>> 1. To accept the vt-d hardware in an active state,
+>>>> 2. Do not disable and re-enable the interrupt remapping, keep it enabled.
+>>>> 3. Use the old interrupt remapping table, do not rewrite the IRTA register.
+>>>> 4. When ioapic entry is setup, the interrupt remapping table is changed, and
+>>>>      the updated data will be stored to the old interrupt remapping table.
+>>>>
+>>>> Advantages of this approach:
+>>>> 1. All manipulation of the IO-device is done by the Linux device-driver
+>>>>      for that device.
+>>>> 2. This approach behaves in a manner very similar to operation without an
+>>>>      active iommu.
+>>>> 3. Any activity between the IO-device and its RMRR areas is handled by the
+>>>>      device-driver in the same manner as during a non-kdump boot.
+>>>> 4. If an IO-device has no driver in the kdump kernel, it is simply left alone.
+>>>>      This supports the practice of creating a special kdump kernel without
+>>>>      drivers for any devices that are not required for taking a crashdump.
+>>>> 5. Minimal code-changes among the existing mainline intel vt-d code.
+>>>>
+>>>> Summary of changes in this patch set:
+>>>> 1. Added some useful function for root entry table in code intel-iommu.c
+>>>> 2. Added new members to struct root_entry and struct irte;
+>>>> 3. Functions to load old root entry table to iommu->root_entry from the memory
+>>>>      of old kernel.
+>>>> 4. Functions to malloc new context entry table and page table and copy the data
+>>>>      from the old ones to the malloced new ones.
+>>>> 5. Functions to enable support for DMA remapping in kdump kernel.
+>>>> 6. Functions to load old irte data from the old kernel to the kdump kernel.
+>>>> 7. Some code changes that support other behaviours that have been listed.
+>>>> 8. In the new functions, use physical address as "unsigned long" type, not
+>>>>      pointers.
+>>>>
+>>>> Original version by Bill Sumner:
+>>>>       https://lkml.org/lkml/2014/1/10/518
+>>>>       https://lkml.org/lkml/2014/4/15/716
+>>>>       https://lkml.org/lkml/2014/4/24/836
+>>>>
+>>>> Zhenhua's last of Bill's patchset:
+>>>>       https://lkml.org/lkml/2014/10/21/134
+>>>>       https://lkml.org/lkml/2014/12/15/121
+>>>>
+>>>> Changed in this version:
+>>>> 1. Do not disable and re-enable traslation and interrupt remapping.
+>>>> 2. Use old root entry table.
+>>>> 3. Use old interrupt remapping table.
+>>>> 4. Use "unsigned long" as physical address.
+>>>> 5. Use intel_unmap to unmap the old dma;
+>>>>
+>>>> This patchset should be applied with this one together:
+>>>>       https://lkml.org/lkml/2014/11/5/43
+>>>>       x86/iommu: fix incorrect bit operations in setting values
+>>>>
+>>>> Bill Sumner (5):
+>>>>     iommu/vt-d: Update iommu_attach_domain() and its callers
+>>>>     iommu/vt-d: Items required for kdump
+>>>>     iommu/vt-d: data types and functions used for kdump
+>>>>     iommu/vt-d: Add domain-id functions
+>>>>     iommu/vt-d: enable kdump support in iommu module
+>>>>
+>>>> Li, Zhen-Hua (10):
+>>>>     iommu/vt-d: Update iommu_attach_domain() and its callers
+>>>>     iommu/vt-d: Items required for kdump
+>>>>     iommu/vt-d: Add domain-id functions
+>>>>     iommu/vt-d: functions to copy data from old mem
+>>>>     iommu/vt-d: Add functions to load and save old re
+>>>>     iommu/vt-d: datatypes and functions used for kdump
+>>>>     iommu/vt-d: enable kdump support in iommu module
+>>>>     iommu/vtd: assign new page table for dma_map
+>>>>     iommu/vt-d: Copy functions for irte
+>>>>     iommu/vt-d: Use old irte in kdump kernel
+>>>>
+>>>>    drivers/iommu/intel-iommu.c         | 1050 +++++++++++++++++++++++++++++++++--
+>>>>    drivers/iommu/intel_irq_remapping.c |   99 +++-
+>>>>    include/linux/intel-iommu.h         |   18 +
+>>>>    3 files changed, 1123 insertions(+), 44 deletions(-)
+>>>>
+>>
+>>
+
+
+--------------070905000603000005030008
+Content-Type: text/x-patch;
+ name="patch_for_flush.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="patch_for_flush.patch"
+
+diff -urp a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+--- a/drivers/iommu/intel-iommu.c	2014-12-29 10:52:02.000000000 +0800
++++ b/drivers/iommu/intel-iommu.c	2014-12-29 09:36:23.000000000 +0800
+@@ -5188,6 +5188,8 @@ static void __iommu_load_old_root_entry(
+ 		|| (!iommu->root_entry_old_phys))
+ 		return;
+ 	memcpy(iommu->root_entry, iommu->root_entry_old_virt, PAGE_SIZE);
++
++	__iommu_flush_cache(iommu, iommu->root_entry, PAGE_SIZE);
+ }
+ 
+ /*
+@@ -5220,6 +5222,8 @@ static void __iommu_update_old_root_entr
+ 	to = iommu->root_entry_old_virt;
+ 	from = iommu->root_entry;
+ 	memcpy(to + start, from + start, size);
++
++	__iommu_flush_cache(iommu, to + start, size);
+ }
+ 
+ /*
+diff -urp a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+--- a/drivers/iommu/intel_irq_remapping.c	2014-12-29 10:52:02.000000000 +0800
++++ b/drivers/iommu/intel_irq_remapping.c	2014-12-29 09:51:52.000000000 +0800
+@@ -1350,6 +1350,9 @@ static int __iommu_load_old_irte(struct
+ 		iommu->ir_table->base_old_virt,
+ 		INTR_REMAP_TABLE_ENTRIES*sizeof(struct irte));
+ 
++	__iommu_flush_cache(iommu, iommu->ir_table->base,
++		INTR_REMAP_TABLE_ENTRIES*sizeof(struct irte));
++
+ 	return 0;
+ }
+ 
+@@ -1382,6 +1385,8 @@ static int __iommu_update_old_irte(struc
+ 	from = iommu->ir_table->base;
+ 	memcpy(to + start, from + start, size);
+ 
++	__iommu_flush_cache(iommu, to + start, size);
++
+ 	return 0;
+ }
+ #endif /* CONFIG_CRASH_DUMP */
+
+--------------070905000603000005030008
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--------------070905000603000005030008--
