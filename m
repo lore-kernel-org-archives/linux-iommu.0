@@ -1,14 +1,16 @@
-From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [v3 00/26] Add VT-d Posted-Interrupts support
-Date: Tue, 6 Jan 2015 01:10:19 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F002327907@SHSMSX104.ccr.corp.intel.com>
-References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
+From: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Subject: Re: [PATCH 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
+Date: Tue, 06 Jan 2015 10:04:33 +0800
+Message-ID: <54AB42B1.2010001@hp.com>
+References: <1419239729-26529-1-git-send-email-zhen-hual@hp.com>
+	<549CEE8F.2090209@jp.fujitsu.com> <549D0459.4080202@hp.com>
+	<549D0DEE.8000301@jp.fujitsu.com> <54A0C761.5060604@hp.com>
+	<54AB29E6.6070403@jp.fujitsu.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1418397300-10870-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <54AB29E6.6070403-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,136 +20,257 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
+Cc: bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tom.vaden-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Ping...
+Thank you very much for your help.
 
-Hi Joerg & David,
+I have found there are several places need flush, and I will send a new
+version
+of this patchset with the flush functions.
 
-Could you please have a look at the IOMMU part of this series (patch 02 - 04, patch 06 - 09 , patch 26)?
+Regards
+Zhenhua
 
-Hi Thomas, Ingo, & Peter,
-
-Could you please have a look at this series, especially for patch 01, 05, 21?
-
-Thanks,
-Feng
-
-> -----Original Message-----
-> From: Wu, Feng
-> Sent: Friday, December 12, 2014 11:15 PM
-> To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org; x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org;
-> gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org;
-> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
-> Cc: eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wu, Feng
-> Subject: [v3 00/26] Add VT-d Posted-Interrupts support
-> 
-> VT-d Posted-Interrupts is an enhancement to CPU side Posted-Interrupt.
-> With VT-d Posted-Interrupts enabled, external interrupts from
-> direct-assigned devices can be delivered to guests without VMM
-> intervention when guest is running in non-root mode.
-> 
-> You can find the VT-d Posted-Interrtups Spec. in the following URL:
-> http://www.intel.com/content/www/us/en/intelligent-systems/intel-technolog
-> y/vt-directed-io-spec.html
-> 
-> v1->v2:
-> * Use VFIO framework to enable this feature, the VFIO part of this series is
->   base on Eric's patch "[PATCH v3 0/8] KVM-VFIO IRQ forward control"
-> * Rebase this patchset on
-> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git,
->   then revise some irq logic based on the new hierarchy irqdomain patches
-> provided
->   by Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> 
-> v2->v3:
-> * Adjust the Posted-interrupts Descriptor updating logic when vCPU is
->   preempted or blocked.
-> * KVM_DEV_VFIO_DEVICE_POSTING_IRQ -->
-> KVM_DEV_VFIO_DEVICE_POST_IRQ
-> * __KVM_HAVE_ARCH_KVM_VFIO_POSTING -->
-> __KVM_HAVE_ARCH_KVM_VFIO_POST
-> * Add KVM_DEV_VFIO_DEVICE_UNPOST_IRQ attribute for VFIO irq, which
->   can be used to change back to remapping mode.
-> * Fix typo
-> 
-> This patch series is made of the following groups:
-> 1-6: Some preparation changes in iommu and irq component, this is based on
-> the
->      new hierarchy irqdomain logic.
-> 7-9, 26: IOMMU changes for VT-d Posted-Interrupts, such as, feature detection,
->           command line parameter.
-> 10-17, 22-25: Changes related to KVM itself.
-> 18-20: Changes in VFIO component, this part was previously sent out as
-> "[RFC PATCH v2 0/2] kvm-vfio: implement the vfio skeleton for VT-d
-> Posted-Interrupts"
-> 21: x86 irq related changes
-> 
-> Feng Wu (26):
->   genirq: Introduce irq_set_vcpu_affinity() to target an interrupt to a
->     VCPU
->   iommu: Add new member capability to struct irq_remap_ops
->   iommu, x86: Define new irte structure for VT-d Posted-Interrupts
->   iommu, x86: Implement irq_set_vcpu_affinity for intel_ir_chip
->   x86, irq: Implement irq_set_vcpu_affinity for pci_msi_ir_controller
->   iommu, x86: No need to migrating irq for VT-d Posted-Interrupts
->   iommu, x86: Add cap_pi_support() to detect VT-d PI capability
->   iommu, x86: Add intel_irq_remapping_capability() for Intel
->   iommu, x86: define irq_remapping_cap()
->   KVM: change struct pi_desc for VT-d Posted-Interrupts
->   KVM: Add some helper functions for Posted-Interrupts
->   KVM: Initialize VT-d Posted-Interrupts Descriptor
->   KVM: Define a new interface kvm_find_dest_vcpu() for VT-d PI
->   KVM: Get Posted-Interrupts descriptor address from struct kvm_vcpu
->   KVM: add interfaces to control PI outside vmx
->   KVM: Make struct kvm_irq_routing_table accessible
->   KVM: make kvm_set_msi_irq() public
->   KVM: kvm-vfio: User API for VT-d Posted-Interrupts
->   KVM: kvm-vfio: implement the VFIO skeleton for VT-d Posted-Interrupts
->   KVM: x86: kvm-vfio: VT-d posted-interrupts setup
->   x86, irq: Define a global vector for VT-d Posted-Interrupts
->   KVM: Define a wakeup worker thread for vCPU
->   KVM: Update Posted-Interrupts Descriptor when vCPU is preempted
->   KVM: Update Posted-Interrupts Descriptor when vCPU is blocked
->   KVM: Suppress posted-interrupt when 'SN' is set
->   iommu/vt-d: Add a command line parameter for VT-d posted-interrupts
-> 
->  Documentation/kernel-parameters.txt        |   1 +
->  Documentation/virtual/kvm/devices/vfio.txt |   9 ++
->  arch/x86/include/asm/entry_arch.h          |   2 +
->  arch/x86/include/asm/hardirq.h             |   1 +
->  arch/x86/include/asm/hw_irq.h              |   2 +
->  arch/x86/include/asm/irq_remapping.h       |  11 ++
->  arch/x86/include/asm/irq_vectors.h         |   1 +
->  arch/x86/include/asm/kvm_host.h            |  12 ++
->  arch/x86/kernel/apic/msi.c                 |   1 +
->  arch/x86/kernel/entry_64.S                 |   2 +
->  arch/x86/kernel/irq.c                      |  27 ++++
->  arch/x86/kernel/irqinit.c                  |   2 +
->  arch/x86/kvm/Makefile                      |   2 +-
->  arch/x86/kvm/kvm_vfio_x86.c                |  77 +++++++++
->  arch/x86/kvm/vmx.c                         | 244
-> ++++++++++++++++++++++++++++-
->  arch/x86/kvm/x86.c                         |  22 ++-
->  drivers/iommu/intel_irq_remapping.c        |  68 +++++++-
->  drivers/iommu/irq_remapping.c              |  24 ++-
->  drivers/iommu/irq_remapping.h              |   8 +
->  include/linux/dmar.h                       |  32 ++++
->  include/linux/intel-iommu.h                |   1 +
->  include/linux/irq.h                        |   7 +
->  include/linux/kvm_host.h                   |  46 ++++++
->  include/uapi/linux/kvm.h                   |  11 ++
->  kernel/irq/chip.c                          |  14 ++
->  kernel/irq/manage.c                        |  20 +++
->  virt/kvm/irq_comm.c                        |  43 ++++-
->  virt/kvm/irqchip.c                         |  11 --
->  virt/kvm/kvm_main.c                        |  15 ++
->  virt/kvm/vfio.c                            | 107 +++++++++++++
->  30 files changed, 795 insertions(+), 28 deletions(-)
->  create mode 100644 arch/x86/kvm/kvm_vfio_x86.c
-> 
-> --
-> 1.9.1
+On 01/06/2015 08:18 AM, Takao Indoh wrote:
+> On 2014/12/29 12:15, Li, ZhenHua wrote:
+>> Hi Takao Indoh,
+>>
+>> Happy New Year, and thank you very much for you help.  The flush is quite
+> Happy new year!
+>
+>>   a problem,  as there are several places the flush function should be called,
+>> I think the flush should be placed in functions like __iommu_update_old_*.
+>> Created a small patch for this, it is attached.
+>>
+>>
+>>
+>> As I cannot reproduce your problems on my system, so could you please try
+>> these steps?
+>> 1. Apply the latest patchset, including 9/10 and 10/10, and then apply the
+>> attached patch_for_flush.patch.  And then test the kernel.
+> No inter-remap fault, but there is still DMAR fault message.
+>
+>> 2.  If 1 does not fix the DMAR fault  problems, then it might be caused by
+>> 7/10, so please *unpatch* it from the kernel (others and the  attached one
+>> should be patched), and then test the kernel.
+> DMAR fault still occurs. I'll dig iommu driver code to find out the
+> reason.
+>
+> Thanks,
+> Takao Indoh
+>
+>> Regards
+>> Zhenhua
+>>
+>> On 12/26/2014 03:27 PM, Takao Indoh wrote:
+>>> On 2014/12/26 15:46, Li, ZhenHua wrote:
+>>>> Hi Takao Indoh,
+>>>>
+>>>> Thank you very much for your testing. I will add your update in next
+>>>> version.
+>>>> Also I think a flush for __iommu_update_old_root_entry is also necessary.
+>>>>
+>>>> Currently I have no idea about your fault, does it happen before or
+>>>> during its loading? Could you send me your full kernel log as an
+>>>> attachment?
+>>> Sure, see attached file.
+>>>
+>>> I removed 9/10 and 10/10 patches from my kernel to avoid panic problem I
+>>> reported in previous mail, and then tested kdump. So please ignore
+>>> intr-remap fault message in log file. Also please ignore stack trace
+>>> starting with the following message, it's a problem of my box.
+>>>
+>>>    Flags mismatch irq 0. 00000080 (i801_smbus) vs. 00015a00 (timer)
+>>>
+>>> Thanks,
+>>> Takao Indoh
+>>>
+>>>> Regards and Merry Christmas.
+>>>> Zhenhua
+>>>>
+>>>> On 12/26/2014 01:13 PM, Takao Indoh wrote:
+>>>>> Hi Zhen-Hua,
+>>>>>
+>>>>> I tested your patch and found two problems.
+>>>>>
+>>>>> [1]
+>>>>> Kenel panic occurs during 2nd kernel boot.
+>>>>>
+>>>>> ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
+>>>>> Kernel panic - not syncing: timer doesn't work through Interrupt-remapped IO-APIC
+>>>>> CPU: 0 PID: 1 Comm: swapper/0 Not tainted 3.18.0 #25
+>>>>> Hardware name: FUJITSU-SV PRIMERGY BX920 S2/D3030, BIOS 080015 Rev.3D81.3030 02/10/2012
+>>>>>    0000000000000002 ffff880036167d08 ffffffff815b1c6a 0000000000000000
+>>>>>    ffffffff817f7670 ffff880036167d88 ffffffff815b19f1 0000000000000008
+>>>>>    ffff880036167d98 ffff880036167d38 ffffffff810a5d2f ffff880036167d98
+>>>>> Call Trace:
+>>>>>    [<ffffffff815b1c6a>] dump_stack+0x48/0x5e
+>>>>>    [<ffffffff815b19f1>] panic+0xbb/0x1fa
+>>>>>    [<ffffffff810a5d2f>] ? vprintk_default+0x1f/0x30
+>>>>>    [<ffffffff814c6a6c>] panic_if_irq_remap+0x1c/0x20
+>>>>>    [<ffffffff81b53985>] check_timer+0x1e7/0x5ed
+>>>>>    [<ffffffff8129bd9d>] ? radix_tree_lookup+0xd/0x10
+>>>>>    [<ffffffff81b5413b>] setup_IO_APIC+0x261/0x292
+>>>>>    [<ffffffff81b50302>] native_smp_prepare_cpus+0x214/0x25d
+>>>>>    [<ffffffff81b41c65>] kernel_init_freeable+0x1dc/0x28c
+>>>>>    [<ffffffff815aaf00>] ? rest_init+0x80/0x80
+>>>>>    [<ffffffff815aaf0e>] kernel_init+0xe/0xf0
+>>>>>    [<ffffffff815b5d2c>] ret_from_fork+0x7c/0xb0
+>>>>>    [<ffffffff815aaf00>] ? rest_init+0x80/0x80
+>>>>> ---[ end Kernel panic - not syncing: timer doesn't work through Interrupt-remapped IO-APIC
+>>>>>
+>>>>>
+>>>>> This panic seems to be related to unflushed cache. I confirmed this
+>>>>> problem was fixed by the following patch.
+>>>>>
+>>>>> --- a/drivers/iommu/intel_irq_remapping.c
+>>>>> +++ b/drivers/iommu/intel_irq_remapping.c
+>>>>> @@ -200,8 +200,13 @@ static int modify_irte(int irq, struct irte *irte_modified)
+>>>>>    	set_64bit(&irte->high, irte_modified->high);
+>>>>>    
+>>>>>    #ifdef CONFIG_CRASH_DUMP
+>>>>> -	if (is_kdump_kernel())
+>>>>> +	if (is_kdump_kernel()) {
+>>>>>    		__iommu_update_old_irte(iommu, index);
+>>>>> +		__iommu_flush_cache(iommu,
+>>>>> +			iommu->ir_table->base_old_virt +
+>>>>> +			index * sizeof(struct irte),
+>>>>> +			sizeof(struct irte));
+>>>>> +	}
+>>>>>    #endif
+>>>>>    	__iommu_flush_cache(iommu, irte, sizeof(*irte));
+>>>>>    
+>>>>>
+>>>>> [2]
+>>>>> Some DMAR error messages are still found in 2nd kernel boot.
+>>>>>
+>>>>> dmar: DRHD: handling fault status reg 2
+>>>>> dmar: DMAR:[DMA Write] Request device [01:00.0] fault addr ffded000
+>>>>> DMAR:[fault reason 01] Present bit in root entry is clear
+>>>>>
+>>>>> I confiremd your commit 1a2262 was already applied. Any idea?
+>>>>>
+>>>>> Thanks,
+>>>>> Takao Indoh
+>>>>>
+>>>>>
+>>>>> On 2014/12/22 18:15, Li, Zhen-Hua wrote:
+>>>>>> This patchset is an update of Bill Sumner's patchset, implements a fix for:
+>>>>>> If a kernel boots with intel_iommu=on on a system that supports intel vt-d,
+>>>>>> when a panic happens, the kdump kernel will boot with these faults:
+>>>>>>
+>>>>>>        dmar: DRHD: handling fault status reg 102
+>>>>>>        dmar: DMAR:[DMA Read] Request device [01:00.0] fault addr fff80000
+>>>>>>        DMAR:[fault reason 01] Present bit in root entry is clear
+>>>>>>
+>>>>>>        dmar: DRHD: handling fault status reg 2
+>>>>>>        dmar: INTR-REMAP: Request device [[61:00.0] fault index 42
+>>>>>>        INTR-REMAP:[fault reason 34] Present field in the IRTE entry is clear
+>>>>>>
+>>>>>> On some system, the interrupt remapping fault will also happen even if the
+>>>>>> intel_iommu is not set to on, because the interrupt remapping will be enabled
+>>>>>> when x2apic is needed by the system.
+>>>>>>
+>>>>>> The cause of the DMA fault is described in Bill's original version, and the
+>>>>>> INTR-Remap fault is caused by a similar reason. In short, the initialization
+>>>>>> of vt-d drivers causes the in-flight DMA and interrupt requests get wrong
+>>>>>> response.
+>>>>>>
+>>>>>> To fix this problem, we modifies the behaviors of the intel vt-d in the
+>>>>>> crashdump kernel:
+>>>>>>
+>>>>>> For DMA Remapping:
+>>>>>> 1. To accept the vt-d hardware in an active state,
+>>>>>> 2. Do not disable and re-enable the translation, keep it enabled.
+>>>>>> 3. Use the old root entry table, do not rewrite the RTA register.
+>>>>>> 4. Malloc and use new context entry table and page table, copy data from the
+>>>>>>       old ones that used by the old kernel.
+>>>>>> 5. to use different portions of the iova address ranges for the device drivers
+>>>>>>       in the crashdump kernel than the iova ranges that were in-use at the time
+>>>>>>       of the panic.
+>>>>>> 6. After device driver is loaded, when it issues the first dma_map command,
+>>>>>>       free the dmar_domain structure for this device, and generate a new one, so
+>>>>>>       that the device can be assigned a new and empty page table.
+>>>>>> 7. When a new context entry table is generated, we also save its address to
+>>>>>>       the old root entry table.
+>>>>>>
+>>>>>> For Interrupt Remapping:
+>>>>>> 1. To accept the vt-d hardware in an active state,
+>>>>>> 2. Do not disable and re-enable the interrupt remapping, keep it enabled.
+>>>>>> 3. Use the old interrupt remapping table, do not rewrite the IRTA register.
+>>>>>> 4. When ioapic entry is setup, the interrupt remapping table is changed, and
+>>>>>>       the updated data will be stored to the old interrupt remapping table.
+>>>>>>
+>>>>>> Advantages of this approach:
+>>>>>> 1. All manipulation of the IO-device is done by the Linux device-driver
+>>>>>>       for that device.
+>>>>>> 2. This approach behaves in a manner very similar to operation without an
+>>>>>>       active iommu.
+>>>>>> 3. Any activity between the IO-device and its RMRR areas is handled by the
+>>>>>>       device-driver in the same manner as during a non-kdump boot.
+>>>>>> 4. If an IO-device has no driver in the kdump kernel, it is simply left alone.
+>>>>>>       This supports the practice of creating a special kdump kernel without
+>>>>>>       drivers for any devices that are not required for taking a crashdump.
+>>>>>> 5. Minimal code-changes among the existing mainline intel vt-d code.
+>>>>>>
+>>>>>> Summary of changes in this patch set:
+>>>>>> 1. Added some useful function for root entry table in code intel-iommu.c
+>>>>>> 2. Added new members to struct root_entry and struct irte;
+>>>>>> 3. Functions to load old root entry table to iommu->root_entry from the memory
+>>>>>>       of old kernel.
+>>>>>> 4. Functions to malloc new context entry table and page table and copy the data
+>>>>>>       from the old ones to the malloced new ones.
+>>>>>> 5. Functions to enable support for DMA remapping in kdump kernel.
+>>>>>> 6. Functions to load old irte data from the old kernel to the kdump kernel.
+>>>>>> 7. Some code changes that support other behaviours that have been listed.
+>>>>>> 8. In the new functions, use physical address as "unsigned long" type, not
+>>>>>>       pointers.
+>>>>>>
+>>>>>> Original version by Bill Sumner:
+>>>>>>        https://lkml.org/lkml/2014/1/10/518
+>>>>>>        https://lkml.org/lkml/2014/4/15/716
+>>>>>>        https://lkml.org/lkml/2014/4/24/836
+>>>>>>
+>>>>>> Zhenhua's last of Bill's patchset:
+>>>>>>        https://lkml.org/lkml/2014/10/21/134
+>>>>>>        https://lkml.org/lkml/2014/12/15/121
+>>>>>>
+>>>>>> Changed in this version:
+>>>>>> 1. Do not disable and re-enable traslation and interrupt remapping.
+>>>>>> 2. Use old root entry table.
+>>>>>> 3. Use old interrupt remapping table.
+>>>>>> 4. Use "unsigned long" as physical address.
+>>>>>> 5. Use intel_unmap to unmap the old dma;
+>>>>>>
+>>>>>> This patchset should be applied with this one together:
+>>>>>>        https://lkml.org/lkml/2014/11/5/43
+>>>>>>        x86/iommu: fix incorrect bit operations in setting values
+>>>>>>
+>>>>>> Bill Sumner (5):
+>>>>>>      iommu/vt-d: Update iommu_attach_domain() and its callers
+>>>>>>      iommu/vt-d: Items required for kdump
+>>>>>>      iommu/vt-d: data types and functions used for kdump
+>>>>>>      iommu/vt-d: Add domain-id functions
+>>>>>>      iommu/vt-d: enable kdump support in iommu module
+>>>>>>
+>>>>>> Li, Zhen-Hua (10):
+>>>>>>      iommu/vt-d: Update iommu_attach_domain() and its callers
+>>>>>>      iommu/vt-d: Items required for kdump
+>>>>>>      iommu/vt-d: Add domain-id functions
+>>>>>>      iommu/vt-d: functions to copy data from old mem
+>>>>>>      iommu/vt-d: Add functions to load and save old re
+>>>>>>      iommu/vt-d: datatypes and functions used for kdump
+>>>>>>      iommu/vt-d: enable kdump support in iommu module
+>>>>>>      iommu/vtd: assign new page table for dma_map
+>>>>>>      iommu/vt-d: Copy functions for irte
+>>>>>>      iommu/vt-d: Use old irte in kdump kernel
+>>>>>>
+>>>>>>     drivers/iommu/intel-iommu.c         | 1050 +++++++++++++++++++++++++++++++++--
+>>>>>>     drivers/iommu/intel_irq_remapping.c |   99 +++-
+>>>>>>     include/linux/intel-iommu.h         |   18 +
+>>>>>>     3 files changed, 1123 insertions(+), 44 deletions(-)
+>>>>>>
+>>>>
+>
