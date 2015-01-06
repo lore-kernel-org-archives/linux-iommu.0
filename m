@@ -1,180 +1,213 @@
-From: Antonios Motakis <a.motakis@virtualopensystems.com>
-Subject: [PATCH v11 13/20] vfio/platform: support for level sensitive interrupts
-Date: Tue,  6 Jan 2015 11:48:48 +0100
-Message-ID: <1420541335-17190-14-git-send-email-a.motakis@virtualopensystems.com>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: [PATCH v11 01/20] vfio/platform: initial skeleton of VFIO support for
+	platform devices
+Date: Tue,  6 Jan 2015 11:48:36 +0100
+Message-ID: <1420541335-17190-2-git-send-email-a.motakis@virtualopensystems.com>
 References: <1420541335-17190-1-git-send-email-a.motakis@virtualopensystems.com>
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <1420541335-17190-1-git-send-email-a.motakis@virtualopensystems.com>
-Sender: kvm-owner@vger.kernel.org
-To: kvmarm@lists.cs.columbia.edu, iommu@lists.linux-foundation.org, alex.williamson@redhat.com
-Cc: will.deacon@arm.com, tech@virtualopensystems.com, christoffer.dall@linaro.org, eric.auger@linaro.org, kim.phillips@freescale.com, marc.zyngier@arm.com, Antonios Motakis <a.motakis@virtualopensystems.com>, "open list:VFIO DRIVER" <kvm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1420541335-17190-1-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Level sensitive interrupts are exposed as maskable and automasked
-interrupts and are masked and disabled automatically when they fire.
+This patch forms the common skeleton code for platform devices support
+with VFIO. This will include the core functionality of VFIO_PLATFORM,
+however binding to the device and discovering the device resources will
+be done with the help of a separate file where any Linux platform bus
+specific code will reside.
 
-Signed-off-by: Antonios Motakis <a.motakis@virtualopensystems.com>
+This will allow us to implement support for also discovering AMBA devices
+and their resources, but still reuse a large part of the VFIO_PLATFORM
+implementation.
+
+Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 ---
- drivers/vfio/platform/vfio_platform_irq.c     | 99 ++++++++++++++++++++++++++-
- drivers/vfio/platform/vfio_platform_private.h |  2 +
- 2 files changed, 98 insertions(+), 3 deletions(-)
+ drivers/vfio/platform/vfio_platform_common.c  | 121 ++++++++++++++++++++++++++
+ drivers/vfio/platform/vfio_platform_private.h |  36 ++++++++
+ 2 files changed, 157 insertions(+)
+ create mode 100644 drivers/vfio/platform/vfio_platform_common.c
+ create mode 100644 drivers/vfio/platform/vfio_platform_private.h
 
-diff --git a/drivers/vfio/platform/vfio_platform_irq.c b/drivers/vfio/platform/vfio_platform_irq.c
-index 4896581..b3602cb 100644
---- a/drivers/vfio/platform/vfio_platform_irq.c
-+++ b/drivers/vfio/platform/vfio_platform_irq.c
-@@ -23,12 +23,59 @@
- 
- #include "vfio_platform_private.h"
- 
-+static void vfio_platform_mask(struct vfio_platform_irq *irq_ctx)
+diff --git a/drivers/vfio/platform/vfio_platform_common.c b/drivers/vfio/platform/vfio_platform_common.c
+new file mode 100644
+index 0000000..34d023b
+--- /dev/null
++++ b/drivers/vfio/platform/vfio_platform_common.c
+@@ -0,0 +1,121 @@
++/*
++ * Copyright (C) 2013 - Virtual Open Systems
++ * Author: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License, version 2, as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include <linux/device.h>
++#include <linux/iommu.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/slab.h>
++#include <linux/types.h>
++#include <linux/vfio.h>
++
++#include "vfio_platform_private.h"
++
++static void vfio_platform_release(void *device_data)
 +{
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&irq_ctx->lock, flags);
-+
-+	if (!irq_ctx->masked) {
-+		disable_irq_nosync(irq_ctx->hwirq);
-+		irq_ctx->masked = true;
-+	}
-+
-+	spin_unlock_irqrestore(&irq_ctx->lock, flags);
++	module_put(THIS_MODULE);
 +}
 +
- static int vfio_platform_set_irq_mask(struct vfio_platform_device *vdev,
- 				      unsigned index, unsigned start,
- 				      unsigned count, uint32_t flags,
- 				      void *data)
- {
--	return -EINVAL;
-+	if (start != 0 || count != 1)
-+		return -EINVAL;
-+
-+	if (!(vdev->irqs[index].flags & VFIO_IRQ_INFO_MASKABLE))
-+		return -EINVAL;
-+
-+	if (flags & VFIO_IRQ_SET_DATA_EVENTFD)
-+		return -EINVAL; /* not implemented yet */
-+
-+	if (flags & VFIO_IRQ_SET_DATA_NONE) {
-+		vfio_platform_mask(&vdev->irqs[index]);
-+
-+	} else if (flags & VFIO_IRQ_SET_DATA_BOOL) {
-+		uint8_t mask = *(uint8_t *)data;
-+
-+		if (mask)
-+			vfio_platform_mask(&vdev->irqs[index]);
-+	}
++static int vfio_platform_open(void *device_data)
++{
++	if (!try_module_get(THIS_MODULE))
++		return -ENODEV;
 +
 +	return 0;
 +}
 +
-+static void vfio_platform_unmask(struct vfio_platform_irq *irq_ctx)
++static long vfio_platform_ioctl(void *device_data,
++				unsigned int cmd, unsigned long arg)
 +{
-+	unsigned long flags;
++	if (cmd == VFIO_DEVICE_GET_INFO)
++		return -EINVAL;
 +
-+	spin_lock_irqsave(&irq_ctx->lock, flags);
++	else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
++		return -EINVAL;
 +
-+	if (irq_ctx->masked) {
-+		enable_irq(irq_ctx->hwirq);
-+		irq_ctx->masked = false;
++	else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
++		return -EINVAL;
++
++	else if (cmd == VFIO_DEVICE_SET_IRQS)
++		return -EINVAL;
++
++	else if (cmd == VFIO_DEVICE_RESET)
++		return -EINVAL;
++
++	return -ENOTTY;
++}
++
++static ssize_t vfio_platform_read(void *device_data, char __user *buf,
++				  size_t count, loff_t *ppos)
++{
++	return -EINVAL;
++}
++
++static ssize_t vfio_platform_write(void *device_data, const char __user *buf,
++				   size_t count, loff_t *ppos)
++{
++	return -EINVAL;
++}
++
++static int vfio_platform_mmap(void *device_data, struct vm_area_struct *vma)
++{
++	return -EINVAL;
++}
++
++static const struct vfio_device_ops vfio_platform_ops = {
++	.name		= "vfio-platform",
++	.open		= vfio_platform_open,
++	.release	= vfio_platform_release,
++	.ioctl		= vfio_platform_ioctl,
++	.read		= vfio_platform_read,
++	.write		= vfio_platform_write,
++	.mmap		= vfio_platform_mmap,
++};
++
++int vfio_platform_probe_common(struct vfio_platform_device *vdev,
++			       struct device *dev)
++{
++	struct iommu_group *group;
++	int ret;
++
++	if (!vdev)
++		return -EINVAL;
++
++	group = iommu_group_get(dev);
++	if (!group) {
++		pr_err("VFIO: No IOMMU group for device %s\n", vdev->name);
++		return -EINVAL;
 +	}
 +
-+	spin_unlock_irqrestore(&irq_ctx->lock, flags);
- }
- 
- static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
-@@ -36,7 +83,50 @@ static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
- 					unsigned count, uint32_t flags,
- 					void *data)
- {
--	return -EINVAL;
-+	if (start != 0 || count != 1)
-+		return -EINVAL;
-+
-+	if (!(vdev->irqs[index].flags & VFIO_IRQ_INFO_MASKABLE))
-+		return -EINVAL;
-+
-+	if (flags & VFIO_IRQ_SET_DATA_EVENTFD)
-+		return -EINVAL; /* not implemented yet */
-+
-+	if (flags & VFIO_IRQ_SET_DATA_NONE) {
-+		vfio_platform_unmask(&vdev->irqs[index]);
-+
-+	} else if (flags & VFIO_IRQ_SET_DATA_BOOL) {
-+		uint8_t unmask = *(uint8_t *)data;
-+
-+		if (unmask)
-+			vfio_platform_unmask(&vdev->irqs[index]);
++	ret = vfio_add_group_dev(dev, &vfio_platform_ops, vdev);
++	if (ret) {
++		iommu_group_put(group);
++		return ret;
 +	}
 +
 +	return 0;
 +}
++EXPORT_SYMBOL_GPL(vfio_platform_probe_common);
 +
-+static irqreturn_t vfio_automasked_irq_handler(int irq, void *dev_id)
++struct vfio_platform_device *vfio_platform_remove_common(struct device *dev)
 +{
-+	struct vfio_platform_irq *irq_ctx = dev_id;
-+	unsigned long flags;
-+	int ret = IRQ_NONE;
++	struct vfio_platform_device *vdev;
 +
-+	spin_lock_irqsave(&irq_ctx->lock, flags);
++	vdev = vfio_del_group_dev(dev);
++	if (vdev)
++		iommu_group_put(dev->iommu_group);
 +
-+	if (!irq_ctx->masked) {
-+		ret = IRQ_HANDLED;
-+
-+		/* automask maskable interrupts */
-+		disable_irq_nosync(irq_ctx->hwirq);
-+		irq_ctx->masked = true;
-+	}
-+
-+	spin_unlock_irqrestore(&irq_ctx->lock, flags);
-+
-+	if (ret == IRQ_HANDLED)
-+		eventfd_signal(irq_ctx->trigger, 1);
-+
-+	return ret;
- }
- 
- static irqreturn_t vfio_irq_handler(int irq, void *dev_id)
-@@ -106,7 +196,7 @@ static int vfio_platform_set_irq_trigger(struct vfio_platform_device *vdev,
- 	irq_handler_t handler;
- 
- 	if (vdev->irqs[index].flags & VFIO_IRQ_INFO_AUTOMASKED)
--		return -EINVAL; /* not implemented */
-+		handler = vfio_automasked_irq_handler;
- 	else
- 		handler = vfio_irq_handler;
- 
-@@ -178,6 +268,8 @@ int vfio_platform_irq_init(struct vfio_platform_device *vdev)
- 		if (hwirq < 0)
- 			goto err;
- 
-+		spin_lock_init(&vdev->irqs[i].lock);
-+
- 		vdev->irqs[i].flags = VFIO_IRQ_INFO_EVENTFD;
- 
- 		if (irq_get_trigger_type(hwirq) & IRQ_TYPE_LEVEL_MASK)
-@@ -186,6 +278,7 @@ int vfio_platform_irq_init(struct vfio_platform_device *vdev)
- 
- 		vdev->irqs[i].count = 1;
- 		vdev->irqs[i].hwirq = hwirq;
-+		vdev->irqs[i].masked = false;
- 	}
- 
- 	vdev->num_irqs = cnt;
++	return vdev;
++}
++EXPORT_SYMBOL_GPL(vfio_platform_remove_common);
 diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
-index b705f17..eef6d1b 100644
---- a/drivers/vfio/platform/vfio_platform_private.h
+new file mode 100644
+index 0000000..062b92d
+--- /dev/null
 +++ b/drivers/vfio/platform/vfio_platform_private.h
-@@ -30,6 +30,8 @@ struct vfio_platform_irq {
- 	int			hwirq;
- 	char			*name;
- 	struct eventfd_ctx	*trigger;
-+	bool			masked;
-+	spinlock_t		lock;
- };
- 
- struct vfio_platform_region {
+@@ -0,0 +1,36 @@
++/*
++ * Copyright (C) 2013 - Virtual Open Systems
++ * Author: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License, version 2, as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef VFIO_PLATFORM_PRIVATE_H
++#define VFIO_PLATFORM_PRIVATE_H
++
++struct vfio_platform_device {
++	/*
++	 * These fields should be filled by the bus specific binder
++	 */
++	void		*opaque;
++	const char	*name;
++	uint32_t	flags;
++	/* callbacks to discover device resources */
++	struct resource*
++		(*get_resource)(struct vfio_platform_device *vdev, int i);
++	int	(*get_irq)(struct vfio_platform_device *vdev, int i);
++};
++
++extern int vfio_platform_probe_common(struct vfio_platform_device *vdev,
++				      struct device *dev);
++extern struct vfio_platform_device *vfio_platform_remove_common
++				     (struct device *dev);
++
++#endif /* VFIO_PLATFORM_PRIVATE_H */
 -- 
 2.1.4
-
