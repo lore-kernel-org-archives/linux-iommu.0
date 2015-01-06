@@ -1,145 +1,116 @@
-From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [PATCH v11 02/20] vfio: platform: probe to devices on the platform bus
-Date: Tue,  6 Jan 2015 11:48:37 +0100
-Message-ID: <1420541335-17190-3-git-send-email-a.motakis@virtualopensystems.com>
+From: Antonios Motakis <a.motakis@virtualopensystems.com>
+Subject: [PATCH v11 20/20] vfio/platform: implement IRQ masking/unmasking via an eventfd
+Date: Tue,  6 Jan 2015 11:48:55 +0100
+Message-ID: <1420541335-17190-21-git-send-email-a.motakis@virtualopensystems.com>
 References: <1420541335-17190-1-git-send-email-a.motakis@virtualopensystems.com>
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1420541335-17190-1-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, kim.phillips-KZfg59tc24xl57MIdRCFDg@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:ABI/API" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <1420541335-17190-1-git-send-email-a.motakis@virtualopensystems.com>
+Sender: kvm-owner@vger.kernel.org
+To: kvmarm@lists.cs.columbia.edu, iommu@lists.linux-foundation.org, alex.williamson@redhat.com
+Cc: will.deacon@arm.com, tech@virtualopensystems.com, christoffer.dall@linaro.org, eric.auger@linaro.org, kim.phillips@freescale.com, marc.zyngier@arm.com, Antonios Motakis <a.motakis@virtualopensystems.com>, "open list:VFIO DRIVER" <kvm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Driver to bind to Linux platform devices, and callbacks to discover their
-resources to be used by the main VFIO PLATFORM code.
+With this patch the VFIO user will be able to set an eventfd that can be
+used in order to mask and unmask IRQs of platform devices.
 
-Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Signed-off-by: Antonios Motakis <a.motakis@virtualopensystems.com>
 ---
- drivers/vfio/platform/vfio_platform.c | 103 ++++++++++++++++++++++++++++++++++
- include/uapi/linux/vfio.h             |   1 +
- 2 files changed, 104 insertions(+)
- create mode 100644 drivers/vfio/platform/vfio_platform.c
+ drivers/vfio/platform/vfio_platform_irq.c     | 47 ++++++++++++++++++++++++---
+ drivers/vfio/platform/vfio_platform_private.h |  2 ++
+ 2 files changed, 45 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/vfio/platform/vfio_platform.c b/drivers/vfio/platform/vfio_platform.c
-new file mode 100644
-index 0000000..cef645c
---- /dev/null
-+++ b/drivers/vfio/platform/vfio_platform.c
-@@ -0,0 +1,103 @@
-+/*
-+ * Copyright (C) 2013 - Virtual Open Systems
-+ * Author: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License, version 2, as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/vfio.h>
-+#include <linux/platform_device.h>
-+
-+#include "vfio_platform_private.h"
-+
-+#define DRIVER_VERSION  "0.10"
-+#define DRIVER_AUTHOR   "Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>"
-+#define DRIVER_DESC     "VFIO for platform devices - User Level meta-driver"
-+
-+/* probing devices from the linux platform bus */
-+
-+static struct resource *get_platform_resource(struct vfio_platform_device *vdev,
-+					      int num)
+diff --git a/drivers/vfio/platform/vfio_platform_irq.c b/drivers/vfio/platform/vfio_platform_irq.c
+index b3602cb..6ade36b 100644
+--- a/drivers/vfio/platform/vfio_platform_irq.c
++++ b/drivers/vfio/platform/vfio_platform_irq.c
+@@ -37,6 +37,15 @@ static void vfio_platform_mask(struct vfio_platform_irq *irq_ctx)
+ 	spin_unlock_irqrestore(&irq_ctx->lock, flags);
+ }
+ 
++static int vfio_platform_mask_handler(void *opaque, void *unused)
 +{
-+	struct platform_device *dev = (struct platform_device *) vdev->opaque;
-+	int i;
++	struct vfio_platform_irq *irq_ctx = opaque;
 +
-+	for (i = 0; i < dev->num_resources; i++) {
-+		struct resource *r = &dev->resource[i];
++	vfio_platform_mask(irq_ctx);
 +
-+		if (resource_type(r) & (IORESOURCE_MEM|IORESOURCE_IO)) {
-+			if (!num)
-+				return r;
-+
-+			num--;
-+		}
-+	}
-+	return NULL;
++	return 0;
 +}
 +
-+static int get_platform_irq(struct vfio_platform_device *vdev, int i)
-+{
-+	struct platform_device *pdev = (struct platform_device *) vdev->opaque;
+ static int vfio_platform_set_irq_mask(struct vfio_platform_device *vdev,
+ 				      unsigned index, unsigned start,
+ 				      unsigned count, uint32_t flags,
+@@ -48,8 +57,18 @@ static int vfio_platform_set_irq_mask(struct vfio_platform_device *vdev,
+ 	if (!(vdev->irqs[index].flags & VFIO_IRQ_INFO_MASKABLE))
+ 		return -EINVAL;
+ 
+-	if (flags & VFIO_IRQ_SET_DATA_EVENTFD)
+-		return -EINVAL; /* not implemented yet */
++	if (flags & VFIO_IRQ_SET_DATA_EVENTFD) {
++		int32_t fd = *(int32_t *)data;
 +
-+	return platform_get_irq(pdev, i);
-+}
++		if (fd >= 0)
++			return vfio_virqfd_enable((void *) &vdev->irqs[index],
++						  vfio_platform_mask_handler,
++						  NULL, NULL,
++						  &vdev->irqs[index].mask, fd);
 +
-+static int vfio_platform_probe(struct platform_device *pdev)
-+{
-+	struct vfio_platform_device *vdev;
-+	int ret;
-+
-+	vdev = kzalloc(sizeof(*vdev), GFP_KERNEL);
-+	if (!vdev)
-+		return -ENOMEM;
-+
-+	vdev->opaque = (void *) pdev;
-+	vdev->name = pdev->name;
-+	vdev->flags = VFIO_DEVICE_FLAGS_PLATFORM;
-+	vdev->get_resource = get_platform_resource;
-+	vdev->get_irq = get_platform_irq;
-+
-+	ret = vfio_platform_probe_common(vdev, &pdev->dev);
-+	if (ret)
-+		kfree(vdev);
-+
-+	return ret;
-+}
-+
-+static int vfio_platform_remove(struct platform_device *pdev)
-+{
-+	struct vfio_platform_device *vdev;
-+
-+	vdev = vfio_platform_remove_common(&pdev->dev);
-+	if (vdev) {
-+		kfree(vdev);
++		vfio_virqfd_disable(&vdev->irqs[index].mask);
 +		return 0;
 +	}
+ 
+ 	if (flags & VFIO_IRQ_SET_DATA_NONE) {
+ 		vfio_platform_mask(&vdev->irqs[index]);
+@@ -78,6 +97,15 @@ static void vfio_platform_unmask(struct vfio_platform_irq *irq_ctx)
+ 	spin_unlock_irqrestore(&irq_ctx->lock, flags);
+ }
+ 
++static int vfio_platform_unmask_handler(void *opaque, void *unused)
++{
++	struct vfio_platform_irq *irq_ctx = opaque;
 +
-+	return -EINVAL;
++	vfio_platform_unmask(irq_ctx);
++
++	return 0;
 +}
 +
-+static struct platform_driver vfio_platform_driver = {
-+	.probe		= vfio_platform_probe,
-+	.remove		= vfio_platform_remove,
-+	.driver	= {
-+		.name	= "vfio-platform",
-+		.owner	= THIS_MODULE,
-+	},
-+};
+ static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
+ 					unsigned index, unsigned start,
+ 					unsigned count, uint32_t flags,
+@@ -89,8 +117,19 @@ static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
+ 	if (!(vdev->irqs[index].flags & VFIO_IRQ_INFO_MASKABLE))
+ 		return -EINVAL;
+ 
+-	if (flags & VFIO_IRQ_SET_DATA_EVENTFD)
+-		return -EINVAL; /* not implemented yet */
++	if (flags & VFIO_IRQ_SET_DATA_EVENTFD) {
++		int32_t fd = *(int32_t *)data;
 +
-+module_platform_driver(vfio_platform_driver);
++		if (fd >= 0)
++			return vfio_virqfd_enable((void *) &vdev->irqs[index],
++						  vfio_platform_unmask_handler,
++						  NULL, NULL,
++						  &vdev->irqs[index].unmask,
++						  fd);
 +
-+MODULE_VERSION(DRIVER_VERSION);
-+MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR(DRIVER_AUTHOR);
-+MODULE_DESCRIPTION(DRIVER_DESC);
-diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-index 9ade02b..4e93a97 100644
---- a/include/uapi/linux/vfio.h
-+++ b/include/uapi/linux/vfio.h
-@@ -159,6 +159,7 @@ struct vfio_device_info {
- 	__u32	flags;
- #define VFIO_DEVICE_FLAGS_RESET	(1 << 0)	/* Device supports reset */
- #define VFIO_DEVICE_FLAGS_PCI	(1 << 1)	/* vfio-pci device */
-+#define VFIO_DEVICE_FLAGS_PLATFORM (1 << 2)	/* vfio-platform device */
- 	__u32	num_regions;	/* Max region index + 1 */
- 	__u32	num_irqs;	/* Max IRQ index + 1 */
++		vfio_virqfd_disable(&vdev->irqs[index].unmask);
++		return 0;
++	}
+ 
+ 	if (flags & VFIO_IRQ_SET_DATA_NONE) {
+ 		vfio_platform_unmask(&vdev->irqs[index]);
+diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
+index eef6d1b..c3d5b4b 100644
+--- a/drivers/vfio/platform/vfio_platform_private.h
++++ b/drivers/vfio/platform/vfio_platform_private.h
+@@ -32,6 +32,8 @@ struct vfio_platform_irq {
+ 	struct eventfd_ctx	*trigger;
+ 	bool			masked;
+ 	spinlock_t		lock;
++	struct virqfd		*unmask;
++	struct virqfd		*mask;
  };
+ 
+ struct vfio_platform_region {
 -- 
 2.1.4
+
