@@ -1,143 +1,54 @@
-From: Antonios Motakis <a.motakis@virtualopensystems.com>
-Subject: [PATCH v11 07/20] vfio/platform: return info for device memory mapped IO regions
-Date: Tue,  6 Jan 2015 11:48:42 +0100
-Message-ID: <1420541335-17190-8-git-send-email-a.motakis@virtualopensystems.com>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: [PATCH v11 06/20] vfio/platform: return info for bound device
+Date: Tue,  6 Jan 2015 11:48:41 +0100
+Message-ID: <1420541335-17190-7-git-send-email-a.motakis@virtualopensystems.com>
 References: <1420541335-17190-1-git-send-email-a.motakis@virtualopensystems.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1420541335-17190-1-git-send-email-a.motakis@virtualopensystems.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: kvmarm@lists.cs.columbia.edu, iommu@lists.linux-foundation.org, alex.williamson@redhat.com
-Cc: will.deacon@arm.com, tech@virtualopensystems.com, christoffer.dall@linaro.org, eric.auger@linaro.org, kim.phillips@freescale.com, marc.zyngier@arm.com, Antonios Motakis <a.motakis@virtualopensystems.com>, "open list:VFIO DRIVER" <kvm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1420541335-17190-1-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch enables the IOCTLs VFIO_DEVICE_GET_REGION_INFO ioctl call,
-which allows the user to learn about the available MMIO resources of
-a device.
+A VFIO userspace driver will start by opening the VFIO device
+that corresponds to an IOMMU group, and will use the ioctl interface
+to get the basic device info, such as number of memory regions and
+interrupts, and their properties. This patch enables the
+VFIO_DEVICE_GET_INFO ioctl call.
 
-Signed-off-by: Antonios Motakis <a.motakis@virtualopensystems.com>
+Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 ---
- drivers/vfio/platform/vfio_platform_common.c  | 106 +++++++++++++++++++++++++-
- drivers/vfio/platform/vfio_platform_private.h |  22 ++++++
- 2 files changed, 124 insertions(+), 4 deletions(-)
+ drivers/vfio/platform/vfio_platform_common.c | 23 ++++++++++++++++++++---
+ 1 file changed, 20 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/vfio/platform/vfio_platform_common.c b/drivers/vfio/platform/vfio_platform_common.c
-index 862b43b..2a4613c 100644
+index 34d023b..862b43b 100644
 --- a/drivers/vfio/platform/vfio_platform_common.c
 +++ b/drivers/vfio/platform/vfio_platform_common.c
-@@ -22,17 +22,97 @@
- 
- #include "vfio_platform_private.h"
- 
-+static DEFINE_MUTEX(driver_lock);
-+
-+static int vfio_platform_regions_init(struct vfio_platform_device *vdev)
-+{
-+	int cnt = 0, i;
-+
-+	while (vdev->get_resource(vdev, cnt))
-+		cnt++;
-+
-+	vdev->regions = kcalloc(cnt, sizeof(struct vfio_platform_region),
-+				GFP_KERNEL);
-+	if (!vdev->regions)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < cnt;  i++) {
-+		struct resource *res =
-+			vdev->get_resource(vdev, i);
-+
-+		if (!res)
-+			goto err;
-+
-+		vdev->regions[i].addr = res->start;
-+		vdev->regions[i].size = resource_size(res);
-+		vdev->regions[i].flags = 0;
-+
-+		switch (resource_type(res)) {
-+		case IORESOURCE_MEM:
-+			vdev->regions[i].type = VFIO_PLATFORM_REGION_TYPE_MMIO;
-+			break;
-+		case IORESOURCE_IO:
-+			vdev->regions[i].type = VFIO_PLATFORM_REGION_TYPE_PIO;
-+			break;
-+		default:
-+			goto err;
-+		}
-+	}
-+
-+	vdev->num_regions = cnt;
-+
-+	return 0;
-+err:
-+	kfree(vdev->regions);
-+	return -EINVAL;
-+}
-+
-+static void vfio_platform_regions_cleanup(struct vfio_platform_device *vdev)
-+{
-+	vdev->num_regions = 0;
-+	kfree(vdev->regions);
-+}
-+
- static void vfio_platform_release(void *device_data)
- {
-+	struct vfio_platform_device *vdev = device_data;
-+
-+	mutex_lock(&driver_lock);
-+
-+	if (!(--vdev->refcnt)) {
-+		vfio_platform_regions_cleanup(vdev);
-+	}
-+
-+	mutex_unlock(&driver_lock);
-+
- 	module_put(THIS_MODULE);
- }
- 
- static int vfio_platform_open(void *device_data)
- {
-+	struct vfio_platform_device *vdev = device_data;
-+	int ret;
-+
- 	if (!try_module_get(THIS_MODULE))
- 		return -ENODEV;
- 
-+	mutex_lock(&driver_lock);
-+
-+	if (!vdev->refcnt) {
-+		ret = vfio_platform_regions_init(vdev);
-+		if (ret)
-+			goto err_reg;
-+	}
-+
-+	vdev->refcnt++;
-+
-+	mutex_unlock(&driver_lock);
- 	return 0;
-+
-+err_reg:
-+	mutex_unlock(&driver_lock);
-+	module_put(THIS_MODULE);
-+	return ret;
- }
- 
+@@ -38,10 +38,27 @@ static int vfio_platform_open(void *device_data)
  static long vfio_platform_ioctl(void *device_data,
-@@ -53,15 +133,33 @@ static long vfio_platform_ioctl(void *device_data,
- 			return -EINVAL;
- 
- 		info.flags = vdev->flags;
--		info.num_regions = 0;
-+		info.num_regions = vdev->num_regions;
- 		info.num_irqs = 0;
- 
- 		return copy_to_user((void __user *)arg, &info, minsz);
- 
--	} else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
+ 				unsigned int cmd, unsigned long arg)
+ {
+-	if (cmd == VFIO_DEVICE_GET_INFO)
 -		return -EINVAL;
-+	} else if (cmd == VFIO_DEVICE_GET_REGION_INFO) {
-+		struct vfio_region_info info;
++	struct vfio_platform_device *vdev = device_data;
++	unsigned long minsz;
 +
-+		minsz = offsetofend(struct vfio_region_info, offset);
++	if (cmd == VFIO_DEVICE_GET_INFO) {
++		struct vfio_device_info info;
++
++		minsz = offsetofend(struct vfio_device_info, num_irqs);
 +
 +		if (copy_from_user(&info, (void __user *)arg, minsz))
 +			return -EFAULT;
@@ -145,54 +56,16 @@ index 862b43b..2a4613c 100644
 +		if (info.argsz < minsz)
 +			return -EINVAL;
 +
-+		if (info.index >= vdev->num_regions)
-+			return -EINVAL;
-+
-+		/* map offset to the physical address  */
-+		info.offset = VFIO_PLATFORM_INDEX_TO_OFFSET(info.index);
-+		info.size = vdev->regions[info.index].size;
-+		info.flags = vdev->regions[info.index].flags;
++		info.flags = vdev->flags;
++		info.num_regions = 0;
++		info.num_irqs = 0;
 +
 +		return copy_to_user((void __user *)arg, &info, minsz);
  
--	else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
-+	} else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
+-	else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
++	} else if (cmd == VFIO_DEVICE_GET_REGION_INFO)
  		return -EINVAL;
  
- 	else if (cmd == VFIO_DEVICE_SET_IRQS)
-diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
-index 062b92d..b24729f 100644
---- a/drivers/vfio/platform/vfio_platform_private.h
-+++ b/drivers/vfio/platform/vfio_platform_private.h
-@@ -15,7 +15,29 @@
- #ifndef VFIO_PLATFORM_PRIVATE_H
- #define VFIO_PLATFORM_PRIVATE_H
- 
-+#define VFIO_PLATFORM_OFFSET_SHIFT   40
-+#define VFIO_PLATFORM_OFFSET_MASK (((u64)(1) << VFIO_PLATFORM_OFFSET_SHIFT) - 1)
-+
-+#define VFIO_PLATFORM_OFFSET_TO_INDEX(off)	\
-+	(off >> VFIO_PLATFORM_OFFSET_SHIFT)
-+
-+#define VFIO_PLATFORM_INDEX_TO_OFFSET(index)	\
-+	((u64)(index) << VFIO_PLATFORM_OFFSET_SHIFT)
-+
-+struct vfio_platform_region {
-+	u64			addr;
-+	resource_size_t		size;
-+	u32			flags;
-+	u32			type;
-+#define VFIO_PLATFORM_REGION_TYPE_MMIO	1
-+#define VFIO_PLATFORM_REGION_TYPE_PIO	2
-+};
-+
- struct vfio_platform_device {
-+	struct vfio_platform_region	*regions;
-+	u32				num_regions;
-+	int				refcnt;
-+
- 	/*
- 	 * These fields should be filled by the bus specific binder
- 	 */
+ 	else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
 -- 
 2.1.4
