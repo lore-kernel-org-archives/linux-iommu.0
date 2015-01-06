@@ -1,135 +1,238 @@
-From: Antonios Motakis <a.motakis@virtualopensystems.com>
-Subject: [PATCH v11 16/20] vfio: add local lock for virqfd instead of depending on VFIO PCI
-Date: Tue,  6 Jan 2015 11:48:51 +0100
-Message-ID: <1420541335-17190-17-git-send-email-a.motakis@virtualopensystems.com>
+From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: [PATCH v11 08/20] vfio/platform: read and write support for the
+	device fd
+Date: Tue,  6 Jan 2015 11:48:43 +0100
+Message-ID: <1420541335-17190-9-git-send-email-a.motakis@virtualopensystems.com>
 References: <1420541335-17190-1-git-send-email-a.motakis@virtualopensystems.com>
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <1420541335-17190-1-git-send-email-a.motakis@virtualopensystems.com>
-Sender: kvm-owner@vger.kernel.org
-To: kvmarm@lists.cs.columbia.edu, iommu@lists.linux-foundation.org, alex.williamson@redhat.com
-Cc: will.deacon@arm.com, tech@virtualopensystems.com, christoffer.dall@linaro.org, eric.auger@linaro.org, kim.phillips@freescale.com, marc.zyngier@arm.com, Antonios Motakis <a.motakis@virtualopensystems.com>, Thomas Gleixner <tglx@linutronix.de>, Gavin Shan <gwshan@linux.vnet.ibm.com>, Jiang Liu <jiang.liu@linux.intel.com>, Alexander Gordeev <agordeev@redhat.com>, "open list:VFIO DRIVER" <kvm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1420541335-17190-1-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: "open list:VFIO DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The Virqfd code needs to keep accesses to any struct *virqfd safe, but
-this comes into play only when creating or destroying eventfds, so sharing
-the same spinlock with the VFIO bus driver is not necessary.
+VFIO returns a file descriptor which we can use to manipulate the memory
+regions of the device. Usually, the user will mmap memory regions that are
+addressable on page boundaries, however for memory regions where this is
+not the case we cannot provide mmap functionality due to security concerns.
+For this reason we also allow to use read and write functions to the file
+descriptor pointing to the memory regions.
 
-Signed-off-by: Antonios Motakis <a.motakis@virtualopensystems.com>
+We implement this functionality only for MMIO regions of platform devices;
+PIO regions are not being handled at this point.
+
+Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 ---
- drivers/vfio/pci/vfio_pci_intrs.c | 31 ++++++++++++++++---------------
- 1 file changed, 16 insertions(+), 15 deletions(-)
+ drivers/vfio/platform/vfio_platform_common.c  | 150 ++++++++++++++++++++++++++
+ drivers/vfio/platform/vfio_platform_private.h |   1 +
+ 2 files changed, 151 insertions(+)
 
-diff --git a/drivers/vfio/pci/vfio_pci_intrs.c b/drivers/vfio/pci/vfio_pci_intrs.c
-index a5378d5..b35bc16 100644
---- a/drivers/vfio/pci/vfio_pci_intrs.c
-+++ b/drivers/vfio/pci/vfio_pci_intrs.c
-@@ -44,6 +44,7 @@ struct virqfd {
+diff --git a/drivers/vfio/platform/vfio_platform_common.c b/drivers/vfio/platform/vfio_platform_common.c
+index 2a4613c..fda4c30 100644
+--- a/drivers/vfio/platform/vfio_platform_common.c
++++ b/drivers/vfio/platform/vfio_platform_common.c
+@@ -50,6 +50,10 @@ static int vfio_platform_regions_init(struct vfio_platform_device *vdev)
+ 		switch (resource_type(res)) {
+ 		case IORESOURCE_MEM:
+ 			vdev->regions[i].type = VFIO_PLATFORM_REGION_TYPE_MMIO;
++			vdev->regions[i].flags |= VFIO_REGION_INFO_FLAG_READ;
++			if (!(res->flags & IORESOURCE_READONLY))
++				vdev->regions[i].flags |=
++					VFIO_REGION_INFO_FLAG_WRITE;
+ 			break;
+ 		case IORESOURCE_IO:
+ 			vdev->regions[i].type = VFIO_PLATFORM_REGION_TYPE_PIO;
+@@ -69,6 +73,11 @@ err:
+ 
+ static void vfio_platform_regions_cleanup(struct vfio_platform_device *vdev)
+ {
++	int i;
++
++	for (i = 0; i < vdev->num_regions; i++)
++		iounmap(vdev->regions[i].ioaddr);
++
+ 	vdev->num_regions = 0;
+ 	kfree(vdev->regions);
+ }
+@@ -171,15 +180,156 @@ static long vfio_platform_ioctl(void *device_data,
+ 	return -ENOTTY;
+ }
+ 
++static ssize_t vfio_platform_read_mmio(struct vfio_platform_region reg,
++				       char __user *buf, size_t count,
++				       loff_t off)
++{
++	unsigned int done = 0;
++
++	if (!reg.ioaddr) {
++		reg.ioaddr =
++			ioremap_nocache(reg.addr, reg.size);
++
++		if (!reg.ioaddr)
++			return -ENOMEM;
++	}
++
++	while (count) {
++		size_t filled;
++
++		if (count >= 4 && !(off % 4)) {
++			u32 val;
++
++			val = ioread32(reg.ioaddr + off);
++			if (copy_to_user(buf, &val, 4))
++				goto err;
++
++			filled = 4;
++		} else if (count >= 2 && !(off % 2)) {
++			u16 val;
++
++			val = ioread16(reg.ioaddr + off);
++			if (copy_to_user(buf, &val, 2))
++				goto err;
++
++			filled = 2;
++		} else {
++			u8 val;
++
++			val = ioread8(reg.ioaddr + off);
++			if (copy_to_user(buf, &val, 1))
++				goto err;
++
++			filled = 1;
++		}
++
++
++		count -= filled;
++		done += filled;
++		off += filled;
++		buf += filled;
++	}
++
++	return done;
++err:
++	return -EFAULT;
++}
++
+ static ssize_t vfio_platform_read(void *device_data, char __user *buf,
+ 				  size_t count, loff_t *ppos)
+ {
++	struct vfio_platform_device *vdev = device_data;
++	unsigned int index = VFIO_PLATFORM_OFFSET_TO_INDEX(*ppos);
++	loff_t off = *ppos & VFIO_PLATFORM_OFFSET_MASK;
++
++	if (index >= vdev->num_regions)
++		return -EINVAL;
++
++	if (!(vdev->regions[index].flags & VFIO_REGION_INFO_FLAG_READ))
++		return -EINVAL;
++
++	if (vdev->regions[index].type & VFIO_PLATFORM_REGION_TYPE_MMIO)
++		return vfio_platform_read_mmio(vdev->regions[index],
++							buf, count, off);
++	else if (vdev->regions[index].type & VFIO_PLATFORM_REGION_TYPE_PIO)
++		return -EINVAL; /* not implemented */
++
+ 	return -EINVAL;
+ }
+ 
++static ssize_t vfio_platform_write_mmio(struct vfio_platform_region reg,
++					const char __user *buf, size_t count,
++					loff_t off)
++{
++	unsigned int done = 0;
++
++	if (!reg.ioaddr) {
++		reg.ioaddr =
++			ioremap_nocache(reg.addr, reg.size);
++
++		if (!reg.ioaddr)
++			return -ENOMEM;
++	}
++
++	while (count) {
++		size_t filled;
++
++		if (count >= 4 && !(off % 4)) {
++			u32 val;
++
++			if (copy_from_user(&val, buf, 4))
++				goto err;
++			iowrite32(val, reg.ioaddr + off);
++
++			filled = 4;
++		} else if (count >= 2 && !(off % 2)) {
++			u16 val;
++
++			if (copy_from_user(&val, buf, 2))
++				goto err;
++			iowrite16(val, reg.ioaddr + off);
++
++			filled = 2;
++		} else {
++			u8 val;
++
++			if (copy_from_user(&val, buf, 1))
++				goto err;
++			iowrite8(val, reg.ioaddr + off);
++
++			filled = 1;
++		}
++
++		count -= filled;
++		done += filled;
++		off += filled;
++		buf += filled;
++	}
++
++	return done;
++err:
++	return -EFAULT;
++}
++
+ static ssize_t vfio_platform_write(void *device_data, const char __user *buf,
+ 				   size_t count, loff_t *ppos)
+ {
++	struct vfio_platform_device *vdev = device_data;
++	unsigned int index = VFIO_PLATFORM_OFFSET_TO_INDEX(*ppos);
++	loff_t off = *ppos & VFIO_PLATFORM_OFFSET_MASK;
++
++	if (index >= vdev->num_regions)
++		return -EINVAL;
++
++	if (!(vdev->regions[index].flags & VFIO_REGION_INFO_FLAG_WRITE))
++		return -EINVAL;
++
++	if (vdev->regions[index].type & VFIO_PLATFORM_REGION_TYPE_MMIO)
++		return vfio_platform_write_mmio(vdev->regions[index],
++							buf, count, off);
++	else if (vdev->regions[index].type & VFIO_PLATFORM_REGION_TYPE_PIO)
++		return -EINVAL; /* not implemented */
++
+ 	return -EINVAL;
+ }
+ 
+diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
+index b24729f..1f251b2 100644
+--- a/drivers/vfio/platform/vfio_platform_private.h
++++ b/drivers/vfio/platform/vfio_platform_private.h
+@@ -31,6 +31,7 @@ struct vfio_platform_region {
+ 	u32			type;
+ #define VFIO_PLATFORM_REGION_TYPE_MMIO	1
+ #define VFIO_PLATFORM_REGION_TYPE_PIO	2
++	void __iomem		*ioaddr;
  };
  
- static struct workqueue_struct *vfio_irqfd_cleanup_wq;
-+DEFINE_SPINLOCK(virqfd_lock);
- 
- int __init vfio_virqfd_init(void)
- {
-@@ -80,21 +81,21 @@ static int virqfd_wakeup(wait_queue_t *wait, unsigned mode, int sync, void *key)
- 
- 	if (flags & POLLHUP) {
- 		unsigned long flags;
--		spin_lock_irqsave(&virqfd->vdev->irqlock, flags);
-+		spin_lock_irqsave(&virqfd_lock, flags);
- 
- 		/*
- 		 * The eventfd is closing, if the virqfd has not yet been
- 		 * queued for release, as determined by testing whether the
--		 * vdev pointer to it is still valid, queue it now.  As
-+		 * virqfd pointer to it is still valid, queue it now.  As
- 		 * with kvm irqfds, we know we won't race against the virqfd
--		 * going away because we hold wqh->lock to get here.
-+		 * going away because we hold the lock to get here.
- 		 */
- 		if (*(virqfd->pvirqfd) == virqfd) {
- 			*(virqfd->pvirqfd) = NULL;
- 			virqfd_deactivate(virqfd);
- 		}
- 
--		spin_unlock_irqrestore(&virqfd->vdev->irqlock, flags);
-+		spin_unlock_irqrestore(&virqfd_lock, flags);
- 	}
- 
- 	return 0;
-@@ -170,16 +171,16 @@ int vfio_virqfd_enable(struct vfio_pci_device *vdev,
- 	 * we update the pointer to the virqfd under lock to avoid
- 	 * pushing multiple jobs to release the same virqfd.
- 	 */
--	spin_lock_irq(&vdev->irqlock);
-+	spin_lock_irq(&virqfd_lock);
- 
- 	if (*pvirqfd) {
--		spin_unlock_irq(&vdev->irqlock);
-+		spin_unlock_irq(&virqfd_lock);
- 		ret = -EBUSY;
- 		goto err_busy;
- 	}
- 	*pvirqfd = virqfd;
- 
--	spin_unlock_irq(&vdev->irqlock);
-+	spin_unlock_irq(&virqfd_lock);
- 
- 	/*
- 	 * Install our own custom wake-up handling so we are notified via
-@@ -217,18 +218,18 @@ err_fd:
- }
- EXPORT_SYMBOL_GPL(vfio_virqfd_enable);
- 
--void vfio_virqfd_disable(struct vfio_pci_device *vdev, struct virqfd **pvirqfd)
-+void vfio_virqfd_disable(struct virqfd **pvirqfd)
- {
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&vdev->irqlock, flags);
-+	spin_lock_irqsave(&virqfd_lock, flags);
- 
- 	if (*pvirqfd) {
- 		virqfd_deactivate(*pvirqfd);
- 		*pvirqfd = NULL;
- 	}
- 
--	spin_unlock_irqrestore(&vdev->irqlock, flags);
-+	spin_unlock_irqrestore(&virqfd_lock, flags);
- 
- 	/*
- 	 * Block until we know all outstanding shutdown jobs have completed.
-@@ -441,8 +442,8 @@ static int vfio_intx_set_signal(struct vfio_pci_device *vdev, int fd)
- static void vfio_intx_disable(struct vfio_pci_device *vdev)
- {
- 	vfio_intx_set_signal(vdev, -1);
--	vfio_virqfd_disable(vdev, &vdev->ctx[0].unmask);
--	vfio_virqfd_disable(vdev, &vdev->ctx[0].mask);
-+	vfio_virqfd_disable(&vdev->ctx[0].unmask);
-+	vfio_virqfd_disable(&vdev->ctx[0].mask);
- 	vdev->irq_type = VFIO_PCI_NUM_IRQS;
- 	vdev->num_ctx = 0;
- 	kfree(vdev->ctx);
-@@ -606,8 +607,8 @@ static void vfio_msi_disable(struct vfio_pci_device *vdev, bool msix)
- 	vfio_msi_set_block(vdev, 0, vdev->num_ctx, NULL, msix);
- 
- 	for (i = 0; i < vdev->num_ctx; i++) {
--		vfio_virqfd_disable(vdev, &vdev->ctx[i].unmask);
--		vfio_virqfd_disable(vdev, &vdev->ctx[i].mask);
-+		vfio_virqfd_disable(&vdev->ctx[i].unmask);
-+		vfio_virqfd_disable(&vdev->ctx[i].mask);
- 	}
- 
- 	if (msix) {
-@@ -645,7 +646,7 @@ static int vfio_pci_set_intx_unmask(struct vfio_pci_device *vdev,
- 						  vfio_send_intx_eventfd, NULL,
- 						  &vdev->ctx[0].unmask, fd);
- 
--		vfio_virqfd_disable(vdev, &vdev->ctx[0].unmask);
-+		vfio_virqfd_disable(&vdev->ctx[0].unmask);
- 	}
- 
- 	return 0;
+ struct vfio_platform_device {
 -- 
 2.1.4
-
