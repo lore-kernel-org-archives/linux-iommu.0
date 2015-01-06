@@ -1,118 +1,199 @@
 From: Antonios Motakis <a.motakis@virtualopensystems.com>
-Subject: [PATCH v11 14/20] vfio: add a vfio_ prefix to virqfd_enable and virqfd_disable and export
-Date: Tue,  6 Jan 2015 11:48:49 +0100
-Message-ID: <1420541335-17190-15-git-send-email-a.motakis@virtualopensystems.com>
+Subject: [PATCH v11 10/20] vfio/platform: return IRQ info
+Date: Tue,  6 Jan 2015 11:48:45 +0100
+Message-ID: <1420541335-17190-11-git-send-email-a.motakis@virtualopensystems.com>
 References: <1420541335-17190-1-git-send-email-a.motakis@virtualopensystems.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1420541335-17190-1-git-send-email-a.motakis@virtualopensystems.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: kvmarm@lists.cs.columbia.edu, iommu@lists.linux-foundation.org, alex.williamson@redhat.com
-Cc: will.deacon@arm.com, tech@virtualopensystems.com, christoffer.dall@linaro.org, eric.auger@linaro.org, kim.phillips@freescale.com, marc.zyngier@arm.com, Antonios Motakis <a.motakis@virtualopensystems.com>, Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@linutronix.de>, Alexander Gordeev <agordeev@redhat.com>, Gavin Shan <gwshan@linux.vnet.ibm.com>, Jiang Liu <jiang.liu@linux.intel.com>, "open list:VFIO DRIVER" <kvm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Cc: will.deacon@arm.com, tech@virtualopensystems.com, christoffer.dall@linaro.org, eric.auger@linaro.org, kim.phillips@freescale.com, marc.zyngier@arm.com, Antonios Motakis <a.motakis@virtualopensystems.com>, open list <linux-kernel@vger.kernel.org>, "open list:VFIO DRIVER" <kvm@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-We want to reuse virqfd functionality in multiple VFIO drivers; before
-moving these functions to core VFIO, add the vfio_ prefix to the
-virqfd_enable and virqfd_disable functions, and export them so they can
-be used from other modules.
+Return information for the interrupts exposed by the device.
+This patch extends VFIO_DEVICE_GET_INFO with the number of IRQs
+and enables VFIO_DEVICE_GET_IRQ_INFO.
 
 Signed-off-by: Antonios Motakis <a.motakis@virtualopensystems.com>
 ---
- drivers/vfio/pci/vfio_pci_intrs.c   | 30 ++++++++++++++++--------------
- drivers/vfio/pci/vfio_pci_private.h |  4 ++--
- 2 files changed, 18 insertions(+), 16 deletions(-)
+ drivers/vfio/platform/Makefile                |  2 +-
+ drivers/vfio/platform/vfio_platform_common.c  | 31 +++++++++++++---
+ drivers/vfio/platform/vfio_platform_irq.c     | 51 +++++++++++++++++++++++++++
+ drivers/vfio/platform/vfio_platform_private.h | 10 ++++++
+ 4 files changed, 89 insertions(+), 5 deletions(-)
+ create mode 100644 drivers/vfio/platform/vfio_platform_irq.c
 
-diff --git a/drivers/vfio/pci/vfio_pci_intrs.c b/drivers/vfio/pci/vfio_pci_intrs.c
-index e8d695b..0a41833d 100644
---- a/drivers/vfio/pci/vfio_pci_intrs.c
-+++ b/drivers/vfio/pci/vfio_pci_intrs.c
-@@ -126,10 +126,10 @@ static void virqfd_inject(struct work_struct *work)
- 		virqfd->thread(virqfd->vdev, virqfd->data);
- }
+diff --git a/drivers/vfio/platform/Makefile b/drivers/vfio/platform/Makefile
+index 1957170..81de144 100644
+--- a/drivers/vfio/platform/Makefile
++++ b/drivers/vfio/platform/Makefile
+@@ -1,5 +1,5 @@
  
--static int virqfd_enable(struct vfio_pci_device *vdev,
--			 int (*handler)(struct vfio_pci_device *, void *),
--			 void (*thread)(struct vfio_pci_device *, void *),
--			 void *data, struct virqfd **pvirqfd, int fd)
-+int vfio_virqfd_enable(struct vfio_pci_device *vdev,
-+		       int (*handler)(struct vfio_pci_device *, void *),
-+		       void (*thread)(struct vfio_pci_device *, void *),
-+		       void *data, struct virqfd **pvirqfd, int fd)
- {
- 	struct fd irqfd;
- 	struct eventfd_ctx *ctx;
-@@ -215,9 +215,9 @@ err_fd:
+-vfio-platform-y := vfio_platform.o vfio_platform_common.o
++vfio-platform-y := vfio_platform.o vfio_platform_common.o vfio_platform_irq.o
  
- 	return ret;
- }
-+EXPORT_SYMBOL_GPL(vfio_virqfd_enable);
+ obj-$(CONFIG_VFIO_PLATFORM) += vfio-platform.o
  
--static void virqfd_disable(struct vfio_pci_device *vdev,
--			   struct virqfd **pvirqfd)
-+void vfio_virqfd_disable(struct vfio_pci_device *vdev, struct virqfd **pvirqfd)
- {
- 	unsigned long flags;
+diff --git a/drivers/vfio/platform/vfio_platform_common.c b/drivers/vfio/platform/vfio_platform_common.c
+index 6bf78ee..cf7bb08 100644
+--- a/drivers/vfio/platform/vfio_platform_common.c
++++ b/drivers/vfio/platform/vfio_platform_common.c
+@@ -100,6 +100,7 @@ static void vfio_platform_release(void *device_data)
  
-@@ -237,6 +237,7 @@ static void virqfd_disable(struct vfio_pci_device *vdev,
- 	 */
- 	flush_workqueue(vfio_irqfd_cleanup_wq);
- }
-+EXPORT_SYMBOL_GPL(vfio_virqfd_disable);
- 
- /*
-  * INTx
-@@ -440,8 +441,8 @@ static int vfio_intx_set_signal(struct vfio_pci_device *vdev, int fd)
- static void vfio_intx_disable(struct vfio_pci_device *vdev)
- {
- 	vfio_intx_set_signal(vdev, -1);
--	virqfd_disable(vdev, &vdev->ctx[0].unmask);
--	virqfd_disable(vdev, &vdev->ctx[0].mask);
-+	vfio_virqfd_disable(vdev, &vdev->ctx[0].unmask);
-+	vfio_virqfd_disable(vdev, &vdev->ctx[0].mask);
- 	vdev->irq_type = VFIO_PCI_NUM_IRQS;
- 	vdev->num_ctx = 0;
- 	kfree(vdev->ctx);
-@@ -605,8 +606,8 @@ static void vfio_msi_disable(struct vfio_pci_device *vdev, bool msix)
- 	vfio_msi_set_block(vdev, 0, vdev->num_ctx, NULL, msix);
- 
- 	for (i = 0; i < vdev->num_ctx; i++) {
--		virqfd_disable(vdev, &vdev->ctx[i].unmask);
--		virqfd_disable(vdev, &vdev->ctx[i].mask);
-+		vfio_virqfd_disable(vdev, &vdev->ctx[i].unmask);
-+		vfio_virqfd_disable(vdev, &vdev->ctx[i].mask);
+ 	if (!(--vdev->refcnt)) {
+ 		vfio_platform_regions_cleanup(vdev);
++		vfio_platform_irq_cleanup(vdev);
  	}
  
- 	if (msix) {
-@@ -639,11 +640,12 @@ static int vfio_pci_set_intx_unmask(struct vfio_pci_device *vdev,
- 	} else if (flags & VFIO_IRQ_SET_DATA_EVENTFD) {
- 		int32_t fd = *(int32_t *)data;
- 		if (fd >= 0)
--			return virqfd_enable(vdev, vfio_pci_intx_unmask_handler,
--					     vfio_send_intx_eventfd, NULL,
--					     &vdev->ctx[0].unmask, fd);
-+			return vfio_virqfd_enable(vdev,
-+						  vfio_pci_intx_unmask_handler,
-+						  vfio_send_intx_eventfd, NULL,
-+						  &vdev->ctx[0].unmask, fd);
- 
--		virqfd_disable(vdev, &vdev->ctx[0].unmask);
-+		vfio_virqfd_disable(vdev, &vdev->ctx[0].unmask);
+ 	mutex_unlock(&driver_lock);
+@@ -121,6 +122,10 @@ static int vfio_platform_open(void *device_data)
+ 		ret = vfio_platform_regions_init(vdev);
+ 		if (ret)
+ 			goto err_reg;
++
++		ret = vfio_platform_irq_init(vdev);
++		if (ret)
++			goto err_irq;
  	}
  
+ 	vdev->refcnt++;
+@@ -128,6 +133,8 @@ static int vfio_platform_open(void *device_data)
+ 	mutex_unlock(&driver_lock);
  	return 0;
-diff --git a/drivers/vfio/pci/vfio_pci_private.h b/drivers/vfio/pci/vfio_pci_private.h
-index 671c17a..2e2f0ea 100644
---- a/drivers/vfio/pci/vfio_pci_private.h
-+++ b/drivers/vfio/pci/vfio_pci_private.h
-@@ -86,8 +86,8 @@ extern ssize_t vfio_pci_vga_rw(struct vfio_pci_device *vdev, char __user *buf,
- extern int vfio_pci_init_perm_bits(void);
- extern void vfio_pci_uninit_perm_bits(void);
  
--extern int vfio_pci_virqfd_init(void);
--extern void vfio_pci_virqfd_exit(void);
-+extern int vfio_virqfd_init(void);
-+extern void vfio_virqfd_exit(void);
++err_irq:
++	vfio_platform_regions_cleanup(vdev);
+ err_reg:
+ 	mutex_unlock(&driver_lock);
+ 	module_put(THIS_MODULE);
+@@ -153,7 +160,7 @@ static long vfio_platform_ioctl(void *device_data,
  
- extern int vfio_config_init(struct vfio_pci_device *vdev);
- extern void vfio_config_free(struct vfio_pci_device *vdev);
+ 		info.flags = vdev->flags;
+ 		info.num_regions = vdev->num_regions;
+-		info.num_irqs = 0;
++		info.num_irqs = vdev->num_irqs;
+ 
+ 		return copy_to_user((void __user *)arg, &info, minsz);
+ 
+@@ -178,10 +185,26 @@ static long vfio_platform_ioctl(void *device_data,
+ 
+ 		return copy_to_user((void __user *)arg, &info, minsz);
+ 
+-	} else if (cmd == VFIO_DEVICE_GET_IRQ_INFO)
+-		return -EINVAL;
++	} else if (cmd == VFIO_DEVICE_GET_IRQ_INFO) {
++		struct vfio_irq_info info;
++
++		minsz = offsetofend(struct vfio_irq_info, count);
++
++		if (copy_from_user(&info, (void __user *)arg, minsz))
++			return -EFAULT;
++
++		if (info.argsz < minsz)
++			return -EINVAL;
++
++		if (info.index >= vdev->num_irqs)
++			return -EINVAL;
++
++		info.flags = vdev->irqs[info.index].flags;
++		info.count = vdev->irqs[info.index].count;
++
++		return copy_to_user((void __user *)arg, &info, minsz);
+ 
+-	else if (cmd == VFIO_DEVICE_SET_IRQS)
++	} else if (cmd == VFIO_DEVICE_SET_IRQS)
+ 		return -EINVAL;
+ 
+ 	else if (cmd == VFIO_DEVICE_RESET)
+diff --git a/drivers/vfio/platform/vfio_platform_irq.c b/drivers/vfio/platform/vfio_platform_irq.c
+new file mode 100644
+index 0000000..c6c3ec1
+--- /dev/null
++++ b/drivers/vfio/platform/vfio_platform_irq.c
+@@ -0,0 +1,51 @@
++/*
++ * VFIO platform devices interrupt handling
++ *
++ * Copyright (C) 2013 - Virtual Open Systems
++ * Author: Antonios Motakis <a.motakis@virtualopensystems.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License, version 2, as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include <linux/eventfd.h>
++#include <linux/interrupt.h>
++#include <linux/slab.h>
++#include <linux/types.h>
++#include <linux/vfio.h>
++#include <linux/irq.h>
++
++#include "vfio_platform_private.h"
++
++int vfio_platform_irq_init(struct vfio_platform_device *vdev)
++{
++	int cnt = 0, i;
++
++	while (vdev->get_irq(vdev, cnt) >= 0)
++		cnt++;
++
++	vdev->irqs = kcalloc(cnt, sizeof(struct vfio_platform_irq), GFP_KERNEL);
++	if (!vdev->irqs)
++		return -ENOMEM;
++
++	for (i = 0; i < cnt; i++) {
++		vdev->irqs[i].flags = 0;
++		vdev->irqs[i].count = 1;
++	}
++
++	vdev->num_irqs = cnt;
++
++	return 0;
++}
++
++void vfio_platform_irq_cleanup(struct vfio_platform_device *vdev)
++{
++	vdev->num_irqs = 0;
++	kfree(vdev->irqs);
++}
+diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
+index 1f251b2..3a29a72 100644
+--- a/drivers/vfio/platform/vfio_platform_private.h
++++ b/drivers/vfio/platform/vfio_platform_private.h
+@@ -24,6 +24,11 @@
+ #define VFIO_PLATFORM_INDEX_TO_OFFSET(index)	\
+ 	((u64)(index) << VFIO_PLATFORM_OFFSET_SHIFT)
+ 
++struct vfio_platform_irq {
++	u32			flags;
++	u32			count;
++};
++
+ struct vfio_platform_region {
+ 	u64			addr;
+ 	resource_size_t		size;
+@@ -37,6 +42,8 @@ struct vfio_platform_region {
+ struct vfio_platform_device {
+ 	struct vfio_platform_region	*regions;
+ 	u32				num_regions;
++	struct vfio_platform_irq	*irqs;
++	u32				num_irqs;
+ 	int				refcnt;
+ 
+ 	/*
+@@ -56,4 +63,7 @@ extern int vfio_platform_probe_common(struct vfio_platform_device *vdev,
+ extern struct vfio_platform_device *vfio_platform_remove_common
+ 				     (struct device *dev);
+ 
++extern int vfio_platform_irq_init(struct vfio_platform_device *vdev);
++extern void vfio_platform_irq_cleanup(struct vfio_platform_device *vdev);
++
+ #endif /* VFIO_PLATFORM_PRIVATE_H */
 -- 
 2.1.4
