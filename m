@@ -1,72 +1,32 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: Hang (due to HW?) in qi_submit_sync()
-Date: Mon, 05 Jan 2015 23:48:21 -0700
-Message-ID: <1420526901.3541.96.camel@redhat.com>
-References: <1420505840-30096-1-git-send-email-roland@kernel.org>
-	<1420512860.3541.77.camel@redhat.com>
-	<CAG4TOxPOgTOKYZa7q9Of8XzHV_wAadtJmXFC0bmyN2Qds7T9RA@mail.gmail.com>
+From: "Li, ZhenHua" <zhen-hual@hp.com>
+Subject: Re: [PATCH 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
+Date: Tue, 06 Jan 2015 15:05:46 +0800
+Message-ID: <54AB894A.3070601@hp.com>
+References: <1419239729-26529-1-git-send-email-zhen-hual@hp.com> <20150106063718.GA2454@dhcp-16-105.nay.redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAG4TOxPOgTOKYZa7q9Of8XzHV_wAadtJmXFC0bmyN2Qds7T9RA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Roland Dreier <roland-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20150106063718.GA2454@dhcp-16-105.nay.redhat.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Baoquan He <bhe@redhat.com>, indou.takao@jp.fujitsu.com
+Cc: dwmw2@infradead.org, joro@8bytes.org, vgoyal@redhat.com, dyoung@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2015-01-05 at 20:39 -0800, Roland Dreier wrote:
-> On Mon, Jan 5, 2015 at 6:54 PM, Alex Williamson
-> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> > Try disabling CONFIG_NET_DMA
-> 
-> We already have that disabled (well, in 3.10 it depends on BROKEN, and
-> we don't have BROKEN enabled :).
+According to Takao Indoh's testing, seems adding flush after loading old 
+irte and updating old irte does not fix the dmar faults.
 
-Only since v3.10.26 is it marked BROKEN.
+According to Takao Indoh's log and your log, the faults happens while 
+and after driver is loaded.  Maybe I am using incorrect code in 08/10.
 
-> However I'm curious why you suggest that.  Because some of the devices
-> we're accessing via vfio are in fact Intel DMA engines (we blacklist
-> ioatdma and use the DMA devices directly from userspace).  Is there
-> some known interaction between the Intel DMA engines and interrupt
-> remapping?
 
-I suggest it because I spent several weeks isolating why we hit the same
-lockup in qi_submit_sync() as you're seeing after we backported a number
-of iommu patches.  In our case, finding that it's toggled by
-CONFIG_NET_DMA, which has since been marked broken and removed is a
-sufficient solution.  I agree though that regardless of what terrible
-things NET_DMA was doing, we seem to be hitting a "broken hardware"
-condition, potentially invoked by the DMA engine.
-
-What I observed was that it occurs when flushing an irte entry, the
-queued invalidation queue is working prior to this flush, but the wait
-descriptor value is never written to the status address, the queue head
-never advances past that wait descriptor once it gets wedged, and the
-status register never indicates any sort of error.  Section 6.5.6 of the
-VT-d spec on interrupt draining has an interesting statement:
-
-        Interrupt draining is performed on Interrupt Entry Cache (IEC)
-        invalidation requests. For IEC invalidations submitted through
-        the queued invalidation interface, interrupt draining must be
-        completed before the next Invalidation Wait Descriptor is
-        completed by hardware.
-
-Given the circumstances of the hang, that certainly makes me suspect
-that queued invalidation is failing to complete interrupt draining and
-hardware is therefore unable to advance past the subsequent wait
-descriptor or complete the wait descriptor because of this requirement.
-I wouldn't be surprised if there's an errata hidden in there somewhere.
-Thanks,
-
-Alex
-
-PS - Thanks for using vfio :)
+On 01/06/2015 02:37 PM, Baoquan He wrote:
+> Hi Zhenhua,
+>
+> I just tested your patchset based on 3.19.0-rc2+, and found several dmar
+> fault and intr-remap fault, it seems not the same as Takao's, please
+> check the attachment.
+>
+> Thanks
+> Baoquan
+>
