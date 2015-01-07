@@ -1,7 +1,7 @@
 From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH v7 05/10] iommu/vt-d: Add functions to load and save old re
-Date: Wed,  7 Jan 2015 12:04:29 +0800
-Message-ID: <1420603474-4235-6-git-send-email-zhen-hual@hp.com>
+Subject: [PATCH v7 10/10] iommu/vt-d: Use old irte in kdump kernel
+Date: Wed,  7 Jan 2015 12:04:34 +0800
+Message-ID: <1420603474-4235-11-git-send-email-zhen-hual@hp.com>
 References: <1420603474-4235-1-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,112 +21,95 @@ To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtd
 Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, zhen-hual-VXdhtT5mjnY@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add functions to load root entry table from old kernel, and to save updated
-root entry table.
-Add two member in struct intel_iommu, to store the RTA in old kernel, and
-the mapped virt address of it.
+Fix the intr-remapping fault.
 
-We use the old RTA in dump kernel, and when the iommu->root_entry is used as
-a cache in kdump kernel, its phys address will not be save to RTA register,
-but when its data is changed, we will save the new data to old root entry table.
+[1.594890] dmar: DRHD: handling fault status reg 2
+[1.594894] dmar: INTR-REMAP: Request device [[41:00.0] fault index 4d
+[1.594894] INTR-REMAP:[fault reason 34] Present field in the IRTE entry
+is clear
 
-Li, Zhen-hua:
-    The functions and logics.
-
-Takao Indoh:
-    Add __iommu_flush_cache.
+Use old irte in kdump kernel, do not disable and re-enable interrupt
+remapping.
 
 Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Signed-off-by: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 53 +++++++++++++++++++++++++++++++++++++++++++++
- include/linux/intel-iommu.h |  5 +++++
- 2 files changed, 58 insertions(+)
+ drivers/iommu/intel_irq_remapping.c | 42 ++++++++++++++++++++++++++++++++-----
+ 1 file changed, 37 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 8a7ad72..f3059b8 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -388,6 +388,10 @@ static int intel_iommu_get_dids_from_old_kernel(struct intel_iommu *iommu);
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index d37fd62..58356cb 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -198,6 +198,11 @@ static int modify_irte(int irq, struct irte *irte_modified)
  
- static int device_to_domain_id(struct intel_iommu *iommu, u8 bus, u8 devfn);
+ 	set_64bit(&irte->low, irte_modified->low);
+ 	set_64bit(&irte->high, irte_modified->high);
++
++#ifdef CONFIG_CRASH_DUMP
++	if (is_kdump_kernel())
++		__iommu_update_old_irte(iommu, index);
++#endif
+ 	__iommu_flush_cache(iommu, irte, sizeof(*irte));
  
-+static void __iommu_load_old_root_entry(struct intel_iommu *iommu);
-+
-+static void __iommu_update_old_root_entry(struct intel_iommu *iommu, int index);
-+
- struct iommu_remapped_entry {
- 	struct list_head list;
- 	void __iomem *mem;
-@@ -4990,4 +4994,53 @@ static int device_to_domain_id(struct intel_iommu *iommu, u8 bus, u8 devfn)
- 	return did;
- }
- 
-+/*
-+ * Load the old root entry table to new root entry table.
-+ */
-+static void __iommu_load_old_root_entry(struct intel_iommu *iommu)
-+{
-+	if ((!iommu)
-+		|| (!iommu->root_entry)
-+		|| (!iommu->root_entry_old_virt)
-+		|| (!iommu->root_entry_old_phys))
-+		return;
-+	memcpy(iommu->root_entry, iommu->root_entry_old_virt, PAGE_SIZE);
-+
-+	__iommu_flush_cache(iommu, iommu->root_entry, PAGE_SIZE);
-+}
-+
-+/*
-+ * When the data in new root entry table is changed, this function
-+ * must be called to save the updated data to old root entry table.
-+ */
-+static void __iommu_update_old_root_entry(struct intel_iommu *iommu, int index)
-+{
-+	u8 start;
-+	unsigned long size;
-+	void __iomem *to;
-+	void *from;
-+
-+	if ((!iommu)
-+		|| (!iommu->root_entry)
-+		|| (!iommu->root_entry_old_virt)
-+		|| (!iommu->root_entry_old_phys))
-+		return;
-+
-+	if (index < -1 || index >= ROOT_ENTRY_NR)
-+		return;
-+
-+	if (index == -1) {
-+		start = 0;
-+		size = ROOT_ENTRY_NR * sizeof(struct root_entry);
-+	} else {
-+		start = index * sizeof(struct root_entry);
-+		size = sizeof(struct root_entry);
-+	}
-+	to = iommu->root_entry_old_virt;
-+	from = iommu->root_entry;
-+	memcpy(to + start, from + start, size);
-+
-+	__iommu_flush_cache(iommu, to + start, size);
-+}
-+
- #endif /* CONFIG_CRASH_DUMP */
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 8ffa523..8e29b97 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -329,6 +329,11 @@ struct intel_iommu {
- 	spinlock_t	lock; /* protect context, domain ids */
- 	struct root_entry *root_entry; /* virtual address */
+ 	rc = qi_flush_iec(iommu, index, 0);
+@@ -259,6 +264,11 @@ static int clear_entries(struct irq_2_iommu *irq_iommu)
+ 	bitmap_release_region(iommu->ir_table->bitmap, index,
+ 			      irq_iommu->irte_mask);
  
 +#ifdef CONFIG_CRASH_DUMP
-+	void __iomem *root_entry_old_virt; /* mapped from old root entry */
-+	unsigned long root_entry_old_phys; /* root entry in old kernel */
++	if (is_kdump_kernel())
++		__iommu_update_old_irte(iommu, -1);
 +#endif
 +
- 	struct iommu_flush flush;
- #endif
- 	struct q_inval  *qi;            /* Queued invalidation info */
+ 	return qi_flush_iec(iommu, index, irq_iommu->irte_mask);
+ }
+ 
+@@ -640,11 +650,20 @@ static int __init intel_enable_irq_remapping(void)
+ 		 */
+ 		dmar_fault(-1, iommu);
+ 
+-		/*
+-		 * Disable intr remapping and queued invalidation, if already
+-		 * enabled prior to OS handover.
+-		 */
+-		iommu_disable_irq_remapping(iommu);
++#ifdef CONFIG_CRASH_DUMP
++		if (is_kdump_kernel()) {
++			/* Do notdisable irq and then re-enable again. */
++		} else {
++#endif
++			/*
++			 * Disable intr remapping and queued invalidation,
++			 * if already enabled prior to OS handover.
++			 */
++			iommu_disable_irq_remapping(iommu);
++
++#ifdef CONFIG_CRASH_DUMP
++		}
++#endif
+ 
+ 		dmar_disable_qi(iommu);
+ 	}
+@@ -687,7 +706,20 @@ static int __init intel_enable_irq_remapping(void)
+ 		if (intel_setup_irq_remapping(iommu))
+ 			goto error;
+ 
++#ifdef CONFIG_CRASH_DUMP
++	if (is_kdump_kernel()) {
++		unsigned long long q;
++
++		q = dmar_readq(iommu->reg + DMAR_IRTA_REG);
++		iommu->ir_table->base_old_phys = q & VTD_PAGE_MASK;
++		iommu->ir_table->base_old_virt = ioremap_cache(
++				iommu->ir_table->base_old_phys,
++				INTR_REMAP_TABLE_ENTRIES*sizeof(struct irte));
++		__iommu_load_old_irte(iommu);
++	} else
++#endif
+ 		iommu_set_irq_remapping(iommu, eim);
++
+ 		setup = 1;
+ 	}
+ 
 -- 
 2.0.0-rc0
