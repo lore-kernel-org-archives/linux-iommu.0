@@ -1,52 +1,107 @@
-From: Murali Karicheri <m-karicheri2@ti.com>
-Subject: [PATCH v3 4/4] PCI: update dma configuration from DT
-Date: Wed, 7 Jan 2015 13:49:54 -0500
-Message-ID: <1420656594-8908-5-git-send-email-m-karicheri2@ti.com>
+From: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
+Subject: [PATCH v3 1/4] of: iommu: add ptr to OF node arg to of_iommu_configure()
+Date: Wed, 7 Jan 2015 13:49:51 -0500
+Message-ID: <1420656594-8908-2-git-send-email-m-karicheri2@ti.com>
 References: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: joro@8bytes.org, grant.likely@linaro.org, robh+dt@kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, bhelgaas@google.com, linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org, will.deacon@arm.com, linux@arm.linux.org.uk, arnd@arndb.de
-Cc: Murali Karicheri <m-karicheri2@ti.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1420656594-8908-1-git-send-email-m-karicheri2-l0cyMroinI0@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org
+Cc: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-If there is a DT node available for the root bridge's parent device,
-use the dma configuration from that device node. For example, keystone
-PCI devices would require dma_pfn_offset to be set correctly in the
-device structure of the pci device in order to have the correct dma mask.
-The DT node will have dma-ranges defined for this. Also support using
-the DT property dma-coherent to allow coherent DMA operation by the
-PCI device.
+Function of_iommu_configure() is called from of_dma_configure() to
+setup iommu ops using DT property. This API is currently used for
+platform devices for which DMA configuration (including iommu ops)
+may come from device's parent. To extend this functionality for PCI
+devices, this API need to take a parent node ptr as an argument
+instead of assuming device's parent. This is needed since for PCI, the
+dma configuration may be defined in the DT node of the root bus bridge's
+parent device. Currently only dma-range is used for PCI and iommu is not
+supported. So return error if the device is PCI.
 
-This patch use the new helper function of_pci_dma_configure() to update
-the device dma configuration.
-
-Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
+Signed-off-by: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
 ---
- drivers/pci/probe.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iommu/of_iommu.c |   10 ++++++++--
+ drivers/of/platform.c    |    2 +-
+ include/linux/of_iommu.h |    6 ++++--
+ 3 files changed, 13 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 23212f8..d7dcd6c 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -6,6 +6,7 @@
- #include <linux/delay.h>
- #include <linux/init.h>
- #include <linux/pci.h>
-+#include <linux/of_pci.h>
- #include <linux/pci_hotplug.h>
- #include <linux/slab.h>
- #include <linux/module.h>
-@@ -1520,6 +1521,7 @@ void pci_device_add(struct pci_dev *dev, struct pci_bus *bus)
- 	dev->dev.dma_mask = &dev->dma_mask;
- 	dev->dev.dma_parms = &dev->dma_parms;
- 	dev->dev.coherent_dma_mask = 0xffffffffull;
-+	of_pci_dma_configure(dev);
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index af1dc6a..396bc77 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -133,19 +133,25 @@ struct iommu_ops *of_iommu_get_ops(struct device_node *np)
+ 	return ops;
+ }
  
- 	pci_set_dma_max_seg_size(dev, 65536);
- 	pci_set_dma_seg_boundary(dev, 0xffffffff);
+-struct iommu_ops *of_iommu_configure(struct device *dev)
++struct iommu_ops *of_iommu_configure(struct device *dev,
++				     struct device_node *node)
+ {
+ 	struct of_phandle_args iommu_spec;
+ 	struct device_node *np;
+ 	struct iommu_ops *ops = NULL;
+ 	int idx = 0;
+ 
++	if (dev_is_pci(dev)) {
++		dev_err(dev, "iommu is currently not supported for PCI\n");
++		return NULL;
++	}
++
+ 	/*
+ 	 * We don't currently walk up the tree looking for a parent IOMMU.
+ 	 * See the `Notes:' section of
+ 	 * Documentation/devicetree/bindings/iommu/iommu.txt
+ 	 */
+-	while (!of_parse_phandle_with_args(dev->of_node, "iommus",
++	while (!of_parse_phandle_with_args(node, "iommus",
+ 					   "#iommu-cells", idx,
+ 					   &iommu_spec)) {
+ 		np = iommu_spec.np;
+diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+index a54ec10..7675b79 100644
+--- a/drivers/of/platform.c
++++ b/drivers/of/platform.c
+@@ -196,7 +196,7 @@ static void of_dma_configure(struct device *dev)
+ 	dev_dbg(dev, "device is%sdma coherent\n",
+ 		coherent ? " " : " not ");
+ 
+-	iommu = of_iommu_configure(dev);
++	iommu = of_iommu_configure(dev, dev->of_node);
+ 	dev_dbg(dev, "device is%sbehind an iommu\n",
+ 		iommu ? " " : " not ");
+ 
+diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+index 16c7554..3258cbb 100644
+--- a/include/linux/of_iommu.h
++++ b/include/linux/of_iommu.h
+@@ -12,7 +12,8 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
+ 			     size_t *size);
+ 
+ extern void of_iommu_init(void);
+-extern struct iommu_ops *of_iommu_configure(struct device *dev);
++extern struct iommu_ops *of_iommu_configure(struct device *dev,
++					struct device_node *np);
+ 
+ #else
+ 
+@@ -24,7 +25,8 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
+ }
+ 
+ static inline void of_iommu_init(void) { }
+-static inline struct iommu_ops *of_iommu_configure(struct device *dev)
++static inline struct iommu_ops *of_iommu_configure(struct device *dev,
++					 struct device_node *np)
+ {
+ 	return NULL;
+ }
 -- 
 1.7.9.5
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
