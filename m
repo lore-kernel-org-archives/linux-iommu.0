@@ -1,107 +1,98 @@
-From: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
-Subject: [PATCH v3 1/4] of: iommu: add ptr to OF node arg to of_iommu_configure()
-Date: Wed, 7 Jan 2015 13:49:51 -0500
-Message-ID: <1420656594-8908-2-git-send-email-m-karicheri2@ti.com>
-References: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu: don't touch the secure STLBIALL register
+Date: Wed, 7 Jan 2015 18:53:22 +0000
+Message-ID: <20150107185322.GU7485@arm.com>
+References: <1419356362-27343-1-git-send-email-mitchelh@codeaurora.org>
+	<20150106141507.GB3484@arm.com>
+	<vnkwiogjhdgm.fsf@mitchelh-linux.qualcomm.com>
+	<CAL_JsqJYZ+-qt8UXPP7=pCsZFXeOkB8ogOzbuusdv1Cb+o1d2A@mail.gmail.com>
+	<vnkw61cjebbq.fsf@mitchelh-linux.qualcomm.com>
+	<20150107101300.GC7485@arm.com>
+	<vnkw4ms2cwb5.fsf@mitchelh-linux.qualcomm.com>
+	<20150107180420.GR7485@arm.com>
+	<vnkwh9w2bfr6.fsf@mitchelh-linux.qualcomm.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1420656594-8908-1-git-send-email-m-karicheri2-l0cyMroinI0@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org
-Cc: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <vnkwh9w2bfr6.fsf-Yf+dfxj6toJBVvN7MMdr1KRtKmQZhJ7pQQ4Iyu8u01E@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Function of_iommu_configure() is called from of_dma_configure() to
-setup iommu ops using DT property. This API is currently used for
-platform devices for which DMA configuration (including iommu ops)
-may come from device's parent. To extend this functionality for PCI
-devices, this API need to take a parent node ptr as an argument
-instead of assuming device's parent. This is needed since for PCI, the
-dma configuration may be defined in the DT node of the root bus bridge's
-parent device. Currently only dma-range is used for PCI and iommu is not
-supported. So return error if the device is PCI.
+On Wed, Jan 07, 2015 at 06:35:41PM +0000, Mitchel Humpherys wrote:
+> On Wed, Jan 07 2015 at 10:04:20 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> > On Wed, Jan 07, 2015 at 05:52:46PM +0000, Mitchel Humpherys wrote:
+> >> On Wed, Jan 07 2015 at 02:13:00 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> >> > If would be better to check for the ARM_SMMU_OPT_SECURE_CFG_ACCESS feature
+> >> > and, if it's set then zero ARM_SMMU_GR0_STLBIALL at the correct address
+> >> > otherwise do the ARM_SMMU_GR0_TLBIALLH and ARM_SMMU_GR0_TLBIALLNSNH.
+> >> 
+> >> I'm confused.  The problem I'm addressing here is that we're touching a
+> >> register that's marked as "secure only", which causes our system to
+> >> crash.  Why would we ever want to touch a secure only register, calxeda
+> >> workaround or not?
+> >
+> > Because I think the way the SMMU is wired for Calxeda is that the CPU can
+> > only see the secure side of the register interface, so the only way to nuke
+> > the whole TLB would be to use ARM_SMMU_GR0_STLBIALL.
+> 
+> Still not sure I understand what "the correct address" is for STLBIALL
+> on Calxeda (i.e. whether or not we need to use ARM_SMMU_GR0_NS), but
+> something like:
 
-Signed-off-by: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
----
- drivers/iommu/of_iommu.c |   10 ++++++++--
- drivers/of/platform.c    |    2 +-
- include/linux/of_iommu.h |    6 ++++--
- 3 files changed, 13 insertions(+), 5 deletions(-)
+Hehe, I wasn't actually expecting a patch, but thanks!
 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index af1dc6a..396bc77 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -133,19 +133,25 @@ struct iommu_ops *of_iommu_get_ops(struct device_node *np)
- 	return ops;
- }
- 
--struct iommu_ops *of_iommu_configure(struct device *dev)
-+struct iommu_ops *of_iommu_configure(struct device *dev,
-+				     struct device_node *node)
- {
- 	struct of_phandle_args iommu_spec;
- 	struct device_node *np;
- 	struct iommu_ops *ops = NULL;
- 	int idx = 0;
- 
-+	if (dev_is_pci(dev)) {
-+		dev_err(dev, "iommu is currently not supported for PCI\n");
-+		return NULL;
-+	}
-+
- 	/*
- 	 * We don't currently walk up the tree looking for a parent IOMMU.
- 	 * See the `Notes:' section of
- 	 * Documentation/devicetree/bindings/iommu/iommu.txt
- 	 */
--	while (!of_parse_phandle_with_args(dev->of_node, "iommus",
-+	while (!of_parse_phandle_with_args(node, "iommus",
- 					   "#iommu-cells", idx,
- 					   &iommu_spec)) {
- 		np = iommu_spec.np;
-diff --git a/drivers/of/platform.c b/drivers/of/platform.c
-index a54ec10..7675b79 100644
---- a/drivers/of/platform.c
-+++ b/drivers/of/platform.c
-@@ -196,7 +196,7 @@ static void of_dma_configure(struct device *dev)
- 	dev_dbg(dev, "device is%sdma coherent\n",
- 		coherent ? " " : " not ");
- 
--	iommu = of_iommu_configure(dev);
-+	iommu = of_iommu_configure(dev, dev->of_node);
- 	dev_dbg(dev, "device is%sbehind an iommu\n",
- 		iommu ? " " : " not ");
- 
-diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
-index 16c7554..3258cbb 100644
---- a/include/linux/of_iommu.h
-+++ b/include/linux/of_iommu.h
-@@ -12,7 +12,8 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
- 			     size_t *size);
- 
- extern void of_iommu_init(void);
--extern struct iommu_ops *of_iommu_configure(struct device *dev);
-+extern struct iommu_ops *of_iommu_configure(struct device *dev,
-+					struct device_node *np);
- 
- #else
- 
-@@ -24,7 +25,8 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
- }
- 
- static inline void of_iommu_init(void) { }
--static inline struct iommu_ops *of_iommu_configure(struct device *dev)
-+static inline struct iommu_ops *of_iommu_configure(struct device *dev,
-+					 struct device_node *np)
- {
- 	return NULL;
- }
--- 
-1.7.9.5
+> -- >8 --
+> Subject: [PATCH v2] iommu/arm-smmu: don't touch the secure STLBIALL register
+> 
+> Currently we do a STLBIALL when we initialize the SMMU.  However, on
+> systems with sane secure
+> configurations (i.e. !ARM_SMMU_OPT_SECURE_CFG_ACCESS) that register is
+> not supposed to be touched and is marked as "Secure only" in the spec.
+> Touching it results in a crash on those platforms.  However, on
+> platforms with ARM_SMMU_OPT_SECURE_CFG_ACCESS it's the only way to nuke
+> the whole TLB, so leave it in for them but rip it out for everyone else.
+> 
+> Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> ---
+>  drivers/iommu/arm-smmu.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 60558f794922..d4c149d83f3d 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1686,9 +1686,12 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+>  	}
+>  
+>  	/* Invalidate the TLB, just in case */
+> -	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_STLBIALL);
+> -	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLH);
+> -	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLNSNH);
+> +	if (smmu->options & ARM_SMMU_OPT_SECURE_CFG_ACCESS) {
+> +		writel_relaxed(0, gr0_base + ARM_SMMU_GR0_STLBIALL);
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Right, so this is the bit where we'd need some Calxeda information about
+whether or not to subtract 0x400 from gr0_base or not.
+
+> +	} else {
+> +		writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLH);
+> +		writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLNSNH);
+> +	}
+
+For now, I've applied your original patch pending any insight on the above.
+
+Cheers,
+
+Will
