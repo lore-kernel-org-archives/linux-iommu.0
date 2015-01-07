@@ -1,15 +1,12 @@
-From: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: Re: [PATCH v7 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
-Date: Wed, 07 Jan 2015 13:25:51 +0800
-Message-ID: <54ACC35F.1070007@hp.com>
-References: <1420603474-4235-1-git-send-email-zhen-hual@hp.com>
-	<54ACB1E9.9070904@hp.com>
-	<20150107050247.GA16050@dhcp-16-116.nay.redhat.com>
+From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [Patch v2 00/16] Refine IR initialization flow and fixes bugs related
+	to X2APIC
+Date: Wed,  7 Jan 2015 15:31:27 +0800
+Message-ID: <1420615903-28253-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150107050247.GA16050-je1gSBvt1Tcx0jIIkfS+Ph/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,208 +16,102 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Li,
-	ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-It is same as the last one I send to you yesterday.
+When converting x86 to new hierarchy irqdoamin framework, Thomas noticed
+that the interrupt remapping initialization flow is a little complex and
+has troubles in memory allocation. Then there is a joint force to
+simplify IR initialization flow, please refer to related threads at:
+https://lkml.org/lkml/2014/12/5/114
+https://lkml.org/lkml/2014/12/10/20
+https://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg788792.html
 
-The continuous memory that needed for data in this patchset:
-RE: PAGE_SIZE, 4096 Bytes;
-IRTE: 65536 * 16 ; 1M Bytes;
+This patch set is based on v3.19-rc3. And you may access it at:
+https://github.com/jiangliu/linux.git ir_init_v2
 
-It should use same memory as the old versions of this patchset. The 
-changes for the last version do not need more memory.
+This patch set combimes above three patches to simplify IR initalization
+flow and solves memory allocation issues. While at it, this patch set
+also refines CPU X2APIC initialization code for maintenance. It also
+fixes two bugs related to X2APIC support.
+1) System hangs or panics if BIOS enables CPU X2APIC mode but kernel
+   doesn't support X2APIC.
+2) System livelocks if BIOS enables CPU X2APIC but opt-outs IR X2APIC.
 
-Regards
-Zhenhua
+This patch set has been tested with on an Intel 4-socket system with
+following configuration:
+---------------------------------------------------------------------------
+[CPU X2APIC]	[IR X2APIC]	[Linux IR]	[Linux X2APIC]	[Result]
+1     D		    /		    D		    D		  OK
+2     D		    /		    E		    D		  OK
+3     D		    /		    E		    E		  OK
+4     P		    /		    E		    E		  OK
+5     P		    /		    D		    D		  Panic(expected)
+6     P		    /		    E		    D		  Panic(expected)
+7     P		    H		    E		    E		  OK
+----------------------------------------------------------------------------
+CPU X2APIC: whether CPU X2APIC is enabled by hardware and BIOS
+IR X2APIC: whether interrupt remapping hardware supports X2APIC mode
+Linux IR: whether interrupt remapping is enabled by Linux kernel
+Linux X2APIC: whether X2APIC is supported by Linux kernel
+D: disabled
+E: enabled
+/: Not care
+P: CPU X2APIC pre-enabled by BIOS
+H: Hard-coded to opt-out X2APIC support in interrupt remapping hardware
 
-On 01/07/2015 01:02 PM, Baoquan He wrote:
-> On 01/07/15 at 12:11pm, Li, ZhenHua wrote:
->> Many thanks to Takao Indoh and Baoquan He, for your testing on more
->> different systems.
->>
->> The calling of flush functions are added to this version.
->>
->> The usage of __iommu_flush_cache function :
->> 1. Fixes a dump on Takao's system.
->> 2. Reduces the count of faults on Baoquan's system.
->
-> I am testing the version you sent to me yesterday afternoon. Is that
-> different with this patchset? I found your patchset man reserve a big
-> contiguous memory region under 896M, this will cause the crashkernel
-> reservation failed when I set crashkernel=320M. The reason I increase
-> the crashkerenl reservation to 320M is 256M is not enough and cause OOM
-> when that patchset is tested.
->
-> I am checking what happened.
->
->
-> Thanks
-> Baoquan
->
->>
->> Regards
->> Zhenhua
->>
->> On 01/07/2015 12:04 PM, Li, Zhen-Hua wrote:
->>> This patchset is an update of Bill Sumner's patchset, implements a fix for:
->>> If a kernel boots with intel_iommu=on on a system that supports intel vt-d,
->>> when a panic happens, the kdump kernel will boot with these faults:
->>>
->>>      dmar: DRHD: handling fault status reg 102
->>>      dmar: DMAR:[DMA Read] Request device [01:00.0] fault addr fff80000
->>>      DMAR:[fault reason 01] Present bit in root entry is clear
->>>
->>>      dmar: DRHD: handling fault status reg 2
->>>      dmar: INTR-REMAP: Request device [[61:00.0] fault index 42
->>>      INTR-REMAP:[fault reason 34] Present field in the IRTE entry is clear
->>>
->>> On some system, the interrupt remapping fault will also happen even if the
->>> intel_iommu is not set to on, because the interrupt remapping will be enabled
->>> when x2apic is needed by the system.
->>>
->>> The cause of the DMA fault is described in Bill's original version, and the
->>> INTR-Remap fault is caused by a similar reason. In short, the initialization
->>> of vt-d drivers causes the in-flight DMA and interrupt requests get wrong
->>> response.
->>>
->>> To fix this problem, we modifies the behaviors of the intel vt-d in the
->>> crashdump kernel:
->>>
->>> For DMA Remapping:
->>> 1. To accept the vt-d hardware in an active state,
->>> 2. Do not disable and re-enable the translation, keep it enabled.
->>> 3. Use the old root entry table, do not rewrite the RTA register.
->>> 4. Malloc and use new context entry table and page table, copy data from the
->>>     old ones that used by the old kernel.
->>> 5. to use different portions of the iova address ranges for the device drivers
->>>     in the crashdump kernel than the iova ranges that were in-use at the time
->>>     of the panic.
->>> 6. After device driver is loaded, when it issues the first dma_map command,
->>>     free the dmar_domain structure for this device, and generate a new one, so
->>>     that the device can be assigned a new and empty page table.
->>> 7. When a new context entry table is generated, we also save its address to
->>>     the old root entry table.
->>>
->>> For Interrupt Remapping:
->>> 1. To accept the vt-d hardware in an active state,
->>> 2. Do not disable and re-enable the interrupt remapping, keep it enabled.
->>> 3. Use the old interrupt remapping table, do not rewrite the IRTA register.
->>> 4. When ioapic entry is setup, the interrupt remapping table is changed, and
->>>     the updated data will be stored to the old interrupt remapping table.
->>>
->>> Advantages of this approach:
->>> 1. All manipulation of the IO-device is done by the Linux device-driver
->>>     for that device.
->>> 2. This approach behaves in a manner very similar to operation without an
->>>     active iommu.
->>> 3. Any activity between the IO-device and its RMRR areas is handled by the
->>>     device-driver in the same manner as during a non-kdump boot.
->>> 4. If an IO-device has no driver in the kdump kernel, it is simply left alone.
->>>     This supports the practice of creating a special kdump kernel without
->>>     drivers for any devices that are not required for taking a crashdump.
->>> 5. Minimal code-changes among the existing mainline intel vt-d code.
->>>
->>> Summary of changes in this patch set:
->>> 1. Added some useful function for root entry table in code intel-iommu.c
->>> 2. Added new members to struct root_entry and struct irte;
->>> 3. Functions to load old root entry table to iommu->root_entry from the memory
->>>     of old kernel.
->>> 4. Functions to malloc new context entry table and page table and copy the data
->>>     from the old ones to the malloced new ones.
->>> 5. Functions to enable support for DMA remapping in kdump kernel.
->>> 6. Functions to load old irte data from the old kernel to the kdump kernel.
->>> 7. Some code changes that support other behaviours that have been listed.
->>> 8. In the new functions, use physical address as "unsigned long" type, not
->>>     pointers.
->>>
->>> Original version by Bill Sumner:
->>>      https://lkml.org/lkml/2014/1/10/518
->>>      https://lkml.org/lkml/2014/4/15/716
->>>      https://lkml.org/lkml/2014/4/24/836
->>>
->>> Zhenhua's updates:
->>>      https://lkml.org/lkml/2014/10/21/134
->>>      https://lkml.org/lkml/2014/12/15/121
->>>      https://lkml.org/lkml/2014/12/22/53
->>>
->>> Changelog[v7]:
->>>      1. Use __iommu_flush_cache to flush the data to hardware.
->>>
->>> Changelog[v6]:
->>>      1. Use "unsigned long" as type of physical address.
->>>      2. Use new function unmap_device_dma to unmap the old dma.
->>>      3. Some small incorrect bits order for aw shift.
->>>
->>> Changelog[v5]:
->>>      1. Do not disable and re-enable traslation and interrupt remapping.
->>>      2. Use old root entry table.
->>>      3. Use old interrupt remapping table.
->>>      4. New functions to copy data from old kernel, and save to old kernel mem.
->>>      5. New functions to save updated root entry table and irte table.
->>>      6. Use intel_unmap to unmap the old dma;
->>>      7. Allocate new pages while driver is being loaded.
->>>
->>> Changelog[v4]:
->>>      1. Cut off the patches that move some defines and functions to new files.
->>>      2. Reduce the numbers of patches to five, make it more easier to read.
->>>      3. Changed the name of functions, make them consistent with current context
->>>         get/set functions.
->>>      4. Add change to function __iommu_attach_domain.
->>>
->>> Changelog[v3]:
->>>      1. Commented-out "#define DEBUG 1" to eliminate debug messages.
->>>      2. Updated the comments about changes in each version.
->>>      3. Fixed: one-line added to Copy-Translations patch to initialize the iovad
->>>            struct as recommended by Baoquan He [bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
->>>            init_iova_domain(&domain->iovad, DMA_32BIT_PFN);
->>>
->>> Changelog[v2]:
->>>      The following series implements a fix for:
->>>      A kdump problem about DMA that has been discussed for a long time. That is,
->>>      when a kernel panics and boots into the kdump kernel, DMA started by the
->>>      panicked kernel is not stopped before the kdump kernel is booted and the
->>>      kdump kernel disables the IOMMU while this DMA continues.  This causes the
->>>      IOMMU to stop translating the DMA addresses as IOVAs and begin to treat
->>>      them as physical memory addresses -- which causes the DMA to either:
->>>          (1) generate DMAR errors or
->>>          (2) generate PCI SERR errors or
->>>          (3) transfer data to or from incorrect areas of memory. Often this
->>>              causes the dump to fail.
->>>
->>> Changelog[v1]:
->>>      The original version.
->>>
->>> Changed in this version:
->>> 1. Do not disable and re-enable traslation and interrupt remapping.
->>> 2. Use old root entry table.
->>> 3. Use old interrupt remapping table.
->>> 4. Use "unsigned long" as physical address.
->>> 5. Use intel_unmap to unmap the old dma;
->>>
->>> Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> helps testing this patchset.
->>>
->>>    iommu/vt-d: Update iommu_attach_domain() and its callers
->>>    iommu/vt-d: Items required for kdump
->>>    iommu/vt-d: Add domain-id functions
->>>    iommu/vt-d: functions to copy data from old mem
->>>    iommu/vt-d: Add functions to load and save old re
->>>    iommu/vt-d: datatypes and functions used for kdump
->>>    iommu/vt-d: enable kdump support in iommu module
->>>    iommu/vt-d: assign new page table for dma_map
->>>    iommu/vt-d: Copy functions for irte
->>>    iommu/vt-d: Use old irte in kdump kernel
->>>
->>> Signed-off-by: Bill Sumner <billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->>> Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
->>> Signed-off-by: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
->>> Tested-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
->>> ---
->>>   drivers/iommu/intel-iommu.c         | 1050 +++++++++++++++++++++++++++++++++--
->>>   drivers/iommu/intel_irq_remapping.c |  104 +++-
->>>   include/linux/intel-iommu.h         |   18 +
->>>   3 files changed, 1130 insertions(+), 42 deletions(-)
->>>
->>
+The patch set changes the behevior of the last three rows:
+1) Row 5 and 6 panics with clear messages instead of random hang or panic.
+2) Row 7 boots successfully instead of livelocking.
+
+The patch set also passes Fengguang's 0day test suites.
+
+Due to lack of hardware platforms for tests, tests on AMD platform are
+welcomed!
+
+V1->V2:
+1) Rebase onto v3.19-rc3
+
+Jiang Liu (11):
+  x86/apic: Panic if kernel doesn't support x2apic but BIOS has enabled
+    x2apic
+  x86/apic: Kill useless variable x2apic_enabled in function
+    enable_IR_x2apic()
+  x86/apic: Correctly detect X2APIC status in function enable_IR()
+  x86/apic: Refine enable_IR_x2apic() and related functions
+  iommu/vt-d: Prepare for killing function irq_remapping_supported()
+  iommu/vt-d: Allow IR works in XAPIC mode though CPU works in X2APIC
+    mode
+  x86/apic: Only disable CPU x2apic mode when necessary
+  iommu/irq_remapping: Kill function irq_remapping_supported() and
+    related code
+  iommu/irq_remapping: Refine function irq_remapping_prepare() for
+    maintenance
+  iommu/irq_remapping: Change variable disable_irq_remap to be static
+  iommu/irq_remapping: Normailize the way to detect whether IR is
+    enabled
+
+Joerg Roedel (2):
+  iommu/vt-d: Allocate IRQ remapping data structures only for all
+    IOMMUs
+  iommu/amd: Check for irq-remap support amd_iommu_prepare()
+
+Thomas Gleixner (3):
+  iommu, x86: Restructure setup of the irq remapping feature
+  iommu/vt-d: Move iommu preparatory allocations to
+    irq_remap_ops.prepare
+  iommu/vt-d: Convert allocations to GFP_KERNEL
+
+ arch/x86/include/asm/irq_remapping.h |    4 --
+ arch/x86/kernel/apic/apic.c          |  104 ++++++++++++++++------------------
+ drivers/iommu/amd_iommu.c            |    1 -
+ drivers/iommu/amd_iommu_init.c       |   10 +---
+ drivers/iommu/amd_iommu_proto.h      |    1 -
+ drivers/iommu/intel_irq_remapping.c  |   96 ++++++++++++++++---------------
+ drivers/iommu/irq_remapping.c        |   74 ++++++++----------------
+ drivers/iommu/irq_remapping.h        |    5 --
+ 8 files changed, 128 insertions(+), 167 deletions(-)
+
+-- 
+1.7.10.4
