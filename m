@@ -1,161 +1,170 @@
-From: Joonyoung Shim <jy0922.shim@samsung.com>
-Subject: Re: [PATCH v3 00/19] Exynos SYSMMU (IOMMU) integration with DT and
- DMA-mapping subsystem
-Date: Wed, 07 Jan 2015 11:03:12 +0900
-Message-ID: <54AC93E0.8010705@samsung.com>
-References: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com>
- <1417514366.21830.22.camel@collabora.co.uk> <54818768.3080303@samsung.com>
- <CABxcv=n=eNqbyBbOk1Wb87tCnnLZAJQurmCdeTOSqMZMbNaSHw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <CABxcv=n=eNqbyBbOk1Wb87tCnnLZAJQurmCdeTOSqMZMbNaSHw@mail.gmail.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Javier Martinez Canillas <javier@dowhile0.org>, Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Sjoerd Simons <sjoerd.simons@collabora.co.uk>, Inki Dae <inki.dae@samsung.com>, iommu@lists.linux-foundation.org, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Kukjin Kim <kgene.kim@samsung.com>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Javier Martinez Canillas <javier.martinez@collabora.co.uk>, Gustavo Padovan <gustavo.>
+From: "Li, Zhen-Hua" <zhen-hual@hp.com>
+Subject: [PATCH v7 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
+Date: Wed,  7 Jan 2015 12:04:24 +0800
+Message-ID: <1420603474-4235-1-git-send-email-zhen-hual@hp.com>
+Return-path: <linux-pci-owner@vger.kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, joro@8bytes.org, vgoyal@redhat.com, dyoung@redhat.com
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, zhen-hual@hp.com, rwright@hp.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/06/2015 06:49 PM, Javier Martinez Canillas wrote:
-> Hello Marek,
-> 
-> On Fri, Dec 5, 2014 at 11:22 AM, Marek Szyprowski
-> <m.szyprowski@samsung.com> wrote:
->> On 2014-12-02 10:59, Sjoerd Simons wrote:
->>>>
->>>> This is another attempt to finally make Exynos SYSMMU driver fully
->>>> integrated with DMA-mapping subsystem. The main change from previous
->>>> version is a rebase onto latest "automatic DMA configuration for IOMMU
->>>> masters" patches from Will Deacon.
->>>
->>> Do you happen to know if anyone is working on iommu/dma-mapping patches
->>> for Exynos 5 based on this patchset?
->>
->>
->> I hope to add Exynos5 SYSMMU patches to the next iteration of my patchset,
->> but I doubt it will get into v3.19-rc1.
->>
->>> For some background to that question, We (re-)discovered yesterday that
->>> the out-of-tree exynos-reference kernel iommu patches are required to
->>> get HDMI out working on exynos 5 boards. The current situation in
->>> mainline is rather broken, HDMI output without CONFIG_DRM_EXYNOS_IOMMU
->>> results in just displaying stripes[0]. While turning on
->>> CONFIG_DRM_EXYNOS_IOMMU causes a kernel oops at boot....
->>
->>
->> We have observed similar issues with Exynos4 based boards, when LCD0 power
->> domain was turned off and only TV power domain has been powered on. Please
->> check the power domain configuration. Maybe in case of Exynos5 the same
-> 
-> So IIUC what you are saying is that enabling the Exynos DRM IOMMU
-> support has the side effect of turning on all the power domains needed
-> by HDMI? I've compared the power domains configuration in mainline
-> with the downstream exynos-reference [0] tree and I didn't find any
-> differences.
-> 
->> issue
->> is caused by the interaction between DISP1 and GSCL domains.
->>
-> 
-> I was also not able to find a dependency betwen GSCL and DISP1 power
-> domains in the Exynos 5420 manual. But If that's the case then your
-> patch to add support for sub-power domains on Exynos [1] will also be
-> needed, right?
-> 
-> AFAICT from the manual, all the used modules in the case of HDMI +
-> Display (LCD, DP, HDMI and MIXER) needs only the DISP1 power domain to
-> be enabled which BTW was removed for Exynos5420 on commit d51cad7
-> ("ARM: dts: remove display power domain for exynos5420"). It seems to
-> work just because the power domain is turned on by the bootloader.
-> 
-> Also I tried forcing the kernel to not disable unused power domains by
-> passing the pd_ignore_unused parameter to the kernel command line. I
-> see on the kernel log a "genpd: Not disabling unused power domains"
-> message but HDMI output still has the stripes that Sjoerd mentioned.
-> Do you know if Exynos DRM HDMI in mainline is supposed to work without
-> SysMMU / IOMMU support?
-> 
+This patchset is an update of Bill Sumner's patchset, implements a fix for:
+If a kernel boots with intel_iommu=on on a system that supports intel vt-d, 
+when a panic happens, the kdump kernel will boot with these faults:
 
-I don't think iommu support and power domain issue are related. I also
-get displaying stripes via hdmi but it is just power domain issue
-regardless iommu support.
+    dmar: DRHD: handling fault status reg 102
+    dmar: DMAR:[DMA Read] Request device [01:00.0] fault addr fff80000
+    DMAR:[fault reason 01] Present bit in root entry is clear
 
-I observed 8th bit from 0x1445000C register of mixer is set to 1 with
-displaying stripes. It means "The graphic layer0 line buffer underflow".
-There was same underflow issue on Exynos4 based boards. As Marek said,
-because LCD0 power domain was turned off.
+    dmar: DRHD: handling fault status reg 2
+    dmar: INTR-REMAP: Request device [[61:00.0] fault index 42
+    INTR-REMAP:[fault reason 34] Present field in the IRTE entry is clear
 
-I just tried to turn off DISP1 power domain at u-boot and DISP1 power
-domain is turned on from kernel hdmi and mixer driver on odroid xu3 
-board. As the result, i can see displaying penguin logo from hdmi.
+On some system, the interrupt remapping fault will also happen even if the 
+intel_iommu is not set to on, because the interrupt remapping will be enabled 
+when x2apic is needed by the system.
 
-But the problem exists still because it is failed to control on/off of
-DISP1 power domain more than twice from kernel hdmi and mixer driver.[0]
+The cause of the DMA fault is described in Bill's original version, and the 
+INTR-Remap fault is caused by a similar reason. In short, the initialization 
+of vt-d drivers causes the in-flight DMA and interrupt requests get wrong 
+response.
 
-Thanks.
+To fix this problem, we modifies the behaviors of the intel vt-d in the 
+crashdump kernel:
 
-[0]:
-[   63.477922] Power domain power-domain disable failed
-[   63.481416] power-domain: Power-off latency exceeded, new value 10613042 ns
-[   63.499805] power-domain: Power-on latency exceeded, new value 8863333 ns
-[   63.506766] Unhandled fault: external abort on non-linefetch (0x1008) at 0xf0280000
-[   63.514191] Internal error: : 1008 [#1] PREEMPT SMP ARM
-[   63.519386] Modules linked in:
-[   63.522425] CPU: 0 PID: 1499 Comm: modetest Not tainted 3.18.1-00007-g04f5a4b-dirty #13
-[   63.530393] task: eddd3400 ti: edfd0000 task.ti: edfd0000
-[   63.535779] PC is at mixer_dpms+0x1dc/0x704
-[   63.539931] LR is at __mutex_unlock_slowpath+0xa8/0x194
-[   63.545125] pc : [<c02c0540>]    lr : [<c04c3eb8>]    psr: 60000013
-[   63.545125] sp : edfd1c98  ip : ee709ef4  fp : ee752aa0
-[   63.556561] r10: c07124b8  r9 : ee752800  r8 : c0712a38
-[   63.561761] r7 : c0712a38  r6 : ee451a80  r5 : ee523a28  r4 : ee523a10
-[   63.568260] r3 : f0280000  r2 : eddd3400  r1 : 035c035b  r0 : ee523a28
-[   63.574760] Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment user
-[   63.581864] Control: 10c5387d  Table: 6d81006a  DAC: 00000015
-[   63.587584] Process modetest (pid: 1499, stack limit = 0xedfd0238)
-[   63.593736] Stack: (0xedfd1c98 to 0xedfd2000)
-[   63.598070] 1c80:                                                       c02c0364 c0766b8c
-[   63.606219] 1ca0: 00000000 edf8d000 c0712a38 ee753c00 ee752800 c07124b8 ee752aa0 c02b5118
-[   63.614365] 1cc0: edf8d900 ee422c08 ee422810 ee753c00 edf8d900 ee752800 ee753c00 c0712a38
-[   63.622510] 1ce0: edf8d000 00000001 edf8d900 c02b52c4 ee752a9c ee753c00 edf8d000 c02901cc
-[   63.630656] 1d00: 00000000 00000000 00000001 edf8d014 00000000 00000000 00000000 ee753c68
-[   63.638801] 1d20: ee753c00 c0766b8c 00000000 00000000 00000018 dededede 00000000 30323931
-[   63.646946] 1d40: 38303178 00000030 00000000 00000000 00000000 00000000 00000000 00000000
-[   63.655092] 1d60: 00000048 00024414 00000780 000007d8 00000804 00000898 00000000 00000438
-[   63.663237] 1d80: 0000043c 00000441 00000465 00000000 00000005 00000256 00000150 00024414
-[   63.671382] 1da0: 00000780 00000780 00000898 000007d8 00000804 00000898 00000000 00000438
-[   63.679528] 1dc0: 00000438 00000465 0000043c 00000441 00000465 00000000 00000000 0000003c
-[   63.687674] 1de0: 00000000 00000000 00000001 ee753c00 ee752a7c ee5a2b80 ee752a88 ee752aa0
-[   63.695820] 1e00: eddd2c00 c0766b8c 00000001 c0290d18 00000000 c0040374 ee753c10 edfd0000
-[   63.703965] 1e20: ee752800 00000001 00000000 ed82bec0 00000000 00000000 ee753c00 ee752aa0
-[   63.712110] 1e40: c07124b8 00000000 ee753c10 edfa8580 ee753c00 00000000 edc8b500 00000000
-[   63.720256] 1e60: ed8827a8 ee525580 ee752958 c02a5f58 ee5a2b80 00000001 00000000 edc8b500
-[   63.728402] 1e80: 00000000 c02971b8 ee752800 edc8b500 ee752800 edc8b500 ee75285c ee752800
-[   63.736547] 1ea0: ee752834 c02971f4 ee752800 c0766b8c ee75285c c029c3c0 ed8827ac ed882700
-[   63.744692] 1ec0: ee75285c c029c7c4 ee24b0e8 00000001 edfa8f80 ee752960 60000013 00000000
-[   63.752838] 1ee0: ee7a9508 ed882000 ede78d60 00000000 edf8d490 ee0bd7b8 00000008 ed882008
-[   63.760983] 1f00: 00000000 c00cbf78 00000000 00000000 eddd374c 00000000 c072ad84 eddd3400
-[   63.769129] 1f20: edfd0008 00000000 ed874e44 c003777c eddd375c eddd3400 edfd0000 ed874e00
-[   63.777274] 1f40: edfd0008 c0022af8 00000000 00000001 ed874e04 ee78d898 ee78d8a0 c00b1d2c
-[   63.785420] 1f60: 000000dd edcdb700 00000000 edfd0000 000000f8 c000e824 edfd0000 00000000
-[   63.793566] 1f80: 00000000 c0023ee8 000a3d78 b6f2a770 b6f2a770 000000f8 c000e824 c0023f64
-[   63.801711] 1fa0: 000a3d78 c000e6a0 000a3d78 b6f2a770 00000000 000a3d64 00000008 00000000
-[   63.809857] 1fc0: 000a3d78 b6f2a770 b6f2a770 000000f8 b6e56248 00000000 0000fd4c 00000000
-[   63.818002] 1fe0: b6fa2000 bed38ba8 b6e1a4dc b6e883d4 60000010 00000000 ffffffff ffffffff
-[   63.826162] [<c02c0540>] (mixer_dpms) from [<c02b5118>] (exynos_drm_crtc_dpms+0x6c/0x17c)
-[   63.834296] [<c02b5118>] (exynos_drm_crtc_dpms) from [<c02b52c4>] (exynos_drm_crtc_commit+0x14/0x44)
-[   63.843400] [<c02b52c4>] (exynos_drm_crtc_commit) from [<c02901cc>] (drm_crtc_helper_set_mode+0x3d0/0x51c)
-[   63.853016] [<c02901cc>] (drm_crtc_helper_set_mode) from [<c0290d18>] (drm_crtc_helper_set_config+0x87c/0x9dc)
-[   63.862982] [<c0290d18>] (drm_crtc_helper_set_config) from [<c02a5f58>] (drm_mode_set_config_internal+0x58/0xd4)
-[   63.873119] [<c02a5f58>] (drm_mode_set_config_internal) from [<c02971b8>] (restore_fbdev_mode+0xcc/0xec)
-[   63.882562] [<c02971b8>] (restore_fbdev_mode) from [<c02971f4>] (drm_fb_helper_restore_fbdev_mode_unlocked+0x1c/0x30)
-[   63.893135] [<c02971f4>] (drm_fb_helper_restore_fbdev_mode_unlocked) from [<c029c3c0>] (drm_lastclose+0x34/0x118)
-[   63.903358] [<c029c3c0>] (drm_lastclose) from [<c029c7c4>] (drm_release+0x320/0x4c8)
-[   63.911071] [<c029c7c4>] (drm_release) from [<c00cbf78>] (__fput+0x80/0x1c8)
-[   63.918095] [<c00cbf78>] (__fput) from [<c003777c>] (task_work_run+0xac/0xe4)
-[   63.925204] [<c003777c>] (task_work_run) from [<c0022af8>] (do_exit+0x2cc/0x958)
-[   63.932563] [<c0022af8>] (do_exit) from [<c0023ee8>] (do_group_exit+0x4c/0xb8)
-[   63.939754] [<c0023ee8>] (do_group_exit) from [<c0023f64>] (__wake_up_parent+0x0/0x18)
-[   63.947636] Code: e1a00005 e5c43011 eb080e99 e5943044 (e5936000) 
-[   63.953701] ---[ end trace d3294b7b867ca713 ]---
-[   63.958290] Fixing recursive fault but reboot is needed!
+For DMA Remapping:
+1. To accept the vt-d hardware in an active state,
+2. Do not disable and re-enable the translation, keep it enabled.
+3. Use the old root entry table, do not rewrite the RTA register.
+4. Malloc and use new context entry table and page table, copy data from the 
+   old ones that used by the old kernel.
+5. to use different portions of the iova address ranges for the device drivers
+   in the crashdump kernel than the iova ranges that were in-use at the time
+   of the panic.  
+6. After device driver is loaded, when it issues the first dma_map command, 
+   free the dmar_domain structure for this device, and generate a new one, so 
+   that the device can be assigned a new and empty page table. 
+7. When a new context entry table is generated, we also save its address to 
+   the old root entry table.
+
+For Interrupt Remapping:
+1. To accept the vt-d hardware in an active state,
+2. Do not disable and re-enable the interrupt remapping, keep it enabled.
+3. Use the old interrupt remapping table, do not rewrite the IRTA register.
+4. When ioapic entry is setup, the interrupt remapping table is changed, and 
+   the updated data will be stored to the old interrupt remapping table.
+
+Advantages of this approach:
+1. All manipulation of the IO-device is done by the Linux device-driver
+   for that device.
+2. This approach behaves in a manner very similar to operation without an
+   active iommu.
+3. Any activity between the IO-device and its RMRR areas is handled by the
+   device-driver in the same manner as during a non-kdump boot.
+4. If an IO-device has no driver in the kdump kernel, it is simply left alone.
+   This supports the practice of creating a special kdump kernel without
+   drivers for any devices that are not required for taking a crashdump. 
+5. Minimal code-changes among the existing mainline intel vt-d code.
+
+Summary of changes in this patch set:
+1. Added some useful function for root entry table in code intel-iommu.c
+2. Added new members to struct root_entry and struct irte;
+3. Functions to load old root entry table to iommu->root_entry from the memory 
+   of old kernel.
+4. Functions to malloc new context entry table and page table and copy the data
+   from the old ones to the malloced new ones.
+5. Functions to enable support for DMA remapping in kdump kernel.
+6. Functions to load old irte data from the old kernel to the kdump kernel.
+7. Some code changes that support other behaviours that have been listed.
+8. In the new functions, use physical address as "unsigned long" type, not 
+   pointers.
+
+Original version by Bill Sumner:
+    https://lkml.org/lkml/2014/1/10/518
+    https://lkml.org/lkml/2014/4/15/716
+    https://lkml.org/lkml/2014/4/24/836
+
+Zhenhua's updates:
+    https://lkml.org/lkml/2014/10/21/134
+    https://lkml.org/lkml/2014/12/15/121
+    https://lkml.org/lkml/2014/12/22/53
+
+Changelog[v7]:
+    1. Use __iommu_flush_cache to flush the data to hardware.
+
+Changelog[v6]:
+    1. Use "unsigned long" as type of physical address.
+    2. Use new function unmap_device_dma to unmap the old dma.
+    3. Some small incorrect bits order for aw shift.
+
+Changelog[v5]:
+    1. Do not disable and re-enable traslation and interrupt remapping. 
+    2. Use old root entry table.
+    3. Use old interrupt remapping table.
+    4. New functions to copy data from old kernel, and save to old kernel mem.
+    5. New functions to save updated root entry table and irte table.
+    6. Use intel_unmap to unmap the old dma;
+    7. Allocate new pages while driver is being loaded.
+
+Changelog[v4]:
+    1. Cut off the patches that move some defines and functions to new files.
+    2. Reduce the numbers of patches to five, make it more easier to read.
+    3. Changed the name of functions, make them consistent with current context
+       get/set functions.
+    4. Add change to function __iommu_attach_domain.
+
+Changelog[v3]:
+    1. Commented-out "#define DEBUG 1" to eliminate debug messages.
+    2. Updated the comments about changes in each version.
+    3. Fixed: one-line added to Copy-Translations patch to initialize the iovad
+          struct as recommended by Baoquan He [bhe@redhat.com]
+          init_iova_domain(&domain->iovad, DMA_32BIT_PFN);
+
+Changelog[v2]:
+    The following series implements a fix for:
+    A kdump problem about DMA that has been discussed for a long time. That is,
+    when a kernel panics and boots into the kdump kernel, DMA started by the
+    panicked kernel is not stopped before the kdump kernel is booted and the
+    kdump kernel disables the IOMMU while this DMA continues.  This causes the
+    IOMMU to stop translating the DMA addresses as IOVAs and begin to treat
+    them as physical memory addresses -- which causes the DMA to either:
+        (1) generate DMAR errors or 
+        (2) generate PCI SERR errors or 
+        (3) transfer data to or from incorrect areas of memory. Often this 
+            causes the dump to fail.
+
+Changelog[v1]:
+    The original version.
+
+Changed in this version:
+1. Do not disable and re-enable traslation and interrupt remapping. 
+2. Use old root entry table.
+3. Use old interrupt remapping table.
+4. Use "unsigned long" as physical address.
+5. Use intel_unmap to unmap the old dma;
+
+Baoquan He <bhe@redhat.com> helps testing this patchset.
+
+  iommu/vt-d: Update iommu_attach_domain() and its callers
+  iommu/vt-d: Items required for kdump
+  iommu/vt-d: Add domain-id functions
+  iommu/vt-d: functions to copy data from old mem
+  iommu/vt-d: Add functions to load and save old re
+  iommu/vt-d: datatypes and functions used for kdump
+  iommu/vt-d: enable kdump support in iommu module
+  iommu/vt-d: assign new page table for dma_map
+  iommu/vt-d: Copy functions for irte
+  iommu/vt-d: Use old irte in kdump kernel
+
+Signed-off-by: Bill Sumner <billsumnerlinux@gmail.com>
+Signed-off-by: Li, Zhen-Hua <zhen-hual@hp.com>
+Signed-off-by: Takao Indoh <indou.takao@jp.fujitsu.com>
+Tested-by: Baoquan He <bhe@redhat.com>
+---
+ drivers/iommu/intel-iommu.c         | 1050 +++++++++++++++++++++++++++++++++--
+ drivers/iommu/intel_irq_remapping.c |  104 +++-
+ include/linux/intel-iommu.h         |   18 +
+ 3 files changed, 1130 insertions(+), 42 deletions(-)
+
+-- 
+2.0.0-rc0
