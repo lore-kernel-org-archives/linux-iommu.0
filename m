@@ -1,113 +1,50 @@
 From: Murali Karicheri <m-karicheri2@ti.com>
-Subject: [PATCH v3 3/4] of/pci: add of_pci_dma_configure() update dma configuration
-Date: Wed, 7 Jan 2015 13:49:53 -0500
-Message-ID: <1420656594-8908-4-git-send-email-m-karicheri2@ti.com>
-References: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com>
+Subject: [PATCH v3 0/4] PCI: get DMA configuration from parent device
+Date: Wed, 7 Jan 2015 13:49:50 -0500
+Message-ID: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: joro@8bytes.org, grant.likely@linaro.org, robh+dt@kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, bhelgaas@google.com, linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org, will.deacon@arm.com, linux@arm.linux.org.uk, arnd@arndb.de
 Cc: Murali Karicheri <m-karicheri2@ti.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Add of_pci_dma_configure() to allow updating the dma configuration
-of the pci device using the configuration from DT of the parent of
-the root bridge device.
+PCI devices on Keystone doesn't have correct dma_pfn_offset set. This patch
+add capability to set the dma configuration such as dma-mask, dma_pfn_offset,
+and dma ops etc using the information from DT. The prior RFCs and discussions
+are available at [1] and [2] below.
 
-Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
----
- drivers/of/of_pci.c    |   39 +++++++++++++++++++++++++++++++++++++++
- include/linux/of_pci.h |   12 ++++++++++++
- 2 files changed, 51 insertions(+)
+[2] : https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg790244.html
+[1] : http://www.gossamer-threads.com/lists/linux/kernel/2024591
 
-diff --git a/drivers/of/of_pci.c b/drivers/of/of_pci.c
-index 88471d3..34878c9 100644
---- a/drivers/of/of_pci.c
-+++ b/drivers/of/of_pci.c
-@@ -2,6 +2,7 @@
- #include <linux/export.h>
- #include <linux/of.h>
- #include <linux/of_address.h>
-+#include <linux/of_device.h>
- #include <linux/of_pci.h>
- #include <linux/slab.h>
- 
-@@ -229,6 +230,44 @@ parse_failed:
- 	return err;
- }
- EXPORT_SYMBOL_GPL(of_pci_get_host_bridge_resources);
-+
-+/**
-+ * of_get_pci_root_bridge_parent - get the OF node of the root bridge's parent
-+ * @dev: ptr to pci_dev struct of the pci device
-+ *
-+ * This function will traverse the bus up to the root bus starting with
-+ * the child and return the OF node ptr to root bridge device's parent device.
-+ */
-+struct device_node *of_get_pci_root_bridge_parent(struct pci_dev *dev)
-+{
-+	struct pci_bus *bus = dev->bus;
-+	struct device *bridge;
-+
-+	while (!pci_is_root_bus(bus))
-+		bus = bus->parent;
-+	bridge = bus->bridge;
-+
-+	return bridge->parent->of_node;
-+}
-+EXPORT_SYMBOL_GPL(of_get_pci_root_bridge_parent);
-+
-+/**
-+ * of_pci_dma_configure - Setup DMA configuration
-+ * @dev: ptr to pci_dev struct of the pci device
-+ *
-+ * Function to update PCI devices's DMA configuration using the same
-+ * info from the OF node of root host bridge's parent.
-+ */
-+void of_pci_dma_configure(struct pci_dev *pci_dev)
-+{
-+	struct device *dev = &pci_dev->dev;
-+	struct device_node *parent_np;
-+
-+	parent_np = of_get_pci_root_bridge_parent(pci_dev);
-+	of_dma_configure(dev, parent_np);
-+}
-+EXPORT_SYMBOL_GPL(of_pci_dma_configure);
-+
- #endif /* CONFIG_OF_ADDRESS */
- 
- #ifdef CONFIG_PCI_MSI
-diff --git a/include/linux/of_pci.h b/include/linux/of_pci.h
-index ce0e5ab..0465a2a 100644
---- a/include/linux/of_pci.h
-+++ b/include/linux/of_pci.h
-@@ -16,6 +16,8 @@ int of_pci_get_devfn(struct device_node *np);
- int of_irq_parse_and_map_pci(const struct pci_dev *dev, u8 slot, u8 pin);
- int of_pci_parse_bus_range(struct device_node *node, struct resource *res);
- int of_get_pci_domain_nr(struct device_node *node);
-+struct device_node *of_get_pci_root_bridge_parent(struct pci_dev *dev);
-+void of_pci_dma_configure(struct pci_dev *pci_dev);
- #else
- static inline int of_irq_parse_pci(const struct pci_dev *pdev, struct of_phandle_args *out_irq)
- {
-@@ -50,6 +52,16 @@ of_get_pci_domain_nr(struct device_node *node)
- {
- 	return -1;
- }
-+
-+static inline struct device_node
-+*of_get_pci_root_bridge_parent(struct pci_dev *dev)
-+{
-+	return NULL;
-+}
-+
-+static inline void of_pci_dma_configure(struct pci_dev *pci_dev)
-+{
-+}
- #endif
- 
- #if defined(CONFIG_OF_ADDRESS)
+Change history:
+	v3 - addressed comments to re-use of_dma_configure() for PCI
+	   - To help re-use, change of_iommu_configure() function argument
+		- Move of_dma_configure to of/device.c
+		- Limit the of_iommu_configure to non pci devices
+	v2 - update size to coherent_dma_mask + 1 if dma-range info is missing
+	   - also check the np for null.
+	v1 - updates based on the comments against initial RFC.
+	   - Added a helper function to get the OF node of the parent
+	   - Added an API in of_pci.c to update DMA configuration of the pci
+	     device.
+
+Murali Karicheri (4):
+  of: iommu: add ptr to OF node arg to of_iommu_configure()
+  of: move of_dma_configure() to device,c to help re-use
+  of/pci: add of_pci_dma_configure() update dma configuration
+  PCI: update dma configuration from DT
+
+ drivers/iommu/of_iommu.c  |   10 ++++++--
+ drivers/of/device.c       |   58 +++++++++++++++++++++++++++++++++++++++++++++
+ drivers/of/of_pci.c       |   39 ++++++++++++++++++++++++++++++
+ drivers/of/platform.c     |   58 ++-------------------------------------------
+ drivers/pci/probe.c       |    2 ++
+ include/linux/of_device.h |    2 ++
+ include/linux/of_iommu.h  |    6 +++--
+ include/linux/of_pci.h    |   12 ++++++++++
+ 8 files changed, 127 insertions(+), 60 deletions(-)
+
 -- 
 1.7.9.5
