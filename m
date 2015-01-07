@@ -1,170 +1,143 @@
-From: "Li, Zhen-Hua" <zhen-hual@hp.com>
-Subject: [PATCH v7 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
-Date: Wed,  7 Jan 2015 12:04:24 +0800
-Message-ID: <1420603474-4235-1-git-send-email-zhen-hual@hp.com>
-Return-path: <linux-pci-owner@vger.kernel.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, joro@8bytes.org, vgoyal@redhat.com, dyoung@redhat.com
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, zhen-hual@hp.com, rwright@hp.com
+From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Subject: [PATCH v7 02/10] iommu/vt-d: Items required for kdump
+Date: Wed,  7 Jan 2015 12:04:26 +0800
+Message-ID: <1420603474-4235-3-git-send-email-zhen-hual@hp.com>
+References: <1420603474-4235-1-git-send-email-zhen-hual@hp.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1420603474-4235-1-git-send-email-zhen-hual-VXdhtT5mjnY@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, zhen-hual-VXdhtT5mjnY@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patchset is an update of Bill Sumner's patchset, implements a fix for:
-If a kernel boots with intel_iommu=on on a system that supports intel vt-d, 
-when a panic happens, the kdump kernel will boot with these faults:
+Add structure type domain_values_entry used for kdump;
+Add context entry functions needed for kdump.
 
-    dmar: DRHD: handling fault status reg 102
-    dmar: DMAR:[DMA Read] Request device [01:00.0] fault addr fff80000
-    DMAR:[fault reason 01] Present bit in root entry is clear
+Bill Sumner:
+    Original version;
 
-    dmar: DRHD: handling fault status reg 2
-    dmar: INTR-REMAP: Request device [[61:00.0] fault index 42
-    INTR-REMAP:[fault reason 34] Present field in the IRTE entry is clear
+Li, Zhenhua:
+    Changed the name of new functions, make them consistent with current
+    context get/set functions.
 
-On some system, the interrupt remapping fault will also happen even if the 
-intel_iommu is not set to on, because the interrupt remapping will be enabled 
-when x2apic is needed by the system.
-
-The cause of the DMA fault is described in Bill's original version, and the 
-INTR-Remap fault is caused by a similar reason. In short, the initialization 
-of vt-d drivers causes the in-flight DMA and interrupt requests get wrong 
-response.
-
-To fix this problem, we modifies the behaviors of the intel vt-d in the 
-crashdump kernel:
-
-For DMA Remapping:
-1. To accept the vt-d hardware in an active state,
-2. Do not disable and re-enable the translation, keep it enabled.
-3. Use the old root entry table, do not rewrite the RTA register.
-4. Malloc and use new context entry table and page table, copy data from the 
-   old ones that used by the old kernel.
-5. to use different portions of the iova address ranges for the device drivers
-   in the crashdump kernel than the iova ranges that were in-use at the time
-   of the panic.  
-6. After device driver is loaded, when it issues the first dma_map command, 
-   free the dmar_domain structure for this device, and generate a new one, so 
-   that the device can be assigned a new and empty page table. 
-7. When a new context entry table is generated, we also save its address to 
-   the old root entry table.
-
-For Interrupt Remapping:
-1. To accept the vt-d hardware in an active state,
-2. Do not disable and re-enable the interrupt remapping, keep it enabled.
-3. Use the old interrupt remapping table, do not rewrite the IRTA register.
-4. When ioapic entry is setup, the interrupt remapping table is changed, and 
-   the updated data will be stored to the old interrupt remapping table.
-
-Advantages of this approach:
-1. All manipulation of the IO-device is done by the Linux device-driver
-   for that device.
-2. This approach behaves in a manner very similar to operation without an
-   active iommu.
-3. Any activity between the IO-device and its RMRR areas is handled by the
-   device-driver in the same manner as during a non-kdump boot.
-4. If an IO-device has no driver in the kdump kernel, it is simply left alone.
-   This supports the practice of creating a special kdump kernel without
-   drivers for any devices that are not required for taking a crashdump. 
-5. Minimal code-changes among the existing mainline intel vt-d code.
-
-Summary of changes in this patch set:
-1. Added some useful function for root entry table in code intel-iommu.c
-2. Added new members to struct root_entry and struct irte;
-3. Functions to load old root entry table to iommu->root_entry from the memory 
-   of old kernel.
-4. Functions to malloc new context entry table and page table and copy the data
-   from the old ones to the malloced new ones.
-5. Functions to enable support for DMA remapping in kdump kernel.
-6. Functions to load old irte data from the old kernel to the kdump kernel.
-7. Some code changes that support other behaviours that have been listed.
-8. In the new functions, use physical address as "unsigned long" type, not 
-   pointers.
-
-Original version by Bill Sumner:
-    https://lkml.org/lkml/2014/1/10/518
-    https://lkml.org/lkml/2014/4/15/716
-    https://lkml.org/lkml/2014/4/24/836
-
-Zhenhua's updates:
-    https://lkml.org/lkml/2014/10/21/134
-    https://lkml.org/lkml/2014/12/15/121
-    https://lkml.org/lkml/2014/12/22/53
-
-Changelog[v7]:
-    1. Use __iommu_flush_cache to flush the data to hardware.
-
-Changelog[v6]:
-    1. Use "unsigned long" as type of physical address.
-    2. Use new function unmap_device_dma to unmap the old dma.
-    3. Some small incorrect bits order for aw shift.
-
-Changelog[v5]:
-    1. Do not disable and re-enable traslation and interrupt remapping. 
-    2. Use old root entry table.
-    3. Use old interrupt remapping table.
-    4. New functions to copy data from old kernel, and save to old kernel mem.
-    5. New functions to save updated root entry table and irte table.
-    6. Use intel_unmap to unmap the old dma;
-    7. Allocate new pages while driver is being loaded.
-
-Changelog[v4]:
-    1. Cut off the patches that move some defines and functions to new files.
-    2. Reduce the numbers of patches to five, make it more easier to read.
-    3. Changed the name of functions, make them consistent with current context
-       get/set functions.
-    4. Add change to function __iommu_attach_domain.
-
-Changelog[v3]:
-    1. Commented-out "#define DEBUG 1" to eliminate debug messages.
-    2. Updated the comments about changes in each version.
-    3. Fixed: one-line added to Copy-Translations patch to initialize the iovad
-          struct as recommended by Baoquan He [bhe@redhat.com]
-          init_iova_domain(&domain->iovad, DMA_32BIT_PFN);
-
-Changelog[v2]:
-    The following series implements a fix for:
-    A kdump problem about DMA that has been discussed for a long time. That is,
-    when a kernel panics and boots into the kdump kernel, DMA started by the
-    panicked kernel is not stopped before the kdump kernel is booted and the
-    kdump kernel disables the IOMMU while this DMA continues.  This causes the
-    IOMMU to stop translating the DMA addresses as IOVAs and begin to treat
-    them as physical memory addresses -- which causes the DMA to either:
-        (1) generate DMAR errors or 
-        (2) generate PCI SERR errors or 
-        (3) transfer data to or from incorrect areas of memory. Often this 
-            causes the dump to fail.
-
-Changelog[v1]:
-    The original version.
-
-Changed in this version:
-1. Do not disable and re-enable traslation and interrupt remapping. 
-2. Use old root entry table.
-3. Use old interrupt remapping table.
-4. Use "unsigned long" as physical address.
-5. Use intel_unmap to unmap the old dma;
-
-Baoquan He <bhe@redhat.com> helps testing this patchset.
-
-  iommu/vt-d: Update iommu_attach_domain() and its callers
-  iommu/vt-d: Items required for kdump
-  iommu/vt-d: Add domain-id functions
-  iommu/vt-d: functions to copy data from old mem
-  iommu/vt-d: Add functions to load and save old re
-  iommu/vt-d: datatypes and functions used for kdump
-  iommu/vt-d: enable kdump support in iommu module
-  iommu/vt-d: assign new page table for dma_map
-  iommu/vt-d: Copy functions for irte
-  iommu/vt-d: Use old irte in kdump kernel
-
-Signed-off-by: Bill Sumner <billsumnerlinux@gmail.com>
-Signed-off-by: Li, Zhen-Hua <zhen-hual@hp.com>
-Signed-off-by: Takao Indoh <indou.takao@jp.fujitsu.com>
-Tested-by: Baoquan He <bhe@redhat.com>
+Signed-off-by: Bill Sumner <billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c         | 1050 +++++++++++++++++++++++++++++++++--
- drivers/iommu/intel_irq_remapping.c |  104 +++-
- include/linux/intel-iommu.h         |   18 +
- 3 files changed, 1130 insertions(+), 42 deletions(-)
+ drivers/iommu/intel-iommu.c | 70 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 70 insertions(+)
 
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 2dc6250..5ce2850 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -40,6 +40,7 @@
+ #include <linux/pci-ats.h>
+ #include <linux/memblock.h>
+ #include <linux/dma-contiguous.h>
++#include <linux/crash_dump.h>
+ #include <asm/irq_remapping.h>
+ #include <asm/cacheflush.h>
+ #include <asm/iommu.h>
+@@ -208,6 +209,12 @@ get_context_addr_from_root(struct root_entry *root)
+ 		NULL);
+ }
+ 
++static inline unsigned long
++get_context_phys_from_root(struct root_entry *root)
++{
++	return  root_present(root) ? (root->val & VTD_PAGE_MASK) : 0;
++}
++
+ /*
+  * low 64 bits:
+  * 0: present
+@@ -228,6 +235,32 @@ static inline bool context_present(struct context_entry *context)
+ {
+ 	return (context->lo & 1);
+ }
++
++static inline int context_fault_enable(struct context_entry *c)
++{
++	return((c->lo >> 1) & 0x1);
++}
++
++static inline int context_translation_type(struct context_entry *c)
++{
++	return((c->lo >> 2) & 0x3);
++}
++
++static inline u64 context_address_root(struct context_entry *c)
++{
++	return((c->lo >> VTD_PAGE_SHIFT));
++}
++
++static inline int context_address_width(struct context_entry *c)
++{
++	return((c->hi >> 0) & 0x7);
++}
++
++static inline int context_domain_id(struct context_entry *c)
++{
++	return((c->hi >> 8) & 0xffff);
++}
++
+ static inline void context_set_present(struct context_entry *context)
+ {
+ 	context->lo |= 1;
+@@ -313,6 +346,43 @@ static inline int first_pte_in_page(struct dma_pte *pte)
+ 	return !((unsigned long)pte & ~VTD_PAGE_MASK);
+ }
+ 
++
++#ifdef CONFIG_CRASH_DUMP
++
++/*
++ * Fix Crashdump failure caused by leftover DMA through a hardware IOMMU
++ *
++ * Fixes the crashdump kernel to deal with an active iommu and legacy
++ * DMA from the (old) panicked kernel in a manner similar to how legacy
++ * DMA is handled when no hardware iommu was in use by the old kernel --
++ * allow the legacy DMA to continue into its current buffers.
++ *
++ * In the crashdump kernel, this code:
++ * 1. skips disabling the IOMMU's translating of IO Virtual Addresses (IOVA).
++ * 2. Do not re-enable IOMMU's translating.
++ * 3. In kdump kernel, use the old root entry table.
++ * 4. Leaves the current translations in-place so that legacy DMA will
++ *    continue to use its current buffers.
++ * 5. Allocates to the device drivers in the crashdump kernel
++ *    portions of the iova address ranges that are different
++ *    from the iova address ranges that were being used by the old kernel
++ *    at the time of the panic.
++ *
++ */
++
++struct domain_values_entry {
++	struct list_head link;		/* link entries into a list */
++	struct iova_domain iovad;	/* iova's that belong to this domain */
++	struct dma_pte	*pgd;		/* virtual address */
++	int    did;			/* domain id */
++	int    gaw;			/* max guest address width */
++	int    iommu_superpage;		/* Level of superpages supported:
++					   0 == 4KiB (no superpages), 1 == 2MiB,
++					   2 == 1GiB, 3 == 512GiB, 4 == 1TiB */
++};
++
++#endif /* CONFIG_CRASH_DUMP */
++
+ /*
+  * This domain is a statically identity mapping domain.
+  *	1. This domain creats a static 1:1 mapping to all usable memory.
 -- 
 2.0.0-rc0
