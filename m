@@ -1,8 +1,7 @@
 From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH v7 01/10] iommu/vt-d: Update iommu_attach_domain() and its
-	callers
-Date: Wed,  7 Jan 2015 12:04:25 +0800
-Message-ID: <1420603474-4235-2-git-send-email-zhen-hual@hp.com>
+Subject: [PATCH v7 05/10] iommu/vt-d: Add functions to load and save old re
+Date: Wed,  7 Jan 2015 12:04:29 +0800
+Message-ID: <1420603474-4235-6-git-send-email-zhen-hual@hp.com>
 References: <1420603474-4235-1-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,120 +21,112 @@ To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtd
 Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, zhen-hual-VXdhtT5mjnY@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Allow specification of the domain-id for the new domain.
-This patch only adds the 'did' parameter to iommu_attach_domain()
-and modifies all of its callers to specify the default value of -1
-which says "no did specified, allocate a new one".
+Add functions to load root entry table from old kernel, and to save updated
+root entry table.
+Add two member in struct intel_iommu, to store the RTA in old kernel, and
+the mapped virt address of it.
 
-This is no functional change from current behaviour -- just enables
-a functional change to be made in a later patch.
+We use the old RTA in dump kernel, and when the iommu->root_entry is used as
+a cache in kdump kernel, its phys address will not be save to RTA register,
+but when its data is changed, we will save the new data to old root entry table.
 
-Bill Sumner:
-    Original version.
+Li, Zhen-hua:
+    The functions and logics.
 
-Li, Zhenhua:
-    Minor change, add change to function __iommu_attach_domain.
+Takao Indoh:
+    Add __iommu_flush_cache.
 
-Signed-off-by: Bill Sumner <billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Signed-off-by: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 34 ++++++++++++++++++++--------------
- 1 file changed, 20 insertions(+), 14 deletions(-)
+ drivers/iommu/intel-iommu.c | 53 +++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/intel-iommu.h |  5 +++++
+ 2 files changed, 58 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 1232336..2dc6250 100644
+index 8a7ad72..f3059b8 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1534,31 +1534,36 @@ static struct dmar_domain *alloc_domain(int flags)
+@@ -388,6 +388,10 @@ static int intel_iommu_get_dids_from_old_kernel(struct intel_iommu *iommu);
+ 
+ static int device_to_domain_id(struct intel_iommu *iommu, u8 bus, u8 devfn);
+ 
++static void __iommu_load_old_root_entry(struct intel_iommu *iommu);
++
++static void __iommu_update_old_root_entry(struct intel_iommu *iommu, int index);
++
+ struct iommu_remapped_entry {
+ 	struct list_head list;
+ 	void __iomem *mem;
+@@ -4990,4 +4994,53 @@ static int device_to_domain_id(struct intel_iommu *iommu, u8 bus, u8 devfn)
+ 	return did;
  }
  
- static int __iommu_attach_domain(struct dmar_domain *domain,
--				 struct intel_iommu *iommu)
-+				 struct intel_iommu *iommu,
-+				 int domain_number)
- {
- 	int num;
- 	unsigned long ndomains;
++/*
++ * Load the old root entry table to new root entry table.
++ */
++static void __iommu_load_old_root_entry(struct intel_iommu *iommu)
++{
++	if ((!iommu)
++		|| (!iommu->root_entry)
++		|| (!iommu->root_entry_old_virt)
++		|| (!iommu->root_entry_old_phys))
++		return;
++	memcpy(iommu->root_entry, iommu->root_entry_old_virt, PAGE_SIZE);
++
++	__iommu_flush_cache(iommu, iommu->root_entry, PAGE_SIZE);
++}
++
++/*
++ * When the data in new root entry table is changed, this function
++ * must be called to save the updated data to old root entry table.
++ */
++static void __iommu_update_old_root_entry(struct intel_iommu *iommu, int index)
++{
++	u8 start;
++	unsigned long size;
++	void __iomem *to;
++	void *from;
++
++	if ((!iommu)
++		|| (!iommu->root_entry)
++		|| (!iommu->root_entry_old_virt)
++		|| (!iommu->root_entry_old_phys))
++		return;
++
++	if (index < -1 || index >= ROOT_ENTRY_NR)
++		return;
++
++	if (index == -1) {
++		start = 0;
++		size = ROOT_ENTRY_NR * sizeof(struct root_entry);
++	} else {
++		start = index * sizeof(struct root_entry);
++		size = sizeof(struct root_entry);
++	}
++	to = iommu->root_entry_old_virt;
++	from = iommu->root_entry;
++	memcpy(to + start, from + start, size);
++
++	__iommu_flush_cache(iommu, to + start, size);
++}
++
+ #endif /* CONFIG_CRASH_DUMP */
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 8ffa523..8e29b97 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -329,6 +329,11 @@ struct intel_iommu {
+ 	spinlock_t	lock; /* protect context, domain ids */
+ 	struct root_entry *root_entry; /* virtual address */
  
- 	ndomains = cap_ndoms(iommu->cap);
--	num = find_first_zero_bit(iommu->domain_ids, ndomains);
--	if (num < ndomains) {
--		set_bit(num, iommu->domain_ids);
--		iommu->domains[num] = domain;
--	} else {
--		num = -ENOSPC;
--	}
-+	if (domain_number < 0) {
-+		num = find_first_zero_bit(iommu->domain_ids, ndomains);
-+		if (num < ndomains) {
-+			set_bit(num, iommu->domain_ids);
-+			iommu->domains[num] = domain;
-+		} else {
-+			num = -ENOSPC;
-+		}
-+	} else
-+		num = domain_number;
- 
- 	return num;
- }
- 
- static int iommu_attach_domain(struct dmar_domain *domain,
--			       struct intel_iommu *iommu)
-+			       struct intel_iommu *iommu,
-+			       int domain_number)
- {
- 	int num;
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&iommu->lock, flags);
--	num = __iommu_attach_domain(domain, iommu);
-+	num = __iommu_attach_domain(domain, iommu, domain_number);
- 	spin_unlock_irqrestore(&iommu->lock, flags);
- 	if (num < 0)
- 		pr_err("IOMMU: no free domain ids\n");
-@@ -1577,7 +1582,7 @@ static int iommu_attach_vm_domain(struct dmar_domain *domain,
- 		if (iommu->domains[num] == domain)
- 			return num;
- 
--	return __iommu_attach_domain(domain, iommu);
-+	return __iommu_attach_domain(domain, iommu, -1);
- }
- 
- static void iommu_detach_domain(struct dmar_domain *domain,
-@@ -2231,6 +2236,7 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
- 	u16 dma_alias;
- 	unsigned long flags;
- 	u8 bus, devfn;
-+	int did = -1;   /* Default to "no domain_id supplied" */
- 
- 	domain = find_domain(dev);
- 	if (domain)
-@@ -2264,7 +2270,7 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
- 	domain = alloc_domain(0);
- 	if (!domain)
- 		return NULL;
--	domain->id = iommu_attach_domain(domain, iommu);
-+	domain->id = iommu_attach_domain(domain, iommu, did);
- 	if (domain->id < 0) {
- 		free_domain_mem(domain);
- 		return NULL;
-@@ -2442,7 +2448,7 @@ static int __init si_domain_init(int hw)
- 		return -EFAULT;
- 
- 	for_each_active_iommu(iommu, drhd) {
--		ret = iommu_attach_domain(si_domain, iommu);
-+		ret = iommu_attach_domain(si_domain, iommu, -1);
- 		if (ret < 0) {
- 			domain_exit(si_domain);
- 			return -EFAULT;
-@@ -3866,7 +3872,7 @@ static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
- 	iommu_enable_translation(iommu);
- 
- 	if (si_domain) {
--		ret = iommu_attach_domain(si_domain, iommu);
-+		ret = iommu_attach_domain(si_domain, iommu, -1);
- 		if (ret < 0 || si_domain->id != ret)
- 			goto disable_iommu;
- 		domain_attach_iommu(si_domain, iommu);
++#ifdef CONFIG_CRASH_DUMP
++	void __iomem *root_entry_old_virt; /* mapped from old root entry */
++	unsigned long root_entry_old_phys; /* root entry in old kernel */
++#endif
++
+ 	struct iommu_flush flush;
+ #endif
+ 	struct q_inval  *qi;            /* Queued invalidation info */
 -- 
 2.0.0-rc0
