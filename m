@@ -1,165 +1,128 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch v2 07/16] x86/apic: Refine enable_IR_x2apic() and related
-	functions
-Date: Wed,  7 Jan 2015 15:31:34 +0800
-Message-ID: <1420615903-28253-8-git-send-email-jiang.liu@linux.intel.com>
+From: Jiang Liu <jiang.liu@linux.intel.com>
+Subject: [Patch v2 01/16] iommu, x86: Restructure setup of the irq remapping feature
+Date: Wed,  7 Jan 2015 15:31:28 +0800
+Message-ID: <1420615903-28253-2-git-send-email-jiang.liu@linux.intel.com>
 References: <1420615903-28253-1-git-send-email-jiang.liu@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1420615903-28253-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, HATAYAMA Daisuke <d.hatayama-+CUm20s59erQFUHtdCDX3A@public.gmane.org>, Jan Beulich <JBeulich-IBi9RG/b67k@public.gmane.org>, Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>, Oren Twaig <oren-Yzr3oMT/Kq5BDgjK7y7TUQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "H. Peter Anvin" <hpa-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1420615903-28253-1-git-send-email-jiang.liu@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thomas Gleixner <tglx@linutronix.de>, Joerg Roedel <joro@8bytes.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Yinghai Lu <yinghai@kernel.org>, Borislav Petkov <bp@alien8.de>, x86@kernel.org, Jiang Liu <jiang.liu@linux.intel.com>, David Rientjes <rientjes@google.com>, HATAYAMA Daisuke <d.hatayama@jp.fujitsu.com>, Jan Beulich <JBeulich@suse.com>, Richard Weinberger <richard@nod.at>, Oren Twaig <oren@scalemp.com>
+Cc: Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>, "H. Peter Anvin" <hpa@linux.intel.com>, Ingo Molnar <mingo@kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Refine enable_IR_x2apic() and related functions for better readability.
+From: Thomas Gleixner <tglx@linutronix.de>
 
-It also changes the way to handle IR in XAPIC mode when enabling X2APIC.
-Previously it just skips X2APIC initialization without checking max CPU
-APIC ID in system, which may cause problem if system has CPU with APIC
-ID bigger than 255. So treat IR in XAPIC mode as same as IR is disabled
-when enabling CPU X2APIC.
+enable_IR_x2apic() calls setup_irq_remapping_ops() which by default
+installs the intel dmar remapping ops and then calls the amd iommu irq
+remapping prepare callback to figure out whether we are running on an
+AMD machine with irq remapping hardware.
 
-Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Right after that it calls irq_remapping_prepare() which pointlessly
+checks:
+	if (!remap_ops || !remap_ops->prepare)
+               return -ENODEV;
+and then calls
+
+    remap_ops->prepare()
+
+which is silly in the AMD case as it got called from
+setup_irq_remapping_ops() already a few microseconds ago.
+
+Simplify this and just collapse everything into
+irq_remapping_prepare().
+
+The irq_remapping_prepare() remains still silly as it assigns blindly
+the intel ops, but that's not scope of this patch.
+
+The scope here is to move the preperatory work, i.e. memory
+allocations out of the atomic section which is required to enable irq
+remapping.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Borislav Petkov <bp@alien8.de>
+Acked-by: Joerg Roedel <joro@8bytes.org>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>
+Cc: x86@kernel.org
+Link: http://lkml.kernel.org/r/20141205084147.232633738@linutronix.de
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
 ---
- arch/x86/kernel/apic/apic.c |   85 +++++++++++++++++++++----------------------
- 1 file changed, 41 insertions(+), 44 deletions(-)
+ arch/x86/include/asm/irq_remapping.h |    2 --
+ arch/x86/kernel/apic/apic.c          |    3 ---
+ drivers/iommu/irq_remapping.c        |   19 +++++++------------
+ 3 files changed, 7 insertions(+), 17 deletions(-)
 
+diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
+index b7747c4c2cf2..f1b619e5a50d 100644
+--- a/arch/x86/include/asm/irq_remapping.h
++++ b/arch/x86/include/asm/irq_remapping.h
+@@ -33,7 +33,6 @@ struct irq_cfg;
+ 
+ #ifdef CONFIG_IRQ_REMAP
+ 
+-extern void setup_irq_remapping_ops(void);
+ extern int irq_remapping_supported(void);
+ extern void set_irq_remapping_broken(void);
+ extern int irq_remapping_prepare(void);
+@@ -60,7 +59,6 @@ void irq_remap_modify_chip_defaults(struct irq_chip *chip);
+ 
+ #else  /* CONFIG_IRQ_REMAP */
+ 
+-static inline void setup_irq_remapping_ops(void) { }
+ static inline int irq_remapping_supported(void) { return 0; }
+ static inline void set_irq_remapping_broken(void) { }
+ static inline int irq_remapping_prepare(void) { return -ENODEV; }
 diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-index 8ce2b8236c1b..09ac1e4ef86b 100644
+index 71b8a6cb7f0e..36249c715da0 100644
 --- a/arch/x86/kernel/apic/apic.c
 +++ b/arch/x86/kernel/apic/apic.c
-@@ -1572,7 +1572,7 @@ void enable_x2apic(void)
- }
- #endif /* CONFIG_X86_X2APIC */
+@@ -1597,9 +1597,6 @@ void __init enable_IR_x2apic(void)
+ 	int ret, x2apic_enabled = 0;
+ 	int hardware_init_ret;
  
--int __init enable_IR(void)
-+static int __init try_to_enable_IR(void)
- {
- #ifdef CONFIG_IRQ_REMAP
- 	if (!irq_remapping_supported()) {
-@@ -1585,17 +1585,48 @@ int __init enable_IR(void)
- 			"io-apic setup\n");
- 		return -1;
- 	}
-+#endif
- 
- 	return irq_remapping_enable();
-+}
-+
-+static __init void try_to_enable_x2apic(int ir_stat)
-+{
-+#ifdef CONFIG_X86_X2APIC
-+	if (!x2apic_supported())
-+		return;
-+
-+	if (ir_stat != IRQ_REMAP_X2APIC_MODE) {
-+		/* IR is required if there is APIC ID > 255 even when running
-+		 * under KVM
-+		 */
-+		if (max_physical_apicid > 255 ||
-+		    !hypervisor_x2apic_available()) {
-+			pr_info("IRQ remapping doesn't support X2APIC mode, disable x2apic.\n");
-+			if (x2apic_preenabled)
-+				disable_x2apic();
-+			return;
-+		}
-+
-+		/*
-+		 * without IR all CPUs can be addressed by IOAPIC/MSI
-+		 * only in physical mode
-+		 */
-+		x2apic_force_phys();
-+	}
-+
-+	if (!x2apic_mode) {
-+		x2apic_mode = 1;
-+		enable_x2apic();
-+		pr_info("Enabled x2apic\n");
-+	}
- #endif
--	return -1;
- }
- 
- void __init enable_IR_x2apic(void)
- {
- 	unsigned long flags;
--	int ret;
--	int hardware_init_ret;
-+	int ret, ir_stat;
- 
- 	if (!IS_ENABLED(CONFIG_X86_X2APIC)) {
- 		u64 msr;
-@@ -1605,8 +1636,8 @@ void __init enable_IR_x2apic(void)
- 			panic("BIOS has enabled x2apic but kernel doesn't support x2apic, please disable x2apic in BIOS.\n");
- 	}
- 
--	hardware_init_ret = irq_remapping_prepare();
--	if (hardware_init_ret && !x2apic_supported())
-+	ir_stat = irq_remapping_prepare();
-+	if (ir_stat < 0 && !x2apic_supported())
+-	/* Make sure irq_remap_ops are initialized */
+-	setup_irq_remapping_ops();
+-
+ 	hardware_init_ret = irq_remapping_prepare();
+ 	if (hardware_init_ret && !x2apic_supported())
  		return;
+diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+index 89c4846683be..91d5884d3ed9 100644
+--- a/drivers/iommu/irq_remapping.c
++++ b/drivers/iommu/irq_remapping.c
+@@ -194,16 +194,6 @@ static __init int setup_irqremap(char *str)
+ }
+ early_param("intremap", setup_irqremap);
  
- 	ret = save_ioapic_entries();
-@@ -1621,45 +1652,11 @@ void __init enable_IR_x2apic(void)
+-void __init setup_irq_remapping_ops(void)
+-{
+-	remap_ops = &intel_irq_remap_ops;
+-
+-#ifdef CONFIG_AMD_IOMMU
+-	if (amd_iommu_irq_ops.prepare() == 0)
+-		remap_ops = &amd_iommu_irq_ops;
+-#endif
+-}
+-
+ void set_irq_remapping_broken(void)
+ {
+ 	irq_remap_broken = 1;
+@@ -222,9 +212,14 @@ int irq_remapping_supported(void)
  
- 	if (x2apic_preenabled && nox2apic)
- 		disable_x2apic();
-+	if (ir_stat >= 0)
-+		ir_stat = try_to_enable_IR();
-+	try_to_enable_x2apic(ir_stat);
+ int __init irq_remapping_prepare(void)
+ {
+-	if (!remap_ops || !remap_ops->prepare)
+-		return -ENODEV;
++	remap_ops = &intel_irq_remap_ops;
  
--	if (hardware_init_ret)
--		ret = -1;
--	else
--		ret = enable_IR();
--
--	if (!x2apic_supported())
--		goto skip_x2apic;
--
--	if (ret < 0) {
--		/* IR is required if there is APIC ID > 255 even when running
--		 * under KVM
--		 */
--		if (max_physical_apicid > 255 ||
--		    !hypervisor_x2apic_available()) {
--			if (x2apic_preenabled)
--				disable_x2apic();
--			goto skip_x2apic;
--		}
--		/*
--		 * without IR all CPUs can be addressed by IOAPIC/MSI
--		 * only in physical mode
--		 */
--		x2apic_force_phys();
--	}
--
--	if (ret == IRQ_REMAP_XAPIC_MODE) {
--		pr_info("x2apic not enabled, IRQ remapping is in xapic mode\n");
--		goto skip_x2apic;
--	}
--
--	if (x2apic_supported() && !x2apic_mode) {
--		x2apic_mode = 1;
--		enable_x2apic();
--		pr_info("Enabled x2apic\n");
--	}
--
--skip_x2apic:
--	if (ret < 0) /* IR enabling failed */
-+	if (ir_stat < 0) /* IR enabling failed */
- 		restore_ioapic_entries();
- 	legacy_pic->restore_mask();
- 	local_irq_restore(flags);
++#ifdef CONFIG_AMD_IOMMU
++	if (amd_iommu_irq_ops.prepare() == 0) {
++		remap_ops = &amd_iommu_irq_ops;
++		return 0;
++	}
++#endif
+ 	return remap_ops->prepare();
+ }
+ 
 -- 
 1.7.10.4
