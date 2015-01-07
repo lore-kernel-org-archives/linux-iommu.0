@@ -1,46 +1,37 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH v6 6/8] dma-mapping: detect and configure IOMMU in
-	of_dma_configure
-Date: Wed, 07 Jan 2015 20:29:15 +0100
-Message-ID: <2577020.XPDvrs2bDx@wuerfel>
-References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
-	<7693528.krAZff0s6I@wuerfel> <20150107185704.GV7485@arm.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v3 0/4] PCI: get DMA configuration from parent device
+Date: Wed, 07 Jan 2015 22:18:35 +0100
+Message-ID: <4057859.4ynbgz66iN@wuerfel>
+References: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150107185704.GV7485-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Murali Karicheri <m-karicheri2@ti.com>, joro@8bytes.org, grant.likely@linaro.org, robh+dt@kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, bhelgaas@google.com, linux-pci@vger.kernel.org, will.deacon@arm.com, linux@arm.linux.org.uk
 List-Id: iommu@lists.linux-foundation.org
 
-On Wednesday 07 January 2015 18:57:05 Will Deacon wrote:
+On Wednesday 07 January 2015 13:49:50 Murali Karicheri wrote:
+> PCI devices on Keystone doesn't have correct dma_pfn_offset set. This patch
+> add capability to set the dma configuration such as dma-mask, dma_pfn_offset,
+> and dma ops etc using the information from DT. The prior RFCs and discussions
+> are available at [1] and [2] below.
 > 
-> Sorry for the delay on this, I had to do a bit of digging.
-> 
-> On Mon, Dec 22, 2014 at 01:36:01PM +0000, Arnd Bergmann wrote:
-> > Do you think it's possible that we might have to deal with a single PCI host
-> > that is connected two different SMMU instances for the purposes of extending
-> > the StreamID space from 15 to 16 bits? I think we would have trouble
-> > expressing this with the current syntax.
-> 
-> Unfortunately, this sounds like something we may well have to support.
-> Whilst the SMMUv2 architecture did grow a late extension to support 16-bit
-> StreamIDs, that may have been too late for all silicon vendors and, as such,
-> I'm not confident that such systems will present a single software interface
-> for their SMMU.
+> [2] : https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg790244.html
+> [1] : http://www.gossamer-threads.com/lists/linux/kernel/2024591
 
-So it's technically possible to connect two SMMU instances to a single
-PCIe root complex? I knew that there is at least one vendor (AMD) that
-can only do 128 bus numbers on PCIe, which seems a much simpler workaround.
+Looks all good to me in this version, I'm just unsure about one thing:
+
+>                - Limit the of_iommu_configure to non pci devices
+
+My last recommendation was to pass the b/d/f number into
+of_pci_dma_configure to handle this correctly. What was your
+reason for not doing it in the end?
+
+We will likely have to change this again if we take your current version,
+but that can be a follow-up patch. I believe AMD requires it to use
+PCI on their their Seattle platform.
 
 	Arnd
