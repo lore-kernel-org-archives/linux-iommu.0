@@ -1,128 +1,48 @@
-From: Jiang Liu <jiang.liu@linux.intel.com>
-Subject: [Patch v2 01/16] iommu, x86: Restructure setup of the irq remapping feature
-Date: Wed,  7 Jan 2015 15:31:28 +0800
-Message-ID: <1420615903-28253-2-git-send-email-jiang.liu@linux.intel.com>
+From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [Patch v2 06/16] x86/apic: Correctly detect X2APIC status in function
+	enable_IR()
+Date: Wed,  7 Jan 2015 15:31:33 +0800
+Message-ID: <1420615903-28253-7-git-send-email-jiang.liu@linux.intel.com>
 References: <1420615903-28253-1-git-send-email-jiang.liu@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1420615903-28253-1-git-send-email-jiang.liu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thomas Gleixner <tglx@linutronix.de>, Joerg Roedel <joro@8bytes.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Yinghai Lu <yinghai@kernel.org>, Borislav Petkov <bp@alien8.de>, x86@kernel.org, Jiang Liu <jiang.liu@linux.intel.com>, David Rientjes <rientjes@google.com>, HATAYAMA Daisuke <d.hatayama@jp.fujitsu.com>, Jan Beulich <JBeulich@suse.com>, Richard Weinberger <richard@nod.at>, Oren Twaig <oren@scalemp.com>
-Cc: Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>, "H. Peter Anvin" <hpa@linux.intel.com>, Ingo Molnar <mingo@kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1420615903-28253-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, HATAYAMA Daisuke <d.hatayama-+CUm20s59erQFUHtdCDX3A@public.gmane.org>, Jan Beulich <JBeulich-IBi9RG/b67k@public.gmane.org>, Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>, Oren Twaig <oren-Yzr3oMT/Kq5BDgjK7y7TUQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "H. Peter Anvin" <hpa-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Thomas Gleixner <tglx@linutronix.de>
+X2APIC will be disabled if user specifies "nox2apic" on kernel command
+line, even when x2apic_preenabled is true. So correctly detect X2APIC
+status by using x2apic_enabled() instead of x2apic_preenabled.
 
-enable_IR_x2apic() calls setup_irq_remapping_ops() which by default
-installs the intel dmar remapping ops and then calls the amd iommu irq
-remapping prepare callback to figure out whether we are running on an
-AMD machine with irq remapping hardware.
-
-Right after that it calls irq_remapping_prepare() which pointlessly
-checks:
-	if (!remap_ops || !remap_ops->prepare)
-               return -ENODEV;
-and then calls
-
-    remap_ops->prepare()
-
-which is silly in the AMD case as it got called from
-setup_irq_remapping_ops() already a few microseconds ago.
-
-Simplify this and just collapse everything into
-irq_remapping_prepare().
-
-The irq_remapping_prepare() remains still silly as it assigns blindly
-the intel ops, but that's not scope of this patch.
-
-The scope here is to move the preperatory work, i.e. memory
-allocations out of the atomic section which is required to enable irq
-remapping.
-
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Tested-by: Borislav Petkov <bp@alien8.de>
-Acked-by: Joerg Roedel <joro@8bytes.org>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>
-Cc: x86@kernel.org
-Link: http://lkml.kernel.org/r/20141205084147.232633738@linutronix.de
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
+Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- arch/x86/include/asm/irq_remapping.h |    2 --
- arch/x86/kernel/apic/apic.c          |    3 ---
- drivers/iommu/irq_remapping.c        |   19 +++++++------------
- 3 files changed, 7 insertions(+), 17 deletions(-)
+ arch/x86/kernel/apic/apic.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
-index b7747c4c2cf2..f1b619e5a50d 100644
---- a/arch/x86/include/asm/irq_remapping.h
-+++ b/arch/x86/include/asm/irq_remapping.h
-@@ -33,7 +33,6 @@ struct irq_cfg;
- 
- #ifdef CONFIG_IRQ_REMAP
- 
--extern void setup_irq_remapping_ops(void);
- extern int irq_remapping_supported(void);
- extern void set_irq_remapping_broken(void);
- extern int irq_remapping_prepare(void);
-@@ -60,7 +59,6 @@ void irq_remap_modify_chip_defaults(struct irq_chip *chip);
- 
- #else  /* CONFIG_IRQ_REMAP */
- 
--static inline void setup_irq_remapping_ops(void) { }
- static inline int irq_remapping_supported(void) { return 0; }
- static inline void set_irq_remapping_broken(void) { }
- static inline int irq_remapping_prepare(void) { return -ENODEV; }
 diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-index 71b8a6cb7f0e..36249c715da0 100644
+index a614e242473b..8ce2b8236c1b 100644
 --- a/arch/x86/kernel/apic/apic.c
 +++ b/arch/x86/kernel/apic/apic.c
-@@ -1597,9 +1597,6 @@ void __init enable_IR_x2apic(void)
- 	int ret, x2apic_enabled = 0;
- 	int hardware_init_ret;
+@@ -1580,7 +1580,7 @@ int __init enable_IR(void)
+ 		return -1;
+ 	}
  
--	/* Make sure irq_remap_ops are initialized */
--	setup_irq_remapping_ops();
--
- 	hardware_init_ret = irq_remapping_prepare();
- 	if (hardware_init_ret && !x2apic_supported())
- 		return;
-diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index 89c4846683be..91d5884d3ed9 100644
---- a/drivers/iommu/irq_remapping.c
-+++ b/drivers/iommu/irq_remapping.c
-@@ -194,16 +194,6 @@ static __init int setup_irqremap(char *str)
- }
- early_param("intremap", setup_irqremap);
- 
--void __init setup_irq_remapping_ops(void)
--{
--	remap_ops = &intel_irq_remap_ops;
--
--#ifdef CONFIG_AMD_IOMMU
--	if (amd_iommu_irq_ops.prepare() == 0)
--		remap_ops = &amd_iommu_irq_ops;
--#endif
--}
--
- void set_irq_remapping_broken(void)
- {
- 	irq_remap_broken = 1;
-@@ -222,9 +212,14 @@ int irq_remapping_supported(void)
- 
- int __init irq_remapping_prepare(void)
- {
--	if (!remap_ops || !remap_ops->prepare)
--		return -ENODEV;
-+	remap_ops = &intel_irq_remap_ops;
- 
-+#ifdef CONFIG_AMD_IOMMU
-+	if (amd_iommu_irq_ops.prepare() == 0) {
-+		remap_ops = &amd_iommu_irq_ops;
-+		return 0;
-+	}
-+#endif
- 	return remap_ops->prepare();
- }
- 
+-	if (!x2apic_preenabled && skip_ioapic_setup) {
++	if (!x2apic_enabled() && skip_ioapic_setup) {
+ 		pr_info("Skipped enabling intr-remap because of skipping "
+ 			"io-apic setup\n");
+ 		return -1;
 -- 
 1.7.10.4
