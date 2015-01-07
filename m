@@ -1,235 +1,66 @@
-From: "Li, ZhenHua" <zhen-hual@hp.com>
-Subject: Re: [PATCH v7 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
-Date: Wed, 07 Jan 2015 16:52:28 +0800
-Message-ID: <54ACF3CC.7090004@hp.com>
-References: <1420603474-4235-1-git-send-email-zhen-hual@hp.com> <54ACB1E9.9070904@hp.com> <20150107050247.GA16050@dhcp-16-116.nay.redhat.com> <54ACC35F.1070007@hp.com> <20150107082813.GB16050@dhcp-16-116.nay.redhat.com>
+From: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
+Subject: Re: [PATCH v3 00/19] Exynos SYSMMU (IOMMU) integration with DT and
+ DMA-mapping subsystem
+Date: Wed, 07 Jan 2015 10:33:29 +0100
+Message-ID: <54ACFD69.1020500@collabora.co.uk>
+References: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com> <1417514366.21830.22.camel@collabora.co.uk> <54818768.3080303@samsung.com> <CABxcv=n=eNqbyBbOk1Wb87tCnnLZAJQurmCdeTOSqMZMbNaSHw@mail.gmail.com> <54AC93E0.8010705@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150107082813.GB16050@dhcp-16-116.nay.redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Baoquan He <bhe@redhat.com>, indou.takao@jp.fujitsu.com
-Cc: dwmw2@infradead.org, joro@8bytes.org, vgoyal@redhat.com, dyoung@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com, "Li, ZhenHua" <zhen-hual@hp.com>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <54AC93E0.8010705@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Joonyoung Shim <jy0922.shim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>, Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Sjoerd Simons <sjoerd.simons@collabora.co.uk>, Inki Dae <inki.dae@samsung.com>, iommu@lists.linux-foundation.org, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Kukjin Kim <kgene.kim@samsung.com>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Gustavo Padovan <gustavo.padovan@collabora.co.uk>
 List-Id: iommu@lists.linux-foundation.org
 
-Well, that's quite good news.
-Looking forward Takao's testing on his system.
+Hello Joonyoung,
 
-Regards
-Zhenhua
-On 01/07/2015 04:28 PM, Baoquan He wrote:
-> On 01/07/15 at 01:25pm, Li, ZhenHua wrote:
->> It is same as the last one I send to you yesterday.
->>
->> The continuous memory that needed for data in this patchset:
->> RE: PAGE_SIZE, 4096 Bytes;
->> IRTE: 65536 * 16 ; 1M Bytes;
->>
->> It should use same memory as the old versions of this patchset. The
->> changes for the last version do not need more memory.
+On 01/07/2015 03:03 AM, Joonyoung Shim wrote:
+> On 01/06/2015 06:49 PM, Javier Martinez Canillas wrote:
+>> 
+>> Also I tried forcing the kernel to not disable unused power domains by
+>> passing the pd_ignore_unused parameter to the kernel command line. I
+>> see on the kernel log a "genpd: Not disabling unused power domains"
+>> message but HDMI output still has the stripes that Sjoerd mentioned.
+>> Do you know if Exynos DRM HDMI in mainline is supposed to work without
+>> SysMMU / IOMMU support?
+>> 
+> 
+> I don't think iommu support and power domain issue are related. I also
+> get displaying stripes via hdmi but it is just power domain issue
+> regardless iommu support.
+> 
+> I observed 8th bit from 0x1445000C register of mixer is set to 1 with
+> displaying stripes. It means "The graphic layer0 line buffer underflow".
+> There was same underflow issue on Exynos4 based boards. As Marek said,
+> because LCD0 power domain was turned off.
 >
-> Hi Zhenhua,
+
+Interesting, thanks a lot for sharing this information.
+ 
+> I just tried to turn off DISP1 power domain at u-boot and DISP1 power
+> domain is turned on from kernel hdmi and mixer driver on odroid xu3 
+> board. As the result, i can see displaying penguin logo from hdmi.
 >
-> It was my mistake because I didn't strip the debug info of modules, then
-> initramfs is bloated very big. Just now I tested the latest version, it
-> works well and dump is successful. No dmar fault and intr-remap fault
-> seen any more, good job!
+
+Can you share the patches you are using to turn on the DISP1 power domain
+since AFAIU the kernel does not know about the DISP1 power domain after
+commit d51cad7df871 ("ARM: dts: remove display power domain for exynos5420").
+
+I tried reverting that commit before so the kernel knows about the DISP1
+power domain and booting with pd_ignore_unused but still had the stripes.
+ 
+> But the problem exists still because it is failed to control on/off of
+> DISP1 power domain more than twice from kernel hdmi and mixer driver.[0]
 >
-> Thanks
-> Baoquan
->
->
->>
->> Regards
->> Zhenhua
->>
->> On 01/07/2015 01:02 PM, Baoquan He wrote:
->>> On 01/07/15 at 12:11pm, Li, ZhenHua wrote:
->>>> Many thanks to Takao Indoh and Baoquan He, for your testing on more
->>>> different systems.
->>>>
->>>> The calling of flush functions are added to this version.
->>>>
->>>> The usage of __iommu_flush_cache function :
->>>> 1. Fixes a dump on Takao's system.
->>>> 2. Reduces the count of faults on Baoquan's system.
->>>
->>> I am testing the version you sent to me yesterday afternoon. Is that
->>> different with this patchset? I found your patchset man reserve a big
->>> contiguous memory region under 896M, this will cause the crashkernel
->>> reservation failed when I set crashkernel=320M. The reason I increase
->>> the crashkerenl reservation to 320M is 256M is not enough and cause OOM
->>> when that patchset is tested.
->>>
->>> I am checking what happened.
->>>
->>>
->>> Thanks
->>> Baoquan
->>>
->>>>
->>>> Regards
->>>> Zhenhua
->>>>
->>>> On 01/07/2015 12:04 PM, Li, Zhen-Hua wrote:
->>>>> This patchset is an update of Bill Sumner's patchset, implements a fix for:
->>>>> If a kernel boots with intel_iommu=on on a system that supports intel vt-d,
->>>>> when a panic happens, the kdump kernel will boot with these faults:
->>>>>
->>>>>      dmar: DRHD: handling fault status reg 102
->>>>>      dmar: DMAR:[DMA Read] Request device [01:00.0] fault addr fff80000
->>>>>      DMAR:[fault reason 01] Present bit in root entry is clear
->>>>>
->>>>>      dmar: DRHD: handling fault status reg 2
->>>>>      dmar: INTR-REMAP: Request device [[61:00.0] fault index 42
->>>>>      INTR-REMAP:[fault reason 34] Present field in the IRTE entry is clear
->>>>>
->>>>> On some system, the interrupt remapping fault will also happen even if the
->>>>> intel_iommu is not set to on, because the interrupt remapping will be enabled
->>>>> when x2apic is needed by the system.
->>>>>
->>>>> The cause of the DMA fault is described in Bill's original version, and the
->>>>> INTR-Remap fault is caused by a similar reason. In short, the initialization
->>>>> of vt-d drivers causes the in-flight DMA and interrupt requests get wrong
->>>>> response.
->>>>>
->>>>> To fix this problem, we modifies the behaviors of the intel vt-d in the
->>>>> crashdump kernel:
->>>>>
->>>>> For DMA Remapping:
->>>>> 1. To accept the vt-d hardware in an active state,
->>>>> 2. Do not disable and re-enable the translation, keep it enabled.
->>>>> 3. Use the old root entry table, do not rewrite the RTA register.
->>>>> 4. Malloc and use new context entry table and page table, copy data from the
->>>>>     old ones that used by the old kernel.
->>>>> 5. to use different portions of the iova address ranges for the device drivers
->>>>>     in the crashdump kernel than the iova ranges that were in-use at the time
->>>>>     of the panic.
->>>>> 6. After device driver is loaded, when it issues the first dma_map command,
->>>>>     free the dmar_domain structure for this device, and generate a new one, so
->>>>>     that the device can be assigned a new and empty page table.
->>>>> 7. When a new context entry table is generated, we also save its address to
->>>>>     the old root entry table.
->>>>>
->>>>> For Interrupt Remapping:
->>>>> 1. To accept the vt-d hardware in an active state,
->>>>> 2. Do not disable and re-enable the interrupt remapping, keep it enabled.
->>>>> 3. Use the old interrupt remapping table, do not rewrite the IRTA register.
->>>>> 4. When ioapic entry is setup, the interrupt remapping table is changed, and
->>>>>     the updated data will be stored to the old interrupt remapping table.
->>>>>
->>>>> Advantages of this approach:
->>>>> 1. All manipulation of the IO-device is done by the Linux device-driver
->>>>>     for that device.
->>>>> 2. This approach behaves in a manner very similar to operation without an
->>>>>     active iommu.
->>>>> 3. Any activity between the IO-device and its RMRR areas is handled by the
->>>>>     device-driver in the same manner as during a non-kdump boot.
->>>>> 4. If an IO-device has no driver in the kdump kernel, it is simply left alone.
->>>>>     This supports the practice of creating a special kdump kernel without
->>>>>     drivers for any devices that are not required for taking a crashdump.
->>>>> 5. Minimal code-changes among the existing mainline intel vt-d code.
->>>>>
->>>>> Summary of changes in this patch set:
->>>>> 1. Added some useful function for root entry table in code intel-iommu.c
->>>>> 2. Added new members to struct root_entry and struct irte;
->>>>> 3. Functions to load old root entry table to iommu->root_entry from the memory
->>>>>     of old kernel.
->>>>> 4. Functions to malloc new context entry table and page table and copy the data
->>>>>     from the old ones to the malloced new ones.
->>>>> 5. Functions to enable support for DMA remapping in kdump kernel.
->>>>> 6. Functions to load old irte data from the old kernel to the kdump kernel.
->>>>> 7. Some code changes that support other behaviours that have been listed.
->>>>> 8. In the new functions, use physical address as "unsigned long" type, not
->>>>>     pointers.
->>>>>
->>>>> Original version by Bill Sumner:
->>>>>      https://lkml.org/lkml/2014/1/10/518
->>>>>      https://lkml.org/lkml/2014/4/15/716
->>>>>      https://lkml.org/lkml/2014/4/24/836
->>>>>
->>>>> Zhenhua's updates:
->>>>>      https://lkml.org/lkml/2014/10/21/134
->>>>>      https://lkml.org/lkml/2014/12/15/121
->>>>>      https://lkml.org/lkml/2014/12/22/53
->>>>>
->>>>> Changelog[v7]:
->>>>>      1. Use __iommu_flush_cache to flush the data to hardware.
->>>>>
->>>>> Changelog[v6]:
->>>>>      1. Use "unsigned long" as type of physical address.
->>>>>      2. Use new function unmap_device_dma to unmap the old dma.
->>>>>      3. Some small incorrect bits order for aw shift.
->>>>>
->>>>> Changelog[v5]:
->>>>>      1. Do not disable and re-enable traslation and interrupt remapping.
->>>>>      2. Use old root entry table.
->>>>>      3. Use old interrupt remapping table.
->>>>>      4. New functions to copy data from old kernel, and save to old kernel mem.
->>>>>      5. New functions to save updated root entry table and irte table.
->>>>>      6. Use intel_unmap to unmap the old dma;
->>>>>      7. Allocate new pages while driver is being loaded.
->>>>>
->>>>> Changelog[v4]:
->>>>>      1. Cut off the patches that move some defines and functions to new files.
->>>>>      2. Reduce the numbers of patches to five, make it more easier to read.
->>>>>      3. Changed the name of functions, make them consistent with current context
->>>>>         get/set functions.
->>>>>      4. Add change to function __iommu_attach_domain.
->>>>>
->>>>> Changelog[v3]:
->>>>>      1. Commented-out "#define DEBUG 1" to eliminate debug messages.
->>>>>      2. Updated the comments about changes in each version.
->>>>>      3. Fixed: one-line added to Copy-Translations patch to initialize the iovad
->>>>>            struct as recommended by Baoquan He [bhe@redhat.com]
->>>>>            init_iova_domain(&domain->iovad, DMA_32BIT_PFN);
->>>>>
->>>>> Changelog[v2]:
->>>>>      The following series implements a fix for:
->>>>>      A kdump problem about DMA that has been discussed for a long time. That is,
->>>>>      when a kernel panics and boots into the kdump kernel, DMA started by the
->>>>>      panicked kernel is not stopped before the kdump kernel is booted and the
->>>>>      kdump kernel disables the IOMMU while this DMA continues.  This causes the
->>>>>      IOMMU to stop translating the DMA addresses as IOVAs and begin to treat
->>>>>      them as physical memory addresses -- which causes the DMA to either:
->>>>>          (1) generate DMAR errors or
->>>>>          (2) generate PCI SERR errors or
->>>>>          (3) transfer data to or from incorrect areas of memory. Often this
->>>>>              causes the dump to fail.
->>>>>
->>>>> Changelog[v1]:
->>>>>      The original version.
->>>>>
->>>>> Changed in this version:
->>>>> 1. Do not disable and re-enable traslation and interrupt remapping.
->>>>> 2. Use old root entry table.
->>>>> 3. Use old interrupt remapping table.
->>>>> 4. Use "unsigned long" as physical address.
->>>>> 5. Use intel_unmap to unmap the old dma;
->>>>>
->>>>> Baoquan He <bhe@redhat.com> helps testing this patchset.
->>>>>
->>>>>    iommu/vt-d: Update iommu_attach_domain() and its callers
->>>>>    iommu/vt-d: Items required for kdump
->>>>>    iommu/vt-d: Add domain-id functions
->>>>>    iommu/vt-d: functions to copy data from old mem
->>>>>    iommu/vt-d: Add functions to load and save old re
->>>>>    iommu/vt-d: datatypes and functions used for kdump
->>>>>    iommu/vt-d: enable kdump support in iommu module
->>>>>    iommu/vt-d: assign new page table for dma_map
->>>>>    iommu/vt-d: Copy functions for irte
->>>>>    iommu/vt-d: Use old irte in kdump kernel
->>>>>
->>>>> Signed-off-by: Bill Sumner <billsumnerlinux@gmail.com>
->>>>> Signed-off-by: Li, Zhen-Hua <zhen-hual@hp.com>
->>>>> Signed-off-by: Takao Indoh <indou.takao@jp.fujitsu.com>
->>>>> Tested-by: Baoquan He <bhe@redhat.com>
->>>>> ---
->>>>>   drivers/iommu/intel-iommu.c         | 1050 +++++++++++++++++++++++++++++++++--
->>>>>   drivers/iommu/intel_irq_remapping.c |  104 +++-
->>>>>   include/linux/intel-iommu.h         |   18 +
->>>>>   3 files changed, 1130 insertions(+), 42 deletions(-)
->>>>>
->>>>
->>
+
+Something that is not clear to me is how display panel is working on the
+Peach boards if this is a power domain issue since according to the manual
+both the modules used for display (LCD controller and DP) and the modules
+used for HDMI (MIXER and HDMI) belong to the same power domain (DISP1).
+
+Or am I misunderstanding something? 
+
+Thanks a lot for your help and best regards,
+Javier
