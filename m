@@ -1,100 +1,95 @@
-From: Murali Karicheri <m-karicheri2@ti.com>
-Subject: Re: [PATCH v3 3/4] of/pci: add of_pci_dma_configure() update dma
- configuration
-Date: Thu, 8 Jan 2015 14:52:13 -0500
-Message-ID: <54AEDFED.8060008@ti.com>
-References: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com> <1420656594-8908-4-git-send-email-m-karicheri2@ti.com> <20150108160626.GN11583@arm.com>
+From: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu: don't touch the secure STLBIALL register
+Date: Thu, 8 Jan 2015 14:58:33 -0600
+Message-ID: <CAL_JsqLqgZ4tYVpd7pFOE9w8Ca441ahOa1OZ_+=XRPk2-WOQrQ@mail.gmail.com>
+References: <1419356362-27343-1-git-send-email-mitchelh@codeaurora.org>
+	<20150106141507.GB3484@arm.com>
+	<vnkwiogjhdgm.fsf@mitchelh-linux.qualcomm.com>
+	<CAL_JsqJYZ+-qt8UXPP7=pCsZFXeOkB8ogOzbuusdv1Cb+o1d2A@mail.gmail.com>
+	<vnkw61cjebbq.fsf@mitchelh-linux.qualcomm.com>
+	<20150107101300.GC7485@arm.com>
+	<vnkw4ms2cwb5.fsf@mitchelh-linux.qualcomm.com>
+	<20150107180420.GR7485@arm.com>
+	<vnkwh9w2bfr6.fsf@mitchelh-linux.qualcomm.com>
+	<20150107185322.GU7485@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20150108160626.GN11583@arm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "bhelgaas@google.com" <bhelgaas@google.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "arnd@arndb.de" <arnd@arndb.de>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150107185322.GU7485-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Andreas Herrmann <herrmann.der.user-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/08/2015 11:06 AM, Will Deacon wrote:
-> On Wed, Jan 07, 2015 at 06:49:53PM +0000, Murali Karicheri wrote:
->> Add of_pci_dma_configure() to allow updating the dma configuration
->> of the pci device using the configuration from DT of the parent of
->> the root bridge device.
++Andreas
+
+On Wed, Jan 7, 2015 at 12:53 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> On Wed, Jan 07, 2015 at 06:35:41PM +0000, Mitchel Humpherys wrote:
+>> On Wed, Jan 07 2015 at 10:04:20 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+>> > On Wed, Jan 07, 2015 at 05:52:46PM +0000, Mitchel Humpherys wrote:
+>> >> On Wed, Jan 07 2015 at 02:13:00 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+>> >> > If would be better to check for the ARM_SMMU_OPT_SECURE_CFG_ACCESS feature
+>> >> > and, if it's set then zero ARM_SMMU_GR0_STLBIALL at the correct address
+>> >> > otherwise do the ARM_SMMU_GR0_TLBIALLH and ARM_SMMU_GR0_TLBIALLNSNH.
+>> >>
+>> >> I'm confused.  The problem I'm addressing here is that we're touching a
+>> >> register that's marked as "secure only", which causes our system to
+>> >> crash.  Why would we ever want to touch a secure only register, calxeda
+>> >> workaround or not?
+>> >
+>> > Because I think the way the SMMU is wired for Calxeda is that the CPU can
+>> > only see the secure side of the register interface, so the only way to nuke
+>> > the whole TLB would be to use ARM_SMMU_GR0_STLBIALL.
 >>
->> Signed-off-by: Murali Karicheri<m-karicheri2@ti.com>
+>> Still not sure I understand what "the correct address" is for STLBIALL
+>> on Calxeda (i.e. whether or not we need to use ARM_SMMU_GR0_NS), but
+>> something like:
+>
+> Hehe, I wasn't actually expecting a patch, but thanks!
+>
+>> -- >8 --
+>> Subject: [PATCH v2] iommu/arm-smmu: don't touch the secure STLBIALL register
+>>
+>> Currently we do a STLBIALL when we initialize the SMMU.  However, on
+>> systems with sane secure
+>> configurations (i.e. !ARM_SMMU_OPT_SECURE_CFG_ACCESS) that register is
+>> not supposed to be touched and is marked as "Secure only" in the spec.
+>> Touching it results in a crash on those platforms.  However, on
+>> platforms with ARM_SMMU_OPT_SECURE_CFG_ACCESS it's the only way to nuke
+>> the whole TLB, so leave it in for them but rip it out for everyone else.
+>>
+>> Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 >> ---
->>   drivers/of/of_pci.c    |   39 +++++++++++++++++++++++++++++++++++++++
->>   include/linux/of_pci.h |   12 ++++++++++++
->>   2 files changed, 51 insertions(+)
+>>  drivers/iommu/arm-smmu.c | 9 ++++++---
+>>  1 file changed, 6 insertions(+), 3 deletions(-)
 >>
->> diff --git a/drivers/of/of_pci.c b/drivers/of/of_pci.c
->> index 88471d3..34878c9 100644
->> --- a/drivers/of/of_pci.c
->> +++ b/drivers/of/of_pci.c
->> @@ -2,6 +2,7 @@
->>   #include<linux/export.h>
->>   #include<linux/of.h>
->>   #include<linux/of_address.h>
->> +#include<linux/of_device.h>
->>   #include<linux/of_pci.h>
->>   #include<linux/slab.h>
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index 60558f794922..d4c149d83f3d 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -1686,9 +1686,12 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+>>       }
 >>
->> @@ -229,6 +230,44 @@ parse_failed:
->>   	return err;
->>   }
->>   EXPORT_SYMBOL_GPL(of_pci_get_host_bridge_resources);
->> +
->> +/**
->> + * of_get_pci_root_bridge_parent - get the OF node of the root bridge's parent
->> + * @dev: ptr to pci_dev struct of the pci device
->> + *
->> + * This function will traverse the bus up to the root bus starting with
->> + * the child and return the OF node ptr to root bridge device's parent device.
->> + */
->> +struct device_node *of_get_pci_root_bridge_parent(struct pci_dev *dev)
->> +{
->> +	struct pci_bus *bus = dev->bus;
->> +	struct device *bridge;
->> +
->> +	while (!pci_is_root_bus(bus))
->> +		bus = bus->parent;
->> +	bridge = bus->bridge;
->> +
->> +	return bridge->parent->of_node;
->> +}
->> +EXPORT_SYMBOL_GPL(of_get_pci_root_bridge_parent);
->> +
->> +/**
->> + * of_pci_dma_configure - Setup DMA configuration
->> + * @dev: ptr to pci_dev struct of the pci device
->> + *
->> + * Function to update PCI devices's DMA configuration using the same
->> + * info from the OF node of root host bridge's parent.
->> + */
->> +void of_pci_dma_configure(struct pci_dev *pci_dev)
->> +{
->> +	struct device *dev =&pci_dev->dev;
->> +	struct device_node *parent_np;
->> +
->> +	parent_np = of_get_pci_root_bridge_parent(pci_dev);
->> +	of_dma_configure(dev, parent_np);
->> +}
->> +EXPORT_SYMBOL_GPL(of_pci_dma_configure);
+>>       /* Invalidate the TLB, just in case */
+>> -     writel_relaxed(0, gr0_base + ARM_SMMU_GR0_STLBIALL);
+>> -     writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLH);
+>> -     writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLNSNH);
+>> +     if (smmu->options & ARM_SMMU_OPT_SECURE_CFG_ACCESS) {
+>> +             writel_relaxed(0, gr0_base + ARM_SMMU_GR0_STLBIALL);
 >
-> Whilst I think this is the right overall structure, I think this function
-> should determine the set of DMA aliases for the device and pass that through
-> to the IOMMU (as mentioned in my reply to the cover letter). Then we just
-> need to work out what we're doing for groups.
->
-> Will
-Will,
+> Right, so this is the bit where we'd need some Calxeda information about
+> whether or not to subtract 0x400 from gr0_base or not.
 
-Could you add this as as a follow up patch as I don't have a platformm 
-that support IOMMU and as such my understanding of the IOMMU is limited?
+Beats me. I don't recall any configuration option here. The binding
+only has a single address. Maybe Andreas remembers.
 
-I can help test the change to make sure it has no side effect on 
-Keystone that doesn't support IOMMU.
-
-Thanks.
--- 
-Murali Karicheri
-Linux Kernel, Texas Instruments
+Rob
