@@ -1,145 +1,83 @@
-From: Oded Gabbay <oded.gabbay@amd.com>
-Subject: Re: [PATCH 0/2] Change order of linkage in kernel makefiles for amdkfd
-Date: Thu, 8 Jan 2015 16:15:42 +0200
-Message-ID: <54AE910E.5060803@amd.com>
-References: <1419246435-7050-1-git-send-email-oded.gabbay@amd.com>
- <1621810.aTt9O4Ghzs@avalon> <549FEB52.4020103@amd.com>
- <1678486.9ZXZnn5och@avalon> <54A12028.7020303@amd.com>
- <20150105154657.GJ12010@ulmo.nvidia.com>
+From: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH v3 0/4] PCI: get DMA configuration from parent device
+Date: Thu, 8 Jan 2015 10:52:36 -0500
+Message-ID: <54AEA7C4.9000005@ti.com>
+References: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com> <54ADBBCF.8020206@ti.com> <CAErSpo46UAn9ckbzrgzAoQbu2D=oyOOL_rO24NWEg_iDLSuCLA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20150105154657.GJ12010@ulmo.nvidia.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?B?Q2hyaXN0aWFuIEvDtg==?= =?UTF-8?B?bmln?= <christian.koenig@amd.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Alexander Deucher <Alexander.Deucher@amd.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAErSpo46UAn9ckbzrgzAoQbu2D=oyOOL_rO24NWEg_iDLSuCLA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arm <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgVGhpZXJyeSwKR2VuZXJhbGx5IEkgYWdyZWUgd2l0aCB0aGUgaXNzdWVzIHlvdSBkZXNjcmli
-ZSBpbiB0aGUgY3VycmVudCBkZXNpZ24uCk9uZSB0YXNrIGluIG91ciAyMDE1IHdvcmtwbGFuIGlz
-IHRvIGNoYW5nZSB0aGUgd2hvbGUgbWV0aG9kIGFtZGtmZCBpcyBsb2FkZWQsIHNvIAppdCBjYW4g
-aW5kZXBlbmRlbnRseSBsb2FkIGF0IGFueSB0aW1lLCByZWdhcmRsZXNzIG9mIHRoZSBvcmRlciBv
-ZiBsb2FkaW5nIApiZXR3ZWVuIGl0IGFuZCByYWRlb24gYW5kIGFtZF9pb21tdV92Mi4gVG8gcmVh
-Y2ggdGhhdCBnb2FsLCBJIGFzc3VtZSB3ZSB3aWxsIApoYXZlIHRvIHVzZSBzb21lIGZvcm0gb2Yg
-ZGVmZXJyZWQgcHJvYmluZy4KCkhvd2V2ZXIsIGZvciB0aGUgbW9tZW50LCB0aGlzIGlzIHRoZSBi
-ZXN0IGJhbmQtYWlkIEkgY291bGQgdGhpbmsgb2YsIGFuZCAKY2hvb3NpbmcgYmV0d2VlbiB0aGlz
-IGJhbmQtYWlkIG9yIG5vIGJhbmQtYWlkIGF0IGFsbCwgSSBwcmVmZXIgdGhlIGZvcm1lciBhbnkg
-ZGF5LgoKCU9kZWQKCgpPbiAwMS8wNS8yMDE1IDA1OjQ2IFBNLCBUaGllcnJ5IFJlZGluZyB3cm90
-ZToKPiBPbiBNb24sIERlYyAyOSwgMjAxNCBhdCAxMDozNDozMkFNICswMTAwLCBDaHJpc3RpYW4g
-S8O2bmlnIHdyb3RlOgo+PiBBbSAyOS4xMi4yMDE0IHVtIDA5OjE2IHNjaHJpZWIgTGF1cmVudCBQ
-aW5jaGFydDoKPj4+IEhpIE9kZWQsCj4+Pgo+Pj4gT24gU3VuZGF5IDI4IERlY2VtYmVyIDIwMTQg
-MTM6MzY6NTAgT2RlZCBHYWJiYXkgd3JvdGU6Cj4+Pj4gT24gMTIvMjYvMjAxNCAxMToxOSBBTSwg
-TGF1cmVudCBQaW5jaGFydCB3cm90ZToKPj4+Pj4gT24gVGh1cnNkYXkgMjUgRGVjZW1iZXIgMjAx
-NCAxNDoyMDo1OSBUaGllcnJ5IFJlZGluZyB3cm90ZToKPj4+Pj4+IE9uIE1vbiwgRGVjIDIyLCAy
-MDE0IGF0IDAxOjA3OjEzUE0gKzAyMDAsIE9kZWQgR2FiYmF5IHdyb3RlOgo+Pj4+Pj4+IFRoaXMg
-c21hbGwgcGF0Y2gtc2V0LCB3YXMgY3JlYXRlZCB0byBzb2x2ZSB0aGUgYnVnIGRlc2NyaWJlZCBh
-dAo+Pj4+Pj4+IGh0dHBzOi8vYnVnemlsbGEua2VybmVsLm9yZy9zaG93X2J1Zy5jZ2k/aWQ9ODk2
-NjEgKEtlcm5lbCBwYW5pYyB3aGVuCj4+Pj4+Pj4gdHJ5aW5nIHVzZSBhbWRrZmQgZHJpdmVyIG9u
-IEthdmVyaSkuIEl0IHJlcGxhY2VzIHRoZSBwcmV2aW91cyBwYXRjaC1zZXQKPj4+Pj4+PiBjYWxs
-ZWQgW1BBVENIIDAvM10gVXNlIHdvcmtxdWV1ZSBmb3IgZGV2aWNlIGluaXQgaW4gYW1ka2ZkCj4+
-Pj4+Pj4gKGh0dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvYXJjaGl2ZXMvZHJpLWRldmVsLzIw
-MTQtRGVjZW1iZXIvMDc0NDAxLmh0Cj4+Pj4+Pj4gbWwpCj4+Pj4+Pj4KPj4+Pj4+PiBUaGF0IGJ1
-ZyBhcHBlYXJzIG9ubHkgd2hlbiByYWRlb24sIGFtZGtmZCBhbmQgYW1kX2lvbW11X3YyIGFyZSBj
-b21waWxlZAo+Pj4+Pj4+IGluc2lkZSB0aGUga2VybmVsIChub3QgYXMgbW9kdWxlcykuIEluIHRo
-YXQgY2FzZSwgdGhlIGNvcnJlY3QgbG9hZGluZwo+Pj4+Pj4+IG9yZGVyLCBhcyBkZXRlcm1pbmVk
-IGJ5IHRoZSBleHBvcnRlZCBzeW1ib2wgdXNlZCBieSBlYWNoIGRyaXZlciwgaXMKPj4+Pj4+PiBu
-b3QgZW5mb3JjZWQgYW55bW9yZSBhbmQgdGhlIGtlcm5lbCBsb2FkcyB0aGVtIGJhc2VkIG9uIHdo
-byB3YXMgbGlua2VkCj4+Pj4+Pj4gZmlyc3QuIFRoYXQgbWFrZXMgcmFkZW9uIGxvYWQgZmlyc3Qs
-IGFtZGtmZCBzZWNvbmQgYW5kIGFtZF9pb21tdV92Mgo+Pj4+Pj4+IHRoaXJkLgo+Pj4+Pj4+Cj4+
-Pj4+Pj4gQmVjYXVzZSB0aGUgaW5pdGlhbGl6YXRpb24gb2YgYSBkZXZpY2UgaW4gYW1ka2ZkIGlz
-IGluaXRpYXRlZCBieSByYWRlb24sCj4+Pj4+Pj4gYW5kIGNhbiBvbmx5IGJlIGNvbXBsZXRlZCBp
-ZiBhbWRrZmQgYW5kIGFtZF9pb21tdV92MiB3ZXJlIGxvYWRlZCBhbmQKPj4+Pj4+PiBpbml0aWFs
-aXplZCwgdGhlbiBpbiB0aGUgY2FzZSBtZW50aW9uZWQgYWJvdmUsIHRoaXMgaW5pdGFsaXphdGlv
-biBmYWlscwo+Pj4+Pj4+IGFuZCB0aGVyZSBpcyBhIGtlcm5lbCBwYW5pYyBhcyBzb21lIHBvaW50
-ZXJzIGFyZSBub3QgaW5pdGlhbGl6ZWQgYnV0Cj4+Pj4+Pj4gdXNlZCBub250aGVsZXNzLgo+Pj4+
-Pj4+Cj4+Pj4+Pj4gVG8gc29sdmUgdGhpcyBidWcsIHRoaXMgcGF0Y2gtc2V0IG1vdmVzIGlvbW11
-LyBiZWZvcmUgZ3B1LyBpbgo+Pj4+Pj4+IGRyaXZlcnMvTWFrZWZpbGUgYW5kIGFsc28gbW92ZXMg
-YW1ka2ZkLyBiZWZvcmUgcmFkZW9uLyBpbgo+Pj4+Pj4+IGRyaXZlcnMvZ3B1L2RybS9NYWtlZmls
-ZS4KPj4+Pj4+Pgo+Pj4+Pj4+IFRoZSByYXRpb25hbGUgaXMgdGhhdCBpbiBnZW5lcmFsLCBBTUQg
-R1BVIGRldmljZXMgYXJlIGRlcGVuZGVudCBvbiBBTUQKPj4+Pj4+PiBJT01NVSBjb250cm9sbGVy
-IGZ1bmN0aW9uYWxpdHkgdG8gYWxsb3cgdGhlIEdQVSB0byBhY2Nlc3MgYSBwcm9jZXNzJ3MKPj4+
-Pj4+PiB2aXJ0dWFsIG1lbW9yeSBhZGRyZXNzIHNwYWNlLCB3aXRob3V0IHRoZSBuZWVkIGZvciBw
-aW5uaW5nIHRoZSBtZW1vcnkuCj4+Pj4+Pj4gVGhhdCdzIHdoeSBpdCBtYWtlcyBzZW5zZSB0byBp
-bml0aWFsaXplIHRoZSBpb21tdS8gc3Vic3lzdGVtIGFoZWFkIG9mCj4+Pj4+Pj4gdGhlIGdwdS8g
-c3Vic3lzdGVtLgo+Pj4+Pj4gSSBzdHJvbmdseSBvYmplY3QgdG8gdGhpcyBwYXRjaCBzZXQuIFRo
-aXMgbWFrZXMgYXNzdW1wdGlvbnMgYWJvdXQgaG93Cj4+Pj4+PiB0aGUgYnVpbGQgc3lzdGVtIGlu
-Zmx1ZW5jZXMgcHJvYmUgb3JkZXIuIFRoYXQncyBiYWQgYmVjYXVzZSBzZWVtaW5nbHkKPj4+Pj4+
-IHVucmVsYXRlZCBjaGFuZ2VzIGNvdWxkIGVhc2lseSBicmVhayB0aGlzIGluIHRoZSBmdXR1cmUu
-Cj4+Pj4+Pgo+Pj4+Pj4gV2UgYWxyZWFkeSBoYXZlIHdheXMgdG8gc29sdmUgdGhpcyBraW5kIG9m
-IGRlcGVuZGVuY3kgKGRyaXZlciBwcm9iZQo+Pj4+Pj4gZGVmZXJyYWwpLCBhbmQgSSB0aGluayB5
-b3Ugc2hvdWxkIGJlIHVzaW5nIGl0IHRvIHNvbHZlIHRoaXMgcGFydGljdWxhcgo+Pj4+Pj4gcHJv
-YmxlbSByYXRoZXIgdGhhbiBzb21lIGxpbmtpbmcgb3JkZXIgaGFjay4KPj4+Pj4gV2hpbGUgSSBh
-Z3JlZSB3aXRoIHlvdSB0aGF0IHByb2JlIGRlZmVycmFsIGlzIHRoZSB3YXkgdG8gZ28sIEkgYmVs
-aWV2ZQo+Pj4+PiBsaW5rYWdlIG9yZGVyaW5nIGNhbiBzdGlsbCBiZSB1c2VkIGFzIGFuIG9wdGlt
-aXphdGlvbiB0byBhdm9pZCBkZWZlcnJpbmcKPj4+Pj4gcHJvYmUgaW4gdGhlIG1vc3QgY29tbW9u
-IGNhc2VzLiBJJ20gdGh1cyBub3Qgb3Bwb3NlZCB0byBtb3ZpbmcgaW9tbXUvCj4+Pj4+IGVhcmxp
-ZXIgaW4gbGluayBvcmRlciAocHJvdmlkZWQgd2UgY2FuIHByb3Blcmx5IHRlc3QgZm9yIHNpZGUg
-ZWZmZWN0cywgYXMKPj4+Pj4gdGhlIGp1bXAgaXMgcHJldHR5IGxhcmdlKSwgYnV0IG5vdCBhcyBh
-IHJlcGxhY2VtZW50IGZvciBwcm9iZSBkZWZlcnJhbC4KPj4+PiBNeSB0aG91Z2h0cyBleGFjdGx5
-LiBJZiB0aGlzIHdhcyBzb21lIGV4dHJlbWUgdXNlIGNhc2UsIHRoYW4gaXQgd291bGQgYmUKPj4+
-PiBqdXN0aWZpZWQgdG8gc29sdmUgaXQgd2l0aCBwcm9iZSBkZWZlcnJhbC4gQnV0IEkgdGhpbmsg
-dGhhdCBmb3IgbW9zdCBjb21tb24KPj4+PiBjYXNlcywgR1BVIGFyZSBkZXBlbmRlbnQgb24gSU9N
-TVUgYW5kICpub3QqIHZpY2UtdmVyc2EuCj4+Cj4+IEZpeGluZyB0aGlzIHRocm91Z2ggZGVmZXJy
-ZWQgcHJvYmluZyBzb3VuZHMgbGlrZSB0aGUgY29ycmVjdCBsb25nIHRlcm0KPj4gc29sdXRpb24g
-dG8gbWUgYXMgd2VsbC4KPj4KPj4gQnV0IHdoYXQgVGhpZXJyeSBpcyByZWZlcnJpbmcgdG8gaGVy
-ZSBpcyBwcm9iYWJseSB0aGUgYXBwcm9hY2ggb2YgcmV0dXJuaW5nCj4+IC1FQUdBSU4gZnJvbSB0
-aGUgcHJvYmUgbWV0aG9kIChhdCBsZWFzdCB0aGF0IHdhcyB0aGUgbGFzdCBzdGF0dXMgd2hlbiBJ
-Cj4+IGxvb2tlZCBpbnRvIHRoaXMpLgo+Cj4gLUVQUk9CRV9ERUZFUiB3b3VsZCBiZSB0aGUgb25l
-IHRoYXQgSSB3YXMgcmVmZXJyaW5nIHRvLgo+Cj4+IFRoZSBwcm9ibGVtIHdpdGggdGhpcyBhcHBy
-b2FjaCBpcyB0aGUgaW50ZXJmYWNlIGRlc2lnbiBiZXR3ZWVuIHJhZGVvbiBhbmQKPj4gYW1ka2Zk
-LiBhbWRrZmQgc2ltcGx5IGRvZXNuJ3QgaGF2ZSBhIHByb2JlIG1ldGhvZCB3aGljaCBnZXRzIGNh
-bGxlZCB3aGVuIHRoZQo+PiBoYXJkd2FyZSBpcyBkZXRlY3RlZCBhbmQgY2FuIHJldHVybiAtRUFH
-QUlOLiBJbnN0ZWFkIGFtZGtmZCBpcyBjYWxsZWQgYnkKPj4gcmFkZW9uIGFmdGVyIGhhcmR3YXJl
-IGluaXRpYWxpemF0aW9uIHdoZW4gaXQgaXMgd2F5IHRvIGxhdGUgZm9yIHN1Y2ggYQo+PiB0aGlu
-Zy4KPgo+IFRoYXQgc291bmRzIGxpa2UgYSBwcmV0dHkgYnJpdHRsZSBkZXNpZ24uIEl0IHNvdW5k
-cyBsaWtlIG5vd2hlcmUgaW4gdGhlCj4gY29kZSB5b3UndmUgZW5jb2RlZCB0aGlzIGRlcGVuZGVu
-Y3kgYW5kIHlvdSByZWx5IG9uIHN5bWJvbHMgb25seSB0bwo+IGVuc3VyZSBwcm9iZSBvcmRlcmlu
-Zy4KPgo+IENvdWxkbid0IHlvdSBzaW1wbHkgbWFrZSByYWRlb24gY2hlY2sgZm9yIGF2YWlsYWJp
-bGl0eSBvZiB0aGUgSU9NTVUKPiBlYXJseSBhbmQgZGVmZXIgcHJvYmluZyBpZiBpdCdzIG5vdCB0
-aGVyZSB5ZXQ/IE9yIGlmIHJhZGVvbiBkZXBlbmRzIG9uCj4gdGhlIElPTU1VIHZpYSBhbWRrZmQs
-IHRoZW4gcGVyaGFwcyBjYWxsaW5nIGludG8gYW1ka2ZkIHRvIGNoZWNrIGZvciB0aGUKPiBhdmFp
-bGFiaWxpdHkgb2YgdGhlIElPTU1VIHdvdWxkIGJlIGEgbW9yZSBjb3JyZWN0IHJlcHJlc2VudGF0
-aW9uIG9mIHRoZQo+IGRlcGVuZGVuY3kuCj4KPj4+PiBCVFcsIG15IGZpcnN0IHRyeSBhdCBzb2x2
-aW5nIHRoaXMgd2FzIHRvIHVzZSBwcm9iZSBkZWZlcnJhbCAodXNpbmcKPj4+PiB3b3JrcXVldWUp
-LCBidXQgdGhlIGZlZWRiYWNrIEkgZ290IGZyb20gQ2hyaXN0aWFuIGFuZCBEYXZlIHdhcyB0aGF0
-IG1vdmluZwo+Pj4+IGlvbW11LyBsaW5rYWdlIGJlZm9yZSBncHUvIHdhcyBhIG11Y2ggbW9yZSBz
-aW1wbGVyIHNvbHV0aW9uLgo+Pj4gVG8gY2xhcmlmeSBteSBwb3NpdGlvbiwgSSBiZWxpZXZlIGNo
-YW5naW5nIHRoZSBsaW5rIG9yZGVyIGNhbiBiZSBhIHdvcnRod2hpbGUKPj4+IG9wdGltaXphdGlv
-biwgYnV0IEknbSB1bmNlcnRhaW4gYWJvdXQgdGhlIGxvbmcgdGVybSB2aWFiaWxpdHkgb2YgdGhh
-dCBjaGFuZ2UKPj4+IGFzIGEgZml4LiBQcm9iZSBkZWZlcnJhbCBoYXMgYmVlbiBpbnRyb2R1Y2Vk
-IGJlY2F1c2Ugbm90IGFsbCBwcm9iZSBvcmRlcmluZwo+Pj4gaXNzdWVzIGNhbiBiZSBmaXhlZCB0
-aHJvdWdoIGxpbmsgb3JkZXJpbmcsIHNvIHdlIHNob3VsZCBmaXggdGhlIHByb2JsZW0KPj4+IHBy
-b3Blcmx5Lgo+Pj4KPj4+IFRoaXMgYmVpbmcgc2FpZCwgaWYgbW9kaWZ5aW5nIHRoZSBsaW5rIG9y
-ZGVyIGNhbiBoZWxwIGZvciBub3cgd2l0aG91dAo+Pj4gaW50cm9kdWNpbmcgbmVnYXRpdmUgc2lk
-ZSBlZmZlY3RzLCBpdCB3b3VsZCBvbmx5IHBvc3Rwb25lIHRoZSByZWFsIGZpeCwgc28gSSdtCj4+
-PiBub3Qgb3Bwb3NlZCB0byBpdC4KPj4KPj4gWWVhaCwgdGhhdCBzb3VuZHMgbGlrZSB0aGUgcmln
-aHQgYXBwcm9hY2ggdG8gbWUgYXMgd2VsbC4KPgo+IEkgZG9uJ3QgdGhpbmsgdGhhdCdzIGEgZ29v
-ZCBhcHByb2FjaCBhdCBhbGwuIEl0IGRvZXNuJ3QgZW5jb2RlIHRoZQo+IGRlcGVuZGVuY3kgYW55
-d2hlcmUuIEFsbCB5b3UgaGF2ZSBpcyBzb21lIE1ha2VmaWxlIHRoYXQgbGlzdHMgYSBidW5jaCBv
-Zgo+IGRpcmVjdG9yaWVzLiBXaGF0IGhhcHBlbnMgaWYgYW55Ym9keSB3YXMgdG8gY2hhbmdlIHRo
-YXQgb3JkZXIgZm9yIHNvbWUKPiBvdGhlciByZWFzb24/IElmIHlvdSdyZSBub3QgQ2MnZWQgb24g
-dGhlIHBhdGNoIGFuZCBub2JvZHkgZWxzZSBOQUsncyBpdAo+IGJlY2F1c2UgdGhleSBhcmUgYWNj
-aWRlbnRhbGx5IGF3YXJlIG9mIHRoZSBkZXBlbmRlbmN5IHRoYXQgcGF0Y2ggaXMKPiBnb2luZyB0
-byBicmVhayByYWRlb24uCj4KPj4gSW4gZ2VuZXJhbCBJIHdvdWxkIHByZWZlciB0aGF0IG1vZHVs
-ZXMgY29tcGlsZWQgaW50byB0aGUga2VybmVsIGxvYWQKPj4gYnkgdGhlIG9yZGVyIG9mIHRoZWly
-IHN5bWJvbCBkZXBlbmRlbmN5IGp1c3QgbGlrZSBzdGFuZGFsb25lIG1vZHVsZXMKPj4gZG8uCj4K
-PiBUaGF0IEkgZ2VuZXJhbGx5IGFncmVlIHdpdGguIEJ1dCBpdCBjYW4ndCBiZSBhIHJlcGxhY2Vt
-ZW50IGZvciBwcm9wZXJseQo+IGRlc2NyaWJpbmcgdGhlIHJ1bnRpbWUgZGVwZW5kZW5jaWVzIGJl
-dHdlZW4gbW9kdWxlcy4gVGhlcmUgY2FuIGJlIG90aGVyCj4gcmVhc29ucyB0aGFuIGxpbmsgb3Jk
-ZXIgdGhhdCBpbmZsdWVuY2UgcHJvYmUgb3JkZXJpbmcuIFdoYXQgaWYgdGhlIElPTU1VCj4gZHJp
-dmVyIGZvciBzb21lIHJlYXNvbiBnYWlucyBkZWZlcnJlZCBwcm9iZSBzdXBwb3J0IGFuZCB0aGVy
-ZWZvcmUKPiBkb2Vzbid0IHN1Y2NlZWQgb24gdGhlIGZpcnN0IHByb2JlPyBPciBvbmx5IHNvbWV0
-aW1lcy4KPgo+IFByb3Blcmx5IGRlc2NyaWJpbmcgdGhlIGRlcGVuZGVuY3kgaXMgdGhlIG9ubHkg
-d2F5IHRvIHByZXZlbnQgYW55IG9mCj4gdGhhdC4KPgo+IFRoaWVycnkKPgoKCl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxp
-c3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwOi8vbGlzdHMuZnJlZWRlc2t0
-b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+On 01/07/2015 06:08 PM, Bjorn Helgaas wrote:
+> On Wed, Jan 7, 2015 at 5:05 PM, Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>  wrote:
+>> On 01/07/2015 01:49 PM, Murali Karicheri wrote:
+>>>
+>>> PCI devices on Keystone doesn't have correct dma_pfn_offset set. This
+>>> patch
+>>> add capability to set the dma configuration such as dma-mask,
+>>> dma_pfn_offset,
+>>> and dma ops etc using the information from DT. The prior RFCs and
+>>> discussions
+>>> are available at [1] and [2] below.
+>>>
+>>> [2] :
+>>> https://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg790244.html
+>>> [1] : http://www.gossamer-threads.com/lists/linux/kernel/2024591
+>>>
+>>> Change history:
+>>>          v3 - addressed comments to re-use of_dma_configure() for PCI
+>>>             - To help re-use, change of_iommu_configure() function argument
+>>>                  - Move of_dma_configure to of/device.c
+>>>                  - Limit the of_iommu_configure to non pci devices
+>>>          v2 - update size to coherent_dma_mask + 1 if dma-range info is
+>>> missing
+>>>             - also check the np for null.
+>>>          v1 - updates based on the comments against initial RFC.
+>>>             - Added a helper function to get the OF node of the parent
+>>>             - Added an API in of_pci.c to update DMA configuration of the
+>>> pci
+>>>               device.
+>>>
+>>> Murali Karicheri (4):
+>>>     of: iommu: add ptr to OF node arg to of_iommu_configure()
+>>>     of: move of_dma_configure() to device,c to help re-use
+>>>     of/pci: add of_pci_dma_configure() update dma configuration
+>>>     PCI: update dma configuration from DT
+>>>
+>>>    drivers/iommu/of_iommu.c  |   10 ++++++--
+>>>    drivers/of/device.c       |   58
+>>> +++++++++++++++++++++++++++++++++++++++++++++
+>>>    drivers/of/of_pci.c       |   39 ++++++++++++++++++++++++++++++
+>>>    drivers/of/platform.c     |   58
+>>> ++-------------------------------------------
+>>>    drivers/pci/probe.c       |    2 ++
+>>>    include/linux/of_device.h |    2 ++
+>>>    include/linux/of_iommu.h  |    6 +++--
+>>>    include/linux/of_pci.h    |   12 ++++++++++
+>>>    8 files changed, 127 insertions(+), 60 deletions(-)
+>>>
+>> Bjorn,
+>>
+>> Could you review this series from the PCI subsystem point of view?
+>
+> Will do, it's in my patchwork queue.  I'm just returning after a
+> couple weeks of vacation, during which I moved across the country, so
+> it will take me a bit to catch up.
+>
+> Bjorn
+Bjorn,
+
+Thanks and Happy New year!
+
+-- 
+Murali Karicheri
+Linux Kernel, Texas Instruments
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
