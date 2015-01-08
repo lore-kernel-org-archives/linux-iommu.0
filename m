@@ -1,16 +1,14 @@
 From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH v3 2/4] of: move of_dma_configure() to device,
-	c to help re-use
-Date: Thu, 08 Jan 2015 09:40:10 +0100
-Message-ID: <3861625.CJ6m15sZMh@wuerfel>
+Subject: Re: [PATCH v3 0/4] PCI: get DMA configuration from parent device
+Date: Thu, 08 Jan 2015 09:56:39 +0100
+Message-ID: <1934001.D0JfDRp1gF@wuerfel>
 References: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com>
-	<1420656594-8908-3-git-send-email-m-karicheri2@ti.com>
-	<CAL_Jsq+pKeXuGnZV_NYHn6iZgeOs404OPhcUb0FJs=-7j2P1Ug@mail.gmail.com>
+	<4057859.4ynbgz66iN@wuerfel> <54ADBB89.8070503@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAL_Jsq+pKeXuGnZV_NYHn6iZgeOs404OPhcUb0FJs=-7j2P1Ug-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <54ADBB89.8070503-l0cyMroinI0@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,25 +18,95 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wednesday 07 January 2015 17:37:56 Rob Herring wrote:
-> On Wed, Jan 7, 2015 at 12:49 PM, Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org> wrote:
+On Wednesday 07 January 2015 18:04:41 Murali Karicheri wrote:
+> On 01/07/2015 04:18 PM, Arnd Bergmann wrote:
+> > On Wednesday 07 January 2015 13:49:50 Murali Karicheri wrote:
+> >> PCI devices on Keystone doesn't have correct dma_pfn_offset set. This patch
+> >> add capability to set the dma configuration such as dma-mask, dma_pfn_offset,
+> >> and dma ops etc using the information from DT. The prior RFCs and discussions
+> >> are available at [1] and [2] below.
+> >>
+> >> [2] : https://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg790244.html
+> >> [1] : http://www.gossamer-threads.com/lists/linux/kernel/2024591
+> >
+> > Looks all good to me in this version, I'm just unsure about one thing:
+> >
+> >>                 - Limit the of_iommu_configure to non pci devices
+> >
+> > My last recommendation was to pass the b/d/f number into
+> > of_pci_dma_configure to handle this correctly. What was your
+> > reason for not doing it in the end?
+> Arnd,
 > 
-> > +       ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
-> > +       if (ret < 0) {
-> > +               dma_addr = offset = 0;
-> > +               size = dev->coherent_dma_mask + 1;
-> 
-> If coherent_dma_mask is DMA_BIT_MASK(64), then you will overflow and
-> have a size of 0. There may also be a problem when the mask is only
-> 32-bit type.
+> I had responded to this already on the list and reproduced below your 
+> remark and my response below from that thread.
 
-The mask is always a 64-bit type, it's not optional. But you are right,
-the 64-bit mask case is broken, so I guess we have to fix it differently
-by always passing the smaller value into arch_setup_dma_ops and
-adapting that function instead.
+Ah right, sorry for missing a reply on that.
+
+> ---------------cut-------------------------------------------------------
+>  > Actually regarding the bit I wrote above, it might be helpful to pass
+>  > the PCI_DEVID() into both of_iommu_configure and of_dma_configure.
+>  >
+>  > While this may or may not be sufficient, I think there is no question
+>  > about it being needed for the ARM SMMU with PCI, so we may as well add
+>  > it at the point when you touch the same lines already. In the platform
+>  > bus case, just pass zero here.
+> 
+> PCI_DEVID() is defined as
+> 
+> #define PCI_DEVID(bus, devfn)  ((((u16)(bus)) << 8) | (devfn))
+> 
+> So PCI_DEVID of 0 is a valid PCI DEVID.
+
+I think that is ok: the idea would be that we always just list the
+first ID of the range and then let the iommu driver add the offset
+in the appropriate way.
+
+> How about checking if the device is PCI in of_iommu_configure() using 
+> dev_is_pci(dev) macro and return immediately for PCI? Need to include 
+> pci.h in this file though.
+> 
+> Some of the iommu drivers already include this.
+
+I guess you are right, but the driver can even handle the PCI
+device correctly without the extra parameter:
+
+	devid = 0;
+	if (dev_is_pci(dev)) {
+		struct pci_dev *pdev = to_pci_dev(dev);
+		devid = PCI_DEVID(pdev->bus->number, pdev->devfn);
+	}
+
+	streamid += devid;
+
+Other IOMMUs won't even care about the devid, so they will just work.
+
+> This will allow us to re-visit this later for IOMMU support for PCI 
+> without polluting the API.
+>
+> -----------------------cut-end---------------------------------------
+> 
+> I assumed you want to use value of zero for b/d/f to indicate it is for
+> platform. Also use the non zero value to skip the DT attribute parsing 
+> for IOMMU DT attribute in of_iommu_configure() for PCI.
+> I did dev_is_pci() for skipping the processing for PCI. I thought it is 
+> better to add the b/d/f argument later when this is re-visited later.
+
+I'd say just keep the iommu setup for PCI now and let drivers handle
+this under the covers.
+
+There is another interesting case, which is a USB host controller or
+something similar behind a PCI bus. These are quite common and also
+need to be handled in some form. Let's do just PCI first for now, but
+be aware that this will come next. Should we assume that the ID that
+is required for a device is either known from the device node, or
+that it comes from a PCI device? That means for the USB case, we will
+likely need to have some custom logic. There seems to be an implicit
+assumption all over the kernel that all devices have the same IOMMU
+instance, but we can't really rely on that here.
 
 	Arnd
