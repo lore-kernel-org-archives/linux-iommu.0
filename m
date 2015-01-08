@@ -1,147 +1,123 @@
-From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v11 00/20] VFIO support for platform and ARM AMBA devices
-Date: Thu, 08 Jan 2015 17:58:21 +0100
-Message-ID: <54AEB72D.1060904@linaro.org>
-References: <1420541335-17190-1-git-send-email-a.motakis@virtualopensystems.com>
+From: Murali Karicheri <m-karicheri2@ti.com>
+Subject: Re: [PATCH v3 1/4] of: iommu: add ptr to OF node arg to of_iommu_configure()
+Date: Thu, 8 Jan 2015 13:29:26 -0500
+Message-ID: <54AECC86.7080201@ti.com>
+References: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com> <1420656594-8908-2-git-send-email-m-karicheri2@ti.com> <CAL_JsqJ5tDQb+SzzhGQTs48tSG=T_QZu3LW5TDyugxFw1V7LoA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1420541335-17190-1-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <CAL_JsqJ5tDQb+SzzhGQTs48tSG=T_QZu3LW5TDyugxFw1V7LoA@mail.gmail.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Rob Herring <robherring2@gmail.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Will Deacon <will.deacon@arm.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Antonios,
+On 01/07/2015 06:30 PM, Rob Herring wrote:
+> On Wed, Jan 7, 2015 at 12:49 PM, Murali Karicheri<m-karicheri2@ti.com>  wrote:
+>> Function of_iommu_configure() is called from of_dma_configure() to
+>> setup iommu ops using DT property. This API is currently used for
+>> platform devices for which DMA configuration (including iommu ops)
+>> may come from device's parent. To extend this functionality for PCI
+>> devices, this API need to take a parent node ptr as an argument
+>> instead of assuming device's parent. This is needed since for PCI, the
+>> dma configuration may be defined in the DT node of the root bus bridge's
+>> parent device. Currently only dma-range is used for PCI and iommu is not
+>> supported. So return error if the device is PCI.
+>>
+>> Signed-off-by: Murali Karicheri<m-karicheri2@ti.com>
+>> ---
+>>   drivers/iommu/of_iommu.c |   10 ++++++++--
+>>   drivers/of/platform.c    |    2 +-
+>>   include/linux/of_iommu.h |    6 ++++--
+>>   3 files changed, 13 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+>> index af1dc6a..396bc77 100644
+>> --- a/drivers/iommu/of_iommu.c
+>> +++ b/drivers/iommu/of_iommu.c
+>> @@ -133,19 +133,25 @@ struct iommu_ops *of_iommu_get_ops(struct device_node *np)
+>>          return ops;
+>>   }
+>>
+>> -struct iommu_ops *of_iommu_configure(struct device *dev)
+>> +struct iommu_ops *of_iommu_configure(struct device *dev,
+>> +                                    struct device_node *node)
+>
+> You use node here, but np in the declaration. However...
+>
+>>   {
+>>          struct of_phandle_args iommu_spec;
+>>          struct device_node *np;
+>
+> We also have np here. I would suggest we rename this to iommu_node or
+> iommu_np to be clear which one this is for.
+>
+Rob,
 
-Tested-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Thanks for the comment. Will pick and use iommu_np consistently everywhere.
 
-Best Regards
+Murali
+>>          struct iommu_ops *ops = NULL;
+>>          int idx = 0;
+>>
+>> +       if (dev_is_pci(dev)) {
+>> +               dev_err(dev, "iommu is currently not supported for PCI\n");
+>> +               return NULL;
+>> +       }
+>> +
+>>          /*
+>>           * We don't currently walk up the tree looking for a parent IOMMU.
+>>           * See the `Notes:' section of
+>>           * Documentation/devicetree/bindings/iommu/iommu.txt
+>>           */
+>> -       while (!of_parse_phandle_with_args(dev->of_node, "iommus",
+>> +       while (!of_parse_phandle_with_args(node, "iommus",
+>>                                             "#iommu-cells", idx,
+>>                                             &iommu_spec)) {
+>>                  np = iommu_spec.np;
+>> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+>> index a54ec10..7675b79 100644
+>> --- a/drivers/of/platform.c
+>> +++ b/drivers/of/platform.c
+>> @@ -196,7 +196,7 @@ static void of_dma_configure(struct device *dev)
+>>          dev_dbg(dev, "device is%sdma coherent\n",
+>>                  coherent ? " " : " not ");
+>>
+>> -       iommu = of_iommu_configure(dev);
+>> +       iommu = of_iommu_configure(dev, dev->of_node);
+>>          dev_dbg(dev, "device is%sbehind an iommu\n",
+>>                  iommu ? " " : " not ");
+>>
+>> diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+>> index 16c7554..3258cbb 100644
+>> --- a/include/linux/of_iommu.h
+>> +++ b/include/linux/of_iommu.h
+>> @@ -12,7 +12,8 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
+>>                               size_t *size);
+>>
+>>   extern void of_iommu_init(void);
+>> -extern struct iommu_ops *of_iommu_configure(struct device *dev);
+>> +extern struct iommu_ops *of_iommu_configure(struct device *dev,
+>> +                                       struct device_node *np);
+>>
+>>   #else
+>>
+>> @@ -24,7 +25,8 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
+>>   }
+>>
+>>   static inline void of_iommu_init(void) { }
+>> -static inline struct iommu_ops *of_iommu_configure(struct device *dev)
+>> +static inline struct iommu_ops *of_iommu_configure(struct device *dev,
+>> +                                        struct device_node *np)
+>>   {
+>>          return NULL;
+>>   }
+>> --
+>> 1.7.9.5
+>>
 
-Eric
 
-On 01/06/2015 11:48 AM, Antonios Motakis wrote:
-> This patch series aims to implement VFIO support for platform devices that
-> reside behind an IOMMU. Examples of such devices are devices behind an ARM
-> SMMU, or behind a Samsung Exynos System MMU.
-> 
-> The API used is based on the existing VFIO API that is also used with PCI
-> devices. Only devices that include a basic set of IRQs and memory regions are
-> targeted; devices with complex relationships with other devices on a device
-> tree are not taken into account at this stage.
-> 
-> This patch series may be applied on the following series/patches:
->  - [PATCH] driver core: amba: add device binding path 'driver_override'
->  - [PATCH v3 0/6] vfio: type1: support for ARM SMMUS with VFIO_IOMMU_TYPE1
-> 
-> A copy can be cloned from the branch vfio-platform-v11 at:
-> git-9UaJU3cA/F/QT0dZR+AlfA@public.gmane.org:virtualopensystems/linux-kvm-arm.git
-> 
-> Changes since v10:
->  - Check if interrupt is already masked when setting a new trigger
->  - Fixed kasprintf with unchecked return value in VFIO AMBA driver
-> Changes since v9:
->  - Reworked the splitting of the patches that decouple virqfd from PCI
->  - Some styling issues and typos
->  - Removed superfluous includes
->  - AMBA devices are now named vfio-amba- suffixed by the AMBA device id
->  - Several other cleanups and fixes
-> Changes since v8:
->  - Separate irq handler for edge and level triggered interrupts
->  - Mutex based lock for VFIO fd open/release
->  - Fixed bug where the first region of a platform device wasn't exposed
->  - Read only regions can be MMAPed only read only
->  - Code cleanups
-> Changes since v7:
->  - Some initial placeholder functionality for PIO resources
->  - Cleaned up code for IRQ triggering, masking and unmasking
->  - Some functionality has been removed from this series and posted separately:
->    - VFIO_IOMMU_TYPE1 support for ARM SMMUs
->    - IOMMU NOEXEC patches
->    - driver_override functionality for AMBA devices
->  - Several fixes
-> Changes since v6:
->  - Integrated support for AMBA devices
->  - Numerous cleanups and fixes
-> Changes since v5:
->  - Full eventfd support for IRQ masking and unmasking.
->  - Changed IOMMU_EXEC to IOMMU_NOEXEC, along with related flags in VFIO.
->  - Other fixes based on reviewer comments.
-> Changes since v4:
->  - Use static offsets for each region in the VFIO device fd
->  - Include patch in the series for the ARM SMMU to expose IOMMU_EXEC
->    availability via IOMMU_CAP_DMA_EXEC
->  - Rebased on VFIO multi domain support:
->    - IOMMU_EXEC is now available if at least one IOMMU in the container
->      supports it
->    - Expose IOMMU_EXEC if available via the capability VFIO_IOMMU_PROT_EXEC
->  - Some bug fixes
-> Changes since v3:
->  - Use Kim Phillips' driver_probe_device()
-> Changes since v2:
->  - Fixed Read/Write and MMAP on device regions
->  - Removed dependency on Device Tree
->  - Interrupts support
->  - Interrupt masking/unmasking
->  - Automask level sensitive interrupts
->  - Introduced VFIO_DMA_MAP_FLAG_EXEC
->  - Code clean ups
-> 
-> Antonios Motakis (20):
->   vfio/platform: initial skeleton of VFIO support for platform devices
->   vfio: platform: probe to devices on the platform bus
->   vfio: platform: add the VFIO PLATFORM module to Kconfig
->   vfio: amba: VFIO support for AMBA devices
->   vfio: amba: add the VFIO for AMBA devices module to Kconfig
->   vfio/platform: return info for bound device
->   vfio/platform: return info for device memory mapped IO regions
->   vfio/platform: read and write support for the device fd
->   vfio/platform: support MMAP of MMIO regions
->   vfio/platform: return IRQ info
->   vfio/platform: initial interrupts support code
->   vfio/platform: trigger an interrupt via eventfd
->   vfio/platform: support for level sensitive interrupts
->   vfio: add a vfio_ prefix to virqfd_enable and virqfd_disable and
->     export
->   vfio: virqfd: rename vfio_pci_virqfd_init and vfio_pci_virqfd_exit
->   vfio: add local lock for virqfd instead of depending on VFIO PCI
->   vfio: pass an opaque pointer on virqfd initialization
->   vfio: move eventfd support code for VFIO_PCI to a separate file
->   vfio: initialize the virqfd workqueue in VFIO generic code
->   vfio/platform: implement IRQ masking/unmasking via an eventfd
-> 
->  drivers/vfio/Kconfig                          |   1 +
->  drivers/vfio/Makefile                         |   5 +-
->  drivers/vfio/pci/vfio_pci.c                   |   8 -
->  drivers/vfio/pci/vfio_pci_intrs.c             | 238 +-----------
->  drivers/vfio/pci/vfio_pci_private.h           |   3 -
->  drivers/vfio/platform/Kconfig                 |  19 +
->  drivers/vfio/platform/Makefile                |   8 +
->  drivers/vfio/platform/vfio_amba.c             | 115 ++++++
->  drivers/vfio/platform/vfio_platform.c         | 103 +++++
->  drivers/vfio/platform/vfio_platform_common.c  | 520 ++++++++++++++++++++++++++
->  drivers/vfio/platform/vfio_platform_irq.c     | 340 +++++++++++++++++
->  drivers/vfio/platform/vfio_platform_private.h |  82 ++++
->  drivers/vfio/vfio.c                           |   8 +
->  drivers/vfio/virqfd.c                         | 213 +++++++++++
->  include/linux/vfio.h                          |  27 ++
->  include/uapi/linux/vfio.h                     |   2 +
->  16 files changed, 1456 insertions(+), 236 deletions(-)
->  create mode 100644 drivers/vfio/platform/Kconfig
->  create mode 100644 drivers/vfio/platform/Makefile
->  create mode 100644 drivers/vfio/platform/vfio_amba.c
->  create mode 100644 drivers/vfio/platform/vfio_platform.c
->  create mode 100644 drivers/vfio/platform/vfio_platform_common.c
->  create mode 100644 drivers/vfio/platform/vfio_platform_irq.c
->  create mode 100644 drivers/vfio/platform/vfio_platform_private.h
->  create mode 100644 drivers/vfio/virqfd.c
-> 
+-- 
+Murali Karicheri
+Linux Kernel, Texas Instruments
