@@ -1,121 +1,47 @@
 From: Murali Karicheri <m-karicheri2@ti.com>
-Subject: Re: [PATCH v3 1/4] of: iommu: add ptr to OF node arg to of_iommu_configure()
-Date: Thu, 8 Jan 2015 13:29:26 -0500
-Message-ID: <54AECC86.7080201@ti.com>
-References: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com> <1420656594-8908-2-git-send-email-m-karicheri2@ti.com> <CAL_JsqJ5tDQb+SzzhGQTs48tSG=T_QZu3LW5TDyugxFw1V7LoA@mail.gmail.com>
+Subject: Re: [PATCH v3 2/4] of: move of_dma_configure() to device,c to help
+ re-use
+Date: Thu, 8 Jan 2015 14:26:36 -0500
+Message-ID: <54AED9EC.1020703@ti.com>
+References: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com> <1420656594-8908-3-git-send-email-m-karicheri2@ti.com> <CAL_Jsq+pKeXuGnZV_NYHn6iZgeOs404OPhcUb0FJs=-7j2P1Ug@mail.gmail.com> <3861625.CJ6m15sZMh@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <CAL_JsqJ5tDQb+SzzhGQTs48tSG=T_QZu3LW5TDyugxFw1V7LoA@mail.gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Rob Herring <robherring2@gmail.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Will Deacon <will.deacon@arm.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <3861625.CJ6m15sZMh@wuerfel>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Rob Herring <robherring2@gmail.com>, Joerg Roedel <joro@8bytes.org>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Will Deacon <will.deacon@arm.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/07/2015 06:30 PM, Rob Herring wrote:
-> On Wed, Jan 7, 2015 at 12:49 PM, Murali Karicheri<m-karicheri2@ti.com>  wrote:
->> Function of_iommu_configure() is called from of_dma_configure() to
->> setup iommu ops using DT property. This API is currently used for
->> platform devices for which DMA configuration (including iommu ops)
->> may come from device's parent. To extend this functionality for PCI
->> devices, this API need to take a parent node ptr as an argument
->> instead of assuming device's parent. This is needed since for PCI, the
->> dma configuration may be defined in the DT node of the root bus bridge's
->> parent device. Currently only dma-range is used for PCI and iommu is not
->> supported. So return error if the device is PCI.
+On 01/08/2015 03:40 AM, Arnd Bergmann wrote:
+> On Wednesday 07 January 2015 17:37:56 Rob Herring wrote:
+>> On Wed, Jan 7, 2015 at 12:49 PM, Murali Karicheri<m-karicheri2@ti.com>  wrote:
 >>
->> Signed-off-by: Murali Karicheri<m-karicheri2@ti.com>
->> ---
->>   drivers/iommu/of_iommu.c |   10 ++++++++--
->>   drivers/of/platform.c    |    2 +-
->>   include/linux/of_iommu.h |    6 ++++--
->>   3 files changed, 13 insertions(+), 5 deletions(-)
+>>> +       ret = of_dma_get_range(np,&dma_addr,&paddr,&size);
+>>> +       if (ret<  0) {
+>>> +               dma_addr = offset = 0;
+>>> +               size = dev->coherent_dma_mask + 1;
 >>
->> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
->> index af1dc6a..396bc77 100644
->> --- a/drivers/iommu/of_iommu.c
->> +++ b/drivers/iommu/of_iommu.c
->> @@ -133,19 +133,25 @@ struct iommu_ops *of_iommu_get_ops(struct device_node *np)
->>          return ops;
->>   }
->>
->> -struct iommu_ops *of_iommu_configure(struct device *dev)
->> +struct iommu_ops *of_iommu_configure(struct device *dev,
->> +                                    struct device_node *node)
+>> If coherent_dma_mask is DMA_BIT_MASK(64), then you will overflow and
+>> have a size of 0. There may also be a problem when the mask is only
+>> 32-bit type.
 >
-> You use node here, but np in the declaration. However...
->
->>   {
->>          struct of_phandle_args iommu_spec;
->>          struct device_node *np;
->
-> We also have np here. I would suggest we rename this to iommu_node or
-> iommu_np to be clear which one this is for.
->
-Rob,
+> The mask is always a 64-bit type, it's not optional. But you are right,
+> the 64-bit mask case is broken, so I guess we have to fix it differently
+> by always passing the smaller value into arch_setup_dma_ops and
+> adapting that function instead.
+Arnd,
 
-Thanks for the comment. Will pick and use iommu_np consistently everywhere.
+What is the smaller value you are referring to in the below code? 
+between *dev->dma_mask and size from DT? But overflow can still happen 
+when size is to be calculated in arch_setup_dma_ops() for Non DT case or 
+when DT size is configured to be equivalent of DMA_BIT_MASK(64) + 1. Can 
+we discuss the code change you have in mind when you get a chance?
 
 Murali
->>          struct iommu_ops *ops = NULL;
->>          int idx = 0;
->>
->> +       if (dev_is_pci(dev)) {
->> +               dev_err(dev, "iommu is currently not supported for PCI\n");
->> +               return NULL;
->> +       }
->> +
->>          /*
->>           * We don't currently walk up the tree looking for a parent IOMMU.
->>           * See the `Notes:' section of
->>           * Documentation/devicetree/bindings/iommu/iommu.txt
->>           */
->> -       while (!of_parse_phandle_with_args(dev->of_node, "iommus",
->> +       while (!of_parse_phandle_with_args(node, "iommus",
->>                                             "#iommu-cells", idx,
->>                                             &iommu_spec)) {
->>                  np = iommu_spec.np;
->> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
->> index a54ec10..7675b79 100644
->> --- a/drivers/of/platform.c
->> +++ b/drivers/of/platform.c
->> @@ -196,7 +196,7 @@ static void of_dma_configure(struct device *dev)
->>          dev_dbg(dev, "device is%sdma coherent\n",
->>                  coherent ? " " : " not ");
->>
->> -       iommu = of_iommu_configure(dev);
->> +       iommu = of_iommu_configure(dev, dev->of_node);
->>          dev_dbg(dev, "device is%sbehind an iommu\n",
->>                  iommu ? " " : " not ");
->>
->> diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
->> index 16c7554..3258cbb 100644
->> --- a/include/linux/of_iommu.h
->> +++ b/include/linux/of_iommu.h
->> @@ -12,7 +12,8 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
->>                               size_t *size);
->>
->>   extern void of_iommu_init(void);
->> -extern struct iommu_ops *of_iommu_configure(struct device *dev);
->> +extern struct iommu_ops *of_iommu_configure(struct device *dev,
->> +                                       struct device_node *np);
->>
->>   #else
->>
->> @@ -24,7 +25,8 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
->>   }
->>
->>   static inline void of_iommu_init(void) { }
->> -static inline struct iommu_ops *of_iommu_configure(struct device *dev)
->> +static inline struct iommu_ops *of_iommu_configure(struct device *dev,
->> +                                        struct device_node *np)
->>   {
->>          return NULL;
->>   }
->> --
->> 1.7.9.5
->>
+>
+> 	Arnd
 
 
 -- 
