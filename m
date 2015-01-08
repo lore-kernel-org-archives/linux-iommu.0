@@ -1,49 +1,100 @@
 From: Murali Karicheri <m-karicheri2@ti.com>
-Subject: Re: [PATCH v3 2/4] of: move of_dma_configure() to device,c to help
- re-use
-Date: Thu, 8 Jan 2015 14:26:36 -0500
-Message-ID: <54AED9EC.1020703@ti.com>
-References: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com> <1420656594-8908-3-git-send-email-m-karicheri2@ti.com> <CAL_Jsq+pKeXuGnZV_NYHn6iZgeOs404OPhcUb0FJs=-7j2P1Ug@mail.gmail.com> <3861625.CJ6m15sZMh@wuerfel>
+Subject: Re: [PATCH v3 3/4] of/pci: add of_pci_dma_configure() update dma
+ configuration
+Date: Thu, 8 Jan 2015 14:52:13 -0500
+Message-ID: <54AEDFED.8060008@ti.com>
+References: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com> <1420656594-8908-4-git-send-email-m-karicheri2@ti.com> <20150108160626.GN11583@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <3861625.CJ6m15sZMh@wuerfel>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Rob Herring <robherring2@gmail.com>, Joerg Roedel <joro@8bytes.org>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Will Deacon <will.deacon@arm.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20150108160626.GN11583@arm.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: "joro@8bytes.org" <joro@8bytes.org>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "bhelgaas@google.com" <bhelgaas@google.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "arnd@arndb.de" <arnd@arndb.de>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/08/2015 03:40 AM, Arnd Bergmann wrote:
-> On Wednesday 07 January 2015 17:37:56 Rob Herring wrote:
->> On Wed, Jan 7, 2015 at 12:49 PM, Murali Karicheri<m-karicheri2@ti.com>  wrote:
+On 01/08/2015 11:06 AM, Will Deacon wrote:
+> On Wed, Jan 07, 2015 at 06:49:53PM +0000, Murali Karicheri wrote:
+>> Add of_pci_dma_configure() to allow updating the dma configuration
+>> of the pci device using the configuration from DT of the parent of
+>> the root bridge device.
 >>
->>> +       ret = of_dma_get_range(np,&dma_addr,&paddr,&size);
->>> +       if (ret<  0) {
->>> +               dma_addr = offset = 0;
->>> +               size = dev->coherent_dma_mask + 1;
+>> Signed-off-by: Murali Karicheri<m-karicheri2@ti.com>
+>> ---
+>>   drivers/of/of_pci.c    |   39 +++++++++++++++++++++++++++++++++++++++
+>>   include/linux/of_pci.h |   12 ++++++++++++
+>>   2 files changed, 51 insertions(+)
 >>
->> If coherent_dma_mask is DMA_BIT_MASK(64), then you will overflow and
->> have a size of 0. There may also be a problem when the mask is only
->> 32-bit type.
+>> diff --git a/drivers/of/of_pci.c b/drivers/of/of_pci.c
+>> index 88471d3..34878c9 100644
+>> --- a/drivers/of/of_pci.c
+>> +++ b/drivers/of/of_pci.c
+>> @@ -2,6 +2,7 @@
+>>   #include<linux/export.h>
+>>   #include<linux/of.h>
+>>   #include<linux/of_address.h>
+>> +#include<linux/of_device.h>
+>>   #include<linux/of_pci.h>
+>>   #include<linux/slab.h>
+>>
+>> @@ -229,6 +230,44 @@ parse_failed:
+>>   	return err;
+>>   }
+>>   EXPORT_SYMBOL_GPL(of_pci_get_host_bridge_resources);
+>> +
+>> +/**
+>> + * of_get_pci_root_bridge_parent - get the OF node of the root bridge's parent
+>> + * @dev: ptr to pci_dev struct of the pci device
+>> + *
+>> + * This function will traverse the bus up to the root bus starting with
+>> + * the child and return the OF node ptr to root bridge device's parent device.
+>> + */
+>> +struct device_node *of_get_pci_root_bridge_parent(struct pci_dev *dev)
+>> +{
+>> +	struct pci_bus *bus = dev->bus;
+>> +	struct device *bridge;
+>> +
+>> +	while (!pci_is_root_bus(bus))
+>> +		bus = bus->parent;
+>> +	bridge = bus->bridge;
+>> +
+>> +	return bridge->parent->of_node;
+>> +}
+>> +EXPORT_SYMBOL_GPL(of_get_pci_root_bridge_parent);
+>> +
+>> +/**
+>> + * of_pci_dma_configure - Setup DMA configuration
+>> + * @dev: ptr to pci_dev struct of the pci device
+>> + *
+>> + * Function to update PCI devices's DMA configuration using the same
+>> + * info from the OF node of root host bridge's parent.
+>> + */
+>> +void of_pci_dma_configure(struct pci_dev *pci_dev)
+>> +{
+>> +	struct device *dev =&pci_dev->dev;
+>> +	struct device_node *parent_np;
+>> +
+>> +	parent_np = of_get_pci_root_bridge_parent(pci_dev);
+>> +	of_dma_configure(dev, parent_np);
+>> +}
+>> +EXPORT_SYMBOL_GPL(of_pci_dma_configure);
 >
-> The mask is always a 64-bit type, it's not optional. But you are right,
-> the 64-bit mask case is broken, so I guess we have to fix it differently
-> by always passing the smaller value into arch_setup_dma_ops and
-> adapting that function instead.
-Arnd,
-
-What is the smaller value you are referring to in the below code? 
-between *dev->dma_mask and size from DT? But overflow can still happen 
-when size is to be calculated in arch_setup_dma_ops() for Non DT case or 
-when DT size is configured to be equivalent of DMA_BIT_MASK(64) + 1. Can 
-we discuss the code change you have in mind when you get a chance?
-
-Murali
+> Whilst I think this is the right overall structure, I think this function
+> should determine the set of DMA aliases for the device and pass that through
+> to the IOMMU (as mentioned in my reply to the cover letter). Then we just
+> need to work out what we're doing for groups.
 >
-> 	Arnd
+> Will
+Will,
 
+Could you add this as as a follow up patch as I don't have a platformm 
+that support IOMMU and as such my understanding of the IOMMU is limited?
 
+I can help test the change to make sure it has no side effect on 
+Keystone that doesn't support IOMMU.
+
+Thanks.
 -- 
 Murali Karicheri
 Linux Kernel, Texas Instruments
