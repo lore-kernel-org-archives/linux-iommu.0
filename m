@@ -1,74 +1,37 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v3 2/4] of: move of_dma_configure() to device,c to help re-use
-Date: Thu, 08 Jan 2015 23:24:11 +0100
-Message-ID: <2083932.v1GzgAfexK@wuerfel>
-References: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com> <3861625.CJ6m15sZMh@wuerfel> <54AED9EC.1020703@ti.com>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH v3 3/4] of/pci: add of_pci_dma_configure() update dma
+	configuration
+Date: Thu, 08 Jan 2015 23:25:15 +0100
+Message-ID: <2057344.eJYxBNosJg@wuerfel>
+References: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com>
+	<20150108160626.GN11583@arm.com> <54AEDFED.8060008@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <54AED9EC.1020703@ti.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Murali Karicheri <m-karicheri2@ti.com>
-Cc: Rob Herring <robherring2@gmail.com>, Joerg Roedel <joro@8bytes.org>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Will Deacon <will.deacon@arm.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <54AEDFED.8060008-l0cyMroinI0@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org" <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thursday 08 January 2015 14:26:36 Murali Karicheri wrote:
-> On 01/08/2015 03:40 AM, Arnd Bergmann wrote:
-> > On Wednesday 07 January 2015 17:37:56 Rob Herring wrote:
-> >> On Wed, Jan 7, 2015 at 12:49 PM, Murali Karicheri<m-karicheri2@ti.com>  wrote:
-> >>
-> >>> +       ret = of_dma_get_range(np,&dma_addr,&paddr,&size);
-> >>> +       if (ret<  0) {
-> >>> +               dma_addr = offset = 0;
-> >>> +               size = dev->coherent_dma_mask + 1;
-> >>
-> >> If coherent_dma_mask is DMA_BIT_MASK(64), then you will overflow and
-> >> have a size of 0. There may also be a problem when the mask is only
-> >> 32-bit type.
-> >
-> > The mask is always a 64-bit type, it's not optional. But you are right,
-> > the 64-bit mask case is broken, so I guess we have to fix it differently
-> > by always passing the smaller value into arch_setup_dma_ops and
-> > adapting that function instead.
-> Arnd,
+On Thursday 08 January 2015 14:52:13 Murali Karicheri wrote:
 > 
-> What is the smaller value you are referring to in the below code? 
-> between *dev->dma_mask and size from DT? But overflow can still happen 
-> when size is to be calculated in arch_setup_dma_ops() for Non DT case or 
-> when DT size is configured to be equivalent of DMA_BIT_MASK(64) + 1. Can 
-> we discuss the code change you have in mind when you get a chance?
+> Could you add this as as a follow up patch as I don't have a platformm 
+> that support IOMMU and as such my understanding of the IOMMU is limited?
+> 
+> I can help test the change to make sure it has no side effect on 
+> Keystone that doesn't support IOMMU.
 
-I meant changing every function that the size values gets passed into
-to take a mask like 0xffffffff instead of a size like 0x100000000, so
-we can represent a 64-bit capable bus correctly.
-
-This means we also need to adapt the value returned from of_dma_get_range.
-A minor complication here is that the DT properties sometimes already
-contain the mask value, in particular when we want to represent a
-full mapping like 
-
-	bus {
-		#address-cells = <1>;
-		#size-cells = <1>;
-		dma-ranges = <0 0 0xffffffff>; /* all 4 GB, DMA_BIT_MASK(32) */
-	};
-
-as opposed to
-
-	bus {
-		#address-cells = <1>;
-		#size-cells = <1>;
-		dma-ranges = <0 0 0x80000000>; /* only lower 2GB, DMA_BIT_MASK(31) */
-	};
-
-or
-
-	bus {
-		#address-cells = <2>;
-		#size-cells = <2>;
-		dma-ranges = <0 0 0x0000000100000000>; /* 4GB of 64-bit address space */
-	};
-
+I think that's fine. Let's get your series done first and add the
+DMA aliases for iommus on top once we have worked out what to do.
 
 	Arnd
