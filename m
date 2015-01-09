@@ -1,7 +1,8 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 5/5] iommu: io-pgtable-arm: add non-secure quirk
-Date: Fri,  9 Jan 2015 13:54:17 +0000
-Message-ID: <1420811657-21321-6-git-send-email-will.deacon@arm.com>
+Subject: [PATCH v2 3/5] iommu: add self-consistency tests to ARM LPAE IO page
+	table allocator
+Date: Fri,  9 Jan 2015 13:54:15 +0000
+Message-ID: <1420811657-21321-4-git-send-email-will.deacon@arm.com>
 References: <1420811657-21321-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,70 +19,261 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, Robin.Murphy-5wv7dgnIgG8@public.gmane.org
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, Robin.Murphy-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+This patch adds a series of basic self-consistency tests to the ARM LPAE
+IO page table allocator that exercise corner cases in map/unmap, as well
+as testing all valid configurations of pagesize, ias and stage.
 
-The quirk causes the Non-Secure bit to be set in all page table entries.
-
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/io-pgtable-arm.c | 7 +++++++
- drivers/iommu/io-pgtable.h     | 3 ++-
- 2 files changed, 9 insertions(+), 1 deletion(-)
+ drivers/iommu/Kconfig          |   9 ++
+ drivers/iommu/io-pgtable-arm.c | 200 ++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 208 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 306454fbc52d..9fd9909867cd 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -28,6 +28,15 @@ config IOMMU_IO_PGTABLE_LPAE
+ 	  sizes at both stage-1 and stage-2, as well as address spaces
+ 	  up to 48-bits in size.
+ 
++config IOMMU_IO_PGTABLE_LPAE_SELFTEST
++	bool "LPAE selftests"
++	depends on IOMMU_IO_PGTABLE_LPAE
++	help
++	  Enable self-tests for LPAE page table allocator. This performs
++	  a series of page-table consistency checks during boot.
++
++	  If unsure, say N here.
++
+ endmenu
+ 
+ config OF_IOMMU
 diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 52fb21487f02..5a500edf00cc 100644
+index dbe6178a53e9..52fb21487f02 100644
 --- a/drivers/iommu/io-pgtable-arm.c
 +++ b/drivers/iommu/io-pgtable-arm.c
-@@ -82,11 +82,13 @@
- #define ARM_LPAE_PTE_TYPE_TABLE		3
- #define ARM_LPAE_PTE_TYPE_PAGE		3
+@@ -193,6 +193,8 @@ struct arm_lpae_io_pgtable {
  
-+#define ARM_LPAE_PTE_NSTABLE		(((arm_lpae_iopte)1) << 63)
- #define ARM_LPAE_PTE_XN			(((arm_lpae_iopte)3) << 53)
- #define ARM_LPAE_PTE_AF			(((arm_lpae_iopte)1) << 10)
- #define ARM_LPAE_PTE_SH_NS		(((arm_lpae_iopte)0) << 8)
- #define ARM_LPAE_PTE_SH_OS		(((arm_lpae_iopte)2) << 8)
- #define ARM_LPAE_PTE_SH_IS		(((arm_lpae_iopte)3) << 8)
-+#define ARM_LPAE_PTE_NS			(((arm_lpae_iopte)1) << 5)
- #define ARM_LPAE_PTE_VALID		(((arm_lpae_iopte)1) << 0)
+ typedef u64 arm_lpae_iopte;
  
- #define ARM_LPAE_PTE_ATTR_LO_MASK	(((arm_lpae_iopte)0x3ff) << 2)
-@@ -208,6 +210,9 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
- 		return -EEXIST;
- 	}
- 
-+	if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_ARM_NS)
-+		pte |= ARM_LPAE_PTE_NS;
++static bool selftest_running = false;
 +
+ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ 			     unsigned long iova, phys_addr_t paddr,
+ 			     arm_lpae_iopte prot, int lvl,
+@@ -201,8 +203,10 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ 	arm_lpae_iopte pte = prot;
+ 
+ 	/* We require an unmap first */
+-	if (WARN_ON(iopte_leaf(*ptep, lvl)))
++	if (iopte_leaf(*ptep, lvl)) {
++		WARN_ON(!selftest_running);
+ 		return -EEXIST;
++	}
+ 
  	if (lvl == ARM_LPAE_MAX_LEVELS - 1)
  		pte |= ARM_LPAE_PTE_TYPE_PAGE;
- 	else
-@@ -251,6 +256,8 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
- 		data->iop.cfg.tlb->flush_pgtable(cptep, 1UL << data->pg_shift,
- 						 cookie);
- 		pte = __pa(cptep) | ARM_LPAE_PTE_TYPE_TABLE;
-+		if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_ARM_NS)
-+			pte |= ARM_LPAE_PTE_NSTABLE;
- 		*ptep = pte;
- 		data->iop.cfg.tlb->flush_pgtable(ptep, sizeof(*ptep), cookie);
- 	} else {
-diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-index 05c4e593a25f..10e32f69c668 100644
---- a/drivers/iommu/io-pgtable.h
-+++ b/drivers/iommu/io-pgtable.h
-@@ -43,7 +43,8 @@ struct iommu_gather_ops {
-  * @tlb:           TLB management callbacks for this set of tables.
-  */
- struct io_pgtable_cfg {
--	int				quirks; /* IO_PGTABLE_QUIRK_* */
-+	#define IO_PGTABLE_QUIRK_ARM_NS	(1 << 0)	/* Set NS bit in PTEs */
-+	int				quirks;
- 	unsigned long			pgsize_bitmap;
- 	unsigned int			ias;
- 	unsigned int			oas;
+@@ -779,3 +783,197 @@ struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s2_init_fns = {
+ 	.alloc	= arm_32_lpae_alloc_pgtable_s2,
+ 	.free	= arm_lpae_free_pgtable,
+ };
++
++#ifdef CONFIG_IOMMU_IO_PGTABLE_LPAE_SELFTEST
++
++static struct io_pgtable_cfg *cfg_cookie;
++
++static void dummy_tlb_flush_all(void *cookie)
++{
++	WARN_ON(cookie != cfg_cookie);
++}
++
++static void dummy_tlb_add_flush(unsigned long iova, size_t size, bool leaf,
++				void *cookie)
++{
++	WARN_ON(cookie != cfg_cookie);
++	WARN_ON(!(size & cfg_cookie->pgsize_bitmap));
++}
++
++static void dummy_tlb_sync(void *cookie)
++{
++	WARN_ON(cookie != cfg_cookie);
++}
++
++static void dummy_flush_pgtable(void *ptr, size_t size, void *cookie)
++{
++	WARN_ON(cookie != cfg_cookie);
++}
++
++static struct iommu_gather_ops dummy_tlb_ops __initdata = {
++	.tlb_flush_all	= dummy_tlb_flush_all,
++	.tlb_add_flush	= dummy_tlb_add_flush,
++	.tlb_sync	= dummy_tlb_sync,
++	.flush_pgtable	= dummy_flush_pgtable,
++};
++
++static void __init arm_lpae_dump_ops(struct io_pgtable_ops *ops)
++{
++	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
++	struct io_pgtable_cfg *cfg = &data->iop.cfg;
++
++	pr_err("cfg: pgsize_bitmap 0x%lx, ias %u-bit\n",
++		cfg->pgsize_bitmap, cfg->ias);
++	pr_err("data: %d levels, 0x%zx pgd_size, %lu pg_shift, %lu bits_per_level, pgd @ %p\n",
++		data->levels, data->pgd_size, data->pg_shift,
++		data->bits_per_level, data->pgd);
++}
++
++#define __FAIL(ops, i)	({						\
++		WARN(1, "selftest: test failed for fmt idx %d\n", (i));	\
++		arm_lpae_dump_ops(ops);					\
++		selftest_running = false;				\
++		-EFAULT;						\
++})
++
++static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
++{
++	static const enum io_pgtable_fmt fmts[] = {
++		ARM_64_LPAE_S1,
++		ARM_64_LPAE_S2,
++	};
++
++	int i, j;
++	unsigned long iova;
++	size_t size;
++	struct io_pgtable_ops *ops;
++
++	selftest_running = true;
++
++	for (i = 0; i < ARRAY_SIZE(fmts); ++i) {
++		cfg_cookie = cfg;
++		ops = alloc_io_pgtable_ops(fmts[i], cfg, cfg);
++		if (!ops) {
++			pr_err("selftest: failed to allocate io pgtable ops\n");
++			return -ENOMEM;
++		}
++
++		/*
++		 * Initial sanity checks.
++		 * Empty page tables shouldn't provide any translations.
++		 */
++		if (ops->iova_to_phys(ops, 42))
++			return __FAIL(ops, i);
++
++		if (ops->iova_to_phys(ops, SZ_1G + 42))
++			return __FAIL(ops, i);
++
++		if (ops->iova_to_phys(ops, SZ_2G + 42))
++			return __FAIL(ops, i);
++
++		/*
++		 * Distinct mappings of different granule sizes.
++		 */
++		iova = 0;
++		j = find_first_bit(&cfg->pgsize_bitmap, BITS_PER_LONG);
++		while (j != BITS_PER_LONG) {
++			size = 1UL << j;
++
++			if (ops->map(ops, iova, iova, size, IOMMU_READ |
++							    IOMMU_WRITE |
++							    IOMMU_NOEXEC |
++							    IOMMU_CACHE))
++				return __FAIL(ops, i);
++
++			/* Overlapping mappings */
++			if (!ops->map(ops, iova, iova + size, size,
++				      IOMMU_READ | IOMMU_NOEXEC))
++				return __FAIL(ops, i);
++
++			if (ops->iova_to_phys(ops, iova + 42) != (iova + 42))
++				return __FAIL(ops, i);
++
++			iova += SZ_1G;
++			j++;
++			j = find_next_bit(&cfg->pgsize_bitmap, BITS_PER_LONG, j);
++		}
++
++		/* Partial unmap */
++		size = 1UL << __ffs(cfg->pgsize_bitmap);
++		if (ops->unmap(ops, SZ_1G + size, size) != size)
++			return __FAIL(ops, i);
++
++		/* Remap of partial unmap */
++		if (ops->map(ops, SZ_1G + size, size, size, IOMMU_READ))
++			return __FAIL(ops, i);
++
++		if (ops->iova_to_phys(ops, SZ_1G + size + 42) != (size + 42))
++			return __FAIL(ops, i);
++
++		/* Full unmap */
++		iova = 0;
++		j = find_first_bit(&cfg->pgsize_bitmap, BITS_PER_LONG);
++		while (j != BITS_PER_LONG) {
++			size = 1UL << j;
++
++			if (ops->unmap(ops, iova, size) != size)
++				return __FAIL(ops, i);
++
++			if (ops->iova_to_phys(ops, iova + 42))
++				return __FAIL(ops, i);
++
++			/* Remap full block */
++			if (ops->map(ops, iova, iova, size, IOMMU_WRITE))
++				return __FAIL(ops, i);
++
++			if (ops->iova_to_phys(ops, iova + 42) != (iova + 42))
++				return __FAIL(ops, i);
++
++			iova += SZ_1G;
++			j++;
++			j = find_next_bit(&cfg->pgsize_bitmap, BITS_PER_LONG, j);
++		}
++
++		free_io_pgtable_ops(ops);
++	}
++
++	selftest_running = false;
++	return 0;
++}
++
++static int __init arm_lpae_do_selftests(void)
++{
++	static const unsigned long pgsize[] = {
++		SZ_4K | SZ_2M | SZ_1G,
++		SZ_16K | SZ_32M,
++		SZ_64K | SZ_512M,
++	};
++
++	static const unsigned int ias[] = {
++		32, 36, 40, 42, 44, 48,
++	};
++
++	int i, j, pass = 0, fail = 0;
++	struct io_pgtable_cfg cfg = {
++		.tlb = &dummy_tlb_ops,
++		.oas = 48,
++	};
++
++	for (i = 0; i < ARRAY_SIZE(pgsize); ++i) {
++		for (j = 0; j < ARRAY_SIZE(ias); ++j) {
++			cfg.pgsize_bitmap = pgsize[i];
++			cfg.ias = ias[j];
++			pr_info("selftest: pgsize_bitmap 0x%08lx, IAS %u\n",
++				pgsize[i], ias[j]);
++			if (arm_lpae_run_tests(&cfg))
++				fail++;
++			else
++				pass++;
++		}
++	}
++
++	pr_info("selftest: completed with %d PASS %d FAIL\n", pass, fail);
++	return fail ? -EFAULT : 0;
++}
++subsys_initcall(arm_lpae_do_selftests);
++#endif
 -- 
 2.1.4
