@@ -1,85 +1,71 @@
-From: Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>
-Subject: Re: Exynos IOMMU driver doesn't work?
-Date: Fri, 9 Jan 2015 16:34:25 +0100
-Message-ID: <CABxcv=n26-A86OmsqviEUz=XSF6QP6K0s=Dfzc43x4+if_qP7A@mail.gmail.com>
-References: <CAOhR-w2vQbyYrWsvZjs-Pt6tU6m9BmH-T5tuBDSyUXteWgxP0Q@mail.gmail.com>
-	<CAOhR-w1gH6zzSZcw-0Lo0zc+p1Mt0=4aqWEZ0Agz4xw0uHsq7A@mail.gmail.com>
+From: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v3 2/4] of: move of_dma_configure() to device,c to help re-use
+Date: Fri, 9 Jan 2015 09:34:50 -0600
+Message-ID: <CAL_JsqLG2OQL2TMMrXi4U0PU1vNzgodUehoZwpds5z8JKsB1jQ@mail.gmail.com>
+References: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com>
+ <3861625.CJ6m15sZMh@wuerfel> <54AED9EC.1020703@ti.com> <2083932.v1GzgAfexK@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAOhR-w1gH6zzSZcw-0Lo0zc+p1Mt0=4aqWEZ0Agz4xw0uHsq7A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Hongbo Zhang <hongbo.zhang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sjoerd Simons <sjoerd.simons-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>
-Cc: "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <2083932.v1GzgAfexK@wuerfel>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-[adding Marek, Sjoerd and Joonyoung that were discussing about iommu
-support in another thread]
-
-Hello Hongbo,
-
-On Fri, Jan 9, 2015 at 8:31 AM, Hongbo Zhang <hongbo.zhang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
-> Add linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org mailing list.
+On Thu, Jan 8, 2015 at 4:24 PM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
+> On Thursday 08 January 2015 14:26:36 Murali Karicheri wrote:
+>> On 01/08/2015 03:40 AM, Arnd Bergmann wrote:
+>> > On Wednesday 07 January 2015 17:37:56 Rob Herring wrote:
+>> >> On Wed, Jan 7, 2015 at 12:49 PM, Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>  wrote:
+>> >>
+>> >>> +       ret = of_dma_get_range(np,&dma_addr,&paddr,&size);
+>> >>> +       if (ret<  0) {
+>> >>> +               dma_addr = offset = 0;
+>> >>> +               size = dev->coherent_dma_mask + 1;
+>> >>
+>> >> If coherent_dma_mask is DMA_BIT_MASK(64), then you will overflow and
+>> >> have a size of 0. There may also be a problem when the mask is only
+>> >> 32-bit type.
+>> >
+>> > The mask is always a 64-bit type, it's not optional. But you are right,
+>> > the 64-bit mask case is broken, so I guess we have to fix it differently
+>> > by always passing the smaller value into arch_setup_dma_ops and
+>> > adapting that function instead.
+>> Arnd,
+>>
+>> What is the smaller value you are referring to in the below code?
+>> between *dev->dma_mask and size from DT? But overflow can still happen
+>> when size is to be calculated in arch_setup_dma_ops() for Non DT case or
+>> when DT size is configured to be equivalent of DMA_BIT_MASK(64) + 1. Can
+>> we discuss the code change you have in mind when you get a chance?
 >
-> On 7 January 2015 at 18:31, Hongbo Zhang <hongbo.zhang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
->> Hi Cho KyongHo, Joerg et al,
->> I found the latest Exynos IOMMU driver doesn't work, the line 481:
->> BUG_ON(!has_sysmmu(dev));
->> in function __exynos_sysmmu_enable() in file exynos-iommu.c triggers
->> kernel panic.
->>
->> Then I found the dev->archdata.iommu isn't initialized at all, it
->> should be the root cause.
->>
+> I meant changing every function that the size values gets passed into
+> to take a mask like 0xffffffff instead of a size like 0x100000000, so
+> we can represent a 64-bit capable bus correctly.
 
-That's correct, I found the same the other day since and thought about
-posting a patch to return -ENODEV if !has_sysmmu(dev) instead to avoid
-the driver to panic the kernel. But then I realized this is already
-fixed in Marek's "[PATCH v3 00/19] Exynos SYSMMU (IOMMU) integration
-with DT and DMA-mapping subsystem" series [0].
+Or you could special case a size of 0 to mean all/max? I'm not sure if
+we need to handle size=0 for other reasons beyond just wrong DT data.
 
->> Another problem is this driver is added support of device tree, but
->> there is no device tree nodes in the dts file, so I had to search from
->> internet and added those nodes manually.
->>
->> I've found these links of v12 and v13 patches
->> https://lkml.org/lkml/2014/4/27/171
->> https://lkml.org/lkml/2014/5/12/34
->> patch v13 was merged into mainline kernel, but as a part of v12, it
->> isn't complete and doesn't work alone, eg dts nodes are missing.
->> (I didn't research much dev->archdata.iommu initialization error is
->> introduced by which patch, but it seems in very old codes there is no
->> such problem)
->>
+> This means we also need to adapt the value returned from of_dma_get_range.
+> A minor complication here is that the DT properties sometimes already
+> contain the mask value, in particular when we want to represent a
+> full mapping like
+>
+>         bus {
+>                 #address-cells = <1>;
+>                 #size-cells = <1>;
+>                 dma-ranges = <0 0 0xffffffff>; /* all 4 GB, DMA_BIT_MASK(32) */
 
-Yes, please take a look to Marek series [0]. Keep in mind that the
-series does not support all sysmmu revisions so IOMMU is not supported
-for some SoCs (e.g: Exynos5). Support for that is planned once that
-series land into mainline though [1].
+This is wrong though, right? The DT should be size. Certainly, this
+could be a valid size, but that would not make the mask 0xfffffffe. We
+would still want it to be 0xffffffff.
 
-May I ask why are you interested in IOMMU support on Exynos? I'm
-asking because the reason why I tried to enable IOMMU support (and hit
-the same issue) was to try using the Exynos DRM HDMI driver with IOMMU
-since I found that HDMI is working on the downstream Samsung kernel
-[2] that has IOMMU support, but is not working on mainline.
+We could do a fixup for these cases adding 1 if bit 0 is set (or not
+subtracting 1 if we want the mask).
 
-At the end the HDMI problem seems to not be IOMMU related but
-something with the power domains and clocking but in case you are
-facing the same issue, you may be interested in that discussion [3].
-
-Best regards,
-Javier
-
-[0]: http://www.spinics.net/lists/linux-samsung-soc/msg39168.html
-[1]: http://www.spinics.net/lists/linux-samsung-soc/msg39980.html
-[2]: git-9UaJU3cA/F/QT0dZR+AlfA@public.gmane.org:exynos-reference/kernel.git
-[3]: http://www.spinics.net/lists/linux-samsung-soc/msg40828.html
+Rob
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
