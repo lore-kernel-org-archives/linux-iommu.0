@@ -1,105 +1,66 @@
-From: leizhen <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 7/9] iommu/arm-smmu: remove arm_smmu_devices
-Date: Thu, 9 Jul 2015 10:43:29 +0800
-Message-ID: <559DDFD1.9010000@huawei.com>
-References: <1436239822-14132-1-git-send-email-thunder.leizhen@huawei.com>
-	<1436239822-14132-8-git-send-email-thunder.leizhen@huawei.com>
-	<559D2210.50202@arm.com>
+From: SF Markus Elfring <elfring@users.sourceforge.net>
+Subject: Re: [PATCH] IOMMU-Tegra: gart: Delete an unnecessary check before the
+ function call "vfree"
+Date: Fri, 9 Jan 2015 07:58:16 +0100
+Message-ID: <559E1B88.5030005@users.sourceforge.net>
+References: <5307CAA2.8060406@users.sourceforge.net>
+ <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6>
+ <530A086E.8010901@users.sourceforge.net>
+ <alpine.DEB.2.02.1402231635510.1985@localhost6.localdomain6>
+ <530A72AA.3000601@users.sourceforge.net>
+ <alpine.DEB.2.02.1402240658210.2090@localhost6.localdomain6>
+ <530B5FB6.6010207@users.sourceforge.net>
+ <alpine.DEB.2.10.1402241710370.2074@hadrien>
+ <530C5E18.1020800@users.sourceforge.net>
+ <alpine.DEB.2.10.1402251014170.2080@hadrien>
+ <530CD2C4.4050903@users.sourceforge.net>
+ <alpine.DEB.2.10.1402251840450.7035@hadrien>
+ <530CF8FF.8080600@users.sourceforge.net>
+ <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6>
+ <530DD06F.4090703@users.sourceforge.net>
+ <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6>
+ <5317A59D.4@users.sourceforge.net> <54D3A1A9.9040709@users.sourceforge.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <559D2210.50202-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <kernel-janitors-owner@vger.kernel.org>
+In-Reply-To: <54D3A1A9.9040709@users.sourceforge.net>
+Sender: kernel-janitors-owner@vger.kernel.org
+To: Alexandre Courbot <gnurou@gmail.com>, Hiroshi Doyu <hdoyu@nvidia.com>, =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>, Stephen Warren <swarren@wwwdotorg.org>, Thierry Reding <thierry.reding@gmail.com>, iommu@lists.linux-foundation.org, linux-tegra@vger.kernel.org
+Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org, Julia Lawall <julia.lawall@lip6.fr>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2015/7/8 21:13, Robin Murphy wrote:
-> On 07/07/15 04:30, Zhen Lei wrote:
->> It can be replaced by of_iommu_list(in of_iommu.c).
->>
->> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->> ---
->>   drivers/iommu/arm-smmu-v3.c | 22 ++--------------------
->>   1 file changed, 2 insertions(+), 20 deletions(-)
->>
->> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->> index c569539..39c55f6 100644
->> --- a/drivers/iommu/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm-smmu-v3.c
->> @@ -604,10 +604,6 @@ struct arm_smmu_domain {
->>       struct iommu_domain        domain;
->>   };
->>
->> -/* Our list of SMMU instances */
->> -static DEFINE_SPINLOCK(arm_smmu_devices_lock);
->> -static LIST_HEAD(arm_smmu_devices);
->> -
->>   struct arm_smmu_option_prop {
->>       u32 opt;
->>       const char *prop;
->> @@ -2675,11 +2671,6 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
->>       if (ret)
->>           goto out_free_structures;
->>
->> -    /* Record our private device structure */
->> -    INIT_LIST_HEAD(&smmu->list);
->> -    spin_lock(&arm_smmu_devices_lock);
->> -    list_add(&smmu->list, &arm_smmu_devices);
->> -    spin_unlock(&arm_smmu_devices_lock);
->>       platform_set_drvdata(pdev, smmu);
->>       of_iommu_set_ops(smmu->dev->of_node, &arm_smmu_ops);
->>
->> @@ -2692,19 +2683,10 @@ out_free_structures:
->>
->>   static int arm_smmu_device_remove(struct platform_device *pdev)
->>   {
->> -    struct arm_smmu_device *curr, *smmu = NULL;
->> +    struct arm_smmu_device *smmu;
->>       struct device *dev = &pdev->dev;
->>
->> -    spin_lock(&arm_smmu_devices_lock);
->> -    list_for_each_entry(curr, &arm_smmu_devices, list) {
->> -        if (curr->dev == dev) {
->> -            smmu = curr;
->> -            list_del(&smmu->list);
->> -            break;
->> -        }
->> -    }
->> -    spin_unlock(&arm_smmu_devices_lock);
->> -
->> +    smmu = find_smmu_by_node(dev->of_node);
+> From: Markus Elfring <elfring@users.sourceforge.net>
+> Date: Thu, 5 Feb 2015 17:54:16 +0100
 > 
-> Isn't that just a really long round-trip to platform_get_drvdata(pdev)?
+> The vfree() function performs also input parameter validation.
+> Thus the test around the call is not needed.
+> 
+> This issue was detected by using the Coccinelle software.
+> 
+> Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+> ---
+>  drivers/iommu/tegra-gart.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+> index f722a0c..07a795a 100644
+> --- a/drivers/iommu/tegra-gart.c
+> +++ b/drivers/iommu/tegra-gart.c
+> @@ -404,8 +404,7 @@ static int tegra_gart_remove(struct platform_device *pdev)
+>  	struct gart_device *gart = platform_get_drvdata(pdev);
+>  
+>  	writel(0, gart->regs + GART_CONFIG);
+> -	if (gart->savedata)
+> -		vfree(gart->savedata);
+> +	vfree(gart->savedata);
+>  	gart_handle = NULL;
+>  	return 0;
+>  }
+> 
 
-But we should first check that pdev is a real smmu device, not others. So we can not omit:
-if (!of_iommu_get_ops(np))
+Would you like to integrate this update suggestion
+into another source code repository?
 
-I think arm_smmu_device_remove will rarely be called, so it will not impact performance.
-
-> 
->>       if (!smmu)
->>           return -ENODEV;
->>
->> -- 
->> 1.8.0
->>
->>
->> _______________________________________________
->> iommu mailing list
->> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->>
-> 
-> 
-> .
-> 
+Regards,
+Markus
