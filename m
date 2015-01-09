@@ -1,60 +1,42 @@
-From: "Wu, Feng" <feng.wu@intel.com>
-Subject: RE: [v3 00/26] Add VT-d Posted-Interrupts support
-Date: Fri, 9 Jan 2015 13:58:20 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F002336FD8@SHSMSX104.ccr.corp.intel.com>
-References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
- <E959C4978C3B6342920538CF579893F002327907@SHSMSX104.ccr.corp.intel.com>
- <20150109124616.GB17298@8bytes.org>
+From: Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [v3 13/26] KVM: Define a new interface kvm_find_dest_vcpu() for
+ VT-d PI
+Date: Fri, 09 Jan 2015 15:56:00 +0100
+Message-ID: <54AFEC00.80507@redhat.com>
+References: <1418397300-10870-1-git-send-email-feng.wu@intel.com> <1418397300-10870-14-git-send-email-feng.wu@intel.com> <20150109145435.GA22469@potion.brq.redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <20150109124616.GB17298@8bytes.org>
-Content-Language: en-US
+In-Reply-To: <20150109145435.GA22469@potion.brq.redhat.com>
 Sender: kvm-owner@vger.kernel.org
-To: "joro@8bytes.org" <joro@8bytes.org>
-Cc: "tglx@linutronix.de" <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>, "hpa@zytor.com" <hpa@zytor.com>, "x86@kernel.org" <x86@kernel.org>, "gleb@kernel.org" <gleb@kernel.org>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "eric.auger@linaro.org" <eric.auger@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Wu, Feng" <feng.wu@intel.com>
+To: =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Feng Wu <feng.wu@intel.com>
+Cc: tglx@linutronix.de, mingo@redhat.com, hpa@zytor.com, x86@kernel.org, gleb@kernel.org, dwmw2@infradead.org, joro@8bytes.org, alex.williamson@redhat.com, jiang.liu@linux.intel.com, eric.auger@linaro.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
 
 
-> -----Original Message-----
-> From: joro@8bytes.org [mailto:joro@8bytes.org]
-> Sent: Friday, January 09, 2015 8:46 PM
-> To: Wu, Feng
-> Cc: tglx@linutronix.de; mingo@redhat.com; hpa@zytor.com; x86@kernel.org;
-> gleb@kernel.org; pbonzini@redhat.com; dwmw2@infradead.org;
-> alex.williamson@redhat.com; jiang.liu@linux.intel.com; eric.auger@linaro.org;
-> linux-kernel@vger.kernel.org; iommu@lists.linux-foundation.org;
-> kvm@vger.kernel.org
-> Subject: Re: [v3 00/26] Add VT-d Posted-Interrupts support
-> 
-> Hi Feng,
-> 
-> On Tue, Jan 06, 2015 at 01:10:19AM +0000, Wu, Feng wrote:
-> > Ping...
-> >
-> > Hi Joerg & David,
-> >
-> > Could you please have a look at the IOMMU part of this series (patch 02 - 04,
-> patch 06 - 09 , patch 26)?
-> >
-> > Hi Thomas, Ingo, & Peter,
-> >
-> > Could you please have a look at this series, especially for patch 01, 05, 21?
-> 
-> I fear this conflicts somewhat with the irq-domain patches from Jiang
-> Liu. Once we worked this out (should happen soon) I'll have a look at
-> the VT-d posted interrupt patches.
-> 
-> Regards,
-> 
-> 	Joerg
+On 09/01/2015 15:54, Radim Kr=C4=8Dm=C3=A1=C5=99 wrote:
+> There are two points relevant to this patch in new KVM's implementati=
+on,
+> ("KVM: x86: amend APIC lowest priority arbitration",
+>  https://lkml.org/lkml/2015/1/9/362)
+>=20
+> 1) lowest priority depends on TPR
+> 2) there is no need for balancing
+>=20
+> (1) has to be considered with PI as well.
 
-Thanks a lot for your feedback on this. In fact, my patches is based on Jiang Liu's
-irq-domain patches and has been discussed with Jiang offline. So I don't think
-it will conflicts with Jiang's work. Anyway, any comments are welcome!
+The chipset doesn't support it. :(
 
-Thanks,
-Feng
+> I kept (2) to avoid whining from people building on that behaviour, b=
+ut
+> lowest priority backed by PI could be transparent without it.
+>=20
+> Patch below removes the balancing, but I am not sure this is a price =
+we
+> allowed ourselves to pay ... what are your opinions?
 
+I wouldn't mind, but it requires a lot of benchmarking.
+
+Paolo
