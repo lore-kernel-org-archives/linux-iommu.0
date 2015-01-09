@@ -1,7 +1,7 @@
 From: Will Deacon <will.deacon@arm.com>
-Subject: [PATCH v2 4/5] iommu/arm-smmu: make use of generic LPAE allocator
-Date: Fri,  9 Jan 2015 13:54:16 +0000
-Message-ID: <1420811657-21321-5-git-send-email-will.deacon@arm.com>
+Subject: [PATCH v2 2/5] iommu: add ARM LPAE page table allocator
+Date: Fri,  9 Jan 2015 13:54:14 +0000
+Message-ID: <1420811657-21321-3-git-send-email-will.deacon@arm.com>
 References: <1420811657-21321-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,1308 +21,912 @@ To: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org
 Cc: lauraa@codeaurora.org, mitchelh@codeaurora.org, joro@8bytes.org, Will Deacon <will.deacon@arm.com>, laurent.pinchart@ideasonboard.com, Varun.Sethi@freescale.com, prem.mallappa@broadcom.com, Robin.Murphy@arm.com, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-The ARM SMMU can walk LPAE page tables, so make use of the generic
-allocator.
+A number of IOMMUs found in ARM SoCs can walk architecture-compatible
+page tables.
 
+This patch adds a generic allocator for Stage-1 and Stage-2 v7/v8
+long-descriptor page tables. 4k, 16k and 64k pages are supported, with
+up to 4-levels of walk to cover a 48-bit address space.
+
+Tested-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 Signed-off-by: Will Deacon <will.deacon@arm.com>
 ---
- arch/arm64/Kconfig       |   1 -
- drivers/iommu/Kconfig    |   6 +-
- drivers/iommu/arm-smmu.c | 886 ++++++++++++++---------------------------------
- 3 files changed, 266 insertions(+), 627 deletions(-)
+ MAINTAINERS                    |   1 +
+ drivers/iommu/Kconfig          |   9 +
+ drivers/iommu/Makefile         |   1 +
+ drivers/iommu/io-pgtable-arm.c | 781 +++++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/io-pgtable.c     |  11 +
+ drivers/iommu/io-pgtable.h     |  14 +
+ 6 files changed, 817 insertions(+)
+ create mode 100644 drivers/iommu/io-pgtable-arm.c
 
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index b1f9a20a3677..528c3fd2d4c1 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -349,7 +349,6 @@ config ARM64_VA_BITS_42
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ddb9ac8d32b3..248aafdeeef7 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1589,6 +1589,7 @@ M:	Will Deacon <will.deacon@arm.com>
+ L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+ S:	Maintained
+ F:	drivers/iommu/arm-smmu.c
++F:	drivers/iommu/io-pgtable-arm.c
  
- config ARM64_VA_BITS_48
- 	bool "48-bit"
--	depends on !ARM_SMMU
- 
- endchoice
- 
+ ARM64 PORT (AARCH64 ARCHITECTURE)
+ M:	Catalin Marinas <catalin.marinas@arm.com>
 diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 9fd9909867cd..87060ad6829d 100644
+index 3faaa41db8ff..306454fbc52d 100644
 --- a/drivers/iommu/Kconfig
 +++ b/drivers/iommu/Kconfig
-@@ -330,13 +330,13 @@ config SPAPR_TCE_IOMMU
+@@ -19,6 +19,15 @@ menu "Generic IOMMU Pagetable Support"
+ config IOMMU_IO_PGTABLE
+ 	bool
  
- config ARM_SMMU
- 	bool "ARM Ltd. System MMU (SMMU) Support"
--	depends on ARM64 || (ARM_LPAE && OF)
-+	depends on ARM64 || ARM
- 	select IOMMU_API
-+	select IOMMU_IO_PGTABLE_LPAE
- 	select ARM_DMA_USE_IOMMU if ARM
- 	help
- 	  Support for implementations of the ARM System MMU architecture
--	  versions 1 and 2. The driver supports both v7l and v8l table
--	  formats with 4k and 64k page sizes.
-+	  versions 1 and 2.
++config IOMMU_IO_PGTABLE_LPAE
++	bool "ARMv7/v8 Long Descriptor Format"
++	select IOMMU_IO_PGTABLE
++	help
++	  Enable support for the ARM long descriptor pagetable format.
++	  This allocator supports 4K/2M/1G, 16K/32M and 64K/512M page
++	  sizes at both stage-1 and stage-2, as well as address spaces
++	  up to 48-bits in size.
++
+ endmenu
  
- 	  Say Y here if your SoC includes an IOMMU device implementing
- 	  the ARM SMMU architecture.
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 337ad5cc6e0f..006f006c35e9 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -23,8 +23,6 @@
-  *	- Stream-matching and stream-indexing
-  *	- v7/v8 long-descriptor format
-  *	- Non-secure access to the SMMU
-- *	- 4k and 64k pages, with contiguous pte hints.
-- *	- Up to 48-bit addressing (dependent on VA_BITS)
-  *	- Context fault reporting
-  */
- 
-@@ -36,7 +34,6 @@
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/iommu.h>
--#include <linux/mm.h>
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/pci.h>
-@@ -46,7 +43,7 @@
- 
- #include <linux/amba/bus.h>
- 
--#include <asm/pgalloc.h>
+ config OF_IOMMU
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 701c9516e2ae..d6889b487d55 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -2,6 +2,7 @@ obj-$(CONFIG_IOMMU_API) += iommu.o
+ obj-$(CONFIG_IOMMU_API) += iommu-traces.o
+ obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
+ obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
++obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
+ obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
+ obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o msm_iommu_dev.o
+ obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+new file mode 100644
+index 000000000000..dbe6178a53e9
+--- /dev/null
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -0,0 +1,781 @@
++/*
++ * CPU-agnostic ARM page table allocator.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ *
++ * Copyright (C) 2014 ARM Limited
++ *
++ * Author: Will Deacon <will.deacon@arm.com>
++ */
++
++#define pr_fmt(fmt)	"arm-lpae io-pgtable: " fmt
++
++#include <linux/iommu.h>
++#include <linux/kernel.h>
++#include <linux/sizes.h>
++#include <linux/slab.h>
++#include <linux/types.h>
++
 +#include "io-pgtable.h"
- 
- /* Maximum number of stream IDs assigned to a single device */
- #define MAX_MASTER_STREAMIDS		MAX_PHANDLE_ARGS
-@@ -71,40 +68,6 @@
- 		((smmu->options & ARM_SMMU_OPT_SECURE_CFG_ACCESS)	\
- 			? 0x400 : 0))
- 
--/* Page table bits */
--#define ARM_SMMU_PTE_XN			(((pteval_t)3) << 53)
--#define ARM_SMMU_PTE_CONT		(((pteval_t)1) << 52)
--#define ARM_SMMU_PTE_AF			(((pteval_t)1) << 10)
--#define ARM_SMMU_PTE_SH_NS		(((pteval_t)0) << 8)
--#define ARM_SMMU_PTE_SH_OS		(((pteval_t)2) << 8)
--#define ARM_SMMU_PTE_SH_IS		(((pteval_t)3) << 8)
--#define ARM_SMMU_PTE_PAGE		(((pteval_t)3) << 0)
--
--#if PAGE_SIZE == SZ_4K
--#define ARM_SMMU_PTE_CONT_ENTRIES	16
--#elif PAGE_SIZE == SZ_64K
--#define ARM_SMMU_PTE_CONT_ENTRIES	32
--#else
--#define ARM_SMMU_PTE_CONT_ENTRIES	1
--#endif
--
--#define ARM_SMMU_PTE_CONT_SIZE		(PAGE_SIZE * ARM_SMMU_PTE_CONT_ENTRIES)
--#define ARM_SMMU_PTE_CONT_MASK		(~(ARM_SMMU_PTE_CONT_SIZE - 1))
--
--/* Stage-1 PTE */
--#define ARM_SMMU_PTE_AP_UNPRIV		(((pteval_t)1) << 6)
--#define ARM_SMMU_PTE_AP_RDONLY		(((pteval_t)2) << 6)
--#define ARM_SMMU_PTE_ATTRINDX_SHIFT	2
--#define ARM_SMMU_PTE_nG			(((pteval_t)1) << 11)
--
--/* Stage-2 PTE */
--#define ARM_SMMU_PTE_HAP_FAULT		(((pteval_t)0) << 6)
--#define ARM_SMMU_PTE_HAP_READ		(((pteval_t)1) << 6)
--#define ARM_SMMU_PTE_HAP_WRITE		(((pteval_t)2) << 6)
--#define ARM_SMMU_PTE_MEMATTR_OIWB	(((pteval_t)0xf) << 2)
--#define ARM_SMMU_PTE_MEMATTR_NC		(((pteval_t)0x5) << 2)
--#define ARM_SMMU_PTE_MEMATTR_DEV	(((pteval_t)0x1) << 2)
--
- /* Configuration registers */
- #define ARM_SMMU_GR0_sCR0		0x0
- #define sCR0_CLIENTPD			(1 << 0)
-@@ -132,17 +95,11 @@
- #define ARM_SMMU_GR0_sGFSYNR0		0x50
- #define ARM_SMMU_GR0_sGFSYNR1		0x54
- #define ARM_SMMU_GR0_sGFSYNR2		0x58
--#define ARM_SMMU_GR0_PIDR0		0xfe0
--#define ARM_SMMU_GR0_PIDR1		0xfe4
--#define ARM_SMMU_GR0_PIDR2		0xfe8
- 
- #define ID0_S1TS			(1 << 30)
- #define ID0_S2TS			(1 << 29)
- #define ID0_NTS				(1 << 28)
- #define ID0_SMS				(1 << 27)
--#define ID0_PTFS_SHIFT			24
--#define ID0_PTFS_MASK			0x2
--#define ID0_PTFS_V8_ONLY		0x2
- #define ID0_CTTW			(1 << 14)
- #define ID0_NUMIRPT_SHIFT		16
- #define ID0_NUMIRPT_MASK		0xff
-@@ -169,9 +126,6 @@
- #define ID2_PTFS_16K			(1 << 13)
- #define ID2_PTFS_64K			(1 << 14)
- 
--#define PIDR2_ARCH_SHIFT		4
--#define PIDR2_ARCH_MASK			0xf
--
- /* Global TLB invalidation */
- #define ARM_SMMU_GR0_TLBIVMID		0x64
- #define ARM_SMMU_GR0_TLBIALLNSNH	0x68
-@@ -230,13 +184,20 @@
- #define ARM_SMMU_CB_TTBCR2		0x10
- #define ARM_SMMU_CB_TTBR0_LO		0x20
- #define ARM_SMMU_CB_TTBR0_HI		0x24
-+#define ARM_SMMU_CB_TTBR1_LO		0x28
-+#define ARM_SMMU_CB_TTBR1_HI		0x2c
- #define ARM_SMMU_CB_TTBCR		0x30
- #define ARM_SMMU_CB_S1_MAIR0		0x38
-+#define ARM_SMMU_CB_S1_MAIR1		0x3c
- #define ARM_SMMU_CB_FSR			0x58
- #define ARM_SMMU_CB_FAR_LO		0x60
- #define ARM_SMMU_CB_FAR_HI		0x64
- #define ARM_SMMU_CB_FSYNR0		0x68
-+#define ARM_SMMU_CB_S1_TLBIVA		0x600
- #define ARM_SMMU_CB_S1_TLBIASID		0x610
-+#define ARM_SMMU_CB_S1_TLBIVAL		0x620
-+#define ARM_SMMU_CB_S2_TLBIIPAS2	0x630
-+#define ARM_SMMU_CB_S2_TLBIIPAS2L	0x638
- 
- #define SCTLR_S1_ASIDPNE		(1 << 12)
- #define SCTLR_CFCFG			(1 << 7)
-@@ -251,44 +212,9 @@
- #define RESUME_RETRY			(0 << 0)
- #define RESUME_TERMINATE		(1 << 0)
- 
--#define TTBCR_EAE			(1 << 31)
--
--#define TTBCR_PASIZE_SHIFT		16
--#define TTBCR_PASIZE_MASK		0x7
--
--#define TTBCR_TG0_4K			(0 << 14)
--#define TTBCR_TG0_64K			(1 << 14)
--
--#define TTBCR_SH0_SHIFT			12
--#define TTBCR_SH0_MASK			0x3
--#define TTBCR_SH_NS			0
--#define TTBCR_SH_OS			2
--#define TTBCR_SH_IS			3
--
--#define TTBCR_ORGN0_SHIFT		10
--#define TTBCR_IRGN0_SHIFT		8
--#define TTBCR_RGN_MASK			0x3
--#define TTBCR_RGN_NC			0
--#define TTBCR_RGN_WBWA			1
--#define TTBCR_RGN_WT			2
--#define TTBCR_RGN_WB			3
--
--#define TTBCR_SL0_SHIFT			6
--#define TTBCR_SL0_MASK			0x3
--#define TTBCR_SL0_LVL_2			0
--#define TTBCR_SL0_LVL_1			1
--
--#define TTBCR_T1SZ_SHIFT		16
--#define TTBCR_T0SZ_SHIFT		0
--#define TTBCR_SZ_MASK			0xf
--
- #define TTBCR2_SEP_SHIFT		15
- #define TTBCR2_SEP_MASK			0x7
- 
--#define TTBCR2_PASIZE_SHIFT		0
--#define TTBCR2_PASIZE_MASK		0x7
--
--/* Common definitions for PASize and SEP fields */
- #define TTBCR2_ADDR_32			0
- #define TTBCR2_ADDR_36			1
- #define TTBCR2_ADDR_40			2
-@@ -296,16 +222,7 @@
- #define TTBCR2_ADDR_44			4
- #define TTBCR2_ADDR_48			5
- 
--#define TTBRn_HI_ASID_SHIFT		16
--
--#define MAIR_ATTR_SHIFT(n)		((n) << 3)
--#define MAIR_ATTR_MASK			0xff
--#define MAIR_ATTR_DEVICE		0x04
--#define MAIR_ATTR_NC			0x44
--#define MAIR_ATTR_WBRWA			0xff
--#define MAIR_ATTR_IDX_NC		0
--#define MAIR_ATTR_IDX_CACHE		1
--#define MAIR_ATTR_IDX_DEV		2
-+#define TTBRn_HI_ASID_SHIFT            16
- 
- #define FSR_MULTI			(1 << 31)
- #define FSR_SS				(1 << 30)
-@@ -379,10 +296,9 @@ struct arm_smmu_device {
- 	u32				num_mapping_groups;
- 	DECLARE_BITMAP(smr_map, ARM_SMMU_MAX_SMRS);
- 
--	unsigned long			s1_input_size;
--	unsigned long			s1_output_size;
--	unsigned long			s2_input_size;
--	unsigned long			s2_output_size;
-+	unsigned long			va_size;
-+	unsigned long			ipa_size;
-+	unsigned long			pa_size;
- 
- 	u32				num_global_irqs;
- 	u32				num_context_irqs;
-@@ -396,7 +312,6 @@ struct arm_smmu_cfg {
- 	u8				cbndx;
- 	u8				irptndx;
- 	u32				cbar;
--	pgd_t				*pgd;
- };
- #define INVALID_IRPTNDX			0xff
- 
-@@ -411,11 +326,15 @@ enum arm_smmu_domain_stage {
- 
- struct arm_smmu_domain {
- 	struct arm_smmu_device		*smmu;
-+	struct io_pgtable_ops		*pgtbl_ops;
-+	spinlock_t			pgtbl_lock;
- 	struct arm_smmu_cfg		cfg;
- 	enum arm_smmu_domain_stage	stage;
--	spinlock_t			lock;
-+	struct mutex			init_mutex; /* Protects smmu pointer */
- };
- 
-+static struct iommu_ops arm_smmu_ops;
 +
- static DEFINE_SPINLOCK(arm_smmu_devices_lock);
- static LIST_HEAD(arm_smmu_devices);
- 
-@@ -596,7 +515,7 @@ static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
- }
- 
- /* Wait for any pending TLB invalidations to complete */
--static void arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
-+static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
- {
- 	int count = 0;
- 	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
-@@ -614,12 +533,19 @@ static void arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
- 	}
- }
- 
--static void arm_smmu_tlb_inv_context(struct arm_smmu_domain *smmu_domain)
-+static void arm_smmu_tlb_sync(void *cookie)
-+{
-+	struct arm_smmu_domain *smmu_domain = cookie;
-+	__arm_smmu_tlb_sync(smmu_domain->smmu);
-+}
++#define ARM_LPAE_MAX_ADDR_BITS		48
++#define ARM_LPAE_S2_MAX_CONCAT_PAGES	16
++#define ARM_LPAE_MAX_LEVELS		4
 +
-+static void arm_smmu_tlb_inv_context(void *cookie)
- {
-+	struct arm_smmu_domain *smmu_domain = cookie;
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
--	void __iomem *base = ARM_SMMU_GR0(smmu);
- 	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
-+	void __iomem *base;
- 
- 	if (stage1) {
- 		base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
-@@ -631,9 +557,76 @@ static void arm_smmu_tlb_inv_context(struct arm_smmu_domain *smmu_domain)
- 			       base + ARM_SMMU_GR0_TLBIVMID);
- 	}
- 
--	arm_smmu_tlb_sync(smmu);
-+	__arm_smmu_tlb_sync(smmu);
-+}
++/* Struct accessors */
++#define io_pgtable_to_data(x)						\
++	container_of((x), struct arm_lpae_io_pgtable, iop)
 +
-+static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
-+					  bool leaf, void *cookie)
-+{
-+	struct arm_smmu_domain *smmu_domain = cookie;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
-+	void __iomem *reg;
++#define io_pgtable_ops_to_pgtable(x)					\
++	container_of((x), struct io_pgtable, ops)
 +
-+	if (stage1) {
-+		reg = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
-+		reg += leaf ? ARM_SMMU_CB_S1_TLBIVAL : ARM_SMMU_CB_S1_TLBIVA;
++#define io_pgtable_ops_to_data(x)					\
++	io_pgtable_to_data(io_pgtable_ops_to_pgtable(x))
 +
-+		if (!IS_ENABLED(CONFIG_64BIT) || smmu->version == ARM_SMMU_V1) {
-+			iova &= ~12UL;
-+			iova |= ARM_SMMU_CB_ASID(cfg);
-+			writel_relaxed(iova, reg);
-+#ifdef CONFIG_64BIT
-+		} else {
-+			iova >>= 12;
-+			iova |= (u64)ARM_SMMU_CB_ASID(cfg) << 48;
-+			writeq_relaxed(iova, reg);
-+#endif
-+		}
-+#ifdef CONFIG_64BIT
-+	} else if (smmu->version == ARM_SMMU_V2) {
-+		reg = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
-+		reg += leaf ? ARM_SMMU_CB_S2_TLBIIPAS2L :
-+			      ARM_SMMU_CB_S2_TLBIIPAS2;
-+		writeq_relaxed(iova >> 12, reg);
-+#endif
-+	} else {
-+		reg = ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_TLBIVMID;
-+		writel_relaxed(ARM_SMMU_CB_VMID(cfg), reg);
-+	}
-+}
++/*
++ * For consistency with the architecture, we always consider
++ * ARM_LPAE_MAX_LEVELS levels, with the walk starting at level n >=0
++ */
++#define ARM_LPAE_START_LVL(d)		(ARM_LPAE_MAX_LEVELS - (d)->levels)
 +
-+static void arm_smmu_flush_pgtable(void *addr, size_t size, void *cookie)
-+{
-+	struct arm_smmu_domain *smmu_domain = cookie;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	unsigned long offset = (unsigned long)addr & ~PAGE_MASK;
++/*
++ * Calculate the right shift amount to get to the portion describing level l
++ * in a virtual address mapped by the pagetable in d.
++ */
++#define ARM_LPAE_LVL_SHIFT(l,d)						\
++	((((d)->levels - ((l) - ARM_LPAE_START_LVL(d) + 1))		\
++	  * (d)->bits_per_level) + (d)->pg_shift)
 +
++#define ARM_LPAE_PAGES_PER_PGD(d)	((d)->pgd_size >> (d)->pg_shift)
 +
-+	/* Ensure new page tables are visible to the hardware walker */
-+	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK) {
-+		dsb(ishst);
-+	} else {
-+		/*
-+		 * If the SMMU can't walk tables in the CPU caches, treat them
-+		 * like non-coherent DMA since we need to flush the new entries
-+		 * all the way out to memory. There's no possibility of
-+		 * recursion here as the SMMU table walker will not be wired
-+		 * through another SMMU.
-+		 */
-+		dma_map_page(smmu->dev, virt_to_page(addr), offset, size,
-+			     DMA_TO_DEVICE);
-+	}
- }
- 
-+static struct iommu_gather_ops arm_smmu_gather_ops = {
-+	.tlb_flush_all	= arm_smmu_tlb_inv_context,
-+	.tlb_add_flush	= arm_smmu_tlb_inv_range_nosync,
-+	.tlb_sync	= arm_smmu_tlb_sync,
-+	.flush_pgtable	= arm_smmu_flush_pgtable,
++/*
++ * Calculate the index at level l used to map virtual address a using the
++ * pagetable in d.
++ */
++#define ARM_LPAE_PGD_IDX(l,d)						\
++	((l) == ARM_LPAE_START_LVL(d) ? ilog2(ARM_LPAE_PAGES_PER_PGD(d)) : 0)
++
++#define ARM_LPAE_LVL_IDX(a,l,d)						\
++	(((a) >> ARM_LPAE_LVL_SHIFT(l,d)) &				\
++	 ((1 << ((d)->bits_per_level + ARM_LPAE_PGD_IDX(l,d))) - 1))
++
++/* Calculate the block/page mapping size at level l for pagetable in d. */
++#define ARM_LPAE_BLOCK_SIZE(l,d)					\
++	(1 << (ilog2(sizeof(arm_lpae_iopte)) +				\
++		((ARM_LPAE_MAX_LEVELS - (l)) * (d)->bits_per_level)))
++
++/* Page table bits */
++#define ARM_LPAE_PTE_TYPE_SHIFT		0
++#define ARM_LPAE_PTE_TYPE_MASK		0x3
++
++#define ARM_LPAE_PTE_TYPE_BLOCK		1
++#define ARM_LPAE_PTE_TYPE_TABLE		3
++#define ARM_LPAE_PTE_TYPE_PAGE		3
++
++#define ARM_LPAE_PTE_XN			(((arm_lpae_iopte)3) << 53)
++#define ARM_LPAE_PTE_AF			(((arm_lpae_iopte)1) << 10)
++#define ARM_LPAE_PTE_SH_NS		(((arm_lpae_iopte)0) << 8)
++#define ARM_LPAE_PTE_SH_OS		(((arm_lpae_iopte)2) << 8)
++#define ARM_LPAE_PTE_SH_IS		(((arm_lpae_iopte)3) << 8)
++#define ARM_LPAE_PTE_VALID		(((arm_lpae_iopte)1) << 0)
++
++#define ARM_LPAE_PTE_ATTR_LO_MASK	(((arm_lpae_iopte)0x3ff) << 2)
++/* Ignore the contiguous bit for block splitting */
++#define ARM_LPAE_PTE_ATTR_HI_MASK	(((arm_lpae_iopte)6) << 52)
++#define ARM_LPAE_PTE_ATTR_MASK		(ARM_LPAE_PTE_ATTR_LO_MASK |	\
++					 ARM_LPAE_PTE_ATTR_HI_MASK)
++
++/* Stage-1 PTE */
++#define ARM_LPAE_PTE_AP_UNPRIV		(((arm_lpae_iopte)1) << 6)
++#define ARM_LPAE_PTE_AP_RDONLY		(((arm_lpae_iopte)2) << 6)
++#define ARM_LPAE_PTE_ATTRINDX_SHIFT	2
++#define ARM_LPAE_PTE_nG			(((arm_lpae_iopte)1) << 11)
++
++/* Stage-2 PTE */
++#define ARM_LPAE_PTE_HAP_FAULT		(((arm_lpae_iopte)0) << 6)
++#define ARM_LPAE_PTE_HAP_READ		(((arm_lpae_iopte)1) << 6)
++#define ARM_LPAE_PTE_HAP_WRITE		(((arm_lpae_iopte)2) << 6)
++#define ARM_LPAE_PTE_MEMATTR_OIWB	(((arm_lpae_iopte)0xf) << 2)
++#define ARM_LPAE_PTE_MEMATTR_NC		(((arm_lpae_iopte)0x5) << 2)
++#define ARM_LPAE_PTE_MEMATTR_DEV	(((arm_lpae_iopte)0x1) << 2)
++
++/* Register bits */
++#define ARM_32_LPAE_TCR_EAE		(1 << 31)
++#define ARM_64_LPAE_S2_TCR_RES1		(1 << 31)
++
++#define ARM_LPAE_TCR_TG0_4K		(0 << 14)
++#define ARM_LPAE_TCR_TG0_64K		(1 << 14)
++#define ARM_LPAE_TCR_TG0_16K		(2 << 14)
++
++#define ARM_LPAE_TCR_SH0_SHIFT		12
++#define ARM_LPAE_TCR_SH0_MASK		0x3
++#define ARM_LPAE_TCR_SH_NS		0
++#define ARM_LPAE_TCR_SH_OS		2
++#define ARM_LPAE_TCR_SH_IS		3
++
++#define ARM_LPAE_TCR_ORGN0_SHIFT	10
++#define ARM_LPAE_TCR_IRGN0_SHIFT	8
++#define ARM_LPAE_TCR_RGN_MASK		0x3
++#define ARM_LPAE_TCR_RGN_NC		0
++#define ARM_LPAE_TCR_RGN_WBWA		1
++#define ARM_LPAE_TCR_RGN_WT		2
++#define ARM_LPAE_TCR_RGN_WB		3
++
++#define ARM_LPAE_TCR_SL0_SHIFT		6
++#define ARM_LPAE_TCR_SL0_MASK		0x3
++
++#define ARM_LPAE_TCR_T0SZ_SHIFT		0
++#define ARM_LPAE_TCR_SZ_MASK		0xf
++
++#define ARM_LPAE_TCR_PS_SHIFT		16
++#define ARM_LPAE_TCR_PS_MASK		0x7
++
++#define ARM_LPAE_TCR_IPS_SHIFT		32
++#define ARM_LPAE_TCR_IPS_MASK		0x7
++
++#define ARM_LPAE_TCR_PS_32_BIT		0x0ULL
++#define ARM_LPAE_TCR_PS_36_BIT		0x1ULL
++#define ARM_LPAE_TCR_PS_40_BIT		0x2ULL
++#define ARM_LPAE_TCR_PS_42_BIT		0x3ULL
++#define ARM_LPAE_TCR_PS_44_BIT		0x4ULL
++#define ARM_LPAE_TCR_PS_48_BIT		0x5ULL
++
++#define ARM_LPAE_MAIR_ATTR_SHIFT(n)	((n) << 3)
++#define ARM_LPAE_MAIR_ATTR_MASK		0xff
++#define ARM_LPAE_MAIR_ATTR_DEVICE	0x04
++#define ARM_LPAE_MAIR_ATTR_NC		0x44
++#define ARM_LPAE_MAIR_ATTR_WBRWA	0xff
++#define ARM_LPAE_MAIR_ATTR_IDX_NC	0
++#define ARM_LPAE_MAIR_ATTR_IDX_CACHE	1
++#define ARM_LPAE_MAIR_ATTR_IDX_DEV	2
++
++/* IOPTE accessors */
++#define iopte_deref(pte,d)					\
++	(__va((pte) & ((1ULL << ARM_LPAE_MAX_ADDR_BITS) - 1)	\
++	& ~((1ULL << (d)->pg_shift) - 1)))
++
++#define iopte_type(pte,l)					\
++	(((pte) >> ARM_LPAE_PTE_TYPE_SHIFT) & ARM_LPAE_PTE_TYPE_MASK)
++
++#define iopte_prot(pte)	((pte) & ARM_LPAE_PTE_ATTR_MASK)
++
++#define iopte_leaf(pte,l)					\
++	(l == (ARM_LPAE_MAX_LEVELS - 1) ?			\
++		(iopte_type(pte,l) == ARM_LPAE_PTE_TYPE_PAGE) :	\
++		(iopte_type(pte,l) == ARM_LPAE_PTE_TYPE_BLOCK))
++
++#define iopte_to_pfn(pte,d)					\
++	(((pte) & ((1ULL << ARM_LPAE_MAX_ADDR_BITS) - 1)) >> (d)->pg_shift)
++
++#define pfn_to_iopte(pfn,d)					\
++	(((pfn) << (d)->pg_shift) & ((1ULL << ARM_LPAE_MAX_ADDR_BITS) - 1))
++
++struct arm_lpae_io_pgtable {
++	struct io_pgtable	iop;
++
++	int			levels;
++	size_t			pgd_size;
++	unsigned long		pg_shift;
++	unsigned long		bits_per_level;
++
++	void			*pgd;
 +};
 +
- static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- {
- 	int flags, ret;
-@@ -711,29 +704,8 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
- 	return IRQ_HANDLED;
- }
- 
--static void arm_smmu_flush_pgtable(struct arm_smmu_device *smmu, void *addr,
--				   size_t size)
--{
--	unsigned long offset = (unsigned long)addr & ~PAGE_MASK;
--
--
--	/* Ensure new page tables are visible to the hardware walker */
--	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK) {
--		dsb(ishst);
--	} else {
--		/*
--		 * If the SMMU can't walk tables in the CPU caches, treat them
--		 * like non-coherent DMA since we need to flush the new entries
--		 * all the way out to memory. There's no possibility of
--		 * recursion here as the SMMU table walker will not be wired
--		 * through another SMMU.
--		 */
--		dma_map_page(smmu->dev, virt_to_page(addr), offset, size,
--				DMA_TO_DEVICE);
--	}
--}
--
--static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
-+static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
-+				       struct io_pgtable_cfg *pgtbl_cfg)
- {
- 	u32 reg;
- 	bool stage1;
-@@ -770,124 +742,68 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain)
- #else
- 		reg = CBA2R_RW64_32BIT;
- #endif
--		writel_relaxed(reg,
--			       gr1_base + ARM_SMMU_GR1_CBA2R(cfg->cbndx));
--
--		/* TTBCR2 */
--		switch (smmu->s1_input_size) {
--		case 32:
--			reg = (TTBCR2_ADDR_32 << TTBCR2_SEP_SHIFT);
--			break;
--		case 36:
--			reg = (TTBCR2_ADDR_36 << TTBCR2_SEP_SHIFT);
--			break;
--		case 39:
--		case 40:
--			reg = (TTBCR2_ADDR_40 << TTBCR2_SEP_SHIFT);
--			break;
--		case 42:
--			reg = (TTBCR2_ADDR_42 << TTBCR2_SEP_SHIFT);
--			break;
--		case 44:
--			reg = (TTBCR2_ADDR_44 << TTBCR2_SEP_SHIFT);
--			break;
--		case 48:
--			reg = (TTBCR2_ADDR_48 << TTBCR2_SEP_SHIFT);
--			break;
--		}
--
--		switch (smmu->s1_output_size) {
--		case 32:
--			reg |= (TTBCR2_ADDR_32 << TTBCR2_PASIZE_SHIFT);
--			break;
--		case 36:
--			reg |= (TTBCR2_ADDR_36 << TTBCR2_PASIZE_SHIFT);
--			break;
--		case 39:
--		case 40:
--			reg |= (TTBCR2_ADDR_40 << TTBCR2_PASIZE_SHIFT);
--			break;
--		case 42:
--			reg |= (TTBCR2_ADDR_42 << TTBCR2_PASIZE_SHIFT);
--			break;
--		case 44:
--			reg |= (TTBCR2_ADDR_44 << TTBCR2_PASIZE_SHIFT);
--			break;
--		case 48:
--			reg |= (TTBCR2_ADDR_48 << TTBCR2_PASIZE_SHIFT);
--			break;
--		}
--
--		if (stage1)
--			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR2);
-+		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(cfg->cbndx));
- 	}
- 
--	/* TTBR0 */
--	arm_smmu_flush_pgtable(smmu, cfg->pgd,
--			       PTRS_PER_PGD * sizeof(pgd_t));
--	reg = __pa(cfg->pgd);
--	writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0_LO);
--	reg = (phys_addr_t)__pa(cfg->pgd) >> 32;
--	if (stage1)
-+	/* TTBRs */
-+	if (stage1) {
-+		reg = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
-+		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0_LO);
-+		reg = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0] >> 32;
- 		reg |= ARM_SMMU_CB_ASID(cfg) << TTBRn_HI_ASID_SHIFT;
--	writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0_HI);
--
--	/*
--	 * TTBCR
--	 * We use long descriptor, with inner-shareable WBWA tables in TTBR0.
--	 */
--	if (smmu->version > ARM_SMMU_V1) {
--		if (PAGE_SIZE == SZ_4K)
--			reg = TTBCR_TG0_4K;
--		else
--			reg = TTBCR_TG0_64K;
-+		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0_HI);
- 
--		if (!stage1) {
--			reg |= (64 - smmu->s2_input_size) << TTBCR_T0SZ_SHIFT;
-+		reg = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
-+		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR1_LO);
-+		reg = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1] >> 32;
-+		reg |= ARM_SMMU_CB_ASID(cfg) << TTBRn_HI_ASID_SHIFT;
-+		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR1_HI);
++typedef u64 arm_lpae_iopte;
++
++static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
++			     unsigned long iova, phys_addr_t paddr,
++			     arm_lpae_iopte prot, int lvl,
++			     arm_lpae_iopte *ptep)
++{
++	arm_lpae_iopte pte = prot;
++
++	/* We require an unmap first */
++	if (WARN_ON(iopte_leaf(*ptep, lvl)))
++		return -EEXIST;
++
++	if (lvl == ARM_LPAE_MAX_LEVELS - 1)
++		pte |= ARM_LPAE_PTE_TYPE_PAGE;
++	else
++		pte |= ARM_LPAE_PTE_TYPE_BLOCK;
++
++	pte |= ARM_LPAE_PTE_AF | ARM_LPAE_PTE_SH_IS;
++	pte |= pfn_to_iopte(paddr >> data->pg_shift, data);
++
++	*ptep = pte;
++	data->iop.cfg.tlb->flush_pgtable(ptep, sizeof(*ptep), data->iop.cookie);
++	return 0;
++}
++
++static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
++			  phys_addr_t paddr, size_t size, arm_lpae_iopte prot,
++			  int lvl, arm_lpae_iopte *ptep)
++{
++	arm_lpae_iopte *cptep, pte;
++	void *cookie = data->iop.cookie;
++	size_t block_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
++
++	/* Find our entry at the current level */
++	ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
++
++	/* If we can install a leaf entry at this level, then do so */
++	if (size == block_size && (size & data->iop.cfg.pgsize_bitmap))
++		return arm_lpae_init_pte(data, iova, paddr, prot, lvl, ptep);
++
++	/* We can't allocate tables at the final level */
++	if (WARN_ON(lvl >= ARM_LPAE_MAX_LEVELS - 1))
++		return -EINVAL;
++
++	/* Grab a pointer to the next level */
++	pte = *ptep;
++	if (!pte) {
++		cptep = alloc_pages_exact(1UL << data->pg_shift,
++					 GFP_ATOMIC | __GFP_ZERO);
++		if (!cptep)
++			return -ENOMEM;
++
++		data->iop.cfg.tlb->flush_pgtable(cptep, 1UL << data->pg_shift,
++						 cookie);
++		pte = __pa(cptep) | ARM_LPAE_PTE_TYPE_TABLE;
++		*ptep = pte;
++		data->iop.cfg.tlb->flush_pgtable(ptep, sizeof(*ptep), cookie);
 +	} else {
-+		reg = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
-+		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0_LO);
-+		reg = pgtbl_cfg->arm_lpae_s2_cfg.vttbr >> 32;
-+		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0_HI);
-+	}
- 
--			switch (smmu->s2_output_size) {
-+	/* TTBCR */
-+	if (stage1) {
-+		reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
-+		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
-+		if (smmu->version > ARM_SMMU_V1) {
-+			reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
-+			switch (smmu->va_size) {
- 			case 32:
--				reg |= (TTBCR2_ADDR_32 << TTBCR_PASIZE_SHIFT);
-+				reg |= (TTBCR2_ADDR_32 << TTBCR2_SEP_SHIFT);
- 				break;
- 			case 36:
--				reg |= (TTBCR2_ADDR_36 << TTBCR_PASIZE_SHIFT);
-+				reg |= (TTBCR2_ADDR_36 << TTBCR2_SEP_SHIFT);
- 				break;
- 			case 40:
--				reg |= (TTBCR2_ADDR_40 << TTBCR_PASIZE_SHIFT);
-+				reg |= (TTBCR2_ADDR_40 << TTBCR2_SEP_SHIFT);
- 				break;
- 			case 42:
--				reg |= (TTBCR2_ADDR_42 << TTBCR_PASIZE_SHIFT);
-+				reg |= (TTBCR2_ADDR_42 << TTBCR2_SEP_SHIFT);
- 				break;
- 			case 44:
--				reg |= (TTBCR2_ADDR_44 << TTBCR_PASIZE_SHIFT);
-+				reg |= (TTBCR2_ADDR_44 << TTBCR2_SEP_SHIFT);
- 				break;
- 			case 48:
--				reg |= (TTBCR2_ADDR_48 << TTBCR_PASIZE_SHIFT);
-+				reg |= (TTBCR2_ADDR_48 << TTBCR2_SEP_SHIFT);
- 				break;
- 			}
--		} else {
--			reg |= (64 - smmu->s1_input_size) << TTBCR_T0SZ_SHIFT;
-+			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR2);
- 		}
- 	} else {
--		reg = 0;
-+		reg = pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
-+		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
- 	}
- 
--	reg |= TTBCR_EAE |
--	      (TTBCR_SH_IS << TTBCR_SH0_SHIFT) |
--	      (TTBCR_RGN_WBWA << TTBCR_ORGN0_SHIFT) |
--	      (TTBCR_RGN_WBWA << TTBCR_IRGN0_SHIFT);
--
--	if (!stage1)
--		reg |= (TTBCR_SL0_LVL_1 << TTBCR_SL0_SHIFT);
--
--	writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
--
--	/* MAIR0 (stage-1 only) */
-+	/* MAIRs (stage-1 only) */
- 	if (stage1) {
--		reg = (MAIR_ATTR_NC << MAIR_ATTR_SHIFT(MAIR_ATTR_IDX_NC)) |
--		      (MAIR_ATTR_WBRWA << MAIR_ATTR_SHIFT(MAIR_ATTR_IDX_CACHE)) |
--		      (MAIR_ATTR_DEVICE << MAIR_ATTR_SHIFT(MAIR_ATTR_IDX_DEV));
-+		reg = pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
- 		writel_relaxed(reg, cb_base + ARM_SMMU_CB_S1_MAIR0);
-+		reg = pgtbl_cfg->arm_lpae_s1_cfg.mair[1];
-+		writel_relaxed(reg, cb_base + ARM_SMMU_CB_S1_MAIR1);
- 	}
- 
- 	/* SCTLR */
-@@ -904,11 +820,14 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 					struct arm_smmu_device *smmu)
- {
- 	int irq, start, ret = 0;
--	unsigned long flags;
-+	unsigned long ias, oas;
-+	struct io_pgtable_ops *pgtbl_ops;
-+	struct io_pgtable_cfg pgtbl_cfg;
-+	enum io_pgtable_fmt fmt;
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
- 
--	spin_lock_irqsave(&smmu_domain->lock, flags);
-+	mutex_lock(&smmu_domain->init_mutex);
- 	if (smmu_domain->smmu)
- 		goto out_unlock;
- 
-@@ -939,6 +858,12 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	case ARM_SMMU_DOMAIN_S1:
- 		cfg->cbar = CBAR_TYPE_S1_TRANS_S2_BYPASS;
- 		start = smmu->num_s2_context_banks;
-+		ias = smmu->va_size;
-+		oas = smmu->ipa_size;
-+		if (IS_ENABLED(CONFIG_64BIT))
-+			fmt = ARM_64_LPAE_S1;
-+		else
-+			fmt = ARM_32_LPAE_S1;
- 		break;
- 	case ARM_SMMU_DOMAIN_NESTED:
- 		/*
-@@ -948,6 +873,12 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	case ARM_SMMU_DOMAIN_S2:
- 		cfg->cbar = CBAR_TYPE_S2_TRANS;
- 		start = 0;
-+		ias = smmu->ipa_size;
-+		oas = smmu->pa_size;
-+		if (IS_ENABLED(CONFIG_64BIT))
-+			fmt = ARM_64_LPAE_S2;
-+		else
-+			fmt = ARM_32_LPAE_S2;
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -967,10 +898,30 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 		cfg->irptndx = cfg->cbndx;
- 	}
- 
--	ACCESS_ONCE(smmu_domain->smmu) = smmu;
--	arm_smmu_init_context_bank(smmu_domain);
--	spin_unlock_irqrestore(&smmu_domain->lock, flags);
-+	pgtbl_cfg = (struct io_pgtable_cfg) {
-+		.pgsize_bitmap	= arm_smmu_ops.pgsize_bitmap,
-+		.ias		= ias,
-+		.oas		= oas,
-+		.tlb		= &arm_smmu_gather_ops,
-+	};
-+
-+	smmu_domain->smmu = smmu;
-+	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
-+	if (!pgtbl_ops) {
-+		ret = -ENOMEM;
-+		goto out_clear_smmu;
++		cptep = iopte_deref(pte, data);
 +	}
 +
-+	/* Update our support page sizes to reflect the page table format */
-+	arm_smmu_ops.pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
++	/* Rinse, repeat */
++	return __arm_lpae_map(data, iova, paddr, size, prot, lvl + 1, cptep);
++}
 +
-+	/* Initialise the context bank with our page table cfg */
-+	arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
- 
-+	/*
-+	 * Request context fault interrupt. Do this last to avoid the
-+	 * handler seeing a half-initialised domain state.
-+	 */
- 	irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
- 	ret = request_irq(irq, arm_smmu_context_fault, IRQF_SHARED,
- 			  "arm-smmu-context-fault", domain);
-@@ -980,10 +931,16 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 		cfg->irptndx = INVALID_IRPTNDX;
- 	}
- 
-+	mutex_unlock(&smmu_domain->init_mutex);
++static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
++					   int prot)
++{
++	arm_lpae_iopte pte;
 +
-+	/* Publish page table ops for map/unmap */
-+	smmu_domain->pgtbl_ops = pgtbl_ops;
- 	return 0;
- 
-+out_clear_smmu:
-+	smmu_domain->smmu = NULL;
- out_unlock:
--	spin_unlock_irqrestore(&smmu_domain->lock, flags);
-+	mutex_unlock(&smmu_domain->init_mutex);
- 	return ret;
- }
- 
-@@ -998,23 +955,27 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
- 	if (!smmu)
- 		return;
- 
--	/* Disable the context bank and nuke the TLB before freeing it. */
-+	/*
-+	 * Disable the context bank and free the page tables before freeing
-+	 * it.
-+	 */
- 	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
- 	writel_relaxed(0, cb_base + ARM_SMMU_CB_SCTLR);
--	arm_smmu_tlb_inv_context(smmu_domain);
- 
- 	if (cfg->irptndx != INVALID_IRPTNDX) {
- 		irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
- 		free_irq(irq, domain);
- 	}
- 
-+	if (smmu_domain->pgtbl_ops)
-+		free_io_pgtable_ops(smmu_domain->pgtbl_ops);
++	if (data->iop.fmt == ARM_64_LPAE_S1 ||
++	    data->iop.fmt == ARM_32_LPAE_S1) {
++		pte = ARM_LPAE_PTE_AP_UNPRIV | ARM_LPAE_PTE_nG;
 +
- 	__arm_smmu_free_bitmap(smmu->context_map, cfg->cbndx);
- }
- 
- static int arm_smmu_domain_init(struct iommu_domain *domain)
- {
- 	struct arm_smmu_domain *smmu_domain;
--	pgd_t *pgd;
- 
- 	/*
- 	 * Allocate the domain and initialise some of its data structures.
-@@ -1025,81 +986,10 @@ static int arm_smmu_domain_init(struct iommu_domain *domain)
- 	if (!smmu_domain)
- 		return -ENOMEM;
- 
--	pgd = kcalloc(PTRS_PER_PGD, sizeof(pgd_t), GFP_KERNEL);
--	if (!pgd)
--		goto out_free_domain;
--	smmu_domain->cfg.pgd = pgd;
--
--	spin_lock_init(&smmu_domain->lock);
-+	mutex_init(&smmu_domain->init_mutex);
-+	spin_lock_init(&smmu_domain->pgtbl_lock);
- 	domain->priv = smmu_domain;
- 	return 0;
--
--out_free_domain:
--	kfree(smmu_domain);
--	return -ENOMEM;
--}
--
--static void arm_smmu_free_ptes(pmd_t *pmd)
--{
--	pgtable_t table = pmd_pgtable(*pmd);
--
--	__free_page(table);
--}
--
--static void arm_smmu_free_pmds(pud_t *pud)
--{
--	int i;
--	pmd_t *pmd, *pmd_base = pmd_offset(pud, 0);
--
--	pmd = pmd_base;
--	for (i = 0; i < PTRS_PER_PMD; ++i) {
--		if (pmd_none(*pmd))
--			continue;
--
--		arm_smmu_free_ptes(pmd);
--		pmd++;
--	}
--
--	pmd_free(NULL, pmd_base);
--}
--
--static void arm_smmu_free_puds(pgd_t *pgd)
--{
--	int i;
--	pud_t *pud, *pud_base = pud_offset(pgd, 0);
--
--	pud = pud_base;
--	for (i = 0; i < PTRS_PER_PUD; ++i) {
--		if (pud_none(*pud))
--			continue;
--
--		arm_smmu_free_pmds(pud);
--		pud++;
--	}
--
--	pud_free(NULL, pud_base);
--}
--
--static void arm_smmu_free_pgtables(struct arm_smmu_domain *smmu_domain)
--{
--	int i;
--	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
--	pgd_t *pgd, *pgd_base = cfg->pgd;
--
--	/*
--	 * Recursively free the page tables for this domain. We don't
--	 * care about speculative TLB filling because the tables should
--	 * not be active in any context bank at this point (SCTLR.M is 0).
--	 */
--	pgd = pgd_base;
--	for (i = 0; i < PTRS_PER_PGD; ++i) {
--		if (pgd_none(*pgd))
--			continue;
--		arm_smmu_free_puds(pgd);
--		pgd++;
--	}
--
--	kfree(pgd_base);
- }
- 
- static void arm_smmu_domain_destroy(struct iommu_domain *domain)
-@@ -1111,7 +1001,6 @@ static void arm_smmu_domain_destroy(struct iommu_domain *domain)
- 	 * already been detached.
- 	 */
- 	arm_smmu_destroy_domain_context(domain);
--	arm_smmu_free_pgtables(smmu_domain);
- 	kfree(smmu_domain);
- }
- 
-@@ -1243,7 +1132,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- {
- 	int ret;
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
--	struct arm_smmu_device *smmu, *dom_smmu;
-+	struct arm_smmu_device *smmu;
- 	struct arm_smmu_master_cfg *cfg;
- 
- 	smmu = find_smmu_for_device(dev);
-@@ -1257,21 +1146,16 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 		return -EEXIST;
- 	}
- 
-+	/* Ensure that the domain is finalised */
-+	ret = arm_smmu_init_domain_context(domain, smmu);
-+	if (IS_ERR_VALUE(ret))
-+		return ret;
++		if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
++			pte |= ARM_LPAE_PTE_AP_RDONLY;
 +
- 	/*
- 	 * Sanity check the domain. We don't support domains across
- 	 * different SMMUs.
- 	 */
--	dom_smmu = ACCESS_ONCE(smmu_domain->smmu);
--	if (!dom_smmu) {
--		/* Now that we have a master, we can finalise the domain */
--		ret = arm_smmu_init_domain_context(domain, smmu);
--		if (IS_ERR_VALUE(ret))
--			return ret;
--
--		dom_smmu = smmu_domain->smmu;
--	}
--
--	if (dom_smmu != smmu) {
-+	if (smmu_domain->smmu != smmu) {
- 		dev_err(dev,
- 			"cannot attach to SMMU %s whilst already attached to domain on SMMU %s\n",
- 			dev_name(smmu_domain->smmu->dev), dev_name(smmu->dev));
-@@ -1302,293 +1186,55 @@ static void arm_smmu_detach_dev(struct iommu_domain *domain, struct device *dev)
- 	arm_smmu_domain_remove_master(smmu_domain, cfg);
- }
- 
--static bool arm_smmu_pte_is_contiguous_range(unsigned long addr,
--					     unsigned long end)
--{
--	return !(addr & ~ARM_SMMU_PTE_CONT_MASK) &&
--		(addr + ARM_SMMU_PTE_CONT_SIZE <= end);
--}
--
--static int arm_smmu_alloc_init_pte(struct arm_smmu_device *smmu, pmd_t *pmd,
--				   unsigned long addr, unsigned long end,
--				   unsigned long pfn, int prot, int stage)
--{
--	pte_t *pte, *start;
--	pteval_t pteval = ARM_SMMU_PTE_PAGE | ARM_SMMU_PTE_AF;
--
--	if (pmd_none(*pmd)) {
--		/* Allocate a new set of tables */
--		pgtable_t table = alloc_page(GFP_ATOMIC|__GFP_ZERO);
--
--		if (!table)
--			return -ENOMEM;
--
--		arm_smmu_flush_pgtable(smmu, page_address(table), PAGE_SIZE);
--		pmd_populate(NULL, pmd, table);
--		arm_smmu_flush_pgtable(smmu, pmd, sizeof(*pmd));
--	}
--
--	if (stage == 1) {
--		pteval |= ARM_SMMU_PTE_AP_UNPRIV | ARM_SMMU_PTE_nG;
--		if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
--			pteval |= ARM_SMMU_PTE_AP_RDONLY;
--
--		if (prot & IOMMU_CACHE)
--			pteval |= (MAIR_ATTR_IDX_CACHE <<
--				   ARM_SMMU_PTE_ATTRINDX_SHIFT);
--	} else {
--		pteval |= ARM_SMMU_PTE_HAP_FAULT;
--		if (prot & IOMMU_READ)
--			pteval |= ARM_SMMU_PTE_HAP_READ;
--		if (prot & IOMMU_WRITE)
--			pteval |= ARM_SMMU_PTE_HAP_WRITE;
--		if (prot & IOMMU_CACHE)
--			pteval |= ARM_SMMU_PTE_MEMATTR_OIWB;
--		else
--			pteval |= ARM_SMMU_PTE_MEMATTR_NC;
--	}
--
--	if (prot & IOMMU_NOEXEC)
--		pteval |= ARM_SMMU_PTE_XN;
--
--	/* If no access, create a faulting entry to avoid TLB fills */
--	if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
--		pteval &= ~ARM_SMMU_PTE_PAGE;
--
--	pteval |= ARM_SMMU_PTE_SH_IS;
--	start = pmd_page_vaddr(*pmd) + pte_index(addr);
--	pte = start;
--
--	/*
--	 * Install the page table entries. This is fairly complicated
--	 * since we attempt to make use of the contiguous hint in the
--	 * ptes where possible. The contiguous hint indicates a series
--	 * of ARM_SMMU_PTE_CONT_ENTRIES ptes mapping a physically
--	 * contiguous region with the following constraints:
--	 *
--	 *   - The region start is aligned to ARM_SMMU_PTE_CONT_SIZE
--	 *   - Each pte in the region has the contiguous hint bit set
--	 *
--	 * This complicates unmapping (also handled by this code, when
--	 * neither IOMMU_READ or IOMMU_WRITE are set) because it is
--	 * possible, yet highly unlikely, that a client may unmap only
--	 * part of a contiguous range. This requires clearing of the
--	 * contiguous hint bits in the range before installing the new
--	 * faulting entries.
--	 *
--	 * Note that re-mapping an address range without first unmapping
--	 * it is not supported, so TLB invalidation is not required here
--	 * and is instead performed at unmap and domain-init time.
--	 */
--	do {
--		int i = 1;
--
--		pteval &= ~ARM_SMMU_PTE_CONT;
--
--		if (arm_smmu_pte_is_contiguous_range(addr, end)) {
--			i = ARM_SMMU_PTE_CONT_ENTRIES;
--			pteval |= ARM_SMMU_PTE_CONT;
--		} else if (pte_val(*pte) &
--			   (ARM_SMMU_PTE_CONT | ARM_SMMU_PTE_PAGE)) {
--			int j;
--			pte_t *cont_start;
--			unsigned long idx = pte_index(addr);
--
--			idx &= ~(ARM_SMMU_PTE_CONT_ENTRIES - 1);
--			cont_start = pmd_page_vaddr(*pmd) + idx;
--			for (j = 0; j < ARM_SMMU_PTE_CONT_ENTRIES; ++j)
--				pte_val(*(cont_start + j)) &=
--					~ARM_SMMU_PTE_CONT;
--
--			arm_smmu_flush_pgtable(smmu, cont_start,
--					       sizeof(*pte) *
--					       ARM_SMMU_PTE_CONT_ENTRIES);
--		}
--
--		do {
--			*pte = pfn_pte(pfn, __pgprot(pteval));
--		} while (pte++, pfn++, addr += PAGE_SIZE, --i);
--	} while (addr != end);
--
--	arm_smmu_flush_pgtable(smmu, start, sizeof(*pte) * (pte - start));
--	return 0;
--}
--
--static int arm_smmu_alloc_init_pmd(struct arm_smmu_device *smmu, pud_t *pud,
--				   unsigned long addr, unsigned long end,
--				   phys_addr_t phys, int prot, int stage)
--{
--	int ret;
--	pmd_t *pmd;
--	unsigned long next, pfn = __phys_to_pfn(phys);
--
--#ifndef __PAGETABLE_PMD_FOLDED
--	if (pud_none(*pud)) {
--		pmd = (pmd_t *)get_zeroed_page(GFP_ATOMIC);
--		if (!pmd)
--			return -ENOMEM;
--
--		arm_smmu_flush_pgtable(smmu, pmd, PAGE_SIZE);
--		pud_populate(NULL, pud, pmd);
--		arm_smmu_flush_pgtable(smmu, pud, sizeof(*pud));
--
--		pmd += pmd_index(addr);
--	} else
--#endif
--		pmd = pmd_offset(pud, addr);
--
--	do {
--		next = pmd_addr_end(addr, end);
--		ret = arm_smmu_alloc_init_pte(smmu, pmd, addr, next, pfn,
--					      prot, stage);
--		phys += next - addr;
--		pfn = __phys_to_pfn(phys);
--	} while (pmd++, addr = next, addr < end);
--
--	return ret;
--}
--
--static int arm_smmu_alloc_init_pud(struct arm_smmu_device *smmu, pgd_t *pgd,
--				   unsigned long addr, unsigned long end,
--				   phys_addr_t phys, int prot, int stage)
--{
--	int ret = 0;
--	pud_t *pud;
--	unsigned long next;
--
--#ifndef __PAGETABLE_PUD_FOLDED
--	if (pgd_none(*pgd)) {
--		pud = (pud_t *)get_zeroed_page(GFP_ATOMIC);
--		if (!pud)
--			return -ENOMEM;
--
--		arm_smmu_flush_pgtable(smmu, pud, PAGE_SIZE);
--		pgd_populate(NULL, pgd, pud);
--		arm_smmu_flush_pgtable(smmu, pgd, sizeof(*pgd));
--
--		pud += pud_index(addr);
--	} else
--#endif
--		pud = pud_offset(pgd, addr);
--
--	do {
--		next = pud_addr_end(addr, end);
--		ret = arm_smmu_alloc_init_pmd(smmu, pud, addr, next, phys,
--					      prot, stage);
--		phys += next - addr;
--	} while (pud++, addr = next, addr < end);
--
--	return ret;
--}
--
--static int arm_smmu_handle_mapping(struct arm_smmu_domain *smmu_domain,
--				   unsigned long iova, phys_addr_t paddr,
--				   size_t size, int prot)
--{
--	int ret, stage;
--	unsigned long end;
--	phys_addr_t input_mask, output_mask;
--	struct arm_smmu_device *smmu = smmu_domain->smmu;
--	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
--	pgd_t *pgd = cfg->pgd;
--	unsigned long flags;
--
--	if (cfg->cbar == CBAR_TYPE_S2_TRANS) {
--		stage = 2;
--		input_mask = (1ULL << smmu->s2_input_size) - 1;
--		output_mask = (1ULL << smmu->s2_output_size) - 1;
--	} else {
--		stage = 1;
--		input_mask = (1ULL << smmu->s1_input_size) - 1;
--		output_mask = (1ULL << smmu->s1_output_size) - 1;
--	}
--
--	if (!pgd)
--		return -EINVAL;
--
--	if (size & ~PAGE_MASK)
--		return -EINVAL;
--
--	if ((phys_addr_t)iova & ~input_mask)
--		return -ERANGE;
--
--	if (paddr & ~output_mask)
--		return -ERANGE;
--
--	spin_lock_irqsave(&smmu_domain->lock, flags);
--	pgd += pgd_index(iova);
--	end = iova + size;
--	do {
--		unsigned long next = pgd_addr_end(iova, end);
--
--		ret = arm_smmu_alloc_init_pud(smmu, pgd, iova, next, paddr,
--					      prot, stage);
--		if (ret)
--			goto out_unlock;
--
--		paddr += next - iova;
--		iova = next;
--	} while (pgd++, iova != end);
--
--out_unlock:
--	spin_unlock_irqrestore(&smmu_domain->lock, flags);
--
--	return ret;
--}
--
- static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
- 			phys_addr_t paddr, size_t size, int prot)
- {
-+	int ret;
-+	unsigned long flags;
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
-+	struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
- 
--	if (!smmu_domain)
-+	if (!ops)
- 		return -ENODEV;
- 
--	return arm_smmu_handle_mapping(smmu_domain, iova, paddr, size, prot);
-+	spin_lock_irqsave(&smmu_domain->pgtbl_lock, flags);
-+	ret = ops->map(ops, iova, paddr, size, prot);
-+	spin_unlock_irqrestore(&smmu_domain->pgtbl_lock, flags);
-+	return ret;
- }
- 
- static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
- 			     size_t size)
- {
--	int ret;
-+	size_t ret;
-+	unsigned long flags;
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
-+	struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
- 
--	ret = arm_smmu_handle_mapping(smmu_domain, iova, 0, size, 0);
--	arm_smmu_tlb_inv_context(smmu_domain);
--	return ret ? 0 : size;
-+	if (!ops)
++		if (prot & IOMMU_CACHE)
++			pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
++				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
++	} else {
++		pte = ARM_LPAE_PTE_HAP_FAULT;
++		if (prot & IOMMU_READ)
++			pte |= ARM_LPAE_PTE_HAP_READ;
++		if (prot & IOMMU_WRITE)
++			pte |= ARM_LPAE_PTE_HAP_WRITE;
++		if (prot & IOMMU_CACHE)
++			pte |= ARM_LPAE_PTE_MEMATTR_OIWB;
++		else
++			pte |= ARM_LPAE_PTE_MEMATTR_NC;
++	}
++
++	if (prot & IOMMU_NOEXEC)
++		pte |= ARM_LPAE_PTE_XN;
++
++	return pte;
++}
++
++static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
++			phys_addr_t paddr, size_t size, int iommu_prot)
++{
++	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
++	arm_lpae_iopte *ptep = data->pgd;
++	int lvl = ARM_LPAE_START_LVL(data);
++	arm_lpae_iopte prot;
++
++	/* If no access, then nothing to do */
++	if (!(iommu_prot & (IOMMU_READ | IOMMU_WRITE)))
 +		return 0;
 +
-+	spin_lock_irqsave(&smmu_domain->pgtbl_lock, flags);
-+	ret = ops->unmap(ops, iova, size);
-+	spin_unlock_irqrestore(&smmu_domain->pgtbl_lock, flags);
-+	return ret;
- }
- 
- static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
- 					 dma_addr_t iova)
- {
--	pgd_t *pgdp, pgd;
--	pud_t pud;
--	pmd_t pmd;
--	pte_t pte;
-+	phys_addr_t ret;
-+	unsigned long flags;
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
--	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+	struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
- 
--	pgdp = cfg->pgd;
--	if (!pgdp)
-+	if (!ops)
- 		return 0;
- 
--	pgd = *(pgdp + pgd_index(iova));
--	if (pgd_none(pgd))
--		return 0;
--
--	pud = *pud_offset(&pgd, iova);
--	if (pud_none(pud))
--		return 0;
--
--	pmd = *pmd_offset(&pud, iova);
--	if (pmd_none(pmd))
--		return 0;
--
--	pte = *(pmd_page_vaddr(pmd) + pte_index(iova));
--	if (pte_none(pte))
--		return 0;
--
--	return __pfn_to_phys(pte_pfn(pte)) | (iova & ~PAGE_MASK);
-+	spin_lock_irqsave(&smmu_domain->pgtbl_lock, flags);
-+	ret = ops->iova_to_phys(ops, iova);
-+	spin_unlock_irqrestore(&smmu_domain->pgtbl_lock, flags);
-+	return ret;
- }
- 
- static bool arm_smmu_capable(enum iommu_cap cap)
-@@ -1697,24 +1343,34 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
- static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
- 				    enum iommu_attr attr, void *data)
- {
-+	int ret = 0;
- 	struct arm_smmu_domain *smmu_domain = domain->priv;
- 
-+	mutex_lock(&smmu_domain->init_mutex);
++	prot = arm_lpae_prot_to_pte(data, iommu_prot);
++	return __arm_lpae_map(data, iova, paddr, size, prot, lvl, ptep);
++}
 +
- 	switch (attr) {
- 	case DOMAIN_ATTR_NESTING:
--		if (smmu_domain->smmu)
--			return -EPERM;
-+		if (smmu_domain->smmu) {
-+			ret = -EPERM;
-+			goto out_unlock;
++static void __arm_lpae_free_pgtable(struct arm_lpae_io_pgtable *data, int lvl,
++				    arm_lpae_iopte *ptep)
++{
++	arm_lpae_iopte *start, *end;
++	unsigned long table_size;
++
++	/* Only leaf entries at the last level */
++	if (lvl == ARM_LPAE_MAX_LEVELS - 1)
++		return;
++
++	if (lvl == ARM_LPAE_START_LVL(data))
++		table_size = data->pgd_size;
++	else
++		table_size = 1UL << data->pg_shift;
++
++	start = ptep;
++	end = (void *)ptep + table_size;
++
++	while (ptep != end) {
++		arm_lpae_iopte pte = *ptep++;
++
++		if (!pte || iopte_leaf(pte, lvl))
++			continue;
++
++		__arm_lpae_free_pgtable(data, lvl + 1, iopte_deref(pte, data));
++	}
++
++	free_pages_exact(start, table_size);
++}
++
++static void arm_lpae_free_pgtable(struct io_pgtable *iop)
++{
++	struct arm_lpae_io_pgtable *data = io_pgtable_to_data(iop);
++
++	__arm_lpae_free_pgtable(data, ARM_LPAE_START_LVL(data), data->pgd);
++	kfree(data);
++}
++
++static int arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
++				    unsigned long iova, size_t size,
++				    arm_lpae_iopte prot, int lvl,
++				    arm_lpae_iopte *ptep, size_t blk_size)
++{
++	unsigned long blk_start, blk_end;
++	phys_addr_t blk_paddr;
++	arm_lpae_iopte table = 0;
++	void *cookie = data->iop.cookie;
++	const struct iommu_gather_ops *tlb = data->iop.cfg.tlb;
++
++	blk_start = iova & ~(blk_size - 1);
++	blk_end = blk_start + blk_size;
++	blk_paddr = iopte_to_pfn(*ptep, data) << data->pg_shift;
++
++	for (; blk_start < blk_end; blk_start += size, blk_paddr += size) {
++		arm_lpae_iopte *tablep;
++
++		/* Unmap! */
++		if (blk_start == iova)
++			continue;
++
++		/* __arm_lpae_map expects a pointer to the start of the table */
++		tablep = &table - ARM_LPAE_LVL_IDX(blk_start, lvl, data);
++		if (__arm_lpae_map(data, blk_start, blk_paddr, size, prot, lvl,
++				   tablep) < 0) {
++			if (table) {
++				/* Free the table we allocated */
++				tablep = iopte_deref(table, data);
++				__arm_lpae_free_pgtable(data, lvl + 1, tablep);
++			}
++			return 0; /* Bytes unmapped */
++		}
++	}
++
++	*ptep = table;
++	tlb->flush_pgtable(ptep, sizeof(*ptep), cookie);
++	iova &= ~(blk_size - 1);
++	tlb->tlb_add_flush(iova, blk_size, true, cookie);
++	return size;
++}
++
++static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
++			    unsigned long iova, size_t size, int lvl,
++			    arm_lpae_iopte *ptep)
++{
++	arm_lpae_iopte pte;
++	const struct iommu_gather_ops *tlb = data->iop.cfg.tlb;
++	void *cookie = data->iop.cookie;
++	size_t blk_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
++
++	ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
++	pte = *ptep;
++
++	/* Something went horribly wrong and we ran out of page table */
++	if (WARN_ON(!pte || (lvl == ARM_LPAE_MAX_LEVELS)))
++		return 0;
++
++	/* If the size matches this level, we're in the right place */
++	if (size == blk_size) {
++		*ptep = 0;
++		tlb->flush_pgtable(ptep, sizeof(*ptep), cookie);
++
++		if (!iopte_leaf(pte, lvl)) {
++			/* Also flush any partial walks */
++			tlb->tlb_add_flush(iova, size, false, cookie);
++			tlb->tlb_sync(data->iop.cookie);
++			ptep = iopte_deref(pte, data);
++			__arm_lpae_free_pgtable(data, lvl + 1, ptep);
++		} else {
++			tlb->tlb_add_flush(iova, size, true, cookie);
 +		}
 +
- 		if (*(int *)data)
- 			smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
- 		else
- 			smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
- 
--		return 0;
-+		break;
- 	default:
--		return -ENODEV;
-+		ret = -ENODEV;
- 	}
++		return size;
++	} else if (iopte_leaf(pte, lvl)) {
++		/*
++		 * Insert a table at the next level to map the old region,
++		 * minus the part we want to unmap
++		 */
++		return arm_lpae_split_blk_unmap(data, iova, size,
++						iopte_prot(pte), lvl, ptep,
++						blk_size);
++	}
 +
-+out_unlock:
-+	mutex_unlock(&smmu_domain->init_mutex);
-+	return ret;
- }
++	/* Keep on walkin' */
++	ptep = iopte_deref(pte, data);
++	return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep);
++}
++
++static int arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
++			  size_t size)
++{
++	size_t unmapped;
++	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
++	struct io_pgtable *iop = &data->iop;
++	arm_lpae_iopte *ptep = data->pgd;
++	int lvl = ARM_LPAE_START_LVL(data);
++
++	unmapped = __arm_lpae_unmap(data, iova, size, lvl, ptep);
++	if (unmapped)
++		iop->cfg.tlb->tlb_sync(iop->cookie);
++
++	return unmapped;
++}
++
++static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
++					 unsigned long iova)
++{
++	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
++	arm_lpae_iopte pte, *ptep = data->pgd;
++	int lvl = ARM_LPAE_START_LVL(data);
++
++	do {
++		/* Valid IOPTE pointer? */
++		if (!ptep)
++			return 0;
++
++		/* Grab the IOPTE we're interested in */
++		pte = *(ptep + ARM_LPAE_LVL_IDX(iova, lvl, data));
++
++		/* Valid entry? */
++		if (!pte)
++			return 0;
++
++		/* Leaf entry? */
++		if (iopte_leaf(pte,lvl))
++			goto found_translation;
++
++		/* Take it to the next level */
++		ptep = iopte_deref(pte, data);
++	} while (++lvl < ARM_LPAE_MAX_LEVELS);
++
++	/* Ran out of page tables to walk */
++	return 0;
++
++found_translation:
++	iova &= ((1 << data->pg_shift) - 1);
++	return ((phys_addr_t)iopte_to_pfn(pte,data) << data->pg_shift) | iova;
++}
++
++static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
++{
++	unsigned long granule;
++
++	/*
++	 * We need to restrict the supported page sizes to match the
++	 * translation regime for a particular granule. Aim to match
++	 * the CPU page size if possible, otherwise prefer smaller sizes.
++	 * While we're at it, restrict the block sizes to match the
++	 * chosen granule.
++	 */
++	if (cfg->pgsize_bitmap & PAGE_SIZE)
++		granule = PAGE_SIZE;
++	else if (cfg->pgsize_bitmap & ~PAGE_MASK)
++		granule = 1UL << __fls(cfg->pgsize_bitmap & ~PAGE_MASK);
++	else if (cfg->pgsize_bitmap & PAGE_MASK)
++		granule = 1UL << __ffs(cfg->pgsize_bitmap & PAGE_MASK);
++	else
++		granule = 0;
++
++	switch (granule) {
++	case SZ_4K:
++		cfg->pgsize_bitmap &= (SZ_4K | SZ_2M | SZ_1G);
++		break;
++	case SZ_16K:
++		cfg->pgsize_bitmap &= (SZ_16K | SZ_32M);
++		break;
++	case SZ_64K:
++		cfg->pgsize_bitmap &= (SZ_64K | SZ_512M);
++		break;
++	default:
++		cfg->pgsize_bitmap = 0;
++	}
++}
++
++static struct arm_lpae_io_pgtable *
++arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
++{
++	unsigned long va_bits, pgd_bits;
++	struct arm_lpae_io_pgtable *data;
++
++	arm_lpae_restrict_pgsizes(cfg);
++
++	if (!(cfg->pgsize_bitmap & (SZ_4K | SZ_16K | SZ_64K)))
++		return NULL;
++
++	if (cfg->ias > ARM_LPAE_MAX_ADDR_BITS)
++		return NULL;
++
++	if (cfg->oas > ARM_LPAE_MAX_ADDR_BITS)
++		return NULL;
++
++	data = kmalloc(sizeof(*data), GFP_KERNEL);
++	if (!data)
++		return NULL;
++
++	data->pg_shift = __ffs(cfg->pgsize_bitmap);
++	data->bits_per_level = data->pg_shift - ilog2(sizeof(arm_lpae_iopte));
++
++	va_bits = cfg->ias - data->pg_shift;
++	data->levels = DIV_ROUND_UP(va_bits, data->bits_per_level);
++
++	/* Calculate the actual size of our pgd (without concatenation) */
++	pgd_bits = va_bits - (data->bits_per_level * (data->levels - 1));
++	data->pgd_size = 1UL << (pgd_bits + ilog2(sizeof(arm_lpae_iopte)));
++
++	data->iop.ops = (struct io_pgtable_ops) {
++		.map		= arm_lpae_map,
++		.unmap		= arm_lpae_unmap,
++		.iova_to_phys	= arm_lpae_iova_to_phys,
++	};
++
++	return data;
++}
++
++static struct io_pgtable *
++arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
++{
++	u64 reg;
++	struct arm_lpae_io_pgtable *data = arm_lpae_alloc_pgtable(cfg);
++
++	if (!data)
++		return NULL;
++
++	/* TCR */
++	reg = (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
++	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT) |
++	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
++
++	switch (1 << data->pg_shift) {
++	case SZ_4K:
++		reg |= ARM_LPAE_TCR_TG0_4K;
++		break;
++	case SZ_16K:
++		reg |= ARM_LPAE_TCR_TG0_16K;
++		break;
++	case SZ_64K:
++		reg |= ARM_LPAE_TCR_TG0_64K;
++		break;
++	}
++
++	switch (cfg->oas) {
++	case 32:
++		reg |= (ARM_LPAE_TCR_PS_32_BIT << ARM_LPAE_TCR_IPS_SHIFT);
++		break;
++	case 36:
++		reg |= (ARM_LPAE_TCR_PS_36_BIT << ARM_LPAE_TCR_IPS_SHIFT);
++		break;
++	case 40:
++		reg |= (ARM_LPAE_TCR_PS_40_BIT << ARM_LPAE_TCR_IPS_SHIFT);
++		break;
++	case 42:
++		reg |= (ARM_LPAE_TCR_PS_42_BIT << ARM_LPAE_TCR_IPS_SHIFT);
++		break;
++	case 44:
++		reg |= (ARM_LPAE_TCR_PS_44_BIT << ARM_LPAE_TCR_IPS_SHIFT);
++		break;
++	case 48:
++		reg |= (ARM_LPAE_TCR_PS_48_BIT << ARM_LPAE_TCR_IPS_SHIFT);
++		break;
++	default:
++		goto out_free_data;
++	}
++
++	reg |= (64ULL - cfg->ias) << ARM_LPAE_TCR_T0SZ_SHIFT;
++	cfg->arm_lpae_s1_cfg.tcr = reg;
++
++	/* MAIRs */
++	reg = (ARM_LPAE_MAIR_ATTR_NC
++	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_NC)) |
++	      (ARM_LPAE_MAIR_ATTR_WBRWA
++	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_CACHE)) |
++	      (ARM_LPAE_MAIR_ATTR_DEVICE
++	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV));
++
++	cfg->arm_lpae_s1_cfg.mair[0] = reg;
++	cfg->arm_lpae_s1_cfg.mair[1] = 0;
++
++	/* Looking good; allocate a pgd */
++	data->pgd = alloc_pages_exact(data->pgd_size, GFP_KERNEL | __GFP_ZERO);
++	if (!data->pgd)
++		goto out_free_data;
++
++	cfg->tlb->flush_pgtable(data->pgd, data->pgd_size, cookie);
++
++	/* TTBRs */
++	cfg->arm_lpae_s1_cfg.ttbr[0] = virt_to_phys(data->pgd);
++	cfg->arm_lpae_s1_cfg.ttbr[1] = 0;
++	return &data->iop;
++
++out_free_data:
++	kfree(data);
++	return NULL;
++}
++
++static struct io_pgtable *
++arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
++{
++	u64 reg, sl;
++	struct arm_lpae_io_pgtable *data = arm_lpae_alloc_pgtable(cfg);
++
++	if (!data)
++		return NULL;
++
++	/*
++	 * Concatenate PGDs at level 1 if possible in order to reduce
++	 * the depth of the stage-2 walk.
++	 */
++	if (data->levels == ARM_LPAE_MAX_LEVELS) {
++		unsigned long pgd_pages;
++
++		pgd_pages = data->pgd_size >> ilog2(sizeof(arm_lpae_iopte));
++		if (pgd_pages <= ARM_LPAE_S2_MAX_CONCAT_PAGES) {
++			data->pgd_size = pgd_pages << data->pg_shift;
++			data->levels--;
++		}
++	}
++
++	/* VTCR */
++	reg = ARM_64_LPAE_S2_TCR_RES1 |
++	     (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
++	     (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT) |
++	     (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
++
++	sl = ARM_LPAE_START_LVL(data);
++
++	switch (1 << data->pg_shift) {
++	case SZ_4K:
++		reg |= ARM_LPAE_TCR_TG0_4K;
++		sl++; /* SL0 format is different for 4K granule size */
++		break;
++	case SZ_16K:
++		reg |= ARM_LPAE_TCR_TG0_16K;
++		break;
++	case SZ_64K:
++		reg |= ARM_LPAE_TCR_TG0_64K;
++		break;
++	}
++
++	switch (cfg->oas) {
++	case 32:
++		reg |= (ARM_LPAE_TCR_PS_32_BIT << ARM_LPAE_TCR_PS_SHIFT);
++		break;
++	case 36:
++		reg |= (ARM_LPAE_TCR_PS_36_BIT << ARM_LPAE_TCR_PS_SHIFT);
++		break;
++	case 40:
++		reg |= (ARM_LPAE_TCR_PS_40_BIT << ARM_LPAE_TCR_PS_SHIFT);
++		break;
++	case 42:
++		reg |= (ARM_LPAE_TCR_PS_42_BIT << ARM_LPAE_TCR_PS_SHIFT);
++		break;
++	case 44:
++		reg |= (ARM_LPAE_TCR_PS_44_BIT << ARM_LPAE_TCR_PS_SHIFT);
++		break;
++	case 48:
++		reg |= (ARM_LPAE_TCR_PS_48_BIT << ARM_LPAE_TCR_PS_SHIFT);
++		break;
++	default:
++		goto out_free_data;
++	}
++
++	reg |= (64ULL - cfg->ias) << ARM_LPAE_TCR_T0SZ_SHIFT;
++	reg |= (~sl & ARM_LPAE_TCR_SL0_MASK) << ARM_LPAE_TCR_SL0_SHIFT;
++	cfg->arm_lpae_s2_cfg.vtcr = reg;
++
++	/* Allocate pgd pages */
++	data->pgd = alloc_pages_exact(data->pgd_size, GFP_KERNEL | __GFP_ZERO);
++	if (!data->pgd)
++		goto out_free_data;
++
++	cfg->tlb->flush_pgtable(data->pgd, data->pgd_size, cookie);
++
++	/* VTTBR */
++	cfg->arm_lpae_s2_cfg.vttbr = virt_to_phys(data->pgd);
++	return &data->iop;
++
++out_free_data:
++	kfree(data);
++	return NULL;
++}
++
++static struct io_pgtable *
++arm_32_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
++{
++	struct io_pgtable *iop;
++
++	if (cfg->ias > 32 || cfg->oas > 40)
++		return NULL;
++
++	cfg->pgsize_bitmap &= (SZ_4K | SZ_2M | SZ_1G);
++	iop = arm_64_lpae_alloc_pgtable_s1(cfg, cookie);
++	if (iop) {
++		cfg->arm_lpae_s1_cfg.tcr |= ARM_32_LPAE_TCR_EAE;
++		cfg->arm_lpae_s1_cfg.tcr &= 0xffffffff;
++	}
++
++	return iop;
++}
++
++static struct io_pgtable *
++arm_32_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
++{
++	struct io_pgtable *iop;
++
++	if (cfg->ias > 40 || cfg->oas > 40)
++		return NULL;
++
++	cfg->pgsize_bitmap &= (SZ_4K | SZ_2M | SZ_1G);
++	iop = arm_64_lpae_alloc_pgtable_s2(cfg, cookie);
++	if (iop)
++		cfg->arm_lpae_s2_cfg.vtcr &= 0xffffffff;
++
++	return iop;
++}
++
++struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns = {
++	.alloc	= arm_64_lpae_alloc_pgtable_s1,
++	.free	= arm_lpae_free_pgtable,
++};
++
++struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns = {
++	.alloc	= arm_64_lpae_alloc_pgtable_s2,
++	.free	= arm_lpae_free_pgtable,
++};
++
++struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s1_init_fns = {
++	.alloc	= arm_32_lpae_alloc_pgtable_s1,
++	.free	= arm_lpae_free_pgtable,
++};
++
++struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s2_init_fns = {
++	.alloc	= arm_32_lpae_alloc_pgtable_s2,
++	.free	= arm_lpae_free_pgtable,
++};
+diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
+index f664a1ca49cf..6436fe24bc2f 100644
+--- a/drivers/iommu/io-pgtable.c
++++ b/drivers/iommu/io-pgtable.c
+@@ -24,9 +24,20 @@
  
--static const struct iommu_ops arm_smmu_ops = {
-+static struct iommu_ops arm_smmu_ops = {
- 	.capable		= arm_smmu_capable,
- 	.domain_init		= arm_smmu_domain_init,
- 	.domain_destroy		= arm_smmu_domain_destroy,
-@@ -1728,9 +1384,7 @@ static const struct iommu_ops arm_smmu_ops = {
- 	.remove_device		= arm_smmu_remove_device,
- 	.domain_get_attr	= arm_smmu_domain_get_attr,
- 	.domain_set_attr	= arm_smmu_domain_set_attr,
--	.pgsize_bitmap		= (SECTION_SIZE |
--				   ARM_SMMU_PTE_CONT_SIZE |
--				   PAGE_SIZE),
-+	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+ #include "io-pgtable.h"
+ 
++extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s1_init_fns;
++extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s2_init_fns;
++extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns;
++extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns;
++
+ static const struct io_pgtable_init_fns *
+ io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] =
+ {
++#ifdef CONFIG_IOMMU_IO_PGTABLE_LPAE
++	[ARM_32_LPAE_S1] = &io_pgtable_arm_32_lpae_s1_init_fns,
++	[ARM_32_LPAE_S2] = &io_pgtable_arm_32_lpae_s2_init_fns,
++	[ARM_64_LPAE_S1] = &io_pgtable_arm_64_lpae_s1_init_fns,
++	[ARM_64_LPAE_S2] = &io_pgtable_arm_64_lpae_s2_init_fns,
++#endif
  };
  
- static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
-@@ -1780,7 +1434,7 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 	reg &= ~(sCR0_BSU_MASK << sCR0_BSU_SHIFT);
+ struct io_pgtable_ops *alloc_io_pgtable_ops(enum io_pgtable_fmt fmt,
+diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+index fdd792c37698..05c4e593a25f 100644
+--- a/drivers/iommu/io-pgtable.h
++++ b/drivers/iommu/io-pgtable.h
+@@ -5,6 +5,10 @@
+  * Public API for use by IOMMU drivers
+  */
+ enum io_pgtable_fmt {
++	ARM_32_LPAE_S1,
++	ARM_32_LPAE_S2,
++	ARM_64_LPAE_S1,
++	ARM_64_LPAE_S2,
+ 	IO_PGTABLE_NUM_FMTS,
+ };
  
- 	/* Push the button */
--	arm_smmu_tlb_sync(smmu);
-+	__arm_smmu_tlb_sync(smmu);
- 	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
- }
+@@ -47,6 +51,16 @@ struct io_pgtable_cfg {
  
-@@ -1814,12 +1468,6 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 
- 	/* ID0 */
- 	id = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID0);
--#ifndef CONFIG_64BIT
--	if (((id >> ID0_PTFS_SHIFT) & ID0_PTFS_MASK) == ID0_PTFS_V8_ONLY) {
--		dev_err(smmu->dev, "\tno v7 descriptor support!\n");
--		return -ENODEV;
--	}
--#endif
- 
- 	/* Restrict available stages based on module parameter */
- 	if (force_stage == 1)
-@@ -1892,16 +1540,14 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 	smmu->pgshift = (id & ID1_PAGESIZE) ? 16 : 12;
- 
- 	/* Check for size mismatch of SMMU address space from mapped region */
--	size = 1 <<
--		(((id >> ID1_NUMPAGENDXB_SHIFT) & ID1_NUMPAGENDXB_MASK) + 1);
-+	size = 1 << (((id >> ID1_NUMPAGENDXB_SHIFT) & ID1_NUMPAGENDXB_MASK) + 1);
- 	size *= 2 << smmu->pgshift;
- 	if (smmu->size != size)
- 		dev_warn(smmu->dev,
- 			"SMMU address space size (0x%lx) differs from mapped region size (0x%lx)!\n",
- 			size, smmu->size);
- 
--	smmu->num_s2_context_banks = (id >> ID1_NUMS2CB_SHIFT) &
--				      ID1_NUMS2CB_MASK;
-+	smmu->num_s2_context_banks = (id >> ID1_NUMS2CB_SHIFT) & ID1_NUMS2CB_MASK;
- 	smmu->num_context_banks = (id >> ID1_NUMCB_SHIFT) & ID1_NUMCB_MASK;
- 	if (smmu->num_s2_context_banks > smmu->num_context_banks) {
- 		dev_err(smmu->dev, "impossible number of S2 context banks!\n");
-@@ -1913,46 +1559,40 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 	/* ID2 */
- 	id = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID2);
- 	size = arm_smmu_id_size_to_bits((id >> ID2_IAS_SHIFT) & ID2_IAS_MASK);
--	smmu->s1_output_size = min_t(unsigned long, PHYS_MASK_SHIFT, size);
-+	smmu->ipa_size = size;
- 
--	/* Stage-2 input size limited due to pgd allocation (PTRS_PER_PGD) */
--#ifdef CONFIG_64BIT
--	smmu->s2_input_size = min_t(unsigned long, VA_BITS, size);
--#else
--	smmu->s2_input_size = min(32UL, size);
--#endif
--
--	/* The stage-2 output mask is also applied for bypass */
-+	/* The output mask is also applied for bypass */
- 	size = arm_smmu_id_size_to_bits((id >> ID2_OAS_SHIFT) & ID2_OAS_MASK);
--	smmu->s2_output_size = min_t(unsigned long, PHYS_MASK_SHIFT, size);
-+	smmu->pa_size = size;
- 
- 	if (smmu->version == ARM_SMMU_V1) {
--		smmu->s1_input_size = 32;
-+		smmu->va_size = smmu->ipa_size;
-+		size = SZ_4K | SZ_2M | SZ_1G;
- 	} else {
--#ifdef CONFIG_64BIT
- 		size = (id >> ID2_UBS_SHIFT) & ID2_UBS_MASK;
--		size = min(VA_BITS, arm_smmu_id_size_to_bits(size));
--#else
--		size = 32;
-+		smmu->va_size = arm_smmu_id_size_to_bits(size);
-+#ifndef CONFIG_64BIT
-+		smmu->va_size = min(32UL, smmu->va_size);
- #endif
--		smmu->s1_input_size = size;
--
--		if ((PAGE_SIZE == SZ_4K && !(id & ID2_PTFS_4K)) ||
--		    (PAGE_SIZE == SZ_64K && !(id & ID2_PTFS_64K)) ||
--		    (PAGE_SIZE != SZ_4K && PAGE_SIZE != SZ_64K)) {
--			dev_err(smmu->dev, "CPU page size 0x%lx unsupported\n",
--				PAGE_SIZE);
--			return -ENODEV;
--		}
-+		size = 0;
-+		if (id & ID2_PTFS_4K)
-+			size |= SZ_4K | SZ_2M | SZ_1G;
-+		if (id & ID2_PTFS_16K)
-+			size |= SZ_16K | SZ_32M;
-+		if (id & ID2_PTFS_64K)
-+			size |= SZ_64K | SZ_512M;
- 	}
- 
-+	arm_smmu_ops.pgsize_bitmap &= size;
-+	dev_notice(smmu->dev, "\tSupported page sizes: 0x%08lx\n", size);
+ 	/* Low-level data specific to the table format */
+ 	union {
++		struct {
++			u64	ttbr[2];
++			u64	tcr;
++			u64	mair[2];
++		} arm_lpae_s1_cfg;
 +
- 	if (smmu->features & ARM_SMMU_FEAT_TRANS_S1)
- 		dev_notice(smmu->dev, "\tStage-1: %lu-bit VA -> %lu-bit IPA\n",
--			   smmu->s1_input_size, smmu->s1_output_size);
-+			   smmu->va_size, smmu->ipa_size);
++		struct {
++			u64	vttbr;
++			u64	vtcr;
++		} arm_lpae_s2_cfg;
+ 	};
+ };
  
- 	if (smmu->features & ARM_SMMU_FEAT_TRANS_S2)
- 		dev_notice(smmu->dev, "\tStage-2: %lu-bit IPA -> %lu-bit PA\n",
--			   smmu->s2_input_size, smmu->s2_output_size);
-+			   smmu->ipa_size, smmu->pa_size);
- 
- 	return 0;
- }
 -- 
 2.1.4
