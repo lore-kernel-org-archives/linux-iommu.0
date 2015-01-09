@@ -1,33 +1,85 @@
-From: Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [v3 13/26] KVM: Define a new interface kvm_find_dest_vcpu() for
- VT-d PI
-Date: Fri, 09 Jan 2015 16:18:00 +0100
-Message-ID: <54AFF128.1080603@redhat.com>
-References: <1418397300-10870-1-git-send-email-feng.wu@intel.com> <1418397300-10870-14-git-send-email-feng.wu@intel.com> <20150109145435.GA22469@potion.brq.redhat.com> <54AFEC00.80507@redhat.com> <20150109151258.GC9877@potion.brq.redhat.com>
+From: Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>
+Subject: Re: Exynos IOMMU driver doesn't work?
+Date: Fri, 9 Jan 2015 16:34:25 +0100
+Message-ID: <CABxcv=n26-A86OmsqviEUz=XSF6QP6K0s=Dfzc43x4+if_qP7A@mail.gmail.com>
+References: <CAOhR-w2vQbyYrWsvZjs-Pt6tU6m9BmH-T5tuBDSyUXteWgxP0Q@mail.gmail.com>
+	<CAOhR-w1gH6zzSZcw-0Lo0zc+p1Mt0=4aqWEZ0Agz4xw0uHsq7A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150109151258.GC9877@potion.brq.redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>
-Cc: Feng Wu <feng.wu@intel.com>, tglx@linutronix.de, mingo@redhat.com, hpa@zytor.com, x86@kernel.org, gleb@kernel.org, dwmw2@infradead.org, joro@8bytes.org, alex.williamson@redhat.com, jiang.liu@linux.intel.com, eric.auger@linaro.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAOhR-w1gH6zzSZcw-0Lo0zc+p1Mt0=4aqWEZ0Agz4xw0uHsq7A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Hongbo Zhang <hongbo.zhang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sjoerd Simons <sjoerd.simons-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>
+Cc: "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+[adding Marek, Sjoerd and Joonyoung that were discussing about iommu
+support in another thread]
 
+Hello Hongbo,
 
-On 09/01/2015 16:12, Radim Kr=C4=8Dm=C3=A1=C5=99 wrote:
-> > The chipset doesn't support it. :(
->=20
-> I meant that we need to recompute PI entries for lowest priority
-> interrupts every time guest's TPR changes.
->=20
-> Luckily, Linux doesn't use TPR, but other OS might be a reason to dro=
-p
-> lowest priority from PI optimizations.  (Or make it more complicated.=
-)
+On Fri, Jan 9, 2015 at 8:31 AM, Hongbo Zhang <hongbo.zhang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+> Add linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org mailing list.
+>
+> On 7 January 2015 at 18:31, Hongbo Zhang <hongbo.zhang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+>> Hi Cho KyongHo, Joerg et al,
+>> I found the latest Exynos IOMMU driver doesn't work, the line 481:
+>> BUG_ON(!has_sysmmu(dev));
+>> in function __exynos_sysmmu_enable() in file exynos-iommu.c triggers
+>> kernel panic.
+>>
+>> Then I found the dev->archdata.iommu isn't initialized at all, it
+>> should be the root cause.
+>>
 
-Doing vector hashing is a possibility as well.  I would like to know
-what existing chipsets do in practice, then we can mimic it.
+That's correct, I found the same the other day since and thought about
+posting a patch to return -ENODEV if !has_sysmmu(dev) instead to avoid
+the driver to panic the kernel. But then I realized this is already
+fixed in Marek's "[PATCH v3 00/19] Exynos SYSMMU (IOMMU) integration
+with DT and DMA-mapping subsystem" series [0].
 
-Paolo
+>> Another problem is this driver is added support of device tree, but
+>> there is no device tree nodes in the dts file, so I had to search from
+>> internet and added those nodes manually.
+>>
+>> I've found these links of v12 and v13 patches
+>> https://lkml.org/lkml/2014/4/27/171
+>> https://lkml.org/lkml/2014/5/12/34
+>> patch v13 was merged into mainline kernel, but as a part of v12, it
+>> isn't complete and doesn't work alone, eg dts nodes are missing.
+>> (I didn't research much dev->archdata.iommu initialization error is
+>> introduced by which patch, but it seems in very old codes there is no
+>> such problem)
+>>
+
+Yes, please take a look to Marek series [0]. Keep in mind that the
+series does not support all sysmmu revisions so IOMMU is not supported
+for some SoCs (e.g: Exynos5). Support for that is planned once that
+series land into mainline though [1].
+
+May I ask why are you interested in IOMMU support on Exynos? I'm
+asking because the reason why I tried to enable IOMMU support (and hit
+the same issue) was to try using the Exynos DRM HDMI driver with IOMMU
+since I found that HDMI is working on the downstream Samsung kernel
+[2] that has IOMMU support, but is not working on mainline.
+
+At the end the HDMI problem seems to not be IOMMU related but
+something with the power domains and clocking but in case you are
+facing the same issue, you may be interested in that discussion [3].
+
+Best regards,
+Javier
+
+[0]: http://www.spinics.net/lists/linux-samsung-soc/msg39168.html
+[1]: http://www.spinics.net/lists/linux-samsung-soc/msg39980.html
+[2]: git-9UaJU3cA/F/QT0dZR+AlfA@public.gmane.org:exynos-reference/kernel.git
+[3]: http://www.spinics.net/lists/linux-samsung-soc/msg40828.html
