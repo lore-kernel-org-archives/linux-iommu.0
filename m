@@ -1,47 +1,53 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v8 01/10] iommu/vt-d: Update iommu_attach_domain() and
-	its callers
-Date: Mon, 12 Jan 2015 16:18:55 +0100
-Message-ID: <20150112151855.GB6343@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v8 02/10] iommu/vt-d: Items required for kdump
+Date: Mon, 12 Jan 2015 16:22:08 +0100
+Message-ID: <20150112152207.GC6343@8bytes.org>
 References: <1421046388-27925-1-git-send-email-zhen-hual@hp.com>
-	<1421046388-27925-2-git-send-email-zhen-hual@hp.com>
+ <1421046388-27925-3-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1421046388-27925-2-git-send-email-zhen-hual-VXdhtT5mjnY@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Cc: bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+In-Reply-To: <1421046388-27925-3-git-send-email-zhen-hual@hp.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: "Li, Zhen-Hua" <zhen-hual@hp.com>
+Cc: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, vgoyal@redhat.com, dyoung@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 12, 2015 at 03:06:19PM +0800, Li, Zhen-Hua wrote:
-> Allow specification of the domain-id for the new domain.
-> This patch only adds the 'did' parameter to iommu_attach_domain()
-> and modifies all of its callers to specify the default value of -1
-> which says "no did specified, allocate a new one".
+On Mon, Jan 12, 2015 at 03:06:20PM +0800, Li, Zhen-Hua wrote:
+> +
+> +#ifdef CONFIG_CRASH_DUMP
+> +
+> +/*
+> + * Fix Crashdump failure caused by leftover DMA through a hardware IOMMU
+> + *
+> + * Fixes the crashdump kernel to deal with an active iommu and legacy
+> + * DMA from the (old) panicked kernel in a manner similar to how legacy
+> + * DMA is handled when no hardware iommu was in use by the old kernel --
+> + * allow the legacy DMA to continue into its current buffers.
+> + *
+> + * In the crashdump kernel, this code:
+> + * 1. skips disabling the IOMMU's translating of IO Virtual Addresses (IOVA).
+> + * 2. Do not re-enable IOMMU's translating.
+> + * 3. In kdump kernel, use the old root entry table.
+> + * 4. Leaves the current translations in-place so that legacy DMA will
+> + *    continue to use its current buffers.
+> + * 5. Allocates to the device drivers in the crashdump kernel
+> + *    portions of the iova address ranges that are different
+> + *    from the iova address ranges that were being used by the old kernel
+> + *    at the time of the panic.
+> + *
+> + */
 
-I think its better to keep the old iommu_attach_domain() interface in
-place and introduce a new function (like iommu_attach_domain_with_id()
-or something) which has the additional parameter. Then you can rewrite
-iommu_attach_domain():
+It looks like you are still copying the io-page-tables from the old
+kernel into the kdump kernel, is that right? With the approach that was
+proposed you only need to copy over the context entries 1-1. They are
+still pointing to the page-tables in the old kernels memory (which is
+just fine).
 
-	iommu_attach_domai(...)
-	{
-		return iommu_attach_domain_with_id(..., -1);
-	}
-
-This way you don't have to update all the callers of
-iommu_attach_domain() and the interface is more readable.
+The root-entry of the old kernel is also re-used, and when the kdump
+kernel starts to use a device, its context entry is updated to point to
+a newly allocated page-table.
 
 
 	Joerg
