@@ -1,19 +1,11 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v8 02/10] iommu/vt-d: Items required for kdump
-Date: Mon, 12 Jan 2015 17:48:03 +0100
-Message-ID: <20150112164803.GG6343@8bytes.org>
-References: <1421046388-27925-1-git-send-email-zhen-hual@hp.com>
-	<1421046388-27925-3-git-send-email-zhen-hual@hp.com>
-	<20150112152207.GC6343@8bytes.org>
-	<20150112152919.GA16162@redhat.com>
-	<20150112160646.GF6343@8bytes.org>
-	<20150112161538.GB16162@redhat.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH 0/4] Genericise the IOVA allocator
+Date: Mon, 12 Jan 2015 17:51:12 +0000
+Message-ID: <cover.1420822848.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20150112161538.GB16162-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,44 +15,43 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Vivek Goyal <vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Li,
-	Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 12, 2015 at 11:15:38AM -0500, Vivek Goyal wrote:
-> On Mon, Jan 12, 2015 at 05:06:46PM +0100, Joerg Roedel wrote:
-> > On Mon, Jan 12, 2015 at 10:29:19AM -0500, Vivek Goyal wrote:
-> > > Kdump has the notion of backup region. Where certain parts of old kernels
-> > > memory can be moved to a different location (first 640K on x86 as of now)
-> > > and new kernel can make use of this memory now.
-> > > 
-> > > So we will have to just make sure that no parts of this old page table
-> > > fall into backup region.
-> > 
-> > Uuh, looks like the 'iommu-with-kdump-issue' isn't complicated enough
-> > yet ;)
-> > Sadly, your above statement is true for all hardware-accessible data
-> > structures in IOMMU code. I think about how we can solve this, is there
-> > an easy way to allocate memory that is not in any backup region?
-> 
-> Hmm..., there does not seem to be any easy way to do this. In fact, as of
-> now, kernel does not even know where is backup region. All these details are
-> managed by user space completely (except for new kexec_file_load() syscall).
-> 
-> That means we are left with ugly options now.
-> 
-> - Define per arch kexec backup regions in kernel and export it to user
->   space and let kexec-tools make use of that deinition (instead of
->   defining its own). That way memory allocation code in kernel can look
->   at this backup area and skip it for certain allocations.
+Hi all,
 
-Yes, that makes sense. In fact, I think all allocations for DMA memory
-need to take this into account to avoid potentially serious data
-corruption.
-If any memory for a disk superblock gets allocated in backup memory and
-a kdump happens, the new kernel might zero out that area and the disk
-controler then writes the zeroes to disk instead of the superblock.
+Here's an update of my previous RFC[1] in preparation for hooking the
+IOVA allocator up to the arm64 DMA mapping API, rebased onto 3.19-rc3.
 
+I tried rebasing patches 3 and 4 onto Sakari's RFC series[2] (the merge
+conflict is pretty trivial), however I found that series applied to rc3
+causes a build error in intel-iommu.c. Thus for now I've left in my
+simpler patches 1 and 2 for breaking out the library. Hopefully we can
+reach some consensus on that.
 
-	Joerg
+Tested on arm64 (DMA mapping series coming soon), and compile-tested
+for x86_64_defconfig.
+
+Changes since RFC:
+Patch 1: Use a proper Kconfig symbol rather than a hack
+Patch 4: sanity check for powers of two also, and clarify the comment
+
+[1]:http://thread.gmane.org/gmane.linux.kernel.iommu/7480
+[2]:http://thread.gmane.org/gmane.linux.kernel.iommu/7436
+
+Robin Murphy (4):
+  iommu: allow building iova.c independently
+  iommu: consolidate IOVA allocator code
+  iommu: make IOVA domain low limit flexible
+  iommu: make IOVA domain page size explicit
+
+ drivers/iommu/Kconfig       |  4 ++++
+ drivers/iommu/Makefile      |  3 ++-
+ drivers/iommu/intel-iommu.c | 45 ++++++++++----------------------------
+ drivers/iommu/iova.c        | 53 +++++++++++++++++++++++++++++++++++++++++----
+ include/linux/iova.h        | 41 +++++++++++++++++++++++++++++++----
+ 5 files changed, 103 insertions(+), 43 deletions(-)
+
+-- 
+1.9.1
