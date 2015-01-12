@@ -1,216 +1,175 @@
-From: Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v3 00/19] Exynos SYSMMU (IOMMU) integration with DT and
-	DMA-mapping subsystem
-Date: Mon, 12 Jan 2015 15:40:26 +0900
-Message-ID: <54B36C5A.6050109@samsung.com>
-References: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com>
-	<1417514366.21830.22.camel@collabora.co.uk>
-	<54818768.3080303@samsung.com>
-	<CABxcv=n=eNqbyBbOk1Wb87tCnnLZAJQurmCdeTOSqMZMbNaSHw@mail.gmail.com>
-	<54AC93E0.8010705@samsung.com> <54ACFD69.1020500@collabora.co.uk>
-	<54AD0293.70909@samsung.com> <54AEB384.2040005@collabora.co.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <54AEB384.2040005-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Javier Martinez Canillas <javier.martinez-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>, Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sjoerd Simons <sjoerd.simons-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Gustavo Padovan <gustavo.padovan-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+From: "Li, Zhen-Hua" <zhen-hual@hp.com>
+Subject: [PATCH v8 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
+Date: Mon, 12 Jan 2015 15:06:18 +0800
+Message-ID: <1421046388-27925-1-git-send-email-zhen-hual@hp.com>
+Return-path: <linux-pci-owner@vger.kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, joro@8bytes.org, vgoyal@redhat.com, dyoung@redhat.com
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, zhen-hual@hp.com, rwright@hp.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+This patchset is an update of Bill Sumner's patchset, implements a fix for:
+If a kernel boots with intel_iommu=on on a system that supports intel vt-d, 
+when a panic happens, the kdump kernel will boot with these faults:
 
-On 01/09/2015 01:42 AM, Javier Martinez Canillas wrote:
-> Hello Joonyoung,
-> 
-> On 01/07/2015 10:55 AM, Joonyoung Shim wrote:
->>>>
->>>> I don't think iommu support and power domain issue are related. I also
->>>> get displaying stripes via hdmi but it is just power domain issue
->>>> regardless iommu support.
->>>>
->>>> I observed 8th bit from 0x1445000C register of mixer is set to 1 with
->>>> displaying stripes. It means "The graphic layer0 line buffer underflow".
->>>> There was same underflow issue on Exynos4 based boards. As Marek said,
->>>> because LCD0 power domain was turned off.
->>>>
->>>
->>> Interesting, thanks a lot for sharing this information.
->>>  
->>>> I just tried to turn off DISP1 power domain at u-boot and DISP1 power
->>>> domain is turned on from kernel hdmi and mixer driver on odroid xu3 
->>>> board. As the result, i can see displaying penguin logo from hdmi.
->>>>
->>>
->>> Can you share the patches you are using to turn on the DISP1 power domain
->>> since AFAIU the kernel does not know about the DISP1 power domain after
->>> commit d51cad7df871 ("ARM: dts: remove display power domain for exynos5420").
->>>
->>> I tried reverting that commit before so the kernel knows about the DISP1
->>> power domain and booting with pd_ignore_unused but still had the stripes.
->>>  
->>
->> I add DISP1 power domain on dts and please refer below patch[0] with
->> some modification on hdmi phy(Actually, i think this is not related).
->> You also should disable DISP1 power domain from bootloader.
->>
-> 
-> Thanks a lot for the patch. With your changes I have some HDMI output on
-> my Peach Pi. But the HDMI output is broken since the resolution is very
-> low and the video as a lot of visual artifacts.
-> 
-> In your change you are also adding clock phandles for the pd oscillator
-> clock and the CLK_MOUT_SW_ACLK200, CLK_MOUT_USER_ACLK200_DISP1 pairs for
-> the parent input and input clocks of the devices attached to the pd.
-> 
-> And also making changes to the clocks in the clk-exynos5420 driver. Can
-> you please explain the rationale for those changes? I'm asking because
-> without your clock changes (only adding the DISP1 pd and making the
-> devices as consumers), I've HDMI output too but video is even worse. This
-> [0] is the minimal change I have on top of 3.19-rc3 to have some output.
-> 
+    dmar: DRHD: handling fault status reg 102
+    dmar: DMAR:[DMA Read] Request device [01:00.0] fault addr fff80000
+    DMAR:[fault reason 01] Present bit in root entry is clear
 
-I just refer below patches,
-http://comments.gmane.org/gmane.linux.kernel.samsung-soc/34576
+    dmar: DRHD: handling fault status reg 2
+    dmar: INTR-REMAP: Request device [[61:00.0] fault index 42
+    INTR-REMAP:[fault reason 34] Present field in the IRTE entry is clear
 
-But i'm not sure whether DISP1 power domain is same case with MFC power domain.
+On some system, the interrupt remapping fault will also happen even if the 
+intel_iommu is not set to on, because the interrupt remapping will be enabled 
+when x2apic is needed by the system.
 
-> The docs I've access to, don't have information about the clock hierarchy.
-> So each time there is a clock issue, I've a hard time to figure out what's
-> happening.
-> 
-> So there seems to be two issues here, one is the mixer and hdmi modules not
-> being attached to the DISP1 power domain and another one is the clocks setup
-> not being correct to have proper HDMI video output.
->  
+The cause of the DMA fault is described in Bill's original version, and the 
+INTR-Remap fault is caused by a similar reason. In short, the initialization 
+of vt-d drivers causes the in-flight DMA and interrupt requests get wrong 
+response.
 
-Hmm, i can see normal hdmi output still from latest upstream
-kernel(3.19-rc4) with my kernel changes and u-boot changes(DISP1 power
-domain disable) of prior mail on odroid xu3 board.
+To fix this problem, we modifies the behaviors of the intel vt-d in the 
+crashdump kernel:
 
->>>> But the problem exists still because it is failed to control on/off of
->>>> DISP1 power domain more than twice from kernel hdmi and mixer driver.[0]
->>>>
-> 
-> I didn't have this issue when testing your patch against 3.19-rc2. From your
-> log I see that you are testing on a 3.18.1. So maybe makes sense to test with
-> the latest kernel version since this HDMI issue qualifies as an 3.19-rc fix?
-> 
-> Since commit 2ed127697eb1 ("PM / Domains: Power on the PM domain right after attach completes")
-> that landed in 3.19-rc1, I see that the power domain is powered on when a
-> device is attached. So maybe that is what makes a difference here?
-> 
+For DMA Remapping:
+1. To accept the vt-d hardware in an active state,
+2. Do not disable and re-enable the translation, keep it enabled.
+3. Use the old root entry table, do not rewrite the RTA register.
+4. Malloc and use new context entry table and page table, copy data from the 
+   old ones that used by the old kernel.
+5. to use different portions of the iova address ranges for the device drivers
+   in the crashdump kernel than the iova ranges that were in-use at the time
+   of the panic.  
+6. After device driver is loaded, when it issues the first dma_map command, 
+   free the dmar_domain structure for this device, and generate a new one, so 
+   that the device can be assigned a new and empty page table. 
+7. When a new context entry table is generated, we also save its address to 
+   the old root entry table.
 
-I'm not sure, but i get same error results from 3.19-rc4. Did you test
-using exynos drm driver? I used modetest of libdrm
+For Interrupt Remapping:
+1. To accept the vt-d hardware in an active state,
+2. Do not disable and re-enable the interrupt remapping, keep it enabled.
+3. Use the old interrupt remapping table, do not rewrite the IRTA register.
+4. When ioapic entry is setup, the interrupt remapping table is changed, and 
+   the updated data will be stored to the old interrupt remapping table.
 
->>>
->>> Something that is not clear to me is how display panel is working on the
->>> Peach boards if this is a power domain issue since according to the manual
->>> both the modules used for display (LCD controller and DP) and the modules
->>> used for HDMI (MIXER and HDMI) belong to the same power domain (DISP1).
->>>
->>
->> I don't know about that because i just tested on odroid xu3 board
->> without display panel. Hmm, It can be any conditions to success on/off
->> power domain e.g. power state of clocks and of on/off order display
->> devices.
->>
-> 
-> My guess is that this is again clock related. Since if I add the DISP1 pd to
-> the DTS and make the fimd node as a consumer of the pd, the display panel
-> works correctly (same than current mainline that doesn't have the node).
-> 
-> But, if I also make the mixer and hdmi nodes as consumer of the DISP1, then
-> the exynos dp driver's probe function fails as shown in [1]. In this case,
-> the HDMI output works and I see that the DISP1 power domain is not powered
-> off so the only thing I can think is that is a clocks issue.
-> 
+Advantages of this approach:
+1. All manipulation of the IO-device is done by the Linux device-driver
+   for that device.
+2. This approach behaves in a manner very similar to operation without an
+   active iommu.
+3. Any activity between the IO-device and its RMRR areas is handled by the
+   device-driver in the same manner as during a non-kdump boot.
+4. If an IO-device has no driver in the kdump kernel, it is simply left alone.
+   This supports the practice of creating a special kdump kernel without
+   drivers for any devices that are not required for taking a crashdump. 
+5. Minimal code-changes among the existing mainline intel vt-d code.
 
-DP also is related with DISP1 power domain, so it think DP driver should
-consider DISP1 power domain.
+Summary of changes in this patch set:
+1. Added some useful function for root entry table in code intel-iommu.c
+2. Added new members to struct root_entry and struct irte;
+3. Functions to load old root entry table to iommu->root_entry from the memory 
+   of old kernel.
+4. Functions to malloc new context entry table and page table and copy the data
+   from the old ones to the malloced new ones.
+5. Functions to enable support for DMA remapping in kdump kernel.
+6. Functions to load old irte data from the old kernel to the kdump kernel.
+7. Some code changes that support other behaviours that have been listed.
+8. In the new functions, use physical address as "unsigned long" type, not 
+   pointers.
 
->> Is DISP1 power domain disabled on Peach boards to save power, not always
->> on?
->>
-> 
-> No AFAICT, currently as I mentioned before the DISP1 power domain was removed
-> from the exynos5420.dtsi. So since the kernel does not know about it, should
-> be always on. With your patch, it should not be disabled either since it has
-> devices attached to and I confirmed that is not powered off anymore once all
-> the attached devices' probe functions have been deferred and retried again.
-> 
+Original version by Bill Sumner:
+    https://lkml.org/lkml/2014/1/10/518
+    https://lkml.org/lkml/2014/4/15/716
+    https://lkml.org/lkml/2014/4/24/836
 
-OK, finally, we should add DISP1 power domain in dts file and be able to
-control on/off of DISP1 power domain.
+Zhenhua's updates:
+    https://lkml.org/lkml/2014/10/21/134
+    https://lkml.org/lkml/2014/12/15/121
+    https://lkml.org/lkml/2014/12/22/53
+    https://lkml.org/lkml/2015/1/6/1166
 
-Thanks.
+Changelog[v8]:
+    1. Add a missing __iommu_flush_cache in function copy_page_table.
 
-> Thanks a lot for your help and best regards,
-> Javier
-> 
-> [0]:
-> diff --git a/arch/arm/boot/dts/exynos5420.dtsi b/arch/arm/boot/dts/exynos5420.dtsi
-> index 517e50f6760b..9966fe7bb0ec 100644
-> --- a/arch/arm/boot/dts/exynos5420.dtsi
-> +++ b/arch/arm/boot/dts/exynos5420.dtsi
-> @@ -265,6 +265,11 @@
->  		clock-names = "oscclk", "pclk0", "clk0";
->  	};
->  
-> +	disp_pd: power-domain@100440C0 {
-> +		compatible = "samsung,exynos4210-pd";
-> +		reg = <0x100440C0 0x20>;
-> +	};
-> +
->  	msc_pd: power-domain@10044120 {
->  		compatible = "samsung,exynos4210-pd";
->  		reg = <0x10044120 0x20>;
-> @@ -535,6 +540,7 @@
->  	};
->  
->  	fimd: fimd@14400000 {
-> +		samsung,power-domain = <&disp_pd>;
->  		clocks = <&clock CLK_SCLK_FIMD1>, <&clock CLK_FIMD1>;
->  		clock-names = "sclk_fimd", "fimd";
->  	};
-> @@ -710,6 +716,7 @@
->  		phy = <&hdmiphy>;
->  		samsung,syscon-phandle = <&pmu_system_controller>;
->  		status = "disabled";
-> +		samsung,power-domain = <&disp_pd>;
->  	};
->  
->  	hdmiphy: hdmiphy@145D0000 {
-> @@ -722,6 +729,7 @@
->  		interrupts = <0 94 0>;
->  		clocks = <&clock CLK_MIXER>, <&clock CLK_SCLK_HDMI>;
->  		clock-names = "mixer", "sclk_hdmi";
-> +		samsung,power-domain = <&disp_pd>;
->  	};
->  
->  	gsc_0: video-scaler@13e00000 {
-> 
-> 
-> [1]:
-> exynos-dp 145b0000.dp-controller: EDID data does not include any extensions.
-> exynos-dp 145b0000.dp-controller: EDID Read success!
-> exynos-dp 145b0000.dp-controller: Link Training Clock Recovery success
-> exynos-dp 145b0000.dp-controller: Link Training success!
-> exynos-dp 145b0000.dp-controller: Timeout of video streamclk ok
-> exynos-dp 145b0000.dp-controller: unable to config video
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
+Changelog[v7]:
+    1. Use __iommu_flush_cache to flush the data to hardware.
+
+Changelog[v6]:
+    1. Use "unsigned long" as type of physical address.
+    2. Use new function unmap_device_dma to unmap the old dma.
+    3. Some small incorrect bits order for aw shift.
+
+Changelog[v5]:
+    1. Do not disable and re-enable traslation and interrupt remapping. 
+    2. Use old root entry table.
+    3. Use old interrupt remapping table.
+    4. New functions to copy data from old kernel, and save to old kernel mem.
+    5. New functions to save updated root entry table and irte table.
+    6. Use intel_unmap to unmap the old dma;
+    7. Allocate new pages while driver is being loaded.
+
+Changelog[v4]:
+    1. Cut off the patches that move some defines and functions to new files.
+    2. Reduce the numbers of patches to five, make it more easier to read.
+    3. Changed the name of functions, make them consistent with current context
+       get/set functions.
+    4. Add change to function __iommu_attach_domain.
+
+Changelog[v3]:
+    1. Commented-out "#define DEBUG 1" to eliminate debug messages.
+    2. Updated the comments about changes in each version.
+    3. Fixed: one-line added to Copy-Translations patch to initialize the iovad
+          struct as recommended by Baoquan He [bhe@redhat.com]
+          init_iova_domain(&domain->iovad, DMA_32BIT_PFN);
+
+Changelog[v2]:
+    The following series implements a fix for:
+    A kdump problem about DMA that has been discussed for a long time. That is,
+    when a kernel panics and boots into the kdump kernel, DMA started by the
+    panicked kernel is not stopped before the kdump kernel is booted and the
+    kdump kernel disables the IOMMU while this DMA continues.  This causes the
+    IOMMU to stop translating the DMA addresses as IOVAs and begin to treat
+    them as physical memory addresses -- which causes the DMA to either:
+        (1) generate DMAR errors or 
+        (2) generate PCI SERR errors or 
+        (3) transfer data to or from incorrect areas of memory. Often this 
+            causes the dump to fail.
+
+Changelog[v1]:
+    The original version.
+
+Changed in this version:
+1. Do not disable and re-enable traslation and interrupt remapping. 
+2. Use old root entry table.
+3. Use old interrupt remapping table.
+4. Use "unsigned long" as physical address.
+5. Use intel_unmap to unmap the old dma;
+
+Baoquan He <bhe@redhat.com> helps testing this patchset.
+Takao Indoh <indou.takao@jp.fujitsu.com> gives valuable suggestions.
+
+  iommu/vt-d: Update iommu_attach_domain() and its callers
+  iommu/vt-d: Items required for kdump
+  iommu/vt-d: Add domain-id functions
+  iommu/vt-d: functions to copy data from old mem
+  iommu/vt-d: Add functions to load and save old re
+  iommu/vt-d: datatypes and functions used for kdump
+  iommu/vt-d: enable kdump support in iommu module
+  iommu/vt-d: assign new page table for dma_map
+  iommu/vt-d: Copy functions for irte
+  iommu/vt-d: Use old irte in kdump kernel
+
+Signed-off-by: Bill Sumner <billsumnerlinux@gmail.com>
+Signed-off-by: Li, Zhen-Hua <zhen-hual@hp.com>
+Signed-off-by: Takao Indoh <indou.takao@jp.fujitsu.com>
+Tested-by: Baoquan He <bhe@redhat.com>
+---
+ drivers/iommu/intel-iommu.c         | 1054 +++++++++++++++++++++++++++++++++--
+ drivers/iommu/intel_irq_remapping.c |  104 +++-
+ include/linux/intel-iommu.h         |   18 +
+ 3 files changed, 1134 insertions(+), 42 deletions(-)
+
+-- 
+2.0.0-rc0
