@@ -1,16 +1,15 @@
-From: Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>
-Subject: Re: Exynos IOMMU driver doesn't work?
-Date: Mon, 12 Jan 2015 12:17:11 +0100
-Message-ID: <CABxcv=koJjdXb6z1K3op8m4rFO=3NRYtGwqVH7WqOb7kR8jVaw@mail.gmail.com>
-References: <CAOhR-w2vQbyYrWsvZjs-Pt6tU6m9BmH-T5tuBDSyUXteWgxP0Q@mail.gmail.com>
-	<CAOhR-w1gH6zzSZcw-0Lo0zc+p1Mt0=4aqWEZ0Agz4xw0uHsq7A@mail.gmail.com>
-	<CABxcv=n26-A86OmsqviEUz=XSF6QP6K0s=Dfzc43x4+if_qP7A@mail.gmail.com>
-	<CAOhR-w0BcdrSLw7fVOTokNrQkcfsRj8skm6fn1UCMGgDeGDNKA@mail.gmail.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH RESEND] dma-mapping: tidy up dma_parms default handling
+Date: Mon, 12 Jan 2015 13:00:21 +0000
+Message-ID: <20150112130021.GC13360@arm.com>
+References: <ffdc5455d698d2525f2d126d0adabf9418fd76b1.1418990609.git.robin.murphy@arm.com>
+	<2031542.TLqIP3YVGc@wuerfel>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAOhR-w0BcdrSLw7fVOTokNrQkcfsRj8skm6fn1UCMGgDeGDNKA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <2031542.TLqIP3YVGc@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,45 +19,28 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Hongbo Zhang <hongbo.zhang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Sjoerd Simons <sjoerd.simons-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello Hongbo,
+On Fri, Jan 09, 2015 at 07:45:49PM +0000, Arnd Bergmann wrote:
+> On Friday 09 January 2015 16:56:03 Robin Murphy wrote:
+> > 
+> > This one's a bit tricky to find a home for - I think technically it's 
+> > probably an IOMMU patch, but then the long-underlying problem doesn't
+> > seem to have blown up anything until arm64, and my motivation is to
+> > make bits of Juno work, which seems to nudge it towards arm64/arm-soc
+> > territory. Could anyone suggest which tree is most appropriate?
+> 
+> I have a set of patches touching various dma-mapping.h related bits
+> across architectures and in ARM in particular. Your patch fits into
+> that series, and I guess we could either have it in my asm-generic
+> tree or in Andrew Morton's mm tree. Possibly also arm-soc for practical
+> reasons, although it really doesn't belong in there.
 
-On Mon, Jan 12, 2015 at 11:51 AM, Hongbo Zhang <hongbo.zhang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
-> On 9 January 2015 at 23:34, Javier Martinez Canillas
->>
->> Yes, please take a look to Marek series [0]. Keep in mind that the
->> series does not support all sysmmu revisions so IOMMU is not supported
->> for some SoCs (e.g: Exynos5). Support for that is planned once that
->> series land into mainline though [1].
->>
->> May I ask why are you interested in IOMMU support on Exynos? I'm
->> asking because the reason why I tried to enable IOMMU support (and hit
->> the same issue) was to try using the Exynos DRM HDMI driver with IOMMU
->> since I found that HDMI is working on the downstream Samsung kernel
->> [2] that has IOMMU support, but is not working on mainline.
->
-> Because I am testing vfio-platform patches, IOMMU is used in this case.
-> http://www.spinics.net/lists/kvm-arm/msg12445.html
->
+I also have a couple of fixes for issues found by Laurent for tearing
+down the IOMMU dma ops, so you could include those too.
 
-Ok, different use case then.
+I'll send them out this afternoon.
 
-> And I am glad to find a working kernel as you pointed out, then I
-
-Glad that you found the information useful.
-
-> found these two commits in this tree may solve my problem:
-> 841a7fe TEMP/TO POST: iommu: exynos: Add "mmu-masters" support
-> bd7e4c7 TEMP/TO POST: ARM: dts: add System MMU nodes of Exynos SoCs
->
->>
-
-Yes, that's what we cherry-picked as well to test HDMI since enabling
-IOMMU has a side effect of turning on the right power domains and
-enabling the needed clocks.
-
-Best regards,
-Javier
+Will
