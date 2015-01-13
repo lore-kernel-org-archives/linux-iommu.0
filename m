@@ -1,16 +1,14 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v8 02/10] iommu/vt-d: Items required for kdump
-Date: Tue, 13 Jan 2015 12:52:53 +0100
-Message-ID: <20150113115252.GH6343@8bytes.org>
-References: <1421046388-27925-1-git-send-email-zhen-hual@hp.com>
-	<1421046388-27925-3-git-send-email-zhen-hual@hp.com>
-	<20150112152207.GC6343@8bytes.org> <54B4D36D.8030204@hp.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH 0/5] arm64: IOMMU-backed DMA mapping
+Date: Tue, 13 Jan 2015 12:07:54 +0000
+Message-ID: <54B50A9A.9010308@arm.com>
+References: <cover.1421086706.git.robin.murphy@arm.com>
+	<1421136128.27675.58.camel@mtksdaap41>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <54B4D36D.8030204-VXdhtT5mjnY@public.gmane.org>
+In-Reply-To: <1421136128.27675.58.camel@mtksdaap41>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,36 +18,28 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Cc: bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: "linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org" <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org" <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 13, 2015 at 04:12:29PM +0800, Li, ZhenHua wrote:
+On 13/01/15 08:02, Yingjoe Chen wrote:
+> On Mon, 2015-01-12 at 20:48 +0000, Robin Murphy wrote:
+>> Hi all,
+>>
+>> Whilst it's a long way off perfect, this has reached the point of being
+>> functional and stable enough to be useful, so here it is. The core
+>> consists of the meat of the arch/arm implementation modified to remove
+>> the assumption of PAGE_SIZE pages and ported over to the Intel IOVA
+>> allocator instead of the bitmap-based one. For that, this series depends
+>> on my "Genericise the IOVA allocator" series posted earlier[1].
+>
+> Hi Robin,
+>
+> We'd to give it a try. Do you have a public git tree contains both
+> series?
+>
 
-> Current status:
-> 1. Use old root entry table,
-> 2. Copy old context entry tables.
-> 3. Copy old page tables.
-> 4. Allocate new page table when device driver is loading.
-> 
-> I remember the progress we discussed was this. Checking the old mails,
-> founding we did not clearly discuss about the old page tables, only
-> agrred with allocating new page tables when device driver is loading.
-> 
-> To me, both of these two options are fine, copying old page tables, or
-> re-use the old ones. My debugging shows both of them works fine.
-> 
-> If we use the old page tables, the patchset will use less code.
-> Functions copy_page_addr, copy_page_table are no longer needed, and
-> functions copy_context_entry and copy_context_entry_table will be
-> reduced to several lines. The patchset will be much simpler.
+Thanks! Unfortunately I don't have a public tree yet, but I'll try to 
+get one set up shortly.
 
-Yes, please do it this way. There is no point in copying the old
-page-tables. We never make changes to them, so they can stay where they
-are.
-
-The problem with the backup region still exists, but it is not
-specific to IOMMUs. This problem and should be addressed seperatly.
-
-
-	Joerg
+Robin.
