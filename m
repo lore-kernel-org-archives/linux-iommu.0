@@ -1,110 +1,52 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH RESEND] dma-mapping: tidy up dma_parms default handling
-Date: Tue, 13 Jan 2015 12:19:12 +0100
-Message-ID: <54B4FF30.2030607@samsung.com>
-References: <ffdc5455d698d2525f2d126d0adabf9418fd76b1.1418990609.git.robin.murphy@arm.com>
+From: Baoquan He <bhe@redhat.com>
+Subject: Re: [PATCH v8 02/10] iommu/vt-d: Items required for kdump
+Date: Tue, 13 Jan 2015 19:41:08 +0800
+Message-ID: <20150113114108.GB24543@dhcp-16-105.nay.redhat.com>
+References: <1421046388-27925-1-git-send-email-zhen-hual@hp.com>
+ <1421046388-27925-3-git-send-email-zhen-hual@hp.com>
+ <20150112152207.GC6343@8bytes.org>
+ <20150112152919.GA16162@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <ffdc5455d698d2525f2d126d0adabf9418fd76b1.1418990609.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20150112152919.GA16162@redhat.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Vivek Goyal <vgoyal@redhat.com>
+Cc: Joerg Roedel <joro@8bytes.org>, "Li, Zhen-Hua" <zhen-hual@hp.com>, dwmw2@infradead.org, indou.takao@jp.fujitsu.com, dyoung@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+On 01/12/15 at 10:29am, Vivek Goyal wrote:
+> On Mon, Jan 12, 2015 at 04:22:08PM +0100, Joerg Roedel wrote:
+> > It looks like you are still copying the io-page-tables from the old
+> > kernel into the kdump kernel, is that right? With the approach that was
+> > proposed you only need to copy over the context entries 1-1. They are
+> > still pointing to the page-tables in the old kernels memory (which is
+> > just fine).
+> 
+> Kdump has the notion of backup region. Where certain parts of old kernels
+> memory can be moved to a different location (first 640K on x86 as of now)
+> and new kernel can make use of this memory now.
 
-On 2015-01-09 17:56, Robin Murphy wrote:
-> Many DMA controllers and other devices set max_segment_size to
-> indicate their scatter-gather capability, but have no interest in
-> segment_boundary_mask. However, the existence of a dma_parms structure
-> precludes the use of any default value, leaving them as zeros (assuming
-> a properly kzalloc'ed structure). If a well-behaved IOMMU (or SWIOTLB)
-> then tries to respect this by ensuring a mapped segment does not cross
-> a zero-byte boundary, hilarity ensues.
->
-> Since zero is a nonsensical value for either parameter, treat it as an
-> indicator for "default", as might be expected. In the process, clean up
-> a bit by replacing the bare constants with slightly more meaningful
-> macros and removing the superfluous "else" statements.
->
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Hi Vivek,
 
-Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+About backup region I am a bit confusing. Just say x86, we usually copy
+it to a backup region. And this first 640K will be used as a usable
+memory region in 2nd kernel since its content has been copied to backup
+region. And that backup region is taken from crashkernel reserved
+memory and not passed to 2nd kernel as usable memory region.
 
-> ---
->
-> Hi, various maintainers from Git logs ;)
->
-> This one's a bit tricky to find a home for - I think technically it's
-> probably an IOMMU patch, but then the long-underlying problem doesn't
-> seem to have blown up anything until arm64, and my motivation is to
-> make bits of Juno work, which seems to nudge it towards arm64/arm-soc
-> territory. Could anyone suggest which tree is most appropriate?
->
-> Thanks,
-> Robin.
->
->   include/linux/dma-mapping.h | 17 ++++++++++-------
->   1 file changed, 10 insertions(+), 7 deletions(-)
->
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index c3007cb..99ba736 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -141,7 +141,9 @@ static inline void arch_teardown_dma_ops(struct device *dev) { }
->   
->   static inline unsigned int dma_get_max_seg_size(struct device *dev)
->   {
-> -	return dev->dma_parms ? dev->dma_parms->max_segment_size : 65536;
-> +	if (dev->dma_parms && dev->dma_parms->max_segment_size)
-> +		return dev->dma_parms->max_segment_size;
-> +	return SZ_64K;
->   }
->   
->   static inline unsigned int dma_set_max_seg_size(struct device *dev,
-> @@ -150,14 +152,15 @@ static inline unsigned int dma_set_max_seg_size(struct device *dev,
->   	if (dev->dma_parms) {
->   		dev->dma_parms->max_segment_size = size;
->   		return 0;
-> -	} else
-> -		return -EIO;
-> +	}
-> +	return -EIO;
->   }
->   
->   static inline unsigned long dma_get_seg_boundary(struct device *dev)
->   {
-> -	return dev->dma_parms ?
-> -		dev->dma_parms->segment_boundary_mask : 0xffffffff;
-> +	if (dev->dma_parms && dev->dma_parms->segment_boundary_mask)
-> +		return dev->dma_parms->segment_boundary_mask;
-> +	return DMA_BIT_MASK(32);
->   }
->   
->   static inline int dma_set_seg_boundary(struct device *dev, unsigned long mask)
-> @@ -165,8 +168,8 @@ static inline int dma_set_seg_boundary(struct device *dev, unsigned long mask)
->   	if (dev->dma_parms) {
->   		dev->dma_parms->segment_boundary_mask = mask;
->   		return 0;
-> -	} else
-> -		return -EIO;
-> +	}
-> +	return -EIO;
->   }
->   
->   #ifndef dma_max_pfn
+Here did you mean the old page table could fall into first 640K memory
+region or that reserved backup region?  Since as I understand the backup
+region is taken from crashkernel memory which is not used by 1st kernel
+process.
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Thanks
+Baoquan
+
+> 
+> So we will have to just make sure that no parts of this old page table
+> fall into backup region.
+> 
+> Thanks
+> Vivek
