@@ -1,71 +1,80 @@
-From: "Li, ZhenHua" <zhen-hual@hp.com>
-Subject: Re: [PATCH v8 02/10] iommu/vt-d: Items required for kdump
-Date: Tue, 13 Jan 2015 16:12:29 +0800
-Message-ID: <54B4D36D.8030204@hp.com>
-References: <1421046388-27925-1-git-send-email-zhen-hual@hp.com> <1421046388-27925-3-git-send-email-zhen-hual@hp.com> <20150112152207.GC6343@8bytes.org>
+From: Joonyoung Shim <jy0922.shim@samsung.com>
+Subject: Re: [PATCH v3 00/19] Exynos SYSMMU (IOMMU) integration with DT and
+ DMA-mapping subsystem
+Date: Tue, 13 Jan 2015 17:40:01 +0900
+Message-ID: <54B4D9E1.10400@samsung.com>
+References: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com>
+ <1417514366.21830.22.camel@collabora.co.uk> <54818768.3080303@samsung.com>
+ <CABxcv=n=eNqbyBbOk1Wb87tCnnLZAJQurmCdeTOSqMZMbNaSHw@mail.gmail.com>
+ <54AC93E0.8010705@samsung.com> <54ACFD69.1020500@collabora.co.uk>
+ <54AD0293.70909@samsung.com> <54AEB384.2040005@collabora.co.uk>
+ <54B36C5A.6050109@samsung.com> <54B3F1B7.7090307@collabora.co.uk>
+ <54B4ABFB.5000501@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20150112152207.GC6343@8bytes.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, vgoyal@redhat.com, dyoung@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com, "Li, ZhenHua" <zhen-hual@hp.com>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <54B4ABFB.5000501@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Javier Martinez Canillas <javier.martinez@collabora.co.uk>, Javier Martinez Canillas <javier@dowhile0.org>, Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: linaro-mm-sig@lists.linaro.org, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh@kernel.org>, Gustavo Padovan <gustavo.padovan@collabora.co.uk>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, Tomasz Figa <tomasz.figa@gmail.com>, Inki Dae <inki.dae@samsung.com>, Sjoerd Simons <sjoerd.simons@collabora.co.uk>, Kukjin Kim <kgene.kim@samsung.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Olof Johansson <olof@lixom.net>, Kyungmin Park <kyungmin.park@samsung.com>, Thierry Reding <treding@nvidia.com>, Cho KyongHo <pullip.cho@samsung.com>, David Wodhouse <dwmw2@infradead.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/12/2015 11:22 PM, Joerg Roedel wrote:
-> On Mon, Jan 12, 2015 at 03:06:20PM +0800, Li, Zhen-Hua wrote:
->> +
->> +#ifdef CONFIG_CRASH_DUMP
->> +
->> +/*
->> + * Fix Crashdump failure caused by leftover DMA through a hardware IOMMU
->> + *
->> + * Fixes the crashdump kernel to deal with an active iommu and legacy
->> + * DMA from the (old) panicked kernel in a manner similar to how legacy
->> + * DMA is handled when no hardware iommu was in use by the old kernel --
->> + * allow the legacy DMA to continue into its current buffers.
->> + *
->> + * In the crashdump kernel, this code:
->> + * 1. skips disabling the IOMMU's translating of IO Virtual Addresses (IOVA).
->> + * 2. Do not re-enable IOMMU's translating.
->> + * 3. In kdump kernel, use the old root entry table.
->> + * 4. Leaves the current translations in-place so that legacy DMA will
->> + *    continue to use its current buffers.
->> + * 5. Allocates to the device drivers in the crashdump kernel
->> + *    portions of the iova address ranges that are different
->> + *    from the iova address ranges that were being used by the old kernel
->> + *    at the time of the panic.
->> + *
->> + */
->
-> It looks like you are still copying the io-page-tables from the old
-> kernel into the kdump kernel, is that right? With the approach that was
-> proposed you only need to copy over the context entries 1-1. They are
-> still pointing to the page-tables in the old kernels memory (which is
-> just fine).
->
-> The root-entry of the old kernel is also re-used, and when the kdump
-> kernel starts to use a device, its context entry is updated to point to
-> a newly allocated page-table.
->
+On 01/13/2015 02:24 PM, Joonyoung Shim wrote:
+> Hi,
+> 
+> On 01/13/2015 01:09 AM, Javier Martinez Canillas wrote:
+>> Hello Joonyoung,
+>>
+>> On 01/12/2015 07:40 AM, Joonyoung Shim wrote:
+>>>> And also making changes to the clocks in the clk-exynos5420 driver. Can
+>>>> you please explain the rationale for those changes? I'm asking because
+>>>> without your clock changes (only adding the DISP1 pd and making the
+>>>> devices as consumers), I've HDMI output too but video is even worse. This
+>>>> [0] is the minimal change I have on top of 3.19-rc3 to have some output.
+>>>>
+>>>
+>>> I just refer below patches,
+>>> http://comments.gmane.org/gmane.linux.kernel.samsung-soc/34576
+>>>
+>>> But i'm not sure whether DISP1 power domain is same case with MFC power domain.
+>>>
+>>
+>> Thanks a lot for sharing those patches, now your changes are much more
+>> clear to me.
+>>
+>>>>
+>>>> So there seems to be two issues here, one is the mixer and hdmi modules not
+>>>> being attached to the DISP1 power domain and another one is the clocks setup
+>>>> not being correct to have proper HDMI video output.
+>>>>  
+>>>
+>>> Hmm, i can see normal hdmi output still from latest upstream
+>>> kernel(3.19-rc4) with my kernel changes and u-boot changes(DISP1 power
+>>> domain disable) of prior mail on odroid xu3 board.
+>>>
+>>
+>> I thought you said on another email that after commit 2ed127697eb1 which
+>> landed on 3.19-rc1 you had bad HDMI output?
+>>
+>> In your changes, it was missing the SW_ACLK_400_DISP1 and USER_ACLK_400_DISP1
+>> clock mux outputs that goes to internal buses in the DISP1. Adding IDs for
+>> these in the exynos5420 clock driver and to the parent and input clock paris
+>> list in the DISP1 power domain gives me a good HDMI output on 3.19-rc2.
+>>
+>> Also, the SW_ACLK_300_DISP1 and USER_ACLK_300_DISP1 are needed for the FIMD
+>> parent and input clock respectively. Adding those to the clocks list of the
+>> DISP1 power domain gives me working display + HDMI on my Exynos5800 Peach Pi.
+>>
+>> These are the changes I have now [0]. Please let me know what you think.
+>>
+> 
+> Good, it's working with your patch without u-boot changes and reverting
+> of commit 2ed127697eb.
+> 
 
-Current status:
-1. Use old root entry table,
-2. Copy old context entry tables.
-3. Copy old page tables.
-4. Allocate new page table when device driver is loading.
+But i also get stripe hdmi output if hdmi/mixer drivers aren't defered
+probed, because DISP1 power domain isn't disabled on booting by defered
+probe so is always on.
 
-I remember the progress we discussed was this. Checking the old mails,
-founding we did not clearly discuss about the old page tables, only
-agrred with allocating new page tables when device driver is loading.
-
-To me, both of these two options are fine, copying old page tables, or
-re-use the old ones. My debugging shows both of them works fine.
-
-If we use the old page tables, the patchset will use less code.
-Functions copy_page_addr, copy_page_table are no longer needed, and
-functions copy_context_entry and copy_context_entry_table will be
-reduced to several lines. The patchset will be much simpler.
-
-Zhenhua
+Thanks.
