@@ -1,39 +1,71 @@
-From: Yingjoe Chen <yingjoe.chen@mediatek.com>
-Subject: Re: [RFC PATCH 0/5] arm64: IOMMU-backed DMA mapping
-Date: Tue, 13 Jan 2015 16:02:08 +0800
-Message-ID: <1421136128.27675.58.camel@mtksdaap41>
-References: <cover.1421086706.git.robin.murphy@arm.com>
+From: "Li, ZhenHua" <zhen-hual@hp.com>
+Subject: Re: [PATCH v8 02/10] iommu/vt-d: Items required for kdump
+Date: Tue, 13 Jan 2015 16:12:29 +0800
+Message-ID: <54B4D36D.8030204@hp.com>
+References: <1421046388-27925-1-git-send-email-zhen-hual@hp.com> <1421046388-27925-3-git-send-email-zhen-hual@hp.com> <20150112152207.GC6343@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <cover.1421086706.git.robin.murphy@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: linux@arm.linux.org.uk, sakari.ailus@linux.intel.com, arnd@arndb.de, stefano.stabellini@eu.citrix.com, catalin.marinas@arm.com, joro@8bytes.org, thunder.leizhen@huawei.com, will.deacon@arm.com, iommu@lists.linux-foundation.org, yong.wu@mediatek.com, suravee.suthikulpanit@amd.com, ritesh.harjani@gmail.com, lauraa@codeaurora.org, eddie.huang@mediatek.com, dwmw2@infradead.org, linux-arm-kernel@lists.infradead.org, yh.chen@mediatek.com
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20150112152207.GC6343@8bytes.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, vgoyal@redhat.com, dyoung@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com, "Li, ZhenHua" <zhen-hual@hp.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2015-01-12 at 20:48 +0000, Robin Murphy wrote:
-> Hi all,
-> 
-> Whilst it's a long way off perfect, this has reached the point of being
-> functional and stable enough to be useful, so here it is. The core
-> consists of the meat of the arch/arm implementation modified to remove
-> the assumption of PAGE_SIZE pages and ported over to the Intel IOVA
-> allocator instead of the bitmap-based one. For that, this series depends
-> on my "Genericise the IOVA allocator" series posted earlier[1].
+On 01/12/2015 11:22 PM, Joerg Roedel wrote:
+> On Mon, Jan 12, 2015 at 03:06:20PM +0800, Li, Zhen-Hua wrote:
+>> +
+>> +#ifdef CONFIG_CRASH_DUMP
+>> +
+>> +/*
+>> + * Fix Crashdump failure caused by leftover DMA through a hardware IOMMU
+>> + *
+>> + * Fixes the crashdump kernel to deal with an active iommu and legacy
+>> + * DMA from the (old) panicked kernel in a manner similar to how legacy
+>> + * DMA is handled when no hardware iommu was in use by the old kernel --
+>> + * allow the legacy DMA to continue into its current buffers.
+>> + *
+>> + * In the crashdump kernel, this code:
+>> + * 1. skips disabling the IOMMU's translating of IO Virtual Addresses (IOVA).
+>> + * 2. Do not re-enable IOMMU's translating.
+>> + * 3. In kdump kernel, use the old root entry table.
+>> + * 4. Leaves the current translations in-place so that legacy DMA will
+>> + *    continue to use its current buffers.
+>> + * 5. Allocates to the device drivers in the crashdump kernel
+>> + *    portions of the iova address ranges that are different
+>> + *    from the iova address ranges that were being used by the old kernel
+>> + *    at the time of the panic.
+>> + *
+>> + */
+>
+> It looks like you are still copying the io-page-tables from the old
+> kernel into the kdump kernel, is that right? With the approach that was
+> proposed you only need to copy over the context entries 1-1. They are
+> still pointing to the page-tables in the old kernels memory (which is
+> just fine).
+>
+> The root-entry of the old kernel is also re-used, and when the kdump
+> kernel starts to use a device, its context entry is updated to point to
+> a newly allocated page-table.
+>
 
-Hi Robin,
+Current status:
+1. Use old root entry table,
+2. Copy old context entry tables.
+3. Copy old page tables.
+4. Allocate new page table when device driver is loading.
 
-We'd to give it a try. Do you have a public git tree contains both
-series?
+I remember the progress we discussed was this. Checking the old mails,
+founding we did not clearly discuss about the old page tables, only
+agrred with allocating new page tables when device driver is loading.
 
-Joe.C
+To me, both of these two options are fine, copying old page tables, or
+re-use the old ones. My debugging shows both of them works fine.
+
+If we use the old page tables, the patchset will use less code.
+Functions copy_page_addr, copy_page_table are no longer needed, and
+functions copy_context_entry and copy_context_entry_table will be
+reduced to several lines. The patchset will be much simpler.
+
+Zhenhua
