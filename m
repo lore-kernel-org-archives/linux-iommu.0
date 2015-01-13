@@ -1,52 +1,79 @@
-From: Baoquan He <bhe@redhat.com>
-Subject: Re: [PATCH v8 02/10] iommu/vt-d: Items required for kdump
-Date: Tue, 13 Jan 2015 19:41:08 +0800
-Message-ID: <20150113114108.GB24543@dhcp-16-105.nay.redhat.com>
-References: <1421046388-27925-1-git-send-email-zhen-hual@hp.com>
- <1421046388-27925-3-git-send-email-zhen-hual@hp.com>
- <20150112152207.GC6343@8bytes.org>
- <20150112152919.GA16162@redhat.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH 0/5] arm64: IOMMU-backed DMA mapping
+Date: Tue, 13 Jan 2015 11:45:25 +0000
+Message-ID: <54B50555.6090803@arm.com>
+References: <cover.1421086706.git.robin.murphy@arm.com>
+	<alpine.DEB.2.02.1501131102540.3058@kaball.uk.xensource.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150112152919.GA16162@redhat.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Vivek Goyal <vgoyal@redhat.com>
-Cc: Joerg Roedel <joro@8bytes.org>, "Li, Zhen-Hua" <zhen-hual@hp.com>, dwmw2@infradead.org, indou.takao@jp.fujitsu.com, dyoung@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <alpine.DEB.2.02.1501131102540.3058-7Z66fg9igcxYtxbxJUhB2Dgeux46jI+i@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Stefano Stabellini <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>
+Cc: "linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org" <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/12/15 at 10:29am, Vivek Goyal wrote:
-> On Mon, Jan 12, 2015 at 04:22:08PM +0100, Joerg Roedel wrote:
-> > It looks like you are still copying the io-page-tables from the old
-> > kernel into the kdump kernel, is that right? With the approach that was
-> > proposed you only need to copy over the context entries 1-1. They are
-> > still pointing to the page-tables in the old kernels memory (which is
-> > just fine).
-> 
-> Kdump has the notion of backup region. Where certain parts of old kernels
-> memory can be moved to a different location (first 640K on x86 as of now)
-> and new kernel can make use of this memory now.
-
-Hi Vivek,
-
-About backup region I am a bit confusing. Just say x86, we usually copy
-it to a backup region. And this first 640K will be used as a usable
-memory region in 2nd kernel since its content has been copied to backup
-region. And that backup region is taken from crashkernel reserved
-memory and not passed to 2nd kernel as usable memory region.
-
-Here did you mean the old page table could fall into first 640K memory
-region or that reserved backup region?  Since as I understand the backup
-region is taken from crashkernel memory which is not used by 1st kernel
-process.
-
-Thanks
-Baoquan
-
-> 
-> So we will have to just make sure that no parts of this old page table
-> fall into backup region.
-> 
-> Thanks
-> Vivek
+T24gMTMvMDEvMTUgMTE6MDgsIFN0ZWZhbm8gU3RhYmVsbGluaSB3cm90ZToKPiBPbiBNb24sIDEy
+IEphbiAyMDE1LCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4+IEhpIGFsbCwKPj4KPj4gV2hpbHN0IGl0
+J3MgYSBsb25nIHdheSBvZmYgcGVyZmVjdCwgdGhpcyBoYXMgcmVhY2hlZCB0aGUgcG9pbnQgb2Yg
+YmVpbmcKPj4gZnVuY3Rpb25hbCBhbmQgc3RhYmxlIGVub3VnaCB0byBiZSB1c2VmdWwsIHNvIGhl
+cmUgaXQgaXMuIFRoZSBjb3JlCj4+IGNvbnNpc3RzIG9mIHRoZSBtZWF0IG9mIHRoZSBhcmNoL2Fy
+bSBpbXBsZW1lbnRhdGlvbiBtb2RpZmllZCB0byByZW1vdmUKPj4gdGhlIGFzc3VtcHRpb24gb2Yg
+UEFHRV9TSVpFIHBhZ2VzIGFuZCBwb3J0ZWQgb3ZlciB0byB0aGUgSW50ZWwgSU9WQQo+PiBhbGxv
+Y2F0b3IgaW5zdGVhZCBvZiB0aGUgYml0bWFwLWJhc2VkIG9uZS4gRm9yIHRoYXQsIHRoaXMgc2Vy
+aWVzIGRlcGVuZHMKPj4gb24gbXkgIkdlbmVyaWNpc2UgdGhlIElPVkEgYWxsb2NhdG9yIiBzZXJp
+ZXMgcG9zdGVkIGVhcmxpZXJbMV0uCj4+Cj4+IFRoZXJlIGFyZSBwbGVudHkgb2Ygb2J2aW91cyB0
+aGluZ3Mgc3RpbGwgdG8gZG8sIGluY2x1ZGluZzoKPj4KPj4gICAqIERvbWFpbiBhbmQgZ3JvdXAg
+aGFuZGxpbmcgaXMgYWxsIHdyb25nLCBidXQgdGhhdCdzIGEgYmlnZ2VyIHByb2JsZW0uCj4+ICAg
+ICBGb3IgdGhlIG1vbWVudCBpdCBkb2VzIG1vcmUgb3IgbGVzcyB0aGUgc2FtZSB0aGluZyBhcyB0
+aGUgYXJjaC9hcm0KPj4gICAgIGNvZGUsIHdoaWNoIGF0IGxlYXN0IHdvcmtzIGZvciB0aGUgb25l
+LUlPTU1VLXBlci1kZXZpY2Ugc2l0dWF0aW9uLgo+PiAgICogSU9NTVUgZG9tYWlucyBhbmQgSU9W
+QSBkb21haW5zIHByb2JhYmx5IHdhbnQgdG8gYmUgYmV0dGVyIGludGVncmF0ZWQKPj4gICAgIHdp
+dGggZGV2aWNlcyBhbmQgZWFjaCBvdGhlciwgcmF0aGVyIHRoYW4gaGF2aW5nIGEgcHJvbGlmZXJh
+dGlvbiBvZgo+PiAgICAgYXJjaC1zcGVjaWZpYyBzdHJ1Y3RzLgo+PiAgICogVGhlIHRlbXBvcmFy
+eSBtYXBfc2cgaW1wbGVtZW50YXRpb24gLSBJIGhhdmUgYSAncHJvcGVyJyBpb21tdV9tYXBfc2cK
+Pj4gICAgIGJhc2VkIG9uZSBpbiBwcm9ncmVzcywgYnV0IHNpbmNlIHRoZSBzaW1wbGUgb25lIHdv
+cmtzIGl0J3Mgbm90IGJlZW4KPj4gICAgIGFzIGhpZ2ggYSBwcmlvcml0eS4KPj4gICAqIFBvcnQg
+YXJjaC9hcm0gb3ZlciB0byBpdC4gSSdkIGd1ZXNzIGl0IG1pZ2h0IGJlIHByZWZlcmFibGUgdG8g
+bWVyZ2UKPj4gICAgIHRoaXMgdGhyb3VnaCBhcm02NCBmaXJzdCwgdGhvdWdoLCByYXRoZXIgdGhh
+biBvdmVyY29tcGxpY2F0ZSBtYXR0ZXJzLgo+PiAgICogVGhlcmUgbWF5IHdlbGwgYmUgc2NvcGUg
+Zm9yIHN0cmVhbWxpbmluZyBhbmQgdGlkeWluZyB1cCB0aGUgY29waWVkCj4+ICAgICBwYXJ0cyAt
+IEluIGdlbmVyYWwgSSd2ZSBzaW1wbHkgYXZvaWRlZCB0b3VjaGluZyBhbnl0aGluZyBJIGRvbid0
+Cj4+ICAgICBmdWxseSB1bmRlcnN0YW5kLgo+PiAgICogSW4gdGhlIHNhbWUgdmVpbiwgSSdtIHN1
+cmUgbG90cyBvZiBpdCBpcyBmYWlybHkgQVJNLXNwZWNpZmljLCBzbyB3aWxsCj4+ICAgICBuZWVk
+IGxvbmdlci10ZXJtIHdvcmsgdG8gYmVjb21lIHRydWx5IGdlbmVyaWMuCj4+Cj4+IFsxXTpodHRw
+Oi8vdGhyZWFkLmdtYW5lLm9yZy9nbWFuZS5saW51eC5rZXJuZWwuaW9tbXUvODIwOAo+Cj4gSSB0
+cmllZCB0byBnaXQtYW0gYW5kIGJ1aWxkIGEgdjMuMTktcmM0IGtlcm5lbCB3aXRoIHRoaXMgc2Vy
+aWVzIChjb25maWcKPiBmaWxlIGF0dGFjaGVkKSwgYnV0IEkgZ2V0Ogo+Cj4gSW4gZmlsZSBpbmNs
+dWRlZCBmcm9tIGluY2x1ZGUvbGludXgvZG1hLW1hcHBpbmcuaDo4MjowLAo+ICAgICAgICAgICAg
+ICAgICAgIGZyb20gYXJjaC9hcm02NC9rZXJuZWwvYXNtLW9mZnNldHMuYzoyMzoKPiAuL2FyY2gv
+YXJtNjQvaW5jbHVkZS9hc20vZG1hLW1hcHBpbmcuaDogSW4gZnVuY3Rpb24g4oCYcGh5c190b19k
+bWHigJk6Cj4gLi9hcmNoL2FybTY0L2luY2x1ZGUvYXNtL2RtYS1tYXBwaW5nLmg6Njk6MjogZXJy
+b3I6IOKAmHN0cnVjdCBkZXZfYXJjaGRhdGHigJkgaGFzIG5vIG1lbWJlciBuYW1lZCDigJhtYXBw
+aW5n4oCZCj4gLi9hcmNoL2FybTY0L2luY2x1ZGUvYXNtL2RtYS1tYXBwaW5nLmg6IEluIGZ1bmN0
+aW9uIOKAmGRtYV90b19waHlz4oCZOgo+IC4vYXJjaC9hcm02NC9pbmNsdWRlL2FzbS9kbWEtbWFw
+cGluZy5oOjgxOjE5OiBlcnJvcjog4oCYc3RydWN0IGRldl9hcmNoZGF0YeKAmSBoYXMgbm8gbWVt
+YmVyIG5hbWVkIOKAmG1hcHBpbmfigJkKPiBtYWtlWzFdOiAqKiogW2FyY2gvYXJtNjQva2VybmVs
+L2FzbS1vZmZzZXRzLnNdIEVycm9yIDEKPgoKT29wcywgbG9va3MgbGlrZSBJJ3ZlIGJlZW4gcmVs
+eWluZyBvbiBoYXZpbmcgYW4gYWN0dWFsIElPTU1VIGRyaXZlciAKc2VsZWN0IENPTkZJR19JT01N
+VV9BUEkgLSBlbmFibGluZyB0aGUgQVJNIFNNTVUgZHJpdmVyIGFzIHdlbGwgYXMgIklPTU1VIApo
+YXJkd2FyZSBzdXBwb3J0IiBtYWtlcyBldmVyeXRoaW5nIGJ1aWxkLCBldmVuIGlmIGl0IGRvZXNu
+J3QgYWN0dWFsbHkgCndvcmsgd2l0aCB0aGUgbmV3IGZyYW1ld29yayAodGhlIHBhdGNoZXMgZm9y
+IHRoYXQgZXhpc3QsIGJ1dCBhcmUgCmN1cnJlbnRseSBhIGJpZyB1Z2x5IG1lc3MpLgoKVGhlIG5l
+c3RlZCAjaW5jbHVkZSBndWFyZCBpbiBhcmNoL2FybTY0L2luY2x1ZGUvYXNtL2RldmljZS5oIGlu
+IHBhdGNoIDQgCmlzIHRvIGJsYW1lIC0gb24gcmVmbGVjdGlvbiwgSSBndWVzcyB0aGF0IGlzbid0
+IGEgZ3JlYXQgaWRlYSByZWdhcmRsZXNzIApvZiB0aGUgbG9naWNhbCBkZXBlbmRlbmN5IChJIGRv
+bid0IHRoaW5rIG15IEtjb25maWctZnUgaXMgc3Ryb25nIGVub3VnaCAKdG8gZ3VhcmFudGVlIHRo
+YXQgZGVwZW5kZW5jeSBpcyBlbmZvcmNlZCkuCgpSb2Jpbi4KCl9fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0
+cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcv
+bWFpbG1hbi9saXN0aW5mby9pb21tdQ==
