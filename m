@@ -1,14 +1,16 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH 0/5] arm64: IOMMU-backed DMA mapping
-Date: Tue, 13 Jan 2015 11:45:25 +0000
-Message-ID: <54B50555.6090803@arm.com>
-References: <cover.1421086706.git.robin.murphy@arm.com>
-	<alpine.DEB.2.02.1501131102540.3058@kaball.uk.xensource.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v8 02/10] iommu/vt-d: Items required for kdump
+Date: Tue, 13 Jan 2015 12:52:53 +0100
+Message-ID: <20150113115252.GH6343@8bytes.org>
+References: <1421046388-27925-1-git-send-email-zhen-hual@hp.com>
+	<1421046388-27925-3-git-send-email-zhen-hual@hp.com>
+	<20150112152207.GC6343@8bytes.org> <54B4D36D.8030204@hp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <alpine.DEB.2.02.1501131102540.3058-7Z66fg9igcxYtxbxJUhB2Dgeux46jI+i@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <54B4D36D.8030204-VXdhtT5mjnY@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,62 +20,36 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stefano Stabellini <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>
-Cc: "linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org" <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Cc: bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMTMvMDEvMTUgMTE6MDgsIFN0ZWZhbm8gU3RhYmVsbGluaSB3cm90ZToKPiBPbiBNb24sIDEy
-IEphbiAyMDE1LCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4+IEhpIGFsbCwKPj4KPj4gV2hpbHN0IGl0
-J3MgYSBsb25nIHdheSBvZmYgcGVyZmVjdCwgdGhpcyBoYXMgcmVhY2hlZCB0aGUgcG9pbnQgb2Yg
-YmVpbmcKPj4gZnVuY3Rpb25hbCBhbmQgc3RhYmxlIGVub3VnaCB0byBiZSB1c2VmdWwsIHNvIGhl
-cmUgaXQgaXMuIFRoZSBjb3JlCj4+IGNvbnNpc3RzIG9mIHRoZSBtZWF0IG9mIHRoZSBhcmNoL2Fy
-bSBpbXBsZW1lbnRhdGlvbiBtb2RpZmllZCB0byByZW1vdmUKPj4gdGhlIGFzc3VtcHRpb24gb2Yg
-UEFHRV9TSVpFIHBhZ2VzIGFuZCBwb3J0ZWQgb3ZlciB0byB0aGUgSW50ZWwgSU9WQQo+PiBhbGxv
-Y2F0b3IgaW5zdGVhZCBvZiB0aGUgYml0bWFwLWJhc2VkIG9uZS4gRm9yIHRoYXQsIHRoaXMgc2Vy
-aWVzIGRlcGVuZHMKPj4gb24gbXkgIkdlbmVyaWNpc2UgdGhlIElPVkEgYWxsb2NhdG9yIiBzZXJp
-ZXMgcG9zdGVkIGVhcmxpZXJbMV0uCj4+Cj4+IFRoZXJlIGFyZSBwbGVudHkgb2Ygb2J2aW91cyB0
-aGluZ3Mgc3RpbGwgdG8gZG8sIGluY2x1ZGluZzoKPj4KPj4gICAqIERvbWFpbiBhbmQgZ3JvdXAg
-aGFuZGxpbmcgaXMgYWxsIHdyb25nLCBidXQgdGhhdCdzIGEgYmlnZ2VyIHByb2JsZW0uCj4+ICAg
-ICBGb3IgdGhlIG1vbWVudCBpdCBkb2VzIG1vcmUgb3IgbGVzcyB0aGUgc2FtZSB0aGluZyBhcyB0
-aGUgYXJjaC9hcm0KPj4gICAgIGNvZGUsIHdoaWNoIGF0IGxlYXN0IHdvcmtzIGZvciB0aGUgb25l
-LUlPTU1VLXBlci1kZXZpY2Ugc2l0dWF0aW9uLgo+PiAgICogSU9NTVUgZG9tYWlucyBhbmQgSU9W
-QSBkb21haW5zIHByb2JhYmx5IHdhbnQgdG8gYmUgYmV0dGVyIGludGVncmF0ZWQKPj4gICAgIHdp
-dGggZGV2aWNlcyBhbmQgZWFjaCBvdGhlciwgcmF0aGVyIHRoYW4gaGF2aW5nIGEgcHJvbGlmZXJh
-dGlvbiBvZgo+PiAgICAgYXJjaC1zcGVjaWZpYyBzdHJ1Y3RzLgo+PiAgICogVGhlIHRlbXBvcmFy
-eSBtYXBfc2cgaW1wbGVtZW50YXRpb24gLSBJIGhhdmUgYSAncHJvcGVyJyBpb21tdV9tYXBfc2cK
-Pj4gICAgIGJhc2VkIG9uZSBpbiBwcm9ncmVzcywgYnV0IHNpbmNlIHRoZSBzaW1wbGUgb25lIHdv
-cmtzIGl0J3Mgbm90IGJlZW4KPj4gICAgIGFzIGhpZ2ggYSBwcmlvcml0eS4KPj4gICAqIFBvcnQg
-YXJjaC9hcm0gb3ZlciB0byBpdC4gSSdkIGd1ZXNzIGl0IG1pZ2h0IGJlIHByZWZlcmFibGUgdG8g
-bWVyZ2UKPj4gICAgIHRoaXMgdGhyb3VnaCBhcm02NCBmaXJzdCwgdGhvdWdoLCByYXRoZXIgdGhh
-biBvdmVyY29tcGxpY2F0ZSBtYXR0ZXJzLgo+PiAgICogVGhlcmUgbWF5IHdlbGwgYmUgc2NvcGUg
-Zm9yIHN0cmVhbWxpbmluZyBhbmQgdGlkeWluZyB1cCB0aGUgY29waWVkCj4+ICAgICBwYXJ0cyAt
-IEluIGdlbmVyYWwgSSd2ZSBzaW1wbHkgYXZvaWRlZCB0b3VjaGluZyBhbnl0aGluZyBJIGRvbid0
-Cj4+ICAgICBmdWxseSB1bmRlcnN0YW5kLgo+PiAgICogSW4gdGhlIHNhbWUgdmVpbiwgSSdtIHN1
-cmUgbG90cyBvZiBpdCBpcyBmYWlybHkgQVJNLXNwZWNpZmljLCBzbyB3aWxsCj4+ICAgICBuZWVk
-IGxvbmdlci10ZXJtIHdvcmsgdG8gYmVjb21lIHRydWx5IGdlbmVyaWMuCj4+Cj4+IFsxXTpodHRw
-Oi8vdGhyZWFkLmdtYW5lLm9yZy9nbWFuZS5saW51eC5rZXJuZWwuaW9tbXUvODIwOAo+Cj4gSSB0
-cmllZCB0byBnaXQtYW0gYW5kIGJ1aWxkIGEgdjMuMTktcmM0IGtlcm5lbCB3aXRoIHRoaXMgc2Vy
-aWVzIChjb25maWcKPiBmaWxlIGF0dGFjaGVkKSwgYnV0IEkgZ2V0Ogo+Cj4gSW4gZmlsZSBpbmNs
-dWRlZCBmcm9tIGluY2x1ZGUvbGludXgvZG1hLW1hcHBpbmcuaDo4MjowLAo+ICAgICAgICAgICAg
-ICAgICAgIGZyb20gYXJjaC9hcm02NC9rZXJuZWwvYXNtLW9mZnNldHMuYzoyMzoKPiAuL2FyY2gv
-YXJtNjQvaW5jbHVkZS9hc20vZG1hLW1hcHBpbmcuaDogSW4gZnVuY3Rpb24g4oCYcGh5c190b19k
-bWHigJk6Cj4gLi9hcmNoL2FybTY0L2luY2x1ZGUvYXNtL2RtYS1tYXBwaW5nLmg6Njk6MjogZXJy
-b3I6IOKAmHN0cnVjdCBkZXZfYXJjaGRhdGHigJkgaGFzIG5vIG1lbWJlciBuYW1lZCDigJhtYXBw
-aW5n4oCZCj4gLi9hcmNoL2FybTY0L2luY2x1ZGUvYXNtL2RtYS1tYXBwaW5nLmg6IEluIGZ1bmN0
-aW9uIOKAmGRtYV90b19waHlz4oCZOgo+IC4vYXJjaC9hcm02NC9pbmNsdWRlL2FzbS9kbWEtbWFw
-cGluZy5oOjgxOjE5OiBlcnJvcjog4oCYc3RydWN0IGRldl9hcmNoZGF0YeKAmSBoYXMgbm8gbWVt
-YmVyIG5hbWVkIOKAmG1hcHBpbmfigJkKPiBtYWtlWzFdOiAqKiogW2FyY2gvYXJtNjQva2VybmVs
-L2FzbS1vZmZzZXRzLnNdIEVycm9yIDEKPgoKT29wcywgbG9va3MgbGlrZSBJJ3ZlIGJlZW4gcmVs
-eWluZyBvbiBoYXZpbmcgYW4gYWN0dWFsIElPTU1VIGRyaXZlciAKc2VsZWN0IENPTkZJR19JT01N
-VV9BUEkgLSBlbmFibGluZyB0aGUgQVJNIFNNTVUgZHJpdmVyIGFzIHdlbGwgYXMgIklPTU1VIApo
-YXJkd2FyZSBzdXBwb3J0IiBtYWtlcyBldmVyeXRoaW5nIGJ1aWxkLCBldmVuIGlmIGl0IGRvZXNu
-J3QgYWN0dWFsbHkgCndvcmsgd2l0aCB0aGUgbmV3IGZyYW1ld29yayAodGhlIHBhdGNoZXMgZm9y
-IHRoYXQgZXhpc3QsIGJ1dCBhcmUgCmN1cnJlbnRseSBhIGJpZyB1Z2x5IG1lc3MpLgoKVGhlIG5l
-c3RlZCAjaW5jbHVkZSBndWFyZCBpbiBhcmNoL2FybTY0L2luY2x1ZGUvYXNtL2RldmljZS5oIGlu
-IHBhdGNoIDQgCmlzIHRvIGJsYW1lIC0gb24gcmVmbGVjdGlvbiwgSSBndWVzcyB0aGF0IGlzbid0
-IGEgZ3JlYXQgaWRlYSByZWdhcmRsZXNzIApvZiB0aGUgbG9naWNhbCBkZXBlbmRlbmN5IChJIGRv
-bid0IHRoaW5rIG15IEtjb25maWctZnUgaXMgc3Ryb25nIGVub3VnaCAKdG8gZ3VhcmFudGVlIHRo
-YXQgZGVwZW5kZW5jeSBpcyBlbmZvcmNlZCkuCgpSb2Jpbi4KCl9fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0
-cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcv
-bWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Tue, Jan 13, 2015 at 04:12:29PM +0800, Li, ZhenHua wrote:
+
+> Current status:
+> 1. Use old root entry table,
+> 2. Copy old context entry tables.
+> 3. Copy old page tables.
+> 4. Allocate new page table when device driver is loading.
+> 
+> I remember the progress we discussed was this. Checking the old mails,
+> founding we did not clearly discuss about the old page tables, only
+> agrred with allocating new page tables when device driver is loading.
+> 
+> To me, both of these two options are fine, copying old page tables, or
+> re-use the old ones. My debugging shows both of them works fine.
+> 
+> If we use the old page tables, the patchset will use less code.
+> Functions copy_page_addr, copy_page_table are no longer needed, and
+> functions copy_context_entry and copy_context_entry_table will be
+> reduced to several lines. The patchset will be much simpler.
+
+Yes, please do it this way. There is no point in copying the old
+page-tables. We never make changes to them, so they can stay where they
+are.
+
+The problem with the backup region still exists, but it is not
+specific to IOMMUs. This problem and should be addressed seperatly.
+
+
+	Joerg
