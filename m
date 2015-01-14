@@ -1,22 +1,20 @@
-From: Javier Martinez Canillas <javier.martinez-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>
-Subject: Re: [PATCH v3 00/19] Exynos SYSMMU (IOMMU) integration with DT and
-	DMA-mapping subsystem
-Date: Wed, 14 Jan 2015 01:24:01 +0100
-Message-ID: <54B5B721.4070309@collabora.co.uk>
-References: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com>
-	<1417514366.21830.22.camel@collabora.co.uk>
-	<54818768.3080303@samsung.com>
-	<CABxcv=n=eNqbyBbOk1Wb87tCnnLZAJQurmCdeTOSqMZMbNaSHw@mail.gmail.com>
-	<54AC93E0.8010705@samsung.com>
-	<54ACFD69.1020500@collabora.co.uk> <54AD0293.70909@samsung.com>
-	<54AEB384.2040005@collabora.co.uk> <54B36C5A.6050109@samsung.com>
-	<54B3F1B7.7090307@collabora.co.uk> <54B4ABFB.5000501@samsung.com>
-	<54B5B5F6.3030607@collabora.co.uk>
+From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [v3 13/26] KVM: Define a new interface kvm_find_dest_vcpu() for
+	VT-d PI
+Date: Wed, 14 Jan 2015 01:27:21 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F00234E4CD@SHSMSX104.ccr.corp.intel.com>
+References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
+	<1418397300-10870-14-git-send-email-feng.wu@intel.com>
+	<20150109145435.GA22469@potion.brq.redhat.com>
+	<54AFEC00.80507@redhat.com>
+	<E959C4978C3B6342920538CF579893F002341102@SHSMSX104.ccr.corp.intel.com>
+	<20150113161716.GA12941@potion.brq.redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <54B5B5F6.3030607-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>
+In-Reply-To: <20150113161716.GA12941-KfRq7+sF/6zkZJWtSm8s3NvLeJWuRmrY@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,37 +24,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sjoerd Simons <sjoerd.simons-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Gustavo Padovan <gustavo.padovan-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: =?utf-8?B?UmFkaW0gS3I/bcOhPw==?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/14/2015 01:19 AM, Javier Martinez Canillas wrote:
-> 
-> I dug further on this issue and found that the cause is that the exynos_mixer
-> driver needs some clocks (CLK_HDMI and CLK_SCLK_HDMI) grabbed by exynos_hdmi
-> to be kept enabled after hdmi_poweroff (drivers/gpu/drm/exynos/exynos_hdmi.c).
-> 
-> Otherwise, any access to mixer device registers leads to an imprecise external
-> abort error. The following change [0] to the Exynos DRM HDMI driver makes the
-> issue to not happen and I can successfully execute:
-> 
-> # echo 1 > /sys/devices/platform/exynos-drm/graphics/fb0/blank
-> # echo 0 > /sys/devices/platform/exynos-drm/graphics/fb0/blank
-> 
-> Only not disabling the hdmi clock [1]: is enough but doing so makes sometimes the
-> DISP1 power domain disabling fails. It doesn't seem to have side effect though
-> since I also see the signal in the HDMI display to go standby and then on again.
-> 
-> # echo 0 > /sys/devices/platform/exynos-drm/graphics/fb0/blank
-> # echo 1 > /sys/devices/platform/exynos-drm/graphics/fb0/blank
-> [   63.089080] Power domain disp1-power-domain disable failed
-> # echo 0 > /sys/devices/platform/exynos-drm/graphics/fb0/blank
-> #
-> 
-> That error message when both clocks are not disabled on hdmi_poweroff() though.
-> 
-
-This should be: "That error message is not shown when both clocks are disabled".
-
-Best regards,
-Javier
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUmFkaW0gS3I/bcOhPyBb
+bWFpbHRvOnJrcmNtYXJAcmVkaGF0LmNvbV0NCj4gU2VudDogV2VkbmVzZGF5LCBKYW51YXJ5IDE0
+LCAyMDE1IDEyOjE3IEFNDQo+IFRvOiBXdSwgRmVuZw0KPiBDYzogUGFvbG8gQm9uemluaTsgdGds
+eEBsaW51dHJvbml4LmRlOyBtaW5nb0ByZWRoYXQuY29tOyBocGFAenl0b3IuY29tOw0KPiB4ODZA
+a2VybmVsLm9yZzsgZ2xlYkBrZXJuZWwub3JnOyBkd213MkBpbmZyYWRlYWQub3JnOyBqb3JvQDhi
+eXRlcy5vcmc7DQo+IGFsZXgud2lsbGlhbXNvbkByZWRoYXQuY29tOyBqaWFuZy5saXVAbGludXgu
+aW50ZWwuY29tOyBlcmljLmF1Z2VyQGxpbmFyby5vcmc7DQo+IGxpbnV4LWtlcm5lbEB2Z2VyLmtl
+cm5lbC5vcmc7IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOw0KPiBrdm1Admdlci5r
+ZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBbdjMgMTMvMjZdIEtWTTogRGVmaW5lIGEgbmV3IGlu
+dGVyZmFjZSBrdm1fZmluZF9kZXN0X3ZjcHUoKSBmb3INCj4gVlQtZCBQSQ0KPiANCj4gMjAxNS0w
+MS0xMyAwMDoyNyswMDAwLCBXdSwgRmVuZzoNCj4gPiA+IE9uIDA5LzAxLzIwMTUgMTU6NTQsIFJh
+ZGltIEtyxI1tw6HFmSB3cm90ZToNCj4gPiA+ID4gVGhlcmUgYXJlIHR3byBwb2ludHMgcmVsZXZh
+bnQgdG8gdGhpcyBwYXRjaCBpbiBuZXcgS1ZNJ3MgaW1wbGVtZW50YXRpb24sDQo+ID4gPiA+ICgi
+S1ZNOiB4ODY6IGFtZW5kIEFQSUMgbG93ZXN0IHByaW9yaXR5IGFyYml0cmF0aW9uIiwNCj4gPiA+
+ID4gIGh0dHBzOi8vbGttbC5vcmcvbGttbC8yMDE1LzEvOS8zNjIpDQo+ID4gPiA+DQo+ID4gPiA+
+IDEpIGxvd2VzdCBwcmlvcml0eSBkZXBlbmRzIG9uIFRQUg0KPiA+ID4gPiAyKSB0aGVyZSBpcyBu
+byBuZWVkIGZvciBiYWxhbmNpbmcNCj4gPiA+ID4NCj4gPiA+ID4gKDEpIGhhcyB0byBiZSBjb25z
+aWRlcmVkIHdpdGggUEkgYXMgd2VsbC4NCj4gPiA+DQo+ID4gPiBUaGUgY2hpcHNldCBkb2Vzbid0
+IHN1cHBvcnQgaXQuIDooDQo+ID4gPg0KPiA+ID4gPiBJIGtlcHQgKDIpIHRvIGF2b2lkIHdoaW5p
+bmcgZnJvbSBwZW9wbGUgYnVpbGRpbmcgb24gdGhhdCBiZWhhdmlvdXIsIGJ1dA0KPiA+ID4gPiBs
+b3dlc3QgcHJpb3JpdHkgYmFja2VkIGJ5IFBJIGNvdWxkIGJlIHRyYW5zcGFyZW50IHdpdGhvdXQg
+aXQuDQo+ID4gPiA+DQo+ID4gPiA+IFBhdGNoIGJlbG93IHJlbW92ZXMgdGhlIGJhbGFuY2luZywg
+YnV0IEkgYW0gbm90IHN1cmUgdGhpcyBpcyBhIHByaWNlIHdlDQo+ID4gPiA+IGFsbG93ZWQgb3Vy
+c2VsdmVzIHRvIHBheSAuLi4gd2hhdCBhcmUgeW91ciBvcGluaW9ucz8NCj4gPiA+DQo+ID4gPiBJ
+IHdvdWxkbid0IG1pbmQsIGJ1dCBpdCByZXF1aXJlcyBhIGxvdCBvZiBiZW5jaG1hcmtpbmcuDQo+
+ID4NCj4gPiBJbiBmYWN0LCB0aGUgcmVhbCBoYXJkd2FyZSBtYXkgZG8gbG93ZXN0IHByaW9yaXR5
+IGluIHJvdW5kIHJvYmluIHdheSwNCj4gDQo+IFllcywgYnV0IHdlIHdvbid0IGVtdWxhdGUgcm91
+bmQgcm9iaW4gd2l0aCBQSSBhbmQgSSB0aGluayBpdCBpcyB3cm9uZyB0bw0KPiBoYXZlIGJhY2tl
+bmRzIHdpdGggc2lnbmlmaWNhbnRseSBkaWZmZXJlbnQgZ3Vlc3QtdmlzaWJsZSBiZWhhdmlvcnMu
+DQo+IA0KPiA+DQo+IHRoZSBuZXcNCj4gPiBoYXJkd2FyZSBldmVuIGRvZXNuJ3QgY29uc2lkZXIg
+dGhlIFRQUiBmb3IgbG93ZXN0IHByaW9yaXR5IGludGVycnVwdHMNCj4gZGVsaXZlcnkuDQo+IA0K
+PiBBIGJvbGQgbW92ZSAuLi4gd2hhdCBoYXJkd2FyZSB3YXMgdGhlIGZpcnN0IHRvIGRvIHNvPw0K
+DQpJIHRoaW5rIGl0IHdhcyBzdGFydGluZyB3aXRoIE5laGFsZW0uDQoNCj4gDQo+ID4gQXMgZGlz
+Y3Vzc2VkIHdpdGggUGFvbG8gYmVmb3JlLCBJIHdpbGwgc3VibWl0IGEgcGF0Y2ggdG8gc3VwcG9y
+dCBsb3dlc3QNCj4gcHJpb3JpdHkgZm9yIFBJDQo+ID4gYWZ0ZXIgdGhpcyBzZXJpZXMgaXMgbWVy
+Z2VkLg0KPiANCj4gU3VyZSwgSSBzZWUgb25seSB0d28gZ29vZCBzb2x1dGlvbnMgdGhvdWdoDQo+
+ICAxKSBkb24ndCBvcHRpbWl6ZSBsb3dlc3QgcHJpb3JpdHkgd2l0aCBQSQ0KPiAgMikgZG9uJ3Qg
+YmFsYW5jZSBsb3dlc3QgcHJpb3JpdHkNCg0KQXMgZGlzY3Vzc2VkIHdpdGggUGFvbG8gYmVmb3Jl
+LCBhcyB0aGUgZmlyc3Qgc3RhZ2UsIHdlIG9ubHkgc3VwcG9ydCBzaW5nbGUtQ1BVDQpsb3dlc3Qg
+cHJpb3JpdHkgZm9yIFBJLCBzaW5jZSB0aGlzIGlzIGEgbmV3IGhhcmR3YXJlIGZlYXR1cmUgZW5h
+YmxpbmcsIFBhb2xvIHRyZW5kcw0KdG8gZG8gc2ltcGxlIHRoaW5ncyBpbiB0aGUgYmVnaW5uaW5n
+LiBUaGVuIHdlIHdpbGwgc3VwcG9ydCBmdWxsIGxvd2VzdCBwcmlvcml0eSBmb3INCml0LCBzdWNo
+IGFzLCB1c2luZyB2ZWN0b3IgaGFzaGluZyAodGhpcyBpcyBvbmUgbWV0aG9kIG9mIHdoYXQgaGFy
+ZHdhcmUgZG8gZm9yDQpsb3dlc3QgcHJpb3JpdHkgdG9kYXkpLCBJIG5lZWQgdG8gZ2V0IHNvbWUg
+ZGV0YWlsZWQgaW5mb3JtYXRpb24gYWJvdXQgdGhpcyBmcm9tDQpoYXJkd2FyZSBndXlzIGJlZm9y
+ZSBlbmFibGluZyBpdC4NCg0KVGhhbmtzLA0KRmVuZw0KX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxp
+bnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWls
+bWFuL2xpc3RpbmZvL2lvbW11
