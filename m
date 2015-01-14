@@ -1,65 +1,99 @@
-From: Radim =?utf-8?B?S3I/bcOhPw==?= <rkrcmar@redhat.com>
-Subject: Re: [v3 13/26] KVM: Define a new interface kvm_find_dest_vcpu() for
- VT-d PI
-Date: Tue, 13 Jan 2015 17:17:16 +0100
-Message-ID: <20150113161716.GA12941@potion.brq.redhat.com>
-References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
- <1418397300-10870-14-git-send-email-feng.wu@intel.com>
- <20150109145435.GA22469@potion.brq.redhat.com>
- <54AFEC00.80507@redhat.com>
- <E959C4978C3B6342920538CF579893F002341102@SHSMSX104.ccr.corp.intel.com>
+From: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
+Subject: Re: [PATCH v3 00/19] Exynos SYSMMU (IOMMU) integration with DT and
+ DMA-mapping subsystem
+Date: Wed, 14 Jan 2015 01:19:02 +0100
+Message-ID: <54B5B5F6.3030607@collabora.co.uk>
+References: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com> <1417514366.21830.22.camel@collabora.co.uk> <54818768.3080303@samsung.com> <CABxcv=n=eNqbyBbOk1Wb87tCnnLZAJQurmCdeTOSqMZMbNaSHw@mail.gmail.com> <54AC93E0.8010705@samsung.com> <54ACFD69.1020500@collabora.co.uk> <54AD0293.70909@samsung.com> <54AEB384.2040005@collabora.co.uk> <54B36C5A.6050109@samsung.com> <54B3F1B7.7090307@collabora.co.uk> <54B4ABFB.5000501@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <E959C4978C3B6342920538CF579893F002341102@SHSMSX104.ccr.corp.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Wu, Feng" <feng.wu@intel.com>
-Cc: Paolo Bonzini <pbonzini@redhat.com>, "tglx@linutronix.de" <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>, "hpa@zytor.com" <hpa@zytor.com>, "x86@kernel.org" <x86@kernel.org>, "gleb@kernel.org" <gleb@kernel.org>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "eric.auger@linaro.org" <eric.auger@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <54B4ABFB.5000501@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Joonyoung Shim <jy0922.shim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>, Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: linaro-mm-sig@lists.linaro.org, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh@kernel.org>, Gustavo Padovan <gustavo.padovan@collabora.co.uk>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, Tomasz Figa <tomasz.figa@gmail.com>, Inki Dae <inki.dae@samsung.com>, Sjoerd Simons <sjoerd.simons@collabora.co.uk>, Kukjin Kim <kgene.kim@samsung.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Olof Johansson <olof@lixom.net>, Kyungmin Park <kyungmin.park@samsung.com>, Thierry Reding <treding@nvidia.com>, Cho KyongHo <pullip.cho@samsung.com>, David Wodhouse <dwmw2@infradead.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-2015-01-13 00:27+0000, Wu, Feng:
-> > On 09/01/2015 15:54, Radim Kr=C4=8Dm=C3=A1=C5=99 wrote:
-> > > There are two points relevant to this patch in new KVM's implemen=
-tation,
-> > > ("KVM: x86: amend APIC lowest priority arbitration",
-> > >  https://lkml.org/lkml/2015/1/9/362)
-> > >
-> > > 1) lowest priority depends on TPR
-> > > 2) there is no need for balancing
-> > >
-> > > (1) has to be considered with PI as well.
-> >=20
-> > The chipset doesn't support it. :(
-> >=20
-> > > I kept (2) to avoid whining from people building on that behaviou=
-r, but
-> > > lowest priority backed by PI could be transparent without it.
-> > >
-> > > Patch below removes the balancing, but I am not sure this is a pr=
-ice we
-> > > allowed ourselves to pay ... what are your opinions?
-> >=20
-> > I wouldn't mind, but it requires a lot of benchmarking.
->=20
-> In fact, the real hardware may do lowest priority in round robin way,
+Hello Joonyoung,
 
-Yes, but we won't emulate round robin with PI and I think it is wrong t=
-o
-have backends with significantly different guest-visible behaviors.
+On 01/13/2015 06:24 AM, Joonyoung Shim wrote:
+>> 
+>> Yes, I was not able to trigger that by running modetest but by turning off
+>> my HDMI monitor and then turning it on again. When the monitor is turned
+>> on then I see a "Power domain power-domain disable failed" and the imprecise
+>> external abort error.
+>> 
+>> I had to disable CONFIG_DRM_EXYNOS_DP in order to trigger though and that
+>> is why I was not able to reproduce it before.
+>> 
+>> I think though that this is a separate issue of the HDMI not working since
+>> power domains should be able to have many consumers devices and I see that
+>> other power domains are used that way.
+>> 
+> 
+> OK, we need more investigation.
+>
 
->                                                                      =
- the new
-> hardware even doesn't consider the TPR for lowest priority interrupts=
- delivery.
+I dug further on this issue and found that the cause is that the exynos_mixer
+driver needs some clocks (CLK_HDMI and CLK_SCLK_HDMI) grabbed by exynos_hdmi
+to be kept enabled after hdmi_poweroff (drivers/gpu/drm/exynos/exynos_hdmi.c).
 
-A bold move ... what hardware was the first to do so?
+Otherwise, any access to mixer device registers leads to an imprecise external
+abort error. The following change [0] to the Exynos DRM HDMI driver makes the
+issue to not happen and I can successfully execute:
 
-> As discussed with Paolo before, I will submit a patch to support lowe=
-st priority for PI
-> after this series is merged.
+# echo 1 > /sys/devices/platform/exynos-drm/graphics/fb0/blank
+# echo 0 > /sys/devices/platform/exynos-drm/graphics/fb0/blank
 
-Sure, I see only two good solutions though
- 1) don't optimize lowest priority with PI
- 2) don't balance lowest priority
+Only not disabling the hdmi clock [1]: is enough but doing so makes sometimes the
+DISP1 power domain disabling fails. It doesn't seem to have side effect though
+since I also see the signal in the HDMI display to go standby and then on again.
+
+# echo 0 > /sys/devices/platform/exynos-drm/graphics/fb0/blank
+# echo 1 > /sys/devices/platform/exynos-drm/graphics/fb0/blank
+[   63.089080] Power domain disp1-power-domain disable failed
+# echo 0 > /sys/devices/platform/exynos-drm/graphics/fb0/blank
+#
+
+That error message when both clocks are not disabled on hdmi_poweroff() though.
+
+I tried different things like set parent of mixer clock to hdmi clock instead
+of aclk200_disp1 or make the Exynos DRM mixer driver to grab the hdmi clock
+from  DT and prepare_enable from mixer_poweron() but in all cases the same
+imprecise external abort error was triggered by mixer_poweron() trying to access
+the mixer registers.
+
+Any ideas?
+
+Thanks a lot and best regards,
+Javier
+
+[0]:
+diff --git a/drivers/gpu/drm/exynos/exynos_hdmi.c b/drivers/gpu/drm/exynos/exynos_hdmi.c
+index 5765a161abdd..0887911cfdd5 100644
+--- a/drivers/gpu/drm/exynos/exynos_hdmi.c
++++ b/drivers/gpu/drm/exynos/exynos_hdmi.c
+@@ -2084,8 +2084,8 @@ static void hdmi_poweroff(struct exynos_drm_display *display)
+ 
+        cancel_delayed_work(&hdata->hotplug_work);
+ 
+-       clk_disable_unprepare(res->sclk_hdmi);
+-       clk_disable_unprepare(res->hdmi);
+ 
+        /* reset pmu hdmiphy control bit to disable hdmiphy */
+        regmap_update_bits(hdata->pmureg, PMU_HDMI_PHY_CONTROL,
+
+
+[1]:
+diff --git a/drivers/gpu/drm/exynos/exynos_hdmi.c b/drivers/gpu/drm/exynos/exynos_hdmi.c
+index 5765a161abdd..628bff96d543 100644
+--- a/drivers/gpu/drm/exynos/exynos_hdmi.c
++++ b/drivers/gpu/drm/exynos/exynos_hdmi.c
+@@ -2085,7 +2085,7 @@ static void hdmi_poweroff(struct exynos_drm_display *display)
+        cancel_delayed_work(&hdata->hotplug_work);
+ 
+        clk_disable_unprepare(res->sclk_hdmi);
+-       clk_disable_unprepare(res->hdmi);
+ 
+        /* reset pmu hdmiphy control bit to disable hdmiphy */
+        regmap_update_bits(hdata->pmureg, PMU_HDMI_PHY_CONTROL,
