@@ -1,20 +1,15 @@
-From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [v3 13/26] KVM: Define a new interface kvm_find_dest_vcpu() for
-	VT-d PI
-Date: Wed, 14 Jan 2015 01:27:21 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F00234E4CD@SHSMSX104.ccr.corp.intel.com>
-References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
-	<1418397300-10870-14-git-send-email-feng.wu@intel.com>
-	<20150109145435.GA22469@potion.brq.redhat.com>
-	<54AFEC00.80507@redhat.com>
-	<E959C4978C3B6342920538CF579893F002341102@SHSMSX104.ccr.corp.intel.com>
-	<20150113161716.GA12941@potion.brq.redhat.com>
+From: Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v6 8/8] arm: dma-mapping: plumb our iommu mapping ops
+	into arch_setup_dma_ops
+Date: Wed, 14 Jan 2015 18:00:24 +0900
+Message-ID: <54B63028.3090701@nvidia.com>
+References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
+	<1417453034-21379-9-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150113161716.GA12941-KfRq7+sF/6zkZJWtSm8s3NvLeJWuRmrY@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1417453034-21379-9-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,56 +19,67 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: =?utf-8?B?UmFkaW0gS3I/bcOhPw==?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUmFkaW0gS3I/bcOhPyBb
-bWFpbHRvOnJrcmNtYXJAcmVkaGF0LmNvbV0NCj4gU2VudDogV2VkbmVzZGF5LCBKYW51YXJ5IDE0
-LCAyMDE1IDEyOjE3IEFNDQo+IFRvOiBXdSwgRmVuZw0KPiBDYzogUGFvbG8gQm9uemluaTsgdGds
-eEBsaW51dHJvbml4LmRlOyBtaW5nb0ByZWRoYXQuY29tOyBocGFAenl0b3IuY29tOw0KPiB4ODZA
-a2VybmVsLm9yZzsgZ2xlYkBrZXJuZWwub3JnOyBkd213MkBpbmZyYWRlYWQub3JnOyBqb3JvQDhi
-eXRlcy5vcmc7DQo+IGFsZXgud2lsbGlhbXNvbkByZWRoYXQuY29tOyBqaWFuZy5saXVAbGludXgu
-aW50ZWwuY29tOyBlcmljLmF1Z2VyQGxpbmFyby5vcmc7DQo+IGxpbnV4LWtlcm5lbEB2Z2VyLmtl
-cm5lbC5vcmc7IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOw0KPiBrdm1Admdlci5r
-ZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBbdjMgMTMvMjZdIEtWTTogRGVmaW5lIGEgbmV3IGlu
-dGVyZmFjZSBrdm1fZmluZF9kZXN0X3ZjcHUoKSBmb3INCj4gVlQtZCBQSQ0KPiANCj4gMjAxNS0w
-MS0xMyAwMDoyNyswMDAwLCBXdSwgRmVuZzoNCj4gPiA+IE9uIDA5LzAxLzIwMTUgMTU6NTQsIFJh
-ZGltIEtyxI1tw6HFmSB3cm90ZToNCj4gPiA+ID4gVGhlcmUgYXJlIHR3byBwb2ludHMgcmVsZXZh
-bnQgdG8gdGhpcyBwYXRjaCBpbiBuZXcgS1ZNJ3MgaW1wbGVtZW50YXRpb24sDQo+ID4gPiA+ICgi
-S1ZNOiB4ODY6IGFtZW5kIEFQSUMgbG93ZXN0IHByaW9yaXR5IGFyYml0cmF0aW9uIiwNCj4gPiA+
-ID4gIGh0dHBzOi8vbGttbC5vcmcvbGttbC8yMDE1LzEvOS8zNjIpDQo+ID4gPiA+DQo+ID4gPiA+
-IDEpIGxvd2VzdCBwcmlvcml0eSBkZXBlbmRzIG9uIFRQUg0KPiA+ID4gPiAyKSB0aGVyZSBpcyBu
-byBuZWVkIGZvciBiYWxhbmNpbmcNCj4gPiA+ID4NCj4gPiA+ID4gKDEpIGhhcyB0byBiZSBjb25z
-aWRlcmVkIHdpdGggUEkgYXMgd2VsbC4NCj4gPiA+DQo+ID4gPiBUaGUgY2hpcHNldCBkb2Vzbid0
-IHN1cHBvcnQgaXQuIDooDQo+ID4gPg0KPiA+ID4gPiBJIGtlcHQgKDIpIHRvIGF2b2lkIHdoaW5p
-bmcgZnJvbSBwZW9wbGUgYnVpbGRpbmcgb24gdGhhdCBiZWhhdmlvdXIsIGJ1dA0KPiA+ID4gPiBs
-b3dlc3QgcHJpb3JpdHkgYmFja2VkIGJ5IFBJIGNvdWxkIGJlIHRyYW5zcGFyZW50IHdpdGhvdXQg
-aXQuDQo+ID4gPiA+DQo+ID4gPiA+IFBhdGNoIGJlbG93IHJlbW92ZXMgdGhlIGJhbGFuY2luZywg
-YnV0IEkgYW0gbm90IHN1cmUgdGhpcyBpcyBhIHByaWNlIHdlDQo+ID4gPiA+IGFsbG93ZWQgb3Vy
-c2VsdmVzIHRvIHBheSAuLi4gd2hhdCBhcmUgeW91ciBvcGluaW9ucz8NCj4gPiA+DQo+ID4gPiBJ
-IHdvdWxkbid0IG1pbmQsIGJ1dCBpdCByZXF1aXJlcyBhIGxvdCBvZiBiZW5jaG1hcmtpbmcuDQo+
-ID4NCj4gPiBJbiBmYWN0LCB0aGUgcmVhbCBoYXJkd2FyZSBtYXkgZG8gbG93ZXN0IHByaW9yaXR5
-IGluIHJvdW5kIHJvYmluIHdheSwNCj4gDQo+IFllcywgYnV0IHdlIHdvbid0IGVtdWxhdGUgcm91
-bmQgcm9iaW4gd2l0aCBQSSBhbmQgSSB0aGluayBpdCBpcyB3cm9uZyB0bw0KPiBoYXZlIGJhY2tl
-bmRzIHdpdGggc2lnbmlmaWNhbnRseSBkaWZmZXJlbnQgZ3Vlc3QtdmlzaWJsZSBiZWhhdmlvcnMu
-DQo+IA0KPiA+DQo+IHRoZSBuZXcNCj4gPiBoYXJkd2FyZSBldmVuIGRvZXNuJ3QgY29uc2lkZXIg
-dGhlIFRQUiBmb3IgbG93ZXN0IHByaW9yaXR5IGludGVycnVwdHMNCj4gZGVsaXZlcnkuDQo+IA0K
-PiBBIGJvbGQgbW92ZSAuLi4gd2hhdCBoYXJkd2FyZSB3YXMgdGhlIGZpcnN0IHRvIGRvIHNvPw0K
-DQpJIHRoaW5rIGl0IHdhcyBzdGFydGluZyB3aXRoIE5laGFsZW0uDQoNCj4gDQo+ID4gQXMgZGlz
-Y3Vzc2VkIHdpdGggUGFvbG8gYmVmb3JlLCBJIHdpbGwgc3VibWl0IGEgcGF0Y2ggdG8gc3VwcG9y
-dCBsb3dlc3QNCj4gcHJpb3JpdHkgZm9yIFBJDQo+ID4gYWZ0ZXIgdGhpcyBzZXJpZXMgaXMgbWVy
-Z2VkLg0KPiANCj4gU3VyZSwgSSBzZWUgb25seSB0d28gZ29vZCBzb2x1dGlvbnMgdGhvdWdoDQo+
-ICAxKSBkb24ndCBvcHRpbWl6ZSBsb3dlc3QgcHJpb3JpdHkgd2l0aCBQSQ0KPiAgMikgZG9uJ3Qg
-YmFsYW5jZSBsb3dlc3QgcHJpb3JpdHkNCg0KQXMgZGlzY3Vzc2VkIHdpdGggUGFvbG8gYmVmb3Jl
-LCBhcyB0aGUgZmlyc3Qgc3RhZ2UsIHdlIG9ubHkgc3VwcG9ydCBzaW5nbGUtQ1BVDQpsb3dlc3Qg
-cHJpb3JpdHkgZm9yIFBJLCBzaW5jZSB0aGlzIGlzIGEgbmV3IGhhcmR3YXJlIGZlYXR1cmUgZW5h
-YmxpbmcsIFBhb2xvIHRyZW5kcw0KdG8gZG8gc2ltcGxlIHRoaW5ncyBpbiB0aGUgYmVnaW5uaW5n
-LiBUaGVuIHdlIHdpbGwgc3VwcG9ydCBmdWxsIGxvd2VzdCBwcmlvcml0eSBmb3INCml0LCBzdWNo
-IGFzLCB1c2luZyB2ZWN0b3IgaGFzaGluZyAodGhpcyBpcyBvbmUgbWV0aG9kIG9mIHdoYXQgaGFy
-ZHdhcmUgZG8gZm9yDQpsb3dlc3QgcHJpb3JpdHkgdG9kYXkpLCBJIG5lZWQgdG8gZ2V0IHNvbWUg
-ZGV0YWlsZWQgaW5mb3JtYXRpb24gYWJvdXQgdGhpcyBmcm9tDQpoYXJkd2FyZSBndXlzIGJlZm9y
-ZSBlbmFibGluZyBpdC4NCg0KVGhhbmtzLA0KRmVuZw0KX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxp
-bnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWls
-bWFuL2xpc3RpbmZvL2lvbW11
+On 12/02/2014 01:57 AM, Will Deacon wrote:
+> This patch plumbs the existing ARM IOMMU DMA infrastructure (which isn't
+> actually called outside of a few drivers) into arch_setup_dma_ops, so
+> that we can use IOMMUs for DMA transfers in a more generic fashion.
+>
+> Since this significantly complicates the arch_setup_dma_ops function,
+> it is moved out of line into dma-mapping.c. If CONFIG_ARM_DMA_USE_IOMMU
+> is not set, the iommu parameter is ignored and the normal ops are used
+> instead.
+
+A series for IOMMU support with Tegra/Nouveau ceased to work after this 
+patch. The Tegra IOMMU is not registered by the time the DT is parsed, 
+and thus all devices end up without the proper DMA ops set up because 
+the phandle to the IOMMU cannot be resolved. Subsequently calling 
+arm_iommu_create_mapping() and arm_iommu_attach_device() from the driver 
+(as I used to do until 3.18) does not help since the call to 
+set_dma_ops() has been moved out of arm_iommu_attach_device(). Therefore 
+there seems to be no way for a device to gets its correct DMA ops unless 
+the IOMMU is ready by the time the DT is parsed.
+
+Also potentially affected by this are the Rockchip DRM and OMAP3 ISP 
+drivers, which follow the same pattern.
+
+This raises the following questions:
+
+1) Why are arm_iommu_create_mapping() and arm_iommu_attach_device() 
+still public since they cannot set the DMA ops and thus seem to be 
+useless outside of arch_setup_dma_ops()?
+
+2) Say you want to use the IOMMU API in your driver, and have an iommu 
+property in your device's DT node. If by chance your IOMMU is registered 
+early, you will already have a mapping automatically created even before 
+your probe function is called. Can this be avoided? Is it even safe?
+
+The issue is workarounded (at least for me) with the following patch:
+
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -1961,6 +1961,7 @@ int arm_iommu_attach_device(struct device *dev,
+
+         kref_get(&mapping->kref);
+         dev->archdata.mapping = mapping;
++       set_dma_ops(dev, &iommu_ops);
+
+         pr_debug("Attached IOMMU controller to %s device.\n", 
+dev_name(dev));
+         return 0;
+
+This allows arm_iommu_create_mapping() and arm_iommu_attach_device() to 
+set the correct DMA ops when called from the driver. But it doesn't look 
+like mergeable material and I'd like to know whether there is a better 
+way to handle this, or whether I should just use the IOMMU API directly. 
+Knowing that even this might not be safe if ARM_DMA_USE_IOMMU is enabled 
+because of point 2) above.
+
+So basically I'm afraid I might not even be able to use the IOMMU safely 
+after this. Or am I missing anything?
+
+Thanks,
+Alex.
