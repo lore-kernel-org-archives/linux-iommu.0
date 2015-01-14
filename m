@@ -1,21 +1,17 @@
-From: Radim =?utf-8?B?S3I/bcOhPw==?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [v3 13/26] KVM: Define a new interface kvm_find_dest_vcpu() for
-	VT-d PI
-Date: Wed, 14 Jan 2015 17:59:10 +0100
-Message-ID: <20150114165909.GA1283@potion.brq.redhat.com>
-References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
-	<1418397300-10870-14-git-send-email-feng.wu@intel.com>
-	<20150109145435.GA22469@potion.brq.redhat.com>
-	<54AFEC00.80507@redhat.com>
-	<E959C4978C3B6342920538CF579893F002341102@SHSMSX104.ccr.corp.intel.com>
-	<20150113161716.GA12941@potion.brq.redhat.com>
-	<E959C4978C3B6342920538CF579893F00234E4CD@SHSMSX104.ccr.corp.intel.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v6 8/8] arm: dma-mapping: plumb our iommu mapping ops
+	into arch_setup_dma_ops
+Date: Wed, 14 Jan 2015 19:17:50 +0000
+Message-ID: <20150114191749.GL4050@arm.com>
+References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
+	<54B63028.3090701@nvidia.com> <20150114104610.GC4050@arm.com>
+	<4122226.MTzV1JgdDD@phil>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <E959C4978C3B6342920538CF579893F00234E4CD-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+In-Reply-To: <4122226.MTzV1JgdDD@phil>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,53 +21,90 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+To: Heiko =?iso-8859-1?Q?St=FCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org" <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-2015-01-14 01:27+0000, Wu, Feng:
-> > the new
-> > > hardware even doesn't consider the TPR for lowest priority interrupts
-> > delivery.
-> > 
-> > A bold move ... what hardware was the first to do so?
-> 
-> I think it was starting with Nehalem.
+On Wed, Jan 14, 2015 at 01:51:36PM +0000, Heiko St=FCbner wrote:
+> Am Mittwoch, 14. Januar 2015, 10:46:10 schrieb Will Deacon:
+> > On Wed, Jan 14, 2015 at 09:00:24AM +0000, Alexandre Courbot wrote:
+> > > On 12/02/2014 01:57 AM, Will Deacon wrote:
+> > > > This patch plumbs the existing ARM IOMMU DMA infrastructure (which =
+isn't
+> > > > actually called outside of a few drivers) into arch_setup_dma_ops, =
+so
+> > > > that we can use IOMMUs for DMA transfers in a more generic fashion.
+> > > > =
 
-Thanks,  (Could be that QPI can't inform about TPR changes anymore ...)
+> > > > Since this significantly complicates the arch_setup_dma_ops functio=
+n,
+> > > > it is moved out of line into dma-mapping.c. If CONFIG_ARM_DMA_USE_I=
+OMMU
+> > > > is not set, the iommu parameter is ignored and the normal ops are u=
+sed
+> > > > instead.
+> > > =
 
-I played with Linux's TPR on Haswell and found that is has no effect.
+> > > A series for IOMMU support with Tegra/Nouveau ceased to work after th=
+is
+> > > patch.
+> > =
 
-> > > As discussed with Paolo before, I will submit a patch to support lowest
-> > priority for PI
-> > > after this series is merged.
-> > 
-> > Sure, I see only two good solutions though
-> >  1) don't optimize lowest priority with PI
-> >  2) don't balance lowest priority
-> 
-> As discussed with Paolo before, as the first stage, we only support single-CPU
-> lowest priority for PI, since this is a new hardware feature enabling, Paolo trends
-> to do simple things in the beginning.
+> > Which series? This code shouldn't even be executed unless you start usi=
+ng
+> > of_xlate and the generic bindings.
+> > =
 
-I agree, that is the best we can do without changing lowest priority.
+> > > The Tegra IOMMU is not registered by the time the DT is parsed,
+> > > and thus all devices end up without the proper DMA ops set up because
+> > > the phandle to the IOMMU cannot be resolved.
+> > =
 
-I wanted to avoid a future solution that would introduce two behaviors
-for lowest priority (round robin and something).
-Round robin (anything dynamic) can't be done with PI, hence the question
-if we can remove it.
+> > You might want to look at the patches posted for the exynos, renesas an=
+d ARM
+> > SMMUs for some hints in how to use the new API.
+> > =
 
->                                       Then we will support full lowest priority for
-> it, such as, using vector hashing (this is one method of what hardware do for
-> lowest priority today), I need to get some detailed information about this from
-> hardware guys before enabling it.
+> > > Subsequently calling arm_iommu_create_mapping() and
+> > > arm_iommu_attach_device() from the driver (as I used to do until 3.18)
+> > > does not help since the call to set_dma_ops() has been moved out of
+> > > arm_iommu_attach_device(). Therefore there seems to be no way for a d=
+evice
+> > > to gets its correct DMA ops unless the IOMMU is ready by the time the=
+ DT
+> > > is parsed.
+> > > =
 
-I wasn't able to confirm hashing, is it a recent addition?
-I'm not sure we want it then:  OS still has to take care of proper
-distribution, being predictable is better than uncertain gains, and
-we'll save code.
+> > > Also potentially affected by this are the Rockchip DRM and OMAP3 ISP
+> > > drivers, which follow the same pattern.
+> > =
 
-The same should apply to hardware though ... do you know the reasons
-behind vector hashing?
+> > I don't understand why any code currently in mainline should be affecte=
+d.
+> > Please can you elaborate on the failure case?
+> =
 
-Thank you.
+> As Alexandre suspected the new Rockchip drm code seems to be affected by
+> this. I hadn't played with the drm code before last weekend and was then
+> stumbling over different iommu related issues. As I hadn't to much contact
+> with iommus till now I didn't get very far.
+> =
+
+> But with Alexandre's bandaid patch of adding
+> 	set_dma_ops(dev, &iommu_ops);
+> to arm_iommu_attach_device both problems go away.
+> =
+
+> =
+
+> So to elaborate on the two failure cases:
+
+Aha, I see what you mean now -- the issue is that attaching to an IOMMU
+domain no longer swizzles the DMA ops. Furthermore, we also need to take
+into account the coherency of the device, which we didn't do before (and
+assumedly "worked" because all of the users happened to be non-coherent).
+
+Maybe we just need to add something like arm_iommu_swizzle_dma_ops, so
+that direct users of the arm_iommu_* API can manage things manually?
+
+Will
