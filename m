@@ -1,16 +1,18 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v10] iopoll: Introduce memory-mapped IO polling macros
-Date: Thu, 15 Jan 2015 10:25:11 +0000
-Message-ID: <20150115102511.GB23475@arm.com>
-References: <1418687243-16395-1-git-send-email-mitchelh@codeaurora.org>
-	<20141216094527.GC6580@arm.com>
-	<vnkwtwztp2rm.fsf@mitchelh-linux.qualcomm.com>
+Subject: Re: [PATCH v6 8/8] arm: dma-mapping: plumb our iommu mapping ops
+	into arch_setup_dma_ops
+Date: Thu, 15 Jan 2015 11:12:17 +0000
+Message-ID: <20150115111211.GF23475@arm.com>
+References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
+	<1417453034-21379-9-git-send-email-will.deacon@arm.com>
+	<54B63028.3090701@nvidia.com> <20150114104610.GC4050@arm.com>
+	<20150115082843.GB30799@ulmo>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <vnkwtwztp2rm.fsf-Yf+dfxj6toJBVvN7MMdr1KRtKmQZhJ7pQQ4Iyu8u01E@public.gmane.org>
+In-Reply-To: <20150115082843.GB30799@ulmo>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,77 +22,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Robert Elliott <elliott-VXdhtT5mjnY@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 14, 2015 at 07:42:53PM +0000, Mitchel Humpherys wrote:
-> On Tue, Dec 16 2014 at 01:45:27 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> > On Mon, Dec 15, 2014 at 11:47:23PM +0000, Mitchel Humpherys wrote:
-> >> From: Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> >> 
-> >> It is sometimes necessary to poll a memory-mapped register until its value
-> >> satisfies some condition. Introduce a family of convenience macros that do
-> >> this. Tight-looping, sleeping, and timing out can all be accomplished using
-> >> these macros.
-> >> 
-> >> Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> >> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> >> Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-> >> Cc: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-> >> Cc: Robert Elliott <elliott-VXdhtT5mjnY@public.gmane.org>
-> >> Signed-off-by: Matt Wagantall <mattw-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> >> Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> >> ---
-> >> v9..10:
-> >>   - Actually added the comments mentioned in v8..v9 (doh!)
-> >> 
-> >> v8..v9:
-> >>   - Added note in comments about max sleep time (Rob Elliott)
-> >> 
-> >> v7..v8:
-> >>   - sorted helper macros by size (b, w, l, q)
-> >>   - removed some of the more esoteric (or flat-out bogus) helper macros
-> >> 
-> >> This patch was originally part of a series [1] for adding support for IOMMU
-> >> address translations through an ARM SMMU hardware register.  The other
-> >> patch in the series (the one that actually uses these macros and implements
-> >> said hardware address translations) was Ack'd by the driver maintainer
-> >> there (Will Deacon) so I've pulled this patch out to avoid resending an
-> >> already Ack'd patch over and over again.
-> >> 
-> >> In short, please see [1] for previous discussion and the first user of
-> >> these macros.
-> >> 
-> >> Will also acked this patch in [2].  I didn't retain his Ack here because I
-> >> added to the macro comments.
-> >
-> > You can keep the ack, it still looks good to me and I'm not really fussed
-> > about the comments.
-> >
-> > Will
+On Thu, Jan 15, 2015 at 08:28:44AM +0000, Thierry Reding wrote:
+> On Wed, Jan 14, 2015 at 10:46:10AM +0000, Will Deacon wrote:
+> > On Wed, Jan 14, 2015 at 09:00:24AM +0000, Alexandre Courbot wrote:
+> [...]
+> > > 2) Say you want to use the IOMMU API in your driver, and have an iommu 
+> > > property in your device's DT node. If by chance your IOMMU is registered 
+> > > early, you will already have a mapping automatically created even before 
+> > > your probe function is called. Can this be avoided? Is it even safe?
+> > 
+> > Currently, I think you have to either teardown the ops manually or return
+> > an error from of_xlate. Thierry was also looking at this sort of thing,
+> > so it might be worth talking to him.
 > 
-> This hasn't gotten any further comments.  Would someone be willing to
-> take it?
+> I already explained in earlier threads why I think this is a bad idea.
+> It's completely unnatural for any driver to manually tear down something
+> that it didn't want set up in the first place. It also means that you
+> have to carefully audit any users of these IOMMU APIs to make sure that
+> they do tear down. That doesn't sound like a good incremental approach,
+> as evidenced by the breakage that Alex and Heiko have encountered.
 
-If you get an Ack from any of Arnd/Joerg/akpm then I'm happy to take it via
-the arm-smmu pull (along with the patch making use of it).
+Well, perhaps we hide that behind a get_iommu API or something. We *do*
+need this manual teardown step to support things like VFIO, so it makes
+sense to reuse it for other users too imo.
 
-Joerg, would you be ok with that?
+> The solution for me has been to completely side-step the issue and not
+> register the IOMMU with the new mechanism at all. That is, there's no
+> .of_xlate() implementation, which means that the ARM DMA API glue won't
+> try to be smart and use the IOMMU in ways it's not meant to be used.
+> This has several advantages, such as that I can also use the regular
+> driver model for suspend/resume of the IOMMU, and I get to enjoy the
+> benefits of devres in the IOMMU driver. Probe ordering is still a tiny
+> issue, but we can easily solve that using explicit initcall ordering
+> (which really isn't any worse than IOMMU_OF_DECLARE()).
+
+That's a pity. I'd much rather extend what we currently have to satisfy
+your use-case. Ho-hum.
 
 Will
-
-> Joerg, maybe you could take this through the IOMMU tree since the first
-> user is an IOMMU driver?  Currently we can't move [1] forward because of
-> this dependency...
-> 
-> [1] http://thread.gmane.org/gmane.linux.kernel.iommu/7837
-> 
-> 
-> -Mitch
-> 
-> -- 
-> Qualcomm Innovation Center, Inc.
-> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-> a Linux Foundation Collaborative Project
-> 
