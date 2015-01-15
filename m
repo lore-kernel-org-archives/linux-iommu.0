@@ -1,65 +1,51 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: [PATCH 3/3] vfio/type1: Add conditional rescheduling
-Date: Thu, 15 Jan 2015 10:35:26 -0700
-Message-ID: <20150115173526.29162.63925.stgit@gimli.home>
-References: <20150115171023.29162.90105.stgit@gimli.home>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH 0/5] arm64: IOMMU-backed DMA mapping
+Date: Thu, 15 Jan 2015 18:35:03 +0000
+Message-ID: <54B80857.7060407@arm.com>
+References: <cover.1421086706.git.robin.murphy@arm.com>
+	<1421136128.27675.58.camel@mtksdaap41>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <20150115171023.29162.90105.stgit@gimli.home>
-Sender: kvm-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, kvm@vger.kernel.org
-Cc: alex.williamson@redhat.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1421136128.27675.58.camel@mtksdaap41>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: "linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org" <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org" <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-IOMMU operations can be expensive and it's not very difficult for a
-user to give us a lot of work to do for a map or unmap operation.
-Killing a large VM will vfio assigned devices can result in soft
-lockups and IOMMU tracing shows that we can easily spend 80% of our
-time with need-resched set.  A sprinkling of conf_resched() calls
-after map and unmap calls has a very tiny affect on performance
-while resulting in traces with <1% of calls overflowing into needs-
-resched.
+On 13/01/15 08:02, Yingjoe Chen wrote:
+> On Mon, 2015-01-12 at 20:48 +0000, Robin Murphy wrote:
+>> Hi all,
+>>
+>> Whilst it's a long way off perfect, this has reached the point of being
+>> functional and stable enough to be useful, so here it is. The core
+>> consists of the meat of the arch/arm implementation modified to remove
+>> the assumption of PAGE_SIZE pages and ported over to the Intel IOVA
+>> allocator instead of the bitmap-based one. For that, this series depends
+>> on my "Genericise the IOVA allocator" series posted earlier[1].
+>
+> Hi Robin,
+>
+> We'd to give it a try. Do you have a public git tree contains both
+> series?
+>
+> Joe.C
 
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
----
+Now that the server seems to be properly accessible again, I've made a 
+branch with both series available here:
 
- drivers/vfio/vfio_iommu_type1.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+   git://linux-arm.org/linux-rm iommu/dma
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 35c9008..57d8c37 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -351,8 +351,10 @@ static void vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma)
- 	domain = d = list_first_entry(&iommu->domain_list,
- 				      struct vfio_domain, next);
- 
--	list_for_each_entry_continue(d, &iommu->domain_list, next)
-+	list_for_each_entry_continue(d, &iommu->domain_list, next) {
- 		iommu_unmap(d->domain, dma->iova, dma->size);
-+		cond_resched();
-+	}
- 
- 	while (iova < end) {
- 		size_t unmapped, len;
-@@ -384,6 +386,8 @@ static void vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma)
- 					     unmapped >> PAGE_SHIFT,
- 					     dma->prot, false);
- 		iova += unmapped;
-+
-+		cond_resched();
- 	}
- 
- 	vfio_lock_acct(-unlocked);
-@@ -528,6 +532,8 @@ static int vfio_iommu_map(struct vfio_iommu *iommu, dma_addr_t iova,
- 			    map_try_harder(d, iova, pfn, npage, prot))
- 				goto unwind;
- 		}
-+
-+		cond_resched();
- 	}
- 
- 	return 0;
+Note that in the current state it also depends on having the ARM SMMU 
+driver selected in the config, due to an oversight on my part :(
 
+Robin.
