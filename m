@@ -1,18 +1,15 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v8 06/10] iommu/vt-d: datatypes and functions used for
-	kdump
-Date: Thu, 15 Jan 2015 15:01:37 +0800
-Message-ID: <20150115070137.GB2461@dhcp-16-105.nay.redhat.com>
-References: <1421046388-27925-1-git-send-email-zhen-hual@hp.com>
-	<1421046388-27925-7-git-send-email-zhen-hual@hp.com>
-	<20150115032858.GA2461@dhcp-16-105.nay.redhat.com>
-	<54B753EF.30609@hp.com>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v6 8/8] arm: dma-mapping: plumb our iommu mapping ops
+	into arch_setup_dma_ops
+Date: Thu, 15 Jan 2015 09:28:44 +0100
+Message-ID: <20150115082843.GB30799@ulmo>
+References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
+	<1417453034-21379-9-git-send-email-will.deacon@arm.com>
+	<54B63028.3090701@nvidia.com> <20150114104610.GC4050@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============0777784068354626429=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <54B753EF.30609-VXdhtT5mjnY@public.gmane.org>
+In-Reply-To: <20150114104610.GC4050-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,140 +19,109 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/15/15 at 01:45pm, Li, ZhenHua wrote:
-> Hi Baoquan,
-> Thank you very much for your review. But according to the latest
-> discussion, the page tables will not be copied from old kernel. We keep
-> using the old page tables before driver is loaded. So there are many
-> changes in next version;
 
-Oh, yes. So please ignore this comment.
+--===============0777784068354626429==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="1LKvkjL3sHcu1TtY"
+Content-Disposition: inline
 
-> 
-> See my comments.
-> 
-> On 01/15/2015 11:28 AM, Baoquan He wrote:
-> >On 01/12/15 at 03:06pm, Li, Zhen-Hua wrote:
-> >>+/*
-> >>+ * Interface to the "copy translation tables" set of functions
-> >>+ * from mainline code.
-> >>+ */
-> >>+static int intel_iommu_load_translation_tables(struct dmar_drhd_unit *drhd,
-> >>+		int g_num_of_iommus)
-> >
-> >The argument g_num_of_iommus is the same as the global variable, it's better
-> >to rename it as num_of_iommus. And even it can be removed since you can
-> >just use the global variable g_num_of_iommus in this function.
-> >
-> >Argument drhd can be intel_iommu because no other member variable in
-> >drhd is needed.
-> 
-> This function is no longer used. So forget the parameters.
-> 
-> >
-> >>+{
-> >>+	struct intel_iommu *iommu;	/* Virt(iommu hardware registers) */
-> >>+	unsigned long long q;		/* quadword scratch */
-> >>+	int ret = 0;			/* Integer return code */
-> >>+	int i = 0;			/* Loop index */
-> >>+	unsigned long flags;
-> >>+
-> >>+	/* Structure so copy_page_addr() can accumulate things
-> >>+	 * over multiple calls and returns
-> >>+	 */
-> >>+	struct copy_page_addr_parms ppa_parms = copy_page_addr_parms_init;
-> >>+	struct copy_page_addr_parms *ppap = &ppa_parms;
-> >>+
-> >>+
-> >>+	iommu = drhd->iommu;
-> >>+	q = dmar_readq(iommu->reg + DMAR_RTADDR_REG);
-> >>+	if (!q)
-> >>+		return -1;
-> >>+
-> >>+	/* If (list needs initializing) do it here */
-> >
-> >This initializing should not be here, because it's not only for this
-> >drhd. It should be done in init_dmars().
-> >
-> Yes you are right. Though the variable domain_values_list will not be
-> used in next version, I think I need to check if there are any other
-> similar problems.
-> 
-> >>+	if (!domain_values_list) {
-> >>+		domain_values_list =
-> >>+			 kcalloc(g_num_of_iommus, sizeof(struct list_head),
-> >>+					GFP_KERNEL);
-> >>+
-> >>+		if (!domain_values_list) {
-> >>+			pr_err("Allocation failed for domain_values_list array\n");
-> >>+			return -ENOMEM;
-> >>+		}
-> >>+		for (i = 0; i < g_num_of_iommus; i++)
-> >>+			INIT_LIST_HEAD(&domain_values_list[i]);
-> >>+	}
-> >>+
-> >>+	spin_lock_irqsave(&iommu->lock, flags);
-> >>+
-> >>+	/* Load the root-entry table from the old kernel
-> >>+	 * foreach context_entry_table in root_entry
-> >>+	 *    foreach context_entry in context_entry_table
-> >>+	 *       foreach level-1 page_table_entry in context_entry
-> >>+	 *          foreach level-2 page_table_entry in level 1 page_table_entry
-> >>+	 *             Above pattern continues up to 6 levels of page tables
-> >>+	 *                Sanity-check the entry
-> >>+	 *                Process the bus, devfn, page_address, page_size
-> >>+	 */
-> >>+	if (!iommu->root_entry) {
-> >>+		iommu->root_entry =
-> >>+			(struct root_entry *)alloc_pgtable_page(iommu->node);
-> >>+		if (!iommu->root_entry) {
-> >>+			spin_unlock_irqrestore(&iommu->lock, flags);
-> >>+			return -ENOMEM;
-> >>+		}
-> >>+	}
-> >>+
-> >>+	iommu->root_entry_old_phys = q & VTD_PAGE_MASK;
-> >>+	if (!iommu->root_entry_old_phys) {
-> >>+		pr_err("Could not read old root entry address.");
-> >>+		return -1;
-> >>+	}
-> >>+
-> >>+	iommu->root_entry_old_virt = ioremap_cache(iommu->root_entry_old_phys,
-> >>+						VTD_PAGE_SIZE);
-> >>+	if (!iommu->root_entry_old_virt) {
-> >>+		pr_err("Could not map the old root entry.");
-> >>+		return -ENOMEM;
-> >>+	}
-> >>+
-> >>+	__iommu_load_old_root_entry(iommu);
-> >>+	ret = copy_root_entry_table(iommu, ppap);
-> >>+	__iommu_flush_cache(iommu, iommu->root_entry, PAGE_SIZE);
-> >>+	__iommu_update_old_root_entry(iommu, -1);
-> >>+
-> >>+	spin_unlock_irqrestore(&iommu->lock, flags);
-> >>+
-> >>+	__iommu_free_mapped_mem();
-> >>+
-> >>+	if (ret)
-> >>+		return ret;
-> >>+
-> >>+	ppa_parms.last = 1;
-> >>+	copy_page_addr(0, 0, 0, 0, 0, NULL, ppap);
-> >>+
-> >>+	return 0;
-> >>+}
-> >>+
-> >>  #endif /* CONFIG_CRASH_DUMP */
-> >>--
-> >>2.0.0-rc0
-> >>
-> >>
-> >>_______________________________________________
-> >>kexec mailing list
-> >>kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> >>http://lists.infradead.org/mailman/listinfo/kexec
-> 
+
+--1LKvkjL3sHcu1TtY
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, Jan 14, 2015 at 10:46:10AM +0000, Will Deacon wrote:
+> On Wed, Jan 14, 2015 at 09:00:24AM +0000, Alexandre Courbot wrote:
+[...]
+> > 2) Say you want to use the IOMMU API in your driver, and have an iommu=
+=20
+> > property in your device's DT node. If by chance your IOMMU is registere=
+d=20
+> > early, you will already have a mapping automatically created even befor=
+e=20
+> > your probe function is called. Can this be avoided? Is it even safe?
+>=20
+> Currently, I think you have to either teardown the ops manually or return
+> an error from of_xlate. Thierry was also looking at this sort of thing,
+> so it might be worth talking to him.
+
+I already explained in earlier threads why I think this is a bad idea.
+It's completely unnatural for any driver to manually tear down something
+that it didn't want set up in the first place. It also means that you
+have to carefully audit any users of these IOMMU APIs to make sure that
+they do tear down. That doesn't sound like a good incremental approach,
+as evidenced by the breakage that Alex and Heiko have encountered.
+
+The solution for me has been to completely side-step the issue and not
+register the IOMMU with the new mechanism at all. That is, there's no
+=2Eof_xlate() implementation, which means that the ARM DMA API glue won't
+try to be smart and use the IOMMU in ways it's not meant to be used.
+This has several advantages, such as that I can also use the regular
+driver model for suspend/resume of the IOMMU, and I get to enjoy the
+benefits of devres in the IOMMU driver. Probe ordering is still a tiny
+issue, but we can easily solve that using explicit initcall ordering
+(which really isn't any worse than IOMMU_OF_DECLARE()).
+
+Ideally of course I could use deferred probing to solve that. Hiroshi
+and I posted patches to implement that over a year ago[0], but it was
+mostly ignored after some, in my opinion, fruitful discussion.
+
+That patch requires drivers to explicitly call iommu_attach() to
+advertise that they want to use the IOMMU. This was done because a
+previous attempt to call iommu_attach() from the driver core was
+rejected on the sole argument that "it doesn't belong in the core",
+without further explanation.
+
+Note that with that approach things all happen at driver probe time, so
+we can simply return -EPROBE_DEFER when the IOMMU isn't ready yet. At
+the same time the IOMMU can be a regular driver just like any of the
+other resource providers like clocks, regulators, etc.
+
+That all said, I'm fine with the current situation, too. Nobody can
+force the Tegra SMMU driver to register via IOMMU_OF_DECLARE() and I'm
+actively recommending the use of the IOMMU API directly. That way we
+get the control we need for drivers where it matters most (i.e. where
+close control of the address space and switching of address spaces per
+process are needed). Any other drivers, like USB or SDMMC simply use
+the DMA API and get their buffers from a contiguous pool.
+
+Thierry
+
+[0]: https://lkml.org/lkml/2014/6/26/476
+
+--1LKvkjL3sHcu1TtY
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJUt3o7AAoJEN0jrNd/PrOhI+sQAIX3gMSf0ZP8k9cIIB5a10AC
+b1FNnCIDAnjH18Ertv/S9aWcSE2nv7HyfXzcnjFr9m1FPZWD7m9iCTV5STZrtK6G
+NbbSaKfnXcN1xPwunv/nMlY1DsLjQLm7SjqatL2JlDbMA07V3NaikBfiYIVrLz5q
+M0l9ylKEz+AwjcoJUyfVlFwSQ9ruQqTxPWgOU0BiSuoCFOmv4uOavWJxnndZ6sFG
+R4QifpaITve4Y16l15tEBMN6wB4hl1ORiBCvFoL3b67cY43JxQdpmHViZalV3PO0
+AvghLV7uLHtBNdMs7V4Py+m3m3en/nSQS3+2vVtIEDvz5TVxKhzZBC1rQivXHNLj
+YAx/iv5vsnwpVW6Gdgub6U3zvGpbTDzzbUhx7vc8QPMw9R19qZjPAIYJh2GdQYwG
+fCs34sF87J29PoK/AiNfrdIoNVkTFiv1VYbM8jy6QtFkBE2cqvH2tjmRKUvICIfN
+qz8pBvQp9SMx0u5ZdE16RC8/mdHES7JSulZrvWayTQxWz9d4Dzd7OoXAVCg4E6ES
+pQS8m+kYJ/4BL2Y6YE/gqB3f9DJA19LFSFYQJQN05p/FZp7/UNiZC8nWsEz5GRhZ
+R+WQ2GzPOmCGPb0PwnuacgSc3KLkN4R19lPnz91urbnkHnac5R2iMoxdH6686K3a
+bH/QI9A7bdNQGs1bJWQi
+=5vlm
+-----END PGP SIGNATURE-----
+
+--1LKvkjL3sHcu1TtY--
+
+--===============0777784068354626429==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============0777784068354626429==--
