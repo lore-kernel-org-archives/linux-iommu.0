@@ -1,88 +1,92 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v4 10/18] iommu: exynos: remove unused functions, part 2
-Date: Fri, 16 Jan 2015 10:13:04 +0100
-Message-ID: <1421399592-7482-11-git-send-email-m.szyprowski@samsung.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCH v4 17/18] iommu: exynos: init from dt-specific callback instead
+ of initcall
+Date: Fri, 16 Jan 2015 10:13:11 +0100
+Message-ID: <1421399592-7482-18-git-send-email-m.szyprowski@samsung.com>
 References: <1421399592-7482-1-git-send-email-m.szyprowski@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1421399592-7482-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <1421399592-7482-1-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-After refactoring functions to use pointer to struct sysmmu_drvdata
-directly, some functions became useless and thus never used, so remove
-them completely.
+This patch introduces IOMMU_OF_DECLARE-based initialization to the
+driver, which replaces subsys_initcall-based procedure.
+exynos_iommu_of_setup ensures that each sysmmu controller is probed
+before its master device.
 
-Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- drivers/iommu/exynos-iommu.c | 43 -------------------------------------------
- 1 file changed, 43 deletions(-)
+ drivers/iommu/exynos-iommu.c | 28 +++++++++++++++++++++++++++-
+ 1 file changed, 27 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 862261fe097b..e62cb96a742c 100644
+index c53cc8f61176..ea2659159e63 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -457,49 +457,6 @@ static int __sysmmu_enable(struct sysmmu_drvdata *data,
+@@ -13,16 +13,21 @@
+ #endif
+ 
+ #include <linux/clk.h>
++#include <linux/dma-mapping.h>
+ #include <linux/err.h>
+ #include <linux/io.h>
+ #include <linux/iommu.h>
+ #include <linux/interrupt.h>
+ #include <linux/list.h>
++#include <linux/of.h>
++#include <linux/of_iommu.h>
++#include <linux/of_platform.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/slab.h>
+ 
+ #include <asm/cacheflush.h>
++#include <asm/dma-iommu.h>
+ #include <asm/pgtable.h>
+ 
+ typedef u32 sysmmu_iova_t;
+@@ -1084,6 +1089,8 @@ static const struct iommu_ops exynos_iommu_ops = {
+ 	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
+ };
+ 
++static int init_done;
++
+ static int __init exynos_iommu_init(void)
+ {
+ 	int ret;
+@@ -1116,6 +1123,8 @@ static int __init exynos_iommu_init(void)
+ 		goto err_set_iommu;
+ 	}
+ 
++	init_done = true;
++
+ 	return 0;
+ err_set_iommu:
+ 	kmem_cache_free(lv2table_kmem_cache, zero_lv2_table);
+@@ -1125,4 +1134,21 @@ err_reg_driver:
+ 	kmem_cache_destroy(lv2table_kmem_cache);
  	return ret;
  }
- 
--/* __exynos_sysmmu_enable: Enables System MMU
-- *
-- * returns -error if an error occurred and System MMU is not enabled,
-- * 0 if the System MMU has been just enabled and 1 if System MMU was already
-- * enabled before.
-- */
--static int __exynos_sysmmu_enable(struct device *dev, phys_addr_t pgtable,
--				  struct iommu_domain *domain)
--{
--	int ret = 0;
--	unsigned long flags;
--	struct exynos_iommu_owner *owner = dev->archdata.iommu;
--	struct sysmmu_drvdata *data;
--
--	BUG_ON(!has_sysmmu(dev));
--
--	data = dev_get_drvdata(owner->sysmmu);
--
--	ret = __sysmmu_enable(data, pgtable, domain);
--	if (ret >= 0)
--		data->master = dev;
--
--	return ret;
--}
--
--static bool exynos_sysmmu_disable(struct device *dev)
--{
--	unsigned long flags;
--	bool disabled = true;
--	struct exynos_iommu_owner *owner = dev->archdata.iommu;
--	struct sysmmu_drvdata *data;
--
--	BUG_ON(!has_sysmmu(dev));
--
--	data = dev_get_drvdata(owner->sysmmu);
--
--	disabled = __sysmmu_disable(data);
--	if (disabled)
--		data->master = NULL;
--
--	return disabled;
--}
--
- static void __sysmmu_tlb_invalidate_flpdcache(struct sysmmu_drvdata *data,
- 					      sysmmu_iova_t iova)
- {
+-subsys_initcall(exynos_iommu_init);
++
++static int __init exynos_iommu_of_setup(struct device_node *np)
++{
++	struct platform_device *pdev;
++
++	if (!init_done)
++		exynos_iommu_init();
++
++	pdev = of_platform_device_create(np, NULL, platform_bus_type.dev_root);
++	if (IS_ERR(pdev))
++		return PTR_ERR(pdev);
++
++	of_iommu_set_ops(np, &exynos_iommu_ops);
++	return 0;
++}
++
++IOMMU_OF_DECLARE(exynos_iommu_of, "samsung,exynos-sysmmu",
++		 exynos_iommu_of_setup);
 -- 
 1.9.2
