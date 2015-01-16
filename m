@@ -1,15 +1,14 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v3 00/19] Exynos SYSMMU (IOMMU) integration with DT and
-	DMA-mapping subsystem
-Date: Fri, 16 Jan 2015 11:33:40 +0100
-Message-ID: <54B8E904.6090107@samsung.com>
-References: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com>
-	<1417514366.21830.22.camel@collabora.co.uk>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 0/5] Generic IOMMU page table framework
+Date: Fri, 16 Jan 2015 14:01:31 +0000
+Message-ID: <20150116140130.GQ7091@arm.com>
+References: <1420811657-21321-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1417514366.21830.22.camel-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1420811657-21321-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,31 +18,61 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sjoerd Simons <sjoerd.simons-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>
-Cc: linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Gustavo Padovan <gustavo.padovan-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Javier Martinez Canillas <javier.martinez-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+On Fri, Jan 09, 2015 at 01:54:12PM +0000, Will Deacon wrote:
+> This is version two of the patch series I originally posted here:
+> 
+>   v1: http://lists.infradead.org/pipermail/linux-arm-kernel/2014-November/306786.html
+> 
+> Changes since v1 include:
+> 
+>  - Separated 32-bit and 64-bit regimes
+>  - Limited pgd allocation when a full page is not required
+>  - Addition of NS quirk, needed by Laurent for the Renesas IOMMU
+>  - Added kerneldoc for the API to IOMMU drivers
+>  - A few minor changes after feedback on the list
+> 
+> All feedback welcome,
 
-On 2014-12-02 10:59, Sjoerd Simons wrote:
-> Hey Marek, Inki,
->
-> On Wed, 2014-11-19 at 12:15 +0100, Marek Szyprowski wrote:
->> Hello Everyone,
->>
->> This is another attempt to finally make Exynos SYSMMU driver fully
->> integrated with DMA-mapping subsystem. The main change from previous
->> version is a rebase onto latest "automatic DMA configuration for IOMMU
->> masters" patches from Will Deacon.
-> Do you happen to know if anyone is working on iommu/dma-mapping patches
-> for Exynos 5 based on this patchset?
+I've not received any feedback on this revision of the series, but it's
+working well for me and Laurent showed that it works with his IOMMU too.
 
-Just to let all of You know - I posted a new version of this patchset with
-Exynos 5250 & 5420/5422/5800 DTS patches:
+Joerg -- can I include this in my pull request for 3.20, or is there
+anything further you'd like me to address? The code is completely
+self-contained, so I wouldn't expect any impact on IOMMU drivers that
+don't explicitly use the new page table API.
 
-http://lists.linaro.org/pipermail/linaro-mm-sig/2015-January/004327.html
+Thanks,
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Will
+
+> --->8
+> 
+> Laurent Pinchart (1):
+>   iommu: io-pgtable-arm: add non-secure quirk
+> 
+> Will Deacon (4):
+>   iommu: introduce generic page table allocation framework
+>   iommu: add ARM LPAE page table allocator
+>   iommu: add self-consistency tests to ARM LPAE IO page table allocator
+>   iommu/arm-smmu: make use of generic LPAE allocator
+> 
+>  MAINTAINERS                    |   1 +
+>  arch/arm64/Kconfig             |   1 -
+>  drivers/iommu/Kconfig          |  32 +-
+>  drivers/iommu/Makefile         |   2 +
+>  drivers/iommu/arm-smmu.c       | 886 +++++++++++-------------------------
+>  drivers/iommu/io-pgtable-arm.c | 986 +++++++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/io-pgtable.c     |  82 ++++
+>  drivers/iommu/io-pgtable.h     | 143 ++++++
+>  8 files changed, 1506 insertions(+), 627 deletions(-)
+>  create mode 100644 drivers/iommu/io-pgtable-arm.c
+>  create mode 100644 drivers/iommu/io-pgtable.c
+>  create mode 100644 drivers/iommu/io-pgtable.h
+> 
+> -- 
+> 2.1.4
+> 
