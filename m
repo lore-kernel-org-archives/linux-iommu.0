@@ -1,39 +1,71 @@
-From: Shuah Khan <shuahkh@osg.samsung.com>
-Subject: [PATCH] iommu: fix trace_map() to report original iova and original size
-Date: Thu, 15 Jan 2015 19:29:43 -0700
-Message-ID: <1421375383-8930-1-git-send-email-shuahkh@osg.samsung.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org, alex.williamson@redhat.com
-Cc: Shuah Khan <shuahkh@osg.samsung.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+From: Yong Wu <yong.wu@mediatek.com>
+Subject: Re: [RFC PATCH 0/5] arm64: IOMMU-backed DMA mapping
+Date: Fri, 16 Jan 2015 15:21:32 +0800
+Message-ID: <1421392892.19175.6.camel@mhfsdcap03>
+References: <cover.1421086706.git.robin.murphy@arm.com>
+ <1421136128.27675.58.camel@mtksdaap41> <54B80857.7060407@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <54B80857.7060407@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "sakari.ailus@linux.intel.com" <sakari.ailus@linux.intel.com>, "arnd@arndb.de" <arnd@arndb.de>, "stefano.stabellini@eu.citrix.com" <stefano.stabellini@eu.citrix.com>, Catalin Marinas <Catalin.Marinas@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "thunder.leizhen@huawei.com" <thunder.leizhen@huawei.com>, Will Deacon <Will.Deacon@arm.com>, "lauraa@codeaurora.org" <lauraa@codeaurora.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>, "ritesh.harjani@gmail.com" <ritesh.harjani@gmail.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>, "eddie.huang@mediatek.com" <eddie.huang@mediatek.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "yh.chen@mediatek.com" <yh.c>
 List-Id: iommu@lists.linux-foundation.org
 
-iommu_map() calls trace_map() with iova and size. trace_map()
-should report original iova and original size as opposed to
-iova and size after they get changed during mapping. size is
-always zero at the end of mapping which is useless to report
-and iova as it gets incremented, it is not as useful as the
-original iova. Change iommu_map() to call trace_map() to
-report original iova and original size.
-
-Signed-off-by: Shuah Khan <shuahkh@osg.samsung.com>
-Reported-by: Alex Williamson <alex.williamson@redhat.com>
----
- drivers/iommu/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index f7718d7..fbf8827 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1084,7 +1084,7 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 	if (ret)
- 		iommu_unmap(domain, orig_iova, orig_size - size);
- 	else
--		trace_map(iova, paddr, size);
-+		trace_map(orig_iova, paddr, orig_size);
- 
- 	return ret;
- }
--- 
-1.9.1
+T24gVGh1LCAyMDE1LTAxLTE1IGF0IDE4OjM1ICswMDAwLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4g
+T24gMTMvMDEvMTUgMDg6MDIsIFlpbmdqb2UgQ2hlbiB3cm90ZToKPiA+IE9uIE1vbiwgMjAxNS0w
+MS0xMiBhdCAyMDo0OCArMDAwMCwgUm9iaW4gTXVycGh5IHdyb3RlOgo+ID4+IEhpIGFsbCwKPiA+
+Pgo+ID4+IFdoaWxzdCBpdCdzIGEgbG9uZyB3YXkgb2ZmIHBlcmZlY3QsIHRoaXMgaGFzIHJlYWNo
+ZWQgdGhlIHBvaW50IG9mIGJlaW5nCj4gPj4gZnVuY3Rpb25hbCBhbmQgc3RhYmxlIGVub3VnaCB0
+byBiZSB1c2VmdWwsIHNvIGhlcmUgaXQgaXMuIFRoZSBjb3JlCj4gPj4gY29uc2lzdHMgb2YgdGhl
+IG1lYXQgb2YgdGhlIGFyY2gvYXJtIGltcGxlbWVudGF0aW9uIG1vZGlmaWVkIHRvIHJlbW92ZQo+
+ID4+IHRoZSBhc3N1bXB0aW9uIG9mIFBBR0VfU0laRSBwYWdlcyBhbmQgcG9ydGVkIG92ZXIgdG8g
+dGhlIEludGVsIElPVkEKPiA+PiBhbGxvY2F0b3IgaW5zdGVhZCBvZiB0aGUgYml0bWFwLWJhc2Vk
+IG9uZS4gRm9yIHRoYXQsIHRoaXMgc2VyaWVzIGRlcGVuZHMKPiA+PiBvbiBteSAiR2VuZXJpY2lz
+ZSB0aGUgSU9WQSBhbGxvY2F0b3IiIHNlcmllcyBwb3N0ZWQgZWFybGllclsxXS4KPiA+Cj4gPiBI
+aSBSb2JpbiwKPiA+Cj4gPiBXZSdkIHRvIGdpdmUgaXQgYSB0cnkuIERvIHlvdSBoYXZlIGEgcHVi
+bGljIGdpdCB0cmVlIGNvbnRhaW5zIGJvdGgKPiA+IHNlcmllcz8KPiA+Cj4gPiBKb2UuQwo+IAo+
+IE5vdyB0aGF0IHRoZSBzZXJ2ZXIgc2VlbXMgdG8gYmUgcHJvcGVybHkgYWNjZXNzaWJsZSBhZ2Fp
+biwgSSd2ZSBtYWRlIGEgCj4gYnJhbmNoIHdpdGggYm90aCBzZXJpZXMgYXZhaWxhYmxlIGhlcmU6
+Cj4gCj4gICAgZ2l0Oi8vbGludXgtYXJtLm9yZy9saW51eC1ybSBpb21tdS9kbWEKPiAKPiBOb3Rl
+IHRoYXQgaW4gdGhlIGN1cnJlbnQgc3RhdGUgaXQgYWxzbyBkZXBlbmRzIG9uIGhhdmluZyB0aGUg
+QVJNIFNNTVUgCj4gZHJpdmVyIHNlbGVjdGVkIGluIHRoZSBjb25maWcsIGR1ZSB0byBhbiBvdmVy
+c2lnaHQgb24gbXkgcGFydCA6KAo+IAo+IFJvYmluLgo+IApEZWFyIFJvYmluLAoKICAgICBXZSBo
+YXZlIHRlc3QgdGhpcyBwYXRjaCBvbiBvdXIgU09DKG10ODE3Myksd2hpY2ggaGF2ZSBvdXIgb3du
+IGlvbW11CkhXKGl0IGlzIG5vdCBBUk0gU01NVSksIHRoZSBwYXRjaCBjb3VsZCB3b3JrIHdlbGwu
+ClRlc3RlZC1ieTpZb25nIFd1IDx5b25nLnd1QG1lZGlhdGVrLmNvbT4KCiBBbmQgSSBoYXZlIHNv
+bWUgcXVlc3Rpb25lcyBhYm91dCB0aGUgdXNhZ2U6CgoxKSBJZiB3ZSBjcmVhdGUgYSBpb21tdSBk
+b21haW4gYnkg4oCcYXJjaF9zZXR1cF9kbWFfb3BzIiwgdGhlbiB3ZSB3b3VsZApsaWtlIHRvIGNh
+bGwgdGhlIHN0YW5kYXJkIGlvbW11IGludGVyZmFjZSwgbGlrZQrigJxpb21tdV9zZXRfZmF1bHRf
+aGFuZGxl4oCdLApIb3cgY2FuIHdlIGdldCB0aGUgInN0cnVjdCBpb21tdV9kb21haW4gKiI/ICh0
+aGUg4oCcZGV2X2RvbWFpbuKAnSBpcwpzdGF0aWMuKQoKMikgSWYgYSBkZXZpY2UgQSBjYWxsIOKA
+nGFyY2hfc2V0dXBfZG1hX29wc+KAnSB0byBjcmVhdGUgYSBpb21tdSBkb21haW4sIGFuZAphIGNs
+aWVudCBkZXZpY2UgQiB3b3VsZCBsaWtlIHRvIGpvaW4gdGhpcyBpb21tdSBkb21haW4sIApzbyBp
+dCBjYWxsIOKAnGlvbW11X2RtYV9hdHRhY2hfZGV2aWNl4oCdLiB0aGVuIHRoZSBkZXZpY2UgQiB3
+YW50IHRvIGFsbG9jCnRoZSBpb21tdSBtZW1vcnksIGl0IGNhbGwg4oCcZG1hX2FsbG9jX2F0dHJz
+4oCdIHdob3NlIGZpcnN0IHBhcmFtZXRlciBzaG91bGQKYmUgdGhlIOKAnHN0cnVjdCBkZXZpY2Ug
+KuKAnW9mIGRldmljZSBBLiBJcyBpdCBkZXNpZ25lZCBsaWtlIHRoaXMgaW4gdGhpcwpwYXRjaD8K
+ICAgIChJbiBhcmNoL2FybSwg4oCcZGV2LT5hcmNoZGF0YS5kbWFfb3BzID0gJmlvbW11X2RtYV9v
+cHPigJ0gaXMgaW4K4oCcYXJtX2lvbW11X2F0dGFjaF9kZXZjZeKAnTsKICAgICBJbiB0aGlzIHBh
+dGNoLCB0aGlzIHNlbnRlbmNlIGlzIGluIOKAnGFyY2hfc2V0dXBfZG1hX29wc+KAnSkuCgozKSAg
+dm9pZCBhcmNoX3NldHVwX2RtYV9vcHMoc3RydWN0IGRldmljZSAqZGV2LCB1NjQgZG1hX2Jhc2Us
+IHU2NCBzaXplLApzdHJ1Y3QgaW9tbXVfb3BzICppb21tdSwgYm9vbCBjb2hlcmVudCkKICAgIElu
+IHRoaXMgZnVuY3Rpb24sIHRoZSBzZWNvbmQgYW5kIHRoaXJkIHBhcmFtZXRlciBhcmUgdGhlIGRt
+YSBhZGRyZXNzCmJhc2UgYW5kIHNpemUsIGNhbiB0aGV5IHdvcmsgY3VycmVudGx5PwoodGFrZSBh
+IGV4YW1wbGUsIEkgc2V0IHRoZSBkbWFfYmFzZSBpcyAwLCBzaXplIGlzIDB4NDAwMDAwMDAgd2hp
+bGUKY2FsbGluZyBhcmNoX3NldHVwX2RtYV9vcHMsIAogdGhlbiBJIGFsbG9jIGEgcmFuZ2UgaW92
+YSB3aG9zZSBzaXplIGlzIDUwKlNaXzRLLCB0aGUgcmV0dXJuIGlvdmEgaXMKMHhmZmZjZTAwMCwg
+aXQgaXMgb3ZlciAweDQwMDAwMDAwLikKCgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJt
+LWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21h
+aWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
