@@ -1,17 +1,16 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Subject: Re: [PATCH 1/2] iommu: return dma alias from
 	iommu_group_get_for_pci_dev()
-Date: Fri, 16 Jan 2015 20:33:50 +0000
-Message-ID: <20150116203350.GA21807@arm.com>
+Date: Fri, 16 Jan 2015 14:11:03 -0700
+Message-ID: <1421442663.6130.281.camel@redhat.com>
 References: <1421427514-16579-1-git-send-email-will.deacon@arm.com>
 	<1421427514-16579-2-git-send-email-will.deacon@arm.com>
-	<1421430111.6130.254.camel@redhat.com>
+	<1421430111.6130.254.camel@redhat.com> <20150116203350.GA21807@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1421430111.6130.254.camel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20150116203350.GA21807-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,128 +20,126 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: "m-karicheri2-l0cyMroinI0@public.gmane.org" <m-karicheri2-l0cyMroinI0@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Alex,
-
-Thanks for having a look.
-
-On Fri, Jan 16, 2015 at 05:41:51PM +0000, Alex Williamson wrote:
-> On Fri, 2015-01-16 at 16:58 +0000, Will Deacon wrote:
-> > Some IOMMU drivers (e.g. the ARM SMMU) require not only the IOMMU group
-> > for a PCI device, but also the effective alias of the device (as seen by
-> > the IOMMU) in order to program the translations correctly.
-> > 
-> > This patch extends iommu_group_get_for_pci_dev to return the DMA alias
-> > of the device as well as the group, which can potentially be overridden
-> > by quirks in the PCI layer. The function is also made visible to drivers
-> > so that the new functionality can be used.
-> > 
-> > Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> > ---
-> >  drivers/iommu/iommu.c | 14 ++++++++++++--
-> >  include/linux/iommu.h |  2 ++
-> >  2 files changed, 14 insertions(+), 2 deletions(-)
-> 
-> This would seem to promote the idea that an IOMMU group for a PCI device
-> has a single bdf alias, which is not necessarily true.
-
-True, but you can deal with that in the caller by ensuring you get the alias
-for each member of the group, no?
-
-> It also only returns the alias based on PCI topology, which can easily be
-> discovered by the caller using pci_for_each_dma_alias() directly.  So I
-> don't really see the benefit of this versus using
-> iommu_group_for_each_dev() and/or pci_for_each_dma_alias().
-
-The problem with using pci_for_each_dma_alias is that I end up duplicating
-the remainder of iommu_group_get_for_pci_dev in the SMMU driver in order
-to handle PCI_DEV_FLAGS_DMA_ALIAS_DEVFN set by PCI quirks and
-aliasing due to ACS constraints. Furthermore, I end up walking the PCI
-topology twice: once for the group and a second time for the aliases.
-
-> It's also intentional that while we have PCI specific code in iommu.c,
-> the exposed interfaces are device agnostic.  I'm not seeing enough
-> reason here to change that.  Thanks,
-
-Hmm, I'd really rather have *something* in the core to avoid duplication
-between all IOMMU drivers sitting on PCI without ACPI tables to describe
-the IDs. How about a method to extract the IDs from an IOMMU group?
-
-Will
-
-> 
-> Alex
-> 
-> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > index f7718d73e984..5300b6507481 100644
-> > --- a/drivers/iommu/iommu.c
-> > +++ b/drivers/iommu/iommu.c
-> > @@ -616,6 +616,7 @@ static struct iommu_group *get_pci_alias_group(struct pci_dev *pdev,
-> >  struct group_for_pci_data {
-> >  	struct pci_dev *pdev;
-> >  	struct iommu_group *group;
-> > +	u16 alias;
-> >  };
-> >  
-> >  /*
-> > @@ -628,6 +629,7 @@ static int get_pci_alias_or_group(struct pci_dev *pdev, u16 alias, void *opaque)
-> >  
-> >  	data->pdev = pdev;
-> >  	data->group = iommu_group_get(&pdev->dev);
-> > +	data->alias = alias;
-> >  
-> >  	return data->group != NULL;
-> >  }
-> > @@ -636,7 +638,8 @@ static int get_pci_alias_or_group(struct pci_dev *pdev, u16 alias, void *opaque)
-> >   * Use standard PCI bus topology, isolation features, and DMA alias quirks
-> >   * to find or create an IOMMU group for a device.
-> >   */
-> > -static struct iommu_group *iommu_group_get_for_pci_dev(struct pci_dev *pdev)
-> > +struct iommu_group *iommu_group_get_for_pci_dev(struct pci_dev *pdev,
-> > +						u16 *alias)
-> >  {
-> >  	struct group_for_pci_data data;
-> >  	struct pci_bus *bus;
-> > @@ -653,6 +656,13 @@ static struct iommu_group *iommu_group_get_for_pci_dev(struct pci_dev *pdev)
-> >  		return data.group;
-> >  
-> >  	pdev = data.pdev;
-> > +	if (alias) {
-> > +		u8 busn = PCI_BUS_NUM(pdev->bus->number);
-> > +		if (pdev->dev_flags & PCI_DEV_FLAGS_DMA_ALIAS_DEVFN)
-> > +			*alias = PCI_DEVID(busn, pdev->dma_alias_devfn);
-> > +		else
-> > +			*alias = data.alias;
-> > +	}
-> >  
-> >  	/*
-> >  	 * Continue upstream from the point of minimum IOMMU granularity
-> > @@ -717,7 +727,7 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
-> >  	if (!dev_is_pci(dev))
-> >  		return ERR_PTR(-EINVAL);
-> >  
-> > -	group = iommu_group_get_for_pci_dev(to_pci_dev(dev));
-> > +	group = iommu_group_get_for_pci_dev(to_pci_dev(dev), NULL);
-> >  
-> >  	if (IS_ERR(group))
-> >  		return group;
-> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> > index 38daa453f2e5..1fe97d62a286 100644
-> > --- a/include/linux/iommu.h
-> > +++ b/include/linux/iommu.h
-> > @@ -199,6 +199,8 @@ extern int iommu_group_register_notifier(struct iommu_group *group,
-> >  extern int iommu_group_unregister_notifier(struct iommu_group *group,
-> >  					   struct notifier_block *nb);
-> >  extern int iommu_group_id(struct iommu_group *group);
-> > +extern struct iommu_group *iommu_group_get_for_pci_dev(struct pci_dev *dev,
-> > +						       u16 *alias);
-> >  extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
-> >  
-> >  extern int iommu_domain_get_attr(struct iommu_domain *domain, enum iommu_attr,
-> 
-> 
-> 
-> 
+SGV5IFdpbGwsCgpPbiBGcmksIDIwMTUtMDEtMTYgYXQgMjA6MzMgKzAwMDAsIFdpbGwgRGVhY29u
+IHdyb3RlOgo+IEhpIEFsZXgsCj4gCj4gVGhhbmtzIGZvciBoYXZpbmcgYSBsb29rLgo+IAo+IE9u
+IEZyaSwgSmFuIDE2LCAyMDE1IGF0IDA1OjQxOjUxUE0gKzAwMDAsIEFsZXggV2lsbGlhbXNvbiB3
+cm90ZToKPiA+IE9uIEZyaSwgMjAxNS0wMS0xNiBhdCAxNjo1OCArMDAwMCwgV2lsbCBEZWFjb24g
+d3JvdGU6Cj4gPiA+IFNvbWUgSU9NTVUgZHJpdmVycyAoZS5nLiB0aGUgQVJNIFNNTVUpIHJlcXVp
+cmUgbm90IG9ubHkgdGhlIElPTU1VIGdyb3VwCj4gPiA+IGZvciBhIFBDSSBkZXZpY2UsIGJ1dCBh
+bHNvIHRoZSBlZmZlY3RpdmUgYWxpYXMgb2YgdGhlIGRldmljZSAoYXMgc2VlbiBieQo+ID4gPiB0
+aGUgSU9NTVUpIGluIG9yZGVyIHRvIHByb2dyYW0gdGhlIHRyYW5zbGF0aW9ucyBjb3JyZWN0bHku
+Cj4gPiA+IAo+ID4gPiBUaGlzIHBhdGNoIGV4dGVuZHMgaW9tbXVfZ3JvdXBfZ2V0X2Zvcl9wY2lf
+ZGV2IHRvIHJldHVybiB0aGUgRE1BIGFsaWFzCj4gPiA+IG9mIHRoZSBkZXZpY2UgYXMgd2VsbCBh
+cyB0aGUgZ3JvdXAsIHdoaWNoIGNhbiBwb3RlbnRpYWxseSBiZSBvdmVycmlkZGVuCj4gPiA+IGJ5
+IHF1aXJrcyBpbiB0aGUgUENJIGxheWVyLiBUaGUgZnVuY3Rpb24gaXMgYWxzbyBtYWRlIHZpc2li
+bGUgdG8gZHJpdmVycwo+ID4gPiBzbyB0aGF0IHRoZSBuZXcgZnVuY3Rpb25hbGl0eSBjYW4gYmUg
+dXNlZC4KPiA+ID4gCj4gPiA+IFNpZ25lZC1vZmYtYnk6IFdpbGwgRGVhY29uIDx3aWxsLmRlYWNv
+bkBhcm0uY29tPgo+ID4gPiAtLS0KPiA+ID4gIGRyaXZlcnMvaW9tbXUvaW9tbXUuYyB8IDE0ICsr
+KysrKysrKysrKy0tCj4gPiA+ICBpbmNsdWRlL2xpbnV4L2lvbW11LmggfCAgMiArKwo+ID4gPiAg
+MiBmaWxlcyBjaGFuZ2VkLCAxNCBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQo+ID4gCj4g
+PiBUaGlzIHdvdWxkIHNlZW0gdG8gcHJvbW90ZSB0aGUgaWRlYSB0aGF0IGFuIElPTU1VIGdyb3Vw
+IGZvciBhIFBDSSBkZXZpY2UKPiA+IGhhcyBhIHNpbmdsZSBiZGYgYWxpYXMsIHdoaWNoIGlzIG5v
+dCBuZWNlc3NhcmlseSB0cnVlLgo+IAo+IFRydWUsIGJ1dCB5b3UgY2FuIGRlYWwgd2l0aCB0aGF0
+IGluIHRoZSBjYWxsZXIgYnkgZW5zdXJpbmcgeW91IGdldCB0aGUgYWxpYXMKPiBmb3IgZWFjaCBt
+ZW1iZXIgb2YgdGhlIGdyb3VwLCBubz8KCklmIHRoZSBjYWxsZXIgbmVlZHMgdG8gZG8gdGhhdCBh
+bnl3YXkgKHdoaWNoIHRoZXkgZG8pLCB3aGF0J3MgdGhlIHBvaW50Cm9mIHRoaXMgYWRkaXRpb24/
+ICBXaGF0IGRvZXMgdGhpcyBhbGlhcyB0aGF0IHdlJ3JlIHJldHVybmluZyBoZXJlCnJlcHJlc2Vu
+dCB2ZXJzdXMgdGhlIG90aGVyIGFsaWFzZXMgYXZhaWxhYmxlPyAgRG9lc24ndCB0aGUgYWxpYXMK
+cmV0dXJuZWQgZGVwZW5kIG9uIHRoZSBJT01NVSBncm91cCBtZW1iZXIgdGhhdCBpdCdzIGNhbGxl
+ZCBmcm9tPyAgT3IKZXZlbiB3aGV0aGVyIHRoZSBncm91cCBoYXMgYWxyZWFkeSBiZWVuIGVzdGFi
+bGlzaGVkPyAgU28gZXZlbiBpZiBpdCBkaWQKbWFrZSBzZW5zZSB0byByZXR1cm4gYW4gYWxpYXMs
+IHRoZSBhbnN3ZXIgZGVwZW5kcyBvbiB0aGUgY2FsbGVyJ3MKcGVyc3BlY3RpdmUuICBTb3J0IG9m
+IGEgU2NocsO2ZGluZ2VyJ3MgY2F0IGZ1bmN0aW9uLgoKPiA+IEl0IGFsc28gb25seSByZXR1cm5z
+IHRoZSBhbGlhcyBiYXNlZCBvbiBQQ0kgdG9wb2xvZ3ksIHdoaWNoIGNhbiBlYXNpbHkgYmUKPiA+
+IGRpc2NvdmVyZWQgYnkgdGhlIGNhbGxlciB1c2luZyBwY2lfZm9yX2VhY2hfZG1hX2FsaWFzKCkg
+ZGlyZWN0bHkuICBTbyBJCj4gPiBkb24ndCByZWFsbHkgc2VlIHRoZSBiZW5lZml0IG9mIHRoaXMg
+dmVyc3VzIHVzaW5nCj4gPiBpb21tdV9ncm91cF9mb3JfZWFjaF9kZXYoKSBhbmQvb3IgcGNpX2Zv
+cl9lYWNoX2RtYV9hbGlhcygpLgo+IAo+IFRoZSBwcm9ibGVtIHdpdGggdXNpbmcgcGNpX2Zvcl9l
+YWNoX2RtYV9hbGlhcyBpcyB0aGF0IEkgZW5kIHVwIGR1cGxpY2F0aW5nCj4gdGhlIHJlbWFpbmRl
+ciBvZiBpb21tdV9ncm91cF9nZXRfZm9yX3BjaV9kZXYgaW4gdGhlIFNNTVUgZHJpdmVyIGluIG9y
+ZGVyCj4gdG8gaGFuZGxlIFBDSV9ERVZfRkxBR1NfRE1BX0FMSUFTX0RFVkZOIHNldCBieSBQQ0kg
+cXVpcmtzIGFuZAo+IGFsaWFzaW5nIGR1ZSB0byBBQ1MgY29uc3RyYWludHMuIEZ1cnRoZXJtb3Jl
+LCBJIGVuZCB1cCB3YWxraW5nIHRoZSBQQ0kKPiB0b3BvbG9neSB0d2ljZTogb25jZSBmb3IgdGhl
+IGdyb3VwIGFuZCBhIHNlY29uZCB0aW1lIGZvciB0aGUgYWxpYXNlcy4KCkJ1dCB0aGUgcGF0Y2gg
+aXMgdGFraW5nIHRoZSBhbGlhcyBvbmx5IGFmdGVyIHRoZQpwY2lfZm9yX2VhY2hfZG1hX2FsaWFz
+KCkgY2FsbCwgbm90IGFmdGVyIHRoZSBBQ1MgY29uc3RyYWludHMsIHNvIEkgZG9uJ3QKc2VlIGhv
+dyB0aGUgZHVwbGljYXRlZCBjb2RlIGlzIGFueSBtb3JlIHRoYW4gYW5vdGhlcgpwY2lfZm9yX2Vh
+Y2hfZG1hX2FsaWFzKCkgcGx1cyBjYWxsYmFjay4gIGludGVsLWlvbW11IGRvZXMgdGhpcyBwbGVu
+dHkuCgpJcyB3YWxraW5nIHRoZSBQQ0kgdG9wb2xvZ3kgYSBzZWNvbmQgdGltZSByZWFsbHkgYW4g
+aXNzdWU/ICBJT01NVSBncm91cApzZXR1cCBzaG91bGQgYmUgZG9uZSBhdCBib290LCBhbmQgcmVh
+bGx5IGhvdyBkZWVwIGRvIHlvdSBleHBlY3QgYSBQQ0kKdG9wb2xvZ3kgdG8gYmU/ICBBICJjb21w
+bGV4IiBkZXZpY2Ugd2lsbCBoYXZlIGEgc3dpdGNoL2JyaWRnZSBhbmQKZW5kcG9pbnRzLCBzbyB3
+ZSdyZSB0YWxraW5nIGFib3V0IHVwIHRvIDMgYnVzIGxldmVscy4gIEluIHRoZW9yeSwgeWVzIHdl
+CmNvdWxkIHdhbGsgYSBtb25zdGVyIHRvcG9sb2d5LCBpbiBwcmFjdGljZSwgbm90c29tdWNoLgoK
+PiA+IEl0J3MgYWxzbyBpbnRlbnRpb25hbCB0aGF0IHdoaWxlIHdlIGhhdmUgUENJIHNwZWNpZmlj
+IGNvZGUgaW4gaW9tbXUuYywKPiA+IHRoZSBleHBvc2VkIGludGVyZmFjZXMgYXJlIGRldmljZSBh
+Z25vc3RpYy4gIEknbSBub3Qgc2VlaW5nIGVub3VnaAo+ID4gcmVhc29uIGhlcmUgdG8gY2hhbmdl
+IHRoYXQuICBUaGFua3MsCj4gCj4gSG1tLCBJJ2QgcmVhbGx5IHJhdGhlciBoYXZlICpzb21ldGhp
+bmcqIGluIHRoZSBjb3JlIHRvIGF2b2lkIGR1cGxpY2F0aW9uCj4gYmV0d2VlbiBhbGwgSU9NTVUg
+ZHJpdmVycyBzaXR0aW5nIG9uIFBDSSB3aXRob3V0IEFDUEkgdGFibGVzIHRvIGRlc2NyaWJlCj4g
+dGhlIElEcy4gSG93IGFib3V0IGEgbWV0aG9kIHRvIGV4dHJhY3QgdGhlIElEcyBmcm9tIGFuIElP
+TU1VIGdyb3VwPwoKV2VsbCwgd2UgZG8gaGF2ZSBzdHVmZiBpbiB0aGUgY29yZS4gIFdlIGNhbiBn
+ZXQgYW4gSU9NTVUgZ3JvdXAgZm9yIGEKZGV2aWNlLCB3ZSBjYW4gaXRlcmF0ZSB0aGUgZGV2aWNl
+cyB3aXRoaW4gYW4gSU9NTVUgZ3JvdXAsIGFuZCB3ZSBjYW4gZ2V0CmFsaWFzIGZvciBkZXZpY2Vz
+IHRoYXQgYXJlIFBDSS4gIFRoZSBJT01NVSAmIFBDSSBjb3JlcyBmYWNpbGl0YXRlcyBhbGwKb2Yg
+dGhhdC4gIEkgZG9uJ3QgZ2V0IHdoeSB3ZSBuZWVkIHRvIGluY29ycG9yYXRlIHNvbWUgY29tYmlu
+YXRpb24gb2YKdGhhdCBpbnRvIGEgbmV3IG9yIGV4aXN0aW5nIGludGVyZmFjZSB3aGVuIGl0IGlt
+cGxpZXMgYSByZWxhdGlvbnNoaXAKdGhhdCBkb2Vzbid0IG5lY2Vzc2FyaWx5IGV4aXN0IGFuZCBi
+aWFzZXMgdGhlIElPTU1VIGludGVyZmFjZXMgdG93YXJkcyBhCnBhcnRpY3VsYXIgZGV2aWNlIHR5
+cGUuICBUaGFua3MsCgpBbGV4Cgo+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pb21t
+dS5jIGIvZHJpdmVycy9pb21tdS9pb21tdS5jCj4gPiA+IGluZGV4IGY3NzE4ZDczZTk4NC4uNTMw
+MGI2NTA3NDgxIDEwMDY0NAo+ID4gPiAtLS0gYS9kcml2ZXJzL2lvbW11L2lvbW11LmMKPiA+ID4g
+KysrIGIvZHJpdmVycy9pb21tdS9pb21tdS5jCj4gPiA+IEBAIC02MTYsNiArNjE2LDcgQEAgc3Rh
+dGljIHN0cnVjdCBpb21tdV9ncm91cCAqZ2V0X3BjaV9hbGlhc19ncm91cChzdHJ1Y3QgcGNpX2Rl
+diAqcGRldiwKPiA+ID4gIHN0cnVjdCBncm91cF9mb3JfcGNpX2RhdGEgewo+ID4gPiAgCXN0cnVj
+dCBwY2lfZGV2ICpwZGV2Owo+ID4gPiAgCXN0cnVjdCBpb21tdV9ncm91cCAqZ3JvdXA7Cj4gPiA+
+ICsJdTE2IGFsaWFzOwo+ID4gPiAgfTsKPiA+ID4gIAo+ID4gPiAgLyoKPiA+ID4gQEAgLTYyOCw2
+ICs2MjksNyBAQCBzdGF0aWMgaW50IGdldF9wY2lfYWxpYXNfb3JfZ3JvdXAoc3RydWN0IHBjaV9k
+ZXYgKnBkZXYsIHUxNiBhbGlhcywgdm9pZCAqb3BhcXVlKQo+ID4gPiAgCj4gPiA+ICAJZGF0YS0+
+cGRldiA9IHBkZXY7Cj4gPiA+ICAJZGF0YS0+Z3JvdXAgPSBpb21tdV9ncm91cF9nZXQoJnBkZXYt
+PmRldik7Cj4gPiA+ICsJZGF0YS0+YWxpYXMgPSBhbGlhczsKPiA+ID4gIAo+ID4gPiAgCXJldHVy
+biBkYXRhLT5ncm91cCAhPSBOVUxMOwo+ID4gPiAgfQo+ID4gPiBAQCAtNjM2LDcgKzYzOCw4IEBA
+IHN0YXRpYyBpbnQgZ2V0X3BjaV9hbGlhc19vcl9ncm91cChzdHJ1Y3QgcGNpX2RldiAqcGRldiwg
+dTE2IGFsaWFzLCB2b2lkICpvcGFxdWUpCj4gPiA+ICAgKiBVc2Ugc3RhbmRhcmQgUENJIGJ1cyB0
+b3BvbG9neSwgaXNvbGF0aW9uIGZlYXR1cmVzLCBhbmQgRE1BIGFsaWFzIHF1aXJrcwo+ID4gPiAg
+ICogdG8gZmluZCBvciBjcmVhdGUgYW4gSU9NTVUgZ3JvdXAgZm9yIGEgZGV2aWNlLgo+ID4gPiAg
+ICovCj4gPiA+IC1zdGF0aWMgc3RydWN0IGlvbW11X2dyb3VwICppb21tdV9ncm91cF9nZXRfZm9y
+X3BjaV9kZXYoc3RydWN0IHBjaV9kZXYgKnBkZXYpCj4gPiA+ICtzdHJ1Y3QgaW9tbXVfZ3JvdXAg
+KmlvbW11X2dyb3VwX2dldF9mb3JfcGNpX2RldihzdHJ1Y3QgcGNpX2RldiAqcGRldiwKPiA+ID4g
+KwkJCQkJCXUxNiAqYWxpYXMpCj4gPiA+ICB7Cj4gPiA+ICAJc3RydWN0IGdyb3VwX2Zvcl9wY2lf
+ZGF0YSBkYXRhOwo+ID4gPiAgCXN0cnVjdCBwY2lfYnVzICpidXM7Cj4gPiA+IEBAIC02NTMsNiAr
+NjU2LDEzIEBAIHN0YXRpYyBzdHJ1Y3QgaW9tbXVfZ3JvdXAgKmlvbW11X2dyb3VwX2dldF9mb3Jf
+cGNpX2RldihzdHJ1Y3QgcGNpX2RldiAqcGRldikKPiA+ID4gIAkJcmV0dXJuIGRhdGEuZ3JvdXA7
+Cj4gPiA+ICAKPiA+ID4gIAlwZGV2ID0gZGF0YS5wZGV2Owo+ID4gPiArCWlmIChhbGlhcykgewo+
+ID4gPiArCQl1OCBidXNuID0gUENJX0JVU19OVU0ocGRldi0+YnVzLT5udW1iZXIpOwo+ID4gPiAr
+CQlpZiAocGRldi0+ZGV2X2ZsYWdzICYgUENJX0RFVl9GTEFHU19ETUFfQUxJQVNfREVWRk4pCj4g
+PiA+ICsJCQkqYWxpYXMgPSBQQ0lfREVWSUQoYnVzbiwgcGRldi0+ZG1hX2FsaWFzX2RldmZuKTsK
+PiA+ID4gKwkJZWxzZQo+ID4gPiArCQkJKmFsaWFzID0gZGF0YS5hbGlhczsKPiA+ID4gKwl9Cj4g
+PiA+ICAKPiA+ID4gIAkvKgo+ID4gPiAgCSAqIENvbnRpbnVlIHVwc3RyZWFtIGZyb20gdGhlIHBv
+aW50IG9mIG1pbmltdW0gSU9NTVUgZ3JhbnVsYXJpdHkKPiA+ID4gQEAgLTcxNyw3ICs3MjcsNyBA
+QCBzdHJ1Y3QgaW9tbXVfZ3JvdXAgKmlvbW11X2dyb3VwX2dldF9mb3JfZGV2KHN0cnVjdCBkZXZp
+Y2UgKmRldikKPiA+ID4gIAlpZiAoIWRldl9pc19wY2koZGV2KSkKPiA+ID4gIAkJcmV0dXJuIEVS
+Ul9QVFIoLUVJTlZBTCk7Cj4gPiA+ICAKPiA+ID4gLQlncm91cCA9IGlvbW11X2dyb3VwX2dldF9m
+b3JfcGNpX2Rldih0b19wY2lfZGV2KGRldikpOwo+ID4gPiArCWdyb3VwID0gaW9tbXVfZ3JvdXBf
+Z2V0X2Zvcl9wY2lfZGV2KHRvX3BjaV9kZXYoZGV2KSwgTlVMTCk7Cj4gPiA+ICAKPiA+ID4gIAlp
+ZiAoSVNfRVJSKGdyb3VwKSkKPiA+ID4gIAkJcmV0dXJuIGdyb3VwOwo+ID4gPiBkaWZmIC0tZ2l0
+IGEvaW5jbHVkZS9saW51eC9pb21tdS5oIGIvaW5jbHVkZS9saW51eC9pb21tdS5oCj4gPiA+IGlu
+ZGV4IDM4ZGFhNDUzZjJlNS4uMWZlOTdkNjJhMjg2IDEwMDY0NAo+ID4gPiAtLS0gYS9pbmNsdWRl
+L2xpbnV4L2lvbW11LmgKPiA+ID4gKysrIGIvaW5jbHVkZS9saW51eC9pb21tdS5oCj4gPiA+IEBA
+IC0xOTksNiArMTk5LDggQEAgZXh0ZXJuIGludCBpb21tdV9ncm91cF9yZWdpc3Rlcl9ub3RpZmll
+cihzdHJ1Y3QgaW9tbXVfZ3JvdXAgKmdyb3VwLAo+ID4gPiAgZXh0ZXJuIGludCBpb21tdV9ncm91
+cF91bnJlZ2lzdGVyX25vdGlmaWVyKHN0cnVjdCBpb21tdV9ncm91cCAqZ3JvdXAsCj4gPiA+ICAJ
+CQkJCSAgIHN0cnVjdCBub3RpZmllcl9ibG9jayAqbmIpOwo+ID4gPiAgZXh0ZXJuIGludCBpb21t
+dV9ncm91cF9pZChzdHJ1Y3QgaW9tbXVfZ3JvdXAgKmdyb3VwKTsKPiA+ID4gK2V4dGVybiBzdHJ1
+Y3QgaW9tbXVfZ3JvdXAgKmlvbW11X2dyb3VwX2dldF9mb3JfcGNpX2RldihzdHJ1Y3QgcGNpX2Rl
+diAqZGV2LAo+ID4gPiArCQkJCQkJICAgICAgIHUxNiAqYWxpYXMpOwo+ID4gPiAgZXh0ZXJuIHN0
+cnVjdCBpb21tdV9ncm91cCAqaW9tbXVfZ3JvdXBfZ2V0X2Zvcl9kZXYoc3RydWN0IGRldmljZSAq
+ZGV2KTsKPiA+ID4gIAo+ID4gPiAgZXh0ZXJuIGludCBpb21tdV9kb21haW5fZ2V0X2F0dHIoc3Ry
+dWN0IGlvbW11X2RvbWFpbiAqZG9tYWluLCBlbnVtIGlvbW11X2F0dHIsCj4gPiAKPiA+IAo+ID4g
+Cj4gPiAKCgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
+aW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBz
+Oi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
