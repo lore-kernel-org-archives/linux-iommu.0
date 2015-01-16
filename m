@@ -1,15 +1,17 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH 0/5] arm64: IOMMU-backed DMA mapping
-Date: Fri, 16 Jan 2015 20:12:29 +0000
-Message-ID: <54B970AD.7020407@arm.com>
-References: <cover.1421086706.git.robin.murphy@arm.com>	
-	<1421136128.27675.58.camel@mtksdaap41> <54B80857.7060407@arm.com>
-	<1421392892.19175.6.camel@mhfsdcap03>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu: return dma alias from
+	iommu_group_get_for_pci_dev()
+Date: Fri, 16 Jan 2015 20:33:50 +0000
+Message-ID: <20150116203350.GA21807@arm.com>
+References: <1421427514-16579-1-git-send-email-will.deacon@arm.com>
+	<1421427514-16579-2-git-send-email-will.deacon@arm.com>
+	<1421430111.6130.254.camel@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1421392892.19175.6.camel@mhfsdcap03>
+Content-Disposition: inline
+In-Reply-To: <1421430111.6130.254.camel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,68 +21,128 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: "linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org" <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org" <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "m-karicheri2-l0cyMroinI0@public.gmane.org" <m-karicheri2-l0cyMroinI0@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMTYvMDEvMTUgMDc6MjEsIFlvbmcgV3Ugd3JvdGU6ClsuLi5dCj4+IE5vdyB0aGF0IHRoZSBz
-ZXJ2ZXIgc2VlbXMgdG8gYmUgcHJvcGVybHkgYWNjZXNzaWJsZSBhZ2FpbiwgSSd2ZSBtYWRlIGEK
-Pj4gYnJhbmNoIHdpdGggYm90aCBzZXJpZXMgYXZhaWxhYmxlIGhlcmU6Cj4+Cj4+ICAgICBnaXQ6
-Ly9saW51eC1hcm0ub3JnL2xpbnV4LXJtIGlvbW11L2RtYQo+Pgo+PiBOb3RlIHRoYXQgaW4gdGhl
-IGN1cnJlbnQgc3RhdGUgaXQgYWxzbyBkZXBlbmRzIG9uIGhhdmluZyB0aGUgQVJNIFNNTVUKPj4g
-ZHJpdmVyIHNlbGVjdGVkIGluIHRoZSBjb25maWcsIGR1ZSB0byBhbiBvdmVyc2lnaHQgb24gbXkg
-cGFydCA6KAo+Pgo+PiBSb2Jpbi4KPj4KPiBEZWFyIFJvYmluLAo+Cj4gICAgICAgV2UgaGF2ZSB0
-ZXN0IHRoaXMgcGF0Y2ggb24gb3VyIFNPQyhtdDgxNzMpLHdoaWNoIGhhdmUgb3VyIG93biBpb21t
-dQo+IEhXKGl0IGlzIG5vdCBBUk0gU01NVSksIHRoZSBwYXRjaCBjb3VsZCB3b3JrIHdlbGwuCj4g
-VGVzdGVkLWJ5OllvbmcgV3UgPHlvbmcud3VAbWVkaWF0ZWsuY29tPgo+CgpUaGFua3MhCgo+ICAg
-QW5kIEkgaGF2ZSBzb21lIHF1ZXN0aW9uZXMgYWJvdXQgdGhlIHVzYWdlOgo+Cj4gMSkgSWYgd2Ug
-Y3JlYXRlIGEgaW9tbXUgZG9tYWluIGJ5IOKAnGFyY2hfc2V0dXBfZG1hX29wcyIsIHRoZW4gd2Ug
-d291bGQKPiBsaWtlIHRvIGNhbGwgdGhlIHN0YW5kYXJkIGlvbW11IGludGVyZmFjZSwgbGlrZQo+
-IOKAnGlvbW11X3NldF9mYXVsdF9oYW5kbGXigJ0sCj4gSG93IGNhbiB3ZSBnZXQgdGhlICJzdHJ1
-Y3QgaW9tbXVfZG9tYWluICoiPyAodGhlIOKAnGRldl9kb21haW7igJ0gaXMKPiBzdGF0aWMuKQo+
-Cj4gMikgSWYgYSBkZXZpY2UgQSBjYWxsIOKAnGFyY2hfc2V0dXBfZG1hX29wc+KAnSB0byBjcmVh
-dGUgYSBpb21tdSBkb21haW4sIGFuZAo+IGEgY2xpZW50IGRldmljZSBCIHdvdWxkIGxpa2UgdG8g
-am9pbiB0aGlzIGlvbW11IGRvbWFpbiwKPiBzbyBpdCBjYWxsIOKAnGlvbW11X2RtYV9hdHRhY2hf
-ZGV2aWNl4oCdLiB0aGVuIHRoZSBkZXZpY2UgQiB3YW50IHRvIGFsbG9jCj4gdGhlIGlvbW11IG1l
-bW9yeSwgaXQgY2FsbCDigJxkbWFfYWxsb2NfYXR0cnPigJ0gd2hvc2UgZmlyc3QgcGFyYW1ldGVy
-IHNob3VsZAo+IGJlIHRoZSDigJxzdHJ1Y3QgZGV2aWNlICrigJ1vZiBkZXZpY2UgQS4gSXMgaXQg
-ZGVzaWduZWQgbGlrZSB0aGlzIGluIHRoaXMKPiBwYXRjaD8KPiAgICAgIChJbiBhcmNoL2FybSwg
-4oCcZGV2LT5hcmNoZGF0YS5kbWFfb3BzID0gJmlvbW11X2RtYV9vcHPigJ0gaXMgaW4KPiDigJxh
-cm1faW9tbXVfYXR0YWNoX2RldmNl4oCdOwo+ICAgICAgIEluIHRoaXMgcGF0Y2gsIHRoaXMgc2Vu
-dGVuY2UgaXMgaW4g4oCcYXJjaF9zZXR1cF9kbWFfb3Bz4oCdKS4KPgoKQXQgdGhpcyBwb2ludCB0
-aGVyZSdzIG5vdCByZWFsbHkgYW55IHN1cHBvcnQgZm9yIGRldmljZXMgbWFuYWdpbmcgdGhlaXIg
-Cm93biBJT01NVXMgLSBpbml0aWFsbHkgSSd2ZSBvbmx5IGJlZW4gZm9jdXNpbmcgb24gdGhlIGNh
-c2Ugd2hlcmUgCmRtYS1tYXBwaW5nIGhhbmRsZXMgZXZlcnl0aGluZyB0cmFuc3BhcmVudGx5LCB3
-aXRoIGxlZ2FjeSAzMi1iaXQgCnBlcmlwaGVyYWxzIGluIG1pbmQuIFRoZXJlJ3MgYWxyZWFkeSBi
-ZWVuIHF1aXRlIGEgbG90IG9mIGRpc2N1c3Npb24gb3ZlciAKdGhlIHNob3J0Y29taW5ncyBvZiB0
-aGUgY3VycmVudCBhcmNoX3NldHVwX2RtYV9vcHMgbW9kZWwgKG1vc3QgcmVjZW50bHksIApbMV0p
-LCBidXQgaXQganVzdC1hYm91dC13b3JrcyBvbiBKdW5vIHdoZXJlIHdlIGhhdmUgYSBzaW5nbGUg
-ZGV2aWNlIApiZWhpbmQgZWFjaCBJT01NVSAod2l0aCB0aGUgZXhjZXB0aW9uIG9mIHRoZSBVU0Ig
-T0hDSSB3aGljaCBmYWxscyBmb3VsIApvZiB0aGUgZG9tYWluLXBlci1kZXZpY2UgYXBwcm9hY2gg
-YW5kIGZhbGxzIG92ZXIgYmVjYXVzZSBpdCBjYW4ndCAKdW5kZXJzdGFuZCBhZGRyZXNzZXMgZnJv
-bSB0aGUgRUhDSSkuIFdlIHJlYWxseSBuZWVkIHRvIGdldCBJT01NVSBncm91cHMgCndvcmtpbmcg
-aW4gb3JkZXIgdG8gbWFuYWdlIGRvbWFpbnMgcHJvcGVybHksIHdoaWNoIGZvciBvbmUgdGhpbmcg
-CnJlcXVpcmVzIGZpeGluZyB0aGUgY3VycmVudCBzaXR1YXRpb24gb2YgZGV2aWNlcyBnZXR0aW5n
-IGF0dGFjaGVkIHRvIGEgCmRvbWFpbiBiZWZvcmUgdGhleSd2ZSBldmVuIGJlZW4gYWRkZWQgdG8g
-dGhlIGJ1cy4gSSd2ZSBzdGFydGVkIGxvb2tpbmcgCmludG8gdGhhdCwgYnV0IEkgc3VzcGVjdCBp
-dCdzIGdvaW5nIHRvIGJlIGxvbmcgYW5kIGNvbXBsaWNhdGVkLgoKPiAzKSAgdm9pZCBhcmNoX3Nl
-dHVwX2RtYV9vcHMoc3RydWN0IGRldmljZSAqZGV2LCB1NjQgZG1hX2Jhc2UsIHU2NCBzaXplLAo+
-IHN0cnVjdCBpb21tdV9vcHMgKmlvbW11LCBib29sIGNvaGVyZW50KQo+ICAgICAgSW4gdGhpcyBm
-dW5jdGlvbiwgdGhlIHNlY29uZCBhbmQgdGhpcmQgcGFyYW1ldGVyIGFyZSB0aGUgZG1hIGFkZHJl
-c3MKPiBiYXNlIGFuZCBzaXplLCBjYW4gdGhleSB3b3JrIGN1cnJlbnRseT8KPiAodGFrZSBhIGV4
-YW1wbGUsIEkgc2V0IHRoZSBkbWFfYmFzZSBpcyAwLCBzaXplIGlzIDB4NDAwMDAwMDAgd2hpbGUK
-PiBjYWxsaW5nIGFyY2hfc2V0dXBfZG1hX29wcywKPiAgIHRoZW4gSSBhbGxvYyBhIHJhbmdlIGlv
-dmEgd2hvc2Ugc2l6ZSBpcyA1MCpTWl80SywgdGhlIHJldHVybiBpb3ZhIGlzCj4gMHhmZmZjZTAw
-MCwgaXQgaXMgb3ZlciAweDQwMDAwMDAwLikKPgoKVGhhdCdsbCBiZSBjb21pbmcgZnJvbSBfX2Fs
-bG9jX2lvdmEgdXNpbmcgdGhlIGRldmljZSdzIGRtYV9tYXNrIGFzIGFuIAp1cHBlciBsaW1pdC4g
-V2hpbHN0IEknbSBub3Qgc3VyZSBpZiBoYXZpbmcgZml4ZWQgdHJhbnNsYXRpb25zIHBlciAKZG1h
-LXJhbmdlcyBtYWtlcyBzZW5zZSB3aXRoIGFuIElPTU1VIHByZXNlbnQsIHRoZXJlIGRvZXMgc2Vl
-bSB0byBiZSBhIAp2YWxpZCBjYXNlIGZvciBoYXZpbmcgYSBzaXplIHNtYWxsZXIgdGhhbiB0aGUg
-ZHJpdmVyJ3MgZG1hX21hc2sgLSBlLmcuIGEgCmRldmljZSB0aGF0IGp1c3QgaGFwcGVucyB0byBo
-YXZlIHNvbWUgdXBwZXIgYWRkcmVzcyBsaW5lcyB0aWVkIG9mZiBpbiBhIApwYXJ0aWN1bGFyIGlt
-cGxlbWVudGF0aW9uIC0gc28gSSdsbCBjaGFuZ2UgdGhhdCB0byBwcm9wZXJseSByZXNwZWN0IHRo
-ZSAKZG1hLXJhbmdlcyB2YWx1ZXMuCgpSb2Jpbi4KClsxXTpodHRwOi8vdGhyZWFkLmdtYW5lLm9y
-Zy9nbWFuZS5saW51eC5rZXJuZWwuaW9tbXUvNzU1Ni9mb2N1cz04MjM3CgoKX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0Cmlv
-bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0
-aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi Alex,
+
+Thanks for having a look.
+
+On Fri, Jan 16, 2015 at 05:41:51PM +0000, Alex Williamson wrote:
+> On Fri, 2015-01-16 at 16:58 +0000, Will Deacon wrote:
+> > Some IOMMU drivers (e.g. the ARM SMMU) require not only the IOMMU group
+> > for a PCI device, but also the effective alias of the device (as seen by
+> > the IOMMU) in order to program the translations correctly.
+> > 
+> > This patch extends iommu_group_get_for_pci_dev to return the DMA alias
+> > of the device as well as the group, which can potentially be overridden
+> > by quirks in the PCI layer. The function is also made visible to drivers
+> > so that the new functionality can be used.
+> > 
+> > Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> > ---
+> >  drivers/iommu/iommu.c | 14 ++++++++++++--
+> >  include/linux/iommu.h |  2 ++
+> >  2 files changed, 14 insertions(+), 2 deletions(-)
+> 
+> This would seem to promote the idea that an IOMMU group for a PCI device
+> has a single bdf alias, which is not necessarily true.
+
+True, but you can deal with that in the caller by ensuring you get the alias
+for each member of the group, no?
+
+> It also only returns the alias based on PCI topology, which can easily be
+> discovered by the caller using pci_for_each_dma_alias() directly.  So I
+> don't really see the benefit of this versus using
+> iommu_group_for_each_dev() and/or pci_for_each_dma_alias().
+
+The problem with using pci_for_each_dma_alias is that I end up duplicating
+the remainder of iommu_group_get_for_pci_dev in the SMMU driver in order
+to handle PCI_DEV_FLAGS_DMA_ALIAS_DEVFN set by PCI quirks and
+aliasing due to ACS constraints. Furthermore, I end up walking the PCI
+topology twice: once for the group and a second time for the aliases.
+
+> It's also intentional that while we have PCI specific code in iommu.c,
+> the exposed interfaces are device agnostic.  I'm not seeing enough
+> reason here to change that.  Thanks,
+
+Hmm, I'd really rather have *something* in the core to avoid duplication
+between all IOMMU drivers sitting on PCI without ACPI tables to describe
+the IDs. How about a method to extract the IDs from an IOMMU group?
+
+Will
+
+> 
+> Alex
+> 
+> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> > index f7718d73e984..5300b6507481 100644
+> > --- a/drivers/iommu/iommu.c
+> > +++ b/drivers/iommu/iommu.c
+> > @@ -616,6 +616,7 @@ static struct iommu_group *get_pci_alias_group(struct pci_dev *pdev,
+> >  struct group_for_pci_data {
+> >  	struct pci_dev *pdev;
+> >  	struct iommu_group *group;
+> > +	u16 alias;
+> >  };
+> >  
+> >  /*
+> > @@ -628,6 +629,7 @@ static int get_pci_alias_or_group(struct pci_dev *pdev, u16 alias, void *opaque)
+> >  
+> >  	data->pdev = pdev;
+> >  	data->group = iommu_group_get(&pdev->dev);
+> > +	data->alias = alias;
+> >  
+> >  	return data->group != NULL;
+> >  }
+> > @@ -636,7 +638,8 @@ static int get_pci_alias_or_group(struct pci_dev *pdev, u16 alias, void *opaque)
+> >   * Use standard PCI bus topology, isolation features, and DMA alias quirks
+> >   * to find or create an IOMMU group for a device.
+> >   */
+> > -static struct iommu_group *iommu_group_get_for_pci_dev(struct pci_dev *pdev)
+> > +struct iommu_group *iommu_group_get_for_pci_dev(struct pci_dev *pdev,
+> > +						u16 *alias)
+> >  {
+> >  	struct group_for_pci_data data;
+> >  	struct pci_bus *bus;
+> > @@ -653,6 +656,13 @@ static struct iommu_group *iommu_group_get_for_pci_dev(struct pci_dev *pdev)
+> >  		return data.group;
+> >  
+> >  	pdev = data.pdev;
+> > +	if (alias) {
+> > +		u8 busn = PCI_BUS_NUM(pdev->bus->number);
+> > +		if (pdev->dev_flags & PCI_DEV_FLAGS_DMA_ALIAS_DEVFN)
+> > +			*alias = PCI_DEVID(busn, pdev->dma_alias_devfn);
+> > +		else
+> > +			*alias = data.alias;
+> > +	}
+> >  
+> >  	/*
+> >  	 * Continue upstream from the point of minimum IOMMU granularity
+> > @@ -717,7 +727,7 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
+> >  	if (!dev_is_pci(dev))
+> >  		return ERR_PTR(-EINVAL);
+> >  
+> > -	group = iommu_group_get_for_pci_dev(to_pci_dev(dev));
+> > +	group = iommu_group_get_for_pci_dev(to_pci_dev(dev), NULL);
+> >  
+> >  	if (IS_ERR(group))
+> >  		return group;
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index 38daa453f2e5..1fe97d62a286 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -199,6 +199,8 @@ extern int iommu_group_register_notifier(struct iommu_group *group,
+> >  extern int iommu_group_unregister_notifier(struct iommu_group *group,
+> >  					   struct notifier_block *nb);
+> >  extern int iommu_group_id(struct iommu_group *group);
+> > +extern struct iommu_group *iommu_group_get_for_pci_dev(struct pci_dev *dev,
+> > +						       u16 *alias);
+> >  extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
+> >  
+> >  extern int iommu_domain_get_attr(struct iommu_domain *domain, enum iommu_attr,
+> 
+> 
+> 
+> 
