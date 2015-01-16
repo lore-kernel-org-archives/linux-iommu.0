@@ -1,7 +1,7 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 1/2] iommu: return dma alias from iommu_group_get_for_pci_dev()
-Date: Fri, 16 Jan 2015 16:58:33 +0000
-Message-ID: <1421427514-16579-2-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 2/2] iommu/arm-smmu: remove homebrew PCI dma alias parsing
+Date: Fri, 16 Jan 2015 16:58:34 +0000
+Message-ID: <1421427514-16579-3-git-send-email-will.deacon@arm.com>
 References: <1421427514-16579-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,86 +21,118 @@ To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 Cc: m-karicheri2-l0cyMroinI0@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Some IOMMU drivers (e.g. the ARM SMMU) require not only the IOMMU group
-for a PCI device, but also the effective alias of the device (as seen by
-the IOMMU) in order to program the translations correctly.
-
-This patch extends iommu_group_get_for_pci_dev to return the DMA alias
-of the device as well as the group, which can potentially be overridden
-by quirks in the PCI layer. The function is also made visible to drivers
-so that the new functionality can be used.
+Core code can walk the PCI topology and extract the DMA alias for us
+whilst retrieving the IOMMU group for a device, so use that instead.
 
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 14 ++++++++++++--
- include/linux/iommu.h |  2 ++
- 2 files changed, 14 insertions(+), 2 deletions(-)
+ drivers/iommu/arm-smmu.c | 58 ++++++++++++++++++++++++++----------------------
+ 1 file changed, 31 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index f7718d73e984..5300b6507481 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -616,6 +616,7 @@ static struct iommu_group *get_pci_alias_group(struct pci_dev *pdev,
- struct group_for_pci_data {
- 	struct pci_dev *pdev;
- 	struct iommu_group *group;
-+	u16 alias;
- };
- 
- /*
-@@ -628,6 +629,7 @@ static int get_pci_alias_or_group(struct pci_dev *pdev, u16 alias, void *opaque)
- 
- 	data->pdev = pdev;
- 	data->group = iommu_group_get(&pdev->dev);
-+	data->alias = alias;
- 
- 	return data->group != NULL;
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 006f006c35e9..779c248a140d 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1255,12 +1255,6 @@ static bool arm_smmu_capable(enum iommu_cap cap)
+ 	}
  }
-@@ -636,7 +638,8 @@ static int get_pci_alias_or_group(struct pci_dev *pdev, u16 alias, void *opaque)
-  * Use standard PCI bus topology, isolation features, and DMA alias quirks
-  * to find or create an IOMMU group for a device.
-  */
--static struct iommu_group *iommu_group_get_for_pci_dev(struct pci_dev *pdev)
-+struct iommu_group *iommu_group_get_for_pci_dev(struct pci_dev *pdev,
-+						u16 *alias)
+ 
+-static int __arm_smmu_get_pci_sid(struct pci_dev *pdev, u16 alias, void *data)
+-{
+-	*((u16 *)data) = alias;
+-	return 0; /* Continue walking */
+-}
+-
+ static void __arm_smmu_release_pci_iommudata(void *data)
  {
- 	struct group_for_pci_data data;
- 	struct pci_bus *bus;
-@@ -653,6 +656,13 @@ static struct iommu_group *iommu_group_get_for_pci_dev(struct pci_dev *pdev)
- 		return data.group;
+ 	kfree(data);
+@@ -1269,56 +1263,66 @@ static void __arm_smmu_release_pci_iommudata(void *data)
+ static int arm_smmu_add_device(struct device *dev)
+ {
+ 	struct arm_smmu_device *smmu;
+-	struct arm_smmu_master_cfg *cfg;
+ 	struct iommu_group *group;
+-	void (*releasefn)(void *) = NULL;
+ 	int ret;
  
- 	pdev = data.pdev;
-+	if (alias) {
-+		u8 busn = PCI_BUS_NUM(pdev->bus->number);
-+		if (pdev->dev_flags & PCI_DEV_FLAGS_DMA_ALIAS_DEVFN)
-+			*alias = PCI_DEVID(busn, pdev->dma_alias_devfn);
-+		else
-+			*alias = data.alias;
-+	}
+ 	smmu = find_smmu_for_device(dev);
+ 	if (!smmu)
+ 		return -ENODEV;
  
- 	/*
- 	 * Continue upstream from the point of minimum IOMMU granularity
-@@ -717,7 +727,7 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
- 	if (!dev_is_pci(dev))
- 		return ERR_PTR(-EINVAL);
+-	group = iommu_group_alloc();
+-	if (IS_ERR(group)) {
+-		dev_err(dev, "Failed to allocate IOMMU group\n");
+-		return PTR_ERR(group);
+-	}
+-
+ 	if (dev_is_pci(dev)) {
++		u16 sid;
++		struct arm_smmu_master_cfg *cfg;
+ 		struct pci_dev *pdev = to_pci_dev(dev);
++		void (*releasefn)(void *) = __arm_smmu_release_pci_iommudata;
  
--	group = iommu_group_get_for_pci_dev(to_pci_dev(dev));
-+	group = iommu_group_get_for_pci_dev(to_pci_dev(dev), NULL);
+-		cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
++		group = iommu_group_get_for_pci_dev(pdev, &sid);
++		if (IS_ERR(group))
++			goto out_no_group;
++
++		cfg = iommu_group_get_iommudata(group);
+ 		if (!cfg) {
+-			ret = -ENOMEM;
++			cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
++			if (!cfg) {
++				ret = -ENOMEM;
++				goto out_put_group;
++			}
++
++			iommu_group_set_iommudata(group, cfg, releasefn);
++		}
++
++		if (cfg->num_streamids >= MAX_MASTER_STREAMIDS) {
++			ret = -ENOSPC;
+ 			goto out_put_group;
+ 		}
  
- 	if (IS_ERR(group))
- 		return group;
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 38daa453f2e5..1fe97d62a286 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -199,6 +199,8 @@ extern int iommu_group_register_notifier(struct iommu_group *group,
- extern int iommu_group_unregister_notifier(struct iommu_group *group,
- 					   struct notifier_block *nb);
- extern int iommu_group_id(struct iommu_group *group);
-+extern struct iommu_group *iommu_group_get_for_pci_dev(struct pci_dev *dev,
-+						       u16 *alias);
- extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
+-		cfg->num_streamids = 1;
+ 		/*
+ 		 * Assume Stream ID == Requester ID for now.
+ 		 * We need a way to describe the ID mappings in FDT.
+ 		 */
+-		pci_for_each_dma_alias(pdev, __arm_smmu_get_pci_sid,
+-				       &cfg->streamids[0]);
+-		releasefn = __arm_smmu_release_pci_iommudata;
++		cfg->streamids[cfg->num_streamids++] = sid;
+ 	} else {
+ 		struct arm_smmu_master *master;
  
- extern int iommu_domain_get_attr(struct iommu_domain *domain, enum iommu_attr,
+ 		master = find_smmu_master(smmu, dev->of_node);
+-		if (!master) {
+-			ret = -ENODEV;
+-			goto out_put_group;
+-		}
++		if (!master)
++			return -ENODEV;
++
++		group = iommu_group_alloc();
++		if (IS_ERR(group))
++			goto out_no_group;
+ 
+-		cfg = &master->cfg;
++		iommu_group_set_iommudata(group, &master->cfg, NULL);
+ 	}
+ 
+-	iommu_group_set_iommudata(group, cfg, releasefn);
+-	ret = iommu_group_add_device(group, dev);
++	return iommu_group_add_device(group, dev);
+ 
+ out_put_group:
+ 	iommu_group_put(group);
+ 	return ret;
++out_no_group:
++	dev_err(dev, "Failed to allocate IOMMU group\n");
++	return PTR_ERR(group);
+ }
+ 
+ static void arm_smmu_remove_device(struct device *dev)
 -- 
 2.1.4
