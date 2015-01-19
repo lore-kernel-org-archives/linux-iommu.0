@@ -1,19 +1,15 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu: return dma alias from
-	iommu_group_get_for_pci_dev()
-Date: Mon, 19 Jan 2015 12:02:18 +0000
-Message-ID: <20150119120217.GH32131@arm.com>
-References: <1421427514-16579-1-git-send-email-will.deacon@arm.com>
-	<1421427514-16579-2-git-send-email-will.deacon@arm.com>
-	<1421430111.6130.254.camel@redhat.com>
-	<20150116203350.GA21807@arm.com>
-	<1421442663.6130.281.camel@redhat.com>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v11 00/20] VFIO support for platform and ARM AMBA devices
+Date: Mon, 19 Jan 2015 13:27:50 +0100
+Message-ID: <54BCF846.1070906@linaro.org>
+References: <1420541335-17190-1-git-send-email-a.motakis@virtualopensystems.com>	<54AF93AB.9030302@linaro.org>	<CAG8rG2yc1ityUwswPiTR_w5f3tSeX_KB2g06HcPCPARXPHGvfg@mail.gmail.com>
+	<CAN9JPjERBVnGku8_BJuesMnzJyQYUgz6rJhL_VrCOgLVQuXyuw@mail.gmail.com>
+	<54BCD9A6.4050501@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1421442663.6130.281.camel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <54BCD9A6.4050501-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,121 +19,225 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "m-karicheri2-l0cyMroinI0@public.gmane.org" <m-karicheri2-l0cyMroinI0@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>
+To: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jan 16, 2015 at 09:11:03PM +0000, Alex Williamson wrote:
-> On Fri, 2015-01-16 at 20:33 +0000, Will Deacon wrote:
-> > On Fri, Jan 16, 2015 at 05:41:51PM +0000, Alex Williamson wrote:
-> > > On Fri, 2015-01-16 at 16:58 +0000, Will Deacon wrote:
-> > > > Some IOMMU drivers (e.g. the ARM SMMU) require not only the IOMMU g=
-roup
-> > > > for a PCI device, but also the effective alias of the device (as se=
-en by
-> > > > the IOMMU) in order to program the translations correctly.
-> > > > =
+Hi Baptiste,
 
-> > > > This patch extends iommu_group_get_for_pci_dev to return the DMA al=
-ias
-> > > > of the device as well as the group, which can potentially be overri=
-dden
-> > > > by quirks in the PCI layer. The function is also made visible to dr=
-ivers
-> > > > so that the new functionality can be used.
-> > > > =
+I think what happens on the second qemu run is:
 
-> > > > Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> > > > ---
-> > > >  drivers/iommu/iommu.c | 14 ++++++++++++--
-> > > >  include/linux/iommu.h |  2 ++
-> > > >  2 files changed, 14 insertions(+), 2 deletions(-)
-> > > =
+an IRQ hits immediatly after request_irq
+automasked handler sets masked = true
+in vfio_set_trigger following condition becomes true
+        if (irq->masked)
+                disable_irq_nosync(irq->hwirq);
+IRQ is disabled twice, in handler and in vfio_set_trigger while there is
+a single enable in resamplefd handler.
+To me you should prevent from entering ISR between request_irq and
+disable_irq.
 
-> > > This would seem to promote the idea that an IOMMU group for a PCI dev=
-ice
-> > > has a single bdf alias, which is not necessarily true.
-> > =
+It does not happen on the first run because no IRQ hit.
 
-> > True, but you can deal with that in the caller by ensuring you get the =
-alias
-> > for each member of the group, no?
-> =
+Please let me know if you share this understanding.
 
-> If the caller needs to do that anyway (which they do), what's the point
-> of this addition?  What does this alias that we're returning here
-> represent versus the other aliases available?  Doesn't the alias
-> returned depend on the IOMMU group member that it's called from?  Or
-> even whether the group has already been established?  So even if it did
-> make sense to return an alias, the answer depends on the caller's
-> perspective.  Sort of a Schr=F6dinger's cat function.
+Best Regards
 
-I'm trying to use this function from the ->add_device IOMMU callback, so
-that I can figure out (a) which IOMMU group the new device is in and (b)
-which aliases are contained in that group.
+Eric
 
-I achieve (b) not by walking the group (iommu_group_for_each_dev) on each
-->add_device, but by simply adding the alias for the new device to a data
-structure stashed via iommu_group_set_iommudata.
-
-Anyway, you have some good points, more below...
-
-> > > It also only returns the alias based on PCI topology, which can easil=
-y be
-> > > discovered by the caller using pci_for_each_dma_alias() directly.  So=
- I
-> > > don't really see the benefit of this versus using
-> > > iommu_group_for_each_dev() and/or pci_for_each_dma_alias().
-> > =
-
-> > The problem with using pci_for_each_dma_alias is that I end up duplicat=
-ing
-> > the remainder of iommu_group_get_for_pci_dev in the SMMU driver in order
-> > to handle PCI_DEV_FLAGS_DMA_ALIAS_DEVFN set by PCI quirks and
-> > aliasing due to ACS constraints. Furthermore, I end up walking the PCI
-> > topology twice: once for the group and a second time for the aliases.
-> =
-
-> But the patch is taking the alias only after the
-> pci_for_each_dma_alias() call, not after the ACS constraints, so I don't
-> see how the duplicated code is any more than another
-> pci_for_each_dma_alias() plus callback.  intel-iommu does this plenty.
-
-Right, I think this is what I was missing. Given that the ACS stuff is all
-about getting the right group, then I should already have seen any other
-group members in ->add_device and therefore using pci_for_each_dma_alias
-will work fine providing that I obtain the group using
-iommu_group_get_for_dev. Any further alias transformations will be described
-by the firmware. Sound sensible?
-
-> Is walking the PCI topology a second time really an issue?  IOMMU group
-> setup should be done at boot, and really how deep do you expect a PCI
-> topology to be?  A "complex" device will have a switch/bridge and
-> endpoints, so we're talking about up to 3 bus levels.  In theory, yes we
-> could walk a monster topology, in practice, notsomuch.
-
-Ok, I guess we can revisit this if it does ever become an issue.
-
-> > > It's also intentional that while we have PCI specific code in iommu.c,
-> > > the exposed interfaces are device agnostic.  I'm not seeing enough
-> > > reason here to change that.  Thanks,
-> > =
-
-> > Hmm, I'd really rather have *something* in the core to avoid duplication
-> > between all IOMMU drivers sitting on PCI without ACPI tables to describe
-> > the IDs. How about a method to extract the IDs from an IOMMU group?
-> =
-
-> Well, we do have stuff in the core.  We can get an IOMMU group for a
-> device, we can iterate the devices within an IOMMU group, and we can get
-> alias for devices that are PCI.  The IOMMU & PCI cores facilitates all
-> of that.  I don't get why we need to incorporate some combination of
-> that into a new or existing interface when it implies a relationship
-> that doesn't necessarily exist and biases the IOMMU interfaces towards a
-> particular device type.  Thanks,
-
-Combining the interfaces would help to reduce some redundant walking of
-device topologies, but since that's not a practical problem at the moment
-then I'll make do with what we have.
-
-Will
+On 01/19/2015 11:17 AM, Eric Auger wrote:
+> Hi Baptiste,
+> 
+> sorry I was off on Friday. you're right I missed the masked field was
+> reset on init. Nethertheless with current QEMU VFIO code, IRQ runs on
+> the first run and not on the second one. I investigate on my side ...
+> 
+> Best Regards
+> 
+> Eric
+> 
+> 
+> 
+> 
+> On 01/16/2015 02:25 PM, Baptiste Reynal wrote:
+>> Hello Eric,
+>>
+>> I'm not sure I understand the issue here. I tried to reproduce the bug
+>> by triggering an interrupt without unmasking it, but the interrupt is
+>> unmasked when the program access to the device (vfio_platform_open
+>> reinit IRQs).
+>>
+>> May I have more details on the bug ?
+>>
+>> Thanks
+>>
+>> On Fri, Jan 9, 2015 at 12:33 PM, Antonios Motakis
+>> <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org
+>> <mailto:a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>> wrote:
+>>
+>>     On Fri, Jan 9, 2015 at 9:39 AM, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+>>     <mailto:eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>> wrote:
+>>     > Hi Antonios,
+>>     >
+>>     > when moving to 3.19rc3 I observe a regression with my xgmac use case
+>>     > (real-time change?).
+>>     >
+>>     > I guess what happens is when I kill a first qemu session, guest does not
+>>     > have time to complete the virtual IRQ and the unmask is not performed by
+>>     > the virqfd handler. When starting a new QEMU session, the irqfd
+>>     > signalling is put in place again but since the masked field is set, the
+>>     > IRQ is left unmasked (v11 modification in vfio_set_trigger).
+>>     >
+>>     > The problem is that we don't discriminate between user mask action and
+>>     > automasked handler action. In case the user did not mask, I think we
+>>     > should reset the masked field when doing the free_irq. What do you think?
+>>
+>>     Hello Eric,
+>>
+>>     I agree, we should reset the masked field for future users.
+>>
+>>     Best regards
+>>     Antonios
+>>
+>>     >
+>>     > Best Regards
+>>     >
+>>     > Eric
+>>     >
+>>     > On 01/06/2015 11:48 AM, Antonios Motakis wrote:
+>>     >> This patch series aims to implement VFIO support for platform
+>>     devices that
+>>     >> reside behind an IOMMU. Examples of such devices are devices
+>>     behind an ARM
+>>     >> SMMU, or behind a Samsung Exynos System MMU.
+>>     >>
+>>     >> The API used is based on the existing VFIO API that is also used
+>>     with PCI
+>>     >> devices. Only devices that include a basic set of IRQs and memory
+>>     regions are
+>>     >> targeted; devices with complex relationships with other devices
+>>     on a device
+>>     >> tree are not taken into account at this stage.
+>>     >>
+>>     >> This patch series may be applied on the following series/patches:
+>>     >>  - [PATCH] driver core: amba: add device binding path
+>>     'driver_override'
+>>     >>  - [PATCH v3 0/6] vfio: type1: support for ARM SMMUS with
+>>     VFIO_IOMMU_TYPE1
+>>     >>
+>>     >> A copy can be cloned from the branch vfio-platform-v11 at:
+>>     >> git-9UaJU3cA/F/QT0dZR+AlfA@public.gmane.org:virtualopensystems/linux-kvm-arm.git
+>>     >>
+>>     >> Changes since v10:
+>>     >>  - Check if interrupt is already masked when setting a new trigger
+>>     >>  - Fixed kasprintf with unchecked return value in VFIO AMBA driver
+>>     >> Changes since v9:
+>>     >>  - Reworked the splitting of the patches that decouple virqfd
+>>     from PCI
+>>     >>  - Some styling issues and typos
+>>     >>  - Removed superfluous includes
+>>     >>  - AMBA devices are now named vfio-amba- suffixed by the AMBA
+>>     device id
+>>     >>  - Several other cleanups and fixes
+>>     >> Changes since v8:
+>>     >>  - Separate irq handler for edge and level triggered interrupts
+>>     >>  - Mutex based lock for VFIO fd open/release
+>>     >>  - Fixed bug where the first region of a platform device wasn't
+>>     exposed
+>>     >>  - Read only regions can be MMAPed only read only
+>>     >>  - Code cleanups
+>>     >> Changes since v7:
+>>     >>  - Some initial placeholder functionality for PIO resources
+>>     >>  - Cleaned up code for IRQ triggering, masking and unmasking
+>>     >>  - Some functionality has been removed from this series and
+>>     posted separately:
+>>     >>    - VFIO_IOMMU_TYPE1 support for ARM SMMUs
+>>     >>    - IOMMU NOEXEC patches
+>>     >>    - driver_override functionality for AMBA devices
+>>     >>  - Several fixes
+>>     >> Changes since v6:
+>>     >>  - Integrated support for AMBA devices
+>>     >>  - Numerous cleanups and fixes
+>>     >> Changes since v5:
+>>     >>  - Full eventfd support for IRQ masking and unmasking.
+>>     >>  - Changed IOMMU_EXEC to IOMMU_NOEXEC, along with related flags
+>>     in VFIO.
+>>     >>  - Other fixes based on reviewer comments.
+>>     >> Changes since v4:
+>>     >>  - Use static offsets for each region in the VFIO device fd
+>>     >>  - Include patch in the series for the ARM SMMU to expose IOMMU_EXEC
+>>     >>    availability via IOMMU_CAP_DMA_EXEC
+>>     >>  - Rebased on VFIO multi domain support:
+>>     >>    - IOMMU_EXEC is now available if at least one IOMMU in the
+>>     container
+>>     >>      supports it
+>>     >>    - Expose IOMMU_EXEC if available via the capability
+>>     VFIO_IOMMU_PROT_EXEC
+>>     >>  - Some bug fixes
+>>     >> Changes since v3:
+>>     >>  - Use Kim Phillips' driver_probe_device()
+>>     >> Changes since v2:
+>>     >>  - Fixed Read/Write and MMAP on device regions
+>>     >>  - Removed dependency on Device Tree
+>>     >>  - Interrupts support
+>>     >>  - Interrupt masking/unmasking
+>>     >>  - Automask level sensitive interrupts
+>>     >>  - Introduced VFIO_DMA_MAP_FLAG_EXEC
+>>     >>  - Code clean ups
+>>     >>
+>>     >> Antonios Motakis (20):
+>>     >>   vfio/platform: initial skeleton of VFIO support for platform
+>>     devices
+>>     >>   vfio: platform: probe to devices on the platform bus
+>>     >>   vfio: platform: add the VFIO PLATFORM module to Kconfig
+>>     >>   vfio: amba: VFIO support for AMBA devices
+>>     >>   vfio: amba: add the VFIO for AMBA devices module to Kconfig
+>>     >>   vfio/platform: return info for bound device
+>>     >>   vfio/platform: return info for device memory mapped IO regions
+>>     >>   vfio/platform: read and write support for the device fd
+>>     >>   vfio/platform: support MMAP of MMIO regions
+>>     >>   vfio/platform: return IRQ info
+>>     >>   vfio/platform: initial interrupts support code
+>>     >>   vfio/platform: trigger an interrupt via eventfd
+>>     >>   vfio/platform: support for level sensitive interrupts
+>>     >>   vfio: add a vfio_ prefix to virqfd_enable and virqfd_disable and
+>>     >>     export
+>>     >>   vfio: virqfd: rename vfio_pci_virqfd_init and vfio_pci_virqfd_exit
+>>     >>   vfio: add local lock for virqfd instead of depending on VFIO PCI
+>>     >>   vfio: pass an opaque pointer on virqfd initialization
+>>     >>   vfio: move eventfd support code for VFIO_PCI to a separate file
+>>     >>   vfio: initialize the virqfd workqueue in VFIO generic code
+>>     >>   vfio/platform: implement IRQ masking/unmasking via an eventfd
+>>     >>
+>>     >>  drivers/vfio/Kconfig                          |   1 +
+>>     >>  drivers/vfio/Makefile                         |   5 +-
+>>     >>  drivers/vfio/pci/vfio_pci.c                   |   8 -
+>>     >>  drivers/vfio/pci/vfio_pci_intrs.c             | 238 +-----------
+>>     >>  drivers/vfio/pci/vfio_pci_private.h           |   3 -
+>>     >>  drivers/vfio/platform/Kconfig                 |  19 +
+>>     >>  drivers/vfio/platform/Makefile                |   8 +
+>>     >>  drivers/vfio/platform/vfio_amba.c             | 115 ++++++
+>>     >>  drivers/vfio/platform/vfio_platform.c         | 103 +++++
+>>     >>  drivers/vfio/platform/vfio_platform_common.c  | 520
+>>     ++++++++++++++++++++++++++
+>>     >>  drivers/vfio/platform/vfio_platform_irq.c     | 340
+>>     +++++++++++++++++
+>>     >>  drivers/vfio/platform/vfio_platform_private.h |  82 ++++
+>>     >>  drivers/vfio/vfio.c                           |   8 +
+>>     >>  drivers/vfio/virqfd.c                         | 213 +++++++++++
+>>     >>  include/linux/vfio.h                          |  27 ++
+>>     >>  include/uapi/linux/vfio.h                     |   2 +
+>>     >>  16 files changed, 1456 insertions(+), 236 deletions(-)
+>>     >>  create mode 100644 drivers/vfio/platform/Kconfig
+>>     >>  create mode 100644 drivers/vfio/platform/Makefile
+>>     >>  create mode 100644 drivers/vfio/platform/vfio_amba.c
+>>     >>  create mode 100644 drivers/vfio/platform/vfio_platform.c
+>>     >>  create mode 100644 drivers/vfio/platform/vfio_platform_common.c
+>>     >>  create mode 100644 drivers/vfio/platform/vfio_platform_irq.c
+>>     >>  create mode 100644 drivers/vfio/platform/vfio_platform_private.h
+>>     >>  create mode 100644 drivers/vfio/virqfd.c
+>>     >>
+>>     >
+>>
+>>
+> 
