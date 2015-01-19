@@ -1,15 +1,15 @@
-From: Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v4 18/18] iommu: exynos: add callback for initializing
-	devices from device tree
-Date: Mon, 19 Jan 2015 16:27:47 +0100
-Message-ID: <CABxcv=nkcY0biXuDH1BHDdOZhrzYWr-YNP13QWzdLfZfQrxouA@mail.gmail.com>
-References: <1421399592-7482-1-git-send-email-m.szyprowski@samsung.com>
-	<1421399592-7482-19-git-send-email-m.szyprowski@samsung.com>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH v6 8/8] arm: dma-mapping: plumb our iommu mapping ops into
+	arch_setup_dma_ops
+Date: Mon, 19 Jan 2015 16:52:41 +0100
+Message-ID: <2253719.6TRpaaEdiI@wuerfel>
+References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
+	<2804479.ZFl06ysk3j@avalon> <20150119123623.GB7312@ulmo.nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1421399592-7482-19-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <20150119123623.GB7312-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,70 +19,62 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello Marek,
+On Monday 19 January 2015 13:36:24 Thierry Reding wrote:
+> On Fri, Jan 16, 2015 at 01:18:21AM +0200, Laurent Pinchart wrote:
+> > On Thursday 15 January 2015 11:12:17 Will Deacon wrote:
+> > > On Thu, Jan 15, 2015 at 08:28:44AM +0000, Thierry Reding wrote:
+> > > > On Wed, Jan 14, 2015 at 10:46:10AM +0000, Will Deacon wrote:
+> > > > > On Wed, Jan 14, 2015 at 09:00:24AM +0000, Alexandre Courbot wrote:
+> > > > [...]
+> > > > 
+> > > >>> 2) Say you want to use the IOMMU API in your driver, and have an iommu
+> > > >>> property in your device's DT node. If by chance your IOMMU is
+> > > >>> registered early, you will already have a mapping automatically
+> > > >>> created even before your probe function is called. Can this be
+> > > >>> avoided? Is it even safe?
+> > > >> 
+> > > >> Currently, I think you have to either teardown the ops manually or
+> > > >> return an error from of_xlate. Thierry was also looking at this sort of
+> > > >> thing, so it might be worth talking to him.
+> > > > 
+> > > > I already explained in earlier threads why I think this is a bad idea.
+> > > > It's completely unnatural for any driver to manually tear down something
+> > > > that it didn't want set up in the first place. It also means that you
+> > > > have to carefully audit any users of these IOMMU APIs to make sure that
+> > > > they do tear down. That doesn't sound like a good incremental approach,
+> > > > as evidenced by the breakage that Alex and Heiko have encountered.
+> > > 
+> > > Well, perhaps we hide that behind a get_iommu API or something. We *do*
+> > > need this manual teardown step to support things like VFIO, so it makes
+> > > sense to reuse it for other users too imo.
+> > > 
+> > > > The solution for me has been to completely side-step the issue and not
+> > > > register the IOMMU with the new mechanism at all. That is, there's no
+> > > > .of_xlate() implementation, which means that the ARM DMA API glue won't
+> > > > try to be smart and use the IOMMU in ways it's not meant to be used.
+> > 
+> > That will break when someone will want to use the same IOMMU type for devices 
+> > that use the DMA mapping API to hide the IOMMU. That might not be the case for 
+> > your IOMMU today, but it's pretty fragile, we need to fix it.
+> 
+> No, there's absolutely no issue here. It simply means that you can't do
+> this on Tegra. So far I'm not sure I even see an advantage in using the
+> IOMMU for devices that don't care about it anyway. Consider the example
+> of the SD/MMC or HDA. They typically allocate fairly small buffers, the
+> order of a single page typically. They can simply use memory handed out
+> by the CMA.
+> 
+> So as long as we don't add a .of_xlate() implementation or instantiate
+> via the IOMMU_OF_DECLARE() mechanism we simply don't support IOMMU-over-
+> DMA on Tegra.
 
-I wanted to test your IOMMU series on an Exynos5420 Peach Pit but the
-kernel hangs with your series + dependencies on top of 3.19-rc5.
+It breaks as soon as you have a system with memory above the 4GB boundary,
+which is the whole point of iommus for most users.
 
-Bisecting I found that $subject is the offending commit. I've pushed
-my test branch [0] in case I missed something.
+CMA does not work for streaming mappings, only for the coherent API.
 
-On Fri, Jan 16, 2015 at 10:13 AM, Marek Szyprowski
-<m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrote:
-> This patch adds implementation of of_xlate callback, which prepares
-> masters device for attaching to IOMMU. This callback is called during
-> creating devices from device tree.
->
-> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> ---
->  drivers/iommu/exynos-iommu.c | 28 ++++++++++++++++++++++++++++
->  1 file changed, 28 insertions(+)
->
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index ea2659159e63..5432b443abfc 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -1077,6 +1077,33 @@ static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *iommu_domain,
->         return phys;
->  }
->
-> +static int exynos_iommu_of_xlate(struct device *dev,
-> +                                struct of_phandle_args *spec)
-> +{
-> +       struct exynos_iommu_owner *owner = dev->archdata.iommu;
-> +       struct platform_device *sysmmu = of_find_device_by_node(spec->np);
-> +       struct sysmmu_drvdata *data;
-> +
-> +       if (!sysmmu)
-> +               return -ENODEV;
-> +
-> +       data = platform_get_drvdata(sysmmu);
-> +       if (!data)
-> +               return -ENODEV;
-> +
-> +       if (!owner) {
-> +               owner = kzalloc(sizeof(*owner), GFP_KERNEL);
-> +               if (!owner)
-> +                       return -ENOMEM;
-> +
-> +               INIT_LIST_HEAD(&owner->clients);
-> +               dev->archdata.iommu = owner;
-> +       }
-> +
-> +       list_add_tail(&data->owner_node, &owner->clients);
-
-This is the line that causes the kernel to hang, if I comment the
-list_add_tail() call then the kernel boots.
-
-I checked that neither data nor owner are NULL and that the
-owner->clients list_head is initialized. Do you have any ideas what
-could be happening?
-
-Thanks a lot and best regards,
-Javier
-
-[0]: git://git.collabora.co.uk/git/user/javier/linux.git exynos-sysmmu-3.19-rc5
+	Arnd
