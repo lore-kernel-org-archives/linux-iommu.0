@@ -1,121 +1,218 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH v4 17/18] iommu: exynos: init from dt-specific callback instead of initcall
-Date: Mon, 19 Jan 2015 03:11:07 +0200
-Message-ID: <10691050.Z5RGmE4fp0@avalon>
-References: <1421399592-7482-1-git-send-email-m.szyprowski@samsung.com> <1421399592-7482-18-git-send-email-m.szyprowski@samsung.com>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v11 00/20] VFIO support for platform and ARM AMBA devices
+Date: Mon, 19 Jan 2015 11:17:10 +0100
+Message-ID: <54BCD9A6.4050501@linaro.org>
+References: <1420541335-17190-1-git-send-email-a.motakis@virtualopensystems.com>	<54AF93AB.9030302@linaro.org>	<CAG8rG2yc1ityUwswPiTR_w5f3tSeX_KB2g06HcPCPARXPHGvfg@mail.gmail.com>
+	<CAN9JPjERBVnGku8_BJuesMnzJyQYUgz6rJhL_VrCOgLVQuXyuw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <1421399592-7482-18-git-send-email-m.szyprowski@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAN9JPjERBVnGku8_BJuesMnzJyQYUgz6rJhL_VrCOgLVQuXyuw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Marek,
+Hi Baptiste,
 
-Thank you for the patch.
+sorry I was off on Friday. you're right I missed the masked field was
+reset on init. Nethertheless with current QEMU VFIO code, IRQ runs on
+the first run and not on the second one. I investigate on my side ...
 
-On Friday 16 January 2015 10:13:11 Marek Szyprowski wrote:
-> This patch introduces IOMMU_OF_DECLARE-based initialization to the
-> driver, which replaces subsys_initcall-based procedure.
-> exynos_iommu_of_setup ensures that each sysmmu controller is probed
-> before its master device.
+Best Regards
+
+Eric
+
+
+
+
+On 01/16/2015 02:25 PM, Baptiste Reynal wrote:
+> Hello Eric,
 > 
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> ---
->  drivers/iommu/exynos-iommu.c | 28 +++++++++++++++++++++++++++-
->  1 file changed, 27 insertions(+), 1 deletion(-)
+> I'm not sure I understand the issue here. I tried to reproduce the bug
+> by triggering an interrupt without unmasking it, but the interrupt is
+> unmasked when the program access to the device (vfio_platform_open
+> reinit IRQs).
 > 
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index c53cc8f61176..ea2659159e63 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -13,16 +13,21 @@
->  #endif
+> May I have more details on the bug ?
 > 
->  #include <linux/clk.h>
-> +#include <linux/dma-mapping.h>
->  #include <linux/err.h>
->  #include <linux/io.h>
->  #include <linux/iommu.h>
->  #include <linux/interrupt.h>
->  #include <linux/list.h>
-> +#include <linux/of.h>
-> +#include <linux/of_iommu.h>
-> +#include <linux/of_platform.h>
->  #include <linux/platform_device.h>
->  #include <linux/pm_runtime.h>
->  #include <linux/slab.h>
+> Thanks
 > 
->  #include <asm/cacheflush.h>
-> +#include <asm/dma-iommu.h>
->  #include <asm/pgtable.h>
+> On Fri, Jan 9, 2015 at 12:33 PM, Antonios Motakis
+> <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org
+> <mailto:a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>> wrote:
 > 
->  typedef u32 sysmmu_iova_t;
-> @@ -1084,6 +1089,8 @@ static const struct iommu_ops exynos_iommu_ops = {
->  	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
->  };
+>     On Fri, Jan 9, 2015 at 9:39 AM, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+>     <mailto:eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>> wrote:
+>     > Hi Antonios,
+>     >
+>     > when moving to 3.19rc3 I observe a regression with my xgmac use case
+>     > (real-time change?).
+>     >
+>     > I guess what happens is when I kill a first qemu session, guest does not
+>     > have time to complete the virtual IRQ and the unmask is not performed by
+>     > the virqfd handler. When starting a new QEMU session, the irqfd
+>     > signalling is put in place again but since the masked field is set, the
+>     > IRQ is left unmasked (v11 modification in vfio_set_trigger).
+>     >
+>     > The problem is that we don't discriminate between user mask action and
+>     > automasked handler action. In case the user did not mask, I think we
+>     > should reset the masked field when doing the free_irq. What do you think?
 > 
-> +static int init_done;
-> +
->  static int __init exynos_iommu_init(void)
->  {
->  	int ret;
-> @@ -1116,6 +1123,8 @@ static int __init exynos_iommu_init(void)
->  		goto err_set_iommu;
->  	}
+>     Hello Eric,
 > 
-> +	init_done = true;
-> +
->  	return 0;
->  err_set_iommu:
->  	kmem_cache_free(lv2table_kmem_cache, zero_lv2_table);
-> @@ -1125,4 +1134,21 @@ err_reg_driver:
->  	kmem_cache_destroy(lv2table_kmem_cache);
->  	return ret;
->  }
-> -subsys_initcall(exynos_iommu_init);
-> +
-> +static int __init exynos_iommu_of_setup(struct device_node *np)
-> +{
-> +	struct platform_device *pdev;
-> +
-> +	if (!init_done)
-> +		exynos_iommu_init();
-> +
-> +	pdev = of_platform_device_create(np, NULL, platform_bus_type.dev_root);
-> +	if (IS_ERR(pdev))
-> +		return PTR_ERR(pdev);
-
-This feels like a hack to me. What happens here is that you're using the 
-IOMMU_OF_DECLARE mechanism to make sure that the iommu platform device will be 
-created and registered before the normal OF bus populate mechanism kicks in, 
-thus ensuring that the iommu gets probed before other devices. In practice 
-this is pretty similar to using different init levels, which is what Will's 
-patch set was trying to avoid in the first place. Creating a new kind of init 
-levels mechanism doesn't sound very good to me.
-
-The existing exynos-iommu driver is based on classic instantiation of a 
-platform device from DT, using the normal device probing mechanism. As such it 
-relies on the availability of a struct device for various helper functions. I 
-thus understand why you want a struct device being registered for the iommu, 
-instead of initializing the device right from the exynos_iommu_of_setup() 
-function without a corresponding struct device being registered.
-
-This leads me to question whether we should really introduce IOMMU_OF_DECLARE. 
-Using regular deferred probing seems more and more like a better solution to 
-me.
-
-> +	of_iommu_set_ops(np, &exynos_iommu_ops);
-> +	return 0;
-> +}
-> +
-> +IOMMU_OF_DECLARE(exynos_iommu_of, "samsung,exynos-sysmmu",
-> +		 exynos_iommu_of_setup);
-
--- 
-Regards,
-
-Laurent Pinchart
+>     I agree, we should reset the masked field for future users.
+> 
+>     Best regards
+>     Antonios
+> 
+>     >
+>     > Best Regards
+>     >
+>     > Eric
+>     >
+>     > On 01/06/2015 11:48 AM, Antonios Motakis wrote:
+>     >> This patch series aims to implement VFIO support for platform
+>     devices that
+>     >> reside behind an IOMMU. Examples of such devices are devices
+>     behind an ARM
+>     >> SMMU, or behind a Samsung Exynos System MMU.
+>     >>
+>     >> The API used is based on the existing VFIO API that is also used
+>     with PCI
+>     >> devices. Only devices that include a basic set of IRQs and memory
+>     regions are
+>     >> targeted; devices with complex relationships with other devices
+>     on a device
+>     >> tree are not taken into account at this stage.
+>     >>
+>     >> This patch series may be applied on the following series/patches:
+>     >>  - [PATCH] driver core: amba: add device binding path
+>     'driver_override'
+>     >>  - [PATCH v3 0/6] vfio: type1: support for ARM SMMUS with
+>     VFIO_IOMMU_TYPE1
+>     >>
+>     >> A copy can be cloned from the branch vfio-platform-v11 at:
+>     >> git-9UaJU3cA/F/QT0dZR+AlfA@public.gmane.org:virtualopensystems/linux-kvm-arm.git
+>     >>
+>     >> Changes since v10:
+>     >>  - Check if interrupt is already masked when setting a new trigger
+>     >>  - Fixed kasprintf with unchecked return value in VFIO AMBA driver
+>     >> Changes since v9:
+>     >>  - Reworked the splitting of the patches that decouple virqfd
+>     from PCI
+>     >>  - Some styling issues and typos
+>     >>  - Removed superfluous includes
+>     >>  - AMBA devices are now named vfio-amba- suffixed by the AMBA
+>     device id
+>     >>  - Several other cleanups and fixes
+>     >> Changes since v8:
+>     >>  - Separate irq handler for edge and level triggered interrupts
+>     >>  - Mutex based lock for VFIO fd open/release
+>     >>  - Fixed bug where the first region of a platform device wasn't
+>     exposed
+>     >>  - Read only regions can be MMAPed only read only
+>     >>  - Code cleanups
+>     >> Changes since v7:
+>     >>  - Some initial placeholder functionality for PIO resources
+>     >>  - Cleaned up code for IRQ triggering, masking and unmasking
+>     >>  - Some functionality has been removed from this series and
+>     posted separately:
+>     >>    - VFIO_IOMMU_TYPE1 support for ARM SMMUs
+>     >>    - IOMMU NOEXEC patches
+>     >>    - driver_override functionality for AMBA devices
+>     >>  - Several fixes
+>     >> Changes since v6:
+>     >>  - Integrated support for AMBA devices
+>     >>  - Numerous cleanups and fixes
+>     >> Changes since v5:
+>     >>  - Full eventfd support for IRQ masking and unmasking.
+>     >>  - Changed IOMMU_EXEC to IOMMU_NOEXEC, along with related flags
+>     in VFIO.
+>     >>  - Other fixes based on reviewer comments.
+>     >> Changes since v4:
+>     >>  - Use static offsets for each region in the VFIO device fd
+>     >>  - Include patch in the series for the ARM SMMU to expose IOMMU_EXEC
+>     >>    availability via IOMMU_CAP_DMA_EXEC
+>     >>  - Rebased on VFIO multi domain support:
+>     >>    - IOMMU_EXEC is now available if at least one IOMMU in the
+>     container
+>     >>      supports it
+>     >>    - Expose IOMMU_EXEC if available via the capability
+>     VFIO_IOMMU_PROT_EXEC
+>     >>  - Some bug fixes
+>     >> Changes since v3:
+>     >>  - Use Kim Phillips' driver_probe_device()
+>     >> Changes since v2:
+>     >>  - Fixed Read/Write and MMAP on device regions
+>     >>  - Removed dependency on Device Tree
+>     >>  - Interrupts support
+>     >>  - Interrupt masking/unmasking
+>     >>  - Automask level sensitive interrupts
+>     >>  - Introduced VFIO_DMA_MAP_FLAG_EXEC
+>     >>  - Code clean ups
+>     >>
+>     >> Antonios Motakis (20):
+>     >>   vfio/platform: initial skeleton of VFIO support for platform
+>     devices
+>     >>   vfio: platform: probe to devices on the platform bus
+>     >>   vfio: platform: add the VFIO PLATFORM module to Kconfig
+>     >>   vfio: amba: VFIO support for AMBA devices
+>     >>   vfio: amba: add the VFIO for AMBA devices module to Kconfig
+>     >>   vfio/platform: return info for bound device
+>     >>   vfio/platform: return info for device memory mapped IO regions
+>     >>   vfio/platform: read and write support for the device fd
+>     >>   vfio/platform: support MMAP of MMIO regions
+>     >>   vfio/platform: return IRQ info
+>     >>   vfio/platform: initial interrupts support code
+>     >>   vfio/platform: trigger an interrupt via eventfd
+>     >>   vfio/platform: support for level sensitive interrupts
+>     >>   vfio: add a vfio_ prefix to virqfd_enable and virqfd_disable and
+>     >>     export
+>     >>   vfio: virqfd: rename vfio_pci_virqfd_init and vfio_pci_virqfd_exit
+>     >>   vfio: add local lock for virqfd instead of depending on VFIO PCI
+>     >>   vfio: pass an opaque pointer on virqfd initialization
+>     >>   vfio: move eventfd support code for VFIO_PCI to a separate file
+>     >>   vfio: initialize the virqfd workqueue in VFIO generic code
+>     >>   vfio/platform: implement IRQ masking/unmasking via an eventfd
+>     >>
+>     >>  drivers/vfio/Kconfig                          |   1 +
+>     >>  drivers/vfio/Makefile                         |   5 +-
+>     >>  drivers/vfio/pci/vfio_pci.c                   |   8 -
+>     >>  drivers/vfio/pci/vfio_pci_intrs.c             | 238 +-----------
+>     >>  drivers/vfio/pci/vfio_pci_private.h           |   3 -
+>     >>  drivers/vfio/platform/Kconfig                 |  19 +
+>     >>  drivers/vfio/platform/Makefile                |   8 +
+>     >>  drivers/vfio/platform/vfio_amba.c             | 115 ++++++
+>     >>  drivers/vfio/platform/vfio_platform.c         | 103 +++++
+>     >>  drivers/vfio/platform/vfio_platform_common.c  | 520
+>     ++++++++++++++++++++++++++
+>     >>  drivers/vfio/platform/vfio_platform_irq.c     | 340
+>     +++++++++++++++++
+>     >>  drivers/vfio/platform/vfio_platform_private.h |  82 ++++
+>     >>  drivers/vfio/vfio.c                           |   8 +
+>     >>  drivers/vfio/virqfd.c                         | 213 +++++++++++
+>     >>  include/linux/vfio.h                          |  27 ++
+>     >>  include/uapi/linux/vfio.h                     |   2 +
+>     >>  16 files changed, 1456 insertions(+), 236 deletions(-)
+>     >>  create mode 100644 drivers/vfio/platform/Kconfig
+>     >>  create mode 100644 drivers/vfio/platform/Makefile
+>     >>  create mode 100644 drivers/vfio/platform/vfio_amba.c
+>     >>  create mode 100644 drivers/vfio/platform/vfio_platform.c
+>     >>  create mode 100644 drivers/vfio/platform/vfio_platform_common.c
+>     >>  create mode 100644 drivers/vfio/platform/vfio_platform_irq.c
+>     >>  create mode 100644 drivers/vfio/platform/vfio_platform_private.h
+>     >>  create mode 100644 drivers/vfio/virqfd.c
+>     >>
+>     >
+> 
+> 
