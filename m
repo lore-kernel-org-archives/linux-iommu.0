@@ -1,14 +1,17 @@
-From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v11 00/20] VFIO support for platform and ARM AMBA devices
-Date: Mon, 19 Jan 2015 11:17:10 +0100
-Message-ID: <54BCD9A6.4050501@linaro.org>
-References: <1420541335-17190-1-git-send-email-a.motakis@virtualopensystems.com>	<54AF93AB.9030302@linaro.org>	<CAG8rG2yc1ityUwswPiTR_w5f3tSeX_KB2g06HcPCPARXPHGvfg@mail.gmail.com>
-	<CAN9JPjERBVnGku8_BJuesMnzJyQYUgz6rJhL_VrCOgLVQuXyuw@mail.gmail.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v6 8/8] arm: dma-mapping: plumb our iommu mapping ops
+	into arch_setup_dma_ops
+Date: Mon, 19 Jan 2015 11:12:02 +0000
+Message-ID: <20150119111202.GD32131@arm.com>
+References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
+	<2804479.ZFl06ysk3j@avalon> <54BB58AA.5070407@nvidia.com>
+	<5043167.LEiljZnGai@avalon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAN9JPjERBVnGku8_BJuesMnzJyQYUgz6rJhL_VrCOgLVQuXyuw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <5043167.LEiljZnGai@avalon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,201 +21,98 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Baptiste,
+On Sun, Jan 18, 2015 at 11:18:51AM +0000, Laurent Pinchart wrote:
+> On Sunday 18 January 2015 15:54:34 Alexandre Courbot wrote:
+> > On 01/16/2015 08:18 AM, Laurent Pinchart wrote:
+> > > On Thursday 15 January 2015 11:12:17 Will Deacon wrote:
+> > >> On Thu, Jan 15, 2015 at 08:28:44AM +0000, Thierry Reding wrote:
+> > >>> On Wed, Jan 14, 2015 at 10:46:10AM +0000, Will Deacon wrote:
+> > >>>> On Wed, Jan 14, 2015 at 09:00:24AM +0000, Alexandre Courbot wrote:
+> > >>> [...]
+> > >>> 
+> > >>>>> 2) Say you want to use the IOMMU API in your driver, and have an iommu
+> > >>>>> property in your device's DT node. If by chance your IOMMU is
+> > >>>>> registered early, you will already have a mapping automatically
+> > >>>>> created even before your probe function is called. Can this be
+> > >>>>> avoided? Is it even safe?
+> > >>>> 
+> > >>>> Currently, I think you have to either teardown the ops manually or
+> > >>>> return an error from of_xlate. Thierry was also looking at this sort of
+> > >>>> thing, so it might be worth talking to him.
+> > >>> 
+> > >>> I already explained in earlier threads why I think this is a bad idea.
+> > >>> It's completely unnatural for any driver to manually tear down something
+> > >>> that it didn't want set up in the first place. It also means that you
+> > >>> have to carefully audit any users of these IOMMU APIs to make sure that
+> > >>> they do tear down. That doesn't sound like a good incremental approach,
+> > >>> as evidenced by the breakage that Alex and Heiko have encountered.
+> > >> 
+> > >> Well, perhaps we hide that behind a get_iommu API or something. We *do*
+> > >> need this manual teardown step to support things like VFIO, so it makes
+> > >> sense to reuse it for other users too imo.
+> > >> 
+> > >>> The solution for me has been to completely side-step the issue and not
+> > >>> register the IOMMU with the new mechanism at all. That is, there's no
+> > >>> .of_xlate() implementation, which means that the ARM DMA API glue won't
+> > >>> try to be smart and use the IOMMU in ways it's not meant to be used.
+> > > 
+> > > That will break when someone will want to use the same IOMMU type for
+> > > devices that use the DMA mapping API to hide the IOMMU. That might not be
+> > > the case for your IOMMU today, but it's pretty fragile, we need to fix
+> > > it.
+> > > 
+> > >>> This has several advantages, such as that I can also use the regular
+> > >>> driver model for suspend/resume of the IOMMU, and I get to enjoy the
+> > >>> benefits of devres in the IOMMU driver. Probe ordering is still a tiny
+> > >>> issue, but we can easily solve that using explicit initcall ordering
+> > >>> (which really isn't any worse than IOMMU_OF_DECLARE()).
+> > >> 
+> > >> That's a pity. I'd much rather extend what we currently have to satisfy
+> > >> your use-case. Ho-hum.
+> > > 
+> > > Assuming we want the IOMMU to be handled transparently for the majority of
+> > > devices I only see two ways to fix this,
+> > > 
+> > > The first way is to create a default DMA mapping unconditionally and let
+> > > drivers that can't live with it tear it down. That's what is implemented
+> > > today.
+> > 
+> > I strongly support Thierry's point that drivers should not have to tear
+> > down things they don't need. The issue we are facing today is a very
+> > good illustration of why one should not have to do this.
+> > 
+> > Everybody hates to receive unsollicited email with a link that says "to
+> > unsubscribe, click here". Let's not import that unpleasant culture into
+> > the kernel.
+> > 
+> > I am arriving late in this discussion, but what is wrong with asking
+> > drivers to explicitly state that they want the DMA API to be backed by
+> > the IOMMU instead of forcibly making it work that way?
+> 
+> The vast majority of the drivers are not IOMMU-aware. We would thus need to 
+> add a call at the beginning of the probe function of nearly every driver that 
+> can perform DMA to state that the driver doesn't need to handle any IOMMU that 
+> might be present in the system itself. I don't think that's a better solution.
+> 
+> Explicitly tearing down mappings in drivers that want to manage IOMMUs isn't a 
+> solution I like either. A possibly better solution would be to call a function 
+> to state that the DMA mapping API shouldn't not handle IOMMUs. Something like
+> 
+> 	dma_mapping_ignore_iommu(dev);
+> 
+> at the beginning of the probe function of such drivers could do. The function 
+> would perform behind the scene all operations needed to tear down everything 
+> that shouldn't have been set up.
 
-sorry I was off on Friday. you're right I missed the masked field was
-reset on init. Nethertheless with current QEMU VFIO code, IRQ runs on
-the first run and not on the second one. I investigate on my side ...
+An alternative would be to add a flag to platform_driver, like we have for
+"prevent_deferred_probe" which is something like "prevent_dma_configure".
 
-Best Regards
+For the moment, that would actually teardown the DMA configuration in
+platform_drv_probe, but if things are reordering in future then we can avoid
+setting up the ops altogether without an API change.
 
-Eric
-
-
-
-
-On 01/16/2015 02:25 PM, Baptiste Reynal wrote:
-> Hello Eric,
-> 
-> I'm not sure I understand the issue here. I tried to reproduce the bug
-> by triggering an interrupt without unmasking it, but the interrupt is
-> unmasked when the program access to the device (vfio_platform_open
-> reinit IRQs).
-> 
-> May I have more details on the bug ?
-> 
-> Thanks
-> 
-> On Fri, Jan 9, 2015 at 12:33 PM, Antonios Motakis
-> <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org
-> <mailto:a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>> wrote:
-> 
->     On Fri, Jan 9, 2015 at 9:39 AM, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
->     <mailto:eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>> wrote:
->     > Hi Antonios,
->     >
->     > when moving to 3.19rc3 I observe a regression with my xgmac use case
->     > (real-time change?).
->     >
->     > I guess what happens is when I kill a first qemu session, guest does not
->     > have time to complete the virtual IRQ and the unmask is not performed by
->     > the virqfd handler. When starting a new QEMU session, the irqfd
->     > signalling is put in place again but since the masked field is set, the
->     > IRQ is left unmasked (v11 modification in vfio_set_trigger).
->     >
->     > The problem is that we don't discriminate between user mask action and
->     > automasked handler action. In case the user did not mask, I think we
->     > should reset the masked field when doing the free_irq. What do you think?
-> 
->     Hello Eric,
-> 
->     I agree, we should reset the masked field for future users.
-> 
->     Best regards
->     Antonios
-> 
->     >
->     > Best Regards
->     >
->     > Eric
->     >
->     > On 01/06/2015 11:48 AM, Antonios Motakis wrote:
->     >> This patch series aims to implement VFIO support for platform
->     devices that
->     >> reside behind an IOMMU. Examples of such devices are devices
->     behind an ARM
->     >> SMMU, or behind a Samsung Exynos System MMU.
->     >>
->     >> The API used is based on the existing VFIO API that is also used
->     with PCI
->     >> devices. Only devices that include a basic set of IRQs and memory
->     regions are
->     >> targeted; devices with complex relationships with other devices
->     on a device
->     >> tree are not taken into account at this stage.
->     >>
->     >> This patch series may be applied on the following series/patches:
->     >>  - [PATCH] driver core: amba: add device binding path
->     'driver_override'
->     >>  - [PATCH v3 0/6] vfio: type1: support for ARM SMMUS with
->     VFIO_IOMMU_TYPE1
->     >>
->     >> A copy can be cloned from the branch vfio-platform-v11 at:
->     >> git-9UaJU3cA/F/QT0dZR+AlfA@public.gmane.org:virtualopensystems/linux-kvm-arm.git
->     >>
->     >> Changes since v10:
->     >>  - Check if interrupt is already masked when setting a new trigger
->     >>  - Fixed kasprintf with unchecked return value in VFIO AMBA driver
->     >> Changes since v9:
->     >>  - Reworked the splitting of the patches that decouple virqfd
->     from PCI
->     >>  - Some styling issues and typos
->     >>  - Removed superfluous includes
->     >>  - AMBA devices are now named vfio-amba- suffixed by the AMBA
->     device id
->     >>  - Several other cleanups and fixes
->     >> Changes since v8:
->     >>  - Separate irq handler for edge and level triggered interrupts
->     >>  - Mutex based lock for VFIO fd open/release
->     >>  - Fixed bug where the first region of a platform device wasn't
->     exposed
->     >>  - Read only regions can be MMAPed only read only
->     >>  - Code cleanups
->     >> Changes since v7:
->     >>  - Some initial placeholder functionality for PIO resources
->     >>  - Cleaned up code for IRQ triggering, masking and unmasking
->     >>  - Some functionality has been removed from this series and
->     posted separately:
->     >>    - VFIO_IOMMU_TYPE1 support for ARM SMMUs
->     >>    - IOMMU NOEXEC patches
->     >>    - driver_override functionality for AMBA devices
->     >>  - Several fixes
->     >> Changes since v6:
->     >>  - Integrated support for AMBA devices
->     >>  - Numerous cleanups and fixes
->     >> Changes since v5:
->     >>  - Full eventfd support for IRQ masking and unmasking.
->     >>  - Changed IOMMU_EXEC to IOMMU_NOEXEC, along with related flags
->     in VFIO.
->     >>  - Other fixes based on reviewer comments.
->     >> Changes since v4:
->     >>  - Use static offsets for each region in the VFIO device fd
->     >>  - Include patch in the series for the ARM SMMU to expose IOMMU_EXEC
->     >>    availability via IOMMU_CAP_DMA_EXEC
->     >>  - Rebased on VFIO multi domain support:
->     >>    - IOMMU_EXEC is now available if at least one IOMMU in the
->     container
->     >>      supports it
->     >>    - Expose IOMMU_EXEC if available via the capability
->     VFIO_IOMMU_PROT_EXEC
->     >>  - Some bug fixes
->     >> Changes since v3:
->     >>  - Use Kim Phillips' driver_probe_device()
->     >> Changes since v2:
->     >>  - Fixed Read/Write and MMAP on device regions
->     >>  - Removed dependency on Device Tree
->     >>  - Interrupts support
->     >>  - Interrupt masking/unmasking
->     >>  - Automask level sensitive interrupts
->     >>  - Introduced VFIO_DMA_MAP_FLAG_EXEC
->     >>  - Code clean ups
->     >>
->     >> Antonios Motakis (20):
->     >>   vfio/platform: initial skeleton of VFIO support for platform
->     devices
->     >>   vfio: platform: probe to devices on the platform bus
->     >>   vfio: platform: add the VFIO PLATFORM module to Kconfig
->     >>   vfio: amba: VFIO support for AMBA devices
->     >>   vfio: amba: add the VFIO for AMBA devices module to Kconfig
->     >>   vfio/platform: return info for bound device
->     >>   vfio/platform: return info for device memory mapped IO regions
->     >>   vfio/platform: read and write support for the device fd
->     >>   vfio/platform: support MMAP of MMIO regions
->     >>   vfio/platform: return IRQ info
->     >>   vfio/platform: initial interrupts support code
->     >>   vfio/platform: trigger an interrupt via eventfd
->     >>   vfio/platform: support for level sensitive interrupts
->     >>   vfio: add a vfio_ prefix to virqfd_enable and virqfd_disable and
->     >>     export
->     >>   vfio: virqfd: rename vfio_pci_virqfd_init and vfio_pci_virqfd_exit
->     >>   vfio: add local lock for virqfd instead of depending on VFIO PCI
->     >>   vfio: pass an opaque pointer on virqfd initialization
->     >>   vfio: move eventfd support code for VFIO_PCI to a separate file
->     >>   vfio: initialize the virqfd workqueue in VFIO generic code
->     >>   vfio/platform: implement IRQ masking/unmasking via an eventfd
->     >>
->     >>  drivers/vfio/Kconfig                          |   1 +
->     >>  drivers/vfio/Makefile                         |   5 +-
->     >>  drivers/vfio/pci/vfio_pci.c                   |   8 -
->     >>  drivers/vfio/pci/vfio_pci_intrs.c             | 238 +-----------
->     >>  drivers/vfio/pci/vfio_pci_private.h           |   3 -
->     >>  drivers/vfio/platform/Kconfig                 |  19 +
->     >>  drivers/vfio/platform/Makefile                |   8 +
->     >>  drivers/vfio/platform/vfio_amba.c             | 115 ++++++
->     >>  drivers/vfio/platform/vfio_platform.c         | 103 +++++
->     >>  drivers/vfio/platform/vfio_platform_common.c  | 520
->     ++++++++++++++++++++++++++
->     >>  drivers/vfio/platform/vfio_platform_irq.c     | 340
->     +++++++++++++++++
->     >>  drivers/vfio/platform/vfio_platform_private.h |  82 ++++
->     >>  drivers/vfio/vfio.c                           |   8 +
->     >>  drivers/vfio/virqfd.c                         | 213 +++++++++++
->     >>  include/linux/vfio.h                          |  27 ++
->     >>  include/uapi/linux/vfio.h                     |   2 +
->     >>  16 files changed, 1456 insertions(+), 236 deletions(-)
->     >>  create mode 100644 drivers/vfio/platform/Kconfig
->     >>  create mode 100644 drivers/vfio/platform/Makefile
->     >>  create mode 100644 drivers/vfio/platform/vfio_amba.c
->     >>  create mode 100644 drivers/vfio/platform/vfio_platform.c
->     >>  create mode 100644 drivers/vfio/platform/vfio_platform_common.c
->     >>  create mode 100644 drivers/vfio/platform/vfio_platform_irq.c
->     >>  create mode 100644 drivers/vfio/platform/vfio_platform_private.h
->     >>  create mode 100644 drivers/vfio/virqfd.c
->     >>
->     >
-> 
-> 
+Will
