@@ -1,16 +1,14 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH v6 8/8] arm: dma-mapping: plumb our iommu mapping ops into
-	arch_setup_dma_ops
-Date: Mon, 19 Jan 2015 18:02:59 +0100
-Message-ID: <14678444.nef4iEKbzI@wuerfel>
-References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
-	<2253719.6TRpaaEdiI@wuerfel>
-	<20150119162111.GA7751@ulmo.nvidia.com>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v11 00/20] VFIO support for platform and ARM AMBA devices
+Date: Mon, 19 Jan 2015 19:09:27 +0100
+Message-ID: <54BD4857.3070707@linaro.org>
+References: <1420541335-17190-1-git-send-email-a.motakis@virtualopensystems.com>	<54AF93AB.9030302@linaro.org>	<CAG8rG2yc1ityUwswPiTR_w5f3tSeX_KB2g06HcPCPARXPHGvfg@mail.gmail.com>	<CAN9JPjERBVnGku8_BJuesMnzJyQYUgz6rJhL_VrCOgLVQuXyuw@mail.gmail.com>	<54BCD9A6.4050501@linaro.org>	<54BCF846.1070906@linaro.org>
+	<CAN9JPjF5sAH-UNKtBhfiHK7cQJBwNwg2UEcrj8sv9Em6MnBVxg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150119162111.GA7751-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
+In-Reply-To: <CAN9JPjF5sAH-UNKtBhfiHK7cQJBwNwg2UEcrj8sv9Em6MnBVxg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,79 +18,315 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Monday 19 January 2015 17:21:14 Thierry Reding wrote:
-> On Mon, Jan 19, 2015 at 04:52:41PM +0100, Arnd Bergmann wrote:
-> > On Monday 19 January 2015 13:36:24 Thierry Reding wrote:
-> > > On Fri, Jan 16, 2015 at 01:18:21AM +0200, Laurent Pinchart wrote:
-> > > > On Thursday 15 January 2015 11:12:17 Will Deacon wrote:
-> > > > > On Thu, Jan 15, 2015 at 08:28:44AM +0000, Thierry Reding wrote:
-> > > > > > On Wed, Jan 14, 2015 at 10:46:10AM +0000, Will Deacon wrote:
-> > > > > > > On Wed, Jan 14, 2015 at 09:00:24AM +0000, Alexandre Courbot wrote:
-> > > > > > [...]
-> > > > > > 
-> > > > > >>> 2) Say you want to use the IOMMU API in your driver, and have an iommu
-> > > > > >>> property in your device's DT node. If by chance your IOMMU is
-> > > > > >>> registered early, you will already have a mapping automatically
-> > > > > >>> created even before your probe function is called. Can this be
-> > > > > >>> avoided? Is it even safe?
-> > > > > >> 
-> > > > > >> Currently, I think you have to either teardown the ops manually or
-> > > > > >> return an error from of_xlate. Thierry was also looking at this sort of
-> > > > > >> thing, so it might be worth talking to him.
-> > > > > > 
-> > > > > > I already explained in earlier threads why I think this is a bad idea.
-> > > > > > It's completely unnatural for any driver to manually tear down something
-> > > > > > that it didn't want set up in the first place. It also means that you
-> > > > > > have to carefully audit any users of these IOMMU APIs to make sure that
-> > > > > > they do tear down. That doesn't sound like a good incremental approach,
-> > > > > > as evidenced by the breakage that Alex and Heiko have encountered.
-> > > > > 
-> > > > > Well, perhaps we hide that behind a get_iommu API or something. We *do*
-> > > > > need this manual teardown step to support things like VFIO, so it makes
-> > > > > sense to reuse it for other users too imo.
-> > > > > 
-> > > > > > The solution for me has been to completely side-step the issue and not
-> > > > > > register the IOMMU with the new mechanism at all. That is, there's no
-> > > > > > .of_xlate() implementation, which means that the ARM DMA API glue won't
-> > > > > > try to be smart and use the IOMMU in ways it's not meant to be used.
-> > > > 
-> > > > That will break when someone will want to use the same IOMMU type for devices 
-> > > > that use the DMA mapping API to hide the IOMMU. That might not be the case for 
-> > > > your IOMMU today, but it's pretty fragile, we need to fix it.
-> > > 
-> > > No, there's absolutely no issue here. It simply means that you can't do
-> > > this on Tegra. So far I'm not sure I even see an advantage in using the
-> > > IOMMU for devices that don't care about it anyway. Consider the example
-> > > of the SD/MMC or HDA. They typically allocate fairly small buffers, the
-> > > order of a single page typically. They can simply use memory handed out
-> > > by the CMA.
-> > > 
-> > > So as long as we don't add a .of_xlate() implementation or instantiate
-> > > via the IOMMU_OF_DECLARE() mechanism we simply don't support IOMMU-over-
-> > > DMA on Tegra.
-> > 
-> > It breaks as soon as you have a system with memory above the 4GB boundary,
-> > which is the whole point of iommus for most users.
+Hi Baptiste,
+
+yes it fixes the issue in my use case.
+
+Best Regards
+
+Eric
+
+On 01/19/2015 06:00 PM, Baptiste Reynal wrote:
+> Hi Eric,
 > 
-> Why does it break? The IOMMU API simply gets a list of pages and gets
-> the physical addresses from those pages when it maps them to the IO
-> virtual addresses. How is .of_xlate() or of_iommu_configure() related?
-
-Because almost no drivers use the IOMMU API, and they expect the dma-mapping
-API to do the right thing independent of the hardware configuration.
-
-> > CMA does not work for streaming mappings, only for the coherent API.
+> Thanks for taking time about this issue. I agree with you, there is a
+> problem here. While I think on a better fix and to be sure the problem
+> is here, may you try this patch and tell me if the problem is solved ?
+> (This should work as the automasked_irq_handler doesn't do anything if
+> the IRQ is masked).
 > 
-> Why not? And if it doesn't I'm not sure we currently care on Tegra since
-> we've gotten away with using CMA just fine so far.
-
-CMA is used as the backing for the dma_alloc_* API. It's impossible to
-use it for streaming data that originates from arbitrary page cache
-pages, like a send() operation on a user space network socket, or
-writing to disk.
-
-	Arnd
+> If you have a suggestion on a fix, you're welcome :)
+> 
+> diff --git a/drivers/vfio/platform/vfio_platform_irq.c
+> b/drivers/vfio/platform/vfio_platform_irq.c
+> index 6ade36b..c9bac80 100644
+> --- a/drivers/vfio/platform/vfio_platform_irq.c
+> +++ b/drivers/vfio/platform/vfio_platform_irq.c
+> @@ -184,6 +184,7 @@ static int vfio_set_trigger(struct
+> vfio_platform_device *vdev, int index,
+>         struct eventfd_ctx *trigger;
+>         unsigned long flags;
+>         int ret;
+> +       bool masked;
+>  
+>         if (irq->trigger) {
+>                 free_irq(irq->hwirq, irq);
+> @@ -208,6 +209,8 @@ static int vfio_set_trigger(struct
+> vfio_platform_device *vdev, int index,
+>  
+>         irq->trigger = trigger;
+>  
+> +       masked = irq->masked;
+> +
+>         ret = request_irq(irq->hwirq, handler, 0, irq->name, irq);
+>         if (ret) {
+>                 kfree(irq->name);
+> @@ -219,7 +222,7 @@ static int vfio_set_trigger(struct
+> vfio_platform_device *vdev, int index,
+>         /* if the IRQ has been masked by the user before setting an eventfd,
+>          * then we need to make sure it is properly disabled */
+>         spin_lock_irqsave(&irq->lock, flags);
+> -       if (irq->masked)
+> +       if (masked)
+>                 disable_irq_nosync(irq->hwirq);
+>         spin_unlock_irqrestore(&irq->lock, flags);
+> 
+> On Mon, Jan 19, 2015 at 1:27 PM, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+> <mailto:eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>> wrote:
+> 
+>     Hi Baptiste,
+> 
+>     I think what happens on the second qemu run is:
+> 
+>     an IRQ hits immediatly after request_irq
+>     automasked handler sets masked = true
+>     in vfio_set_trigger following condition becomes true
+>             if (irq->masked)
+>                     disable_irq_nosync(irq->hwirq);
+>     IRQ is disabled twice, in handler and in vfio_set_trigger while there is
+>     a single enable in resamplefd handler.
+>     To me you should prevent from entering ISR between request_irq and
+>     disable_irq.
+> 
+>     It does not happen on the first run because no IRQ hit.
+> 
+>     Please let me know if you share this understanding.
+> 
+>     Best Regards
+> 
+>     Eric
+> 
+>     On 01/19/2015 11:17 AM, Eric Auger wrote:
+>     > Hi Baptiste,
+>     >
+>     > sorry I was off on Friday. you're right I missed the masked field was
+>     > reset on init. Nethertheless with current QEMU VFIO code, IRQ runs on
+>     > the first run and not on the second one. I investigate on my side ...
+>     >
+>     > Best Regards
+>     >
+>     > Eric
+>     >
+>     >
+>     >
+>     >
+>     > On 01/16/2015 02:25 PM, Baptiste Reynal wrote:
+>     >> Hello Eric,
+>     >>
+>     >> I'm not sure I understand the issue here. I tried to reproduce
+>     the bug
+>     >> by triggering an interrupt without unmasking it, but the interrupt is
+>     >> unmasked when the program access to the device (vfio_platform_open
+>     >> reinit IRQs).
+>     >>
+>     >> May I have more details on the bug ?
+>     >>
+>     >> Thanks
+>     >>
+>     >> On Fri, Jan 9, 2015 at 12:33 PM, Antonios Motakis
+>     >> <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org
+>     <mailto:a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+>     >> <mailto:a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org
+>     <mailto:a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>>> wrote:
+>     >>
+>     >>     On Fri, Jan 9, 2015 at 9:39 AM, Eric Auger
+>     <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org <mailto:eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>     >>     <mailto:eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+>     <mailto:eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>>> wrote:
+>     >>     > Hi Antonios,
+>     >>     >
+>     >>     > when moving to 3.19rc3 I observe a regression with my xgmac
+>     use case
+>     >>     > (real-time change?).
+>     >>     >
+>     >>     > I guess what happens is when I kill a first qemu session,
+>     guest does not
+>     >>     > have time to complete the virtual IRQ and the unmask is not
+>     performed by
+>     >>     > the virqfd handler. When starting a new QEMU session, the irqfd
+>     >>     > signalling is put in place again but since the masked field
+>     is set, the
+>     >>     > IRQ is left unmasked (v11 modification in vfio_set_trigger).
+>     >>     >
+>     >>     > The problem is that we don't discriminate between user mask
+>     action and
+>     >>     > automasked handler action. In case the user did not mask, I
+>     think we
+>     >>     > should reset the masked field when doing the free_irq. What
+>     do you think?
+>     >>
+>     >>     Hello Eric,
+>     >>
+>     >>     I agree, we should reset the masked field for future users.
+>     >>
+>     >>     Best regards
+>     >>     Antonios
+>     >>
+>     >>     >
+>     >>     > Best Regards
+>     >>     >
+>     >>     > Eric
+>     >>     >
+>     >>     > On 01/06/2015 11:48 AM, Antonios Motakis wrote:
+>     >>     >> This patch series aims to implement VFIO support for platform
+>     >>     devices that
+>     >>     >> reside behind an IOMMU. Examples of such devices are devices
+>     >>     behind an ARM
+>     >>     >> SMMU, or behind a Samsung Exynos System MMU.
+>     >>     >>
+>     >>     >> The API used is based on the existing VFIO API that is
+>     also used
+>     >>     with PCI
+>     >>     >> devices. Only devices that include a basic set of IRQs and
+>     memory
+>     >>     regions are
+>     >>     >> targeted; devices with complex relationships with other
+>     devices
+>     >>     on a device
+>     >>     >> tree are not taken into account at this stage.
+>     >>     >>
+>     >>     >> This patch series may be applied on the following
+>     series/patches:
+>     >>     >>  - [PATCH] driver core: amba: add device binding path
+>     >>     'driver_override'
+>     >>     >>  - [PATCH v3 0/6] vfio: type1: support for ARM SMMUS with
+>     >>     VFIO_IOMMU_TYPE1
+>     >>     >>
+>     >>     >> A copy can be cloned from the branch vfio-platform-v11 at:
+>     >>     >> git-9UaJU3cA/F/QT0dZR+AlfA@public.gmane.org:virtualopensystems/linux-kvm-arm.git
+>     >>     >>
+>     >>     >> Changes since v10:
+>     >>     >>  - Check if interrupt is already masked when setting a new
+>     trigger
+>     >>     >>  - Fixed kasprintf with unchecked return value in VFIO
+>     AMBA driver
+>     >>     >> Changes since v9:
+>     >>     >>  - Reworked the splitting of the patches that decouple virqfd
+>     >>     from PCI
+>     >>     >>  - Some styling issues and typos
+>     >>     >>  - Removed superfluous includes
+>     >>     >>  - AMBA devices are now named vfio-amba- suffixed by the AMBA
+>     >>     device id
+>     >>     >>  - Several other cleanups and fixes
+>     >>     >> Changes since v8:
+>     >>     >>  - Separate irq handler for edge and level triggered
+>     interrupts
+>     >>     >>  - Mutex based lock for VFIO fd open/release
+>     >>     >>  - Fixed bug where the first region of a platform device
+>     wasn't
+>     >>     exposed
+>     >>     >>  - Read only regions can be MMAPed only read only
+>     >>     >>  - Code cleanups
+>     >>     >> Changes since v7:
+>     >>     >>  - Some initial placeholder functionality for PIO resources
+>     >>     >>  - Cleaned up code for IRQ triggering, masking and unmasking
+>     >>     >>  - Some functionality has been removed from this series and
+>     >>     posted separately:
+>     >>     >>    - VFIO_IOMMU_TYPE1 support for ARM SMMUs
+>     >>     >>    - IOMMU NOEXEC patches
+>     >>     >>    - driver_override functionality for AMBA devices
+>     >>     >>  - Several fixes
+>     >>     >> Changes since v6:
+>     >>     >>  - Integrated support for AMBA devices
+>     >>     >>  - Numerous cleanups and fixes
+>     >>     >> Changes since v5:
+>     >>     >>  - Full eventfd support for IRQ masking and unmasking.
+>     >>     >>  - Changed IOMMU_EXEC to IOMMU_NOEXEC, along with related
+>     flags
+>     >>     in VFIO.
+>     >>     >>  - Other fixes based on reviewer comments.
+>     >>     >> Changes since v4:
+>     >>     >>  - Use static offsets for each region in the VFIO device fd
+>     >>     >>  - Include patch in the series for the ARM SMMU to expose
+>     IOMMU_EXEC
+>     >>     >>    availability via IOMMU_CAP_DMA_EXEC
+>     >>     >>  - Rebased on VFIO multi domain support:
+>     >>     >>    - IOMMU_EXEC is now available if at least one IOMMU in the
+>     >>     container
+>     >>     >>      supports it
+>     >>     >>    - Expose IOMMU_EXEC if available via the capability
+>     >>     VFIO_IOMMU_PROT_EXEC
+>     >>     >>  - Some bug fixes
+>     >>     >> Changes since v3:
+>     >>     >>  - Use Kim Phillips' driver_probe_device()
+>     >>     >> Changes since v2:
+>     >>     >>  - Fixed Read/Write and MMAP on device regions
+>     >>     >>  - Removed dependency on Device Tree
+>     >>     >>  - Interrupts support
+>     >>     >>  - Interrupt masking/unmasking
+>     >>     >>  - Automask level sensitive interrupts
+>     >>     >>  - Introduced VFIO_DMA_MAP_FLAG_EXEC
+>     >>     >>  - Code clean ups
+>     >>     >>
+>     >>     >> Antonios Motakis (20):
+>     >>     >>   vfio/platform: initial skeleton of VFIO support for platform
+>     >>     devices
+>     >>     >>   vfio: platform: probe to devices on the platform bus
+>     >>     >>   vfio: platform: add the VFIO PLATFORM module to Kconfig
+>     >>     >>   vfio: amba: VFIO support for AMBA devices
+>     >>     >>   vfio: amba: add the VFIO for AMBA devices module to Kconfig
+>     >>     >>   vfio/platform: return info for bound device
+>     >>     >>   vfio/platform: return info for device memory mapped IO
+>     regions
+>     >>     >>   vfio/platform: read and write support for the device fd
+>     >>     >>   vfio/platform: support MMAP of MMIO regions
+>     >>     >>   vfio/platform: return IRQ info
+>     >>     >>   vfio/platform: initial interrupts support code
+>     >>     >>   vfio/platform: trigger an interrupt via eventfd
+>     >>     >>   vfio/platform: support for level sensitive interrupts
+>     >>     >>   vfio: add a vfio_ prefix to virqfd_enable and
+>     virqfd_disable and
+>     >>     >>     export
+>     >>     >>   vfio: virqfd: rename vfio_pci_virqfd_init and
+>     vfio_pci_virqfd_exit
+>     >>     >>   vfio: add local lock for virqfd instead of depending on
+>     VFIO PCI
+>     >>     >>   vfio: pass an opaque pointer on virqfd initialization
+>     >>     >>   vfio: move eventfd support code for VFIO_PCI to a
+>     separate file
+>     >>     >>   vfio: initialize the virqfd workqueue in VFIO generic code
+>     >>     >>   vfio/platform: implement IRQ masking/unmasking via an
+>     eventfd
+>     >>     >>
+>     >>     >>  drivers/vfio/Kconfig                          |   1 +
+>     >>     >>  drivers/vfio/Makefile                         |   5 +-
+>     >>     >>  drivers/vfio/pci/vfio_pci.c                   |   8 -
+>     >>     >>  drivers/vfio/pci/vfio_pci_intrs.c             | 238
+>     +-----------
+>     >>     >>  drivers/vfio/pci/vfio_pci_private.h           |   3 -
+>     >>     >>  drivers/vfio/platform/Kconfig                 |  19 +
+>     >>     >>  drivers/vfio/platform/Makefile                |   8 +
+>     >>     >>  drivers/vfio/platform/vfio_amba.c             | 115 ++++++
+>     >>     >>  drivers/vfio/platform/vfio_platform.c         | 103 +++++
+>     >>     >>  drivers/vfio/platform/vfio_platform_common.c  | 520
+>     >>     ++++++++++++++++++++++++++
+>     >>     >>  drivers/vfio/platform/vfio_platform_irq.c     | 340
+>     >>     +++++++++++++++++
+>     >>     >>  drivers/vfio/platform/vfio_platform_private.h |  82 ++++
+>     >>     >>  drivers/vfio/vfio.c                           |   8 +
+>     >>     >>  drivers/vfio/virqfd.c                         | 213
+>     +++++++++++
+>     >>     >>  include/linux/vfio.h                          |  27 ++
+>     >>     >>  include/uapi/linux/vfio.h                     |   2 +
+>     >>     >>  16 files changed, 1456 insertions(+), 236 deletions(-)
+>     >>     >>  create mode 100644 drivers/vfio/platform/Kconfig
+>     >>     >>  create mode 100644 drivers/vfio/platform/Makefile
+>     >>     >>  create mode 100644 drivers/vfio/platform/vfio_amba.c
+>     >>     >>  create mode 100644 drivers/vfio/platform/vfio_platform.c
+>     >>     >>  create mode 100644
+>     drivers/vfio/platform/vfio_platform_common.c
+>     >>     >>  create mode 100644 drivers/vfio/platform/vfio_platform_irq.c
+>     >>     >>  create mode 100644
+>     drivers/vfio/platform/vfio_platform_private.h
+>     >>     >>  create mode 100644 drivers/vfio/virqfd.c
+>     >>     >>
+>     >>     >
+>     >>
+>     >>
+>     >
+> 
+> 
