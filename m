@@ -1,15 +1,17 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Subject: Re: [PATCH v6 8/8] arm: dma-mapping: plumb our iommu mapping ops
 	into arch_setup_dma_ops
-Date: Mon, 19 Jan 2015 13:49:36 +0100
-Message-ID: <20150119124934.GD7312@ulmo.nvidia.com>
+Date: Mon, 19 Jan 2015 12:50:52 +0000
+Message-ID: <20150119125051.GI32131@arm.com>
 References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
-	<20150115082843.GB30799@ulmo> <20150115111211.GF23475@arm.com>
-	<2804479.ZFl06ysk3j@avalon>
+	<2804479.ZFl06ysk3j@avalon> <54BB58AA.5070407@nvidia.com>
+	<5043167.LEiljZnGai@avalon> <20150119124305.GC7312@ulmo.nvidia.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============5483649910068276575=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <2804479.ZFl06ysk3j@avalon>
+Content-Disposition: inline
+In-Reply-To: <20150119124305.GC7312-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,82 +21,40 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On Mon, Jan 19, 2015 at 12:43:06PM +0000, Thierry Reding wrote:
+> On Sun, Jan 18, 2015 at 01:18:51PM +0200, Laurent Pinchart wrote:
+> > On Sunday 18 January 2015 15:54:34 Alexandre Courbot wrote:
+> > > On 01/16/2015 08:18 AM, Laurent Pinchart wrote:
+> [...]
+> > > > The second way is to implement a mechanism to let drivers signal that they
+> > > > want to handle DMA mappings themselves. As the mappings need in the
+> > > > general case to be created before the probe function  is called
+> > > 
+> > > Sorry for being ignorant here, but why is that?
+> > 
+> > Because a driver can call the DMA mapping API in its probe function, to 
+> > allocate DMA coherent memory for instance. We need to ensure that the DMA 
+> > mapping IOMMU has set up the required IOMMU ops by that time. As explained 
+> > above I don't like the idea of sprinkling explicit calls to initialize IOMMU 
+> > support in the vast majority of drivers, especially when they shouldn't be 
+> > IOMMU-aware, so we then need to initialize everything that is needed before 
+> > the first call to the DMA mapping API.
+> 
+> The original patch that Hiroshi posted based on my comments was to have
+> the driver core call iommu_attach(), which would then set up everything
+> needed right before calling into the driver's ->probe(). This works
+> quite nicely because by definition the driver can't allocate any DMA
+> before ->probe(). And, like you said, this allows deferred probe to be
+> used.
+> 
+> To me it's so obviously the right solution that I remain flabbergasted
+> with how much resistance it's received (or how much it's being ignored).
 
---===============5483649910068276575==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="sgneBHv3152wZ8jf"
-Content-Disposition: inline
+Have you considered reposting the patches based on what we currently have
+(which has the advantage of identifying a specific IOMMU instance)?
 
-
---sgneBHv3152wZ8jf
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Jan 16, 2015 at 01:18:21AM +0200, Laurent Pinchart wrote:
-[...]
-> The second way is to implement a mechanism to let drivers signal that the=
-y=20
-> want to handle DMA mappings themselves. As the mappings need in the gener=
-al=20
-> case to be created before the probe function is called we can't signal th=
-is by=20
-> calling a function in probe(). A new flag field for struct device_driver =
-is a=20
-> possible solution. This would however require delaying the creation of DM=
-A=20
-> mappings until right before probe time. Attaching to the IOMMU could be p=
-ushed=20
-> to right before probe() as well, which would have the added benefit of ma=
-king=20
-> IOMMU driver implementable as real platform drivers.
-
-Right. This is a pretty important point, too. One of the things that
-we've been working on is suspend/resume. Now if you don't have a struct
-device you can't easily implement suspend/resume. You'd have to play
-tricks like using syscore_ops, which then leads to potentially problems
-with suspend/resume ordering. It also means we have to keep around
-global variables for driver-private data because there's no struct
-device to attach it to.
-
-By properly encoding the dependencies via deferred probe we get the
-proper ordering and we can use the regular driver model with all the
-goodies that we've come up with over the years.
-
-Thierry
-
---sgneBHv3152wZ8jf
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJUvP1eAAoJEN0jrNd/PrOhD7IQAIjGe06ULWFHNxxBlBFLoQXE
-nWdSOEuAG6nsiPFSsMjuAep54bsTvNqLK1rTKZT1atFOhnIJhnsOyYPGN0ZBME4w
-VDgI24dz+DT/xnvhYx473c9UGYJqehc/mjki8+xb1u3Rlj7g5HVvP/H+AK4l271d
-r7t3xYSb03CqMLXtYUxyIaBRs5AqkPSMM5blZ2Fv6WIN9TEGh+3GTGb0g4Bf3hov
-WoWVSHW2coJVbsi4XzCm7m5tdATREE0V61PO08bSynIbX754bCOm17632jZKJAkV
-iIytPPgqqsU3TbkVXUYehQbq0X36DwTVB4cXSO/285t9fcKbqLILw7XkqHZimP0P
-Kud0m3Wk6g96ZMD/Ux0QSjSZS6wcdxIJyCJ86QDFk7AcmlgC0nN5z0FTmkUAt2UA
-hhHlYRpm4BAA8WmKQMX3P/aTFlkQzIswVvHIHpFBrhOy3qbs9J4tSbItgWe1TdxH
-EuJK+Wsp2FAmDGp+jxJgg3aUcIEFrcQBYAplVcwPWJf6siSDYgY8ylOjiSrOGpjT
-wCC02MKtXKAQqNx+sDDacrSeCKbHZxKLw7/aOL3Uz/1nGRnU4xZAwoCOsvbjrGbh
-WkuEl5nzUEnU/yG5pqIFSej2SJ9giVScei5LKoV98iH4WguMHub3y92SEuN72RTj
-Wkfd+T8Erg1W+cAhG05p
-=jTQy
------END PGP SIGNATURE-----
-
---sgneBHv3152wZ8jf--
-
---===============5483649910068276575==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============5483649910068276575==--
+Will
