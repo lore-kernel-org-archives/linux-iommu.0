@@ -1,119 +1,149 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v6 8/8] arm: dma-mapping: plumb our iommu mapping ops into
- arch_setup_dma_ops
-Date: Mon, 19 Jan 2015 17:13:14 +0100
-Message-ID: <3782946.UYvzT31Xfc@wuerfel>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v6 8/8] arm: dma-mapping: plumb our iommu mapping ops
+	into arch_setup_dma_ops
+Date: Mon, 19 Jan 2015 17:21:14 +0100
+Message-ID: <20150119162111.GA7751@ulmo.nvidia.com>
 References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
- <54BB58AA.5070407@nvidia.com> <5043167.LEiljZnGai@avalon>
+	<2804479.ZFl06ysk3j@avalon> <20150119123623.GB7312@ulmo.nvidia.com>
+	<2253719.6TRpaaEdiI@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <5043167.LEiljZnGai@avalon>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: "jroedel@suse.de" <jroedel@suse.de>, Heiko Stuebner <heiko@sntech.de>, Will Deacon <will.deacon@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Thierry Reding <thierry.reding@gmail.com>, Alexandre Courbot <acourbot@nvidia.com>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, "hdoyu@nvidia.com" <hdoyu@nvidia.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>
+Content-Type: multipart/mixed; boundary="===============3249539649699674950=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <2253719.6TRpaaEdiI@wuerfel>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sunday 18 January 2015 13:18:51 Laurent Pinchart wrote:
-> On Sunday 18 January 2015 15:54:34 Alexandre Courbot wrote:
-> > On 01/16/2015 08:18 AM, Laurent Pinchart wrote:
+
+--===============3249539649699674950==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="ew6BAiZeqk4r7MaW"
+Content-Disposition: inline
+
+
+--ew6BAiZeqk4r7MaW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, Jan 19, 2015 at 04:52:41PM +0100, Arnd Bergmann wrote:
+> On Monday 19 January 2015 13:36:24 Thierry Reding wrote:
+> > On Fri, Jan 16, 2015 at 01:18:21AM +0200, Laurent Pinchart wrote:
 > > > On Thursday 15 January 2015 11:12:17 Will Deacon wrote:
-> > >> On Thu, Jan 15, 2015 at 08:28:44AM +0000, Thierry Reding wrote:
-> > >>> This has several advantages, such as that I can also use the regular
-> > >>> driver model for suspend/resume of the IOMMU, and I get to enjoy the
-> > >>> benefits of devres in the IOMMU driver. Probe ordering is still a tiny
-> > >>> issue, but we can easily solve that using explicit initcall ordering
-> > >>> (which really isn't any worse than IOMMU_OF_DECLARE()).
-> > >> 
-> > >> That's a pity. I'd much rather extend what we currently have to satisfy
-> > >> your use-case. Ho-hum.
-> > > 
-> > > Assuming we want the IOMMU to be handled transparently for the majority of
-> > > devices I only see two ways to fix this,
-> > > 
-> > > The first way is to create a default DMA mapping unconditionally and let
-> > > drivers that can't live with it tear it down. That's what is implemented
-> > > today.
-> > 
-> > I strongly support Thierry's point that drivers should not have to tear
-> > down things they don't need. The issue we are facing today is a very
-> > good illustration of why one should not have to do this.
-> > 
-> > Everybody hates to receive unsollicited email with a link that says "to
-> > unsubscribe, click here". Let's not import that unpleasant culture into
-> > the kernel.
-> > 
-> > I am arriving late in this discussion, but what is wrong with asking
-> > drivers to explicitly state that they want the DMA API to be backed by
-> > the IOMMU instead of forcibly making it work that way?
-> 
-> The vast majority of the drivers are not IOMMU-aware. We would thus need to 
-> add a call at the beginning of the probe function of nearly every driver that 
-> can perform DMA to state that the driver doesn't need to handle any IOMMU that 
-> might be present in the system itself. I don't think that's a better solution.
+> > > > On Thu, Jan 15, 2015 at 08:28:44AM +0000, Thierry Reding wrote:
+> > > > > On Wed, Jan 14, 2015 at 10:46:10AM +0000, Will Deacon wrote:
+> > > > > > On Wed, Jan 14, 2015 at 09:00:24AM +0000, Alexandre Courbot wro=
+te:
+> > > > > [...]
+> > > > >=20
+> > > > >>> 2) Say you want to use the IOMMU API in your driver, and have a=
+n iommu
+> > > > >>> property in your device's DT node. If by chance your IOMMU is
+> > > > >>> registered early, you will already have a mapping automatically
+> > > > >>> created even before your probe function is called. Can this be
+> > > > >>> avoided? Is it even safe?
+> > > > >>=20
+> > > > >> Currently, I think you have to either teardown the ops manually =
+or
+> > > > >> return an error from of_xlate. Thierry was also looking at this =
+sort of
+> > > > >> thing, so it might be worth talking to him.
+> > > > >=20
+> > > > > I already explained in earlier threads why I think this is a bad =
+idea.
+> > > > > It's completely unnatural for any driver to manually tear down so=
+mething
+> > > > > that it didn't want set up in the first place. It also means that=
+ you
+> > > > > have to carefully audit any users of these IOMMU APIs to make sur=
+e that
+> > > > > they do tear down. That doesn't sound like a good incremental app=
+roach,
+> > > > > as evidenced by the breakage that Alex and Heiko have encountered.
+> > > >=20
+> > > > Well, perhaps we hide that behind a get_iommu API or something. We =
+*do*
+> > > > need this manual teardown step to support things like VFIO, so it m=
+akes
+> > > > sense to reuse it for other users too imo.
+> > > >=20
+> > > > > The solution for me has been to completely side-step the issue an=
+d not
+> > > > > register the IOMMU with the new mechanism at all. That is, there'=
+s no
+> > > > > .of_xlate() implementation, which means that the ARM DMA API glue=
+ won't
+> > > > > try to be smart and use the IOMMU in ways it's not meant to be us=
+ed.
+> > >=20
+> > > That will break when someone will want to use the same IOMMU type for=
+ devices=20
+> > > that use the DMA mapping API to hide the IOMMU. That might not be the=
+ case for=20
+> > > your IOMMU today, but it's pretty fragile, we need to fix it.
+> >=20
+> > No, there's absolutely no issue here. It simply means that you can't do
+> > this on Tegra. So far I'm not sure I even see an advantage in using the
+> > IOMMU for devices that don't care about it anyway. Consider the example
+> > of the SD/MMC or HDA. They typically allocate fairly small buffers, the
+> > order of a single page typically. They can simply use memory handed out
+> > by the CMA.
+> >=20
+> > So as long as we don't add a .of_xlate() implementation or instantiate
+> > via the IOMMU_OF_DECLARE() mechanism we simply don't support IOMMU-over-
+> > DMA on Tegra.
+>=20
+> It breaks as soon as you have a system with memory above the 4GB boundary,
+> which is the whole point of iommus for most users.
 
-Right, abstracting the presence of an IOMMU (along with things like
-cache management) is the whole point for having the dma-mapping API.
+Why does it break? The IOMMU API simply gets a list of pages and gets
+the physical addresses from those pages when it maps them to the IO
+virtual addresses. How is .of_xlate() or of_iommu_configure() related?
 
-The iommu driver should instead be able to make the decision on whether
-the device uses the iommu for DMA or not. In some cases, it's not an
-option because the iommu is mandatory for all DMA and there is no working
-passthrough mode. In other cases, it depends on the dma mask: as long as
-the device's dma_mask covers all of RAM, we can avoid using the IOMMU
-and get better performance (and also avoid setting up tables that may
-need to be removed again), but when the dma mask is too small, we have
-to use the iommu or fall back to swiotlb (which is currently not implemeted
-on arm32).
+> CMA does not work for streaming mappings, only for the coherent API.
 
-> > > we can't signal this by calling a function in probe(). A new flag field
-> > > for struct device_driver is a possible solution. This would however
-> > > require delaying the creation of DMA mappings until right before probe
-> > > time. Attaching to the IOMMU could be pushed to right before probe() as
-> > > well, which would have the added benefit of making IOMMU driver
-> > > implementable as real platform drivers.
-> > 
-> > Keeping the ability to write IOMMU drivers as platform drivers would be
-> > nice indeed.
-> > 
-> > The problem with the opt-out flag though is that one will need to check
-> > every single driver out there to see whether it stills behave correctly
-> > if its hardware is suddently put behind a IOMMU.
-> 
-> That's actually my default assumption :-) On ARM platforms at least, for many 
-> devices, whether an IOMMU is present or not is an integration property, not a 
-> property of the device. The same way a device shouldn't care about the exact 
-> bus topology that connects it to the CPU and memory, it shouldn't care about 
-> whether an IOMMU is present on that bus, except in special cases.
+Why not? And if it doesn't I'm not sure we currently care on Tegra since
+we've gotten away with using CMA just fine so far.
 
-Agreed. This must work by default, or basically all arm64 machines are
-broken. At the moment, arm64 does not support IOMMUs properly and uses
-uses swiotlb instead, but it's a huge performance bottleneck. On arm32,
-very few systems need an IOMMU at the moment, but it's getting more common.
+Thierry
 
-> > Doing it the other way (a flag that enables IOMMU if available) sounds safer
-> > to me.
-> >
-> > What we have right now is a mechanism that basically makes it impossible
-> > to use the DMA API on many ARM platforms if ARM_DMA_USE_IOMMU is set
-> > (and I suspect it would also make the IOMMU unusable as well, without
-> > any way to fix things). This is quite concerning.
-> > 
-> > Even more concerning is that -rc5 is about to be released and we have
-> > in-tree drivers (Rockchip DRM) that are not working as they should
-> > because of this patch. Will, what is your plan to fix this? Do we have
-> > stuff that absolutely depends on this patch? If not, can we just revert
-> > it until all these issues are solved?
+--ew6BAiZeqk4r7MaW
+Content-Type: application/pgp-signature
 
-keystone, shmobile, mvebu and highbank all have PCI buses that are unable
-to access all of RAM, with different kinds of hacks to work around that.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
-	Arnd
+iQIcBAEBAgAGBQJUvS73AAoJEN0jrNd/PrOhRm8P/ioAn43xLsdQofS8RF1iAvUL
+CCHBpvPTGeTQpXjKRiEztIXaGDUaj0tZz384aa/SKmPVVryI4C6OkTw3JNLXjNdn
+1yx6PKMTOzoglvUYMuwAVe4jOq2burkTdlluuijQasgnBVmupl+X5ARXTZNwfDzp
+hhqKvMplQfaBhssZjOLjoSlm5Hy763ECFEd0DMFqZR5H4meeOiTCkPT95vbgV4tc
+7mamb4kIs2rZ/JbXMZhL12iMTt4CNQaedGoorMr5vWtDwWbyEfBFkagMmY6hunUF
+XR6cBP9UtsM/SBGWMkzMTHSLAyTHWXJzaFfoNd7VKs1NgsmU4phm4rhg3WFe4ra7
+ce8trFhnRtTtJGXjOlu2e89ehHhUux5pNEl36lED+L/mM3b2ilBJDDYawhM9i633
+pZsIb5nddE6n6ARThoVpZHq9/XDwIJaJcvBYBblLSctZzvm3IMuQzHv+f/EV3bUw
+X3q6rodf4pd3VqC0D22aySWLRzlu2EedbQw8F6EG13oqVDj+/DUblpgp3rrBg7hF
+gcdP4D5q3bzhrAJHnt7cY4cJVFhduudaL39WUq0R2st18l74ZUFqtg8U+g9pDTNc
+62a+aZqezMzjU3fEMTbxH6e8dIXa++ky0dnkLu1+bi8cmapMHxVjOgX9QAHvsoei
+QPwAKy4tqMR7uLSgwUg0
+=sS29
+-----END PGP SIGNATURE-----
+
+--ew6BAiZeqk4r7MaW--
+
+--===============3249539649699674950==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============3249539649699674950==--
