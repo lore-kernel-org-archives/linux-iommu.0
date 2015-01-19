@@ -1,36 +1,53 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [GIT PULL FOR v3.20] Renesas IPMMU driver
-Date: Mon, 19 Jan 2015 14:44:05 +0100
-Message-ID: <20150119134405.GK6343@8bytes.org>
-References: <17336548.2pFUfTyJuB@avalon>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH v2 0/5] Generic IOMMU page table framework
+Date: Mon, 19 Jan 2015 15:56:42 +0200
+Message-ID: <2897578.zknPhjxUSB@avalon>
+References: <1420811657-21321-1-git-send-email-will.deacon@arm.com>
+	<20150119130940.GJ6343@8bytes.org> <20150119131843.GJ32131@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-sh-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <17336548.2pFUfTyJuB@avalon>
-Sender: linux-sh-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: iommu@lists.linux-foundation.org, linux-sh@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150119131843.GJ32131-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jan 16, 2015 at 06:08:16PM +0200, Laurent Pinchart wrote:
-> ----------------------------------------------------------------
-> Laurent Pinchart (7):
->       iommu/ipmmu-vmsa: Cleanup failures of ARM mapping creation or attachment
->       iommu/ipmmu-vmsa: Flush P[UM]D entry before freeing the child page table
->       iommu/ipmmu-vmsa: Invalidate TLB after unmapping
->       iommu/ipmmu-vmsa: Add device tree bindings documentation
->       iommu/ipmmu-vmsa: Add device tree support
->       iommu/ipmmu-vmsa: Support multiple micro TLBs per device
->       iommu/ipmmu-vmsa: Remove platform data support
+Hi Will,
+
+On Monday 19 January 2015 13:18:43 Will Deacon wrote:
+> On Mon, Jan 19, 2015 at 01:09:41PM +0000, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org wrote:
+> > On Fri, Jan 16, 2015 at 02:01:31PM +0000, Will Deacon wrote:
+> >> I've not received any feedback on this revision of the series, but it's
+> >> working well for me and Laurent showed that it works with his IOMMU too.
+> >> 
+> >> Joerg -- can I include this in my pull request for 3.20, or is there
+> >> anything further you'd like me to address? The code is completely
+> >> self-contained, so I wouldn't expect any impact on IOMMU drivers that
+> >> don't explicitly use the new page table API.
+> > 
+> > The patch-set looks good to me. But with code generification in general,
+> > what are the plans for other arm iommu drivers to adopt this?
 > 
->  .../devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt    |  41 +++++++
->  drivers/iommu/ipmmu-vmsa.c                              | 151 +++++++++++----
->  include/linux/platform_data/ipmmu-vmsa.h                |  24 ----
->  3 files changed, 154 insertions(+), 62 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iommu/renesas,ipmmu-
-> vmsa.txt
->  delete mode 100644 include/linux/platform_data/ipmmu-vmsa.h
+> I think Laurent was going to make use of it and I'm working on a driver
+> that will use it too.
+> 
+> Laurent -- you had patches ready to go for v1, right?
 
-Pulled, thanks Laurent.
+Yes, and I've rebased them (or actually it, it's a single patch) on v2. I 
+haven't had time to test the result yet, I'll try to do so later tonight or 
+tomorrow.
 
+-- 
+Regards,
+
+Laurent Pinchart
