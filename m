@@ -1,15 +1,19 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH v6 8/8] arm: dma-mapping: plumb our iommu mapping ops into
-	arch_setup_dma_ops
-Date: Mon, 19 Jan 2015 13:34:24 +0200
-Message-ID: <1984907.uTqFPJnJpV@avalon>
-References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
-	<5043167.LEiljZnGai@avalon> <20150119111202.GD32131@arm.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu: return dma alias from
+	iommu_group_get_for_pci_dev()
+Date: Mon, 19 Jan 2015 12:02:18 +0000
+Message-ID: <20150119120217.GH32131@arm.com>
+References: <1421427514-16579-1-git-send-email-will.deacon@arm.com>
+	<1421427514-16579-2-git-send-email-will.deacon@arm.com>
+	<1421430111.6130.254.camel@redhat.com>
+	<20150116203350.GA21807@arm.com>
+	<1421442663.6130.281.camel@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150119111202.GD32131-5wv7dgnIgG8@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1421442663.6130.281.camel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,111 +23,121 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "m-karicheri2-l0cyMroinI0@public.gmane.org" <m-karicheri2-l0cyMroinI0@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+On Fri, Jan 16, 2015 at 09:11:03PM +0000, Alex Williamson wrote:
+> On Fri, 2015-01-16 at 20:33 +0000, Will Deacon wrote:
+> > On Fri, Jan 16, 2015 at 05:41:51PM +0000, Alex Williamson wrote:
+> > > On Fri, 2015-01-16 at 16:58 +0000, Will Deacon wrote:
+> > > > Some IOMMU drivers (e.g. the ARM SMMU) require not only the IOMMU g=
+roup
+> > > > for a PCI device, but also the effective alias of the device (as se=
+en by
+> > > > the IOMMU) in order to program the translations correctly.
+> > > > =
 
-On Monday 19 January 2015 11:12:02 Will Deacon wrote:
-> On Sun, Jan 18, 2015 at 11:18:51AM +0000, Laurent Pinchart wrote:
-> > On Sunday 18 January 2015 15:54:34 Alexandre Courbot wrote:
-> >> On 01/16/2015 08:18 AM, Laurent Pinchart wrote:
-> >>> On Thursday 15 January 2015 11:12:17 Will Deacon wrote:
-> >>>> On Thu, Jan 15, 2015 at 08:28:44AM +0000, Thierry Reding wrote:
-> >>>>> On Wed, Jan 14, 2015 at 10:46:10AM +0000, Will Deacon wrote:
-> >>>>>> On Wed, Jan 14, 2015 at 09:00:24AM +0000, Alexandre Courbot wrote:
-> >>>>> [...]
-> >>>>> 
-> >>>>>>> 2) Say you want to use the IOMMU API in your driver, and have an
-> >>>>>>> iommu property in your device's DT node. If by chance your IOMMU
-> >>>>>>> is registered early, you will already have a mapping automatically
-> >>>>>>> created even before your probe function is called. Can this be
-> >>>>>>> avoided? Is it even safe?
-> >>>>>> 
-> >>>>>> Currently, I think you have to either teardown the ops manually or
-> >>>>>> return an error from of_xlate. Thierry was also looking at this
-> >>>>>> sort of thing, so it might be worth talking to him.
-> >>>>> 
-> >>>>> I already explained in earlier threads why I think this is a bad
-> >>>>> idea. It's completely unnatural for any driver to manually tear down
-> >>>>> something that it didn't want set up in the first place. It also
-> >>>>> means that you have to carefully audit any users of these IOMMU APIs
-> >>>>> to make sure that they do tear down. That doesn't sound like a good
-> >>>>> incremental approach, as evidenced by the breakage that Alex and
-> >>>>> Heiko have encountered.
-> >>>> 
-> >>>> Well, perhaps we hide that behind a get_iommu API or something. We
-> >>>> *do* need this manual teardown step to support things like VFIO, so
-> >>>> it makes sense to reuse it for other users too imo.
-> >>>> 
-> >>>>> The solution for me has been to completely side-step the issue and
-> >>>>> not register the IOMMU with the new mechanism at all. That is,
-> >>>>> there's no .of_xlate() implementation, which means that the ARM DMA
-> >>>>> API glue won't try to be smart and use the IOMMU in ways it's not
-> >>>>> meant to be used.
-> >>> 
-> >>> That will break when someone will want to use the same IOMMU type for
-> >>> devices that use the DMA mapping API to hide the IOMMU. That might not
-> >>> be the case for your IOMMU today, but it's pretty fragile, we need to
-> >>> fix it.
-> >>> 
-> >>>>> This has several advantages, such as that I can also use the regular
-> >>>>> driver model for suspend/resume of the IOMMU, and I get to enjoy the
-> >>>>> benefits of devres in the IOMMU driver. Probe ordering is still a
-> >>>>> tiny issue, but we can easily solve that using explicit initcall
-> >>>>> ordering (which really isn't any worse than IOMMU_OF_DECLARE()).
-> >>>> 
-> >>>> That's a pity. I'd much rather extend what we currently have to
-> >>>> satisfy your use-case. Ho-hum.
-> >>> 
-> >>> Assuming we want the IOMMU to be handled transparently for the
-> >>> majority of devices I only see two ways to fix this,
-> >>> 
-> >>> The first way is to create a default DMA mapping unconditionally and
-> >>> let drivers that can't live with it tear it down. That's what is
-> >>> implemented today.
-> >> 
-> >> I strongly support Thierry's point that drivers should not have to tear
-> >> down things they don't need. The issue we are facing today is a very
-> >> good illustration of why one should not have to do this.
-> >> 
-> >> Everybody hates to receive unsollicited email with a link that says "to
-> >> unsubscribe, click here". Let's not import that unpleasant culture into
-> >> the kernel.
-> >> 
-> >> I am arriving late in this discussion, but what is wrong with asking
-> >> drivers to explicitly state that they want the DMA API to be backed by
-> >> the IOMMU instead of forcibly making it work that way?
-> > 
-> > The vast majority of the drivers are not IOMMU-aware. We would thus need
-> > to add a call at the beginning of the probe function of nearly every
-> > driver that can perform DMA to state that the driver doesn't need to
-> > handle any IOMMU that might be present in the system itself. I don't think
-> > that's a better solution.
-> > 
-> > Explicitly tearing down mappings in drivers that want to manage IOMMUs
-> > isn't a solution I like either. A possibly better solution would be to
-> > call a function to state that the DMA mapping API shouldn't not handle
-> > IOMMUs. Something like
-> >
-> > 	dma_mapping_ignore_iommu(dev);
-> > 
-> > at the beginning of the probe function of such drivers could do. The
-> > function would perform behind the scene all operations needed to tear
-> > down everything that shouldn't have been set up.
-> 
-> An alternative would be to add a flag to platform_driver, like we have for
-> "prevent_deferred_probe" which is something like "prevent_dma_configure".
+> > > > This patch extends iommu_group_get_for_pci_dev to return the DMA al=
+ias
+> > > > of the device as well as the group, which can potentially be overri=
+dden
+> > > > by quirks in the PCI layer. The function is also made visible to dr=
+ivers
+> > > > so that the new functionality can be used.
+> > > > =
 
-That's a solution I have proposed (albeit as a struct device_driver field, but 
-that's a small detail), so I'm fine with it :-)
+> > > > Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> > > > ---
+> > > >  drivers/iommu/iommu.c | 14 ++++++++++++--
+> > > >  include/linux/iommu.h |  2 ++
+> > > >  2 files changed, 14 insertions(+), 2 deletions(-)
+> > > =
 
-> For the moment, that would actually teardown the DMA configuration in
-> platform_drv_probe, but if things are reordering in future then we can avoid
-> setting up the ops altogether without an API change.
+> > > This would seem to promote the idea that an IOMMU group for a PCI dev=
+ice
+> > > has a single bdf alias, which is not necessarily true.
+> > =
 
--- 
-Regards,
+> > True, but you can deal with that in the caller by ensuring you get the =
+alias
+> > for each member of the group, no?
+> =
 
-Laurent Pinchart
+> If the caller needs to do that anyway (which they do), what's the point
+> of this addition?  What does this alias that we're returning here
+> represent versus the other aliases available?  Doesn't the alias
+> returned depend on the IOMMU group member that it's called from?  Or
+> even whether the group has already been established?  So even if it did
+> make sense to return an alias, the answer depends on the caller's
+> perspective.  Sort of a Schr=F6dinger's cat function.
+
+I'm trying to use this function from the ->add_device IOMMU callback, so
+that I can figure out (a) which IOMMU group the new device is in and (b)
+which aliases are contained in that group.
+
+I achieve (b) not by walking the group (iommu_group_for_each_dev) on each
+->add_device, but by simply adding the alias for the new device to a data
+structure stashed via iommu_group_set_iommudata.
+
+Anyway, you have some good points, more below...
+
+> > > It also only returns the alias based on PCI topology, which can easil=
+y be
+> > > discovered by the caller using pci_for_each_dma_alias() directly.  So=
+ I
+> > > don't really see the benefit of this versus using
+> > > iommu_group_for_each_dev() and/or pci_for_each_dma_alias().
+> > =
+
+> > The problem with using pci_for_each_dma_alias is that I end up duplicat=
+ing
+> > the remainder of iommu_group_get_for_pci_dev in the SMMU driver in order
+> > to handle PCI_DEV_FLAGS_DMA_ALIAS_DEVFN set by PCI quirks and
+> > aliasing due to ACS constraints. Furthermore, I end up walking the PCI
+> > topology twice: once for the group and a second time for the aliases.
+> =
+
+> But the patch is taking the alias only after the
+> pci_for_each_dma_alias() call, not after the ACS constraints, so I don't
+> see how the duplicated code is any more than another
+> pci_for_each_dma_alias() plus callback.  intel-iommu does this plenty.
+
+Right, I think this is what I was missing. Given that the ACS stuff is all
+about getting the right group, then I should already have seen any other
+group members in ->add_device and therefore using pci_for_each_dma_alias
+will work fine providing that I obtain the group using
+iommu_group_get_for_dev. Any further alias transformations will be described
+by the firmware. Sound sensible?
+
+> Is walking the PCI topology a second time really an issue?  IOMMU group
+> setup should be done at boot, and really how deep do you expect a PCI
+> topology to be?  A "complex" device will have a switch/bridge and
+> endpoints, so we're talking about up to 3 bus levels.  In theory, yes we
+> could walk a monster topology, in practice, notsomuch.
+
+Ok, I guess we can revisit this if it does ever become an issue.
+
+> > > It's also intentional that while we have PCI specific code in iommu.c,
+> > > the exposed interfaces are device agnostic.  I'm not seeing enough
+> > > reason here to change that.  Thanks,
+> > =
+
+> > Hmm, I'd really rather have *something* in the core to avoid duplication
+> > between all IOMMU drivers sitting on PCI without ACPI tables to describe
+> > the IDs. How about a method to extract the IDs from an IOMMU group?
+> =
+
+> Well, we do have stuff in the core.  We can get an IOMMU group for a
+> device, we can iterate the devices within an IOMMU group, and we can get
+> alias for devices that are PCI.  The IOMMU & PCI cores facilitates all
+> of that.  I don't get why we need to incorporate some combination of
+> that into a new or existing interface when it implies a relationship
+> that doesn't necessarily exist and biases the IOMMU interfaces towards a
+> particular device type.  Thanks,
+
+Combining the interfaces would help to reduce some redundant walking of
+device topologies, but since that's not a practical problem at the moment
+then I'll make do with what we have.
+
+Will
