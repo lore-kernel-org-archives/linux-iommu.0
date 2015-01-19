@@ -1,17 +1,15 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v6 8/8] arm: dma-mapping: plumb our iommu mapping ops
-	into arch_setup_dma_ops
-Date: Mon, 19 Jan 2015 12:50:52 +0000
-Message-ID: <20150119125051.GI32131@arm.com>
-References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
-	<2804479.ZFl06ysk3j@avalon> <54BB58AA.5070407@nvidia.com>
-	<5043167.LEiljZnGai@avalon> <20150119124305.GC7312@ulmo.nvidia.com>
+From: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 0/5] Generic IOMMU page table framework
+Date: Mon, 19 Jan 2015 14:09:41 +0100
+Message-ID: <20150119130940.GJ6343@8bytes.org>
+References: <1420811657-21321-1-git-send-email-will.deacon@arm.com>
+	<20150116140130.GQ7091@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20150119124305.GC7312-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
+In-Reply-To: <20150116140130.GQ7091-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,40 +19,23 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 19, 2015 at 12:43:06PM +0000, Thierry Reding wrote:
-> On Sun, Jan 18, 2015 at 01:18:51PM +0200, Laurent Pinchart wrote:
-> > On Sunday 18 January 2015 15:54:34 Alexandre Courbot wrote:
-> > > On 01/16/2015 08:18 AM, Laurent Pinchart wrote:
-> [...]
-> > > > The second way is to implement a mechanism to let drivers signal that they
-> > > > want to handle DMA mappings themselves. As the mappings need in the
-> > > > general case to be created before the probe function  is called
-> > > 
-> > > Sorry for being ignorant here, but why is that?
-> > 
-> > Because a driver can call the DMA mapping API in its probe function, to 
-> > allocate DMA coherent memory for instance. We need to ensure that the DMA 
-> > mapping IOMMU has set up the required IOMMU ops by that time. As explained 
-> > above I don't like the idea of sprinkling explicit calls to initialize IOMMU 
-> > support in the vast majority of drivers, especially when they shouldn't be 
-> > IOMMU-aware, so we then need to initialize everything that is needed before 
-> > the first call to the DMA mapping API.
-> 
-> The original patch that Hiroshi posted based on my comments was to have
-> the driver core call iommu_attach(), which would then set up everything
-> needed right before calling into the driver's ->probe(). This works
-> quite nicely because by definition the driver can't allocate any DMA
-> before ->probe(). And, like you said, this allows deferred probe to be
-> used.
-> 
-> To me it's so obviously the right solution that I remain flabbergasted
-> with how much resistance it's received (or how much it's being ignored).
+Hi Will,
 
-Have you considered reposting the patches based on what we currently have
-(which has the advantage of identifying a specific IOMMU instance)?
+On Fri, Jan 16, 2015 at 02:01:31PM +0000, Will Deacon wrote:
+> I've not received any feedback on this revision of the series, but it's
+> working well for me and Laurent showed that it works with his IOMMU too.
+> 
+> Joerg -- can I include this in my pull request for 3.20, or is there
+> anything further you'd like me to address? The code is completely
+> self-contained, so I wouldn't expect any impact on IOMMU drivers that
+> don't explicitly use the new page table API.
 
-Will
+The patch-set looks good to me. But with code generification in general,
+what are the plans for other arm iommu drivers to adopt this?
+
+
+	Joerg
