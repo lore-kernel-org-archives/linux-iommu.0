@@ -1,96 +1,116 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part2 v4 15/33] irq_remapping/amd: Move struct irq_2_irte into
-	amd_iommu.c
-Date: Tue, 20 Jan 2015 13:51:35 +0800
-Message-ID: <1421733113-15704-16-git-send-email-jiang.liu@linux.intel.com>
+From: Jiang Liu <jiang.liu@linux.intel.com>
+Subject: [Patch Part2 v4 25/33] x86/irq: Move check of cfg->move_in_progress into send_cleanup_vector()
+Date: Tue, 20 Jan 2015 13:51:45 +0800
+Message-ID: <1421733113-15704-26-git-send-email-jiang.liu@linux.intel.com>
 References: <1421733113-15704-1-git-send-email-jiang.liu@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1421733113-15704-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Dimitri Sivanich <sivanich-sJ/iWh9BUns@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Cohen <david.a.cohen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Sander Eikelenboom <linux-6SM94LqRVpn6gRhOQ7JHfg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Vrabel <david.vrabel-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1421733113-15704-1-git-send-email-jiang.liu@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Randy Dunlap <rdunlap@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Borislav Petkov <bp@alien8.de>, Dimitri Sivanich <sivanich@sgi.com>, x86@kernel.org, Joerg Roedel <joro@8bytes.org>, Jiang Liu <jiang.liu@linux.intel.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, David Cohen <david.a.cohen@linux.intel.com>, Sander Eikelenboom <linux@eikelenboom.it>, David Vrabel <david.vrabel@citrix.com>, Andrew Morton <akpm@linux-foundation.org>, Tony Luck <tony.luck@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Now only amd_iommu.c access irq_2_irte, so move it from hw_irq.h into
-amd_iommu.c.
+Move check of cfg->move_in_progress into send_cleanup_vector() to
+prepare for simplifying struct irq_cfg.
 
-Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
-Cc: Rafael J. Wysocki <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
-Cc: Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Link: http://lkml.kernel.org/r/1416901802-24211-25-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
-Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Tested-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Tony Luck <tony.luck@intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: iommu@lists.linux-foundation.org
+Cc: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Cc: Yinghai Lu <yinghai@kernel.org>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Joerg Roedel <joro@8bytes.org>
+Link: http://lkml.kernel.org/r/1416901802-24211-34-git-send-email-jiang.liu@linux.intel.com
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Joerg Roedel <jroedel@suse.de>
 ---
- arch/x86/include/asm/hw_irq.h |   13 -------------
- drivers/iommu/amd_iommu.c     |    5 +++++
- 2 files changed, 5 insertions(+), 13 deletions(-)
+ arch/x86/kernel/apic/vector.c       |   10 ++++++++--
+ arch/x86/platform/uv/uv_irq.c       |    3 +--
+ drivers/iommu/amd_iommu.c           |    3 +--
+ drivers/iommu/intel_irq_remapping.c |    3 +--
+ 4 files changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
-index 3520f71f168b..494d541d2aee 100644
---- a/arch/x86/include/asm/hw_irq.h
-+++ b/arch/x86/include/asm/hw_irq.h
-@@ -94,14 +94,6 @@ extern void trace_call_function_single_interrupt(void);
- #define trace_kvm_posted_intr_ipi kvm_posted_intr_ipi
- #endif /* CONFIG_TRACING */
- 
--#ifdef CONFIG_IRQ_REMAP
--/* AMD specific interrupt remapping information */
--struct irq_2_irte {
--	u16 devid; /* Device ID for IRTE table */
--	u16 index; /* Index into IRTE table*/
--};
--#endif	/* CONFIG_IRQ_REMAP */
--
- struct irq_domain;
- 
- #ifdef	CONFIG_X86_LOCAL_APIC
-@@ -184,11 +176,6 @@ struct irq_cfg {
- 	unsigned int		dest_apicid;
- 	u8			vector;
- 	u8			move_in_progress : 1;
--#ifdef CONFIG_IRQ_REMAP
--	union {
--		struct irq_2_irte  irq_2_irte;
--	};
--#endif
- 	union {
- #ifdef CONFIG_X86_IO_APIC
- 		struct {
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 8792db50ffbd..f24bb128b28c 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3858,6 +3858,11 @@ union irte {
- 	} fields;
+diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
+index 436a3400d9ac..a5ce2eef0528 100644
+--- a/arch/x86/kernel/apic/vector.c
++++ b/arch/x86/kernel/apic/vector.c
+@@ -495,7 +495,7 @@ static struct irq_chip lapic_controller = {
  };
  
-+struct irq_2_irte {
-+	u16 devid; /* Device ID for IRTE table */
-+	u16 index; /* Index into IRTE table*/
-+};
+ #ifdef CONFIG_SMP
+-void send_cleanup_vector(struct irq_cfg *cfg)
++static void __send_cleanup_vector(struct irq_cfg *cfg)
+ {
+ 	cpumask_var_t cleanup_mask;
+ 
+@@ -513,6 +513,12 @@ void send_cleanup_vector(struct irq_cfg *cfg)
+ 	cfg->move_in_progress = 0;
+ }
+ 
++void send_cleanup_vector(struct irq_cfg *cfg)
++{
++	if (cfg->move_in_progress)
++		__send_cleanup_vector(cfg);
++}
 +
- struct amd_ir_data {
- 	struct irq_2_irte			irq_2_irte;
- 	union irte				irte_entry;
+ asmlinkage __visible void smp_irq_move_cleanup_interrupt(void)
+ {
+ 	unsigned vector, me;
+@@ -583,7 +589,7 @@ static void __irq_complete_move(struct irq_cfg *cfg, unsigned vector)
+ 	me = smp_processor_id();
+ 
+ 	if (vector == cfg->vector && cpumask_test_cpu(me, cfg->domain))
+-		send_cleanup_vector(cfg);
++		__send_cleanup_vector(cfg);
+ }
+ 
+ void irq_complete_move(struct irq_cfg *cfg)
+diff --git a/arch/x86/platform/uv/uv_irq.c b/arch/x86/platform/uv/uv_irq.c
+index 54af6e388a12..091b36ac44c4 100644
+--- a/arch/x86/platform/uv/uv_irq.c
++++ b/arch/x86/platform/uv/uv_irq.c
+@@ -63,8 +63,7 @@ uv_set_irq_affinity(struct irq_data *data, const struct cpumask *mask,
+ 	ret = parent->chip->irq_set_affinity(parent, mask, force);
+ 	if (ret >= 0) {
+ 		uv_program_mmr(cfg, data->chip_data);
+-		if (cfg->move_in_progress)
+-			send_cleanup_vector(cfg);
++		send_cleanup_vector(cfg);
+ 	}
+ 
+ 	return ret;
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index f24bb128b28c..ce44cd79a674 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -4333,8 +4333,7 @@ static int amd_ir_set_affinity(struct irq_data *data,
+ 	 * at the new destination. So, time to cleanup the previous
+ 	 * vector allocation.
+ 	 */
+-	if (cfg->move_in_progress)
+-		send_cleanup_vector(cfg);
++	send_cleanup_vector(cfg);
+ 
+ 	return IRQ_SET_MASK_OK_DONE;
+ }
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 8a71ef6af93c..55e72ce52fc4 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -1003,8 +1003,7 @@ intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
+ 	 * at the new destination. So, time to cleanup the previous
+ 	 * vector allocation.
+ 	 */
+-	if (cfg->move_in_progress)
+-		send_cleanup_vector(cfg);
++	send_cleanup_vector(cfg);
+ 
+ 	return IRQ_SET_MASK_OK_DONE;
+ }
 -- 
 1.7.10.4
