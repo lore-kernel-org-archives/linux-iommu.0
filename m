@@ -1,15 +1,23 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH v6 8/8] arm: dma-mapping: plumb our iommu mapping ops into
-	arch_setup_dma_ops
-Date: Tue, 20 Jan 2015 16:05:42 +0200
-Message-ID: <1668598.fJABSYM31J@avalon>
-References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
-	<2804479.ZFl06ysk3j@avalon> <20150119124934.GD7312@ulmo.nvidia.com>
+From: Javier Martinez Canillas <javier.martinez-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>
+Subject: Re: [PATCH v3 00/19] Exynos SYSMMU (IOMMU) integration with DT and
+	DMA-mapping subsystem
+Date: Tue, 20 Jan 2015 15:05:38 +0100
+Message-ID: <54BE60B2.1030707@collabora.co.uk>
+References: <1416395748-10731-1-git-send-email-m.szyprowski@samsung.com>
+	<1417514366.21830.22.camel@collabora.co.uk>
+	<54818768.3080303@samsung.com>
+	<CABxcv=n=eNqbyBbOk1Wb87tCnnLZAJQurmCdeTOSqMZMbNaSHw@mail.gmail.com>
+	<54AC93E0.8010705@samsung.com>
+	<54ACFD69.1020500@collabora.co.uk> <54AD0293.70909@samsung.com>
+	<54AEB384.2040005@collabora.co.uk> <54B36C5A.6050109@samsung.com>
+	<54B3F1B7.7090307@collabora.co.uk> <54B4ABFB.5000501@samsung.com>
+	<54B5B5F6.3030607@collabora.co.uk>
+	<54B5B721.4070309@collabora.co.uk> <54BE383B.5030505@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150119124934.GD7312-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
+In-Reply-To: <54BE383B.5030505-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,46 +27,39 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sjoerd Simons <sjoerd.simons-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Gustavo Padovan <gustavo.padovan-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Thierry,
+Hello Joonyoung,
 
-On Monday 19 January 2015 13:49:36 Thierry Reding wrote:
-> On Fri, Jan 16, 2015 at 01:18:21AM +0200, Laurent Pinchart wrote:
-> [...]
+On 01/20/2015 12:12 PM, Joonyoung Shim wrote:
+>>>
+>>> I dug further on this issue and found that the cause is that the exynos_mixer
+>>> driver needs some clocks (CLK_HDMI and CLK_SCLK_HDMI) grabbed by exynos_hdmi
+>>> to be kept enabled after hdmi_poweroff (drivers/gpu/drm/exynos/exynos_hdmi.c).
+>>>
+>>> Otherwise, any access to mixer device registers leads to an imprecise external
+>>> abort error. The following change [0] to the Exynos DRM HDMI driver makes the
+>>> issue to not happen and I can successfully execute:
+>>>
+>>> # echo 1 > /sys/devices/platform/exynos-drm/graphics/fb0/blank
+>>> # echo 0 > /sys/devices/platform/exynos-drm/graphics/fb0/blank
+>>>
 > 
-> > The second way is to implement a mechanism to let drivers signal that they
-> > want to handle DMA mappings themselves. As the mappings need in the
-> > general case to be created before the probe function is called we can't
-> > signal this by calling a function in probe(). A new flag field for struct
-> > device_driver is a possible solution. This would however require delaying
-> > the creation of DMA mappings until right before probe time. Attaching to
-> > the IOMMU could be pushed to right before probe() as well, which would
-> > have the added benefit of making IOMMU driver implementable as real
-> > platform drivers.
-> 
-> Right. This is a pretty important point, too. One of the things that
-> we've been working on is suspend/resume. Now if you don't have a struct
-> device you can't easily implement suspend/resume. You'd have to play
-> tricks like using syscore_ops, which then leads to potentially problems
-> with suspend/resume ordering. It also means we have to keep around
-> global variables for driver-private data because there's no struct
-> device to attach it to.
-> 
-> By properly encoding the dependencies via deferred probe we get the
-> proper ordering and we can use the regular driver model with all the
-> goodies that we've come up with over the years.
+> Did you execute this operation repeatedly? Still i get error when i
+> execute this more than twice with your change [0].
+>
 
-Marek's patch set to port the Exynos IOMMU driver on Will's patches uses 
-of_platform_device_create() in the init handler registered with 
-IOMMU_OF_DECLARE() to create a platform device for the IOMMU. I've initially 
-considered this as a dubious hack, but on the other hand it avoids modifying 
-the whole IOMMU driver to get rid of struct device, making it easier to move 
-to a deferred probe approach later if needed (and possible and desired).
+You mean that you are seeing the "Power domain power-domain disable failed"
+message but the system is not crashing or that you are still having the
+system crash?
 
--- 
-Regards,
+I've seen the former when running multiple times but I have not seen the
+crash when the hdmi clock is not disabled on hdmi_poweroff().
 
-Laurent Pinchart
+> Thanks.
+>
+
+Best regards,
+Javier
