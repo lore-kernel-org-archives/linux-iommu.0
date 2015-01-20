@@ -1,13 +1,14 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v11 00/20] VFIO support for platform and ARM AMBA devices
-Date: Mon, 19 Jan 2015 11:39:10 -0700
-Message-ID: <1421692750.6130.377.camel@redhat.com>
-References: <1420541335-17190-1-git-send-email-a.motakis@virtualopensystems.com>
+From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [Patch Part1 v7 07/38] x86/dmar: Use new irqdomain interfaces to
+	allocate/free IRQ
+Date: Tue, 20 Jan 2015 11:08:10 +0800
+Message-ID: <1421723321-8386-8-git-send-email-jiang.liu@linux.intel.com>
+References: <1421723321-8386-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1420541335-17190-1-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+In-Reply-To: <1421723321-8386-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,137 +18,120 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Dimitri Sivanich <sivanich-sJ/iWh9BUns@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Cohen <david.a.cohen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Sander Eikelenboom <linux-6SM94LqRVpn6gRhOQ7JHfg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, David Vrabel <david.vrabel-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2015-01-06 at 11:48 +0100, Antonios Motakis wrote:
-> This patch series aims to implement VFIO support for platform devices that
-> reside behind an IOMMU. Examples of such devices are devices behind an ARM
-> SMMU, or behind a Samsung Exynos System MMU.
-> 
-> The API used is based on the existing VFIO API that is also used with PCI
-> devices. Only devices that include a basic set of IRQs and memory regions are
-> targeted; devices with complex relationships with other devices on a device
-> tree are not taken into account at this stage.
-> 
-> This patch series may be applied on the following series/patches:
->  - [PATCH] driver core: amba: add device binding path 'driver_override'
+Use new irqdomain interfaces to allocate/free IRQ for DMAR and interrupt
+remapping, so we could kill GENERIC_IRQ_LEGACY_ALLOC_HWIRQ later.
 
-Are we stalled from feature bloat again?  What if we dropped amba
-support for now, is there still a useful patch series remaining?
+The private definition of irq_alloc_hwirqs()/irq_free_hwirqs() are
+temporary solution, it will be removed once we have converted interrupt
+remapping driver to use irqdomain framework.
 
->  - [PATCH v3 0/6] vfio: type1: support for ARM SMMUS with VFIO_IOMMU_TYPE1
+Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
+Cc: Rafael J. Wysocki <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
+Cc: Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Link: http://lkml.kernel.org/r/1416894816-23245-8-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+---
+ arch/x86/include/asm/irq_remapping.h |    4 ++--
+ arch/x86/kernel/apic/msi.c           |   10 ++++++++++
+ drivers/iommu/irq_remapping.c        |   17 +++++++++++++++--
+ 3 files changed, 27 insertions(+), 4 deletions(-)
 
-Is there anything blocking this series now?  I think we were waiting on
-the NOEXEC stuff for the iommu branch, which I think is now in v3.19-rc,
-right?
-
-Otherwise it looks like there's at least another revision required to
-this series to resolve the mask issue reported by Eric.  Is that
-correct?  Thanks,
-
-Alex
-
-> A copy can be cloned from the branch vfio-platform-v11 at:
-> git-9UaJU3cA/F/QT0dZR+AlfA@public.gmane.org:virtualopensystems/linux-kvm-arm.git
-> 
-> Changes since v10:
->  - Check if interrupt is already masked when setting a new trigger
->  - Fixed kasprintf with unchecked return value in VFIO AMBA driver
-> Changes since v9:
->  - Reworked the splitting of the patches that decouple virqfd from PCI
->  - Some styling issues and typos
->  - Removed superfluous includes
->  - AMBA devices are now named vfio-amba- suffixed by the AMBA device id
->  - Several other cleanups and fixes
-> Changes since v8:
->  - Separate irq handler for edge and level triggered interrupts
->  - Mutex based lock for VFIO fd open/release
->  - Fixed bug where the first region of a platform device wasn't exposed
->  - Read only regions can be MMAPed only read only
->  - Code cleanups
-> Changes since v7:
->  - Some initial placeholder functionality for PIO resources
->  - Cleaned up code for IRQ triggering, masking and unmasking
->  - Some functionality has been removed from this series and posted separately:
->    - VFIO_IOMMU_TYPE1 support for ARM SMMUs
->    - IOMMU NOEXEC patches
->    - driver_override functionality for AMBA devices
->  - Several fixes
-> Changes since v6:
->  - Integrated support for AMBA devices
->  - Numerous cleanups and fixes
-> Changes since v5:
->  - Full eventfd support for IRQ masking and unmasking.
->  - Changed IOMMU_EXEC to IOMMU_NOEXEC, along with related flags in VFIO.
->  - Other fixes based on reviewer comments.
-> Changes since v4:
->  - Use static offsets for each region in the VFIO device fd
->  - Include patch in the series for the ARM SMMU to expose IOMMU_EXEC
->    availability via IOMMU_CAP_DMA_EXEC
->  - Rebased on VFIO multi domain support:
->    - IOMMU_EXEC is now available if at least one IOMMU in the container
->      supports it
->    - Expose IOMMU_EXEC if available via the capability VFIO_IOMMU_PROT_EXEC
->  - Some bug fixes
-> Changes since v3:
->  - Use Kim Phillips' driver_probe_device()
-> Changes since v2:
->  - Fixed Read/Write and MMAP on device regions
->  - Removed dependency on Device Tree
->  - Interrupts support
->  - Interrupt masking/unmasking
->  - Automask level sensitive interrupts
->  - Introduced VFIO_DMA_MAP_FLAG_EXEC
->  - Code clean ups
-> 
-> Antonios Motakis (20):
->   vfio/platform: initial skeleton of VFIO support for platform devices
->   vfio: platform: probe to devices on the platform bus
->   vfio: platform: add the VFIO PLATFORM module to Kconfig
->   vfio: amba: VFIO support for AMBA devices
->   vfio: amba: add the VFIO for AMBA devices module to Kconfig
->   vfio/platform: return info for bound device
->   vfio/platform: return info for device memory mapped IO regions
->   vfio/platform: read and write support for the device fd
->   vfio/platform: support MMAP of MMIO regions
->   vfio/platform: return IRQ info
->   vfio/platform: initial interrupts support code
->   vfio/platform: trigger an interrupt via eventfd
->   vfio/platform: support for level sensitive interrupts
->   vfio: add a vfio_ prefix to virqfd_enable and virqfd_disable and
->     export
->   vfio: virqfd: rename vfio_pci_virqfd_init and vfio_pci_virqfd_exit
->   vfio: add local lock for virqfd instead of depending on VFIO PCI
->   vfio: pass an opaque pointer on virqfd initialization
->   vfio: move eventfd support code for VFIO_PCI to a separate file
->   vfio: initialize the virqfd workqueue in VFIO generic code
->   vfio/platform: implement IRQ masking/unmasking via an eventfd
-> 
->  drivers/vfio/Kconfig                          |   1 +
->  drivers/vfio/Makefile                         |   5 +-
->  drivers/vfio/pci/vfio_pci.c                   |   8 -
->  drivers/vfio/pci/vfio_pci_intrs.c             | 238 +-----------
->  drivers/vfio/pci/vfio_pci_private.h           |   3 -
->  drivers/vfio/platform/Kconfig                 |  19 +
->  drivers/vfio/platform/Makefile                |   8 +
->  drivers/vfio/platform/vfio_amba.c             | 115 ++++++
->  drivers/vfio/platform/vfio_platform.c         | 103 +++++
->  drivers/vfio/platform/vfio_platform_common.c  | 520 ++++++++++++++++++++++++++
->  drivers/vfio/platform/vfio_platform_irq.c     | 340 +++++++++++++++++
->  drivers/vfio/platform/vfio_platform_private.h |  82 ++++
->  drivers/vfio/vfio.c                           |   8 +
->  drivers/vfio/virqfd.c                         | 213 +++++++++++
->  include/linux/vfio.h                          |  27 ++
->  include/uapi/linux/vfio.h                     |   2 +
->  16 files changed, 1456 insertions(+), 236 deletions(-)
->  create mode 100644 drivers/vfio/platform/Kconfig
->  create mode 100644 drivers/vfio/platform/Makefile
->  create mode 100644 drivers/vfio/platform/vfio_amba.c
->  create mode 100644 drivers/vfio/platform/vfio_platform.c
->  create mode 100644 drivers/vfio/platform/vfio_platform_common.c
->  create mode 100644 drivers/vfio/platform/vfio_platform_irq.c
->  create mode 100644 drivers/vfio/platform/vfio_platform_private.h
->  create mode 100644 drivers/vfio/virqfd.c
-> 
+diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
+index 6224d316c405..86d897bc15dd 100644
+--- a/arch/x86/include/asm/irq_remapping.h
++++ b/arch/x86/include/asm/irq_remapping.h
+@@ -99,7 +99,7 @@ static inline bool setup_remapped_irq(int irq,
+ }
+ #endif /* CONFIG_IRQ_REMAP */
+ 
+-#define dmar_alloc_hwirq()	irq_alloc_hwirq(-1)
+-#define dmar_free_hwirq		irq_free_hwirq
++extern int dmar_alloc_hwirq(void);
++extern void dmar_free_hwirq(int irq);
+ 
+ #endif /* __X86_IRQ_REMAPPING_H */
+diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
+index 76cc2c902176..9be7d6d8a579 100644
+--- a/arch/x86/kernel/apic/msi.c
++++ b/arch/x86/kernel/apic/msi.c
+@@ -223,6 +223,16 @@ int arch_setup_dmar_msi(unsigned int irq)
+ 				      "edge");
+ 	return 0;
+ }
++
++int dmar_alloc_hwirq(void)
++{
++	return irq_domain_alloc_irqs(NULL, 1, NUMA_NO_NODE, NULL);
++}
++
++void dmar_free_hwirq(int irq)
++{
++	irq_domain_free_irqs(irq, 1);
++}
+ #endif
+ 
+ /*
+diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+index 390079ee1350..5617150fd8fb 100644
+--- a/drivers/iommu/irq_remapping.c
++++ b/drivers/iommu/irq_remapping.c
+@@ -6,6 +6,7 @@
+ #include <linux/msi.h>
+ #include <linux/irq.h>
+ #include <linux/pci.h>
++#include <linux/irqdomain.h>
+ 
+ #include <asm/hw_irq.h>
+ #include <asm/irq_remapping.h>
+@@ -49,6 +50,18 @@ static void irq_remapping_disable_io_apic(void)
+ 		disconnect_bsp_APIC(0);
+ }
+ 
++#ifndef CONFIG_GENERIC_IRQ_LEGACY_ALLOC_HWIRQ
++static unsigned int irq_alloc_hwirqs(int cnt, int node)
++{
++	return irq_domain_alloc_irqs(NULL, -1, cnt, node, NULL);
++}
++
++static void irq_free_hwirqs(unsigned int from, int cnt)
++{
++	irq_domain_free_irqs(from, cnt);
++}
++#endif
++
+ static int do_setup_msi_irqs(struct pci_dev *dev, int nvec)
+ {
+ 	int ret, sub_handle, nvec_pow2, index = 0;
+@@ -104,7 +117,7 @@ static int do_setup_msix_irqs(struct pci_dev *dev, int nvec)
+ 
+ 	list_for_each_entry(msidesc, &dev->msi_list, list) {
+ 
+-		irq = irq_alloc_hwirq(node);
++		irq = irq_alloc_hwirqs(1, node);
+ 		if (irq == 0)
+ 			return -1;
+ 
+@@ -127,7 +140,7 @@ static int do_setup_msix_irqs(struct pci_dev *dev, int nvec)
+ 	return 0;
+ 
+ error:
+-	irq_free_hwirq(irq);
++	irq_free_hwirqs(irq, 1);
+ 	return ret;
+ }
+ 
+-- 
+1.7.10.4
