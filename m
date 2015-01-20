@@ -1,87 +1,85 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH v4 17/18] iommu: exynos: init from dt-specific callback instead of initcall
-Date: Tue, 20 Jan 2015 15:41:08 +0200
-Message-ID: <1998769.ho0KpoUOzK@avalon>
-References: <1421399592-7482-1-git-send-email-m.szyprowski@samsung.com> <10691050.Z5RGmE4fp0@avalon> <20150119113331.GG32131@arm.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH v6 8/8] arm: dma-mapping: plumb our iommu mapping ops into
+	arch_setup_dma_ops
+Date: Tue, 20 Jan 2015 15:47:30 +0200
+Message-ID: <1529759.XStvaeMLn3@avalon>
+References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
+	<2253719.6TRpaaEdiI@wuerfel>
+	<20150119162111.GA7751@ulmo.nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <20150119113331.GG32131@arm.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Rob Herring <robh@kernel.org>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150119162111.GA7751-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+Hi Thierry,
 
-On Monday 19 January 2015 11:33:31 Will Deacon wrote:
-> On Mon, Jan 19, 2015 at 01:11:07AM +0000, Laurent Pinchart wrote:
-> > On Friday 16 January 2015 10:13:11 Marek Szyprowski wrote:
-> >> This patch introduces IOMMU_OF_DECLARE-based initialization to the
-> >> driver, which replaces subsys_initcall-based procedure.
-> >> exynos_iommu_of_setup ensures that each sysmmu controller is probed
-> >> before its master device.
-> 
-> [...]
-> 
-> >> +static int __init exynos_iommu_of_setup(struct device_node *np)
-> >> +{
-> >> +	struct platform_device *pdev;
-> >> +
-> >> +	if (!init_done)
-> >> +		exynos_iommu_init();
-> >> +
-> >> +	pdev = of_platform_device_create(np, NULL,
-> >> platform_bus_type.dev_root);
-> >> +	if (IS_ERR(pdev))
-> >> +		return PTR_ERR(pdev);
-> > 
-> > This feels like a hack to me. What happens here is that you're using the
-> > IOMMU_OF_DECLARE mechanism to make sure that the iommu platform device
-> > will be created and registered before the normal OF bus populate
-> > mechanism kicks in, thus ensuring that the iommu gets probed before other
-> > devices. In practice this is pretty similar to using different init
-> > levels, which is what Will's patch set was trying to avoid in the first
-> > place. Creating a new kind of init levels mechanism doesn't sound very
-> > good to me.
-> > 
-> > The existing exynos-iommu driver is based on classic instantiation of a
-> > platform device from DT, using the normal device probing mechanism. As
-> > such it relies on the availability of a struct device for various helper
-> > functions. I thus understand why you want a struct device being
-> > registered for the iommu, instead of initializing the device right from
-> > the exynos_iommu_of_setup() function without a corresponding struct
-> > device being registered.
-> > 
-> > This leads me to question whether we should really introduce
-> > IOMMU_OF_DECLARE. Using regular deferred probing seems more and more like
-> > a better solution to me.
-> 
-> We seem to be going round and round on this argument. I said before that
-> I'm not against changing this [1], but somebody would need to propose
-> patches, which hasn't happened in recent history.
-> 
-> Arnd also makes some good arguments against using probing [2], which would
-> need further discussion.
-> 
-> Basically, it looks like there are two sides to this argument and I don't
-> see anything changing without patch proposals. The only thing that the
-> current discussions seem to be achieving is blocking people like Marek,
-> who are trying to make use of what we have in mainline today!
+On Monday 19 January 2015 17:21:14 Thierry Reding wrote:
+> On Mon, Jan 19, 2015 at 04:52:41PM +0100, Arnd Bergmann wrote:
+> > On Monday 19 January 2015 13:36:24 Thierry Reding wrote:
+> >> On Fri, Jan 16, 2015 at 01:18:21AM +0200, Laurent Pinchart wrote:
+> >>> On Thursday 15 January 2015 11:12:17 Will Deacon wrote:
+> >>>> On Thu, Jan 15, 2015 at 08:28:44AM +0000, Thierry Reding wrote:
 
-To be perfectly clear, I won't block patches here without submitting a 
-counterproposal (unless there's something fundamentally wrong of course). I 
-still believe the deferred probe approach should be given at least a try, but 
-as I don't have time to implement that myself now, I won't try to block 
-anything.
+[...]
 
-> [1]
-> http://lists.infradead.org/pipermail/linux-arm-kernel/2014-December/310783.
-> html
-> [2]
-> http://lists.infradead.org/pipermail/linux-arm-kernel/2014-December/310992.
-> html
+> >>>>> The solution for me has been to completely side-step the issue and
+> >>>>> not register the IOMMU with the new mechanism at all. That is,
+> >>>>> there's no .of_xlate() implementation, which means that the ARM
+> >>>>> DMA API glue won't try to be smart and use the IOMMU in ways it's
+> >>>>> not meant to be used.
+> >>> 
+> >>> That will break when someone will want to use the same IOMMU type for
+> >>> devices that use the DMA mapping API to hide the IOMMU. That might
+> >>> not be the case for your IOMMU today, but it's pretty fragile, we
+> >>> need to fix it.
+> >> 
+> >> No, there's absolutely no issue here. It simply means that you can't do
+> >> this on Tegra. So far I'm not sure I even see an advantage in using the
+> >> IOMMU for devices that don't care about it anyway. Consider the example
+> >> of the SD/MMC or HDA. They typically allocate fairly small buffers, the
+> >> order of a single page typically. They can simply use memory handed out
+> >> by the CMA.
+> >> 
+> >> So as long as we don't add a .of_xlate() implementation or instantiate
+> >> via the IOMMU_OF_DECLARE() mechanism we simply don't support IOMMU-over-
+> >> DMA on Tegra.
+> > 
+> > It breaks as soon as you have a system with memory above the 4GB boundary,
+> > which is the whole point of iommus for most users.
+> 
+> Why does it break? The IOMMU API simply gets a list of pages and gets
+> the physical addresses from those pages when it maps them to the IO
+> virtual addresses. How is .of_xlate() or of_iommu_configure() related?
+
+Arnd's point was that using the IOMMU for devices that deal with small buffers 
+is mandatory in case those devices only support a 32-bit DMA address space, 
+and the system has memory over 4GB that you want to use for DMA purpose. 
+That's the case of Renesas' platforms with LPAE support for instance.
+
+Another use case for IOMMUs is device isolation, which is, depending on your 
+use cases, something you might want for devices that are not IOMMU-aware.
+
+It should also be noted that even DRM drivers don't need to be explicit IOMMU 
+users. The rcar-du driver allocates large frame buffers through the DMA 
+mapping API, without caring about whether an IOMMU is present or not.
+
+> > CMA does not work for streaming mappings, only for the coherent API.
+> 
+> Why not? And if it doesn't I'm not sure we currently care on Tegra since
+> we've gotten away with using CMA just fine so far.
 
 -- 
 Regards,
