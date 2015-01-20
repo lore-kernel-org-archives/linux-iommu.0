@@ -1,16 +1,15 @@
 From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 Subject: Re: [PATCH v6 8/8] arm: dma-mapping: plumb our iommu mapping ops into
 	arch_setup_dma_ops
-Date: Tue, 20 Jan 2015 15:50:22 +0200
-Message-ID: <8857658.GNuE7rO8TV@avalon>
+Date: Tue, 20 Jan 2015 16:05:42 +0200
+Message-ID: <1668598.fJABSYM31J@avalon>
 References: <1417453034-21379-1-git-send-email-will.deacon@arm.com>
-	<20150119125051.GI32131@arm.com>
-	<20150119133633.GA23778@ulmo.nvidia.com>
+	<2804479.ZFl06ysk3j@avalon> <20150119124934.GD7312@ulmo.nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150119133633.GA23778-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
+In-Reply-To: <20150119124934.GD7312-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,54 +25,38 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi Thierry,
 
-On Monday 19 January 2015 14:36:38 Thierry Reding wrote:
-> On Mon, Jan 19, 2015 at 12:50:52PM +0000, Will Deacon wrote:
-> > On Mon, Jan 19, 2015 at 12:43:06PM +0000, Thierry Reding wrote:
-> >> On Sun, Jan 18, 2015 at 01:18:51PM +0200, Laurent Pinchart wrote:
-> >> > On Sunday 18 January 2015 15:54:34 Alexandre Courbot wrote:
-> >> > > On 01/16/2015 08:18 AM, Laurent Pinchart wrote:
-> >> [...]
-> >> 
-> >>>>> The second way is to implement a mechanism to let drivers signal
-> >>>>> that they want to handle DMA mappings themselves. As the mappings
-> >>>>> need in the general case to be created before the probe function 
-> >>>>> is called
-> >>>> 
-> >>>> Sorry for being ignorant here, but why is that?
-> >>> 
-> >>> Because a driver can call the DMA mapping API in its probe function,
-> >>> to allocate DMA coherent memory for instance. We need to ensure that
-> >>> the DMA mapping IOMMU has set up the required IOMMU ops by that time.
-> >>> As explained above I don't like the idea of sprinkling explicit calls
-> >>> to initialize IOMMU support in the vast majority of drivers,
-> >>> especially when they shouldn't be IOMMU-aware, so we then need to
-> >>> initialize everything that is needed before the first call to the DMA
-> >>> mapping API.
-> >> 
-> >> The original patch that Hiroshi posted based on my comments was to have
-> >> the driver core call iommu_attach(), which would then set up everything
-> >> needed right before calling into the driver's ->probe(). This works
-> >> quite nicely because by definition the driver can't allocate any DMA
-> >> before ->probe(). And, like you said, this allows deferred probe to be
-> >> used.
-> >> 
-> >> To me it's so obviously the right solution that I remain flabbergasted
-> >> with how much resistance it's received (or how much it's being ignored).
-> > 
-> > Have you considered reposting the patches based on what we currently have
-> > (which has the advantage of identifying a specific IOMMU instance)?
+On Monday 19 January 2015 13:49:36 Thierry Reding wrote:
+> On Fri, Jan 16, 2015 at 01:18:21AM +0200, Laurent Pinchart wrote:
+> [...]
 > 
-> No, I hadn't. Initially my patches included a solution for identifying
-> individual IOMMU instances, too. There was a small registry with a list
-> of struct iommus. That was supposed to get used to store per-instance
-> data (by being embedded in a driver-specific structure). I'd need to
-> look in more detail how that could be done with the infrastructure that
-> your patchset creates. I'm somewhat burried below other tasks right now
-> so don't expect to have any time to look into this anytime before -rc6
-> or -rc7 at the earliest.
+> > The second way is to implement a mechanism to let drivers signal that they
+> > want to handle DMA mappings themselves. As the mappings need in the
+> > general case to be created before the probe function is called we can't
+> > signal this by calling a function in probe(). A new flag field for struct
+> > device_driver is a possible solution. This would however require delaying
+> > the creation of DMA mappings until right before probe time. Attaching to
+> > the IOMMU could be pushed to right before probe() as well, which would
+> > have the added benefit of making IOMMU driver implementable as real
+> > platform drivers.
+> 
+> Right. This is a pretty important point, too. One of the things that
+> we've been working on is suspend/resume. Now if you don't have a struct
+> device you can't easily implement suspend/resume. You'd have to play
+> tricks like using syscore_ops, which then leads to potentially problems
+> with suspend/resume ordering. It also means we have to keep around
+> global variables for driver-private data because there's no struct
+> device to attach it to.
+> 
+> By properly encoding the dependencies via deferred probe we get the
+> proper ordering and we can use the regular driver model with all the
+> goodies that we've come up with over the years.
 
-I'm pretty buried below other tasks as well, but if you find time to work on 
-this I'll try to prioritize testing and review.
+Marek's patch set to port the Exynos IOMMU driver on Will's patches uses 
+of_platform_device_create() in the init handler registered with 
+IOMMU_OF_DECLARE() to create a platform device for the IOMMU. I've initially 
+considered this as a dubious hack, but on the other hand it avoids modifying 
+the whole IOMMU driver to get rid of struct device, making it easier to move 
+to a deferred probe approach later if needed (and possible and desired).
 
 -- 
 Regards,
