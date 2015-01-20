@@ -1,8 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part2 v4 05/33] x86/irq: Kill x86_io_apic_ops.set_affinity and
-	related interfaces
-Date: Tue, 20 Jan 2015 13:51:25 +0800
-Message-ID: <1421733113-15704-6-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part2 v4 06/33] x86/irq: Kill x86_io_apic_ops.eoi_ioapic_pin
+	and related interfaces
+Date: Tue, 20 Jan 2015 13:51:26 +0800
+Message-ID: <1421733113-15704-7-git-send-email-jiang.liu@linux.intel.com>
 References: <1421733113-15704-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,7 +22,7 @@ To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Benjamin H
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Cohen <david.a.cohen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Sander Eikelenboom <linux-6SM94LqRVpn6gRhOQ7JHfg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Vrabel <david.vrabel-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Now there is no user of x86_io_apic_ops.set_affinity anymore, so kill
+Now there is no user of x86_io_apic_ops.eoi_ioapic_pin anymore, so kill
 it.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
@@ -39,151 +39,172 @@ Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
 Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 Cc: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Link: http://lkml.kernel.org/r/1416901802-24211-15-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+Link: http://lkml.kernel.org/r/1416901802-24211-16-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
 Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 Tested-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- arch/x86/include/asm/io_apic.h  |    4 ----
- arch/x86/include/asm/x86_init.h |    3 ---
- arch/x86/kernel/apic/io_apic.c  |   25 +------------------------
+ arch/x86/include/asm/io_apic.h  |   12 ------------
+ arch/x86/include/asm/x86_init.h |    1 -
+ arch/x86/kernel/apic/io_apic.c  |   20 ++++----------------
  arch/x86/kernel/x86_init.c      |    1 -
- drivers/iommu/irq_remapping.c   |   15 ---------------
- 5 files changed, 1 insertion(+), 47 deletions(-)
+ drivers/iommu/irq_remapping.c   |   19 -------------------
+ 5 files changed, 4 insertions(+), 49 deletions(-)
 
 diff --git a/arch/x86/include/asm/io_apic.h b/arch/x86/include/asm/io_apic.h
-index d2a34e4718d2..0ff68daa9949 100644
+index 0ff68daa9949..3b54f0f9cbb7 100644
 --- a/arch/x86/include/asm/io_apic.h
 +++ b/arch/x86/include/asm/io_apic.h
-@@ -222,9 +222,6 @@ extern unsigned int native_io_apic_read(unsigned int apic, unsigned int reg);
- extern void native_io_apic_write(unsigned int apic, unsigned int reg, unsigned int val);
- extern void native_io_apic_modify(unsigned int apic, unsigned int reg, unsigned int val);
- extern void native_disable_io_apic(void);
--extern int native_ioapic_set_affinity(struct irq_data *,
--				      const struct cpumask *,
--				      bool);
+@@ -150,10 +150,6 @@ struct irq_cfg;
+ extern void ioapic_insert_resources(void);
+ extern int arch_early_ioapic_init(void);
  
- static inline unsigned int io_apic_read(unsigned int apic, unsigned int reg)
- {
-@@ -285,7 +282,6 @@ static inline void disable_ioapic_support(void) { }
+-extern void eoi_ioapic_irq(unsigned int irq, struct irq_cfg *cfg);
+-
+-extern void native_eoi_ioapic_pin(int apic, int pin, int vector);
+-
+ extern int save_ioapic_entries(void);
+ extern void mask_ioapic_entries(void);
+ extern int restore_ioapic_entries(void);
+@@ -237,8 +233,6 @@ static inline void io_apic_modify(unsigned int apic, unsigned int reg, unsigned
+ 	x86_io_apic_ops.modify(apic, reg, value);
+ }
+ 
+-extern void io_apic_eoi(unsigned int apic, unsigned int vector);
+-
+ extern void setup_IO_APIC(void);
+ extern void enable_IO_APIC(void);
+ extern void disable_IO_APIC(void);
+@@ -282,12 +276,6 @@ static inline void disable_ioapic_support(void) { }
  #define native_io_apic_write		NULL
  #define native_io_apic_modify		NULL
  #define native_disable_io_apic		NULL
--#define native_ioapic_set_affinity	NULL
- #define native_eoi_ioapic_pin		NULL
+-#define native_eoi_ioapic_pin		NULL
+-
+-static inline void setup_IO_APIC(void) { }
+-static inline void enable_IO_APIC(void) { }
+-static inline void setup_ioapic_dest(void) { }
+-
+ #endif
  
- static inline void setup_IO_APIC(void) { }
+ #endif /* _ASM_X86_IO_APIC_H */
 diff --git a/arch/x86/include/asm/x86_init.h b/arch/x86/include/asm/x86_init.h
-index 0c690574efae..f9f83cfabcaa 100644
+index f9f83cfabcaa..4ada3d3a0e86 100644
 --- a/arch/x86/include/asm/x86_init.h
 +++ b/arch/x86/include/asm/x86_init.h
-@@ -191,9 +191,6 @@ struct x86_io_apic_ops {
+@@ -191,7 +191,6 @@ struct x86_io_apic_ops {
  	void		(*write)  (unsigned int apic, unsigned int reg, unsigned int value);
  	void		(*modify) (unsigned int apic, unsigned int reg, unsigned int value);
  	void		(*disable)(void);
--	int		(*set_affinity)(struct irq_data *data,
--					const struct cpumask *mask,
--					bool force);
- 	void		(*eoi_ioapic_pin)(int apic, int pin, int vector);
+-	void		(*eoi_ioapic_pin)(int apic, int pin, int vector);
  };
  
+ extern struct x86_init_ops x86_init;
 diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-index 769fcd10f217..fff17afdfe5d 100644
+index fff17afdfe5d..8690334ad40c 100644
 --- a/arch/x86/kernel/apic/io_apic.c
 +++ b/arch/x86/kernel/apic/io_apic.c
-@@ -1785,29 +1785,6 @@ static void __target_IO_APIC_irq(unsigned int irq, unsigned int dest, struct irq
- 	}
+@@ -273,7 +273,7 @@ static __attribute_const__ struct io_apic __iomem *io_apic_base(int idx)
+ 		+ (mpc_ioapic_addr(idx) & ~PAGE_MASK);
  }
  
--int native_ioapic_set_affinity(struct irq_data *data,
--			       const struct cpumask *mask,
--			       bool force)
--{
--	unsigned int dest, irq = data->irq;
--	unsigned long flags;
--	int ret;
--
--	if (!config_enabled(CONFIG_SMP))
--		return -EPERM;
--
--	raw_spin_lock_irqsave(&ioapic_lock, flags);
--	ret = apic_set_affinity(data, mask, &dest);
--	if (!ret) {
--		/* Only the high 8 bits are valid. */
--		dest = SET_APIC_LOGICAL_ID(dest);
--		__target_IO_APIC_irq(irq, dest, irqd_cfg(data));
--		ret = IRQ_SET_MASK_OK_NOCOPY;
--	}
+-void io_apic_eoi(unsigned int apic, unsigned int vector)
++static inline void io_apic_eoi(unsigned int apic, unsigned int vector)
+ {
+ 	struct io_apic __iomem *io_apic = io_apic_base(apic);
+ 	writel(vector, &io_apic->eoi);
+@@ -529,7 +529,7 @@ static void unmask_ioapic_irq(struct irq_data *data)
+  * Otherwise, we simulate the EOI message manually by changing the trigger
+  * mode to edge and then back to level, with RTE being masked during this.
+  */
+-void native_eoi_ioapic_pin(int apic, int pin, int vector)
++static void __eoi_ioapic_pin(int apic, int pin, int vector)
+ {
+ 	if (mpc_ioapic_ver(apic) >= 0x20) {
+ 		io_apic_eoi(apic, vector);
+@@ -560,19 +560,7 @@ void eoi_ioapic_pin(int vector, struct irq_cfg *cfg)
+ 
+ 	raw_spin_lock_irqsave(&ioapic_lock, flags);
+ 	for_each_irq_pin(entry, cfg->irq_2_pin)
+-		native_eoi_ioapic_pin(entry->apic, entry->pin, vector);
 -	raw_spin_unlock_irqrestore(&ioapic_lock, flags);
--	return ret;
 -}
 -
- atomic_t irq_mis_count;
+-void eoi_ioapic_irq(unsigned int irq, struct irq_cfg *cfg)
+-{
+-	struct irq_pin_list *entry;
+-	unsigned long flags;
+-
+-	raw_spin_lock_irqsave(&ioapic_lock, flags);
+-	for_each_irq_pin(entry, cfg->irq_2_pin)
+-		x86_io_apic_ops.eoi_ioapic_pin(entry->apic, entry->pin,
+-					       cfg->vector);
++		__eoi_ioapic_pin(entry->apic, entry->pin, vector);
+ 	raw_spin_unlock_irqrestore(&ioapic_lock, flags);
+ }
  
- #ifdef CONFIG_GENERIC_PENDING_IRQ
-@@ -2684,7 +2661,7 @@ void __init setup_ioapic_dest(void)
- 		else
- 			mask = apic->target_cpus();
- 
--		x86_io_apic_ops.set_affinity(idata, mask, false);
-+		irq_set_affinity(irq, mask);
+@@ -608,7 +596,7 @@ static void clear_IO_APIC_pin(unsigned int apic, unsigned int pin)
+ 			ioapic_write_entry(apic, pin, entry);
+ 		}
+ 		raw_spin_lock_irqsave(&ioapic_lock, flags);
+-		native_eoi_ioapic_pin(apic, pin, entry.vector);
++		__eoi_ioapic_pin(apic, pin, entry.vector);
+ 		raw_spin_unlock_irqrestore(&ioapic_lock, flags);
  	}
  
- }
 diff --git a/arch/x86/kernel/x86_init.c b/arch/x86/kernel/x86_init.c
-index 066cdaa6503e..f7e8eab3a7c4 100644
+index f7e8eab3a7c4..f612dc018fb6 100644
 --- a/arch/x86/kernel/x86_init.c
 +++ b/arch/x86/kernel/x86_init.c
-@@ -144,6 +144,5 @@ struct x86_io_apic_ops x86_io_apic_ops = {
+@@ -144,5 +144,4 @@ struct x86_io_apic_ops x86_io_apic_ops = {
  	.write			= native_io_apic_write,
  	.modify			= native_io_apic_modify,
  	.disable		= native_disable_io_apic,
--	.set_affinity		= native_ioapic_set_affinity,
- 	.eoi_ioapic_pin		= native_eoi_ioapic_pin,
+-	.eoi_ioapic_pin		= native_eoi_ioapic_pin,
  };
 diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index 5bb1a04c91f5..7baa54a13921 100644
+index 7baa54a13921..bca42550b1ad 100644
 --- a/drivers/iommu/irq_remapping.c
 +++ b/drivers/iommu/irq_remapping.c
-@@ -25,10 +25,6 @@ int no_x2apic_optout;
- static int disable_irq_remap;
- static struct irq_remap_ops *remap_ops;
+@@ -43,21 +43,9 @@ static void irq_remapping_disable_io_apic(void)
+ 		disconnect_bsp_APIC(0);
+ }
  
--static int set_remapped_irq_affinity(struct irq_data *data,
--				     const struct cpumask *mask,
--				     bool force);
+-static void eoi_ioapic_pin_remapped(int apic, int pin, int vector)
+-{
+-	/*
+-	 * Intr-remapping uses pin number as the virtual vector
+-	 * in the RTE. Actual vector is programmed in
+-	 * intr-remapping table entry. Hence for the io-apic
+-	 * EOI we use the pin number.
+-	 */
+-	io_apic_eoi(apic, pin);
+-}
 -
- static bool irq_remapped(struct irq_cfg *cfg)
- {
- 	return (cfg->remapped == 1);
-@@ -61,7 +57,6 @@ static void eoi_ioapic_pin_remapped(int apic, int pin, int vector)
  static void __init irq_remapping_modify_x86_ops(void)
  {
  	x86_io_apic_ops.disable		= irq_remapping_disable_io_apic;
--	x86_io_apic_ops.set_affinity	= set_remapped_irq_affinity;
- 	x86_io_apic_ops.eoi_ioapic_pin	= eoi_ioapic_pin_remapped;
+-	x86_io_apic_ops.eoi_ioapic_pin	= eoi_ioapic_pin_remapped;
  }
  
-@@ -157,15 +152,6 @@ int __init irq_remap_enable_fault_handling(void)
- 	return remap_ops->enable_faulting();
+ static __init int setup_nointremap(char *str)
+@@ -171,12 +159,6 @@ void ir_ack_apic_edge(struct irq_data *data)
+ 	ack_APIC_irq();
  }
  
--static int set_remapped_irq_affinity(struct irq_data *data,
--				     const struct cpumask *mask, bool force)
+-static void ir_ack_apic_level(struct irq_data *data)
 -{
--	if (!config_enabled(CONFIG_SMP) || !remap_ops->set_affinity)
--		return 0;
--
--	return remap_ops->set_affinity(data, mask, force);
+-	ack_APIC_irq();
+-	eoi_ioapic_irq(data->irq, irqd_cfg(data));
 -}
 -
- void free_remapped_irq(int irq)
+ static void ir_print_prefix(struct irq_data *data, struct seq_file *p)
  {
- 	struct irq_cfg *cfg = irq_cfg(irq);
-@@ -201,7 +187,6 @@ void irq_remap_modify_chip_defaults(struct irq_chip *chip)
+ 	seq_printf(p, " IR-%s", data->chip->name);
+@@ -186,7 +168,6 @@ void irq_remap_modify_chip_defaults(struct irq_chip *chip)
+ {
  	chip->irq_print_chip = ir_print_prefix;
  	chip->irq_ack = ir_ack_apic_edge;
- 	chip->irq_eoi = ir_ack_apic_level;
--	chip->irq_set_affinity = x86_io_apic_ops.set_affinity;
+-	chip->irq_eoi = ir_ack_apic_level;
  }
  
  bool setup_remapped_irq(int irq, struct irq_cfg *cfg, struct irq_chip *chip)
