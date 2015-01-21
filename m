@@ -1,48 +1,42 @@
-From: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-Subject: [PATCH] iommu/fsl: Fix section mismatch
-Date: Wed, 21 Jan 2015 16:05:45 -0600
-Message-ID: <1421877945-25844-1-git-send-email-Emilian.Medve@Freescale.com>
+From: Tobias Jakobi <liquid.acid@gmx.net>
+Subject: Re: [PATCH v4 00/18] Exynos SYSMMU (IOMMU) integration with
+ DT and DMA-mapping subsystem
+Date: Thu, 22 Jan 2015 00:37:28 +0100
+Message-ID: <54C03838.4080008@gmx.net>
+References: <1421399592-7482-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, Varun.Sethi-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org
-Cc: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <1421399592-7482-1-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Section mismatch in reference from the variable fsl_of_pamu_driver to the function .init.text:fsl_pamu_probe()
-The variable fsl_of_pamu_driver references
-the function __init fsl_pamu_probe()
-If the reference is valid then annotate the
-variable with __init* or __refdata (see linux/init.h) or name the variable:
-*_template, *_timer, *_sht, *_ops, *_probe, *_probe_one, *_console
+Hello,
 
-Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
----
- drivers/iommu/fsl_pamu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+just some warnings I encountered when compiling this today:
+drivers/iommu/exynos-iommu.c: In function =E2=80=98exynos_iommu_of_setu=
+p=E2=80=99:
+drivers/iommu/exynos-iommu.c:1177:2: warning: passing argument 2 of
+=E2=80=98of_iommu_set_ops=E2=80=99 discards =E2=80=98const=E2=80=99 qua=
+lifier from pointer target type
+[enabled by default]
+  of_iommu_set_ops(np, &exynos_iommu_ops);
+  ^
+In file included from drivers/iommu/exynos-iommu.c:23:0:
+include/linux/of_iommu.h:34:6: note: expected =E2=80=98struct iommu_ops=
+ *=E2=80=99 but
+argument is of type =E2=80=98const struct iommu_ops *=E2=80=99
+ void of_iommu_set_ops(struct device_node *np, struct iommu_ops *ops);
+      ^
 
-diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
-index 80ac68d..076a951 100644
---- a/drivers/iommu/fsl_pamu.c
-+++ b/drivers/iommu/fsl_pamu.c
-@@ -1016,7 +1016,7 @@ static const struct {
- 
- #define SVR_SECURITY	0x80000	/* The Security (E) bit */
- 
--static int __init fsl_pamu_probe(struct platform_device *pdev)
-+static int fsl_pamu_probe(struct platform_device *pdev)
- {
- 	void __iomem *pamu_regs = NULL;
- 	struct ccsr_guts __iomem *guts_regs = NULL;
--- 
-2.2.2
+
+I guess the 'const' should be dropped from exynos_iommu_ops, even thoug=
+h
+I wonder why of_iommu_set_ops wants a non-const pointer (can/does it
+modify the struct later on?).
+
+With best wishes,
+Tobias
