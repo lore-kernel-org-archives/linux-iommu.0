@@ -1,42 +1,145 @@
-From: Tobias Jakobi <liquid.acid@gmx.net>
-Subject: Re: [PATCH v4 00/18] Exynos SYSMMU (IOMMU) integration with
- DT and DMA-mapping subsystem
-Date: Thu, 22 Jan 2015 00:37:28 +0100
-Message-ID: <54C03838.4080008@gmx.net>
-References: <1421399592-7482-1-git-send-email-m.szyprowski@samsung.com>
+From: Sumit Semwal <sumit.semwal@linaro.org>
+Subject: Re: [PATCH RESEND] dma-mapping: tidy up dma_parms default handling
+Date: Thu, 22 Jan 2015 09:15:08 +0530
+Message-ID: <CAO_48GHXaNE4m5TErg0=nkDZrvi65mp8u4h7ao011OL4mhSDUw@mail.gmail.com>
+References: <ffdc5455d698d2525f2d126d0adabf9418fd76b1.1418990609.git.robin.murphy@arm.com>
+ <54B4FF30.2030607@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <1421399592-7482-1-git-send-email-m.szyprowski@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <54B4FF30.2030607@samsung.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>, Bjorn Helgaas <bhelgaas@google.com>, joro@8bytes.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+Hi Robin,
 
-just some warnings I encountered when compiling this today:
-drivers/iommu/exynos-iommu.c: In function =E2=80=98exynos_iommu_of_setu=
-p=E2=80=99:
-drivers/iommu/exynos-iommu.c:1177:2: warning: passing argument 2 of
-=E2=80=98of_iommu_set_ops=E2=80=99 discards =E2=80=98const=E2=80=99 qua=
-lifier from pointer target type
-[enabled by default]
-  of_iommu_set_ops(np, &exynos_iommu_ops);
-  ^
-In file included from drivers/iommu/exynos-iommu.c:23:0:
-include/linux/of_iommu.h:34:6: note: expected =E2=80=98struct iommu_ops=
- *=E2=80=99 but
-argument is of type =E2=80=98const struct iommu_ops *=E2=80=99
- void of_iommu_set_ops(struct device_node *np, struct iommu_ops *ops);
-      ^
+On 13 January 2015 at 16:49, Marek Szyprowski <m.szyprowski@samsung.com=
+> wrote:
+> Hello,
+>
+> On 2015-01-09 17:56, Robin Murphy wrote:
+>>
+>> Many DMA controllers and other devices set max_segment_size to
+>> indicate their scatter-gather capability, but have no interest in
+>> segment_boundary_mask. However, the existence of a dma_parms structu=
+re
+>> precludes the use of any default value, leaving them as zeros (assum=
+ing
+>> a properly kzalloc'ed structure). If a well-behaved IOMMU (or SWIOTL=
+B)
+>> then tries to respect this by ensuring a mapped segment does not cro=
+ss
+>> a zero-byte boundary, hilarity ensues.
+>>
+>> Since zero is a nonsensical value for either parameter, treat it as =
+an
+>> indicator for "default", as might be expected. In the process, clean=
+ up
+>> a bit by replacing the bare constants with slightly more meaningful
+>> macros and removing the superfluous "else" statements.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>
+>
+> Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
 
+Please feel free to add my
+Reviewed-by: Sumit Semwal <sumit.semwal@linaro.org>
+>
+>> ---
+>>
+>> Hi, various maintainers from Git logs ;)
+>>
+>> This one's a bit tricky to find a home for - I think technically it'=
+s
+>> probably an IOMMU patch, but then the long-underlying problem doesn'=
+t
+>> seem to have blown up anything until arm64, and my motivation is to
+>> make bits of Juno work, which seems to nudge it towards arm64/arm-so=
+c
+>> territory. Could anyone suggest which tree is most appropriate?
+>>
+>> Thanks,
+>> Robin.
+>>
+>>
+>>   include/linux/dma-mapping.h | 17 ++++++++++-------
+>>   1 file changed, 10 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping=
+=2Eh
+>> index c3007cb..99ba736 100644
+>> --- a/include/linux/dma-mapping.h
+>> +++ b/include/linux/dma-mapping.h
+>> @@ -141,7 +141,9 @@ static inline void arch_teardown_dma_ops(struct =
+device
+>> *dev) { }
+>>     static inline unsigned int dma_get_max_seg_size(struct device *d=
+ev)
+>>   {
+>> -       return dev->dma_parms ? dev->dma_parms->max_segment_size : 6=
+5536;
+>> +       if (dev->dma_parms && dev->dma_parms->max_segment_size)
+>> +               return dev->dma_parms->max_segment_size;
+>> +       return SZ_64K;
+>>   }
+>>     static inline unsigned int dma_set_max_seg_size(struct device *d=
+ev,
+>> @@ -150,14 +152,15 @@ static inline unsigned int
+>> dma_set_max_seg_size(struct device *dev,
+>>         if (dev->dma_parms) {
+>>                 dev->dma_parms->max_segment_size =3D size;
+>>                 return 0;
+>> -       } else
+>> -               return -EIO;
+>> +       }
+>> +       return -EIO;
+>>   }
+>>     static inline unsigned long dma_get_seg_boundary(struct device *=
+dev)
+>>   {
+>> -       return dev->dma_parms ?
+>> -               dev->dma_parms->segment_boundary_mask : 0xffffffff;
+>> +       if (dev->dma_parms && dev->dma_parms->segment_boundary_mask)
+>> +               return dev->dma_parms->segment_boundary_mask;
+>> +       return DMA_BIT_MASK(32);
+>>   }
+>>     static inline int dma_set_seg_boundary(struct device *dev, unsig=
+ned
+>> long mask)
+>> @@ -165,8 +168,8 @@ static inline int dma_set_seg_boundary(struct de=
+vice
+>> *dev, unsigned long mask)
+>>         if (dev->dma_parms) {
+>>                 dev->dma_parms->segment_boundary_mask =3D mask;
+>>                 return 0;
+>> -       } else
+>> -               return -EIO;
+>> +       }
+>> +       return -EIO;
+>>   }
+>>     #ifndef dma_max_pfn
+>
+>
+> Best regards
+> --
+> Marek Szyprowski, PhD
+> Samsung R&D Institute Poland
+>
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kerne=
+l" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
 
-I guess the 'const' should be dropped from exynos_iommu_ops, even thoug=
-h
-I wonder why of_iommu_set_ops wants a non-const pointer (can/does it
-modify the struct later on?).
+--=20
+Thanks and regards,
 
-With best wishes,
-Tobias
+Sumit Semwal
+Kernel Team Lead - Linaro Mobile Group
+Linaro.org =E2=94=82 Open source software for ARM SoCs
