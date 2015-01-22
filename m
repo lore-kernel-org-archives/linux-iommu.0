@@ -1,145 +1,66 @@
-From: Sumit Semwal <sumit.semwal@linaro.org>
-Subject: Re: [PATCH RESEND] dma-mapping: tidy up dma_parms default handling
-Date: Thu, 22 Jan 2015 09:15:08 +0530
-Message-ID: <CAO_48GHXaNE4m5TErg0=nkDZrvi65mp8u4h7ao011OL4mhSDUw@mail.gmail.com>
-References: <ffdc5455d698d2525f2d126d0adabf9418fd76b1.1418990609.git.robin.murphy@arm.com>
- <54B4FF30.2030607@samsung.com>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH] iommu/fsl: Fix section mismatch
+Date: Thu, 22 Jan 2015 10:48:45 +0000
+Message-ID: <BN3PR0301MB1219F803356A4803CEA93C6BEA490@BN3PR0301MB1219.namprd03.prod.outlook.com>
+References: <1421877945-25844-1-git-send-email-Emilian.Medve@Freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <54B4FF30.2030607@samsung.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>, Bjorn Helgaas <bhelgaas@google.com>, joro@8bytes.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1421877945-25844-1-git-send-email-Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
+Cc: Emilian Medve <Emilian.Medve-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+Hi Emil,
+Thanks for pointing this out. Please find my comment inline.
 
-On 13 January 2015 at 16:49, Marek Szyprowski <m.szyprowski@samsung.com=
-> wrote:
-> Hello,
->
-> On 2015-01-09 17:56, Robin Murphy wrote:
->>
->> Many DMA controllers and other devices set max_segment_size to
->> indicate their scatter-gather capability, but have no interest in
->> segment_boundary_mask. However, the existence of a dma_parms structu=
-re
->> precludes the use of any default value, leaving them as zeros (assum=
-ing
->> a properly kzalloc'ed structure). If a well-behaved IOMMU (or SWIOTL=
-B)
->> then tries to respect this by ensuring a mapped segment does not cro=
-ss
->> a zero-byte boundary, hilarity ensues.
->>
->> Since zero is a nonsensical value for either parameter, treat it as =
-an
->> indicator for "default", as might be expected. In the process, clean=
- up
->> a bit by replacing the bare constants with slightly more meaningful
->> macros and removing the superfluous "else" statements.
->>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->
->
-> Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Regards
+Varun
 
-Please feel free to add my
-Reviewed-by: Sumit Semwal <sumit.semwal@linaro.org>
->
->> ---
->>
->> Hi, various maintainers from Git logs ;)
->>
->> This one's a bit tricky to find a home for - I think technically it'=
-s
->> probably an IOMMU patch, but then the long-underlying problem doesn'=
-t
->> seem to have blown up anything until arm64, and my motivation is to
->> make bits of Juno work, which seems to nudge it towards arm64/arm-so=
-c
->> territory. Could anyone suggest which tree is most appropriate?
->>
->> Thanks,
->> Robin.
->>
->>
->>   include/linux/dma-mapping.h | 17 ++++++++++-------
->>   1 file changed, 10 insertions(+), 7 deletions(-)
->>
->> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping=
-=2Eh
->> index c3007cb..99ba736 100644
->> --- a/include/linux/dma-mapping.h
->> +++ b/include/linux/dma-mapping.h
->> @@ -141,7 +141,9 @@ static inline void arch_teardown_dma_ops(struct =
-device
->> *dev) { }
->>     static inline unsigned int dma_get_max_seg_size(struct device *d=
-ev)
->>   {
->> -       return dev->dma_parms ? dev->dma_parms->max_segment_size : 6=
-5536;
->> +       if (dev->dma_parms && dev->dma_parms->max_segment_size)
->> +               return dev->dma_parms->max_segment_size;
->> +       return SZ_64K;
->>   }
->>     static inline unsigned int dma_set_max_seg_size(struct device *d=
-ev,
->> @@ -150,14 +152,15 @@ static inline unsigned int
->> dma_set_max_seg_size(struct device *dev,
->>         if (dev->dma_parms) {
->>                 dev->dma_parms->max_segment_size =3D size;
->>                 return 0;
->> -       } else
->> -               return -EIO;
->> +       }
->> +       return -EIO;
->>   }
->>     static inline unsigned long dma_get_seg_boundary(struct device *=
-dev)
->>   {
->> -       return dev->dma_parms ?
->> -               dev->dma_parms->segment_boundary_mask : 0xffffffff;
->> +       if (dev->dma_parms && dev->dma_parms->segment_boundary_mask)
->> +               return dev->dma_parms->segment_boundary_mask;
->> +       return DMA_BIT_MASK(32);
->>   }
->>     static inline int dma_set_seg_boundary(struct device *dev, unsig=
-ned
->> long mask)
->> @@ -165,8 +168,8 @@ static inline int dma_set_seg_boundary(struct de=
-vice
->> *dev, unsigned long mask)
->>         if (dev->dma_parms) {
->>                 dev->dma_parms->segment_boundary_mask =3D mask;
->>                 return 0;
->> -       } else
->> -               return -EIO;
->> +       }
->> +       return -EIO;
->>   }
->>     #ifndef dma_max_pfn
->
->
-> Best regards
+> -----Original Message-----
+> From: Emil Medve [mailto:Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org]
+> Sent: Thursday, January 22, 2015 3:36 AM
+> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org;
+> Sethi Varun-B16395
+> Cc: Medve Emilian-EMMEDVE1
+> Subject: [PATCH] iommu/fsl: Fix section mismatch
+> 
+> Section mismatch in reference from the variable fsl_of_pamu_driver to the
+> function .init.text:fsl_pamu_probe() The variable fsl_of_pamu_driver
+> references the function __init fsl_pamu_probe() If the reference is valid
+> then annotate the variable with __init* or __refdata (see linux/init.h) or
+> name the variable:
+> *_template, *_timer, *_sht, *_ops, *_probe, *_probe_one, *_console
+> 
+> Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+> ---
+>  drivers/iommu/fsl_pamu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c index
+> 80ac68d..076a951 100644
+> --- a/drivers/iommu/fsl_pamu.c
+> +++ b/drivers/iommu/fsl_pamu.c
+> @@ -1016,7 +1016,7 @@ static const struct {
+> 
+>  #define SVR_SECURITY	0x80000	/* The Security (E) bit */
+> 
+> -static int __init fsl_pamu_probe(struct platform_device *pdev)
+> +static int fsl_pamu_probe(struct platform_device *pdev)
+>  {
+>  	void __iomem *pamu_regs = NULL;
+>  	struct ccsr_guts __iomem *guts_regs = NULL;
 > --
-> Marek Szyprowski, PhD
-> Samsung R&D Institute Poland
->
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kerne=
-l" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
-
---=20
-Thanks and regards,
-
-Sumit Semwal
-Kernel Team Lead - Linaro Mobile Group
-Linaro.org =E2=94=82 Open source software for ARM SoCs
+> 2.2.2
+Fsl_pamu_probe is expected to be called during system initialization in order to initialize PAMU before other devices are initialized. We should make fsl_of_pamu_driver as __initdata.
