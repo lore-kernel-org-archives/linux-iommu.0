@@ -1,7 +1,7 @@
 From: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-Subject: [PATCH 2/3] iommu/fsl: Remove unused fsl_of_pamu_ids[]
-Date: Thu, 22 Jan 2015 08:47:21 -0600
-Message-ID: <1421938042-22580-2-git-send-email-Emilian.Medve@Freescale.com>
+Subject: [PATCH 3/3] iommu/fsl: Sprinkle some __init* annotations
+Date: Thu, 22 Jan 2015 08:47:22 -0600
+Message-ID: <1421938042-22580-3-git-send-email-Emilian.Medve@Freescale.com>
 References: <1421938042-22580-1-git-send-email-Emilian.Medve@Freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,29 +23,57 @@ List-Id: iommu@lists.linux-foundation.org
 
 Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 ---
- drivers/iommu/fsl_pamu.c | 10 ----------
- 1 file changed, 10 deletions(-)
+ drivers/iommu/fsl_pamu.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
-index d478ad8..113fb7b 100644
+index 113fb7b..db9c1eb 100644
 --- a/drivers/iommu/fsl_pamu.c
 +++ b/drivers/iommu/fsl_pamu.c
-@@ -1214,16 +1214,6 @@ error:
- 	return ret;
- }
+@@ -59,7 +59,7 @@ static struct ome *omt;
+  * SOCs. For the older SOCs "fsl,qoriq-device-config-1.0"
+  * string would be used.
+ */
+-static const struct of_device_id guts_device_ids[] = {
++static const struct of_device_id guts_device_ids[] __initconst = {
+ 	{ .compatible = "fsl,qoriq-device-config-1.0", },
+ 	{ .compatible = "fsl,qoriq-device-config-2.0", },
+ 	{}
+@@ -187,7 +187,7 @@ static unsigned int map_subwindow_cnt_to_wce(u32 subwindow_cnt)
+  * Set the PAACE type as primary and set the coherency required domain
+  * attribute
+  */
+-static void pamu_init_ppaace(struct paace *ppaace)
++static void __init pamu_init_ppaace(struct paace *ppaace)
+ {
+ 	set_bf(ppaace->addr_bitfields, PAACE_AF_PT, PAACE_PT_PRIMARY);
  
--static const struct of_device_id fsl_of_pamu_ids[] = {
--	{
--		.compatible = "fsl,p4080-pamu",
--	},
--	{
--		.compatible = "fsl,pamu",
--	},
--	{},
--};
--
- static struct platform_driver fsl_of_pamu_driver __initdata = {
- 	.driver = {
- 		.name = "fsl-of-pamu",
+@@ -612,7 +612,7 @@ found_cpu_node:
+  * Memory accesses to QMAN and BMAN private memory need not be coherent, so
+  * clear the PAACE entry coherency attribute for them.
+  */
+-static void setup_qbman_paace(struct paace *ppaace, int  paace_type)
++static void __init setup_qbman_paace(struct paace *ppaace, int  paace_type)
+ {
+ 	switch (paace_type) {
+ 	case QMAN_PAACE:
+@@ -679,7 +679,7 @@ static void __init setup_omt(struct ome *omt)
+  * Get the maximum number of PAACT table entries
+  * and subwindows supported by PAMU
+  */
+-static void get_pamu_cap_values(unsigned long pamu_reg_base)
++static void __init get_pamu_cap_values(unsigned long pamu_reg_base)
+ {
+ 	u32 pc_val;
+ 
+@@ -998,7 +998,7 @@ error:
+ static const struct {
+ 	u32 svr;
+ 	u32 port_id;
+-} port_id_map[] = {
++} port_id_map[] __initconst = {
+ 	{0x82100010, 0xFF000000},	/* P2040 1.0 */
+ 	{0x82100011, 0xFF000000},	/* P2040 1.1 */
+ 	{0x82100110, 0xFF000000},	/* P2041 1.0 */
 -- 
 2.2.2
