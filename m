@@ -1,8 +1,7 @@
 From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v5 06/18] iommu: exynos: don't read version register on every
- tlb operation
-Date: Fri, 23 Jan 2015 16:51:16 +0100
-Message-ID: <1422028288-891-7-git-send-email-m.szyprowski@samsung.com>
+Subject: [PATCH v5 10/18] iommu: exynos: remove unused functions, part 2
+Date: Fri, 23 Jan 2015 16:51:20 +0100
+Message-ID: <1422028288-891-11-git-send-email-m.szyprowski@samsung.com>
 References: <1422028288-891-1-git-send-email-m.szyprowski@samsung.com>
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 In-reply-to: <1422028288-891-1-git-send-email-m.szyprowski@samsung.com>
@@ -11,72 +10,68 @@ To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-a
 Cc: Marek Szyprowski <m.szyprowski@samsung.com>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch removes reading of REG_MMU_VERSION register on every tlb
-operation and caches SYSMMU version in driver's internal data.
+After refactoring functions to use pointer to struct sysmmu_drvdata
+directly, some functions became useless and thus never used, so remove
+them completely.
 
 Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- drivers/iommu/exynos-iommu.c | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+ drivers/iommu/exynos-iommu.c | 43 -------------------------------------------
+ 1 file changed, 43 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 7ce5273..b6c8612 100644
+index 862261f..e62cb96 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -212,6 +212,7 @@ struct sysmmu_drvdata {
- 	spinlock_t lock;
- 	struct iommu_domain *domain;
- 	phys_addr_t pgtable;
-+	int version;
- };
- 
- static bool set_sysmmu_active(struct sysmmu_drvdata *data)
-@@ -238,11 +239,6 @@ static void sysmmu_unblock(void __iomem *sfrbase)
- 	__raw_writel(CTRL_ENABLE, sfrbase + REG_MMU_CTRL);
+@@ -457,49 +457,6 @@ static int __sysmmu_enable(struct sysmmu_drvdata *data,
+ 	return ret;
  }
  
--static unsigned int __raw_sysmmu_version(struct sysmmu_drvdata *data)
+-/* __exynos_sysmmu_enable: Enables System MMU
+- *
+- * returns -error if an error occurred and System MMU is not enabled,
+- * 0 if the System MMU has been just enabled and 1 if System MMU was already
+- * enabled before.
+- */
+-static int __exynos_sysmmu_enable(struct device *dev, phys_addr_t pgtable,
+-				  struct iommu_domain *domain)
 -{
--	return MMU_RAW_VER(__raw_readl(data->sfrbase + REG_MMU_VERSION));
+-	int ret = 0;
+-	unsigned long flags;
+-	struct exynos_iommu_owner *owner = dev->archdata.iommu;
+-	struct sysmmu_drvdata *data;
+-
+-	BUG_ON(!has_sysmmu(dev));
+-
+-	data = dev_get_drvdata(owner->sysmmu);
+-
+-	ret = __sysmmu_enable(data, pgtable, domain);
+-	if (ret >= 0)
+-		data->master = dev;
+-
+-	return ret;
 -}
 -
- static bool sysmmu_block(void __iomem *sfrbase)
- {
- 	int i = 120;
-@@ -402,7 +398,7 @@ static void __sysmmu_init_config(struct sysmmu_drvdata *data)
- 	unsigned int cfg = CFG_LRU | CFG_QOS(15);
- 	unsigned int ver;
- 
--	ver = __raw_sysmmu_version(data);
-+	ver = MMU_RAW_VER(__raw_readl(data->sfrbase + REG_MMU_VERSION));
- 	if (MMU_MAJ_VER(ver) == 3) {
- 		if (MMU_MIN_VER(ver) >= 2) {
- 			cfg |= CFG_FLPDCACHE;
-@@ -416,6 +412,7 @@ static void __sysmmu_init_config(struct sysmmu_drvdata *data)
- 	}
- 
- 	__raw_writel(cfg, data->sfrbase + REG_MMU_CFG);
-+	data->version = ver;
- }
- 
- static void __sysmmu_enable_nocount(struct sysmmu_drvdata *data)
-@@ -525,7 +522,7 @@ static bool exynos_sysmmu_disable(struct device *dev)
+-static bool exynos_sysmmu_disable(struct device *dev)
+-{
+-	unsigned long flags;
+-	bool disabled = true;
+-	struct exynos_iommu_owner *owner = dev->archdata.iommu;
+-	struct sysmmu_drvdata *data;
+-
+-	BUG_ON(!has_sysmmu(dev));
+-
+-	data = dev_get_drvdata(owner->sysmmu);
+-
+-	disabled = __sysmmu_disable(data);
+-	if (disabled)
+-		data->master = NULL;
+-
+-	return disabled;
+-}
+-
  static void __sysmmu_tlb_invalidate_flpdcache(struct sysmmu_drvdata *data,
  					      sysmmu_iova_t iova)
  {
--	if (__raw_sysmmu_version(data) == MAKE_MMU_VER(3, 3))
-+	if (data->version == MAKE_MMU_VER(3, 3))
- 		__raw_writel(iova | 0x1, data->sfrbase + REG_MMU_FLUSH_ENTRY);
- }
- 
-@@ -574,7 +571,7 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, sysmmu_iova_t iova,
- 		 * 1MB page can be cached in one of all sets.
- 		 * 64KB page can be one of 16 consecutive sets.
- 		 */
--		if (MMU_MAJ_VER(__raw_sysmmu_version(data)) == 2)
-+		if (MMU_MAJ_VER(data->version) == 2)
- 			num_inv = min_t(unsigned int, size / PAGE_SIZE, 64);
- 
- 		if (sysmmu_block(data->sfrbase)) {
 -- 
 1.9.2
