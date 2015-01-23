@@ -1,7 +1,8 @@
 From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v5 05/18] ARM: dts: exynos5420: add sysmmu nodes
-Date: Fri, 23 Jan 2015 16:51:15 +0100
-Message-ID: <1422028288-891-6-git-send-email-m.szyprowski@samsung.com>
+Subject: [PATCH v5 09/18] iommu: exynos: refactor function parameters to
+ simplify code
+Date: Fri, 23 Jan 2015 16:51:19 +0100
+Message-ID: <1422028288-891-10-git-send-email-m.szyprowski@samsung.com>
 References: <1422028288-891-1-git-send-email-m.szyprowski@samsung.com>
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 In-reply-to: <1422028288-891-1-git-send-email-m.szyprowski@samsung.com>
@@ -10,235 +11,231 @@ To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-a
 Cc: Marek Szyprowski <m.szyprowski@samsung.com>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
+This patch simplifies the code by:
+- refactoring function parameters from struct device pointer to direct pointer
+  to struct sysmmu drvdata
+- moving list_head enteries from struct exynos_iommu_owner directly to struct
+  sysmmu_drvdata
+
 Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- arch/arm/boot/dts/exynos5420.dtsi | 181 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 181 insertions(+)
+ drivers/iommu/exynos-iommu.c | 93 ++++++++++++++++++++++----------------------
+ 1 file changed, 46 insertions(+), 47 deletions(-)
 
-diff --git a/arch/arm/boot/dts/exynos5420.dtsi b/arch/arm/boot/dts/exynos5420.dtsi
-index 1b62410..b8f1c9f 100644
---- a/arch/arm/boot/dts/exynos5420.dtsi
-+++ b/arch/arm/boot/dts/exynos5420.dtsi
-@@ -179,6 +179,8 @@
- 		clocks = <&clock CLK_MFC>;
- 		clock-names = "mfc";
- 		power-domains = <&mfc_pd>;
-+		iommus = <&sysmmu_mfc_l>, <&sysmmu_mfc_r>;
-+		iommu-names = "left", "right";
- 	};
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index aa8c4b0..862261f 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -186,8 +186,6 @@ static char *sysmmu_fault_name[SYSMMU_FAULTS_NUM] = {
  
- 	mmc_0: mmc@12200000 {
-@@ -556,6 +558,8 @@
- 		clocks = <&clock CLK_SCLK_FIMD1>, <&clock CLK_FIMD1>;
- 		clock-names = "sclk_fimd", "fimd";
- 		power-domains = <&disp_pd>;
-+		iommus = <&sysmmu_fimd1_0>, <&sysmmu_fimd1_1>;
-+		iommu-names = "m0", "m1";
- 	};
- 
- 	adc: adc@12D10000 {
-@@ -743,6 +747,7 @@
- 		clocks = <&clock CLK_MIXER>, <&clock CLK_HDMI>,
- 			 <&clock CLK_SCLK_HDMI>;
- 		clock-names = "mixer", "hdmi", "sclk_hdmi";
-+		iommus = <&sysmmu_tv>;
- 		power-domains = <&disp_pd>;
- 	};
- 
-@@ -753,6 +758,7 @@
- 		clocks = <&clock CLK_GSCL0>;
- 		clock-names = "gscl";
- 		power-domains = <&gsc_pd>;
-+		iommus = <&sysmmu_gscl0>;
- 	};
- 
- 	gsc_1: video-scaler@13e10000 {
-@@ -762,6 +768,7 @@
- 		clocks = <&clock CLK_GSCL1>;
- 		clock-names = "gscl";
- 		power-domains = <&gsc_pd>;
-+		iommus = <&sysmmu_gscl1>;
- 	};
- 
- 	pmu_system_controller: system-controller@10040000 {
-@@ -925,4 +932,178 @@
- 		samsung,sysreg-phandle = <&sysreg_system_controller>;
- 		samsung,pmureg-phandle = <&pmu_system_controller>;
- 	};
-+
-+	sysmmu_g2dr: sysmmu@0x10A60000 {
-+		compatible = "samsung,exynos-sysmmu";
-+		reg = <0x10A60000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <24 5>;
-+		clock-names = "sysmmu", "master";
-+		clocks = <&clock CLK_SMMU_G2D>, <&clock CLK_G2D>;
-+		#iommu-cells = <0>;
-+	};
-+
-+	sysmmu_g2dw: sysmmu@0x10A70000 {
-+		compatible = "samsung,exynos-sysmmu";
-+		reg = <0x10A70000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <22 2>;
-+		clock-names = "sysmmu", "master";
-+		clocks = <&clock CLK_SMMU_G2D>, <&clock CLK_G2D>;
-+		#iommu-cells = <0>;
-+	};
-+
-+	sysmmu_tv: sysmmu@0x14650000 {
-+		compatible = "samsung,exynos-sysmmu";
-+		reg = <0x14650000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <7 4>;
-+		clock-names = "sysmmu", "master";
-+		clocks = <&clock CLK_SMMU_MIXER>, <&clock CLK_MIXER>;
-+		samsung,power-domain = <&disp_pd>;
-+		#iommu-cells = <0>;
-+	};
-+
-+	sysmmu_gscl0: sysmmu@0x13E80000 {
-+		compatible = "samsung,exynos-sysmmu";
-+		reg = <0x13E80000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <2 0>;
-+		clock-names = "sysmmu", "master";
-+		clocks = <&clock CLK_SMMU_GSCL0>, <&clock CLK_GSCL0>;
-+		power-domains = <&gsc_pd>;
-+		#iommu-cells = <0>;
-+	};
-+
-+	sysmmu_gscl1: sysmmu@0x13E90000 {
-+		compatible = "samsung,exynos-sysmmu";
-+		reg = <0x13E90000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <2 2>;
-+		clock-names = "sysmmu", "master";
-+		clocks = <&clock CLK_SMMU_GSCL1>, <&clock CLK_GSCL1>;
-+		power-domains = <&gsc_pd>;
-+		#iommu-cells = <0>;
-+	};
-+
-+	sysmmu_scaler0r: sysmmu@0x12880000 {
-+		compatible = "samsung,exynos-sysmmu";
-+		reg = <0x12880000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <22 4>;
-+		clock-names = "sysmmu", "master";
-+		clocks = <&clock CLK_SMMU_MSCL0>, <&clock CLK_MSCL0>;
-+		#iommu-cells = <0>;
-+	};
-+
-+	sysmmu_scaler1r: sysmmu@0x12890000 {
-+		compatible = "samsung,exynos-sysmmu";
-+		reg = <0x12890000 0x1000>;
-+		interrupts = <0 186 0>;
-+		clock-names = "sysmmu", "master";
-+		clocks = <&clock CLK_SMMU_MSCL1>, <&clock CLK_MSCL1>;
-+		#iommu-cells = <0>;
-+	};
-+
-+	sysmmu_scaler2r: sysmmu@0x128A0000 {
-+		compatible = "samsung,exynos-sysmmu";
-+		reg = <0x128A0000 0x1000>;
-+		interrupts = <0 188 0>;
-+		clock-names = "sysmmu", "master";
-+		clocks = <&clock CLK_SMMU_MSCL2>, <&clock CLK_MSCL2>;
-+		#iommu-cells = <0>;
-+	};
-+
-+	sysmmu_scaler0w: sysmmu@0x128C0000 {
-+		compatible = "samsung,exynos-sysmmu";
-+		reg = <0x128C0000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <27 2>;
-+		clock-names = "sysmmu", "master";
-+		clocks = <&clock CLK_SMMU_MSCL0>, <&clock CLK_MSCL0>;
-+		#iommu-cells = <0>;
-+	};
-+
-+	sysmmu_scaler1w: sysmmu@0x128D0000 {
-+		compatible = "samsung,exynos-sysmmu";
-+		reg = <0x128D0000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <22 6>;
-+		clock-names = "sysmmu", "master";
-+		clocks = <&clock CLK_SMMU_MSCL1>, <&clock CLK_MSCL1>;
-+		#iommu-cells = <0>;
-+	};
-+
-+	sysmmu_scaler2w: sysmmu@0x128E0000 {
-+		compatible = "samsung,exynos-sysmmu";
-+		reg = <0x128E0000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <19 6>;
-+		clock-names = "sysmmu", "master";
-+		clocks = <&clock CLK_SMMU_MSCL2>, <&clock CLK_MSCL2>;
-+		#iommu-cells = <0>;
-+	};
-+
-+	sysmmu_jpeg: sysmmu@0x11F10000 {
-+		compatible = "samsung,exynos-sysmmu";
-+		reg = <0x11F10000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <4 2>;
-+		clock-names = "sysmmu", "master";
-+		clocks = <&clock CLK_SMMU_JPEG>, <&clock CLK_JPEG>;
-+		#iommu-cells = <0>;
-+	};
-+
-+	sysmmu_jpeg2: sysmmu@0x11F20000 {
-+		compatible = "samsung,exynos-sysmmu";
-+		reg = <0x11F20000 0x1000>;
-+		interrupts = <0 169 0>;
-+		clock-names = "sysmmu", "master";
-+		clocks = <&clock CLK_SMMU_JPEG2>, <&clock CLK_JPEG2>;
-+		#iommu-cells = <0>;
-+	};
-+
-+	sysmmu_mfc_l: sysmmu@0x11200000 {
-+		compatible = "samsung,exynos-sysmmu";
-+		reg = <0x11200000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <6 2>;
-+		clock-names = "sysmmu", "master";
-+		clocks = <&clock CLK_SMMU_MFCL>, <&clock CLK_MFC>;
-+		power-domains = <&mfc_pd>;
-+		#iommu-cells = <0>;
-+	};
-+
-+	sysmmu_mfc_r: sysmmu@0x11210000 {
-+		compatible = "samsung,exynos-sysmmu";
-+		reg = <0x11210000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <8 5>;
-+		clock-names = "sysmmu", "master";
-+		clocks = <&clock CLK_SMMU_MFCR>, <&clock CLK_MFC>;
-+		power-domains = <&mfc_pd>;
-+		#iommu-cells = <0>;
-+	};
-+
-+	sysmmu_fimd1_0: sysmmu@0x14640000 {
-+		compatible = "samsung,exynos-sysmmu";
-+		reg = <0x14640000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <3 2>;
-+		clock-names = "sysmmu", "master";
-+		clocks = <&clock CLK_SMMU_FIMD1M0>, <&clock CLK_FIMD1>;
-+		samsung,power-domain = <&disp_pd>;
-+		#iommu-cells = <0>;
-+	};
-+
-+	sysmmu_fimd1_1: sysmmu@0x14680000 {
-+		compatible = "samsung,exynos-sysmmu";
-+		reg = <0x14680000 0x1000>;
-+		interrupt-parent = <&combiner>;
-+		interrupts = <3 0>;
-+		clock-names = "sysmmu", "master";
-+		clocks = <&clock CLK_SMMU_FIMD1M0>, <&clock CLK_FIMD1>;
-+		samsung,power-domain = <&disp_pd>;
-+		#iommu-cells = <0>;
-+	};
+ /* attached to dev.archdata.iommu of the master device */
+ struct exynos_iommu_owner {
+-	struct list_head client; /* entry of exynos_iommu_domain.clients */
+-	struct device *dev;
+ 	struct device *sysmmu;
  };
+ 
+@@ -208,6 +206,7 @@ struct sysmmu_drvdata {
+ 	int activations;
+ 	spinlock_t lock;
+ 	struct iommu_domain *domain;
++	struct list_head domain_node;
+ 	phys_addr_t pgtable;
+ 	int version;
+ };
+@@ -508,12 +507,10 @@ static void __sysmmu_tlb_invalidate_flpdcache(struct sysmmu_drvdata *data,
+ 		__raw_writel(iova | 0x1, data->sfrbase + REG_MMU_FLUSH_ENTRY);
+ }
+ 
+-static void sysmmu_tlb_invalidate_flpdcache(struct device *dev,
++static void sysmmu_tlb_invalidate_flpdcache(struct sysmmu_drvdata *data,
+ 					    sysmmu_iova_t iova)
+ {
+ 	unsigned long flags;
+-	struct exynos_iommu_owner *owner = dev->archdata.iommu;
+-	struct sysmmu_drvdata *data = dev_get_drvdata(owner->sysmmu);
+ 
+ 	if (!IS_ERR(data->clk_master))
+ 		clk_enable(data->clk_master);
+@@ -527,14 +524,10 @@ static void sysmmu_tlb_invalidate_flpdcache(struct device *dev,
+ 		clk_disable(data->clk_master);
+ }
+ 
+-static void sysmmu_tlb_invalidate_entry(struct device *dev, sysmmu_iova_t iova,
+-					size_t size)
++static void sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
++					sysmmu_iova_t iova, size_t size)
+ {
+-	struct exynos_iommu_owner *owner = dev->archdata.iommu;
+ 	unsigned long flags;
+-	struct sysmmu_drvdata *data;
+-
+-	data = dev_get_drvdata(owner->sysmmu);
+ 
+ 	spin_lock_irqsave(&data->lock, flags);
+ 	if (is_sysmmu_active(data)) {
+@@ -564,8 +557,8 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, sysmmu_iova_t iova,
+ 		if (!IS_ERR(data->clk_master))
+ 			clk_disable(data->clk_master);
+ 	} else {
+-		dev_dbg(dev, "disabled. Skipping TLB invalidation @ %#x\n",
+-			iova);
++		dev_dbg(data->master,
++			"disabled. Skipping TLB invalidation @ %#x\n", iova);
+ 	}
+ 	spin_unlock_irqrestore(&data->lock, flags);
+ }
+@@ -703,7 +696,7 @@ err_pgtable:
+ static void exynos_iommu_domain_destroy(struct iommu_domain *domain)
+ {
+ 	struct exynos_iommu_domain *priv = domain->priv;
+-	struct exynos_iommu_owner *owner;
++	struct sysmmu_drvdata *data;
+ 	unsigned long flags;
+ 	int i;
+ 
+@@ -711,14 +704,12 @@ static void exynos_iommu_domain_destroy(struct iommu_domain *domain)
+ 
+ 	spin_lock_irqsave(&priv->lock, flags);
+ 
+-	list_for_each_entry(owner, &priv->clients, client) {
+-		while (!exynos_sysmmu_disable(owner->dev))
+-			; /* until System MMU is actually disabled */
++	list_for_each_entry(data, &priv->clients, domain_node) {
++		if (__sysmmu_disable(data))
++			data->master = NULL;
++		list_del_init(&data->domain_node);
+ 	}
+ 
+-	while (!list_empty(&priv->clients))
+-		list_del_init(priv->clients.next);
+-
+ 	spin_unlock_irqrestore(&priv->lock, flags);
+ 
+ 	for (i = 0; i < NUM_LV1ENTRIES; i++)
+@@ -737,20 +728,26 @@ static int exynos_iommu_attach_device(struct iommu_domain *domain,
+ {
+ 	struct exynos_iommu_owner *owner = dev->archdata.iommu;
+ 	struct exynos_iommu_domain *priv = domain->priv;
++	struct sysmmu_drvdata *data;
+ 	phys_addr_t pagetable = virt_to_phys(priv->pgtable);
+ 	unsigned long flags;
+-	int ret;
++	int ret = -ENODEV;
+ 
+-	spin_lock_irqsave(&priv->lock, flags);
++	if (!has_sysmmu(dev))
++		return -ENODEV;
+ 
+-	ret = __exynos_sysmmu_enable(dev, pagetable, domain);
+-	if (ret == 0) {
+-		list_add_tail(&owner->client, &priv->clients);
+-		owner->domain = domain;
++	data = dev_get_drvdata(owner->sysmmu);
++	if (data) {
++		ret = __sysmmu_enable(data, pagetable, domain);
++		if (ret >= 0) {
++			data->master = dev;
++
++			spin_lock_irqsave(&priv->lock, flags);
++			list_add_tail(&data->domain_node, &priv->clients);
++			spin_unlock_irqrestore(&priv->lock, flags);
++		}
+ 	}
+ 
+-	spin_unlock_irqrestore(&priv->lock, flags);
+-
+ 	if (ret < 0) {
+ 		dev_err(dev, "%s: Failed to attach IOMMU with pgtable %pa\n",
+ 					__func__, &pagetable);
+@@ -766,26 +763,29 @@ static int exynos_iommu_attach_device(struct iommu_domain *domain,
+ static void exynos_iommu_detach_device(struct iommu_domain *domain,
+ 				    struct device *dev)
+ {
+-	struct exynos_iommu_owner *owner;
+ 	struct exynos_iommu_domain *priv = domain->priv;
+ 	phys_addr_t pagetable = virt_to_phys(priv->pgtable);
++	struct sysmmu_drvdata *data;
+ 	unsigned long flags;
++	int found = 0;
+ 
+-	spin_lock_irqsave(&priv->lock, flags);
++	if (!has_sysmmu(dev))
++		return;
+ 
+-	list_for_each_entry(owner, &priv->clients, client) {
+-		if (owner == dev->archdata.iommu) {
+-			if (exynos_sysmmu_disable(dev)) {
+-				list_del_init(&owner->client);
+-				owner->domain = NULL;
++	spin_lock_irqsave(&priv->lock, flags);
++	list_for_each_entry(data, &priv->clients, domain_node) {
++		if (data->master == dev) {
++			if (__sysmmu_disable(data)) {
++				data->master = NULL;
++				list_del_init(&data->domain_node);
+ 			}
++			found = true;
+ 			break;
+ 		}
+ 	}
+-
+ 	spin_unlock_irqrestore(&priv->lock, flags);
+ 
+-	if (owner == dev->archdata.iommu)
++	if (found)
+ 		dev_dbg(dev, "%s: Detached IOMMU with pgtable %pa\n",
+ 					__func__, &pagetable);
+ 	else
+@@ -832,12 +832,11 @@ static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *priv,
+ 		 * not currently mapped.
+ 		 */
+ 		if (need_flush_flpd_cache) {
+-			struct exynos_iommu_owner *owner;
++			struct sysmmu_drvdata *data;
+ 
+ 			spin_lock(&priv->lock);
+-			list_for_each_entry(owner, &priv->clients, client)
+-				sysmmu_tlb_invalidate_flpdcache(
+-							owner->dev, iova);
++			list_for_each_entry(data, &priv->clients, domain_node)
++				sysmmu_tlb_invalidate_flpdcache(data, iova);
+ 			spin_unlock(&priv->lock);
+ 		}
+ 	}
+@@ -872,13 +871,13 @@ static int lv1set_section(struct exynos_iommu_domain *priv,
+ 
+ 	spin_lock(&priv->lock);
+ 	if (lv1ent_page_zero(sent)) {
+-		struct exynos_iommu_owner *owner;
++		struct sysmmu_drvdata *data;
+ 		/*
+ 		 * Flushing FLPD cache in System MMU v3.3 that may cache a FLPD
+ 		 * entry by speculative prefetch of SLPD which has no mapping.
+ 		 */
+-		list_for_each_entry(owner, &priv->clients, client)
+-			sysmmu_tlb_invalidate_flpdcache(owner->dev, iova);
++		list_for_each_entry(data, &priv->clients, domain_node)
++			sysmmu_tlb_invalidate_flpdcache(data, iova);
+ 	}
+ 	spin_unlock(&priv->lock);
+ 
+@@ -983,13 +982,13 @@ static int exynos_iommu_map(struct iommu_domain *domain, unsigned long l_iova,
+ static void exynos_iommu_tlb_invalidate_entry(struct exynos_iommu_domain *priv,
+ 						sysmmu_iova_t iova, size_t size)
+ {
+-	struct exynos_iommu_owner *owner;
++	struct sysmmu_drvdata *data;
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&priv->lock, flags);
+ 
+-	list_for_each_entry(owner, &priv->clients, client)
+-		sysmmu_tlb_invalidate_entry(owner->dev, iova, size);
++	list_for_each_entry(data, &priv->clients, domain_node)
++		sysmmu_tlb_invalidate_entry(data, iova, size);
+ 
+ 	spin_unlock_irqrestore(&priv->lock, flags);
+ }
 -- 
 1.9.2
