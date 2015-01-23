@@ -1,52 +1,56 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v5 16/18] iommu: exynos: remove excessive includes and sort
- others alphabetically
-Date: Fri, 23 Jan 2015 16:51:26 +0100
-Message-ID: <1422028288-891-17-git-send-email-m.szyprowski@samsung.com>
-References: <1422028288-891-1-git-send-email-m.szyprowski@samsung.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1422028288-891-1-git-send-email-m.szyprowski@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH URGENT] arm: dma-mapping: Set DMA IOMMU ops in
+	arm_iommu_attach_device()
+Date: Fri, 23 Jan 2015 17:55:25 +0200
+Message-ID: <2416515.WUUq1g4kPD@avalon>
+References: <1422022909-31044-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+	<10179212.ryUUVC9zEx@wuerfel>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <10179212.ryUUVC9zEx@wuerfel>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Removed following unused includes: <linux/mm.h>, <linux/errno.h>,
-<linux/memblock.h> and <linux/export.h>.
+Hi Arnd,
 
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
- drivers/iommu/exynos-iommu.c | 14 +++++---------
- 1 file changed, 5 insertions(+), 9 deletions(-)
+On Friday 23 January 2015 16:27:24 Arnd Bergmann wrote:
+> On Friday 23 January 2015 16:21:49 Laurent Pinchart wrote:
+> > +/**
+> > + * arm_iommu_detach_device
+> > + * @dev: valid struct device pointer
+> > + *
+> > + * Detaches the provided device from a previously attached map.
+> > + * This voids the dma operations (dma_map_ops pointer)
+> > + */
+> > +void arm_iommu_detach_device(struct device *dev)
+> > +{
+> > +       __arm_iommu_detach_device(dev);
+> > +       set_dma_ops(dev, NULL);
+> > +}
+> > 
+> >  EXPORT_SYMBOL_GPL(arm_iommu_detach_device);
+> 
+> Would this introduce a regression in the case where the device is
+> cache coherent and needs arm_coherent_dma_ops set?
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index ef71725..c53cc8f 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -12,19 +12,15 @@
- #define DEBUG
- #endif
- 
--#include <linux/io.h>
--#include <linux/interrupt.h>
--#include <linux/platform_device.h>
--#include <linux/slab.h>
--#include <linux/pm_runtime.h>
- #include <linux/clk.h>
- #include <linux/err.h>
--#include <linux/mm.h>
-+#include <linux/io.h>
- #include <linux/iommu.h>
--#include <linux/errno.h>
-+#include <linux/interrupt.h>
- #include <linux/list.h>
--#include <linux/memblock.h>
--#include <linux/export.h>
-+#include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/slab.h>
- 
- #include <asm/cacheflush.h>
- #include <asm/pgtable.h>
+I think we need to handle that case (as well as the coherent IOMMU case in 
+arm_iommu_attach_device), but this patch only tries to restore the previous 
+behaviour to fix the bug detailed in the commit message. Would you prefer 
+fixing both issues in one go ?
+
 -- 
-1.9.2
+Regards,
+
+Laurent Pinchart
