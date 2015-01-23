@@ -1,55 +1,80 @@
-From: Murali Karicheri <m-karicheri2@ti.com>
-Subject: [PATCH v4 6/6] arm: dma-mapping: updates to limit dma_mask and iommu mapping size
-Date: Fri, 23 Jan 2015 17:32:39 -0500
-Message-ID: <1422052359-12384-7-git-send-email-m-karicheri2@ti.com>
-References: <1422052359-12384-1-git-send-email-m-karicheri2@ti.com>
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu: use a threaded handler for context
+	interrupts
+Date: Fri, 23 Jan 2015 14:33:20 -0800
+Message-ID: <vnkw61bx2klr.fsf@mitchelh-linux.qualcomm.com>
+References: <1421970482-11722-1-git-send-email-mitchelh@codeaurora.org>
+	<20150123112415.GD23058@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1422052359-12384-1-git-send-email-m-karicheri2@ti.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org
-Cc: Murali Karicheri <m-karicheri2@ti.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150123112415.GD23058-5wv7dgnIgG8@public.gmane.org> (Will Deacon's message of "Fri,
+	23 Jan 2015 11:24:15 +0000")
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Limit the dma_mask to minimum of dma_mask and dma_base + size - 1.
+On Fri, Jan 23 2015 at 03:24:15 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> Hi Mitch,
+>
+> On Thu, Jan 22, 2015 at 11:48:02PM +0000, Mitchel Humpherys wrote:
+>> Context interrupts can call domain-specific handlers which might sleep.
+>> Currently we register our handler with request_irq, so our handler is
+>> called in atomic context, so domain handlers that sleep result in an
+>> invalid context BUG.  Fix this by using request_threaded_irq.
+>> 
+>> This also prepares the way for doing things like enabling clocks within
+>> our interrupt handler.
+>> 
+>> Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>> ---
+>>  drivers/iommu/arm-smmu.c | 5 +++--
+>>  1 file changed, 3 insertions(+), 2 deletions(-)
+>> 
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index 6cd47b75286f..81f6b54d94b1 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -973,8 +973,9 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+>>  	spin_unlock_irqrestore(&smmu_domain->lock, flags);
+>>  
+>>  	irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
+>> -	ret = request_irq(irq, arm_smmu_context_fault, IRQF_SHARED,
+>> -			  "arm-smmu-context-fault", domain);
+>> +	ret = request_threaded_irq(irq, NULL, arm_smmu_context_fault,
+>> +				IRQF_ONESHOT | IRQF_SHARED,
+>> +				"arm-smmu-context-fault", domain);
+>>  	if (IS_ERR_VALUE(ret)) {
+>>  		dev_err(smmu->dev, "failed to request context IRQ %d (%u)\n",
+>>  			cfg->irptndx, irq);
+>
+> I think I'd rather keep a simple atomic handler, then have a threaded
+> handler for actually issuing the report_iommu_fault. i.e. we only wake
+> the thread when it looks like there's some work to do. That also works
+> much better for shared interrupts.
 
-Also arm_iommu_create_mapping() has size parameter of size_t and
-arm_setup_iommu_dma_ops() can take a value higher than that. So
-limit the size to SIZE_MAX.
+Are you still against adding clock support to the driver?  If not, we'll
+need to move to a threaded handler when clocks come in anyways...
 
-Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
----
- arch/arm/mm/dma-mapping.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+Can you elaborate what you mean regarding shared interrupts?  Even
+without clocks it seems like the code clarity / performance tradeoff
+would favor a threaded handler, given that performance isn't important
+here.
 
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index 7864797..a1f9030 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -2004,6 +2004,13 @@ static bool arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size,
- 	if (!iommu)
- 		return false;
- 
-+	/*
-+	 * currently arm_iommu_create_mapping() takes a max of size_t
-+	 * for size param. So check this limit for now.
-+	 */
-+	if (size > SIZE_MAX)
-+		return false;
-+
- 	mapping = arm_iommu_create_mapping(dev->bus, dma_base, size);
- 	if (IS_ERR(mapping)) {
- 		pr_warn("Failed to create %llu-byte IOMMU mapping for device %s\n",
-@@ -2053,6 +2060,9 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
- {
- 	struct dma_map_ops *dma_ops;
- 
-+	/* limit dma_mask to the lower of the two values */
-+	*dev->dma_mask = min((*dev->dma_mask), (dma_base + size - 1));
-+
- 	dev->archdata.dma_coherent = coherent;
- 	if (arm_setup_iommu_dma_ops(dev, dma_base, size, iommu))
- 		dma_ops = arm_get_iommu_dma_map_ops(coherent);
+
+-Mitch
+
 -- 
-1.7.9.5
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
