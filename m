@@ -1,112 +1,116 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH 3/5] iommu: implement common IOMMU ops for DMA mapping
-Date: Fri, 23 Jan 2015 18:14:03 +0000
-Message-ID: <54C28F6B.4020707@arm.com>
-References: <cover.1421086706.git.robin.murphy@arm.com>
-	<09e5515a9afcb3235f4c425520cd18a6032d31b4.1421086706.git.robin.murphy@arm.com>
-	<54C287F7.3060603@codeaurora.org>
+From: Murali Karicheri <m-karicheri2@ti.com>
+Subject: Re: [PATCH v3 2/4] of: move of_dma_configure() to device,c to help
+ re-use
+Date: Fri, 23 Jan 2015 13:19:08 -0500
+Message-ID: <54C2909C.2070705@ti.com>
+References: <1420656594-8908-1-git-send-email-m-karicheri2@ti.com> <3861625.CJ6m15sZMh@wuerfel> <54AED9EC.1020703@ti.com> <2083932.v1GzgAfexK@wuerfel> <CAL_JsqLG2OQL2TMMrXi4U0PU1vNzgodUehoZwpds5z8JKsB1jQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <54C287F7.3060603-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: "linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org" <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org" <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <CAL_JsqLG2OQL2TMMrXi4U0PU1vNzgodUehoZwpds5z8JKsB1jQ@mail.gmail.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Rob Herring <robherring2@gmail.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Joerg Roedel <joro@8bytes.org>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Will Deacon <will.deacon@arm.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Laura,
-
-Thanks for looking
-
-On 23/01/15 17:42, Laura Abbott wrote:
-> On 1/12/2015 12:48 PM, Robin Murphy wrote:
->> Taking inspiration from the existing arch/arm code, break out some
->> generic functions to interface the DMA-API to the IOMMU-API. This will
->> do the bulk of the heavy lifting for IOMMU-backed dma-mapping.
+On 01/09/2015 10:34 AM, Rob Herring wrote:
+> On Thu, Jan 8, 2015 at 4:24 PM, Arnd Bergmann<arnd@arndb.de>  wrote:
+>> On Thursday 08 January 2015 14:26:36 Murali Karicheri wrote:
+>>> On 01/08/2015 03:40 AM, Arnd Bergmann wrote:
+>>>> On Wednesday 07 January 2015 17:37:56 Rob Herring wrote:
+>>>>> On Wed, Jan 7, 2015 at 12:49 PM, Murali Karicheri<m-karicheri2@ti.com>   wrote:
+>>>>>
+>>>>>> +       ret = of_dma_get_range(np,&dma_addr,&paddr,&size);
+>>>>>> +       if (ret<   0) {
+>>>>>> +               dma_addr = offset = 0;
+>>>>>> +               size = dev->coherent_dma_mask + 1;
+>>>>>
+>>>>> If coherent_dma_mask is DMA_BIT_MASK(64), then you will overflow and
+>>>>> have a size of 0. There may also be a problem when the mask is only
+>>>>> 32-bit type.
+>>>>
+>>>> The mask is always a 64-bit type, it's not optional. But you are right,
+>>>> the 64-bit mask case is broken, so I guess we have to fix it differently
+>>>> by always passing the smaller value into arch_setup_dma_ops and
+>>>> adapting that function instead.
+>>> Arnd,
+>>>
+>>> What is the smaller value you are referring to in the below code?
+>>> between *dev->dma_mask and size from DT? But overflow can still happen
+>>> when size is to be calculated in arch_setup_dma_ops() for Non DT case or
+>>> when DT size is configured to be equivalent of DMA_BIT_MASK(64) + 1. Can
+>>> we discuss the code change you have in mind when you get a chance?
 >>
->> Whilst the target is arm64, rather than introduce yet another private
->> implementation, place this in common code as the first step towards
->> consolidating the numerous versions spread around between architecture
->> code and IOMMU drivers.
->>
->> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> ---
->>    include/linux/dma-iommu.h |  78 ++++++++
->>    lib/Kconfig               |   8 +
->>    lib/Makefile              |   1 +
->>    lib/dma-iommu.c           | 455 ++++++++++++++++++++++++++++++++++++++++++++++
->>    4 files changed, 542 insertions(+)
->>    create mode 100644 include/linux/dma-iommu.h
->>    create mode 100644 lib/dma-iommu.c
->>
->> diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
->> new file mode 100644
->> index 0000000..4515407
->> --- /dev/null
->> +++ b/include/linux/dma-iommu.h
-> <snip>
->> +
->> +struct iommu_dma_mapping *iommu_dma_create_mapping(struct iommu_ops *ops,
->> +		dma_addr_t base, size_t size)
->> +{
->> +	struct iommu_dma_mapping *mapping;
->> +	struct iommu_domain *domain;
->> +	struct iova_domain *iovad;
->> +	struct iommu_domain_geometry *dg;
->> +	unsigned long order, base_pfn, end_pfn;
->> +
->> +	pr_debug("base=%pad\tsize=0x%zx\n", &base, size);
->> +	mapping = kzalloc(sizeof(*mapping), GFP_KERNEL);
->> +	if (!mapping)
->> +		return NULL;
->> +
->> +	/*
->> +	 * HACK: We'd like to ask the relevant IOMMU in ops for a suitable
->> +	 * domain, but until that happens, bypass the bus nonsense and create
->> +	 * one directly for this specific device/IOMMU combination...
->> +	 */
->> +	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
->> +
->> +	if (!domain)
->> +		goto out_free_mapping;
->> +	domain->ops = ops;
->> +
->> +	if (ops->domain_init(domain))
->> +		goto out_free_mapping;
->> +	/*
->> +	 * ...and do the bare minimum to sanity-check that the domain allows
->> +	 * at least some access to the device...
->> +	 */
->> +	dg = &domain->geometry;
->> +	if (!(base < dg->aperture_end && base + size > dg->aperture_start)) {
->> +		pr_warn("DMA range outside IOMMU capability; is DT correct?\n");
->> +		goto out_free_mapping;
->> +	}
+>> I meant changing every function that the size values gets passed into
+>> to take a mask like 0xffffffff instead of a size like 0x100000000, so
+>> we can represent a 64-bit capable bus correctly.
 >
-> This check seems to always fail with base = 0 because dg->aperture_end is
-> always going to be 0 as well. base <= dg->aperature_end ?
+> Or you could special case a size of 0 to mean all/max? I'm not sure if
+> we need to handle size=0 for other reasons beyond just wrong DT data.
 >
+>> This means we also need to adapt the value returned from of_dma_get_range.
+>> A minor complication here is that the DT properties sometimes already
+>> contain the mask value, in particular when we want to represent a
+>> full mapping like
+>>
+>>          bus {
+>>                  #address-cells =<1>;
+>>                  #size-cells =<1>;
+>>                  dma-ranges =<0 0 0xffffffff>; /* all 4 GB, DMA_BIT_MASK(32) */
+>
+> This is wrong though, right? The DT should be size. Certainly, this
+> could be a valid size, but that would not make the mask 0xfffffffe. We
+> would still want it to be 0xffffffff.
+>
+> We could do a fixup for these cases adding 1 if bit 0 is set (or not
+> subtracting 1 if we want the mask).
+>
+> Rob
+Arnd, Rob, et all,
 
-Strictly you're right, since aperture_end should be the highest mappable 
-address thus you could create a valid, if a little silly, 1-byte domain 
-if both were zero. However, it shouldn't really be zero.
+Do we have preference one way or other for the size format? If we need 
+to follow the mask format, all of the calling functions below and the 
+arm_iommu_create_mapping() has to change as well to use this changed format.
 
-I put this bit in since the majority of IOMMU drivers set up the 
-geometry in domain_init and it seemed worth making use of. The ARM SMMU 
-driver is currently one of the odd ones out that don't, however one of 
-my as-yet-unpublished patches porting it to the new of_iommu_configure 
-framework involves fixing domain initialisation and adds geometry setup 
-as well - that's what I've been testing with. I'm hoping to get that 
-series out soon, but among other things it needs a messy merge with 
-Will's pagetable changes.
+drivers/gpu/drm/rockchip/rockchip_drm_drv.c:	mapping = 
+arm_iommu_create_mapping(&platform_bus_type, 0x00000000,
+drivers/gpu/drm/exynos/exynos_drm_iommu.c:	mapping = 
+arm_iommu_create_mapping(&platform_bus_type, priv->da_start,
+drivers/media/platform/omap3isp/isp.c:	mapping = 
+arm_iommu_create_mapping(&platform_bus_type, SZ_1G, SZ_2G);
+drivers/iommu/shmobile-iommu.c:		mapping = 
+arm_iommu_create_mapping(&platform_bus_type, 0,
+drivers/iommu/ipmmu-vmsa.c:		mapping = 
+arm_iommu_create_mapping(&platform_bus_type,
 
-Robin.
+So IMO, keeping current convention of size and taking care of exception 
+in DT handling is the right thing to do instead of changing all of the 
+above functions. i.e in of_dma_configure(), if DT provide a mask for 
+size (lsb set), we  will check that and add 1 to it. Only case in DTS 
+that I can see this usage is
+
+arch/arm64/boot/dts/amd/amd-seattle-soc.dtsi:		dma-ranges = <0x80 0x0 
+0x80 0x0 0x7f 0xffffffff>;
+arch/arm64/boot/dts/amd/amd-seattle-soc.dtsi:			dma-ranges = <0x43000000 
+0x80 0x0 0x80 0x0 0x7f 0xffffffff>;
+
+This logic should take care of setting the size to ox80_00000000 for 
+these cases. if dma_coherent_mask is set to max of u64, then this will 
+result in a zero size (both DT case and non DT case). So treat a size of 
+zero as error being overflow.
+
+Also arm_iommu_create_mapping() currently accept a size of type size_t 
+which means, this function expect the size to be max of 0xffffffff. So 
+in arm_setup_iommu_dma_ops(), we need to check if size if >0xffffffff 
+and return an error. If in future this function support u64 for size, 
+this check can be removed.
+
+I will update the series with this change and post it if we have an 
+agreement on this. Please repond.
+
+Thanks
+
+-- 
+Murali Karicheri
+Linux Kernel, Texas Instruments
