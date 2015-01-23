@@ -1,8 +1,8 @@
 From: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
-Subject: [PATCH v4 1/6] of: iommu: add ptr to OF node arg to
-	of_iommu_configure()
-Date: Fri, 23 Jan 2015 17:32:34 -0500
-Message-ID: <1422052359-12384-2-git-send-email-m-karicheri2@ti.com>
+Subject: [PATCH v4 4/6] of/pci: add of_pci_dma_configure() update dma
+	configuration
+Date: Fri, 23 Jan 2015 17:32:37 -0500
+Message-ID: <1422052359-12384-5-git-send-email-m-karicheri2@ti.com>
 References: <1422052359-12384-1-git-send-email-m-karicheri2@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,15 +22,9 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-ke
 Cc: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Function of_iommu_configure() is called from of_dma_configure() to
-setup iommu ops using DT property. This API is currently used for
-platform devices for which DMA configuration (including iommu ops)
-may come from device's parent. To extend this functionality for PCI
-devices, this API need to take a parent node ptr as an argument
-instead of assuming device's parent. This is needed since for PCI, the
-dma configuration may be defined in the DT node of the root bus bridge's
-parent device. Currently only dma-range is used for PCI and iommu is not
-supported. So return error if the device is PCI.
+Add of_pci_dma_configure() to allow updating the dma configuration
+of the pci device using the configuration from DT of the parent of
+the root bridge device.
 
 Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
@@ -43,79 +37,96 @@ Cc: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 
 Signed-off-by: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
 ---
- drivers/iommu/of_iommu.c |   10 ++++++++--
- drivers/of/platform.c    |    2 +-
- include/linux/of_iommu.h |    6 ++++--
- 3 files changed, 13 insertions(+), 5 deletions(-)
+ drivers/of/of_pci.c    |   39 +++++++++++++++++++++++++++++++++++++++
+ include/linux/of_pci.h |   12 ++++++++++++
+ 2 files changed, 51 insertions(+)
 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index af1dc6a..439235b 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -133,19 +133,25 @@ struct iommu_ops *of_iommu_get_ops(struct device_node *np)
- 	return ops;
+diff --git a/drivers/of/of_pci.c b/drivers/of/of_pci.c
+index 88471d3..34878c9 100644
+--- a/drivers/of/of_pci.c
++++ b/drivers/of/of_pci.c
+@@ -2,6 +2,7 @@
+ #include <linux/export.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
++#include <linux/of_device.h>
+ #include <linux/of_pci.h>
+ #include <linux/slab.h>
+ 
+@@ -229,6 +230,44 @@ parse_failed:
+ 	return err;
  }
- 
--struct iommu_ops *of_iommu_configure(struct device *dev)
-+struct iommu_ops *of_iommu_configure(struct device *dev,
-+				     struct device_node *iommu_np)
- {
- 	struct of_phandle_args iommu_spec;
- 	struct device_node *np;
- 	struct iommu_ops *ops = NULL;
- 	int idx = 0;
- 
-+	if (dev_is_pci(dev)) {
-+		dev_err(dev, "iommu is currently not supported for PCI\n");
-+		return NULL;
-+	}
+ EXPORT_SYMBOL_GPL(of_pci_get_host_bridge_resources);
 +
- 	/*
- 	 * We don't currently walk up the tree looking for a parent IOMMU.
- 	 * See the `Notes:' section of
- 	 * Documentation/devicetree/bindings/iommu/iommu.txt
- 	 */
--	while (!of_parse_phandle_with_args(dev->of_node, "iommus",
-+	while (!of_parse_phandle_with_args(iommu_np, "iommus",
- 					   "#iommu-cells", idx,
- 					   &iommu_spec)) {
- 		np = iommu_spec.np;
-diff --git a/drivers/of/platform.c b/drivers/of/platform.c
-index a54ec10..7675b79 100644
---- a/drivers/of/platform.c
-+++ b/drivers/of/platform.c
-@@ -196,7 +196,7 @@ static void of_dma_configure(struct device *dev)
- 	dev_dbg(dev, "device is%sdma coherent\n",
- 		coherent ? " " : " not ");
++/**
++ * of_get_pci_root_bridge_parent - get the OF node of the root bridge's parent
++ * @dev: ptr to pci_dev struct of the pci device
++ *
++ * This function will traverse the bus up to the root bus starting with
++ * the child and return the OF node ptr to root bridge device's parent device.
++ */
++struct device_node *of_get_pci_root_bridge_parent(struct pci_dev *dev)
++{
++	struct pci_bus *bus = dev->bus;
++	struct device *bridge;
++
++	while (!pci_is_root_bus(bus))
++		bus = bus->parent;
++	bridge = bus->bridge;
++
++	return bridge->parent->of_node;
++}
++EXPORT_SYMBOL_GPL(of_get_pci_root_bridge_parent);
++
++/**
++ * of_pci_dma_configure - Setup DMA configuration
++ * @dev: ptr to pci_dev struct of the pci device
++ *
++ * Function to update PCI devices's DMA configuration using the same
++ * info from the OF node of root host bridge's parent.
++ */
++void of_pci_dma_configure(struct pci_dev *pci_dev)
++{
++	struct device *dev = &pci_dev->dev;
++	struct device_node *parent_np;
++
++	parent_np = of_get_pci_root_bridge_parent(pci_dev);
++	of_dma_configure(dev, parent_np);
++}
++EXPORT_SYMBOL_GPL(of_pci_dma_configure);
++
+ #endif /* CONFIG_OF_ADDRESS */
  
--	iommu = of_iommu_configure(dev);
-+	iommu = of_iommu_configure(dev, dev->of_node);
- 	dev_dbg(dev, "device is%sbehind an iommu\n",
- 		iommu ? " " : " not ");
- 
-diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
-index 16c7554..a97e5bd 100644
---- a/include/linux/of_iommu.h
-+++ b/include/linux/of_iommu.h
-@@ -12,7 +12,8 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
- 			     size_t *size);
- 
- extern void of_iommu_init(void);
--extern struct iommu_ops *of_iommu_configure(struct device *dev);
-+extern struct iommu_ops *of_iommu_configure(struct device *dev,
-+					struct device_node *iommu_np);
- 
+ #ifdef CONFIG_PCI_MSI
+diff --git a/include/linux/of_pci.h b/include/linux/of_pci.h
+index ce0e5ab..0465a2a 100644
+--- a/include/linux/of_pci.h
++++ b/include/linux/of_pci.h
+@@ -16,6 +16,8 @@ int of_pci_get_devfn(struct device_node *np);
+ int of_irq_parse_and_map_pci(const struct pci_dev *dev, u8 slot, u8 pin);
+ int of_pci_parse_bus_range(struct device_node *node, struct resource *res);
+ int of_get_pci_domain_nr(struct device_node *node);
++struct device_node *of_get_pci_root_bridge_parent(struct pci_dev *dev);
++void of_pci_dma_configure(struct pci_dev *pci_dev);
  #else
- 
-@@ -24,7 +25,8 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
- }
- 
- static inline void of_iommu_init(void) { }
--static inline struct iommu_ops *of_iommu_configure(struct device *dev)
-+static inline struct iommu_ops *of_iommu_configure(struct device *dev,
-+					 struct device_node *iommu_np)
+ static inline int of_irq_parse_pci(const struct pci_dev *pdev, struct of_phandle_args *out_irq)
  {
- 	return NULL;
+@@ -50,6 +52,16 @@ of_get_pci_domain_nr(struct device_node *node)
+ {
+ 	return -1;
  }
++
++static inline struct device_node
++*of_get_pci_root_bridge_parent(struct pci_dev *dev)
++{
++	return NULL;
++}
++
++static inline void of_pci_dma_configure(struct pci_dev *pci_dev)
++{
++}
+ #endif
+ 
+ #if defined(CONFIG_OF_ADDRESS)
 -- 
 1.7.9.5
