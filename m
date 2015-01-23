@@ -1,7 +1,7 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 1/2] iommu/tegra: gart: Do not register with bus
-Date: Fri, 23 Jan 2015 16:37:51 +0100
-Message-ID: <1422027472-31467-2-git-send-email-thierry.reding@gmail.com>
+Subject: [PATCH 2/2] iommu/tegra: gart: Provide default ->map_sg() callback
+Date: Fri, 23 Jan 2015 16:37:52 +0100
+Message-ID: <1422027472-31467-3-git-send-email-thierry.reding@gmail.com>
 References: <1422027472-31467-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,35 +23,30 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-The driver currently doesn't work as expected and causes existing setups
-with Tegra20 to break after commit df06b759f2cf ("drm/tegra: Add IOMMU
-support"). To restore these setups, do not register the operations with
-the platform bus for now. Fixing this properly will involve non-trivial
-changes to the DRM driver, which are unlikely to be accepted at this
-point in the release cycle.
+Commit 315786ebbf4a ("iommu: Add iommu_map_sg() function") adds a new
+->map_sg() callback and provides a default implementation that drivers
+can use until they implement a hardware-specific variant. Unfortunately
+the Tegra GART driver was not updated as part of that commit, so that
+iommu_map_sg() calls on a domain provided by the GART cause an oops.
 
-Reported-by: Misha Komarovskiy <zombah-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Reported-by: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Tested-by: Misha Komarovskiy <zombah-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Tested-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Fixes: 315786ebbf4a ("iommu: Add iommu_map_sg() function")
 Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/tegra-gart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/tegra-gart.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index f722a0c466cf..10fc32dabb0a 100644
+index 10fc32dabb0a..c48da057dbb1 100644
 --- a/drivers/iommu/tegra-gart.c
 +++ b/drivers/iommu/tegra-gart.c
-@@ -395,7 +395,7 @@ static int tegra_gart_probe(struct platform_device *pdev)
- 	do_gart_setup(gart, NULL);
- 
- 	gart_handle = gart;
--	bus_set_iommu(&platform_bus_type, &gart_iommu_ops);
-+
- 	return 0;
- }
- 
+@@ -315,6 +315,7 @@ static const struct iommu_ops gart_iommu_ops = {
+ 	.attach_dev	= gart_iommu_attach_dev,
+ 	.detach_dev	= gart_iommu_detach_dev,
+ 	.map		= gart_iommu_map,
++	.map_sg		= default_iommu_map_sg,
+ 	.unmap		= gart_iommu_unmap,
+ 	.iova_to_phys	= gart_iommu_iova_to_phys,
+ 	.pgsize_bitmap	= GART_IOMMU_PGSIZES,
 -- 
 2.1.3
