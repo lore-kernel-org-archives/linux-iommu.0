@@ -1,40 +1,136 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v5 11/18] iommu: exynos: remove useless device_add/remove
- callbacks
-Date: Mon, 26 Jan 2015 14:47:01 +0100
-Message-ID: <20150126134701.GH30345@8bytes.org>
-References: <1422028288-891-1-git-send-email-m.szyprowski@samsung.com>
- <2829552.kzfCU5HyxQ@avalon>
- <20150126110059.GC30345@8bytes.org>
- <1589480.9kxdoXKkuz@avalon>
+From: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH v4 1/6] of: iommu: add ptr to OF node arg to of_iommu_configure()
+Date: Mon, 26 Jan 2015 13:49:01 -0500
+Message-ID: <54C68C1D.5030605@ti.com>
+References: <1422052359-12384-1-git-send-email-m-karicheri2@ti.com> <1422052359-12384-2-git-send-email-m-karicheri2@ti.com> <4711364.TTK5TCBdiy@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1589480.9kxdoXKkuz@avalon>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <4711364.TTK5TCBdiy@avalon>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Laurent,
+On 01/25/2015 08:32 AM, Laurent Pinchart wrote:
+> Hi Murali,
+>
+> Thank you for the patch.
+>
+> On Friday 23 January 2015 17:32:34 Murali Karicheri wrote:
+>> Function of_iommu_configure() is called from of_dma_configure() to
+>> setup iommu ops using DT property. This API is currently used for
+>> platform devices for which DMA configuration (including iommu ops)
+>> may come from device's parent. To extend this functionality for PCI
+>> devices, this API need to take a parent node ptr as an argument
+>> instead of assuming device's parent. This is needed since for PCI, the
+>> dma configuration may be defined in the DT node of the root bus bridge's
+>> parent device. Currently only dma-range is used for PCI and iommu is not
+>> supported. So return error if the device is PCI.
+>>
+>> Cc: Joerg Roedel<joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+>> Cc: Grant Likely<grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>> Cc: Rob Herring<robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+>> Cc: Bjorn Helgaas<bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+>> Cc: Will Deacon<will.deacon-5wv7dgnIgG8@public.gmane.org>
+>> Cc: Russell King<linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+>> Cc: Arnd Bergmann<arnd-r2nGTMty4D4@public.gmane.org>
+>> Cc: Suravee Suthikulpanit<Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+>>
+>> Signed-off-by: Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>
+>> ---
+>>   drivers/iommu/of_iommu.c |   10 ++++++++--
+>>   drivers/of/platform.c    |    2 +-
+>>   include/linux/of_iommu.h |    6 ++++--
+>>   3 files changed, 13 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+>> index af1dc6a..439235b 100644
+>> --- a/drivers/iommu/of_iommu.c
+>> +++ b/drivers/iommu/of_iommu.c
+>> @@ -133,19 +133,25 @@ struct iommu_ops *of_iommu_get_ops(struct device_node
+>> *np) return ops;
+>>   }
+>>
+>> -struct iommu_ops *of_iommu_configure(struct device *dev)
+>> +struct iommu_ops *of_iommu_configure(struct device *dev,
+>> +				     struct device_node *iommu_np)
+>>   {
+>>   	struct of_phandle_args iommu_spec;
+>>   	struct device_node *np;
+>>   	struct iommu_ops *ops = NULL;
+>>   	int idx = 0;
+>>
+>> +	if (dev_is_pci(dev)) {
+>> +		dev_err(dev, "iommu is currently not supported for PCI\n");
+>> +		return NULL;
+>> +	}
+>> +
+>>   	/*
+>>   	 * We don't currently walk up the tree looking for a parent IOMMU.
+>>   	 * See the `Notes:' section of
+>>   	 * Documentation/devicetree/bindings/iommu/iommu.txt
+>>   	 */
+> Wouldn't it be better to fix this rather than passing the device node pointer
+> to the function ? The solution would be more generic.
+Laurent,
 
-On Mon, Jan 26, 2015 at 03:03:57PM +0200, Laurent Pinchart wrote:
-> On Monday 26 January 2015 12:00:59 Joerg Roedel wrote:
-> > My plan is to make IOMMU groups mandatory. I am currently preparing and
-> > RFC patch-set to introduce default-domains (which will be per group). So
-> > when all IOMMU drivers are converted to make use of default domains the
-> > iommu groups will be mandatory.
-> 
-> Could the default domain policy be configured by the IOMMU driver ? The ipmmu-
-> vmsa driver supports four domains only, and serves up to 32 masters, with one 
-> group per master. A default of one domain per group wouldn't be usable.
+Will Deacon (Copied here) is working on this as we alteady discussed in 
+this thread. So it will be
+addressed by him in another series.
 
-I guess this limitation is a property of the iommu hardware. I currently
-have no support for this in the patch-set, but I think it is easy (and
-the best way) to support a model where we have only one default domain
-for all groups. This is not in the patch set right now, but will be
-added at some point.
+Murali
+>
+>> -	while (!of_parse_phandle_with_args(dev->of_node, "iommus",
+>> +	while (!of_parse_phandle_with_args(iommu_np, "iommus",
+>>   					   "#iommu-cells", idx,
+>>   					&iommu_spec)) {
+>>   		np = iommu_spec.np;
+>> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+>> index a54ec10..7675b79 100644
+>> --- a/drivers/of/platform.c
+>> +++ b/drivers/of/platform.c
+>> @@ -196,7 +196,7 @@ static void of_dma_configure(struct device *dev)
+>>   	dev_dbg(dev, "device is%sdma coherent\n",
+>>   		coherent ? " " : " not ");
+>>
+>> -	iommu = of_iommu_configure(dev);
+>> +	iommu = of_iommu_configure(dev, dev->of_node);
+>>   	dev_dbg(dev, "device is%sbehind an iommu\n",
+>>   		iommu ? " " : " not ");
+>>
+>> diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+>> index 16c7554..a97e5bd 100644
+>> --- a/include/linux/of_iommu.h
+>> +++ b/include/linux/of_iommu.h
+>> @@ -12,7 +12,8 @@ extern int of_get_dma_window(struct device_node *dn, const
+>> char *prefix, size_t *size);
+>>
+>>   extern void of_iommu_init(void);
+>> -extern struct iommu_ops *of_iommu_configure(struct device *dev);
+>> +extern struct iommu_ops *of_iommu_configure(struct device *dev,
+>> +					struct device_node *iommu_np);
+>>
+>>   #else
+>>
+>> @@ -24,7 +25,8 @@ static inline int of_get_dma_window(struct device_node
+>> *dn, const char *prefix, }
+>>
+>>   static inline void of_iommu_init(void) { }
+>> -static inline struct iommu_ops *of_iommu_configure(struct device *dev)
+>> +static inline struct iommu_ops *of_iommu_configure(struct device *dev,
+>> +					 struct device_node *iommu_np)
+>>   {
+>>   	return NULL;
+>>   }
 
 
-	Joerg
+-- 
+Murali Karicheri
+Linux Kernel, Texas Instruments
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
