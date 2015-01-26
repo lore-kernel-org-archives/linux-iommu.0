@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 13/15] iommu/rockchip: Make use of domain_alloc and domain_free
-Date: Tue, 27 Jan 2015 00:51:43 +0100
-Message-ID: <1422316305-19216-14-git-send-email-joro@8bytes.org>
+Subject: [PATCH 10/15] iommu/msm: Make use of domain_alloc and domain_free
+Date: Tue, 27 Jan 2015 00:51:40 +0100
+Message-ID: <1422316305-19216-11-git-send-email-joro@8bytes.org>
 References: <1422316305-19216-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -28,140 +28,178 @@ replacement for domain_init/domain_destroy.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/rockchip-iommu.c | 40 ++++++++++++++++++++++++----------------
- 1 file changed, 24 insertions(+), 16 deletions(-)
+ drivers/iommu/msm_iommu.c | 73 +++++++++++++++++++++++------------------------
+ 1 file changed, 36 insertions(+), 37 deletions(-)
 
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 6a8b1ec..0646827 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -80,6 +80,8 @@ struct rk_iommu_domain {
- 	u32 *dt; /* page directory table */
- 	spinlock_t iommus_lock; /* lock for iommus list */
- 	spinlock_t dt_lock; /* lock for modifying page directory table */
-+
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index e1b0537..f023c7a 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -52,8 +52,14 @@ DEFINE_SPINLOCK(msm_iommu_lock);
+ struct msm_priv {
+ 	unsigned long *pgtable;
+ 	struct list_head list_attached;
 +	struct iommu_domain domain;
  };
  
- struct rk_iommu {
-@@ -100,6 +102,11 @@ static inline void rk_table_flush(u32 *va, unsigned int count)
- 	outer_flush_range(pa_start, pa_end);
- }
- 
-+static struct rk_iommu_domain *to_rk_domain(struct iommu_domain *dom)
++static struct msm_priv *to_msm_priv(struct iommu_domain *dom)
 +{
-+	return container_of(dom, struct rk_iommu_domain, domain);
++	return container_of(dom, struct msm_priv, domain);
 +}
 +
- /**
-  * Inspired by _wait_for in intel_drv.h
-  * This is NOT safe for use in interrupt context.
-@@ -503,7 +510,7 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_id)
- static phys_addr_t rk_iommu_iova_to_phys(struct iommu_domain *domain,
- 					 dma_addr_t iova)
+ static int __enable_clocks(struct msm_iommu_drvdata *drvdata)
  {
--	struct rk_iommu_domain *rk_domain = domain->priv;
-+	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
- 	unsigned long flags;
- 	phys_addr_t pt_phys, phys = 0;
- 	u32 dte, pte;
-@@ -639,7 +646,7 @@ unwind:
- static int rk_iommu_map(struct iommu_domain *domain, unsigned long _iova,
- 			phys_addr_t paddr, size_t size, int prot)
- {
--	struct rk_iommu_domain *rk_domain = domain->priv;
-+	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
- 	unsigned long flags;
- 	dma_addr_t iova = (dma_addr_t)_iova;
- 	u32 *page_table, *pte_addr;
-@@ -670,7 +677,7 @@ static int rk_iommu_map(struct iommu_domain *domain, unsigned long _iova,
- static size_t rk_iommu_unmap(struct iommu_domain *domain, unsigned long _iova,
- 			     size_t size)
- {
--	struct rk_iommu_domain *rk_domain = domain->priv;
-+	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
- 	unsigned long flags;
- 	dma_addr_t iova = (dma_addr_t)_iova;
- 	phys_addr_t pt_phys;
-@@ -726,7 +733,7 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
- 				  struct device *dev)
- {
- 	struct rk_iommu *iommu;
--	struct rk_iommu_domain *rk_domain = domain->priv;
-+	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
- 	unsigned long flags;
  	int ret;
- 	phys_addr_t dte_addr;
-@@ -778,7 +785,7 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
- 				   struct device *dev)
- {
- 	struct rk_iommu *iommu;
--	struct rk_iommu_domain *rk_domain = domain->priv;
-+	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
- 	unsigned long flags;
+@@ -79,7 +85,7 @@ static void __disable_clocks(struct msm_iommu_drvdata *drvdata)
  
- 	/* Allow 'virtual devices' (eg drm) to detach from domain */
-@@ -804,13 +811,16 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
- 	dev_info(dev, "Detached from iommu domain\n");
+ static int __flush_iotlb(struct iommu_domain *domain)
+ {
+-	struct msm_priv *priv = domain->priv;
++	struct msm_priv *priv = to_msm_priv(domain);
+ 	struct msm_iommu_drvdata *iommu_drvdata;
+ 	struct msm_iommu_ctx_drvdata *ctx_drvdata;
+ 	int ret = 0;
+@@ -209,10 +215,14 @@ static void __program_context(void __iomem *base, int ctx, phys_addr_t pgtable)
+ 	SET_M(base, ctx, 1);
  }
  
--static int rk_iommu_domain_init(struct iommu_domain *domain)
-+static struct iommu_domain *rk_iommu_domain_alloc(enum iommu_domain_type type)
+-static int msm_iommu_domain_init(struct iommu_domain *domain)
++static struct iommu_domain *msm_iommu_domain_alloc(enum iommu_domain_type type)
  {
- 	struct rk_iommu_domain *rk_domain;
+-	struct msm_priv *priv = kzalloc(sizeof(*priv), GFP_KERNEL);
++	struct msm_priv *priv;
  
 +	if (type != IOMMU_DOMAIN_UNMANAGED)
 +		return NULL;
 +
- 	rk_domain = kzalloc(sizeof(*rk_domain), GFP_KERNEL);
- 	if (!rk_domain)
--		return -ENOMEM;
-+		return NULL;
++	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+ 	if (!priv)
+ 		goto fail_nomem;
  
- 	/*
- 	 * rk32xx iommus use a 2 level pagetable.
-@@ -827,17 +837,16 @@ static int rk_iommu_domain_init(struct iommu_domain *domain)
- 	spin_lock_init(&rk_domain->dt_lock);
- 	INIT_LIST_HEAD(&rk_domain->iommus);
+@@ -224,20 +234,19 @@ static int msm_iommu_domain_init(struct iommu_domain *domain)
+ 		goto fail_nomem;
  
--	domain->priv = rk_domain;
-+	return &rk_domain->domain;
+ 	memset(priv->pgtable, 0, SZ_16K);
+-	domain->priv = priv;
+ 
+-	domain->geometry.aperture_start = 0;
+-	domain->geometry.aperture_end   = (1ULL << 32) - 1;
+-	domain->geometry.force_aperture = true;
++	priv->domain.geometry.aperture_start = 0;
++	priv->domain.geometry.aperture_end   = (1ULL << 32) - 1;
++	priv->domain.geometry.force_aperture = true;
  
 -	return 0;
- err_dt:
- 	kfree(rk_domain);
++	return &priv->domain;
+ 
+ fail_nomem:
+ 	kfree(priv);
 -	return -ENOMEM;
 +	return NULL;
  }
  
--static void rk_iommu_domain_destroy(struct iommu_domain *domain)
-+static void rk_iommu_domain_free(struct iommu_domain *domain)
+-static void msm_iommu_domain_destroy(struct iommu_domain *domain)
++static void msm_iommu_domain_free(struct iommu_domain *domain)
  {
--	struct rk_iommu_domain *rk_domain = domain->priv;
-+	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
+ 	struct msm_priv *priv;
+ 	unsigned long flags;
+@@ -245,20 +254,17 @@ static void msm_iommu_domain_destroy(struct iommu_domain *domain)
  	int i;
  
- 	WARN_ON(!list_empty(&rk_domain->iommus));
-@@ -852,8 +861,7 @@ static void rk_iommu_domain_destroy(struct iommu_domain *domain)
+ 	spin_lock_irqsave(&msm_iommu_lock, flags);
+-	priv = domain->priv;
+-	domain->priv = NULL;
++	priv = to_msm_priv(domain);
+ 
+-	if (priv) {
+-		fl_table = priv->pgtable;
++	fl_table = priv->pgtable;
+ 
+-		for (i = 0; i < NUM_FL_PTE; i++)
+-			if ((fl_table[i] & 0x03) == FL_TYPE_TABLE)
+-				free_page((unsigned long) __va(((fl_table[i]) &
+-								FL_BASE_MASK)));
++	for (i = 0; i < NUM_FL_PTE; i++)
++		if ((fl_table[i] & 0x03) == FL_TYPE_TABLE)
++			free_page((unsigned long) __va(((fl_table[i]) &
++							FL_BASE_MASK)));
+ 
+-		free_pages((unsigned long)priv->pgtable, get_order(SZ_16K));
+-		priv->pgtable = NULL;
+-	}
++	free_pages((unsigned long)priv->pgtable, get_order(SZ_16K));
++	priv->pgtable = NULL;
+ 
+ 	kfree(priv);
+ 	spin_unlock_irqrestore(&msm_iommu_lock, flags);
+@@ -276,9 +282,9 @@ static int msm_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 
+ 	spin_lock_irqsave(&msm_iommu_lock, flags);
+ 
+-	priv = domain->priv;
++	priv = to_msm_priv(domain);
+ 
+-	if (!priv || !dev) {
++	if (!dev) {
+ 		ret = -EINVAL;
+ 		goto fail;
+ 	}
+@@ -330,9 +336,9 @@ static void msm_iommu_detach_dev(struct iommu_domain *domain,
+ 	int ret;
+ 
+ 	spin_lock_irqsave(&msm_iommu_lock, flags);
+-	priv = domain->priv;
++	priv = to_msm_priv(domain);
+ 
+-	if (!priv || !dev)
++	if (!dev)
+ 		goto fail;
+ 
+ 	iommu_drvdata = dev_get_drvdata(dev->parent);
+@@ -382,11 +388,7 @@ static int msm_iommu_map(struct iommu_domain *domain, unsigned long va,
+ 		goto fail;
  	}
  
- 	free_page((unsigned long)rk_domain->dt);
--	kfree(domain->priv);
--	domain->priv = NULL;
-+	kfree(rk_domain);
- }
+-	priv = domain->priv;
+-	if (!priv) {
+-		ret = -EINVAL;
+-		goto fail;
+-	}
++	priv = to_msm_priv(domain);
  
- static bool rk_iommu_is_dev_iommu_master(struct device *dev)
-@@ -952,8 +960,8 @@ static void rk_iommu_remove_device(struct device *dev)
- }
+ 	fl_table = priv->pgtable;
  
- static const struct iommu_ops rk_iommu_ops = {
--	.domain_init = rk_iommu_domain_init,
--	.domain_destroy = rk_iommu_domain_destroy,
-+	.domain_alloc = rk_iommu_domain_alloc,
-+	.domain_free = rk_iommu_domain_free,
- 	.attach_dev = rk_iommu_attach_device,
- 	.detach_dev = rk_iommu_detach_device,
- 	.map = rk_iommu_map,
+@@ -484,10 +486,7 @@ static size_t msm_iommu_unmap(struct iommu_domain *domain, unsigned long va,
+ 
+ 	spin_lock_irqsave(&msm_iommu_lock, flags);
+ 
+-	priv = domain->priv;
+-
+-	if (!priv)
+-		goto fail;
++	priv = to_msm_priv(domain);
+ 
+ 	fl_table = priv->pgtable;
+ 
+@@ -566,7 +565,7 @@ static phys_addr_t msm_iommu_iova_to_phys(struct iommu_domain *domain,
+ 
+ 	spin_lock_irqsave(&msm_iommu_lock, flags);
+ 
+-	priv = domain->priv;
++	priv = to_msm_priv(domain);
+ 	if (list_empty(&priv->list_attached))
+ 		goto fail;
+ 
+@@ -674,8 +673,8 @@ fail:
+ 
+ static const struct iommu_ops msm_iommu_ops = {
+ 	.capable = msm_iommu_capable,
+-	.domain_init = msm_iommu_domain_init,
+-	.domain_destroy = msm_iommu_domain_destroy,
++	.domain_alloc = msm_iommu_domain_alloc,
++	.domain_free = msm_iommu_domain_free,
+ 	.attach_dev = msm_iommu_attach_dev,
+ 	.detach_dev = msm_iommu_detach_dev,
+ 	.map = msm_iommu_map,
 -- 
 1.8.4.5
