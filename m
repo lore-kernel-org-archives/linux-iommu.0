@@ -1,8 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 09/15] iommu/tegra-gart: Make use of domain_alloc and
+Subject: [PATCH 12/15] iommu/ipmmu-vmsa: Make use of domain_alloc and
 	domain_free
-Date: Tue, 27 Jan 2015 00:51:39 +0100
-Message-ID: <1422316305-19216-10-git-send-email-joro@8bytes.org>
+Date: Tue, 27 Jan 2015 00:51:42 +0100
+Message-ID: <1422316305-19216-13-git-send-email-joro@8bytes.org>
 References: <1422316305-19216-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -29,152 +29,148 @@ replacement for domain_init/domain_destroy.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/tegra-gart.c | 67 +++++++++++++++++++++++++++++++---------------
- 1 file changed, 46 insertions(+), 21 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c | 43 ++++++++++++++++++++++++-------------------
+ 1 file changed, 24 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index f722a0c..34ca333 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -63,11 +63,21 @@ struct gart_device {
- 	struct device		*dev;
- };
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 7486931..12270e1 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -37,7 +37,7 @@ struct ipmmu_vmsa_device {
  
-+struct gart_domain {
-+	struct iommu_domain domain;		/* generic domain handle */
-+	struct gart_device *gart;		/* link to gart device   */
-+};
-+
- static struct gart_device *gart_handle; /* unique for a system */
+ struct ipmmu_vmsa_domain {
+ 	struct ipmmu_vmsa_device *mmu;
+-	struct iommu_domain *io_domain;
++	struct iommu_domain io_domain;
  
- #define GART_PTE(_pfn)						\
- 	(GART_ENTRY_PHYS_ADDR_VALID | ((_pfn) << PAGE_SHIFT))
+ 	unsigned int context_id;
+ 	spinlock_t lock;			/* Protects mappings */
+@@ -52,6 +52,11 @@ struct ipmmu_vmsa_archdata {
+ static DEFINE_SPINLOCK(ipmmu_devices_lock);
+ static LIST_HEAD(ipmmu_devices);
  
-+static struct gart_domain *to_gart_domain(struct iommu_domain *dom)
++static struct ipmmu_vmsa_domain *to_vmsa_domain(struct iommu_domain *dom)
 +{
-+	return container_of(dom, struct gart_domain, domain);
++	return container_of(dom, struct ipmmu_vmsa_domain, io_domain);
 +}
 +
- /*
-  * Any interaction between any block on PPSB and a block on APB or AHB
-  * must have these read-back to ensure the APB/AHB bus transaction is
-@@ -156,6 +166,7 @@ static inline bool gart_iova_range_valid(struct gart_device *gart,
- static int gart_iommu_attach_dev(struct iommu_domain *domain,
- 				 struct device *dev)
- {
-+	struct gart_domain *gart_domain = to_gart_domain(domain);
- 	struct gart_device *gart;
- 	struct gart_client *client, *c;
- 	int err = 0;
-@@ -163,7 +174,7 @@ static int gart_iommu_attach_dev(struct iommu_domain *domain,
- 	gart = gart_handle;
- 	if (!gart)
- 		return -EINVAL;
--	domain->priv = gart;
-+	gart_domain->gart = gart;
+ #define TLB_LOOP_TIMEOUT		100	/* 100us */
  
- 	domain->geometry.aperture_start = gart->iovmm_base;
- 	domain->geometry.aperture_end   = gart->iovmm_base +
-@@ -198,7 +209,8 @@ fail:
- static void gart_iommu_detach_dev(struct iommu_domain *domain,
- 				  struct device *dev)
- {
--	struct gart_device *gart = domain->priv;
-+	struct gart_domain *gart_domain = to_gart_domain(domain);
-+	struct gart_device *gart = gart_domain->gart;
- 	struct gart_client *c;
+ /* -----------------------------------------------------------------------------
+@@ -435,7 +440,7 @@ static irqreturn_t ipmmu_domain_irq(struct ipmmu_vmsa_domain *domain)
+ 	 * TODO: We need to look up the faulty device based on the I/O VA. Use
+ 	 * the IOMMU device for now.
+ 	 */
+-	if (!report_iommu_fault(domain->io_domain, mmu->dev, iova, 0))
++	if (!report_iommu_fault(&domain->io_domain, mmu->dev, iova, 0))
+ 		return IRQ_HANDLED;
  
- 	spin_lock(&gart->client_lock);
-@@ -216,33 +228,44 @@ out:
- 	spin_unlock(&gart->client_lock);
+ 	dev_err_ratelimited(mmu->dev,
+@@ -455,7 +460,7 @@ static irqreturn_t ipmmu_irq(int irq, void *dev)
+ 		return IRQ_NONE;
+ 
+ 	io_domain = mmu->mapping->domain;
+-	domain = io_domain->priv;
++	domain = to_vmsa_domain(io_domain);
+ 
+ 	return ipmmu_domain_irq(domain);
  }
+@@ -854,31 +859,31 @@ done:
+  * IOMMU Operations
+  */
  
--static int gart_iommu_domain_init(struct iommu_domain *domain)
-+static struct iommu_domain *gart_iommu_domain_alloc(enum iommu_domain_type type)
+-static int ipmmu_domain_init(struct iommu_domain *io_domain)
++static struct iommu_domain *ipmmu_domain_alloc(enum iommu_domain_type type)
  {
--	return 0;
-+	struct gart_domain *gart_domain;
-+
+ 	struct ipmmu_vmsa_domain *domain;
+ 
 +	if (type != IOMMU_DOMAIN_UNMANAGED)
 +		return NULL;
 +
-+	gart_domain = kzalloc(sizeof(*gart_domain), GFP_KERNEL);
-+	if (!gart_domain)
+ 	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
+ 	if (!domain)
+-		return -ENOMEM;
 +		return NULL;
-+
-+	return &gart_domain->domain;
- }
  
--static void gart_iommu_domain_destroy(struct iommu_domain *domain)
-+static void gart_iommu_domain_free(struct iommu_domain *domain)
- {
--	struct gart_device *gart = domain->priv;
--
--	if (!gart)
--		return;
-+	struct gart_domain *gart_domain = to_gart_domain(domain);
-+	struct gart_device *gart = gart_domain->gart;
+ 	spin_lock_init(&domain->lock);
  
--	spin_lock(&gart->client_lock);
--	if (!list_empty(&gart->client)) {
--		struct gart_client *c;
-+	if (gart) {
-+		spin_lock(&gart->client_lock);
-+		if (!list_empty(&gart->client)) {
-+			struct gart_client *c;
- 
--		list_for_each_entry(c, &gart->client, list)
--			gart_iommu_detach_dev(domain, c->dev);
-+			list_for_each_entry(c, &gart->client, list)
-+				gart_iommu_detach_dev(domain, c->dev);
-+		}
-+		spin_unlock(&gart->client_lock);
+ 	domain->pgd = kzalloc(IPMMU_PTRS_PER_PGD * sizeof(pgd_t), GFP_KERNEL);
+ 	if (!domain->pgd) {
+ 		kfree(domain);
+-		return -ENOMEM;
++		return NULL;
  	}
--	spin_unlock(&gart->client_lock);
--	domain->priv = NULL;
-+
-+	kfree(gart_domain);
+ 
+-	io_domain->priv = domain;
+-	domain->io_domain = io_domain;
+-
+-	return 0;
++	return &domain->io_domain;
  }
  
- static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
- 			  phys_addr_t pa, size_t bytes, int prot)
+-static void ipmmu_domain_destroy(struct iommu_domain *io_domain)
++static void ipmmu_domain_free(struct iommu_domain *io_domain)
  {
--	struct gart_device *gart = domain->priv;
-+	struct gart_domain *gart_domain = to_gart_domain(domain);
-+	struct gart_device *gart = gart_domain->gart;
- 	unsigned long flags;
- 	unsigned long pfn;
+-	struct ipmmu_vmsa_domain *domain = io_domain->priv;
++	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
  
-@@ -265,7 +288,8 @@ static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
- static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- 			       size_t bytes)
+ 	/*
+ 	 * Free the domain resources. We assume that all devices have already
+@@ -894,7 +899,7 @@ static int ipmmu_attach_device(struct iommu_domain *io_domain,
  {
--	struct gart_device *gart = domain->priv;
-+	struct gart_domain *gart_domain = to_gart_domain(domain);
-+	struct gart_device *gart = gart_domain->gart;
+ 	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
+ 	struct ipmmu_vmsa_device *mmu = archdata->mmu;
+-	struct ipmmu_vmsa_domain *domain = io_domain->priv;
++	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
  	unsigned long flags;
+ 	int ret = 0;
  
- 	if (!gart_iova_range_valid(gart, iova, bytes))
-@@ -281,7 +305,8 @@ static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- static phys_addr_t gart_iommu_iova_to_phys(struct iommu_domain *domain,
- 					   dma_addr_t iova)
+@@ -933,7 +938,7 @@ static void ipmmu_detach_device(struct iommu_domain *io_domain,
+ 				struct device *dev)
  {
--	struct gart_device *gart = domain->priv;
-+	struct gart_domain *gart_domain = to_gart_domain(domain);
-+	struct gart_device *gart = gart_domain->gart;
- 	unsigned long pte;
- 	phys_addr_t pa;
- 	unsigned long flags;
-@@ -310,8 +335,8 @@ static bool gart_iommu_capable(enum iommu_cap cap)
+ 	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
+-	struct ipmmu_vmsa_domain *domain = io_domain->priv;
++	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
  
- static const struct iommu_ops gart_iommu_ops = {
- 	.capable	= gart_iommu_capable,
--	.domain_init	= gart_iommu_domain_init,
--	.domain_destroy	= gart_iommu_domain_destroy,
-+	.domain_alloc	= gart_iommu_domain_alloc,
-+	.domain_free	= gart_iommu_domain_free,
- 	.attach_dev	= gart_iommu_attach_dev,
- 	.detach_dev	= gart_iommu_detach_dev,
- 	.map		= gart_iommu_map,
+ 	ipmmu_utlb_disable(domain, archdata->utlb);
+ 
+@@ -945,7 +950,7 @@ static void ipmmu_detach_device(struct iommu_domain *io_domain,
+ static int ipmmu_map(struct iommu_domain *io_domain, unsigned long iova,
+ 		     phys_addr_t paddr, size_t size, int prot)
+ {
+-	struct ipmmu_vmsa_domain *domain = io_domain->priv;
++	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+ 
+ 	if (!domain)
+ 		return -ENODEV;
+@@ -956,7 +961,7 @@ static int ipmmu_map(struct iommu_domain *io_domain, unsigned long iova,
+ static size_t ipmmu_unmap(struct iommu_domain *io_domain, unsigned long iova,
+ 			  size_t size)
+ {
+-	struct ipmmu_vmsa_domain *domain = io_domain->priv;
++	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+ 	int ret;
+ 
+ 	ret = ipmmu_clear_mapping(domain, iova, size);
+@@ -966,7 +971,7 @@ static size_t ipmmu_unmap(struct iommu_domain *io_domain, unsigned long iova,
+ static phys_addr_t ipmmu_iova_to_phys(struct iommu_domain *io_domain,
+ 				      dma_addr_t iova)
+ {
+-	struct ipmmu_vmsa_domain *domain = io_domain->priv;
++	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+ 	pgd_t pgd;
+ 	pud_t pud;
+ 	pmd_t pmd;
+@@ -1121,8 +1126,8 @@ static void ipmmu_remove_device(struct device *dev)
+ }
+ 
+ static const struct iommu_ops ipmmu_ops = {
+-	.domain_init = ipmmu_domain_init,
+-	.domain_destroy = ipmmu_domain_destroy,
++	.domain_alloc = ipmmu_domain_alloc,
++	.domain_free = ipmmu_domain_free,
+ 	.attach_dev = ipmmu_attach_device,
+ 	.detach_dev = ipmmu_detach_device,
+ 	.map = ipmmu_map,
 -- 
 1.8.4.5
