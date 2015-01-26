@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 08/15] iommu/tegra-smmu: Make use of domain_alloc and
-	domain_free
-Date: Tue, 27 Jan 2015 00:51:38 +0100
-Message-ID: <1422316305-19216-9-git-send-email-joro@8bytes.org>
+Subject: [PATCH 13/15] iommu/rockchip: Make use of domain_alloc and domain_free
+Date: Tue, 27 Jan 2015 00:51:43 +0100
+Message-ID: <1422316305-19216-14-git-send-email-joro@8bytes.org>
 References: <1422316305-19216-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -29,145 +28,140 @@ replacement for domain_init/domain_destroy.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/tegra-smmu.c | 41 +++++++++++++++++++++++------------------
- 1 file changed, 23 insertions(+), 18 deletions(-)
+ drivers/iommu/rockchip-iommu.c | 40 ++++++++++++++++++++++++----------------
+ 1 file changed, 24 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 6e134c7..f1bf84a 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -31,7 +31,7 @@ struct tegra_smmu {
- };
- 
- struct tegra_smmu_as {
--	struct iommu_domain *domain;
-+	struct iommu_domain domain;
- 	struct tegra_smmu *smmu;
- 	unsigned int use_count;
- 	struct page *count;
-@@ -40,6 +40,11 @@ struct tegra_smmu_as {
- 	u32 attr;
- };
- 
-+static struct tegra_smmu_as *to_smmu_as(struct iommu_domain *dom)
-+{
-+	return container_of(dom, struct tegra_smmu_as, domain);
-+}
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 6a8b1ec..0646827 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -80,6 +80,8 @@ struct rk_iommu_domain {
+ 	u32 *dt; /* page directory table */
+ 	spinlock_t iommus_lock; /* lock for iommus list */
+ 	spinlock_t dt_lock; /* lock for modifying page directory table */
 +
- static inline void smmu_writel(struct tegra_smmu *smmu, u32 value,
- 			       unsigned long offset)
- {
-@@ -224,30 +229,32 @@ static bool tegra_smmu_capable(enum iommu_cap cap)
- 	return false;
++	struct iommu_domain domain;
+ };
+ 
+ struct rk_iommu {
+@@ -100,6 +102,11 @@ static inline void rk_table_flush(u32 *va, unsigned int count)
+ 	outer_flush_range(pa_start, pa_end);
  }
  
--static int tegra_smmu_domain_init(struct iommu_domain *domain)
-+static struct iommu_domain *tegra_smmu_domain_alloc(enum iommu_domain_type type)
++static struct rk_iommu_domain *to_rk_domain(struct iommu_domain *dom)
++{
++	return container_of(dom, struct rk_iommu_domain, domain);
++}
++
+ /**
+  * Inspired by _wait_for in intel_drv.h
+  * This is NOT safe for use in interrupt context.
+@@ -503,7 +510,7 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_id)
+ static phys_addr_t rk_iommu_iova_to_phys(struct iommu_domain *domain,
+ 					 dma_addr_t iova)
  {
- 	struct tegra_smmu_as *as;
- 	unsigned int i;
- 	uint32_t *pd;
+-	struct rk_iommu_domain *rk_domain = domain->priv;
++	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
+ 	unsigned long flags;
+ 	phys_addr_t pt_phys, phys = 0;
+ 	u32 dte, pte;
+@@ -639,7 +646,7 @@ unwind:
+ static int rk_iommu_map(struct iommu_domain *domain, unsigned long _iova,
+ 			phys_addr_t paddr, size_t size, int prot)
+ {
+-	struct rk_iommu_domain *rk_domain = domain->priv;
++	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
+ 	unsigned long flags;
+ 	dma_addr_t iova = (dma_addr_t)_iova;
+ 	u32 *page_table, *pte_addr;
+@@ -670,7 +677,7 @@ static int rk_iommu_map(struct iommu_domain *domain, unsigned long _iova,
+ static size_t rk_iommu_unmap(struct iommu_domain *domain, unsigned long _iova,
+ 			     size_t size)
+ {
+-	struct rk_iommu_domain *rk_domain = domain->priv;
++	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
+ 	unsigned long flags;
+ 	dma_addr_t iova = (dma_addr_t)_iova;
+ 	phys_addr_t pt_phys;
+@@ -726,7 +733,7 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+ 				  struct device *dev)
+ {
+ 	struct rk_iommu *iommu;
+-	struct rk_iommu_domain *rk_domain = domain->priv;
++	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
+ 	unsigned long flags;
+ 	int ret;
+ 	phys_addr_t dte_addr;
+@@ -778,7 +785,7 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
+ 				   struct device *dev)
+ {
+ 	struct rk_iommu *iommu;
+-	struct rk_iommu_domain *rk_domain = domain->priv;
++	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
+ 	unsigned long flags;
+ 
+ 	/* Allow 'virtual devices' (eg drm) to detach from domain */
+@@ -804,13 +811,16 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
+ 	dev_info(dev, "Detached from iommu domain\n");
+ }
+ 
+-static int rk_iommu_domain_init(struct iommu_domain *domain)
++static struct iommu_domain *rk_iommu_domain_alloc(enum iommu_domain_type type)
+ {
+ 	struct rk_iommu_domain *rk_domain;
  
 +	if (type != IOMMU_DOMAIN_UNMANAGED)
 +		return NULL;
 +
- 	as = kzalloc(sizeof(*as), GFP_KERNEL);
- 	if (!as)
+ 	rk_domain = kzalloc(sizeof(*rk_domain), GFP_KERNEL);
+ 	if (!rk_domain)
 -		return -ENOMEM;
 +		return NULL;
  
- 	as->attr = SMMU_PD_READABLE | SMMU_PD_WRITABLE | SMMU_PD_NONSECURE;
--	as->domain = domain;
+ 	/*
+ 	 * rk32xx iommus use a 2 level pagetable.
+@@ -827,17 +837,16 @@ static int rk_iommu_domain_init(struct iommu_domain *domain)
+ 	spin_lock_init(&rk_domain->dt_lock);
+ 	INIT_LIST_HEAD(&rk_domain->iommus);
  
- 	as->pd = alloc_page(GFP_KERNEL | __GFP_DMA);
- 	if (!as->pd) {
- 		kfree(as);
--		return -ENOMEM;
-+		return NULL;
- 	}
+-	domain->priv = rk_domain;
++	return &rk_domain->domain;
  
- 	as->count = alloc_page(GFP_KERNEL);
- 	if (!as->count) {
- 		__free_page(as->pd);
- 		kfree(as);
--		return -ENOMEM;
-+		return NULL;
- 	}
- 
- 	/* clear PDEs */
-@@ -264,14 +271,12 @@ static int tegra_smmu_domain_init(struct iommu_domain *domain)
- 	for (i = 0; i < SMMU_NUM_PDE; i++)
- 		pd[i] = 0;
- 
--	domain->priv = as;
--
 -	return 0;
-+	return &as->domain;
+ err_dt:
+ 	kfree(rk_domain);
+-	return -ENOMEM;
++	return NULL;
  }
  
--static void tegra_smmu_domain_destroy(struct iommu_domain *domain)
-+static void tegra_smmu_domain_free(struct iommu_domain *domain)
+-static void rk_iommu_domain_destroy(struct iommu_domain *domain)
++static void rk_iommu_domain_free(struct iommu_domain *domain)
  {
--	struct tegra_smmu_as *as = domain->priv;
-+	struct tegra_smmu_as *as = to_smmu_as(domain);
+-	struct rk_iommu_domain *rk_domain = domain->priv;
++	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
+ 	int i;
  
- 	/* TODO: free page directory and page tables */
- 	ClearPageReserved(as->pd);
-@@ -395,7 +400,7 @@ static int tegra_smmu_attach_dev(struct iommu_domain *domain,
- 				 struct device *dev)
- {
- 	struct tegra_smmu *smmu = dev->archdata.iommu;
--	struct tegra_smmu_as *as = domain->priv;
-+	struct tegra_smmu_as *as = to_smmu_as(domain);
- 	struct device_node *np = dev->of_node;
- 	struct of_phandle_args args;
- 	unsigned int index = 0;
-@@ -428,7 +433,7 @@ static int tegra_smmu_attach_dev(struct iommu_domain *domain,
+ 	WARN_ON(!list_empty(&rk_domain->iommus));
+@@ -852,8 +861,7 @@ static void rk_iommu_domain_destroy(struct iommu_domain *domain)
+ 	}
  
- static void tegra_smmu_detach_dev(struct iommu_domain *domain, struct device *dev)
- {
--	struct tegra_smmu_as *as = domain->priv;
-+	struct tegra_smmu_as *as = to_smmu_as(domain);
- 	struct device_node *np = dev->of_node;
- 	struct tegra_smmu *smmu = as->smmu;
- 	struct of_phandle_args args;
-@@ -524,7 +529,7 @@ static void as_put_pte(struct tegra_smmu_as *as, dma_addr_t iova)
- static int tegra_smmu_map(struct iommu_domain *domain, unsigned long iova,
- 			  phys_addr_t paddr, size_t size, int prot)
- {
--	struct tegra_smmu_as *as = domain->priv;
-+	struct tegra_smmu_as *as = to_smmu_as(domain);
- 	struct tegra_smmu *smmu = as->smmu;
- 	unsigned long offset;
- 	struct page *page;
-@@ -548,7 +553,7 @@ static int tegra_smmu_map(struct iommu_domain *domain, unsigned long iova,
- static size_t tegra_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
- 			       size_t size)
- {
--	struct tegra_smmu_as *as = domain->priv;
-+	struct tegra_smmu_as *as = to_smmu_as(domain);
- 	struct tegra_smmu *smmu = as->smmu;
- 	unsigned long offset;
- 	struct page *page;
-@@ -572,7 +577,7 @@ static size_t tegra_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
- static phys_addr_t tegra_smmu_iova_to_phys(struct iommu_domain *domain,
- 					   dma_addr_t iova)
- {
--	struct tegra_smmu_as *as = domain->priv;
-+	struct tegra_smmu_as *as = to_smmu_as(domain);
- 	struct page *page;
- 	unsigned long pfn;
- 	u32 *pte;
-@@ -633,8 +638,8 @@ static void tegra_smmu_remove_device(struct device *dev)
+ 	free_page((unsigned long)rk_domain->dt);
+-	kfree(domain->priv);
+-	domain->priv = NULL;
++	kfree(rk_domain);
+ }
  
- static const struct iommu_ops tegra_smmu_ops = {
- 	.capable = tegra_smmu_capable,
--	.domain_init = tegra_smmu_domain_init,
--	.domain_destroy = tegra_smmu_domain_destroy,
-+	.domain_alloc = tegra_smmu_domain_alloc,
-+	.domain_free = tegra_smmu_domain_free,
- 	.attach_dev = tegra_smmu_attach_dev,
- 	.detach_dev = tegra_smmu_detach_dev,
- 	.add_device = tegra_smmu_add_device,
+ static bool rk_iommu_is_dev_iommu_master(struct device *dev)
+@@ -952,8 +960,8 @@ static void rk_iommu_remove_device(struct device *dev)
+ }
+ 
+ static const struct iommu_ops rk_iommu_ops = {
+-	.domain_init = rk_iommu_domain_init,
+-	.domain_destroy = rk_iommu_domain_destroy,
++	.domain_alloc = rk_iommu_domain_alloc,
++	.domain_free = rk_iommu_domain_free,
+ 	.attach_dev = rk_iommu_attach_device,
+ 	.detach_dev = rk_iommu_detach_device,
+ 	.map = rk_iommu_map,
 -- 
 1.8.4.5
