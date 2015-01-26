@@ -1,57 +1,49 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 1/4] iommu: Make more drivers depend on COMPILE_TEST
-Date: Tue, 27 Jan 2015 00:50:27 +0100
-Message-ID: <1422316230-18893-2-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 2/4] iommu/exynos: Make driver depend on REGULATOR
+Date: Tue, 27 Jan 2015 00:50:28 +0100
+Message-ID: <1422316230-18893-3-git-send-email-joro@8bytes.org>
 References: <1422316230-18893-1-git-send-email-joro@8bytes.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1422316230-18893-1-git-send-email-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Arnd Bergmann <arnd@arndb.de>, Will Deacon <will.deacon@arm.com>, Thierry Reding <treding@nvidia.com>, Varun Sethi <Varun.Sethi@freescale.com>, linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, jroedel@suse.de
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1422316230-18893-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-For easier compile testing of these iommu drivers.
+When regulator is not selected during kconfig, linking of
+the exynos iommu driver fails due to missing symbols.
+Fix it!
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/Kconfig | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/iommu/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 325188e..dfa6cf1 100644
+index dfa6cf1..2e6100d 100644
 --- a/drivers/iommu/Kconfig
 +++ b/drivers/iommu/Kconfig
-@@ -19,7 +19,8 @@ config OF_IOMMU
+@@ -190,7 +190,7 @@ config TEGRA_IOMMU_SMMU
  
- config FSL_PAMU
- 	bool "Freescale IOMMU support"
--	depends on PPC_E500MC
-+	depends on PPC32
-+	depends on PPC_E500MC || COMPILE_TEST
+ config EXYNOS_IOMMU
+ 	bool "Exynos IOMMU Support"
+-	depends on ARCH_EXYNOS && ARM
++	depends on ARCH_EXYNOS && ARM && REGULATOR
  	select IOMMU_API
- 	select GENERIC_ALLOCATOR
+ 	select ARM_DMA_USE_IOMMU
  	help
-@@ -30,7 +31,8 @@ config FSL_PAMU
- # MSM IOMMU support
- config MSM_IOMMU
- 	bool "MSM IOMMU Support"
--	depends on ARCH_MSM8X60 || ARCH_MSM8960
-+	depends on ARM
-+	depends on ARCH_MSM8X60 || ARCH_MSM8960 || COMPILE_TEST
- 	select IOMMU_API
- 	help
- 	  Support for the IOMMUs found on certain Qualcomm SOCs.
-@@ -140,7 +142,8 @@ config IRQ_REMAP
- # OMAP IOMMU support
- config OMAP_IOMMU
- 	bool "OMAP IOMMU Support"
--	depends on ARCH_OMAP2PLUS
-+	depends on ARM
-+	depends on ARCH_OMAP2PLUS || COMPILE_TEST
- 	select IOMMU_API
- 
- config OMAP_IOMMU_DEBUG
 -- 
 1.9.1
