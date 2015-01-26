@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 2/4] iommu/exynos: Make driver depend on REGULATOR
-Date: Tue, 27 Jan 2015 00:50:28 +0100
-Message-ID: <1422316230-18893-3-git-send-email-joro@8bytes.org>
+Subject: [PATCH 4/4] iommu/fsl: Use %pa to print phys_addr_t
+Date: Tue, 27 Jan 2015 00:50:30 +0100
+Message-ID: <1422316230-18893-5-git-send-email-joro@8bytes.org>
 References: <1422316230-18893-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,27 +23,34 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-When regulator is not selected during kconfig, linking of
-the exynos iommu driver fails due to missing symbols.
-Fix it!
+Fix two compile warnings.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/fsl_pamu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index dfa6cf1..2e6100d 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -190,7 +190,7 @@ config TEGRA_IOMMU_SMMU
+diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
+index 80ac68d..e63904b 100644
+--- a/drivers/iommu/fsl_pamu.c
++++ b/drivers/iommu/fsl_pamu.c
+@@ -352,7 +352,7 @@ int pamu_config_ppaace(int liodn, phys_addr_t win_addr, phys_addr_t win_size,
+ 	unsigned long fspi;
  
- config EXYNOS_IOMMU
- 	bool "Exynos IOMMU Support"
--	depends on ARCH_EXYNOS && ARM
-+	depends on ARCH_EXYNOS && ARM && REGULATOR
- 	select IOMMU_API
- 	select ARM_DMA_USE_IOMMU
- 	help
+ 	if ((win_size & (win_size - 1)) || win_size < PAMU_PAGE_SIZE) {
+-		pr_debug("window size too small or not a power of two %llx\n", win_size);
++		pr_debug("window size too small or not a power of two %pa\n", &win_size);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -1138,7 +1138,7 @@ static int __init fsl_pamu_probe(struct platform_device *pdev)
+ 
+ 	if (csd_port_id) {
+ 		dev_dbg(&pdev->dev, "creating coherency subdomain at address "
+-			"0x%llx, size %zu, port id 0x%08x", ppaact_phys,
++			"%pa, size %zu, port id 0x%08x", &ppaact_phys,
+ 			mem_size, csd_port_id);
+ 
+ 		ret = create_csd(ppaact_phys, mem_size, csd_port_id);
 -- 
 1.9.1
