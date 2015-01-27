@@ -1,8 +1,7 @@
 From: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
-Subject: [PATCH v5 4/8] PCI: add helper functions
-	pci_get[put]_host_bridge_device()
-Date: Tue, 27 Jan 2015 16:00:01 -0500
-Message-ID: <1422392405-32196-5-git-send-email-m-karicheri2@ti.com>
+Subject: [PATCH v5 6/8] PCI: update dma configuration from DT
+Date: Tue, 27 Jan 2015 16:00:03 -0500
+Message-ID: <1422392405-32196-7-git-send-email-m-karicheri2@ti.com>
 References: <1422392405-32196-1-git-send-email-m-karicheri2@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,7 +21,16 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-ke
 Cc: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Add a helper function to get/put the root bus's host bridge device.
+If there is a DT node available for the root bridge's parent device,
+use the dma configuration from that device node. For example, keystone
+PCI devices would require dma_pfn_offset to be set correctly in the
+device structure of the pci device in order to have the correct dma mask.
+The DT node will have dma-ranges defined for this. Also support using
+the DT property dma-coherent to allow coherent DMA operation by the
+PCI device.
+
+This patch use the new helper function of_pci_dma_configure() to update
+the device dma configuration.
 
 Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
@@ -35,48 +43,28 @@ Cc: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 Acked-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 Signed-off-by: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
 ---
- drivers/pci/host-bridge.c |   14 ++++++++++++++
- include/linux/pci.h       |    3 +++
- 2 files changed, 17 insertions(+)
+ drivers/pci/probe.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
-index 0e5f3c9..f58e05b 100644
---- a/drivers/pci/host-bridge.c
-+++ b/drivers/pci/host-bridge.c
-@@ -23,6 +23,20 @@ static struct pci_host_bridge *find_pci_host_bridge(struct pci_bus *bus)
- 	return to_pci_host_bridge(root_bus->bridge);
- }
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 23212f8..d7dcd6c 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -6,6 +6,7 @@
+ #include <linux/delay.h>
+ #include <linux/init.h>
+ #include <linux/pci.h>
++#include <linux/of_pci.h>
+ #include <linux/pci_hotplug.h>
+ #include <linux/slab.h>
+ #include <linux/module.h>
+@@ -1520,6 +1521,7 @@ void pci_device_add(struct pci_dev *dev, struct pci_bus *bus)
+ 	dev->dev.dma_mask = &dev->dma_mask;
+ 	dev->dev.dma_parms = &dev->dma_parms;
+ 	dev->dev.coherent_dma_mask = 0xffffffffull;
++	of_pci_dma_configure(dev);
  
-+struct device *pci_get_host_bridge_device(struct pci_dev *dev)
-+{
-+	struct pci_bus *root_bus = find_pci_root_bus(dev->bus);
-+	struct device *bridge = root_bus->bridge;
-+
-+	kobject_get(&bridge->kobj);
-+	return bridge;
-+}
-+
-+void  pci_put_host_bridge_device(struct device *dev)
-+{
-+	kobject_put(&dev->kobj);
-+}
-+
- void pci_set_host_bridge_release(struct pci_host_bridge *bridge,
- 				 void (*release_fn)(struct pci_host_bridge *),
- 				 void *release_data)
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 9603094..d677c66 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -513,6 +513,9 @@ static inline struct pci_dev *pci_upstream_bridge(struct pci_dev *dev)
- 	return dev->bus->self;
- }
- 
-+struct device *pci_get_host_bridge_device(struct pci_dev *dev);
-+void pci_put_host_bridge_device(struct device *dev);
-+
- #ifdef CONFIG_PCI_MSI
- static inline bool pci_dev_msi_enabled(struct pci_dev *pci_dev)
- {
+ 	pci_set_dma_max_seg_size(dev, 65536);
+ 	pci_set_dma_seg_boundary(dev, 0xffffffff);
 -- 
 1.7.9.5
