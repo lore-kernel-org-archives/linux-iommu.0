@@ -1,48 +1,68 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 0/4] iommu: Small fixes and cleanups
-Date: Tue, 27 Jan 2015 09:14:59 +0200
-Message-ID: <3395052.hcL4E8rFcL@avalon>
+From: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+Subject: Re: [PATCH 4/4] iommu/fsl: Use %pa to print phys_addr_t
+Date: Tue, 27 Jan 2015 04:40:35 -0600
+Message-ID: <54C76B23.3010809@Freescale.com>
 References: <1422316230-18893-1-git-send-email-joro@8bytes.org>
+	<1422316230-18893-5-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1422316230-18893-1-git-send-email-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, Arnd Bergmann <arnd@arndb.de>, Will Deacon <will.deacon@arm.com>, Thierry Reding <treding@nvidia.com>, Varun Sethi <Varun.Sethi@freescale.com>, linux-kernel@vger.kernel.org, jroedel@suse.de
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1422316230-18893-5-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: Sethi Varun-B16395 <Varun.Sethi-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+Hello Joerg,
 
-Thank you for the patches.
 
-On Tuesday 27 January 2015 00:50:26 Joerg Roedel wrote:
-> Hi,
+On 01/26/2015 05:50 PM, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel-l3A5Bk7waGM-XMD5yJDbdMReXY1tMh2IBg@public.gmane.org>
 > 
-> here are a couple of iommu fixes and cleanups to fix compile
-> errors and some warnings on ARM and PPC.
-
-For the whole series,
-
-Acked-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-
-> Regards,
+> Fix two compile warnings.
 > 
-> 	Joerg
+> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM-XMD5yJDbdMReXY1tMh2IBg@public.gmane.org>
+> ---
+>  drivers/iommu/fsl_pamu.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> Joerg Roedel (4):
->   iommu: Make more drivers depend on COMPILE_TEST
->   iommu/exynos: Make driver depend on REGULATOR
->   iommu/omap: Print phys_addr_t using %pa
->   iommu/fsl: Use %pa to print phys_addr_t
-> 
->  drivers/iommu/Kconfig      | 11 +++++++----
->  drivers/iommu/fsl_pamu.c   |  4 ++--
->  drivers/iommu/omap-iommu.c |  2 +-
->  3 files changed, 10 insertions(+), 7 deletions(-)
+> diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
+> index 80ac68d..e63904b 100644
+> --- a/drivers/iommu/fsl_pamu.c
+> +++ b/drivers/iommu/fsl_pamu.c
+> @@ -352,7 +352,7 @@ int pamu_config_ppaace(int liodn, phys_addr_t win_addr, phys_addr_t win_size,
+>  	unsigned long fspi;
+>  
+>  	if ((win_size & (win_size - 1)) || win_size < PAMU_PAGE_SIZE) {
+> -		pr_debug("window size too small or not a power of two %llx\n", win_size);
+> +		pr_debug("window size too small or not a power of two %pa\n", &win_size);
+>  		return -EINVAL;
+>  	}
 
--- 
-Regards,
+Somewhere around line 1124 there another opportunity for this fix:
 
-Laurent Pinchart
+>    1124         dev_dbg(&pdev->dev, "ppaact virt=%p phys=0x%llx\n", ppaact,
+>    1125                 (unsigned long long) ppaact_phys);
+
+
+Cheers,
+
+
+> @@ -1138,7 +1138,7 @@ static int __init fsl_pamu_probe(struct platform_device *pdev)
+>  
+>  	if (csd_port_id) {
+>  		dev_dbg(&pdev->dev, "creating coherency subdomain at address "
+> -			"0x%llx, size %zu, port id 0x%08x", ppaact_phys,
+> +			"%pa, size %zu, port id 0x%08x", &ppaact_phys,
+>  			mem_size, csd_port_id);
+>  
+>  		ret = create_csd(ppaact_phys, mem_size, csd_port_id);
