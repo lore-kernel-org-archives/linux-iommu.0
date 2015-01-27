@@ -1,101 +1,86 @@
-From: Murali Karicheri <m-karicheri2@ti.com>
-Subject: Re: [PATCH v4 3/6] of: fix size when dma-range is not used
-Date: Tue, 27 Jan 2015 10:44:45 -0500
-Message-ID: <54C7B26D.3080505@ti.com>
-References: <1422052359-12384-1-git-send-email-m-karicheri2@ti.com> <1422052359-12384-4-git-send-email-m-karicheri2@ti.com> <54C77616.80301@arm.com>
+From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: [PATCH 6/6] dmaengine: rcar-dmac: Disable channel 0 when using IOMMU
+Date: Tue, 27 Jan 2015 19:25:16 +0200
+Message-ID: <1422379516-1633-7-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+References: <1422379516-1633-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <54C77616.80301@arm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Russell King <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, Joerg Roedel <joro@8bytes.org>, Will Deacon <Will.Deacon@arm.com>, Rob Herring <robh+dt@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1422379516-1633-1-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/27/2015 06:27 AM, Robin Murphy wrote:
-> Hi Murali,
->
-> On 23/01/15 22:32, Murali Karicheri wrote:
->> Fix the dma-range size when the DT attribute is missing. i.e set size to
->> dev->coherent_dma_mask + 1 instead of dev->coherent_dma_mask. To detect
->> overflow when mask is set to max of u64, add a check, log error and
->> return.
->> Some platform use mask format for size in DTS. So add a work around to
->> catch this and fix.
->>
->> Cc: Joerg Roedel <joro@8bytes.org>
->> Cc: Grant Likely <grant.likely@linaro.org>
->> Cc: Rob Herring <robh+dt@kernel.org>
->> Cc: Bjorn Helgaas <bhelgaas@google.com>
->> Cc: Will Deacon <will.deacon@arm.com>
->> Cc: Russell King <linux@arm.linux.org.uk>
->> Cc: Arnd Bergmann <arnd@arndb.de>
->> Cc: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
->>
->> Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
->> ---
->> drivers/of/device.c | 14 +++++++++++++-
->> 1 file changed, 13 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/of/device.c b/drivers/of/device.c
->> index 2de320d..0a5ff54 100644
->> --- a/drivers/of/device.c
->> +++ b/drivers/of/device.c
->> @@ -105,12 +105,24 @@ void of_dma_configure(struct device *dev, struct
->> device_node *np)
->> ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
->> if (ret < 0) {
->> dma_addr = offset = 0;
->> - size = dev->coherent_dma_mask;
->> + size = dev->coherent_dma_mask + 1;
->> } else {
->> offset = PFN_DOWN(paddr - dma_addr);
->> + /*
->> + * Add a work around to treat the size as mask + 1 in case
->> + * it is defined in DT as a mask.
->> + */
->> + if (size & 1)
->> + size = size + 1;
->> dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
->> }
->>
->> + /* if size is 0, we have an overflow of u64 */
->> + if (!size) {
->> + dev_err(dev, "invalid size\n");
->> + return;
->> + }
->> +
->
-> This seems potentially fragile to dodgy DTs given that we might also be
-> using size to make a mask later. Would it make sense to double-up a
-> sanity check as mask-format detection? Something like:
->
-> if is_power_of_2(size)
-> // use size
-> else if is_power_of_2(size + 1)
-> // use size + 1
-> else
-> // cry
->
-Robin,
+A still unconfirmed hardware bug prevents the IPMMU microTLB 0 to be
+flushed correctly, resulting in memory corruption. DMAC 0 channel 0 is
+connected to microTLB 0 on currently supported platforms, so we can't
+use it with the IPMMU. As the IOMMU API operates at the device level we
+can't disable it selectively, so ignore channel 0 for now if the device
+is part of an IOMMU group.
 
-I think this is better. I will wait for some more time for anyone to 
-respond and re-send my patch with this change.
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+---
+ drivers/dma/sh/rcar-dmac.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
-Thanks
-Murali
->
-> Robin.
->
->> dev->dma_pfn_offset = offset;
->>
->> coherent = of_dma_is_coherent(np);
->>
->
->
+As this patch works around an IOMMU bug in a DMA engine driver it would
+benefit from review from IOMMU developers.
 
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 
+diff --git a/drivers/dma/sh/rcar-dmac.c b/drivers/dma/sh/rcar-dmac.c
+index d345d3d81813..e0bf38a7284e 100644
+--- a/drivers/dma/sh/rcar-dmac.c
++++ b/drivers/dma/sh/rcar-dmac.c
+@@ -1595,6 +1595,7 @@ static int rcar_dmac_probe(struct platform_device *pdev)
+ 		DMA_SLAVE_BUSWIDTH_2_BYTES | DMA_SLAVE_BUSWIDTH_4_BYTES |
+ 		DMA_SLAVE_BUSWIDTH_8_BYTES | DMA_SLAVE_BUSWIDTH_16_BYTES |
+ 		DMA_SLAVE_BUSWIDTH_32_BYTES | DMA_SLAVE_BUSWIDTH_64_BYTES;
++	unsigned int channels_offset = 0;
+ 	struct dma_device *engine;
+ 	struct rcar_dmac *dmac;
+ 	struct resource *mem;
+@@ -1614,6 +1615,19 @@ static int rcar_dmac_probe(struct platform_device *pdev)
+ 	if (ret < 0)
+ 		return ret;
+ 
++	/*
++	 * A still unconfirmed hardware bug prevents the IPMMU microTLB 0 to be
++	 * flushed correctly, resulting in memory corruption. DMAC 0 channel 0
++	 * is connected to microTLB 0 on currently supported platforms, so we
++	 * can't use it with the IPMMU. As the IOMMU API operates at the device
++	 * level we can't disable it selectively, so ignore channel 0 for now if
++	 * the device is part of an IOMMU group.
++	 */
++	if (pdev->dev.iommu_group) {
++		dmac->n_channels--;
++		channels_offset = 1;
++	}
++
+ 	dmac->channels = devm_kcalloc(&pdev->dev, dmac->n_channels,
+ 				      sizeof(*dmac->channels), GFP_KERNEL);
+ 	if (!dmac->channels)
+@@ -1664,7 +1678,8 @@ static int rcar_dmac_probe(struct platform_device *pdev)
+ 	INIT_LIST_HEAD(&dmac->engine.channels);
+ 
+ 	for (i = 0; i < dmac->n_channels; ++i) {
+-		ret = rcar_dmac_chan_probe(dmac, &dmac->channels[i], i);
++		ret = rcar_dmac_chan_probe(dmac, &dmac->channels[i],
++					   i + channels_offset);
+ 		if (ret < 0)
+ 			goto error;
+ 	}
 -- 
-Murali Karicheri
-Linux Kernel, Texas Instruments
+2.0.5
