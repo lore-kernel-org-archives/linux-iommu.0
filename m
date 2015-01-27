@@ -1,14 +1,15 @@
-From: Suman Tripathi <stripathi-qTEPVZfXA3Y@public.gmane.org>
-Subject: [PATCH v1 3/3] Documentation: dt-bindings: Add the binding info for
-	APM X-Gene AHBC IOMMU driver.
-Date: Tue, 27 Jan 2015 22:55:54 +0530
-Message-ID: <1422379554-10328-4-git-send-email-stripathi@apm.com>
-References: <1422379554-10328-1-git-send-email-stripathi@apm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH 4/5] arm64: add IOMMU dma_ops
+Date: Tue, 27 Jan 2015 17:30:45 +0000
+Message-ID: <54C7CB45.7030907@arm.com>
+References: <cover.1421086706.git.robin.murphy@arm.com>
+	<aa7de3b1dd189c31eb8b14d0c0eea699183f8a2c.1421086706.git.robin.murphy@arm.com>
+	<54C5B3B9.1040300@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1422379554-10328-1-git-send-email-stripathi-qTEPVZfXA3Y@public.gmane.org>
+In-Reply-To: <54C5B3B9.1040300-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,55 +19,130 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mlangsdo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Suman Tripathi <stripathi-qTEPVZfXA3Y@public.gmane.org>, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, patches-qTEPVZfXA3Y@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Joseph Lo <josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: "linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org" <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org" <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds the device tree binding information for X-Gene
-AHBC IOMMU driver.
+Hi Joseph,
 
-Signed-off-by: Suman Tripathi <stripathi-qTEPVZfXA3Y@public.gmane.org>
----
- .../devicetree/bindings/iommu/xgene,ahbc-iommu.txt | 31 ++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iommu/xgene,ahbc-iommu.txt
+Thanks for giving it a spin,
 
-diff --git a/Documentation/devicetree/bindings/iommu/xgene,ahbc-iommu.txt b/Documentation/devicetree/bindings/iommu/xgene,ahbc-iommu.txt
-new file mode 100644
-index 0000000..37ad3a6
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iommu/xgene,ahbc-iommu.txt
-@@ -0,0 +1,31 @@
-+*APM X-Gene AHBC IOMMU Architecture Implementation
-+
-+APM X-Gene SoC AHBC IOMMU translates the AHBC 32-bit address from
-+dma master to 42-bit AXI address by using a set of AIM(AHB Inbound mapper)
-+register.
-+
-+** AHBC IOMMU required properties:
-+
-+- compatible    : Should be "apm,xgene-ahbc-iommu"
-+- reg           : Base address of the AHBC AXI mapper registers
-+- iommu-cells   : It is single master IOMMU.
-+
-+Example:
-+		/* IOMMU controller device node */
-+		ahbc_iommu: ahbc_iommu@0x1f2a0080 {
-+			compatible = "apm,xgene-ahbc-iommu";
-+			#iommu-cells = <0>;
-+			reg = <0x0 0x1f2a0080 0x0 0x90>;
-+		};
-+
-+		/* Master node */
-+		sdhc0: sdhc@1c000000 {
-+			device_type = "sdhc";
-+			compatible = "arasan,sdhci-8.9a";
-+			reg = <0x0 0x1c000000 0x0 0x100>;
-+			interrupts = <0x0 0x49 0x4>;
-+			clock-names = "clk_xin", "clk_ahb";
-+			clocks = <&sdioclk 0>, <&ahbclk 0>;
-+			iommus = <&ahbc_iommu>;
-+		};
-+
---
-1.8.2.1
+On 26/01/15 03:25, Joseph Lo wrote:
+> On 01/13/2015 04:48 AM, Robin Murphy wrote:
+>> Taking some inspiration from the arch/arm code, implement the
+>> arch-specific side of the DMA mapping ops using the new IOMMU-DMA layer.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> ---
+>>    arch/arm64/include/asm/device.h      |   3 +
+>>    arch/arm64/include/asm/dma-mapping.h |  12 ++
+>>    arch/arm64/mm/dma-mapping.c          | 297 +++++++++++++++++++++++++++++++++++
+>>    3 files changed, 312 insertions(+)
+>>
+> [snip]
+>> +static struct dma_map_ops iommu_dma_ops = {
+>> +	.alloc = __iommu_alloc_attrs,
+>> +	.free = __iommu_free_attrs,
+>> +	.mmap = __swiotlb_mmap,
+>
+> Hi Robin,
+>
+> Thanks for posting this series. I spent some time to re-write Tegra-smmu
+> driver to work with the new DT-based iommu initialization procedure and
+> do some modification in Tegra/DRM driver to make it work with
+> IOMMU-backed DMA mapping API.
+>
+> Found two issues, one is the mmap function here.
+> The mmap function is not reliable, the userspace application and kernel
+> easily leads to crash after calling this. Can we mmap the CPU VA to the
+> IOVA?
+> This issue was gone after replacing it with the same function
+> (arm_iommu_mmap_attrs) in the ARM32 kernel. And everything just works fine.
+>
+
+Hmm, it looks like __dma_common_mmap might rely on pages being 
+contiguous, which would be a big problem I hadn't noticed. I'll have a 
+dig into it and see if it's feasible to extend the existing 
+implementation, otherwise we'll have to just pull in the arm_iommu 
+version and have two.
+
+>> +	.map_page = __iommu_map_page,
+>> +	.unmap_page = __iommu_unmap_page,
+>> +	.map_sg = __iommu_map_sg_attrs,
+>> +	.unmap_sg = __iommu_unmap_sg_attrs,
+>> +	.sync_single_for_cpu = __iommu_sync_single_for_cpu,
+>> +	.sync_single_for_device = __iommu_sync_single_for_device,
+>> +	.sync_sg_for_cpu = __iommu_sync_sg_for_cpu,
+>> +	.sync_sg_for_device = __iommu_sync_sg_for_device,
+>> +	.dma_supported = iommu_dma_supported,
+>> +	.mapping_error = iommu_dma_mapping_error,
+>> +};
+>> +
+>> +static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+>> +				  struct iommu_ops *ops)
+>> +{
+>> +	struct iommu_dma_mapping *mapping;
+>> +
+>> +	if (!ops)
+>> +		return;
+>> +
+>> +	mapping = iommu_dma_create_mapping(ops, dma_base, size);
+>
+> The other issue is here. We create a DMA range here, but the
+> __iova_alloc not really working with that, if the end of the range was
+> under 4G limitation. The allocation address always starts from
+> 0xfffxxxxx, because we set the .dma_mask to DMA_BIT_MASK(32) by default.
+> If we don't expect that, we need one more function call like
+> dma_coerce_mask_and_coherent(dev, 0x80000000) for the range of 0 to 2G
+> for example.
+>
+> Does this the expectation when we use this framework?
+>
+> (Except the issue of __alloc_iova, I am ok with this. We could set up a
+> default range from 0 to 4G for every device by default, and then isolate
+> the virtual range by reset the .dma_mask of the device later.)
+>
+
+Yes, I failed to consider dma-ranges in this initial version, so it 
+allocates based on the DMA mask alone. I hacked up an unsatisfactory 
+workaround in preparation for v2, but it turns out the fix as per your 
+suggestion is already in progress elsewhere[1], so I'll rework based on 
+that idea.
+
+Robin.
+
+[1]:https://lkml.org/lkml/2015/1/23/694
+
+> Thanks,
+> -Joseph
+>
+>> +	if (!mapping) {
+>> +		pr_warn("Failed to create %llu-byte IOMMU mapping for device %s\n",
+>> +				size, dev_name(dev));
+>> +		return;
+>> +	}
+>> +
+>> +	if (iommu_dma_attach_device(dev, mapping))
+>> +		pr_warn("Failed to attach device %s to IOMMU mapping\n",
+>> +				dev_name(dev));
+>> +	else
+>> +		dev->archdata.dma_ops = &iommu_dma_ops;
+>> +
+>> +	/* drop the initial mapping refcount */
+>> +	iommu_dma_release_mapping(mapping);
+>> +}
+>> +
+>> +#else
+>> +
+>> +static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+>> +				  struct iommu_ops *iommu)
+>> +{ }
+>> +
+>> +#endif  /* CONFIG_IOMMU_DMA */
+>>
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>
