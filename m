@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 5/5] iommu: Add iommu_get_domain_for_dev function
-Date: Tue, 27 Jan 2015 01:08:59 +0100
-Message-ID: <1422317339-22620-6-git-send-email-joro@8bytes.org>
+Subject: [PATCH 3/5] iommu: Limit iommu_attach/detach_device to devices with
+	their own group
+Date: Tue, 27 Jan 2015 01:08:57 +0100
+Message-ID: <1422317339-22620-4-git-send-email-joro@8bytes.org>
 References: <1422317339-22620-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,67 +24,141 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-This function can be used to request the current domain a
-device is attached to.
+This patch changes the behavior of the iommu_attach_device
+and iommu_detach_device functions. With this change these
+functions only work on devices that have their own group.
+For all other devices the iommu_group_attach/detach
+functions must be used.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 18 ++++++++++++++++++
- include/linux/iommu.h |  6 ++++++
- 2 files changed, 24 insertions(+)
+ drivers/iommu/iommu.c | 63 +++++++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 59 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 5080759..824442e 100644
+index 8f33ddd3..b63a550 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -1022,6 +1022,24 @@ out_unlock:
- }
- EXPORT_SYMBOL_GPL(iommu_detach_device);
+@@ -51,6 +51,7 @@ struct iommu_group {
+ 	void (*iommu_data_release)(void *iommu_data);
+ 	char *name;
+ 	int id;
++	unsigned dev_cnt;
+ 	struct iommu_domain *default_domain;
+ };
  
-+struct iommu_domain *iommu_get_domain_for_dev(struct device *dev)
+@@ -380,6 +381,7 @@ rename:
+ 
+ 	mutex_lock(&group->mutex);
+ 	list_add_tail(&device->list, &group->devices);
++	group->dev_cnt += 1;
+ 	mutex_unlock(&group->mutex);
+ 
+ 	/* Notify any listeners about change to group. */
+@@ -408,6 +410,7 @@ void iommu_group_remove_device(struct device *dev)
+ 				     IOMMU_GROUP_NOTIFY_DEL_DEVICE, dev);
+ 
+ 	mutex_lock(&group->mutex);
++	group->dev_cnt -= 1;
+ 	list_for_each_entry(tmp_device, &group->devices, list) {
+ 		if (tmp_device->dev == dev) {
+ 			device = tmp_device;
+@@ -943,7 +946,8 @@ void iommu_domain_free(struct iommu_domain *domain)
+ }
+ EXPORT_SYMBOL_GPL(iommu_domain_free);
+ 
+-int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
++static int __iommu_attach_device(struct iommu_domain *domain,
++				 struct device *dev)
+ {
+ 	int ret;
+ 	if (unlikely(domain->ops->attach_dev == NULL))
+@@ -954,9 +958,38 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+ 		trace_attach_device_to_domain(dev);
+ 	return ret;
+ }
++
++int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
 +{
-+	struct iommu_domain *domain;
++	struct iommu_group *group;
++	int ret;
++
++	group = iommu_group_get(dev);
++	/* FIXME: Remove this when groups a mandatory for iommu drivers */
++	if (group == NULL)
++		return __iommu_attach_device(domain, dev);
++
++	/*
++	 * We have a group - lock it to make sure the device-count doesn't
++	 * change while we are attaching
++	 */
++	mutex_lock(&group->mutex);
++	ret = -EINVAL;
++	if (group->dev_cnt != 1)
++		goto out_unlock;
++
++	ret = iommu_attach_group(domain, group);
++
++out_unlock:
++	mutex_unlock(&group->mutex);
++	iommu_group_put(group);
++
++	return ret;
++}
+ EXPORT_SYMBOL_GPL(iommu_attach_device);
+ 
+-void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
++static void __iommu_detach_device(struct iommu_domain *domain,
++				  struct device *dev)
+ {
+ 	if (unlikely(domain->ops->detach_dev == NULL))
+ 		return;
+@@ -964,6 +997,28 @@ void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
+ 	domain->ops->detach_dev(domain, dev);
+ 	trace_detach_device_from_domain(dev);
+ }
++
++void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
++{
 +	struct iommu_group *group;
 +
 +	group = iommu_group_get(dev);
 +	/* FIXME: Remove this when groups a mandatory for iommu drivers */
 +	if (group == NULL)
-+		return NULL;
++		return __iommu_detach_device(domain, dev);
 +
-+	domain = group->domain;
++	mutex_lock(&group->mutex);
++	if (group->dev_cnt != 1) {
++		WARN_ON(1);
++		goto out_unlock;
++	}
 +
++	iommu_detach_group(domain, group);
++
++out_unlock:
++	mutex_unlock(&group->mutex);
 +	iommu_group_put(group);
-+
-+	return domain;
 +}
-+EXPORT_SYMBOL_GPL(iommu_get_domain_for_dev);
-+
+ EXPORT_SYMBOL_GPL(iommu_detach_device);
+ 
  /*
-  * IOMMU groups are really the natrual working unit of the IOMMU, but
-  * the IOMMU API works on domains and devices.  Bridge that gap by
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 2951dca..dc102ad 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -177,6 +177,7 @@ extern int iommu_attach_device(struct iommu_domain *domain,
- 			       struct device *dev);
- extern void iommu_detach_device(struct iommu_domain *domain,
- 				struct device *dev);
-+extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
- extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 		     phys_addr_t paddr, size_t size, int prot);
- extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
-@@ -316,6 +317,11 @@ static inline void iommu_detach_device(struct iommu_domain *domain,
+@@ -980,7 +1035,7 @@ static int iommu_group_do_attach_device(struct device *dev, void *data)
  {
+ 	struct iommu_domain *domain = data;
+ 
+-	return iommu_attach_device(domain, dev);
++	return __iommu_attach_device(domain, dev);
  }
  
-+static inline struct iommu_domain *iommu_get_domain_for_dev(struct device *dev)
-+{
-+	return NULL;
-+}
-+
- static inline int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 			    phys_addr_t paddr, int gfp_order, int prot)
+ int iommu_attach_group(struct iommu_domain *domain, struct iommu_group *group)
+@@ -994,7 +1049,7 @@ static int iommu_group_do_detach_device(struct device *dev, void *data)
  {
+ 	struct iommu_domain *domain = data;
+ 
+-	iommu_detach_device(domain, dev);
++	__iommu_detach_device(domain, dev);
+ 
+ 	return 0;
+ }
 -- 
 1.9.1
