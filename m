@@ -1,19 +1,15 @@
 From: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH v4 4/6] of/pci: add of_pci_dma_configure() update dma
-	configuration
-Date: Tue, 27 Jan 2015 13:45:46 -0500
-Message-ID: <54C7DCDA.4030809@ti.com>
+Subject: Re: [PATCH v4 3/6] of: fix size when dma-range is not used
+Date: Tue, 27 Jan 2015 13:55:15 -0500
+Message-ID: <54C7DF13.20402@ti.com>
 References: <1422052359-12384-1-git-send-email-m-karicheri2@ti.com>
-	<1422052359-12384-5-git-send-email-m-karicheri2@ti.com>
-	<20150123234124.GW29776@google.com> <54C6CCF3.7080308@ti.com>
-	<CAErSpo4w0zVCmXk2D2Qk5W3kceS9Wk+=jqHBDwk6HUXWwXdq_Q@mail.gmail.com>
-	<54C7D576.6030502@ti.com>
-	<CAErSpo4Awgqu0ZtoMm0XSZzhnYtXh3xxH2OJMkyth5YDR9GUiA@mail.gmail.com>
+	<1422052359-12384-4-git-send-email-m-karicheri2@ti.com>
+	<54C77616.80301@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAErSpo4Awgqu0ZtoMm0XSZzhnYtXh3xxH2OJMkyth5YDR9GUiA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <54C77616.80301-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,181 +19,106 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-arm <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/27/2015 01:42 PM, Bjorn Helgaas wrote:
-> On Tue, Jan 27, 2015 at 12:14 PM, Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>  wrote:
->> On 01/26/2015 06:59 PM, Bjorn Helgaas wrote:
->>>
->>> On Mon, Jan 26, 2015 at 5:25 PM, Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>
->>> wrote:
->>>>
->>>> On 01/23/2015 06:41 PM, Bjorn Helgaas wrote:
->>>>>
->>>>>
->>>>> On Fri, Jan 23, 2015 at 05:32:37PM -0500, Murali Karicheri wrote:
->>>>>>
->>>>>>
->>>>>> Add of_pci_dma_configure() to allow updating the dma configuration
->>>>>> of the pci device using the configuration from DT of the parent of
->>>>>> the root bridge device.
->>>>>>
->>    -- Cut ---
+On 01/27/2015 06:27 AM, Robin Murphy wrote:
+> Hi Murali,
+>
+> On 23/01/15 22:32, Murali Karicheri wrote:
+>> Fix the dma-range size when the DT attribute is missing. i.e set size to
+>> dev->coherent_dma_mask + 1 instead of dev->coherent_dma_mask. To detect
+>> overflow when mask is set to max of u64, add a check, log error and
+>> return.
+>> Some platform use mask format for size in DTS. So add a work around to
+>> catch this and fix.
 >>
->>>>>>
->>>>>> Signed-off-by: Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>
->>>>>> ---
->>>>>>     drivers/of/of_pci.c    |   39
->>>>>> +++++++++++++++++++++++++++++++++++++++
->>>>>>     include/linux/of_pci.h |   12 ++++++++++++
->>>>>>     2 files changed, 51 insertions(+)
->>>>>>
->>>>>> diff --git a/drivers/of/of_pci.c b/drivers/of/of_pci.c
->>>>>> index 88471d3..34878c9 100644
->>>>>> --- a/drivers/of/of_pci.c
->>>>>> +++ b/drivers/of/of_pci.c
->>>>>> @@ -2,6 +2,7 @@
->>>>>>     #include<linux/export.h>
->>>>>>     #include<linux/of.h>
->>>>>>     #include<linux/of_address.h>
->>>>>> +#include<linux/of_device.h>
->>>>>>     #include<linux/of_pci.h>
->>>>>>     #include<linux/slab.h>
->>>>>>
->>>>>> @@ -229,6 +230,44 @@ parse_failed:
->>>>>>           return err;
->>>>>>     }
->>>>>>     EXPORT_SYMBOL_GPL(of_pci_get_host_bridge_resources);
->>>>>> +
->>>>>> +/**
->>>>>> + * of_get_pci_root_bridge_parent - get the OF node of the root
->>>>>> bridge's
->>>>>> parent
->>>>>> + * @dev: ptr to pci_dev struct of the pci device
->>>>>> + *
->>>>>> + * This function will traverse the bus up to the root bus starting
->>>>>> with
->>>>>> + * the child and return the OF node ptr to root bridge device's parent
->>>>>> device.
->>>>>> + */
->>>>>> +struct device_node *of_get_pci_root_bridge_parent(struct pci_dev *dev)
->>>>>
->>>>>
->>>>>
->>>>> I'm not an OF person, but this interface seems like it might be too
->>>>> special-purpose.  Maybe it would be enough to add
->>>>> "of_get_pci_root_bridge()", and the caller could do this:
->>>>>
->>>>>        struct device *bridge = of_get_pci_root_bridge(dev);
->>>>>        struct device_node *parent_np = bridge->parent->of_node;
->>>>>
->>>>> Also, the name "of_get_..." suggests that it increments a refcount, as
->>>>> of_get_parent() does.  But you aren't doing anything with the refcount.
->>>>>
->>>>> But I guess an "of_get_pci_root_bridge()" isn't doing anything
->>>>> OF-related,
->>>>> so maybe we should just add a "pci_get_host_bridge(struct pci_dev *)"
->>>>> to PCI instead.
->>>>
->>>>
->>>>
->>>> Bjorn,
->>>>
->>>> Thanks for the comment.
->>>>
->>>> I think adding pci_get_host_bridge() is a good idea. There is already
->>>> similar function in host-bridge.c. I have added this function re-using
->>>> existing function find_pci_root_bus(). See the incremental diff below
->>>> after
->>>> this change. Does this look good?
->>>
->>>
->>> I like the implementation, but I think either we need to take a
->>> reference on the host bridge, or change the name to  something like
->>> "pci_find_host_bridge()", because using "_get_" is conventional for
->>> functions that acquire a reference.
->>>
->>> Since host bridges are hot-pluggable, at least in theory, I vote for
->>> taking a reference.  Then of course, you'd have to add code to drop
->>> the reference when you're finished with it.
->>>
->> Bjorn,
+>> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+>> Cc: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>> Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+>> Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+>> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+>> Cc: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+>> Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+>> Cc: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 >>
->> Thanks. I agree with your suggestion even though the convention is not
->> followed fully :) of_pci_get_devfn(), of_get_pci_domain_nr(),
->> of_pci_get_host_bridge_resources() are some of those functions not following
->> the convention. I plan to change the function as below. Also want to name
->> functions as pci_get/put_host_bridge_device() as existing function
->> find_pci_host_bridge() is actually returning ptr to struct pci_host_bridge
->> vs the new function returning ptr to device. Here are the new functions and
->> how they will be used. Please review and respond so that I can avoid a
->> re-spin.
+>> Signed-off-by: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
+>> ---
+>> drivers/of/device.c | 14 +++++++++++++-
+>> 1 file changed, 13 insertions(+), 1 deletion(-)
 >>
->> in linux/include/pci.h add the prototypes of
->> pci_get/put_host_bridge_device().
->>
->> in drivers/pci/host-bridge.c add two new functions.
->>
->> struct device *pci_get_host_bridge_device(struct pci_dev *dev)
->> {
->>          struct pci_bus *root_bus = find_pci_root_bus(dev->bus);
->>          struct device *bridge = root_bus->bridge;
->>
->>          kobject_get(&bridge->kobj);
->>          return bridge;
+>> diff --git a/drivers/of/device.c b/drivers/of/device.c
+>> index 2de320d..0a5ff54 100644
+>> --- a/drivers/of/device.c
+>> +++ b/drivers/of/device.c
+>> @@ -105,12 +105,24 @@ void of_dma_configure(struct device *dev, struct
+>> device_node *np)
+>> ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
+>> if (ret < 0) {
+>> dma_addr = offset = 0;
+>> - size = dev->coherent_dma_mask;
+>> + size = dev->coherent_dma_mask + 1;
+>> } else {
+>> offset = PFN_DOWN(paddr - dma_addr);
+>> + /*
+>> + * Add a work around to treat the size as mask + 1 in case
+>> + * it is defined in DT as a mask.
+>> + */
+>> + if (size & 1)
+>> + size = size + 1;
+>> dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
 >> }
->
-> Looks good to me.
->
->> void  pci_put_host_bridge_device(struct pci_dev *dev)
->> {
->>          struct pci_bus *root_bus = find_pci_root_bus(dev->bus);
->>          struct device *bridge = root_bus->bridge;
 >>
->>          kobject_put(&bridge->kobj);
->> }
+>> + /* if size is 0, we have an overflow of u64 */
+>> + if (!size) {
+>> + dev_err(dev, "invalid size\n");
+>> + return;
+>> + }
+>> +
 >
-> I think I would pass in the "struct device *" here so we don't have to
-> call find_pci_root_bus() again.
+> This seems potentially fragile to dodgy DTs given that we might also be
+> using size to make a mask later. Would it make sense to double-up a
+> sanity check as mask-format detection? Something like:
 >
->> drivers/of/of_pci.c
->>
->> void of_pci_dma_configure(struct pci_dev *pci_dev)
->> {
->>          struct device *dev =&pci_dev->dev;
->>          struct device *bridge = pci_get_host_bridge_device(pci_dev);
->>
->>          of_dma_configure(dev, bridge->parent->of_node);
->>          pci_put_host_bridge_device(pci_dev);
->
-> Then this would become "pci_put_host_bridge_device(bridge)"
+> if is_power_of_2(size)
+> // use size
+> else if is_power_of_2(size + 1)
+> // use size + 1
+> else
+> // cry
+Robin,
 
-Agree with both. Will become part of my v5 of the series. I am adding 
-this as a separate commit.
+How about having the logic like this?
+
+	ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
+	if (ret < 0) {
+		dma_addr = offset = 0;
+		size = dev->coherent_dma_mask + 1;
+	} else {
+		offset = PFN_DOWN(paddr - dma_addr);
+		dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
+	}
+
+	if (is_power_of_2(size + 1))
+		size = size + 1;
+	else if (!is_power_of_2(size))
+	{
+		dev_err(dev, "invalid size\n");
+		return;
+	}
 
 Murali
 >
->> }
+>
+> Robin.
+>
+>> dev->dma_pfn_offset = offset;
 >>
->> Murali
+>> coherent = of_dma_is_coherent(np);
 >>
->>> Bjorn
->>>
->>
->>>>>>
->>>>
->>>>
->>>> --
->>>> Murali Karicheri
->>>> Linux Kernel, Texas Instruments
->>
->>
->>
->> --
->> Murali Karicheri
->> Linux Kernel, Texas Instruments
+>
+>
 
 
 -- 
