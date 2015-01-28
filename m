@@ -1,14 +1,14 @@
 From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [v3 06/26] iommu, x86: No need to migrating irq for VT-d
-	Posted-Interrupts
-Date: Wed, 28 Jan 2015 15:29:06 +0000
-Message-ID: <1422458946.5293.58.camel@infradead.org>
+Subject: Re: [v3 07/26] iommu, x86: Add cap_pi_support() to detect VT-d PI
+	capability
+Date: Wed, 28 Jan 2015 15:32:02 +0000
+Message-ID: <1422459122.5293.60.camel@infradead.org>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
-	<1418397300-10870-7-git-send-email-feng.wu@intel.com>
+	<1418397300-10870-8-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============3136824715131717869=="
+Content-Type: multipart/mixed; boundary="===============3543755556276862808=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1418397300-10870-7-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1418397300-10870-8-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,24 +23,17 @@ Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============3136824715131717869==
+--===============3543755556276862808==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-cLymp5ieiIJVEYauj9jF"
+	boundary="=-KPyTFbMimRk+8cSk5zQA"
 
 
---=-cLymp5ieiIJVEYauj9jF
+--=-KPyTFbMimRk+8cSk5zQA
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 On Fri, 2014-12-12 at 23:14 +0800, Feng Wu wrote:
-> We don't need to migrate the irqs for VT-d Posted-Interrupts here.
-> When 'pst' is set in IRTE, the associated irq will be posted to
-> guests instead of interrupt remapping. The destination of the
-> interrupt is set in Posted-Interrupts Descriptor, and the migration
-> happens during vCPU scheduling.
->=20
-> However, we still update the cached irte here, which can be used
-> when changing back to remapping mode.
+> Add helper function to detect VT-d Posted-Interrupts capability.
 >=20
 > Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 > Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
@@ -51,7 +44,7 @@ Acked-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.o
 David Woodhouse                            Open Source Technology Centre
 David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
 
---=-cLymp5ieiIJVEYauj9jF
+--=-KPyTFbMimRk+8cSk5zQA
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -145,28 +138,28 @@ Cmr47UQpqQ7BjK0xggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
 Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2
 BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMJ
 2TIwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMTUwMTI4MTUyOTA2WjAjBgkqhkiG9w0BCQQxFgQUZqkOBeanlls/ocQOSwknHCrSg28wgaUG
+DxcNMTUwMTI4MTUzMjAyWjAjBgkqhkiG9w0BCQQxFgQU0Fh5VzfxlzBfSuHYACuJjm/vrSgwgaUG
 CSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4x
 KzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0
 YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMJ2TIwgacGCyqG
 SIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEr
 MCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMvU3Rh
 cnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAwnZMjANBgkqhkiG
-9w0BAQEFAASCAQAZJJV369+LNRkuABX1+S000ApBndce4OM2yQMSzH5kof/KDt67nEuKPX3VK/3b
-NquDo6nyGy1yUP8cE+YHRi+cfsasDmuPCN4ND5vv+OljYTFVD38Ajhsj77mlvHQhYSSB06v6rrrK
-D6kRwhU/8/t6lkH9XNEtMku3rvCPaS17NHfqt7sxejysl1kIrioaRioSUIoG7NO3+/p73KPOAcRu
-lgEwi+8+7u0eeu9hx3NyJA8zyZDn0nEzDk+PrxCcb4t4EPXnI8F6eRpyfooM6VsWo022YRTpCscL
-hnAJ9t7x/Oe05aKGmZp0C0GpvzQpkUaPqNlH9i5H4Dg010TjSZX9AAAAAAAA
+9w0BAQEFAASCAQCjzVv1ZHaSmTwl5zdbIEx7D314kk8ttyY0KAHE0XspA512dbyHJfw+ZmBYsBHz
+OeInuzemA0zWTzviuWM0TbsZ4jAx4P+o9oCPOTcP9MCyqf82++r3tIdN7EYkXWdTb92HjhKU698d
+UhqniVThNuD4wvbzYCSQ7OhbLSalqt9SRP9By9nwqkWj1rCwiCCYHz04M4+w9yJqC0m1lk025w7G
+3Z+jQlHSr6LYOlqit2Bgdkh1XxHEMu+KDcx5733+Er+fmh4h0NwnqOhUoztNtrIBMPmGzV8+81OX
+B67vbBxv7aZNLUi+YebWD3cDgA9nY0RBRe0iUuP85rruEO3cEISoAAAAAAAA
 
 
---=-cLymp5ieiIJVEYauj9jF--
+--=-KPyTFbMimRk+8cSk5zQA--
 
 
---===============3136824715131717869==
+--===============3543755556276862808==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============3136824715131717869==--
+--===============3543755556276862808==--
