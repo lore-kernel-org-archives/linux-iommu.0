@@ -1,14 +1,14 @@
 From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [v3 08/26] iommu, x86: Add intel_irq_remapping_capability() for
-	Intel
-Date: Wed, 28 Jan 2015 15:37:30 +0000
-Message-ID: <1422459450.5293.62.camel@infradead.org>
+Subject: Re: [v3 26/26] iommu/vt-d: Add a command line parameter for VT-d
+	posted-interrupts
+Date: Wed, 28 Jan 2015 15:39:53 +0000
+Message-ID: <1422459593.5293.63.camel@infradead.org>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
-	<1418397300-10870-9-git-send-email-feng.wu@intel.com>
+	<1418397300-10870-27-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============5109919536039532167=="
+Content-Type: multipart/mixed; boundary="===============8641763779560188635=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1418397300-10870-9-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1418397300-10870-27-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,50 +23,28 @@ Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============5109919536039532167==
+--===============8641763779560188635==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-JXKPJRHymof/ynQ5+vgo"
+	boundary="=-nLLDDE9PcSBIqkFDiGwg"
 
 
---=-JXKPJRHymof/ynQ5+vgo
+--=-nLLDDE9PcSBIqkFDiGwg
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 2014-12-12 at 23:14 +0800, Feng Wu wrote:
-> Add the Intel side implementation for capability in
-> struct irq_remap_ops.
+On Fri, 2014-12-12 at 23:15 +0800, Feng Wu wrote:
+> Enable VT-d Posted-Interrtups and add a command line
+> parameter for it.
 >=20
 > Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 
-> +static bool intel_irq_remapping_capability(enum irq_remap_cap cap)
-> +{
-> +	struct dmar_drhd_unit *drhd;
-> +	struct intel_iommu *iommu;
-> +
-> +	switch (cap) {
-> +	case IRQ_POSTING_CAP:
-> +		/*
-> +		 * If 1) posted-interrupts is disabled by user
-> +		 * or 2) irq remapping is disabled, posted-interrupts
-> +		 * is not supported.
-> +		 */
-> +		if (disable_irq_post || !irq_remapping_enabled)
-> +			return 0;
-> +
-> +		for_each_iommu(iommu, drhd)
-> +			if (!cap_pi_support(iommu->cap))
-> +				return 0;
-> +
-
-If a new IOMMU is hotplugged now which doesn't support posted
-interrupts, what happens?
+Acked-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 
 --=20
 David Woodhouse                            Open Source Technology Centre
 David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
 
---=-JXKPJRHymof/ynQ5+vgo
+--=-nLLDDE9PcSBIqkFDiGwg
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -160,28 +138,28 @@ Cmr47UQpqQ7BjK0xggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
 Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2
 BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMJ
 2TIwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMTUwMTI4MTUzNzMwWjAjBgkqhkiG9w0BCQQxFgQU/a/XhqxaeTZHkTtdWlYWIzd7lWUwgaUG
+DxcNMTUwMTI4MTUzOTUzWjAjBgkqhkiG9w0BCQQxFgQUVyzV6DTJB/SEhxehrLyn/hX0gGswgaUG
 CSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4x
 KzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0
 YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMJ2TIwgacGCyqG
 SIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEr
 MCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMvU3Rh
 cnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAwnZMjANBgkqhkiG
-9w0BAQEFAASCAQCaHkYnH0XWkH5b9rGritmKoWAk8iLPm0E5bxFQrAt8ud2emNteKvpEDeYxzR3P
-gkz8UKpBI9PKWWoLKjz3s1kxn7NoHXQuIWX7WM7gt+kfavelFl6iS52bi/RxUUZ9uISQM88Z7Z2n
-fLkDE5wZdSY/b9yl3TOsb1bZwAfMhC78jUzDoUHPJpRZb9he0MnQ71rDRFWh13AOUTqx/TM03vUs
-x9vvu4ZwxRxs2oVt0Oq/hQGQmvlRE0tKtSVmdREH5+FOA06an0c9600V5Rc1yTFhblpABKoT7ITe
-jcExavN+qJxQQY4Ze1yyckoi7R4zw9bdvj4dCUgJsCa1rMKY+sdvAAAAAAAA
+9w0BAQEFAASCAQCJwJPqkv7nmGFTepEMq1cjOP5SYQihWBzg2+DsJcDZnfwPE0V8pfXOYiBDhjff
+7WH+xJvSJdr/3Em6ljAzET+VlBdaiNQnNeYvHM0mFioH/th4yFZaFCLObooHlPi3znRWo20VHGCn
+qZFEQ6yLUHSB1wPU0+EeZGKVejc9zPueeGo2mQ+rNbwflTUCetfLRYN97TcGGXsAS/+LpjYP5h/d
+RuAirtJ4QsbR7g5FC2CazVR4pHJmKlzPwqnYOfaC/pktpjQ/SMYwJ0QdCM3gVMuaXfsNEVfXzN5f
+PUn2ifl0xtfmbDKRvYzS6ZCyPsgW/R9thHwzlPBULc2QaK7aI/xjAAAAAAAA
 
 
---=-JXKPJRHymof/ynQ5+vgo--
+--=-nLLDDE9PcSBIqkFDiGwg--
 
 
---===============5109919536039532167==
+--===============8641763779560188635==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============5109919536039532167==--
+--===============8641763779560188635==--
