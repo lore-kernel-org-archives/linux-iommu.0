@@ -1,7 +1,7 @@
 From: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-Subject: [PATCH 23/26] iommu/fsl: Use NULL instead of zero
-Date: Wed, 28 Jan 2015 08:34:55 -0600
-Message-ID: <1422455698-3074-24-git-send-email-Emilian.Medve@Freescale.com>
+Subject: [PATCH 06/26] iommu/fsl: Fix checkpatch type LEADING_SPACE
+Date: Wed, 28 Jan 2015 08:34:38 -0600
+Message-ID: <1422455698-3074-7-git-send-email-Emilian.Medve@Freescale.com>
 References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,45 +21,46 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv
 Cc: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-drivers/iommu/fsl_pamu.c:532:72: warning: Using plain integer as NULL pointer
-drivers/iommu/fsl_pamu.c:559:72: warning: Using plain integer as NULL pointer
-drivers/iommu/fsl_pamu.c:570:66: warning: Using plain integer as NULL pointer
+WARNING:LEADING_SPACE: please, no spaces at the start of a line
++       return __ffs(subwindow_cnt) - 1;$
+
+WARNING:LEADING_SPACE: please, no spaces at the start of a line
++                (PAACE_ATM_WINDOW_XLATE | PAACE_ATM_PAGE_XLATE)$
 
 Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 ---
- drivers/iommu/fsl_pamu.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iommu/fsl_pamu.c | 4 ++--
+ drivers/iommu/fsl_pamu.h | 3 +--
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
-index 1d9273a..7a4665d 100644
+index df6007c..ccdc5e5 100644
 --- a/drivers/iommu/fsl_pamu.c
 +++ b/drivers/iommu/fsl_pamu.c
-@@ -529,7 +529,7 @@ u32 get_stash_id(u32 stash_dest_hint, u32 vcpu)
- 	if (stash_dest_hint == PAMU_ATTR_CACHE_L3) {
- 		node = of_find_matching_node(NULL, l3_device_ids);
- 		if (node) {
--			prop = of_get_property(node, "cache-stash-id", 0);
-+			prop = of_get_property(node, "cache-stash-id", NULL);
- 			if (!prop) {
- 				pr_debug("missing cache-stash-id at %s\n",
- 					 node->full_name);
-@@ -556,7 +556,7 @@ found_cpu_node:
- 	/* find the hwnode that represents the cache */
- 	for (cache_level = PAMU_ATTR_CACHE_L1; (cache_level < PAMU_ATTR_CACHE_L3) && found; cache_level++) {
- 		if (stash_dest_hint == cache_level) {
--			prop = of_get_property(node, "cache-stash-id", 0);
-+			prop = of_get_property(node, "cache-stash-id", NULL);
- 			if (!prop) {
- 				pr_debug("missing cache-stash-id at %s\n",
- 					 node->full_name);
-@@ -567,7 +567,7 @@ found_cpu_node:
- 			return be32_to_cpup(prop);
- 		}
+@@ -169,8 +169,8 @@ static unsigned int map_addrspace_size_to_wse(phys_addr_t addrspace_size)
+ /* Derive the PAACE window count encoding for the subwindow count */
+ static unsigned int map_subwindow_cnt_to_wce(u32 subwindow_cnt)
+ {
+-       /* window count is 2^(WCE+1) bytes */
+-       return __ffs(subwindow_cnt) - 1;
++	/* window count is 2^(WCE+1) bytes */
++	return __ffs(subwindow_cnt) - 1;
+ }
  
--		prop = of_get_property(node, "next-level-cache", 0);
-+		prop = of_get_property(node, "next-level-cache", NULL);
- 		if (!prop) {
- 			pr_debug("can't find next-level-cache at %s\n",
- 				 node->full_name);
+ /*
+diff --git a/drivers/iommu/fsl_pamu.h b/drivers/iommu/fsl_pamu.h
+index a7794b5..52a91af 100644
+--- a/drivers/iommu/fsl_pamu.h
++++ b/drivers/iommu/fsl_pamu.h
+@@ -200,8 +200,7 @@ struct pamu_mmap_regs {
+ #define PAACE_ATM_NO_XLATE      0x00
+ #define PAACE_ATM_WINDOW_XLATE  0x01
+ #define PAACE_ATM_PAGE_XLATE    0x02
+-#define PAACE_ATM_WIN_PG_XLATE  \
+-                (PAACE_ATM_WINDOW_XLATE | PAACE_ATM_PAGE_XLATE)
++#define PAACE_ATM_WIN_PG_XLATE  (PAACE_ATM_WINDOW_XLATE | PAACE_ATM_PAGE_XLATE)
+ #define PAACE_OTM_NO_XLATE      0x00
+ #define PAACE_OTM_IMMEDIATE     0x01
+ #define PAACE_OTM_INDEXED       0x02
 -- 
 2.2.2
