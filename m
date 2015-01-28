@@ -1,7 +1,7 @@
 From: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-Subject: [PATCH 26/26] iommu/fsl: Remove extra paranthesis
-Date: Wed, 28 Jan 2015 08:34:58 -0600
-Message-ID: <1422455698-3074-27-git-send-email-Emilian.Medve@Freescale.com>
+Subject: [PATCH 09/26] iommu/fsl: Fix checkpatch type ALLOC_SIZEOF_STRUCT
+Date: Wed, 28 Jan 2015 08:34:41 -0600
+Message-ID: <1422455698-3074-10-git-send-email-Emilian.Medve@Freescale.com>
 References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,82 +21,43 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv
 Cc: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+CHECK:ALLOC_SIZEOF_STRUCT: Prefer kzalloc(sizeof(*data)...) over kzalloc(sizeof(struct pamu_isr_data)...)
++       data = kzalloc(sizeof(struct pamu_isr_data), GFP_KERNEL);
+
+CHECK:ALLOC_SIZEOF_STRUCT: Prefer kzalloc(sizeof(*dma_domain->win_arr)...) over kzalloc(sizeof(struct dma_window)...)
++               dma_domain->win_arr = kzalloc(sizeof(struct dma_window)
+
 Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 ---
- drivers/iommu/fsl_pamu.c        | 4 ++--
- drivers/iommu/fsl_pamu.h        | 4 ++--
- drivers/iommu/fsl_pamu_domain.c | 8 ++++----
- 3 files changed, 8 insertions(+), 8 deletions(-)
+ drivers/iommu/fsl_pamu.c        | 2 +-
+ drivers/iommu/fsl_pamu_domain.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
-index 7a4665d..ea49d9f 100644
+index 7f0181c..4f1926b 100644
 --- a/drivers/iommu/fsl_pamu.c
 +++ b/drivers/iommu/fsl_pamu.c
-@@ -160,7 +160,7 @@ int pamu_disable_liodn(int liodn)
- static unsigned int map_addrspace_size_to_wse(phys_addr_t addrspace_size)
- {
- 	/* Bug if not a power of 2 */
--	BUG_ON((addrspace_size & (addrspace_size - 1)));
-+	BUG_ON(addrspace_size & (addrspace_size - 1));
+@@ -1039,7 +1039,7 @@ static int __init fsl_pamu_probe(struct platform_device *pdev)
+ 		goto error;
+ 	}
  
- 	/* window size is 2^(WSE+1) bytes */
- 	return fls64(addrspace_size) - 2;
-@@ -801,7 +801,7 @@ static irqreturn_t pamu_av_isr(int irq, void *arg)
- 			}
- 
- 			/* clear access violation condition */
--			out_be32((p + PAMU_AVS1), avs1 & PAMU_AV_MASK);
-+			out_be32(p + PAMU_AVS1, avs1 & PAMU_AV_MASK);
- 			paace = pamu_get_ppaace(avs1 >> PAMU_AVS1_LIODN_SHIFT);
- 			BUG_ON(!paace);
- 			/* check if we got a violation for a disabled LIODN */
-diff --git a/drivers/iommu/fsl_pamu.h b/drivers/iommu/fsl_pamu.h
-index 342ac6d..aab723f 100644
---- a/drivers/iommu/fsl_pamu.h
-+++ b/drivers/iommu/fsl_pamu.h
-@@ -26,8 +26,8 @@
- /* Bit Field macros
-  *	v = bit field variable; m = mask, m##_SHIFT = shift, x = value to load
-  */
--#define set_bf(v, m, x)		(v = ((v) & ~(m)) | (((x) << (m##_SHIFT)) & (m)))
--#define get_bf(v, m)		(((v) & (m)) >> (m##_SHIFT))
-+#define set_bf(v, m, x)		(v = ((v) & ~(m)) | (((x) << m##_SHIFT) & (m)))
-+#define get_bf(v, m)		(((v) & (m)) >> m##_SHIFT)
- 
- /* PAMU CCSR space */
- #define PAMU_PGC 0x00000000     /* Allows all peripheral accesses */
+-	data = kzalloc(sizeof(struct pamu_isr_data), GFP_KERNEL);
++	data = kzalloc(sizeof(*data), GFP_KERNEL);
+ 	if (!data) {
+ 		dev_err(&pdev->dev, "PAMU isr data memory allocation failed\n");
+ 		ret = -ENOMEM;
 diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index 36622e2..ceebd28 100644
+index d5137dd..9417207 100644
 --- a/drivers/iommu/fsl_pamu_domain.c
 +++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -84,7 +84,7 @@ static phys_addr_t get_phys_addr(struct fsl_dma_domain *dma_domain, dma_addr_t i
- 	}
- 
- 	if (win_ptr->valid)
--		return (win_ptr->paddr + (iova & (win_ptr->size - 1)));
-+		return win_ptr->paddr + (iova & (win_ptr->size - 1));
- 
- 	return 0;
- }
-@@ -386,8 +386,8 @@ static phys_addr_t fsl_pamu_iova_to_phys(struct iommu_domain *domain,
- {
- 	struct fsl_dma_domain *dma_domain = domain->priv;
- 
--	if ((iova < domain->geometry.aperture_start) ||
--	    iova > (domain->geometry.aperture_end))
-+	if (iova < domain->geometry.aperture_start ||
-+	    iova > domain->geometry.aperture_end)
- 		return 0;
- 
- 	return get_phys_addr(dma_domain, iova);
-@@ -1029,7 +1029,7 @@ static int fsl_pamu_set_windows(struct iommu_domain *domain, u32 w_count)
- 	}
- 
- 	ret = pamu_set_domain_geometry(dma_domain, &domain->geometry,
--				       ((w_count > 1) ? w_count : 0));
-+				       w_count > 1 ? w_count : 0);
+@@ -1037,7 +1037,7 @@ static int fsl_pamu_set_windows(struct iommu_domain *domain, u32 w_count)
+ 				((w_count > 1) ? w_count : 0));
  	if (!ret) {
  		kfree(dma_domain->win_arr);
- 		dma_domain->win_arr = kcalloc(w_count,
+-		dma_domain->win_arr = kzalloc(sizeof(struct dma_window) *
++		dma_domain->win_arr = kzalloc(sizeof(*dma_domain->win_arr) *
+ 							  w_count, GFP_ATOMIC);
+ 		if (!dma_domain->win_arr) {
+ 			spin_unlock_irqrestore(&dma_domain->domain_lock, flags);
 -- 
 2.2.2
