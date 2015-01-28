@@ -1,7 +1,7 @@
 From: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-Subject: [PATCH 03/26] iommu/fsl: Remove unused/extra includes
-Date: Wed, 28 Jan 2015 08:34:35 -0600
-Message-ID: <1422455698-3074-4-git-send-email-Emilian.Medve@Freescale.com>
+Subject: [PATCH 13/26] iommu/fsl: Fix checkpatch type PREFER_PACKED
+Date: Wed, 28 Jan 2015 08:34:45 -0600
+Message-ID: <1422455698-3074-14-git-send-email-Emilian.Medve@Freescale.com>
 References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,97 +21,26 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv
 Cc: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-linux/modules.h		- drivers can't be a module
-linux/bootmem.h		- no boot time memory allocator is used
-linux/notifier.h	- not used
-etc.
-
-Factorize common includes into fsl_pamu.h
+WARNING:PREFER_PACKED: __packed is preferred over __attribute__((packed))
++} __attribute__((packed));
 
 Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 ---
- drivers/iommu/fsl_pamu.c        | 16 +++-------------
- drivers/iommu/fsl_pamu.h        |  2 ++
- drivers/iommu/fsl_pamu_domain.c | 20 ++------------------
- 3 files changed, 7 insertions(+), 31 deletions(-)
+ drivers/iommu/fsl_pamu.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
-index 7d9f8a0..d3a9fff 100644
---- a/drivers/iommu/fsl_pamu.c
-+++ b/drivers/iommu/fsl_pamu.c
-@@ -18,24 +18,14 @@
- 
- #define pr_fmt(fmt)    "fsl-pamu: %s: " fmt, __func__
- 
--#include <linux/init.h>
--#include <linux/iommu.h>
--#include <linux/slab.h>
--#include <linux/module.h>
--#include <linux/types.h>
--#include <linux/mm.h>
-+#include "fsl_pamu.h"
-+
- #include <linux/interrupt.h>
--#include <linux/device.h>
--#include <linux/of_platform.h>
--#include <linux/bootmem.h>
- #include <linux/genalloc.h>
--#include <asm/io.h>
--#include <asm/bitops.h>
-+
- #include <asm/mpc85xx.h>
- #include <asm/fsl_guts.h>
- 
--#include "fsl_pamu.h"
--
- /* define indexes for each operation mapping scenario */
- #define OMI_QMAN        0x00
- #define OMI_FMAN        0x01
 diff --git a/drivers/iommu/fsl_pamu.h b/drivers/iommu/fsl_pamu.h
-index 8fc1a12..a7794b5 100644
+index 86abc70..04dcd25 100644
 --- a/drivers/iommu/fsl_pamu.h
 +++ b/drivers/iommu/fsl_pamu.h
-@@ -19,6 +19,8 @@
- #ifndef __FSL_PAMU_H
- #define __FSL_PAMU_H
+@@ -333,7 +333,7 @@ struct paace {
+ #define NUM_MOE 128
+ struct ome {
+ 	u8 moe[NUM_MOE];
+-} __attribute__((packed));
++} __packed;
  
-+#include <linux/iommu.h>
-+
- #include <asm/fsl_pamu_stash.h>
- 
- /* Bit Field macros
-diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index 48a72b3..7ea93ae 100644
---- a/drivers/iommu/fsl_pamu_domain.c
-+++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -19,26 +19,10 @@
- 
- #define pr_fmt(fmt)    "fsl-pamu-domain: %s: " fmt, __func__
- 
--#include <linux/init.h>
--#include <linux/iommu.h>
--#include <linux/notifier.h>
--#include <linux/slab.h>
--#include <linux/module.h>
--#include <linux/types.h>
--#include <linux/mm.h>
--#include <linux/interrupt.h>
--#include <linux/device.h>
--#include <linux/of_platform.h>
--#include <linux/bootmem.h>
--#include <linux/err.h>
--#include <asm/io.h>
--#include <asm/bitops.h>
--
--#include <asm/pci-bridge.h>
--#include <sysdev/fsl_pci.h>
--
- #include "fsl_pamu_domain.h"
- 
-+#include <sysdev/fsl_pci.h>
-+
- /*
-  * Global spinlock that needs to be held while
-  * configuring PAMU.
+ #define PAACT_SIZE              (sizeof(struct paace) * PAACE_NUMBER_ENTRIES)
+ #define SPAACT_SIZE              (sizeof(struct paace) * SPAACE_NUMBER_ENTRIES)
 -- 
 2.2.2
