@@ -1,17 +1,15 @@
-From: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH v4 3/6] of: fix size when dma-range is not used
-Date: Wed, 28 Jan 2015 12:34:59 -0500
-Message-ID: <54C91DC3.4020101@ti.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH v4 1/6] of: iommu: add ptr to OF node arg to
+	of_iommu_configure()
+Date: Thu, 29 Jan 2015 01:32 +0200
+Message-ID: <5349994.6VHXzPdIxs@avalon>
 References: <1422052359-12384-1-git-send-email-m-karicheri2@ti.com>
-	<1422052359-12384-4-git-send-email-m-karicheri2@ti.com>
-	<54C77616.80301@arm.com> <54C7DF13.20402@ti.com>
-	<20150128110523.GC6646@e104818-lin.cambridge.arm.com>
-	<CAL_JsqJiCKW0ny=_ueq=A7RH3octpEhN+KZuLZhbNEHusyjcig@mail.gmail.com>
+	<13812499.ICbNgSDOae@avalon> <20150128133219.GM1569@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAL_JsqJiCKW0ny=_ueq=A7RH3octpEhN+KZuLZhbNEHusyjcig-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <20150128133219.GM1569-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,185 +19,122 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/28/2015 10:45 AM, Rob Herring wrote:
-> On Wed, Jan 28, 2015 at 5:05 AM, Catalin Marinas
-> <catalin.marinas-5wv7dgnIgG8@public.gmane.org>  wrote:
->> On Tue, Jan 27, 2015 at 06:55:15PM +0000, Murali Karicheri wrote:
->>> On 01/27/2015 06:27 AM, Robin Murphy wrote:
->>>> On 23/01/15 22:32, Murali Karicheri wrote:
->>>>> Fix the dma-range size when the DT attribute is missing. i.e set size to
->>>>> dev->coherent_dma_mask + 1 instead of dev->coherent_dma_mask. To detect
->>>>> overflow when mask is set to max of u64, add a check, log error and
->>>>> return.
->>>>> Some platform use mask format for size in DTS. So add a work around to
->>>>> catch this and fix.
->>>>>
->>>>> Cc: Joerg Roedel<joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
->>>>> Cc: Grant Likely<grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
->>>>> Cc: Rob Herring<robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
->>>>> Cc: Bjorn Helgaas<bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
->>>>> Cc: Will Deacon<will.deacon-5wv7dgnIgG8@public.gmane.org>
->>>>> Cc: Russell King<linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
->>>>> Cc: Arnd Bergmann<arnd-r2nGTMty4D4@public.gmane.org>
->>>>> Cc: Suravee Suthikulpanit<Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
->>>>>
->>>>> Signed-off-by: Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>
->>>>> ---
->>>>> drivers/of/device.c | 14 +++++++++++++-
->>>>> 1 file changed, 13 insertions(+), 1 deletion(-)
->>>>>
->>>>> diff --git a/drivers/of/device.c b/drivers/of/device.c
->>>>> index 2de320d..0a5ff54 100644
->>>>> --- a/drivers/of/device.c
->>>>> +++ b/drivers/of/device.c
->>>>> @@ -105,12 +105,24 @@ void of_dma_configure(struct device *dev, struct
->>>>> device_node *np)
->>>>> ret = of_dma_get_range(np,&dma_addr,&paddr,&size);
->>>>> if (ret<  0) {
->>>>> dma_addr = offset = 0;
->>>>> - size = dev->coherent_dma_mask;
->>>>> + size = dev->coherent_dma_mask + 1;
->>>>> } else {
->>>>> offset = PFN_DOWN(paddr - dma_addr);
->>>>> + /*
->>>>> + * Add a work around to treat the size as mask + 1 in case
->>>>> + * it is defined in DT as a mask.
->>>>> + */
->>>>> + if (size&  1)
->>>>> + size = size + 1;
->>>>> dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
->>>>> }
->>>>>
->>>>> + /* if size is 0, we have an overflow of u64 */
->>>>> + if (!size) {
->>>>> + dev_err(dev, "invalid size\n");
->>>>> + return;
->>>>> + }
->>>>> +
->>>>
->>>> This seems potentially fragile to dodgy DTs given that we might also be
->>>> using size to make a mask later. Would it make sense to double-up a
->>>> sanity check as mask-format detection? Something like:
->>>>
->>>> if is_power_of_2(size)
->>>> // use size
->>>> else if is_power_of_2(size + 1)
->>>> // use size + 1
->>>> else
->>>> // cry
->>>
->>> How about having the logic like this?
->>>
->>>        ret = of_dma_get_range(np,&dma_addr,&paddr,&size);
->>>        if (ret<  0) {
->>>                dma_addr = offset = 0;
->>>                size = dev->coherent_dma_mask + 1;
->>>        } else {
->>>                offset = PFN_DOWN(paddr - dma_addr);
->>>                dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
->>>        }
->>>
->>>        if (is_power_of_2(size + 1))
->>>                size = size + 1;
->>>        else if (!is_power_of_2(size))
->>>        {
->>>                dev_err(dev, "invalid size\n");
->>>                return;
->>>        }
->>
->> In of_dma_configure(), we currently assume that the default coherent
->> mask is 32-bit. In this thread:
->>
->> http://article.gmane.org/gmane.linux.kernel/1835096
->>
->> we talked about setting the coherent mask based on size automatically.
->> I'm not sure about the size but I think we can assume is 32-bit mask + 1
->> if it is not specified in the DT. Instead of just assuming a default
->> mask, let's assume a default size and create the mask based on this
->> (untested):
->>
->> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
->> index 5b33c6a21807..9ff8d1286b44 100644
->> --- a/drivers/of/platform.c
->> +++ b/drivers/of/platform.c
->> @@ -170,10 +170,10 @@ static void of_dma_configure(struct device *dev)
->>          struct iommu_ops *iommu;
->>
->>          /*
->> -        * Set default dma-mask to 32 bit. Drivers are expected to setup
->> -        * the correct supported dma_mask.
->> +        * Set default size to cover the 32-bit. Drivers are expected to setup
->> +        * the correct size and dma_mask.
->>           */
->> -       dev->coherent_dma_mask = DMA_BIT_MASK(32);
->> +       size = 1ULL<<  32;
->>
->>          /*
->>           * Set it to coherent_dma_mask by default if the architecture
->> @@ -185,13 +185,24 @@ static void of_dma_configure(struct device *dev)
->>          ret = of_dma_get_range(dev->of_node,&dma_addr,&paddr,&size);
->>          if (ret<  0) {
->>                  dma_addr = offset = 0;
->> -               size = dev->coherent_dma_mask;
->
-> Are we assuming dma_addr, paddr and size are not touched on error? If
-> so, we can get rid of this clause entirely.
-Checking the code for of_dma_get_range() I see paddr is modified on 
-error case, but is used only for success case in this function. dma_addr 
-and size are not modified. So setting dma_addr and offset to zero before 
-hand like size might work as below
+Hi Will,
 
-dma_addr = offset = 0;
-size = 1ULL <<  32;
+On Wednesday 28 January 2015 13:32:19 Will Deacon wrote:
+> On Wed, Jan 28, 2015 at 01:15:10PM +0000, Laurent Pinchart wrote:
+> > On Wednesday 28 January 2015 12:29:42 Will Deacon wrote:
+> >> On Wed, Jan 28, 2015 at 12:23:03PM +0000, Laurent Pinchart wrote:
+> >>> On Wednesday 28 January 2015 11:33:00 Will Deacon wrote:
+> >>>> On Mon, Jan 26, 2015 at 06:49:01PM +0000, Murali Karicheri wrote:
+> >>>>> On 01/25/2015 08:32 AM, Laurent Pinchart wrote:
+> >>>>>> On Friday 23 January 2015 17:32:34 Murali Karicheri wrote:
+> >>>>>>> Function of_iommu_configure() is called from of_dma_configure() to
+> >>>>>>> setup iommu ops using DT property. This API is currently used for
+> >>>>>>> platform devices for which DMA configuration (including iommu ops)
+> >>>>>>> may come from device's parent. To extend this functionality for
+> >>>>>>> PCI devices, this API need to take a parent node ptr as an argument
+> >>>>>>> instead of assuming device's parent. This is needed since for PCI,
+> >>>>>>> the dma configuration may be defined in the DT node of the root
+> >>>>>>> bus bridge's parent device. Currently only dma-range is used for PCI
+> >>>>>>> and iommu is not supported. So return error if the device is PCI.
+> >>>>>>> 
+> >>>>>>> Cc: Joerg Roedel<joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> >>>>>>> Cc: Grant Likely<grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> >>>>>>> Cc: Rob Herring<robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> >>>>>>> Cc: Bjorn Helgaas<bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+> >>>>>>> Cc: Will Deacon<will.deacon-5wv7dgnIgG8@public.gmane.org>
+> >>>>>>> Cc: Russell King<linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+> >>>>>>> Cc: Arnd Bergmann<arnd-r2nGTMty4D4@public.gmane.org>
+> >>>>>>> Cc: Suravee Suthikulpanit<Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> >>>>>>> 
+> >>>>>>> Signed-off-by: Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>
+> >>>>>>> ---
+> >>>>>>> 
+> >>>>>>>   drivers/iommu/of_iommu.c |   10 ++++++++--
+> >>>>>>>   drivers/of/platform.c    |    2 +-
+> >>>>>>>   include/linux/of_iommu.h |    6 ++++--
+> >>>>>>>   3 files changed, 13 insertions(+), 5 deletions(-)
+> >>>>>>> 
+> >>>>>>> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> >>>>>>> index af1dc6a..439235b 100644
+> >>>>>>> --- a/drivers/iommu/of_iommu.c
+> >>>>>>> +++ b/drivers/iommu/of_iommu.c
+> >>>>>>> @@ -133,19 +133,25 @@ struct iommu_ops *of_iommu_get_ops(struct
+> >>>>>>> device_node *np)
+> >>>>>>>   	return ops;
+> >>>>>>>  }
+> >>>>>>> 
+> >>>>>>> -struct iommu_ops *of_iommu_configure(struct device *dev)
+> >>>>>>> +struct iommu_ops *of_iommu_configure(struct device *dev,
+> >>>>>>> +				     struct device_node *iommu_np)
+> >>>>>>>  {
+> >>>>>>>   	struct of_phandle_args iommu_spec;
+> >>>>>>>   	struct device_node *np;
+> >>>>>>>   	struct iommu_ops *ops = NULL;
+> >>>>>>>   	int idx = 0;
+> >>>>>>> 
+> >>>>>>> +	if (dev_is_pci(dev)) {
+> >>>>>>> +		dev_err(dev, "iommu is currently not supported for PCI\n");
+> >>>>>>> +		return NULL;
+> >>>>>>> +	}
+> >>>>>>> +
+> >>>>>>>   	/*
+> >>>>>>>   	 * We don't currently walk up the tree looking for a parent
+> >>>>>>>   	 IOMMU.
+> >>>>>>>   	 * See the `Notes:' section of
+> >>>>>>>   	 * Documentation/devicetree/bindings/iommu/iommu.txt
+> >>>>>>>   	 */
+> >>>>>> 
+> >>>>>> Wouldn't it be better to fix this rather than passing the device
+> >>>>>> node pointer to the function ? The solution would be more generic.
+> >>>>> 
+> >>>>> Will Deacon (Copied here) is working on this as we alteady discussed
+> >>>>> in this thread. So it will be addressed by him in another series.
+> >>>> 
+> >>>> Well, "working on this" equates to "has it somewhere near the bottom
+> >>>> of a very long list" :)
+> >>> 
+> >>> What's your opinion on this patch then, do you think adding the
+> >>> iommu_np argument makes sense as a temporary hack, or should we instead
+> >>> walk up the tree looking for an iommus attribute in parent nodes ? I
+> >>> don't expect that to be insanely difficult to code.
+> >> 
+> >> If walking up the tree is useful, then I think we should do that and
+> >> update the Documentation to reflect the new behaviour.
+> > 
+> > If I understand Murali's patch set right (please correct me if that's not
+> > the case) the PCI code walks up the DT nodes hierarchy to the parent node
+> > that contains the iommus attribute and passes a pointer to that node to
+> > this function. It's thus a PCI-specific solution. As a temporary hack
+> > that's OK I suppose, but if implementing it right straight away isn't
+> > difficult that would be better.
+> 
+> It looks to me like the code walks the PCI topology to get the DT node for
+> the host controller, and passes *that* to of_dma_configure. That sounds
+> like the right thing to do to me, especially since the PCI topology is
+> likely not encoded in the device-tree. So actually, it is passing the
+> first parent node afaict.
 
-ret = of_dma_get_range(dev->of_node,&dma_addr,&paddr,&size);
-if (!ret) {
-	offset = PFN_DOWN(paddr - dma_addr);
-}
+Indeed, that's right. I forgot for a moment that we have non-DT devices ;-)
 
-.. rest of the code.
+Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 
-Murali
+Murali, nitpicking a bit, shouldn't the iommu_np parameter be renamed ? It 
+points to the node containing the iommus parameter, not to the iommu node, so 
+the current name is slightly confusing. A brief kerneldoc above the function 
+would also help. This can be the subject of a separate patch.
 
-
->
->>          } else {
->>                  offset = PFN_DOWN(paddr - dma_addr);
->>                  dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", dev->dma_pfn_offset);
->>          }
->>          dev->dma_pfn_offset = offset;
->>
->> +       /*
->> +        * Workaround for DTs setting the size to a mask or 0.
->> +        */
->> +       if (is_power_of_2(size + 1))
->> +               size += 1;
->
-> As I mentioned, I think power of 2 is too restrictive (from a DT
-> perspective even though the kernel may require a power of 2 here for
-> the mask). Just checking bit0 set should be enough.
->
-> Also, we need a WARN here so DTs get fixed.
->
->> +
->> +       /*
->> +        * Coherent DMA masks larger than 32-bit must be explicitly set by the
->> +        * driver.
->> +        */
->> +       dev->coherent_dma_mask = min(DMA_BIT_MASK(32), DMA_BIT_MASK(ilog2(size)));
->> +
->>          coherent = of_dma_is_coherent(dev->of_node);
->>          dev_dbg(dev, "device is%sdma coherent\n",
->>                  coherent ? " " : " not ");
->>
->> --
->> Catalin
-
+> The part I'm more interested in is the mapping of RequesterID (PCI dma
+> alias) to IOMMU ID when we transition from the PCI topology to the DT
+> topology. Currently, it seems to be 1:1 on the platforms I have, but I
+> doubt this will always be the case.
 
 -- 
-Murali Karicheri
-Linux Kernel, Texas Instruments
+Regards,
+
+Laurent Pinchart
