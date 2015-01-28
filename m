@@ -1,11 +1,13 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: [PATCH] iommu: disable on !MMU builds
-Date: Wed, 28 Jan 2015 15:45:53 +0100
-Message-ID: <1685569.C1Ne1erBMA@wuerfel>
+From: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+Subject: [PATCH 07/26] iommu/fsl: Fix checkpath type BRACES
+Date: Wed, 28 Jan 2015 08:34:39 -0600
+Message-ID: <1422455698-3074-8-git-send-email-Emilian.Medve@Freescale.com>
+References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1422455698-3074-1-git-send-email-Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,72 +17,148 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, Varun.Sethi-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org
+Cc: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-A lot of the IOMMU support code does not build if the CPU does
-not have an MMU itself, and it's not clear if there is any
-use case for it, so let's just disable it and wait for anybody
-to need it.
+WARNING:BRACES: braces {} are not necessary for single statement blocks
++               if (!paace) {
++                       return -ENOENT;
++               }
 
-This avoids randconfig errors like
+WARNING:BRACES: braces {} are not necessary for single statement blocks
++               if (!paace) {
++                       return -ENOENT;
++               }
 
-../arch/arm/mm/dma-mapping.c: In function '__iommu_alloc_remap':
-../arch/arm/mm/dma-mapping.c:1278:34: error: 'VM_ARM_DMA_CONSISTENT' undeclared (first use in this function)
-  area = get_vm_area_caller(size, VM_ARM_DMA_CONSISTENT | VM_USERMAP,
-                                  ^
-../arch/arm/mm/dma-mapping.c:1278:34: note: each undeclared identifier is reported only once for each function it appears in
-../arch/arm/mm/dma-mapping.c: In function '__atomic_get_pages':
-../arch/arm/mm/dma-mapping.c:1358:27: error: 'atomic_pool' undeclared (first use in this function)
-  struct dma_pool *pool = &atomic_pool;
+WARNING:BRACES: braces {} are not necessary for single statement blocks
++       if (!ppaace) {
++               return -ENOENT;
++       }
 
-Signed-off-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+CHECK:BRACES: Blank lines aren't necessary after an open brace '{'
++{
++
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index c68c8db0e6f7..089da97d7c6b 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -4,6 +4,7 @@ config IOMMU_API
+CHECK:BRACES: Blank lines aren't necessary before a close brace '}'
++
++}
+
+CHECK:BRACES: Blank lines aren't necessary before a close brace '}'
++
++}
+
+CHECK:BRACES: Blank lines aren't necessary before a close brace '}'
++
++}
+
+CHECK:BRACES: Blank lines aren't necessary after an open brace '{'
++       for (i = 0; i < num; i++) {
++
+
+CHECK:BRACES: braces {} should be used on all arms of this statement
++               if (pci_ctl->parent->iommu_group) {
+[...]
++               } else
+[...]
+
+Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+---
+ drivers/iommu/fsl_pamu.c        | 9 +++------
+ drivers/iommu/fsl_pamu_domain.c | 8 ++------
+ 2 files changed, 5 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
+index ccdc5e5..6b28dd8 100644
+--- a/drivers/iommu/fsl_pamu.c
++++ b/drivers/iommu/fsl_pamu.c
+@@ -278,9 +278,8 @@ int  pamu_update_paace_stash(int liodn, u32 subwin, u32 value)
+ 	}
+ 	if (subwin) {
+ 		paace = pamu_get_spaace(paace, subwin - 1);
+-		if (!paace) {
++		if (!paace)
+ 			return -ENOENT;
+-		}
+ 	}
+ 	set_bf(paace->impl_attr, PAACE_IA_CID, value);
  
- menuconfig IOMMU_SUPPORT
- 	bool "IOMMU Hardware Support"
-+	depends on MMU
- 	default y
- 	---help---
- 	  Say Y here if you want to compile device drivers for IO Memory
-@@ -170,7 +171,7 @@ config IRQ_REMAP
- # OMAP IOMMU support
- config OMAP_IOMMU
- 	bool "OMAP IOMMU Support"
--	depends on ARCH_OMAP2PLUS
-+	depends on ARCH_OMAP2PLUS && MMU
- 	select IOMMU_API
+@@ -301,9 +300,8 @@ int pamu_disable_spaace(int liodn, u32 subwin)
+ 	}
+ 	if (subwin) {
+ 		paace = pamu_get_spaace(paace, subwin - 1);
+-		if (!paace) {
++		if (!paace)
+ 			return -ENOENT;
+-		}
+ 		set_bf(paace->addr_bitfields, PAACE_AF_V,
+ 			 PAACE_V_INVALID);
+ 	} else {
+@@ -351,9 +349,8 @@ int pamu_config_ppaace(int liodn, phys_addr_t win_addr, phys_addr_t win_size,
+ 	}
  
- config OMAP_IOMMU_DEBUG
-@@ -217,7 +218,7 @@ config TEGRA_IOMMU_SMMU
+ 	ppaace = pamu_get_ppaace(liodn);
+-	if (!ppaace) {
++	if (!ppaace)
+ 		return -ENOENT;
+-	}
  
- config EXYNOS_IOMMU
- 	bool "Exynos IOMMU Support"
--	depends on ARCH_EXYNOS && ARM
-+	depends on ARCH_EXYNOS && ARM && MMU
- 	select IOMMU_API
- 	select ARM_DMA_USE_IOMMU
- 	help
-@@ -246,7 +247,7 @@ config SHMOBILE_IPMMU_TLB
- config SHMOBILE_IOMMU
- 	bool "IOMMU for Renesas IPMMU/IPMMUI"
- 	default n
--	depends on ARM
-+	depends on ARM && MMU
- 	depends on ARCH_SHMOBILE || COMPILE_TEST
- 	select IOMMU_API
- 	select ARM_DMA_USE_IOMMU
-@@ -336,6 +337,7 @@ config SPAPR_TCE_IOMMU
- config ARM_SMMU
- 	bool "ARM Ltd. System MMU (SMMU) Support"
- 	depends on ARM64 || ARM
-+	depends on MMU
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select ARM_DMA_USE_IOMMU if ARM
+ 	/* window size is 2^(WSE+1) bytes */
+ 	set_bf(ppaace->addr_bitfields, PPAACE_AF_WSE,
+diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+index dc38db5..080ffa4 100644
+--- a/drivers/iommu/fsl_pamu_domain.c
++++ b/drivers/iommu/fsl_pamu_domain.c
+@@ -35,7 +35,6 @@ static DEFINE_SPINLOCK(device_domain_lock);
+ 
+ static int __init iommu_init_mempool(void)
+ {
+-
+ 	fsl_pamu_domain_cache = kmem_cache_create("fsl_pamu_domain",
+ 					 sizeof(struct fsl_dma_domain),
+ 					 0,
+@@ -153,7 +152,6 @@ static int map_liodn(int liodn, struct fsl_dma_domain *dma_domain)
+ 		return map_subwins(liodn, dma_domain);
+ 	else
+ 		return map_win(liodn, dma_domain);
+-
+ }
+ 
+ /* Update window/subwindow mapping for the LIODN */
+@@ -380,7 +378,6 @@ static void attach_device(struct fsl_dma_domain *dma_domain, int liodn, struct d
+ 	if (!dev->archdata.iommu_domain)
+ 		dev->archdata.iommu_domain = info;
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+-
+ }
+ 
+ static phys_addr_t fsl_pamu_iova_to_phys(struct iommu_domain *domain,
+@@ -527,7 +524,6 @@ static void fsl_pamu_window_disable(struct iommu_domain *domain, u32 wnd_nr)
+ 	}
+ 
+ 	spin_unlock_irqrestore(&dma_domain->domain_lock, flags);
+-
+ }
+ 
+ static int fsl_pamu_window_enable(struct iommu_domain *domain, u32 wnd_nr,
+@@ -616,7 +612,6 @@ static int handle_attach_device(struct fsl_dma_domain *dma_domain,
+ 
+ 	spin_lock_irqsave(&dma_domain->domain_lock, flags);
+ 	for (i = 0; i < num; i++) {
+-
+ 		/* Ensure that LIODN value is valid */
+ 		if (liodn[i] >= PAACE_NUMBER_ENTRIES) {
+ 			pr_debug("Invalid liodn %d, attach device failed for %s\n",
+@@ -951,8 +946,9 @@ static struct iommu_group *get_pci_device_group(struct pci_dev *pdev)
+ 		if (pci_ctl->parent->iommu_group) {
+ 			group = get_device_iommu_group(pci_ctl->parent);
+ 			iommu_group_remove_device(pci_ctl->parent);
+-		} else
++		} else {
+ 			group = get_shared_pci_device_group(pdev);
++		}
+ 	}
+ 
+ 	if (!group)
+-- 
+2.2.2
