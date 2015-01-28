@@ -1,7 +1,7 @@
 From: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-Subject: [PATCH 02/26] iommu/fsl: Use SVR_* instead of magic numbers
-Date: Wed, 28 Jan 2015 08:34:34 -0600
-Message-ID: <1422455698-3074-3-git-send-email-Emilian.Medve@Freescale.com>
+Subject: [PATCH 22/26] iommu/fsl: Make local symbols static
+Date: Wed, 28 Jan 2015 08:34:54 -0600
+Message-ID: <1422455698-3074-23-git-send-email-Emilian.Medve@Freescale.com>
 References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,55 +21,35 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv
 Cc: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+drivers/iommu/fsl_pamu.c:78:17: warning: symbol 'spaace_pool' was not declared. Should it be static?
+drivers/iommu/fsl_pamu.c:762:13: warning: symbol 'pamu_av_isr' was not declared. Should it be static?
+
 Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 ---
- drivers/iommu/fsl_pamu.c | 27 ++++++++++++++-------------
- 1 file changed, 14 insertions(+), 13 deletions(-)
+ drivers/iommu/fsl_pamu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
-index 652c34d..7d9f8a0 100644
+index 3f83259..1d9273a 100644
 --- a/drivers/iommu/fsl_pamu.c
 +++ b/drivers/iommu/fsl_pamu.c
-@@ -31,6 +31,7 @@
- #include <linux/genalloc.h>
- #include <asm/io.h>
- #include <asm/bitops.h>
-+#include <asm/mpc85xx.h>
- #include <asm/fsl_guts.h>
+@@ -75,7 +75,7 @@ static const struct of_device_id l3_device_ids[] = {
+ static u32 max_subwindow_count;
  
- #include "fsl_pamu.h"
-@@ -999,19 +1000,19 @@ static const struct {
- 	u32 svr;
- 	u32 port_id;
- } port_id_map[] __initconst = {
--	{0x82100010, 0xFF000000},	/* P2040 1.0 */
--	{0x82100011, 0xFF000000},	/* P2040 1.1 */
--	{0x82100110, 0xFF000000},	/* P2041 1.0 */
--	{0x82100111, 0xFF000000},	/* P2041 1.1 */
--	{0x82110310, 0xFF000000},	/* P3041 1.0 */
--	{0x82110311, 0xFF000000},	/* P3041 1.1 */
--	{0x82010020, 0xFFF80000},	/* P4040 2.0 */
--	{0x82000020, 0xFFF80000},	/* P4080 2.0 */
--	{0x82210010, 0xFC000000},       /* P5010 1.0 */
--	{0x82210020, 0xFC000000},       /* P5010 2.0 */
--	{0x82200010, 0xFC000000},	/* P5020 1.0 */
--	{0x82050010, 0xFF800000},	/* P5021 1.0 */
--	{0x82040010, 0xFF800000},	/* P5040 1.0 */
-+	{(SVR_P2040 << 8) | 0x10, 0xFF000000},	/* P2040 1.0 */
-+	{(SVR_P2040 << 8) | 0x11, 0xFF000000},	/* P2040 1.1 */
-+	{(SVR_P2041 << 8) | 0x10, 0xFF000000},	/* P2041 1.0 */
-+	{(SVR_P2041 << 8) | 0x11, 0xFF000000},	/* P2041 1.1 */
-+	{(SVR_P3041 << 8) | 0x10, 0xFF000000},	/* P3041 1.0 */
-+	{(SVR_P3041 << 8) | 0x11, 0xFF000000},	/* P3041 1.1 */
-+	{(SVR_P4040 << 8) | 0x20, 0xFFF80000},	/* P4040 2.0 */
-+	{(SVR_P4080 << 8) | 0x20, 0xFFF80000},	/* P4080 2.0 */
-+	{(SVR_P5010 << 8) | 0x10, 0xFC000000},	/* P5010 1.0 */
-+	{(SVR_P5010 << 8) | 0x20, 0xFC000000},	/* P5010 2.0 */
-+	{(SVR_P5020 << 8) | 0x10, 0xFC000000},	/* P5020 1.0 */
-+	{(SVR_P5021 << 8) | 0x10, 0xFF800000},	/* P5021 1.0 */
-+	{(SVR_P5040 << 8) | 0x10, 0xFF800000},	/* P5040 1.0 */
- };
+ /* Pool for fspi allocation */
+-struct gen_pool *spaace_pool;
++static struct gen_pool *spaace_pool;
  
- #define SVR_SECURITY	0x80000	/* The Security (E) bit */
+ /**
+  * pamu_get_max_subwin_cnt() - Return the maximum supported
+@@ -759,7 +759,7 @@ static void __init setup_liodns(void)
+ 	}
+ }
+ 
+-irqreturn_t pamu_av_isr(int irq, void *arg)
++static irqreturn_t pamu_av_isr(int irq, void *arg)
+ {
+ 	struct pamu_isr_data *data = arg;
+ 	phys_addr_t phys;
 -- 
 2.2.2
