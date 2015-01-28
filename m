@@ -1,13 +1,14 @@
-From: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
-Subject: [PATCH v5 2/8] of: move of_dma_configure() to device.c to help re-use
-Date: Tue, 27 Jan 2015 15:59:59 -0500
-Message-ID: <1422392405-32196-3-git-send-email-m-karicheri2@ti.com>
-References: <1422392405-32196-1-git-send-email-m-karicheri2@ti.com>
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [PATCH URGENT] arm: dma-mapping: Set DMA IOMMU ops in
+	arm_iommu_attach_device()
+Date: Wed, 28 Jan 2015 01:25:35 +0100
+Message-ID: <2085044.xTrZHjchoH@diego>
+References: <1422022909-31044-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1422392405-32196-1-git-send-email-m-karicheri2-l0cyMroinI0@public.gmane.org>
+In-Reply-To: <1422022909-31044-1-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,217 +18,39 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: arm-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Alexandre Courbot <acourbot-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Move of_dma_configure() to device.c so that same function can be re-used
-for PCI devices to obtain DMA configuration from DT. Also add a second
-argument so that for PCI, DT node of root bus host bridge can be used to
-obtain the DMA configuration for the slave PCI device.
+Hi Arnd, Olof,
 
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Am Freitag, 23. Januar 2015, 16:21:49 schrieb Laurent Pinchart:
+> Commit 4bb25789ed28228a ("arm: dma-mapping: plumb our iommu mapping ops
+> into arch_setup_dma_ops") moved the setting of the DMA operations from
+> arm_iommu_attach_device() to arch_setup_dma_ops() where the DMA
+> operations to be used are selected based on whether the device is
+> connected to an IOMMU. However, the IOMMU detection scheme requires the
+> IOMMU driver to be ported to the new IOMMU of_xlate API. As no driver
+> has been ported yet, this effectively breaks all IOMMU ARM users that
+> depend on the IOMMU being handled transparently by the DMA mapping API.
+> 
+> Fix this by restoring the setting of DMA IOMMU ops in
+> arm_iommu_attach_device() and splitting the rest of the function into a
+> new internal __arm_iommu_attach_device() function, called by
+> arch_setup_dma_ops().
+> 
+> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 
-Acked-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
----
- drivers/of/device.c       |   59 +++++++++++++++++++++++++++++++++++++++++++++
- drivers/of/platform.c     |   58 ++------------------------------------------
- include/linux/of_device.h |    2 ++
- 3 files changed, 63 insertions(+), 56 deletions(-)
+in the original submission arm-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org was not included, but it looks like 
+the patch should go through arm-soc.
 
-diff --git a/drivers/of/device.c b/drivers/of/device.c
-index 46d6c75c..2de320d 100644
---- a/drivers/of/device.c
-+++ b/drivers/of/device.c
-@@ -2,6 +2,9 @@
- #include <linux/kernel.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-+#include <linux/of_address.h>
-+#include <linux/of_iommu.h>
-+#include <linux/dma-mapping.h>
- #include <linux/init.h>
- #include <linux/module.h>
- #include <linux/mod_devicetable.h>
-@@ -66,6 +69,62 @@ int of_device_add(struct platform_device *ofdev)
- 	return device_add(&ofdev->dev);
- }
- 
-+/**
-+ * of_dma_configure - Setup DMA configuration
-+ * @dev:	Device to apply DMA configuration
-+ * @np:		ptr to of node having dma configuration
-+ *
-+ * Try to get devices's DMA configuration from DT and update it
-+ * accordingly.
-+ *
-+ * In case if platform code need to use own special DMA configuration,it
-+ * can use Platform bus notifier and handle BUS_NOTIFY_ADD_DEVICE event
-+ * to fix up DMA configuration.
-+ */
-+void of_dma_configure(struct device *dev, struct device_node *np)
-+{
-+	u64 dma_addr, paddr, size;
-+	int ret;
-+	bool coherent;
-+	unsigned long offset;
-+	struct iommu_ops *iommu;
-+
-+	/*
-+	 * Set default dma-mask to 32 bit. Drivers are expected to setup
-+	 * the correct supported dma_mask.
-+	 */
-+	dev->coherent_dma_mask = DMA_BIT_MASK(32);
-+
-+	/*
-+	 * Set it to coherent_dma_mask by default if the architecture
-+	 * code has not set it.
-+	 */
-+	if (!dev->dma_mask)
-+		dev->dma_mask = &dev->coherent_dma_mask;
-+
-+	ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
-+	if (ret < 0) {
-+		dma_addr = offset = 0;
-+		size = dev->coherent_dma_mask;
-+	} else {
-+		offset = PFN_DOWN(paddr - dma_addr);
-+		dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
-+	}
-+
-+	dev->dma_pfn_offset = offset;
-+
-+	coherent = of_dma_is_coherent(np);
-+	dev_dbg(dev, "device is%sdma coherent\n",
-+		coherent ? " " : " not ");
-+
-+	iommu = of_iommu_configure(dev, np);
-+	dev_dbg(dev, "device is%sbehind an iommu\n",
-+		iommu ? " " : " not ");
-+
-+	arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
-+}
-+EXPORT_SYMBOL_GPL(of_dma_configure);
-+
- int of_device_register(struct platform_device *pdev)
- {
- 	device_initialize(&pdev->dev);
-diff --git a/drivers/of/platform.c b/drivers/of/platform.c
-index d3f3988..cbee18d 100644
---- a/drivers/of/platform.c
-+++ b/drivers/of/platform.c
-@@ -19,7 +19,6 @@
- #include <linux/slab.h>
- #include <linux/of_address.h>
- #include <linux/of_device.h>
--#include <linux/of_iommu.h>
- #include <linux/of_irq.h>
- #include <linux/of_platform.h>
- #include <linux/platform_device.h>
-@@ -150,59 +149,6 @@ struct platform_device *of_device_alloc(struct device_node *np,
- }
- EXPORT_SYMBOL(of_device_alloc);
- 
--/**
-- * of_dma_configure - Setup DMA configuration
-- * @dev:	Device to apply DMA configuration
-- *
-- * Try to get devices's DMA configuration from DT and update it
-- * accordingly.
-- *
-- * In case if platform code need to use own special DMA configuration,it
-- * can use Platform bus notifier and handle BUS_NOTIFY_ADD_DEVICE event
-- * to fix up DMA configuration.
-- */
--static void of_dma_configure(struct device *dev)
--{
--	u64 dma_addr, paddr, size;
--	int ret;
--	bool coherent;
--	unsigned long offset;
--	struct iommu_ops *iommu;
--
--	/*
--	 * Set default dma-mask to 32 bit. Drivers are expected to setup
--	 * the correct supported dma_mask.
--	 */
--	dev->coherent_dma_mask = DMA_BIT_MASK(32);
--
--	/*
--	 * Set it to coherent_dma_mask by default if the architecture
--	 * code has not set it.
--	 */
--	if (!dev->dma_mask)
--		dev->dma_mask = &dev->coherent_dma_mask;
--
--	ret = of_dma_get_range(dev->of_node, &dma_addr, &paddr, &size);
--	if (ret < 0) {
--		dma_addr = offset = 0;
--		size = dev->coherent_dma_mask;
--	} else {
--		offset = PFN_DOWN(paddr - dma_addr);
--		dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
--	}
--	dev->dma_pfn_offset = offset;
--
--	coherent = of_dma_is_coherent(dev->of_node);
--	dev_dbg(dev, "device is%sdma coherent\n",
--		coherent ? " " : " not ");
--
--	iommu = of_iommu_configure(dev, dev->of_node);
--	dev_dbg(dev, "device is%sbehind an iommu\n",
--		iommu ? " " : " not ");
--
--	arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
--}
--
- static void of_dma_deconfigure(struct device *dev)
- {
- 	arch_teardown_dma_ops(dev);
-@@ -236,7 +182,7 @@ static struct platform_device *of_platform_device_create_pdata(
- 
- 	dev->dev.bus = &platform_bus_type;
- 	dev->dev.platform_data = platform_data;
--	of_dma_configure(&dev->dev);
-+	of_dma_configure(&dev->dev, dev->dev.of_node);
- 
- 	if (of_device_add(dev) != 0) {
- 		of_dma_deconfigure(&dev->dev);
-@@ -299,7 +245,7 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
- 		dev_set_name(&dev->dev, "%s", bus_id);
- 	else
- 		of_device_make_bus_id(&dev->dev);
--	of_dma_configure(&dev->dev);
-+	of_dma_configure(&dev->dev, dev->dev.of_node);
- 
- 	/* Allow the HW Peripheral ID to be overridden */
- 	prop = of_get_property(node, "arm,primecell-periphid", NULL);
-diff --git a/include/linux/of_device.h b/include/linux/of_device.h
-index ef37021..c661496 100644
---- a/include/linux/of_device.h
-+++ b/include/linux/of_device.h
-@@ -53,6 +53,7 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
- 	return of_node_get(cpu_dev->of_node);
- }
- 
-+void of_dma_configure(struct device *dev, struct device_node *np);
- #else /* CONFIG_OF */
- 
- static inline int of_driver_match_device(struct device *dev,
-@@ -90,6 +91,7 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
- {
- 	return NULL;
- }
-+void of_dma_configure(struct device *dev, struct device_node *np) { }
- #endif /* CONFIG_OF */
- 
- #endif /* _LINUX_OF_DEVICE_H */
--- 
-1.7.9.5
+We have two tags
+	Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+	Tested-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+
+Can you find the original patch somehow or should it be resend to include 
+arm-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org ?
+
+
+Thanks
+Heiko
