@@ -1,14 +1,14 @@
 From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [v3 03/26] iommu, x86: Define new irte structure for VT-d
-	Posted-Interrupts
-Date: Wed, 28 Jan 2015 15:26:47 +0000
-Message-ID: <1422458807.5293.54.camel@infradead.org>
+Subject: Re: [v3 04/26] iommu, x86: Implement irq_set_vcpu_affinity for
+	intel_ir_chip
+Date: Wed, 28 Jan 2015 15:26:51 +0000
+Message-ID: <1422458811.5293.56.camel@infradead.org>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
-	<1418397300-10870-4-git-send-email-feng.wu@intel.com>
+	<1418397300-10870-5-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============4768638492002876584=="
+Content-Type: multipart/mixed; boundary="===============2706552641618116312=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1418397300-10870-4-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1418397300-10870-5-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,31 +23,50 @@ Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============4768638492002876584==
+--===============2706552641618116312==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-SABuuLV9WsFfSG6C032c"
+	boundary="=-9mUXvIlQK0natyNnEzQO"
 
 
---=-SABuuLV9WsFfSG6C032c
+--=-9mUXvIlQK0natyNnEzQO
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 On Fri, 2014-12-12 at 23:14 +0800, Feng Wu wrote:
-> Add a new irte_pi structure for VT-d Posted-Interrupts.
+> Implement irq_set_vcpu_affinity for intel_ir_chip.
 >=20
 > Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+> Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 
-Acked-by: David.Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Acked-by: David.Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> assuming a
+suitable answer to...
 
-I think it makes most sense for this to go along with the other patches
-rather than through me, and I'm happy for it to do so.
+> +		vcpu_pi_info =3D (struct vcpu_data *)vcpu_info;
+> +		memcpy(irte_pi, &ir_data->irte_entry, sizeof(struct irte));
+> +
+> +		irte_pi->urg =3D 0;
+> +		irte_pi->vector =3D vcpu_pi_info->vector;
+> +		irte_pi->pda_l =3D (vcpu_pi_info->pi_desc_addr >>
+> +				 (32 - PDA_LOW_BIT)) & ~(-1UL << PDA_LOW_BIT);
+> +		irte_pi->pda_h =3D (vcpu_pi_info->pi_desc_addr >> 32) &
+> +				 ~(-1UL << PDA_HIGH_BIT);
+> +
+> +		irte_pi->__reserved_1 =3D 0;
+> +		irte_pi->__reserved_2 =3D 0;
+> +		irte_pi->__reserved_3 =3D 0;
+> +		irte_pi->__reserved_4 =3D 0;
+
+.... do we need a barrier here before we set this bit?
+
+> +		irte_pi->pst =3D 1;
+> +
+> +		modify_irte(&ir_data->irq_2_iommu, (struct irte *)irte_pi);
+
 
 --=20
-David Woodhouse                            Open Source Technology Centre
-David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
+dwmw2
 
---=-SABuuLV9WsFfSG6C032c
+--=-9mUXvIlQK0natyNnEzQO
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -141,28 +160,28 @@ Cmr47UQpqQ7BjK0xggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
 Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2
 BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMJ
 2TIwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMTUwMTI4MTUyNjQ3WjAjBgkqhkiG9w0BCQQxFgQU3j6SLfR9e6gSRDZvkTI9LMc/FmowgaUG
+DxcNMTUwMTI4MTUyNjUxWjAjBgkqhkiG9w0BCQQxFgQUr3k/HobW3Om2I9YMOQVmpS2k1WswgaUG
 CSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4x
 KzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0
 YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMJ2TIwgacGCyqG
 SIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEr
 MCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMvU3Rh
 cnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAwnZMjANBgkqhkiG
-9w0BAQEFAASCAQB2rLD8tTlH21xBOzmCHOAH4cNGED/81+GwL+KH5XeNvb6dSjTWCVhvuLLOtxM8
-9Av7LcziePDThBOVA8BY9t/PkvhOEb96YcWsmuuwHqFduWXZOoLqQYYbeRuDTU3yl+6NQ5T8naa3
-MlU8IwfUy0zHBOPZcvonhWBozJUigo4PEroQks3+aeIjiPCcULXRfpQ7CUmY7KDU34t/VLy0wHiz
-NKVYkUE3JMV+KIo1nPYg7Rh1XVZt3g8LCG1AvWkzNpd7ziBJ9MCXDlBaOaVCkUJI0jHY3eYHFI9+
-X7yIem8Uhs5Xi6ZN8h2rhDkU8X4RHrf8+XkYF+TNSY8lnKWs+XvEAAAAAAAA
+9w0BAQEFAASCAQAi6tO44HaZNQ91vtJrwCPobmks8pEmzDglB0EglqV170WXZYq5uVYbEtFIHy6J
+XE+d2n+jVNqfHMBCXkgRqOsKXkxU5XNYY6s2AhWbTgOfYgPcBTG3Xc+29MgTd2uk4B+eE4JxKND4
+LGLk3xVtyyGx4iKCNe2x8VmUFjg5wdgXcvo82Z6+3D1/jhPhvL2+vv3cI9Z7TFseoi/SgxB6FvnD
+3lsr4uTtx/KN1L11cX2HlWj1lvcPCi8lFxqSLlAoxcgL620+U3s329u/emIOVYYJm0aMpv4kTgnV
+ZrloFUrLuYHlpqqGpMzIjlkNrq5I/knpQqN6pspuctP0ikpSxTc+AAAAAAAA
 
 
---=-SABuuLV9WsFfSG6C032c--
+--=-9mUXvIlQK0natyNnEzQO--
 
 
---===============4768638492002876584==
+--===============2706552641618116312==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============4768638492002876584==--
+--===============2706552641618116312==--
