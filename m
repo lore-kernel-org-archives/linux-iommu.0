@@ -1,14 +1,16 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH] iommu/ipmmu-vmsa: Fix IOMMU lookup when multiple IOMMUs
-	are registered
-Date: Wed, 28 Jan 2015 10:40:32 +0200
-Message-ID: <1937580.GPTjQ28sbs@avalon>
-References: <1422134030-11121-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v4 3/6] of: fix size when dma-range is not used
+Date: Wed, 28 Jan 2015 11:05:23 +0000
+Message-ID: <20150128110523.GC6646@e104818-lin.cambridge.arm.com>
+References: <1422052359-12384-1-git-send-email-m-karicheri2@ti.com>
+	<1422052359-12384-4-git-send-email-m-karicheri2@ti.com>
+	<54C77616.80301@arm.com> <54C7DF13.20402@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1422134030-11121-1-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <54C7DF13.20402-l0cyMroinI0@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,134 +20,148 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+On Tue, Jan 27, 2015 at 06:55:15PM +0000, Murali Karicheri wrote:
+> On 01/27/2015 06:27 AM, Robin Murphy wrote:
+> > On 23/01/15 22:32, Murali Karicheri wrote:
+> >> Fix the dma-range size when the DT attribute is missing. i.e set size to
+> >> dev->coherent_dma_mask + 1 instead of dev->coherent_dma_mask. To detect
+> >> overflow when mask is set to max of u64, add a check, log error and
+> >> return.
+> >> Some platform use mask format for size in DTS. So add a work around to
+> >> catch this and fix.
+> >>
+> >> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> >> Cc: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> >> Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> >> Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+> >> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> >> Cc: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+> >> Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+> >> Cc: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> >>
+> >> Signed-off-by: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
+> >> ---
+> >> drivers/of/device.c | 14 +++++++++++++-
+> >> 1 file changed, 13 insertions(+), 1 deletion(-)
+> >>
+> >> diff --git a/drivers/of/device.c b/drivers/of/device.c
+> >> index 2de320d..0a5ff54 100644
+> >> --- a/drivers/of/device.c
+> >> +++ b/drivers/of/device.c
+> >> @@ -105,12 +105,24 @@ void of_dma_configure(struct device *dev, struct
+> >> device_node *np)
+> >> ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
+> >> if (ret < 0) {
+> >> dma_addr = offset = 0;
+> >> - size = dev->coherent_dma_mask;
+> >> + size = dev->coherent_dma_mask + 1;
+> >> } else {
+> >> offset = PFN_DOWN(paddr - dma_addr);
+> >> + /*
+> >> + * Add a work around to treat the size as mask + 1 in case
+> >> + * it is defined in DT as a mask.
+> >> + */
+> >> + if (size & 1)
+> >> + size = size + 1;
+> >> dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
+> >> }
+> >>
+> >> + /* if size is 0, we have an overflow of u64 */
+> >> + if (!size) {
+> >> + dev_err(dev, "invalid size\n");
+> >> + return;
+> >> + }
+> >> +
+> >
+> > This seems potentially fragile to dodgy DTs given that we might also be
+> > using size to make a mask later. Would it make sense to double-up a
+> > sanity check as mask-format detection? Something like:
+> >
+> > if is_power_of_2(size)
+> > // use size
+> > else if is_power_of_2(size + 1)
+> > // use size + 1
+> > else
+> > // cry
+> 
+> How about having the logic like this?
+> 
+> 	ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
+> 	if (ret < 0) {
+> 		dma_addr = offset = 0;
+> 		size = dev->coherent_dma_mask + 1;
+> 	} else {
+> 		offset = PFN_DOWN(paddr - dma_addr);
+> 		dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
+> 	}
+> 
+> 	if (is_power_of_2(size + 1))
+> 		size = size + 1;
+> 	else if (!is_power_of_2(size))
+> 	{
+> 		dev_err(dev, "invalid size\n");
+> 		return;
+> 	}
 
-Could you please pick this patch up for v3.20 ?
+In of_dma_configure(), we currently assume that the default coherent
+mask is 32-bit. In this thread:
 
-On Saturday 24 January 2015 23:13:50 Laurent Pinchart wrote:
-> When adding a new device the driver loops over all registered IOMMUs and
-> calls the ipmmu_find_utlbs() function to parse the DT iommus attribute.
-> The function returns an error when the IOMMU referenced in DT doesn't
-> match the current IOMMU. The caller incorrectly breaks from the loop
-> immediately when the error is reported, resulting in only the first
-> IOMMU being considered.
-> 
-> Fix this, and while at it move code that isn't specific to an IOMMU
-> instance out of the loop.
-> 
-> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-> ---
->  drivers/iommu/ipmmu-vmsa.c | 49 +++++++++++++++++++------------------------
->  1 file changed, 21 insertions(+), 28 deletions(-)
-> 
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index 791c3daec7c0..407324132587 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -1007,45 +1007,28 @@ static phys_addr_t ipmmu_iova_to_phys(struct
-> iommu_domain *io_domain, }
-> 
->  static int ipmmu_find_utlbs(struct ipmmu_vmsa_device *mmu, struct device
-> *dev, -			    unsigned int **_utlbs)
-> +			    unsigned int *utlbs, unsigned int num_utlbs)
->  {
-> -	unsigned int *utlbs;
->  	unsigned int i;
-> -	int count;
-> -
-> -	count = of_count_phandle_with_args(dev->of_node, "iommus",
-> -					   "#iommu-cells");
-> -	if (count < 0)
-> -		return -EINVAL;
-> -
-> -	utlbs = kcalloc(count, sizeof(*utlbs), GFP_KERNEL);
-> -	if (!utlbs)
-> -		return -ENOMEM;
-> 
-> -	for (i = 0; i < count; ++i) {
-> +	for (i = 0; i < num_utlbs; ++i) {
->  		struct of_phandle_args args;
->  		int ret;
-> 
->  		ret = of_parse_phandle_with_args(dev->of_node, "iommus",
->  						 "#iommu-cells", i, &args);
->  		if (ret < 0)
-> -			goto error;
-> +			return ret;
-> 
->  		of_node_put(args.np);
-> 
->  		if (args.np != mmu->dev->of_node || args.args_count != 1)
-> -			goto error;
-> +			return -EINVAL;
-> 
->  		utlbs[i] = args.args[0];
->  	}
-> 
-> -	*_utlbs = utlbs;
-> -
-> -	return count;
-> -
-> -error:
-> -	kfree(utlbs);
-> -	return -EINVAL;
-> +	return 0;
->  }
-> 
->  static int ipmmu_add_device(struct device *dev)
-> @@ -1053,10 +1036,10 @@ static int ipmmu_add_device(struct device *dev)
->  	struct ipmmu_vmsa_archdata *archdata;
->  	struct ipmmu_vmsa_device *mmu;
->  	struct iommu_group *group = NULL;
-> -	unsigned int *utlbs = NULL;
-> +	unsigned int *utlbs;
->  	unsigned int i;
-> -	int num_utlbs = 0;
-> -	int ret;
-> +	int num_utlbs;
-> +	int ret = -ENODEV;
-> 
->  	if (dev->archdata.iommu) {
->  		dev_warn(dev, "IOMMU driver already assigned to device %s\n",
-> @@ -1065,11 +1048,21 @@ static int ipmmu_add_device(struct device *dev)
->  	}
-> 
->  	/* Find the master corresponding to the device. */
-> +
-> +	num_utlbs = of_count_phandle_with_args(dev->of_node, "iommus",
-> +					       "#iommu-cells");
-> +	if (num_utlbs < 0)
-> +		return -ENODEV;
-> +
-> +	utlbs = kcalloc(num_utlbs, sizeof(*utlbs), GFP_KERNEL);
-> +	if (!utlbs)
-> +		return -ENOMEM;
-> +
->  	spin_lock(&ipmmu_devices_lock);
-> 
->  	list_for_each_entry(mmu, &ipmmu_devices, list) {
-> -		num_utlbs = ipmmu_find_utlbs(mmu, dev, &utlbs);
-> -		if (num_utlbs) {
-> +		ret = ipmmu_find_utlbs(mmu, dev, utlbs, num_utlbs);
-> +		if (!ret) {
->  			/*
->  			 * TODO Take a reference to the MMU to protect
->  			 * against device removal.
-> @@ -1080,7 +1073,7 @@ static int ipmmu_add_device(struct device *dev)
-> 
->  	spin_unlock(&ipmmu_devices_lock);
-> 
-> -	if (num_utlbs <= 0)
-> +	if (ret < 0)
->  		return -ENODEV;
-> 
->  	for (i = 0; i < num_utlbs; ++i) {
+http://article.gmane.org/gmane.linux.kernel/1835096
+
+we talked about setting the coherent mask based on size automatically.
+I'm not sure about the size but I think we can assume is 32-bit mask + 1
+if it is not specified in the DT. Instead of just assuming a default
+mask, let's assume a default size and create the mask based on this
+(untested):
+
+diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+index 5b33c6a21807..9ff8d1286b44 100644
+--- a/drivers/of/platform.c
++++ b/drivers/of/platform.c
+@@ -170,10 +170,10 @@ static void of_dma_configure(struct device *dev)
+ 	struct iommu_ops *iommu;
+ 
+ 	/*
+-	 * Set default dma-mask to 32 bit. Drivers are expected to setup
+-	 * the correct supported dma_mask.
++	 * Set default size to cover the 32-bit. Drivers are expected to setup
++	 * the correct size and dma_mask.
+ 	 */
+-	dev->coherent_dma_mask = DMA_BIT_MASK(32);
++	size = 1ULL << 32;
+ 
+ 	/*
+ 	 * Set it to coherent_dma_mask by default if the architecture
+@@ -185,13 +185,24 @@ static void of_dma_configure(struct device *dev)
+ 	ret = of_dma_get_range(dev->of_node, &dma_addr, &paddr, &size);
+ 	if (ret < 0) {
+ 		dma_addr = offset = 0;
+-		size = dev->coherent_dma_mask;
+ 	} else {
+ 		offset = PFN_DOWN(paddr - dma_addr);
+ 		dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", dev->dma_pfn_offset);
+ 	}
+ 	dev->dma_pfn_offset = offset;
+ 
++	/*
++	 * Workaround for DTs setting the size to a mask or 0.
++	 */
++	if (is_power_of_2(size + 1))
++		size += 1;
++
++	/*
++	 * Coherent DMA masks larger than 32-bit must be explicitly set by the
++	 * driver.
++	 */
++	dev->coherent_dma_mask = min(DMA_BIT_MASK(32), DMA_BIT_MASK(ilog2(size)));
++
+ 	coherent = of_dma_is_coherent(dev->of_node);
+ 	dev_dbg(dev, "device is%sdma coherent\n",
+ 		coherent ? " " : " not ");
 
 -- 
-Regards,
-
-Laurent Pinchart
+Catalin
