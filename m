@@ -1,7 +1,7 @@
 From: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-Subject: [PATCH 07/26] iommu/fsl: Fix checkpath type BRACES
-Date: Wed, 28 Jan 2015 08:34:39 -0600
-Message-ID: <1422455698-3074-8-git-send-email-Emilian.Medve@Freescale.com>
+Subject: [PATCH 05/26] iommu/fsl: Fix checkpatch type LINE_SPACING
+Date: Wed, 28 Jan 2015 08:34:37 -0600
+Message-ID: <1422455698-3074-6-git-send-email-Emilian.Medve@Freescale.com>
 References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,144 +21,103 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv
 Cc: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-WARNING:BRACES: braces {} are not necessary for single statement blocks
-+               if (!paace) {
-+                       return -ENOENT;
-+               }
-
-WARNING:BRACES: braces {} are not necessary for single statement blocks
-+               if (!paace) {
-+                       return -ENOENT;
-+               }
-
-WARNING:BRACES: braces {} are not necessary for single statement blocks
-+       if (!ppaace) {
-+               return -ENOENT;
-+       }
-
-CHECK:BRACES: Blank lines aren't necessary after an open brace '{'
-+{
+CHECK:LINE_SPACING: Please don't use multiple blank lines
++
 +
 
-CHECK:BRACES: Blank lines aren't necessary before a close brace '}'
+CHECK:LINE_SPACING: Please don't use multiple blank lines
 +
-+}
-
-CHECK:BRACES: Blank lines aren't necessary before a close brace '}'
-+
-+}
-
-CHECK:BRACES: Blank lines aren't necessary before a close brace '}'
-+
-+}
-
-CHECK:BRACES: Blank lines aren't necessary after an open brace '{'
-+       for (i = 0; i < num; i++) {
 +
 
-CHECK:BRACES: braces {} should be used on all arms of this statement
-+               if (pci_ctl->parent->iommu_group) {
-[...]
-+               } else
-[...]
+CHECK:LINE_SPACING: Please don't use multiple blank lines
++
++
+
+CHECK:LINE_SPACING: Please don't use multiple blank lines
++
++
+
+WARNING:LINE_SPACING: Missing a blank line after declarations
++                       u32 win_cnt = dma_domain->win_cnt > 1 ?  dma_domain->win_cnt : 0;
++                       ret = pamu_set_liodn(liodn[i], dev, dma_domain,
+
+CHECK:LINE_SPACING: Please don't use multiple blank lines
++
++
+
+CHECK:LINE_SPACING: Please don't use multiple blank lines
++
++
 
 Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 ---
- drivers/iommu/fsl_pamu.c        | 9 +++------
- drivers/iommu/fsl_pamu_domain.c | 8 ++------
- 2 files changed, 5 insertions(+), 12 deletions(-)
+ drivers/iommu/fsl_pamu.c        | 4 ----
+ drivers/iommu/fsl_pamu_domain.c | 3 +--
+ 2 files changed, 1 insertion(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
-index ccdc5e5..6b28dd8 100644
+index d3a9fff..df6007c 100644
 --- a/drivers/iommu/fsl_pamu.c
 +++ b/drivers/iommu/fsl_pamu.c
-@@ -278,9 +278,8 @@ int  pamu_update_paace_stash(int liodn, u32 subwin, u32 value)
- 	}
- 	if (subwin) {
- 		paace = pamu_get_spaace(paace, subwin - 1);
--		if (!paace) {
-+		if (!paace)
- 			return -ENOENT;
--		}
- 	}
- 	set_bf(paace->impl_attr, PAACE_IA_CID, value);
+@@ -56,7 +56,6 @@ static const struct of_device_id guts_device_ids[] __initconst = {
+ 	{}
+ };
  
-@@ -301,9 +300,8 @@ int pamu_disable_spaace(int liodn, u32 subwin)
- 	}
- 	if (subwin) {
- 		paace = pamu_get_spaace(paace, subwin - 1);
--		if (!paace) {
-+		if (!paace)
- 			return -ENOENT;
--		}
- 		set_bf(paace->addr_bitfields, PAACE_AF_V,
- 			 PAACE_V_INVALID);
- 	} else {
-@@ -351,9 +349,8 @@ int pamu_config_ppaace(int liodn, phys_addr_t win_addr, phys_addr_t win_size,
+-
+ /*
+  * Table for matching compatible strings, for device tree
+  * L3 cache controller node.
+@@ -317,7 +316,6 @@ int pamu_disable_spaace(int liodn, u32 subwin)
+ 	return 0;
+ }
+ 
+-
+ /**
+  * pamu_config_paace() - Sets up PPAACE entry for specified liodn
+  *
+@@ -433,7 +431,6 @@ int pamu_config_spaace(int liodn, u32 subwin_cnt, u32 subwin,
+ {
+ 	struct paace *paace;
+ 
+-
+ 	/* setup sub-windows */
+ 	if (!subwin_cnt) {
+ 		pr_debug("Invalid subwindow count\n");
+@@ -824,7 +821,6 @@ irqreturn_t pamu_av_isr(int irq, void *arg)
+ 		}
  	}
  
- 	ppaace = pamu_get_ppaace(liodn);
--	if (!ppaace) {
-+	if (!ppaace)
- 		return -ENOENT;
--	}
+-
+ 	return IRQ_HANDLED;
+ }
  
- 	/* window size is 2^(WSE+1) bytes */
- 	set_bf(ppaace->addr_bitfields, PPAACE_AF_WSE,
 diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index dc38db5..080ffa4 100644
+index 7ea93ae..dc38db5 100644
 --- a/drivers/iommu/fsl_pamu_domain.c
 +++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -35,7 +35,6 @@ static DEFINE_SPINLOCK(device_domain_lock);
+@@ -633,6 +633,7 @@ static int handle_attach_device(struct fsl_dma_domain *dma_domain,
+ 		 */
+ 		if (dma_domain->win_arr) {
+ 			u32 win_cnt = dma_domain->win_cnt > 1 ? dma_domain->win_cnt : 0;
++
+ 			ret = pamu_set_liodn(liodn[i], dev, dma_domain,
+ 					      &domain->geometry,
+ 					      win_cnt);
+@@ -822,7 +823,6 @@ static int fsl_pamu_set_domain_attr(struct iommu_domain *domain,
+ 	struct fsl_dma_domain *dma_domain = domain->priv;
+ 	int ret = 0;
  
- static int __init iommu_init_mempool(void)
- {
 -
- 	fsl_pamu_domain_cache = kmem_cache_create("fsl_pamu_domain",
- 					 sizeof(struct fsl_dma_domain),
- 					 0,
-@@ -153,7 +152,6 @@ static int map_liodn(int liodn, struct fsl_dma_domain *dma_domain)
- 		return map_subwins(liodn, dma_domain);
- 	else
- 		return map_win(liodn, dma_domain);
+ 	switch (attr_type) {
+ 	case DOMAIN_ATTR_GEOMETRY:
+ 		ret = configure_domain_geometry(domain, data);
+@@ -848,7 +848,6 @@ static int fsl_pamu_get_domain_attr(struct iommu_domain *domain,
+ 	struct fsl_dma_domain *dma_domain = domain->priv;
+ 	int ret = 0;
+ 
 -
- }
- 
- /* Update window/subwindow mapping for the LIODN */
-@@ -380,7 +378,6 @@ static void attach_device(struct fsl_dma_domain *dma_domain, int liodn, struct d
- 	if (!dev->archdata.iommu_domain)
- 		dev->archdata.iommu_domain = info;
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
--
- }
- 
- static phys_addr_t fsl_pamu_iova_to_phys(struct iommu_domain *domain,
-@@ -527,7 +524,6 @@ static void fsl_pamu_window_disable(struct iommu_domain *domain, u32 wnd_nr)
- 	}
- 
- 	spin_unlock_irqrestore(&dma_domain->domain_lock, flags);
--
- }
- 
- static int fsl_pamu_window_enable(struct iommu_domain *domain, u32 wnd_nr,
-@@ -616,7 +612,6 @@ static int handle_attach_device(struct fsl_dma_domain *dma_domain,
- 
- 	spin_lock_irqsave(&dma_domain->domain_lock, flags);
- 	for (i = 0; i < num; i++) {
--
- 		/* Ensure that LIODN value is valid */
- 		if (liodn[i] >= PAACE_NUMBER_ENTRIES) {
- 			pr_debug("Invalid liodn %d, attach device failed for %s\n",
-@@ -951,8 +946,9 @@ static struct iommu_group *get_pci_device_group(struct pci_dev *pdev)
- 		if (pci_ctl->parent->iommu_group) {
- 			group = get_device_iommu_group(pci_ctl->parent);
- 			iommu_group_remove_device(pci_ctl->parent);
--		} else
-+		} else {
- 			group = get_shared_pci_device_group(pdev);
-+		}
- 	}
- 
- 	if (!group)
+ 	switch (attr_type) {
+ 	case DOMAIN_ATTR_FSL_PAMU_STASH:
+ 		memcpy((struct pamu_stash_attribute *) data, &dma_domain->dma_stash,
 -- 
 2.2.2
