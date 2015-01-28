@@ -1,15 +1,16 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 2/5] iommu: Allocate a default domain for iommu groups
-Date: Wed, 28 Jan 2015 15:11:03 +0000
-Message-ID: <54C8FC07.2050003@arm.com>
-References: <1422317339-22620-1-git-send-email-joro@8bytes.org>
-	<1422317339-22620-3-git-send-email-joro@8bytes.org>
-	<20150128143006.GQ1569@arm.com>
+From: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH v4 1/6] of: iommu: add ptr to OF node arg to
+	of_iommu_configure()
+Date: Wed, 28 Jan 2015 10:21:22 -0500
+Message-ID: <54C8FE72.3060409@ti.com>
+References: <1422052359-12384-1-git-send-email-m-karicheri2@ti.com>
+	<3953539.m9NpxSWcJ5@avalon> <20150128122941.GK1569@arm.com>
+	<13812499.ICbNgSDOae@avalon> <20150128133219.GM1569@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150128143006.GQ1569-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20150128133219.GM1569-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,77 +20,122 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 28/01/15 14:30, Will Deacon wrote:
-> On Tue, Jan 27, 2015 at 12:08:56AM +0000, Joerg Roedel wrote:
->> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+On 01/28/2015 08:32 AM, Will Deacon wrote:
+> On Wed, Jan 28, 2015 at 01:15:10PM +0000, Laurent Pinchart wrote:
+>> On Wednesday 28 January 2015 12:29:42 Will Deacon wrote:
+>>> On Wed, Jan 28, 2015 at 12:23:03PM +0000, Laurent Pinchart wrote:
+>>>> On Wednesday 28 January 2015 11:33:00 Will Deacon wrote:
+>>>>> On Mon, Jan 26, 2015 at 06:49:01PM +0000, Murali Karicheri wrote:
+>>>>>> On 01/25/2015 08:32 AM, Laurent Pinchart wrote:
+>>>>>>> On Friday 23 January 2015 17:32:34 Murali Karicheri wrote:
+>>>>>>>> Function of_iommu_configure() is called from of_dma_configure() to
+>>>>>>>> setup iommu ops using DT property. This API is currently used for
+>>>>>>>> platform devices for which DMA configuration (including iommu ops)
+>>>>>>>> may come from device's parent. To extend this functionality for PCI
+>>>>>>>> devices, this API need to take a parent node ptr as an argument
+>>>>>>>> instead of assuming device's parent. This is needed since for PCI,
+>>>>>>>> the dma configuration may be defined in the DT node of the root bus
+>>>>>>>> bridge's parent device. Currently only dma-range is used for PCI and
+>>>>>>>> iommu is not supported. So return error if the device is PCI.
+>>>>>>>>
+>>>>>>>> Cc: Joerg Roedel<joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+>>>>>>>> Cc: Grant Likely<grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>>>>>>>> Cc: Rob Herring<robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+>>>>>>>> Cc: Bjorn Helgaas<bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+>>>>>>>> Cc: Will Deacon<will.deacon-5wv7dgnIgG8@public.gmane.org>
+>>>>>>>> Cc: Russell King<linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+>>>>>>>> Cc: Arnd Bergmann<arnd-r2nGTMty4D4@public.gmane.org>
+>>>>>>>> Cc: Suravee Suthikulpanit<Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+>>>>>>>>
+>>>>>>>> Signed-off-by: Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>
+>>>>>>>> ---
+>>>>>>>>
+>>>>>>>>    drivers/iommu/of_iommu.c |   10 ++++++++--
+>>>>>>>>    drivers/of/platform.c    |    2 +-
+>>>>>>>>    include/linux/of_iommu.h |    6 ++++--
+>>>>>>>>    3 files changed, 13 insertions(+), 5 deletions(-)
+>>>>>>>>
+>>>>>>>> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+>>>>>>>> index af1dc6a..439235b 100644
+>>>>>>>> --- a/drivers/iommu/of_iommu.c
+>>>>>>>> +++ b/drivers/iommu/of_iommu.c
+>>>>>>>> @@ -133,19 +133,25 @@ struct iommu_ops *of_iommu_get_ops(struct
+>>>>>>>> device_node *np)
+>>>>>>>>    	return ops;
+>>>>>>>>   }
+>>>>>>>>
+>>>>>>>> -struct iommu_ops *of_iommu_configure(struct device *dev)
+>>>>>>>> +struct iommu_ops *of_iommu_configure(struct device *dev,
+>>>>>>>> +				     struct device_node *iommu_np)
+>>>>>>>>   {
+>>>>>>>>    	struct of_phandle_args iommu_spec;
+>>>>>>>>    	struct device_node *np;
+>>>>>>>>    	struct iommu_ops *ops = NULL;
+>>>>>>>>    	int idx = 0;
+>>>>>>>>
+>>>>>>>> +	if (dev_is_pci(dev)) {
+>>>>>>>> +		dev_err(dev, "iommu is currently not supported for PCI\n");
+>>>>>>>> +		return NULL;
+>>>>>>>> +	}
+>>>>>>>> +
+>>>>>>>>    	/*
+>>>>>>>>    	 * We don't currently walk up the tree looking for a parent
+>>>>>>>>    	 IOMMU.
+>>>>>>>>    	 * See the `Notes:' section of
+>>>>>>>>    	 * Documentation/devicetree/bindings/iommu/iommu.txt
+>>>>>>>>    	 */
+>>>>>>>
+>>>>>>> Wouldn't it be better to fix this rather than passing the device node
+>>>>>>> pointer to the function ? The solution would be more generic.
+>>>>>>
+>>>>>> Will Deacon (Copied here) is working on this as we alteady discussed
+>>>>>> in this thread. So it will be addressed by him in another series.
+>>>>>
+>>>>> Well, "working on this" equates to "has it somewhere near the bottom of
+>>>>> a very long list" :)
+>>>>
+>>>> What's your opinion on this patch then, do you think adding the iommu_np
+>>>> argument makes sense as a temporary hack, or should we instead walk up the
+>>>> tree looking for an iommus attribute in parent nodes ? I don't expect that
+>>>> to be insanely difficult to code.
+>>>
+>>> If walking up the tree is useful, then I think we should do that and update
+>>> the Documentation to reflect the new behaviour.
 >>
->> The default domain will be used (if supported by the iommu
->> driver) when the devices in the iommu group are not attached
->> to any other domain.
->>
->> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
->> ---
->>   drivers/iommu/iommu.c | 26 +++++++++++++++++++++++---
->>   1 file changed, 23 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 34636eb..8f33ddd3 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -76,6 +76,9 @@ struct iommu_group_attribute iommu_group_attr_##_name =		\
->>   #define to_iommu_group(_kobj)		\
->>   	container_of(_kobj, struct iommu_group, kobj)
->>
->> +static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
->> +						 enum iommu_domain_type type);
->> +
->>   static ssize_t iommu_group_attr_show(struct kobject *kobj,
->>   				     struct attribute *__attr, char *buf)
->>   {
->> @@ -362,6 +365,17 @@ rename:
->>
->>   	kobject_get(group->devices_kobj);
->>
->> +	/*
->> +	 * Try to allocate a default domain for the group, if this
->> +	 * hasn't happened yet. This is not the best place to do that,
->> +	 * it should happen in iommu_group_alloc(). But we have no
->> +	 * iommu_ops there yet, so the allocation has to happen here for
->> +	 * now.
->> +	 */
->> +	if (group->default_domain == NULL)
->> +		group->default_domain = __iommu_domain_alloc(dev->bus,
->> +							     IOMMU_DOMAIN_DMA);
+>> If I understand Murali's patch set right (please correct me if that's not the
+>> case) the PCI code walks up the DT nodes hierarchy to the parent node that
+>> contains the iommus attribute and passes a pointer to that node to this
+>> function. It's thus a PCI-specific solution. As a temporary hack that's OK I
+>> suppose, but if implementing it right straight away isn't difficult that would
+>> be better.
 >
-> Having a per-group domain is wasteful for IOMMUs that only support a modest
-> number of concurrent domains, so in reality I think we need to have one
-> domain per IOMMU instance. Is that possible?
+> It looks to me like the code walks the PCI topology to get the DT node for
+> the host controller, and passes *that* to of_dma_configure. That sounds
+> like the right thing to do to me, especially since the PCI topology is
+> likely not encoded in the device-tree. So actually, it is passing the
+> first parent node afaict.
+>
+Laurent, Will,
 
-Strictly speaking, it is, provided you can identify instances (I've 
-hacked up such a thing controlled from the DMA mapping side), but 
-there's a question of how to handle devices with differing DMA ranges. 
-The Intel IOVA allocator could actually handle them sharing one address 
-space, since you can perform individual allocations with different 
-constraints, but I'm not sure if that really makes sense. Perhaps one 
-domain per dma-ranges variation per instance?
+I don't have an IOMMU hardware to do more work on this. My patch series 
+has been on this list for long and it is also increasing in scope :(
 
-> One problem with the current per-bus approach is that __iommu_domain_alloc
-> can't figure out which IOMMU instance corresponds to the group.
+I would suggest a follow up patch to this from someone (probably Will) 
+and my patch goes as is with out further update. Hope this is reasonable.
 
-Indeed - I think it might make sense to pass devices around instead of 
-buses, and for now stick in an abstraction like:
+Murali
+> The part I'm more interested in is the mapping of RequesterID (PCI dma
+> alias) to IOMMU ID when we transition from the PCI topology to the DT
+> topology. Currently, it seems to be 1:1 on the platforms I have, but I
+> doubt this will always be the case.
+>
+> Will
 
-static const struct iommu_ops *get_iommu_for_dev(struct device *dev)
-{
-	return dev->bus->iommu_ops;
-}
 
-in which we can then later hook up some sort of of_iommu_get_ops-based 
-lookup for non-PCI devices. Which ends up more or less looking like 
-Thierry's original idea, but kept private to the IOMMU API internals.
-
-Robin.
+-- 
+Murali Karicheri
+Linux Kernel, Texas Instruments
