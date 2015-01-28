@@ -1,13 +1,15 @@
-From: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-Subject: [PATCH 09/26] iommu/fsl: Fix checkpatch type ALLOC_SIZEOF_STRUCT
-Date: Wed, 28 Jan 2015 08:34:41 -0600
-Message-ID: <1422455698-3074-10-git-send-email-Emilian.Medve@Freescale.com>
-References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 2/5] iommu: Allocate a default domain for iommu groups
+Date: Wed, 28 Jan 2015 15:11:03 +0000
+Message-ID: <54C8FC07.2050003@arm.com>
+References: <1422317339-22620-1-git-send-email-joro@8bytes.org>
+	<1422317339-22620-3-git-send-email-joro@8bytes.org>
+	<20150128143006.GQ1569@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1422455698-3074-1-git-send-email-Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+In-Reply-To: <20150128143006.GQ1569-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,47 +19,77 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, Varun.Sethi-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org
-Cc: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-CHECK:ALLOC_SIZEOF_STRUCT: Prefer kzalloc(sizeof(*data)...) over kzalloc(sizeof(struct pamu_isr_data)...)
-+       data = kzalloc(sizeof(struct pamu_isr_data), GFP_KERNEL);
+On 28/01/15 14:30, Will Deacon wrote:
+> On Tue, Jan 27, 2015 at 12:08:56AM +0000, Joerg Roedel wrote:
+>> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+>>
+>> The default domain will be used (if supported by the iommu
+>> driver) when the devices in the iommu group are not attached
+>> to any other domain.
+>>
+>> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+>> ---
+>>   drivers/iommu/iommu.c | 26 +++++++++++++++++++++++---
+>>   1 file changed, 23 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 34636eb..8f33ddd3 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -76,6 +76,9 @@ struct iommu_group_attribute iommu_group_attr_##_name =		\
+>>   #define to_iommu_group(_kobj)		\
+>>   	container_of(_kobj, struct iommu_group, kobj)
+>>
+>> +static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+>> +						 enum iommu_domain_type type);
+>> +
+>>   static ssize_t iommu_group_attr_show(struct kobject *kobj,
+>>   				     struct attribute *__attr, char *buf)
+>>   {
+>> @@ -362,6 +365,17 @@ rename:
+>>
+>>   	kobject_get(group->devices_kobj);
+>>
+>> +	/*
+>> +	 * Try to allocate a default domain for the group, if this
+>> +	 * hasn't happened yet. This is not the best place to do that,
+>> +	 * it should happen in iommu_group_alloc(). But we have no
+>> +	 * iommu_ops there yet, so the allocation has to happen here for
+>> +	 * now.
+>> +	 */
+>> +	if (group->default_domain == NULL)
+>> +		group->default_domain = __iommu_domain_alloc(dev->bus,
+>> +							     IOMMU_DOMAIN_DMA);
+>
+> Having a per-group domain is wasteful for IOMMUs that only support a modest
+> number of concurrent domains, so in reality I think we need to have one
+> domain per IOMMU instance. Is that possible?
 
-CHECK:ALLOC_SIZEOF_STRUCT: Prefer kzalloc(sizeof(*dma_domain->win_arr)...) over kzalloc(sizeof(struct dma_window)...)
-+               dma_domain->win_arr = kzalloc(sizeof(struct dma_window)
+Strictly speaking, it is, provided you can identify instances (I've 
+hacked up such a thing controlled from the DMA mapping side), but 
+there's a question of how to handle devices with differing DMA ranges. 
+The Intel IOVA allocator could actually handle them sharing one address 
+space, since you can perform individual allocations with different 
+constraints, but I'm not sure if that really makes sense. Perhaps one 
+domain per dma-ranges variation per instance?
 
-Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
----
- drivers/iommu/fsl_pamu.c        | 2 +-
- drivers/iommu/fsl_pamu_domain.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+> One problem with the current per-bus approach is that __iommu_domain_alloc
+> can't figure out which IOMMU instance corresponds to the group.
 
-diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
-index 7f0181c..4f1926b 100644
---- a/drivers/iommu/fsl_pamu.c
-+++ b/drivers/iommu/fsl_pamu.c
-@@ -1039,7 +1039,7 @@ static int __init fsl_pamu_probe(struct platform_device *pdev)
- 		goto error;
- 	}
- 
--	data = kzalloc(sizeof(struct pamu_isr_data), GFP_KERNEL);
-+	data = kzalloc(sizeof(*data), GFP_KERNEL);
- 	if (!data) {
- 		dev_err(&pdev->dev, "PAMU isr data memory allocation failed\n");
- 		ret = -ENOMEM;
-diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index d5137dd..9417207 100644
---- a/drivers/iommu/fsl_pamu_domain.c
-+++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -1037,7 +1037,7 @@ static int fsl_pamu_set_windows(struct iommu_domain *domain, u32 w_count)
- 				((w_count > 1) ? w_count : 0));
- 	if (!ret) {
- 		kfree(dma_domain->win_arr);
--		dma_domain->win_arr = kzalloc(sizeof(struct dma_window) *
-+		dma_domain->win_arr = kzalloc(sizeof(*dma_domain->win_arr) *
- 							  w_count, GFP_ATOMIC);
- 		if (!dma_domain->win_arr) {
- 			spin_unlock_irqrestore(&dma_domain->domain_lock, flags);
--- 
-2.2.2
+Indeed - I think it might make sense to pass devices around instead of 
+buses, and for now stick in an abstraction like:
+
+static const struct iommu_ops *get_iommu_for_dev(struct device *dev)
+{
+	return dev->bus->iommu_ops;
+}
+
+in which we can then later hook up some sort of of_iommu_get_ops-based 
+lookup for non-PCI devices. Which ends up more or less looking like 
+Thierry's original idea, but kept private to the IOMMU API internals.
+
+Robin.
