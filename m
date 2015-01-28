@@ -1,14 +1,14 @@
 From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [v3 07/26] iommu, x86: Add cap_pi_support() to detect VT-d PI
-	capability
-Date: Wed, 28 Jan 2015 15:32:02 +0000
-Message-ID: <1422459122.5293.60.camel@infradead.org>
+Subject: Re: [v3 08/26] iommu, x86: Add intel_irq_remapping_capability() for
+	Intel
+Date: Wed, 28 Jan 2015 15:37:30 +0000
+Message-ID: <1422459450.5293.62.camel@infradead.org>
 References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
-	<1418397300-10870-8-git-send-email-feng.wu@intel.com>
+	<1418397300-10870-9-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============3543755556276862808=="
+Content-Type: multipart/mixed; boundary="===============5109919536039532167=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1418397300-10870-8-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1418397300-10870-9-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,28 +23,50 @@ Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============3543755556276862808==
+--===============5109919536039532167==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-KPyTFbMimRk+8cSk5zQA"
+	boundary="=-JXKPJRHymof/ynQ5+vgo"
 
 
---=-KPyTFbMimRk+8cSk5zQA
+--=-JXKPJRHymof/ynQ5+vgo
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 On Fri, 2014-12-12 at 23:14 +0800, Feng Wu wrote:
-> Add helper function to detect VT-d Posted-Interrupts capability.
+> Add the Intel side implementation for capability in
+> struct irq_remap_ops.
 >=20
 > Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 > Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 
-Acked-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> +static bool intel_irq_remapping_capability(enum irq_remap_cap cap)
+> +{
+> +	struct dmar_drhd_unit *drhd;
+> +	struct intel_iommu *iommu;
+> +
+> +	switch (cap) {
+> +	case IRQ_POSTING_CAP:
+> +		/*
+> +		 * If 1) posted-interrupts is disabled by user
+> +		 * or 2) irq remapping is disabled, posted-interrupts
+> +		 * is not supported.
+> +		 */
+> +		if (disable_irq_post || !irq_remapping_enabled)
+> +			return 0;
+> +
+> +		for_each_iommu(iommu, drhd)
+> +			if (!cap_pi_support(iommu->cap))
+> +				return 0;
+> +
+
+If a new IOMMU is hotplugged now which doesn't support posted
+interrupts, what happens?
 
 --=20
 David Woodhouse                            Open Source Technology Centre
 David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
 
---=-KPyTFbMimRk+8cSk5zQA
+--=-JXKPJRHymof/ynQ5+vgo
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -138,28 +160,28 @@ Cmr47UQpqQ7BjK0xggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
 Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2
 BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMJ
 2TIwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMTUwMTI4MTUzMjAyWjAjBgkqhkiG9w0BCQQxFgQU0Fh5VzfxlzBfSuHYACuJjm/vrSgwgaUG
+DxcNMTUwMTI4MTUzNzMwWjAjBgkqhkiG9w0BCQQxFgQU/a/XhqxaeTZHkTtdWlYWIzd7lWUwgaUG
 CSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4x
 KzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0
 YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMJ2TIwgacGCyqG
 SIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEr
 MCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMvU3Rh
 cnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAwnZMjANBgkqhkiG
-9w0BAQEFAASCAQCjzVv1ZHaSmTwl5zdbIEx7D314kk8ttyY0KAHE0XspA512dbyHJfw+ZmBYsBHz
-OeInuzemA0zWTzviuWM0TbsZ4jAx4P+o9oCPOTcP9MCyqf82++r3tIdN7EYkXWdTb92HjhKU698d
-UhqniVThNuD4wvbzYCSQ7OhbLSalqt9SRP9By9nwqkWj1rCwiCCYHz04M4+w9yJqC0m1lk025w7G
-3Z+jQlHSr6LYOlqit2Bgdkh1XxHEMu+KDcx5733+Er+fmh4h0NwnqOhUoztNtrIBMPmGzV8+81OX
-B67vbBxv7aZNLUi+YebWD3cDgA9nY0RBRe0iUuP85rruEO3cEISoAAAAAAAA
+9w0BAQEFAASCAQCaHkYnH0XWkH5b9rGritmKoWAk8iLPm0E5bxFQrAt8ud2emNteKvpEDeYxzR3P
+gkz8UKpBI9PKWWoLKjz3s1kxn7NoHXQuIWX7WM7gt+kfavelFl6iS52bi/RxUUZ9uISQM88Z7Z2n
+fLkDE5wZdSY/b9yl3TOsb1bZwAfMhC78jUzDoUHPJpRZb9he0MnQ71rDRFWh13AOUTqx/TM03vUs
+x9vvu4ZwxRxs2oVt0Oq/hQGQmvlRE0tKtSVmdREH5+FOA06an0c9600V5Rc1yTFhblpABKoT7ITe
+jcExavN+qJxQQY4Ze1yyckoi7R4zw9bdvj4dCUgJsCa1rMKY+sdvAAAAAAAA
 
 
---=-KPyTFbMimRk+8cSk5zQA--
+--=-JXKPJRHymof/ynQ5+vgo--
 
 
---===============3543755556276862808==
+--===============5109919536039532167==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============3543755556276862808==--
+--===============5109919536039532167==--
