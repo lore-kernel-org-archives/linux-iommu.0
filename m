@@ -1,16 +1,16 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 3/5] iommu: Limit iommu_attach/detach_device to devices
-	with their own group
-Date: Wed, 28 Jan 2015 14:35:24 +0000
-Message-ID: <20150128143523.GR1569@arm.com>
+Subject: Re: [PATCH 4/5] iommu: Make sure a device is always attached to a
+	domain
+Date: Wed, 28 Jan 2015 14:38:52 +0000
+Message-ID: <20150128143852.GS1569@arm.com>
 References: <1422317339-22620-1-git-send-email-joro@8bytes.org>
-	<1422317339-22620-4-git-send-email-joro@8bytes.org>
+	<1422317339-22620-5-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1422317339-22620-4-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1422317339-22620-5-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,35 +24,43 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 27, 2015 at 12:08:57AM +0000, Joerg Roedel wrote:
+On Tue, Jan 27, 2015 at 12:08:58AM +0000, Joerg Roedel wrote:
 > From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 > 
-> This patch changes the behavior of the iommu_attach_device
-> and iommu_detach_device functions. With this change these
-> functions only work on devices that have their own group.
-> For all other devices the iommu_group_attach/detach
-> functions must be used.
-
-I like this a lot. Currently, if somebody detaches a device from the ARM
-SMMU, I end up detaching its group as well, which I've always found slightly
-odd.
-
+> Make use of the default domain and re-attach a device to it
+> when it is detached from another domain. Also enforce that a
+> device has to be in the default domain before it can be
+> attached to a different domain.
+> 
 > Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 > ---
->  drivers/iommu/iommu.c | 63 +++++++++++++++++++++++++++++++++++++++++++++++----
->  1 file changed, 59 insertions(+), 4 deletions(-)
+>  drivers/iommu/iommu.c | 34 +++++++++++++++++++++++++++++++---
+>  1 file changed, 31 insertions(+), 3 deletions(-)
 > 
 > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 8f33ddd3..b63a550 100644
+> index b63a550..5080759 100644
 > --- a/drivers/iommu/iommu.c
 > +++ b/drivers/iommu/iommu.c
-> @@ -51,6 +51,7 @@ struct iommu_group {
->  	void (*iommu_data_release)(void *iommu_data);
->  	char *name;
+> @@ -53,6 +53,7 @@ struct iommu_group {
 >  	int id;
-> +	unsigned dev_cnt;
+>  	unsigned dev_cnt;
+>  	struct iommu_domain *default_domain;
+> +	struct iommu_domain *domain;
+>  };
+>  
+>  struct iommu_device {
+> @@ -1040,8 +1041,17 @@ static int iommu_group_do_attach_device(struct device *dev, void *data)
+>  
+>  int iommu_attach_group(struct iommu_domain *domain, struct iommu_group *group)
+>  {
+> -	return iommu_group_for_each_dev(group, domain,
+> -					iommu_group_do_attach_device);
+> +	int ret;
+> +
+> +	if (group->default_domain && group->domain != group->default_domain)
+> +		return -EBUSY;
 
-Is this actually used on a fast path, or can we just inspect the list of
-devices on the group instead?
+I think this is now racy with itself and detach, whereas before we always
+held the group->mutex by virtue of iommu_group_for_each_dev.
 
 Will
