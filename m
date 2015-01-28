@@ -1,15 +1,15 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 02/15] iommu: Introduce iommu domain types
-Date: Wed, 28 Jan 2015 14:19:34 +0000
-Message-ID: <20150128141934.GP1569@arm.com>
-References: <1422316305-19216-1-git-send-email-joro@8bytes.org>
-	<1422316305-19216-3-git-send-email-joro@8bytes.org>
+Subject: Re: [PATCH 2/5] iommu: Allocate a default domain for iommu groups
+Date: Wed, 28 Jan 2015 14:30:06 +0000
+Message-ID: <20150128143006.GQ1569@arm.com>
+References: <1422317339-22620-1-git-send-email-joro@8bytes.org>
+	<1422317339-22620-3-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1422316305-19216-3-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1422317339-22620-3-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,72 +20,55 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-
-Thanks for posting this!
-
-On Mon, Jan 26, 2015 at 11:51:32PM +0000, Joerg Roedel wrote:
+On Tue, Jan 27, 2015 at 12:08:56AM +0000, Joerg Roedel wrote:
 > From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 > 
-> This allows to handle domains differently based on their
-> type in the future. An IOMMU driver can implement certain
-> optimizations for DMA-API domains for example.
+> The default domain will be used (if supported by the iommu
+> driver) when the devices in the iommu group are not attached
+> to any other domain.
 > 
 > Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 > ---
->  drivers/iommu/iommu.c |  5 +++--
->  include/linux/iommu.h | 11 ++++++++++-
->  2 files changed, 13 insertions(+), 3 deletions(-)
+>  drivers/iommu/iommu.c | 26 +++++++++++++++++++++++---
+>  1 file changed, 23 insertions(+), 3 deletions(-)
 > 
 > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 684efc0..ab24d77 100644
+> index 34636eb..8f33ddd3 100644
 > --- a/drivers/iommu/iommu.c
 > +++ b/drivers/iommu/iommu.c
-> @@ -909,14 +909,15 @@ struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
->  	ops = bus->iommu_ops;
+> @@ -76,6 +76,9 @@ struct iommu_group_attribute iommu_group_attr_##_name =		\
+>  #define to_iommu_group(_kobj)		\
+>  	container_of(_kobj, struct iommu_group, kobj)
 >  
->  	if (ops->domain_alloc)
-> -		domain = ops->domain_alloc();
-> +		domain = ops->domain_alloc(IOMMU_DOMAIN_UNMANAGED);
->  	else
->  		domain = kzalloc(sizeof(*domain), GFP_KERNEL);
+> +static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+> +						 enum iommu_domain_type type);
+> +
+>  static ssize_t iommu_group_attr_show(struct kobject *kobj,
+>  				     struct attribute *__attr, char *buf)
+>  {
+> @@ -362,6 +365,17 @@ rename:
 >  
->  	if (!domain)
->  		return NULL;
+>  	kobject_get(group->devices_kobj);
 >  
-> -	domain->ops = bus->iommu_ops;
-> +	domain->ops  = bus->iommu_ops;
-> +	domain->type = IOMMU_DOMAIN_UNMANAGED;
->  
->  	if (ops->domain_init && domain->ops->domain_init(domain))
->  		goto out_free;
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 69d1d12..0b67f65 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -51,7 +51,16 @@ struct iommu_domain_geometry {
->  	bool force_aperture;       /* DMA only allowed in mappable range? */
->  };
->  
-> +/* This are the possible domain-types */
-> +enum iommu_domain_type {
-> +	IOMMU_DOMAIN_DMA,	/* Domain used for DMA-API */
-> +	IOMMU_DOMAIN_IDENTITY,	/* Identity mapped domain  */
+> +	/*
+> +	 * Try to allocate a default domain for the group, if this
+> +	 * hasn't happened yet. This is not the best place to do that,
+> +	 * it should happen in iommu_group_alloc(). But we have no
+> +	 * iommu_ops there yet, so the allocation has to happen here for
+> +	 * now.
+> +	 */
+> +	if (group->default_domain == NULL)
+> +		group->default_domain = __iommu_domain_alloc(dev->bus,
+> +							     IOMMU_DOMAIN_DMA);
 
-What happens if somebody calls map or unmap on an identity-mapping domain?
-Can we catch that in the IOMMU core before calling the IOMMU driver? That
-also implies we need something extra to parameterise the attributes for
-the mapping (e.g. cacheable, read-only) and also potentially the address
-range.
+Having a per-group domain is wasteful for IOMMUs that only support a modest
+number of concurrent domains, so in reality I think we need to have one
+domain per IOMMU instance. Is that possible?
 
-> +	IOMMU_DOMAIN_UNMANAGED, /* Domain mappings are managed by a third party
-> +				   user (like KVM or VFIO) */
-
-We already have the domain attributes (iommu_attr) to describe features
-of a domain. Is there really a need for this extra type, or can we extend
-the attribute set and allow for domain allocation with attributes?
+One problem with the current per-bus approach is that __iommu_domain_alloc
+can't figure out which IOMMU instance corresponds to the group.
 
 Will
