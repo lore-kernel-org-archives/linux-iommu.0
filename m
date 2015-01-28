@@ -1,17 +1,14 @@
-From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [v3 00/26] Add VT-d Posted-Interrupts support
-Date: Wed, 28 Jan 2015 04:44:52 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F002383DF1@SHSMSX104.ccr.corp.intel.com>
-References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
-	<E959C4978C3B6342920538CF579893F00236670C@SHSMSX104.ccr.corp.intel.com>
-	<E959C4978C3B6342920538CF579893F0023826A5@SHSMSX104.ccr.corp.intel.com>
-	<1422416668.22865.91.camel@redhat.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH] iommu/ipmmu-vmsa: Fix IOMMU lookup when multiple IOMMUs
+	are registered
+Date: Wed, 28 Jan 2015 10:40:32 +0200
+Message-ID: <1937580.GPTjQ28sbs@avalon>
+References: <1422134030-11121-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1422416668.22865.91.camel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1422134030-11121-1-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,187 +18,134 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Joerg,
 
+Could you please pick this patch up for v3.20 ?
 
-> -----Original Message-----
-> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Wednesday, January 28, 2015 11:44 AM
-> To: Wu, Feng
-> Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org; x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org;
-> gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org;
-> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org; eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org;
-> linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [v3 00/26] Add VT-d Posted-Interrupts support
+On Saturday 24 January 2015 23:13:50 Laurent Pinchart wrote:
+> When adding a new device the driver loops over all registered IOMMUs and
+> calls the ipmmu_find_utlbs() function to parse the DT iommus attribute.
+> The function returns an error when the IOMMU referenced in DT doesn't
+> match the current IOMMU. The caller incorrectly breaks from the loop
+> immediately when the error is reported, resulting in only the first
+> IOMMU being considered.
 > 
-> On Wed, 2015-01-28 at 03:01 +0000, Wu, Feng wrote:
-> >
-> > > -----Original Message-----
-> > > From: Wu, Feng
-> > > Sent: Wednesday, January 21, 2015 10:26 AM
-> > > To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org;
-> x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org;
-> > > gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org;
-> > > joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
-> > > Cc: eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wu, Feng
-> > > Subject: RE: [v3 00/26] Add VT-d Posted-Interrupts support
-> > >
-> > >
-> > > > -----Original Message-----
-> > > > From: Wu, Feng
-> > > > Sent: Friday, December 12, 2014 11:15 PM
-> > > > To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org;
-> > > x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org;
-> > > > gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org;
-> > > > joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
-> > > > Cc: eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wu, Feng
-> > > > Subject: [v3 00/26] Add VT-d Posted-Interrupts support
-> > > >
-> > > > VT-d Posted-Interrupts is an enhancement to CPU side Posted-Interrupt.
-> > > > With VT-d Posted-Interrupts enabled, external interrupts from
-> > > > direct-assigned devices can be delivered to guests without VMM
-> > > > intervention when guest is running in non-root mode.
-> > > >
-> > > > You can find the VT-d Posted-Interrtups Spec. in the following URL:
-> > > >
-> > >
-> http://www.intel.com/content/www/us/en/intelligent-systems/intel-technolog
-> > > > y/vt-directed-io-spec.html
-> > > >
-> > > > v1->v2:
-> > > > * Use VFIO framework to enable this feature, the VFIO part of this series is
-> > > >   base on Eric's patch "[PATCH v3 0/8] KVM-VFIO IRQ forward control"
-> > > > * Rebase this patchset on
-> > > > git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git,
-> > > >   then revise some irq logic based on the new hierarchy irqdomain
-> patches
-> > > > provided
-> > > >   by Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> > > >
-> > > > v2->v3:
-> > > > * Adjust the Posted-interrupts Descriptor updating logic when vCPU is
-> > > >   preempted or blocked.
-> > > > * KVM_DEV_VFIO_DEVICE_POSTING_IRQ -->
-> > > > KVM_DEV_VFIO_DEVICE_POST_IRQ
-> > > > * __KVM_HAVE_ARCH_KVM_VFIO_POSTING -->
-> > > > __KVM_HAVE_ARCH_KVM_VFIO_POST
-> > > > * Add KVM_DEV_VFIO_DEVICE_UNPOST_IRQ attribute for VFIO irq, which
-> > > >   can be used to change back to remapping mode.
-> > > > * Fix typo
-> > > >
-> > > > This patch series is made of the following groups:
-> > > > 1-6: Some preparation changes in iommu and irq component, this is based
-> on
-> > > > the
-> > > >      new hierarchy irqdomain logic.
-> > > > 7-9, 26: IOMMU changes for VT-d Posted-Interrupts, such as, feature
-> > > > detection,
-> > > >           command line parameter.
-> > > > 10-17, 22-25: Changes related to KVM itself.
-> > > > 18-20: Changes in VFIO component, this part was previously sent out as
-> > > > "[RFC PATCH v2 0/2] kvm-vfio: implement the vfio skeleton for VT-d
-> > > > Posted-Interrupts"
-> > > > 21: x86 irq related changes
-> > > >
-> > > > Feng Wu (26):
-> > > >   genirq: Introduce irq_set_vcpu_affinity() to target an interrupt to a
-> > > >     VCPU
-> > > >   iommu: Add new member capability to struct irq_remap_ops
-> > > >   iommu, x86: Define new irte structure for VT-d Posted-Interrupts
-> > > >   iommu, x86: Implement irq_set_vcpu_affinity for intel_ir_chip
-> > > >   x86, irq: Implement irq_set_vcpu_affinity for pci_msi_ir_controller
-> > > >   iommu, x86: No need to migrating irq for VT-d Posted-Interrupts
-> > > >   iommu, x86: Add cap_pi_support() to detect VT-d PI capability
-> > > >   iommu, x86: Add intel_irq_remapping_capability() for Intel
-> > > >   iommu, x86: define irq_remapping_cap()
-> > > >   KVM: change struct pi_desc for VT-d Posted-Interrupts
-> > > >   KVM: Add some helper functions for Posted-Interrupts
-> > > >   KVM: Initialize VT-d Posted-Interrupts Descriptor
-> > > >   KVM: Define a new interface kvm_find_dest_vcpu() for VT-d PI
-> > > >   KVM: Get Posted-Interrupts descriptor address from struct kvm_vcpu
-> > > >   KVM: add interfaces to control PI outside vmx
-> > > >   KVM: Make struct kvm_irq_routing_table accessible
-> > > >   KVM: make kvm_set_msi_irq() public
-> > > >   KVM: kvm-vfio: User API for VT-d Posted-Interrupts
-> > > >   KVM: kvm-vfio: implement the VFIO skeleton for VT-d Posted-Interrupts
-> > > >   KVM: x86: kvm-vfio: VT-d posted-interrupts setup
-> > > >   x86, irq: Define a global vector for VT-d Posted-Interrupts
-> > > >   KVM: Define a wakeup worker thread for vCPU
-> > > >   KVM: Update Posted-Interrupts Descriptor when vCPU is preempted
-> > > >   KVM: Update Posted-Interrupts Descriptor when vCPU is blocked
-> > > >   KVM: Suppress posted-interrupt when 'SN' is set
-> > > >   iommu/vt-d: Add a command line parameter for VT-d posted-interrupts
-> > > >
-> > > >  Documentation/kernel-parameters.txt        |   1 +
-> > > >  Documentation/virtual/kvm/devices/vfio.txt |   9 ++
-> > > >  arch/x86/include/asm/entry_arch.h          |   2 +
-> > > >  arch/x86/include/asm/hardirq.h             |   1 +
-> > > >  arch/x86/include/asm/hw_irq.h              |   2 +
-> > > >  arch/x86/include/asm/irq_remapping.h       |  11 ++
-> > > >  arch/x86/include/asm/irq_vectors.h         |   1 +
-> > > >  arch/x86/include/asm/kvm_host.h            |  12 ++
-> > > >  arch/x86/kernel/apic/msi.c                 |   1 +
-> > > >  arch/x86/kernel/entry_64.S                 |   2 +
-> > > >  arch/x86/kernel/irq.c                      |  27 ++++
-> > > >  arch/x86/kernel/irqinit.c                  |   2 +
-> > > >  arch/x86/kvm/Makefile                      |   2 +-
-> > > >  arch/x86/kvm/kvm_vfio_x86.c                |  77 +++++++++
-> > > >  arch/x86/kvm/vmx.c                         | 244
-> > > > ++++++++++++++++++++++++++++-
-> > > >  arch/x86/kvm/x86.c                         |  22 ++-
-> > > >  drivers/iommu/intel_irq_remapping.c        |  68 +++++++-
-> > > >  drivers/iommu/irq_remapping.c              |  24 ++-
-> > > >  drivers/iommu/irq_remapping.h              |   8 +
-> > > >  include/linux/dmar.h                       |  32 ++++
-> > > >  include/linux/intel-iommu.h                |   1 +
-> > > >  include/linux/irq.h                        |   7 +
-> > > >  include/linux/kvm_host.h                   |  46 ++++++
-> > > >  include/uapi/linux/kvm.h                   |  11 ++
-> > > >  kernel/irq/chip.c                          |  14 ++
-> > > >  kernel/irq/manage.c                        |  20 +++
-> > > >  virt/kvm/irq_comm.c                        |  43 ++++-
-> > > >  virt/kvm/irqchip.c                         |  11 --
-> > > >  virt/kvm/kvm_main.c                        |  15 ++
-> > > >  virt/kvm/vfio.c                            | 107 +++++++++++++
-> > > >  30 files changed, 795 insertions(+), 28 deletions(-)
-> > > >  create mode 100644 arch/x86/kvm/kvm_vfio_x86.c
-> > > >
-> > >
-> > > Hi Paolo, Alex, and other maintainers,
-> > >
-> > > Since this series contain multiple subsystems, IOMMU, irq, x86, VFIO, KVM,
-> etc.
-> > > I am wondering how you guys handled this case before? If all the patches are
-> > > reviewed and acked by the associated maintainer, are you only merge the
-> > > patches
-> > > related to your own subsystem to your tree? However, you may also need
-> get
-> > > other
-> > > patches to make the build successful, so I am a little curious about how you
-> guys
-> > > handle this? Thanks a lot!
-> >
-> > Can anyone share some experiences about this?
+> Fix this, and while at it move code that isn't specific to an IOMMU
+> instance out of the loop.
 > 
-> Generally you need to split the patches into logical changes per
-> subsystem and submit them separately through the mailing list and
-> maintainer.  This helps to make sure the changes make sense and stand on
-> their own and aren't simply a hack to reach the end goal.  Submit what
-> you can in parallel, but expect that if you send patches dependent on
-> other, unmerged series, they will get ignored and will need to be resent
-> when the dependencies are resolved in -next.  Thanks,
+> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> ---
+>  drivers/iommu/ipmmu-vmsa.c | 49 +++++++++++++++++++------------------------
+>  1 file changed, 21 insertions(+), 28 deletions(-)
 > 
-> Alex
+> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+> index 791c3daec7c0..407324132587 100644
+> --- a/drivers/iommu/ipmmu-vmsa.c
+> +++ b/drivers/iommu/ipmmu-vmsa.c
+> @@ -1007,45 +1007,28 @@ static phys_addr_t ipmmu_iova_to_phys(struct
+> iommu_domain *io_domain, }
+> 
+>  static int ipmmu_find_utlbs(struct ipmmu_vmsa_device *mmu, struct device
+> *dev, -			    unsigned int **_utlbs)
+> +			    unsigned int *utlbs, unsigned int num_utlbs)
+>  {
+> -	unsigned int *utlbs;
+>  	unsigned int i;
+> -	int count;
+> -
+> -	count = of_count_phandle_with_args(dev->of_node, "iommus",
+> -					   "#iommu-cells");
+> -	if (count < 0)
+> -		return -EINVAL;
+> -
+> -	utlbs = kcalloc(count, sizeof(*utlbs), GFP_KERNEL);
+> -	if (!utlbs)
+> -		return -ENOMEM;
+> 
+> -	for (i = 0; i < count; ++i) {
+> +	for (i = 0; i < num_utlbs; ++i) {
+>  		struct of_phandle_args args;
+>  		int ret;
+> 
+>  		ret = of_parse_phandle_with_args(dev->of_node, "iommus",
+>  						 "#iommu-cells", i, &args);
+>  		if (ret < 0)
+> -			goto error;
+> +			return ret;
+> 
+>  		of_node_put(args.np);
+> 
+>  		if (args.np != mmu->dev->of_node || args.args_count != 1)
+> -			goto error;
+> +			return -EINVAL;
+> 
+>  		utlbs[i] = args.args[0];
+>  	}
+> 
+> -	*_utlbs = utlbs;
+> -
+> -	return count;
+> -
+> -error:
+> -	kfree(utlbs);
+> -	return -EINVAL;
+> +	return 0;
+>  }
+> 
+>  static int ipmmu_add_device(struct device *dev)
+> @@ -1053,10 +1036,10 @@ static int ipmmu_add_device(struct device *dev)
+>  	struct ipmmu_vmsa_archdata *archdata;
+>  	struct ipmmu_vmsa_device *mmu;
+>  	struct iommu_group *group = NULL;
+> -	unsigned int *utlbs = NULL;
+> +	unsigned int *utlbs;
+>  	unsigned int i;
+> -	int num_utlbs = 0;
+> -	int ret;
+> +	int num_utlbs;
+> +	int ret = -ENODEV;
+> 
+>  	if (dev->archdata.iommu) {
+>  		dev_warn(dev, "IOMMU driver already assigned to device %s\n",
+> @@ -1065,11 +1048,21 @@ static int ipmmu_add_device(struct device *dev)
+>  	}
+> 
+>  	/* Find the master corresponding to the device. */
+> +
+> +	num_utlbs = of_count_phandle_with_args(dev->of_node, "iommus",
+> +					       "#iommu-cells");
+> +	if (num_utlbs < 0)
+> +		return -ENODEV;
+> +
+> +	utlbs = kcalloc(num_utlbs, sizeof(*utlbs), GFP_KERNEL);
+> +	if (!utlbs)
+> +		return -ENOMEM;
+> +
+>  	spin_lock(&ipmmu_devices_lock);
+> 
+>  	list_for_each_entry(mmu, &ipmmu_devices, list) {
+> -		num_utlbs = ipmmu_find_utlbs(mmu, dev, &utlbs);
+> -		if (num_utlbs) {
+> +		ret = ipmmu_find_utlbs(mmu, dev, utlbs, num_utlbs);
+> +		if (!ret) {
+>  			/*
+>  			 * TODO Take a reference to the MMU to protect
+>  			 * against device removal.
+> @@ -1080,7 +1073,7 @@ static int ipmmu_add_device(struct device *dev)
+> 
+>  	spin_unlock(&ipmmu_devices_lock);
+> 
+> -	if (num_utlbs <= 0)
+> +	if (ret < 0)
+>  		return -ENODEV;
+> 
+>  	for (i = 0; i < num_utlbs; ++i) {
 
-Thanks a lot for your response, Alex! I am still waiting for comments for
-the generic IRQ and IOMMU parts, after I got the comments, I will consider
-your advice in the next post. Thank you!
+-- 
+Regards,
 
-Thanks,
-Feng
+Laurent Pinchart
