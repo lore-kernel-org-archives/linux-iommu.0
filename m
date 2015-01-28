@@ -1,15 +1,14 @@
-From: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v5 1/8] of: iommu: add ptr to OF node arg to
-	of_iommu_configure()
-Date: Tue, 27 Jan 2015 20:18:28 -0600
-Message-ID: <CAL_JsqLSxzWt6JiKbzpPPZEygU07AJ+oj24zcPmnhUXoLTnQjA@mail.gmail.com>
-References: <1422392405-32196-1-git-send-email-m-karicheri2@ti.com>
-	<1422392405-32196-2-git-send-email-m-karicheri2@ti.com>
+From: Joseph Lo <josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC PATCH 4/5] arm64: add IOMMU dma_ops
+Date: Wed, 28 Jan 2015 10:22:55 +0800
+Message-ID: <54C847FF.8060805@nvidia.com>
+References: <cover.1421086706.git.robin.murphy@arm.com>
+	<aa7de3b1dd189c31eb8b14d0c0eea699183f8a2c.1421086706.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1422392405-32196-2-git-send-email-m-karicheri2-l0cyMroinI0@public.gmane.org>
+In-Reply-To: <aa7de3b1dd189c31eb8b14d0c0eea699183f8a2c.1421086706.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,109 +18,89 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 27, 2015 at 2:59 PM, Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org> wrote:
-> Function of_iommu_configure() is called from of_dma_configure() to
-> setup iommu ops using DT property. This API is currently used for
-> platform devices for which DMA configuration (including iommu ops)
-> may come from device's parent. To extend this functionality for PCI
-> devices, this API need to take a parent node ptr as an argument
-> instead of assuming device's parent. This is needed since for PCI, the
-> dma configuration may be defined in the DT node of the root bus bridge's
-> parent device. Currently only dma-range is used for PCI and iommu is not
-> supported. So return error if the device is PCI.
->
-> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Cc: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Hi Robin
 
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Sorry for separate the comments into many replies.
 
-> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> Cc: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-> Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-> Cc: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+On 01/13/2015 04:48 AM, Robin Murphy wrote:
+> Taking some inspiration from the arch/arm code, implement the
+> arch-specific side of the DMA mapping ops using the new IOMMU-DMA layer.
 >
-> Acked-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-> Signed-off-by: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 > ---
->  drivers/iommu/of_iommu.c |   10 ++++++++--
->  drivers/of/platform.c    |    2 +-
->  include/linux/of_iommu.h |    6 ++++--
->  3 files changed, 13 insertions(+), 5 deletions(-)
+>   arch/arm64/include/asm/device.h      |   3 +
+>   arch/arm64/include/asm/dma-mapping.h |  12 ++
+>   arch/arm64/mm/dma-mapping.c          | 297 +++++++++++++++++++++++++++++++++++
+>   3 files changed, 312 insertions(+)
 >
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index af1dc6a..439235b 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -133,19 +133,25 @@ struct iommu_ops *of_iommu_get_ops(struct device_node *np)
->         return ops;
->  }
->
-> -struct iommu_ops *of_iommu_configure(struct device *dev)
-> +struct iommu_ops *of_iommu_configure(struct device *dev,
-> +                                    struct device_node *iommu_np)
->  {
->         struct of_phandle_args iommu_spec;
->         struct device_node *np;
->         struct iommu_ops *ops = NULL;
->         int idx = 0;
->
-> +       if (dev_is_pci(dev)) {
-> +               dev_err(dev, "iommu is currently not supported for PCI\n");
-> +               return NULL;
-> +       }
+[snip]
+> +static void __iommu_sync_sg_for_cpu(struct device *dev,
+> +				    struct scatterlist *sgl, int nelems,
+> +				    enum dma_data_direction dir)
+> +{
+> +	struct scatterlist *sg;
+> +	int i;
 > +
->         /*
->          * We don't currently walk up the tree looking for a parent IOMMU.
->          * See the `Notes:' section of
->          * Documentation/devicetree/bindings/iommu/iommu.txt
->          */
-> -       while (!of_parse_phandle_with_args(dev->of_node, "iommus",
-> +       while (!of_parse_phandle_with_args(iommu_np, "iommus",
->                                            "#iommu-cells", idx,
->                                            &iommu_spec)) {
->                 np = iommu_spec.np;
-> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
-> index b0d50d7..d3f3988 100644
-> --- a/drivers/of/platform.c
-> +++ b/drivers/of/platform.c
-> @@ -196,7 +196,7 @@ static void of_dma_configure(struct device *dev)
->         dev_dbg(dev, "device is%sdma coherent\n",
->                 coherent ? " " : " not ");
->
-> -       iommu = of_iommu_configure(dev);
-> +       iommu = of_iommu_configure(dev, dev->of_node);
->         dev_dbg(dev, "device is%sbehind an iommu\n",
->                 iommu ? " " : " not ");
->
-> diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
-> index 16c7554..a97e5bd 100644
-> --- a/include/linux/of_iommu.h
-> +++ b/include/linux/of_iommu.h
-> @@ -12,7 +12,8 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
->                              size_t *size);
->
->  extern void of_iommu_init(void);
-> -extern struct iommu_ops *of_iommu_configure(struct device *dev);
-> +extern struct iommu_ops *of_iommu_configure(struct device *dev,
-> +                                       struct device_node *iommu_np);
->
->  #else
->
-> @@ -24,7 +25,8 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
->  }
->
->  static inline void of_iommu_init(void) { }
-> -static inline struct iommu_ops *of_iommu_configure(struct device *dev)
-> +static inline struct iommu_ops *of_iommu_configure(struct device *dev,
-> +                                        struct device_node *iommu_np)
->  {
->         return NULL;
->  }
-> --
-> 1.7.9.5
->
+> +	if (is_device_dma_coherent(dev))
+> +		return;
+> +
+> +	for_each_sg(sgl, sg, nelems, i) {
+> +		unsigned int len = sg_dma_len(sg);
+> +		void *virt = iova_to_virt(dev, sg_dma_address(sg));
+> +
+> +		if (virt && len)
+> +			__dma_unmap_area(virt, len, dir);
+> +	}
+> +}
+> +
+> +static void __iommu_sync_sg_for_device(struct device *dev,
+> +				       struct scatterlist *sgl, int nelems,
+> +				       enum dma_data_direction dir)
+> +{
+> +	struct scatterlist *sg;
+> +	int i;
+> +
+> +	if (is_device_dma_coherent(dev))
+> +		return;
+> +
+> +	for_each_sg(sgl, sg, nelems, i) {
+> +		unsigned int len = sg_dma_len(sg);
+> +		void *virt = iova_to_virt(dev, sg_dma_address(sg));
+
+I think we don't need to manually table walk of the IOMMU page table to 
+get the PA of the iova and translate it back to CPU VA here. The page in 
+the SG list already has the info we want. And same as above function. It 
+just the same as the change below.
+
+@@ -635,7 +635,7 @@ static void __iommu_sync_sg_for_cpu(struct device *dev,
+
+         for_each_sg(sgl, sg, nelems, i) {
+                 unsigned int len = sg_dma_len(sg);
+-               void *virt = iova_to_virt(dev, sg_dma_address(sg));
++               void *virt = page_address(sg_page(sg));
+
+                 if (virt && len)
+                         __dma_unmap_area(virt, len, dir);
+@@ -654,7 +654,7 @@ static void __iommu_sync_sg_for_device(struct device 
+*dev,
+
+         for_each_sg(sgl, sg, nelems, i) {
+                 unsigned int len = sg_dma_len(sg);
+-               void *virt = iova_to_virt(dev, sg_dma_address(sg));
++               void *virt = page_address(sg_page(sg));
+
+                 if (virt && len)
+                         __dma_map_area(virt, len, dir);
+-Joseph
+
+> +
+> +		if (virt && len)
+> +			__dma_map_area(virt, len, dir);
+> +	}
+> +}
+> +
+[snip]
