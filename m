@@ -1,7 +1,7 @@
 From: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-Subject: [PATCH 06/26] iommu/fsl: Fix checkpatch type LEADING_SPACE
-Date: Wed, 28 Jan 2015 08:34:38 -0600
-Message-ID: <1422455698-3074-7-git-send-email-Emilian.Medve@Freescale.com>
+Subject: [PATCH 02/26] iommu/fsl: Use SVR_* instead of magic numbers
+Date: Wed, 28 Jan 2015 08:34:34 -0600
+Message-ID: <1422455698-3074-3-git-send-email-Emilian.Medve@Freescale.com>
 References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,46 +21,55 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv
 Cc: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-WARNING:LEADING_SPACE: please, no spaces at the start of a line
-+       return __ffs(subwindow_cnt) - 1;$
-
-WARNING:LEADING_SPACE: please, no spaces at the start of a line
-+                (PAACE_ATM_WINDOW_XLATE | PAACE_ATM_PAGE_XLATE)$
-
 Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 ---
- drivers/iommu/fsl_pamu.c | 4 ++--
- drivers/iommu/fsl_pamu.h | 3 +--
- 2 files changed, 3 insertions(+), 4 deletions(-)
+ drivers/iommu/fsl_pamu.c | 27 ++++++++++++++-------------
+ 1 file changed, 14 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
-index df6007c..ccdc5e5 100644
+index 652c34d..7d9f8a0 100644
 --- a/drivers/iommu/fsl_pamu.c
 +++ b/drivers/iommu/fsl_pamu.c
-@@ -169,8 +169,8 @@ static unsigned int map_addrspace_size_to_wse(phys_addr_t addrspace_size)
- /* Derive the PAACE window count encoding for the subwindow count */
- static unsigned int map_subwindow_cnt_to_wce(u32 subwindow_cnt)
- {
--       /* window count is 2^(WCE+1) bytes */
--       return __ffs(subwindow_cnt) - 1;
-+	/* window count is 2^(WCE+1) bytes */
-+	return __ffs(subwindow_cnt) - 1;
- }
+@@ -31,6 +31,7 @@
+ #include <linux/genalloc.h>
+ #include <asm/io.h>
+ #include <asm/bitops.h>
++#include <asm/mpc85xx.h>
+ #include <asm/fsl_guts.h>
  
- /*
-diff --git a/drivers/iommu/fsl_pamu.h b/drivers/iommu/fsl_pamu.h
-index a7794b5..52a91af 100644
---- a/drivers/iommu/fsl_pamu.h
-+++ b/drivers/iommu/fsl_pamu.h
-@@ -200,8 +200,7 @@ struct pamu_mmap_regs {
- #define PAACE_ATM_NO_XLATE      0x00
- #define PAACE_ATM_WINDOW_XLATE  0x01
- #define PAACE_ATM_PAGE_XLATE    0x02
--#define PAACE_ATM_WIN_PG_XLATE  \
--                (PAACE_ATM_WINDOW_XLATE | PAACE_ATM_PAGE_XLATE)
-+#define PAACE_ATM_WIN_PG_XLATE  (PAACE_ATM_WINDOW_XLATE | PAACE_ATM_PAGE_XLATE)
- #define PAACE_OTM_NO_XLATE      0x00
- #define PAACE_OTM_IMMEDIATE     0x01
- #define PAACE_OTM_INDEXED       0x02
+ #include "fsl_pamu.h"
+@@ -999,19 +1000,19 @@ static const struct {
+ 	u32 svr;
+ 	u32 port_id;
+ } port_id_map[] __initconst = {
+-	{0x82100010, 0xFF000000},	/* P2040 1.0 */
+-	{0x82100011, 0xFF000000},	/* P2040 1.1 */
+-	{0x82100110, 0xFF000000},	/* P2041 1.0 */
+-	{0x82100111, 0xFF000000},	/* P2041 1.1 */
+-	{0x82110310, 0xFF000000},	/* P3041 1.0 */
+-	{0x82110311, 0xFF000000},	/* P3041 1.1 */
+-	{0x82010020, 0xFFF80000},	/* P4040 2.0 */
+-	{0x82000020, 0xFFF80000},	/* P4080 2.0 */
+-	{0x82210010, 0xFC000000},       /* P5010 1.0 */
+-	{0x82210020, 0xFC000000},       /* P5010 2.0 */
+-	{0x82200010, 0xFC000000},	/* P5020 1.0 */
+-	{0x82050010, 0xFF800000},	/* P5021 1.0 */
+-	{0x82040010, 0xFF800000},	/* P5040 1.0 */
++	{(SVR_P2040 << 8) | 0x10, 0xFF000000},	/* P2040 1.0 */
++	{(SVR_P2040 << 8) | 0x11, 0xFF000000},	/* P2040 1.1 */
++	{(SVR_P2041 << 8) | 0x10, 0xFF000000},	/* P2041 1.0 */
++	{(SVR_P2041 << 8) | 0x11, 0xFF000000},	/* P2041 1.1 */
++	{(SVR_P3041 << 8) | 0x10, 0xFF000000},	/* P3041 1.0 */
++	{(SVR_P3041 << 8) | 0x11, 0xFF000000},	/* P3041 1.1 */
++	{(SVR_P4040 << 8) | 0x20, 0xFFF80000},	/* P4040 2.0 */
++	{(SVR_P4080 << 8) | 0x20, 0xFFF80000},	/* P4080 2.0 */
++	{(SVR_P5010 << 8) | 0x10, 0xFC000000},	/* P5010 1.0 */
++	{(SVR_P5010 << 8) | 0x20, 0xFC000000},	/* P5010 2.0 */
++	{(SVR_P5020 << 8) | 0x10, 0xFC000000},	/* P5020 1.0 */
++	{(SVR_P5021 << 8) | 0x10, 0xFF800000},	/* P5021 1.0 */
++	{(SVR_P5040 << 8) | 0x10, 0xFF800000},	/* P5040 1.0 */
+ };
+ 
+ #define SVR_SECURITY	0x80000	/* The Security (E) bit */
 -- 
 2.2.2
