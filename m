@@ -1,7 +1,7 @@
 From: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-Subject: [PATCH 04/26] iommu/fsl: Fix checkpatch type SPACE_BEFORE_TAB
-Date: Wed, 28 Jan 2015 08:34:36 -0600
-Message-ID: <1422455698-3074-5-git-send-email-Emilian.Medve@Freescale.com>
+Subject: [PATCH 08/26] iommu/fsl: Fix checkpatch type CODE_INDENT
+Date: Wed, 28 Jan 2015 08:34:40 -0600
+Message-ID: <1422455698-3074-9-git-send-email-Emilian.Medve@Freescale.com>
 References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,31 +21,69 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv
 Cc: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-WARNING:SPACE_BEFORE_TAB: please, no space before tabs
-+^Iu32 ^Icpu;^I/* cpu number */$
+ERROR:CODE_INDENT: code indent should use tabs where possible
++^I          stash_dest_hint, vcpu);$
 
-WARNING:SPACE_BEFORE_TAB: please, no space before tabs
-+^Iu32 ^Icache;^I/* cache to stash to: L1,L2,L3 */$
+ERROR:CODE_INDENT: code indent should use tabs where possible
++^I           phys_addr_t ppaact_phys, phys_addr_t spaact_phys,$
+
+ERROR:CODE_INDENT: code indent should use tabs where possible
++^I^I          dev->of_node->full_name);$
+
+ERROR:CODE_INDENT: code indent should use tabs where possible
++^I^I          dev->of_node->full_name);$
 
 Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 ---
- arch/powerpc/include/asm/fsl_pamu_stash.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/fsl_pamu.c        | 6 +++---
+ drivers/iommu/fsl_pamu_domain.c | 4 ++--
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/powerpc/include/asm/fsl_pamu_stash.h b/arch/powerpc/include/asm/fsl_pamu_stash.h
-index caa1b21..38311c9 100644
---- a/arch/powerpc/include/asm/fsl_pamu_stash.h
-+++ b/arch/powerpc/include/asm/fsl_pamu_stash.h
-@@ -32,8 +32,8 @@ enum pamu_stash_target {
-  */
+diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
+index 6b28dd8..7f0181c 100644
+--- a/drivers/iommu/fsl_pamu.c
++++ b/drivers/iommu/fsl_pamu.c
+@@ -583,7 +583,7 @@ found_cpu_node:
+ 	}
  
- struct pamu_stash_attribute {
--	u32 	cpu;	/* cpu number */
--	u32 	cache;	/* cache to stash to: L1,L2,L3 */
-+	u32	cpu;	/* cpu number */
-+	u32	cache;	/* cache to stash to: L1,L2,L3 */
- };
+ 	pr_debug("stash dest not found for %d on vcpu %d\n",
+-	          stash_dest_hint, vcpu);
++		 stash_dest_hint, vcpu);
+ 	return ~(u32)0;
+ }
  
- #endif  /* __FSL_PAMU_STASH_H */
+@@ -675,8 +675,8 @@ static void __init get_pamu_cap_values(unsigned long pamu_reg_base)
+ 
+ /* Setup PAMU registers pointing to PAACT, SPAACT and OMT */
+ static int __init setup_one_pamu(unsigned long pamu_reg_base, unsigned long pamu_reg_size,
+-	           phys_addr_t ppaact_phys, phys_addr_t spaact_phys,
+-		   phys_addr_t omt_phys)
++				 phys_addr_t ppaact_phys, phys_addr_t spaact_phys,
++				 phys_addr_t omt_phys)
+ {
+ 	u32 *pc;
+ 	struct pamu_mmap_regs *pamu_regs;
+diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+index 080ffa4..d5137dd 100644
+--- a/drivers/iommu/fsl_pamu_domain.c
++++ b/drivers/iommu/fsl_pamu_domain.c
+@@ -682,7 +682,7 @@ static int fsl_pamu_attach_device(struct iommu_domain *domain,
+ 					 liodn, liodn_cnt);
+ 	} else {
+ 		pr_debug("missing fsl,liodn property at %s\n",
+-		          dev->of_node->full_name);
++			 dev->of_node->full_name);
+ 			ret = -EINVAL;
+ 	}
+ 
+@@ -718,7 +718,7 @@ static void fsl_pamu_detach_device(struct iommu_domain *domain,
+ 		detach_device(dev, dma_domain);
+ 	else
+ 		pr_debug("missing fsl,liodn property at %s\n",
+-		          dev->of_node->full_name);
++			 dev->of_node->full_name);
+ }
+ 
+ static  int configure_domain_geometry(struct iommu_domain *domain, void *data)
 -- 
 2.2.2
