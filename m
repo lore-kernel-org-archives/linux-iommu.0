@@ -1,85 +1,82 @@
-From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [v3 08/26] iommu, x86: Add intel_irq_remapping_capability() for
-	Intel
-Date: Thu, 29 Jan 2015 08:57:54 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F0023896B8@SHSMSX104.ccr.corp.intel.com>
-References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
-	<1418397300-10870-9-git-send-email-feng.wu@intel.com>
-	<1422459450.5293.62.camel@infradead.org>
+From: =?iso-8859-1?Q?GAUGUEY_R=E9my_228890?= <remy.gauguey@cea.fr>
+Subject: [PATCH v3 4/6] vfio: type1: replace domain wide protection flags
+ with supported capabilities
+Date: Thu, 29 Jan 2015 12:24:14 +0000
+Message-ID: <022C7612790E20489F80A6F0D54B849F3B2C11AD@EXDAG0-B1.intra.cea.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1422459450.5293.62.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Language: fr-FR
+Sender: linux-kernel-owner@vger.kernel.org
+To: Antonios Motakis <a.motakis@virtualopensystems.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>
+Cc: "open list:VFIO DRIVER" <kvm@vger.kernel.org>, "will.deacon@arm.com" <will.deacon@arm.com>, open list <linux-kernel@vger.kernel.org>, "tech@virtualopensystems.com" <tech@virtualopensystems.com>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Antonios,=20
 
+On Thu, 27 Nov 2014 18:22:53 Antonios Motakis wrote:
+>VFIO_IOMMU_TYPE1 keeps track for each domain it knows a list of protec=
+tion
+>flags it always applies to all mappings in the domain. This is used fo=
+r
+>domains that support IOMMU_CAP_CACHE_COHERENCY.
+>
+>Refactor this slightly, by keeping track instead that a given domain
+>supports the capability, and applying the IOMMU_CACHE protection flag =
+when
+>doing the actual DMA mappings.
+>
+>This will allow us to reuse the behavior for IOMMU_CAP_NOEXEC, which w=
+e
+>also want to keep track of, but without applying it to all domains tha=
+t
+>support it unless the user explicitly requests it.
+>
+>Signed-off-by: Antonios Motakis <a.motakis@xxxxxxxxxxxxxxxxxxxxxx>
+>---
+> drivers/vfio/vfio_iommu_type1.c | 25 +++++++++++++++++--------
+> 1 file changed, 17 insertions(+), 8 deletions(-)
+>
+>diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu=
+_type1.c
+>index 4a9d666..c54dab8 100644
+>--- a/drivers/vfio/vfio_iommu_type1.c
+>+++ b/drivers/vfio/vfio_iommu_type1.c
+> 			if (ret)
+> 				return ret;
+>=20
+>@@ -731,7 +740,7 @@ static int vfio_iommu_type1_attach_group(void *iom=
+mu_data,
+> 	}
+>=20
+> 	if (iommu_capable(bus, IOMMU_CAP_CACHE_COHERENCY))
+>-		domain->prot |=3D IOMMU_CACHE;
+>+		domain->caps |=3D IOMMU_CAP_CACHE_COHERENCY;
 
-> -----Original Message-----
-> From: David Woodhouse [mailto:dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org]
-> Sent: Wednesday, January 28, 2015 11:38 PM
-> To: Wu, Feng
-> Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org; x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org;
-> gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org;
-> alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org; eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org;
-> linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [v3 08/26] iommu, x86: Add intel_irq_remapping_capability() for
-> Intel
-> 
-> On Fri, 2014-12-12 at 23:14 +0800, Feng Wu wrote:
-> > Add the Intel side implementation for capability in
-> > struct irq_remap_ops.
-> >
-> > Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> > Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> 
-> > +static bool intel_irq_remapping_capability(enum irq_remap_cap cap)
-> > +{
-> > +	struct dmar_drhd_unit *drhd;
-> > +	struct intel_iommu *iommu;
-> > +
-> > +	switch (cap) {
-> > +	case IRQ_POSTING_CAP:
-> > +		/*
-> > +		 * If 1) posted-interrupts is disabled by user
-> > +		 * or 2) irq remapping is disabled, posted-interrupts
-> > +		 * is not supported.
-> > +		 */
-> > +		if (disable_irq_post || !irq_remapping_enabled)
-> > +			return 0;
-> > +
-> > +		for_each_iommu(iommu, drhd)
-> > +			if (!cap_pi_support(iommu->cap))
-> > +				return 0;
-> > +
-> 
-> If a new IOMMU is hotplugged now which doesn't support posted
-> interrupts, what happens?
+IMHO this is not good since IOMMU_CAP_CACHE_COHERENCY is not a bitfield=
+ but an enum=20
+See include/linux/iommu.h=20
+enum iommu_cap {
+	IOMMU_CAP_CACHE_COHERENCY,	/* IOMMU can enforce cache coherent DMA
+					   transactions */
+	IOMMU_CAP_INTR_REMAP,		/* IOMMU supports interrupt isolation */
+	IOMMU_CAP_NOEXEC,		/* IOMMU_NOEXEC flag */
+};
+One possible fix would to redefine the enum with values with bitfiled v=
+alues
+enum iommu_cap {
+	IOMMU_CAP_CACHE_COHERENCY =3D 1, /* IOMMU can enforce cache coherent D=
+MA
+					   transactions */
+	IOMMU_CAP_INTR_REMAP =3D 2,	/* IOMMU supports interrupt isolation */
+	IOMMU_CAP_NOEXEC =3D 4,		/* IOMMU_NOEXEC flag */
+};
 
-Good question, Just had a offline discussion with Jiang Liu, actually, there
-is the same question for IR. In the current implementation, If IR is in use
-and a new IOMMU without IR capability is hotplugged, it will reject this
-hotplugging. I think I can simple follow the same policy for PI.
+Regards
+R=E9my
 
-Thanks,
-Feng
-
-> 
-> --
-> David Woodhouse                            Open Source Technology
-> Centre
-> David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel
-> Corporation
+>_______________________________________________
+>kvmarm mailing list
+>kvmarm@xxxxxxxxxxxxxxxxxxxxx
+https://lists.cs.columbia.edu/mailman/listinfo/kvmarm
