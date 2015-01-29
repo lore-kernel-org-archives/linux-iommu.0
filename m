@@ -1,82 +1,148 @@
-From: =?iso-8859-1?Q?GAUGUEY_R=E9my_228890?= <remy.gauguey@cea.fr>
-Subject: [PATCH v3 4/6] vfio: type1: replace domain wide protection flags
- with supported capabilities
-Date: Thu, 29 Jan 2015 12:24:14 +0000
-Message-ID: <022C7612790E20489F80A6F0D54B849F3B2C11AD@EXDAG0-B1.intra.cea.fr>
+From: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH v4 1/6] of: iommu: add ptr to OF node arg to
+	of_iommu_configure()
+Date: Thu, 29 Jan 2015 09:59:33 -0500
+Message-ID: <54CA4AD5.2060307@ti.com>
+References: <1422052359-12384-1-git-send-email-m-karicheri2@ti.com>
+	<13812499.ICbNgSDOae@avalon> <20150128133219.GM1569@arm.com>
+	<5349994.6VHXzPdIxs@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Language: fr-FR
-Sender: linux-kernel-owner@vger.kernel.org
-To: Antonios Motakis <a.motakis@virtualopensystems.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>
-Cc: "open list:VFIO DRIVER" <kvm@vger.kernel.org>, "will.deacon@arm.com" <will.deacon@arm.com>, open list <linux-kernel@vger.kernel.org>, "tech@virtualopensystems.com" <tech@virtualopensystems.com>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5349994.6VHXzPdIxs@avalon>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Antonios,=20
-
-On Thu, 27 Nov 2014 18:22:53 Antonios Motakis wrote:
->VFIO_IOMMU_TYPE1 keeps track for each domain it knows a list of protec=
-tion
->flags it always applies to all mappings in the domain. This is used fo=
-r
->domains that support IOMMU_CAP_CACHE_COHERENCY.
+On 01/28/2015 06:32 PM, Laurent Pinchart wrote:
+> Hi Will,
 >
->Refactor this slightly, by keeping track instead that a given domain
->supports the capability, and applying the IOMMU_CACHE protection flag =
-when
->doing the actual DMA mappings.
+> On Wednesday 28 January 2015 13:32:19 Will Deacon wrote:
+>> On Wed, Jan 28, 2015 at 01:15:10PM +0000, Laurent Pinchart wrote:
+>>> On Wednesday 28 January 2015 12:29:42 Will Deacon wrote:
+>>>> On Wed, Jan 28, 2015 at 12:23:03PM +0000, Laurent Pinchart wrote:
+>>>>> On Wednesday 28 January 2015 11:33:00 Will Deacon wrote:
+>>>>>> On Mon, Jan 26, 2015 at 06:49:01PM +0000, Murali Karicheri wrote:
+>>>>>>> On 01/25/2015 08:32 AM, Laurent Pinchart wrote:
+>>>>>>>> On Friday 23 January 2015 17:32:34 Murali Karicheri wrote:
+>>>>>>>>> Function of_iommu_configure() is called from of_dma_configure() to
+>>>>>>>>> setup iommu ops using DT property. This API is currently used for
+>>>>>>>>> platform devices for which DMA configuration (including iommu ops)
+>>>>>>>>> may come from device's parent. To extend this functionality for
+>>>>>>>>> PCI devices, this API need to take a parent node ptr as an argument
+>>>>>>>>> instead of assuming device's parent. This is needed since for PCI,
+>>>>>>>>> the dma configuration may be defined in the DT node of the root
+>>>>>>>>> bus bridge's parent device. Currently only dma-range is used for PCI
+>>>>>>>>> and iommu is not supported. So return error if the device is PCI.
+>>>>>>>>>
+>>>>>>>>> Cc: Joerg Roedel<joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+>>>>>>>>> Cc: Grant Likely<grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>>>>>>>>> Cc: Rob Herring<robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+>>>>>>>>> Cc: Bjorn Helgaas<bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+>>>>>>>>> Cc: Will Deacon<will.deacon-5wv7dgnIgG8@public.gmane.org>
+>>>>>>>>> Cc: Russell King<linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+>>>>>>>>> Cc: Arnd Bergmann<arnd-r2nGTMty4D4@public.gmane.org>
+>>>>>>>>> Cc: Suravee Suthikulpanit<Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+>>>>>>>>>
+>>>>>>>>> Signed-off-by: Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>
+>>>>>>>>> ---
+>>>>>>>>>
+>>>>>>>>>    drivers/iommu/of_iommu.c |   10 ++++++++--
+>>>>>>>>>    drivers/of/platform.c    |    2 +-
+>>>>>>>>>    include/linux/of_iommu.h |    6 ++++--
+>>>>>>>>>    3 files changed, 13 insertions(+), 5 deletions(-)
+>>>>>>>>>
+>>>>>>>>> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+>>>>>>>>> index af1dc6a..439235b 100644
+>>>>>>>>> --- a/drivers/iommu/of_iommu.c
+>>>>>>>>> +++ b/drivers/iommu/of_iommu.c
+>>>>>>>>> @@ -133,19 +133,25 @@ struct iommu_ops *of_iommu_get_ops(struct
+>>>>>>>>> device_node *np)
+>>>>>>>>>    	return ops;
+>>>>>>>>>   }
+>>>>>>>>>
+>>>>>>>>> -struct iommu_ops *of_iommu_configure(struct device *dev)
+>>>>>>>>> +struct iommu_ops *of_iommu_configure(struct device *dev,
+>>>>>>>>> +				     struct device_node *iommu_np)
+>>>>>>>>>   {
+>>>>>>>>>    	struct of_phandle_args iommu_spec;
+>>>>>>>>>    	struct device_node *np;
+>>>>>>>>>    	struct iommu_ops *ops = NULL;
+>>>>>>>>>    	int idx = 0;
+>>>>>>>>>
+>>>>>>>>> +	if (dev_is_pci(dev)) {
+>>>>>>>>> +		dev_err(dev, "iommu is currently not supported for PCI\n");
+>>>>>>>>> +		return NULL;
+>>>>>>>>> +	}
+>>>>>>>>> +
+>>>>>>>>>    	/*
+>>>>>>>>>    	 * We don't currently walk up the tree looking for a parent
+>>>>>>>>>    	 IOMMU.
+>>>>>>>>>    	 * See the `Notes:' section of
+>>>>>>>>>    	 * Documentation/devicetree/bindings/iommu/iommu.txt
+>>>>>>>>>    	 */
+>>>>>>>>
+>>>>>>>> Wouldn't it be better to fix this rather than passing the device
+>>>>>>>> node pointer to the function ? The solution would be more generic.
+>>>>>>>
+>>>>>>> Will Deacon (Copied here) is working on this as we alteady discussed
+>>>>>>> in this thread. So it will be addressed by him in another series.
+>>>>>>
+>>>>>> Well, "working on this" equates to "has it somewhere near the bottom
+>>>>>> of a very long list" :)
+>>>>>
+>>>>> What's your opinion on this patch then, do you think adding the
+>>>>> iommu_np argument makes sense as a temporary hack, or should we instead
+>>>>> walk up the tree looking for an iommus attribute in parent nodes ? I
+>>>>> don't expect that to be insanely difficult to code.
+>>>>
+>>>> If walking up the tree is useful, then I think we should do that and
+>>>> update the Documentation to reflect the new behaviour.
+>>>
+>>> If I understand Murali's patch set right (please correct me if that's not
+>>> the case) the PCI code walks up the DT nodes hierarchy to the parent node
+>>> that contains the iommus attribute and passes a pointer to that node to
+>>> this function. It's thus a PCI-specific solution. As a temporary hack
+>>> that's OK I suppose, but if implementing it right straight away isn't
+>>> difficult that would be better.
+>>
+>> It looks to me like the code walks the PCI topology to get the DT node for
+>> the host controller, and passes *that* to of_dma_configure. That sounds
+>> like the right thing to do to me, especially since the PCI topology is
+>> likely not encoded in the device-tree. So actually, it is passing the
+>> first parent node afaict.
 >
->This will allow us to reuse the behavior for IOMMU_CAP_NOEXEC, which w=
-e
->also want to keep track of, but without applying it to all domains tha=
-t
->support it unless the user explicitly requests it.
+> Indeed, that's right. I forgot for a moment that we have non-DT devices ;-)
 >
->Signed-off-by: Antonios Motakis <a.motakis@xxxxxxxxxxxxxxxxxxxxxx>
->---
-> drivers/vfio/vfio_iommu_type1.c | 25 +++++++++++++++++--------
-> 1 file changed, 17 insertions(+), 8 deletions(-)
+> Acked-by: Laurent Pinchart<laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 >
->diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu=
-_type1.c
->index 4a9d666..c54dab8 100644
->--- a/drivers/vfio/vfio_iommu_type1.c
->+++ b/drivers/vfio/vfio_iommu_type1.c
-> 			if (ret)
-> 				return ret;
->=20
->@@ -731,7 +740,7 @@ static int vfio_iommu_type1_attach_group(void *iom=
-mu_data,
-> 	}
->=20
-> 	if (iommu_capable(bus, IOMMU_CAP_CACHE_COHERENCY))
->-		domain->prot |=3D IOMMU_CACHE;
->+		domain->caps |=3D IOMMU_CAP_CACHE_COHERENCY;
+> Murali, nitpicking a bit, shouldn't the iommu_np parameter be renamed ? It
+> points to the node containing the iommus parameter, not to the iommu node, so
+> the current name is slightly confusing. A brief kerneldoc above the function
+> would also help. This can be the subject of a separate patch.
+Probably the doc part can be added by Will. The iommu_np was a 
+suggestion from Rob, if I recollect. Isn't the iommu_np points to the 
+iommu device, and if so, iommu_np make sense.
 
-IMHO this is not good since IOMMU_CAP_CACHE_COHERENCY is not a bitfield=
- but an enum=20
-See include/linux/iommu.h=20
-enum iommu_cap {
-	IOMMU_CAP_CACHE_COHERENCY,	/* IOMMU can enforce cache coherent DMA
-					   transactions */
-	IOMMU_CAP_INTR_REMAP,		/* IOMMU supports interrupt isolation */
-	IOMMU_CAP_NOEXEC,		/* IOMMU_NOEXEC flag */
-};
-One possible fix would to redefine the enum with values with bitfiled v=
-alues
-enum iommu_cap {
-	IOMMU_CAP_CACHE_COHERENCY =3D 1, /* IOMMU can enforce cache coherent D=
-MA
-					   transactions */
-	IOMMU_CAP_INTR_REMAP =3D 2,	/* IOMMU supports interrupt isolation */
-	IOMMU_CAP_NOEXEC =3D 4,		/* IOMMU_NOEXEC flag */
-};
+Murali
+>
+>> The part I'm more interested in is the mapping of RequesterID (PCI dma
+>> alias) to IOMMU ID when we transition from the PCI topology to the DT
+>> topology. Currently, it seems to be 1:1 on the platforms I have, but I
+>> doubt this will always be the case.
+>
 
-Regards
-R=E9my
 
->_______________________________________________
->kvmarm mailing list
->kvmarm@xxxxxxxxxxxxxxxxxxxxx
-https://lists.cs.columbia.edu/mailman/listinfo/kvmarm
+-- 
+Murali Karicheri
+Linux Kernel, Texas Instruments
