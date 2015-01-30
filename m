@@ -1,117 +1,75 @@
-From: Baptiste Reynal <b.reynal@virtualopensystems.com>
-Subject: [PATCH v13 18/18] vfio/platform: implement IRQ masking/unmasking via an eventfd
-Date: Fri, 30 Jan 2015 14:46:24 +0100
-Message-ID: <1422625584-3741-19-git-send-email-b.reynal@virtualopensystems.com>
-References: <1422625584-3741-1-git-send-email-b.reynal@virtualopensystems.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1422625584-3741-1-git-send-email-b.reynal@virtualopensystems.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: kvmarm@lists.cs.columbia.edu, iommu@lists.linux-foundation.org, alex.williamson@redhat.com
-Cc: will.deacon@arm.com, tech@virtualopensystems.com, christoffer.dall@linaro.org, eric.auger@linaro.org, kim.phillips@freescale.com, marc.zyngier@arm.com, Antonios Motakis <a.motakis@virtualopensystems.com>, Baptiste Reynal <b.reynal@virtualopensystems.com>, "open list:VFIO DRIVER" <kvm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+From: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+Subject: Re: [PATCH 11/26] iommu/fsl: Fix checkpatch type OOM_MESSAGE
+Date: Fri, 30 Jan 2015 08:18:40 -0600
+Message-ID: <54CB92C0.5000304@Freescale.com>
+References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
+	<1422455698-3074-12-git-send-email-Emilian.Medve@Freescale.com>
+	<BN3PR0301MB1219BCCB01E99D150D0753F6EA310@BN3PR0301MB1219.namprd03.prod.outlook.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <BN3PR0301MB1219BCCB01E99D150D0753F6EA310-CEkquS/Gb81uuip9JPHoc5wN6zqB+hSMnBOFsp37pqbUKgpGm//BTAC/G2K4zDHf@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sethi Varun-B16395 <Varun.Sethi-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Antonios Motakis <a.motakis@virtualopensystems.com>
+Hello Varun,
 
-With this patch the VFIO user will be able to set an eventfd that can be
-used in order to mask and unmask IRQs of platform devices.
 
-Signed-off-by: Antonios Motakis <a.motakis@virtualopensystems.com>
----
- drivers/vfio/platform/vfio_platform_irq.c     | 47 ++++++++++++++++++++++++---
- drivers/vfio/platform/vfio_platform_private.h |  2 ++
- 2 files changed, 45 insertions(+), 4 deletions(-)
+On 01/30/2015 03:43 AM, Sethi Varun-B16395 wrote:
+> Hi Emil,
+> 
+>> -----Original Message-----
+>> From: Emil Medve [mailto:Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org]
+>> Sent: Wednesday, January 28, 2015 8:05 PM
+>> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org;
+>> Sethi Varun-B16395
+>> Cc: Medve Emilian-EMMEDVE1
+>> Subject: [PATCH 11/26] iommu/fsl: Fix checkpatch type OOM_MESSAGE
+>>
+>> WARNING:OOM_MESSAGE: Possible unnecessary 'out of memory' message
+>> +       if (!data) {
+>> +               dev_err(&pdev->dev, "PAMU isr data memory allocation
+>> + failed\n");
+>>
+>> Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+>> ---
+>>  drivers/iommu/fsl_pamu.c | 1 -
+>>  1 file changed, 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c index
+>> 4f1926b..6f9c976 100644
+>> --- a/drivers/iommu/fsl_pamu.c
+>> +++ b/drivers/iommu/fsl_pamu.c
+>> @@ -1041,7 +1041,6 @@ static int __init fsl_pamu_probe(struct
+>> platform_device *pdev)
+>>
+>>  	data = kzalloc(sizeof(*data), GFP_KERNEL);
+>>  	if (!data) {
+>> -		dev_err(&pdev->dev, "PAMU isr data memory allocation
+>> failed\n");
+>>  		ret = -ENOMEM;
+>>  		goto error;
+>>  	}
+> I think this is fine, there are other places as well where we have
+> error prints while setting the ENOMEM as the return code.
 
-diff --git a/drivers/vfio/platform/vfio_platform_irq.c b/drivers/vfio/platform/vfio_platform_irq.c
-index e0e6388..88bba57 100644
---- a/drivers/vfio/platform/vfio_platform_irq.c
-+++ b/drivers/vfio/platform/vfio_platform_irq.c
-@@ -37,6 +37,15 @@ static void vfio_platform_mask(struct vfio_platform_irq *irq_ctx)
- 	spin_unlock_irqrestore(&irq_ctx->lock, flags);
- }
- 
-+static int vfio_platform_mask_handler(void *opaque, void *unused)
-+{
-+	struct vfio_platform_irq *irq_ctx = opaque;
-+
-+	vfio_platform_mask(irq_ctx);
-+
-+	return 0;
-+}
-+
- static int vfio_platform_set_irq_mask(struct vfio_platform_device *vdev,
- 				      unsigned index, unsigned start,
- 				      unsigned count, uint32_t flags,
-@@ -48,8 +57,18 @@ static int vfio_platform_set_irq_mask(struct vfio_platform_device *vdev,
- 	if (!(vdev->irqs[index].flags & VFIO_IRQ_INFO_MASKABLE))
- 		return -EINVAL;
- 
--	if (flags & VFIO_IRQ_SET_DATA_EVENTFD)
--		return -EINVAL; /* not implemented yet */
-+	if (flags & VFIO_IRQ_SET_DATA_EVENTFD) {
-+		int32_t fd = *(int32_t *)data;
-+
-+		if (fd >= 0)
-+			return vfio_virqfd_enable((void *) &vdev->irqs[index],
-+						  vfio_platform_mask_handler,
-+						  NULL, NULL,
-+						  &vdev->irqs[index].mask, fd);
-+
-+		vfio_virqfd_disable(&vdev->irqs[index].mask);
-+		return 0;
-+	}
- 
- 	if (flags & VFIO_IRQ_SET_DATA_NONE) {
- 		vfio_platform_mask(&vdev->irqs[index]);
-@@ -78,6 +97,15 @@ static void vfio_platform_unmask(struct vfio_platform_irq *irq_ctx)
- 	spin_unlock_irqrestore(&irq_ctx->lock, flags);
- }
- 
-+static int vfio_platform_unmask_handler(void *opaque, void *unused)
-+{
-+	struct vfio_platform_irq *irq_ctx = opaque;
-+
-+	vfio_platform_unmask(irq_ctx);
-+
-+	return 0;
-+}
-+
- static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
- 					unsigned index, unsigned start,
- 					unsigned count, uint32_t flags,
-@@ -89,8 +117,19 @@ static int vfio_platform_set_irq_unmask(struct vfio_platform_device *vdev,
- 	if (!(vdev->irqs[index].flags & VFIO_IRQ_INFO_MASKABLE))
- 		return -EINVAL;
- 
--	if (flags & VFIO_IRQ_SET_DATA_EVENTFD)
--		return -EINVAL; /* not implemented yet */
-+	if (flags & VFIO_IRQ_SET_DATA_EVENTFD) {
-+		int32_t fd = *(int32_t *)data;
-+
-+		if (fd >= 0)
-+			return vfio_virqfd_enable((void *) &vdev->irqs[index],
-+						  vfio_platform_unmask_handler,
-+						  NULL, NULL,
-+						  &vdev->irqs[index].unmask,
-+						  fd);
-+
-+		vfio_virqfd_disable(&vdev->irqs[index].unmask);
-+		return 0;
-+	}
- 
- 	if (flags & VFIO_IRQ_SET_DATA_NONE) {
- 		vfio_platform_unmask(&vdev->irqs[index]);
-diff --git a/drivers/vfio/platform/vfio_platform_private.h b/drivers/vfio/platform/vfio_platform_private.h
-index ff2db1d..5d31e04 100644
---- a/drivers/vfio/platform/vfio_platform_private.h
-+++ b/drivers/vfio/platform/vfio_platform_private.h
-@@ -35,6 +35,8 @@ struct vfio_platform_irq {
- 	struct eventfd_ctx	*trigger;
- 	bool			masked;
- 	spinlock_t		lock;
-+	struct virqfd		*unmask;
-+	struct virqfd		*mask;
- };
- 
- struct vfio_platform_region {
--- 
-2.2.2
+This is a checkpatch report and I quote from the log:
+
+>     Logging messages that show some type of "out of memory" error are
+>     generally unnecessary as there is a generic message and a stack dump
+>     done by the memory subsystem.
+
+I think this particular dev_err() doesn't add extra
+
+
+Cheers,
