@@ -1,17 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 4/5] iommu: Make sure a device is always attached to a
-	domain
-Date: Fri, 30 Jan 2015 13:29:19 +0100
-Message-ID: <20150130122919.GD3702@8bytes.org>
-References: <1422317339-22620-1-git-send-email-joro@8bytes.org>
-	<1422317339-22620-5-git-send-email-joro@8bytes.org>
-	<20150128143852.GS1569@arm.com>
+Subject: Re: [PATCH 00/26] iommu/fsl: Various cleanup
+Date: Fri, 30 Jan 2015 13:30:40 +0100
+Message-ID: <20150130123040.GE3702@8bytes.org>
+References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20150128143852.GS1569-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1422455698-3074-1-git-send-email-Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,23 +18,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+Cc: Varun.Sethi-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 28, 2015 at 02:38:52PM +0000, Will Deacon wrote:
-> On Tue, Jan 27, 2015 at 12:08:58AM +0000, Joerg Roedel wrote:
-> > -	return iommu_group_for_each_dev(group, domain,
-> > -					iommu_group_do_attach_device);
-> > +	int ret;
-> > +
-> > +	if (group->default_domain && group->domain != group->default_domain)
-> > +		return -EBUSY;
+Varun,
+
+On Wed, Jan 28, 2015 at 08:34:32AM -0600, Emil Medve wrote:
+> Currently a PAMU driver patch is very likely to receive some checkpatch
+> complaints about the code in the context of the patch. This sequence is an
+> attempt to fix most of that and make the dirver more readable
 > 
-> I think this is now racy with itself and detach, whereas before we always
-> held the group->mutex by virtue of iommu_group_for_each_dev.
+> Also fixed a subset of the sparse and coccinelle reported issues
+> 
+> Emil Medve (26):
+>   iommu/fsl: Sprinkle some __init* annotations
+>   iommu/fsl: Use SVR_* instead of magic numbers
+>   iommu/fsl: Remove unused/extra includes
+>   iommu/fsl: Fix checkpatch type SPACE_BEFORE_TAB
+>   iommu/fsl: Fix checkpatch type LINE_SPACING
+>   iommu/fsl: Fix checkpatch type LEADING_SPACE
+>   iommu/fsl: Fix checkpath type BRACES
+>   iommu/fsl: Fix checkpatch type CODE_INDENT
+>   iommu/fsl: Fix checkpatch type ALLOC_SIZEOF_STRUCT
+>   iommu/fsl: Fix checkpatch type ALLOC_WITH_MULTIPLY
+>   iommu/fsl: Fix checkpatch type OOM_MESSAGE
+>   iommu/fsl: Fix checkpatch type TYPO_SPELLING
+>   iommu/fsl: Fix checkpatch type PREFER_PACKED
+>   iommu/fsl: Fix checkpatch type QUOTED_WHITESPACE_BEFORE_NEWLINE
+>   iommu/fsl: Fix checkpatch type SPACING
+>   iommu/fsl: Use a device pointer to make lines shorter
+>   iommu/fsl: Remove pr/dev_*() prefixes
+>   iommu/fsl: Fix checkpatch type PARENTHESIS_ALIGNMENT
+>   iommu/fsl: Fix some comments alignment
+>   iommu/fsl: Fix alignment of some stray lines
+>   iommu/fsl: Fix checkpatch type LONG_LINE
+>   iommu/fsl: Make local symbols static
+>   iommu/fsl: Use NULL instead of zero
+>   iommu/fsl: Remove unneeded semicolon
+>   iommu/fsl: Don't use integers values with bool type
+>   iommu/fsl: Remove extra paranthesis
 
-You are right, thanks. I will update the code with correct locking.
+Can you collect the patches you acked and send me a pull-req for them?
 
+
+Thanks,
 
 	Joerg
