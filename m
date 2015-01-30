@@ -1,17 +1,19 @@
-From: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-Subject: Re: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init* annotations
-Date: Fri, 30 Jan 2015 08:23:41 -0600
-Message-ID: <54CB93ED.80109@Freescale.com>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init* annotations
+Date: Fri, 30 Jan 2015 14:44:01 +0000
+Message-ID: <BN3PR0301MB121923A1C57AFAAA70360723EA310@BN3PR0301MB1219.namprd03.prod.outlook.com>
 References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
 	<1422455698-3074-2-git-send-email-Emilian.Medve@Freescale.com>
 	<BN3PR0301MB121998FEF4EE5C92DEEF7D61EA310@BN3PR0301MB1219.namprd03.prod.outlook.com>
 	<54CB2AEC.9000800@Freescale.com>
 	<BN3PR0301MB1219965593D06F96A8A1ADB8EA310@BN3PR0301MB1219.namprd03.prod.outlook.com>
+	<54CB93ED.80109@Freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <BN3PR0301MB1219965593D06F96A8A1ADB8EA310-CEkquS/Gb81uuip9JPHoc5wN6zqB+hSMnBOFsp37pqbUKgpGm//BTAC/G2K4zDHf@public.gmane.org>
+In-Reply-To: <54CB93ED.80109-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,69 +23,79 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sethi Varun-B16395 <Varun.Sethi-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
+To: Emilian Medve <Emilian.Medve-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello Varun,
+Hi Emil,
 
-
-On 01/30/2015 03:20 AM, Sethi Varun-B16395 wrote:
-> Hi Emil,
+> -----Original Message-----
+> From: Emil Medve [mailto:Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org]
+> Sent: Friday, January 30, 2015 7:54 PM
+> To: Sethi Varun-B16395; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org
+> Subject: Re: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init* annotations
 > 
->> -----Original Message-----
->> From: Emil Medve [mailto:Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org]
->> Sent: Friday, January 30, 2015 12:26 PM
->> To: Sethi Varun-B16395; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
->> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org
->> Subject: Re: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init* annotations
->>
->> Hello Varun,
->>
->>
->> On 01/30/2015 12:46 AM, Sethi Varun-B16395 wrote:
->>> Hi Emil,
->>>
->>>> -----Original Message-----
->>>> From: Emil Medve [mailto:Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org]
->>>> Sent: Wednesday, January 28, 2015 8:05 PM
->>>> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org;
->>>> jroedel-l3A5Bk7waGM@public.gmane.org; Sethi Varun-B16395
->>>> Cc: Medve Emilian-EMMEDVE1
->>>> Subject: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init*
->>>> annotations
->>>>
->>>> Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
->>>> ---
->>>>  drivers/iommu/fsl_pamu.c        | 12 ++++++------
->>>>  drivers/iommu/fsl_pamu_domain.c |  2 +-
->>>>  2 files changed, 7 insertions(+), 7 deletions(-)
->>>>
->>>> diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
->>>> index d958e65..652c34d 100644
->>>> --- a/drivers/iommu/fsl_pamu.c
->>>> +++ b/drivers/iommu/fsl_pamu.c
->>>> @@ -50,7 +50,7 @@ struct pamu_isr_data {
->>>>
->>>>  static struct paace *ppaact;
->>>>  static struct paace *spaact;
->>>> -static struct ome *omt;
->>>> +static struct ome *omt __initdata;
->>>
->>> [varun] omt shouldn't be initdata.
->>
->> It seems to be used only from probe()'s call tree: fsl_pamu_probe() and
->> setup_omt(); both __init functions. Am I missing something?
->>
->>
-> Omt corresponds to PAMU operation mapping table, which is pointed to
-> by the PAMU OMT base registers. We are using operation mapping table for
-> operation translation.
+> Hello Varun,
+> 
+> 
+> On 01/30/2015 03:20 AM, Sethi Varun-B16395 wrote:
+> > Hi Emil,
+> >
+> >> -----Original Message-----
+> >> From: Emil Medve [mailto:Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org]
+> >> Sent: Friday, January 30, 2015 12:26 PM
+> >> To: Sethi Varun-B16395; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> >> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org
+> >> Subject: Re: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init*
+> >> annotations
+> >>
+> >> Hello Varun,
+> >>
+> >>
+> >> On 01/30/2015 12:46 AM, Sethi Varun-B16395 wrote:
+> >>> Hi Emil,
+> >>>
+> >>>> -----Original Message-----
+> >>>> From: Emil Medve [mailto:Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org]
+> >>>> Sent: Wednesday, January 28, 2015 8:05 PM
+> >>>> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org;
+> >>>> jroedel-l3A5Bk7waGM@public.gmane.org; Sethi Varun-B16395
+> >>>> Cc: Medve Emilian-EMMEDVE1
+> >>>> Subject: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init*
+> >>>> annotations
+> >>>>
+> >>>> Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+> >>>> ---
+> >>>>  drivers/iommu/fsl_pamu.c        | 12 ++++++------
+> >>>>  drivers/iommu/fsl_pamu_domain.c |  2 +-
+> >>>>  2 files changed, 7 insertions(+), 7 deletions(-)
+> >>>>
+> >>>> diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
+> >>>> index d958e65..652c34d 100644
+> >>>> --- a/drivers/iommu/fsl_pamu.c
+> >>>> +++ b/drivers/iommu/fsl_pamu.c
+> >>>> @@ -50,7 +50,7 @@ struct pamu_isr_data {
+> >>>>
+> >>>>  static struct paace *ppaact;
+> >>>>  static struct paace *spaact;
+> >>>> -static struct ome *omt;
+> >>>> +static struct ome *omt __initdata;
+> >>>
+> >>> [varun] omt shouldn't be initdata.
+> >>
+> >> It seems to be used only from probe()'s call tree: fsl_pamu_probe()
+> >> and setup_omt(); both __init functions. Am I missing something?
+> >>
+> >>
+> > Omt corresponds to PAMU operation mapping table, which is pointed to
+> > by the PAMU OMT base registers. We are using operation mapping table
+> > for operation translation.
+> 
+> Yes, but this 'omt' is just a pointer (should it be annotated as
+> __iomem?) to the table and not used past the call sequence
+> fsl_pamu_probe()->setup_omt(). For that matter 'omt' can be local to
+> fsl_pamu_probe(). The hardware table/storage is used by the PAMU past
+> the setup, but this pointer is not
+Yes, you are right we won't use the pointer after the OMT table has been setup. We would just need the operation mapping entry index.
 
-Yes, but this 'omt' is just a pointer (should it be annotated as
-__iomem?) to the table and not used past the call sequence
-fsl_pamu_probe()->setup_omt(). For that matter 'omt' can be local to
-fsl_pamu_probe(). The hardware table/storage is used by the PAMU past
-the setup, but this pointer is not
-
-
-Cheers,
+Acked-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
