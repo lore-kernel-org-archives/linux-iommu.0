@@ -1,15 +1,14 @@
 From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 14/26] iommu/fsl: Fix checkpatch type
-	QUOTED_WHITESPACE_BEFORE_NEWLINE
-Date: Fri, 30 Jan 2015 07:42:04 +0000
-Message-ID: <BN3PR0301MB12194C7B54B789BC3A0E35EDEA310@BN3PR0301MB1219.namprd03.prod.outlook.com>
+Subject: RE: [PATCH 15/26] iommu/fsl: Fix checkpatch type SPACING
+Date: Fri, 30 Jan 2015 07:44:34 +0000
+Message-ID: <BN3PR0301MB1219966234C984A7EC39B541EA310@BN3PR0301MB1219.namprd03.prod.outlook.com>
 References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
-	<1422455698-3074-15-git-send-email-Emilian.Medve@Freescale.com>
+	<1422455698-3074-16-git-send-email-Emilian.Medve@Freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1422455698-3074-15-git-send-email-Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+In-Reply-To: <1422455698-3074-16-git-send-email-Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -32,33 +31,57 @@ List-Id: iommu@lists.linux-foundation.org
 > To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org;
 > Sethi Varun-B16395
 > Cc: Medve Emilian-EMMEDVE1
-> Subject: [PATCH 14/26] iommu/fsl: Fix checkpatch type
-> QUOTED_WHITESPACE_BEFORE_NEWLINE
+> Subject: [PATCH 15/26] iommu/fsl: Fix checkpatch type SPACING
 > 
-> WARNING:QUOTED_WHITESPACE_BEFORE_NEWLINE: unnecessary
-> whitespace before a quoted newline
-> +               pr_debug("Invalid window size \n");
+> CHECK:SPACING: No space is necessary after a cast
+> +               pamu_reg_base = (unsigned long) pamu_regs +
+> + pamu_reg_off;
+> 
+> CHECK:SPACING: No space is necessary after a cast
+> +               memcpy((struct pamu_stash_attribute *) data,
+> + &dma_domain->dma_stash,
 > 
 > Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 > ---
->  drivers/iommu/fsl_pamu_domain.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/iommu/fsl_pamu.c        | 2 +-
+>  drivers/iommu/fsl_pamu_domain.c | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/iommu/fsl_pamu_domain.c
-> b/drivers/iommu/fsl_pamu_domain.c index dcb9bb4..c9886ff 100644
+> diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c index
+> 6f9c976..18a604a 100644
+> --- a/drivers/iommu/fsl_pamu.c
+> +++ b/drivers/iommu/fsl_pamu.c
+> @@ -1151,7 +1151,7 @@ static int __init fsl_pamu_probe(struct
+> platform_device *pdev)
+>  	for (pamu_reg_off = 0, pamu_counter = 0x80000000; pamu_reg_off
+> < size;
+>  	     pamu_reg_off += PAMU_OFFSET, pamu_counter >>= 1) {
+> 
+> -		pamu_reg_base = (unsigned long) pamu_regs +
+> pamu_reg_off;
+> +		pamu_reg_base = (unsigned long)pamu_regs +
+> pamu_reg_off;
+>  		setup_one_pamu(pamu_reg_base, pamu_reg_off,
+> ppaact_phys,
+>  				 spaact_phys, omt_phys);
+>  		/* Disable PAMU bypass for this PAMU */ diff --git
+> a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+> index c9886ff..c7af760 100644
 > --- a/drivers/iommu/fsl_pamu_domain.c
 > +++ b/drivers/iommu/fsl_pamu_domain.c
-> @@ -556,7 +556,7 @@ static int fsl_pamu_window_enable(struct
-> iommu_domain *domain, u32 wnd_nr,
+> @@ -845,8 +845,8 @@ static int fsl_pamu_get_domain_attr(struct
+> iommu_domain *domain,
 > 
->  	win_size = dma_domain->geom_size >> ilog2(dma_domain-
-> >win_cnt);
->  	if (size > win_size) {
-> -		pr_debug("Invalid window size \n");
-> +		pr_debug("Invalid window size\n");
->  		spin_unlock_irqrestore(&dma_domain->domain_lock, flags);
->  		return -EINVAL;
->  	}
+>  	switch (attr_type) {
+>  	case DOMAIN_ATTR_FSL_PAMU_STASH:
+> -		memcpy((struct pamu_stash_attribute *) data,
+> &dma_domain->dma_stash,
+> -				 sizeof(struct pamu_stash_attribute));
+> +		memcpy(data, &dma_domain->dma_stash,
+> +		       sizeof(struct pamu_stash_attribute));
+>  		break;
+>  	case DOMAIN_ATTR_FSL_PAMU_ENABLE:
+>  		*(int *)data = dma_domain->enabled;
 > --
 > 2.2.2
 Acked-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
