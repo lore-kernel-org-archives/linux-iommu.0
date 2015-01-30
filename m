@@ -1,14 +1,14 @@
 From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 02/26] iommu/fsl: Use SVR_* instead of magic numbers
-Date: Fri, 30 Jan 2015 06:57:55 +0000
-Message-ID: <BN3PR0301MB121951752636406F0B810A9AEA310@BN3PR0301MB1219.namprd03.prod.outlook.com>
+Subject: RE: [PATCH 03/26] iommu/fsl: Remove unused/extra includes
+Date: Fri, 30 Jan 2015 07:10:27 +0000
+Message-ID: <BN3PR0301MB121904D98B98BBF15CD5EF25EA310@BN3PR0301MB1219.namprd03.prod.outlook.com>
 References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
-	<1422455698-3074-3-git-send-email-Emilian.Medve@Freescale.com>
+	<1422455698-3074-4-git-send-email-Emilian.Medve@Freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1422455698-3074-3-git-send-email-Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+In-Reply-To: <1422455698-3074-4-git-send-email-Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -31,58 +31,100 @@ List-Id: iommu@lists.linux-foundation.org
 > To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org;
 > Sethi Varun-B16395
 > Cc: Medve Emilian-EMMEDVE1
-> Subject: [PATCH 02/26] iommu/fsl: Use SVR_* instead of magic numbers
+> Subject: [PATCH 03/26] iommu/fsl: Remove unused/extra includes
+> 
+> linux/modules.h		- drivers can't be a module
+> linux/bootmem.h		- no boot time memory allocator is used
+> linux/notifier.h	- not used
+> etc.
+> 
+> Factorize common includes into fsl_pamu.h
 > 
 > Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 > ---
->  drivers/iommu/fsl_pamu.c | 27 ++++++++++++++-------------
->  1 file changed, 14 insertions(+), 13 deletions(-)
+>  drivers/iommu/fsl_pamu.c        | 16 +++-------------
+>  drivers/iommu/fsl_pamu.h        |  2 ++
+>  drivers/iommu/fsl_pamu_domain.c | 20 ++------------------
+>  3 files changed, 7 insertions(+), 31 deletions(-)
 > 
 > diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c index
-> 652c34d..7d9f8a0 100644
+> 7d9f8a0..d3a9fff 100644
 > --- a/drivers/iommu/fsl_pamu.c
 > +++ b/drivers/iommu/fsl_pamu.c
-> @@ -31,6 +31,7 @@
+> @@ -18,24 +18,14 @@
+> 
+>  #define pr_fmt(fmt)    "fsl-pamu: %s: " fmt, __func__
+> 
+> -#include <linux/init.h>
+> -#include <linux/iommu.h>
+> -#include <linux/slab.h>
+> -#include <linux/module.h>
+> -#include <linux/types.h>
+> -#include <linux/mm.h>
+> +#include "fsl_pamu.h"
+> +
+>  #include <linux/interrupt.h>
+> -#include <linux/device.h>
+> -#include <linux/of_platform.h>
+> -#include <linux/bootmem.h>
 >  #include <linux/genalloc.h>
->  #include <asm/io.h>
->  #include <asm/bitops.h>
-> +#include <asm/mpc85xx.h>
+> -#include <asm/io.h>
+> -#include <asm/bitops.h>
+> +
+>  #include <asm/mpc85xx.h>
 >  #include <asm/fsl_guts.h>
 > 
->  #include "fsl_pamu.h"
-> @@ -999,19 +1000,19 @@ static const struct {
->  	u32 svr;
->  	u32 port_id;
->  } port_id_map[] __initconst = {
-> -	{0x82100010, 0xFF000000},	/* P2040 1.0 */
-> -	{0x82100011, 0xFF000000},	/* P2040 1.1 */
-> -	{0x82100110, 0xFF000000},	/* P2041 1.0 */
-> -	{0x82100111, 0xFF000000},	/* P2041 1.1 */
-> -	{0x82110310, 0xFF000000},	/* P3041 1.0 */
-> -	{0x82110311, 0xFF000000},	/* P3041 1.1 */
-> -	{0x82010020, 0xFFF80000},	/* P4040 2.0 */
-> -	{0x82000020, 0xFFF80000},	/* P4080 2.0 */
-> -	{0x82210010, 0xFC000000},       /* P5010 1.0 */
-> -	{0x82210020, 0xFC000000},       /* P5010 2.0 */
-> -	{0x82200010, 0xFC000000},	/* P5020 1.0 */
-> -	{0x82050010, 0xFF800000},	/* P5021 1.0 */
-> -	{0x82040010, 0xFF800000},	/* P5040 1.0 */
-> +	{(SVR_P2040 << 8) | 0x10, 0xFF000000},	/* P2040 1.0 */
-> +	{(SVR_P2040 << 8) | 0x11, 0xFF000000},	/* P2040 1.1 */
-> +	{(SVR_P2041 << 8) | 0x10, 0xFF000000},	/* P2041 1.0 */
-> +	{(SVR_P2041 << 8) | 0x11, 0xFF000000},	/* P2041 1.1 */
-> +	{(SVR_P3041 << 8) | 0x10, 0xFF000000},	/* P3041 1.0 */
-> +	{(SVR_P3041 << 8) | 0x11, 0xFF000000},	/* P3041 1.1 */
-> +	{(SVR_P4040 << 8) | 0x20, 0xFFF80000},	/* P4040 2.0 */
-> +	{(SVR_P4080 << 8) | 0x20, 0xFFF80000},	/* P4080 2.0 */
-> +	{(SVR_P5010 << 8) | 0x10, 0xFC000000},	/* P5010 1.0 */
-> +	{(SVR_P5010 << 8) | 0x20, 0xFC000000},	/* P5010 2.0 */
-> +	{(SVR_P5020 << 8) | 0x10, 0xFC000000},	/* P5020 1.0 */
-> +	{(SVR_P5021 << 8) | 0x10, 0xFF800000},	/* P5021 1.0 */
-> +	{(SVR_P5040 << 8) | 0x10, 0xFF800000},	/* P5040 1.0 */
->  };
+> -#include "fsl_pamu.h"
+> -
+>  /* define indexes for each operation mapping scenario */
+>  #define OMI_QMAN        0x00
+>  #define OMI_FMAN        0x01
+> diff --git a/drivers/iommu/fsl_pamu.h b/drivers/iommu/fsl_pamu.h index
+> 8fc1a12..a7794b5 100644
+> --- a/drivers/iommu/fsl_pamu.h
+> +++ b/drivers/iommu/fsl_pamu.h
+> @@ -19,6 +19,8 @@
+>  #ifndef __FSL_PAMU_H
+>  #define __FSL_PAMU_H
 > 
->  #define SVR_SECURITY	0x80000	/* The Security (E) bit */
+> +#include <linux/iommu.h>
+> +
+>  #include <asm/fsl_pamu_stash.h>
+> 
+>  /* Bit Field macros
+> diff --git a/drivers/iommu/fsl_pamu_domain.c
+> b/drivers/iommu/fsl_pamu_domain.c index 48a72b3..7ea93ae 100644
+> --- a/drivers/iommu/fsl_pamu_domain.c
+> +++ b/drivers/iommu/fsl_pamu_domain.c
+> @@ -19,26 +19,10 @@
+> 
+>  #define pr_fmt(fmt)    "fsl-pamu-domain: %s: " fmt, __func__
+> 
+> -#include <linux/init.h>
+> -#include <linux/iommu.h>
+> -#include <linux/notifier.h>
+> -#include <linux/slab.h>
+> -#include <linux/module.h>
+> -#include <linux/types.h>
+> -#include <linux/mm.h>
+> -#include <linux/interrupt.h>
+> -#include <linux/device.h>
+> -#include <linux/of_platform.h>
+> -#include <linux/bootmem.h>
+> -#include <linux/err.h>
+> -#include <asm/io.h>
+> -#include <asm/bitops.h>
+> -
+> -#include <asm/pci-bridge.h>
+> -#include <sysdev/fsl_pci.h>
+> -
+>  #include "fsl_pamu_domain.h"
+> 
+> +#include <sysdev/fsl_pci.h>
+> +
+>  /*
+>   * Global spinlock that needs to be held while
+>   * configuring PAMU.
 > --
 > 2.2.2
 Acked-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
