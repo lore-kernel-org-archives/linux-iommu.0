@@ -1,15 +1,16 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 11/26] iommu/fsl: Fix checkpatch type OOM_MESSAGE
-Date: Fri, 30 Jan 2015 09:43:22 +0000
-Message-ID: <BN3PR0301MB1219BCCB01E99D150D0753F6EA310@BN3PR0301MB1219.namprd03.prod.outlook.com>
-References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
-	<1422455698-3074-12-git-send-email-Emilian.Medve@Freescale.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 02/15] iommu: Introduce iommu domain types
+Date: Fri, 30 Jan 2015 13:22:34 +0100
+Message-ID: <20150130122233.GA3702@8bytes.org>
+References: <1422316305-19216-1-git-send-email-joro@8bytes.org>
+	<1422316305-19216-3-git-send-email-joro@8bytes.org>
+	<20150128141934.GP1569@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1422455698-3074-12-git-send-email-Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20150128141934.GP1569-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,44 +20,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
-Cc: Emilian Medve <Emilian.Medve-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Emil,
+Hi Will,
 
-> -----Original Message-----
-> From: Emil Medve [mailto:Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org]
-> Sent: Wednesday, January 28, 2015 8:05 PM
-> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org;
-> Sethi Varun-B16395
-> Cc: Medve Emilian-EMMEDVE1
-> Subject: [PATCH 11/26] iommu/fsl: Fix checkpatch type OOM_MESSAGE
+On Wed, Jan 28, 2015 at 02:19:34PM +0000, Will Deacon wrote:
+> > +/* This are the possible domain-types */
+> > +enum iommu_domain_type {
+> > +	IOMMU_DOMAIN_DMA,	/* Domain used for DMA-API */
+> > +	IOMMU_DOMAIN_IDENTITY,	/* Identity mapped domain  */
 > 
-> WARNING:OOM_MESSAGE: Possible unnecessary 'out of memory' message
-> +       if (!data) {
-> +               dev_err(&pdev->dev, "PAMU isr data memory allocation
-> + failed\n");
-> 
-> Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-> ---
->  drivers/iommu/fsl_pamu.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c index
-> 4f1926b..6f9c976 100644
-> --- a/drivers/iommu/fsl_pamu.c
-> +++ b/drivers/iommu/fsl_pamu.c
-> @@ -1041,7 +1041,6 @@ static int __init fsl_pamu_probe(struct
-> platform_device *pdev)
-> 
->  	data = kzalloc(sizeof(*data), GFP_KERNEL);
->  	if (!data) {
-> -		dev_err(&pdev->dev, "PAMU isr data memory allocation
-> failed\n");
->  		ret = -ENOMEM;
->  		goto error;
->  	}
-I think this is fine, there are other places as well where we have error prints while setting the ENOMEM as the return code.
+> What happens if somebody calls map or unmap on an identity-mapping domain?
+> Can we catch that in the IOMMU core before calling the IOMMU driver? That
+> also implies we need something extra to parameterise the attributes for
+> the mapping (e.g. cacheable, read-only) and also potentially the address
+> range.
 
--Varun
+The domain type is only used by the IOMMU drivers to do be able to enter
+special allocation paths (the AMD-Vi driver for example could allocate a
+special internal domain type for IOMMU_DOMAIN_DMA).
+But I think you are right, a couple of the current domain attributes we
+have could be moved here, turning the domain-type into a bit-field. So
+we could have bits for PAGING, CACHABLE, DMA_API and NESTING and build
+the domain types above from those bits.
+
+> > +	IOMMU_DOMAIN_UNMANAGED, /* Domain mappings are managed by a third party
+> > +				   user (like KVM or VFIO) */
+> 
+> We already have the domain attributes (iommu_attr) to describe features
+> of a domain. Is there really a need for this extra type, or can we extend
+> the attribute set and allow for domain allocation with attributes?
+
+I don't think that domains attributed will become obsolete with this
+domain-type field. Some of the attributes should stay there for now,
+like all the PAMU specific stuff. But I agree, some could be moved over.
+
+	
+	Joerg
