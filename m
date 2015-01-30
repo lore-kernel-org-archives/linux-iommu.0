@@ -1,14 +1,14 @@
 From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 06/26] iommu/fsl: Fix checkpatch type LEADING_SPACE
-Date: Fri, 30 Jan 2015 07:15:17 +0000
-Message-ID: <BN3PR0301MB1219C9B4ADEADB38433178FCEA310@BN3PR0301MB1219.namprd03.prod.outlook.com>
+Subject: RE: [PATCH 07/26] iommu/fsl: Fix checkpath type BRACES
+Date: Fri, 30 Jan 2015 07:17:55 +0000
+Message-ID: <BN3PR0301MB1219CE0E0BF6206580BD006BEA310@BN3PR0301MB1219.namprd03.prod.outlook.com>
 References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
-	<1422455698-3074-7-git-send-email-Emilian.Medve@Freescale.com>
+	<1422455698-3074-8-git-send-email-Emilian.Medve@Freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1422455698-3074-7-git-send-email-Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+In-Reply-To: <1422455698-3074-8-git-send-email-Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -31,50 +31,154 @@ List-Id: iommu@lists.linux-foundation.org
 > To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org;
 > Sethi Varun-B16395
 > Cc: Medve Emilian-EMMEDVE1
-> Subject: [PATCH 06/26] iommu/fsl: Fix checkpatch type LEADING_SPACE
+> Subject: [PATCH 07/26] iommu/fsl: Fix checkpath type BRACES
 > 
-> WARNING:LEADING_SPACE: please, no spaces at the start of a line
-> +       return __ffs(subwindow_cnt) - 1;$
+> WARNING:BRACES: braces {} are not necessary for single statement blocks
+> +               if (!paace) {
+> +                       return -ENOENT;
+> +               }
 > 
-> WARNING:LEADING_SPACE: please, no spaces at the start of a line
-> +                (PAACE_ATM_WINDOW_XLATE | PAACE_ATM_PAGE_XLATE)$
+> WARNING:BRACES: braces {} are not necessary for single statement blocks
+> +               if (!paace) {
+> +                       return -ENOENT;
+> +               }
+> 
+> WARNING:BRACES: braces {} are not necessary for single statement blocks
+> +       if (!ppaace) {
+> +               return -ENOENT;
+> +       }
+> 
+> CHECK:BRACES: Blank lines aren't necessary after an open brace '{'
+> +{
+> +
+> 
+> CHECK:BRACES: Blank lines aren't necessary before a close brace '}'
+> +
+> +}
+> 
+> CHECK:BRACES: Blank lines aren't necessary before a close brace '}'
+> +
+> +}
+> 
+> CHECK:BRACES: Blank lines aren't necessary before a close brace '}'
+> +
+> +}
+> 
+> CHECK:BRACES: Blank lines aren't necessary after an open brace '{'
+> +       for (i = 0; i < num; i++) {
+> +
+> 
+> CHECK:BRACES: braces {} should be used on all arms of this statement
+> +               if (pci_ctl->parent->iommu_group) {
+> [...]
+> +               } else
+> [...]
 > 
 > Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 > ---
->  drivers/iommu/fsl_pamu.c | 4 ++--
->  drivers/iommu/fsl_pamu.h | 3 +--
->  2 files changed, 3 insertions(+), 4 deletions(-)
+>  drivers/iommu/fsl_pamu.c        | 9 +++------
+>  drivers/iommu/fsl_pamu_domain.c | 8 ++------
+>  2 files changed, 5 insertions(+), 12 deletions(-)
 > 
 > diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c index
-> df6007c..ccdc5e5 100644
+> ccdc5e5..6b28dd8 100644
 > --- a/drivers/iommu/fsl_pamu.c
 > +++ b/drivers/iommu/fsl_pamu.c
-> @@ -169,8 +169,8 @@ static unsigned int
-> map_addrspace_size_to_wse(phys_addr_t addrspace_size)
->  /* Derive the PAACE window count encoding for the subwindow count */
-> static unsigned int map_subwindow_cnt_to_wce(u32 subwindow_cnt)  {
-> -       /* window count is 2^(WCE+1) bytes */
-> -       return __ffs(subwindow_cnt) - 1;
-> +	/* window count is 2^(WCE+1) bytes */
-> +	return __ffs(subwindow_cnt) - 1;
+> @@ -278,9 +278,8 @@ int  pamu_update_paace_stash(int liodn, u32 subwin,
+> u32 value)
+>  	}
+>  	if (subwin) {
+>  		paace = pamu_get_spaace(paace, subwin - 1);
+> -		if (!paace) {
+> +		if (!paace)
+>  			return -ENOENT;
+> -		}
+>  	}
+>  	set_bf(paace->impl_attr, PAACE_IA_CID, value);
+> 
+> @@ -301,9 +300,8 @@ int pamu_disable_spaace(int liodn, u32 subwin)
+>  	}
+>  	if (subwin) {
+>  		paace = pamu_get_spaace(paace, subwin - 1);
+> -		if (!paace) {
+> +		if (!paace)
+>  			return -ENOENT;
+> -		}
+>  		set_bf(paace->addr_bitfields, PAACE_AF_V,
+>  			 PAACE_V_INVALID);
+>  	} else {
+> @@ -351,9 +349,8 @@ int pamu_config_ppaace(int liodn, phys_addr_t
+> win_addr, phys_addr_t win_size,
+>  	}
+> 
+>  	ppaace = pamu_get_ppaace(liodn);
+> -	if (!ppaace) {
+> +	if (!ppaace)
+>  		return -ENOENT;
+> -	}
+> 
+>  	/* window size is 2^(WSE+1) bytes */
+>  	set_bf(ppaace->addr_bitfields, PPAACE_AF_WSE, diff --git
+> a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+> index dc38db5..080ffa4 100644
+> --- a/drivers/iommu/fsl_pamu_domain.c
+> +++ b/drivers/iommu/fsl_pamu_domain.c
+> @@ -35,7 +35,6 @@ static DEFINE_SPINLOCK(device_domain_lock);
+> 
+>  static int __init iommu_init_mempool(void)  {
+> -
+>  	fsl_pamu_domain_cache =
+> kmem_cache_create("fsl_pamu_domain",
+>  					 sizeof(struct fsl_dma_domain),
+>  					 0,
+> @@ -153,7 +152,6 @@ static int map_liodn(int liodn, struct fsl_dma_domain
+> *dma_domain)
+>  		return map_subwins(liodn, dma_domain);
+>  	else
+>  		return map_win(liodn, dma_domain);
+> -
 >  }
 > 
->  /*
-> diff --git a/drivers/iommu/fsl_pamu.h b/drivers/iommu/fsl_pamu.h index
-> a7794b5..52a91af 100644
-> --- a/drivers/iommu/fsl_pamu.h
-> +++ b/drivers/iommu/fsl_pamu.h
-> @@ -200,8 +200,7 @@ struct pamu_mmap_regs {
->  #define PAACE_ATM_NO_XLATE      0x00
->  #define PAACE_ATM_WINDOW_XLATE  0x01
->  #define PAACE_ATM_PAGE_XLATE    0x02
-> -#define PAACE_ATM_WIN_PG_XLATE  \
-> -                (PAACE_ATM_WINDOW_XLATE | PAACE_ATM_PAGE_XLATE)
-> +#define PAACE_ATM_WIN_PG_XLATE  (PAACE_ATM_WINDOW_XLATE |
-> +PAACE_ATM_PAGE_XLATE)
->  #define PAACE_OTM_NO_XLATE      0x00
->  #define PAACE_OTM_IMMEDIATE     0x01
->  #define PAACE_OTM_INDEXED       0x02
+>  /* Update window/subwindow mapping for the LIODN */ @@ -380,7 +378,6
+> @@ static void attach_device(struct fsl_dma_domain *dma_domain, int
+> liodn, struct d
+>  	if (!dev->archdata.iommu_domain)
+>  		dev->archdata.iommu_domain = info;
+>  	spin_unlock_irqrestore(&device_domain_lock, flags);
+> -
+>  }
+> 
+>  static phys_addr_t fsl_pamu_iova_to_phys(struct iommu_domain *domain,
+> @@ -527,7 +524,6 @@ static void fsl_pamu_window_disable(struct
+> iommu_domain *domain, u32 wnd_nr)
+>  	}
+> 
+>  	spin_unlock_irqrestore(&dma_domain->domain_lock, flags);
+> -
+>  }
+> 
+>  static int fsl_pamu_window_enable(struct iommu_domain *domain, u32
+> wnd_nr, @@ -616,7 +612,6 @@ static int handle_attach_device(struct
+> fsl_dma_domain *dma_domain,
+> 
+>  	spin_lock_irqsave(&dma_domain->domain_lock, flags);
+>  	for (i = 0; i < num; i++) {
+> -
+>  		/* Ensure that LIODN value is valid */
+>  		if (liodn[i] >= PAACE_NUMBER_ENTRIES) {
+>  			pr_debug("Invalid liodn %d, attach device failed for
+> %s\n", @@ -951,8 +946,9 @@ static struct iommu_group
+> *get_pci_device_group(struct pci_dev *pdev)
+>  		if (pci_ctl->parent->iommu_group) {
+>  			group = get_device_iommu_group(pci_ctl->parent);
+>  			iommu_group_remove_device(pci_ctl->parent);
+> -		} else
+> +		} else {
+>  			group = get_shared_pci_device_group(pdev);
+> +		}
+>  	}
+> 
+>  	if (!group)
 > --
 > 2.2.2
 Acked-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
