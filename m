@@ -1,10 +1,17 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [git pull] IOMMU Fixes for Linux v3.19-rc3
-Date: Fri, 30 Jan 2015 15:23:40 +0100
-Message-ID: <20150130142340.GA10152@8bytes.org>
+From: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+Subject: Re: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init* annotations
+Date: Fri, 30 Jan 2015 08:23:41 -0600
+Message-ID: <54CB93ED.80109@Freescale.com>
+References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
+	<1422455698-3074-2-git-send-email-Emilian.Medve@Freescale.com>
+	<BN3PR0301MB121998FEF4EE5C92DEEF7D61EA310@BN3PR0301MB1219.namprd03.prod.outlook.com>
+	<54CB2AEC.9000800@Freescale.com>
+	<BN3PR0301MB1219965593D06F96A8A1ADB8EA310@BN3PR0301MB1219.namprd03.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============4751173090838498827=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <BN3PR0301MB1219965593D06F96A8A1ADB8EA310-CEkquS/Gb81uuip9JPHoc5wN6zqB+hSMnBOFsp37pqbUKgpGm//BTAC/G2K4zDHf@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -14,88 +21,69 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sethi Varun-B16395 <Varun.Sethi-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
---===============4751173090838498827==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="zhXaljGHf11kAtnf"
-Content-Disposition: inline
+Hello Varun,
 
 
---zhXaljGHf11kAtnf
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+On 01/30/2015 03:20 AM, Sethi Varun-B16395 wrote:
+> Hi Emil,
+> 
+>> -----Original Message-----
+>> From: Emil Medve [mailto:Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org]
+>> Sent: Friday, January 30, 2015 12:26 PM
+>> To: Sethi Varun-B16395; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+>> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org
+>> Subject: Re: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init* annotations
+>>
+>> Hello Varun,
+>>
+>>
+>> On 01/30/2015 12:46 AM, Sethi Varun-B16395 wrote:
+>>> Hi Emil,
+>>>
+>>>> -----Original Message-----
+>>>> From: Emil Medve [mailto:Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org]
+>>>> Sent: Wednesday, January 28, 2015 8:05 PM
+>>>> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org;
+>>>> jroedel-l3A5Bk7waGM@public.gmane.org; Sethi Varun-B16395
+>>>> Cc: Medve Emilian-EMMEDVE1
+>>>> Subject: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init*
+>>>> annotations
+>>>>
+>>>> Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+>>>> ---
+>>>>  drivers/iommu/fsl_pamu.c        | 12 ++++++------
+>>>>  drivers/iommu/fsl_pamu_domain.c |  2 +-
+>>>>  2 files changed, 7 insertions(+), 7 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
+>>>> index d958e65..652c34d 100644
+>>>> --- a/drivers/iommu/fsl_pamu.c
+>>>> +++ b/drivers/iommu/fsl_pamu.c
+>>>> @@ -50,7 +50,7 @@ struct pamu_isr_data {
+>>>>
+>>>>  static struct paace *ppaact;
+>>>>  static struct paace *spaact;
+>>>> -static struct ome *omt;
+>>>> +static struct ome *omt __initdata;
+>>>
+>>> [varun] omt shouldn't be initdata.
+>>
+>> It seems to be used only from probe()'s call tree: fsl_pamu_probe() and
+>> setup_omt(); both __init functions. Am I missing something?
+>>
+>>
+> Omt corresponds to PAMU operation mapping table, which is pointed to
+> by the PAMU OMT base registers. We are using operation mapping table for
+> operation translation.
 
-Hi Linus,
-
-The following changes since commit 26bc420b59a38e4e6685a73345a0def461136dce:
-
-  Linux 3.19-rc6 (2015-01-25 20:04:41 -0800)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v3.19-rc6
-
-for you to fetch changes up to 35577079b9943e158c7032afe1dde6faf4385222:
-
-  iommu/tegra: gart: Provide default ->map_sg() callback (2015-01-26 13:41:07 +0100)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v3.19-rc6
-
-Two small fixes for the Tegra GART IOMMU driver:
-
-	* Provide a .map_sg function for iommu_ops
-	* Do not register Tegra GART driver as a workaround because of
-	  issues with it when used from DRM code
-
-----------------------------------------------------------------
-Thierry Reding (2):
-      iommu/tegra: gart: Do not register with bus
-      iommu/tegra: gart: Provide default ->map_sg() callback
-
- drivers/iommu/tegra-gart.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
-
---zhXaljGHf11kAtnf
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJUy5PsAAoJECvwRC2XARrjMJ0P/1nQo8oyOkHqmkHK5hFgz0fY
-b4TW4MnBW6JlCWagKZi1l82D3K3a4ILI7jOJxKL0qSRzXDyGgZyAV+rKaq9YtPG9
-6tc2PCfJU3KCREvAOF4Cu7hTtkjhxAgzA1QMntHhy1lwQr5zOXjMZNCfJqHrzBp/
-bps7MQYPjbTuSZAKIcgwtu1cKRoKIg9M2uDhUnXDWHBmUq+BTu0yjqQ0qw84eWSg
-Gry8bv+kTnSs1QnAn6wCKv8AKmCmKDEhJSX0zsipt926RSEJ+ZSl2zZ3gYcMHiYY
-VziyLu4FpfJCd14OaQS5a0hB/IZLS0UdCgdOtx+pfxtJXbRihYPaXB+TUhofl4aS
-3RsYf9tC040Gnm4l2TiUsbjdVEYNCtF2p5o7mcvBI4h7xj64GWBJhakykrFFhBUx
-whBDJPesLPQ2wOLTaJxlx7q5wxo0wpanbQrZXuQWKlzoi4uhdzkct55GlY/203xr
-eCSpq9iXVZXukLLT2ThrfyINPjfW4nNI2fsWZ2GVWeSgZotrto5DqvwT6wB51Hs8
-H7JIq+ZAbj2AnrM/5rA/2sBqTXpr4NPvn9y7TYq0Pkny7RKea7LMsGrWD9jFOzsm
-TgBeZdlrL2X1MEVPHX5atzlNiZcsXuK8XJ2//ZdkS0vM1NZzxqG/KhuUQb8HenWb
-Kodp0FogTiYM/i9Q/LZK
-=w/oy
------END PGP SIGNATURE-----
-
---zhXaljGHf11kAtnf--
-
---===============4751173090838498827==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Yes, but this 'omt' is just a pointer (should it be annotated as
+__iomem?) to the table and not used past the call sequence
+fsl_pamu_probe()->setup_omt(). For that matter 'omt' can be local to
+fsl_pamu_probe(). The hardware table/storage is used by the PAMU past
+the setup, but this pointer is not
 
 
---===============4751173090838498827==--
+Cheers,
