@@ -1,15 +1,17 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 00/26] iommu/fsl: Various cleanup
-Date: Fri, 30 Jan 2015 14:50:17 +0000
-Message-ID: <BN3PR0301MB12194ECBA7501AFE17F34F69EA310@BN3PR0301MB1219.namprd03.prod.outlook.com>
-References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
-	<20150130123040.GE3702@8bytes.org>
+From: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH v4 1/6] of: iommu: add ptr to OF node arg to
+	of_iommu_configure()
+Date: Fri, 30 Jan 2015 10:23:52 -0500
+Message-ID: <54CBA208.5020005@ti.com>
+References: <1422052359-12384-1-git-send-email-m-karicheri2@ti.com>
+	<5349994.6VHXzPdIxs@avalon>
+	<CAL_Jsq+rzwk0Rw5RRKf9oLqXNFFgnJb4UQ_AzpJLxN1Z0rJWMQ@mail.gmail.com>
+	<1612981.2C6LXFqAIA@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150130123040.GE3702-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1612981.2C6LXFqAIA@avalon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,59 +21,68 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Emilian Medve <Emilian.Medve-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+On 01/29/2015 07:24 PM, Laurent Pinchart wrote:
+> Hi Rob,
+>
+> On Thursday 29 January 2015 10:49:38 Rob Herring wrote:
+>> On Wed, Jan 28, 2015 at 5:32 PM, Laurent Pinchart wrote:
+>>> On Wednesday 28 January 2015 13:32:19 Will Deacon wrote:
+>>>> On Wed, Jan 28, 2015 at 01:15:10PM +0000, Laurent Pinchart wrote:
+>>>>> On Wednesday 28 January 2015 12:29:42 Will Deacon wrote:
+>>>>>> On Wed, Jan 28, 2015 at 12:23:03PM +0000, Laurent Pinchart wrote:
+>>>>>>> On Wednesday 28 January 2015 11:33:00 Will Deacon wrote:
+>>>>>>>> On Mon, Jan 26, 2015 at 06:49:01PM +0000, Murali Karicheri wrote:
+>>>>>>>> On 01/25/2015 08:32 AM, Laurent Pinchart wrote:
+>>>>>>>>>> On Friday 23 January 2015 17:32:34 Murali Karicheri wrote:
+>>>>>>>>>>> Function of_iommu_configure() is called from of_dma_configure()
+>>>>>>>>>>> to setup iommu ops using DT property. This API is currently used
+>>>>>>>>>>> for platform devices for which DMA configuration (including iommu
+>>>>>>>>>>> ops) may come from device's parent. To extend this functionality
+>>>>>>>>>>> for PCI devices, this API need to take a parent node ptr as an
+>>>>>>>>>>> argument instead of assuming device's parent. This is needed since
+>>>>>>>>>>> for PCI, the dma configuration may be defined in the DT node of
+>>>>>>>>>>> the root bus bridge's parent device. Currently only dma-range is
+>>>>>>>>>>> used for PCI and iommu is not supported. So return error if the
+>>>>>>>>>>> device is PCI.
+>>
+>> [...]
+>>
+>>>>> If I understand Murali's patch set right (please correct me if that's
+>>>>> not the case) the PCI code walks up the DT nodes hierarchy to the
+>>>>> parent node that contains the iommus attribute and passes a pointer to
+>>>>> that node to this function. It's thus a PCI-specific solution. As a
+>>>>> temporary hack that's OK I suppose, but if implementing it right
+>>>>> straight away isn't difficult that would be better.
+>>>>
+>>>> It looks to me like the code walks the PCI topology to get the DT node
+>>>> for the host controller, and passes *that* to of_dma_configure. That
+>>>> sounds like the right thing to do to me, especially since the PCI
+>>>> topology is likely not encoded in the device-tree. So actually, it is
+>>>> passing the first parent node afaict.
+>>>
+>>> Indeed, that's right. I forgot for a moment that we have non-DT devices
+>>> ;-)
+>>>
+>>> Acked-by: Laurent Pinchart<laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+>>>
+>>> Murali, nitpicking a bit, shouldn't the iommu_np parameter be renamed ? It
+>>> points to the node containing the iommus parameter, not to the iommu node,
+>>> so the current name is slightly confusing. A brief kerneldoc above the
+>>> function would also help. This can be the subject of a separate patch.
+>>
+>> It was more confusing having np and node within the function.
+>
+> Agreed.
+>
+> How about master_np or iommu_master_np ? The latter might be a bit long.
+>
+Probabaly master_np suffice as this function is named 
+of_iommu_configure(). I will update it.
 
-> -----Original Message-----
-> From: Joerg Roedel [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
-> Sent: Friday, January 30, 2015 6:01 PM
-> To: Medve Emilian-EMMEDVE1
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org; Sethi Varun-B16395
-> Subject: Re: [PATCH 00/26] iommu/fsl: Various cleanup
-> 
-> Varun,
-> 
-> On Wed, Jan 28, 2015 at 08:34:32AM -0600, Emil Medve wrote:
-> > Currently a PAMU driver patch is very likely to receive some
-> > checkpatch complaints about the code in the context of the patch. This
-> > sequence is an attempt to fix most of that and make the dirver more
-> > readable
-> >
-> > Also fixed a subset of the sparse and coccinelle reported issues
-> >
-> > Emil Medve (26):
-> >   iommu/fsl: Sprinkle some __init* annotations
-> >   iommu/fsl: Use SVR_* instead of magic numbers
-> >   iommu/fsl: Remove unused/extra includes
-> >   iommu/fsl: Fix checkpatch type SPACE_BEFORE_TAB
-> >   iommu/fsl: Fix checkpatch type LINE_SPACING
-> >   iommu/fsl: Fix checkpatch type LEADING_SPACE
-> >   iommu/fsl: Fix checkpath type BRACES
-> >   iommu/fsl: Fix checkpatch type CODE_INDENT
-> >   iommu/fsl: Fix checkpatch type ALLOC_SIZEOF_STRUCT
-> >   iommu/fsl: Fix checkpatch type ALLOC_WITH_MULTIPLY
-> >   iommu/fsl: Fix checkpatch type OOM_MESSAGE
-> >   iommu/fsl: Fix checkpatch type TYPO_SPELLING
-> >   iommu/fsl: Fix checkpatch type PREFER_PACKED
-> >   iommu/fsl: Fix checkpatch type QUOTED_WHITESPACE_BEFORE_NEWLINE
-> >   iommu/fsl: Fix checkpatch type SPACING
-> >   iommu/fsl: Use a device pointer to make lines shorter
-> >   iommu/fsl: Remove pr/dev_*() prefixes
-> >   iommu/fsl: Fix checkpatch type PARENTHESIS_ALIGNMENT
-> >   iommu/fsl: Fix some comments alignment
-> >   iommu/fsl: Fix alignment of some stray lines
-> >   iommu/fsl: Fix checkpatch type LONG_LINE
-> >   iommu/fsl: Make local symbols static
-> >   iommu/fsl: Use NULL instead of zero
-> >   iommu/fsl: Remove unneeded semicolon
-> >   iommu/fsl: Don't use integers values with bool type
-> >   iommu/fsl: Remove extra paranthesis
-> 
-> Can you collect the patches you acked and send me a pull-req for them?
-> 
-Acked, all the patches in the series. Can you apply the series or would you prefer a pull request?
-
-Acked-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+-- 
+Murali Karicheri
+Linux Kernel, Texas Instruments
