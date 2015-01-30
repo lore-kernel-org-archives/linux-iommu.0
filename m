@@ -1,14 +1,14 @@
 From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 19/26] iommu/fsl: Fix some comments alignment
-Date: Fri, 30 Jan 2015 09:30:38 +0000
-Message-ID: <BN3PR0301MB12190D19D52E82FCD55EC16DEA310@BN3PR0301MB1219.namprd03.prod.outlook.com>
+Subject: RE: [PATCH 20/26] iommu/fsl: Fix alignment of some stray lines
+Date: Fri, 30 Jan 2015 09:31:31 +0000
+Message-ID: <BN3PR0301MB121963DCA641494F62E2A93CEA310@BN3PR0301MB1219.namprd03.prod.outlook.com>
 References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
-	<1422455698-3074-20-git-send-email-Emilian.Medve@Freescale.com>
+	<1422455698-3074-21-git-send-email-Emilian.Medve@Freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1422455698-3074-20-git-send-email-Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+In-Reply-To: <1422455698-3074-21-git-send-email-Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -31,139 +31,88 @@ List-Id: iommu@lists.linux-foundation.org
 > To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org;
 > Sethi Varun-B16395
 > Cc: Medve Emilian-EMMEDVE1
-> Subject: [PATCH 19/26] iommu/fsl: Fix some comments alignment
+> Subject: [PATCH 20/26] iommu/fsl: Fix alignment of some stray lines
 > 
 > Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 > ---
->  drivers/iommu/fsl_pamu.c        | 24 ++++++++++++------------
->  drivers/iommu/fsl_pamu_domain.c |  6 +++---
->  2 files changed, 15 insertions(+), 15 deletions(-)
+>  drivers/iommu/fsl_pamu.h        |  2 +-
+>  drivers/iommu/fsl_pamu_domain.c | 15 ++++++---------
+>  2 files changed, 7 insertions(+), 10 deletions(-)
 > 
-> diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c index
-> dc3955f..ba5d1e0 100644
-> --- a/drivers/iommu/fsl_pamu.c
-> +++ b/drivers/iommu/fsl_pamu.c
-> @@ -35,7 +35,7 @@
->  #define make64(high, low) (((u64)(high) << 32) | (low))
-> 
->  struct pamu_isr_data {
-> -	void __iomem *pamu_reg_base;	/* Base address of PAMU
-> regs*/
-> +	void __iomem *pamu_reg_base;	/* Base address of PAMU
-> regs */
->  	unsigned int count;		/* The number of PAMUs */
->  };
-> 
-> @@ -49,7 +49,7 @@ static struct ome *omt __initdata;
->   * "fsl,qoriq-device-config-2.0" corresponds to T4 & B4
->   * SOCs. For the older SOCs "fsl,qoriq-device-config-1.0"
->   * string would be used.
-> -*/
-> + */
->  static const struct of_device_id guts_device_ids[] __initconst = {
->  	{ .compatible = "fsl,qoriq-device-config-1.0", },
->  	{ .compatible = "fsl,qoriq-device-config-2.0", }, @@ -63,7 +63,7 @@
-> static const struct of_device_id guts_device_ids[] __initconst = {
->   * "fsl,b4860-l3-cache-controller" corresponds to B4 &
->   * "fsl,p4080-l3-cache-controller" corresponds to other,
->   * SOCs.
-> -*/
-> + */
->  static const struct of_device_id l3_device_ids[] = {
->  	{ .compatible = "fsl,t4240-l3-cache-controller", },
->  	{ .compatible = "fsl,b4860-l3-cache-controller", }, @@ -231,7 +231,7
-> @@ static struct paace *pamu_get_spaace(struct paace *paace, u32 wnum)
->   * If no SPAACE entry is available or the allocator can not reserve the
-> required
->   * number of contiguous entries function returns ULONG_MAX indicating a
-> failure.
->   *
-> -*/
-> + */
->  static unsigned long pamu_get_fspi_and_allocate(u32 subwin_cnt)  {
->  	unsigned long spaace_addr;
-> @@ -494,11 +494,11 @@ int pamu_config_spaace(int liodn, u32 subwin_cnt,
-> u32 subwin,  }
-> 
->  /**
-> -* get_ome_index() - Returns the index in the operation mapping table
-> -*                   for device.
-> -* @*omi_index: pointer for storing the index value
-> -*
-> -*/
-> + * get_ome_index() - Returns the index in the operation mapping table
-> + *                   for device.
-> + * @*omi_index: pointer for storing the index value
-> + *
-> + */
->  void get_ome_index(u32 *omi_index, struct device *dev)  {
->  	if (of_device_is_compatible(dev->of_node, "fsl,qman-portal")) @@
-> -610,7 +610,7 @@ static void __init setup_qbman_paace(struct paace
-> *ppaace, int  paace_type)
->  	case QMAN_PORTAL_PAACE:
->  		set_bf(ppaace->impl_attr, PAACE_IA_OTM,
-> PAACE_OTM_INDEXED);
->  		ppaace->op_encode.index_ot.omi = OMI_QMAN;
-> -		/*Set DQRR and Frame stashing for the L3 cache */
-> +		/* Set DQRR and Frame stashing for the L3 cache */
->  		set_bf(ppaace->impl_attr, PAACE_IA_CID,
-> get_stash_id(PAMU_ATTR_CACHE_L3, 0));
->  		break;
->  	case BMAN_PAACE:
-> @@ -937,7 +937,7 @@ static int __init create_csd(phys_addr_t phys, size_t
-> size, u32 csd_port_id)
->  	}
-> 
->  	if (i == 0 || i == num_laws) {
-> -		/* This should never happen*/
-> +		/* This should never happen */
->  		ret = -ENOENT;
->  		goto error;
->  	}
-> @@ -1163,7 +1163,7 @@ static int __init fsl_pamu_probe(struct
-> platform_device *pdev)
-> 
->  	iounmap(guts_regs);
-> 
-> -	/* Enable DMA for the LIODNs in the device tree*/
-> +	/* Enable DMA for the LIODNs in the device tree */
-> 
->  	setup_liodns();
+> diff --git a/drivers/iommu/fsl_pamu.h b/drivers/iommu/fsl_pamu.h index
+> 04dcd25..342ac6d 100644
+> --- a/drivers/iommu/fsl_pamu.h
+> +++ b/drivers/iommu/fsl_pamu.h
+> @@ -67,7 +67,7 @@ struct pamu_mmap_regs {
+>  #define PAMU_AVS1_GCV   0x2000
+>  #define PAMU_AVS1_PDV   0x4000
+>  #define PAMU_AV_MASK    (PAMU_AVS1_AV | PAMU_AVS1_OTV |
+> PAMU_AVS1_APV | PAMU_AVS1_WAV \
+> -			| PAMU_AVS1_LAV | PAMU_AVS1_GCV |
+> PAMU_AVS1_PDV)
+> +			 | PAMU_AVS1_LAV | PAMU_AVS1_GCV |
+> PAMU_AVS1_PDV)
+>  #define PAMU_AVS1_LIODN_SHIFT 16
+>  #define PAMU_LAV_LIODN_NOT_IN_PPAACT 0x400
 > 
 > diff --git a/drivers/iommu/fsl_pamu_domain.c
-> b/drivers/iommu/fsl_pamu_domain.c index 51a6750..eea2212 100644
+> b/drivers/iommu/fsl_pamu_domain.c index eea2212..ae21305 100644
 > --- a/drivers/iommu/fsl_pamu_domain.c
 > +++ b/drivers/iommu/fsl_pamu_domain.c
-> @@ -285,7 +285,7 @@ static int check_size(u64 size, dma_addr_t iova)
->  		return -EINVAL;
+> @@ -62,8 +62,7 @@ static int __init iommu_init_mempool(void)  static
+> phys_addr_t get_phys_addr(struct fsl_dma_domain *dma_domain,
+> dma_addr_t iova)  {
+>  	u32 win_cnt = dma_domain->win_cnt;
+> -	struct dma_window *win_ptr =
+> -				&dma_domain->win_arr[0];
+> +	struct dma_window *win_ptr = &dma_domain->win_arr[0];
+>  	struct iommu_domain_geometry *geom;
+> 
+>  	geom = &dma_domain->iommu_domain->geometry;
+> @@ -92,15 +91,13 @@ static phys_addr_t get_phys_addr(struct
+> fsl_dma_domain *dma_domain, dma_addr_t i
+> 
+>  static int map_subwins(int liodn, struct fsl_dma_domain *dma_domain)  {
+> -	struct dma_window *sub_win_ptr =
+> -				&dma_domain->win_arr[0];
+> +	struct dma_window *sub_win_ptr = &dma_domain->win_arr[0];
+>  	int i, ret;
+>  	unsigned long rpn, flags;
+> 
+>  	for (i = 0; i < dma_domain->win_cnt; i++) {
+>  		if (sub_win_ptr[i].valid) {
+> -			rpn = sub_win_ptr[i].paddr >>
+> -				 PAMU_PAGE_SHIFT;
+> +			rpn = sub_win_ptr[i].paddr >> PAMU_PAGE_SHIFT;
+>  			spin_lock_irqsave(&iommu_lock, flags);
+>  			ret = pamu_config_spaace(liodn, dma_domain-
+> >win_cnt, i,
+>  						 sub_win_ptr[i].size,
+> @@ -180,8 +177,8 @@ static int update_liodn(int liodn, struct
+> fsl_dma_domain *dma_domain, u32 wnd_nr
+>  					 wnd->size,
+>  					 ~(u32)0,
+>  					 wnd->paddr >> PAMU_PAGE_SHIFT,
+> -					dma_domain->snoop_id,
+> dma_domain->stash_id,
+> -					0, wnd->prot);
+> +					 dma_domain->snoop_id,
+> dma_domain->stash_id,
+> +					 0, wnd->prot);
+>  		if (ret)
+>  			pr_debug("Window reconfiguration failed for liodn
+> %d\n", liodn);
+>  	}
+> @@ -679,7 +676,7 @@ static int fsl_pamu_attach_device(struct
+> iommu_domain *domain,
+>  	} else {
+>  		pr_debug("missing fsl,liodn property at %s\n",
+>  			 dev->of_node->full_name);
+> -			ret = -EINVAL;
+> +		ret = -EINVAL;
 >  	}
 > 
-> -	/* iova must be page size aligned*/
-> +	/* iova must be page size aligned */
->  	if (iova & (size - 1)) {
->  		pr_debug("Address is not aligned with window size\n");
->  		return -EINVAL;
-> @@ -779,7 +779,7 @@ static int configure_domain_stash(struct
-> fsl_dma_domain *dma_domain, void *data)
 >  	return ret;
->  }
-> 
-> -/* Configure domain dma state i.e. enable/disable DMA*/
-> +/* Configure domain dma state i.e. enable/disable DMA */
->  static int configure_domain_dma_state(struct fsl_dma_domain
-> *dma_domain, bool enable)  {
->  	struct device_domain_info *info;
-> @@ -876,7 +876,7 @@ static  bool check_pci_ctl_endpt_part(struct
-> pci_controller *pci_ctl)
->  	/* Check the PCI controller version number by readding BRR1 register
-> */
->  	version = in_be32(pci_ctl->cfg_addr + (PCI_FSL_BRR1 >> 2));
->  	version &= PCI_FSL_BRR1_VER;
-> -	/* If PCI controller version is >= 0x204 we can partition endpoints*/
-> +	/* If PCI controller version is >= 0x204 we can partition endpoints */
->  	if (version >= 0x204)
->  		return 1;
-> 
 > --
 > 2.2.2
 Acked-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
