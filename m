@@ -1,11 +1,17 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: [PATCH] iommu: arm-smmu: avoid build warning
-Date: Fri, 30 Jan 2015 22:55:55 +0100
-Message-ID: <1754709.y30A9Ie4hF@wuerfel>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 00/26] iommu/fsl: Various cleanup
+Date: Sat, 31 Jan 2015 17:37:14 +0000
+Message-ID: <BN3PR0301MB1219B0BC7A256AE8259EB045EA3E0@BN3PR0301MB1219.namprd03.prod.outlook.com>
+References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
+	<20150130123040.GE3702@8bytes.org>
+	<BN3PR0301MB12194ECBA7501AFE17F34F69EA310@BN3PR0301MB1219.namprd03.prod.outlook.com>
+	<20150130153626.GH3702@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150130153626.GH3702-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,31 +21,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Emilian Medve <Emilian.Medve-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-ARM allmodconfig gained a new warning when dma_addr_t is 32-bit wide:
+Hi Joerg,
+I have applied the patches on the pamu_next branch at https://github.com/varunfsl/fsl_pamu/tree/pamu_next
 
-drivers/iommu/arm-smmu.c: In function 'arm_smmu_iova_to_phys_hard':
-drivers/iommu/arm-smmu.c:1255:3: warning: right shift count >= width of type
+Please pull commit ids e72d948 to 14241be
 
-This changes the calculation so that the effective type is always
-64-bit.
-
-Signed-off-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Fixes: 859a732e4f713 ("iommu/arm-smmu: add support for iova_to_phys through ATS1PR")
-
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 1d6d43bb3395..fc13dd56953e 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1252,7 +1252,7 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
- 	} else {
- 		u32 reg = iova & ~0xfff;
- 		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_LO);
--		reg = (iova & ~0xfff) >> 32;
-+		reg = ((u64)iova & ~0xfff) >> 32;
- 		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_HI);
- 	}
- 
+Regards
+Varun
+> -----Original Message-----
+> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Joerg Roedel
+> Sent: Friday, January 30, 2015 9:06 PM
+> To: Sethi Varun-B16395
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org; Medve Emilian-
+> EMMEDVE1
+> Subject: Re: [PATCH 00/26] iommu/fsl: Various cleanup
+> 
+> On Fri, Jan 30, 2015 at 02:50:17PM +0000, Varun Sethi wrote:
+> > Acked, all the patches in the series. Can you apply the series or would you
+> prefer a pull request?
+> 
+> Yes, please add your acks and send me a pull-request.
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
