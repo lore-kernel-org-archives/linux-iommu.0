@@ -1,48 +1,94 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH] iommu: arm-smmu: avoid build warning
-Date: Mon, 2 Feb 2015 10:20:49 +0000
-Message-ID: <20150202102048.GB30699@arm.com>
-References: <1754709.y30A9Ie4hF@wuerfel>
+From: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v4 3/6] of: fix size when dma-range is not used
+Date: Mon, 2 Feb 2015 12:18:43 +0000
+Message-ID: <20150202121843.GD22661@e104818-lin.cambridge.arm.com>
+References: <1422052359-12384-1-git-send-email-m-karicheri2@ti.com>
+ <1422052359-12384-4-git-send-email-m-karicheri2@ti.com>
+ <54C77616.80301@arm.com>
+ <54C7DF13.20402@ti.com>
+ <20150128110523.GC6646@e104818-lin.cambridge.arm.com>
+ <54C9068D.8050701@arm.com>
+ <20150128173048.GE31752@e104818-lin.cambridge.arm.com>
+ <54CBC823.3020905@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1754709.y30A9Ie4hF@wuerfel>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Joerg Roedel <jroedel@suse.de>, Mitchel Humpherys <mitchelh@codeaurora.org>, "joro@8bytes.org" <joro@8bytes.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+In-Reply-To: <54CBC823.3020905-l0cyMroinI0@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
+Cc: Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org" <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jan 30, 2015 at 09:55:55PM +0000, Arnd Bergmann wrote:
-> ARM allmodconfig gained a new warning when dma_addr_t is 32-bit wide:
-> 
-> drivers/iommu/arm-smmu.c: In function 'arm_smmu_iova_to_phys_hard':
-> drivers/iommu/arm-smmu.c:1255:3: warning: right shift count >= width of type
-> 
-> This changes the calculation so that the effective type is always
-> 64-bit.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Fixes: 859a732e4f713 ("iommu/arm-smmu: add support for iova_to_phys through ATS1PR")
-> 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 1d6d43bb3395..fc13dd56953e 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -1252,7 +1252,7 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
->  	} else {
->  		u32 reg = iova & ~0xfff;
->  		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_LO);
-> -		reg = (iova & ~0xfff) >> 32;
-> +		reg = ((u64)iova & ~0xfff) >> 32;
->  		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_HI);
->  	}
+On Fri, Jan 30, 2015 at 06:06:27PM +0000, Murali Karicheri wrote:
+> On 01/28/2015 12:30 PM, Catalin Marinas wrote:
+> > I think we can remove this check altogether (we leaved without it for a
+> > while) but we need to add 1 when calculating the mask:
+> >
+> > 	dev->coherent_dma_mask = min(DMA_BIT_MASK(32),
+> > 				     DMA_BIT_MASK(ilog2(size + 1)));
+> >
+> For Keystone, the dma_addr is to be taken care as well to determine the 
+> mask. The above will not work.
 
-Thanks, Arnd.
+This was discussed before (not on this thread) and dma_addr should not
+affect the mask, it only affects the pfn offset.
 
-Acked-by: Will Deacon <will.deacon@arm.com>
+> Based on the discussion so far, this is the function I have come up with 
+> incorporating the suggestions. Please review this and see if I have 
+> missed out any. This works fine on Keystone.
+> 
+> void of_dma_configure(struct device *dev, struct device_node *np)
+> {
+> 	u64 dma_addr = 0, paddr, size;
+> 	int ret;
+> 	bool coherent;
+> 	unsigned long offset = 0;
+> 	struct iommu_ops *iommu;
+> 
+> 	/*
+> 	 * Set default size to cover the 32-bit. Drivers are expected to setup
+> 	 * the correct size and dma_mask.
+>    	 */
+> 	size = 1ULL << 32;
+> 
+> 	ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
+> 	if (!ret) {
+> 		offset = PFN_DOWN(paddr - dma_addr);
+> 		if (!size) {
+> 			dev_err(dev, "Invalid size (%llx)\n",
+> 				size);
+> 			return;
+> 		}
+> 		if (size & 1) {
+> 			size = size + 1;
+> 			dev_warn(dev, "Incorrect usage of size (%llx)\n",
+> 				 size);
+> 		}
+> 		dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
+> 	}
+> 	dev->dma_pfn_offset = offset;
+> 
+> 	/*
+> 	 * Coherent DMA masks larger than 32-bit must be explicitly set by the
+> 	 * driver.
+> 	 */
+> 	dev->coherent_dma_mask = min(DMA_BIT_MASK(32),
+> 				     DMA_BIT_MASK(ilog2(dma_addr + size)));
 
-Joerg, could you pick this one up directly please? I don't have any other
-ARM SMMU fixes queued at the moment.
+That's not correct, coherent_dma_mask should still be calculated solely
+based on size, not dma_addr.
 
-Will
+Functions like swiotlb_dma_supported() use phys_to_dma() which on ARM
+(32-bit) subtracts the dma_pfn_offset, so the mask based on size works
+fine.
+
+In the arm64 tree, we haven't taken dma_pfn_offset into account for
+phys_to_dma() yet but if needed for a SoC, we'll add it.
+
+-- 
+Catalin
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
