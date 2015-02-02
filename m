@@ -1,65 +1,54 @@
-From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v4 1/8] iommu: Add new member capability to struct irq_remap_ops
-Date: Mon,  2 Feb 2015 16:01:47 +0800
-Message-ID: <1422864114-19324-2-git-send-email-feng.wu@intel.com>
+From: Feng Wu <feng.wu@intel.com>
+Subject: [v4 4/8] iommu, x86: No need to migrating irq for VT-d Posted-Interrupts
+Date: Mon,  2 Feb 2015 16:01:50 +0800
+Message-ID: <1422864114-19324-5-git-send-email-feng.wu@intel.com>
 References: <1422864114-19324-1-git-send-email-feng.wu@intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1422864114-19324-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, joro-zLv9SwRftAJQFI55V6+gNQ@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1422864114-19324-1-git-send-email-feng.wu@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: dwmw2@infradead.org, joro@8bytes.or
+Cc: jiang.liu@linux.intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Feng Wu <feng.wu@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds a new member capability to struct irq_remap_ops,
-this new function ops can be used to check whether some
-features are supported, such as VT-d Posted-Interrupts.
+We don't need to migrate the irqs for VT-d Posted-Interrupts here.
+When 'pst' is set in IRTE, the associated irq will be posted to
+guests instead of interrupt remapping. The destination of the
+interrupt is set in Posted-Interrupts Descriptor, and the migration
+happens during vCPU scheduling.
 
-Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+However, we still update the cached irte here, which can be used
+when changing back to remapping mode.
+
+Signed-off-by: Feng Wu <feng.wu@intel.com>
+Reviewed-by: Jiang Liu <jiang.liu@linux.intel.com>
+Acked-by: David Woodhouse <David.Woodhouse@intel.com>
 ---
- arch/x86/include/asm/irq_remapping.h |    4 ++++
- drivers/iommu/irq_remapping.h        |    3 +++
- 2 files changed, 7 insertions(+), 0 deletions(-)
+ drivers/iommu/intel_irq_remapping.c |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
 
-diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
-index 6ba2431..f67ae08 100644
---- a/arch/x86/include/asm/irq_remapping.h
-+++ b/arch/x86/include/asm/irq_remapping.h
-@@ -31,6 +31,10 @@ struct irq_alloc_info;
- 
- #ifdef CONFIG_IRQ_REMAP
- 
-+enum irq_remap_cap {
-+	IRQ_POSTING_CAP = 0,
-+};
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 48c2051..ab9057a 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -977,6 +977,7 @@ intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
+ {
+ 	struct intel_ir_data *ir_data = data->chip_data;
+ 	struct irte *irte = &ir_data->irte_entry;
++	struct irte_pi *irte_pi = (struct irte_pi *)irte;
+ 	struct irq_cfg *cfg = irqd_cfg(data);
+ 	struct irq_data *parent = data->parent_data;
+ 	int ret;
+@@ -991,7 +992,10 @@ intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
+ 	 */
+ 	irte->vector = cfg->vector;
+ 	irte->dest_id = IRTE_DEST(cfg->dest_apicid);
+-	modify_irte(&ir_data->irq_2_iommu, irte);
 +
- extern void setup_irq_remapping_ops(void);
- extern int irq_remapping_supported(void);
- extern void set_irq_remapping_broken(void);
-diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
-index 4bd791d..69b2a1c 100644
---- a/drivers/iommu/irq_remapping.h
-+++ b/drivers/iommu/irq_remapping.h
-@@ -36,6 +36,9 @@ extern int no_x2apic_optout;
- extern int irq_remapping_enabled;
++	/* We don't need to modify irte if the interrupt is for posting. */
++	if (irte_pi->pst != 1)
++		modify_irte(&ir_data->irq_2_iommu, irte);
  
- struct irq_remap_ops {
-+	/* The supported capabilites */
-+	int capability;
-+
- 	/* Check whether Interrupt Remapping is supported */
- 	int (*supported)(void);
- 
+ 	/*
+ 	 * After this point, all the interrupts will start arriving
 -- 
 1.7.1
