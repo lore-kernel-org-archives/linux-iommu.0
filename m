@@ -1,47 +1,48 @@
-From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v4 8/8] iommu, x86: Properly handler PI for IOMMU hotplug
-Date: Mon,  2 Feb 2015 16:07:04 +0800
-Message-ID: <1422864424-19411-9-git-send-email-feng.wu@intel.com>
-References: <1422864424-19411-1-git-send-email-feng.wu@intel.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH] iommu: arm-smmu: avoid build warning
+Date: Mon, 2 Feb 2015 10:20:49 +0000
+Message-ID: <20150202102048.GB30699@arm.com>
+References: <1754709.y30A9Ie4hF@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1422864424-19411-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1754709.y30A9Ie4hF@wuerfel>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Joerg Roedel <jroedel@suse.de>, Mitchel Humpherys <mitchelh@codeaurora.org>, "joro@8bytes.org" <joro@8bytes.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Return error when inserting a new IOMMU which doesn't support PI
-if PI is currently in use.
+On Fri, Jan 30, 2015 at 09:55:55PM +0000, Arnd Bergmann wrote:
+> ARM allmodconfig gained a new warning when dma_addr_t is 32-bit wide:
+> 
+> drivers/iommu/arm-smmu.c: In function 'arm_smmu_iova_to_phys_hard':
+> drivers/iommu/arm-smmu.c:1255:3: warning: right shift count >= width of type
+> 
+> This changes the calculation so that the effective type is always
+> 64-bit.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Fixes: 859a732e4f713 ("iommu/arm-smmu: add support for iova_to_phys through ATS1PR")
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 1d6d43bb3395..fc13dd56953e 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1252,7 +1252,7 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
+>  	} else {
+>  		u32 reg = iova & ~0xfff;
+>  		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_LO);
+> -		reg = (iova & ~0xfff) >> 32;
+> +		reg = ((u64)iova & ~0xfff) >> 32;
+>  		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_HI);
+>  	}
 
-Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
----
- drivers/iommu/intel_irq_remapping.c |    3 +++
- 1 files changed, 3 insertions(+), 0 deletions(-)
+Thanks, Arnd.
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 130a92b..0c2c317 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -1339,6 +1339,9 @@ int dmar_ir_hotplug(struct dmar_drhd_unit *dmaru, bool insert)
- 		return -EINVAL;
- 	if (!ecap_ir_support(iommu->ecap))
- 		return 0;
-+	if (irq_remapping_cap(IRQ_POSTING_CAP) &&
-+	    !cap_pi_support(iommu->cap))
-+		return -EBUSY;
- 
- 	if (insert) {
- 		if (!iommu->ir_table)
--- 
-1.7.1
+Acked-by: Will Deacon <will.deacon@arm.com>
+
+Joerg, could you pick this one up directly please? I don't have any other
+ARM SMMU fixes queued at the moment.
+
+Will
