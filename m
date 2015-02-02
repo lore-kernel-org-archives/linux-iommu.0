@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v4 3/8] iommu, x86: Implement irq_set_vcpu_affinity for intel_ir_chip
-Date: Mon,  2 Feb 2015 16:01:49 +0800
-Message-ID: <1422864114-19324-4-git-send-email-feng.wu@intel.com>
+Subject: [v4 1/8] iommu: Add new member capability to struct irq_remap_ops
+Date: Mon,  2 Feb 2015 16:01:47 +0800
+Message-ID: <1422864114-19324-2-git-send-email-feng.wu@intel.com>
 References: <1422864114-19324-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,88 +21,45 @@ To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, joro-zLv9SwRftAJQFI55V6+gNQ@p
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Implement irq_set_vcpu_affinity for intel_ir_chip.
+This patch adds a new member capability to struct irq_remap_ops,
+this new function ops can be used to check whether some
+features are supported, such as VT-d Posted-Interrupts.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Acked-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/include/asm/irq_remapping.h |    5 ++++
- drivers/iommu/intel_irq_remapping.c  |   35 ++++++++++++++++++++++++++++++++++
- 2 files changed, 40 insertions(+), 0 deletions(-)
+ arch/x86/include/asm/irq_remapping.h |    4 ++++
+ drivers/iommu/irq_remapping.h        |    3 +++
+ 2 files changed, 7 insertions(+), 0 deletions(-)
 
 diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
-index f67ae08..f87ac70 100644
+index 6ba2431..f67ae08 100644
 --- a/arch/x86/include/asm/irq_remapping.h
 +++ b/arch/x86/include/asm/irq_remapping.h
-@@ -60,6 +60,11 @@ static inline struct irq_domain *arch_get_ir_parent_domain(void)
- 	return x86_vector_domain;
- }
+@@ -31,6 +31,10 @@ struct irq_alloc_info;
  
-+struct vcpu_data {
-+	u64 pi_desc_addr;	/* Physical address of PI Descriptor */
-+	u32 vector;		/* Guest vector of the interrupt */
+ #ifdef CONFIG_IRQ_REMAP
+ 
++enum irq_remap_cap {
++	IRQ_POSTING_CAP = 0,
 +};
 +
- #else  /* CONFIG_IRQ_REMAP */
+ extern void setup_irq_remapping_ops(void);
+ extern int irq_remapping_supported(void);
+ extern void set_irq_remapping_broken(void);
+diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
+index 4bd791d..69b2a1c 100644
+--- a/drivers/iommu/irq_remapping.h
++++ b/drivers/iommu/irq_remapping.h
+@@ -36,6 +36,9 @@ extern int no_x2apic_optout;
+ extern int irq_remapping_enabled;
  
- static inline void setup_irq_remapping_ops(void) { }
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index f6da3b2..48c2051 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -42,6 +42,7 @@ struct irq_2_iommu {
- struct intel_ir_data {
- 	struct irq_2_iommu			irq_2_iommu;
- 	struct irte				irte_entry;
-+	struct irte_pi                          irte_pi_entry;
- 	union {
- 		struct msi_msg			msi_entry;
- 	};
-@@ -1010,10 +1011,44 @@ static void intel_ir_compose_msi_msg(struct irq_data *irq_data,
- 	*msg = ir_data->msi_entry;
- }
+ struct irq_remap_ops {
++	/* The supported capabilites */
++	int capability;
++
+ 	/* Check whether Interrupt Remapping is supported */
+ 	int (*supported)(void);
  
-+static int intel_ir_set_vcpu_affinity(struct irq_data *data, void *vcpu_info)
-+{
-+	struct intel_ir_data *ir_data = data->chip_data;
-+	struct irte_pi *irte_pi = &ir_data->irte_pi_entry;
-+	struct vcpu_data *vcpu_pi_info;
-+
-+	/* stop posting interrupts, back to remapping mode */
-+	if (!vcpu_info)
-+		modify_irte(&ir_data->irq_2_iommu, &ir_data->irte_entry);
-+	else {
-+		vcpu_pi_info = (struct vcpu_data *)vcpu_info;
-+		memcpy(irte_pi, &ir_data->irte_entry, sizeof(struct irte));
-+
-+		irte_pi->urg = 0;
-+		irte_pi->vector = vcpu_pi_info->vector;
-+		irte_pi->pda_l = (vcpu_pi_info->pi_desc_addr >>
-+				 (32 - PDA_LOW_BIT)) & ~(-1UL << PDA_LOW_BIT);
-+		irte_pi->pda_h = (vcpu_pi_info->pi_desc_addr >> 32) &
-+				 ~(-1UL << PDA_HIGH_BIT);
-+
-+		irte_pi->__reserved_1 = 0;
-+		irte_pi->__reserved_2 = 0;
-+		irte_pi->__reserved_3 = 0;
-+		irte_pi->__reserved_4 = 0;
-+
-+		irte_pi->pst = 1;
-+
-+		modify_irte(&ir_data->irq_2_iommu, (struct irte *)irte_pi);
-+	}
-+
-+	return 0;
-+}
-+
- static struct irq_chip intel_ir_chip = {
- 	.irq_ack = ir_ack_apic_edge,
- 	.irq_set_affinity = intel_ir_set_affinity,
- 	.irq_compose_msi_msg = intel_ir_compose_msi_msg,
-+	.irq_set_vcpu_affinity = intel_ir_set_vcpu_affinity,
- };
- 
- static void intel_irq_remapping_prepare_irte(struct intel_ir_data *data,
 -- 
 1.7.1
