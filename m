@@ -1,17 +1,14 @@
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [PATCH 3/5] iommu: Limit iommu_attach/detach_device to devices
-	with their own group
-Date: Tue, 3 Feb 2015 13:59:07 +0100
-Message-ID: <20150203125907.GC3519@suse.de>
-References: <1422317339-22620-1-git-send-email-joro@8bytes.org>
-	<1422317339-22620-4-git-send-email-joro@8bytes.org>
-	<20150203122506.GC15068@ulmo.nvidia.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 2/4] iommu/exynos: Make driver depend on REGULATOR
+Date: Tue, 03 Feb 2015 15:37:27 +0100
+Message-ID: <54D0DD27.5030000@samsung.com>
+References: <1422316230-18893-1-git-send-email-joro@8bytes.org>
+	<1422316230-18893-3-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20150203122506.GC15068-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
+In-reply-to: <1422316230-18893-3-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,27 +18,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 03, 2015 at 01:25:07PM +0100, Thierry Reding wrote:
-> Sorry for my ignorance, but I don't understand what IOMMU groups are
-> supposed to be or how to make use of them. It seems like a common idiom
-> is to simply allocate a new group and add a device to it in the IOMMU's
-> ->add_device() callback, but I fail to see the reason for that.
-> 
-> Can anybody point me to documentation about this? I've looked and I did
-> not find anything.
+Hello,
 
-An iommu group is a set of devices that the iommu hardware can isolate
-from other devices. So devices in one group can't be isolated from each
-other and have to share the same iommu page table.
+On 2015-01-27 00:50, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+>
+> When regulator is not selected during kconfig, linking of
+> the exynos iommu driver fails due to missing symbols.
+> Fix it!
 
-This happens for example on legac 32 bit PCI buses. All devices on such
-a bus use the request-id of the PCIe-PCI bridge, so they can't be
-isolated from each other from the IOMMU and have to be in one iommu
-group.
+Frankly, I never observed such issue. Could you provide the .config for 
+such case? I know that existing exynos iommu driver is broken, but 
+please, don't break it even more...
 
+> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> ---
+>   drivers/iommu/Kconfig | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index dfa6cf1..2e6100d 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -190,7 +190,7 @@ config TEGRA_IOMMU_SMMU
+>   
+>   config EXYNOS_IOMMU
+>   	bool "Exynos IOMMU Support"
+> -	depends on ARCH_EXYNOS && ARM
+> +	depends on ARCH_EXYNOS && ARM && REGULATOR
+>   	select IOMMU_API
+>   	select ARM_DMA_USE_IOMMU
+>   	help
 
-	Joerg
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
