@@ -1,15 +1,15 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 00/26] iommu/fsl: Various cleanup
-Date: Tue, 3 Feb 2015 18:51:41 +0100
-Message-ID: <20150203175141.GA29585@8bytes.org>
-References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
-	<CAOZdJXXk5L7AFwryKXiTemw=jw+VXXXBZXdapzgzs4APC0PLtQ@mail.gmail.com>
+From: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu: arm-smmu: avoid build warning
+Date: Tue, 3 Feb 2015 18:54:15 +0100
+Message-ID: <20150203175415.GB29585@8bytes.org>
+References: <1754709.y30A9Ie4hF@wuerfel>
+ <20150202102048.GB30699@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAOZdJXXk5L7AFwryKXiTemw=jw+VXXXBZXdapzgzs4APC0PLtQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <20150202102048.GB30699-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,12 +19,22 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Timur Tabi <timur-N01EOCouUvQ@public.gmane.org>
-Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, Emil Medve <Emilian.Medve-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Jan 31, 2015 at 11:58:58AM -0600, Timur Tabi wrote:
-> These should all be merged into one patch, IMHO.
+On Mon, Feb 02, 2015 at 10:20:49AM +0000, Will Deacon wrote:
+> On Fri, Jan 30, 2015 at 09:55:55PM +0000, Arnd Bergmann wrote:
+> > -		reg = (iova & ~0xfff) >> 32;
+> > +		reg = ((u64)iova & ~0xfff) >> 32;
+> >  		writel_relaxed(reg, cb_base + ARM_SMMU_CB_ATS1PR_HI);
+> >  	}
+> 
+> Thanks, Arnd.
+> 
+> Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> 
+> Joerg, could you pick this one up directly please? I don't have any other
+> ARM SMMU fixes queued at the moment.
 
-I agree, it makes more sense to put all this into a single patch.
-Applied this way.
+Done, thanks.
