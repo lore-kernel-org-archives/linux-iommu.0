@@ -1,7 +1,7 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 1/4] iommu/exynos: Play nice in multi-platform builds
-Date: Wed,  4 Feb 2015 08:58:07 +0100
-Message-ID: <1423036690-3862-2-git-send-email-thierry.reding@gmail.com>
+Subject: [PATCH 2/4] iommu/omap: Play nice in multi-platform builds
+Date: Wed,  4 Feb 2015 08:58:08 +0100
+Message-ID: <1423036690-3862-3-git-send-email-thierry.reding@gmail.com>
 References: <1423036690-3862-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,45 +18,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-The Exynos System MMU driver unconditionally executes code and registers
-a struct iommu_ops with the platform bus irrespective of whether it runs
-on an Exynos SoC or not. This causes problems in multi-platform kernels
+The OMAP IOMMU driver unconditionally executes code and registers a
+struct iommu_ops with the platform bus irrespective of whether it runs
+on an OMAP SoC or not. This causes problems in multi-platform kernels
 where drivers for other SoCs will no longer be able to register their
 own struct iommu_ops or even try to use a struct iommu_ops for an IOMMU
 that obviously isn't there.
 
 The smallest fix I could think of is to check for the existence of any
-Exynos System MMU devices in the device tree and skip initialization
-otherwise.
+OMAP IOMMU devices in the device tree and skip initialization otherwise.
 
 This fixes a problem on Tegra20 where the DRM driver will try to use the
-obviously non-existent Exynos System MMU.
+obviously non-existent OMAP IOMMU.
 
 Reported-by: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+Cc: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Cc: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iommu/omap-iommu.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 7ce52737c7a1..d4b41fa32368 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -1188,6 +1188,9 @@ static int __init exynos_iommu_init(void)
- {
- 	int ret;
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index bbb7dcef02d3..e4d4f133a3b3 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1377,6 +1377,9 @@ static int __init omap_iommu_init(void)
+ 	const unsigned long flags = SLAB_HWCACHE_ALIGN;
+ 	size_t align = 1 << 10; /* L2 pagetable alignement */
  
-+	if (!of_find_matching_node(NULL, sysmmu_of_match))
++	if (!of_find_matching_node(NULL, omap_iommu_of_match))
 +		return 0;
 +
- 	lv2table_kmem_cache = kmem_cache_create("exynos-iommu-lv2table",
- 				LV2TABLE_SIZE, LV2TABLE_SIZE, 0, NULL);
- 	if (!lv2table_kmem_cache) {
+ 	p = kmem_cache_create("iopte_cache", IOPTE_TABLE_SIZE, align, flags,
+ 			      iopte_cachep_ctor);
+ 	if (!p)
+@@ -1394,6 +1397,9 @@ subsys_initcall(omap_iommu_init);
+ 
+ static void __exit omap_iommu_exit(void)
+ {
++	if (!of_find_matching_node(NULL, omap_iommu_of_match))
++		return;
++
+ 	kmem_cache_destroy(iopte_cachep);
+ 
+ 	platform_driver_unregister(&omap_iommu_driver);
 -- 
 2.1.3
