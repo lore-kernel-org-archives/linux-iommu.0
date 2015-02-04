@@ -1,19 +1,15 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu: use a threaded handler for context
-	interrupts
-Date: Wed, 4 Feb 2015 11:33:05 +0000
-Message-ID: <20150204113305.GA28902@arm.com>
-References: <1421970482-11722-1-git-send-email-mitchelh@codeaurora.org>
-	<20150123112415.GD23058@arm.com>
-	<vnkw61bx2klr.fsf@mitchelh-linux.qualcomm.com>
-	<20150128120738.GJ1569@arm.com>
-	<vnkwa90why79.fsf@mitchelh-linux.qualcomm.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v5 00/18] Exynos SYSMMU (IOMMU) integration with DT and
+	DMA-mapping subsystem
+Date: Wed, 04 Feb 2015 14:54:59 +0100
+Message-ID: <54D224B3.5070806@samsung.com>
+References: <1422028288-891-1-git-send-email-m.szyprowski@samsung.com>
+	<CAOhR-w3xdFtNGi=cfEM=N4ntjrjGwMUzxnqHWoRwy6r-AQOAjA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <vnkwa90why79.fsf-Yf+dfxj6toJBVvN7MMdr1KRtKmQZhJ7pQQ4Iyu8u01E@public.gmane.org>
+In-reply-to: <CAOhR-w3xdFtNGi=cfEM=N4ntjrjGwMUzxnqHWoRwy6r-AQOAjA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,39 +19,27 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Hongbo Zhang <hongbo.zhang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Seung-Woo Kim <sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Linaro MM SIG Mailman List <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 02, 2015 at 08:10:02PM +0000, Mitchel Humpherys wrote:
-> On Wed, Jan 28 2015 at 04:07:39 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> > With a shared handler (e.g. a bunch of context banks have the same IRQ)
-> > then I assume that we don't want to end up with multiple handler threads
-> > all tripping over each other. I'd rather have one thread that handles work
-> > queued up by multiple low-level handlers.
-> >
-> > Do you have a preference either way?
-> 
-> Ok I think I understand the scenario you're describing.  If multiple
-> context banks are sharing an interrupt line their handlers currently
-> execute serially, but with threaded handlers they would all be woken up
-> and possibly execute concurrently.  I hadn't really considered this
-> because none of our targets have CBs sharing interrupts.  In any case,
-> the CBs that aren't interrupting should quickly return IRQ_NONE when
-> they notice that !(fsr & FSR_FAULT), so is this really a concern?
+Hello,
 
-Well, with my stall-mode hat on, the FSR check could be done in the
-low-level handler, with the actual page fault handling or whatever done
-in the thread.
+On 2015-02-04 10:53, Hongbo Zhang wrote:
+> This is patch set against v3.19-rc4 plus 'Add HDMI support for
+> Exynos5420 platform', right?
+> No other dependencies? If there is, do you have a public git tree to be cloned?
 
-> Anyways, we can always hold off on this until we have a more compelling
-> motivation for it.  For example, if we need to enable clocks to read
-> registers then threaded IRQs seem like the best solution.  Hopefully
-> I'll find time to have another go at the clocks stuff soon, which is the
-> real reason why we're using threaded IRQs for context interrupts in our
-> msm tree.
+I've just prepared public branch based on v3.19-rc7 with
+kgene/v3.20-next/dt-samsung-3 branch merged and exynos-hdmi patches applied.
 
-Okey doke. Having the clocks stuff supported in iommu core would be my
-preference.
+It is available here:
+http://git.linaro.org/git-ro/people/marek.szyprowski/linux-srpol.git 
+v3.19-hdmi-iommu
 
-Will
+Tested with Exynos5422-based Odroid XU3 and Exynos4412-based Odroid U3.
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
