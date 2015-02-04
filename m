@@ -1,20 +1,15 @@
-From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu: use a threaded handler for context
-	interrupts
-Date: Wed, 04 Feb 2015 09:19:06 -0800
-Message-ID: <vnkwiofhppbp.fsf@mitchelh-linux.qualcomm.com>
-References: <1421970482-11722-1-git-send-email-mitchelh@codeaurora.org>
-	<20150123112415.GD23058@arm.com>
-	<vnkw61bx2klr.fsf@mitchelh-linux.qualcomm.com>
-	<20150128120738.GJ1569@arm.com>
-	<vnkwa90why79.fsf@mitchelh-linux.qualcomm.com>
-	<20150204113305.GA28902@arm.com>
+From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH 2/4] iommu/omap: Play nice in multi-platform builds
+Date: Wed, 4 Feb 2015 11:37:52 -0600
+Message-ID: <54D258F0.8040905@ti.com>
+References: <1423036690-3862-1-git-send-email-thierry.reding@gmail.com>
+	<1423036690-3862-3-git-send-email-thierry.reding@gmail.com>
+	<1718219.kRa6INVfJa@avalon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150204113305.GA28902-5wv7dgnIgG8@public.gmane.org> (Will Deacon's message of "Wed,
-	4 Feb 2015 11:33:05 +0000")
+In-Reply-To: <1718219.kRa6INVfJa@avalon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,56 +19,83 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Feb 04 2015 at 03:33:05 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> On Mon, Feb 02, 2015 at 08:10:02PM +0000, Mitchel Humpherys wrote:
->> On Wed, Jan 28 2015 at 04:07:39 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
->> > With a shared handler (e.g. a bunch of context banks have the same IRQ)
->> > then I assume that we don't want to end up with multiple handler threads
->> > all tripping over each other. I'd rather have one thread that handles work
->> > queued up by multiple low-level handlers.
->> >
->> > Do you have a preference either way?
->> 
->> Ok I think I understand the scenario you're describing.  If multiple
->> context banks are sharing an interrupt line their handlers currently
->> execute serially, but with threaded handlers they would all be woken up
->> and possibly execute concurrently.  I hadn't really considered this
->> because none of our targets have CBs sharing interrupts.  In any case,
->> the CBs that aren't interrupting should quickly return IRQ_NONE when
->> they notice that !(fsr & FSR_FAULT), so is this really a concern?
->
-> Well, with my stall-mode hat on, the FSR check could be done in the
-> low-level handler, with the actual page fault handling or whatever done
-> in the thread.
+Hi Thierry,
 
-But we'll need to turn on clocks just to read the FSR, which can't be
-done from atomic context.
+On 02/04/2015 08:31 AM, Laurent Pinchart wrote:
+> Hi Thierry,
+> 
+> Thank you for the patch.
+> 
+> On Wednesday 04 February 2015 08:58:08 Thierry Reding wrote:
+>> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+>>
+>> The OMAP IOMMU driver unconditionally executes code and registers a
+>> struct iommu_ops with the platform bus irrespective of whether it runs
+>> on an OMAP SoC or not. This causes problems in multi-platform kernels
+>> where drivers for other SoCs will no longer be able to register their
+>> own struct iommu_ops or even try to use a struct iommu_ops for an IOMMU
+>> that obviously isn't there.
+>>
+>> The smallest fix I could think of is to check for the existence of any
+>> OMAP IOMMU devices in the device tree and skip initialization otherwise.
+>>
+>> This fixes a problem on Tegra20 where the DRM driver will try to use the
+>> obviously non-existent OMAP IOMMU.
+>>
+>> Reported-by: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>> Cc: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+>> Cc: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+>> Cc: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+>> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+>> ---
+>>  drivers/iommu/omap-iommu.c | 6 ++++++
+>>  1 file changed, 6 insertions(+)
+>>
+>> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+>> index bbb7dcef02d3..e4d4f133a3b3 100644
+>> --- a/drivers/iommu/omap-iommu.c
+>> +++ b/drivers/iommu/omap-iommu.c
+>> @@ -1377,6 +1377,9 @@ static int __init omap_iommu_init(void)
+>>  	const unsigned long flags = SLAB_HWCACHE_ALIGN;
+>>  	size_t align = 1 << 10; /* L2 pagetable alignement */
+>>
+>> +	if (!of_find_matching_node(NULL, omap_iommu_of_match))
+>> +		return 0;
+>> +
 
->
->> Anyways, we can always hold off on this until we have a more compelling
->> motivation for it.  For example, if we need to enable clocks to read
->> registers then threaded IRQs seem like the best solution.  Hopefully
->> I'll find time to have another go at the clocks stuff soon, which is the
->> real reason why we're using threaded IRQs for context interrupts in our
->> msm tree.
->
-> Okey doke. Having the clocks stuff supported in iommu core would be my
-> preference.
+Need to call the of_node_put on the cases it succeeds right, you should
+change this to the semantics you used in the arm-smmu driver.
 
-Yeah I'll try to come up with something.  In this particular case I
-guess we'd actually have to call out to some iommu_enable_access API so
-it wouldn't be completely transparent.  Everywhere else I think the
-iommu core can wrap the various iommu_ops callbacks with the
-enable/disable calls.
+> 
+> We should convert the omap-iommu driver to proper DT instantiation, but this 
+> should do for now.
 
+Agreed, and I think this check is better than the iommu_present check
+used in some of the other IOMMU drivers, as that would work for a SoC
+family only if that is the first one getting registered.
 
--Mitch
+regards
+Suman
 
--- 
-Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+> 
+>>  	p = kmem_cache_create("iopte_cache", IOPTE_TABLE_SIZE, align, flags,
+>>  			      iopte_cachep_ctor);
+>>  	if (!p)
+>> @@ -1394,6 +1397,9 @@ subsys_initcall(omap_iommu_init);
+>>
+>>  static void __exit omap_iommu_exit(void)
+>>  {
+>> +	if (!of_find_matching_node(NULL, omap_iommu_of_match))
+>> +		return;
+>> +
+>>  	kmem_cache_destroy(iopte_cachep);
+>>
+>>  	platform_driver_unregister(&omap_iommu_driver);
+> 
+> The exit function will never be called as the omap-iommu driver is always 
+> built-in. You could just remove the exit function.
+> 
