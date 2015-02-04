@@ -1,15 +1,14 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v5 00/18] Exynos SYSMMU (IOMMU) integration with DT and
-	DMA-mapping subsystem
-Date: Wed, 4 Feb 2015 15:21:49 +0100
-Message-ID: <20150204142149.GM3702@8bytes.org>
-References: <1422028288-891-1-git-send-email-m.szyprowski@samsung.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH 2/4] iommu/omap: Play nice in multi-platform builds
+Date: Wed, 04 Feb 2015 16:31:55 +0200
+Message-ID: <1718219.kRa6INVfJa@avalon>
+References: <1423036690-3862-1-git-send-email-thierry.reding@gmail.com>
+	<1423036690-3862-3-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1422028288-891-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <1423036690-3862-3-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,23 +18,72 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Seung-Woo Kim <sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Marek,
+Hi Thierry,
 
-On Fri, Jan 23, 2015 at 04:51:10PM +0100, Marek Szyprowski wrote:
-> 1. All iommu related patches (with 'iommu: exynos') can be merged to
-> iommu tree. They don't have any direct dependencies on the DTS, DRM and
-> power domain initialization change - without them the driver will simply
-> not initialize, when no exynos,sysmmu nodes are provided in device tree.
+Thank you for the patch.
+
+On Wednesday 04 February 2015 08:58:08 Thierry Reding wrote:
+> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 > 
-> Joerg, could you merge those patches?
+> The OMAP IOMMU driver unconditionally executes code and registers a
+> struct iommu_ops with the platform bus irrespective of whether it runs
+> on an OMAP SoC or not. This causes problems in multi-platform kernels
+> where drivers for other SoCs will no longer be able to register their
+> own struct iommu_ops or even try to use a struct iommu_ops for an IOMMU
+> that obviously isn't there.
+> 
+> The smallest fix I could think of is to check for the existence of any
+> OMAP IOMMU devices in the device tree and skip initialization otherwise.
+>
+> This fixes a problem on Tegra20 where the DRM driver will try to use the
+> obviously non-existent OMAP IOMMU.
+> 
+> Reported-by: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Cc: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+> Cc: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+> Cc: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/iommu/omap-iommu.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+> index bbb7dcef02d3..e4d4f133a3b3 100644
+> --- a/drivers/iommu/omap-iommu.c
+> +++ b/drivers/iommu/omap-iommu.c
+> @@ -1377,6 +1377,9 @@ static int __init omap_iommu_init(void)
+>  	const unsigned long flags = SLAB_HWCACHE_ALIGN;
+>  	size_t align = 1 << 10; /* L2 pagetable alignement */
+> 
+> +	if (!of_find_matching_node(NULL, omap_iommu_of_match))
+> +		return 0;
+> +
 
-Given the previous comments and tests on this patch set I am still
-waiting for some Acked-bys and/or Tested-bys on this. Can you collect
-these and resend then (probably after the v3.20 merge window)?
+We should convert the omap-iommu driver to proper DT instantiation, but this 
+should do for now.
 
+>  	p = kmem_cache_create("iopte_cache", IOPTE_TABLE_SIZE, align, flags,
+>  			      iopte_cachep_ctor);
+>  	if (!p)
+> @@ -1394,6 +1397,9 @@ subsys_initcall(omap_iommu_init);
+> 
+>  static void __exit omap_iommu_exit(void)
+>  {
+> +	if (!of_find_matching_node(NULL, omap_iommu_of_match))
+> +		return;
+> +
+>  	kmem_cache_destroy(iopte_cachep);
+> 
+>  	platform_driver_unregister(&omap_iommu_driver);
 
-	Joerg
+The exit function will never be called as the omap-iommu driver is always 
+built-in. You could just remove the exit function.
+
+-- 
+Regards,
+
+Laurent Pinchart
