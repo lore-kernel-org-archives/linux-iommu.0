@@ -1,11 +1,13 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 0/4] iommu: A couple of urgent fixes
-Date: Wed,  4 Feb 2015 08:58:06 +0100
-Message-ID: <1423036690-3862-1-git-send-email-thierry.reding@gmail.com>
+Subject: [PATCH 1/4] iommu/exynos: Play nice in multi-platform builds
+Date: Wed,  4 Feb 2015 08:58:07 +0100
+Message-ID: <1423036690-3862-2-git-send-email-thierry.reding@gmail.com>
+References: <1423036690-3862-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1423036690-3862-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,39 +18,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-Hi Joerg,
+The Exynos System MMU driver unconditionally executes code and registers
+a struct iommu_ops with the platform bus irrespective of whether it runs
+on an Exynos SoC or not. This causes problems in multi-platform kernels
+where drivers for other SoCs will no longer be able to register their
+own struct iommu_ops or even try to use a struct iommu_ops for an IOMMU
+that obviously isn't there.
 
-Here are a couple of urgent fixes for a regression on old Tegra devices
-related to IOMMU support. The issue is that many drivers think it's a
-good idea to register IOMMU support unconditionally, which is not the
-smart thing to do at all on multi-platform kernels. This probably went
-unnoticed for a while because the offending drivers aren't enabled in
-any of the multi-platform default configurations. Fedora ARM has their
-own config where the offending drivers did get enabled, hence caused a
-regression on Tegra20. I would expect the same regression to exist on a
-number of other SoCs, possibly all that support IOMMU.
+The smallest fix I could think of is to check for the existence of any
+Exynos System MMU devices in the device tree and skip initialization
+otherwise.
 
-I've tried to keep the patches minimal in the hopes of still getting
-this into v3.19-rc8 or the final release to avoid the regression.
+This fixes a problem on Tegra20 where the DRM driver will try to use the
+obviously non-existent Exynos System MMU.
 
-Thierry
+Reported-by: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/exynos-iommu.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Thierry Reding (4):
-  iommu/exynos: Play nice in multi-platform builds
-  iommu/omap: Play nice in multi-platform builds
-  iommu/rockchip: Play nice in multi-platform builds
-  iommu/msm: Mark driver BROKEN
-
- drivers/iommu/Kconfig          | 1 +
- drivers/iommu/exynos-iommu.c   | 3 +++
- drivers/iommu/omap-iommu.c     | 6 ++++++
- drivers/iommu/rockchip-iommu.c | 6 ++++++
- 4 files changed, 16 insertions(+)
-
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 7ce52737c7a1..d4b41fa32368 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1188,6 +1188,9 @@ static int __init exynos_iommu_init(void)
+ {
+ 	int ret;
+ 
++	if (!of_find_matching_node(NULL, sysmmu_of_match))
++		return 0;
++
+ 	lv2table_kmem_cache = kmem_cache_create("exynos-iommu-lv2table",
+ 				LV2TABLE_SIZE, LV2TABLE_SIZE, 0, NULL);
+ 	if (!lv2table_kmem_cache) {
 -- 
 2.1.3
