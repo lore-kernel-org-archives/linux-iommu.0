@@ -1,52 +1,61 @@
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH 3/4] iommu/rockchip: Play nice in multi-platform builds
-Date: Thu, 05 Feb 2015 09:30:28 +0100
-Message-ID: <8897595.h8gfmnfTfF@phil>
-References: <1423036690-3862-1-git-send-email-thierry.reding@gmail.com>
-	<1423036690-3862-4-git-send-email-thierry.reding@gmail.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH v2] iommu/amd: Use wait_event in put_pasid_state_wait
+Date: Thu, 5 Feb 2015 12:40:20 +0100
+Message-ID: <20150205114020.GQ3702@8bytes.org>
+References: <1423062622-28257-1-git-send-email-joro@8bytes.org>
+ <20150204163450.GD5029@twins.programming.kicks-ass.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1423036690-3862-4-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20150204163450.GD5029@twins.programming.kicks-ass.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: iommu@lists.linux-foundation.org, Benjamin LaHaise <bcrl@kvack.org>, Jesse Barnes <jbarnes@virtuousgeek.org>, linux-aio@kvack.org, linux-kernel@vger.kernel.org, Oded Gabbay <oded.gabbay@amd.com>, jroedel@suse.de
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Thierry,
+On Wed, Feb 04, 2015 at 05:34:50PM +0100, Peter Zijlstra wrote:
+> You just lost your atomic_dec.
 
-Am Mittwoch, 4. Februar 2015, 08:58:09 schrieb Thierry Reding:
-> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> 
-> The Rockchip IOMMU driver unconditionally executes code and registers a
-> struct iommu_ops with the platform bus irrespective of whether it runs
-> on a Rockchip SoC or not. This causes problems in multi-platform kernels
-> where drivers for other SoCs will no longer be able to register their
-> own struct iommu_ops or even try to use a struct iommu_ops for an IOMMU
-> that obviously isn't there.
-> 
-> The smallest fix I could think of is to check for the existence of any
-> Rockchip IOMMU devices in the device tree and skip initialization
-> otherwise.
-> 
-> This fixes a problem on Tegra20 where the DRM driver will try to use the
-> obviously non-existent Rockchip IOMMU.
-> 
-> Reported-by: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-> Cc: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+So this should be the correct version then.
 
-Reviewed-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+>From 2a52250e542d8964c8285a37b71fe838a44c05c4 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Wed, 4 Feb 2015 15:50:38 +0100
+Subject: [PATCH 1/2] iommu/amd: Use wait_event in put_pasid_state_wait
 
-on a rk3288-firefly with drm through the hdmi connector
-Tested-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Now that I learned about possible spurious wakeups this
+place needs fixing too. Replace the self-coded sleep variant
+with the generic wait_event() helper.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ drivers/iommu/amd_iommu_v2.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
+index b6398d7..e01bc8f 100644
+--- a/drivers/iommu/amd_iommu_v2.c
++++ b/drivers/iommu/amd_iommu_v2.c
+@@ -266,14 +266,13 @@ static void put_pasid_state(struct pasid_state *pasid_state)
+ 
+ static void put_pasid_state_wait(struct pasid_state *pasid_state)
+ {
+-	DEFINE_WAIT(wait);
++	/* Drop our reference */
++	atomic_dec(&pasid_state->count);
+ 
+-	prepare_to_wait(&pasid_state->wq, &wait, TASK_UNINTERRUPTIBLE);
++	/* Wait for others to drop their references */
++	wait_event(pasid_state->wq, !atomic_read(&pasid_state->count));
+ 
+-	if (!atomic_dec_and_test(&pasid_state->count))
+-		schedule();
+-
+-	finish_wait(&pasid_state->wq, &wait);
++	/* Get rid of it */
+ 	free_pasid_state(pasid_state);
+ }
+ 
+-- 
+1.8.4.5
