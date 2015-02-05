@@ -1,15 +1,14 @@
-From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 4/4] iommu/msm: Mark driver BROKEN
-Date: Wed, 4 Feb 2015 14:32:58 -0500
-Message-ID: <CAF6AEGsz4TsnVP-2WpEoFRha=36MWrQYj789GMX9=wvSv2_UVg@mail.gmail.com>
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [PATCH 3/4] iommu/rockchip: Play nice in multi-platform builds
+Date: Thu, 05 Feb 2015 09:30:28 +0100
+Message-ID: <8897595.h8gfmnfTfF@phil>
 References: <1423036690-3862-1-git-send-email-thierry.reding@gmail.com>
-	<1423036690-3862-5-git-send-email-thierry.reding@gmail.com>
-	<54D26AF8.2010101@codeaurora.org>
+	<1423036690-3862-4-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <54D26AF8.2010101-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <1423036690-3862-4-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,71 +18,35 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bryan Huntsman <bryanh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Daniel Walker <dwalker-zu3NM2574RrQT0dZR+AlfA@public.gmane.org>, David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Feb 4, 2015 at 1:54 PM, Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
-> Adding Mitch H. and Rob Clark.
->
+Hi Thierry,
 
-The current upstream msm-iommu isn't actually used by anything,
-afaict.. it lacks support for DT based platforms.  So this is fine by
-me.
+Am Mittwoch, 4. Februar 2015, 08:58:09 schrieb Thierry Reding:
+> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> 
+> The Rockchip IOMMU driver unconditionally executes code and registers a
+> struct iommu_ops with the platform bus irrespective of whether it runs
+> on a Rockchip SoC or not. This causes problems in multi-platform kernels
+> where drivers for other SoCs will no longer be able to register their
+> own struct iommu_ops or even try to use a struct iommu_ops for an IOMMU
+> that obviously isn't there.
+> 
+> The smallest fix I could think of is to check for the existence of any
+> Rockchip IOMMU devices in the device tree and skip initialization
+> otherwise.
+> 
+> This fixes a problem on Tegra20 where the DRM driver will try to use the
+> obviously non-existent Rockchip IOMMU.
+> 
+> Reported-by: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+> Cc: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-Acked-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Reviewed-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 
-
->
-> On 2/3/2015 11:58 PM, Thierry Reding wrote:
->>
->> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
->>
->> The MSM IOMMU driver unconditionally calls bus_set_iommu(), which is a
->> very stupid thing to do on multi-platform kernels. While marking the
->> driver BROKEN may seem a little extreme, there is no other way to make
->> the driver skip initialization. One of the problems is that it doesn't
->> have devicetree binding documentation and the driver doesn't contain a
->> struct of_device_id table either, so no way to check that it is indeed
->> valid to set up the IOMMU operations for this driver.
->>
->> This fixes a problem on Tegra20 where the DRM driver will try to use the
->> obviously non-existent MSM IOMMU.
->>
->> Marking the driver BROKEN shouldn't do any harm, since there aren't any
->> users currently. There is no struct of_device_id table, so the device
->> can't be instantiated from device tree, and I couldn't find any code
->> that would instantiate a matching platform_device either, so the driver
->> is effectively unused.
->>
->> Reported-by: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->> Cc: David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->> Cc: Daniel Walker <dwalker-zu3NM2574RrQT0dZR+AlfA@public.gmane.org>
->> Cc: Bryan Huntsman <bryanh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->> Cc: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
->> ---
->>   drivers/iommu/Kconfig | 1 +
->>   1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
->> index 325188eef1c1..0f70bc1fce65 100644
->> --- a/drivers/iommu/Kconfig
->> +++ b/drivers/iommu/Kconfig
->> @@ -31,6 +31,7 @@ config FSL_PAMU
->>   config MSM_IOMMU
->>         bool "MSM IOMMU Support"
->>         depends on ARCH_MSM8X60 || ARCH_MSM8960
->> +       depends on BROKEN
->>         select IOMMU_API
->>         help
->>           Support for the IOMMUs found on certain Qualcomm SOCs.
->>
->
->
-> .Olav
->
-> --
-> Qualcomm Innovation Center, Inc.
-> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-> a Linux Foundation Collaborative Project
+on a rk3288-firefly with drm through the hdmi connector
+Tested-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
