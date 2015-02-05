@@ -1,42 +1,46 @@
-From: Oded Gabbay <oded.gabbay@amd.com>
-Subject: Re: [PATCH v2] iommu/amd: Use wait_event in put_pasid_state_wait
-Date: Thu, 5 Feb 2015 14:23:10 +0200
-Message-ID: <54D360AE.8090603@amd.com>
-References: <1423062622-28257-1-git-send-email-joro@8bytes.org>
- <20150204163450.GD5029@twins.programming.kicks-ass.net>
- <20150205114020.GQ3702@8bytes.org>
+From: SF Markus Elfring <elfring-Rn4VEauK+AKRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>
+Subject: [PATCH] IOMMU-Tegra: gart: Delete an unnecessary check before the
+ function call "vfree"
+Date: Thu, 05 Feb 2015 18:00:25 +0100
+Message-ID: <54D3A1A9.9040709@users.sourceforge.net>
+References: <5307CAA2.8060406@users.sourceforge.net> <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6> <530A086E.8010901@users.sourceforge.net> <alpine.DEB.2.02.1402231635510.1985@localhost6.localdomain6> <530A72AA.3000601@users.sourceforge.net> <alpine.DEB.2.02.1402240658210.2090@localhost6.localdomain6> <530B5FB6.6010207@users.sourceforge.net> <alpine.DEB.2.10.1402241710370.2074@hadrien> <530C5E18.1020800@users.sourceforge.net> <alpine.DEB.2.10.1402251014170.2080@hadrien> <530CD2C4.4050903@users.sourceforge.net> <alpine.DEB.2.10.1402251840450.7035@hadrien> <530CF8FF.8080600@users.sourceforge.net> <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6> <530DD06F.4090703@users.sourceforge.net> <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6> <5317A59D.4@users.so
+ urceforge.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-aio@kvack.org>
-In-Reply-To: <20150205114020.GQ3702@8bytes.org>
-Sender: owner-linux-aio@kvack.org
-To: Joerg Roedel <joro@8bytes.org>, Peter Zijlstra <peterz@infradead.org>
-Cc: iommu@lists.linux-foundation.org, Benjamin LaHaise <bcrl@kvack.org>, Jesse Barnes <jbarnes@virtuousgeek.org>, linux-aio@kvack.org, linux-kernel@vger.kernel.org, jroedel@suse.de
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <5317A59D.4-Rn4VEauK+AKRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, =?windows-1252?Q?J=F6rg_R=F6del?= <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, kernel-janitors-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Julia Lawall <julia.lawall-L2FTfq7BK8M@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+From: Markus Elfring <elfring-Rn4VEauK+AKRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>
+Date: Thu, 5 Feb 2015 17:54:16 +0100
 
+The vfree() function performs also input parameter validation.
+Thus the test around the call is not needed.
 
-On 02/05/2015 01:40 PM, Joerg Roedel wrote:
-> So this should be the correct version then.
->
->  From 2a52250e542d8964c8285a37b71fe838a44c05c4 Mon Sep 17 00:00:00 2001
-> From: Joerg Roedel<jroedel@suse.de>
-> Date: Wed, 4 Feb 2015 15:50:38 +0100
-> Subject: [PATCH 1/2] iommu/amd: Use wait_event in put_pasid_state_wait
->
-> Now that I learned about possible spurious wakeups this
-> place needs fixing too. Replace the self-coded sleep variant
-> with the generic wait_event() helper.
->
-> Signed-off-by: Joerg Roedel<jroedel@suse.de>
+This issue was detected by using the Coccinelle software.
 
-Tested-by: Oded Gabbay <oded.gabbay@amd.com>
+Signed-off-by: Markus Elfring <elfring-Rn4VEauK+AKRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>
+---
+ drivers/iommu/tegra-gart.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-	Oded
-
---
-To unsubscribe, send a message with 'unsubscribe linux-aio' in
-the body to majordomo@kvack.org.  For more info on Linux AIO,
-see: http://www.kvack.org/aio/
-Don't email: <a href=mailto:"aart@kvack.org">aart@kvack.org</a>
+diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+index f722a0c..07a795a 100644
+--- a/drivers/iommu/tegra-gart.c
++++ b/drivers/iommu/tegra-gart.c
+@@ -404,8 +404,7 @@ static int tegra_gart_remove(struct platform_device *pdev)
+ 	struct gart_device *gart = platform_get_drvdata(pdev);
+ 
+ 	writel(0, gart->regs + GART_CONFIG);
+-	if (gart->savedata)
+-		vfree(gart->savedata);
++	vfree(gart->savedata);
+ 	gart_handle = NULL;
+ 	return 0;
+ }
+-- 
+2.2.2
