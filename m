@@ -1,67 +1,171 @@
-From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH v2 0/4] iommu: A couple of urgent fixes
-Date: Fri, 6 Feb 2015 12:04:40 -0600
-Message-ID: <54D50238.1010709@ti.com>
-References: <1423219448-22683-1-git-send-email-thierry.reding@gmail.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH/RFC 4/4] iommu/arm-smmu: Support deferred probing
+Date: Fri, 06 Feb 2015 18:31:02 +0000
+Message-ID: <54D50866.8000505@arm.com>
+References: <1423182722-16646-1-git-send-email-lauraa@codeaurora.org> <1423182722-16646-5-git-send-email-lauraa@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1423219448-22683-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=WINDOWS-1252; format=flowed
+Content-Transfer-Encoding: 8BIT
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1423182722-16646-5-git-send-email-lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joreg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Thierry,
+Hi Laura,
 
-On 02/06/2015 04:44 AM, Thierry Reding wrote:
-> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> 
-> Hi Joerg,
-> 
-> Here are a couple of urgent fixes for a regression on old Tegra devices
-> related to IOMMU support. The issue is that many drivers think it's a
-> good idea to register IOMMU support unconditionally, which is not the
-> smart thing to do at all on multi-platform kernels. This probably went
-> unnoticed for a while because the offending drivers aren't enabled in
-> any of the multi-platform default configurations. Fedora ARM has their
-> own config where the offending drivers did get enabled, hence caused a
-> regression on Tegra20. I would expect the same regression to exist on a
-> number of other SoCs, possibly all that support IOMMU.
-> 
-> I've tried to keep the patches minimal in the hopes of still getting
-> this into v3.19-rc8 or the final release to avoid the regression.
-> 
-> Changes in v2:
-> - avoid potential leak by dropping references to device tree nodes
-> - remove fixups from module exit functions since they are unused
+As a heads up, I'm still vainly hoping to move the ARM SMMU driver 
+entirely over to the generic framework - there's an iommu/dev branch on 
+top of the iommu/dma branch I pushed earlier[1] which you might want to 
+take a peek at to check if we're likely to end up pulling in different 
+directions.
 
-Thanks for the revised patches, tested them on the OMAP platforms. I was
-not able to apply the iommu/msm patch though against 3.19-rc7 cleanly.
+[1]:http://article.gmane.org/gmane.linux.kernel.iommu/8773
 
-regards
-Suman
+On 06/02/15 00:32, Laura Abbott wrote:
+>
+> With the addition of clocks in the SMMU driver, the driver
+> now may need to be deferred if the clocks are not ready. Apart from
+> just the probe function though, we may need to defer attachment as
+> well. Support both of these.
+>
+> Signed-off-by: Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> ---
+> I went with the simplest approach ('started_probe') to indicate
+> we should defer probing. Another possibility I considered was to have
+> a 'masters added before probe completed' list and keep all masters
+> there until probe completes at which point we can bind the masters
+> to the SMMUs.
 
-> Thierry
-> 
-> Thierry Reding (4):
->   iommu/exynos: Play nice in multi-platform builds
->   iommu/omap: Play nice in multi-platform builds
->   iommu/rockchip: Play nice in multi-platform builds
->   iommu/msm: Mark driver BROKEN
-> 
->  drivers/iommu/Kconfig          | 1 +
->  drivers/iommu/exynos-iommu.c   | 7 +++++++
->  drivers/iommu/omap-iommu.c     | 7 +++++++
->  drivers/iommu/rockchip-iommu.c | 7 +++++++
->  4 files changed, 22 insertions(+)
-> 
+I think this looks OK for the single-distributed-SMMU case MMU-500 
+allows; the Juno case with multiple MMU-401 instances is more awkward, 
+but I have a feeling there's a really neat way to slot this approach to 
+deferral into my per-instance stuff. I'll give this series a spin and 
+see what falls out.
+
+Thanks,
+Robin.
+
+> ---
+>   drivers/iommu/arm-smmu.c | 37 +++++++++++++++++++++++++++++++++++--
+>   1 file changed, 35 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index d9f7cf48..7e8194c 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -43,6 +43,8 @@
+>   #include <linux/platform_device.h>
+>   #include <linux/slab.h>
+>   #include <linux/spinlock.h>
+> +#include <linux/of_iommu.h>
+> +#include <linux/of_platform.h>
+>
+>   #include <linux/amba/bus.h>
+>
+> @@ -330,6 +332,7 @@ static int force_stage;
+>   module_param_named(force_stage, force_stage, int, S_IRUGO | S_IWUSR);
+>   MODULE_PARM_DESC(force_stage,
+>   	"Force SMMU mappings to be installed at a particular stage of translation. A value of '1' or '2' forces the corresponding stage. All other values are ignored (i.e. no stage is forced). Note that selecting a specific stage will disable support for nested translation.");
+> +static bool started_probe;
+>
+>   enum arm_smmu_arch_version {
+>   	ARM_SMMU_V1 = 1,
+> @@ -1284,7 +1287,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>   	smmu = find_smmu_for_device(dev);
+>   	if (!smmu) {
+>   		dev_err(dev, "cannot attach to SMMU, is it on the same bus?\n");
+> -		return -ENXIO;
+> +		return started_probe ? -EPROBE_DEFER : -ENXIO;
+>   	}
+>
+>   	if (dev->archdata.iommu) {
+> @@ -1677,7 +1680,7 @@ static int arm_smmu_add_device(struct device *dev)
+>
+>   	smmu = find_smmu_for_device(dev);
+>   	if (!smmu)
+> -		return -ENODEV;
+> +		return started_probe ? -EPROBE_DEFER : -ENODEV;
+>
+>   	group = iommu_group_alloc();
+>   	if (IS_ERR(group)) {
+> @@ -1761,6 +1764,11 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+>   	}
+>   }
+>
+> +static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *spec)
+> +{
+> +	return arm_smmu_add_device(dev);
+> +}
+> +
+>   static int arm_smmu_enable_resources(struct iommu_domain *domain)
+>   {
+>   	struct arm_smmu_domain *smmu_domain = domain->priv;
+> @@ -1814,6 +1822,7 @@ static const struct iommu_ops arm_smmu_ops = {
+>   	.pgsize_bitmap		= (SECTION_SIZE |
+>   				   ARM_SMMU_PTE_CONT_SIZE |
+>   				   PAGE_SIZE),
+> +	.of_xlate		= arm_smmu_of_xlate,
+>   	.enable_resources	= arm_smmu_enable_resources,
+>   	.disable_resources	= arm_smmu_disable_resources,
+>   };
+> @@ -2108,6 +2117,8 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+>   	struct of_phandle_args masterspec;
+>   	int num_irqs, i, err;
+>
+> +	started_probe = true;
+> +
+>   	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
+>   	if (!smmu) {
+>   		dev_err(dev, "failed to allocate arm_smmu_device\n");
+> @@ -2282,6 +2293,8 @@ static struct platform_driver arm_smmu_driver = {
+>   	.remove	= arm_smmu_device_remove,
+>   };
+>
+> +static int init_done;
+> +
+>   static int __init arm_smmu_init(void)
+>   {
+>   	struct device_node *np;
+> @@ -2316,6 +2329,7 @@ static int __init arm_smmu_init(void)
+>   		bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
+>   #endif
+>
+> +	init_done = true;
+>   	return 0;
+>   }
+>
+> @@ -2327,6 +2341,25 @@ static void __exit arm_smmu_exit(void)
+>   subsys_initcall(arm_smmu_init);
+>   module_exit(arm_smmu_exit);
+>
+> +static int __init arm_smmu_of_setup(struct device_node *np)
+> +{
+> +	struct platform_device *pdev;
+> +
+> +	if (!init_done)
+> +		arm_smmu_init();
+> +
+> +	pdev = of_platform_device_create(np, NULL, platform_bus_type.dev_root);
+> +	if (IS_ERR(pdev))
+> +		return PTR_ERR(pdev);
+> +
+> +	of_iommu_set_ops(np, &arm_smmu_ops);
+> +	return 0;
+> +}
+> +
+> +IOMMU_OF_DECLARE(arm_smmu_of, "arm,mmu-500",
+> +		 arm_smmu_of_setup);
+> +
+> +
+>   MODULE_DESCRIPTION("IOMMU API for ARM architected SMMU implementations");
+>   MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
+>   MODULE_LICENSE("GPL v2");
+>
+
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
