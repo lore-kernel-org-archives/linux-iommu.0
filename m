@@ -1,54 +1,68 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: question about AMD IOMMU IO_PAGE_FAULT event and PRI
-Date: Fri, 6 Feb 2015 13:11:38 +0100
-Message-ID: <20150206121138.GS3702@8bytes.org>
-References: <CALu9Y57totEk4o+r7EKOK0kZjPNmnBJBQvhLkGmtyrv1EgCNvw@mail.gmail.com>
+From: Catalin Marinas <catalin.marinas@arm.com>
+Subject: Re: [PATCH v6 3/7] of: fix size when dma-range is not used
+Date: Fri, 6 Feb 2015 14:38:12 +0000
+Message-ID: <20150206143812.GB20549@localhost>
+References: <1423173179-10227-1-git-send-email-m-karicheri2@ti.com>
+ <1423173179-10227-4-git-send-email-m-karicheri2@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CALu9Y57totEk4o+r7EKOK0kZjPNmnBJBQvhLkGmtyrv1EgCNvw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Hann Huang <gic4107-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+In-Reply-To: <1423173179-10227-4-git-send-email-m-karicheri2@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Murali Karicheri <m-karicheri2@ti.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, Joerg Roedel <joro@8bytes.org>, Will Deacon <Will.Deacon@arm.com>, Rob Herring <robh+dt@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello Hann,
-
-On Fri, Feb 06, 2015 at 11:45:55AM +0800, Hann Huang wrote:
-> Hi all,
+On Thu, Feb 05, 2015 at 09:52:55PM +0000, Murali Karicheri wrote:
+> Fix the dma-range size when the DT attribute is missing. i.e  set size to
+> dev->coherent_dma_mask + 1 instead of dev->coherent_dma_mask. Also add
+> code to check invalid values of size configured in DT and log error.
 > 
-> I did some experiment which needs two-stage address translation (GVA->GPA->
-> SPA).
-> After setting the mode bit in DTE to 100b, I got lots of IO_PAGE_FAULT event
-> but no any PPR request.
-
-Did you also install a valid page-table before changing the mode-bit?
-
-> While turn off the GPA-to-SPA translation, PPR request comes and no
-> IO_PAGE_FAULT event.
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Grant Likely <grant.likely@linaro.org>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+> Cc: Will Deacon <will.deacon@arm.com>
+> Cc: Russell King <linux@arm.linux.org.uk>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
 > 
-> My question is :
-> In what situation IO_PAGE_FAULT event generate, and how about PRI request?
-> Can IO_PAGE_FAULT event be fixed? (such as handle the page fault and send
-> COMPLETE_PPR_REQUEST?)
+> Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
+> ---
+>  drivers/of/device.c |   17 ++++++++++++++++-
+>  1 file changed, 16 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/of/device.c b/drivers/of/device.c
+> index 2de320d..314c8a9 100644
+> --- a/drivers/of/device.c
+> +++ b/drivers/of/device.c
+> @@ -105,9 +105,24 @@ void of_dma_configure(struct device *dev, struct device_node *np)
+>  	ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
+>  	if (ret < 0) {
+>  		dma_addr = offset = 0;
+> -		size = dev->coherent_dma_mask;
+> +		size = dev->coherent_dma_mask + 1;
+>  	} else {
+>  		offset = PFN_DOWN(paddr - dma_addr);
+> +
+> +		/*
+> +		 * Add a work around to treat the size as mask + 1 in case
+> +		 * it is defined in DT as a mask.
+> +		 */
+> +		if (size & 1) {
+> +			dev_warn(dev, "Invalid size 0x%llx for dma-range\n",
+> +				 size);
+> +			size = size + 1;
+> +		}
+> +
+> +		if (!size) {
+> +			dev_err(dev, "Adjusted size 0x%llx invalid\n", size);
+> +			return;
+> +		}
 
-Basic answer is, you get an IO_PAGE_FAULT for all translation errors in
-the l1 page-table (the one where the page-table root it specified in the
-DTE).
+Would it make sense to set coherent_dma_mask to 0 here to make this more
+noticeable? It can be done together with the mask calculation from size.
 
-For any page-fault in l2 page-tables (where you have one page-table per
-pasid) you get a PRI fault. But note that the peripheral PCI device needs to
-support ATS and PRI for this to work.
-
-
-	Joerg
+-- 
+Catalin
