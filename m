@@ -1,171 +1,97 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH/RFC 4/4] iommu/arm-smmu: Support deferred probing
-Date: Fri, 06 Feb 2015 18:31:02 +0000
-Message-ID: <54D50866.8000505@arm.com>
-References: <1423182722-16646-1-git-send-email-lauraa@codeaurora.org> <1423182722-16646-5-git-send-email-lauraa@codeaurora.org>
+From: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH v6 0/7] PCI: get DMA configuration from parent device
+Date: Fri, 6 Feb 2015 13:36:57 -0500
+Message-ID: <54D509C9.9010204@ti.com>
+References: <1423173179-10227-1-git-send-email-m-karicheri2@ti.com>
+	<20150206151542.GD23190@e104818-lin.cambridge.arm.com>
+	<54D4DD95.7000303@ti.com>
+	<CAErSpo6GOXHeKKfU8s5jCS3+Mui=HupZd=jpkLEyWAE94Ory5w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=WINDOWS-1252; format=flowed
-Content-Transfer-Encoding: 8BIT
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1423182722-16646-5-git-send-email-lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joreg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAErSpo6GOXHeKKfU8s5jCS3+Mui=HupZd=jpkLEyWAE94Ory5w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Laura,
+On 02/06/2015 12:53 PM, Bjorn Helgaas wrote:
+> On Fri, Feb 6, 2015 at 9:28 AM, Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>  wrote:
+>> On 02/06/2015 10:15 AM, Catalin Marinas wrote:
+>>>
+>>> On Thu, Feb 05, 2015 at 09:52:52PM +0000, Murali Karicheri wrote:
+>>>>
+>>>> This patch add an important capability to PCI driver on Keystone. I hope
+>>>> to
+>>>> have this merged to the upstream branch so that it is available for
+>>>> v3.20.
+>>>
+>>> It's very late for 3.20 and the code hasn't been in linux-next at all
+>>> (but it's not me who's merging this code), unless you can squeeze it in
+>>> as a bug-fix.
+>>
+>> This is in fact a bug fix as PCI on Keystone is broken without this.
+>
+> Oh, sorry, I didn't realize that this was so urgent.  I guess I read
+> "this adds an important capability" in the cover letter and concluded
+> that it was new functionality.
+Bjorn,
 
-As a heads up, I'm still vainly hoping to move the ARM SMMU driver 
-entirely over to the generic framework - there's an iommu/dev branch on 
-top of the iommu/dma branch I pushed earlier[1] which you might want to 
-take a peek at to check if we're likely to end up pulling in different 
-directions.
+Thanks for responding.
 
-[1]:http://article.gmane.org/gmane.linux.kernel.iommu/8773
+Let me give you some context on this without which my explanation won't 
+be complete. For using PCI driver on Keystone, I had submitted patches 
+related to machine and DTS to the arm mailing list to enable the driver 
+on Keystone. Subsequenty one of the patch from my series  was Nack-ed 
+and I was asked to implememented in a different way and started this 
+series. You can refer to the discussion of this at
 
-On 06/02/15 00:32, Laura Abbott wrote:
->
-> With the addition of clocks in the SMMU driver, the driver
-> now may need to be deferred if the clocks are not ready. Apart from
-> just the probe function though, we may need to defer attachment as
-> well. Support both of these.
->
-> Signed-off-by: Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> ---
-> I went with the simplest approach ('started_probe') to indicate
-> we should defer probing. Another possibility I considered was to have
-> a 'masters added before probe completed' list and keep all masters
-> there until probe completes at which point we can bind the masters
-> to the SMMUs.
+http://www.gossamer-threads.com/lists/linux/kernel/2024591
 
-I think this looks OK for the single-distributed-SMMU case MMU-500 
-allows; the Juno case with multiple MMU-401 instances is more awkward, 
-but I have a feeling there's a really neat way to slot this approach to 
-deferral into my per-instance stuff. I'll give this series a spin and 
-see what falls out.
+The PCI driver enablement on Keystone is still a working in progress and 
+I am trying to get it fully functional on the upstream. Another missing 
+piece is the SerDes phy driver patch. We have started working on the 
+other part (SerDes phy driver) already as the initial one was not 
+accepted. So it is fine if we are too late for the v3.20 merge window to 
+merge this series and this can be applied to the next branch for v3.21.
 
-Thanks,
-Robin.
-
-> ---
->   drivers/iommu/arm-smmu.c | 37 +++++++++++++++++++++++++++++++++++--
->   1 file changed, 35 insertions(+), 2 deletions(-)
 >
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index d9f7cf48..7e8194c 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -43,6 +43,8 @@
->   #include <linux/platform_device.h>
->   #include <linux/slab.h>
->   #include <linux/spinlock.h>
-> +#include <linux/of_iommu.h>
-> +#include <linux/of_platform.h>
->
->   #include <linux/amba/bus.h>
->
-> @@ -330,6 +332,7 @@ static int force_stage;
->   module_param_named(force_stage, force_stage, int, S_IRUGO | S_IWUSR);
->   MODULE_PARM_DESC(force_stage,
->   	"Force SMMU mappings to be installed at a particular stage of translation. A value of '1' or '2' forces the corresponding stage. All other values are ignored (i.e. no stage is forced). Note that selecting a specific stage will disable support for nested translation.");
-> +static bool started_probe;
->
->   enum arm_smmu_arch_version {
->   	ARM_SMMU_V1 = 1,
-> @@ -1284,7 +1287,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->   	smmu = find_smmu_for_device(dev);
->   	if (!smmu) {
->   		dev_err(dev, "cannot attach to SMMU, is it on the same bus?\n");
-> -		return -ENXIO;
-> +		return started_probe ? -EPROBE_DEFER : -ENXIO;
->   	}
->
->   	if (dev->archdata.iommu) {
-> @@ -1677,7 +1680,7 @@ static int arm_smmu_add_device(struct device *dev)
->
->   	smmu = find_smmu_for_device(dev);
->   	if (!smmu)
-> -		return -ENODEV;
-> +		return started_probe ? -EPROBE_DEFER : -ENODEV;
->
->   	group = iommu_group_alloc();
->   	if (IS_ERR(group)) {
-> @@ -1761,6 +1764,11 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
->   	}
->   }
->
-> +static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *spec)
-> +{
-> +	return arm_smmu_add_device(dev);
-> +}
-> +
->   static int arm_smmu_enable_resources(struct iommu_domain *domain)
->   {
->   	struct arm_smmu_domain *smmu_domain = domain->priv;
-> @@ -1814,6 +1822,7 @@ static const struct iommu_ops arm_smmu_ops = {
->   	.pgsize_bitmap		= (SECTION_SIZE |
->   				   ARM_SMMU_PTE_CONT_SIZE |
->   				   PAGE_SIZE),
-> +	.of_xlate		= arm_smmu_of_xlate,
->   	.enable_resources	= arm_smmu_enable_resources,
->   	.disable_resources	= arm_smmu_disable_resources,
->   };
-> @@ -2108,6 +2117,8 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
->   	struct of_phandle_args masterspec;
->   	int num_irqs, i, err;
->
-> +	started_probe = true;
-> +
->   	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
->   	if (!smmu) {
->   		dev_err(dev, "failed to allocate arm_smmu_device\n");
-> @@ -2282,6 +2293,8 @@ static struct platform_driver arm_smmu_driver = {
->   	.remove	= arm_smmu_device_remove,
->   };
->
-> +static int init_done;
-> +
->   static int __init arm_smmu_init(void)
->   {
->   	struct device_node *np;
-> @@ -2316,6 +2329,7 @@ static int __init arm_smmu_init(void)
->   		bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
->   #endif
->
-> +	init_done = true;
->   	return 0;
->   }
->
-> @@ -2327,6 +2341,25 @@ static void __exit arm_smmu_exit(void)
->   subsys_initcall(arm_smmu_init);
->   module_exit(arm_smmu_exit);
->
-> +static int __init arm_smmu_of_setup(struct device_node *np)
-> +{
-> +	struct platform_device *pdev;
-> +
-> +	if (!init_done)
-> +		arm_smmu_init();
-> +
-> +	pdev = of_platform_device_create(np, NULL, platform_bus_type.dev_root);
-> +	if (IS_ERR(pdev))
-> +		return PTR_ERR(pdev);
-> +
-> +	of_iommu_set_ops(np, &arm_smmu_ops);
-> +	return 0;
-> +}
-> +
-> +IOMMU_OF_DECLARE(arm_smmu_of, "arm,mmu-500",
-> +		 arm_smmu_of_setup);
-> +
-> +
->   MODULE_DESCRIPTION("IOMMU API for ARM architected SMMU implementations");
->   MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
->   MODULE_LICENSE("GPL v2");
+> Anyway, if it's broken, presumably PCI on Keystone *did* work at one
+> point.  Can you identify the commit that broke it and requires these
+> fixes, so we can figure out how far the fixes need to be backported?
 >
 
+I am trying to get this driver enabled on Keystone by adding the missing 
+pieces as described above. So I guess we don't have to back port 
+anything here.
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> If I merge it, I would like to get into my for-linus branch and get a
+> little time in -next before asking Linus to pull it.  The merge window
+> is a little wrinkle there -- I don't like to add new things to the mix
+> during the window.  But if it's an important fix we can still get it
+> in before the final v3.20.
+
+Please apply this to next branch for v3.21. It currently apply cleanly 
+to v3.19-rc7. If you want me rebase to another branch, let me know I can 
+apply and send you an updated patch.
+
+Thanks
+
+Murali
+
+>
+> Bjorn
+
+
+-- 
+Murali Karicheri
+Linux Kernel, Texas Instruments
