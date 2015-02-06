@@ -1,11 +1,13 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH v2 0/3] arm64: IOMMU-backed DMA mapping
-Date: Fri,  6 Feb 2015 14:55:12 +0000
-Message-ID: <cover.1423226542.git.robin.murphy@arm.com>
+Subject: [RFC PATCH v2 3/3] arm64: hook up IOMMU dma_ops
+Date: Fri,  6 Feb 2015 14:55:15 +0000
+Message-ID: <482b3b109a3d4818b1b1e693f488a919cf1bb707.1423226542.git.robin.murphy@arm.com>
+References: <cover.1423226542.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <cover.1423226542.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,59 +21,86 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-ar
 Cc: arnd-r2nGTMty4D4@public.gmane.org, stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi all,
+With iommu_dma_ops in place, hook them up to the configuration code, so
+IOMMU-fronted devices will get them automatically.
 
-This is an updated RFC to address some of the initial comments[1].
-The first two patches of the original posting, along with the IOVA
-series, are now in -next so aren't included here.
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+ arch/arm64/Kconfig                   |  1 +
+ arch/arm64/include/asm/dma-mapping.h | 11 ++++++-----
+ arch/arm64/mm/dma-mapping.c          | 15 +++++++++++++++
+ 3 files changed, 22 insertions(+), 5 deletions(-)
 
-If this is starting to look tidy enough, then I'll get to work on
-porting arch/arm as well so I can repost as a formal patch set.
-
-Thanks,
-Robin.
-
-
-A branch with all the necessary bits is available at:
-
-   git://linux-arm.org/linux-rm iommu/dma
-
-Main changes since v1:
-* rebased to -rc7
-* moved common code to drivers/iommu, and tidied up the config
-  dependencies
-* renamed iommu_dma_mapping to better reflect that it's a managed domain
-* abstracted away the explicit use of archdata
-* finished the map_sg implementation
-* fixed up the mmap implementation with the arch/arm one for now
-* removed the iova_to_phys accessor in favour of (more flexibly)
-  exposing the iommu domain for where it's needed
-
-More complicated things still to do:
-* understand and sort out the compound pages issue
-* get domain and group allocation right - I'd like to try integrating
-  Joerg's proposals for that area[2][3], which should help.
-
-[1]:http://article.gmane.org/gmane.linux.kernel.iommu/8213
-[2]:http://thread.gmane.org/gmane.linux.ports.tegra/20907
-[3]:http://thread.gmane.org/gmane.linux.kernel.iommu/8492
-
-Robin Murphy (3):
-  iommu: implement common IOMMU ops for DMA mapping
-  arm64: add IOMMU dma_ops
-  arm64: hook up IOMMU dma_ops
-
- arch/arm64/Kconfig                   |   1 +
- arch/arm64/include/asm/device.h      |   3 +
- arch/arm64/include/asm/dma-mapping.h |  28 +-
- arch/arm64/mm/dma-mapping.c          | 335 +++++++++++++++++++++
- drivers/iommu/Kconfig                |   7 +
- drivers/iommu/Makefile               |   1 +
- drivers/iommu/dma-iommu.c            | 552 +++++++++++++++++++++++++++++++++++
- include/linux/dma-iommu.h            |  94 ++++++
- 8 files changed, 1016 insertions(+), 5 deletions(-)
- create mode 100644 drivers/iommu/dma-iommu.c
- create mode 100644 include/linux/dma-iommu.h
-
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index b1f9a20..e2abcdc 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -66,6 +66,7 @@ config ARM64
+ 	select HAVE_PERF_USER_STACK_DUMP
+ 	select HAVE_RCU_TABLE_FREE
+ 	select HAVE_SYSCALL_TRACEPOINTS
++	select IOMMU_DMA if IOMMU_SUPPORT
+ 	select IRQ_DOMAIN
+ 	select MODULES_USE_ELF_RELA
+ 	select NO_BOOTMEM
+diff --git a/arch/arm64/include/asm/dma-mapping.h b/arch/arm64/include/asm/dma-mapping.h
+index c1b271f..5246d1a 100644
+--- a/arch/arm64/include/asm/dma-mapping.h
++++ b/arch/arm64/include/asm/dma-mapping.h
+@@ -45,11 +45,8 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+ 		return __generic_dma_ops(dev);
+ }
+ 
+-static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+-				      struct iommu_ops *iommu, bool coherent)
+-{
+-	dev->archdata.dma_coherent = coherent;
+-}
++void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
++			struct iommu_ops *iommu, bool coherent);
+ #define arch_setup_dma_ops	arch_setup_dma_ops
+ 
+ /* do not use this function in a driver */
+@@ -63,6 +60,10 @@ static inline bool is_device_dma_coherent(struct device *dev)
+ #include <asm-generic/dma-mapping-common.h>
+ 
+ #ifdef CONFIG_IOMMU_DMA
++
++void arch_teardown_dma_ops(struct device *dev);
++#define arch_teardown_dma_ops	arch_teardown_dma_ops
++
+ static inline struct iommu_dma_domain *get_dma_domain(struct device *dev)
+ {
+ 	return dev->archdata.dma_domain;
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 28e771c..2a30673 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -752,6 +752,14 @@ static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+ 	iommu_dma_release_domain(dma_domain);
+ }
+ 
++void arch_teardown_dma_ops(struct device *dev)
++{
++	if (dev->archdata.dma_domain) {
++		iommu_dma_detach_device(dev);
++		dev->archdata.dma_ops = NULL;
++	}
++}
++
+ #else
+ 
+ static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+@@ -759,3 +767,10 @@ static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+ { }
+ 
+ #endif  /* CONFIG_IOMMU_DMA */
++
++void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
++			struct iommu_ops *iommu, bool coherent)
++{
++	dev->archdata.dma_coherent = coherent;
++	__iommu_setup_dma_ops(dev, dma_base, size, iommu);
++}
 -- 
 1.9.1
