@@ -1,96 +1,99 @@
-From: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH v6 0/7] PCI: get DMA configuration from parent device
-Date: Fri, 6 Feb 2015 13:36:57 -0500
-Message-ID: <54D509C9.9010204@ti.com>
-References: <1423173179-10227-1-git-send-email-m-karicheri2@ti.com>
-	<20150206151542.GD23190@e104818-lin.cambridge.arm.com>
-	<54D4DD95.7000303@ti.com>
-	<CAErSpo6GOXHeKKfU8s5jCS3+Mui=HupZd=jpkLEyWAE94Ory5w@mail.gmail.com>
+From: Murali Karicheri <m-karicheri2@ti.com>
+Subject: Re: [PATCH v6 3/7] of: fix size when dma-range is not used
+Date: Fri, 6 Feb 2015 15:26:55 -0500
+Message-ID: <54D5238F.4030608@ti.com>
+References: <1423173179-10227-1-git-send-email-m-karicheri2@ti.com> <1423173179-10227-4-git-send-email-m-karicheri2@ti.com> <20150206143812.GB20549@localhost> <54D4D59F.6050408@ti.com> <20150206151210.GC23190@e104818-lin.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAErSpo6GOXHeKKfU8s5jCS3+Mui=HupZd=jpkLEyWAE94Ory5w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20150206151210.GC23190@e104818-lin.cambridge.arm.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, Joerg Roedel <joro@8bytes.org>, Will Deacon <Will.Deacon@arm.com>, Rob Herring <robh+dt@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 02/06/2015 12:53 PM, Bjorn Helgaas wrote:
-> On Fri, Feb 6, 2015 at 9:28 AM, Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>  wrote:
->> On 02/06/2015 10:15 AM, Catalin Marinas wrote:
->>>
->>> On Thu, Feb 05, 2015 at 09:52:52PM +0000, Murali Karicheri wrote:
+On 02/06/2015 10:12 AM, Catalin Marinas wrote:
+> On Fri, Feb 06, 2015 at 02:54:23PM +0000, Murali Karicheri wrote:
+>> On 02/06/2015 09:38 AM, Catalin Marinas wrote:
+>>> On Thu, Feb 05, 2015 at 09:52:55PM +0000, Murali Karicheri wrote:
+>>>> Fix the dma-range size when the DT attribute is missing. i.e  set size to
+>>>> dev->coherent_dma_mask + 1 instead of dev->coherent_dma_mask. Also add
+>>>> code to check invalid values of size configured in DT and log error.
 >>>>
->>>> This patch add an important capability to PCI driver on Keystone. I hope
->>>> to
->>>> have this merged to the upstream branch so that it is available for
->>>> v3.20.
+>>>> Cc: Joerg Roedel<joro@8bytes.org>
+>>>> Cc: Grant Likely<grant.likely@linaro.org>
+>>>> Cc: Rob Herring<robh+dt@kernel.org>
+>>>> Cc: Bjorn Helgaas<bhelgaas@google.com>
+>>>> Cc: Will Deacon<will.deacon@arm.com>
+>>>> Cc: Russell King<linux@arm.linux.org.uk>
+>>>> Cc: Arnd Bergmann<arnd@arndb.de>
+>>>> Cc: Suravee Suthikulpanit<Suravee.Suthikulpanit@amd.com>
+>>>>
+>>>> Signed-off-by: Murali Karicheri<m-karicheri2@ti.com>
+>>>> ---
+>>>>    drivers/of/device.c |   17 ++++++++++++++++-
+>>>>    1 file changed, 16 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/of/device.c b/drivers/of/device.c
+>>>> index 2de320d..314c8a9 100644
+>>>> --- a/drivers/of/device.c
+>>>> +++ b/drivers/of/device.c
+>>>> @@ -105,9 +105,24 @@ void of_dma_configure(struct device *dev, struct device_node *np)
+>>>>    	ret = of_dma_get_range(np,&dma_addr,&paddr,&size);
+>>>>    	if (ret<   0) {
+>>>>    		dma_addr = offset = 0;
+>>>> -		size = dev->coherent_dma_mask;
+>>>> +		size = dev->coherent_dma_mask + 1;
+>>>>    	} else {
+>>>>    		offset = PFN_DOWN(paddr - dma_addr);
+>>>> +
+>>>> +		/*
+>>>> +		 * Add a work around to treat the size as mask + 1 in case
+>>>> +		 * it is defined in DT as a mask.
+>>>> +		 */
+>>>> +		if (size&   1) {
+>>>> +			dev_warn(dev, "Invalid size 0x%llx for dma-range\n",
+>>>> +				 size);
+>>>> +			size = size + 1;
+>>>> +		}
+>>>> +
+>>>> +		if (!size) {
+>>>> +			dev_err(dev, "Adjusted size 0x%llx invalid\n", size);
+>>>> +			return;
+>>>> +		}
 >>>
->>> It's very late for 3.20 and the code hasn't been in linux-next at all
->>> (but it's not me who's merging this code), unless you can squeeze it in
->>> as a bug-fix.
+>>> Would it make sense to set coherent_dma_mask to 0 here to make this more
+>>> noticeable? It can be done together with the mask calculation from size.
 >>
->> This is in fact a bug fix as PCI on Keystone is broken without this.
+>> I guess you are the following in the code.
+>>
+>> if (!size) {
+>> 		dev->coherent_dma_mask = 0;
+>> 		dev_err(dev, "Adjusted size 0x%llx invalid\n", size);
+>> 		return;
+>> }
+>>
+>> Not sure how this is going to help and how this get handled by the
+>> caller and subsequent logic. Probably it will cause probe to fail, with
+>> some helpful error code.
 >
-> Oh, sorry, I didn't realize that this was so urgent.  I guess I read
-> "this adds an important capability" in the cover letter and concluded
-> that it was new functionality.
-Bjorn,
-
-Thanks for responding.
-
-Let me give you some context on this without which my explanation won't 
-be complete. For using PCI driver on Keystone, I had submitted patches 
-related to machine and DTS to the arm mailing list to enable the driver 
-on Keystone. Subsequenty one of the patch from my series  was Nack-ed 
-and I was asked to implememented in a different way and started this 
-series. You can refer to the discussion of this at
-
-http://www.gossamer-threads.com/lists/linux/kernel/2024591
-
-The PCI driver enablement on Keystone is still a working in progress and 
-I am trying to get it fully functional on the upstream. Another missing 
-piece is the SerDes phy driver patch. We have started working on the 
-other part (SerDes phy driver) already as the initial one was not 
-accepted. So it is fine if we are too late for the v3.20 merge window to 
-merge this series and this can be applied to the next branch for v3.21.
-
+> Not sure how it will fail, maybe the driver figures out that DMA isn't
+> available and say something or switch to PIO. I guess you can leave it
+> as 32-bit mask by default for now even in case of size == 0.
 >
-> Anyway, if it's broken, presumably PCI on Keystone *did* work at one
-> point.  Can you identify the commit that broke it and requires these
-> fixes, so we can figure out how far the fixes need to be backported?
+> BTW, since pci_device_add() already sets coherent_dma_mask, you could
+> add another check at the beginning of of_dma_configure():
 >
-
-I am trying to get this driver enabled on Keystone by adding the missing 
-pieces as described above. So I guess we don't have to back port 
-anything here.
-
-> If I merge it, I would like to get into my for-linus branch and get a
-> little time in -next before asking Linus to pull it.  The merge window
-> is a little wrinkle there -- I don't like to add new things to the mix
-> during the window.  But if it's an important fix we can still get it
-> in before the final v3.20.
-
-Please apply this to next branch for v3.21. It currently apply cleanly 
-to v3.19-rc7. If you want me rebase to another branch, let me know I can 
-apply and send you an updated patch.
-
-Thanks
-
-Murali
-
+> 	if (!dev->coherent_dma_mask)
+> 		dev->coherent_dma_mask = DMA_BIT_MASK(32);
 >
-> Bjorn
+> That's more of a nitpick as the values are both the same.
+>
+Catalin,
 
+Just posted a patch for size based dma mask with title "of: calculate 
+masks of the device based on dma-range size". Please review and comment
 
 -- 
 Murali Karicheri
