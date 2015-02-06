@@ -1,195 +1,58 @@
-From: Quentin Lambert <lambert.quentin@gmail.com>
-Subject: [PATCH 1/1] iommu/vt-d: Convert non-returned local variable to
- boolean when relevant
-Date: Fri, 6 Feb 2015 10:59:53 +0100
-Message-ID: <20150206095953.GA5780@sloth>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v2 0/4] iommu: A couple of urgent fixes
+Date: Fri,  6 Feb 2015 11:44:04 +0100
+Message-ID: <1423219448-22683-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
-Cc: kernel-janitors@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch was produced using Coccinelle. A simplified version of the
-semantic patch is:
+From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-@r exists@
-identifier f;
-local idexpression u8 x;
-identifier xname;
-@@
+Hi Joerg,
 
-f(...) {
-...when any
-(
-  x@xname = 1;
-|
-  x@xname = 0;
-)
-...when any
-}
+Here are a couple of urgent fixes for a regression on old Tegra devices
+related to IOMMU support. The issue is that many drivers think it's a
+good idea to register IOMMU support unconditionally, which is not the
+smart thing to do at all on multi-platform kernels. This probably went
+unnoticed for a while because the offending drivers aren't enabled in
+any of the multi-platform default configurations. Fedora ARM has their
+own config where the offending drivers did get enabled, hence caused a
+regression on Tegra20. I would expect the same regression to exist on a
+number of other SoCs, possibly all that support IOMMU.
 
-@bad exists@
-identifier r.f;
-local idexpression u8 r.x
-expression e1 != {0, 1}, e2;
-@@
+I've tried to keep the patches minimal in the hopes of still getting
+this into v3.19-rc8 or the final release to avoid the regression.
 
-f(...) {
-...when any
-(
-  x = e1;
-|
-  x + e2
-)
-...when any
-}
+Changes in v2:
+- avoid potential leak by dropping references to device tree nodes
+- remove fixups from module exit functions since they are unused
 
-@depends on !bad@
-identifier r.f;
-local idexpression u8 r.x;
-identifier r.xname;
-@@
+Thierry
 
-f(...) {
-...
-++ bool xname;
-- int xname;
-<...
-(
-  x =
-- 1
-+ true
-|
-  x =
-- -1
-+ false
-)
-...>
+Thierry Reding (4):
+  iommu/exynos: Play nice in multi-platform builds
+  iommu/omap: Play nice in multi-platform builds
+  iommu/rockchip: Play nice in multi-platform builds
+  iommu/msm: Mark driver BROKEN
 
-}
+ drivers/iommu/Kconfig          | 1 +
+ drivers/iommu/exynos-iommu.c   | 7 +++++++
+ drivers/iommu/omap-iommu.c     | 7 +++++++
+ drivers/iommu/rockchip-iommu.c | 7 +++++++
+ 4 files changed, 22 insertions(+)
 
-Signed-off-by: Quentin Lambert <lambert.quentin@gmail.com>
----
- drivers/iommu/intel-iommu.c         | 13 +++++++------
- drivers/iommu/intel_irq_remapping.c | 12 ++++++------
- 2 files changed, 13 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index ae4c1a8..d25cc62 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -595,12 +595,13 @@ static void domain_update_iommu_coherency(struct dmar_domain *domain)
- {
- 	struct dmar_drhd_unit *drhd;
- 	struct intel_iommu *iommu;
--	int i, found = 0;
-+	bool found = false;
-+	int i;
- 
- 	domain->iommu_coherency = 1;
- 
- 	for_each_set_bit(i, domain->iommu_bmp, g_num_of_iommus) {
--		found = 1;
-+		found = true;
- 		if (!ecap_coherent(g_iommus[i]->ecap)) {
- 			domain->iommu_coherency = 0;
- 			break;
-@@ -1267,7 +1268,7 @@ static struct device_domain_info *
- iommu_support_dev_iotlb (struct dmar_domain *domain, struct intel_iommu *iommu,
- 			 u8 bus, u8 devfn)
- {
--	int found = 0;
-+	bool found = false;
- 	unsigned long flags;
- 	struct device_domain_info *info;
- 	struct pci_dev *pdev;
-@@ -1282,7 +1283,7 @@ iommu_support_dev_iotlb (struct dmar_domain *domain, struct intel_iommu *iommu,
- 	list_for_each_entry(info, &domain->devices, link)
- 		if (info->iommu == iommu && info->bus == bus &&
- 		    info->devfn == devfn) {
--			found = 1;
-+			found = true;
- 			break;
- 		}
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
-@@ -4270,7 +4271,7 @@ static void domain_remove_one_dev_info(struct dmar_domain *domain,
- 	struct device_domain_info *info, *tmp;
- 	struct intel_iommu *iommu;
- 	unsigned long flags;
--	int found = 0;
-+	bool found = false;
- 	u8 bus, devfn;
- 
- 	iommu = device_to_iommu(dev, &bus, &devfn);
-@@ -4302,7 +4303,7 @@ static void domain_remove_one_dev_info(struct dmar_domain *domain,
- 		 * update iommu count and coherency
- 		 */
- 		if (info->iommu == iommu)
--			found = 1;
-+			found = true;
- 	}
- 
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 14de1ab..6c25b3c 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -631,7 +631,7 @@ static int __init intel_enable_irq_remapping(void)
- {
- 	struct dmar_drhd_unit *drhd;
- 	struct intel_iommu *iommu;
--	int setup = 0;
-+	bool setup = false;
- 	int eim = 0;
- 
- 	if (x2apic_supported()) {
-@@ -697,7 +697,7 @@ static int __init intel_enable_irq_remapping(void)
- 	 */
- 	for_each_iommu(iommu, drhd) {
- 		iommu_set_irq_remapping(iommu, eim);
--		setup = 1;
-+		setup = true;
- 	}
- 
- 	if (!setup)
-@@ -856,7 +856,7 @@ static int __init parse_ioapics_under_ir(void)
- {
- 	struct dmar_drhd_unit *drhd;
- 	struct intel_iommu *iommu;
--	int ir_supported = 0;
-+	bool ir_supported = false;
- 	int ioapic_idx;
- 
- 	for_each_iommu(iommu, drhd)
-@@ -864,7 +864,7 @@ static int __init parse_ioapics_under_ir(void)
- 			if (ir_parse_ioapic_hpet_scope(drhd->hdr, iommu))
- 				return -1;
- 
--			ir_supported = 1;
-+			ir_supported = true;
- 		}
- 
- 	if (!ir_supported)
-@@ -917,7 +917,7 @@ static void disable_irq_remapping(void)
- static int reenable_irq_remapping(int eim)
- {
- 	struct dmar_drhd_unit *drhd;
--	int setup = 0;
-+	bool setup = false;
- 	struct intel_iommu *iommu = NULL;
- 
- 	for_each_iommu(iommu, drhd)
-@@ -933,7 +933,7 @@ static int reenable_irq_remapping(int eim)
- 
- 		/* Set up interrupt remapping for iommu.*/
- 		iommu_set_irq_remapping(iommu, eim);
--		setup = 1;
-+		setup = true;
- 	}
- 
- 	if (!setup)
 -- 
-1.9.1
+2.1.3
