@@ -1,7 +1,7 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 3/4] iommu/rockchip: Play nice in multi-platform builds
-Date: Fri,  6 Feb 2015 11:44:07 +0100
-Message-ID: <1423219448-22683-4-git-send-email-thierry.reding@gmail.com>
+Subject: [PATCH v2 4/4] iommu/msm: Mark driver BROKEN
+Date: Fri,  6 Feb 2015 11:44:08 +0100
+Message-ID: <1423219448-22683-5-git-send-email-thierry.reding@gmail.com>
 References: <1423219448-22683-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,58 +18,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bryan Huntsman <bryanh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Walker <dwalker-zu3NM2574RrQT0dZR+AlfA@public.gmane.org>, David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-The Rockchip IOMMU driver unconditionally executes code and registers a
-struct iommu_ops with the platform bus irrespective of whether it runs
-on a Rockchip SoC or not. This causes problems in multi-platform kernels
-where drivers for other SoCs will no longer be able to register their
-own struct iommu_ops or even try to use a struct iommu_ops for an IOMMU
-that obviously isn't there.
-
-The smallest fix I could think of is to check for the existence of any
-Rockchip IOMMU devices in the device tree and skip initialization
-otherwise.
+The MSM IOMMU driver unconditionally calls bus_set_iommu(), which is a
+very stupid thing to do on multi-platform kernels. While marking the
+driver BROKEN may seem a little extreme, there is no other way to make
+the driver skip initialization. One of the problems is that it doesn't
+have devicetree binding documentation and the driver doesn't contain a
+struct of_device_id table either, so no way to check that it is indeed
+valid to set up the IOMMU operations for this driver.
 
 This fixes a problem on Tegra20 where the DRM driver will try to use the
-obviously non-existent Rockchip IOMMU.
+obviously non-existent MSM IOMMU.
+
+Marking the driver BROKEN shouldn't do any harm, since there aren't any
+users currently. There is no struct of_device_id table, so the device
+can't be instantiated from device tree, and I couldn't find any code
+that would instantiate a matching platform_device either, so the driver
+is effectively unused.
 
 Reported-by: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Cc: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Reviewed-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Tested-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Cc: David Brown <davidb-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Daniel Walker <dwalker-zu3NM2574RrQT0dZR+AlfA@public.gmane.org>
+Cc: Bryan Huntsman <bryanh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Acked-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
-Changes in v2:
-- do not fix up module exit function since it's dead code
-- drop reference to struct device_node
+ drivers/iommu/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
- drivers/iommu/rockchip-iommu.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 6a8b1ec4a48a..9f74fddcd304 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -1015,8 +1015,15 @@ static struct platform_driver rk_iommu_driver = {
- 
- static int __init rk_iommu_init(void)
- {
-+	struct device_node *np;
- 	int ret;
- 
-+	np = of_find_matching_node(NULL, rk_iommu_dt_ids);
-+	if (!np)
-+		return 0;
-+
-+	of_node_put(np);
-+
- 	ret = bus_set_iommu(&platform_bus_type, &rk_iommu_ops);
- 	if (ret)
- 		return ret;
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index b280f0e21c8c..619bfd7bab1a 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -63,6 +63,7 @@ config MSM_IOMMU
+ 	bool "MSM IOMMU Support"
+ 	depends on ARM
+ 	depends on ARCH_MSM8X60 || ARCH_MSM8960 || COMPILE_TEST
++	depends on BROKEN
+ 	select IOMMU_API
+ 	help
+ 	  Support for the IOMMUs found on certain Qualcomm SOCs.
 -- 
 2.1.3
