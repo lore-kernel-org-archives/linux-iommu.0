@@ -1,100 +1,40 @@
-From: Murali Karicheri <m-karicheri2@ti.com>
-Subject: Re: [PATCH v6 3/7] of: fix size when dma-range is not used
-Date: Fri, 6 Feb 2015 15:26:55 -0500
-Message-ID: <54D5238F.4030608@ti.com>
-References: <1423173179-10227-1-git-send-email-m-karicheri2@ti.com> <1423173179-10227-4-git-send-email-m-karicheri2@ti.com> <20150206143812.GB20549@localhost> <54D4D59F.6050408@ti.com> <20150206151210.GC23190@e104818-lin.cambridge.arm.com>
+From: "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH/RFC 0/4] Probe deferral for IOMMU DT integration
+Date: Sat, 7 Feb 2015 23:41:24 +0100 (CET)
+Message-ID: <2115835102.210232.1423348884955.JavaMail.open-xchange@oxbaltgw04.schlund.de>
+References: <1423182722-16646-1-git-send-email-lauraa@codeaurora.org>
+Reply-To: "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20150206151210.GC23190@e104818-lin.cambridge.arm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, Joerg Roedel <joro@8bytes.org>, Will Deacon <Will.Deacon@arm.com>, Rob Herring <robh+dt@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1423182722-16646-1-git-send-email-lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joreg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 02/06/2015 10:12 AM, Catalin Marinas wrote:
-> On Fri, Feb 06, 2015 at 02:54:23PM +0000, Murali Karicheri wrote:
->> On 02/06/2015 09:38 AM, Catalin Marinas wrote:
->>> On Thu, Feb 05, 2015 at 09:52:55PM +0000, Murali Karicheri wrote:
->>>> Fix the dma-range size when the DT attribute is missing. i.e  set size to
->>>> dev->coherent_dma_mask + 1 instead of dev->coherent_dma_mask. Also add
->>>> code to check invalid values of size configured in DT and log error.
->>>>
->>>> Cc: Joerg Roedel<joro@8bytes.org>
->>>> Cc: Grant Likely<grant.likely@linaro.org>
->>>> Cc: Rob Herring<robh+dt@kernel.org>
->>>> Cc: Bjorn Helgaas<bhelgaas@google.com>
->>>> Cc: Will Deacon<will.deacon@arm.com>
->>>> Cc: Russell King<linux@arm.linux.org.uk>
->>>> Cc: Arnd Bergmann<arnd@arndb.de>
->>>> Cc: Suravee Suthikulpanit<Suravee.Suthikulpanit@amd.com>
->>>>
->>>> Signed-off-by: Murali Karicheri<m-karicheri2@ti.com>
->>>> ---
->>>>    drivers/of/device.c |   17 ++++++++++++++++-
->>>>    1 file changed, 16 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/of/device.c b/drivers/of/device.c
->>>> index 2de320d..314c8a9 100644
->>>> --- a/drivers/of/device.c
->>>> +++ b/drivers/of/device.c
->>>> @@ -105,9 +105,24 @@ void of_dma_configure(struct device *dev, struct device_node *np)
->>>>    	ret = of_dma_get_range(np,&dma_addr,&paddr,&size);
->>>>    	if (ret<   0) {
->>>>    		dma_addr = offset = 0;
->>>> -		size = dev->coherent_dma_mask;
->>>> +		size = dev->coherent_dma_mask + 1;
->>>>    	} else {
->>>>    		offset = PFN_DOWN(paddr - dma_addr);
->>>> +
->>>> +		/*
->>>> +		 * Add a work around to treat the size as mask + 1 in case
->>>> +		 * it is defined in DT as a mask.
->>>> +		 */
->>>> +		if (size&   1) {
->>>> +			dev_warn(dev, "Invalid size 0x%llx for dma-range\n",
->>>> +				 size);
->>>> +			size = size + 1;
->>>> +		}
->>>> +
->>>> +		if (!size) {
->>>> +			dev_err(dev, "Adjusted size 0x%llx invalid\n", size);
->>>> +			return;
->>>> +		}
->>>
->>> Would it make sense to set coherent_dma_mask to 0 here to make this more
->>> noticeable? It can be done together with the mask calculation from size.
->>
->> I guess you are the following in the code.
->>
->> if (!size) {
->> 		dev->coherent_dma_mask = 0;
->> 		dev_err(dev, "Adjusted size 0x%llx invalid\n", size);
->> 		return;
->> }
->>
->> Not sure how this is going to help and how this get handled by the
->> caller and subsequent logic. Probably it will cause probe to fail, with
->> some helpful error code.
+Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> hat am 6. Februar 2015 um 01:31
+geschrieben:
 >
-> Not sure how it will fail, maybe the driver figures out that DMA isn't
-> available and say something or switch to PIO. I guess you can leave it
-> as 32-bit mask by default for now even in case of size == 0.
->
-> BTW, since pci_device_add() already sets coherent_dma_mask, you could
-> add another check at the beginning of of_dma_configure():
->
-> 	if (!dev->coherent_dma_mask)
-> 		dev->coherent_dma_mask = DMA_BIT_MASK(32);
->
-> That's more of a nitpick as the values are both the same.
->
-Catalin,
-
-Just posted a patch for size based dma mask with title "of: calculate 
-masks of the device based on dma-range size". Please review and comment
-
--- 
-Murali Karicheri
-Linux Kernel, Texas Instruments
+> The requirement for this is based on a previous patch to add clock
+> support to the ARM SMMU driver[2]. Once we have clock support, it's
+> possible that the driver itself may need to be defered which breaks
+> a bunch of assumptions about how SMMU probing is supposed to work.
+ 
+Hi Laura,
+ 
+I was hoping that we would not need this, and instead treat the iommu in
+the same way as timers and SMP initialization, both
+of which need to be run early at boot time but may rely on clock controllers
+to be initialized first.
+ 
+Is there a specific requirement that makes this impossible here, or is your
+intention to solve the problem more nicely by allowing deferred probing
+over forcing the input clocks of the iommu to be early?
+ 
+      Arnd
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
