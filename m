@@ -1,14 +1,12 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH v2 2/4] iommu/omap: Play nice in multi-platform builds
-Date: Mon, 09 Feb 2015 11:31:13 +0200
-Message-ID: <4074084.ChUOO287C1@avalon>
-References: <1423219448-22683-1-git-send-email-thierry.reding@gmail.com>
-	<1423219448-22683-3-git-send-email-thierry.reding@gmail.com>
+From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: [PATCH] CHROMIUM: iommu: rockchip: Make sure that page table state is
+	coherent
+Date: Mon,  9 Feb 2015 20:19:21 +0900
+Message-ID: <1423480761-33453-1-git-send-email-tfiga@chromium.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1423219448-22683-3-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,66 +16,80 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Thierry,
+Even though the code uses the dt_lock spin lock to serialize mapping
+operation from different threads, it does not protect from IOMMU
+accesses that might be already taking place and thus altering state
+of the IOTLB. This means that current mapping code which first zaps
+the page table and only then updates it with new mapping which is
+prone to mentioned race.
 
-Thank you for the patch.
+In addition, current code assumes that mappings are always > 4 MiB
+(which translates to 1024 PTEs) and so they would always occupy
+entire page tables. This is not true for mappings created by V4L2
+Videobuf2 DMA contig allocator.
 
-On Friday 06 February 2015 11:44:06 Thierry Reding wrote:
-> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> 
-> The OMAP IOMMU driver unconditionally executes code and registers a
-> struct iommu_ops with the platform bus irrespective of whether it runs
-> on an OMAP SoC or not. This causes problems in multi-platform kernels
-> where drivers for other SoCs will no longer be able to register their
-> own struct iommu_ops or even try to use a struct iommu_ops for an IOMMU
-> that obviously isn't there.
-> 
-> The smallest fix I could think of is to check for the existence of any
-> OMAP IOMMU devices in the device tree and skip initialization otherwise.
-> 
-> This fixes a problem on Tegra20 where the DRM driver will try to use the
-> obviously non-existent OMAP IOMMU.
-> 
-> Reported-by: Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> Cc: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
-> Cc: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
-> Cc: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+This patch changes the mapping code to always zap the page table
+after it is updated, which avoids the aforementioned race and also
+zap the last page of the mapping to make sure that stale data is
+not cached from an already existing mapping.
 
-Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Reviewed-by: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+---
+ drivers/iommu/rockchip-iommu.c | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
 
-> ---
-> Changes in v2:
-> - do not fix up module exit function since it's dead code
-> - drop reference to struct device_node
-> 
->  drivers/iommu/omap-iommu.c | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index f59f857b702e..a4ba851825c2 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -1376,6 +1376,13 @@ static int __init omap_iommu_init(void)
->  	struct kmem_cache *p;
->  	const unsigned long flags = SLAB_HWCACHE_ALIGN;
->  	size_t align = 1 << 10; /* L2 pagetable alignement */
-> +	struct device_node *np;
-> +
-> +	np = of_find_matching_node(NULL, omap_iommu_of_match);
-> +	if (!np)
-> +		return 0;
-> +
-> +	of_node_put(np);
-> 
->  	p = kmem_cache_create("iopte_cache", IOPTE_TABLE_SIZE, align, flags,
->  			      iopte_cachep_ctor);
-
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 6a8b1ec..b06fe76 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -544,6 +544,15 @@ static void rk_iommu_zap_iova(struct rk_iommu_domain *rk_domain,
+ 	spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
+ }
+ 
++static void rk_iommu_zap_iova_first_last(struct rk_iommu_domain *rk_domain,
++					 dma_addr_t iova, size_t size)
++{
++	rk_iommu_zap_iova(rk_domain, iova, SPAGE_SIZE);
++	if (size > SPAGE_SIZE)
++		rk_iommu_zap_iova(rk_domain, iova + size - SPAGE_SIZE,
++					SPAGE_SIZE);
++}
++
+ static u32 *rk_dte_get_page_table(struct rk_iommu_domain *rk_domain,
+ 				  dma_addr_t iova)
+ {
+@@ -568,12 +577,6 @@ static u32 *rk_dte_get_page_table(struct rk_iommu_domain *rk_domain,
+ 	rk_table_flush(page_table, NUM_PT_ENTRIES);
+ 	rk_table_flush(dte_addr, 1);
+ 
+-	/*
+-	 * Zap the first iova of newly allocated page table so iommu evicts
+-	 * old cached value of new dte from the iotlb.
+-	 */
+-	rk_iommu_zap_iova(rk_domain, iova, SPAGE_SIZE);
+-
+ done:
+ 	pt_phys = rk_dte_pt_address(dte);
+ 	return (u32 *)phys_to_virt(pt_phys);
+@@ -623,6 +626,14 @@ static int rk_iommu_map_iova(struct rk_iommu_domain *rk_domain, u32 *pte_addr,
+ 
+ 	rk_table_flush(pte_addr, pte_count);
+ 
++	/*
++	 * Zap the first and last iova to evict from iotlb any previously
++	 * mapped cachelines holding stale values for its dte and pte.
++	 * We only zap the first and last iova, since only they could have
++	 * dte or pte shared with an existing mapping.
++	 */
++	rk_iommu_zap_iova_first_last(rk_domain, iova, size);
++
+ 	return 0;
+ unwind:
+ 	/* Unmap the range of iovas that we just mapped */
 -- 
-Regards,
-
-Laurent Pinchart
+2.2.0.rc0.207.ga3a616c
