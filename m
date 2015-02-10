@@ -1,16 +1,14 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init* annotations
-Date: Tue, 10 Feb 2015 02:26:27 +0000
-Message-ID: <BY1PR0301MB122186F802612D1B8048722AEA240@BY1PR0301MB1221.namprd03.prod.outlook.com>
-References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
-	<1422455698-3074-2-git-send-email-Emilian.Medve@Freescale.com>
-	<54D92ABC.3030802@Freescale.com>
+From: Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [RFC PATCH v2 2/3] arm64: add IOMMU dma_ops
+Date: Tue, 10 Feb 2015 12:39:11 +0800
+Message-ID: <1423543151.18280.2.camel@mtksdaap41>
+References: <cover.1423226542.git.robin.murphy@arm.com>
+	<058e038009ac708a40197c80e07410914c2a162e.1423226542.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <54D92ABC.3030802-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <058e038009ac708a40197c80e07410914c2a162e.1423226542.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,34 +18,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Emilian Medve <Emilian.Medve-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: arnd-r2nGTMty4D4@public.gmane.org, stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Emil,
+On Fri, 2015-02-06 at 14:55 +0000, Robin Murphy wrote
+<...>
+> diff --git a/arch/arm64/include/asm/dma-mapping.h b/arch/arm64/include/asm/dma-mapping.h
+> index 6932bb5..c1b271f 100644
+> --- a/arch/arm64/include/asm/dma-mapping.h
+> +++ b/arch/arm64/include/asm/dma-mapping.h
+> @@ -62,13 +62,30 @@ static inline bool is_device_dma_coherent(struct device *dev)
+>  
+>  #include <asm-generic/dma-mapping-common.h>
+>  
+> +#ifdef CONFIG_IOMMU_DMA
+> +static inline struct iommu_dma_domain *get_dma_domain(struct device *dev)
+> +{
+> +	return dev->archdata.dma_domain;
+> +}
+> +
+> +static inline void set_dma_domain(struct device *dev,
+> +				  struct iommu_dma_domain *dma_domain)
+> +{
+> +	dev->archdata.dma_domain = dma_domain;
+> +}
+> +#endif
+> +
+>  static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
+>  {
+> +	if (WARN_ON(dev && get_dma_domain(dev)))
+> +		return DMA_ERROR_CODE;
+>  	return (dma_addr_t)paddr;
+>  }
 
 
-> -----Original Message-----
-> From: Emil Medve [mailto:Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org]
-> Sent: Tuesday, February 10, 2015 3:17 AM
-> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org;
-> Sethi Varun-B16395
-> Subject: Re: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init* annotations
-> 
-> Hello Joerg,
-> 
-> 
-> On 01/28/2015 08:34 AM, Emil Medve wrote:
-> > Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-> > ---
-> >  drivers/iommu/fsl_pamu.c        | 12 ++++++------
-> >  drivers/iommu/fsl_pamu_domain.c |  2 +-
-> >  2 files changed, 7 insertions(+), 7 deletions(-)
-> 
-> Please don't apply this patch as it's wrong. It's based on
-> https://git.kernel.org/cgit/linux/kernel/git/joro/iommu.git/commit/?h=ppc/
-> pamu&id=0f1fb99b62ce226f8d818852f812c5d79071ce58
-> which is wrong as well and its causing semi-random crashes upon more
-> extensive testing. I will follow-up with details shortly
-Are you seeing  a crash with https://git.kernel.org/cgit/linux/kernel/git/joro/iommu.git/commit/?h=ppc/pamu&id=0f1fb99b62ce226f8d818852f812c5d79071ce58 ? At, what point do you see crashes?
+Hi Robin, 
 
--Varun
+Build fail if CONFIG_IOMMU_DMA is not enabled.
+
+In file included from ../include/linux/dma-mapping.h:82:0,
+                 from ../arch/arm64/kernel/asm-offsets.c:23:
+../arch/arm64/include/asm/dma-mapping.h: In function 'phys_to_dma':
+../arch/arm64/include/asm/dma-mapping.h:81:2: error: implicit declaration of function 'get_dma_domain' [-Werror=implicit-function-declaration]
+  if (WARN_ON(dev && get_dma_domain(dev)))
+  ^
+
+Joe.C
