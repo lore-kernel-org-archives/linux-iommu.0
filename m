@@ -1,16 +1,17 @@
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init* annotations
-Date: Wed, 11 Feb 2015 12:35:36 +0100
-Message-ID: <20150211113536.GB6104@suse.de>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init* annotations
+Date: Wed, 11 Feb 2015 13:47:29 +0000
+Message-ID: <BN3PR0301MB1219251DC0CA7A389991DE1DEA250@BN3PR0301MB1219.namprd03.prod.outlook.com>
 References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
 	<1422455698-3074-2-git-send-email-Emilian.Medve@Freescale.com>
 	<54D92ABC.3030802@Freescale.com>
+	<BY1PR0301MB122186F802612D1B8048722AEA240@BY1PR0301MB1221.namprd03.prod.outlook.com>
+	<54DB37DA.2040500@Freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <54D92ABC.3030802-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,18 +21,89 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-Cc: Varun.Sethi-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Emilian Medve <Emilian.Medve-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 09, 2015 at 03:46:36PM -0600, Emil Medve wrote:
-> Please don't apply this patch as it's wrong. It's based on
-> https://git.kernel.org/cgit/linux/kernel/git/joro/iommu.git/commit/?h=ppc/pamu&id=0f1fb99b62ce226f8d818852f812c5d79071ce58
-> which is wrong as well and its causing semi-random crashes upon more
-> extensive testing. I will follow-up with details shortly
+Hi Emil,
 
-Please send a follow-on patch with a fix, I can't easily revert that
-single patch.
+> -----Original Message-----
+> From: Sethi Varun-B16395
+> Sent: Wednesday, February 11, 2015 5:00 PM
+> To: 'Emil Medve'; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org;
+> jroedel-l3A5Bk7waGM@public.gmane.org
+> Subject: RE: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init* annotations
+> 
+> Hi Emil,
+> 
+> > -----Original Message-----
+> > From: Emil Medve [mailto:Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org]
+> > Sent: Wednesday, February 11, 2015 4:37 PM
+> > To: Sethi Varun-B16395; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> > joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org
+> > Subject: Re: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init*
+> > annotations
+> >
+> > Hello Varun,
+> >
+> >
+> > On 02/09/2015 08:26 PM, Sethi Varun-B16395 wrote:
+> > > Hi Emil,
+> > >
+> > >
+> > >> -----Original Message-----
+> > >> From: Emil Medve [mailto:Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org]
+> > >> Sent: Tuesday, February 10, 2015 3:17 AM
+> > >> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org;
+> > >> jroedel-l3A5Bk7waGM@public.gmane.org; Sethi Varun-B16395
+> > >> Subject: Re: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init*
+> > >> annotations
+> > >>
+> > >> Hello Joerg,
+> > >>
+> > >>
+> > >> On 01/28/2015 08:34 AM, Emil Medve wrote:
+> > >>> Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+> > >>> ---
+> > >>>  drivers/iommu/fsl_pamu.c        | 12 ++++++------
+> > >>>  drivers/iommu/fsl_pamu_domain.c |  2 +-
+> > >>>  2 files changed, 7 insertions(+), 7 deletions(-)
+> > >>
+> > >> Please don't apply this patch as it's wrong. It's based on
+> > >> https://git.kernel.org/cgit/linux/kernel/git/joro/iommu.git/commit/
+> > >> ?h
+> > >> =ppc/
+> > >> pamu&id=0f1fb99b62ce226f8d818852f812c5d79071ce58
+> > >> which is wrong as well and its causing semi-random crashes upon
+> > >> more extensive testing. I will follow-up with details shortly
+> > >
+> > > Are you seeing  a crash with
+> > > https://git.kernel.org/cgit/linux/kernel/git/joro/iommu.git/commit/?
+> > > h=
+> > > ppc/pamu&id=0f1fb99b62ce226f8d818852f812c5d79071ce58
+> > > ? At, what point do you see crashes?
+> >
+> > platform_driver.device_driver gets added to a (platform) bus klist of
+> drivers.
+> > (There are also a handful of other pointers that get set to
+> > fsl_of_pamu_driver) Once fsl_of_pamu_driver gets released that klist
+> > becomes "corrupted" and, depending on how said memory gets re-used,
+> > traversing it for any reason will end up into a crash
+> >
+> > Anyway, I identified easier ways to produce kernel crashes related to
+> > the PAMU driver via sysfs (with or without my __init* annotation
+> > patches). For example a "unbind, bind" sequence will cause a crash
+> > with the driver as is in
+> > v3.19
+> >
+> > BTW, why is the PAMU an "early" driver?
+> >
+> > I'll send out some patches to properly fix all these __init*
+> > annotations
+> Yes, the fsl_of_pamu_driver structure shouldn't be marked init data, it could
+> actually corrupt the driver list. PAMU driver should initialize before the DPAA
+> driver initialization also, to ensure the default DMA window is setup for all
+> devices.
+> 
+I think that we can revert this patch, the section mismatch isn't really an issue. The pamu driver probe routine wouldn't get called during platform bus probe. 
 
-
-	Joerg
+-Varun
