@@ -1,14 +1,16 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH/RFC 0/4] Probe deferral for IOMMU DT integration
-Date: Wed, 11 Feb 2015 10:37:46 +0100
-Message-ID: <54DB22EA.3050507@samsung.com>
-References: <1423182722-16646-1-git-send-email-lauraa@codeaurora.org>
-	<2115835102.210232.1423348884955.JavaMail.open-xchange@oxbaltgw04.schlund.de>
+From: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+Subject: Re: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init* annotations
+Date: Wed, 11 Feb 2015 05:07:06 -0600
+Message-ID: <54DB37DA.2040500@Freescale.com>
+References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
+	<1422455698-3074-2-git-send-email-Emilian.Medve@Freescale.com>
+	<54D92ABC.3030802@Freescale.com>
+	<BY1PR0301MB122186F802612D1B8048722AEA240@BY1PR0301MB1221.namprd03.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <2115835102.210232.1423348884955.JavaMail.open-xchange-h4m1HHXQYNGZU4JK52HgGMgmgJlYmuWJ@public.gmane.org>
+In-Reply-To: <BY1PR0301MB122186F802612D1B8048722AEA240-M1kb196zaoruTkAIFHd/+ZwN6zqB+hSMnBOFsp37pqbUKgpGm//BTAC/G2K4zDHf@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,41 +20,57 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Sethi Varun-B16395 <Varun.Sethi-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+Hello Varun,
 
-On 2015-02-07 23:41, arnd-r2nGTMty4D4@public.gmane.org wrote:
-> Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> hat am 6. Februar 2015 um 01:31
-> geschrieben:
->> The requirement for this is based on a previous patch to add clock
->> support to the ARM SMMU driver[2]. Once we have clock support, it's
->> possible that the driver itself may need to be defered which breaks
->> a bunch of assumptions about how SMMU probing is supposed to work.
->   
-> Hi Laura,
->   
-> I was hoping that we would not need this, and instead treat the iommu in
-> the same way as timers and SMP initialization, both
-> of which need to be run early at boot time but may rely on clock controllers
-> to be initialized first.
->   
-> Is there a specific requirement that makes this impossible here, or is your
-> intention to solve the problem more nicely by allowing deferred probing
-> over forcing the input clocks of the iommu to be early?
 
-I case of Exynos SoCs there is also a dependency on power domains (some 
-might
-be disabled by the bootloader). It is convenient to use the whole device
-infrastructure for this although it still doesn't provide any methods of
-modelling the real power management dependencies. Right now I simply ignored
-this problem and left it for the future.
+On 02/09/2015 08:26 PM, Sethi Varun-B16395 wrote:
+> Hi Emil,
+> 
+> 
+>> -----Original Message-----
+>> From: Emil Medve [mailto:Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org]
+>> Sent: Tuesday, February 10, 2015 3:17 AM
+>> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org;
+>> Sethi Varun-B16395
+>> Subject: Re: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init* annotations
+>>
+>> Hello Joerg,
+>>
+>>
+>> On 01/28/2015 08:34 AM, Emil Medve wrote:
+>>> Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+>>> ---
+>>>  drivers/iommu/fsl_pamu.c        | 12 ++++++------
+>>>  drivers/iommu/fsl_pamu_domain.c |  2 +-
+>>>  2 files changed, 7 insertions(+), 7 deletions(-)
+>>
+>> Please don't apply this patch as it's wrong. It's based on
+>> https://git.kernel.org/cgit/linux/kernel/git/joro/iommu.git/commit/?h=ppc/
+>> pamu&id=0f1fb99b62ce226f8d818852f812c5d79071ce58
+>> which is wrong as well and its causing semi-random crashes upon more
+>> extensive testing. I will follow-up with details shortly
+> 
+> Are you seeing  a crash with
+> https://git.kernel.org/cgit/linux/kernel/git/joro/iommu.git/commit/?h=ppc/pamu&id=0f1fb99b62ce226f8d818852f812c5d79071ce58
+> ? At, what point do you see crashes?
 
-I will check if this patchset helps in our case.
+platform_driver.device_driver gets added to a (platform) bus klist of
+drivers. (There are also a handful of other pointers that get set to
+fsl_of_pamu_driver) Once fsl_of_pamu_driver gets released that klist
+becomes "corrupted" and, depending on how said memory gets re-used,
+traversing it for any reason will end up into a crash
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Anyway, I identified easier ways to produce kernel crashes related to
+the PAMU driver via sysfs (with or without my __init* annotation
+patches). For example a "unbind, bind" sequence will cause a crash with
+the driver as is in v3.19
+
+BTW, why is the PAMU an "early" driver?
+
+I'll send out some patches to properly fix all these __init* annotations
+
+
+Cheers,
