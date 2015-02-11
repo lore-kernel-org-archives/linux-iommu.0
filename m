@@ -1,41 +1,58 @@
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-Subject: Re: [PATCH] CHROMIUM: iommu: rockchip: Make sure that page table state is coherent
-Date: Tue, 10 Feb 2015 23:21:55 +0100
-Message-ID: <1697393.usElVkPJfb@diego>
-References: <1423480761-33453-1-git-send-email-tfiga@chromium.org>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH/RFC 0/4] Probe deferral for IOMMU DT integration
+Date: Wed, 11 Feb 2015 10:37:46 +0100
+Message-ID: <54DB22EA.3050507@samsung.com>
+References: <1423182722-16646-1-git-send-email-lauraa@codeaurora.org>
+	<2115835102.210232.1423348884955.JavaMail.open-xchange@oxbaltgw04.schlund.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1423480761-33453-1-git-send-email-tfiga@chromium.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tomasz Figa <tfiga@chromium.org>
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org, Joerg Roedel <joro@8bytes.org>, Daniel Kurtz <djkurtz@chromium.org>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <2115835102.210232.1423348884955.JavaMail.open-xchange-h4m1HHXQYNGZU4JK52HgGMgmgJlYmuWJ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Am Montag, 9. Februar 2015, 20:19:21 schrieb Tomasz Figa:
-> Even though the code uses the dt_lock spin lock to serialize mapping
-> operation from different threads, it does not protect from IOMMU
-> accesses that might be already taking place and thus altering state
-> of the IOTLB. This means that current mapping code which first zaps
-> the page table and only then updates it with new mapping which is
-> prone to mentioned race.
-> 
-> In addition, current code assumes that mappings are always > 4 MiB
-> (which translates to 1024 PTEs) and so they would always occupy
-> entire page tables. This is not true for mappings created by V4L2
-> Videobuf2 DMA contig allocator.
-> 
-> This patch changes the mapping code to always zap the page table
-> after it is updated, which avoids the aforementioned race and also
-> zap the last page of the mapping to make sure that stale data is
-> not cached from an already existing mapping.
-> 
-> Signed-off-by: Tomasz Figa <tfiga@chromium.org>
-> Reviewed-by: Daniel Kurtz <djkurtz@chromium.org>
+Hello,
 
-I don't know enough about iommu-magic yet to review this properly, but on my 
-rk3288-firefly the whole display pipeline stays in working condition, down to 
-x11 and es2gears, so
+On 2015-02-07 23:41, arnd-r2nGTMty4D4@public.gmane.org wrote:
+> Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> hat am 6. Februar 2015 um 01:31
+> geschrieben:
+>> The requirement for this is based on a previous patch to add clock
+>> support to the ARM SMMU driver[2]. Once we have clock support, it's
+>> possible that the driver itself may need to be defered which breaks
+>> a bunch of assumptions about how SMMU probing is supposed to work.
+>   
+> Hi Laura,
+>   
+> I was hoping that we would not need this, and instead treat the iommu in
+> the same way as timers and SMP initialization, both
+> of which need to be run early at boot time but may rely on clock controllers
+> to be initialized first.
+>   
+> Is there a specific requirement that makes this impossible here, or is your
+> intention to solve the problem more nicely by allowing deferred probing
+> over forcing the input clocks of the iommu to be early?
 
-Tested-by: Heiko Stuebner <heiko@sntech.de>
+I case of Exynos SoCs there is also a dependency on power domains (some 
+might
+be disabled by the bootloader). It is convenient to use the whole device
+infrastructure for this although it still doesn't provide any methods of
+modelling the real power management dependencies. Right now I simply ignored
+this problem and left it for the future.
+
+I will check if this patchset helps in our case.
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
