@@ -1,109 +1,100 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init* annotations
-Date: Wed, 11 Feb 2015 13:47:29 +0000
-Message-ID: <BN3PR0301MB1219251DC0CA7A389991DE1DEA250@BN3PR0301MB1219.namprd03.prod.outlook.com>
-References: <1422455698-3074-1-git-send-email-Emilian.Medve@Freescale.com>
-	<1422455698-3074-2-git-send-email-Emilian.Medve@Freescale.com>
-	<54D92ABC.3030802@Freescale.com>
-	<BY1PR0301MB122186F802612D1B8048722AEA240@BY1PR0301MB1221.namprd03.prod.outlook.com>
-	<54DB37DA.2040500@Freescale.com>
+From: Murali Karicheri <m-karicheri2@ti.com>
+Subject: Re: [PATCH v6 0/7] PCI: get DMA configuration from parent device
+Date: Wed, 11 Feb 2015 11:54:56 -0500
+Message-ID: <54DB8960.9010707@ti.com>
+References: <1423173179-10227-1-git-send-email-m-karicheri2@ti.com> <20150206151542.GD23190@e104818-lin.cambridge.arm.com> <54D4DD95.7000303@ti.com> <CAErSpo6GOXHeKKfU8s5jCS3+Mui=HupZd=jpkLEyWAE94Ory5w@mail.gmail.com> <54D509C9.9010204@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Emilian Medve <Emilian.Medve-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <54D509C9.9010204@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>, Arnd Bergmann <arnd@arndb.de>
+Cc: Catalin Marinas <catalin.marinas@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Joerg Roedel <joro@8bytes.org>, Will Deacon <Will.Deacon@arm.com>, Rob Herring <robh+dt@kernel.org>, "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Emil,
+On 02/06/2015 01:36 PM, Murali Karicheri wrote:
+> On 02/06/2015 12:53 PM, Bjorn Helgaas wrote:
+>> On Fri, Feb 6, 2015 at 9:28 AM, Murali Karicheri<m-karicheri2@ti.com>
+>> wrote:
+>>> On 02/06/2015 10:15 AM, Catalin Marinas wrote:
+>>>>
+>>>> On Thu, Feb 05, 2015 at 09:52:52PM +0000, Murali Karicheri wrote:
+>>>>>
+>>>>> This patch add an important capability to PCI driver on Keystone. I
+>>>>> hope
+>>>>> to
+>>>>> have this merged to the upstream branch so that it is available for
+>>>>> v3.20.
+>>>>
+>>>> It's very late for 3.20 and the code hasn't been in linux-next at all
+>>>> (but it's not me who's merging this code), unless you can squeeze it in
+>>>> as a bug-fix.
+>>>
+>>> This is in fact a bug fix as PCI on Keystone is broken without this.
+>>
+>> Oh, sorry, I didn't realize that this was so urgent. I guess I read
+>> "this adds an important capability" in the cover letter and concluded
+>> that it was new functionality.
+> Bjorn,
+>
+> Thanks for responding.
+>
+> Let me give you some context on this without which my explanation won't
+> be complete. For using PCI driver on Keystone, I had submitted patches
+> related to machine and DTS to the arm mailing list to enable the driver
+> on Keystone. Subsequenty one of the patch from my series was Nack-ed and
+> I was asked to implememented in a different way and started this series.
+> You can refer to the discussion of this at
+>
+> http://www.gossamer-threads.com/lists/linux/kernel/2024591
+>
+> The PCI driver enablement on Keystone is still a working in progress and
+> I am trying to get it fully functional on the upstream. Another missing
+> piece is the SerDes phy driver patch. We have started working on the
+> other part (SerDes phy driver) already as the initial one was not
+> accepted. So it is fine if we are too late for the v3.20 merge window to
+> merge this series and this can be applied to the next branch for v3.21.
+>
+>>
+>> Anyway, if it's broken, presumably PCI on Keystone *did* work at one
+>> point. Can you identify the commit that broke it and requires these
+>> fixes, so we can figure out how far the fixes need to be backported?
+>>
+>
+> I am trying to get this driver enabled on Keystone by adding the missing
+> pieces as described above. So I guess we don't have to back port
+> anything here.
+>
+>> If I merge it, I would like to get into my for-linus branch and get a
+>> little time in -next before asking Linus to pull it. The merge window
+>> is a little wrinkle there -- I don't like to add new things to the mix
+>> during the window. But if it's an important fix we can still get it
+>> in before the final v3.20.
+>
+> Please apply this to next branch for v3.21. It currently apply cleanly
+> to v3.19-rc7. If you want me rebase to another branch, let me know I can
+> apply and send you an updated patch.
+>
+Bjorn, Arnd,
 
-> -----Original Message-----
-> From: Sethi Varun-B16395
-> Sent: Wednesday, February 11, 2015 5:00 PM
-> To: 'Emil Medve'; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org;
-> jroedel-l3A5Bk7waGM@public.gmane.org
-> Subject: RE: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init* annotations
-> 
-> Hi Emil,
-> 
-> > -----Original Message-----
-> > From: Emil Medve [mailto:Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org]
-> > Sent: Wednesday, February 11, 2015 4:37 PM
-> > To: Sethi Varun-B16395; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> > joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org
-> > Subject: Re: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init*
-> > annotations
-> >
-> > Hello Varun,
-> >
-> >
-> > On 02/09/2015 08:26 PM, Sethi Varun-B16395 wrote:
-> > > Hi Emil,
-> > >
-> > >
-> > >> -----Original Message-----
-> > >> From: Emil Medve [mailto:Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org]
-> > >> Sent: Tuesday, February 10, 2015 3:17 AM
-> > >> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org;
-> > >> jroedel-l3A5Bk7waGM@public.gmane.org; Sethi Varun-B16395
-> > >> Subject: Re: [PATCH v2 01/26] iommu/fsl: Sprinkle some __init*
-> > >> annotations
-> > >>
-> > >> Hello Joerg,
-> > >>
-> > >>
-> > >> On 01/28/2015 08:34 AM, Emil Medve wrote:
-> > >>> Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-> > >>> ---
-> > >>>  drivers/iommu/fsl_pamu.c        | 12 ++++++------
-> > >>>  drivers/iommu/fsl_pamu_domain.c |  2 +-
-> > >>>  2 files changed, 7 insertions(+), 7 deletions(-)
-> > >>
-> > >> Please don't apply this patch as it's wrong. It's based on
-> > >> https://git.kernel.org/cgit/linux/kernel/git/joro/iommu.git/commit/
-> > >> ?h
-> > >> =ppc/
-> > >> pamu&id=0f1fb99b62ce226f8d818852f812c5d79071ce58
-> > >> which is wrong as well and its causing semi-random crashes upon
-> > >> more extensive testing. I will follow-up with details shortly
-> > >
-> > > Are you seeing  a crash with
-> > > https://git.kernel.org/cgit/linux/kernel/git/joro/iommu.git/commit/?
-> > > h=
-> > > ppc/pamu&id=0f1fb99b62ce226f8d818852f812c5d79071ce58
-> > > ? At, what point do you see crashes?
-> >
-> > platform_driver.device_driver gets added to a (platform) bus klist of
-> drivers.
-> > (There are also a handful of other pointers that get set to
-> > fsl_of_pamu_driver) Once fsl_of_pamu_driver gets released that klist
-> > becomes "corrupted" and, depending on how said memory gets re-used,
-> > traversing it for any reason will end up into a crash
-> >
-> > Anyway, I identified easier ways to produce kernel crashes related to
-> > the PAMU driver via sysfs (with or without my __init* annotation
-> > patches). For example a "unbind, bind" sequence will cause a crash
-> > with the driver as is in
-> > v3.19
-> >
-> > BTW, why is the PAMU an "early" driver?
-> >
-> > I'll send out some patches to properly fix all these __init*
-> > annotations
-> Yes, the fsl_of_pamu_driver structure shouldn't be marked init data, it could
-> actually corrupt the driver list. PAMU driver should initialize before the DPAA
-> driver initialization also, to ensure the default DMA window is setup for all
-> devices.
-> 
-I think that we can revert this patch, the section mismatch isn't really an issue. The pamu driver probe routine wouldn't get called during platform bus probe. 
+I am assuming, Bjorn is going to merge this to his next branch for 
+v3.21. If not, it might have to be merged through the arm soc? There are 
+a couple of Tested-by and Acked-by received after v7. Do you want me to 
+post v8 with these updated in the patches?
 
--Varun
+Murali
+
+> Thanks
+>
+> Murali
+>
+>>
+>> Bjorn
+>
+>
+
+
+-- 
+Murali Karicheri
+Linux Kernel, Texas Instruments
