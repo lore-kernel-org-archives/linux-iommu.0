@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Subject: Re: Kernel Oops: iommu related?
-Date: Thu, 12 Feb 2015 22:08:46 +0100
-Message-ID: <20150212210846.GE29106@8bytes.org>
+Date: Thu, 12 Feb 2015 22:13:40 +0100
+Message-ID: <20150212211340.GF29106@8bytes.org>
 References: <54DCE8A6.4000608@compro.net> <20150212180846.GD29106@8bytes.org>
 	<54DCF024.30309@compro.net> <54DD00FE.2050009@compro.net>
 Mime-Version: 1.0
@@ -24,22 +24,11 @@ Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 On Thu, Feb 12, 2015 at 02:37:34PM -0500, Mark Hounschell wrote:
-> I've cleaned the machine of all our drivers and also the nvidia
-> driver. If the problem is as you say, it is an in-kernel driver.
-> I've attached a dmesg taken after it started. I used the dgap driver
-> from the staging directory to unload and trigger this as I have one.
-> That driver does NO dma. I know because I'm one of the maintainers
-> and have done lots of work on it.
+> [    0.000000] Command line: BOOT_IMAGE=/vmlinuz-3.18.7-lcrs root=/dev/disk/by-id/ata-ST3160815AS_6RACD7A6-part5 splash=verbose showopts video=1600x1200 noresume apm=off vmalloc=256M cma=64M@0-4G audit=0 nohz=on nohz_full=4,5,6,7 rcu_nocbs=4,5,6,7 3
 
-I have seen reports before with IOMMU problems and the NVidia driver.
-Can you reproduce the problem without any out-of-tree stuff and without
-staging modules ever loaded after boot? The Tainted flags in the warning
-should be empty then.
+Oh, and can you please boot with 'amd_iommu_dump' on the kernel command
+line and send me dmesg after boot?
 
-> [  122.810648] AMD-Vi: Event logged [IO_PAGE_FAULT device=0f:00.0 domain=0x0001 address=0x000000000007a260 flags=0x0020]
-
-This indicates that the driver for device 0f:00.0 (or something behind
-it if it is a bridge) could be the problem.
-
+Thanks,
 
 	Joerg
