@@ -1,131 +1,179 @@
-From: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH v6 0/7] PCI: get DMA configuration from parent device
-Date: Wed, 11 Feb 2015 11:58:52 -0500
-Message-ID: <54DB8A4C.9050002@ti.com>
-References: <1423173179-10227-1-git-send-email-m-karicheri2@ti.com>
-	<20150206151542.GD23190@e104818-lin.cambridge.arm.com>
-	<54D4DD95.7000303@ti.com>
-	<CAErSpo6GOXHeKKfU8s5jCS3+Mui=HupZd=jpkLEyWAE94Ory5w@mail.gmail.com>
-	<54D509C9.9010204@ti.com> <54DB8960.9010707@ti.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [git pull] IOMMU Updates for Linux v3.20
+Date: Thu, 12 Feb 2015 16:19:42 +0100
+Message-ID: <20150212151942.GA21126@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <54DB8960.9010707-l0cyMroinI0@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Qxx1br4bt0+wmkIi"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 02/11/2015 11:54 AM, Murali Karicheri wrote:
-> On 02/06/2015 01:36 PM, Murali Karicheri wrote:
->> On 02/06/2015 12:53 PM, Bjorn Helgaas wrote:
->>> On Fri, Feb 6, 2015 at 9:28 AM, Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>
->>> wrote:
->>>> On 02/06/2015 10:15 AM, Catalin Marinas wrote:
->>>>>
->>>>> On Thu, Feb 05, 2015 at 09:52:52PM +0000, Murali Karicheri wrote:
->>>>>>
->>>>>> This patch add an important capability to PCI driver on Keystone. I
->>>>>> hope
->>>>>> to
->>>>>> have this merged to the upstream branch so that it is available for
->>>>>> v3.20.
->>>>>
->>>>> It's very late for 3.20 and the code hasn't been in linux-next at all
->>>>> (but it's not me who's merging this code), unless you can squeeze
->>>>> it in
->>>>> as a bug-fix.
->>>>
->>>> This is in fact a bug fix as PCI on Keystone is broken without this.
->>>
->>> Oh, sorry, I didn't realize that this was so urgent. I guess I read
->>> "this adds an important capability" in the cover letter and concluded
->>> that it was new functionality.
->> Bjorn,
->>
->> Thanks for responding.
->>
->> Let me give you some context on this without which my explanation won't
->> be complete. For using PCI driver on Keystone, I had submitted patches
->> related to machine and DTS to the arm mailing list to enable the driver
->> on Keystone. Subsequenty one of the patch from my series was Nack-ed and
->> I was asked to implememented in a different way and started this series.
->> You can refer to the discussion of this at
->>
->> http://www.gossamer-threads.com/lists/linux/kernel/2024591
->>
->> The PCI driver enablement on Keystone is still a working in progress and
->> I am trying to get it fully functional on the upstream. Another missing
->> piece is the SerDes phy driver patch. We have started working on the
->> other part (SerDes phy driver) already as the initial one was not
->> accepted. So it is fine if we are too late for the v3.20 merge window to
->> merge this series and this can be applied to the next branch for v3.21.
->>
->>>
->>> Anyway, if it's broken, presumably PCI on Keystone *did* work at one
->>> point. Can you identify the commit that broke it and requires these
->>> fixes, so we can figure out how far the fixes need to be backported?
->>>
->>
->> I am trying to get this driver enabled on Keystone by adding the missing
->> pieces as described above. So I guess we don't have to back port
->> anything here.
->>
->>> If I merge it, I would like to get into my for-linus branch and get a
->>> little time in -next before asking Linus to pull it. The merge window
->>> is a little wrinkle there -- I don't like to add new things to the mix
->>> during the window. But if it's an important fix we can still get it
->>> in before the final v3.20.
->>
->> Please apply this to next branch for v3.21. It currently apply cleanly
->> to v3.19-rc7. If you want me rebase to another branch, let me know I can
->> apply and send you an updated patch.
->>
-> Bjorn, Arnd,
->
-> I am assuming, Bjorn is going to merge this to his next branch for
-> v3.21. If not, it might have to be merged through the arm soc? There are
-> a couple of Tested-by and Acked-by received after v7. Do you want me to
-> post v8 with these updated in the patches?
-FYI.
 
-These are the updates.
-Series was
+--Qxx1br4bt0+wmkIi
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-1) Tested-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-    (on AMD Seattle platform w/ PCI Generic Host controller)
-2) Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-3) Reviewed-by: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Hi Linus,
 
-If you want to send a updated series with these, please let me know.
+The following changes since commit e36f014edff70fc02b3d3d79cead1d58f289332e:
 
-Thanks and regards,
+  Linux 3.19-rc7 (2015-02-01 20:07:21 -0800)
 
-Murali
->
-> Murali
->
->> Thanks
->>
->> Murali
->>
->>>
->>> Bjorn
->>
->>
->
->
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v3.20
+
+for you to fetch changes up to a20cc76b9efae10c20123049df361adcd7f0e0b3:
+
+  Merge branches 'arm/renesas', 'arm/smmu', 'arm/omap', 'ppc/pamu', 'x86/amd' and 'core' into next (2015-02-04 16:53:44 +0100)
+
+----------------------------------------------------------------
+
+IOMMU Updates for Linux v3.20
+
+This time with:
+
+	* Generic page-table framework for ARM IOMMUs using the LPAE page-table
+	  format, ARM-SMMU and Renesas IPMMU make use of it already.
+
+	* Break out of the IO virtual address allocator from the Intel IOMMU so
+	  that it can be used by other DMA-API implementations too. The first
+	  user will be the ARM64 common DMA-API implementation for IOMMUs
+
+	* Device tree support for Renesas IPMMU
+
+	* Various fixes and cleanups all over the place
+
+----------------------------------------------------------------
+Arnd Bergmann (2):
+      iommu: Disable on !MMU builds
+      iommu/arm-smmu: Avoid build warning
+
+Emil Medve (3):
+      iommu/fsl: Fix section mismatch
+      iommu/fsl: Remove unused fsl_of_pamu_ids[]
+      iommu/fsl: Various cleanups
+
+Joerg Roedel (9):
+      Merge branch 'iommu/next' of git://linuxtv.org/pinchartl/fbdev into arm/renesas
+      Merge branch 'for-joerg/arm-smmu/updates' of git://git.kernel.org/.../will/linux into arm/smmu
+      Merge branch 'arm/smmu' into arm/renesas
+      iommu: Make more drivers depend on COMPILE_TEST
+      iommu/omap: Print phys_addr_t using %pa
+      iommu/fsl: Use %pa to print phys_addr_t
+      iommu/amd: Use wait_event in put_pasid_state_wait
+      iommu: Update my email address
+      Merge branches 'arm/renesas', 'arm/smmu', 'arm/omap', 'ppc/pamu', 'x86/amd' and 'core' into next
+
+Laurent Pinchart (10):
+      iommu/ipmmu-vmsa: Cleanup failures of ARM mapping creation or attachment
+      iommu/ipmmu-vmsa: Flush P[UM]D entry before freeing the child page table
+      iommu/ipmmu-vmsa: Invalidate TLB after unmapping
+      iommu/ipmmu-vmsa: Add device tree bindings documentation
+      iommu/ipmmu-vmsa: Add device tree support
+      iommu/ipmmu-vmsa: Support multiple micro TLBs per device
+      iommu/ipmmu-vmsa: Remove platform data support
+      iommu: io-pgtable-arm: add non-secure quirk
+      iommu/ipmmu-vmsa: Use the ARM LPAE page table allocator
+      iommu/ipmmu-vmsa: Fix IOMMU lookup when multiple IOMMUs are registered
+
+Matt Wagantall (1):
+      iopoll: Introduce memory-mapped IO polling macros
+
+Mitchel Humpherys (2):
+      iommu/arm-smmu: don't touch the secure STLBIALL register
+      iommu/arm-smmu: add support for iova_to_phys through ATS1PR
+
+Peter Zijlstra (1):
+      iommu/amd: Fix amd_iommu_free_device()
+
+Quentin Lambert (1):
+      iommu/amd: Convert non-returned local variable to boolean when relevant
+
+Robin Murphy (4):
+      iommu: Allow building iova.c independently
+      iommu: Consolidate IOVA allocator code
+      iommu: Make IOVA domain low limit flexible
+      iommu: Make IOVA domain page size explicit
+
+Shuah Khan (3):
+      iommu: Fix trace_unmap() to report original iova
+      iommu: Change trace unmap api to report unmapped size
+      iommu: Fix trace_map() to report original iova and original size
+
+Will Deacon (4):
+      iommu: introduce generic page table allocation framework
+      iommu: add ARM LPAE page table allocator
+      iommu: add self-consistency tests to ARM LPAE IO page table allocator
+      iommu/arm-smmu: make use of generic LPAE allocator
+
+ .../bindings/iommu/renesas,ipmmu-vmsa.txt          |  41 +
+ MAINTAINERS                                        |   1 +
+ arch/arm64/Kconfig                                 |   1 -
+ arch/powerpc/include/asm/fsl_pamu_stash.h          |   4 +-
+ drivers/iommu/Kconfig                              |  51 +-
+ drivers/iommu/Makefile                             |   5 +-
+ drivers/iommu/amd_iommu.c                          |  14 +-
+ drivers/iommu/amd_iommu_init.c                     |   2 +-
+ drivers/iommu/amd_iommu_proto.h                    |   2 +-
+ drivers/iommu/amd_iommu_types.h                    |   2 +-
+ drivers/iommu/amd_iommu_v2.c                       |  35 +-
+ drivers/iommu/arm-smmu.c                           | 935 +++++++------------
+ drivers/iommu/fsl_pamu.c                           | 216 ++---
+ drivers/iommu/fsl_pamu.h                           |  15 +-
+ drivers/iommu/fsl_pamu_domain.c                    | 173 ++--
+ drivers/iommu/intel-iommu.c                        |  45 +-
+ drivers/iommu/io-pgtable-arm.c                     | 986 +++++++++++++++++++++
+ drivers/iommu/io-pgtable.c                         |  82 ++
+ drivers/iommu/io-pgtable.h                         | 143 +++
+ drivers/iommu/iommu.c                              |   7 +-
+ drivers/iommu/iova.c                               |  53 +-
+ drivers/iommu/ipmmu-vmsa.c                         | 674 ++++----------
+ drivers/iommu/irq_remapping.h                      |   2 +-
+ drivers/iommu/omap-iommu.c                         |   2 +-
+ include/linux/iopoll.h                             | 144 +++
+ include/linux/iova.h                               |  41 +-
+ include/linux/platform_data/ipmmu-vmsa.h           |  24 -
+ include/trace/events/iommu.h                       |  31 +-
+ 28 files changed, 2239 insertions(+), 1492 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+ create mode 100644 drivers/iommu/io-pgtable-arm.c
+ create mode 100644 drivers/iommu/io-pgtable.c
+ create mode 100644 drivers/iommu/io-pgtable.h
+ create mode 100644 include/linux/iopoll.h
+ delete mode 100644 include/linux/platform_data/ipmmu-vmsa.h
+
+Please pull.
+
+Thanks,
+
+	Joerg
 
 
--- 
-Murali Karicheri
-Linux Kernel, Texas Instruments
+--Qxx1br4bt0+wmkIi
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJU3MSOAAoJECvwRC2XARrjLeAQAKOXYCziHVCqUssAqLvr7Ws6
+bGxilbM5sLFvZNDynWv7zl2pyqvB1PqC6Kd120tKc1VBFoErn6VIS/5QsIi93rqW
+4v0DPxgp1hltSDvm91GQs2TsnoMebIgi5OMlITs5fRkcNvE9lu6FEulqwFI5/fS4
+gb9bww16fyrO4QNSjXRla3U6smcVIcMV/vdu100B21/3wApzQDB7fdWkl0aXidEc
+YYQvRVVcq7MavNDQhn66vRpaHfw1mzij/tq/P7yXnHZR1zZ3NLUwzA7jYsX8Gk6L
+ZWT4XbMGubVhHa1zrxJOmT9GrO5HDE77q8BoyoI83c9B/2WeVWmKDG3HL89Nwb7L
+QVY0Q029xCEtWb2tizS7VL4cjR5Z4p82h+rFuo4//GejlmGGe+pA1GFhZyRl3Bpm
+V87Bdrs8n3uk+bnqPLnPrFob2UYNgt2ZYNL2Qb4IOVdGDqKothEMFJcvsNgySROw
+Fvep1gb0cNkykZb9miiOE/GGJ+F3Qp7FSqsCjkfmAHPjMkeAEjloTLLkkJOlcRQR
+nOWGKLV9xKsiseI0OTlqp7Ew7gbkq2nKDsbkEWhDltG4eoIcrXtCZscCAXWrcNYV
+cqFcRXX+2dXZn3wCUujVs1rBMf6OmxuU0lAQQSEo4o9b2HFj0YRwjBPpW3oEdTFW
+geafZQC1ls5T/M46Lz1a
+=Jubq
+-----END PGP SIGNATURE-----
+
+--Qxx1br4bt0+wmkIi--
