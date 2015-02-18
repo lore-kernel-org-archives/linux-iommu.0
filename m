@@ -1,70 +1,56 @@
-From: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: SMMU 2-stage support
-Date: Wed, 18 Feb 2015 18:04:21 +0100
-Message-ID: <CAN9JPjFf1Lb+L8sWq0SWt8f6P6DX2i308OeF+TdnFdstRoU3hA@mail.gmail.com>
+From: "joro@8bytes.org >> Joerg Roedel" <joro@8bytes.org>
+Subject: Re: IOMMU/DMA API inquiry
+Date: Wed, 18 Feb 2015 19:19:01 +0100
+Message-ID: <20150218181901.GK29106@8bytes.org>
+References: <54E39AF3.1090409@compro.net>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1766979127736853145=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <54E39AF3.1090409@compro.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Mark Hounschell <markh@compro.net>
+Cc: iommu@lists.linux-foundation.org, "linux-kernel@vger.kernel.org >> Linux-kernel" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
---===============1766979127736853145==
-Content-Type: multipart/alternative; boundary=001a11c081fe7fc2e4050f5fcf99
+Hi Mark,
 
---001a11c081fe7fc2e4050f5fcf99
-Content-Type: text/plain; charset=UTF-8
+On Tue, Feb 17, 2015 at 02:48:03PM -0500, Mark Hounschell wrote:
+> I understand that AMD IOMMU support is not available for 32-bit
+> kernels.  I believe the INTEL IOMMU is supported there. Not knowing
+> why, I was curious if that is going to remain that way?
 
-We are currently working on the ARM SMMU 2-stage support in order to expose
-SMMU capabilities to a guest OS.
-By doing some research, we noticed some work has already be done by Will
-Deacon on exposing virtual IOMMU interface to KVM guest. After going
-through slides and code (on git://
-git.kernel.org/pub/scm/linux/kernel/git/will/linux.git, branch:
-iommu/vsmmu), we have some questions :
-
-- What is the status of this work ? Is Alex still working on it ?
-- Are there any test case about the current vsmmu implementation ?
-
-- What is exposed to the guest in the current implementation ?
-- How do the guest program the stage-1 translation ?
-
-Thanks for your consideration,
-Baptiste
-
---001a11c081fe7fc2e4050f5fcf99
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">We are currently working on the ARM SMMU 2-stage support i=
-n order to expose SMMU capabilities to a guest OS. <br>By
- doing some research, we noticed some work has already be done by Will=20
-Deacon on exposing virtual IOMMU interface to KVM guest. After going=20
-through slides and code (on git://<a href=3D"http://git.kernel.org/pub/scm/=
-linux/kernel/git/will/linux.git" target=3D"_blank">git.kernel.org/pub/scm/l=
-inux/kernel/git/will/linux.git</a>,
-    branch: iommu/vsmmu), we have some questions :<br><br>- What is the sta=
-tus of this work ? Is Alex still working on it ?<br>- Are there any test ca=
-se about the current vsmmu implementation ?<br><br>- What is exposed to the=
- guest in the current implementation ?<br>- How do the guest program the st=
-age-1 translation ?<div><br></div>Thanks for your consideration,<br>Baptist=
-e</div>
-
---001a11c081fe7fc2e4050f5fcf99--
-
---===============1766979127736853145==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Yes, I have no plan on making the AMD IOMMU driver available on 32bit.
+But I would not be resistant to patches enabling the driver there.
 
 
---===============1766979127736853145==--
+> I've learned that the AMD IOMMU does not play well with the kernels
+> "Contiguous Memory Allocator" (CMA). I also believe, but could be
+> mistaken, that the INTEL IOMMU does. Again, not knowing why, I was
+> curious if that is going to remain that way also?
+
+No, I will queue a patch for the next merge window to enable CMA use in
+the AMD IOMMU driver. So there will be support for this.
+
+
+> Is the fact that the AMD IOMMU is not supported on 32 bit kernels
+> the reason that dma_map_page always returns 0 on 32 bit kernels.
+
+There is no particular reason for not supporting it on 32 bit kernels,
+it just didn't seem to be important yet. At least not important enough
+to justify the work.
+
+> I've read the DMA-API-HOWTO.txt concerning dma_map_sg and at first I
+> thought that maybe dma_map_sg could be used to get around the fact
+> that AMD IOMMU doesn't work with CMA. But it looks as though I was
+> mistaken and I would actually have to do a DMA for_each_sg(sglist,
+> sg, count, i). Is that correct or can dma_map_sg somehow enable you
+> to do a single DMA using a single address for the entire sglist?
+
+The map_sg functions can't be used with the AMD IOMMU driver to work
+around missing CMA support. Depending on what you want it might work
+with the Intel IOMMU driver, as this one allocates a single IOVA region
+for the entire sg_list.
+
+
+	Joerg
