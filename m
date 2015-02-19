@@ -1,67 +1,73 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: SMMU 2-stage support
-Date: Wed, 18 Feb 2015 18:56:00 +0000
-Message-ID: <20150218185600.GN22017@arm.com>
-References: <CAN9JPjFf1Lb+L8sWq0SWt8f6P6DX2i308OeF+TdnFdstRoU3hA@mail.gmail.com>
+From: Mark Hounschell <markh@compro.net>
+Subject: Re: IOMMU/DMA API inquiry
+Date: Thu, 19 Feb 2015 14:41:37 -0500
+Message-ID: <54E63C71.3020804@compro.net>
+References: <54E39AF3.1090409@compro.net> <20150218181901.GK29106@8bytes.org>
+Reply-To: markh@compro.net
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAN9JPjFf1Lb+L8sWq0SWt8f6P6DX2i308OeF+TdnFdstRoU3hA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20150218181901.GK29106@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "joro@8bytes.org >> Joerg Roedel" <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, "linux-kernel@vger.kernel.org >> Linux-kernel" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Feb 18, 2015 at 05:04:21PM +0000, Baptiste Reynal wrote:
-> We are currently working on the ARM SMMU 2-stage support in order to
-> expose SMMU capabilities to a guest OS.
-> By doing some research, we noticed some work has already be done by Will
-> Deacon on exposing virtual IOMMU interface to KVM guest. After going
-> through slides and code (on
-> git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git<http://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git>,
-> branch: iommu/vsmmu), we have some questions :
-> 
-> - What is the status of this work ? Is Alex still working on it ?
+Hi Joerg, Thanks for the response.
 
-I got a reasonable way through implementing something, but ran into a
-wall for a few reasons:
+On 02/18/2015 01:19 PM, joro@8bytes.org >> Joerg Roedel wrote:
+> Hi Mark,
+>
+> On Tue, Feb 17, 2015 at 02:48:03PM -0500, Mark Hounschell wrote:
+>> I understand that AMD IOMMU support is not available for 32-bit
+>> kernels.  I believe the INTEL IOMMU is supported there. Not knowing
+>> why, I was curious if that is going to remain that way?
+>
+> Yes, I have no plan on making the AMD IOMMU driver available on 32bit.
+> But I would not be resistant to patches enabling the driver there.
+>
 
-  (1) I don't have anything where I can test this (yet)
+OK. I might take a look. Should it not "just work" more or less?
 
-  (2) Nobody's actually asking for it...
+>
+>> I've learned that the AMD IOMMU does not play well with the kernels
+>> "Contiguous Memory Allocator" (CMA). I also believe, but could be
+>> mistaken, that the INTEL IOMMU does. Again, not knowing why, I was
+>> curious if that is going to remain that way also?
+>
+> No, I will queue a patch for the next merge window to enable CMA use in
+> the AMD IOMMU driver. So there will be support for this.
+>
 
-> - Are there any test case about the current vsmmu implementation ?
+Great! That's a couple of  kernels away then. I would be happy to test 
+if  you have a need.
 
-No.
+>
+>> Is the fact that the AMD IOMMU is not supported on 32 bit kernels
+>> the reason that dma_map_page always returns 0 on 32 bit kernels.
+>
+> There is no particular reason for not supporting it on 32 bit kernels,
+> it just didn't seem to be important yet. At least not important enough
+> to justify the work.
+>
 
-> - What is exposed to the guest in the current implementation ?
+Understood.
 
-An emulation of a stage-1 only SMMU.
+>> I've read the DMA-API-HOWTO.txt concerning dma_map_sg and at first I
+>> thought that maybe dma_map_sg could be used to get around the fact
+>> that AMD IOMMU doesn't work with CMA. But it looks as though I was
+>> mistaken and I would actually have to do a DMA for_each_sg(sglist,
+>> sg, count, i). Is that correct or can dma_map_sg somehow enable you
+>> to do a single DMA using a single address for the entire sglist?
+>
+> The map_sg functions can't be used with the AMD IOMMU driver to work
+> around missing CMA support. Depending on what you want it might work
+> with the Intel IOMMU driver, as this one allocates a single IOVA region
+> for the entire sg_list.
+>
 
-> - How do the guest program the stage-1 translation ?
+Thanks  Joerg
 
-Just like it would for a physical SMMU.
-It's probably easiest if you look at the (incomplete, WIP) code:
-
-  https://git.kernel.org/cgit/linux/kernel/git/will/linux.git/commit/?h=iommu/vsmmu&id=539dbcb964e5c730791a6a31a4f58ceff4b945c2
-
-Anyway, until somebody actually wants this feature I've put it on ice as
-it adds a whole bunch of complication to the ARM SMMU driver, as well as
-new user ABI extensions that I don't really want to maintain for fun.
-
-The only murmurs I've heard about IOMMU usage from a guest relate to a
-paravirtualised interface, which abstracts the details of the host IOMMU
-altogether and allows the translation to be collapsed (which can be
-better for TLB utilisation).
-
-Will
+Regards
+Mark
