@@ -1,40 +1,47 @@
-From: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: [patch] iommu/amd: small cleanup in mn_release()
-Date: Fri, 20 Feb 2015 13:52:01 +0300
-Message-ID: <20150220105201.GA7895@mwanda>
+From: Jean Delvare <jdelvare@suse.de>
+Subject: [PATCH] iommu/io-pgtable-arm: Add built time dependency
+Date: Fri, 20 Feb 2015 19:44:45 +0100
+Message-ID: <20150220194445.4225d56b@endymion.delvare>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kernel-janitors-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-"pasid_state->device_state" and "dev_state" are the same, but it's nicer
-to use dev_state consistently.
+If io-pgtable-arm is an ARM-specific driver then configuration option
+IOMMU_IO_PGTABLE_LPAE should not be presented to the user by default
+for non-ARM kernels.
 
-Signed-off-by: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Jean Delvare <jdelvare@suse.de>
+Cc: Will Deacon <will.deacon@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+---
+ drivers/iommu/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index 6d5a5c4..a1cbba9 100644
---- a/drivers/iommu/amd_iommu_v2.c
-+++ b/drivers/iommu/amd_iommu_v2.c
-@@ -417,7 +417,7 @@ static void mn_release(struct mmu_notifier *mn, struct mm_struct *mm)
- 	dev_state      = pasid_state->device_state;
- 	run_inv_ctx_cb = !pasid_state->invalid;
- 
--	if (run_inv_ctx_cb && pasid_state->device_state->inv_ctx_cb)
-+	if (run_inv_ctx_cb && dev_state->inv_ctx_cb)
- 		dev_state->inv_ctx_cb(dev_state->pdev, pasid_state->pasid);
- 
- 	unbind_pasid(pasid_state);
+--- linux-3.20-rc0.orig/drivers/iommu/Kconfig	2015-02-20 17:24:46.838955014 +0100
++++ linux-3.20-rc0/drivers/iommu/Kconfig	2015-02-20 19:38:45.804582668 +0100
+@@ -23,6 +23,7 @@ config IOMMU_IO_PGTABLE
+ config IOMMU_IO_PGTABLE_LPAE
+ 	bool "ARMv7/v8 Long Descriptor Format"
+ 	select IOMMU_IO_PGTABLE
++	depends on ARM || COMPILE_TEST
+ 	help
+ 	  Enable support for the ARM long descriptor pagetable format.
+ 	  This allocator supports 4K/2M/1G, 16K/32M and 64K/512M page
+
+
+-- 
+Jean Delvare
+SUSE L3 Support
