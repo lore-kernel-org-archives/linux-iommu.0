@@ -1,12 +1,16 @@
-From: "Fenghua Yu" <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH] driver/iommu/intel_irq_remapping: Print x2apic opt out info
-	instead of printing a warning
-Date: Sat, 21 Feb 2015 13:07:27 -0800
-Message-ID: <1424552847-40775-1-git-send-email-fenghua.yu@intel.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/io-pgtable-arm: Add built time dependency
+Date: Sun, 22 Feb 2015 13:09:42 +0000
+Message-ID: <20150222130942.GB9591@arm.com>
+References: <20150220194445.4225d56b@endymion.delvare>
+	<20150220191943.GB1767@arm.com>
+	<20150220204642.04b1f0d8@endymion.delvare>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20150220204642.04b1f0d8-R0o5gVi9kd7kN2dkZ6Wm7A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,37 +20,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: Jean Delvare <jdelvare-l3A5Bk7waGM@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+On Fri, Feb 20, 2015 at 07:46:42PM +0000, Jean Delvare wrote:
+> On Fri, 20 Feb 2015 19:19:43 +0000, Will Deacon wrote:
+> > On Fri, Feb 20, 2015 at 06:44:45PM +0000, Jean Delvare wrote:
+> > > If io-pgtable-arm is an ARM-specific driver then configuration option
+> > > IOMMU_IO_PGTABLE_LPAE should not be presented to the user by default
+> > > for non-ARM kernels.
+> > > 
+> > > Signed-off-by: Jean Delvare <jdelvare-l3A5Bk7waGM@public.gmane.org>
+> > > Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> > > Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> > > ---
+> > >  drivers/iommu/Kconfig |    1 +
+> > >  1 file changed, 1 insertion(+)
+> > > 
+> > > --- linux-3.20-rc0.orig/drivers/iommu/Kconfig	2015-02-20 17:24:46.838955014 +0100
+> > > +++ linux-3.20-rc0/drivers/iommu/Kconfig	2015-02-20 19:38:45.804582668 +0100
+> > > @@ -23,6 +23,7 @@ config IOMMU_IO_PGTABLE
+> > >  config IOMMU_IO_PGTABLE_LPAE
+> > >  	bool "ARMv7/v8 Long Descriptor Format"
+> > >  	select IOMMU_IO_PGTABLE
+> > > +	depends on ARM || COMPILE_TEST
+> > >  	help
+> > >  	  Enable support for the ARM long descriptor pagetable format.
+> > >  	  This allocator supports 4K/2M/1G, 16K/32M and 64K/512M page
+> > 
+> > So this code doesn't actually *depend* on any arch code at all. In fact,
+> > having it built and booted on x86 revealed a couple of bugs that I've
+> > since fixed. I'd rather let this run everywhere, but if people insist on
+> > the false dependency, so be it but we should add ARM64 to the mix too.
+> 
+> Oh, I'm not insisting on anything ;-) If the code is useful on other
+> architectures then just ignore this patch. But if the only point of
+> using it on other architectures is to reveal bugs which would not have
+> triggered otherwise, then that's what COMPILE_TEST is there for.
 
-BIOS can set up x2apic_opt_out bit on some platforms. This is not a BIOS
-problem. A user can either disable the x2apic_opt_out bit in BIOS or by kernel
-parameter "no_x2apic_optout". Instead of printing a warning, we just print
-information of x2apic opt out.
+Sure, COMPILE_TEST should definitely be there if we add a dependency, but
+actually the issues raised so far were by *running* the code (there are
+some boot-time self-tests).
 
-Signed-off-by: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
----
- drivers/iommu/intel_irq_remapping.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+> From the option description and help text, it really looks
+> ARM-specific, so if it is not, the help text at least should be
+> improved.
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 14de1ab..cd3c4d6 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -637,10 +637,7 @@ static int __init intel_enable_irq_remapping(void)
- 	if (x2apic_supported()) {
- 		eim = !dmar_x2apic_optout();
- 		if (!eim)
--			printk(KERN_WARNING
--				"Your BIOS is broken and requested that x2apic be disabled.\n"
--				"This will slightly decrease performance.\n"
--				"Use 'intremap=no_x2apic_optout' to override BIOS request.\n");
-+			pr_info("x2apic is disabled because BIOS sets x2apic opt out bit. You can use 'intremap=no_x2apic_optout' to override the BIOS setting.\n");
- 	}
- 
- 	for_each_iommu(iommu, drhd) {
--- 
-1.8.1.2
+It's ARM-specific in that the users of the page table code are IOMMUs
+typically present in ARM SoCs. However, there's no reason why you couldn't
+stick one of these IOMMUs in another SoC in the same way that you can use
+an Intel NIC on a PowerPC box.
+
+Will
