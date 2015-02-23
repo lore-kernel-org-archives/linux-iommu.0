@@ -1,11 +1,16 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH] iommu/fsl: PAMU is also present on 64-bit SoC(s)
-Date: Mon, 23 Feb 2015 18:16:55 +0000
-Message-ID: <y3f9uencp9itm32jxjkubo74.1424715368250@email.android.com>
+From: Marcelo Tosatti <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [v3 21/26] x86, irq: Define a global vector for VT-d
+	Posted-Interrupts
+Date: Mon, 23 Feb 2015 19:04:57 -0300
+Message-ID: <20150223220457.GA9544@amt.cnet>
+References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
+	<1418397300-10870-22-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============7217963875027713351=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <1418397300-10870-22-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,80 +20,20 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Emilian Medve <Emilian.Medve-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+To: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
---===============7217963875027713351==
-Content-Language: en-GB
-Content-Type: multipart/alternative;
-	boundary="_000_y3f9uencp9itm32jxjkubo741424715368250emailandroidcom_"
+On Fri, Dec 12, 2014 at 11:14:55PM +0800, Feng Wu wrote:
+> Currently, we use a global vector as the Posted-Interrupts
+> Notification Event for all the vCPUs in the system. We need
+> to introduce another global vector for VT-d Posted-Interrtups,
+> which will be used to wakeup the sleep vCPU when an external
+> interrupt from a direct-assigned device happens for that vCPU.
+> 
+> Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 
---_000_y3f9uencp9itm32jxjkubo741424715368250emailandroidcom_
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Why an additional vector is necessary?
 
-DQoNCi0tLS0tLS0tIE9yaWdpbmFsIG1lc3NhZ2UgLS0tLS0tLS0NCkZyb206IEVtaWwgTWVkdmUN
-CkRhdGU6MDIvMTQvMjAxNSAyOjI3IFBNIChHTVQrMDU6MzApDQpUbzogaW9tbXVAbGlzdHMubGlu
-dXgtZm91bmRhdGlvbi5vcmcsam9yb0A4Ynl0ZXMub3JnLGpyb2VkZWxAc3VzZS5kZSxTZXRoaSBW
-YXJ1bi1CMTYzOTUNCkNjOiBNZWR2ZSBFbWlsaWFuLUVNTUVEVkUxDQpTdWJqZWN0OiBbUEFUQ0hd
-IGlvbW11L2ZzbDogUEFNVSBpcyBhbHNvIHByZXNlbnQgb24gNjQtYml0IFNvQyhzKQ0KDQpUaGlz
-IHJldmVydHMgYSBjaGFuZ2UgZG9uZSBpbiAnNDc3YWI3YSBpb21tdTogTWFrZSBtb3JlIGRyaXZl
-cnMgZGVwZW5kIG9uIENPTVBJTEVfVEVTVCcNCg0KU2lnbmVkLW9mZi1ieTogRW1pbCBNZWR2ZSA8
-RW1pbGlhbi5NZWR2ZUBGcmVlc2NhbGUuY29tPg0KLS0tDQogZHJpdmVycy9pb21tdS9LY29uZmln
-IHwgMSAtDQogMSBmaWxlIGNoYW5nZWQsIDEgZGVsZXRpb24oLSkNCg0KZGlmZiAtLWdpdCBhL2Ry
-aXZlcnMvaW9tbXUvS2NvbmZpZyBiL2RyaXZlcnMvaW9tbXUvS2NvbmZpZw0KaW5kZXggYmFhMGQ5
-Ny4uZDkzNjkyYSAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvaW9tbXUvS2NvbmZpZw0KKysrIGIvZHJp
-dmVycy9pb21tdS9LY29uZmlnDQpAQCAtNDksNyArNDksNiBAQCBjb25maWcgT0ZfSU9NTVUNCg0K
-IGNvbmZpZyBGU0xfUEFNVQ0KICAgICAgICAgYm9vbCAiRnJlZXNjYWxlIElPTU1VIHN1cHBvcnQi
-DQotICAgICAgIGRlcGVuZHMgb24gUFBDMzINCiAgICAgICAgIGRlcGVuZHMgb24gUFBDX0U1MDBN
-QyB8fCBDT01QSUxFX1RFU1QNCiAgICAgICAgIHNlbGVjdCBJT01NVV9BUEkNCiAgICAgICAgIHNl
-bGVjdCBHRU5FUklDX0FMTE9DQVRPUg0KLS0NCjIuMy4wDQpBY2tlZC1ieTogVmFydW4gU2V0aGkg
-PFZhcnVuLiBTZXRoaUBmcmVlc2NhbGUuY29tPg0K
-
---_000_y3f9uencp9itm32jxjkubo741424715368250emailandroidcom_
-Content-Type: text/html; charset="utf-8"
-Content-ID: <C5014F12F3D85D43ACC6120D346417CC-KZfg59tc24yhsmfSigO4VTk/3NxTyxQbAL8bYrjMMd8@public.gmane.org>
-Content-Transfer-Encoding: base64
-
-PGh0bWw+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIgY29udGVudD0i
-dGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjwvaGVhZD4NCjxib2R5Pg0KPGJyPg0KPGJyPg0K
-LS0tLS0tLS0gT3JpZ2luYWwgbWVzc2FnZSAtLS0tLS0tLTxicj4NCkZyb206IEVtaWwgTWVkdmUg
-PEVtaWxpYW4uTWVkdmVARnJlZXNjYWxlLmNvbT48YnI+DQpEYXRlOjAyLzE0LzIwMTUgMjoyNyBQ
-TSAoR01UJiM0MzswNTozMCkgPGJyPg0KVG86IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
-b3JnLGpvcm9AOGJ5dGVzLm9yZyxqcm9lZGVsQHN1c2UuZGUsU2V0aGkgVmFydW4tQjE2Mzk1DQo8
-VmFydW4uU2V0aGlAZnJlZXNjYWxlLmNvbT48YnI+DQpDYzogTWVkdmUgRW1pbGlhbi1FTU1FRFZF
-MSA8RW1pbGlhbi5NZWR2ZUBmcmVlc2NhbGUuY29tPjxicj4NClN1YmplY3Q6IFtQQVRDSF0gaW9t
-bXUvZnNsOiBQQU1VIGlzIGFsc28gcHJlc2VudCBvbiA2NC1iaXQgU29DKHMpIDxicj4NCjxicj4N
-Cjxmb250IHNpemU9IjIiPjxzcGFuIHN0eWxlPSJmb250LXNpemU6MTBwdDsiPg0KPGRpdiBjbGFz
-cz0iUGxhaW5UZXh0Ij5UaGlzIHJldmVydHMgYSBjaGFuZ2UgZG9uZSBpbiAnNDc3YWI3YSBpb21t
-dTogTWFrZSBtb3JlIGRyaXZlcnMgZGVwZW5kIG9uIENPTVBJTEVfVEVTVCc8YnI+DQo8YnI+DQpT
-aWduZWQtb2ZmLWJ5OiBFbWlsIE1lZHZlICZsdDtFbWlsaWFuLk1lZHZlQEZyZWVzY2FsZS5jb20m
-Z3Q7PGJyPg0KLS0tPGJyPg0KJm5ic3A7ZHJpdmVycy9pb21tdS9LY29uZmlnIHwgMSAtPGJyPg0K
-Jm5ic3A7MSBmaWxlIGNoYW5nZWQsIDEgZGVsZXRpb24oLSk8YnI+DQo8YnI+DQpkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9pb21tdS9LY29uZmlnIGIvZHJpdmVycy9pb21tdS9LY29uZmlnPGJyPg0KaW5k
-ZXggYmFhMGQ5Ny4uZDkzNjkyYSAxMDA2NDQ8YnI+DQotLS0gYS9kcml2ZXJzL2lvbW11L0tjb25m
-aWc8YnI+DQomIzQzOyYjNDM7JiM0MzsgYi9kcml2ZXJzL2lvbW11L0tjb25maWc8YnI+DQpAQCAt
-NDksNyAmIzQzOzQ5LDYgQEAgY29uZmlnIE9GX0lPTU1VPGJyPg0KJm5ic3A7PGJyPg0KJm5ic3A7
-Y29uZmlnIEZTTF9QQU1VPGJyPg0KJm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7
-Jm5ic3A7Jm5ic3A7IGJvb2wgJnF1b3Q7RnJlZXNjYWxlIElPTU1VIHN1cHBvcnQmcXVvdDs8YnI+
-DQotJm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7IGRlcGVuZHMgb24gUFBDMzI8
-YnI+DQombmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsgZGVw
-ZW5kcyBvbiBQUENfRTUwME1DIHx8IENPTVBJTEVfVEVTVDxicj4NCiZuYnNwOyZuYnNwOyZuYnNw
-OyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyBzZWxlY3QgSU9NTVVfQVBJPGJyPg0KJm5i
-c3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7IHNlbGVjdCBHRU5F
-UklDX0FMTE9DQVRPUjxicj4NCi0tIDxicj4NCjIuMy4wPGJyPg0KPC9kaXY+DQo8L3NwYW4+PHNw
-YW4gY2xhc3M9IkFwcGxlLXN0eWxlLXNwYW4iIHN0eWxlPSJmb250LXNpemU6IDEzLjMzMzMzMzAx
-NTQ0MTg5NXB4OyAiPkFja2VkLWJ5OiBWYXJ1biBTZXRoaSAmbHQ7VmFydW4uIFNldGhpQGZyZWVz
-Y2FsZS5jb20mZ3Q7PC9zcGFuPjwvZm9udD4NCjwvYm9keT4NCjwvaHRtbD4NCg==
-
---_000_y3f9uencp9itm32jxjkubo741424715368250emailandroidcom_--
-
---===============7217963875027713351==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============7217963875027713351==--
+Can't you simply wakeup the vcpu from kvm_posted_intr_ipi, the posted
+interrupt vector handler ?
