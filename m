@@ -1,13 +1,11 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH linux-next] iommu: Enable LPAE pagetable on ARM only
-Date: Mon, 23 Feb 2015 18:52:41 +0200
-Message-ID: <2868840.GyWYJOzqWH@avalon>
-References: <1424621346-7822-1-git-send-email-vincent.stehle@laposte.net>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH] iommu/fsl: PAMU is also present on 64-bit SoC(s)
+Date: Mon, 23 Feb 2015 18:16:55 +0000
+Message-ID: <y3f9uencp9itm32jxjkubo74.1424715368250@email.android.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/mixed; boundary="===============7217963875027713351=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1424621346-7822-1-git-send-email-vincent.stehle-QFKgK+z4sOrR7s880joybQ@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,111 +15,80 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Vincent =?ISO-8859-1?Q?Stehl=E9?= <vincent.stehle-QFKgK+z4sOrR7s880joybQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-next-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: Emilian Medve <Emilian.Medve-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Vincent,
+--===============7217963875027713351==
+Content-Language: en-GB
+Content-Type: multipart/alternative;
+	boundary="_000_y3f9uencp9itm32jxjkubo741424715368250emailandroidcom_"
 
-Thank you for the patch.
+--_000_y3f9uencp9itm32jxjkubo741424715368250emailandroidcom_
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-On Sunday 22 February 2015 17:09:06 Vincent Stehl=E9 wrote:
-> LPAE iommu page table makes sense only for ARM architecture. Add the
-> corresponding dependency in Kconfig.
-> =
+DQoNCi0tLS0tLS0tIE9yaWdpbmFsIG1lc3NhZ2UgLS0tLS0tLS0NCkZyb206IEVtaWwgTWVkdmUN
+CkRhdGU6MDIvMTQvMjAxNSAyOjI3IFBNIChHTVQrMDU6MzApDQpUbzogaW9tbXVAbGlzdHMubGlu
+dXgtZm91bmRhdGlvbi5vcmcsam9yb0A4Ynl0ZXMub3JnLGpyb2VkZWxAc3VzZS5kZSxTZXRoaSBW
+YXJ1bi1CMTYzOTUNCkNjOiBNZWR2ZSBFbWlsaWFuLUVNTUVEVkUxDQpTdWJqZWN0OiBbUEFUQ0hd
+IGlvbW11L2ZzbDogUEFNVSBpcyBhbHNvIHByZXNlbnQgb24gNjQtYml0IFNvQyhzKQ0KDQpUaGlz
+IHJldmVydHMgYSBjaGFuZ2UgZG9uZSBpbiAnNDc3YWI3YSBpb21tdTogTWFrZSBtb3JlIGRyaXZl
+cnMgZGVwZW5kIG9uIENPTVBJTEVfVEVTVCcNCg0KU2lnbmVkLW9mZi1ieTogRW1pbCBNZWR2ZSA8
+RW1pbGlhbi5NZWR2ZUBGcmVlc2NhbGUuY29tPg0KLS0tDQogZHJpdmVycy9pb21tdS9LY29uZmln
+IHwgMSAtDQogMSBmaWxlIGNoYW5nZWQsIDEgZGVsZXRpb24oLSkNCg0KZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvaW9tbXUvS2NvbmZpZyBiL2RyaXZlcnMvaW9tbXUvS2NvbmZpZw0KaW5kZXggYmFhMGQ5
+Ny4uZDkzNjkyYSAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvaW9tbXUvS2NvbmZpZw0KKysrIGIvZHJp
+dmVycy9pb21tdS9LY29uZmlnDQpAQCAtNDksNyArNDksNiBAQCBjb25maWcgT0ZfSU9NTVUNCg0K
+IGNvbmZpZyBGU0xfUEFNVQ0KICAgICAgICAgYm9vbCAiRnJlZXNjYWxlIElPTU1VIHN1cHBvcnQi
+DQotICAgICAgIGRlcGVuZHMgb24gUFBDMzINCiAgICAgICAgIGRlcGVuZHMgb24gUFBDX0U1MDBN
+QyB8fCBDT01QSUxFX1RFU1QNCiAgICAgICAgIHNlbGVjdCBJT01NVV9BUEkNCiAgICAgICAgIHNl
+bGVjdCBHRU5FUklDX0FMTE9DQVRPUg0KLS0NCjIuMy4wDQpBY2tlZC1ieTogVmFydW4gU2V0aGkg
+PFZhcnVuLiBTZXRoaUBmcmVlc2NhbGUuY29tPg0K
 
-> This fixes the following runtime warnings on PA-RISC architecture:
+--_000_y3f9uencp9itm32jxjkubo741424715368250emailandroidcom_
+Content-Type: text/html; charset="utf-8"
+Content-ID: <C5014F12F3D85D43ACC6120D346417CC-KZfg59tc24yhsmfSigO4VTk/3NxTyxQbAL8bYrjMMd8@public.gmane.org>
+Content-Transfer-Encoding: base64
 
-I suppose this is caused by the selftest code ?
+PGh0bWw+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIgY29udGVudD0i
+dGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjwvaGVhZD4NCjxib2R5Pg0KPGJyPg0KPGJyPg0K
+LS0tLS0tLS0gT3JpZ2luYWwgbWVzc2FnZSAtLS0tLS0tLTxicj4NCkZyb206IEVtaWwgTWVkdmUg
+PEVtaWxpYW4uTWVkdmVARnJlZXNjYWxlLmNvbT48YnI+DQpEYXRlOjAyLzE0LzIwMTUgMjoyNyBQ
+TSAoR01UJiM0MzswNTozMCkgPGJyPg0KVG86IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
+b3JnLGpvcm9AOGJ5dGVzLm9yZyxqcm9lZGVsQHN1c2UuZGUsU2V0aGkgVmFydW4tQjE2Mzk1DQo8
+VmFydW4uU2V0aGlAZnJlZXNjYWxlLmNvbT48YnI+DQpDYzogTWVkdmUgRW1pbGlhbi1FTU1FRFZF
+MSA8RW1pbGlhbi5NZWR2ZUBmcmVlc2NhbGUuY29tPjxicj4NClN1YmplY3Q6IFtQQVRDSF0gaW9t
+bXUvZnNsOiBQQU1VIGlzIGFsc28gcHJlc2VudCBvbiA2NC1iaXQgU29DKHMpIDxicj4NCjxicj4N
+Cjxmb250IHNpemU9IjIiPjxzcGFuIHN0eWxlPSJmb250LXNpemU6MTBwdDsiPg0KPGRpdiBjbGFz
+cz0iUGxhaW5UZXh0Ij5UaGlzIHJldmVydHMgYSBjaGFuZ2UgZG9uZSBpbiAnNDc3YWI3YSBpb21t
+dTogTWFrZSBtb3JlIGRyaXZlcnMgZGVwZW5kIG9uIENPTVBJTEVfVEVTVCc8YnI+DQo8YnI+DQpT
+aWduZWQtb2ZmLWJ5OiBFbWlsIE1lZHZlICZsdDtFbWlsaWFuLk1lZHZlQEZyZWVzY2FsZS5jb20m
+Z3Q7PGJyPg0KLS0tPGJyPg0KJm5ic3A7ZHJpdmVycy9pb21tdS9LY29uZmlnIHwgMSAtPGJyPg0K
+Jm5ic3A7MSBmaWxlIGNoYW5nZWQsIDEgZGVsZXRpb24oLSk8YnI+DQo8YnI+DQpkaWZmIC0tZ2l0
+IGEvZHJpdmVycy9pb21tdS9LY29uZmlnIGIvZHJpdmVycy9pb21tdS9LY29uZmlnPGJyPg0KaW5k
+ZXggYmFhMGQ5Ny4uZDkzNjkyYSAxMDA2NDQ8YnI+DQotLS0gYS9kcml2ZXJzL2lvbW11L0tjb25m
+aWc8YnI+DQomIzQzOyYjNDM7JiM0MzsgYi9kcml2ZXJzL2lvbW11L0tjb25maWc8YnI+DQpAQCAt
+NDksNyAmIzQzOzQ5LDYgQEAgY29uZmlnIE9GX0lPTU1VPGJyPg0KJm5ic3A7PGJyPg0KJm5ic3A7
+Y29uZmlnIEZTTF9QQU1VPGJyPg0KJm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7
+Jm5ic3A7Jm5ic3A7IGJvb2wgJnF1b3Q7RnJlZXNjYWxlIElPTU1VIHN1cHBvcnQmcXVvdDs8YnI+
+DQotJm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7IGRlcGVuZHMgb24gUFBDMzI8
+YnI+DQombmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsgZGVw
+ZW5kcyBvbiBQUENfRTUwME1DIHx8IENPTVBJTEVfVEVTVDxicj4NCiZuYnNwOyZuYnNwOyZuYnNw
+OyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyBzZWxlY3QgSU9NTVVfQVBJPGJyPg0KJm5i
+c3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7IHNlbGVjdCBHRU5F
+UklDX0FMTE9DQVRPUjxicj4NCi0tIDxicj4NCjIuMy4wPGJyPg0KPC9kaXY+DQo8L3NwYW4+PHNw
+YW4gY2xhc3M9IkFwcGxlLXN0eWxlLXNwYW4iIHN0eWxlPSJmb250LXNpemU6IDEzLjMzMzMzMzAx
+NTQ0MTg5NXB4OyAiPkFja2VkLWJ5OiBWYXJ1biBTZXRoaSAmbHQ7VmFydW4uIFNldGhpQGZyZWVz
+Y2FsZS5jb20mZ3Q7PC9zcGFuPjwvZm9udD4NCjwvYm9keT4NCjwvaHRtbD4NCg==
 
->   WARNING: at drivers/iommu/io-pgtable-arm.c:413
->   Modules linked in:
->   CPU: 0 PID: 1 Comm: swapper/0 Not tainted
-> 3.19.0-next-20150222-00002-gc420256 #2 task: 17ca0000 ti: 17ca8000 task.t=
-i:
-> 17ca8000
-> =
+--_000_y3f9uencp9itm32jxjkubo741424715368250emailandroidcom_--
 
->        YZrvWESTHLNXBCVMcbcbcbcbOGFRQPDI
->   PSW: 00000000000001001111111100001111 Not tainted
->   r00-03  0004ff0f 0000001b 104871b0 17ca83c0
->   r04-07  00001000 00000000 00000000 00000000
->   r08-11  00000000 40001000 1013b36c 17ca8248
->   r12-15  00000080 17e712c0 00000000 17c5e100
->   r16-19  0000000c 105d8eb0 40001000 ffffffff
->   r20-23  00000000 00800020 1048717c 00000000
->   r24-27  00001000 00000000 00000009 10774ce0
->   r28-31  00000000 00000027 17ca8480 10486d44
->   sr00-03  00000000 00000000 00000000 00000000
->   sr04-07  00000000 00000000 00000000 00000000
-> =
+--===============7217963875027713351==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
->   IASQ: 00000000 00000000 IAOQ: 10486df4 10486df8
->    IIR: 03ffe01f    ISR: 00000000  IOR: 17c86e54
->    CPU:        0   CR30: 17ca8000 CR31: 00000002
->    ORIG_R28: 00000001
->    IAOQ[0]: __arm_lpae_unmap+0x144/0x4cc
->    IAOQ[1]: __arm_lpae_unmap+0x148/0x4cc
->    RP(r2): arm_lpae_unmap+0x34/0x6c
->   Backtrace:
->    [<104871b0>] arm_lpae_unmap+0x34/0x6c
->    [<10127944>] 0x10127944
->    [<10168ee0>] do_one_initcall+0x128/0x1dc
->    [<101028fc>] 0x101028fc
->    [<10161b48>] kernel_init+0x1c/0x118
->    [<1015d01c>] end_fault_vector+0x1c/0x24
->    [<101762ec>] save_stack_trace+0x28/0x60
-> =
 
-> Signed-off-by: Vincent Stehl=E9 <vincent.stehle-QFKgK+z4sOrR7s880joybQ@public.gmane.org>
-> Cc: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> ---
-> =
-
-> =
-
-> Hi,
-> =
-
-> This can be seen with e.g. Linux next-20150222 on parisc with allmodconfi=
-g.
-> =
-
-> Best regards,
-> =
-
-> V.
-> =
-
-> =
-
->  drivers/iommu/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
-> =
-
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index baa0d97..c73fd72 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -22,6 +22,7 @@ config IOMMU_IO_PGTABLE
-> =
-
->  config IOMMU_IO_PGTABLE_LPAE
->  	bool "ARMv7/v8 Long Descriptor Format"
-> +	depends on ARM
-
-How about ARM || COMPILE_TEST ? It can still be useful to compile the modul=
-e =
-
-on other architectures.
-
->  	select IOMMU_IO_PGTABLE
->  	help
->  	  Enable support for the ARM long descriptor pagetable format.
-
--- =
-
-Regards,
-
-Laurent Pinchart
+--===============7217963875027713351==--
