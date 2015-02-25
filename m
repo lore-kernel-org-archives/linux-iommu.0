@@ -1,58 +1,39 @@
-From: Murali Karicheri <m-karicheri2@ti.com>
-Subject: Re: [PATCH v6 6/7] PCI: update dma configuration from DT
-Date: Wed, 25 Feb 2015 15:45:01 -0500
-Message-ID: <54EE344D.5060403@ti.com>
-References: <1423173179-10227-1-git-send-email-m-karicheri2@ti.com> <20150225015317.GO6220@google.com> <54EDF236.40101@ti.com> <4781283.CC9oFpsHLJ@wuerfel>
+From: Marcelo Tosatti <mtosatti@redhat.com>
+Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU is
+ blocked
+Date: Wed, 25 Feb 2015 18:50:11 -0300
+Message-ID: <20150225215011.GA16848@amt.cnet>
+References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
+ <1418397300-10870-25-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <4781283.CC9oFpsHLJ@wuerfel>
+Content-Disposition: inline
+In-Reply-To: <1418397300-10870-25-git-send-email-feng.wu@intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, Will Deacon <will.deacon@arm.com>, Russell King <linux@arm.linux.org.uk>, Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
+To: Feng Wu <feng.wu@intel.com>
+Cc: tglx@linutronix.de, mingo@redhat.com, hpa@zytor.com, x86@kernel.org, gleb@kernel.org, pbonzini@redhat.com, dwmw2@infradead.org, joro@8bytes.org, alex.williamson@redhat.com, jiang.liu@linux.intel.com, eric.auger@linaro.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 02/25/2015 11:09 AM, Arnd Bergmann wrote:
-> On Wednesday 25 February 2015 11:03:02 Murali Karicheri wrote:
->>
->>> (I don't know exactly how these patches all fit together, so that's
->>> probably not accurate, but that's the *sort* of thing I'd like to include.)
->>>
->>> If that actually *is* what's going on, I have to wonder why this isn't
->>> implemented as a very simple IOMMU instead of adding dma_pfn_offset,
->>> which is present on all arches but only used on ARM.  In some sense that
->>> offset is parallel but incompatible with an IOMMU: they both translate DMA
->>> addresses into system RAM addresses.
->>
->> I don't have much history on any previous discussion on the subject you
->> are referring to. I assume it would have happened when
->> of_dma_configure() was first introduced. On Keystone, we don't have
->> IOMMU support and dma_pfn_offset is needed to translate DMA address to
->> System RAM address and vice-versa. So this has to be supported for
->> Keystone. There can be enhancement for IOMMU with out impacting this
->> feature for Keystone.
->
-> The direction we are taking with IOMMU in general is opposite to what Bjorn
-> is suggesting: I believe what he wants to say is that we should use the
-> traditional approach of having a specialized dma_map_ops implementation
-> for this, just like we do for IOMMU implementations on x86, IA64 or PowerPC.
->
-> However, with the recent explosion of IOMMU implementations on ARM, we
-> are moving towards having a single dma_map_ops structure for all of them,
-> and that structure does not work with the keystone hardware. Instead,
-> the normal ARM dma_map_ops have been changed to handle the offset,
-> which is the same thing we do on PowerPC.
->
-Arnd,
+On Fri, Dec 12, 2014 at 11:14:58PM +0800, Feng Wu wrote:
+> This patch updates the Posted-Interrupts Descriptor when vCPU
+> is blocked.
+> 
+> pre-block:
+> - Add the vCPU to the blocked per-CPU list
+> - Clear 'SN'
+> - Set 'NV' to POSTED_INTR_WAKEUP_VECTOR
+> 
+> post-block:
+> - Remove the vCPU from the per-CPU list
+> 
+> Signed-off-by: Feng Wu <feng.wu@intel.com>
+> ---
 
-Thanks for the clarification.
+Don't see this is needed, can use the existing POSTED_INTR_VECTOR:
 
-Murali
+If in guest mode, IPI will be handled in VMX non-root by performed
+PIR->IRR transfer.
 
-> 	Arnd
-
-
--- 
-Murali Karicheri
-Linux Kernel, Texas Instruments
+If outside guest mode, POSTED_INTR_VECTOR IPI will be handled by host
+which can wakeup the guest (in case it is halted).
