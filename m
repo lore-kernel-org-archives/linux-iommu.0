@@ -1,90 +1,68 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v6 0/7] PCI: get DMA configuration from parent device
-Date: Wed, 25 Feb 2015 16:20:49 -0600
-Message-ID: <20150225222049.GP6220@google.com>
-References: <1423173179-10227-1-git-send-email-m-karicheri2@ti.com>
+From: "Wu, Feng" <feng.wu@intel.com>
+Subject: RE: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU
+ is blocked
+Date: Thu, 26 Feb 2015 08:08:15 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F0023E9C69@SHSMSX104.ccr.corp.intel.com>
+References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
+ <1418397300-10870-25-git-send-email-feng.wu@intel.com>
+ <20150225215011.GA16848@amt.cnet>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1423173179-10227-1-git-send-email-m-karicheri2@ti.com>
+In-Reply-To: <20150225215011.GA16848@amt.cnet>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Murali Karicheri <m-karicheri2@ti.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, Will Deacon <will.deacon@arm.com>, Russell King <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
+To: Marcelo Tosatti <mtosatti@redhat.com>
+Cc: "tglx@linutronix.de" <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>, "hpa@zytor.com" <hpa@zytor.com>, "x86@kernel.org" <x86@kernel.org>, "gleb@kernel.org" <gleb@kernel.org>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "eric.auger@linaro.org" <eric.auger@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Zhang, Yang Z" <yang.z.zhang@intel.com>, "Wu, Feng" <feng.wu@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 05, 2015 at 04:52:52PM -0500, Murali Karicheri wrote:
-> This patch add an important capability to PCI driver on Keystone. I hope to
-> have this merged to the upstream branch so that it is available for v3.20.
-> Also would like thank everyone for the contribution.
-> 
-> PCI devices on Keystone doesn't have correct dma_pfn_offset set. This patch
-> add capability to set the dma configuration such as dma-mask, dma_pfn_offset,
-> and dma ops etc using the information from DT. The prior RFCs and discussions
-> are available at [1] and [2] below.
-> 
-> [2] : https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg790244.html
-> [1] : http://www.gossamer-threads.com/lists/linux/kernel/2024591
-> 
-> Change history:
-> 	v6 - Rebased to v3.19-v7
-> 	   - Addressed some minor comments about node name and DT size validation.
-> 	   - Pulled out 8/8 of v5 and plan to send a patch for enhancing
-> 	     of_dma_configure() to use size to calculate dma mask.
-> 	   - Added Acks from reviewers.
-> 	v5 - moved the dma_mask update in device from ARM specific API to
-> 	     of_dma_configure to allow this across other architecture as well
-> 	   - improved sanity check for DT dma-range size in of_dma_configure()
-> 	   - moved API to get parent bridge device to PCI (host-bridge.c)
-> 	v4 - moved size adjustments in of_iommu_configure() to a separate patch
-> 	   - consistent node name comment from Rob
-> 	   - patch 6 added for dma_mask adjustment and iommu mapping size
-> 	     limiting.
-> 	v3 - addressed comments to re-use of_dma_configure() for PCI
-> 	   - To help re-use, change of_iommu_configure() function argument
-> 		- Move of_dma_configure to of/device.c
-> 		- Limit the of_iommu_configure to non pci devices
-> 	v2 - update size to coherent_dma_mask + 1 if dma-range info is missing
-> 	   - also check the np for null.
-> 	v1 - updates based on the comments against initial RFC.
-> 	   - Added a helper function to get the OF node of the parent
-> 	   - Added an API in of_pci.c to update DMA configuration of the pci
-> 	     device.
-> 
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Grant Likely <grant.likely@linaro.org>
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Cc: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: Will Deacon <will.deacon@arm.com>
-> Cc: Russell King <linux@arm.linux.org.uk>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
-> 
-> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-> Acked-by: Murali Karicheri <m-karicheri2@ti.com>
-> 
-> Murali Karicheri (7):
->   of: iommu: add ptr to OF node arg to of_iommu_configure()
->   of: move of_dma_configure() to device.c to help re-use
->   of: fix size when dma-range is not used
->   PCI: add helper functions pci_get[put]_host_bridge_device()
->   of/pci: add of_pci_dma_configure() update dma configuration
->   PCI: update dma configuration from DT
->   arm: dma-mapping: limit iommu mapping size
-> 
->  arch/arm/mm/dma-mapping.c |    7 +++++
->  drivers/iommu/of_iommu.c  |   10 ++++--
->  drivers/of/device.c       |   74 +++++++++++++++++++++++++++++++++++++++++++++
->  drivers/of/of_pci.c       |   19 ++++++++++++
->  drivers/of/platform.c     |   58 ++---------------------------------
->  drivers/pci/host-bridge.c |   14 +++++++++
->  drivers/pci/probe.c       |    2 ++
->  include/linux/of_device.h |    2 ++
->  include/linux/of_iommu.h  |    6 ++--
->  include/linux/of_pci.h    |    5 +++
->  include/linux/pci.h       |    3 ++
->  11 files changed, 140 insertions(+), 60 deletions(-)
 
-Applied with additional acks/tested-by to pci/iommu for v4.1, thanks!
 
-Bjorn
+> -----Original Message-----
+> From: Marcelo Tosatti [mailto:mtosatti@redhat.com]
+> Sent: Thursday, February 26, 2015 5:50 AM
+> To: Wu, Feng
+> Cc: tglx@linutronix.de; mingo@redhat.com; hpa@zytor.com; x86@kernel.org;
+> gleb@kernel.org; pbonzini@redhat.com; dwmw2@infradead.org;
+> joro@8bytes.org; alex.williamson@redhat.com; jiang.liu@linux.intel.com;
+> eric.auger@linaro.org; linux-kernel@vger.kernel.org;
+> iommu@lists.linux-foundation.org; kvm@vger.kernel.org
+> Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU
+> is blocked
+> 
+> On Fri, Dec 12, 2014 at 11:14:58PM +0800, Feng Wu wrote:
+> > This patch updates the Posted-Interrupts Descriptor when vCPU
+> > is blocked.
+> >
+> > pre-block:
+> > - Add the vCPU to the blocked per-CPU list
+> > - Clear 'SN'
+> > - Set 'NV' to POSTED_INTR_WAKEUP_VECTOR
+> >
+> > post-block:
+> > - Remove the vCPU from the per-CPU list
+> >
+> > Signed-off-by: Feng Wu <feng.wu@intel.com>
+> > ---
+> 
+> Don't see this is needed, can use the existing POSTED_INTR_VECTOR:
+> 
+> If in guest mode, IPI will be handled in VMX non-root by performed
+> PIR->IRR transfer.
+> 
+> If outside guest mode, POSTED_INTR_VECTOR IPI will be handled by host
+> which can wakeup the guest (in case it is halted).
+
+Please see the following scenario:
+
+1. vCPU0 is running on pCPU0
+2. vCPU0 is halted and vCPU1 is currently running on pCPU0
+3. An interrupt occurs for vCPU0, if we still use POSTED_INTR_VECTOR
+for vCPU0, the notification event for vCPU0 (the event will go to pCPU1)
+will be consumed by vCPU1 incorrectly. The worst case is that vCPU0
+will never be woken up again since the wakeup event for it is always
+consumed by other vCPUs incorrectly.
+
+Thanks,
+Feng
