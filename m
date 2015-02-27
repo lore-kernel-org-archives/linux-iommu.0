@@ -1,356 +1,431 @@
-From: Marcelo Tosatti <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU is
-	blocked
-Date: Thu, 26 Feb 2015 20:40:48 -0300
-Message-ID: <20150226234048.GA7784@amt.cnet>
-References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
-	<1418397300-10870-25-git-send-email-feng.wu@intel.com>
+From: Baptiste Reynal <b.reynal@virtualopensystems.com>
+Subject: Re: [PATCH v13 00/18] VFIO support for platform devices
+Date: Fri, 27 Feb 2015 12:05:26 +0100
+Message-ID: <CAN9JPjE9ssasEBMbxpf+FOyc_jMkz6-7z82WRFj2YwuSDgv85w@mail.gmail.com>
+References: <1422625584-3741-1-git-send-email-b.reynal@virtualopensystems.com>
+ <CAN9JPjHo3AP_O=9EE83Fa7ZR+6Q2J2xYjc=ksNwLrF2WChZ4qg@mail.gmail.com>
+ <54EF5892.7080908@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1418397300-10870-25-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+Content-Type: multipart/mixed; boundary="===============4266795144776573961=="
+Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
+In-Reply-To: <54EF5892.7080908@arm.com>
+List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
+List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
+List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
+List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
+List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
+Errors-To: kvmarm-bounces@lists.cs.columbia.edu
+Sender: kvmarm-bounces@lists.cs.columbia.edu
+To: Marc Zyngier <marc.zyngier@arm.com>
+Cc: Will Deacon <Will.Deacon@arm.com>, Alex Williamson <alex.williamson@redhat.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, VirtualOpenSystems Technical Team <tech@virtualopensystems.com>, kvm-arm <kvmarm@lists.cs.columbia.edu>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Dec 12, 2014 at 11:14:58PM +0800, Feng Wu wrote:
-> This patch updates the Posted-Interrupts Descriptor when vCPU
-> is blocked.
-> 
-> pre-block:
-> - Add the vCPU to the blocked per-CPU list
-> - Clear 'SN'
-> - Set 'NV' to POSTED_INTR_WAKEUP_VECTOR
-> 
-> post-block:
-> - Remove the vCPU from the per-CPU list
-> 
-> Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> ---
->  arch/x86/include/asm/kvm_host.h |  2 +
->  arch/x86/kvm/vmx.c              | 96 +++++++++++++++++++++++++++++++++++++++++
->  arch/x86/kvm/x86.c              | 22 +++++++---
->  include/linux/kvm_host.h        |  4 ++
->  virt/kvm/kvm_main.c             |  6 +++
->  5 files changed, 123 insertions(+), 7 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> index 13e3e40..32c110a 100644
-> --- a/arch/x86/include/asm/kvm_host.h
-> +++ b/arch/x86/include/asm/kvm_host.h
-> @@ -101,6 +101,8 @@ static inline gfn_t gfn_to_index(gfn_t gfn, gfn_t base_gfn, int level)
->  
->  #define ASYNC_PF_PER_VCPU 64
->  
-> +extern void (*wakeup_handler_callback)(void);
-> +
->  enum kvm_reg {
->  	VCPU_REGS_RAX = 0,
->  	VCPU_REGS_RCX = 1,
-> diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-> index bf2e6cd..a1c83a2 100644
-> --- a/arch/x86/kvm/vmx.c
-> +++ b/arch/x86/kvm/vmx.c
-> @@ -832,6 +832,13 @@ static DEFINE_PER_CPU(struct vmcs *, current_vmcs);
->  static DEFINE_PER_CPU(struct list_head, loaded_vmcss_on_cpu);
->  static DEFINE_PER_CPU(struct desc_ptr, host_gdt);
->  
-> +/*
-> + * We maintian a per-CPU linked-list of vCPU, so in wakeup_handler() we
-> + * can find which vCPU should be waken up.
-> + */
-> +static DEFINE_PER_CPU(struct list_head, blocked_vcpu_on_cpu);
-> +static DEFINE_PER_CPU(spinlock_t, blocked_vcpu_on_cpu_lock);
-> +
->  static unsigned long *vmx_io_bitmap_a;
->  static unsigned long *vmx_io_bitmap_b;
->  static unsigned long *vmx_msr_bitmap_legacy;
-> @@ -1921,6 +1928,7 @@ static void vmx_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
->  		struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
->  		struct pi_desc old, new;
->  		unsigned int dest;
-> +		unsigned long flags;
->  
->  		memset(&old, 0, sizeof(old));
->  		memset(&new, 0, sizeof(new));
-> @@ -1942,6 +1950,20 @@ static void vmx_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
->  			new.nv = POSTED_INTR_VECTOR;
->  		} while (cmpxchg(&pi_desc->control, old.control,
->  				new.control) != old.control);
-> +
-> +		/*
-> +		 * Delete the vCPU from the related wakeup queue
-> +		 * if we are resuming from blocked state
-> +		 */
-> +		if (vcpu->blocked) {
-> +			vcpu->blocked = false;
-> +			spin_lock_irqsave(&per_cpu(blocked_vcpu_on_cpu_lock,
-> +				vcpu->wakeup_cpu), flags);
-> +			list_del(&vcpu->blocked_vcpu_list);
-> +			spin_unlock_irqrestore(&per_cpu(blocked_vcpu_on_cpu_lock,
-> +				vcpu->wakeup_cpu), flags);
-> +			vcpu->wakeup_cpu = -1;
-> +		}
->  	}
->  }
->  
-> @@ -1950,6 +1972,9 @@ static void vmx_vcpu_put(struct kvm_vcpu *vcpu)
->  	if (irq_remapping_cap(IRQ_POSTING_CAP)) {
->  		struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
->  		struct pi_desc old, new;
-> +		unsigned long flags;
-> +		int cpu;
-> +		struct cpumask cpu_others_mask;
->  
->  		memset(&old, 0, sizeof(old));
->  		memset(&new, 0, sizeof(new));
-> @@ -1961,6 +1986,54 @@ static void vmx_vcpu_put(struct kvm_vcpu *vcpu)
->  				pi_set_sn(&new);
->  			} while (cmpxchg(&pi_desc->control, old.control,
->  					new.control) != old.control);
-> +		} else if (vcpu->blocked) {
-> +			/*
-> +			 * The vcpu is blocked on the wait queue.
-> +			 * Store the blocked vCPU on the list of the
-> +			 * vcpu->wakeup_cpu, which is the destination
-> +			 * of the wake-up notification event.
-> +			 */
-> +			vcpu->wakeup_cpu = vcpu->cpu;
-> +			spin_lock_irqsave(&per_cpu(blocked_vcpu_on_cpu_lock,
-> +					  vcpu->wakeup_cpu), flags);
-> +			list_add_tail(&vcpu->blocked_vcpu_list,
-> +				      &per_cpu(blocked_vcpu_on_cpu,
-> +				      vcpu->wakeup_cpu));
-> +			spin_unlock_irqrestore(
-> +					&per_cpu(blocked_vcpu_on_cpu_lock,
-> +					vcpu->wakeup_cpu), flags);
-> +
-> +			do {
-> +				old.control = new.control = pi_desc->control;
-> +
-> +				/*
-> +				 * We should not block the vCPU if
-> +				 * an interrupt is posted for it.
-> +				 */
-> +				if (pi_test_on(pi_desc) == 1) {
-> +					/*
-> +					 * We need schedule the wakeup worker
-> +					 * on a different cpu other than
-> +					 * vcpu->cpu, because in some case,
-> +					 * schedule_work() will call
-> +					 * try_to_wake_up() which needs acquire
-> +					 * the rq lock. This can cause deadlock.
-> +					 */
-> +					cpumask_copy(&cpu_others_mask,
-> +						     cpu_online_mask);
-> +					cpu_clear(vcpu->cpu, cpu_others_mask);
-> +					cpu = any_online_cpu(cpu_others_mask);
-> +
-> +					schedule_work_on(cpu,
-> +							 &vcpu->wakeup_worker);
-> +				}
-> +
-> +				pi_clear_sn(&new);
-> +
-> +				/* set 'NV' to 'wakeup vector' */
-> +				new.nv = POSTED_INTR_WAKEUP_VECTOR;
-> +			} while (cmpxchg(&pi_desc->control, old.control,
-> +				new.control) != old.control);
->  		}
+--===============4266795144776573961==
+Content-Type: multipart/alternative; boundary=001a11c13c12823b4205100fd8d8
 
-This can be done exclusively on HLT emulation, correct? (that is, on
-entry to HLT and exit from HLT).
+--001a11c13c12823b4205100fd8d8
+Content-Type: text/plain; charset=UTF-8
 
-If the vcpu is scheduled out for any other reason (transition to
-userspace or transition to other thread), it will eventually resume
-execution. And in that case, continuation of execution does not depend
-on the event (VT-d interrupt) notification.
+Thanks for your answers.
 
-There is a race window with the code above, I believe.
+I am now the sub-maintainer of vfio-platform. I will handle the rebase of
+these serie and fix "[PATCH v3 0/6] vfio: type1: support for ARM SMMUS with
+VFIO_IOMMU_TYPE1". New versions are coming soon.
 
->  	}
->  
-> @@ -2842,6 +2915,8 @@ static int hardware_enable(void)
->  		return -EBUSY;
->  
->  	INIT_LIST_HEAD(&per_cpu(loaded_vmcss_on_cpu, cpu));
-> +	INIT_LIST_HEAD(&per_cpu(blocked_vcpu_on_cpu, cpu));
-> +	spin_lock_init(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
->  
->  	/*
->  	 * Now we can enable the vmclear operation in kdump
-> @@ -9315,6 +9390,25 @@ static struct kvm_x86_ops vmx_x86_ops = {
->  	.pi_set_sn = vmx_pi_set_sn,
->  };
->  
-> +/*
-> + * Handler for POSTED_INTERRUPT_WAKEUP_VECTOR.
-> + */
-> +void wakeup_handler(void)
-> +{
-> +	struct kvm_vcpu *vcpu;
-> +	int cpu = smp_processor_id();
-> +
-> +	spin_lock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
-> +	list_for_each_entry(vcpu, &per_cpu(blocked_vcpu_on_cpu, cpu),
-> +			blocked_vcpu_list) {
-> +		struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
-> +
-> +		if (pi_test_on(pi_desc) == 1)
-> +			kvm_vcpu_kick(vcpu);
-> +	}
-> +	spin_unlock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
-> +}
+Regards,
+Baptiste
 
-Looping through all blocked vcpus does not scale:
-Can you allocate more vectors and then multiplex those
-vectors amongst the HLT'ed vcpus? 
+On Thu, Feb 26, 2015 at 6:32 PM, Marc Zyngier <marc.zyngier@arm.com> wrote:
 
-It seems there is a bunch free:
-
-commit 52aec3308db85f4e9f5c8b9f5dc4fbd0138c6fa4
-Author: Alex Shi <alex.shi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Date:   Thu Jun 28 09:02:23 2012 +0800
-
-    x86/tlb: replace INVALIDATE_TLB_VECTOR by CALL_FUNCTION_VECTOR
-
-Can you add only vcpus which have posted IRTEs that point to this pCPU
-to the HLT'ed vcpu lists? (so for example, vcpus without assigned
-devices are not part of the list).
-
-> +
->  static int __init vmx_init(void)
->  {
->  	int r, i, msr;
-> @@ -9429,6 +9523,8 @@ static int __init vmx_init(void)
->  
->  	update_ple_window_actual_max();
->  
-> +	wakeup_handler_callback = wakeup_handler;
-> +
->  	return 0;
->  
->  out7:
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 0033df3..1551a46 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -6152,6 +6152,21 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
->  			kvm_vcpu_reload_apic_access_page(vcpu);
->  	}
->  
-> +	/*
-> +	 * Since posted-interrupts can be set by VT-d HW now, in this
-> +	 * case, KVM_REQ_EVENT is not set. We move the following
-> +	 * operations out of the if statement.
-> +	 */
-> +	if (kvm_lapic_enabled(vcpu)) {
-> +		/*
-> +		 * Update architecture specific hints for APIC
-> +		 * virtual interrupt delivery.
-> +		 */
-> +		if (kvm_x86_ops->hwapic_irr_update)
-> +			kvm_x86_ops->hwapic_irr_update(vcpu,
-> +				kvm_lapic_find_highest_irr(vcpu));
-> +	}
-> +
-
-This is a hot fast path. You can set KVM_REQ_EVENT from wakeup_handler.
-
->  	if (kvm_check_request(KVM_REQ_EVENT, vcpu) || req_int_win) {
->  		kvm_apic_accept_events(vcpu);
->  		if (vcpu->arch.mp_state == KVM_MP_STATE_INIT_RECEIVED) {
-> @@ -6168,13 +6183,6 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
->  			kvm_x86_ops->enable_irq_window(vcpu);
->  
->  		if (kvm_lapic_enabled(vcpu)) {
-> -			/*
-> -			 * Update architecture specific hints for APIC
-> -			 * virtual interrupt delivery.
-> -			 */
-> -			if (kvm_x86_ops->hwapic_irr_update)
-> -				kvm_x86_ops->hwapic_irr_update(vcpu,
-> -					kvm_lapic_find_highest_irr(vcpu));
->  			update_cr8_intercept(vcpu);
->  			kvm_lapic_sync_to_vapic(vcpu);
->  		}
-> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-> index 3d7242c..d981d16 100644
-> --- a/include/linux/kvm_host.h
-> +++ b/include/linux/kvm_host.h
-> @@ -239,6 +239,9 @@ struct kvm_vcpu {
->  	unsigned long requests;
->  	unsigned long guest_debug;
->  
-> +	int wakeup_cpu;
-> +	struct list_head blocked_vcpu_list;
-> +
->  	struct mutex mutex;
->  	struct kvm_run *run;
->  
-> @@ -282,6 +285,7 @@ struct kvm_vcpu {
->  	} spin_loop;
->  #endif
->  	bool preempted;
-> +	bool blocked;
->  	struct kvm_vcpu_arch arch;
->  };
-
-Please remove blocked and wakeup_cpu, they should not be necessary.
-
-> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-> index ba53fd6..6deb994 100644
-> --- a/virt/kvm/kvm_main.c
-> +++ b/virt/kvm/kvm_main.c
-> @@ -233,6 +233,9 @@ int kvm_vcpu_init(struct kvm_vcpu *vcpu, struct kvm *kvm, unsigned id)
->  
->  	INIT_WORK(&vcpu->wakeup_worker, wakeup_thread);
->  
-> +	vcpu->wakeup_cpu = -1;
-> +	INIT_LIST_HEAD(&vcpu->blocked_vcpu_list);
-> +
->  	page = alloc_page(GFP_KERNEL | __GFP_ZERO);
->  	if (!page) {
->  		r = -ENOMEM;
-> @@ -243,6 +246,7 @@ int kvm_vcpu_init(struct kvm_vcpu *vcpu, struct kvm *kvm, unsigned id)
->  	kvm_vcpu_set_in_spin_loop(vcpu, false);
->  	kvm_vcpu_set_dy_eligible(vcpu, false);
->  	vcpu->preempted = false;
-> +	vcpu->blocked = false;
->  
->  	r = kvm_arch_vcpu_init(vcpu);
->  	if (r < 0)
-> @@ -1752,6 +1756,7 @@ void kvm_vcpu_block(struct kvm_vcpu *vcpu)
->  	DEFINE_WAIT(wait);
->  
->  	for (;;) {
-> +		vcpu->blocked = true;
->  		prepare_to_wait(&vcpu->wq, &wait, TASK_INTERRUPTIBLE);
->  
->  		if (kvm_arch_vcpu_runnable(vcpu)) {
-> @@ -1767,6 +1772,7 @@ void kvm_vcpu_block(struct kvm_vcpu *vcpu)
->  	}
->  
->  	finish_wait(&vcpu->wq, &wait);
-> +	vcpu->blocked = false;
->  }
->  EXPORT_SYMBOL_GPL(kvm_vcpu_block);
->  
-> -- 
-> 1.9.1
-> 
+> Hi Baptiste,
+>
+> On 26/02/15 17:02, Baptiste Reynal wrote:
+> > Hi everyone,
+> >
+> > Are there any comments on this patch series? If not, Is there
+> > anything keeping this series from getting merged upstream?
+>
+> For a start, it looks like the dependency mentioned below is still not
+> in, which is a bit of a problem.
+>
+> Also, trying to merge your branch below (after fixing the URL), I get
+> some conflicts with the current mainline, so that's a bit of a show
+> stopper too.
+>
+> Can you start by rebasing on top of 4.0-rc1 with all the dependencies,
+> reposting the series, and cc-ing the original author of the patches (as
+> I cannot see Antonios on the CC list)?
+>
+> Thanks,
+>
+>         M.
+>
+> > Thanks,
+> > Baptiste
+> >
+> > On Fri, Jan 30, 2015 at 2:46 PM, Baptiste Reynal <
+> b.reynal@virtualopensystems.com<mailto:b.reynal@virtualopensystems.com>>
+> wrote:
+> > This patch series aims to implement VFIO support for platform devices
+> that
+> > reside behind an IOMMU. Examples of such devices are devices behind an
+> ARM
+> > SMMU, or behind a Samsung Exynos System MMU.
+> >
+> > The API used is based on the existing VFIO API that is also used with PCI
+> > devices. Only devices that include a basic set of IRQs and memory
+> regions are
+> > targeted; devices with complex relationships with other devices on a
+> device
+> > tree are not taken into account at this stage.
+> >
+> > This patch series may be applied on the following series/patches:
+> >  - [PATCH v3 0/6] vfio: type1: support for ARM SMMUS with
+> VFIO_IOMMU_TYPE1
+> >
+> > A copy can be cloned from the branch vfio-platform-v13 at:
+> > git@github.com:virtualopensystems/linux-kvm-arm.git
+> >
+> > Changes since v12:
+> >  - Reorder chunks to be bisect-able
+> > Changes since v11:
+> >  - Drop support for ARM AMBA devices
+> >  - vfio_platform_private.h is now self-contained
+> >  - Fix masked IRQ initialization
+> > Changes since v10:
+> >  - Check if interrupt is already masked when setting a new trigger
+> >  - Fixed kasprintf with unchecked return value in VFIO AMBA driver
+> > Changes since v9:
+> >  - Reworked the splitting of the patches that decouple virqfd from PCI
+> >  - Some styling issues and typos
+> >  - Removed superfluous includes
+> >  - AMBA devices are now named vfio-amba- suffixed by the AMBA device id
+> >  - Several other cleanups and fixes
+> > Changes since v8:
+> >  - Separate irq handler for edge and level triggered interrupts
+> >  - Mutex based lock for VFIO fd open/release
+> >  - Fixed bug where the first region of a platform device wasn't exposed
+> >  - Read only regions can be MMAPed only read only
+> >  - Code cleanups
+> > Changes since v7:
+> >  - Some initial placeholder functionality for PIO resources
+> >  - Cleaned up code for IRQ triggering, masking and unmasking
+> >  - Some functionality has been removed from this series and posted
+> separately:
+> >    - VFIO_IOMMU_TYPE1 support for ARM SMMUs
+> >    - IOMMU NOEXEC patches
+> >    - driver_override functionality for AMBA devices
+> >  - Several fixes
+> > Changes since v6:
+> >  - Integrated support for AMBA devices
+> >  - Numerous cleanups and fixes
+> > Changes since v5:
+> >  - Full eventfd support for IRQ masking and unmasking.
+> >  - Changed IOMMU_EXEC to IOMMU_NOEXEC, along with related flags in VFIO.
+> >  - Other fixes based on reviewer comments.
+> > Changes since v4:
+> >  - Use static offsets for each region in the VFIO device fd
+> >  - Include patch in the series for the ARM SMMU to expose IOMMU_EXEC
+> >    availability via IOMMU_CAP_DMA_EXEC
+> >  - Rebased on VFIO multi domain support:
+> >    - IOMMU_EXEC is now available if at least one IOMMU in the container
+> >      supports it
+> >    - Expose IOMMU_EXEC if available via the capability
+> VFIO_IOMMU_PROT_EXEC
+> >  - Some bug fixes
+> > Changes since v3:
+> >  - Use Kim Phillips' driver_probe_device()
+> > Changes since v2:
+> >  - Fixed Read/Write and MMAP on device regions
+> >  - Removed dependency on Device Tree
+> >  - Interrupts support
+> >  - Interrupt masking/unmasking
+> >  - Automask level sensitive interrupts
+> >  - Introduced VFIO_DMA_MAP_FLAG_EXEC
+> >  - Code clean ups
+> >
+> > Antonios Motakis (18):
+> >   vfio/platform: initial skeleton of VFIO support for platform devices
+> >   vfio: platform: probe to devices on the platform bus
+> >   vfio: platform: add the VFIO PLATFORM module to Kconfig
+> >   vfio/platform: return info for bound device
+> >   vfio/platform: return info for device memory mapped IO regions
+> >   vfio/platform: read and write support for the device fd
+> >   vfio/platform: support MMAP of MMIO regions
+> >   vfio/platform: return IRQ info
+> >   vfio/platform: initial interrupts support code
+> >   vfio/platform: trigger an interrupt via eventfd
+> >   vfio/platform: support for level sensitive interrupts
+> >   vfio: add a vfio_ prefix to virqfd_enable and virqfd_disable and
+> >     export
+> >   vfio: virqfd: rename vfio_pci_virqfd_init and vfio_pci_virqfd_exit
+> >   vfio: add local lock for virqfd instead of depending on VFIO PCI
+> >   vfio: pass an opaque pointer on virqfd initialization
+> >   vfio: move eventfd support code for VFIO_PCI to a separate file
+> >   vfio: initialize the virqfd workqueue in VFIO generic code
+> >   vfio/platform: implement IRQ masking/unmasking via an eventfd
+> >
+> >  drivers/vfio/Kconfig                          |   1 +
+> >  drivers/vfio/Makefile                         |   5 +-
+> >  drivers/vfio/pci/vfio_pci.c                   |   8 -
+> >  drivers/vfio/pci/vfio_pci_intrs.c             | 238 +-----------
+> >  drivers/vfio/pci/vfio_pci_private.h           |   3 -
+> >  drivers/vfio/platform/Kconfig                 |   9 +
+> >  drivers/vfio/platform/Makefile                |   4 +
+> >  drivers/vfio/platform/vfio_platform.c         | 103 +++++
+> >  drivers/vfio/platform/vfio_platform_common.c  | 521
+> ++++++++++++++++++++++++++
+> >  drivers/vfio/platform/vfio_platform_irq.c     | 336 +++++++++++++++++
+> >  drivers/vfio/platform/vfio_platform_private.h |  85 +++++
+> >  drivers/vfio/vfio.c                           |   8 +
+> >  drivers/vfio/virqfd.c                         | 213 +++++++++++
+> >  include/linux/vfio.h                          |  27 ++
+> >  include/uapi/linux/vfio.h                     |   1 +
+> >  15 files changed, 1326 insertions(+), 236 deletions(-)
+> >  create mode 100644 drivers/vfio/platform/Kconfig
+> >  create mode 100644 drivers/vfio/platform/Makefile
+> >  create mode 100644 drivers/vfio/platform/vfio_platform.c
+> >  create mode 100644 drivers/vfio/platform/vfio_platform_common.c
+> >  create mode 100644 drivers/vfio/platform/vfio_platform_irq.c
+> >  create mode 100644 drivers/vfio/platform/vfio_platform_private.h
+> >  create mode 100644 drivers/vfio/virqfd.c
+> >
+> > --
+> > 2.2.2
+> >
+> >
+>
+>
 > --
-> To unsubscribe from this list: send the line "unsubscribe kvm" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Jazz is not dead. It just smells funny...
+>
+
+--001a11c13c12823b4205100fd8d8
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Thanks for your answers.<br><br>I am now the sub-maintaine=
+r of vfio-platform. I will handle the rebase of these serie and fix &quot;[=
+PATCH v3 0/6] vfio: type1: support for ARM SMMUS with VFIO_IOMMU_TYPE1&quot=
+;. New versions are coming soon.<br><br>Regards,<br>Baptiste</div><div clas=
+s=3D"gmail_extra"><br><div class=3D"gmail_quote">On Thu, Feb 26, 2015 at 6:=
+32 PM, Marc Zyngier <span dir=3D"ltr">&lt;<a href=3D"mailto:marc.zyngier@ar=
+m.com" target=3D"_blank">marc.zyngier@arm.com</a>&gt;</span> wrote:<br><blo=
+ckquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #c=
+cc solid;padding-left:1ex">Hi Baptiste,<br>
+<span class=3D""><br>
+On 26/02/15 17:02, Baptiste Reynal wrote:<br>
+&gt; Hi everyone,<br>
+&gt;<br>
+&gt; Are there any comments on this patch series? If not, Is there<br>
+&gt; anything keeping this series from getting merged upstream?<br>
+<br>
+</span>For a start, it looks like the dependency mentioned below is still n=
+ot<br>
+in, which is a bit of a problem.<br>
+<br>
+Also, trying to merge your branch below (after fixing the URL), I get<br>
+some conflicts with the current mainline, so that&#39;s a bit of a show<br>
+stopper too.<br>
+<br>
+Can you start by rebasing on top of 4.0-rc1 with all the dependencies,<br>
+reposting the series, and cc-ing the original author of the patches (as<br>
+I cannot see Antonios on the CC list)?<br>
+<br>
+Thanks,<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 M.<br>
+<br>
+&gt; Thanks,<br>
+&gt; Baptiste<br>
+<div class=3D"HOEnZb"><div class=3D"h5">&gt;<br>
+&gt; On Fri, Jan 30, 2015 at 2:46 PM, Baptiste Reynal &lt;<a href=3D"mailto=
+:b.reynal@virtualopensystems.com">b.reynal@virtualopensystems.com</a>&lt;ma=
+ilto:<a href=3D"mailto:b.reynal@virtualopensystems.com">b.reynal@virtualope=
+nsystems.com</a>&gt;&gt; wrote:<br>
+&gt; This patch series aims to implement VFIO support for platform devices =
+that<br>
+&gt; reside behind an IOMMU. Examples of such devices are devices behind an=
+ ARM<br>
+&gt; SMMU, or behind a Samsung Exynos System MMU.<br>
+&gt;<br>
+&gt; The API used is based on the existing VFIO API that is also used with =
+PCI<br>
+&gt; devices. Only devices that include a basic set of IRQs and memory regi=
+ons are<br>
+&gt; targeted; devices with complex relationships with other devices on a d=
+evice<br>
+&gt; tree are not taken into account at this stage.<br>
+&gt;<br>
+&gt; This patch series may be applied on the following series/patches:<br>
+&gt;=C2=A0 - [PATCH v3 0/6] vfio: type1: support for ARM SMMUS with VFIO_IO=
+MMU_TYPE1<br>
+&gt;<br>
+&gt; A copy can be cloned from the branch vfio-platform-v13 at:<br>
+&gt; git@github.com:virtualopensystems/linux-kvm-arm.git<br>
+&gt;<br>
+&gt; Changes since v12:<br>
+&gt;=C2=A0 - Reorder chunks to be bisect-able<br>
+&gt; Changes since v11:<br>
+&gt;=C2=A0 - Drop support for ARM AMBA devices<br>
+&gt;=C2=A0 - vfio_platform_private.h is now self-contained<br>
+&gt;=C2=A0 - Fix masked IRQ initialization<br>
+&gt; Changes since v10:<br>
+&gt;=C2=A0 - Check if interrupt is already masked when setting a new trigge=
+r<br>
+&gt;=C2=A0 - Fixed kasprintf with unchecked return value in VFIO AMBA drive=
+r<br>
+&gt; Changes since v9:<br>
+&gt;=C2=A0 - Reworked the splitting of the patches that decouple virqfd fro=
+m PCI<br>
+&gt;=C2=A0 - Some styling issues and typos<br>
+&gt;=C2=A0 - Removed superfluous includes<br>
+&gt;=C2=A0 - AMBA devices are now named vfio-amba- suffixed by the AMBA dev=
+ice id<br>
+&gt;=C2=A0 - Several other cleanups and fixes<br>
+&gt; Changes since v8:<br>
+&gt;=C2=A0 - Separate irq handler for edge and level triggered interrupts<b=
+r>
+&gt;=C2=A0 - Mutex based lock for VFIO fd open/release<br>
+&gt;=C2=A0 - Fixed bug where the first region of a platform device wasn&#39=
+;t exposed<br>
+&gt;=C2=A0 - Read only regions can be MMAPed only read only<br>
+&gt;=C2=A0 - Code cleanups<br>
+&gt; Changes since v7:<br>
+&gt;=C2=A0 - Some initial placeholder functionality for PIO resources<br>
+&gt;=C2=A0 - Cleaned up code for IRQ triggering, masking and unmasking<br>
+&gt;=C2=A0 - Some functionality has been removed from this series and poste=
+d separately:<br>
+&gt;=C2=A0 =C2=A0 - VFIO_IOMMU_TYPE1 support for ARM SMMUs<br>
+&gt;=C2=A0 =C2=A0 - IOMMU NOEXEC patches<br>
+&gt;=C2=A0 =C2=A0 - driver_override functionality for AMBA devices<br>
+&gt;=C2=A0 - Several fixes<br>
+&gt; Changes since v6:<br>
+&gt;=C2=A0 - Integrated support for AMBA devices<br>
+&gt;=C2=A0 - Numerous cleanups and fixes<br>
+&gt; Changes since v5:<br>
+&gt;=C2=A0 - Full eventfd support for IRQ masking and unmasking.<br>
+&gt;=C2=A0 - Changed IOMMU_EXEC to IOMMU_NOEXEC, along with related flags i=
+n VFIO.<br>
+&gt;=C2=A0 - Other fixes based on reviewer comments.<br>
+&gt; Changes since v4:<br>
+&gt;=C2=A0 - Use static offsets for each region in the VFIO device fd<br>
+&gt;=C2=A0 - Include patch in the series for the ARM SMMU to expose IOMMU_E=
+XEC<br>
+&gt;=C2=A0 =C2=A0 availability via IOMMU_CAP_DMA_EXEC<br>
+&gt;=C2=A0 - Rebased on VFIO multi domain support:<br>
+&gt;=C2=A0 =C2=A0 - IOMMU_EXEC is now available if at least one IOMMU in th=
+e container<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 supports it<br>
+&gt;=C2=A0 =C2=A0 - Expose IOMMU_EXEC if available via the capability VFIO_=
+IOMMU_PROT_EXEC<br>
+&gt;=C2=A0 - Some bug fixes<br>
+&gt; Changes since v3:<br>
+&gt;=C2=A0 - Use Kim Phillips&#39; driver_probe_device()<br>
+&gt; Changes since v2:<br>
+&gt;=C2=A0 - Fixed Read/Write and MMAP on device regions<br>
+&gt;=C2=A0 - Removed dependency on Device Tree<br>
+&gt;=C2=A0 - Interrupts support<br>
+&gt;=C2=A0 - Interrupt masking/unmasking<br>
+&gt;=C2=A0 - Automask level sensitive interrupts<br>
+&gt;=C2=A0 - Introduced VFIO_DMA_MAP_FLAG_EXEC<br>
+&gt;=C2=A0 - Code clean ups<br>
+&gt;<br>
+&gt; Antonios Motakis (18):<br>
+&gt;=C2=A0 =C2=A0vfio/platform: initial skeleton of VFIO support for platfo=
+rm devices<br>
+&gt;=C2=A0 =C2=A0vfio: platform: probe to devices on the platform bus<br>
+&gt;=C2=A0 =C2=A0vfio: platform: add the VFIO PLATFORM module to Kconfig<br=
+>
+&gt;=C2=A0 =C2=A0vfio/platform: return info for bound device<br>
+&gt;=C2=A0 =C2=A0vfio/platform: return info for device memory mapped IO reg=
+ions<br>
+&gt;=C2=A0 =C2=A0vfio/platform: read and write support for the device fd<br=
+>
+&gt;=C2=A0 =C2=A0vfio/platform: support MMAP of MMIO regions<br>
+&gt;=C2=A0 =C2=A0vfio/platform: return IRQ info<br>
+&gt;=C2=A0 =C2=A0vfio/platform: initial interrupts support code<br>
+&gt;=C2=A0 =C2=A0vfio/platform: trigger an interrupt via eventfd<br>
+&gt;=C2=A0 =C2=A0vfio/platform: support for level sensitive interrupts<br>
+&gt;=C2=A0 =C2=A0vfio: add a vfio_ prefix to virqfd_enable and virqfd_disab=
+le and<br>
+&gt;=C2=A0 =C2=A0 =C2=A0export<br>
+&gt;=C2=A0 =C2=A0vfio: virqfd: rename vfio_pci_virqfd_init and vfio_pci_vir=
+qfd_exit<br>
+&gt;=C2=A0 =C2=A0vfio: add local lock for virqfd instead of depending on VF=
+IO PCI<br>
+&gt;=C2=A0 =C2=A0vfio: pass an opaque pointer on virqfd initialization<br>
+&gt;=C2=A0 =C2=A0vfio: move eventfd support code for VFIO_PCI to a separate=
+ file<br>
+&gt;=C2=A0 =C2=A0vfio: initialize the virqfd workqueue in VFIO generic code=
+<br>
+&gt;=C2=A0 =C2=A0vfio/platform: implement IRQ masking/unmasking via an even=
+tfd<br>
+&gt;<br>
+&gt;=C2=A0 drivers/vfio/Kconfig=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 |=C2=A0 =C2=A01 +<br>
+&gt;=C2=A0 drivers/vfio/Makefile=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0|=C2=A0 =C2=A05 +-<br>
+&gt;=C2=A0 drivers/vfio/pci/vfio_pci.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0|=C2=A0 =C2=A08 -<br>
+&gt;=C2=A0 drivers/vfio/pci/vfio_pci_intrs.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0| 238 +-----------<br>
+&gt;=C2=A0 drivers/vfio/pci/vfio_pci_private.h=C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0|=C2=A0 =C2=A03 -<br>
+&gt;=C2=A0 drivers/vfio/platform/Kconfig=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0|=C2=A0 =C2=A09 +<br>
+&gt;=C2=A0 drivers/vfio/platform/Makefile=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 |=C2=A0 =C2=A04 +<br>
+&gt;=C2=A0 drivers/vfio/platform/vfio_platform.c=C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0| 103 +++++<br>
+&gt;=C2=A0 drivers/vfio/platform/vfio_platform_common.c=C2=A0 | 521 +++++++=
++++++++++++++++++++<br>
+&gt;=C2=A0 drivers/vfio/platform/vfio_platform_irq.c=C2=A0 =C2=A0 =C2=A0| 3=
+36 +++++++++++++++++<br>
+&gt;=C2=A0 drivers/vfio/platform/vfio_platform_private.h |=C2=A0 85 +++++<b=
+r>
+&gt;=C2=A0 drivers/vfio/vfio.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0|=C2=A0 =C2=A08 +<br>
+&gt;=C2=A0 drivers/vfio/virqfd.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| 213 +++++++++++<br>
+&gt;=C2=A0 include/linux/vfio.h=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 |=C2=A0 27 ++<br>
+&gt;=C2=A0 include/uapi/linux/vfio.h=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0|=C2=A0 =C2=A01 +<br>
+&gt;=C2=A0 15 files changed, 1326 insertions(+), 236 deletions(-)<br>
+&gt;=C2=A0 create mode 100644 drivers/vfio/platform/Kconfig<br>
+&gt;=C2=A0 create mode 100644 drivers/vfio/platform/Makefile<br>
+&gt;=C2=A0 create mode 100644 drivers/vfio/platform/vfio_platform.c<br>
+&gt;=C2=A0 create mode 100644 drivers/vfio/platform/vfio_platform_common.c<=
+br>
+&gt;=C2=A0 create mode 100644 drivers/vfio/platform/vfio_platform_irq.c<br>
+&gt;=C2=A0 create mode 100644 drivers/vfio/platform/vfio_platform_private.h=
+<br>
+&gt;=C2=A0 create mode 100644 drivers/vfio/virqfd.c<br>
+&gt;<br>
+&gt; --<br>
+&gt; 2.2.2<br>
+&gt;<br>
+&gt;<br>
+<br>
+<br>
+</div></div><span class=3D"HOEnZb"><font color=3D"#888888">--<br>
+Jazz is not dead. It just smells funny...<br>
+</font></span></blockquote></div><br></div>
+
+--001a11c13c12823b4205100fd8d8--
+
+--===============4266795144776573961==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+kvmarm mailing list
+kvmarm@lists.cs.columbia.edu
+https://lists.cs.columbia.edu/mailman/listinfo/kvmarm
+
+--===============4266795144776573961==--
