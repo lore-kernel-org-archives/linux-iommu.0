@@ -1,79 +1,216 @@
-From: Murali Karicheri <m-karicheri2@ti.com>
-Subject: Re: [PATCH - v7] of: Move of_dma_configure() to device.c to help
- re-use
-Date: Tue, 3 Mar 2015 17:54:25 -0500
-Message-ID: <54F63BA1.8030708@ti.com>
-References: <1425333548-8802-1-git-send-email-m-karicheri2@ti.com> <CAErSpo7MsxgVZyhpijRzVN7mVNcbN7M4A4W-UKaNs4AnmGrB6g@mail.gmail.com> <54F5F59C.5000603@ti.com> <CAErSpo5gPVqRrzZ3LbWvLRchr6SjxN0eve62dTJamfz+=O882Q@mail.gmail.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH/RFC 0/4] Probe deferral for IOMMU DT integration
+Date: Wed, 04 Mar 2015 01:54:46 +0200
+Message-ID: <1946782.v9knT4VCx7@avalon>
+References: <1423182722-16646-1-git-send-email-lauraa@codeaurora.org> <1519819.qZaXvuQI61@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <CAErSpo5gPVqRrzZ3LbWvLRchr6SjxN0eve62dTJamfz+=O882Q@mail.gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-arm <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1519819.qZaXvuQI61@avalon>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Joreg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/03/2015 03:53 PM, Bjorn Helgaas wrote:
-> [+cc linux-pci]
->
-> On Tue, Mar 3, 2015 at 11:55 AM, Murali Karicheri<m-karicheri2@ti.com>  wrote:
->> On 03/02/2015 10:43 PM, Bjorn Helgaas wrote:
->>>
->>> On Mon, Mar 2, 2015 at 3:59 PM, Murali Karicheri<m-karicheri2@ti.com>
->>> wrote:
->>>>
->>>> Move of_dma_configure() to device.c so it can be re-used for PCI devices
->>>> to
->>>> obtain DMA configuration from DT.  Also add a second argument so that for
->>>> PCI, the DT node of root bus host bridge can be used to obtain the DMA
->>>> configuration for the slave PCI device.
->>>>
->>>> Tested-by: Suravee Suthikulpanit<Suravee.Suthikulpanit@amd.com>   (AMD
->>>> Seattle)
->>>> Signed-off-by: Murali Karicheri<m-karicheri2@ti.com>
->>>> Signed-off-by: Bjorn Helgaas<bhelgaas@google.com>
->>>> Reviewed-by: Catalin Marinas<catalin.marinas@arm.com>
->>>> Acked-by: Will Deacon<will.deacon@arm.com>
->>>> CC: Joerg Roedel<joro@8bytes.org>
->>>> CC: Grant Likely<grant.likely@linaro.org>
->>>> CC: Rob Herring<robh+dt@kernel.org>
->>>> CC: Russell King<linux@arm.linux.org.uk>
->>>> CC: Arnd Bergmann<arnd@arndb.de>
->>>> ---
->>>>    - Based on the existing patch applied to arm-pci/pci/iommu for pci next
->>>> (Bjorn)
->>>>    - Fixed the build issue reported on ARCH=x86_64
->>>
->>>
->>> Hi Murali,
->>>
->>> Can you please repost the entire series with fixed patches?  It's
->>> easier for me to reapply the whole thing at once than it is to keep
->>> track of and fiddle with individual patches.
->>>
->>> Bjorn
->>
->> Bjorn,
->>
->> Ok. I have just posted v8 of the series including all patches.
->
-> Thanks, I put them on a pci/murali-v8 branch for now.  I'm assuming
-> you want them to go through my tree.  In the cover letter, you
-> mentioned the "arm-pci iommu branch", so if that means you want them
-> via an ARM tree instead of mine, just let me know.  I assume the build
-> will be clean and I'll rename it back to pci/iommu.
+Hello,
 
-My bad. It should have beem pci/iommu. My remote was named arm-pci and 
-hence the confusion. Please apply it to the pci/iommu branch.
+I haven't seen any reply to this e-mail. I know that the combination of IOMMU, 
+DMA mapping and DT doesn't exactly sound like fun, but I think we still need 
+to move on :-)
 
-Thanks
+Will and Arnd, could you please confirm that my summary below matches your 
+memories of our discussion ?
 
-Murali
->
-> Bjorn
-
+On Monday 16 February 2015 18:14:45 Laurent Pinchart wrote:
+> On Thursday 05 February 2015 16:31:58 Laura Abbott wrote:
+> > Hi,
+> > 
+> > On the heels of Exynos integrating SMMU in to the DT for probing,
+> > this series attempts to add support to make SMMU drivers work with
+> > deferred probing. This has been referenced before[1] but this is
+> > some actual code to use as a starting point for discussion.
+> > 
+> > The requirement for this is based on a previous patch to add clock
+> > support to the ARM SMMU driver[2]. Once we have clock support, it's
+> > possible that the driver itself may need to be defered which breaks
+> > a bunch of assumptions about how SMMU probing is supposed to work.
+> > The concept here is to have the driver call of_dma_configure which
+> > may return -EPROBE_DEFER. of_dma_configure could possibly be moved
+> > up to probe level. The existing method of initialization still needs
+> > to be done as well which might mean we have the worst of both worlds.
+> > 
+> > Open questions:
+> > - This still doesn't really address Arnd's concerns[3] about disabling
+> > IOMMUs
+> 
+> Arnd, Will and I have discussed IOMMU probe deferral last week. Here's a
+> summary of the discussion, before the details blur away.
+> 
+> The discussion covered both higher level concepts and lower level details,
+> in various directions. I'll try to make the summary clear by filling the
+> gaps between pieces where needed, so some of the information below might
+> not be a direct result of the discussions. Arnd and Will, please feel free
+> to correct me.
+> 
+> The first question we've discussed was whether probe deferral for IOMMUs is
+> really needed. Various dependencies between IOMMU devices and other devices
+> exist, in particular on clocks (as you have mentioned above) and on power
+> domains (as mentioned by Marek in
+> http://lists.infradead.org/pipermail/linux-arm-kernel/2015-February/323238.
+> html). While there are mechanism to handle some of them with probe deferral
+> (for instance by using the OF_DECLARE macros to register clock drivers),
+> generalizing those mechanisms would essentially recreate a probe ordering
+> mechanism similar to link order probe ordering and couldn't really scale.
+> 
+> Additionally, IOMMUs could also be present hot-pluggable devices and depend
+> on resources that are thus hot-plugged. OF_DECLARE wouldn't help in that
+> case. For all those reasons we have concluded that probe deferral for
+> IOMMUs is desired if it can be implemented cleanly.
+> 
+> The second question we've discussed was how to implement probe deferral
+> cleanly :-)
+> 
+> The current implementation configures DMA at device creation time and sets
+> the following properties:
+> 
+> - dma_map_ops (IOMMU, SWIOTLB, linear mapping)
+> - initial DMA mask
+> - DMA offset
+> - DMA coherency
+> 
+> Additionally the IOMMU group (when an IOMMU is present) will also be
+> configured at the same time (patches are under review).
+> 
+> The base idea is to defer probing of bus master devices when their IOMMU
+> isn't present. Three cases need to be handled.
+> 
+> 1. No IOMMU is declared by the firmware (through DT, ACPI, ...) for the bus
+> master device. The bus master device probe doesn't need to be deferred due
+> to the IOMMU. dma_map_ops must be set to SWIOTLB or linear mapping (the
+> later should likely be implemented through SWIOTLB).
+> 
+> 2. An IOMMU is declared for the bus master device and the IOMMU has been
+> successfully probed and registered. The bus master device probe doesn't need
+> to be deferred due to the IOMMU. dma_map_ops must be set to IOMMU ops.
+> 
+> 3. An IOMMU is declared for the bus master device but the IOMMU isn't
+> registered. This can be caused by different reasons:
+> 
+> - a. No driver is loaded for this IOMMU (for instance because DT describes
+> the IOMMU connection, but the IOMMU driver hasn't been developed yet, or an
+> older kernel is used). If the IOMMU is optional the bus master device probe
+> should succeed, and dma_map_ops should be set to linear. If the IOMMU is
+> mandatory the bus master device probe should fail.
+> 
+> Note that, as we require IOMMU drivers to be compiled in, we don't need to
+> handle the case of loadable IOMMU drivers that haven't been loaded yet.
+> 
+> - b. A driver is loaded for this IOMMU but the IOMMU hasn't been probed yet,
+> or its probe has been deferred. The bus master device probe should be
+> deferred.
+> 
+> - c. A driver is loaded for this IOMMU but the IOMMU probe has failed
+> permanently. It's not clear at the moment whether we should try to recover
+> from this automatically using the same mechanism as case 3.a, or if we can
+> considered this as an abnormal failure and disable the bus master device.
+> 
+> Assuming that we should try to recover from such an error, we can't predict
+> this case when the device is instantiated (even if IOMMUs are registered
+> before bus master devices are added, for instance using the OF_DECLARE
+> mechanism that Will has implemented). We thus need to setup the dma_map_ops
+> and IOMMU group at bus master device probe time.
+> 
+> Furthermore, we can't distinguish cases 3.a and 3.b at bus master probe time
+> without early registration of IOMMU drivers. Case 3.a would instead be
+> considered as 3.b, leading to infinite probe deferral of bus master
+> devices.
+> 
+> For those reasons we have concluded that IOMMU probe deferral needs to be
+> implemented with a combination of several mechanisms. The following steps
+> should happen at bus master device probe time.
+> 
+> 1. The IOMMU device referenced by the firmware with the bus master device is
+> looked up. On DT-based systems, this will be the IOMMU DT node referenced
+> by the iommus property. If no IOMMU device is associated, dma_map_ops will
+> be set to linear mapping or SWIOTLB and device probe will continue.
+> 
+> 2. An IOMMU device is referenced for the bus master device.
+> 
+> The corresponding IOMMU instance is looked up. This requires a new IOMMU
+> registration system. IOMMU drivers will create IOMMU instances at probe time
+> and register them with the IOMMU core.
+> 
+> If an IOMMU instance is found for the referenced IOMMU device, the IOMMU
+> instance's of_xlate function will be called to setup the IOMMU.
+> 
+> If the of_xlate call succeeds dma_map_ops will be set to IOMMU ops and
+> device probe will continue. If the call fails we can either fail the bus
+> master device probe, or fall back to non-IOMMU dma_map_ops (to be
+> discussed).
+> 
+> 3. The IOMMU device referenced for the bus master device isn't present, due
+> to the IOMMU device probe not having been performed yet, having been
+> deferred, or having failed.
+> 
+> The IOMMU driver associated with the IOMMU device is looked up. This was
+> initially thought to require an early registration mechanism for IOMMU
+> drivers (using an OF_DECLARE mechanism for DT-based systems for instance),
+> but on second thought it might be possible to implement this based on
+> normal driver registration (to be researched).
+> 
+> If an IOMMU driver is found for the referenced IOMMU device, a callback
+> function of the IOMMU driver is called to check whether an IOMMU instance is
+> expected to be registered later (most IOMMU drivers will just return true,
+> so we could skip this callback function until an IOMMU driver requires it).
+> If an IOMMU instance is expected to be registered later the bus master
+> device probe is deferred. Otherwise dma_map_ops will be set to linear
+> mapping/SWIOTLB and device probe will continue.
+> 
+> 
+> The initial DMA mask and the DMA offset can still be configured at device
+> instantiation time if desired.
+> 
+> > - Currently tested where we knew the driver was going to be deferring.
+> > Probably need some logic for calling of_dma_configure again.
+> > 
+> > This is based on Robin Murphy's work for dma mapping[4] and a few
+> > patches from Murali Kaicheri[5] for of_dma_configure.
+> > 
+> > 
+> > [1] http://lists.linuxfoundation.org/pipermail/iommu/2015-> > January/011764.html
+> > [2] http://lists.infradead.org/pipermail/linux-arm-kernel/2014-> > August/279036.html
+> > [3] http://lists.infradead.org/pipermail/linux-arm-kernel/2014-> > December/311579.html
+> > [4] http://lists.infradead.org/pipermail/linux-arm-kernel/2015-> > January/315459.html
+> > [5] http://lists.infradead.org/pipermail/linux-arm-kernel/2015-> > January/319390.html
+> > 
+> > Laura Abbott (3):
+> >   dma-mapping: Make arch_setup_dma_ops return an error code
+> >   of: Return error codes from of_dma_configure
+> >   iommu/arm-smmu: Support deferred probing
+> > 
+> > Mitchel Humpherys (1):
+> >   iommu/arm-smmu: add support for specifying clocks
+> >  
+> >  arch/arm/include/asm/dma-mapping.h   |   2 +-
+> >  arch/arm/mm/dma-mapping.c            |   4 +-
+> >  arch/arm64/include/asm/dma-mapping.h |   2 +-
+> >  arch/arm64/mm/dma-mapping.c          |  16 +--
+> >  drivers/iommu/arm-smmu.c             | 186 ++++++++++++++++++++++++++++--
+> >  drivers/iommu/iommu.c                |  49 ++++++++-
+> >  drivers/iommu/of_iommu.c             |  14 ++-
+> >  drivers/of/device.c                  |   9 +-
+> >  include/linux/dma-mapping.h          |   7 +-
+> >  include/linux/iommu.h                |   2 +
+> >  include/linux/of_device.h            |   4 +-
+> >  11 files changed, 268 insertions(+), 27 deletions(-)
 
 -- 
-Murali Karicheri
-Linux Kernel, Texas Instruments
+Regards,
+
+Laurent Pinchart
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
