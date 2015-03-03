@@ -1,8 +1,8 @@
 From: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
-Subject: [PATCH v8 4/7] PCI: Add helper functions
-	pci_get[put]_host_bridge_device()
-Date: Tue, 3 Mar 2015 12:52:11 -0500
-Message-ID: <1425405134-24707-5-git-send-email-m-karicheri2@ti.com>
+Subject: [PATCH v8 5/7] of/pci: Add of_pci_dma_configure() to update DMA
+	configuration
+Date: Tue, 3 Mar 2015 12:52:12 -0500
+Message-ID: <1425405134-24707-6-git-send-email-m-karicheri2@ti.com>
 References: <1425405134-24707-1-git-send-email-m-karicheri2@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,64 +19,85 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Add helper functions to get/put the root bus's host bridge device.
+Add of_pci_dma_configure() to allow updating the DMA configuration of the
+PCI device using the configuration from DT of the parent of the root bridge
+device.  Use the newly added APIs pci_get/put_host_bridge_device() for
+implementing this.
 
 Tested-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org> (AMD Seattle)
 Signed-off-by: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
 Signed-off-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 Reviewed-by: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Acked-by: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 CC: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 CC: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-CC: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 CC: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
 CC: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
 ---
- drivers/pci/host-bridge.c |   14 ++++++++++++++
- include/linux/pci.h       |    3 +++
- 2 files changed, 17 insertions(+)
+ drivers/of/of_pci.c    |   18 ++++++++++++++++++
+ include/linux/of_pci.h |    3 +++
+ 2 files changed, 21 insertions(+)
 
-diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
-index 39b2dbe..3e5bbf9 100644
---- a/drivers/pci/host-bridge.c
-+++ b/drivers/pci/host-bridge.c
-@@ -23,6 +23,20 @@ static struct pci_host_bridge *find_pci_host_bridge(struct pci_bus *bus)
- 	return to_pci_host_bridge(root_bus->bridge);
- }
+diff --git a/drivers/of/of_pci.c b/drivers/of/of_pci.c
+index 62426d8..86d3c38 100644
+--- a/drivers/of/of_pci.c
++++ b/drivers/of/of_pci.c
+@@ -2,6 +2,7 @@
+ #include <linux/export.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
++#include <linux/of_device.h>
+ #include <linux/of_pci.h>
+ #include <linux/slab.h>
  
-+struct device *pci_get_host_bridge_device(struct pci_dev *dev)
-+{
-+	struct pci_bus *root_bus = find_pci_root_bus(dev->bus);
-+	struct device *bridge = root_bus->bridge;
-+
-+	kobject_get(&bridge->kobj);
-+	return bridge;
-+}
-+
-+void  pci_put_host_bridge_device(struct device *dev)
-+{
-+	kobject_put(&dev->kobj);
-+}
-+
- void pci_set_host_bridge_release(struct pci_host_bridge *bridge,
- 				 void (*release_fn)(struct pci_host_bridge *),
- 				 void *release_data)
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 211e9da..a379513 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -510,6 +510,9 @@ static inline struct pci_dev *pci_upstream_bridge(struct pci_dev *dev)
- 	return dev->bus->self;
+@@ -116,6 +117,23 @@ int of_get_pci_domain_nr(struct device_node *node)
  }
+ EXPORT_SYMBOL_GPL(of_get_pci_domain_nr);
  
-+struct device *pci_get_host_bridge_device(struct pci_dev *dev);
-+void pci_put_host_bridge_device(struct device *dev);
++/**
++ * of_pci_dma_configure - Setup DMA configuration
++ * @dev: ptr to pci_dev struct of the pci device
++ *
++ * Function to update PCI devices's DMA configuration using the same
++ * info from the OF node of root host bridge's parent.
++ */
++void of_pci_dma_configure(struct pci_dev *pci_dev)
++{
++	struct device *dev = &pci_dev->dev;
++	struct device *bridge = pci_get_host_bridge_device(pci_dev);
 +
- #ifdef CONFIG_PCI_MSI
- static inline bool pci_dev_msi_enabled(struct pci_dev *pci_dev)
++	of_dma_configure(dev, bridge->parent->of_node);
++	pci_put_host_bridge_device(bridge);
++}
++EXPORT_SYMBOL_GPL(of_pci_dma_configure);
++
+ #if defined(CONFIG_OF_ADDRESS)
+ /**
+  * of_pci_get_host_bridge_resources - Parse PCI host bridge resources from DT
+diff --git a/include/linux/of_pci.h b/include/linux/of_pci.h
+index ce0e5ab..29fd3fe 100644
+--- a/include/linux/of_pci.h
++++ b/include/linux/of_pci.h
+@@ -16,6 +16,7 @@ int of_pci_get_devfn(struct device_node *np);
+ int of_irq_parse_and_map_pci(const struct pci_dev *dev, u8 slot, u8 pin);
+ int of_pci_parse_bus_range(struct device_node *node, struct resource *res);
+ int of_get_pci_domain_nr(struct device_node *node);
++void of_pci_dma_configure(struct pci_dev *pci_dev);
+ #else
+ static inline int of_irq_parse_pci(const struct pci_dev *pdev, struct of_phandle_args *out_irq)
  {
+@@ -50,6 +51,8 @@ of_get_pci_domain_nr(struct device_node *node)
+ {
+ 	return -1;
+ }
++
++static inline void of_pci_dma_configure(struct pci_dev *pci_dev) { }
+ #endif
+ 
+ #if defined(CONFIG_OF_ADDRESS)
 -- 
 1.7.9.5
