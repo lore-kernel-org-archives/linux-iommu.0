@@ -1,30 +1,48 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] CHROMIUM: iommu: rockchip: Make sure that page table
- state is coherent
-Date: Tue, 3 Mar 2015 14:36:59 +0100
-Message-ID: <20150303133659.GD10502@8bytes.org>
-References: <1423480761-33453-1-git-send-email-tfiga@chromium.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu/fsl: Really fix init section(s) content
+Date: Tue, 3 Mar 2015 14:55:41 +0100
+Message-ID: <20150303135541.GM29106@8bytes.org>
+References: <1423777528-8143-1-git-send-email-Emilian.Medve@Freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1423480761-33453-1-git-send-email-tfiga@chromium.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tomasz Figa <tfiga@chromium.org>
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org, Heiko Stuebner <heiko@sntech.de>, Daniel Kurtz <djkurtz@chromium.org>
+In-Reply-To: <1423777528-8143-1-git-send-email-Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+Cc: Varun.Sethi-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 09, 2015 at 08:19:21PM +0900, Tomasz Figa wrote:
-> Even though the code uses the dt_lock spin lock to serialize mapping
-> operation from different threads, it does not protect from IOMMU
-> accesses that might be already taking place and thus altering state
-> of the IOTLB. This means that current mapping code which first zaps
-> the page table and only then updates it with new mapping which is
-> prone to mentioned race.
+On Thu, Feb 12, 2015 at 03:45:28PM -0600, Emil Medve wrote:
+> '0f1fb99 iommu/fsl: Fix section mismatch' was intended to address the modpost
+> warning and the potential crash. Crash which is actually easy to trigger with a
+> 'unbind' followed by a 'bind' sequence. The fix is/ wrong as
+> fsl_of_pamu_driver.driver gets added by bus_add_driver() to a couple of
+> klist(s) which become invalid/corrupted as soon as the init sections are freed.
+> Depending on when/how the init sections storage is reused various/random errors
+> and crashes will happen
+> 
+> 'cd70d46 iommu/fsl: Various cleanups' contains annotations that go further down
+> the wrong path laid by '0f1fb99 iommu/fsl: Fix section mismatch'
+> 
+> Now remove all the incorrect annotations from the above mentioned patches (not
+> exactly a revert) and those previously existing in the code, This fixes the
+> modpost warning(s), the unbind/bind sequence crashes and the random
+> errors/crashes
+> 
+> Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 
-Could you elabortate a bit on the race and why it is sufficient to zap
-only the first and the last iova? From the description and the comments
-in the patch this is not clear to me.
+Please resend this with the Acks, a proper stable-tag and a Fixes: line
+with the commit this patch fixes.
 
 
 	Joerg
