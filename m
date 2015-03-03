@@ -1,14 +1,17 @@
-From: leizhen <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH v2 3/3] arm64: hook up IOMMU dma_ops
-Date: Tue, 3 Mar 2015 19:05:09 +0800
-Message-ID: <54F59565.7000807@huawei.com>
-References: <cover.1423226542.git.robin.murphy@arm.com>
-	<482b3b109a3d4818b1b1e693f488a919cf1bb707.1423226542.git.robin.murphy@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH v2 2/3] arm64: add IOMMU dma_ops
+Date: Tue, 03 Mar 2015 12:15:58 +0000
+Message-ID: <54F5A5FE.3040506@arm.com>
+References: <cover.1423226542.git.robin.murphy@arm.com>			
+	<058e038009ac708a40197c80e07410914c2a162e.1423226542.git.robin.murphy@arm.com>		
+	<1423543151.18280.2.camel@mtksdaap41> <54D9F486.10501@arm.com>	
+	<1423901011.27922.7.camel@mhfsdcap03> <54E24D50.408@arm.com>
+	<1425353927.4555.10.camel@mhfsdcap03>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <482b3b109a3d4818b1b1e693f488a919cf1bb707.1423226542.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1425353927.4555.10.camel@mhfsdcap03>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,94 +21,64 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: arnd-r2nGTMty4D4@public.gmane.org, stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org" <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org" <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2015/2/6 22:55, Robin Murphy wrote:
-> With iommu_dma_ops in place, hook them up to the configuration code, so
-> IOMMU-fronted devices will get them automatically.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
->  arch/arm64/Kconfig                   |  1 +
->  arch/arm64/include/asm/dma-mapping.h | 11 ++++++-----
->  arch/arm64/mm/dma-mapping.c          | 15 +++++++++++++++
->  3 files changed, 22 insertions(+), 5 deletions(-)
-> 
-> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-> index b1f9a20..e2abcdc 100644
-> --- a/arch/arm64/Kconfig
-> +++ b/arch/arm64/Kconfig
-> @@ -66,6 +66,7 @@ config ARM64
->  	select HAVE_PERF_USER_STACK_DUMP
->  	select HAVE_RCU_TABLE_FREE
->  	select HAVE_SYSCALL_TRACEPOINTS
-> +	select IOMMU_DMA if IOMMU_SUPPORT
+On 03/03/15 03:38, Yong Wu wrote:
+> On Mon, 2015-02-16 at 20:04 +0000, Robin Murphy wrote:
+>
+>>>        2)int (*domain_init)(struct iommu_domain *domain);
+>>>          About this function, it will alloc pagetable for the iommu
+>>> domain. And We expect the pagetable memory is uncacheable, so try to
+>>> call "dma_alloc_coherent", unfortunately the "struct device *" can't be
+>>> passed into this function. so is it possible if adding a parameter in
+>>> this function.
+>>
+>> ...one of the ideas of the new of_iommu_configure framework is that
+>> iommu_ops structures can represent individual IOMMU devices if
+>> necessary. The ops->priv pointer was included for that purpose, but
+>> isn't very clean so Will has plans to remove it again - it's easy enough
+>> to achieve the same effect by having the driver embed the ops in its
+>> private instance data instead. I've done that with the ARM SMMU driver
+>> which has a similar issue of needing hardware details at domain_init()
+>> time (no patches ready yet but I have an iommu/dev branch on top of the
+>> iommu/dma branch with some current work-in-progress bits)
+>>
+>> Thanks,
+>> Robin.
+>>
+> Dear Robin,
+>          Thanks very much for your suggestion.
+>
+>          I have a more question: how to do cache maintenance in arm64.
+>
+>          a) "__dma_flush_range" can not be expected to used directly.
+>          b) Following Documentation\DMA-API.txt, section: Streaming DMA
+> mappings. dma_map_single should be used, But I am not sure how to pass
+> the first "struct device *".
+>           We have a device which call arch_setup_dma_ops to create the
+> iommu domain, if we use this device, it will enter __iommu_map_page;
+>          If we input NULL for dmap_map_single, it will assert at
+> dma_capable in swiotlb_map_page...
 
-IOMMU_SUPPORT is selected above, so "if IOMMU_SUPPORT" can be omitted.
-And I suggest putting "select IOMMU_DMA" next to "select IOMMU_SUPPORT".
+Consider that the IOMMU's page table walker is a DMA master in its own 
+right, and that is the device you're mapping the page tables for. 
+Therefore your IOMMU driver needs to have access to the struct device of 
+the IOMMU itself to use for the page-table-related mappings. Also, be 
+sure to set the IOMMU's DMA mask correctly to prevent SWIOTLB bounce 
+buffers being created in the process (which as I've found generally ends 
+in disaster).
 
->  	select IRQ_DOMAIN
->  	select MODULES_USE_ELF_RELA
->  	select NO_BOOTMEM
-> diff --git a/arch/arm64/include/asm/dma-mapping.h b/arch/arm64/include/asm/dma-mapping.h
-> index c1b271f..5246d1a 100644
-> --- a/arch/arm64/include/asm/dma-mapping.h
-> +++ b/arch/arm64/include/asm/dma-mapping.h
-> @@ -45,11 +45,8 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
->  		return __generic_dma_ops(dev);
->  }
->  
-> -static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-> -				      struct iommu_ops *iommu, bool coherent)
-> -{
-> -	dev->archdata.dma_coherent = coherent;
-> -}
-> +void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-> +			struct iommu_ops *iommu, bool coherent);
->  #define arch_setup_dma_ops	arch_setup_dma_ops
->  
->  /* do not use this function in a driver */
-> @@ -63,6 +60,10 @@ static inline bool is_device_dma_coherent(struct device *dev)
->  #include <asm-generic/dma-mapping-common.h>
->  
->  #ifdef CONFIG_IOMMU_DMA
-> +
-> +void arch_teardown_dma_ops(struct device *dev);
-> +#define arch_teardown_dma_ops	arch_teardown_dma_ops
-> +
->  static inline struct iommu_dma_domain *get_dma_domain(struct device *dev)
->  {
->  	return dev->archdata.dma_domain;
-> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-> index 28e771c..2a30673 100644
-> --- a/arch/arm64/mm/dma-mapping.c
-> +++ b/arch/arm64/mm/dma-mapping.c
-> @@ -752,6 +752,14 @@ static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
->  	iommu_dma_release_domain(dma_domain);
->  }
->  
-> +void arch_teardown_dma_ops(struct device *dev)
-> +{
-> +	if (dev->archdata.dma_domain) {
-> +		iommu_dma_detach_device(dev);
-> +		dev->archdata.dma_ops = NULL;
-> +	}
-> +}
-> +
->  #else
->  
->  static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-> @@ -759,3 +767,10 @@ static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
->  { }
->  
->  #endif  /* CONFIG_IOMMU_DMA */
-> +
-> +void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-> +			struct iommu_ops *iommu, bool coherent)
-> +{
-> +	dev->archdata.dma_coherent = coherent;
-> +	__iommu_setup_dma_ops(dev, dma_base, size, iommu);
-> +}
-> 
+>          And normally, we always need do cache maintenance only for some
+> bytes in the pagetable but not whole a page. Then is there a easy way to
+> do the cache maintenance?
+
+For a noncoherent device, dma_map_single() will end up calling 
+__dma_map_area() with the page offset and size of the original request, 
+so the updated part gets flushed by VA, and the rest of the page isn't 
+touched if it doesn't need to be. On the other hand if the page tables 
+were allocated with dma_alloc_coherent() in the first place, then just 
+calling dma_sync_single_for_device() for the updated region should suffice.
+
+Robin.
