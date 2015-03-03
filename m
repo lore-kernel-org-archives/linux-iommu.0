@@ -1,11 +1,15 @@
 From: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
-Subject: [PATCH v8 0/7] PCI: get DMA configuration from parent device
-Date: Tue, 3 Mar 2015 12:52:07 -0500
-Message-ID: <1425405134-24707-1-git-send-email-m-karicheri2@ti.com>
+Subject: Re: [PATCH - v7] of: Move of_dma_configure() to device.c to help
+	re-use
+Date: Tue, 3 Mar 2015 12:55:40 -0500
+Message-ID: <54F5F59C.5000603@ti.com>
+References: <1425333548-8802-1-git-send-email-m-karicheri2@ti.com>
+	<CAErSpo7MsxgVZyhpijRzVN7mVNcbN7M4A4W-UKaNs4AnmGrB6g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAErSpo7MsxgVZyhpijRzVN7mVNcbN7M4A4W-UKaNs4AnmGrB6g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,90 +19,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open
+	list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-arm <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This series is already applied on arm-pci iommu branch for next, but
-kbuild test robot reported build errors on x86_64 and sparc. So I am
-sending v8 to help apply on arm-pci iommu branch.
- 
-Here is the original cover letter of the series.
+On 03/02/2015 10:43 PM, Bjorn Helgaas wrote:
+> On Mon, Mar 2, 2015 at 3:59 PM, Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>  wrote:
+>> Move of_dma_configure() to device.c so it can be re-used for PCI devices to
+>> obtain DMA configuration from DT.  Also add a second argument so that for
+>> PCI, the DT node of root bus host bridge can be used to obtain the DMA
+>> configuration for the slave PCI device.
+>>
+>> Tested-by: Suravee Suthikulpanit<Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>  (AMD Seattle)
+>> Signed-off-by: Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>
+>> Signed-off-by: Bjorn Helgaas<bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+>> Reviewed-by: Catalin Marinas<catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+>> Acked-by: Will Deacon<will.deacon-5wv7dgnIgG8@public.gmane.org>
+>> CC: Joerg Roedel<joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+>> CC: Grant Likely<grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>> CC: Rob Herring<robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+>> CC: Russell King<linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+>> CC: Arnd Bergmann<arnd-r2nGTMty4D4@public.gmane.org>
+>> ---
+>>   - Based on the existing patch applied to arm-pci/pci/iommu for pci next (Bjorn)
+>>   - Fixed the build issue reported on ARCH=x86_64
+>
+> Hi Murali,
+>
+> Can you please repost the entire series with fixed patches?  It's
+> easier for me to reapply the whole thing at once than it is to keep
+> track of and fiddle with individual patches.
+>
+> Bjorn
+Bjorn,
 
-This patch add an important capability to PCI driver on Keystone. I hope to
-have this merged to the upstream branch so that it is available for v3.20.
-Also would like thank everyone for the contribution.
+Ok. I have just posted v8 of the series including all patches.
 
-PCI devices on Keystone doesn't have correct dma_pfn_offset set. This patch
-add capability to set the dma configuration such as dma-mask, dma_pfn_offset,
-and dma ops etc using the information from DT. The prior RFCs and discussions
-are available at [1] and [2] below.
-
-[2] : https://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg790244.html
-[1] : http://www.gossamer-threads.com/lists/linux/kernel/2024591
-
-Change history:
-	v8 - On request from Bjorn, I am resending the whole series with also
-	     ack from Rob Herring against 2/7
-	v7 - Used for re-spinning 2/7 and 6/7. Fixed build issues on x86_64 and
-	     sparc reported by kbuild test robot
-	v6 - Rebased to v3.19-v7
-	   - Addressed some minor comments about node name and DT size validation.
-	   - Pulled out 8/8 of v5 and plan to send a patch for enhancing
-	     of_dma_configure() to use size to calculate dma mask.
-	   - Added Acks from reviewers.
-	v5 - moved the dma_mask update in device from ARM specific API to
-	     of_dma_configure to allow this across other architecture as well
-	   - improved sanity check for DT dma-range size in of_dma_configure()
-	   - moved API to get parent bridge device to PCI (host-bridge.c)
-	v4 - moved size adjustments in of_iommu_configure() to a separate patch
-	   - consistent node name comment from Rob
-	   - patch 6 added for dma_mask adjustment and iommu mapping size
-	     limiting.
-	v3 - addressed comments to re-use of_dma_configure() for PCI
-	   - To help re-use, change of_iommu_configure() function argument
-		- Move of_dma_configure to of/device.c
-		- Limit the of_iommu_configure to non pci devices
-	v2 - update size to coherent_dma_mask + 1 if dma-range info is missing
-	   - also check the np for null.
-	v1 - updates based on the comments against initial RFC.
-	   - Added a helper function to get the OF node of the parent
-	   - Added an API in of_pci.c to update DMA configuration of the pci
-	     device.
-
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-
-Acked-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Acked-by: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
-
-Murali Karicheri (7):
-  of: iommu: Add ptr to OF node arg to of_iommu_configure()
-  of: Move of_dma_configure() to device.c to help re-use
-  of: Fix size when dma-range is not used
-  PCI: Add helper functions pci_get[put]_host_bridge_device()
-  of/pci: Add of_pci_dma_configure() to update DMA configuration
-  PCI: Update DMA configuration from DT
-  arm: dma-mapping: limit IOMMU mapping size
-
- arch/arm/mm/dma-mapping.c |    7 +++++
- drivers/iommu/of_iommu.c  |   10 ++++--
- drivers/of/device.c       |   74 +++++++++++++++++++++++++++++++++++++++++++++
- drivers/of/of_pci.c       |   18 +++++++++++
- drivers/of/platform.c     |   58 ++---------------------------------
- drivers/pci/host-bridge.c |   14 +++++++++
- drivers/pci/probe.c       |    2 ++
- include/linux/of_device.h |    3 ++
- include/linux/of_iommu.h  |    6 ++--
- include/linux/of_pci.h    |    3 ++
- include/linux/pci.h       |    3 ++
- 11 files changed, 138 insertions(+), 60 deletions(-)
-
+FYI.
 -- 
-1.7.9.5
+Murali Karicheri
+Linux Kernel, Texas Instruments
