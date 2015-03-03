@@ -1,15 +1,15 @@
-From: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH - v7] of: Move of_dma_configure() to device.c to help
-	re-use
-Date: Tue, 3 Mar 2015 12:55:40 -0500
-Message-ID: <54F5F59C.5000603@ti.com>
-References: <1425333548-8802-1-git-send-email-m-karicheri2@ti.com>
-	<CAErSpo7MsxgVZyhpijRzVN7mVNcbN7M4A4W-UKaNs4AnmGrB6g@mail.gmail.com>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v4 0/5] vfio: type1: support for ARM SMMUS with
+	VFIO_IOMMU_TYPE1
+Date: Tue, 03 Mar 2015 18:54:18 +0100
+Message-ID: <54F5F54A.3010209@linaro.org>
+References: <1425315507-29661-1-git-send-email-b.reynal@virtualopensystems.com>
+	<54F5F37E.2070002@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAErSpo7MsxgVZyhpijRzVN7mVNcbN7M4A4W-UKaNs4AnmGrB6g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <54F5F37E.2070002-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,44 +19,60 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open
-	list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-arm <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org
+Cc: tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/02/2015 10:43 PM, Bjorn Helgaas wrote:
-> On Mon, Mar 2, 2015 at 3:59 PM, Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>  wrote:
->> Move of_dma_configure() to device.c so it can be re-used for PCI devices to
->> obtain DMA configuration from DT.  Also add a second argument so that for
->> PCI, the DT node of root bus host bridge can be used to obtain the DMA
->> configuration for the slave PCI device.
+On 03/03/2015 06:46 PM, Eric Auger wrote:
+> Hi Baptiste,
+> 
+> In "vfio: type1: implement the VFIO_DMA_MAP_FLAG_NOEXEC flag" you still
+> kept domain->caps |= IOMMU_CAP_NOEXEC so potentially overwriting 1<<
+> IOMMU_CAP_CACHE_COHERENCY I guess.
+
+Well sorry no risk to overwrite but not homogeneous.
+Eric
+> 
+> Sorry I do not have this 4th patch file in my mailbox.
+> 
+> Best Regards
+> 
+> Eric
+> 
+> 	if (iommu_capable(bus, IOMMU_CAP_CACHE_COHERENCY))
+> 		domain->caps |= (1 << IOMMU_CAP_CACHE_COHERENCY);
+> 
+> 	if (iommu_capable(bus, IOMMU_CAP_NOEXEC))
+> 		domain->caps |= IOMMU_CAP_NOEXEC;
+> 
+> On 03/02/2015 05:58 PM, Baptiste Reynal wrote:
+>> This patch series makes the VFIO_IOMMU_TYPE1 driver buildable on ARM, so it
+>> may be used with ARM SMMUs. It also adds support for the IOMMU_NOEXEC flag
+>> supported by SMMUs adhering to the ARM SMMU specification so the VFIO user can
+>> specify whether the target memory can be executed by the device behind the
+>> SMMU.
 >>
->> Tested-by: Suravee Suthikulpanit<Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>  (AMD Seattle)
->> Signed-off-by: Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>
->> Signed-off-by: Bjorn Helgaas<bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
->> Reviewed-by: Catalin Marinas<catalin.marinas-5wv7dgnIgG8@public.gmane.org>
->> Acked-by: Will Deacon<will.deacon-5wv7dgnIgG8@public.gmane.org>
->> CC: Joerg Roedel<joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
->> CC: Grant Likely<grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
->> CC: Rob Herring<robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
->> CC: Russell King<linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
->> CC: Arnd Bergmann<arnd-r2nGTMty4D4@public.gmane.org>
->> ---
->>   - Based on the existing patch applied to arm-pci/pci/iommu for pci next (Bjorn)
->>   - Fixed the build issue reported on ARCH=x86_64
->
-> Hi Murali,
->
-> Can you please repost the entire series with fixed patches?  It's
-> easier for me to reapply the whole thing at once than it is to keep
-> track of and fiddle with individual patches.
->
-> Bjorn
-Bjorn,
-
-Ok. I have just posted v8 of the series including all patches.
-
-FYI.
--- 
-Murali Karicheri
-Linux Kernel, Texas Instruments
+>> Changes from v3:
+>>  - Rebased on linux v4.0-rc1
+>>  - Use bit shifting for domain->caps
+>>  - Baptiste Reynal is the new maintainer of this serie
+>> Changes from v2:
+>>  - Rebased on latest iommu/next branch by Joerg Roedel
+>> Changes from v1:
+>>  - Bugfixes and corrected some typos
+>>  - Use enum for VFIO IOMMU driver capabilities
+>>
+>> Antonios Motakis (5):
+>>   vfio: implement iommu driver capabilities with an enum
+>>   vfio: introduce the VFIO_DMA_MAP_FLAG_NOEXEC flag
+>>   vfio: type1: replace domain wide protection flags with supported
+>>     capabilities
+>>   vfio: type1: replace vfio_domains_have_iommu_cache with generic
+>>     function
+>>   vfio: type1: implement the VFIO_DMA_MAP_FLAG_NOEXEC flag
+>>
+>>  drivers/vfio/vfio_iommu_type1.c | 91 +++++++++++++++++++++++++++++------------
+>>  include/uapi/linux/vfio.h       | 30 ++++++++------
+>>  2 files changed, 81 insertions(+), 40 deletions(-)
+>>
+> 
