@@ -1,134 +1,111 @@
-From: Baptiste Reynal <b.reynal@virtualopensystems.com>
-Subject: Re: [PATCH v4 0/5] vfio: type1: support for ARM SMMUS with
- VFIO_IOMMU_TYPE1
-Date: Tue, 3 Mar 2015 11:07:16 +0100
-Message-ID: <CAN9JPjFMLYFyRQ9i+9-K80H9C=zkroPDZ4cBk82g6Hyh=W0+gQ@mail.gmail.com>
-References: <1425315507-29661-1-git-send-email-b.reynal@virtualopensystems.com>
+From: leizhen <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC PATCH v2 3/3] arm64: hook up IOMMU dma_ops
+Date: Tue, 3 Mar 2015 19:05:09 +0800
+Message-ID: <54F59565.7000807@huawei.com>
+References: <cover.1423226542.git.robin.murphy@arm.com>
+	<482b3b109a3d4818b1b1e693f488a919cf1bb707.1423226542.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============8884118132916334700=="
-Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
-In-Reply-To: <1425315507-29661-1-git-send-email-b.reynal@virtualopensystems.com>
-List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
-List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
-List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
-List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
-List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
-Errors-To: kvmarm-bounces@lists.cs.columbia.edu
-Sender: kvmarm-bounces@lists.cs.columbia.edu
-To: Linux IOMMU <iommu@lists.linux-foundation.org>, kvm-arm <kvmarm@lists.cs.columbia.edu>
-Cc: VirtualOpenSystems Technical Team <tech@virtualopensystems.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <482b3b109a3d4818b1b1e693f488a919cf1bb707.1423226542.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: arnd-r2nGTMty4D4@public.gmane.org, stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
---===============8884118132916334700==
-Content-Type: multipart/alternative; boundary=001a11490592d65c7b05105f7fdb
+On 2015/2/6 22:55, Robin Murphy wrote:
+> With iommu_dma_ops in place, hook them up to the configuration code, so
+> IOMMU-fronted devices will get them automatically.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  arch/arm64/Kconfig                   |  1 +
+>  arch/arm64/include/asm/dma-mapping.h | 11 ++++++-----
+>  arch/arm64/mm/dma-mapping.c          | 15 +++++++++++++++
+>  3 files changed, 22 insertions(+), 5 deletions(-)
+> 
+> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+> index b1f9a20..e2abcdc 100644
+> --- a/arch/arm64/Kconfig
+> +++ b/arch/arm64/Kconfig
+> @@ -66,6 +66,7 @@ config ARM64
+>  	select HAVE_PERF_USER_STACK_DUMP
+>  	select HAVE_RCU_TABLE_FREE
+>  	select HAVE_SYSCALL_TRACEPOINTS
+> +	select IOMMU_DMA if IOMMU_SUPPORT
 
---001a11490592d65c7b05105f7fdb
-Content-Type: text/plain; charset=UTF-8
+IOMMU_SUPPORT is selected above, so "if IOMMU_SUPPORT" can be omitted.
+And I suggest putting "select IOMMU_DMA" next to "select IOMMU_SUPPORT".
 
-Added Eric Auger for comments.
-
-On Mon, Mar 2, 2015 at 5:58 PM, Baptiste Reynal <
-b.reynal@virtualopensystems.com> wrote:
-
-> This patch series makes the VFIO_IOMMU_TYPE1 driver buildable on ARM, so it
-> may be used with ARM SMMUs. It also adds support for the IOMMU_NOEXEC flag
-> supported by SMMUs adhering to the ARM SMMU specification so the VFIO user
-> can
-> specify whether the target memory can be executed by the device behind the
-> SMMU.
->
-> Changes from v3:
->  - Rebased on linux v4.0-rc1
->  - Use bit shifting for domain->caps
->  - Baptiste Reynal is the new maintainer of this serie
-> Changes from v2:
->  - Rebased on latest iommu/next branch by Joerg Roedel
-> Changes from v1:
->  - Bugfixes and corrected some typos
->  - Use enum for VFIO IOMMU driver capabilities
->
-> Antonios Motakis (5):
->   vfio: implement iommu driver capabilities with an enum
->   vfio: introduce the VFIO_DMA_MAP_FLAG_NOEXEC flag
->   vfio: type1: replace domain wide protection flags with supported
->     capabilities
->   vfio: type1: replace vfio_domains_have_iommu_cache with generic
->     function
->   vfio: type1: implement the VFIO_DMA_MAP_FLAG_NOEXEC flag
->
->  drivers/vfio/vfio_iommu_type1.c | 91
-> +++++++++++++++++++++++++++++------------
->  include/uapi/linux/vfio.h       | 30 ++++++++------
->  2 files changed, 81 insertions(+), 40 deletions(-)
->
-> --
-> 2.3.1
->
->
-
---001a11490592d65c7b05105f7fdb
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Added Eric Auger for comments.</div><div class=3D"gmail_ex=
-tra"><br><div class=3D"gmail_quote">On Mon, Mar 2, 2015 at 5:58 PM, Baptist=
-e Reynal <span dir=3D"ltr">&lt;<a href=3D"mailto:b.reynal@virtualopensystem=
-s.com" target=3D"_blank">b.reynal@virtualopensystems.com</a>&gt;</span> wro=
-te:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-=
-left:1px #ccc solid;padding-left:1ex"><div class=3D"HOEnZb"><div class=3D"h=
-5">This patch series makes the VFIO_IOMMU_TYPE1 driver buildable on ARM, so=
- it<br>
-may be used with ARM SMMUs. It also adds support for the IOMMU_NOEXEC flag<=
-br>
-supported by SMMUs adhering to the ARM SMMU specification so the VFIO user =
-can<br>
-specify whether the target memory can be executed by the device behind the<=
-br>
-SMMU.<br>
-<br>
-Changes from v3:<br>
-=C2=A0- Rebased on linux v4.0-rc1<br>
-=C2=A0- Use bit shifting for domain-&gt;caps<br>
-=C2=A0- Baptiste Reynal is the new maintainer of this serie<br>
-Changes from v2:<br>
-=C2=A0- Rebased on latest iommu/next branch by Joerg Roedel<br>
-Changes from v1:<br>
-=C2=A0- Bugfixes and corrected some typos<br>
-=C2=A0- Use enum for VFIO IOMMU driver capabilities<br>
-<br>
-Antonios Motakis (5):<br>
-=C2=A0 vfio: implement iommu driver capabilities with an enum<br>
-=C2=A0 vfio: introduce the VFIO_DMA_MAP_FLAG_NOEXEC flag<br>
-=C2=A0 vfio: type1: replace domain wide protection flags with supported<br>
-=C2=A0 =C2=A0 capabilities<br>
-=C2=A0 vfio: type1: replace vfio_domains_have_iommu_cache with generic<br>
-=C2=A0 =C2=A0 function<br>
-=C2=A0 vfio: type1: implement the VFIO_DMA_MAP_FLAG_NOEXEC flag<br>
-<br>
-=C2=A0drivers/vfio/vfio_iommu_type1.c | 91 +++++++++++++++++++++++++++++---=
----------<br>
-=C2=A0include/uapi/linux/vfio.h=C2=A0 =C2=A0 =C2=A0 =C2=A0| 30 ++++++++----=
---<br>
-=C2=A02 files changed, 81 insertions(+), 40 deletions(-)<br>
-<br>
---<br>
-2.3.1<br>
-<br>
-</div></div></blockquote></div><br></div>
-
---001a11490592d65c7b05105f7fdb--
-
---===============8884118132916334700==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-kvmarm mailing list
-kvmarm@lists.cs.columbia.edu
-https://lists.cs.columbia.edu/mailman/listinfo/kvmarm
-
---===============8884118132916334700==--
+>  	select IRQ_DOMAIN
+>  	select MODULES_USE_ELF_RELA
+>  	select NO_BOOTMEM
+> diff --git a/arch/arm64/include/asm/dma-mapping.h b/arch/arm64/include/asm/dma-mapping.h
+> index c1b271f..5246d1a 100644
+> --- a/arch/arm64/include/asm/dma-mapping.h
+> +++ b/arch/arm64/include/asm/dma-mapping.h
+> @@ -45,11 +45,8 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+>  		return __generic_dma_ops(dev);
+>  }
+>  
+> -static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> -				      struct iommu_ops *iommu, bool coherent)
+> -{
+> -	dev->archdata.dma_coherent = coherent;
+> -}
+> +void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> +			struct iommu_ops *iommu, bool coherent);
+>  #define arch_setup_dma_ops	arch_setup_dma_ops
+>  
+>  /* do not use this function in a driver */
+> @@ -63,6 +60,10 @@ static inline bool is_device_dma_coherent(struct device *dev)
+>  #include <asm-generic/dma-mapping-common.h>
+>  
+>  #ifdef CONFIG_IOMMU_DMA
+> +
+> +void arch_teardown_dma_ops(struct device *dev);
+> +#define arch_teardown_dma_ops	arch_teardown_dma_ops
+> +
+>  static inline struct iommu_dma_domain *get_dma_domain(struct device *dev)
+>  {
+>  	return dev->archdata.dma_domain;
+> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+> index 28e771c..2a30673 100644
+> --- a/arch/arm64/mm/dma-mapping.c
+> +++ b/arch/arm64/mm/dma-mapping.c
+> @@ -752,6 +752,14 @@ static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+>  	iommu_dma_release_domain(dma_domain);
+>  }
+>  
+> +void arch_teardown_dma_ops(struct device *dev)
+> +{
+> +	if (dev->archdata.dma_domain) {
+> +		iommu_dma_detach_device(dev);
+> +		dev->archdata.dma_ops = NULL;
+> +	}
+> +}
+> +
+>  #else
+>  
+>  static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> @@ -759,3 +767,10 @@ static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+>  { }
+>  
+>  #endif  /* CONFIG_IOMMU_DMA */
+> +
+> +void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> +			struct iommu_ops *iommu, bool coherent)
+> +{
+> +	dev->archdata.dma_coherent = coherent;
+> +	__iommu_setup_dma_ops(dev, dma_base, size, iommu);
+> +}
+> 
