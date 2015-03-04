@@ -1,14 +1,11 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v5 0/4] vfio: type1: support for ARM SMMUS with
-	VFIO_IOMMU_TYPE1
-Date: Wed, 04 Mar 2015 10:45:04 -0700
-Message-ID: <1425491104.5200.268.camel@redhat.com>
-References: <1425485274-5709-1-git-send-email-b.reynal@virtualopensystems.com>
+Subject: [PATCH] iommu/vt-d: Detach domain *only* from attached iommus
+Date: Wed, 04 Mar 2015 11:30:10 -0700
+Message-ID: <20150304182905.23660.81378.stgit@gimli.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1425485274-5709-1-git-send-email-b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,56 +15,60 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2015-03-04 at 17:07 +0100, Baptiste Reynal wrote:
-> This patch series makes the VFIO_IOMMU_TYPE1 driver buildable on ARM, so it
-> may be used with ARM SMMUs. It also adds support for the IOMMU_NOEXEC flag
-> supported by SMMUs adhering to the ARM SMMU specification so the VFIO user can
-> specify whether the target memory can be executed by the device behind the
-> SMMU.
+Device domains never span IOMMU hardware units, which allows the
+domain ID space for each IOMMU to be an independent address space.
+Therefore we can have multiple, independent domains, each with the
+same domain->id, but attached to different hardware units.  This is
+also why we need to do a heavy-weight search for VM domains since
+they can span multiple IOMMUs hardware units and we don't require a
+single global ID to use for all hardware units.
 
-Ok, so the differences between IOMMU_CACHE and IOMMU_NOEXEC are twofold.
-First is that when the IOMMU is IOMMU_CAP_CACHE_COHERENCY we always use
-IOMMU_CACHE for all mappings within the domain.  This is not a user
-provided mapping flag.  Second, if a device is added behind an IOMMU
-that is not IOMMU_CAP_CACHE_COHERENCY capable, this simply means that it
-needs to be managed as a separate domain within the same container.
-vfio_domains_have_iommu_cache() reports true only if all domains within
-the container support, and are therefore using, IOMMU_CACHE.
+Therefore, if we call iommu_detach_domain() across all active IOMMU
+hardware units for a non-VM domain, the result is that we clear domain
+IDs that are not associated with our domain, allowing them to be
+re-allocated and causing apparent coherency issues when the device
+cannot access IOVAs for the intended domain.
 
-On the other hand, IOMMU_NOEXEC is a feature, but not a global mapping
-flag for a domain.  There are potentially some mappings with it within a
-domain and some without, just like the IOMMU_READ/IOMMU_WRITE.  It's
-therefore a per-DMA mapping flag as you've implemented in patch 4.
-Second, as a user specified flag, support for it is mandatory.  If a
-device is added behind an IOMMU that does not support NOEXEC and NOEXEC
-mappings are in use, the device must be rejected from addition to the
-container.
+This bug was introduced in commit fb170fb4c548 ("iommu/vt-d: Introduce
+helper functions to make code symmetric for readability"), but is
+significantly exacerbated by the more recent commit 62c22167dd70
+("iommu/vt-d: Fix dmar_domain leak in iommu_attach_device") which calls
+domain_exit() more frequently to resolve a domain leak.
 
-Hopefully that's correct, because I think that's what the code does.
-The problem I have with the code is that I don't think it's acceptable
-to call iommu_ops.capable() directly.  This is breaking an abstraction
-of the IOMMU API.  The obvious problem with that is:
+Fixes: fb170fb4c548 ("iommu/vt-d: Introduce helper functions to make code symmetric for readability")
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org # v3.17+
+---
+ drivers/iommu/intel-iommu.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-bool iommu_capable(struct bus_type *bus, enum iommu_cap cap)
-
-I assume you're calling the op directly because of bus_type, but that's
-no excuse to misuse the API.  Our choice is either to try to extend the
-API, maybe create:
-
-bool iommu_domain_capable(struct iommu_domain *domain, enum iommu_cap cap)
-
-Or to use the available function by either caching the value when we do
-have a bus_type available to us, or storing or discovering bus_type.  It
-doesn't seem that terrible to cache it on the domain.  Be careful though
-that if a device imposing lack of NOEXEC on a domain is removed, the
-ability to do NOEXEC mappings should be reinstated.  That would be easy
-if we use separate vfio_domains to manage NOEXEC capable vs NOEXEC
-in-capable devices (like we do CACHE vs no-CACHE), but there's some
-additional overhead to do that since it implies a separate iommu_domain.
-Thanks,
-
-Alex
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index ae4c1a8..a83c965 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1743,8 +1743,8 @@ static int domain_init(struct dmar_domain *domain, int guest_width)
+ static void domain_exit(struct dmar_domain *domain)
+ {
+ 	struct dmar_drhd_unit *drhd;
+-	struct intel_iommu *iommu;
+ 	struct page *freelist = NULL;
++	int i;
+ 
+ 	/* Domain 0 is reserved, so dont process it */
+ 	if (!domain)
+@@ -1764,8 +1764,8 @@ static void domain_exit(struct dmar_domain *domain)
+ 
+ 	/* clear attached or cached domains */
+ 	rcu_read_lock();
+-	for_each_active_iommu(iommu, drhd)
+-		iommu_detach_domain(domain, iommu);
++	for_each_set_bit(i, domain->iommu_bmp, g_num_of_iommus)
++		iommu_detach_domain(domain, g_iommus[i]);
+ 	rcu_read_unlock();
+ 
+ 	dma_free_pagelist(freelist);
