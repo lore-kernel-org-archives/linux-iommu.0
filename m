@@ -1,11 +1,15 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH] iommu/vt-d: Detach domain *only* from attached iommus
-Date: Wed, 04 Mar 2015 11:30:10 -0700
-Message-ID: <20150304182905.23660.81378.stgit@gimli.home>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 1/1] iommu/arm-smmu: fix ARM_SMMU_FEAT_TRANS_OPS
+	condition
+Date: Wed, 4 Mar 2015 18:32:58 +0000
+Message-ID: <20150304183258.GN17250@arm.com>
+References: <1425484266-5449-1-git-send-email-b.reynal@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1425484266-5449-1-git-send-email-b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,60 +19,59 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+To: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Cc: open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Device domains never span IOMMU hardware units, which allows the
-domain ID space for each IOMMU to be an independent address space.
-Therefore we can have multiple, independent domains, each with the
-same domain->id, but attached to different hardware units.  This is
-also why we need to do a heavy-weight search for VM domains since
-they can span multiple IOMMUs hardware units and we don't require a
-single global ID to use for all hardware units.
+On Wed, Mar 04, 2015 at 03:51:06PM +0000, Baptiste Reynal wrote:
+> This patch is a fix to "iommu/arm-smmu: add support for iova_to_phys
+> through ATS1PR".
+> According to ARM documentation, translation registers are optional even
+> in SMMUv1, so ID0_S1TS needs to be checked to verify their presence.
+> Also, we check that the domain is a stage-1 domain.
+> 
+> Signed-off-by: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+> 
+> ---
+> v1 -> v2:
+> Add domain stage test (Thanks to Will Deacon)
+> 
+> ---
+>  drivers/iommu/arm-smmu.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index fc13dd5..a3adde6 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1288,10 +1288,13 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
+>  		return 0;
+>  
+>  	spin_lock_irqsave(&smmu_domain->pgtbl_lock, flags);
+> -	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_TRANS_OPS)
+> +	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_TRANS_OPS &&
+> +			smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
+>  		ret = arm_smmu_iova_to_phys_hard(domain, iova);
+> -	else
+> +	} else {
+>  		ret = ops->iova_to_phys(ops, iova);
+> +	}
+> +
+>  	spin_unlock_irqrestore(&smmu_domain->pgtbl_lock, flags);
+>  
+>  	return ret;
+> @@ -1556,7 +1559,7 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>  		return -ENODEV;
+>  	}
+>  
+> -	if (smmu->version == 1 || (!(id & ID0_ATOSNS) && (id & ID0_S1TS))) {
+> +	if ((id & ID0_S1TS) && ((smmu->version == 1) || (id & ID0_ATOSNS))) {
+>  		smmu->features |= ARM_SMMU_FEAT_TRANS_OPS;
+>  		dev_notice(smmu->dev, "\taddress translation ops\n");
 
-Therefore, if we call iommu_detach_domain() across all active IOMMU
-hardware units for a non-VM domain, the result is that we clear domain
-IDs that are not associated with our domain, allowing them to be
-re-allocated and causing apparent coherency issues when the device
-cannot access IOVAs for the intended domain.
+Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 
-This bug was introduced in commit fb170fb4c548 ("iommu/vt-d: Introduce
-helper functions to make code symmetric for readability"), but is
-significantly exacerbated by the more recent commit 62c22167dd70
-("iommu/vt-d: Fix dmar_domain leak in iommu_attach_device") which calls
-domain_exit() more frequently to resolve a domain leak.
+Sorry Joerg, but this is the latest in the drip of ARM SMMU fixes for
+4.0! Please pick it up with the rest.
 
-Fixes: fb170fb4c548 ("iommu/vt-d: Introduce helper functions to make code symmetric for readability")
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org # v3.17+
----
- drivers/iommu/intel-iommu.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index ae4c1a8..a83c965 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1743,8 +1743,8 @@ static int domain_init(struct dmar_domain *domain, int guest_width)
- static void domain_exit(struct dmar_domain *domain)
- {
- 	struct dmar_drhd_unit *drhd;
--	struct intel_iommu *iommu;
- 	struct page *freelist = NULL;
-+	int i;
- 
- 	/* Domain 0 is reserved, so dont process it */
- 	if (!domain)
-@@ -1764,8 +1764,8 @@ static void domain_exit(struct dmar_domain *domain)
- 
- 	/* clear attached or cached domains */
- 	rcu_read_lock();
--	for_each_active_iommu(iommu, drhd)
--		iommu_detach_domain(domain, iommu);
-+	for_each_set_bit(i, domain->iommu_bmp, g_num_of_iommus)
-+		iommu_detach_domain(domain, g_iommus[i]);
- 	rcu_read_unlock();
- 
- 	dma_free_pagelist(freelist);
+Will
