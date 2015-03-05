@@ -1,14 +1,15 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH 0/5] arm64: IOMMU-backed DMA mapping
-Date: Thu, 05 Mar 2015 16:42:31 +0000
-Message-ID: <54F88777.3090404@arm.com>
-References: <cover.1421086706.git.robin.murphy@arm.com>
-	<54F868A8.7070103@samsung.com>
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu: fix leak in arm_smmu_flush_pgtable
+Date: Thu, 05 Mar 2015 09:28:02 -0800
+Message-ID: <vnkwsidjtkv1.fsf@mitchelh-linux.qualcomm.com>
+References: <1425514685-23831-1-git-send-email-mitchelh@codeaurora.org>
+	<54F83235.70700@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <54F868A8.7070103-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <54F83235.70700-5wv7dgnIgG8@public.gmane.org> (Robin Murphy's message of "Thu, 05 Mar
+	2015 10:38:45 +0000")
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,77 +19,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: "linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org" <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org" <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Marek,
-
-On 05/03/15 14:31, Marek Szyprowski wrote:
-> Hello,
+On Thu, Mar 05 2015 at 02:38:45 AM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+> Hi Mitch,
 >
-> On 2015-01-12 21:48, Robin Murphy wrote:
->> Hi all,
+> On 05/03/15 00:18, Mitchel Humpherys wrote:
+>> We're currently mapping a page in arm_smmu_flush_pgtable without ever
+>> unmapping it.  Fix this by calling dma_unmap_page on the returned dma
+>> address.  Since the only reason we're calling dma_map_page is to make
+>> sure it actually gets flushed out to RAM, we can just call
+>> dma_unmap_page immediately following the map.
 >>
->> Whilst it's a long way off perfect, this has reached the point of being
->> functional and stable enough to be useful, so here it is. The core
->> consists of the meat of the arch/arm implementation modified to remove
->> the assumption of PAGE_SIZE pages and ported over to the Intel IOVA
->> allocator instead of the bitmap-based one. For that, this series depends
->> on my "Genericise the IOVA allocator" series posted earlier[1].
->
-> I've tested your patches on Exynos 5433 based system and I have a few
-> comments. To get them working I had to do some fixes. Most of them
-> are already reported in this thread, the remaining I will send in a few
-> minutes.
-
-Thanks!
-
-> Do you plan to send an updated patchset?
-
-I already sent a v2 which addressed some of the major issues here:
-
-http://thread.gmane.org/gmane.linux.kernel.iommu/8773
-
-Following some of the feedback there I've currently got a v3 in 
-development, which reworks a lot of it more in favour of scatterlists, 
-and fills in some of the gaps needed to move arch/arm over (I still need 
-to look at how to handle the drivers currently making use of 
-dma_iommu_mapping directly).
-
-Robin.
-
->
->> There are plenty of obvious things still to do, including:
+>> Without this, eventually swiotlb runs out of memory and starts printing
+>> things like:
 >>
->>    * Domain and group handling is all wrong, but that's a bigger problem.
->>      For the moment it does more or less the same thing as the arch/arm
->>      code, which at least works for the one-IOMMU-per-device situation.
->>    * IOMMU domains and IOVA domains probably want to be better integrated
->>      with devices and each other, rather than having a proliferation of
->>      arch-specific structs.
->>    * The temporary map_sg implementation - I have a 'proper' iommu_map_sg
->>      based one in progress, but since the simple one works it's not been
->>      as high a priority.
->
-> Well, for ARM arch this was the main feature of IOMMU and DMA-mapping
-> integration. It is heavily used by some multimedia devices and dma-buf
-> realted stuff to get a scattered buffer mapped into contiguous IO address
-> space.
->
->>    * Port arch/arm over to it. I'd guess it might be preferable to merge
->>      this through arm64 first, though, rather than overcomplicate matters.
->
-> I think that the code in arch/arm is already quite well tested and can be
-> almost directly reused for common dma-mapping helpers.
->
->>    * There may well be scope for streamlining and tidying up the copied
->>      parts - In general I've simply avoided touching anything I don't
->>      fully understand.
->>    * In the same vein, I'm sure lots of it is fairly ARM-specific, so will
->>      need longer-term work to become truly generic.
+>>      [   35.545076] arm-smmu d00000.arm,smmu: swiotlb buffer is full (sz: 128 bytes)
 >>
->> [1]:http://thread.gmane.org/gmane.linux.kernel.iommu/8208
 >
-> Best regards
->
+> So, you have non-coherent SMMUs too ;) The real problem is that the SMMU's
+> DMA mask is wrong (as it happens I've just given Will a patch to fix that)
+> - this is really just doing a whole bunch of unnecessary work (two memory
+> copies and two cache flushes, one of which isn't even flushing the right
+> area) to hide the problem. With an appropriate DMA mask set,
+> swiotlb_map_page becomes a no-op and we fall through to the cache flush
+> without ever allocating anything.
+
+Yeah I noticed that as well...  But isn't this still incorrect usage of
+the API (DMA-API-HOWTO.txt seems to indicate that calls to map should
+always be balanced with calls to unmap)?  What we really want to do here
+is just call __dma_map_area directly, but the comment on that guy
+expressly forbids it...  Not sure what's worse, abusing the DMA API or
+disobeying that comment?
+
+
+-Mitch
+
+-- 
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
