@@ -1,100 +1,84 @@
-From: Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [RFC PATCH v2 2/3] arm64: add IOMMU dma_ops
-Date: Wed, 04 Mar 2015 16:19:45 -0800
-Message-ID: <54F7A121.3050103@codeaurora.org>
-References: <cover.1423226542.git.robin.murphy@arm.com>			
-	<058e038009ac708a40197c80e07410914c2a162e.1423226542.git.robin.murphy@arm.com>		
-	<1423543151.18280.2.camel@mtksdaap41> <54D9F486.10501@arm.com>	
-	<1423901011.27922.7.camel@mhfsdcap03> <54E24D50.408@arm.com>
-	<1425353927.4555.10.camel@mhfsdcap03> <54F5A5FE.3040506@arm.com>
+From: Baptiste Reynal <b.reynal@virtualopensystems.com>
+Subject: Re: [PATCH v5 0/4] vfio: type1: support for ARM SMMUS with
+ VFIO_IOMMU_TYPE1
+Date: Thu, 5 Mar 2015 11:16:24 +0100
+Message-ID: <CAN9JPjEimOMW4U5-ZkF0kkQ9SLqj7i1gLhJuihLqAazCqN3a_w@mail.gmail.com>
+References: <1425485274-5709-1-git-send-email-b.reynal@virtualopensystems.com>
+ <1425491104.5200.268.camel@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <54F5A5FE.3040506-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: "linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org" <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org" <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
+In-Reply-To: <1425491104.5200.268.camel@redhat.com>
+List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
+List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
+List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
+List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
+List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
+Errors-To: kvmarm-bounces@lists.cs.columbia.edu
+Sender: kvmarm-bounces@lists.cs.columbia.edu
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Linux IOMMU <iommu@lists.linux-foundation.org>, VirtualOpenSystems Technical Team <tech@virtualopensystems.com>, kvm-arm <kvmarm@lists.cs.columbia.edu>
 List-Id: iommu@lists.linux-foundation.org
 
-On 3/3/2015 4:15 AM, Robin Murphy wrote:
-> On 03/03/15 03:38, Yong Wu wrote:
->> On Mon, 2015-02-16 at 20:04 +0000, Robin Murphy wrote:
->>
->>>>        2)int (*domain_init)(struct iommu_domain *domain);
->>>>          About this function, it will alloc pagetable for the iommu
->>>> domain. And We expect the pagetable memory is uncacheable, so try to
->>>> call "dma_alloc_coherent", unfortunately the "struct device *" can't be
->>>> passed into this function. so is it possible if adding a parameter in
->>>> this function.
->>>
->>> ...one of the ideas of the new of_iommu_configure framework is that
->>> iommu_ops structures can represent individual IOMMU devices if
->>> necessary. The ops->priv pointer was included for that purpose, but
->>> isn't very clean so Will has plans to remove it again - it's easy enough
->>> to achieve the same effect by having the driver embed the ops in its
->>> private instance data instead. I've done that with the ARM SMMU driver
->>> which has a similar issue of needing hardware details at domain_init()
->>> time (no patches ready yet but I have an iommu/dev branch on top of the
->>> iommu/dma branch with some current work-in-progress bits)
->>>
->>> Thanks,
->>> Robin.
->>>
->> Dear Robin,
->>          Thanks very much for your suggestion.
->>
->>          I have a more question: how to do cache maintenance in arm64.
->>
->>          a) "__dma_flush_range" can not be expected to used directly.
->>          b) Following Documentation\DMA-API.txt, section: Streaming DMA
->> mappings. dma_map_single should be used, But I am not sure how to pass
->> the first "struct device *".
->>           We have a device which call arch_setup_dma_ops to create the
->> iommu domain, if we use this device, it will enter __iommu_map_page;
->>          If we input NULL for dmap_map_single, it will assert at
->> dma_capable in swiotlb_map_page...
+On Wed, Mar 4, 2015 at 6:45 PM, Alex Williamson
+<alex.williamson@redhat.com> wrote:
+> On Wed, 2015-03-04 at 17:07 +0100, Baptiste Reynal wrote:
+>> This patch series makes the VFIO_IOMMU_TYPE1 driver buildable on ARM, so it
+>> may be used with ARM SMMUs. It also adds support for the IOMMU_NOEXEC flag
+>> supported by SMMUs adhering to the ARM SMMU specification so the VFIO user can
+>> specify whether the target memory can be executed by the device behind the
+>> SMMU.
 >
-> Consider that the IOMMU's page table walker is a DMA master in its own
-right, and that is the device you're mapping the page tables for.
-Therefore your IOMMU driver needs to have access to the struct device
-of the IOMMU itself to use for the page-table-related mappings. Also,
-be sure to set the IOMMU's DMA mask correctly to prevent SWIOTLB bounce
-buffers being created in the process (which as I've found generally ends
-in disaster).
+> Ok, so the differences between IOMMU_CACHE and IOMMU_NOEXEC are twofold.
+> First is that when the IOMMU is IOMMU_CAP_CACHE_COHERENCY we always use
+> IOMMU_CACHE for all mappings within the domain.  This is not a user
+> provided mapping flag.  Second, if a device is added behind an IOMMU
+> that is not IOMMU_CAP_CACHE_COHERENCY capable, this simply means that it
+> needs to be managed as a separate domain within the same container.
+> vfio_domains_have_iommu_cache() reports true only if all domains within
+> the container support, and are therefore using, IOMMU_CACHE.
 >
->>          And normally, we always need do cache maintenance only for some
->> bytes in the pagetable but not whole a page. Then is there a easy way to
->> do the cache maintenance?
+> On the other hand, IOMMU_NOEXEC is a feature, but not a global mapping
+> flag for a domain.  There are potentially some mappings with it within a
+> domain and some without, just like the IOMMU_READ/IOMMU_WRITE.  It's
+> therefore a per-DMA mapping flag as you've implemented in patch 4.
+> Second, as a user specified flag, support for it is mandatory.  If a
+> device is added behind an IOMMU that does not support NOEXEC and NOEXEC
+> mappings are in use, the device must be rejected from addition to the
+> container.
+
+Thanks for taking time to explain. That is also my understanding on those flags.
+
 >
-> For a noncoherent device, dma_map_single() will end up calling
-__dma_map_area() with the page offset and size of the original request, so
-the updated part gets flushed by VA, and the rest of the page isn't touched
-if it doesn't need to be. On the other hand if the page tables were
-allocated with dma_alloc_coherent() in the first place, then just calling
-dma_sync_single_for_device() for the updated region should suffice.
+> Hopefully that's correct, because I think that's what the code does.
+> The problem I have with the code is that I don't think it's acceptable
+> to call iommu_ops.capable() directly.  This is breaking an abstraction
+> of the IOMMU API.  The obvious problem with that is:
+>
+> bool iommu_capable(struct bus_type *bus, enum iommu_cap cap)
+>
+> I assume you're calling the op directly because of bus_type, but that's
+> no excuse to misuse the API.  Our choice is either to try to extend the
+> API, maybe create:
+>
+> bool iommu_domain_capable(struct iommu_domain *domain, enum iommu_cap cap)
+>
+> Or to use the available function by either caching the value when we do
+> have a bus_type available to us, or storing or discovering bus_type.  It
+> doesn't seem that terrible to cache it on the domain.  Be careful though
+> that if a device imposing lack of NOEXEC on a domain is removed, the
+> ability to do NOEXEC mappings should be reinstated.  That would be easy
+> if we use separate vfio_domains to manage NOEXEC capable vs NOEXEC
+> in-capable devices (like we do CACHE vs no-CACHE), but there's some
+> additional overhead to do that since it implies a separate iommu_domain.
+> Thanks,
+>
+> Alex
 >
 
-Where exactly would you call the dma_unmap? It seems a bit strange to
-be repeatedly calling dma_map and never calling dma_unmap. I don't see it
-explicitly forbidden in the docs anywhere to do this but it seems like
-it would be violating the implicit handoff of dma_map/dma_unmap.
-
-> Robin.
->
-
-Thanks,
-Laura
-
--- 
-Qualcomm Innovation Center, Inc.
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+I understand the issue on the API here. I will go for extending the
+iommu API with iommu_domain_capable, except if you have any reason to
+push for the second solution.
