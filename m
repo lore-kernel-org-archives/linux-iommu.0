@@ -1,14 +1,11 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu: fix leak in arm_smmu_flush_pgtable
-Date: Thu, 05 Mar 2015 18:44:29 +0000
-Message-ID: <54F8A40D.5030608@arm.com>
-References: <1425514685-23831-1-git-send-email-mitchelh@codeaurora.org>	<54F83235.70700@arm.com>
-	<vnkwsidjtkv1.fsf@mitchelh-linux.qualcomm.com>
+Subject: [PATCH] iommu: arm-smmu: set a more appropriate DMA mask
+Date: Thu,  5 Mar 2015 18:56:36 +0000
+Message-ID: <2ad6f0a7d198d607e252c420fef52d95dbe048c6.1425581413.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <vnkwsidjtkv1.fsf-Yf+dfxj6toJBVvN7MMdr1KRtKmQZhJ7pQQ4Iyu8u01E@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,45 +15,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/03/15 17:28, Mitchel Humpherys wrote:
-> On Thu, Mar 05 2015 at 02:38:45 AM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
->> Hi Mitch,
->>
->> On 05/03/15 00:18, Mitchel Humpherys wrote:
->>> We're currently mapping a page in arm_smmu_flush_pgtable without ever
->>> unmapping it.  Fix this by calling dma_unmap_page on the returned dma
->>> address.  Since the only reason we're calling dma_map_page is to make
->>> sure it actually gets flushed out to RAM, we can just call
->>> dma_unmap_page immediately following the map.
->>>
->>> Without this, eventually swiotlb runs out of memory and starts printing
->>> things like:
->>>
->>>       [   35.545076] arm-smmu d00000.arm,smmu: swiotlb buffer is full (sz: 128 bytes)
->>>
->>
->> So, you have non-coherent SMMUs too ;) The real problem is that the SMMU's
->> DMA mask is wrong (as it happens I've just given Will a patch to fix that)
->> - this is really just doing a whole bunch of unnecessary work (two memory
->> copies and two cache flushes, one of which isn't even flushing the right
->> area) to hide the problem. With an appropriate DMA mask set,
->> swiotlb_map_page becomes a no-op and we fall through to the cache flush
->> without ever allocating anything.
->
-> Yeah I noticed that as well...  But isn't this still incorrect usage of
-> the API (DMA-API-HOWTO.txt seems to indicate that calls to map should
-> always be balanced with calls to unmap)?  What we really want to do here
-> is just call __dma_map_area directly, but the comment on that guy
-> expressly forbids it...  Not sure what's worse, abusing the DMA API or
-> disobeying that comment?
+Since we use dma_map_page() as an architecture-independent means of
+making page table updates visible to non-coherent SMMUs, we need to
+have a suitable DMA mask set to discourage the DMA mapping layer from
+creating bounce buffers and flushing those instead, if said page tables
+happen to lie outside the default 32-bit mask.
 
-Actually, I think we've figured out a fairly nice way to make the core 
-io-pgtbl code more DMA-API aware, so we can make all the appropriate 
-calls for the way we're actually using the page tables - I'm having a go 
-at a patch now...
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Robin.
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index fc13dd5..dc0ae62 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1630,6 +1630,13 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 	size = arm_smmu_id_size_to_bits((id >> ID2_OAS_SHIFT) & ID2_OAS_MASK);
+ 	smmu->pa_size = size;
+ 
++	/*
++	 * What the page table walker can address actually depends on which
++	 * descriptor format is in use, but since a) we don't know that yet,
++	 * and b) it can vary per context bank, this will have to do...
++	 */
++	dma_set_mask_and_coherent(smmu->dev, DMA_BIT_MASK(size));
++
+ 	if (smmu->version == ARM_SMMU_V1) {
+ 		smmu->va_size = smmu->ipa_size;
+ 		size = SZ_4K | SZ_2M | SZ_1G;
+-- 
+1.9.1
