@@ -1,15 +1,14 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v5 0/4] vfio: type1: support for ARM SMMUS with
-	VFIO_IOMMU_TYPE1
-Date: Thu, 05 Mar 2015 14:11:55 -0700
-Message-ID: <1425589915.5200.336.camel@redhat.com>
-References: <1425485274-5709-1-git-send-email-b.reynal@virtualopensystems.com>
-	<1425491104.5200.268.camel@redhat.com> <54F893C3.6020006@linaro.org>
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH] iommu: arm-smmu: set a more appropriate DMA mask
+Date: Thu, 05 Mar 2015 13:20:03 -0800
+Message-ID: <vnkw1tl3qgzg.fsf@mitchelh-linux.qualcomm.com>
+References: <2ad6f0a7d198d607e252c420fef52d95dbe048c6.1425581413.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <54F893C3.6020006-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+In-Reply-To: <2ad6f0a7d198d607e252c420fef52d95dbe048c6.1425581413.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+	(Robin Murphy's message of "Thu, 5 Mar 2015 18:56:36 +0000")
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,24 +18,27 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2015-03-05 at 18:34 +0100, Eric Auger wrote:
-> Hi All,
-> 
-> Ironically, since the correction of the IOMMU_CAP_CACHE_COHERENCY bug
-> (https://lkml.org/lkml/2015/1/29/514) in vfio_iommu_type1.c, my Calxeda
-> Midway VFIO use case is not working anymore. This is also observable
-> when I do not apply at all the whole [PATCH v5 0/4] vfio: type1: support
-> for ARM SMMUS with VFIO_IOMMU_TYPE1 series.
-> 
-> My understanding is this series should not be requested for me since my
-> xgmac device does not care about the XN attribute.
+On Thu, Mar 05 2015 at 10:56:36 AM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+> Since we use dma_map_page() as an architecture-independent means of
+> making page table updates visible to non-coherent SMMUs, we need to
+> have a suitable DMA mask set to discourage the DMA mapping layer from
+> creating bounce buffers and flushing those instead, if said page tables
+> happen to lie outside the default 32-bit mask.
+>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-This also raises the concern that we're continuing to put optional
-features as prerequisites to base vfio-platform support and creating
-self-induced stalls at getting anything upstream :-\  Thanks,
+Tested-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 
-Alex
+Thanks Robin!
+
+
+-Mitch
+
+-- 
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
