@@ -1,15 +1,11 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 1/1] iommu/arm-smmu: fix ARM_SMMU_FEAT_TRANS_OPS
-	condition
-Date: Wed, 4 Mar 2015 18:32:58 +0000
-Message-ID: <20150304183258.GN17250@arm.com>
-References: <1425484266-5449-1-git-send-email-b.reynal@virtualopensystems.com>
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH] iommu/arm-smmu: fix leak in arm_smmu_flush_pgtable
+Date: Wed,  4 Mar 2015 16:18:05 -0800
+Message-ID: <1425514685-23831-1-git-send-email-mitchelh@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1425484266-5449-1-git-send-email-b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,59 +15,47 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 04, 2015 at 03:51:06PM +0000, Baptiste Reynal wrote:
-> This patch is a fix to "iommu/arm-smmu: add support for iova_to_phys
-> through ATS1PR".
-> According to ARM documentation, translation registers are optional even
-> in SMMUv1, so ID0_S1TS needs to be checked to verify their presence.
-> Also, we check that the domain is a stage-1 domain.
-> 
-> Signed-off-by: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-> 
-> ---
-> v1 -> v2:
-> Add domain stage test (Thanks to Will Deacon)
-> 
-> ---
->  drivers/iommu/arm-smmu.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index fc13dd5..a3adde6 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -1288,10 +1288,13 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
->  		return 0;
->  
->  	spin_lock_irqsave(&smmu_domain->pgtbl_lock, flags);
-> -	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_TRANS_OPS)
-> +	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_TRANS_OPS &&
-> +			smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
->  		ret = arm_smmu_iova_to_phys_hard(domain, iova);
-> -	else
-> +	} else {
->  		ret = ops->iova_to_phys(ops, iova);
-> +	}
-> +
->  	spin_unlock_irqrestore(&smmu_domain->pgtbl_lock, flags);
->  
->  	return ret;
-> @@ -1556,7 +1559,7 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
->  		return -ENODEV;
->  	}
->  
-> -	if (smmu->version == 1 || (!(id & ID0_ATOSNS) && (id & ID0_S1TS))) {
-> +	if ((id & ID0_S1TS) && ((smmu->version == 1) || (id & ID0_ATOSNS))) {
->  		smmu->features |= ARM_SMMU_FEAT_TRANS_OPS;
->  		dev_notice(smmu->dev, "\taddress translation ops\n");
+We're currently mapping a page in arm_smmu_flush_pgtable without ever
+unmapping it.  Fix this by calling dma_unmap_page on the returned dma
+address.  Since the only reason we're calling dma_map_page is to make
+sure it actually gets flushed out to RAM, we can just call
+dma_unmap_page immediately following the map.
 
-Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Without this, eventually swiotlb runs out of memory and starts printing
+things like:
 
-Sorry Joerg, but this is the latest in the drip of ARM SMMU fixes for
-4.0! Please pick it up with the rest.
+    [   35.545076] arm-smmu d00000.arm,smmu: swiotlb buffer is full (sz: 128 bytes)
 
-Will
+Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index fc13dd56953e..2ff8f35cf533 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -627,8 +627,13 @@ static void arm_smmu_flush_pgtable(void *addr, size_t size, void *cookie)
+ 		 * recursion here as the SMMU table walker will not be wired
+ 		 * through another SMMU.
+ 		 */
+-		dma_map_page(smmu->dev, virt_to_page(addr), offset, size,
+-			     DMA_TO_DEVICE);
++		dma_addr_t handle = dma_map_page(smmu->dev, virt_to_page(addr),
++						offset, size, DMA_TO_DEVICE);
++		if (handle == DMA_ERROR_CODE)
++			dev_err(smmu->dev,
++				"Couldn't flush page tables at %p!\n", addr);
++		else
++			dma_unmap_page(smmu->dev, handle, size, DMA_TO_DEVICE);
+ 	}
+ }
+ 
+-- 
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
