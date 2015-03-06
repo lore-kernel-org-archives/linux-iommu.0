@@ -1,47 +1,75 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH v5 0/4] vfio: type1: support for ARM SMMUS with
- VFIO_IOMMU_TYPE1
-Date: Fri, 06 Mar 2015 07:46:22 -0700
-Message-ID: <1425653182.5200.379.camel@redhat.com>
-References: <1425485274-5709-1-git-send-email-b.reynal@virtualopensystems.com>
- <1425491104.5200.268.camel@redhat.com> <54F893C3.6020006@linaro.org>
- <1425589915.5200.336.camel@redhat.com> <54F96D96.8040207@linaro.org>
- <20150306104148.GC22377@arm.com>
+From: Sergei Shtylyov <sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH 3/5] dt-bindings: mediatek: Add smi dts binding
+Date: Fri, 06 Mar 2015 17:48:53 +0300
+Message-ID: <54F9BE55.90601@cogentembedded.com>
+References: <1425638900-24989-1-git-send-email-yong.wu@mediatek.com>
+	<1425638900-24989-4-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
-In-Reply-To: <20150306104148.GC22377@arm.com>
-List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
-List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
-List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
-List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
-List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
-Errors-To: kvmarm-bounces@lists.cs.columbia.edu
-Sender: kvmarm-bounces@lists.cs.columbia.edu
-To: Will Deacon <will.deacon@arm.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "tech@virtualopensystems.com" <tech@virtualopensystems.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1425638900-24989-4-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 2015-03-06 at 10:41 +0000, Will Deacon wrote:
-> > As a longer term solution, would it make sense to add a user flag at VFIO
-> > user API level to turn the IOMMU_CACHE on?
-> 
-> I think userspace certainly needs a way to figure out if a device is
-> coherent or not, otherwise it can't generate the correct device-tree
-> properties for something like a KVM guest but the IOMMU_* setting should
-> remain in the kernel IMO. Similarly for things like MSI pages, which would
-> need to be mapped as device memory on ARM -- that should be exposed as a
-> higher level "please map my MSI page here" ioctl as opposed to requiring
-> userspace to supply the correct memory attributes.
+Hello.
 
-Userspace already has a way to determine if all the IOMMUs for a
-container support cache coherence, as does KVM via the kvm-vfio pseudo
-device.  It's inadvisable to allow userspace to control whether
-IOMMU_CACHE is used on x86 as emulating cache sync instructions hurts
-the overall system performance.  We don't want users to arbitrarily
-decide to enable those heavy-weight operations.  Thanks,
+On 3/6/2015 1:48 PM, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org wrote:
 
-Alex
+> From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+
+> This patch add smi binding document.
+
+> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> ---
+>   .../devicetree/bindings/soc/mediatek/mediatek,smi.txt   | 17 +++++++++++++++++
+>   1 file changed, 17 insertions(+)
+>   create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mediatek,smi.txt
+
+> diff --git a/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi.txt b/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi.txt
+> new file mode 100644
+> index 0000000..0fc9d1a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi.txt
+> @@ -0,0 +1,17 @@
+> +SMI hardware block diagram please help check <bindings/iommu/mediatek,iommu.txt>
+> +
+> +Required properties:
+> +- compatible : must be "mediatek,mediatek,mt8173-smi-larb"
+
+    One "mediatek," is enough. :-)
+
+> +- reg : the register of each local arbiter
+> +- clocks : the clocks of each local arbiter
+> +- clock-name: larb_sub*(3 clockes at most)
+
+    clock-names.
+
+> +
+> +Example:
+> +	larb1:larb@16010000 {
+> +	        compatible = "mediatek,mt8173-smi-larb";
+> +		reg = <0 0x16010000 0 0x1000>;
+> +		clocks = <&mmsys MM_SMI_COMMON>,
+> +		        <&vdecsys VDEC_CKEN>,
+
+    Please align with the < above.
+
+> +                        <&vdecsys VDEC_LARB_CKEN>;
+
+    Use tabs instead of spaces, please.
+
+> +		clock-names = "larb_sub0", "larb_sub1", "larb_sub2";
+> +	};
+
+WBR, Sergei
