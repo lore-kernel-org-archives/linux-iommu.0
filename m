@@ -1,8 +1,8 @@
 From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 Subject: Re: [PATCH 1/2] iommu: move pgsize_bitmap from struct iommu_ops to
 	struct iommu_domain
-Date: Fri, 06 Mar 2015 13:56:08 +0200
-Message-ID: <3242222.7VyhtFfsx7@avalon>
+Date: Fri, 06 Mar 2015 13:57:58 +0200
+Message-ID: <1973968.aLfySGl5av@avalon>
 References: <1425641688-26438-1-git-send-email-will.deacon@arm.com>
 	<1425641688-26438-2-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
@@ -24,8 +24,6 @@ Cc: jroedel-l3A5Bk7waGM@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, iom
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Will,
-
-Thank you for the patch.
 
 On Friday 06 March 2015 11:34:47 Will Deacon wrote:
 > struct iommu_ops contains function pointers for IOMMU driver callbacks
@@ -59,29 +57,40 @@ On Friday 06 March 2015 11:34:47 Will Deacon wrote:
 
 [snip]
 
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index 10186cac7716..cd867b255b99 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -469,6 +469,7 @@ static int ipmmu_domain_init(struct iommu_domain
-> *io_domain)
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 38daa453f2e5..baa05c09ca1b 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -53,6 +53,7 @@ struct iommu_domain_geometry {
 > 
->  	io_domain->priv = domain;
->  	domain->io_domain = io_domain;
-> +	domain->pgsize_bitmap = SZ_2M | SZ_64K | SZ_4K;
+>  struct iommu_domain {
+>  	const struct iommu_ops *ops;
+> +	unsigned long pgsize_bitmap;	/* Bitmap of supported page sizes */
+>  	void *priv;
+>  	iommu_fault_handler_t handler;
+>  	void *handler_token;
+> @@ -108,8 +109,6 @@ enum iommu_attr {
+>   * @domain_get_attr: Query domain attributes
+>   * @domain_set_attr: Change domain attributes
+>   * @of_xlate: add OF master IDs to iommu grouping
+> - * @pgsize_bitmap: bitmap of supported page sizes
+> - * @priv: per-instance data private to the iommu driver
+>   */
+>  struct iommu_ops {
+>  	bool (*capable)(enum iommu_cap);
+> @@ -144,9 +143,6 @@ struct iommu_ops {
+>  #ifdef CONFIG_OF_IOMMU
+>  	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
+>  #endif
+> -
+> -	unsigned long pgsize_bitmap;
+> -	void *priv;
 
-You're changing the bitmap, was it intended ?
+The commit message doesn't mention the removal of the priv field.
 
->  	return 0;
->  }
-> @@ -747,7 +748,6 @@ static const struct iommu_ops ipmmu_ops = {
->  	.iova_to_phys = ipmmu_iova_to_phys,
->  	.add_device = ipmmu_add_device,
->  	.remove_device = ipmmu_remove_device,
-> -	.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
 >  };
 > 
->  /* ------------------------------------------------------------------------ 
+>  #define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
 
 -- 
 Regards,
