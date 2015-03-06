@@ -1,15 +1,18 @@
-From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 4/5] dt-bindings: iommu: Add binding for mediatek IOMMU
-Date: Fri, 6 Mar 2015 11:21:37 +0000
-Message-ID: <20150306112137.GE8700@leverpostej>
-References: <1425638900-24989-1-git-send-email-yong.wu@mediatek.com>
-	<1425638900-24989-5-git-send-email-yong.wu@mediatek.com>
+From: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: Re: [PATCH v5 0/4] vfio: type1: support for ARM SMMUS with
+	VFIO_IOMMU_TYPE1
+Date: Fri, 6 Mar 2015 12:27:16 +0100
+Message-ID: <CAN9JPjHWcXuzkByJY1gnbvi28nZX8RBbZXDA2t-VeK6v8OrSRg@mail.gmail.com>
+References: <1425485274-5709-1-git-send-email-b.reynal@virtualopensystems.com>
+	<1425491104.5200.268.camel@redhat.com>
+	<54F893C3.6020006@linaro.org>
+	<1425589915.5200.336.camel@redhat.com>
+	<54F96D96.8040207@linaro.org> <20150306104148.GC22377@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1425638900-24989-5-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+In-Reply-To: <20150306104148.GC22377-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,108 +22,89 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 06, 2015 at 10:48:19AM +0000, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org wrote:
-> From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> 
-> This patch add mediatek iommu dts binding document.
-> 
-> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> ---
->  .../devicetree/bindings/iommu/mediatek,iommu.txt   | 41 ++++++++++++++++++++++
->  1 file changed, 41 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
-> new file mode 100644
-> index 0000000..db01c92
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
-> @@ -0,0 +1,41 @@
-> +/******************************************************/
-> +/*    Mediatek IOMMU Hardware block diagram           */
-> +/******************************************************/
-> +              EMI (External Memory Interface)
-> +               |
-> +              m4u (Multimedia Memory Management Unit)
-> +               |
-> +              smi (Smart Multimedia Interface)
-> +               |
-> +        +---------------+-------
-> +        |               |
-> +        |               |
-> +    vdec larb       disp larb      ... SoCs have different local arbiter(larb).
-> +        |               |
-> +        |               |
-> +   +----+----+    +-----+-----+
-> +   |    |    |    |     |     |    ...
-> +   |    |    |    |     |     |    ...
-> +   |    |    |    |     |     |    ...
-> +  MC   PP   VLD  OVL0 RDMA0 WDMA0  ... There are different ports in each larb.
-> +
-> +Required properties:
-> +- compatible : must be "mediatek,mt8173-iommu"
+Hi everyone,
 
-s/iommu/m4u/ -- the name should match what the hardware is called.
+Indeed, the NOEXEC flag is needed for our tests and VFIO should work
+without it for some other devices (including xgmac). I think it is
+reasonable to drop this patch serie for now.
 
-> +- reg : m4u register base
+Still we have the IOMMU_CACHE issue. To answer Will, the SMMU page
+tables are installed at stage-2. Currently, the dma-coherent flag is
+not preserved to the guest, that may be the issue (As we don't have it
+in the host in our case). "[RFC PATCH v3 0/3] vfio: platform: return
+device properties for a platform device"
+(http://lists.celinuxforum.org/pipermail/iommu/2014-December/011425.html)
+may be a solution to figure out if the device is coherent or not.
 
-... and size
 
-> +- interrupts : must contain the interrupts from each internal translation unit
-
-How many "internal translation units" are there?
-
-How should the interrupts be ordered?
-
-How do these relate to the larbs?
-
-> +- clocks : must contain one entry for each clock-name
-> +- clock-name: m4u clock
-
-This does not match the example.
-
-s/clock-name/clock-names/
-
-Please format this like a list, with names quoted, e.g.
-
-- clock-names: must contain:
-  * "m4u" - The functional clock for the m4u
-
-> +- larb : must contain the larbes of current platform
-
-s/larbes/local arbiters/
-
-How should these be ordered? Surely there's a relationship with
-registers/interrupts/etc in this unit?
-
-> +- iommu-cells : must be 1. Specifies the client PortID as defined in
-> +dt-binding/iommu/mt**-iommu-port.h
-
-Give the absolute filename.
-
-The include file should be added in this patch (it's part of the
-binding). The whole patch should be moved earlier in the series.
-
-Thanks,
-Mark.
-
-> +
-> +Example:
-> +		iommu: mmsys_iommu@10205000 {
-> +			compatible = "mediatek,mt8173-iommu";
-> +			reg = <0 0x10205000 0 0x1000>;
-> +			interrupts = <GIC_SPI 139 IRQ_TYPE_LEVEL_LOW>;
-> +			clocks = <&infrasys INFRA_M4U>;
-> +			clock-names = "infra_m4u";
-> +			larb = <&larb0 &larb1 &larb2 &larb3 &larb4 &larb5>;
-> +			#iommu-cells = <1>;
-> +		};
-> \ No newline at end of file
-> -- 
-> 1.8.1.1.dirty
-> 
-> 
+On Fri, Mar 6, 2015 at 11:41 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> Hi Eric,
+>
+> On Fri, Mar 06, 2015 at 09:04:22AM +0000, Eric Auger wrote:
+>> Yes to me "vfio: type1: support for ARM SMMUS with VFIO_IOMMU_TYPE1" is
+>> not a direct dependency of vfio-platform driver although I understand
+>> Baptiste needs it to test with PL330 device. On my side I can test
+>> vfio-platform driver without it, assigning the Midway Calxeda xgmac.
+>
+> Realistically, I don't expect anybody using device passthrough for
+> practical applications to be using a PL330. Your xgmac example is far
+> more compelling.
+>
+>> Also if I am not wrong the title of the series now does not really
+>> reflect anymore what the series aims at. since "[PATCH v3 2/6] vfio:
+>> type1: support for ARM SMMUs"  withdrawal, the series now "only" aims at
+>> supporting the VFIO_DMA_MAP_FLAG_NOEXEC flag.
+>>
+>> However with this issue of IOMMU_CACHE always set along with arm-smmu,
+>> there is a need for an adaptation of either vfio_iommu_type1 or arm-smmu
+>> since the integrated pieces are not functional.
+>
+> Well, I'm still trying to understand exactly what is happening in your case:
+>
+>   - Is the xgmac coherent or not? Does it have a "dma-coherent" property?
+>   - Are you installing the SMMU page tables at stage-1 or stage-2?
+>   - If it *is* coherent, then we should use IOMMU_CACHE mappings for the
+>     DMA buffers and ensure that the guest knows it is coherent (by
+>     preserving the "dma-coherent" flag).
+>   - If it is *not* coherent, then the behaviour of IOMMU_CACHE depends
+>     on the stage of translation:
+>
+>     * Stage-1: we will make the transactions cacheable, and you'll need
+>       to tell the guest that the device is actually cache coherent
+>     * Stage-2: IOMMU_CACHE won't actually have any effect, so everything
+>       should work as non-coherent.
+>
+> In other words, I think you're probably just telling the guest the wrong
+> thing.
+>
+>> On top of the dma-coherent property of the *master*, should not we also
+>> query the cache-coherent property of the interconnect downstream to the
+>> smmu?
+>
+> I don't think so... "dma-coherent" should only be set on a master if the
+> interconnect is properly configured. It's supposed to be a "If you DMA now,
+> it will snoop the CPU caches" flag as opposed to "If you write a random
+> selection of MMIO registers in the SoC, then this device will be coherent".
+>
+>> How can we progress quickly on this topic? is it acceptable to return
+>> false on arm_smmu_capable(IOMMU_CAP_CACHE_COHERENCY) as a quick hack?
+>
+> No; pretending that a device is not coherent when it actually is can lead
+> to corruption of DMA buffers due to unnecessary cache invalidation.
+>
+>> As a longer term solution, would it make sense to add a user flag at VFIO
+>> user API level to turn the IOMMU_CACHE on?
+>
+> I think userspace certainly needs a way to figure out if a device is
+> coherent or not, otherwise it can't generate the correct device-tree
+> properties for something like a KVM guest but the IOMMU_* setting should
+> remain in the kernel IMO. Similarly for things like MSI pages, which would
+> need to be mapped as device memory on ARM -- that should be exposed as a
+> higher level "please map my MSI page here" ioctl as opposed to requiring
+> userspace to supply the correct memory attributes.
+>
+> Will
