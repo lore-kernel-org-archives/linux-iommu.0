@@ -1,48 +1,78 @@
-From: Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+From: Mitchel Humpherys <mitchelh@codeaurora.org>
 Subject: Re: [PATCH 2/5] iommu/mediatek: Add mt8173 IOMMU driver
-Date: Mon, 9 Mar 2015 22:46:29 +0800
-Message-ID: <1425912389.4871.19.camel@mtksdaap41>
+Date: Mon, 09 Mar 2015 09:57:45 -0700
+Message-ID: <vnkwwq2qrtva.fsf@mitchelh-linux.qualcomm.com>
 References: <1425638900-24989-1-git-send-email-yong.wu@mediatek.com>
 	<1425638900-24989-3-git-send-email-yong.wu@mediatek.com>
-	<CAAFQd5AhTe=d9tXN8kaRah_GiZYYxG0cD0up=cbHkSfbBnXmvQ@mail.gmail.com>
+	<vnkwwq2unj2y.fsf@mitchelh-linux.qualcomm.com>
+	<1425903386.13300.33.camel@mhfsdcap03>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAAFQd5AhTe=d9tXN8kaRah_GiZYYxG0cD0up=cbHkSfbBnXmvQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Yong Wu =?UTF-8?Q?=28=E5=90=B4=E5=8B=87=29?= <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1425903386.13300.33.camel@mhfsdcap03> (Yong Wu's message of
+	"Mon, 9 Mar 2015 20:16:26 +0800")
+Sender: linux-kernel-owner@vger.kernel.org
+To: Yong Wu <yong.wu@mediatek.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, srv_heupstream@mediatek.com, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>, Daniel Kurtz <djkurtz@google.com>, Sasha Hauer <kernel@pengutronix.de>, Matthias Brugger <matthias.bgg@gmail.com>, linux-mediatek@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org, Lucas Stach <l.stach@pengutronix.de>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2015-03-09 at 20:11 +0900, Tomasz Figa wrote:
-<...>
-> > +/*
-> > + * pimudev is a global var for dma_alloc_coherent.
-> > + * It is not accepatable, we will delete it if "domain_alloc" is enabled
-> > + */
-> > +static struct device *pimudev;
-> 
-> This is indeed not acceptable. Could you replace dma_alloc_coherent()
-> with something that doesn't require device pointer, e.g.
-> alloc_pages()? (Although that would require you to handle cache
-> maintenance in the driver, due to cached memory allocated.) I need to
-> think about a better solution for this.
+On Mon, Mar 09 2015 at 05:16:26 AM, Yong Wu <yong.wu@mediatek.com> wrote:
+> Dear Mitchel,
+>      Thanks very much for your review.
+>
+> On Fri, 2015-03-06 at 09:15 -0800, Mitchel Humpherys wrote:
+>> On Fri, Mar 06 2015 at 02:48:17 AM, <yong.wu@mediatek.com> wrote:
+>> > From: Yong Wu <yong.wu@mediatek.com>
+>> >
+>> > This patch adds support for mediatek m4u (MultiMedia Memory Management Unit).
+>> > Currently this only supports m4u gen 2 with 2 levels of page table on mt8173.
+>> 
+>> [...]
+>> 
+>> > +static int mtk_iommu_invalidate_tlb(const struct mtk_iommu_info *piommu,
+>> > +				    int isinvall, unsigned int iova_start,
+>> > +				    unsigned int iova_end)
+>> > +{
+>> > +	void __iomem *m4u_base = piommu->m4u_base;
+>> > +	u32 val;
+>> > +	u64 start, end;
+>> > +
+>> > +	start = sched_clock();
+>> > +
+>> > +	if (!isinvall) {
+>> > +		iova_start = round_down(iova_start, SZ_4K);
+>> > +		iova_end = round_up(iova_end, SZ_4K);
+>> > +	}
+>> > +
+>> > +	val = F_MMU_INV_EN_L2 | F_MMU_INV_EN_L1;
+>> > +
+>> > +	writel(val, m4u_base + REG_INVLID_SEL);
+>> > +
+>> > +	if (isinvall) {
+>> > +		writel(F_MMU_INV_ALL, m4u_base + REG_MMU_INVLD);
+>> > +	} else {
+>> > +		writel(iova_start, m4u_base + REG_MMU_INVLD_SA);
+>> > +		writel(iova_end, m4u_base + REG_MMU_INVLD_EA);
+>> > +		writel(F_MMU_INV_RANGE, m4u_base + REG_MMU_INVLD);
+>> > +
+>> > +		while (!readl(m4u_base + REG_MMU_CPE_DONE)) {
+>> > +			end = sched_clock();
+>> > +			if (end - start >= 100000000ULL) {
+>> > +				dev_warn(piommu->dev, "invalid don't done\n");
+>> > +				writel(F_MMU_INV_ALL, m4u_base + REG_MMU_INVLD);
+>> > +			}
+>> > +		};
+>> 
+>> Superfluous `;'.  Also, maybe you should be using readl_poll_timeout?
+>    Thanks.
+>    For the "readl_poll_timeout", My base is 3.19-rc7 and robin's patch.
+> it don't have this interface.  I will try to add it in the next version.
 
-Hi,
+Yeah it was merged in v4.0-rc1.
 
-For 2nd level page table, we use cached memory now. Currently we are
-using __dma_flush_range to flush the cache, which is also unacceptable.
+-Mitch
 
-For proper cache management, we'll need to use dma_map_single or
-dma_sync_*, which still need a deivce*.
-
-Joe.C
+-- 
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
