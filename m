@@ -1,66 +1,82 @@
-From: Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>
-Subject: Re: [PATCH 1/5] soc: mediatek: Add SMI driver
-Date: Mon, 09 Mar 2015 18:59:37 +0100
-Message-ID: <1425923977.2317.4.camel@tiscali.nl>
-References: <1425638900-24989-1-git-send-email-yong.wu@mediatek.com>
-	<1425638900-24989-2-git-send-email-yong.wu@mediatek.com>
-	<1425641445.24292.280.camel@x220>
-	<1425902271.13300.18.camel@mhfsdcap03>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [RFC PATCH v2 2/3] arm64: add IOMMU dma_ops
+Date: Mon, 9 Mar 2015 17:59:04 +0000
+Message-ID: <20150309175904.GC8656@n2100.arm.linux.org.uk>
+References: <cover.1423226542.git.robin.murphy@arm.com>
+ <058e038009ac708a40197c80e07410914c2a162e.1423226542.git.robin.murphy@arm.com>
+ <1423543151.18280.2.camel@mtksdaap41> <54D9F486.10501@arm.com>
+ <1423901011.27922.7.camel@mhfsdcap03> <54E24D50.408@arm.com>
+ <1425353927.4555.10.camel@mhfsdcap03> <54F5A5FE.3040506@arm.com>
+ <54F7A121.3050103@codeaurora.org> <54F83B0C.9020606@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1425902271.13300.18.camel@mhfsdcap03>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <54F83B0C.9020606@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: "ritesh.harjani@gmail.com" <ritesh.harjani@gmail.com>, Laura Abbott <lauraa@codeaurora.org>, "arnd@arndb.de" <arnd@arndb.de>, "stefano.stabellini@eu.citrix.com" <stefano.stabellini@eu.citrix.com>, Catalin Marinas <Catalin.Marinas@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "thunder.leizhen@huawei.com" <thunder.leizhen@huawei.com>, Will Deacon <Will.Deacon@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Yong Wu <yong.wu@mediatek.com>, "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>, "josephl@nvidia.com" <josephl@nvidia.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>, Mitchel Humpherys <mitchelh@codeaurora.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Yong,
+On Thu, Mar 05, 2015 at 11:16:28AM +0000, Robin Murphy wrote:
+> Hi Laura,
+> 
+> On 05/03/15 00:19, Laura Abbott wrote:
+> [...]
+> >>Consider that the IOMMU's page table walker is a DMA master in its own
+> >right, and that is the device you're mapping the page tables for.
+> >Therefore your IOMMU driver needs to have access to the struct device
+> >of the IOMMU itself to use for the page-table-related mappings. Also,
+> >be sure to set the IOMMU's DMA mask correctly to prevent SWIOTLB bounce
+> >buffers being created in the process (which as I've found generally ends
+> >in disaster).
+> >>
+> >>>          And normally, we always need do cache maintenance only for some
+> >>>bytes in the pagetable but not whole a page. Then is there a easy way to
+> >>>do the cache maintenance?
+> >>
+> >>For a noncoherent device, dma_map_single() will end up calling
+> >__dma_map_area() with the page offset and size of the original request, so
+> >the updated part gets flushed by VA, and the rest of the page isn't touched
+> >if it doesn't need to be. On the other hand if the page tables were
+> >allocated with dma_alloc_coherent() in the first place, then just calling
+> >dma_sync_single_for_device() for the updated region should suffice.
 
-Yong Wu schreef op ma 09-03-2015 om 19:57 [+0800]:
-> On Fri, 2015-03-06 at 12:30 +0100, Paul Bolle wrote:
-> > On Fri, 2015-03-06 at 18:48 +0800, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org wrote:
-> > > --- a/drivers/soc/mediatek/Kconfig
-> > > +++ b/drivers/soc/mediatek/Kconfig
-> > > @@ -20,3 +20,10 @@ config MT8173_PMIC_WRAP
-> > >  	  PMIC wrapper is a proprietary hardware in MT8173 to make
-> > >  	  communication protocols to access PMIC device.
-> > >  	  This driver implement access protocols for MT8173.
-> > > +
-> > > +config MTK_SMI
-> > > +        bool
-> > 
-> > Nit: make this one tab instead of 8 spaces, please.
-> > 
-> > > +	help
-> > > +	  Smi help enable/disable iommu in mt8173 and control the
-> > > +	  clock of each local arbiter.
-> > > +	  It should be true while MTK_IOMMU enable.
-> > 
-> > I don't think anyone using the *config tools will ever see this text, as
-> > there's no prompt. So you might as well make this a comment or drop it
-> > altogether.
-> > 
->      We could search it in the tool even though we don't see it. In next
-> version, I will try to make it a comment.
-> > Is this selected by more than just MTK_IOMMU (see 2/5)? If not, I think
-> > MTK_SMI will be set and unset in lockstep with MTK_IOMMU. In other
-> > words, you could as well use one Kconfig symbol.
-> > 
->     if we disable MTK_IOMMU, the MTK_SMI also should be selected.That is because 
-> if the multimedia h/w want to work, the clock of the local arbiters always should be opened.
+That's wrong.  dma_sync_single_*() is not permitted to be called on
+coherently allocated memory.  Where coherent memory needs to be remapped,
+dma_sync_single_*() will panic the kernel.
 
-This is a bit confusing, I'm afraid. Do you mean to say that it ought to
-be possible for MTK_SMI to be 'y' even if MTK_IOMMU would be 'n'?
+If it's in coherent memory, all you should need is the appropriate
+memory barrier to ensure that the DMA agent can see the writes.
 
+> >Where exactly would you call the dma_unmap? It seems a bit strange to
+> >be repeatedly calling dma_map and never calling dma_unmap. I don't see it
+> >explicitly forbidden in the docs anywhere to do this but it seems like
+> >it would be violating the implicit handoff of dma_map/dma_unmap.
+> 
+> I think ideally you'd call dma_map_page when you first create the page
+> table, dma_sync_single_for_device on any update, and dma_unmap_page when you
+> tear it down, and you'd also use the appropriate DMA addresses everywhere
+> instead of physical addresses.
 
-Paul Bolle
+No.
+
+dma_map_page()			ownership changes CPU->DMA
+dma_sync_single_for_cpu()	ownership changes DMA->CPU
+dma_sync_single_for_device()	ownership changes CPU->DMA
+dma_unmap_page()		ownership changes DMA->CPU
+
+It's invalid to miss out the pairing that give those ownership changes.
+
+-- 
+FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
+according to speedtest.net.
