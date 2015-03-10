@@ -1,17 +1,14 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH v2 2/3] arm64: add IOMMU dma_ops
-Date: Tue, 10 Mar 2015 10:16:31 +0000
-Message-ID: <54FEC47F.2040804@arm.com>
-References: <cover.1423226542.git.robin.murphy@arm.com>	<058e038009ac708a40197c80e07410914c2a162e.1423226542.git.robin.murphy@arm.com>	<1423543151.18280.2.camel@mtksdaap41>
-	<54D9F486.10501@arm.com>	<1423901011.27922.7.camel@mhfsdcap03>
-	<54E24D50.408@arm.com>	<1425353927.4555.10.camel@mhfsdcap03>	<54F5A5FE.3040506@arm.com>
-	<54F7A121.3050103@codeaurora.org>	<54F83B0C.9020606@arm.com>	<20150309175904.GC8656@n2100.arm.linux.org.uk>
-	<54FDFE0D.8030807@arm.com>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v14 00/20] VFIO support for platform devices
+Date: Tue, 10 Mar 2015 18:42:07 +0100
+Message-ID: <54FF2CEF.1050705@linaro.org>
+References: <1425315600-29761-1-git-send-email-b.reynal@virtualopensystems.com>
+	<CAN9JPjH0MQ-f2Vp-Cpd4GZfBtvVjWZKh_WDKrZz40AK14_Awrw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <54FDFE0D.8030807-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <CAN9JPjH0MQ-f2Vp-Cpd4GZfBtvVjWZKh_WDKrZz40AK14_Awrw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,46 +18,188 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-Cc: "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org" <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+To: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/03/15 20:09, Robin Murphy wrote:
-[...]
->>> I think ideally you'd call dma_map_page when you first create the page
->>> table, dma_sync_single_for_device on any update, and dma_unmap_page when you
->>> tear it down, and you'd also use the appropriate DMA addresses everywhere
->>> instead of physical addresses.
->>
->> No.
->>
->> dma_map_page()			ownership changes CPU->DMA
->> dma_sync_single_for_cpu()	ownership changes DMA->CPU
->> dma_sync_single_for_device()	ownership changes CPU->DMA
->> dma_unmap_page()		ownership changes DMA->CPU
->>
->> It's invalid to miss out the pairing that give those ownership changes.
->
-> Thanks for the clarification - the wording in DMA-API.txt rather implies
-> that in the DMA_TO_DEVICE case you only have to sync the updated data
-> /after/ writing it. For the sake of purely getting pages flushed, would
-> it be more reasonable then to call dma_map_single() followed immediately
-> by dma_unmap_single_attrs() with DMA_ATTR_SKIP_CPU_SYNC? Since we know
-> the IOMMU can never write back to memory  (ones that can are a different
-> issue) it would be nice to be able to skip the extra invalidations
-> somehow, without too heinously abusing the API.
+Hi Baptiste,
 
-Scratch that, I'm being a massive idiot (again). Of course the actual 
-invalidations will only happen if they need to, based on the DMA 
-direction. The overhead of dma_sync_*_for_cpu() and dma_unmap() is then 
-only a handful of function calls, which is probably an acceptable price 
-to pay for making sure things work as correctly as possible.
+Please add:
+Reviewed-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> on the whole series
+Tested-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> on the whole series except
+AMBA specific patches.
 
->
-> Robin.
->
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->
+I currently exercise the following functionalities on Calxeda Midway HW:
+- MMIO read/write/mmap,
+- automasked IRQ + mask/unmask (NONE flag),
+- virqfd (unmask handler only).
+
+Despite a new thorough review I failed in pointing out any new
+interesting issues in this series.
+
+just minor points below:
+
+- PIO regions: currently read/write/mmap is not supported. I can't
+figure out how much this is a problem at this point?
+- nit: vfio_pci_intrs.c: may not need wait.h anymore after removal of
+virqfd code. may be added in vfio.h
+- nit: interrupt.h not needed at early stage in vfio_platform_private.h,
+until irq introduction
+- version of the driver: 0.10?
+
+Since there is no real dependency on "[PATCH v4 0/6] vfio: type1:
+support for ARM SMMUS with VFIO_IOMMU_TYPE1" I hope we can get this
+upstreamed soon.
+
+Best Regards
+
+Eric
+
+
+On 03/03/2015 11:06 AM, Baptiste Reynal wrote:
+> Added Eric Auger for comments.
+> 
+> On Mon, Mar 2, 2015 at 5:59 PM, Baptiste Reynal
+> <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org
+> <mailto:b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>> wrote:
+> 
+>     This patch series aims to implement VFIO support for platform
+>     devices that
+>     reside behind an IOMMU. Examples of such devices are devices behind
+>     an ARM
+>     SMMU, or behind a Samsung Exynos System MMU.
+> 
+>     The API used is based on the existing VFIO API that is also used
+>     with PCI
+>     devices. Only devices that include a basic set of IRQs and memory
+>     regions are
+>     targeted; devices with complex relationships with other devices on a
+>     device
+>     tree are not taken into account at this stage.
+> 
+>     This patch series may be applied on the following series/patches:
+>      - [PATCH 1/1] iommu/arm-smmu: fix ARM_SMMU_FEAT_TRANS_OPS condition
+>      - [PATCH v4 0/6] vfio: type1: support for ARM SMMUS with
+>     VFIO_IOMMU_TYPE1
+> 
+>     A copy can be cloned from the branch vfio-platform-v14 at:
+>     https://github.com/virtualopensystems/linux-kvm-arm.git
+> 
+>     This serie has been tested on a DMA PL330 with ARM FastModels.
+> 
+>     Changes since v13:
+>      - Rebased on linux v4.0-rc1
+>      - Re-added support for ARM AMBA devices
+>      - Baptiste Reynal is the new maintainer of this serie
+>     Changes since v12:
+>      - Reorder chunks to be bisect-able
+>     Changes since v11:
+>      - Drop support for ARM AMBA devices
+>      - vfio_platform_private.h is now self-contained
+>      - Fix masked IRQ initialization
+>     Changes since v10:
+>      - Check if interrupt is already masked when setting a new trigger
+>      - Fixed kasprintf with unchecked return value in VFIO AMBA driver
+>     Changes since v9:
+>      - Reworked the splitting of the patches that decouple virqfd from PCI
+>      - Some styling issues and typos
+>      - Removed superfluous includes
+>      - AMBA devices are now named vfio-amba- suffixed by the AMBA device id
+>      - Several other cleanups and fixes
+>     Changes since v8:
+>      - Separate irq handler for edge and level triggered interrupts
+>      - Mutex based lock for VFIO fd open/release
+>      - Fixed bug where the first region of a platform device wasn't exposed
+>      - Read only regions can be MMAPed only read only
+>      - Code cleanups
+>     Changes since v7:
+>      - Some initial placeholder functionality for PIO resources
+>      - Cleaned up code for IRQ triggering, masking and unmasking
+>      - Some functionality has been removed from this series and posted
+>     separately:
+>        - VFIO_IOMMU_TYPE1 support for ARM SMMUs
+>        - IOMMU NOEXEC patches
+>        - driver_override functionality for AMBA devices
+>      - Several fixes
+>     Changes since v6:
+>      - Integrated support for AMBA devices
+>      - Numerous cleanups and fixes
+>     Changes since v5:
+>      - Full eventfd support for IRQ masking and unmasking.
+>      - Changed IOMMU_EXEC to IOMMU_NOEXEC, along with related flags in VFIO.
+>      - Other fixes based on reviewer comments.
+>     Changes since v4:
+>      - Use static offsets for each region in the VFIO device fd
+>      - Include patch in the series for the ARM SMMU to expose IOMMU_EXEC
+>        availability via IOMMU_CAP_DMA_EXEC
+>      - Rebased on VFIO multi domain support:
+>        - IOMMU_EXEC is now available if at least one IOMMU in the container
+>          supports it
+>        - Expose IOMMU_EXEC if available via the capability
+>     VFIO_IOMMU_PROT_EXEC
+>      - Some bug fixes
+>     Changes since v3:
+>      - Use Kim Phillips' driver_probe_device()
+>     Changes since v2:
+>      - Fixed Read/Write and MMAP on device regions
+>      - Removed dependency on Device Tree
+>      - Interrupts support
+>      - Interrupt masking/unmasking
+>      - Automask level sensitive interrupts
+>      - Introduced VFIO_DMA_MAP_FLAG_EXEC
+>      - Code clean ups
+> 
+>     Antonios Motakis (20):
+>       vfio/platform: initial skeleton of VFIO support for platform devices
+>       vfio: platform: probe to devices on the platform bus
+>       vfio: platform: add the VFIO PLATFORM module to Kconfig
+>       vfio: amba: VFIO support for AMBA devices
+>       vfio: amba: add the VFIO for AMBA devices module to Kconfig
+>       vfio/platform: return info for bound device
+>       vfio/platform: return info for device memory mapped IO regions
+>       vfio/platform: read and write support for the device fd
+>       vfio/platform: support MMAP of MMIO regions
+>       vfio/platform: return IRQ info
+>       vfio/platform: initial interrupts support code
+>       vfio/platform: trigger an interrupt via eventfd
+>       vfio/platform: support for level sensitive interrupts
+>       vfio: add a vfio_ prefix to virqfd_enable and virqfd_disable and
+>         export
+>       vfio: virqfd: rename vfio_pci_virqfd_init and vfio_pci_virqfd_exit
+>       vfio: add local lock for virqfd instead of depending on VFIO PCI
+>       vfio: pass an opaque pointer on virqfd initialization
+>       vfio: move eventfd support code for VFIO_PCI to a separate file
+>       vfio: initialize the virqfd workqueue in VFIO generic code
+>       vfio/platform: implement IRQ masking/unmasking via an eventfd
+> 
+>      drivers/vfio/Kconfig                          |   1 +
+>      drivers/vfio/Makefile                         |   5 +-
+>      drivers/vfio/pci/vfio_pci.c                   |   8 -
+>      drivers/vfio/pci/vfio_pci_intrs.c             | 238 +-----------
+>      drivers/vfio/pci/vfio_pci_private.h           |   3 -
+>      drivers/vfio/platform/Kconfig                 |  19 +
+>      drivers/vfio/platform/Makefile                |   8 +
+>      drivers/vfio/platform/vfio_amba.c             | 115 ++++++
+>      drivers/vfio/platform/vfio_platform.c         | 103 +++++
+>      drivers/vfio/platform/vfio_platform_common.c  | 521
+>     ++++++++++++++++++++++++++
+>      drivers/vfio/platform/vfio_platform_irq.c     | 336 +++++++++++++++++
+>      drivers/vfio/platform/vfio_platform_private.h |  85 +++++
+>      drivers/vfio/vfio.c                           |   8 +
+>      drivers/vfio/virqfd.c                         | 213 +++++++++++
+>      include/linux/vfio.h                          |  27 ++
+>      include/uapi/linux/vfio.h                     |   2 +
+>      16 files changed, 1456 insertions(+), 236 deletions(-)
+>      create mode 100644 drivers/vfio/platform/Kconfig
+>      create mode 100644 drivers/vfio/platform/Makefile
+>      create mode 100644 drivers/vfio/platform/vfio_amba.c
+>      create mode 100644 drivers/vfio/platform/vfio_platform.c
+>      create mode 100644 drivers/vfio/platform/vfio_platform_common.c
+>      create mode 100644 drivers/vfio/platform/vfio_platform_irq.c
+>      create mode 100644 drivers/vfio/platform/vfio_platform_private.h
+>      create mode 100644 drivers/vfio/virqfd.c
+> 
+>     --
+>     2.3.1
+> 
+> 
