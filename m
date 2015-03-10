@@ -1,69 +1,66 @@
-From: Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [PATCH 1/5] soc: mediatek: Add SMI driver
-Date: Tue, 10 Mar 2015 10:24:03 +0100
-Message-ID: <1425979443.6226.4.camel@pengutronix.de>
-References: <1425638900-24989-1-git-send-email-yong.wu@mediatek.com>
-	 <1425638900-24989-2-git-send-email-yong.wu@mediatek.com>
-	 <1425871612.4871.10.camel@mtksdaap41> <2583132.xxsZocsQta@wuerfel>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH v2 2/3] arm64: add IOMMU dma_ops
+Date: Tue, 10 Mar 2015 10:16:31 +0000
+Message-ID: <54FEC47F.2040804@arm.com>
+References: <cover.1423226542.git.robin.murphy@arm.com>	<058e038009ac708a40197c80e07410914c2a162e.1423226542.git.robin.murphy@arm.com>	<1423543151.18280.2.camel@mtksdaap41>
+	<54D9F486.10501@arm.com>	<1423901011.27922.7.camel@mhfsdcap03>
+	<54E24D50.408@arm.com>	<1425353927.4555.10.camel@mhfsdcap03>	<54F5A5FE.3040506@arm.com>
+	<54F7A121.3050103@codeaurora.org>	<54F83B0C.9020606@arm.com>	<20150309175904.GC8656@n2100.arm.linux.org.uk>
+	<54FDFE0D.8030807@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <2583132.xxsZocsQta@wuerfel>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <54FDFE0D.8030807-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+Cc: "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org" <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Arnd,
+On 09/03/15 20:09, Robin Murphy wrote:
+[...]
+>>> I think ideally you'd call dma_map_page when you first create the page
+>>> table, dma_sync_single_for_device on any update, and dma_unmap_page when you
+>>> tear it down, and you'd also use the appropriate DMA addresses everywhere
+>>> instead of physical addresses.
+>>
+>> No.
+>>
+>> dma_map_page()			ownership changes CPU->DMA
+>> dma_sync_single_for_cpu()	ownership changes DMA->CPU
+>> dma_sync_single_for_device()	ownership changes CPU->DMA
+>> dma_unmap_page()		ownership changes DMA->CPU
+>>
+>> It's invalid to miss out the pairing that give those ownership changes.
+>
+> Thanks for the clarification - the wording in DMA-API.txt rather implies
+> that in the DMA_TO_DEVICE case you only have to sync the updated data
+> /after/ writing it. For the sake of purely getting pages flushed, would
+> it be more reasonable then to call dma_map_single() followed immediately
+> by dma_unmap_single_attrs() with DMA_ATTR_SKIP_CPU_SYNC? Since we know
+> the IOMMU can never write back to memory  (ones that can are a different
+> issue) it would be nice to be able to skip the extra invalidations
+> somehow, without too heinously abusing the API.
 
-Am Montag, den 09.03.2015, 22:56 +0100 schrieb Arnd Bergmann:
-> On Monday 09 March 2015 11:26:52 Yingjoe Chen wrote:
-> > On Fri, 2015-03-06 at 18:48 +0800, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org wrote:
-> > > From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> > > 
-> > >     This patch add SMI(Smart Multimedia Interface) driver. This driver is
-> > > responsible to enable/disable iommu and control the clocks of each
-> > > local arbiter.
-> > > 
-> > > Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> > > ---
-> > >  drivers/soc/mediatek/Kconfig      |   7 ++
-> > >  drivers/soc/mediatek/Makefile     |   1 +
-> > >  drivers/soc/mediatek/mt8173-smi.c | 143 ++++++++++++++++++++++++++++++++++++++
-> > >  include/linux/mtk-smi.h           |  40 +++++++++++
-> > >  4 files changed, 191 insertions(+)
-> > >  create mode 100644 drivers/soc/mediatek/mt8173-smi.c
-> > >  create mode 100644 include/linux/mtk-smi.h
-> > > 
-> > 
-> > Hi Arnd, Matthias,
-> > 
-> > For the SMI driver, we can't find a better place, so we put it in
-> > drivers/soc/mediatek now. Please let us know if you have any suggestion
-> > or concern. Thanks
-> 
-> From what I understand from your description, I think it would better
-> fit in drivers/iommu. Another option is drivers/memory, which I think
-> is where the respective Tegra driver ended up.
-> 
-Note that this is not the IOMMU driver. M4U is the IOMMU unit. The SMI
-unit is more of a bridge control for the internal buses where you can
-control various properties for the masters on the bus.
+Scratch that, I'm being a massive idiot (again). Of course the actual 
+invalidations will only happen if they need to, based on the DMA 
+direction. The overhead of dma_sync_*_for_cpu() and dma_unmap() is then 
+only a handful of function calls, which is probably an acceptable price 
+to pay for making sure things work as correctly as possible.
 
-One notable property (and why this driver is part of the IOMMU series)
-is the control weather a master should go through the M4U unit for
-translation or bypass it and talk directly to external memory
-controller.
-
-Regards,
-Lucas
-
--- 
-Pengutronix e.K.             | Lucas Stach                 |
-Industrial Linux Solutions   | http://www.pengutronix.de/  |
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
+> Robin.
+>
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>
