@@ -1,70 +1,95 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v14 00/20] VFIO support for platform devices
-Date: Tue, 10 Mar 2015 12:04:40 -0600
-Message-ID: <1426010680.25026.77.camel@redhat.com>
-References: <1425315600-29761-1-git-send-email-b.reynal@virtualopensystems.com>
-	<CAN9JPjH0MQ-f2Vp-Cpd4GZfBtvVjWZKh_WDKrZz40AK14_Awrw@mail.gmail.com>
-	<54FF2CEF.1050705@linaro.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [git pull] IOMMU Fixes for Linux v4.0-rc3
+Date: Tue, 10 Mar 2015 13:42:20 -0500
+Message-ID: <20150310184219.GA17319@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <54FF2CEF.1050705-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="tThc/1wpZn/ma/RB"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2015-03-10 at 18:42 +0100, Eric Auger wrote:
-> Hi Baptiste,
-> 
-> Please add:
-> Reviewed-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> on the whole series
-> Tested-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> on the whole series except
-> AMBA specific patches.
-> 
-> I currently exercise the following functionalities on Calxeda Midway HW:
-> - MMIO read/write/mmap,
-> - automasked IRQ + mask/unmask (NONE flag),
-> - virqfd (unmask handler only).
-> 
-> Despite a new thorough review I failed in pointing out any new
-> interesting issues in this series.
-> 
-> just minor points below:
-> 
-> - PIO regions: currently read/write/mmap is not supported. I can't
-> figure out how much this is a problem at this point?
 
-AIUI, nobody has any way to test this, which is why it's not
-implemented.  I think we've done due diligence in accommodating PIO into
-the vfio-platform framework though and hopefully it will be a simple
-matter to add when someone has a use case for it.
+--tThc/1wpZn/ma/RB
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> - nit: vfio_pci_intrs.c: may not need wait.h anymore after removal of
-> virqfd code. may be added in vfio.h
-> - nit: interrupt.h not needed at early stage in vfio_platform_private.h,
-> until irq introduction
-> - version of the driver: 0.10?
+Hi Linus,
 
-None of these seem like blockers, I'd be willing to accept header
-cleanups as follow-on and driver versions are mostly arbitrary anyway.
+The following changes since commit c517d838eb7d07bbe9507871fab3931deccff539:
 
-> Since there is no real dependency on "[PATCH v4 0/6] vfio: type1:
-> support for ARM SMMUS with VFIO_IOMMU_TYPE1" I hope we can get this
-> upstreamed soon.
+  Linux 4.0-rc1 (2015-02-22 18:21:14 -0800)
 
-Me too, I also re-reviewed the series yesterday.  If Baptiste agrees
-that there's no dependency on the other series, I can add your R-b/T-b,
-do some additional testing, and queue the series for linux-next.
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.0-rc3
+
+for you to fetch changes up to d05321ecfd77b6204b28e5d98fb75befabf62b53:
+
+  iommu/io-pgtable-arm: Add built time dependency (2015-03-03 14:04:12 +0100)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v4.0-rc3
+
+The patches contain:
+
+	* Fix multiple ARM IOMMU drivers to behave well when the
+	  hardware is not present
+
+	* Mark MSM driver as broken
+
+	* Fix build errors with the new ARM generic io-page-table code
+
+----------------------------------------------------------------
+Jean Delvare (1):
+      iommu/io-pgtable-arm: Add built time dependency
+
+Thierry Reding (4):
+      iommu/exynos: Play nice in multi-platform builds
+      iommu/omap: Play nice in multi-platform builds
+      iommu/rockchip: Play nice in multi-platform builds
+      iommu/msm: Mark driver BROKEN
+
+Will Deacon (1):
+      iommu/io-pgtable-arm: Fix self-test WARNs on i386
+
+ drivers/iommu/Kconfig          | 2 ++
+ drivers/iommu/exynos-iommu.c   | 7 +++++++
+ drivers/iommu/io-pgtable-arm.c | 5 +++--
+ drivers/iommu/omap-iommu.c     | 7 +++++++
+ drivers/iommu/rockchip-iommu.c | 7 +++++++
+ 5 files changed, 26 insertions(+), 2 deletions(-)
+
+Please pull.
+
 Thanks,
 
-Alex
+	Joerg
+
+
+--tThc/1wpZn/ma/RB
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJU/zsLAAoJECvwRC2XARrjKFcQANpHun9NbytucnR++/l0malB
+JaTtKUG/hV06fy4REl3FApFNqsgT71RcrvkPMu8lTPsIDieBzs67qWMOcYjxrw8s
+Ci2OgbwsOq9QWtldrFjalFLw96xXr9we7GQUOIaVLgty+PhZk1UOJ7ffcsOzkq5X
+kxU1BMCO6fzIwnXYJ0imHfVO7XHN47SLyygcALN/m7CvOoTPrc+Q+WS2mRZeKzcn
+QKGVVWC8hV19FW14hM/qAsjIMJ2eKK9yx2wJKdnCMX7sfmmEA/DGFiqOgyx9AOu9
+ZCwQq7SGSOFUzgxUFcfxfP7bKIfBsG2IfZxrE70NK+OWJ8trcRA/blX4aVRufrYN
+DRWN93RxtWdaaBCXzwTBAVvf+XhcZwVKwpeli8DC8iXbk9e2xsp9JAwB8K37f3gs
+wXPuFVgaHSLmhBPk1VNHe5xKqMMV265idJcArgX2Pq366Wizf7X6cN7RQYsCFtb8
+JEPM1Rji2c/nwkBwjiFBXqVVA6RCdLqSkPGdfwvdm94NWB4yJ04OjJwAww+0dLOp
+8qk3YSoOUTh9Ht0nAjvZgrE7S4btAWYLnN6DLRAwnLqWSWp1+0pw8KNPitBmic17
+muPtyVJeUvd40XDDFDJ/zZaJst9eXHKmkB+bDQp0iP7FFK125hPeEFC5TUdOHnKm
+KmZlzhHuLfSkekrhGo2L
+=sQ8B
+-----END PGP SIGNATURE-----
+
+--tThc/1wpZn/ma/RB--
