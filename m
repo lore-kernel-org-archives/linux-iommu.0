@@ -1,16 +1,13 @@
-From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v14 00/20] VFIO support for platform devices
-Date: Wed, 11 Mar 2015 09:40:54 +0100
-Message-ID: <54FFFF96.4010200@linaro.org>
-References: <1425315600-29761-1-git-send-email-b.reynal@virtualopensystems.com>	
-	<CAN9JPjH0MQ-f2Vp-Cpd4GZfBtvVjWZKh_WDKrZz40AK14_Awrw@mail.gmail.com>	
-	<54FF2CEF.1050705@linaro.org>
-	<1426010680.25026.77.camel@redhat.com>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 2/2] iommu: of: enforce const-ness of struct iommu_ops
+Date: Wed, 11 Mar 2015 09:43:49 +0100
+Message-ID: <20150311084347.GC19391@ulmo.nvidia.com>
+References: <1425641688-26438-1-git-send-email-will.deacon@arm.com>
+	<1425641688-26438-3-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============3173735964719412848=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1426010680.25026.77.camel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1425641688-26438-3-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,63 +17,71 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, VirtualOpenSystems Technical Team <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, kvm-arm <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/10/2015 07:04 PM, Alex Williamson wrote:
-> On Tue, 2015-03-10 at 18:42 +0100, Eric Auger wrote:
->> Hi Baptiste,
->>
->> Please add:
->> Reviewed-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> on the whole series
->> Tested-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> on the whole series except
->> AMBA specific patches.
->>
->> I currently exercise the following functionalities on Calxeda Midway HW:
->> - MMIO read/write/mmap,
->> - automasked IRQ + mask/unmask (NONE flag),
->> - virqfd (unmask handler only).
->>
->> Despite a new thorough review I failed in pointing out any new
->> interesting issues in this series.
->>
->> just minor points below:
->>
->> - PIO regions: currently read/write/mmap is not supported. I can't
->> figure out how much this is a problem at this point?
-> 
-> AIUI, nobody has any way to test this, which is why it's not
-> implemented.  I think we've done due diligence in accommodating PIO into
-> the vfio-platform framework though and hopefully it will be a simple
-> matter to add when someone has a use case for it.
-> 
->> - nit: vfio_pci_intrs.c: may not need wait.h anymore after removal of
->> virqfd code. may be added in vfio.h
->> - nit: interrupt.h not needed at early stage in vfio_platform_private.h,
->> until irq introduction
->> - version of the driver: 0.10?
-> 
-> None of these seem like blockers, I'd be willing to accept header
-> cleanups as follow-on and driver versions are mostly arbitrary anyway.
-> 
->> Since there is no real dependency on "[PATCH v4 0/6] vfio: type1:
->> support for ARM SMMUS with VFIO_IOMMU_TYPE1" I hope we can get this
->> upstreamed soon.
-> 
-> Me too, I also re-reviewed the series yesterday.  If Baptiste agrees
-> that there's no dependency on the other series, I can add your R-b/T-b,
-> do some additional testing, and queue the series for linux-next.
-> Thanks,
 
-Hi Alex,
+--===============3173735964719412848==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="iFRdW5/EC4oqxDHL"
+Content-Disposition: inline
 
-I let Baptiste answer. If he agrees please do as proposed. I am looking
-forward to seeing the series in linux-next!
 
-Best Regards
+--iFRdW5/EC4oqxDHL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Eric
-> 
-> Alex
-> 
+On Fri, Mar 06, 2015 at 11:34:48AM +0000, Will Deacon wrote:
+> From: Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
+>=20
+> With the pgsize_bitmap removed, there is no compelling reason for
+> the remaining callbacks in struct iommu_ops to be mutable, so enforce
+> const-ness throughout the core code.
+>=20
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  arch/arm/include/asm/dma-mapping.h   |  2 +-
+>  arch/arm/mm/dma-mapping.c            |  6 +++---
+>  arch/arm64/include/asm/dma-mapping.h |  3 ++-
+>  drivers/iommu/of_iommu.c             | 12 ++++++------
+>  drivers/of/platform.c                |  2 +-
+>  include/linux/dma-mapping.h          |  2 +-
+>  include/linux/of_iommu.h             |  8 ++++----
+>  7 files changed, 18 insertions(+), 17 deletions(-)
+
+Acked-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+
+--iFRdW5/EC4oqxDHL
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJVAABDAAoJEN0jrNd/PrOhMHIQAJLz8k/cQ39q85ABbgGOSjZi
+Dz8Z23PbPf13WAeC3mygUt7E81AW/jXMq77IQWKETsQrwPPY8AfNY1Zfo144Ny+V
+wa7GyQjavo9jJ2CQFD5f9pfaslByGON20QWQl1smoy7qaDObWIJIh6hbvzVSqs1r
+zV+6ZQv0IU9WhM4PK8kswY+cvdhYj4y8oOo+yRqHTDRkVR/vZBL9PKNuG/EKDFwW
+mdO7mg6HWCZyHnhuvUWz/eroa90+UZZEFK63VmgdF+KFFflGqUYoqHWAv3EYNuh3
+LxEWfVWEEaRbAbsSWX3Bf8DfSrxg7h+4GH9pNNpCNlxdDPwnofSOCT/h4ljpA+Xr
+JUFd12FmijHyAuc1WvEv2elbhXeynoepaXVMeG9YLJB786FET66K/jQp5ZanjMwH
+CDM6KBuB9my6ap9vC2vHV8JYgvCjMgbCGpoLTybor4S855JD9M2QzhDuv/UdShyt
+XtSIddit/F991cHZtMWnsKLgOg8ghHlC+5nR3Oi6VS7+lBC95B1scxWkSw/h761b
+jk/tmsPDvuId5G92kLC5K0wdI7cCJRif0Z48kSzHWE/R5NFXbK3+XrLbOQ7UXMCL
+iIJ8bhAVaZLWe2HzZsf29V5jZW6dVRB1bMMkC2psh5IpyW8JeMVLh390LY1WkJM4
+ePb88fIk7MfPewML8cPQ
+=daDb
+-----END PGP SIGNATURE-----
+
+--iFRdW5/EC4oqxDHL--
+
+--===============3173735964719412848==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============3173735964719412848==--
