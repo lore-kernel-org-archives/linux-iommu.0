@@ -1,14 +1,15 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [RFC PATCH v2 2/3] arm64: add IOMMU dma_ops
-Date: Thu, 12 Mar 2015 13:50:42 +0100
-Message-ID: <55018BA2.4000401@samsung.com>
-References: <cover.1423226542.git.robin.murphy@arm.com>
-	<058e038009ac708a40197c80e07410914c2a162e.1423226542.git.robin.murphy@arm.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH 2/5] iommu/mediatek: Add mt8173 IOMMU driver
+Date: Thu, 12 Mar 2015 22:16:18 +0800
+Message-ID: <1426169778.695.34.camel@mhfsdcap03>
+References: <1425638900-24989-1-git-send-email-yong.wu@mediatek.com>
+	<1425638900-24989-3-git-send-email-yong.wu@mediatek.com>
+	<CAAFQd5CWOjT6XU8PFT+PO6Q2mb-i+iMTtZPSo_RDNUzpOO6TvA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <058e038009ac708a40197c80e07410914c2a162e.1423226542.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <CAAFQd5CWOjT6XU8PFT+PO6Q2mb-i+iMTtZPSo_RDNUzpOO6TvA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,434 +19,180 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: arnd-r2nGTMty4D4@public.gmane.org, stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+To: Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello Robin,
+Dear Tomasz,
 
-On 2015-02-06 15:55, Robin Murphy wrote:
-> Taking some inspiration from the arch/arm code, implement the
-> arch-specific side of the DMA mapping ops using the new IOMMU-DMA layer.
->
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
->   arch/arm64/include/asm/device.h      |   3 +
->   arch/arm64/include/asm/dma-mapping.h |  17 ++
->   arch/arm64/mm/dma-mapping.c          | 320 +++++++++++++++++++++++++++++++++++
->   3 files changed, 340 insertions(+)
->
-> diff --git a/arch/arm64/include/asm/device.h b/arch/arm64/include/asm/device.h
-> index 243ef25..510cee1 100644
-> --- a/arch/arm64/include/asm/device.h
-> +++ b/arch/arm64/include/asm/device.h
-> @@ -20,6 +20,9 @@ struct dev_archdata {
->   	struct dma_map_ops *dma_ops;
->   #ifdef CONFIG_IOMMU_API
->   	void *iommu;			/* private IOMMU data */
-> +#ifdef CONFIG_IOMMU_DMA
-> +	struct iommu_dma_domain *dma_domain;
-> +#endif
->   #endif
->   	bool dma_coherent;
->   };
-> diff --git a/arch/arm64/include/asm/dma-mapping.h b/arch/arm64/include/asm/dma-mapping.h
-> index 6932bb5..c1b271f 100644
-> --- a/arch/arm64/include/asm/dma-mapping.h
-> +++ b/arch/arm64/include/asm/dma-mapping.h
-> @@ -62,13 +62,30 @@ static inline bool is_device_dma_coherent(struct device *dev)
->   
->   #include <asm-generic/dma-mapping-common.h>
->   
-> +#ifdef CONFIG_IOMMU_DMA
-> +static inline struct iommu_dma_domain *get_dma_domain(struct device *dev)
-> +{
-> +	return dev->archdata.dma_domain;
-> +}
-> +
-> +static inline void set_dma_domain(struct device *dev,
-> +				  struct iommu_dma_domain *dma_domain)
-> +{
-> +	dev->archdata.dma_domain = dma_domain;
-> +}
-> +#endif
-> +
->   static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
->   {
-> +	if (WARN_ON(dev && get_dma_domain(dev)))
-> +		return DMA_ERROR_CODE;
->   	return (dma_addr_t)paddr;
->   }
->   
->   static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dev_addr)
->   {
-> +	if (WARN_ON(dev && get_dma_domain(dev)))
-> +		return 0;
->   	return (phys_addr_t)dev_addr;
->   }
->   
-> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-> index 0a24b9b..28e771c 100644
-> --- a/arch/arm64/mm/dma-mapping.c
-> +++ b/arch/arm64/mm/dma-mapping.c
-> @@ -23,6 +23,7 @@
->   #include <linux/genalloc.h>
->   #include <linux/dma-mapping.h>
->   #include <linux/dma-contiguous.h>
-> +#include <linux/dma-iommu.h>
->   #include <linux/vmalloc.h>
->   #include <linux/swiotlb.h>
->   
-> @@ -426,6 +427,7 @@ static int __init arm64_dma_init(void)
->   
->   	ret |= swiotlb_late_init();
->   	ret |= atomic_pool_init();
-> +	ret |= iommu_dma_init();
->   
->   	return ret;
->   }
-> @@ -439,3 +441,321 @@ static int __init dma_debug_do_init(void)
->   	return 0;
->   }
->   fs_initcall(dma_debug_do_init);
-> +
-> +
-> +#ifdef CONFIG_IOMMU_DMA
-> +
-> +static struct page **__atomic_get_pages(void *addr)
-> +{
-> +	struct page *page;
-> +	phys_addr_t phys;
-> +
-> +	phys = gen_pool_virt_to_phys(atomic_pool, (unsigned long)addr);
-> +	page = phys_to_page(phys);
-> +
-> +	return (struct page **)page;
-> +}
-> +
-> +static struct page **__iommu_get_pages(void *cpu_addr, struct dma_attrs *attrs)
-> +{
-> +	struct vm_struct *area;
-> +
-> +	if (__in_atomic_pool(cpu_addr, PAGE_SIZE))
-> +		return __atomic_get_pages(cpu_addr);
-> +
-> +	area = find_vm_area(cpu_addr);
-> +	if (!area)
-> +		return NULL;
-> +
-> +	return area->pages;
-> +}
-> +
-> +static void *__iommu_alloc_atomic(struct device *dev, size_t size,
-> +				  dma_addr_t *handle, bool coherent)
-> +{
-> +	struct page *page;
-> +	void *addr;
-> +
-> +	addr = __alloc_from_pool(size, &page);
-> +	if (!addr)
-> +		return NULL;
-> +
-> +	*handle = iommu_dma_create_iova_mapping(dev, &page, size, coherent);
-> +	if (*handle == DMA_ERROR_CODE) {
-> +		__free_from_pool(addr, size);
-> +		return NULL;
-> +	}
-> +	return addr;
-> +}
-> +
-> +static void __iommu_free_atomic(struct device *dev, void *cpu_addr,
-> +				dma_addr_t handle, size_t size)
-> +{
-> +	iommu_dma_release_iova_mapping(dev, handle, size);
-> +	__free_from_pool(cpu_addr, size);
-> +}
-> +
-> +static void __dma_clear_buffer(struct page *page, size_t size)
-> +{
-> +	void *ptr = page_address(page);
-> +
-> +	memset(ptr, 0, size);
-> +	__dma_flush_range(ptr, ptr + size);
-> +}
-> +
-> +static void *__iommu_alloc_attrs(struct device *dev, size_t size,
-> +				 dma_addr_t *handle, gfp_t gfp,
-> +				 struct dma_attrs *attrs)
-> +{
-> +	bool coherent = is_device_dma_coherent(dev);
-> +	pgprot_t prot = coherent ? __pgprot(PROT_NORMAL) :
-> +				   __pgprot(PROT_NORMAL_NC);
-> +	struct page **pages;
-> +	void *addr = NULL;
-> +
-> +	*handle = DMA_ERROR_CODE;
-> +	size = PAGE_ALIGN(size);
-> +
-> +	if (!(gfp & __GFP_WAIT))
-> +		return __iommu_alloc_atomic(dev, size, handle, coherent);
-> +	/*
-> +	 * FIXME: This isn't even true any more!
-> +	 *
-> +	 * Following is a work-around (a.k.a. hack) to prevent pages
-> +	 * with __GFP_COMP being passed to split_page() which cannot
-> +	 * handle them.  The real problem is that this flag probably
-> +	 * should be 0 on ARM as it is not supported on this
-> +	 * platform; see CONFIG_HUGETLBFS.
-> +	 */
-> +	gfp &= ~(__GFP_COMP);
-> +
-> +	pages = iommu_dma_alloc_buffer(dev, size, gfp, attrs,
-> +			__dma_clear_buffer);
-> +	if (!pages)
-> +		return NULL;
-> +
-> +	*handle = iommu_dma_create_iova_mapping(dev, pages, size, coherent);
-> +	if (*handle == DMA_ERROR_CODE)
-> +		goto err_mapping;
-> +
-> +	addr = dma_common_pages_remap(pages, size, VM_USERMAP,
-> +				      __get_dma_pgprot(attrs, prot, coherent),
-> +				      __builtin_return_address(0));
-> +	if (addr)
-> +		return addr;
-> +
-> +	iommu_dma_release_iova_mapping(dev, *handle, size);
-> +err_mapping:
-> +	iommu_dma_free_buffer(dev, pages, size, attrs);
-> +	return NULL;
-> +}
-> +
-> +static void __iommu_free_attrs(struct device *dev, size_t size, void *cpu_addr,
-> +			       dma_addr_t handle, struct dma_attrs *attrs)
-> +{
-> +	struct page **pages;
-> +
-> +	size = PAGE_ALIGN(size);
-> +	if (__in_atomic_pool(cpu_addr, size)) {
-> +		__iommu_free_atomic(dev, cpu_addr, handle, size);
-> +		return;
-> +	}
-> +
-> +	pages = __iommu_get_pages(cpu_addr, attrs);
-> +	if (!pages) {
-> +		WARN(1, "trying to free invalid coherent area: %p\n", cpu_addr);
-> +		return;
-> +	}
-> +
-> +	dma_common_free_remap(cpu_addr, size, VM_USERMAP);
-> +
-> +	iommu_dma_release_iova_mapping(dev, handle, size);
-> +	iommu_dma_free_buffer(dev, pages, size, attrs);
-> +}
-> +
-> +static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
-> +			      void *cpu_addr, dma_addr_t dma_addr, size_t size,
-> +			      struct dma_attrs *attrs)
-> +{
-> +	unsigned long uaddr = vma->vm_start;
-> +	unsigned long usize = vma->vm_end - vma->vm_start;
-> +	struct page **pages = __iommu_get_pages(cpu_addr, attrs);
-> +	int ret;
-> +
-> +	if (!pages)
-> +		return -ENXIO;
-> +
-> +	vma->vm_page_prot = __get_dma_pgprot(attrs, vma->vm_page_prot,
-> +					     is_device_dma_coherent(dev));
-> +
-> +	if (dma_mmap_from_coherent(dev, vma, cpu_addr, size, &ret))
-> +		return ret;
-> +
-> +	do {
-> +		ret = vm_insert_page(vma, uaddr, *pages++);
-> +		if (ret) {
-> +			pr_err("Remapping memory failed: %d\n", ret);
-> +			return ret;
-> +		}
-> +		uaddr += PAGE_SIZE;
-> +		usize -= PAGE_SIZE;
-> +	} while (usize > 0);
-> +
-> +	return 0;
-> +}
-> +
-> +static void __iommu_sync_single_for_cpu(struct device *dev,
-> +					dma_addr_t dev_addr, size_t size,
-> +					enum dma_data_direction dir)
-> +{
-> +	if (!is_device_dma_coherent(dev) && (dev_addr != DMA_ERROR_CODE)) {
-> +		struct iommu_dma_domain *dma_domain = get_dma_domain(dev);
-> +		struct iommu_domain *domain = iommu_dma_raw_domain(dma_domain);
-> +		phys_addr_t phys = iommu_iova_to_phys(domain, dev_addr);
-> +
-> +		__dma_unmap_area(phys_to_virt(phys), size, dir);
-> +	}
-> +}
-> +
-> +static void __iommu_sync_single_for_device(struct device *dev,
-> +					   dma_addr_t dev_addr, size_t size,
-> +					   enum dma_data_direction dir)
-> +{
-> +	if (!is_device_dma_coherent(dev) && (dev_addr != DMA_ERROR_CODE)) {
-> +		struct iommu_dma_domain *dma_domain = get_dma_domain(dev);
-> +		struct iommu_domain *domain = iommu_dma_raw_domain(dma_domain);
-> +		phys_addr_t phys = iommu_iova_to_phys(domain, dev_addr);
-> +
-> +		__dma_map_area(phys_to_virt(phys), size, dir);
-> +	}
-> +}
-> +
-> +static dma_addr_t __iommu_map_page(struct device *dev, struct page *page,
-> +				   unsigned long offset, size_t size,
-> +				   enum dma_data_direction dir,
-> +				   struct dma_attrs *attrs)
-> +{
-> +	dma_addr_t dev_addr;
-> +
-> +	if (is_device_dma_coherent(dev))
-> +		return iommu_dma_coherent_map_page(dev, page, offset, size,
-> +				dir, attrs);
-> +
-> +	dev_addr = iommu_dma_map_page(dev, page, offset, size, dir, attrs);
-> +
-> +	if (!dma_get_attr(DMA_ATTR_SKIP_CPU_SYNC, attrs))
-> +		__iommu_sync_single_for_device(dev, dev_addr, size, dir);
-> +
-> +	return dev_addr;
-> +}
-> +
-> +static void __iommu_unmap_page(struct device *dev, dma_addr_t dev_addr,
-> +			       size_t size, enum dma_data_direction dir,
-> +			       struct dma_attrs *attrs)
-> +{
-> +	if (!dma_get_attr(DMA_ATTR_SKIP_CPU_SYNC, attrs))
-> +		__iommu_sync_single_for_cpu(dev, dev_addr, size, dir);
-> +
-> +	iommu_dma_unmap_page(dev, dev_addr, size, dir, attrs);
-> +}
-> +
-> +static void __iommu_sync_sg_for_cpu(struct device *dev,
-> +				    struct scatterlist *sgl, int nelems,
-> +				    enum dma_data_direction dir)
-> +{
-> +	struct scatterlist *sg;
-> +	int i;
-> +
-> +	if (is_device_dma_coherent(dev))
-> +		return;
-> +
-> +	for_each_sg(sgl, sg, nelems, i)
-> +		__dma_unmap_area(sg_virt(sg), sg->length, dir);
-> +}
-> +
-> +static void __iommu_sync_sg_for_device(struct device *dev,
-> +				       struct scatterlist *sgl, int nelems,
-> +				       enum dma_data_direction dir)
-> +{
-> +	struct scatterlist *sg;
-> +	int i;
-> +
-> +	if (is_device_dma_coherent(dev))
-> +		return;
-> +
-> +	for_each_sg(sgl, sg, nelems, i)
-> +		__dma_map_area(sg_virt(sg), sg->length, dir);
-> +}
-> +
-> +static int __iommu_map_sg_attrs(struct device *dev, struct scatterlist *sgl,
-> +				int nelems, enum dma_data_direction dir,
-> +				struct dma_attrs *attrs)
-> +{
-> +	if (is_device_dma_coherent(dev))
-> +		return iommu_dma_coherent_map_sg(dev, sgl, nelems, dir, attrs);
-> +
-> +	if (!dma_get_attr(DMA_ATTR_SKIP_CPU_SYNC, attrs))
-> +		__iommu_sync_sg_for_device(dev, sgl, nelems, dir);
-> +
-> +	return iommu_dma_map_sg(dev, sgl, nelems, dir, attrs);
-> +}
-> +
-> +static void __iommu_unmap_sg_attrs(struct device *dev,
-> +				   struct scatterlist *sgl, int nelems,
-> +				   enum dma_data_direction dir,
-> +				   struct dma_attrs *attrs)
-> +{
-> +	if (!dma_get_attr(DMA_ATTR_SKIP_CPU_SYNC, attrs))
-> +		__iommu_sync_sg_for_cpu(dev, sgl, nelems, dir);
-> +
-> +	iommu_dma_unmap_sg(dev, sgl, nelems, dir, attrs);
-> +}
-> +
+      Thanks very much for review so detail!
 
-Could you also add the following function to make the implementation 
-complete?
+      Please check my reply below. Others I will fix it in the next
+version.
+       
+      And I have got your comment of [2/5]. Do you have plan for the
+other patch?
 
-static int __iommu_get_sgtable(struct device *dev, struct sg_table *sgt,
-                                void *cpu_addr, dma_addr_t dma_addr,
-                                size_t size, struct dma_attrs *attrs)
-{
-         unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-         struct page **pages = __iommu_get_pages(cpu_addr, attrs);
+On Sun, 2015-03-08 at 13:12 +0900, Tomasz Figa wrote:
+> Hi Yong Wu,
+> 
+> Thanks for this series. Please see my comments inline.
+> 
+> On Fri, Mar 6, 2015 at 7:48 PM,  <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
+> > From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> >
+> > This patch adds support for mediatek m4u (MultiMedia Memory Management Unit).
+> > Currently this only supports m4u gen 2 with 2 levels of page table on mt8173.
+> 
+[snip]
+> > +static const struct mtk_iommu_port mtk_iommu_mt8173_port[] = {
+> > +       /* port name                m4uid slaveid larbid portid tfid */
+> > +       /* larb0 */
+> > +       {"M4U_PORT_DISP_OVL0",          0,  0,    0,  0, MTK_TFID(0, 0)},
+> > +       {"M4U_PORT_DISP_RDMA0",         0,  0,    0,  1, MTK_TFID(0, 1)},
+> > +       {"M4U_PORT_DISP_WDMA0",         0,  0,    0,  2, MTK_TFID(0, 2)},
+> > +       {"M4U_PORT_DISP_OD_R",          0,  0,    0,  3, MTK_TFID(0, 3)},
+> > +       {"M4U_PORT_DISP_OD_W",          0,  0,    0,  4, MTK_TFID(0, 4)},
+> > +       {"M4U_PORT_MDP_RDMA0",          0,  0,    0,  5, MTK_TFID(0, 5)},
+> > +       {"M4U_PORT_MDP_WDMA",           0,  0,    0,  6, MTK_TFID(0, 6)},
+> > +       {"M4U_PORT_MDP_WROT0",          0,  0,    0,  7, MTK_TFID(0, 7)},
+> 
+> [snip]
+> 
+> > +       {"M4U_PORT_HSIC_MAS",              1,  0,    6,  12, 0x11},
+> > +       {"M4U_PORT_HSIC_DEV",              1,  0,    6,  13, 0x19},
+> > +       {"M4U_PORT_AP_DMA",                1,  0,    6,  14, 0x18},
+> > +       {"M4U_PORT_HSIC_DMA",              1,  0,    6,  15, 0xc8},
+> > +       {"M4U_PORT_MSDC0",                 1,  0,    6,  16, 0x0},
+> > +       {"M4U_PORT_MSDC3",                 1,  0,    6,  17, 0x20},
+> > +       {"M4U_PORT_UNKNOWN",               1,  0,    6,  18, 0xf},
+> 
+> Why the MTK_TFID() macro is not used for perisys iommu?
+> 
+       The perisys iommu don't connected with SMI and Local arbiter.
+it's translation fault id is not MTK_TFID(x, y).it is special.
+       For this perisys iommu , it is different with multimedia iommu,
+we don't support it in this version, We have plan to delete perisys
+iommu port next time.
 
-         if (!pages)
-                 return -ENXIO;
+> > +};
+> > +
+> 
+> Anyway, is it really necessary to hardcode the SoC specific topology
+> data in this driver? Is there really any use besides of printing port
+> name? If not, you could just print the values in a way letting you
+> quickly look up in the datasheet, without hardcoding this. Or even
+> better, you could print which devices are attached to the port.
+> 
+a) Printing the port name is for debug. We could not request every iommu
+user to understand smi&local arbiter. When there is irq, they have to
+look up the iommu's datasheet to find out which port error. if we print
+it directly, It may be more easily to debug.
 
-         return sg_alloc_table_from_pages(sgt, pages, count, 0, size,
-                                          GFP_KERNEL);
-}
+b) In mtk_iommu_config_port, according to this hardcode we can be easily
+to get out which local arbiter and which port we prepare to config.
 
-> +static struct dma_map_ops iommu_dma_ops = {
-> +	.alloc = __iommu_alloc_attrs,
-> +	.free = __iommu_free_attrs,
-> +	.mmap = __iommu_mmap_attrs,
-> +	.map_page = __iommu_map_page,
-> +	.unmap_page = __iommu_unmap_page,
-> +	.map_sg = __iommu_map_sg_attrs,
-> +	.unmap_sg = __iommu_unmap_sg_attrs,
-> +	.sync_single_for_cpu = __iommu_sync_single_for_cpu,
-> +	.sync_single_for_device = __iommu_sync_single_for_device,
-> +	.sync_sg_for_cpu = __iommu_sync_sg_for_cpu,
-> +	.sync_sg_for_device = __iommu_sync_sg_for_device,
-> +	.dma_supported = iommu_dma_supported,
-> +	.mapping_error = iommu_dma_mapping_error,
-> +};
-> +
-> +static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-> +				  const struct iommu_ops *ops)
-> +{
-> +	struct iommu_dma_domain *dma_domain;
-> +
-> +	if (!ops)
-> +		return;
-> +
-> +	dma_domain = iommu_dma_create_domain(ops, dma_base, size);
-> +	if (!dma_domain) {
-> +		pr_warn("Failed to create %llu-byte IOMMU mapping for device %s\n",
-> +				size, dev_name(dev));
-> +		return;
-> +	}
-> +
-> +	if (iommu_dma_attach_device(dev, dma_domain))
-> +		pr_warn("Failed to attach device %s to IOMMU mapping\n",
-> +				dev_name(dev));
-> +	else
-> +		dev->archdata.dma_ops = &iommu_dma_ops;
-> +
-> +	/* drop the initial mapping refcount */
-> +	iommu_dma_release_domain(dma_domain);
-> +}
-> +
-> +#else
-> +
-> +static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-> +				  struct iommu_ops *iommu)
-> +{ }
-> +
-> +#endif  /* CONFIG_IOMMU_DMA */
+c) If we support different SOCs, we could change this arrays easily.
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+> > +static const struct mtk_iommu_cfg mtk_iommu_mt8173_cfg = {
+> > +       .larb_nr = 6,
+> > +       .m4u_port_nr = ARRAY_SIZE(mtk_iommu_mt8173_port),
+> > +       .pport = mtk_iommu_mt8173_port,
+> > +};
+> > +
+> > +static const char *mtk_iommu_get_port_name(const struct mtk_iommu_info *piommu,
+> > +                                          unsigned int portid)
+> > +{
+> > +       const struct mtk_iommu_port *pcurport = NULL;
+> > +
+> > +       pcurport = piommu->imucfg->pport + portid;
+> > +       if (portid < piommu->imucfg->m4u_port_nr && pcurport)
+> > +               return pcurport->port_name;
+> > +       else
+> > +               return "UNKNOWN_PORT";
+> > +}
+> 
+> This function seems to be used just for printing the hardcoded port names.
+> 
+> > +
+> > +static int mtk_iommu_get_port_by_tfid(const struct mtk_iommu_info *pimu,
+> > +                                     int tf_id)
+> > +{
+> > +       const struct mtk_iommu_cfg *pimucfg = pimu->imucfg;
+> > +       int i;
+> > +       unsigned int portid = pimucfg->m4u_port_nr;
+> > +
+> > +       for (i = 0; i < pimucfg->m4u_port_nr; i++) {
+> > +               if (pimucfg->pport[i].tf_id == tf_id) {
+> > +                       portid = i;
+> > +                       break;
+> > +               }
+> > +       }
+> > +       if (i == pimucfg->m4u_port_nr)
+> > +               dev_err(pimu->dev, "tf_id find fail, tfid %d\n", tf_id);
+> > +       return portid;
+> > +}
+> 
+> This function seems to be used just for finding an index into the
+> array of hardcoded port names for printing purposes.
+   Yes. "mtk_iommu_get_port_name" and "mtk_iommu_get_port_by_tfid" is
+only for find out the right port to print for improve debug.
+> 
+[snip]
+> > +
+> > +static int mtk_iommu_invalidate_tlb(const struct mtk_iommu_info *piommu,
+> > +                                   int isinvall, unsigned int iova_start,
+> > +                                   unsigned int iova_end)
+> > +{
+> > +       void __iomem *m4u_base = piommu->m4u_base;
+> > +       u32 val;
+> > +       u64 start, end;
+> > +
+> > +       start = sched_clock();
+> 
+> I don't think this is the preferred way of checking time in kernel
+> drivers, especially after seeing this comment:
+> http://lxr.free-electrons.com/source/include/linux/sched.h#L2134
+> 
+> You should use ktime_get() and other ktime_ helpers.
+> 
+   I will try to replace this with readl_polling_timeout from Mitchel.
+Is it ok?
+
+> > +
+> > +       if (!isinvall) {
+> > +               iova_start = round_down(iova_start, SZ_4K);
+> > +               iova_end = round_up(iova_end, SZ_4K);
+> > +       }
+> > +
+> > +       val = F_MMU_INV_EN_L2 | F_MMU_INV_EN_L1;
+> > +
+> > +       writel(val, m4u_base + REG_INVLID_SEL);
+> > +
+> > +       if (isinvall) {
+> > +               writel(F_MMU_INV_ALL, m4u_base + REG_MMU_INVLD);
+> 
+> Please move invalidate all into separate function and just call it
+> wherever the code currently passes true as invall argument. You will
+> get rid of two of the ifs in this function.
+> 
+> > +       } else {
+> > +               writel(iova_start, m4u_base + REG_MMU_INVLD_SA);
+> > +               writel(iova_end, m4u_base + REG_MMU_INVLD_EA);
+> > +               writel(F_MMU_INV_RANGE, m4u_base + REG_MMU_INVLD);
+> > +
+> > +               while (!readl(m4u_base + REG_MMU_CPE_DONE)) {
+> > +                       end = sched_clock();
+> > +                       if (end - start >= 100000000ULL) {
+> 
+> Looks like a very interesting magic number. Please define a macro and
+> use normal time units along with ktime_to_<unit>() helpers.
+> 
+> > +                               dev_warn(piommu->dev, "invalid don't done\n");
+> > +                               writel(F_MMU_INV_ALL, m4u_base + REG_MMU_INVLD);
+> 
+> By following my comment above, you could just call the new invalidate
+> all function here instead of duplicating the same register write.
+[snip]
+> Best regards,
+> Tomasz
