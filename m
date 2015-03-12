@@ -1,506 +1,754 @@
-From: Marcelo Tosatti <mtosatti@redhat.com>
-Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU is
- blocked
-Date: Wed, 11 Mar 2015 22:15:26 -0300
-Message-ID: <20150312011526.GA5878@amt.cnet>
-References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
- <1418397300-10870-25-git-send-email-feng.wu@intel.com>
- <20150226234048.GA7784@amt.cnet>
- <E959C4978C3B6342920538CF579893F0023F5A98@SHSMSX104.ccr.corp.intel.com>
- <20150304120608.GA26762@amt.cnet>
- <E959C4978C3B6342920538CF579893F002409841@SHSMSX104.ccr.corp.intel.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [RFC PATCH v2 1/3] iommu: implement common IOMMU ops for DMA
+	mapping
+Date: Thu, 12 Mar 2015 13:45:19 +0100
+Message-ID: <55018A5F.9010907@samsung.com>
+References: <cover.1423226542.git.robin.murphy@arm.com>
+	<da0e905ae94f2fca241a47b2a20e078255e45a81.1423226542.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <E959C4978C3B6342920538CF579893F002409841@SHSMSX104.ccr.corp.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Wu, Feng" <feng.wu@intel.com>
-Cc: "tglx@linutronix.de" <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>, "hpa@zytor.com" <hpa@zytor.com>, "x86@kernel.org" <x86@kernel.org>, "gleb@kernel.org" <gleb@kernel.org>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "eric.auger@linaro.org" <eric.auger@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <da0e905ae94f2fca241a47b2a20e078255e45a81.1423226542.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: arnd-r2nGTMty4D4@public.gmane.org, stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 06, 2015 at 06:51:52AM +0000, Wu, Feng wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Marcelo Tosatti [mailto:mtosatti@redhat.com]
-> > Sent: Wednesday, March 04, 2015 8:06 PM
-> > To: Wu, Feng
-> > Cc: tglx@linutronix.de; mingo@redhat.com; hpa@zytor.com; x86@kernel.org;
-> > gleb@kernel.org; pbonzini@redhat.com; dwmw2@infradead.org;
-> > joro@8bytes.org; alex.williamson@redhat.com; jiang.liu@linux.intel.com;
-> > eric.auger@linaro.org; linux-kernel@vger.kernel.org;
-> > iommu@lists.linux-foundation.org; kvm@vger.kernel.org
-> > Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU
-> > is blocked
-> > 
-> > On Mon, Mar 02, 2015 at 01:36:51PM +0000, Wu, Feng wrote:
-> > >
-> > >
-> > > > -----Original Message-----
-> > > > From: Marcelo Tosatti [mailto:mtosatti@redhat.com]
-> > > > Sent: Friday, February 27, 2015 7:41 AM
-> > > > To: Wu, Feng
-> > > > Cc: tglx@linutronix.de; mingo@redhat.com; hpa@zytor.com;
-> > x86@kernel.org;
-> > > > gleb@kernel.org; pbonzini@redhat.com; dwmw2@infradead.org;
-> > > > joro@8bytes.org; alex.williamson@redhat.com; jiang.liu@linux.intel.com;
-> > > > eric.auger@linaro.org; linux-kernel@vger.kernel.org;
-> > > > iommu@lists.linux-foundation.org; kvm@vger.kernel.org
-> > > > Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when
-> > vCPU
-> > > > is blocked
-> > > >
-> > > > On Fri, Dec 12, 2014 at 11:14:58PM +0800, Feng Wu wrote:
-> > > > > This patch updates the Posted-Interrupts Descriptor when vCPU
-> > > > > is blocked.
-> > > > >
-> > > > > pre-block:
-> > > > > - Add the vCPU to the blocked per-CPU list
-> > > > > - Clear 'SN'
-> > > > > - Set 'NV' to POSTED_INTR_WAKEUP_VECTOR
-> > > > >
-> > > > > post-block:
-> > > > > - Remove the vCPU from the per-CPU list
-> > > > >
-> > > > > Signed-off-by: Feng Wu <feng.wu@intel.com>
-> > > > > ---
-> > > > >  arch/x86/include/asm/kvm_host.h |  2 +
-> > > > >  arch/x86/kvm/vmx.c              | 96
-> > > > +++++++++++++++++++++++++++++++++++++++++
-> > > > >  arch/x86/kvm/x86.c              | 22 +++++++---
-> > > > >  include/linux/kvm_host.h        |  4 ++
-> > > > >  virt/kvm/kvm_main.c             |  6 +++
-> > > > >  5 files changed, 123 insertions(+), 7 deletions(-)
-> > > > >
-> > > > > diff --git a/arch/x86/include/asm/kvm_host.h
-> > > > b/arch/x86/include/asm/kvm_host.h
-> > > > > index 13e3e40..32c110a 100644
-> > > > > --- a/arch/x86/include/asm/kvm_host.h
-> > > > > +++ b/arch/x86/include/asm/kvm_host.h
-> > > > > @@ -101,6 +101,8 @@ static inline gfn_t gfn_to_index(gfn_t gfn, gfn_t
-> > > > base_gfn, int level)
-> > > > >
-> > > > >  #define ASYNC_PF_PER_VCPU 64
-> > > > >
-> > > > > +extern void (*wakeup_handler_callback)(void);
-> > > > > +
-> > > > >  enum kvm_reg {
-> > > > >  	VCPU_REGS_RAX = 0,
-> > > > >  	VCPU_REGS_RCX = 1,
-> > > > > diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-> > > > > index bf2e6cd..a1c83a2 100644
-> > > > > --- a/arch/x86/kvm/vmx.c
-> > > > > +++ b/arch/x86/kvm/vmx.c
-> > > > > @@ -832,6 +832,13 @@ static DEFINE_PER_CPU(struct vmcs *,
-> > > > current_vmcs);
-> > > > >  static DEFINE_PER_CPU(struct list_head, loaded_vmcss_on_cpu);
-> > > > >  static DEFINE_PER_CPU(struct desc_ptr, host_gdt);
-> > > > >
-> > > > > +/*
-> > > > > + * We maintian a per-CPU linked-list of vCPU, so in wakeup_handler() we
-> > > > > + * can find which vCPU should be waken up.
-> > > > > + */
-> > > > > +static DEFINE_PER_CPU(struct list_head, blocked_vcpu_on_cpu);
-> > > > > +static DEFINE_PER_CPU(spinlock_t, blocked_vcpu_on_cpu_lock);
-> > > > > +
-> > > > >  static unsigned long *vmx_io_bitmap_a;
-> > > > >  static unsigned long *vmx_io_bitmap_b;
-> > > > >  static unsigned long *vmx_msr_bitmap_legacy;
-> > > > > @@ -1921,6 +1928,7 @@ static void vmx_vcpu_load(struct kvm_vcpu
-> > *vcpu,
-> > > > int cpu)
-> > > > >  		struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
-> > > > >  		struct pi_desc old, new;
-> > > > >  		unsigned int dest;
-> > > > > +		unsigned long flags;
-> > > > >
-> > > > >  		memset(&old, 0, sizeof(old));
-> > > > >  		memset(&new, 0, sizeof(new));
-> > > > > @@ -1942,6 +1950,20 @@ static void vmx_vcpu_load(struct kvm_vcpu
-> > > > *vcpu, int cpu)
-> > > > >  			new.nv = POSTED_INTR_VECTOR;
-> > > > >  		} while (cmpxchg(&pi_desc->control, old.control,
-> > > > >  				new.control) != old.control);
-> > > > > +
-> > > > > +		/*
-> > > > > +		 * Delete the vCPU from the related wakeup queue
-> > > > > +		 * if we are resuming from blocked state
-> > > > > +		 */
-> > > > > +		if (vcpu->blocked) {
-> > > > > +			vcpu->blocked = false;
-> > > > > +			spin_lock_irqsave(&per_cpu(blocked_vcpu_on_cpu_lock,
-> > > > > +				vcpu->wakeup_cpu), flags);
-> > > > > +			list_del(&vcpu->blocked_vcpu_list);
-> > > > > +
-> > 	spin_unlock_irqrestore(&per_cpu(blocked_vcpu_on_cpu_lock,
-> > > > > +				vcpu->wakeup_cpu), flags);
-> > > > > +			vcpu->wakeup_cpu = -1;
-> > > > > +		}
-> > > > >  	}
-> > > > >  }
-> > > > >
-> > > > > @@ -1950,6 +1972,9 @@ static void vmx_vcpu_put(struct kvm_vcpu
-> > *vcpu)
-> > > > >  	if (irq_remapping_cap(IRQ_POSTING_CAP)) {
-> > > > >  		struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
-> > > > >  		struct pi_desc old, new;
-> > > > > +		unsigned long flags;
-> > > > > +		int cpu;
-> > > > > +		struct cpumask cpu_others_mask;
-> > > > >
-> > > > >  		memset(&old, 0, sizeof(old));
-> > > > >  		memset(&new, 0, sizeof(new));
-> > > > > @@ -1961,6 +1986,54 @@ static void vmx_vcpu_put(struct kvm_vcpu
-> > > > *vcpu)
-> > > > >  				pi_set_sn(&new);
-> > > > >  			} while (cmpxchg(&pi_desc->control, old.control,
-> > > > >  					new.control) != old.control);
-> > > > > +		} else if (vcpu->blocked) {
-> > > > > +			/*
-> > > > > +			 * The vcpu is blocked on the wait queue.
-> > > > > +			 * Store the blocked vCPU on the list of the
-> > > > > +			 * vcpu->wakeup_cpu, which is the destination
-> > > > > +			 * of the wake-up notification event.
-> > > > > +			 */
-> > > > > +			vcpu->wakeup_cpu = vcpu->cpu;
-> > > > > +			spin_lock_irqsave(&per_cpu(blocked_vcpu_on_cpu_lock,
-> > > > > +					  vcpu->wakeup_cpu), flags);
-> > > > > +			list_add_tail(&vcpu->blocked_vcpu_list,
-> > > > > +				      &per_cpu(blocked_vcpu_on_cpu,
-> > > > > +				      vcpu->wakeup_cpu));
-> > > > > +			spin_unlock_irqrestore(
-> > > > > +					&per_cpu(blocked_vcpu_on_cpu_lock,
-> > > > > +					vcpu->wakeup_cpu), flags);
-> > > > > +
-> > > > > +			do {
-> > > > > +				old.control = new.control = pi_desc->control;
-> > > > > +
-> > > > > +				/*
-> > > > > +				 * We should not block the vCPU if
-> > > > > +				 * an interrupt is posted for it.
-> > > > > +				 */
-> > > > > +				if (pi_test_on(pi_desc) == 1) {
-> > > > > +					/*
-> > > > > +					 * We need schedule the wakeup worker
-> > > > > +					 * on a different cpu other than
-> > > > > +					 * vcpu->cpu, because in some case,
-> > > > > +					 * schedule_work() will call
-> > > > > +					 * try_to_wake_up() which needs acquire
-> > > > > +					 * the rq lock. This can cause deadlock.
-> > > > > +					 */
-> > > > > +					cpumask_copy(&cpu_others_mask,
-> > > > > +						     cpu_online_mask);
-> > > > > +					cpu_clear(vcpu->cpu, cpu_others_mask);
-> > > > > +					cpu = any_online_cpu(cpu_others_mask);
-> > > > > +
-> > > > > +					schedule_work_on(cpu,
-> > > > > +							 &vcpu->wakeup_worker);
-> > > > > +				}
-> > > > > +
-> > > > > +				pi_clear_sn(&new);
-> > > > > +
-> > > > > +				/* set 'NV' to 'wakeup vector' */
-> > > > > +				new.nv = POSTED_INTR_WAKEUP_VECTOR;
-> > > > > +			} while (cmpxchg(&pi_desc->control, old.control,
-> > > > > +				new.control) != old.control);
-> > > > >  		}
-> > > >
-> > > > This can be done exclusively on HLT emulation, correct? (that is, on
-> > > > entry to HLT and exit from HLT).
-> > >
-> > > Do you mean the following?
-> > > In kvm_emulate_halt(), we do:
-> > > 1. Add vCPU in the blocking list
-> > > 2. Clear 'SN'
-> > > 3. set 'NV' to POSTED_INTR_WAKEUP_VECTOR
-> > >
-> > > In __vcpu_run(), after kvm_vcpu_block(), we remove the vCPU from the
-> > > Bloc king list.
-> > 
-> > Yes (please check its OK to do this...).
-> 
-> I think about this for some time, and I feel this may be another solution
-> to implement it. Do you mind sharing your ideas about why do you think
-> this alternative is better than the current one? Thanks a lot!
+Hello Robin,
 
-Two reasons:
+I'm sorry for a delay, but I've just finished testing this patchser on 
+Exynos5433
+with Exynos DRM and other drivers.
 
-1) Because it does not add overhead to vcpu_puts thats are not due to
-HLT. Doing so removes the "vcpu->blocked" variable (its implicit in the 
-code anyway).
-2) Easier to spot races.
-
-Do you have any reason why having the code at vcpu_put/vcpu_load is     
-better than the proposal to have the code at kvm_vcpu_block?
-
-> > > > If the vcpu is scheduled out for any other reason (transition to
-> > > > userspace or transition to other thread), it will eventually resume
-> > > > execution. And in that case, continuation of execution does not depend
-> > > > on the event (VT-d interrupt) notification.
-> > >
-> > > Yes, I think this is true for my current implementation, right?
-> > >
-> > > >
-> > > > There is a race window with the code above, I believe.
-> > >
-> > > I did careful code review back and forth for the above code, It will
-> > > be highly appreciated if you can point out the race window!
-> > 
-> > So the remapping HW sees either POSTED_INTR_VECTOR or
-> > POSTED_INTR_WAKEUP_VECTOR.
-> > 
-> > You should:
-> > 
-> > 1. Set POSTED_INTR_WAKEUP_VECTOR.
-> > 2. Check for PIR / ON bit, which might have been set by
-> > POSTED_INTR_VECTOR notification.
-> > 3. emulate HLT.
-> 
-> My original idea for pre-block operation is:
-> 1. Add vCPU to the per-cpu blocking list. Here is the code for this in my patch:
-> +                       vcpu->wakeup_cpu = vcpu->cpu;
-> +                       spin_lock_irqsave(&per_cpu(blocked_vcpu_on_cpu_lock,
-> +                                         vcpu->wakeup_cpu), flags);
-> +                       list_add_tail(&vcpu->blocked_vcpu_list,
-> +                                     &per_cpu(blocked_vcpu_on_cpu,
-> +                                     vcpu->wakeup_cpu));
-> +                       spin_unlock_irqrestore(
-> +                                       &per_cpu(blocked_vcpu_on_cpu_lock,
-> +                                       vcpu->wakeup_cpu), flags);
-> 2. Update Posted-interrupt descriptor, here is the code in my patch:
-> +                       do {
-> +                               old.control = new.control = pi_desc->control;
+On 2015-02-06 15:55, Robin Murphy wrote:
+> Taking inspiration from the existing arch/arm code, break out some
+> generic functions to interface the DMA-API to the IOMMU-API. This will
+> do the bulk of the heavy lifting for IOMMU-backed dma-mapping.
+>
+> Whilst this RFC series is aimed at enabling arm64, once any remaining
+> obvious issues in the common code are addressed we can complete the
+> refactoring by porting arch/arm over for a merge-worthy series.
+>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+>   drivers/iommu/Kconfig     |   7 +
+>   drivers/iommu/Makefile    |   1 +
+>   drivers/iommu/dma-iommu.c | 552 ++++++++++++++++++++++++++++++++++++++++++++++
+>   include/linux/dma-iommu.h |  94 ++++++++
+>   4 files changed, 654 insertions(+)
+>   create mode 100644 drivers/iommu/dma-iommu.c
+>   create mode 100644 include/linux/dma-iommu.h
+>
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index a839ca9..19027bb 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -20,6 +20,13 @@ config OF_IOMMU
+>          def_bool y
+>          depends on OF && IOMMU_API
+>   
+> +# IOMMU-agnostic DMA-mapping layer
+> +config IOMMU_DMA
+> +	def_bool n
+> +	depends on NEED_SG_DMA_LENGTH
+> +	select IOMMU_API
+> +	select IOMMU_IOVA
 > +
-> +                               /*
-> +                                * We should not block the vCPU if
-> +                                * an interrupt is posted for it.
-> +                                */
-> +                               if (pi_test_on(pi_desc) == 1) {
-> +                                       /*
-> +                                        * We need schedule the wakeup worker
-> +                                        * on a different cpu other than
-> +                                        * vcpu->cpu, because in some case,
-> +                                        * schedule_work() will call
-> +                                        * try_to_wake_up() which needs acquire
-> +                                        * the rq lock. This can cause deadlock.
-> +                                        */
-> +                                       cpumask_copy(&cpu_others_mask,
-> +                                                    cpu_online_mask);
-> +                                       cpu_clear(vcpu->cpu, cpu_others_mask);
-> +                                       cpu = any_online_cpu(cpu_others_mask);
+>   config FSL_PAMU
+>   	bool "Freescale IOMMU support"
+>   	depends on PPC_E500MC
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index 0b1b94e..37bfc4e 100644
+> --- a/drivers/iommu/Makefile
+> +++ b/drivers/iommu/Makefile
+> @@ -1,6 +1,7 @@
+>   obj-$(CONFIG_IOMMU_API) += iommu.o
+>   obj-$(CONFIG_IOMMU_API) += iommu-traces.o
+>   obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
+> +obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
+>   obj-$(CONFIG_IOMMU_IOVA) += iova.o
+>   obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
+>   obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o msm_iommu_dev.o
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> new file mode 100644
+> index 0000000..b97cc0b9
+> --- /dev/null
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -0,0 +1,552 @@
+> +/*
+> + * A fairly generic DMA-API to IOMMU-API glue layer.
+> + *
+> + * Copyright (C) 2014 ARM Ltd.
+> + *
+> + * based in part on arch/arm/mm/dma-mapping.c:
+> + * Copyright (C) 2000-2004 Russell King
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + *
+> + * You should have received a copy of the GNU General Public License
+> + * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+> + */
 > +
-> +                                       schedule_work_on(cpu,
-> +                                                        &vcpu->wakeup_worker);
-> +                               }
+> +#define pr_fmt(fmt)	"%s: " fmt, __func__
 > +
-> +                               WARN((pi_desc->sn == 1),
-> +                                    "Warning: SN field of posted-interrupts "
-> +                                    "is set before blocking\n");
+> +#include <linux/dma-contiguous.h>
+> +#include <linux/dma-iommu.h>
+> +#include <linux/iova.h>
 > +
-> +                               /* set 'NV' to 'wakeup vector' */
-> +                               new.nv = POSTED_INTR_WAKEUP_VECTOR;
-> +                       } while (cmpxchg(&pi_desc->control, old.control,
-> +                               new.control) != old.control);
-> 
-> If PIR/ON bit is set by POSTED_INTR_VECTOR notification during the above operation, we will stop
-> blocking the vCPU like about. But seems I missed something in the above code which should be in
-> my mind from the beginning, I should add a 'break' in the end the above ' if (pi_test_on(pi_desc) == 1) {}',
-> so in this case, the 'NV' filed remains unchanged.
+> +int iommu_dma_init(void)
+> +{
+> +	return iommu_iova_cache_init();
+> +}
+> +
+> +struct iommu_dma_domain {
+> +	struct iommu_domain *domain;
+> +	struct iova_domain *iovad;
+> +	struct kref kref;
+> +};
+> +
+> +static inline dma_addr_t dev_dma_addr(struct device *dev, dma_addr_t addr)
+> +{
+> +	BUG_ON(addr < dev->dma_pfn_offset);
+> +	return addr - ((dma_addr_t)dev->dma_pfn_offset << PAGE_SHIFT);
+> +}
+> +
+> +static int __dma_direction_to_prot(enum dma_data_direction dir, bool coherent)
+> +{
+> +	int prot = coherent ? IOMMU_CACHE : 0;
+> +
+> +	switch (dir) {
+> +	case DMA_BIDIRECTIONAL:
+> +		return prot | IOMMU_READ | IOMMU_WRITE;
+> +	case DMA_TO_DEVICE:
+> +		return prot | IOMMU_READ;
+> +	case DMA_FROM_DEVICE:
+> +		return prot | IOMMU_WRITE;
+> +	default:
+> +		return 0;
+> +	}
+> +}
+> +
+> +static struct iova *__alloc_iova(struct device *dev, size_t size, bool coherent)
+> +{
+> +	struct iommu_dma_domain *dom = get_dma_domain(dev);
+> +	struct iova_domain *iovad = dom->iovad;
+> +	unsigned long shift = iova_shift(iovad);
+> +	unsigned long length = iova_align(iovad, size) >> shift;
+> +	unsigned long limit_pfn = iovad->dma_32bit_pfn;
+> +	u64 dma_limit = coherent ? dev->coherent_dma_mask : *dev->dma_mask;
+> +
+> +	limit_pfn = min(limit_pfn, (unsigned long)(dma_limit >> shift));
+> +	/* Alignment should probably come from a domain/device attribute... */
+> +	return alloc_iova(iovad, length, limit_pfn, false);
 
-Right have to think carefully about all cases.
+DMA-mapping subsystem must provide IOVAs, which are at least size 
+aligned, some drivers
+depends on this feature (mainly because they are not able to specify 
+alignment in other
+way...). I've discussed this issue long time ago when CMA has been 
+developed and the
+conclusion was that size alignment is guaranteed by dma-mapping and 
+drivers can rely on
+it.
 
-> > > > >  	}
-> > > > >
-> > > > > @@ -2842,6 +2915,8 @@ static int hardware_enable(void)
-> > > > >  		return -EBUSY;
-> > > > >
-> > > > >  	INIT_LIST_HEAD(&per_cpu(loaded_vmcss_on_cpu, cpu));
-> > > > > +	INIT_LIST_HEAD(&per_cpu(blocked_vcpu_on_cpu, cpu));
-> > > > > +	spin_lock_init(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
-> > > > >
-> > > > >  	/*
-> > > > >  	 * Now we can enable the vmclear operation in kdump
-> > > > > @@ -9315,6 +9390,25 @@ static struct kvm_x86_ops vmx_x86_ops = {
-> > > > >  	.pi_set_sn = vmx_pi_set_sn,
-> > > > >  };
-> > > > >
-> > > > > +/*
-> > > > > + * Handler for POSTED_INTERRUPT_WAKEUP_VECTOR.
-> > > > > + */
-> > > > > +void wakeup_handler(void)
-> > > > > +{
-> > > > > +	struct kvm_vcpu *vcpu;
-> > > > > +	int cpu = smp_processor_id();
-> > > > > +
-> > > > > +	spin_lock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
-> > > > > +	list_for_each_entry(vcpu, &per_cpu(blocked_vcpu_on_cpu, cpu),
-> > > > > +			blocked_vcpu_list) {
-> > > > > +		struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
-> > > > > +
-> > > > > +		if (pi_test_on(pi_desc) == 1)
-> > > > > +			kvm_vcpu_kick(vcpu);
-> > > > > +	}
-> > > > > +	spin_unlock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
-> > > > > +}
-> > > >
-> > > > Looping through all blocked vcpus does not scale:
-> > > > Can you allocate more vectors and then multiplex those
-> > > > vectors amongst the HLT'ed vcpus?
-> > >
-> > > I am a little confused about this, can you elaborate it a bit more?
-> > > Thanks a lot!
-> > 
-> > Picture the following overcommitment scenario:
-> > 
-> > * High ratio of vCPUs/pCPUs, in the ratio 128/1 (this is exaggerated
-> > to demonstrate the issue).
-> > * Every VT-d interrupt is going to scan 128 entries in the list.
-> > 
-> > Moreover, the test:
-> > 
-> > 		if (pi_test_on(pi_desc) == 1)
-> > 			kvm_vcpu_kick(vcpu);
-> > 
-> > Can trigger for vCPUs which have not been waken up due
-> > to VT-d interrupts, but for other interrupts.
-> > 
-> > You can allocate, say 16 vectors on the pCPU for VT-d interrupts:
-> > 
-> > POSTED_INTERRUPT_WAKEUP_VECTOR_1,
-> > POSTED_INTERRUPT_WAKEUP_VECTOR_2,
-> > ...
-> > 
-> 
-> Global vector is a limited resources in the system, and this involves
-> common x86 interrupt code changes. I am not sure we can allocate
-> so many dedicated global vector for KVM usage.
+> +}
+> +
+> +/*
+> + * Create a mapping in device IO address space for specified pages
+> + */
+> +dma_addr_t iommu_dma_create_iova_mapping(struct device *dev,
+> +		struct page **pages, size_t size, bool coherent)
+> +{
+> +	struct iommu_dma_domain *dom = get_dma_domain(dev);
+> +	struct iova_domain *iovad = dom->iovad;
+> +	struct iommu_domain *domain = dom->domain;
+> +	struct iova *iova;
+> +	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> +	dma_addr_t addr_lo, addr_hi;
+> +	int i, prot = __dma_direction_to_prot(DMA_BIDIRECTIONAL, coherent);
+> +
+> +	iova = __alloc_iova(dev, size, coherent);
+> +	if (!iova)
+> +		return DMA_ERROR_CODE;
+> +
+> +	addr_hi = addr_lo = iova_dma_addr(iovad, iova);
+> +	for (i = 0; i < count; ) {
+> +		unsigned int next_pfn = page_to_pfn(pages[i]) + 1;
+> +		phys_addr_t phys = page_to_phys(pages[i]);
+> +		unsigned int len, j;
+> +
+> +		for (j = i+1; j < count; j++, next_pfn++)
+> +			if (page_to_pfn(pages[j]) != next_pfn)
+> +				break;
+> +
+> +		len = (j - i) << PAGE_SHIFT;
+> +		if (iommu_map(domain, addr_hi, phys, len, prot))
+> +			goto fail;
+> +		addr_hi += len;
+> +		i = j;
+> +	}
+> +	return dev_dma_addr(dev, addr_lo);
+> +fail:
+> +	iommu_unmap(domain, addr_lo, addr_hi - addr_lo);
+> +	__free_iova(iovad, iova);
+> +	return DMA_ERROR_CODE;
+> +}
+> +
+> +int iommu_dma_release_iova_mapping(struct device *dev, dma_addr_t iova,
+> +		size_t size)
+> +{
+> +	struct iommu_dma_domain *dom = get_dma_domain(dev);
+> +	struct iova_domain *iovad = dom->iovad;
+> +	size_t offset = iova_offset(iovad, iova);
+> +	size_t len = iova_align(iovad, size + offset);
+> +
+> +	iommu_unmap(dom->domain, iova - offset, len);
+> +	free_iova(iovad, iova_pfn(iovad, iova));
+> +	return 0;
+> +}
+> +
+> +struct page **iommu_dma_alloc_buffer(struct device *dev, size_t size,
+> +		gfp_t gfp, struct dma_attrs *attrs,
+> +		void (clear_buffer)(struct page *page, size_t size))
+> +{
+> +	struct page **pages;
+> +	int count = size >> PAGE_SHIFT;
+> +	int array_size = count * sizeof(struct page *);
+> +	int i = 0;
+> +
+> +	if (array_size <= PAGE_SIZE)
+> +		pages = kzalloc(array_size, GFP_KERNEL);
+> +	else
+> +		pages = vzalloc(array_size);
+> +	if (!pages)
+> +		return NULL;
+> +
+> +	if (dma_get_attr(DMA_ATTR_FORCE_CONTIGUOUS, attrs)) {
+> +		unsigned long order = get_order(size);
+> +		struct page *page;
+> +
+> +		page = dma_alloc_from_contiguous(dev, count, order);
+> +		if (!page)
+> +			goto error;
+> +
+> +		if (clear_buffer)
+> +			clear_buffer(page, size);
+> +
+> +		for (i = 0; i < count; i++)
+> +			pages[i] = page + i;
+> +
+> +		return pages;
+> +	}
+> +
+> +	/*
+> +	 * IOMMU can map any pages, so himem can also be used here
+> +	 */
+> +	gfp |= __GFP_NOWARN | __GFP_HIGHMEM;
+> +
+> +	while (count) {
+> +		int j, order = __fls(count);
+> +
+> +		pages[i] = alloc_pages(gfp, order);
+> +		while (!pages[i] && order)
+> +			pages[i] = alloc_pages(gfp, --order);
+> +		if (!pages[i])
+> +			goto error;
+> +
+> +		if (order) {
+> +			split_page(pages[i], order);
+> +			j = 1 << order;
+> +			while (--j)
+> +				pages[i + j] = pages[i] + j;
+> +		}
+> +
+> +		if (clear_buffer)
+> +			clear_buffer(pages[i], PAGE_SIZE << order);
+> +		i += 1 << order;
+> +		count -= 1 << order;
+> +	}
+> +
+> +	return pages;
+> +error:
+> +	while (i--)
+> +		if (pages[i])
+> +			__free_pages(pages[i], 0);
+> +	if (array_size <= PAGE_SIZE)
+> +		kfree(pages);
+> +	else
+> +		vfree(pages);
+> +	return NULL;
+> +}
+> +
+> +int iommu_dma_free_buffer(struct device *dev, struct page **pages, size_t size,
+> +		struct dma_attrs *attrs)
+> +{
+> +	int count = size >> PAGE_SHIFT;
+> +	int array_size = count * sizeof(struct page *);
+> +	int i;
+> +
+> +	if (dma_get_attr(DMA_ATTR_FORCE_CONTIGUOUS, attrs)) {
+> +		dma_release_from_contiguous(dev, pages[0], count);
+> +	} else {
+> +		for (i = 0; i < count; i++)
+> +			if (pages[i])
+> +				__free_pages(pages[i], 0);
+> +	}
+> +
+> +	if (array_size <= PAGE_SIZE)
+> +		kfree(pages);
+> +	else
+> +		vfree(pages);
+> +	return 0;
+> +}
+> +
+> +static dma_addr_t __iommu_dma_map_page(struct device *dev, struct page *page,
+> +		unsigned long offset, size_t size, enum dma_data_direction dir,
+> +		bool coherent)
+> +{
+> +	dma_addr_t dma_addr;
+> +	struct iommu_dma_domain *dom = get_dma_domain(dev);
+> +	struct iova_domain *iovad = dom->iovad;
+> +	phys_addr_t phys = page_to_phys(page) + offset;
+> +	size_t iova_off = iova_offset(iovad, phys);
+> +	size_t len = iova_align(iovad, size + iova_off);
+> +	int prot = __dma_direction_to_prot(dir, coherent);
+> +	struct iova *iova = __alloc_iova(dev, len, coherent);
+> +
+> +	if (!iova)
+> +		return DMA_ERROR_CODE;
+> +
+> +	dma_addr = iova_dma_addr(iovad, iova);
+> +	if (iommu_map(dom->domain, dma_addr, phys - iova_off, len, prot)) {
+> +		__free_iova(iovad, iova);
+> +		return DMA_ERROR_CODE;
+> +	}
+> +
+> +	return dev_dma_addr(dev, dma_addr + iova_off);
+> +}
+> +
+> +dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+> +		unsigned long offset, size_t size, enum dma_data_direction dir,
+> +		struct dma_attrs *attrs)
+> +{
+> +	return __iommu_dma_map_page(dev, page, offset, size, dir, false);
+> +}
+> +
+> +dma_addr_t iommu_dma_coherent_map_page(struct device *dev, struct page *page,
+> +		unsigned long offset, size_t size, enum dma_data_direction dir,
+> +		struct dma_attrs *attrs)
+> +{
+> +	return __iommu_dma_map_page(dev, page, offset, size, dir, true);
+> +}
+> +
+> +void iommu_dma_unmap_page(struct device *dev, dma_addr_t handle, size_t size,
+> +		enum dma_data_direction dir, struct dma_attrs *attrs)
+> +{
+> +	struct iommu_dma_domain *dom = get_dma_domain(dev);
+> +	struct iova_domain *iovad = dom->iovad;
+> +	size_t offset = iova_offset(iovad, handle);
+> +	size_t len = iova_align(iovad, size + offset);
+> +	dma_addr_t iova = handle - offset;
+> +
+> +	if (!iova)
+> +		return;
+> +
+> +	iommu_unmap(dom->domain, iova, len);
+> +	free_iova(iovad, iova_pfn(iovad, iova));
+> +}
+> +
+> +static int finalise_sg(struct device *dev, struct scatterlist *sg, int nents,
+> +		dma_addr_t dma_addr)
+> +{
+> +	struct scatterlist *s, *seg = sg;
+> +	unsigned long seg_mask = dma_get_seg_boundary(dev);
+> +	unsigned int max_len = dma_get_max_seg_size(dev);
+> +	unsigned int seg_len = 0, seg_dma = 0;
+> +	int i, count = 1;
+> +
+> +	for_each_sg(sg, s, nents, i) {
+> +		/* Un-swizzling the fields here, hence the naming mismatch */
+> +		unsigned int s_offset = sg_dma_address(s);
+> +		unsigned int s_length = sg_dma_len(s);
+> +		unsigned int s_dma_len = s->length;
+> +
+> +		s->offset = s_offset;
+> +		s->length = s_length;
+> +		sg_dma_address(s) = DMA_ERROR_CODE;
+> +		sg_dma_len(s) = 0;
+> +
+> +		if (seg_len && (seg_dma + seg_len == dma_addr + s_offset) &&
+> +		    (seg_len + s_dma_len <= max_len) &&
+> +		    ((seg_dma & seg_mask) <= seg_mask - (seg_len + s_length))
+> +		   ) {
+> +			sg_dma_len(seg) += s_dma_len;
+> +		} else {
+> +			if (seg_len) {
+> +				seg = sg_next(seg);
+> +				count++;
+> +			}
+> +			sg_dma_len(seg) = s_dma_len;
+> +			sg_dma_address(seg) = dma_addr + s_offset;
+> +
+> +			seg_len = s_offset;
+> +			seg_dma = dma_addr + s_offset;
+> +		}
+> +		seg_len += s_length;
+> +		dma_addr += s_dma_len;
+> +	}
+> +	return count;
+> +}
+> +
+> +static void invalidate_sg(struct scatterlist *sg, int nents)
+> +{
+> +	struct scatterlist *s;
+> +	int i;
+> +
+> +	for_each_sg(sg, s, nents, i) {
+> +		if (sg_dma_address(s) != DMA_ERROR_CODE)
+> +			s->offset = sg_dma_address(s);
+> +		if (sg_dma_len(s))
+> +			s->length = sg_dma_len(s);
+> +		sg_dma_address(s) = DMA_ERROR_CODE;
+> +		sg_dma_len(s) = 0;
+> +	}
+> +}
+> +
+> +static int __iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+> +		int nents, enum dma_data_direction dir, struct dma_attrs *attrs,
+> +		bool coherent)
+> +{
+> +	struct iommu_dma_domain *dom = get_dma_domain(dev);
+> +	struct iova_domain *iovad = dom->iovad;
+> +	struct iova *iova;
+> +	struct scatterlist *s;
+> +	dma_addr_t dma_addr;
+> +	size_t iova_len = 0;
+> +	int i, prot = __dma_direction_to_prot(dir, coherent);
+> +
+> +	/*
+> +	 * Work out how much IOVA space we need, and align the segments to
+> +	 * IOVA granules for the IOMMU driver to handle. With some clever
+> +	 * trickery we can modify the list in a reversible manner.
+> +	 */
+> +	for_each_sg(sg, s, nents, i) {
+> +		size_t s_offset = iova_offset(iovad, s->offset);
+> +		size_t s_length = s->length;
+> +
+> +		sg_dma_address(s) = s->offset;
+> +		sg_dma_len(s) = s_length;
+> +		s->offset -= s_offset;
+> +		s_length = iova_align(iovad, s_length + s_offset);
+> +		s->length = s_length;
+> +
+> +		iova_len += s_length;
+> +	}
+> +
+> +	iova = __alloc_iova(dev, iova_len, coherent);
+> +	if (!iova)
+> +		goto out_restore_sg;
+> +
+> +	/*
+> +	 * We'll leave any physical concatenation to the IOMMU driver's
+> +	 * implementation - it knows better than we do.
+> +	 */
+> +	dma_addr = iova_dma_addr(iovad, iova);
+> +	if (iommu_map_sg(dom->domain, dma_addr, sg, nents, prot) < iova_len)
+> +		goto out_free_iova;
+> +
+> +	return finalise_sg(dev, sg, nents, dev_dma_addr(dev, dma_addr));
+> +
+> +out_free_iova:
+> +	__free_iova(iovad, iova);
+> +out_restore_sg:
+> +	invalidate_sg(sg, nents);
+> +	return 0;
+> +}
+> +
+> +int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+> +		enum dma_data_direction dir, struct dma_attrs *attrs)
+> +{
+> +	return __iommu_dma_map_sg(dev, sg, nents, dir, attrs, false);
+> +}
+> +
+> +int iommu_dma_coherent_map_sg(struct device *dev, struct scatterlist *sg,
+> +		int nents, enum dma_data_direction dir, struct dma_attrs *attrs)
+> +{
+> +	return __iommu_dma_map_sg(dev, sg, nents, dir, attrs, true);
+> +}
+> +
+> +void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
+> +		enum dma_data_direction dir, struct dma_attrs *attrs)
+> +{
+> +	struct iommu_dma_domain *dom = get_dma_domain(dev);
+> +	struct iova_domain *iovad = dom->iovad;
+> +	struct scatterlist *s;
+> +	int i;
+> +	dma_addr_t iova = sg_dma_address(sg) & ~iova_mask(iovad);
+> +	size_t len = 0;
+> +
+> +	/*
+> +	 * The scatterlist segments are mapped into contiguous IOVA space,
+> +	 * so just add up the total length and unmap it in one go.
+> +	 */
+> +	for_each_sg(sg, s, nents, i)
+> +		len += sg_dma_len(s);
+> +
+> +	iommu_unmap(dom->domain, iova, len);
+> +	free_iova(iovad, iova_pfn(iovad, iova));
+> +}
+> +
+> +struct iommu_dma_domain *iommu_dma_create_domain(const struct iommu_ops *ops,
+> +		dma_addr_t base, size_t size)
+> +{
+> +	struct iommu_dma_domain *dom;
+> +	struct iommu_domain *domain;
+> +	struct iova_domain *iovad;
+> +	struct iommu_domain_geometry *dg;
+> +	unsigned long order, base_pfn, end_pfn;
+> +
+> +	pr_debug("base=%pad\tsize=0x%zx\n", &base, size);
+> +	dom = kzalloc(sizeof(*dom), GFP_KERNEL);
+> +	if (!dom)
+> +		return NULL;
+> +
+> +	/*
+> +	 * HACK: We'd like to ask the relevant IOMMU in ops for a suitable
+> +	 * domain, but until that happens, bypass the bus nonsense and create
+> +	 * one directly for this specific device/IOMMU combination...
+> +	 */
+> +	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
+> +
+> +	if (!domain)
+> +		goto out_free_dma_domain;
+> +	domain->ops = ops;
+> +
+> +	if (ops->domain_init(domain))
+> +		goto out_free_iommu_domain;
+> +	/*
+> +	 * ...and do the bare minimum to sanity-check that the domain allows
+> +	 * at least some access to the device...
+> +	 */
+> +	dg = &domain->geometry;
+> +	if (!(base <= dg->aperture_end && base + size > dg->aperture_start)) {
+> +		pr_warn("DMA range outside IOMMU capability; is DT correct?\n");
+> +		goto out_free_iommu_domain;
+> +	}
+> +	/* ...then finally give it a kicking to make sure it fits */
+> +	dg->aperture_start = max(base, dg->aperture_start);
+> +	dg->aperture_end = min(base + size - 1, dg->aperture_end);
+> +	/*
+> +	 * Note that this almost certainly breaks the case where multiple
+> +	 * devices with different DMA capabilities need to share a domain,
+> +	 * but we don't have the necessary information to handle that here
+> +	 * anyway - "proper" group and domain allocation needs to involve
+> +	 * the IOMMU driver and a complete view of the bus.
+> +	 */
+> +
+> +	iovad = kzalloc(sizeof(*iovad), GFP_KERNEL);
+> +	if (!iovad)
+> +		goto out_free_iommu_domain;
+> +
+> +	/* Use the smallest supported page size for IOVA granularity */
+> +	order = __ffs(ops->pgsize_bitmap);
+> +	base_pfn = max(dg->aperture_start >> order, (dma_addr_t)1);
+> +	end_pfn = dg->aperture_end >> order;
+> +	init_iova_domain(iovad, 1UL << order, base_pfn, end_pfn);
+> +
+> +	dom->domain = domain;
+> +	dom->iovad = iovad;
+> +	kref_init(&dom->kref);
+> +	pr_debug("domain %p created\n", dom);
+> +	return dom;
+> +
+> +out_free_iommu_domain:
+> +	kfree(domain);
+> +out_free_dma_domain:
+> +	kfree(dom);
+> +	return NULL;
+> +}
+> +
+> +static void iommu_dma_free_domain(struct kref *kref)
+> +{
+> +	struct iommu_dma_domain *dom;
+> +
+> +	dom = container_of(kref, struct iommu_dma_domain, kref);
+> +	put_iova_domain(dom->iovad);
+> +	iommu_domain_free(dom->domain);
+> +	kfree(dom);
+> +	pr_debug("domain %p freed\n", dom);
+> +}
+> +
+> +void iommu_dma_release_domain(struct iommu_dma_domain *dom)
+> +{
+> +	kref_put(&dom->kref, iommu_dma_free_domain);
+> +}
+> +
+> +struct iommu_domain *iommu_dma_raw_domain(struct iommu_dma_domain *dom)
+> +{
+> +	return dom ? dom->domain : NULL;
+> +}
+> +
+> +int iommu_dma_attach_device(struct device *dev, struct iommu_dma_domain *dom)
+> +{
+> +	int ret;
+> +
+> +	kref_get(&dom->kref);
+> +	ret = iommu_attach_device(dom->domain, dev);
+> +	if (ret)
+> +		iommu_dma_release_domain(dom);
+> +	else
+> +		set_dma_domain(dev, dom);
+> +	pr_debug("%s%s attached to domain %p\n", dev_name(dev),
+> +			ret?" *not*":"", dom);
+> +	return ret;
+> +}
+> +
+> +void iommu_dma_detach_device(struct device *dev)
+> +{
+> +	struct iommu_dma_domain *dom = get_dma_domain(dev);
+> +
+> +	if (!dom) {
+> +		dev_warn(dev, "Not attached\n");
+> +		return;
+> +	}
+> +	set_dma_domain(dev, NULL);
+> +	iommu_detach_device(dom->domain, dev);
+> +	iommu_dma_release_domain(dom);
+> +	pr_debug("%s detached from domain %p\n", dev_name(dev), dom);
+> +}
+> +
+> +int iommu_dma_supported(struct device *dev, u64 mask)
+> +{
+> +	/*
+> +	 * This looks awful, but really it's reasonable to assume that if an
+> +	 * IOMMU can't address everything that the CPU can, it probably isn't
+> +	 * generic enough to be using this implementation in the first place.
+> +	 */
+> +	return 1;
+> +}
+> +
+> +int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
+> +{
+> +	return dma_addr == DMA_ERROR_CODE;
+> +}
+> diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+> new file mode 100644
+> index 0000000..4bba85a
+> --- /dev/null
+> +++ b/include/linux/dma-iommu.h
+> @@ -0,0 +1,94 @@
+> +/*
+> + * Copyright (C) 2014 ARM Ltd.
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + *
+> + * You should have received a copy of the GNU General Public License
+> + * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+> + */
+> +#ifndef __DMA_IOMMU_H
+> +#define __DMA_IOMMU_H
+> +
+> +#ifdef __KERNEL__
+> +
+> +#include <linux/types.h>
+> +#include <linux/iommu.h>
+> +
+> +#ifdef CONFIG_IOMMU_DMA
+> +
+> +int iommu_dma_init(void);
+> +
+> +
+> +struct iommu_dma_domain *iommu_dma_create_domain(const struct iommu_ops *ops,
+> +		dma_addr_t base, size_t size);
+> +void iommu_dma_release_domain(struct iommu_dma_domain *dma_domain);
+> +
+> +struct iommu_domain *iommu_dma_raw_domain(struct iommu_dma_domain *dma_domain);
+> +
+> +int iommu_dma_attach_device(struct device *dev, struct iommu_dma_domain *domain);
+> +void iommu_dma_detach_device(struct device *dev);
+> +
+> +/*
+> + * Implementation of these is left to arch code - it can associate domains
+> + * with devices however it likes, provided the lookup is efficient.
+> + */
+> +struct iommu_dma_domain *get_dma_domain(struct device *dev);
+> +void set_dma_domain(struct device *dev, struct iommu_dma_domain *dma_domain);
+> +
+> +
+> +dma_addr_t iommu_dma_create_iova_mapping(struct device *dev,
+> +		struct page **pages, size_t size, bool coherent);
+> +int iommu_dma_release_iova_mapping(struct device *dev, dma_addr_t iova,
+> +		size_t size);
+> +
+> +struct page **iommu_dma_alloc_buffer(struct device *dev, size_t size,
+> +		gfp_t gfp, struct dma_attrs *attrs,
+> +		void (clear_buffer)(struct page *page, size_t size));
+> +int iommu_dma_free_buffer(struct device *dev, struct page **pages, size_t size,
+> +		struct dma_attrs *attrs);
+> +
+> +dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+> +		unsigned long offset, size_t size, enum dma_data_direction dir,
+> +		struct dma_attrs *attrs);
+> +dma_addr_t iommu_dma_coherent_map_page(struct device *dev, struct page *page,
+> +		unsigned long offset, size_t size, enum dma_data_direction dir,
+> +		struct dma_attrs *attrs);
+> +void iommu_dma_unmap_page(struct device *dev, dma_addr_t handle, size_t size,
+> +		enum dma_data_direction dir, struct dma_attrs *attrs);
+> +
+> +int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+> +		enum dma_data_direction dir, struct dma_attrs *attrs);
+> +int iommu_dma_coherent_map_sg(struct device *dev, struct scatterlist *sg,
+> +		int nents, enum dma_data_direction dir,
+> +		struct dma_attrs *attrs);
+> +void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sgl, int nents,
+> +		enum dma_data_direction dir, struct dma_attrs *attrs);
+> +
+> +int iommu_dma_supported(struct device *dev, u64 mask);
+> +int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
+> +
+> +#else
+> +
+> +static inline int iommu_dma_init(void)
+> +{
+> +	return 0;
+> +}
+> +
+> +static inline struct iommu_dma_domain *get_dma_domain(struct device *dev)
+> +{
+> +	return NULL;
+> +}
+> +
+> +void set_dma_domain(struct device *dev, struct iommu_dma_domain *dma_domain) { }
+> +
+> +#endif  /* CONFIG_IOMMU_DMA */
+> +
+> +#endif	/* __KERNEL__ */
+> +#endif	/* __DMA_IOMMU_H */
 
-Why not? Have KVM use all free vectors (so if vectors are necessary for
-other purposes, people should shrink the KVM vector pool).
-
-BTW the Intel docs talk about that ("one vector per vCPU").
-
-> > > > It seems there is a bunch free:
-> > > >
-> > > > commit 52aec3308db85f4e9f5c8b9f5dc4fbd0138c6fa4
-> > > > Author: Alex Shi <alex.shi@intel.com>
-> > > > Date:   Thu Jun 28 09:02:23 2012 +0800
-> > > >
-> > > >     x86/tlb: replace INVALIDATE_TLB_VECTOR by
-> > CALL_FUNCTION_VECTOR
-> > > >
-> > > > Can you add only vcpus which have posted IRTEs that point to this pCPU
-> > > > to the HLT'ed vcpu lists? (so for example, vcpus without assigned
-> > > > devices are not part of the list).
-> > >
-> > > Is it easy to find whether a vCPU (or the associated domain) has assigned
-> > devices?
-> > > If so, we can only add those vCPUs with assigned devices.
-> > 
-> > When configuring IRTE, at kvm_arch_vfio_update_pi_irte?
-> 
-> Yes.
-> 
-> > 
-> > > > > +
-> > > > >  static int __init vmx_init(void)
-> > > > >  {
-> > > > >  	int r, i, msr;
-> > > > > @@ -9429,6 +9523,8 @@ static int __init vmx_init(void)
-> > > > >
-> > > > >  	update_ple_window_actual_max();
-> > > > >
-> > > > > +	wakeup_handler_callback = wakeup_handler;
-> > > > > +
-> > > > >  	return 0;
-> > > > >
-> > > > >  out7:
-> > > > > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> > > > > index 0033df3..1551a46 100644
-> > > > > --- a/arch/x86/kvm/x86.c
-> > > > > +++ b/arch/x86/kvm/x86.c
-> > > > > @@ -6152,6 +6152,21 @@ static int vcpu_enter_guest(struct kvm_vcpu
-> > > > *vcpu)
-> > > > >  			kvm_vcpu_reload_apic_access_page(vcpu);
-> > > > >  	}
-> > > > >
-> > > > > +	/*
-> > > > > +	 * Since posted-interrupts can be set by VT-d HW now, in this
-> > > > > +	 * case, KVM_REQ_EVENT is not set. We move the following
-> > > > > +	 * operations out of the if statement.
-> > > > > +	 */
-> > > > > +	if (kvm_lapic_enabled(vcpu)) {
-> > > > > +		/*
-> > > > > +		 * Update architecture specific hints for APIC
-> > > > > +		 * virtual interrupt delivery.
-> > > > > +		 */
-> > > > > +		if (kvm_x86_ops->hwapic_irr_update)
-> > > > > +			kvm_x86_ops->hwapic_irr_update(vcpu,
-> > > > > +				kvm_lapic_find_highest_irr(vcpu));
-> > > > > +	}
-> > > > > +
-> > > >
-> > > > This is a hot fast path. You can set KVM_REQ_EVENT from wakeup_handler.
-> > >
-> > > I am afraid Setting KVM_REQ_EVENT from wakeup_handler doesn't help
-> > much,
-> > > if vCPU is running in ROOT mode, and VT-d hardware issues an notification
-> > event,
-> > > POSTED_INTR_VECTOR interrupt handler will be called.
-> > 
-> > If vCPU is in root mode, remapping HW will find IRTE configured with
-> > vector == POSTED_INTR_WAKEUP_VECTOR, use that vector, which will
-> > VM-exit, and execute the interrupt handler wakeup_handler. Right?
-> 
-> There are two cases:
-> Case 1: vCPU is blocked, so it is in root mode, this is what you described above.
-> Case 2, vCPU is running in root mode, such as, handling vm-exits, in this case,
-> the notification vector is 'POSTED_INTR_VECTOR', and if external interrupts
-> from assigned devices happen, the handled of 'POSTED_INTR_VECTOR' will
-> be called ( it is 'smp_kvm_posted_intr_ipi' in fact), this routine doesn't need
-> do real things, since the pending interrupts in PIR will be synced to vIRR before
-> VM-Entry (this code have already been there when enabling CPU-side
-> posted-interrupt along with APICv). Like what I said before, it is a little hard to
-> get vCPU related information in it, even if we get, it is not accurate and may harm
-> the performance.(need search)
-> 
-> So only setting KVM_REQ_EVENT in wakeup_handler cannot cover the notification
-> event for 'POSTED_INTR_VECTOR'.
-> 
-> > 
-> > The point of this comment is that you can keep the
-> > 
-> > "if (kvm_x86_ops->hwapic_irr_update)
-> > 	kvm_x86_ops->hwapic_irr_update(vcpu,
-> > 			kvm_lapic_find_highest_irr(vcpu));
-> > "
-> > 
-> > Code inside KVM_REQ_EVENT handling section of vcpu_run, as long as
-> > wakeup_handler sets KVM_REQ_EVENT.
-> 
-> Please see above.
-
-OK can you set KVM_REQ_EVENT in case the ON bit is set,
-after disabling interrupts ?
-
-kvm_lapic_find_highest_irr(vcpu) eats some cache 
-(4 cachelines) versus 1 cacheline for reading ON bit.
-
-> > > > Please remove blocked and wakeup_cpu, they should not be necessary.
-> > >
-> > > Why do you think wakeup_cpu is not needed, when vCPU is blocked,
-> > > wakeup_cpu saves the cpu which the vCPU is blocked on, after vCPU
-> > > is woken up, it can run on a different cpu, so we need wakeup_cpu to
-> > > find the right list to wake up the vCPU.
-> > 
-> > If the vCPU was moved it should have updated IRTE destination field
-> > to the pCPU which it has moved to?
-> 
-> Every time a vCPU is scheduled to a new pCPU, the IRTE destination filed
-> would be updated accordingly. 
-> 
-> When vCPU is blocked. To wake up the blocked vCPU, we need to find which
-> list the vCPU is blocked on, and this is what wakeup_cpu used for?
-
-Right, perhaps prev_vcpu is a better name.
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
