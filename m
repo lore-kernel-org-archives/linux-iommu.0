@@ -1,15 +1,21 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH 2/5] iommu/mediatek: Add mt8173 IOMMU driver
-Date: Thu, 12 Mar 2015 22:16:18 +0800
-Message-ID: <1426169778.695.34.camel@mhfsdcap03>
-References: <1425638900-24989-1-git-send-email-yong.wu@mediatek.com>
-	<1425638900-24989-3-git-send-email-yong.wu@mediatek.com>
-	<CAAFQd5CWOjT6XU8PFT+PO6Q2mb-i+iMTtZPSo_RDNUzpOO6TvA@mail.gmail.com>
+From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU
+	is blocked
+Date: Mon, 16 Mar 2015 11:42:06 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F00243A819@SHSMSX104.ccr.corp.intel.com>
+References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
+	<1418397300-10870-25-git-send-email-feng.wu@intel.com>
+	<20150226234048.GA7784@amt.cnet>
+	<E959C4978C3B6342920538CF579893F0023F5A98@SHSMSX104.ccr.corp.intel.com>
+	<20150304120608.GA26762@amt.cnet>
+	<E959C4978C3B6342920538CF579893F002409841@SHSMSX104.ccr.corp.intel.com>
+	<20150312011526.GA5878@amt.cnet>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAAFQd5CWOjT6XU8PFT+PO6Q2mb-i+iMTtZPSo_RDNUzpOO6TvA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <20150312011526.GA5878-I4X2Mt4zSy4@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,180 +25,570 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+To: Marcelo Tosatti <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Dear Tomasz,
 
-      Thanks very much for review so detail!
 
-      Please check my reply below. Others I will fix it in the next
-version.
-       
-      And I have got your comment of [2/5]. Do you have plan for the
-other patch?
-
-On Sun, 2015-03-08 at 13:12 +0900, Tomasz Figa wrote:
-> Hi Yong Wu,
+> -----Original Message-----
+> From: Marcelo Tosatti [mailto:mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> Sent: Thursday, March 12, 2015 9:15 AM
+> To: Wu, Feng
+> Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org; x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org;
+> gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org;
+> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org;
+> eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU
+> is blocked
 > 
-> Thanks for this series. Please see my comments inline.
-> 
-> On Fri, Mar 6, 2015 at 7:48 PM,  <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
-> > From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> On Fri, Mar 06, 2015 at 06:51:52AM +0000, Wu, Feng wrote:
 > >
-> > This patch adds support for mediatek m4u (MultiMedia Memory Management Unit).
-> > Currently this only supports m4u gen 2 with 2 levels of page table on mt8173.
+> >
+> > > -----Original Message-----
+> > > From: Marcelo Tosatti [mailto:mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> > > Sent: Wednesday, March 04, 2015 8:06 PM
+> > > To: Wu, Feng
+> > > Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org;
+> x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org;
+> > > gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org;
+> > > joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org;
+> > > eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > > Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when
+> vCPU
+> > > is blocked
+> > >
+> > > On Mon, Mar 02, 2015 at 01:36:51PM +0000, Wu, Feng wrote:
+> > > >
+> > > >
+> > > > > -----Original Message-----
+> > > > > From: Marcelo Tosatti [mailto:mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> > > > > Sent: Friday, February 27, 2015 7:41 AM
+> > > > > To: Wu, Feng
+> > > > > Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org;
+> > > x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org;
+> > > > > gleb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org;
+> > > > > joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
+> jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org;
+> > > > > eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> > > > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > > > > Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when
+> > > vCPU
+> > > > > is blocked
+> > > > >
+> > > > > On Fri, Dec 12, 2014 at 11:14:58PM +0800, Feng Wu wrote:
+> > > > > > This patch updates the Posted-Interrupts Descriptor when vCPU
+> > > > > > is blocked.
+> > > > > >
+> > > > > > pre-block:
+> > > > > > - Add the vCPU to the blocked per-CPU list
+> > > > > > - Clear 'SN'
+> > > > > > - Set 'NV' to POSTED_INTR_WAKEUP_VECTOR
+> > > > > >
+> > > > > > post-block:
+> > > > > > - Remove the vCPU from the per-CPU list
+> > > > > >
+> > > > > > Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> > > > > > ---
+> > > > > >  arch/x86/include/asm/kvm_host.h |  2 +
+> > > > > >  arch/x86/kvm/vmx.c              | 96
+> > > > > +++++++++++++++++++++++++++++++++++++++++
+> > > > > >  arch/x86/kvm/x86.c              | 22 +++++++---
+> > > > > >  include/linux/kvm_host.h        |  4 ++
+> > > > > >  virt/kvm/kvm_main.c             |  6 +++
+> > > > > >  5 files changed, 123 insertions(+), 7 deletions(-)
+> > > > > >
+> > > > > > diff --git a/arch/x86/include/asm/kvm_host.h
+> > > > > b/arch/x86/include/asm/kvm_host.h
+> > > > > > index 13e3e40..32c110a 100644
+> > > > > > --- a/arch/x86/include/asm/kvm_host.h
+> > > > > > +++ b/arch/x86/include/asm/kvm_host.h
+> > > > > > @@ -101,6 +101,8 @@ static inline gfn_t gfn_to_index(gfn_t gfn,
+> gfn_t
+> > > > > base_gfn, int level)
+> > > > > >
+> > > > > >  #define ASYNC_PF_PER_VCPU 64
+> > > > > >
+> > > > > > +extern void (*wakeup_handler_callback)(void);
+> > > > > > +
+> > > > > >  enum kvm_reg {
+> > > > > >  	VCPU_REGS_RAX = 0,
+> > > > > >  	VCPU_REGS_RCX = 1,
+> > > > > > diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+> > > > > > index bf2e6cd..a1c83a2 100644
+> > > > > > --- a/arch/x86/kvm/vmx.c
+> > > > > > +++ b/arch/x86/kvm/vmx.c
+> > > > > > @@ -832,6 +832,13 @@ static DEFINE_PER_CPU(struct vmcs *,
+> > > > > current_vmcs);
+> > > > > >  static DEFINE_PER_CPU(struct list_head, loaded_vmcss_on_cpu);
+> > > > > >  static DEFINE_PER_CPU(struct desc_ptr, host_gdt);
+> > > > > >
+> > > > > > +/*
+> > > > > > + * We maintian a per-CPU linked-list of vCPU, so in wakeup_handler()
+> we
+> > > > > > + * can find which vCPU should be waken up.
+> > > > > > + */
+> > > > > > +static DEFINE_PER_CPU(struct list_head, blocked_vcpu_on_cpu);
+> > > > > > +static DEFINE_PER_CPU(spinlock_t, blocked_vcpu_on_cpu_lock);
+> > > > > > +
+> > > > > >  static unsigned long *vmx_io_bitmap_a;
+> > > > > >  static unsigned long *vmx_io_bitmap_b;
+> > > > > >  static unsigned long *vmx_msr_bitmap_legacy;
+> > > > > > @@ -1921,6 +1928,7 @@ static void vmx_vcpu_load(struct kvm_vcpu
+> > > *vcpu,
+> > > > > int cpu)
+> > > > > >  		struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
+> > > > > >  		struct pi_desc old, new;
+> > > > > >  		unsigned int dest;
+> > > > > > +		unsigned long flags;
+> > > > > >
+> > > > > >  		memset(&old, 0, sizeof(old));
+> > > > > >  		memset(&new, 0, sizeof(new));
+> > > > > > @@ -1942,6 +1950,20 @@ static void vmx_vcpu_load(struct
+> kvm_vcpu
+> > > > > *vcpu, int cpu)
+> > > > > >  			new.nv = POSTED_INTR_VECTOR;
+> > > > > >  		} while (cmpxchg(&pi_desc->control, old.control,
+> > > > > >  				new.control) != old.control);
+> > > > > > +
+> > > > > > +		/*
+> > > > > > +		 * Delete the vCPU from the related wakeup queue
+> > > > > > +		 * if we are resuming from blocked state
+> > > > > > +		 */
+> > > > > > +		if (vcpu->blocked) {
+> > > > > > +			vcpu->blocked = false;
+> > > > > > +
+> 	spin_lock_irqsave(&per_cpu(blocked_vcpu_on_cpu_lock,
+> > > > > > +				vcpu->wakeup_cpu), flags);
+> > > > > > +			list_del(&vcpu->blocked_vcpu_list);
+> > > > > > +
+> > > 	spin_unlock_irqrestore(&per_cpu(blocked_vcpu_on_cpu_lock,
+> > > > > > +				vcpu->wakeup_cpu), flags);
+> > > > > > +			vcpu->wakeup_cpu = -1;
+> > > > > > +		}
+> > > > > >  	}
+> > > > > >  }
+> > > > > >
+> > > > > > @@ -1950,6 +1972,9 @@ static void vmx_vcpu_put(struct kvm_vcpu
+> > > *vcpu)
+> > > > > >  	if (irq_remapping_cap(IRQ_POSTING_CAP)) {
+> > > > > >  		struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
+> > > > > >  		struct pi_desc old, new;
+> > > > > > +		unsigned long flags;
+> > > > > > +		int cpu;
+> > > > > > +		struct cpumask cpu_others_mask;
+> > > > > >
+> > > > > >  		memset(&old, 0, sizeof(old));
+> > > > > >  		memset(&new, 0, sizeof(new));
+> > > > > > @@ -1961,6 +1986,54 @@ static void vmx_vcpu_put(struct
+> kvm_vcpu
+> > > > > *vcpu)
+> > > > > >  				pi_set_sn(&new);
+> > > > > >  			} while (cmpxchg(&pi_desc->control, old.control,
+> > > > > >  					new.control) != old.control);
+> > > > > > +		} else if (vcpu->blocked) {
+> > > > > > +			/*
+> > > > > > +			 * The vcpu is blocked on the wait queue.
+> > > > > > +			 * Store the blocked vCPU on the list of the
+> > > > > > +			 * vcpu->wakeup_cpu, which is the destination
+> > > > > > +			 * of the wake-up notification event.
+> > > > > > +			 */
+> > > > > > +			vcpu->wakeup_cpu = vcpu->cpu;
+> > > > > > +
+> 	spin_lock_irqsave(&per_cpu(blocked_vcpu_on_cpu_lock,
+> > > > > > +					  vcpu->wakeup_cpu), flags);
+> > > > > > +			list_add_tail(&vcpu->blocked_vcpu_list,
+> > > > > > +				      &per_cpu(blocked_vcpu_on_cpu,
+> > > > > > +				      vcpu->wakeup_cpu));
+> > > > > > +			spin_unlock_irqrestore(
+> > > > > > +					&per_cpu(blocked_vcpu_on_cpu_lock,
+> > > > > > +					vcpu->wakeup_cpu), flags);
+> > > > > > +
+> > > > > > +			do {
+> > > > > > +				old.control = new.control = pi_desc->control;
+> > > > > > +
+> > > > > > +				/*
+> > > > > > +				 * We should not block the vCPU if
+> > > > > > +				 * an interrupt is posted for it.
+> > > > > > +				 */
+> > > > > > +				if (pi_test_on(pi_desc) == 1) {
+> > > > > > +					/*
+> > > > > > +					 * We need schedule the wakeup worker
+> > > > > > +					 * on a different cpu other than
+> > > > > > +					 * vcpu->cpu, because in some case,
+> > > > > > +					 * schedule_work() will call
+> > > > > > +					 * try_to_wake_up() which needs acquire
+> > > > > > +					 * the rq lock. This can cause deadlock.
+> > > > > > +					 */
+> > > > > > +					cpumask_copy(&cpu_others_mask,
+> > > > > > +						     cpu_online_mask);
+> > > > > > +					cpu_clear(vcpu->cpu, cpu_others_mask);
+> > > > > > +					cpu = any_online_cpu(cpu_others_mask);
+> > > > > > +
+> > > > > > +					schedule_work_on(cpu,
+> > > > > > +							 &vcpu->wakeup_worker);
+> > > > > > +				}
+> > > > > > +
+> > > > > > +				pi_clear_sn(&new);
+> > > > > > +
+> > > > > > +				/* set 'NV' to 'wakeup vector' */
+> > > > > > +				new.nv = POSTED_INTR_WAKEUP_VECTOR;
+> > > > > > +			} while (cmpxchg(&pi_desc->control, old.control,
+> > > > > > +				new.control) != old.control);
+> > > > > >  		}
+> > > > >
+> > > > > This can be done exclusively on HLT emulation, correct? (that is, on
+> > > > > entry to HLT and exit from HLT).
+> > > >
+> > > > Do you mean the following?
+> > > > In kvm_emulate_halt(), we do:
+> > > > 1. Add vCPU in the blocking list
+> > > > 2. Clear 'SN'
+> > > > 3. set 'NV' to POSTED_INTR_WAKEUP_VECTOR
+> > > >
+> > > > In __vcpu_run(), after kvm_vcpu_block(), we remove the vCPU from the
+> > > > Bloc king list.
+> > >
+> > > Yes (please check its OK to do this...).
+> >
+> > I think about this for some time, and I feel this may be another solution
+> > to implement it. Do you mind sharing your ideas about why do you think
+> > this alternative is better than the current one? Thanks a lot!
 > 
-[snip]
-> > +static const struct mtk_iommu_port mtk_iommu_mt8173_port[] = {
-> > +       /* port name                m4uid slaveid larbid portid tfid */
-> > +       /* larb0 */
-> > +       {"M4U_PORT_DISP_OVL0",          0,  0,    0,  0, MTK_TFID(0, 0)},
-> > +       {"M4U_PORT_DISP_RDMA0",         0,  0,    0,  1, MTK_TFID(0, 1)},
-> > +       {"M4U_PORT_DISP_WDMA0",         0,  0,    0,  2, MTK_TFID(0, 2)},
-> > +       {"M4U_PORT_DISP_OD_R",          0,  0,    0,  3, MTK_TFID(0, 3)},
-> > +       {"M4U_PORT_DISP_OD_W",          0,  0,    0,  4, MTK_TFID(0, 4)},
-> > +       {"M4U_PORT_MDP_RDMA0",          0,  0,    0,  5, MTK_TFID(0, 5)},
-> > +       {"M4U_PORT_MDP_WDMA",           0,  0,    0,  6, MTK_TFID(0, 6)},
-> > +       {"M4U_PORT_MDP_WROT0",          0,  0,    0,  7, MTK_TFID(0, 7)},
+> Two reasons:
 > 
-> [snip]
+> 1) Because it does not add overhead to vcpu_puts thats are not due to
+> HLT. Doing so removes the "vcpu->blocked" variable (its implicit in the
+> code anyway).
+> 2) Easier to spot races.
 > 
-> > +       {"M4U_PORT_HSIC_MAS",              1,  0,    6,  12, 0x11},
-> > +       {"M4U_PORT_HSIC_DEV",              1,  0,    6,  13, 0x19},
-> > +       {"M4U_PORT_AP_DMA",                1,  0,    6,  14, 0x18},
-> > +       {"M4U_PORT_HSIC_DMA",              1,  0,    6,  15, 0xc8},
-> > +       {"M4U_PORT_MSDC0",                 1,  0,    6,  16, 0x0},
-> > +       {"M4U_PORT_MSDC3",                 1,  0,    6,  17, 0x20},
-> > +       {"M4U_PORT_UNKNOWN",               1,  0,    6,  18, 0xf},
-> 
-> Why the MTK_TFID() macro is not used for perisys iommu?
-> 
-       The perisys iommu don't connected with SMI and Local arbiter.
-it's translation fault id is not MTK_TFID(x, y).it is special.
-       For this perisys iommu , it is different with multimedia iommu,
-we don't support it in this version, We have plan to delete perisys
-iommu port next time.
+> Do you have any reason why having the code at vcpu_put/vcpu_load is
+> better than the proposal to have the code at kvm_vcpu_block?
 
-> > +};
-> > +
-> 
-> Anyway, is it really necessary to hardcode the SoC specific topology
-> data in this driver? Is there really any use besides of printing port
-> name? If not, you could just print the values in a way letting you
-> quickly look up in the datasheet, without hardcoding this. Or even
-> better, you could print which devices are attached to the port.
-> 
-a) Printing the port name is for debug. We could not request every iommu
-user to understand smi&local arbiter. When there is irq, they have to
-look up the iommu's datasheet to find out which port error. if we print
-it directly, It may be more easily to debug.
+I think your proposal is good, I just want to better understand your idea here.:)
 
-b) In mtk_iommu_config_port, according to this hardcode we can be easily
-to get out which local arbiter and which port we prepare to config.
+One thing, even we put the code to kvm_vcpu_block, we still need to add code
+at vcpu_put/vcpu_load for the preemption case like what I did now.
 
-c) If we support different SOCs, we could change this arrays easily.
+> 
+> > > > > If the vcpu is scheduled out for any other reason (transition to
+> > > > > userspace or transition to other thread), it will eventually resume
+> > > > > execution. And in that case, continuation of execution does not depend
+> > > > > on the event (VT-d interrupt) notification.
+> > > >
+> > > > Yes, I think this is true for my current implementation, right?
+> > > >
+> > > > >
+> > > > > There is a race window with the code above, I believe.
+> > > >
+> > > > I did careful code review back and forth for the above code, It will
+> > > > be highly appreciated if you can point out the race window!
+> > >
+> > > So the remapping HW sees either POSTED_INTR_VECTOR or
+> > > POSTED_INTR_WAKEUP_VECTOR.
+> > >
+> > > You should:
+> > >
+> > > 1. Set POSTED_INTR_WAKEUP_VECTOR.
+> > > 2. Check for PIR / ON bit, which might have been set by
+> > > POSTED_INTR_VECTOR notification.
+> > > 3. emulate HLT.
+> >
+> > My original idea for pre-block operation is:
+> > 1. Add vCPU to the per-cpu blocking list. Here is the code for this in my patch:
+> > +                       vcpu->wakeup_cpu = vcpu->cpu;
+> > +
+> spin_lock_irqsave(&per_cpu(blocked_vcpu_on_cpu_lock,
+> > +                                         vcpu->wakeup_cpu),
+> flags);
+> > +                       list_add_tail(&vcpu->blocked_vcpu_list,
+> > +
+> &per_cpu(blocked_vcpu_on_cpu,
+> > +                                     vcpu->wakeup_cpu));
+> > +                       spin_unlock_irqrestore(
+> > +
+> &per_cpu(blocked_vcpu_on_cpu_lock,
+> > +                                       vcpu->wakeup_cpu), flags);
+> > 2. Update Posted-interrupt descriptor, here is the code in my patch:
+> > +                       do {
+> > +                               old.control = new.control =
+> pi_desc->control;
+> > +
+> > +                               /*
+> > +                                * We should not block the vCPU if
+> > +                                * an interrupt is posted for it.
+> > +                                */
+> > +                               if (pi_test_on(pi_desc) == 1) {
+> > +                                       /*
+> > +                                        * We need schedule the
+> wakeup worker
+> > +                                        * on a different cpu other
+> than
+> > +                                        * vcpu->cpu, because in
+> some case,
+> > +                                        * schedule_work() will call
+> > +                                        * try_to_wake_up() which
+> needs acquire
+> > +                                        * the rq lock. This can
+> cause deadlock.
+> > +                                        */
+> > +
+> cpumask_copy(&cpu_others_mask,
+> > +
+> cpu_online_mask);
+> > +                                       cpu_clear(vcpu->cpu,
+> cpu_others_mask);
+> > +                                       cpu =
+> any_online_cpu(cpu_others_mask);
+> > +
+> > +                                       schedule_work_on(cpu,
+> > +
+> &vcpu->wakeup_worker);
+> > +                               }
+> > +
+> > +                               WARN((pi_desc->sn == 1),
+> > +                                    "Warning: SN field of
+> posted-interrupts "
+> > +                                    "is set before blocking\n");
+> > +
+> > +                               /* set 'NV' to 'wakeup vector' */
+> > +                               new.nv =
+> POSTED_INTR_WAKEUP_VECTOR;
+> > +                       } while (cmpxchg(&pi_desc->control,
+> old.control,
+> > +                               new.control) != old.control);
+> >
+> > If PIR/ON bit is set by POSTED_INTR_VECTOR notification during the above
+> operation, we will stop
+> > blocking the vCPU like about. But seems I missed something in the above
+> code which should be in
+> > my mind from the beginning, I should add a 'break' in the end the above ' if
+> (pi_test_on(pi_desc) == 1) {}',
+> > so in this case, the 'NV' filed remains unchanged.
+> 
+> Right have to think carefully about all cases.
+> 
+> > > > > >  	}
+> > > > > >
+> > > > > > @@ -2842,6 +2915,8 @@ static int hardware_enable(void)
+> > > > > >  		return -EBUSY;
+> > > > > >
+> > > > > >  	INIT_LIST_HEAD(&per_cpu(loaded_vmcss_on_cpu, cpu));
+> > > > > > +	INIT_LIST_HEAD(&per_cpu(blocked_vcpu_on_cpu, cpu));
+> > > > > > +	spin_lock_init(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
+> > > > > >
+> > > > > >  	/*
+> > > > > >  	 * Now we can enable the vmclear operation in kdump
+> > > > > > @@ -9315,6 +9390,25 @@ static struct kvm_x86_ops vmx_x86_ops =
+> {
+> > > > > >  	.pi_set_sn = vmx_pi_set_sn,
+> > > > > >  };
+> > > > > >
+> > > > > > +/*
+> > > > > > + * Handler for POSTED_INTERRUPT_WAKEUP_VECTOR.
+> > > > > > + */
+> > > > > > +void wakeup_handler(void)
+> > > > > > +{
+> > > > > > +	struct kvm_vcpu *vcpu;
+> > > > > > +	int cpu = smp_processor_id();
+> > > > > > +
+> > > > > > +	spin_lock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
+> > > > > > +	list_for_each_entry(vcpu, &per_cpu(blocked_vcpu_on_cpu,
+> cpu),
+> > > > > > +			blocked_vcpu_list) {
+> > > > > > +		struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
+> > > > > > +
+> > > > > > +		if (pi_test_on(pi_desc) == 1)
+> > > > > > +			kvm_vcpu_kick(vcpu);
+> > > > > > +	}
+> > > > > > +	spin_unlock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
+> > > > > > +}
+> > > > >
+> > > > > Looping through all blocked vcpus does not scale:
+> > > > > Can you allocate more vectors and then multiplex those
+> > > > > vectors amongst the HLT'ed vcpus?
+> > > >
+> > > > I am a little confused about this, can you elaborate it a bit more?
+> > > > Thanks a lot!
+> > >
+> > > Picture the following overcommitment scenario:
+> > >
+> > > * High ratio of vCPUs/pCPUs, in the ratio 128/1 (this is exaggerated
+> > > to demonstrate the issue).
+> > > * Every VT-d interrupt is going to scan 128 entries in the list.
+> > >
+> > > Moreover, the test:
+> > >
+> > > 		if (pi_test_on(pi_desc) == 1)
+> > > 			kvm_vcpu_kick(vcpu);
+> > >
+> > > Can trigger for vCPUs which have not been waken up due
+> > > to VT-d interrupts, but for other interrupts.
+> > >
+> > > You can allocate, say 16 vectors on the pCPU for VT-d interrupts:
+> > >
+> > > POSTED_INTERRUPT_WAKEUP_VECTOR_1,
+> > > POSTED_INTERRUPT_WAKEUP_VECTOR_2,
+> > > ...
+> > >
+> >
+> > Global vector is a limited resources in the system, and this involves
+> > common x86 interrupt code changes. I am not sure we can allocate
+> > so many dedicated global vector for KVM usage.
+> 
+> Why not? Have KVM use all free vectors (so if vectors are necessary for
+> other purposes, people should shrink the KVM vector pool).
 
-> > +static const struct mtk_iommu_cfg mtk_iommu_mt8173_cfg = {
-> > +       .larb_nr = 6,
-> > +       .m4u_port_nr = ARRAY_SIZE(mtk_iommu_mt8173_port),
-> > +       .pport = mtk_iommu_mt8173_port,
-> > +};
-> > +
-> > +static const char *mtk_iommu_get_port_name(const struct mtk_iommu_info *piommu,
-> > +                                          unsigned int portid)
-> > +{
-> > +       const struct mtk_iommu_port *pcurport = NULL;
-> > +
-> > +       pcurport = piommu->imucfg->pport + portid;
-> > +       if (portid < piommu->imucfg->m4u_port_nr && pcurport)
-> > +               return pcurport->port_name;
-> > +       else
-> > +               return "UNKNOWN_PORT";
-> > +}
-> 
-> This function seems to be used just for printing the hardcoded port names.
-> 
-> > +
-> > +static int mtk_iommu_get_port_by_tfid(const struct mtk_iommu_info *pimu,
-> > +                                     int tf_id)
-> > +{
-> > +       const struct mtk_iommu_cfg *pimucfg = pimu->imucfg;
-> > +       int i;
-> > +       unsigned int portid = pimucfg->m4u_port_nr;
-> > +
-> > +       for (i = 0; i < pimucfg->m4u_port_nr; i++) {
-> > +               if (pimucfg->pport[i].tf_id == tf_id) {
-> > +                       portid = i;
-> > +                       break;
-> > +               }
-> > +       }
-> > +       if (i == pimucfg->m4u_port_nr)
-> > +               dev_err(pimu->dev, "tf_id find fail, tfid %d\n", tf_id);
-> > +       return portid;
-> > +}
-> 
-> This function seems to be used just for finding an index into the
-> array of hardcoded port names for printing purposes.
-   Yes. "mtk_iommu_get_port_name" and "mtk_iommu_get_port_by_tfid" is
-only for find out the right port to print for improve debug.
-> 
-[snip]
-> > +
-> > +static int mtk_iommu_invalidate_tlb(const struct mtk_iommu_info *piommu,
-> > +                                   int isinvall, unsigned int iova_start,
-> > +                                   unsigned int iova_end)
-> > +{
-> > +       void __iomem *m4u_base = piommu->m4u_base;
-> > +       u32 val;
-> > +       u64 start, end;
-> > +
-> > +       start = sched_clock();
-> 
-> I don't think this is the preferred way of checking time in kernel
-> drivers, especially after seeing this comment:
-> http://lxr.free-electrons.com/source/include/linux/sched.h#L2134
-> 
-> You should use ktime_get() and other ktime_ helpers.
-> 
-   I will try to replace this with readl_polling_timeout from Mitchel.
-Is it ok?
+If we want to allocate more global vector for this usage, we need hpa's
+input about it. Peter, what is your opinion?
 
-> > +
-> > +       if (!isinvall) {
-> > +               iova_start = round_down(iova_start, SZ_4K);
-> > +               iova_end = round_up(iova_end, SZ_4K);
-> > +       }
-> > +
-> > +       val = F_MMU_INV_EN_L2 | F_MMU_INV_EN_L1;
-> > +
-> > +       writel(val, m4u_base + REG_INVLID_SEL);
-> > +
-> > +       if (isinvall) {
-> > +               writel(F_MMU_INV_ALL, m4u_base + REG_MMU_INVLD);
 > 
-> Please move invalidate all into separate function and just call it
-> wherever the code currently passes true as invall argument. You will
-> get rid of two of the ifs in this function.
+> BTW the Intel docs talk about that ("one vector per vCPU").
+Yes, the Spec talks about this, but it is more complex using one vector per vCPU.
+
 > 
-> > +       } else {
-> > +               writel(iova_start, m4u_base + REG_MMU_INVLD_SA);
-> > +               writel(iova_end, m4u_base + REG_MMU_INVLD_EA);
-> > +               writel(F_MMU_INV_RANGE, m4u_base + REG_MMU_INVLD);
-> > +
-> > +               while (!readl(m4u_base + REG_MMU_CPE_DONE)) {
-> > +                       end = sched_clock();
-> > +                       if (end - start >= 100000000ULL) {
+> > > > > It seems there is a bunch free:
+> > > > >
+> > > > > commit 52aec3308db85f4e9f5c8b9f5dc4fbd0138c6fa4
+> > > > > Author: Alex Shi <alex.shi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> > > > > Date:   Thu Jun 28 09:02:23 2012 +0800
+> > > > >
+> > > > >     x86/tlb: replace INVALIDATE_TLB_VECTOR by
+> > > CALL_FUNCTION_VECTOR
+> > > > >
+> > > > > Can you add only vcpus which have posted IRTEs that point to this pCPU
+> > > > > to the HLT'ed vcpu lists? (so for example, vcpus without assigned
+> > > > > devices are not part of the list).
+> > > >
+> > > > Is it easy to find whether a vCPU (or the associated domain) has assigned
+> > > devices?
+> > > > If so, we can only add those vCPUs with assigned devices.
+> > >
+> > > When configuring IRTE, at kvm_arch_vfio_update_pi_irte?
+> >
+> > Yes.
+> >
+> > >
+> > > > > > +
+> > > > > >  static int __init vmx_init(void)
+> > > > > >  {
+> > > > > >  	int r, i, msr;
+> > > > > > @@ -9429,6 +9523,8 @@ static int __init vmx_init(void)
+> > > > > >
+> > > > > >  	update_ple_window_actual_max();
+> > > > > >
+> > > > > > +	wakeup_handler_callback = wakeup_handler;
+> > > > > > +
+> > > > > >  	return 0;
+> > > > > >
+> > > > > >  out7:
+> > > > > > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> > > > > > index 0033df3..1551a46 100644
+> > > > > > --- a/arch/x86/kvm/x86.c
+> > > > > > +++ b/arch/x86/kvm/x86.c
+> > > > > > @@ -6152,6 +6152,21 @@ static int vcpu_enter_guest(struct
+> kvm_vcpu
+> > > > > *vcpu)
+> > > > > >  			kvm_vcpu_reload_apic_access_page(vcpu);
+> > > > > >  	}
+> > > > > >
+> > > > > > +	/*
+> > > > > > +	 * Since posted-interrupts can be set by VT-d HW now, in this
+> > > > > > +	 * case, KVM_REQ_EVENT is not set. We move the following
+> > > > > > +	 * operations out of the if statement.
+> > > > > > +	 */
+> > > > > > +	if (kvm_lapic_enabled(vcpu)) {
+> > > > > > +		/*
+> > > > > > +		 * Update architecture specific hints for APIC
+> > > > > > +		 * virtual interrupt delivery.
+> > > > > > +		 */
+> > > > > > +		if (kvm_x86_ops->hwapic_irr_update)
+> > > > > > +			kvm_x86_ops->hwapic_irr_update(vcpu,
+> > > > > > +				kvm_lapic_find_highest_irr(vcpu));
+> > > > > > +	}
+> > > > > > +
+> > > > >
+> > > > > This is a hot fast path. You can set KVM_REQ_EVENT from
+> wakeup_handler.
+> > > >
+> > > > I am afraid Setting KVM_REQ_EVENT from wakeup_handler doesn't help
+> > > much,
+> > > > if vCPU is running in ROOT mode, and VT-d hardware issues an notification
+> > > event,
+> > > > POSTED_INTR_VECTOR interrupt handler will be called.
+> > >
+> > > If vCPU is in root mode, remapping HW will find IRTE configured with
+> > > vector == POSTED_INTR_WAKEUP_VECTOR, use that vector, which will
+> > > VM-exit, and execute the interrupt handler wakeup_handler. Right?
+> >
+> > There are two cases:
+> > Case 1: vCPU is blocked, so it is in root mode, this is what you described
+> above.
+> > Case 2, vCPU is running in root mode, such as, handling vm-exits, in this case,
+> > the notification vector is 'POSTED_INTR_VECTOR', and if external interrupts
+> > from assigned devices happen, the handled of 'POSTED_INTR_VECTOR' will
+> > be called ( it is 'smp_kvm_posted_intr_ipi' in fact), this routine doesn't need
+> > do real things, since the pending interrupts in PIR will be synced to vIRR
+> before
+> > VM-Entry (this code have already been there when enabling CPU-side
+> > posted-interrupt along with APICv). Like what I said before, it is a little hard
+> to
+> > get vCPU related information in it, even if we get, it is not accurate and may
+> harm
+> > the performance.(need search)
+> >
+> > So only setting KVM_REQ_EVENT in wakeup_handler cannot cover the
+> notification
+> > event for 'POSTED_INTR_VECTOR'.
+> >
+> > >
+> > > The point of this comment is that you can keep the
+> > >
+> > > "if (kvm_x86_ops->hwapic_irr_update)
+> > > 	kvm_x86_ops->hwapic_irr_update(vcpu,
+> > > 			kvm_lapic_find_highest_irr(vcpu));
+> > > "
+> > >
+> > > Code inside KVM_REQ_EVENT handling section of vcpu_run, as long as
+> > > wakeup_handler sets KVM_REQ_EVENT.
+> >
+> > Please see above.
 > 
-> Looks like a very interesting magic number. Please define a macro and
-> use normal time units along with ktime_to_<unit>() helpers.
+> OK can you set KVM_REQ_EVENT in case the ON bit is set,
+> after disabling interrupts ?
 > 
-> > +                               dev_warn(piommu->dev, "invalid don't done\n");
-> > +                               writel(F_MMU_INV_ALL, m4u_base + REG_MMU_INVLD);
+Currently, the following code is executed before local_irq_disable() is called,
+so do you mean 1)moving local_irq_disable() to the place before it. 2) after interrupt
+is disabled, set KVM_REQ_EVENT in case the ON bit is set?
+
+"if (kvm_x86_ops->hwapic_irr_update)
+	kvm_x86_ops->hwapic_irr_update(vcpu,
+			kvm_lapic_find_highest_irr(vcpu));
+
+> kvm_lapic_find_highest_irr(vcpu) eats some cache
+> (4 cachelines) versus 1 cacheline for reading ON bit.
 > 
-> By following my comment above, you could just call the new invalidate
-> all function here instead of duplicating the same register write.
-[snip]
-> Best regards,
-> Tomasz
+> > > > > Please remove blocked and wakeup_cpu, they should not be necessary.
+> > > >
+> > > > Why do you think wakeup_cpu is not needed, when vCPU is blocked,
+> > > > wakeup_cpu saves the cpu which the vCPU is blocked on, after vCPU
+> > > > is woken up, it can run on a different cpu, so we need wakeup_cpu to
+> > > > find the right list to wake up the vCPU.
+> > >
+> > > If the vCPU was moved it should have updated IRTE destination field
+> > > to the pCPU which it has moved to?
+> >
+> > Every time a vCPU is scheduled to a new pCPU, the IRTE destination filed
+> > would be updated accordingly.
+> >
+> > When vCPU is blocked. To wake up the blocked vCPU, we need to find which
+> > list the vCPU is blocked on, and this is what wakeup_cpu used for?
+> 
+> Right, perhaps prev_vcpu is a better name.
+
+Do you mean "prev_pcpu"?
+
+Thanks,
+Feng
