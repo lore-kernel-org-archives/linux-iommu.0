@@ -1,68 +1,83 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 2/5] iommu/mediatek: Add mt8173 IOMMU driver
-Date: Tue, 17 Mar 2015 15:14:24 +0000
-Message-ID: <20150317151424.GQ8399@arm.com>
-References: <1425638900-24989-1-git-send-email-yong.wu@mediatek.com>
- <1425638900-24989-3-git-send-email-yong.wu@mediatek.com>
- <20150306105821.GE22377@arm.com>
- <1425903103.13300.29.camel@mhfsdcap03>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: Detach domain *only* from attached iommus
+Date: Tue, 17 Mar 2015 13:08:42 -0600
+Message-ID: <1426619322.3643.325.camel@redhat.com>
+References: <20150304182905.23660.81378.stgit@gimli.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1425903103.13300.29.camel@mhfsdcap03>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150304182905.23660.81378.stgit-GCcqpEzw8uZBDLzU/O5InQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Mar 09, 2015 at 12:11:43PM +0000, Yong Wu wrote:
-> On Fri, 2015-03-06 at 10:58 +0000, Will Deacon wrote:
-> > On Fri, Mar 06, 2015 at 10:48:17AM +0000, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org wrote:
-> > > From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> > > 
-> > > This patch adds support for mediatek m4u (MultiMedia Memory Management Unit).
-> > > Currently this only supports m4u gen 2 with 2 levels of page table on mt8173.
-> > 
-> > [...]
-> > 
-> > > +/* 2 level pagetable: pgd -> pte */
-> > > +#define F_PTE_TYPE_GET(regval)  (regval & 0x3)
-> > > +#define F_PTE_TYPE_LARGE         BIT(0)
-> > > +#define F_PTE_TYPE_SMALL         BIT(1)
-> > > +#define F_PTE_B_BIT              BIT(2)
-> > > +#define F_PTE_C_BIT              BIT(3)
-> > > +#define F_PTE_BIT32_BIT          BIT(9)
-> > > +#define F_PTE_S_BIT              BIT(10)
-> > > +#define F_PTE_NG_BIT             BIT(11)
-> > > +#define F_PTE_PA_LARGE_MSK            (~0UL << 16)
-> > > +#define F_PTE_PA_LARGE_GET(regval)    ((regval >> 16) & 0xffff)
-> > > +#define F_PTE_PA_SMALL_MSK            (~0UL << 12)
-> > > +#define F_PTE_PA_SMALL_GET(regval)    ((regval >> 12) & (~0))
-> > > +#define F_PTE_TYPE_IS_LARGE_PAGE(pte) ((imu_pte_val(pte) & 0x3) == \
-> > > +                                       F_PTE_TYPE_LARGE)
-> > > +#define F_PTE_TYPE_IS_SMALL_PAGE(pte) ((imu_pte_val(pte) & 0x3) == \
-> > > +                                       F_PTE_TYPE_SMALL)
-> > 
-> > This looks like the ARM short-descriptor format to me. Could you please
-> > add a new page table format to the io-pgtable code, so that other IOMMU
-> > drivers can make use of this? I know there was some interest in using
-> > short descriptor for the ARM SMMU, for example.
->     Currently I not familiar with the io-pgtable,I may need some time
-> for it and the ARM short-descriptor. 
 
-Well, you can read the LPAE version I wrote in io-pgtable-arm.c for some
-inspiration (it's used by arm-smmu.c and ipmmu-vmsa.c).
+Ping?  I think this needs to be a v4.0 candidate.  Thanks,
 
->     And there are some difference between mediatek's pagetable with the
-> standard short-descriptor, like bit 9. we use it for the dram over 4GB.
-> Then how should we do if there are some difference. 
+Alex
 
-That can easily be handled using a quirk (see, for example,
-IO_PGTABLE_QUIRK_ARM_NS).
-
-Will
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+On Wed, 2015-03-04 at 11:30 -0700, Alex Williamson wrote:
+> Device domains never span IOMMU hardware units, which allows the
+> domain ID space for each IOMMU to be an independent address space.
+> Therefore we can have multiple, independent domains, each with the
+> same domain->id, but attached to different hardware units.  This is
+> also why we need to do a heavy-weight search for VM domains since
+> they can span multiple IOMMUs hardware units and we don't require a
+> single global ID to use for all hardware units.
+> 
+> Therefore, if we call iommu_detach_domain() across all active IOMMU
+> hardware units for a non-VM domain, the result is that we clear domain
+> IDs that are not associated with our domain, allowing them to be
+> re-allocated and causing apparent coherency issues when the device
+> cannot access IOVAs for the intended domain.
+> 
+> This bug was introduced in commit fb170fb4c548 ("iommu/vt-d: Introduce
+> helper functions to make code symmetric for readability"), but is
+> significantly exacerbated by the more recent commit 62c22167dd70
+> ("iommu/vt-d: Fix dmar_domain leak in iommu_attach_device") which calls
+> domain_exit() more frequently to resolve a domain leak.
+> 
+> Fixes: fb170fb4c548 ("iommu/vt-d: Introduce helper functions to make code symmetric for readability")
+> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Cc: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org # v3.17+
+> ---
+>  drivers/iommu/intel-iommu.c |    6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index ae4c1a8..a83c965 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -1743,8 +1743,8 @@ static int domain_init(struct dmar_domain *domain, int guest_width)
+>  static void domain_exit(struct dmar_domain *domain)
+>  {
+>  	struct dmar_drhd_unit *drhd;
+> -	struct intel_iommu *iommu;
+>  	struct page *freelist = NULL;
+> +	int i;
+>  
+>  	/* Domain 0 is reserved, so dont process it */
+>  	if (!domain)
+> @@ -1764,8 +1764,8 @@ static void domain_exit(struct dmar_domain *domain)
+>  
+>  	/* clear attached or cached domains */
+>  	rcu_read_lock();
+> -	for_each_active_iommu(iommu, drhd)
+> -		iommu_detach_domain(domain, iommu);
+> +	for_each_set_bit(i, domain->iommu_bmp, g_num_of_iommus)
+> +		iommu_detach_domain(domain, g_iommus[i]);
+>  	rcu_read_unlock();
+>  
+>  	dma_free_pagelist(freelist);
+> 
