@@ -1,75 +1,48 @@
-From: Sakari Ailus <sakari.ailus@iki.fi>
+From: Tim Nordell <tim.nordell@logicpd.com>
 Subject: Re: [PATCH v2 25/26] omap3isp: Move to videobuf2
-Date: Wed, 18 Mar 2015 23:44:25 +0200
-Message-ID: <20150318214425.GL11954@valkosipuli.retiisi.org.uk>
-References: <1398083352-8451-1-git-send-email-laurent.pinchart@ideasonboard.com>
- <2315546.eR07gyadH5@avalon>
- <55099773.2010809@logicpd.com>
- <2250003.9yO29CjKoc@avalon>
- <5509D6BC.6080006@logicpd.com>
- <5509E6DF.4080900@logicpd.com>
+Date: Wed, 18 Mar 2015 17:43:41 -0500
+Message-ID: <5509FF9D.8060106@logicpd.com>
+References: <1398083352-8451-1-git-send-email-laurent.pinchart@ideasonboard.com> <2315546.eR07gyadH5@avalon> <55099773.2010809@logicpd.com> <2250003.9yO29CjKoc@avalon> <5509D6BC.6080006@logicpd.com> <5509E6DF.4080900@logicpd.com> <20150318214425.GL11954@valkosipuli.retiisi.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-media-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5509E6DF.4080900@logicpd.com>
+In-Reply-To: <20150318214425.GL11954@valkosipuli.retiisi.org.uk>
 Sender: linux-media-owner@vger.kernel.org
-To: Tim Nordell <tim.nordell@logicpd.com>
+To: Sakari Ailus <sakari.ailus@iki.fi>
 Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-media@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Tim,
+On 03/18/15 16:44, Sakari Ailus wrote:
+>
+> I don't think omap3isp has been using this very long. A few minor versions
+> perhaps.
+>
+>> Do you know if this common code is supposed to guarantee a
+>> physically contiguous memory region?  The documentation for the
+>> function doesn't indicate that it should, and it certainly doesn't
+>> as-is.  It seems like hitting this issue is highly dependent on the
+>> size of the buffer one is allocating.
+>
+> I guess there aren't too many drivers that may map large areas of memory
+> pinned using get_user_pages() to IOMMU. If dma_map_sg() couldn't be used to
+> allocate virtually contiguous memory, then what could be? This looks like a
+> bug in __iommu_map_sg() to me.
+>
+> Cc the iommu list.
+>
 
-On Wed, Mar 18, 2015 at 03:58:07PM -0500, Tim Nordell wrote:
-> Laurent -
-> 
-> On 03/18/15 14:49, Tim Nordell wrote:
-> >Digging through to find who is responsible for assigning the virtual
-> >addresses, I find that it's buried inside
-> >arch/arm/mm/dma-mapping.c:__alloc_iova(...).  This call is called
-> >individually for each entry in the scatter-gather table via
-> >__map_sg_chunk from iommu_map_sg(...).  If this is supposed to allocate
-> >a contiguous virtual memory region, it seems that __iommu_map_sg(...)
-> >should be considering the full buffer range rather than parts of the
-> >buffer at a time for the virtual allocation, similar to how
-> >__iommu_create_mapping(...) works in the same file.
-> >
-> >- Tim
-> >
-> 
-> I've confirmed that this code is the culprit for allocating a
-> non-contiguous space (called via the dma_map_sg_attrs(...) back down
-> in the videobuf2-dma-contig).  I've reworked it for testing so that
-> it does an __alloc_iova(...) on the entire region rather than a
-> chunk at a time, however, I don't think what I have locally is
-> completely the right approach for the generic case since I think
-> technically a given entry in the scatterlist could end up with the
-> end of a page partially used (the per list entry ->offset and such).
-> 
-> Looks like code (the specific functions in mm/dma-mapping.c) in
-> question was last touched in 2012 with a quick git-blame, but I
-> don't know how long the OMAP 3 ISP code has been using this common
-> code.  I'm guessing it's only been since the virtual memory manager
-> internal to the IOMMU code was removed in July of last year.
+After staring at this for a while, I realized that the mm/dma-mapping.c 
+is doing exactly what it's supposed to (and works similarly to how I was 
+starting to refactor the outer function) and that the omap3isp driver 
+needs to do one further step in initialization.
 
-I don't think omap3isp has been using this very long. A few minor versions
-perhaps.
+There is a call dma_set_max_seg_size(...) that defines how the code in 
+dma-mapping.c chunks things up.  If it's set larger, the dma-mapping 
+routine will allocate larger physically contiguous chunks in the virtual 
+memory space.  Any clue where the best place in omap3isp to set this is?
 
-> Do you know if this common code is supposed to guarantee a
-> physically contiguous memory region?  The documentation for the
-> function doesn't indicate that it should, and it certainly doesn't
-> as-is.  It seems like hitting this issue is highly dependent on the
-> size of the buffer one is allocating.
+At least it's a short patch to omap3isp to fix this behavior.  I'll be 
+sending a patch along shortly.
 
-I guess there aren't too many drivers that may map large areas of memory
-pinned using get_user_pages() to IOMMU. If dma_map_sg() couldn't be used to
-allocate virtually contiguous memory, then what could be? This looks like a
-bug in __iommu_map_sg() to me.
-
-Cc the iommu list.
-
--- 
-Kind regards,
-
-Sakari Ailus
-e-mail: sakari.ailus@iki.fi	XMPP: sailus@retiisi.org.uk
+- Tim
