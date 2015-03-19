@@ -1,115 +1,81 @@
-From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH v9 10/10] iommu/vt-d: Use old irte in kdump kernel
-Date: Thu, 19 Mar 2015 13:36:28 +0800
-Message-ID: <1426743388-26908-11-git-send-email-zhen-hual@hp.com>
-References: <1426743388-26908-1-git-send-email-zhen-hual@hp.com>
+From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH - v7] of: Move of_dma_configure() to device.c to help
+ re-use
+Date: Thu, 19 Mar 2015 10:02:24 -0500
+Message-ID: <20150319150224.GB26935@google.com>
+References: <1425333548-8802-1-git-send-email-m-karicheri2@ti.com>
+ <CAErSpo7MsxgVZyhpijRzVN7mVNcbN7M4A4W-UKaNs4AnmGrB6g@mail.gmail.com>
+ <54F5F59C.5000603@ti.com>
+ <CAErSpo5gPVqRrzZ3LbWvLRchr6SjxN0eve62dTJamfz+=O882Q@mail.gmail.com>
+ <54F63BA1.8030708@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1426743388-26908-1-git-send-email-zhen-hual-VXdhtT5mjnY@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, zhen-hual-VXdhtT5mjnY@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <54F63BA1.8030708-l0cyMroinI0@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>
+Cc: linux-arm <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Fix the intr-remapping fault.
+On Tue, Mar 03, 2015 at 05:54:25PM -0500, Murali Karicheri wrote:
+> On 03/03/2015 03:53 PM, Bjorn Helgaas wrote:
+> >[+cc linux-pci]
+> >
+> >On Tue, Mar 3, 2015 at 11:55 AM, Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>  wrote:
+> >>On 03/02/2015 10:43 PM, Bjorn Helgaas wrote:
+> >>>
+> >>>On Mon, Mar 2, 2015 at 3:59 PM, Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>
+> >>>wrote:
+> >>>>
+> >>>>Move of_dma_configure() to device.c so it can be re-used for PCI devices
+> >>>>to
+> >>>>obtain DMA configuration from DT.  Also add a second argument so that for
+> >>>>PCI, the DT node of root bus host bridge can be used to obtain the DMA
+> >>>>configuration for the slave PCI device.
+> >>>>
+> >>>>Tested-by: Suravee Suthikulpanit<Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>   (AMD
+> >>>>Seattle)
+> >>>>Signed-off-by: Murali Karicheri<m-karicheri2-l0cyMroinI0@public.gmane.org>
+> >>>>Signed-off-by: Bjorn Helgaas<bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+> >>>>Reviewed-by: Catalin Marinas<catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+> >>>>Acked-by: Will Deacon<will.deacon-5wv7dgnIgG8@public.gmane.org>
+> >>>>CC: Joerg Roedel<joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> >>>>CC: Grant Likely<grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> >>>>CC: Rob Herring<robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> >>>>CC: Russell King<linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+> >>>>CC: Arnd Bergmann<arnd-r2nGTMty4D4@public.gmane.org>
+> >>>>---
+> >>>>   - Based on the existing patch applied to arm-pci/pci/iommu for pci next
+> >>>>(Bjorn)
+> >>>>   - Fixed the build issue reported on ARCH=x86_64
+> >>>
+> >>>
+> >>>Hi Murali,
+> >>>
+> >>>Can you please repost the entire series with fixed patches?  It's
+> >>>easier for me to reapply the whole thing at once than it is to keep
+> >>>track of and fiddle with individual patches.
+> >>>
+> >>>Bjorn
+> >>
+> >>Bjorn,
+> >>
+> >>Ok. I have just posted v8 of the series including all patches.
+> >
+> >Thanks, I put them on a pci/murali-v8 branch for now.  I'm assuming
+> >you want them to go through my tree.  In the cover letter, you
+> >mentioned the "arm-pci iommu branch", so if that means you want them
+> >via an ARM tree instead of mine, just let me know.  I assume the build
+> >will be clean and I'll rename it back to pci/iommu.
+> 
+> My bad. It should have beem pci/iommu. My remote was named arm-pci
+> and hence the confusion. Please apply it to the pci/iommu branch.
 
-[1.594890] dmar: DRHD: handling fault status reg 2
-[1.594894] dmar: INTR-REMAP: Request device [[41:00.0] fault index 4d
-[1.594894] INTR-REMAP:[fault reason 34] Present field in the IRTE entry
-is clear
+Applied to pci/iommu for v4.1, thanks!
 
-Use old irte in kdump kernel, do not disable and re-enable interrupt
-remapping.
-
-Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
----
- drivers/iommu/intel_irq_remapping.c | 43 +++++++++++++++++++++++++++++++------
- 1 file changed, 37 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 20c060b..4e5a02d 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -199,6 +199,11 @@ static int modify_irte(int irq, struct irte *irte_modified)
- 
- 	set_64bit(&irte->low, irte_modified->low);
- 	set_64bit(&irte->high, irte_modified->high);
-+
-+#ifdef CONFIG_CRASH_DUMP
-+	if (is_kdump_kernel())
-+		__iommu_update_old_irte(iommu, index);
-+#endif
- 	__iommu_flush_cache(iommu, irte, sizeof(*irte));
- 
- 	rc = qi_flush_iec(iommu, index, 0);
-@@ -260,6 +265,11 @@ static int clear_entries(struct irq_2_iommu *irq_iommu)
- 	bitmap_release_region(iommu->ir_table->bitmap, index,
- 			      irq_iommu->irte_mask);
- 
-+#ifdef CONFIG_CRASH_DUMP
-+	if (is_kdump_kernel())
-+		__iommu_update_old_irte(iommu, -1);
-+#endif
-+
- 	return qi_flush_iec(iommu, index, irq_iommu->irte_mask);
- }
- 
-@@ -662,11 +672,20 @@ static int __init intel_enable_irq_remapping(void)
- 		 */
- 		dmar_fault(-1, iommu);
- 
--		/*
--		 * Disable intr remapping and queued invalidation, if already
--		 * enabled prior to OS handover.
--		 */
--		iommu_disable_irq_remapping(iommu);
-+#ifdef CONFIG_CRASH_DUMP
-+		if (is_kdump_kernel()) {
-+			/* Do notdisable irq and then re-enable again. */
-+		} else {
-+#endif
-+			/*
-+			 * Disable intr remapping and queued invalidation,
-+			 * if already enabled prior to OS handover.
-+			 */
-+			iommu_disable_irq_remapping(iommu);
-+
-+#ifdef CONFIG_CRASH_DUMP
-+		}
-+#endif
- 
- 		dmar_disable_qi(iommu);
- 	}
-@@ -702,7 +721,19 @@ static int __init intel_enable_irq_remapping(void)
- 	 * Setup Interrupt-remapping for all the DRHD's now.
- 	 */
- 	for_each_iommu(iommu, drhd) {
--		iommu_set_irq_remapping(iommu, eim);
-+#ifdef CONFIG_CRASH_DUMP
-+		if (is_kdump_kernel()) {
-+			unsigned long long q;
-+
-+			q = dmar_readq(iommu->reg + DMAR_IRTA_REG);
-+			iommu->ir_table->base_old_phys = q & VTD_PAGE_MASK;
-+			iommu->ir_table->base_old_virt = ioremap_cache(
-+				iommu->ir_table->base_old_phys,
-+				INTR_REMAP_TABLE_ENTRIES*sizeof(struct irte));
-+			__iommu_load_old_irte(iommu);
-+		} else
-+#endif
-+			iommu_set_irq_remapping(iommu, eim);
- 		setup = 1;
- 	}
- 
--- 
-2.0.0-rc0
+Bjorn
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
