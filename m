@@ -1,7 +1,7 @@
 From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH v9 09/10] iommu/vt-d: Copy functions for irte
-Date: Thu, 19 Mar 2015 13:36:27 +0800
-Message-ID: <1426743388-26908-10-git-send-email-zhen-hual@hp.com>
+Subject: [PATCH v9 10/10] iommu/vt-d: Use old irte in kdump kernel
+Date: Thu, 19 Mar 2015 13:36:28 +0800
+Message-ID: <1426743388-26908-11-git-send-email-zhen-hual@hp.com>
 References: <1426743388-26908-1-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,112 +21,95 @@ To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtd
 Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, zhen-hual-VXdhtT5mjnY@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Functions to copy the irte data from the old kernel into the kdump kernel.
+Fix the intr-remapping fault.
+
+[1.594890] dmar: DRHD: handling fault status reg 2
+[1.594894] dmar: INTR-REMAP: Request device [[41:00.0] fault index 4d
+[1.594894] INTR-REMAP:[fault reason 34] Present field in the IRTE entry
+is clear
+
+Use old irte in kdump kernel, do not disable and re-enable interrupt
+remapping.
 
 Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c | 62 +++++++++++++++++++++++++++++++++++++
- include/linux/intel-iommu.h         |  4 +++
- 2 files changed, 66 insertions(+)
+ drivers/iommu/intel_irq_remapping.c | 43 +++++++++++++++++++++++++++++++------
+ 1 file changed, 37 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 14de1ab..20c060b 100644
+index 20c060b..4e5a02d 100644
 --- a/drivers/iommu/intel_irq_remapping.c
 +++ b/drivers/iommu/intel_irq_remapping.c
-@@ -8,6 +8,7 @@
- #include <linux/irq.h>
- #include <linux/intel-iommu.h>
- #include <linux/acpi.h>
-+#include <linux/crash_dump.h>
- #include <asm/io_apic.h>
- #include <asm/smp.h>
- #include <asm/cpu.h>
-@@ -17,6 +18,11 @@
+@@ -199,6 +199,11 @@ static int modify_irte(int irq, struct irte *irte_modified)
  
- #include "irq_remapping.h"
- 
-+#ifdef CONFIG_CRASH_DUMP
-+static int __iommu_load_old_irte(struct intel_iommu *iommu);
-+static int __iommu_update_old_irte(struct intel_iommu *iommu, int index);
-+#endif /* CONFIG_CRASH_DUMP */
-+
- struct ioapic_scope {
- 	struct intel_iommu *iommu;
- 	unsigned int id;
-@@ -1302,3 +1308,59 @@ int dmar_ir_hotplug(struct dmar_drhd_unit *dmaru, bool insert)
- 
- 	return ret;
- }
+ 	set_64bit(&irte->low, irte_modified->low);
+ 	set_64bit(&irte->high, irte_modified->high);
 +
 +#ifdef CONFIG_CRASH_DUMP
-+
-+static int __iommu_load_old_irte(struct intel_iommu *iommu)
-+{
-+	if ((!iommu)
-+		|| (!iommu->ir_table)
-+		|| (!iommu->ir_table->base)
-+		|| (!iommu->ir_table->base_old_phys)
-+		|| (!iommu->ir_table->base_old_virt))
-+		return -1;
-+
-+	memcpy(iommu->ir_table->base,
-+		iommu->ir_table->base_old_virt,
-+		INTR_REMAP_TABLE_ENTRIES*sizeof(struct irte));
-+
-+	__iommu_flush_cache(iommu, iommu->ir_table->base,
-+		INTR_REMAP_TABLE_ENTRIES*sizeof(struct irte));
-+
-+	return 0;
-+}
-+
-+static int __iommu_update_old_irte(struct intel_iommu *iommu, int index)
-+{
-+	int start;
-+	unsigned long size;
-+	void __iomem *to;
-+	void *from;
-+
-+	if ((!iommu)
-+		|| (!iommu->ir_table)
-+		|| (!iommu->ir_table->base)
-+		|| (!iommu->ir_table->base_old_phys)
-+		|| (!iommu->ir_table->base_old_virt))
-+		return -1;
-+
-+	if (index < -1 || index >= INTR_REMAP_TABLE_ENTRIES)
-+		return -1;
-+
-+	if (index == -1) {
-+		start = 0;
-+		size = INTR_REMAP_TABLE_ENTRIES * sizeof(struct irte);
-+	} else {
-+		start = index * sizeof(struct irte);
-+		size = sizeof(struct irte);
-+	}
-+
-+	to = iommu->ir_table->base_old_virt;
-+	from = iommu->ir_table->base;
-+	memcpy(to + start, from + start, size);
-+
-+	__iommu_flush_cache(iommu, to + start, size);
-+
-+	return 0;
-+}
-+#endif /* CONFIG_CRASH_DUMP */
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 8e29b97..76c6ea5 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -290,6 +290,10 @@ struct q_inval {
- struct ir_table {
- 	struct irte *base;
- 	unsigned long *bitmap;
-+#ifdef CONFIG_CRASH_DUMP
-+	void __iomem *base_old_virt;
-+	unsigned long base_old_phys;
++	if (is_kdump_kernel())
++		__iommu_update_old_irte(iommu, index);
 +#endif
- };
- #endif
+ 	__iommu_flush_cache(iommu, irte, sizeof(*irte));
+ 
+ 	rc = qi_flush_iec(iommu, index, 0);
+@@ -260,6 +265,11 @@ static int clear_entries(struct irq_2_iommu *irq_iommu)
+ 	bitmap_release_region(iommu->ir_table->bitmap, index,
+ 			      irq_iommu->irte_mask);
+ 
++#ifdef CONFIG_CRASH_DUMP
++	if (is_kdump_kernel())
++		__iommu_update_old_irte(iommu, -1);
++#endif
++
+ 	return qi_flush_iec(iommu, index, irq_iommu->irte_mask);
+ }
+ 
+@@ -662,11 +672,20 @@ static int __init intel_enable_irq_remapping(void)
+ 		 */
+ 		dmar_fault(-1, iommu);
+ 
+-		/*
+-		 * Disable intr remapping and queued invalidation, if already
+-		 * enabled prior to OS handover.
+-		 */
+-		iommu_disable_irq_remapping(iommu);
++#ifdef CONFIG_CRASH_DUMP
++		if (is_kdump_kernel()) {
++			/* Do notdisable irq and then re-enable again. */
++		} else {
++#endif
++			/*
++			 * Disable intr remapping and queued invalidation,
++			 * if already enabled prior to OS handover.
++			 */
++			iommu_disable_irq_remapping(iommu);
++
++#ifdef CONFIG_CRASH_DUMP
++		}
++#endif
+ 
+ 		dmar_disable_qi(iommu);
+ 	}
+@@ -702,7 +721,19 @@ static int __init intel_enable_irq_remapping(void)
+ 	 * Setup Interrupt-remapping for all the DRHD's now.
+ 	 */
+ 	for_each_iommu(iommu, drhd) {
+-		iommu_set_irq_remapping(iommu, eim);
++#ifdef CONFIG_CRASH_DUMP
++		if (is_kdump_kernel()) {
++			unsigned long long q;
++
++			q = dmar_readq(iommu->reg + DMAR_IRTA_REG);
++			iommu->ir_table->base_old_phys = q & VTD_PAGE_MASK;
++			iommu->ir_table->base_old_virt = ioremap_cache(
++				iommu->ir_table->base_old_phys,
++				INTR_REMAP_TABLE_ENTRIES*sizeof(struct irte));
++			__iommu_load_old_irte(iommu);
++		} else
++#endif
++			iommu_set_irq_remapping(iommu, eim);
+ 		setup = 1;
+ 	}
  
 -- 
 2.0.0-rc0
