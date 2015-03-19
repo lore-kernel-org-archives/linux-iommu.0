@@ -1,7 +1,7 @@
 From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH v9 01/10] iommu/vt-d: New function to attach domain with id
-Date: Thu, 19 Mar 2015 13:36:19 +0800
-Message-ID: <1426743388-26908-2-git-send-email-zhen-hual@hp.com>
+Subject: [PATCH v9 02/10] iommu/vt-d: Items required for kdump
+Date: Thu, 19 Mar 2015 13:36:20 +0800
+Message-ID: <1426743388-26908-3-git-send-email-zhen-hual@hp.com>
 References: <1426743388-26908-1-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,61 +21,109 @@ To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtd
 Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, zhen-hual-VXdhtT5mjnY@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Allow specification of the domain-id for the new domain.
-This patch only adds a new function iommu_attach_domain_with_id, it is like
-the function iommu_attach_domain(), only adding a parameter "did".
+Add context entry functions needed for kdump.
 
 Bill Sumner:
-    (In older versions) Add new 'did' parameter to iommu_attach_domain();
-    The caller of this function.
+    Original version;
 
 Li, Zhenhua:
-    New function iommu_attach_domain_with_id(), instead of updating funtion
-    iommu_attach_domain();
+    Changed the name of new functions, make them consistent with current
+    context get/set functions.
+    Remove the structure dve which is not used in new version.
 
 Signed-off-by: Bill Sumner <billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ drivers/iommu/intel-iommu.c | 56 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 56 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index ae4c1a8..76674a1 100644
+index 76674a1..577d5de 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1558,6 +1558,16 @@ static int iommu_attach_domain(struct dmar_domain *domain,
- 	return num;
+@@ -40,6 +40,7 @@
+ #include <linux/pci-ats.h>
+ #include <linux/memblock.h>
+ #include <linux/dma-contiguous.h>
++#include <linux/crash_dump.h>
+ #include <asm/irq_remapping.h>
+ #include <asm/cacheflush.h>
+ #include <asm/iommu.h>
+@@ -211,6 +212,12 @@ get_context_addr_from_root(struct root_entry *root)
+ 		NULL);
  }
  
-+static int iommu_attach_domain_with_id(struct dmar_domain *domain,
-+			       struct intel_iommu *iommu,
-+			       int domain_number)
++static inline unsigned long
++get_context_phys_from_root(struct root_entry *root)
 +{
-+	if (domain_number >= 0)
-+		return domain_number;
-+
-+	return iommu_attach_domain(domain, iommu);
++	return  root_present(root) ? (root->val & VTD_PAGE_MASK) : 0;
 +}
 +
- static int iommu_attach_vm_domain(struct dmar_domain *domain,
- 				  struct intel_iommu *iommu)
+ /*
+  * low 64 bits:
+  * 0: present
+@@ -231,6 +238,32 @@ static inline bool context_present(struct context_entry *context)
  {
-@@ -2225,6 +2235,7 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
- 	u16 dma_alias;
- 	unsigned long flags;
- 	u8 bus, devfn;
-+	int did = -1;   /* Default to "no domain_id supplied" */
+ 	return (context->lo & 1);
+ }
++
++static inline int context_fault_enable(struct context_entry *c)
++{
++	return((c->lo >> 1) & 0x1);
++}
++
++static inline int context_translation_type(struct context_entry *c)
++{
++	return((c->lo >> 2) & 0x3);
++}
++
++static inline u64 context_address_root(struct context_entry *c)
++{
++	return((c->lo >> VTD_PAGE_SHIFT));
++}
++
++static inline int context_address_width(struct context_entry *c)
++{
++	return((c->hi >> 0) & 0x7);
++}
++
++static inline int context_domain_id(struct context_entry *c)
++{
++	return((c->hi >> 8) & 0xffff);
++}
++
+ static inline void context_set_present(struct context_entry *context)
+ {
+ 	context->lo |= 1;
+@@ -316,6 +349,29 @@ static inline int first_pte_in_page(struct dma_pte *pte)
+ 	return !((unsigned long)pte & ~VTD_PAGE_MASK);
+ }
  
- 	domain = find_domain(dev);
- 	if (domain)
-@@ -2258,7 +2269,7 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
- 	domain = alloc_domain(0);
- 	if (!domain)
- 		return NULL;
--	domain->id = iommu_attach_domain(domain, iommu);
-+	domain->id = iommu_attach_domain_with_id(domain, iommu, did);
- 	if (domain->id < 0) {
- 		free_domain_mem(domain);
- 		return NULL;
++
++#ifdef CONFIG_CRASH_DUMP
++
++/*
++ * Fix Crashdump failure caused by leftover DMA through a hardware IOMMU
++ *
++ * Fixes the crashdump kernel to deal with an active iommu and legacy
++ * DMA from the (old) panicked kernel in a manner similar to how legacy
++ * DMA is handled when no hardware iommu was in use by the old kernel --
++ * allow the legacy DMA to continue into its current buffers.
++ *
++ * In the crashdump kernel, this code:
++ * 1. skips disabling the IOMMU's translating.
++ * 2. Do not re-enable IOMMU's translating.
++ * 3. In kdump kernel, use the old root entry table.
++ * 4. Allocate pages for new context entry, copy data from old context entries
++ *    in the old kernel to the new ones.
++ *
++ */
++
++
++#endif /* CONFIG_CRASH_DUMP */
++
+ /*
+  * This domain is a statically identity mapping domain.
+  *	1. This domain creats a static 1:1 mapping to all usable memory.
 -- 
 2.0.0-rc0
