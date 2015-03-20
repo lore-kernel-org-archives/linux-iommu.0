@@ -1,8 +1,8 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 1/4] iommu/arm-smmu: ensure CBA2R is initialised before CBAR
-	on SMMUv2
-Date: Fri, 20 Mar 2015 18:15:34 +0000
-Message-ID: <1426875337-12808-2-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 4/4] iommu/io-pgtable-arm: avoid speculative walks through
+	TTBR1
+Date: Fri, 20 Mar 2015 18:15:37 +0000
+Message-ID: <1426875337-12808-5-git-send-email-will.deacon@arm.com>
 References: <1426875337-12808-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,62 +22,42 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The VMID16 (8.1) extension to SMMUv2 added a 16-bit VMID16 field to the
-CBA2R registers. Unfortunately, if software writes this field as zero
-after setting an 8-bit VMID in a stage-2 CBAR, then the VMID may also be
-overwritten with zero on some early implementations (the architecture
-was later updated to fix this issue).
+Although we set TCR.T1SZ to 0, the input address range covered by TTBR1
+is actually calculated using T0SZ in this case on the ARM SMMU. This
+could theoretically lead to speculative table walks through physical
+address zero, leading to all sorts of fun and games if we have MMIO
+regions down there.
 
-This patch ensures that we initialise CBA2R before CBAR, therefore
-ensuring that the VMID is set correctly.
+This patch avoids the issue by setting EPD1 to disable walks through
+the unused TTBR1 register.
 
-Tested-by: Manish Jaggi <mjaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 24 ++++++++++++++----------
- 1 file changed, 14 insertions(+), 10 deletions(-)
+ drivers/iommu/io-pgtable-arm.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index fc13dd56953e..4abb831e24f0 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -730,6 +730,20 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 	stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
- 	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index b610a8dee238..4e460216bd16 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -116,6 +116,8 @@
+ #define ARM_32_LPAE_TCR_EAE		(1 << 31)
+ #define ARM_64_LPAE_S2_TCR_RES1		(1 << 31)
  
-+	if (smmu->version > ARM_SMMU_V1) {
-+		/*
-+		 * CBA2R.
-+		 * *Must* be initialised before CBAR thanks to VMID16
-+		 * architectural oversight affected some implementations.
-+		 */
-+#ifdef CONFIG_64BIT
-+		reg = CBA2R_RW64_64BIT;
-+#else
-+		reg = CBA2R_RW64_32BIT;
-+#endif
-+		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(cfg->cbndx));
-+	}
++#define ARM_LPAE_TCR_EPD1		(1 << 23)
 +
- 	/* CBAR */
- 	reg = cfg->cbar;
- 	if (smmu->version == ARM_SMMU_V1)
-@@ -747,16 +761,6 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ #define ARM_LPAE_TCR_TG0_4K		(0 << 14)
+ #define ARM_LPAE_TCR_TG0_64K		(1 << 14)
+ #define ARM_LPAE_TCR_TG0_16K		(2 << 14)
+@@ -621,6 +623,9 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
  	}
- 	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(cfg->cbndx));
  
--	if (smmu->version > ARM_SMMU_V1) {
--		/* CBA2R */
--#ifdef CONFIG_64BIT
--		reg = CBA2R_RW64_64BIT;
--#else
--		reg = CBA2R_RW64_32BIT;
--#endif
--		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(cfg->cbndx));
--	}
--
- 	/* TTBRs */
- 	if (stage1) {
- 		reg = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
+ 	reg |= (64ULL - cfg->ias) << ARM_LPAE_TCR_T0SZ_SHIFT;
++
++	/* Disable speculative walks through TTBR1 */
++	reg |= ARM_LPAE_TCR_EPD1;
+ 	cfg->arm_lpae_s1_cfg.tcr = reg;
+ 
+ 	/* MAIRs */
 -- 
 2.1.4
