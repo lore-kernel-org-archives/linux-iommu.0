@@ -1,8 +1,7 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 4/4] iommu/io-pgtable-arm: avoid speculative walks through
-	TTBR1
-Date: Fri, 20 Mar 2015 18:15:37 +0000
-Message-ID: <1426875337-12808-5-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 2/4] iommu/arm-smmu: set a more appropriate DMA mask
+Date: Fri, 20 Mar 2015 18:15:35 +0000
+Message-ID: <1426875337-12808-3-git-send-email-will.deacon@arm.com>
 References: <1426875337-12808-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,42 +21,41 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Although we set TCR.T1SZ to 0, the input address range covered by TTBR1
-is actually calculated using T0SZ in this case on the ARM SMMU. This
-could theoretically lead to speculative table walks through physical
-address zero, leading to all sorts of fun and games if we have MMIO
-regions down there.
+From: Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
 
-This patch avoids the issue by setting EPD1 to disable walks through
-the unused TTBR1 register.
+Since we use dma_map_page() as an architecture-independent means of
+making page table updates visible to non-coherent SMMUs, we need to
+have a suitable DMA mask set to discourage the DMA mapping layer from
+creating bounce buffers and flushing those instead, if said page tables
+happen to lie outside the default 32-bit mask.
 
+Tested-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+[will: added error checking]
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/io-pgtable-arm.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/iommu/arm-smmu.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index b610a8dee238..4e460216bd16 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -116,6 +116,8 @@
- #define ARM_32_LPAE_TCR_EAE		(1 << 31)
- #define ARM_64_LPAE_S2_TCR_RES1		(1 << 31)
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 4abb831e24f0..161dd46999e2 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1634,6 +1634,15 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 	size = arm_smmu_id_size_to_bits((id >> ID2_OAS_SHIFT) & ID2_OAS_MASK);
+ 	smmu->pa_size = size;
  
-+#define ARM_LPAE_TCR_EPD1		(1 << 23)
++	/*
++	 * What the page table walker can address actually depends on which
++	 * descriptor format is in use, but since a) we don't know that yet,
++	 * and b) it can vary per context bank, this will have to do...
++	 */
++	if (dma_set_mask_and_coherent(smmu->dev, DMA_BIT_MASK(size)))
++		dev_warn(smmu->dev,
++			 "failed to set DMA mask for table walker\n");
 +
- #define ARM_LPAE_TCR_TG0_4K		(0 << 14)
- #define ARM_LPAE_TCR_TG0_64K		(1 << 14)
- #define ARM_LPAE_TCR_TG0_16K		(2 << 14)
-@@ -621,6 +623,9 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 	}
- 
- 	reg |= (64ULL - cfg->ias) << ARM_LPAE_TCR_T0SZ_SHIFT;
-+
-+	/* Disable speculative walks through TTBR1 */
-+	reg |= ARM_LPAE_TCR_EPD1;
- 	cfg->arm_lpae_s1_cfg.tcr = reg;
- 
- 	/* MAIRs */
+ 	if (smmu->version == ARM_SMMU_V1) {
+ 		smmu->va_size = smmu->ipa_size;
+ 		size = SZ_4K | SZ_2M | SZ_1G;
 -- 
 2.1.4
