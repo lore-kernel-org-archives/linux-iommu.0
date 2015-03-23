@@ -1,29 +1,20 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v2 1/1] iommu/arm-smmu: fix ARM_SMMU_FEAT_TRANS_OPS
- condition
-Date: Mon, 23 Mar 2015 15:23:41 +0100
-Message-ID: <20150323142340.GA2226@8bytes.org>
-References: <1425484266-5449-1-git-send-email-b.reynal@virtualopensystems.com>
- <20150304183258.GN17250@arm.com>
+Subject: Re: [PATCH] iommu/vt-d: Detach domain *only* from attached iommus
+Date: Mon, 23 Mar 2015 15:24:15 +0100
+Message-ID: <20150323142415.GB2226@8bytes.org>
+References: <20150304182905.23660.81378.stgit@gimli.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20150304183258.GN17250@arm.com>
+In-Reply-To: <20150304182905.23660.81378.stgit@gimli.home>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: Baptiste Reynal <b.reynal@virtualopensystems.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "tech@virtualopensystems.com" <tech@virtualopensystems.com>, "moderated list:ARM SMMU DRIVER" <linux-arm-kernel@lists.infradead.org>, open list <linux-kernel@vger.kernel.org>
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: iommu@lists.linux-foundation.org, dwmw2@infradead.org, linux-kernel@vger.kernel.org, jiang.liu@linux.intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 04, 2015 at 06:32:58PM +0000, Will Deacon wrote:
-> > -	if (smmu->version == 1 || (!(id & ID0_ATOSNS) && (id & ID0_S1TS))) {
-> > +	if ((id & ID0_S1TS) && ((smmu->version == 1) || (id & ID0_ATOSNS))) {
-> >  		smmu->features |= ARM_SMMU_FEAT_TRANS_OPS;
-> >  		dev_notice(smmu->dev, "\taddress translation ops\n");
-> 
-> Acked-by: Will Deacon <will.deacon@arm.com>
-> 
-> Sorry Joerg, but this is the latest in the drip of ARM SMMU fixes for
-> 4.0! Please pick it up with the rest.
+On Wed, Mar 04, 2015 at 11:30:10AM -0700, Alex Williamson wrote:
+>  drivers/iommu/intel-iommu.c |    6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 
-Applied to iommu/fixes, thanks.
+Applied to iommu/fixes, thanks Alex.
