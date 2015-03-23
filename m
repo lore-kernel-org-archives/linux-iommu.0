@@ -1,34 +1,30 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: BUG: SCSI aic7xxx driver and AMD IOMMU
-Date: Mon, 23 Mar 2015 16:03:04 +0100
-Message-ID: <20150323150304.GQ4441@8bytes.org>
-References: <54E1FFFA.1060403@compro.net>
- <54F60D33.8090401@compro.net>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu/fsl: PAMU is also present on 64-bit SoC(s)
+Date: Mon, 23 Mar 2015 16:04:42 +0100
+Message-ID: <20150323150439.GA3332@8bytes.org>
+References: <1423903940-27672-1-git-send-email-Emilian.Medve@Freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-scsi-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <54F60D33.8090401@compro.net>
-Sender: linux-scsi-owner@vger.kernel.org
-To: Mark Hounschell <markh@compro.net>
-Cc: "linux-scsi@vger.kernel.org >> SCSI development list" <linux-scsi@vger.kernel.org>, Hannes Reinecke <hare@suse.de>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+In-Reply-To: <1423903940-27672-1-git-send-email-Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+Cc: Varun.Sethi-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Mark,
+On Sat, Feb 14, 2015 at 02:52:20AM -0600, Emil Medve wrote:
+> This reverts a change done in '477ab7a iommu: Make more drivers depend on COMPILE_TEST'
+> 
+> Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
 
-On Tue, Mar 03, 2015 at 02:36:19PM -0500, Mark Hounschell wrote:
-> It looks like this problem is NOT a bug with the SCSI aic7xxx driver
-> after all. I can duplicate this BUG very easily with other hardware.
-> Simply removing a driver module  (whether it its self, has actually
-> used any of the DMA API or not) that is sitting on the same pci bus
-> as a card that is actually using DMA will cause this. And that card
-> that is in use and using DMA will no longer function. It "looks and
-> feels" like unloading a module causes the IOMMU to improperly unmap
-> valid mappings.
-
-You are right, I looked into the code and found the problem. I'll post a
-fix for testing this week.
-
-
-	Joerg
-
+Applied, thanks.
