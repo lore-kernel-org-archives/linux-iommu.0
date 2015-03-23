@@ -1,20 +1,30 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu/vt-d: Detach domain *only* from attached iommus
-Date: Mon, 23 Mar 2015 15:24:15 +0100
-Message-ID: <20150323142415.GB2226@8bytes.org>
-References: <20150304182905.23660.81378.stgit@gimli.home>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu: ipmmu-vmsa: Add terminating entry for ipmmu_of_ids
+Date: Mon, 23 Mar 2015 15:24:39 +0100
+Message-ID: <20150323142439.GC2226@8bytes.org>
+References: <1426550805.4837.0.camel@phoenix>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20150304182905.23660.81378.stgit@gimli.home>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: iommu@lists.linux-foundation.org, dwmw2@infradead.org, linux-kernel@vger.kernel.org, jiang.liu@linux.intel.com
+In-Reply-To: <1426550805.4837.0.camel@phoenix>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Axel Lin <axel.lin-8E1dMatC8ynQT0dZR+AlfA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 04, 2015 at 11:30:10AM -0700, Alex Williamson wrote:
->  drivers/iommu/intel-iommu.c |    6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+On Tue, Mar 17, 2015 at 08:06:45AM +0800, Axel Lin wrote:
+> The of_device_id table is supposed to be zero-terminated.
+> 
+> Signed-off-by: Axel Lin <axel.lin-8E1dMatC8ynQT0dZR+AlfA@public.gmane.org>
 
-Applied to iommu/fixes, thanks Alex.
+Applied to iommu/fixes, thanks.
