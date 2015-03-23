@@ -1,30 +1,34 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu: ipmmu-vmsa: Add terminating entry for ipmmu_of_ids
-Date: Mon, 23 Mar 2015 15:24:39 +0100
-Message-ID: <20150323142439.GC2226@8bytes.org>
-References: <1426550805.4837.0.camel@phoenix>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: BUG: SCSI aic7xxx driver and AMD IOMMU
+Date: Mon, 23 Mar 2015 16:03:04 +0100
+Message-ID: <20150323150304.GQ4441@8bytes.org>
+References: <54E1FFFA.1060403@compro.net>
+ <54F60D33.8090401@compro.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-scsi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1426550805.4837.0.camel@phoenix>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Axel Lin <axel.lin-8E1dMatC8ynQT0dZR+AlfA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+In-Reply-To: <54F60D33.8090401@compro.net>
+Sender: linux-scsi-owner@vger.kernel.org
+To: Mark Hounschell <markh@compro.net>
+Cc: "linux-scsi@vger.kernel.org >> SCSI development list" <linux-scsi@vger.kernel.org>, Hannes Reinecke <hare@suse.de>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Mar 17, 2015 at 08:06:45AM +0800, Axel Lin wrote:
-> The of_device_id table is supposed to be zero-terminated.
-> 
-> Signed-off-by: Axel Lin <axel.lin-8E1dMatC8ynQT0dZR+AlfA@public.gmane.org>
+Hi Mark,
 
-Applied to iommu/fixes, thanks.
+On Tue, Mar 03, 2015 at 02:36:19PM -0500, Mark Hounschell wrote:
+> It looks like this problem is NOT a bug with the SCSI aic7xxx driver
+> after all. I can duplicate this BUG very easily with other hardware.
+> Simply removing a driver module  (whether it its self, has actually
+> used any of the DMA API or not) that is sitting on the same pci bus
+> as a card that is actually using DMA will cause this. And that card
+> that is in use and using DMA will no longer function. It "looks and
+> feels" like unloading a module causes the IOMMU to improperly unmap
+> valid mappings.
+
+You are right, I looked into the code and found the problem. I'll post a
+fix for testing this week.
+
+
+	Joerg
+
