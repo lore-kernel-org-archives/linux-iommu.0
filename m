@@ -1,15 +1,14 @@
-From: Mark Hounschell <markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
-Subject: Re: BUG: SCSI aic7xxx driver and AMD IOMMU
-Date: Tue, 24 Mar 2015 07:57:49 -0400
-Message-ID: <5511513D.6090106@compro.net>
-References: <54E1FFFA.1060403@compro.net> <54F60D33.8090401@compro.net>
-	<20150323150304.GQ4441@8bytes.org>
-Reply-To: markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: Remove unused variable
+Date: Tue, 24 Mar 2015 15:39:58 +0100
+Message-ID: <20150324143957.GA19563@8bytes.org>
+References: <20150324014955.31056.96200.stgit@gimli.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150323150304.GQ4441-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20150324014955.31056.96200.stgit-GCcqpEzw8uZBDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,28 +18,17 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Hannes Reinecke <hare-l3A5Bk7waGM@public.gmane.org>, "linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org >> SCSI development list" <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/23/2015 11:03 AM, Joerg Roedel wrote:
-> Hi Mark,
->
-> On Tue, Mar 03, 2015 at 02:36:19PM -0500, Mark Hounschell wrote:
->> It looks like this problem is NOT a bug with the SCSI aic7xxx driver
->> after all. I can duplicate this BUG very easily with other hardware.
->> Simply removing a driver module  (whether it its self, has actually
->> used any of the DMA API or not) that is sitting on the same pci bus
->> as a card that is actually using DMA will cause this. And that card
->> that is in use and using DMA will no longer function. It "looks and
->> feels" like unloading a module causes the IOMMU to improperly unmap
->> valid mappings.
->
-> You are right, I looked into the code and found the problem. I'll post a
-> fix for testing this week.
->
+On Mon, Mar 23, 2015 at 07:50:21PM -0600, Alex Williamson wrote:
+> Unused after commit 71684406905f ("iommu/vt-d: Detach domain *only*
+> from attached iommus").  Reported by 0-day builder.
+> 
+> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/iommu/intel-iommu.c |    1 -
+>  1 file changed, 1 deletion(-)
 
-I'll be happy to test it.
-
-Regards
-Mark
+Applied, thanks.
