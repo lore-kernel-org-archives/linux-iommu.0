@@ -1,30 +1,33 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/fsl: PAMU is also present on 64-bit SoC(s)
-Date: Mon, 23 Mar 2015 16:04:42 +0100
-Message-ID: <20150323150439.GA3332@8bytes.org>
-References: <1423903940-27672-1-git-send-email-Emilian.Medve@Freescale.com>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: [PATCH] iommu/vt-d: Remove unused variable
+Date: Mon, 23 Mar 2015 19:50:21 -0600
+Message-ID: <20150324014955.31056.96200.stgit@gimli.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1423903940-27672-1-git-send-email-Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-Cc: Varun.Sethi-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, joro@8bytes.org
+Cc: linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Feb 14, 2015 at 02:52:20AM -0600, Emil Medve wrote:
-> This reverts a change done in '477ab7a iommu: Make more drivers depend on COMPILE_TEST'
-> 
-> Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
+Unused after commit 71684406905f ("iommu/vt-d: Detach domain *only*
+from attached iommus").  Reported by 0-day builder.
 
-Applied, thanks.
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+---
+ drivers/iommu/intel-iommu.c |    1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 6228582..0e5ca10 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1743,7 +1743,6 @@ static int domain_init(struct dmar_domain *domain, int guest_width)
+ 
+ static void domain_exit(struct dmar_domain *domain)
+ {
+-	struct dmar_drhd_unit *drhd;
+ 	struct page *freelist = NULL;
+ 	int i;
+ 
