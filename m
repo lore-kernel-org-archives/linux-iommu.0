@@ -1,40 +1,43 @@
-From: AceLan Kao <acelan.kao-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>
-Subject: Any side effect if turn off amd_iommu
-Date: Wed, 25 Mar 2015 11:30:20 +0800
-Message-ID: <CAFv23QmxQ3vJnMEGN0TNR3vLAx1MN7ptB0y3QQLKciqfT3OBsQ@mail.gmail.com>
+From: Mark Hounschell <markh@compro.net>
+Subject: Re: BUG: SCSI aic7xxx driver and AMD IOMMU
+Date: Wed, 25 Mar 2015 12:36:34 -0400
+Message-ID: <5512E412.9040807@compro.net>
+References: <54E1FFFA.1060403@compro.net> <54F60D33.8090401@compro.net> <20150323150304.GQ4441@8bytes.org> <5511513D.6090106@compro.net> <20150325135937.GR4441@8bytes.org> <20150325151332.GT4441@8bytes.org>
+Reply-To: markh@compro.net
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <linux-scsi-owner@vger.kernel.org>
+In-Reply-To: <20150325151332.GT4441@8bytes.org>
+Sender: linux-scsi-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, Hannes Reinecke <hare@suse.de>, "linux-scsi@vger.kernel.org >> SCSI development list" <linux-scsi@vger.kernel.org>, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On 03/25/2015 11:13 AM, Joerg Roedel wrote:
+> Hi again,
+>
+> On Wed, Mar 25, 2015 at 02:59:37PM +0100, Joerg Roedel wrote:
+>> On Tue, Mar 24, 2015 at 07:57:49AM -0400, Mark Hounschell wrote:
+>>> I'll be happy to test it.
+>>
+>> Okay, here you go:
+>>
+>> 	git://git.kernel.org/pub/scm/linux/kernel/git/joro/linux.git amd-iommu
+>
+> I just added more patches to implement the use of the contiguous memory
+> allocator for the dma_alloc_coherent path. Since you asked for it, can
+> you test this as well?
+>
+>
 
-We have some AMD machines(AMD cpu and graphics) that need to set
-amd_iommu=off to work.
-Some of them have wifi issue that it can't connect to any AP(no
-interrupt)(can set noapic to workaround it, too),
-and some of them have graphics issues.
-The only workaround we found is to set amd_iommu=off, and it fixes both issues.
+Sure. No problem. If I update my tree from the above, will I get it.
 
-I have 2 questions.
-1. What kind of these issues would be, are they a driver issue or a
-BIOS issue? If it's a BIOS issue, what we should tell the BIOS
-engineers, so that they know how to fix it?
-2. Some of the machines may not have the chance to get a BIOS update,
-do you think it's okay to add a quirk in amd_iommu driver to blacklist
-out those machines? Are there any side effects if we do so?
-Thanks.
+BTW, so far the first 2 patches are working well. I was going to wait 
+until the end of the day to report but so far I have been unable to 
+produce the problems I was seeing. And I am in the middle of some driver 
+work so lots of unloading/loading going on.
 
-Beat regards,
-AceLan Kao.
+Regards
+Mark
+
