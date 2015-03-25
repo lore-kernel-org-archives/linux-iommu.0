@@ -1,43 +1,198 @@
-From: Mark Hounschell <markh@compro.net>
-Subject: Re: BUG: SCSI aic7xxx driver and AMD IOMMU
-Date: Wed, 25 Mar 2015 12:36:34 -0400
-Message-ID: <5512E412.9040807@compro.net>
-References: <54E1FFFA.1060403@compro.net> <54F60D33.8090401@compro.net> <20150323150304.GQ4441@8bytes.org> <5511513D.6090106@compro.net> <20150325135937.GR4441@8bytes.org> <20150325151332.GT4441@8bytes.org>
-Reply-To: markh@compro.net
+From: Marcelo Tosatti <mtosatti@redhat.com>
+Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU is
+ blocked
+Date: Wed, 25 Mar 2015 20:17:38 -0300
+Message-ID: <20150325231738.GA7333@amt.cnet>
+References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
+ <1418397300-10870-25-git-send-email-feng.wu@intel.com>
+ <20150226234048.GA7784@amt.cnet>
+ <E959C4978C3B6342920538CF579893F0023F5A98@SHSMSX104.ccr.corp.intel.com>
+ <20150304120608.GA26762@amt.cnet>
+ <E959C4978C3B6342920538CF579893F002409841@SHSMSX104.ccr.corp.intel.com>
+ <20150312011526.GA5878@amt.cnet>
+ <E959C4978C3B6342920538CF579893F00243A819@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-scsi-owner@vger.kernel.org>
-In-Reply-To: <20150325151332.GT4441@8bytes.org>
-Sender: linux-scsi-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, Hannes Reinecke <hare@suse.de>, "linux-scsi@vger.kernel.org >> SCSI development list" <linux-scsi@vger.kernel.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <E959C4978C3B6342920538CF579893F00243A819@SHSMSX104.ccr.corp.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Wu, Feng" <feng.wu@intel.com>
+Cc: "tglx@linutronix.de" <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>, "hpa@zytor.com" <hpa@zytor.com>, "x86@kernel.org" <x86@kernel.org>, "gleb@kernel.org" <gleb@kernel.org>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "eric.auger@linaro.org" <eric.auger@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/25/2015 11:13 AM, Joerg Roedel wrote:
-> Hi again,
->
-> On Wed, Mar 25, 2015 at 02:59:37PM +0100, Joerg Roedel wrote:
->> On Tue, Mar 24, 2015 at 07:57:49AM -0400, Mark Hounschell wrote:
->>> I'll be happy to test it.
->>
->> Okay, here you go:
->>
->> 	git://git.kernel.org/pub/scm/linux/kernel/git/joro/linux.git amd-iommu
->
-> I just added more patches to implement the use of the contiguous memory
-> allocator for the dma_alloc_coherent path. Since you asked for it, can
-> you test this as well?
->
->
+On Mon, Mar 16, 2015 at 11:42:06AM +0000, Wu, Feng wrote:
+> > Do you have any reason why having the code at vcpu_put/vcpu_load is
+> > better than the proposal to have the code at kvm_vcpu_block?
+> 
+> I think your proposal is good, I just want to better understand your idea here.:)
 
-Sure. No problem. If I update my tree from the above, will I get it.
+Reduce the overhead of vcpu sched in / vcpu sched out, basically.
 
-BTW, so far the first 2 patches are working well. I was going to wait 
-until the end of the day to report but so far I have been unable to 
-produce the problems I was seeing. And I am in the middle of some driver 
-work so lots of unloading/loading going on.
+> One thing, even we put the code to kvm_vcpu_block, we still need to add code
+> at vcpu_put/vcpu_load for the preemption case like what I did now.
+> 
+> > 
+> > >
+> > > Global vector is a limited resources in the system, and this involves
+> > > common x86 interrupt code changes. I am not sure we can allocate
+> > > so many dedicated global vector for KVM usage.
+> > 
+> > Why not? Have KVM use all free vectors (so if vectors are necessary for
+> > other purposes, people should shrink the KVM vector pool).
+> 
+> If we want to allocate more global vector for this usage, we need hpa's
+> input about it. Peter, what is your opinion?
 
-Regards
-Mark
+Peter?
 
+> > BTW the Intel docs talk about that ("one vector per vCPU").
+> Yes, the Spec talks about this, but it is more complex using one vector per vCPU.
+> 
+> > 
+> > > > > > It seems there is a bunch free:
+> > > > > >
+> > > > > > commit 52aec3308db85f4e9f5c8b9f5dc4fbd0138c6fa4
+> > > > > > Author: Alex Shi <alex.shi@intel.com>
+> > > > > > Date:   Thu Jun 28 09:02:23 2012 +0800
+> > > > > >
+> > > > > >     x86/tlb: replace INVALIDATE_TLB_VECTOR by
+> > > > CALL_FUNCTION_VECTOR
+> > > > > >
+> > > > > > Can you add only vcpus which have posted IRTEs that point to this pCPU
+> > > > > > to the HLT'ed vcpu lists? (so for example, vcpus without assigned
+> > > > > > devices are not part of the list).
+> > > > >
+> > > > > Is it easy to find whether a vCPU (or the associated domain) has assigned
+> > > > devices?
+> > > > > If so, we can only add those vCPUs with assigned devices.
+> > > >
+> > > > When configuring IRTE, at kvm_arch_vfio_update_pi_irte?
+> > >
+> > > Yes.
+> > >
+> > > >
+> > > > > > > +
+> > > > > > >  static int __init vmx_init(void)
+> > > > > > >  {
+> > > > > > >  	int r, i, msr;
+> > > > > > > @@ -9429,6 +9523,8 @@ static int __init vmx_init(void)
+> > > > > > >
+> > > > > > >  	update_ple_window_actual_max();
+> > > > > > >
+> > > > > > > +	wakeup_handler_callback = wakeup_handler;
+> > > > > > > +
+> > > > > > >  	return 0;
+> > > > > > >
+> > > > > > >  out7:
+> > > > > > > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> > > > > > > index 0033df3..1551a46 100644
+> > > > > > > --- a/arch/x86/kvm/x86.c
+> > > > > > > +++ b/arch/x86/kvm/x86.c
+> > > > > > > @@ -6152,6 +6152,21 @@ static int vcpu_enter_guest(struct
+> > kvm_vcpu
+> > > > > > *vcpu)
+> > > > > > >  			kvm_vcpu_reload_apic_access_page(vcpu);
+> > > > > > >  	}
+> > > > > > >
+> > > > > > > +	/*
+> > > > > > > +	 * Since posted-interrupts can be set by VT-d HW now, in this
+> > > > > > > +	 * case, KVM_REQ_EVENT is not set. We move the following
+> > > > > > > +	 * operations out of the if statement.
+> > > > > > > +	 */
+> > > > > > > +	if (kvm_lapic_enabled(vcpu)) {
+> > > > > > > +		/*
+> > > > > > > +		 * Update architecture specific hints for APIC
+> > > > > > > +		 * virtual interrupt delivery.
+> > > > > > > +		 */
+> > > > > > > +		if (kvm_x86_ops->hwapic_irr_update)
+> > > > > > > +			kvm_x86_ops->hwapic_irr_update(vcpu,
+> > > > > > > +				kvm_lapic_find_highest_irr(vcpu));
+> > > > > > > +	}
+> > > > > > > +
+> > > > > >
+> > > > > > This is a hot fast path. You can set KVM_REQ_EVENT from
+> > wakeup_handler.
+> > > > >
+> > > > > I am afraid Setting KVM_REQ_EVENT from wakeup_handler doesn't help
+> > > > much,
+> > > > > if vCPU is running in ROOT mode, and VT-d hardware issues an notification
+> > > > event,
+> > > > > POSTED_INTR_VECTOR interrupt handler will be called.
+> > > >
+> > > > If vCPU is in root mode, remapping HW will find IRTE configured with
+> > > > vector == POSTED_INTR_WAKEUP_VECTOR, use that vector, which will
+> > > > VM-exit, and execute the interrupt handler wakeup_handler. Right?
+> > >
+> > > There are two cases:
+> > > Case 1: vCPU is blocked, so it is in root mode, this is what you described
+> > above.
+> > > Case 2, vCPU is running in root mode, such as, handling vm-exits, in this case,
+> > > the notification vector is 'POSTED_INTR_VECTOR', and if external interrupts
+> > > from assigned devices happen, the handled of 'POSTED_INTR_VECTOR' will
+> > > be called ( it is 'smp_kvm_posted_intr_ipi' in fact), this routine doesn't need
+> > > do real things, since the pending interrupts in PIR will be synced to vIRR
+> > before
+> > > VM-Entry (this code have already been there when enabling CPU-side
+> > > posted-interrupt along with APICv). Like what I said before, it is a little hard
+> > to
+> > > get vCPU related information in it, even if we get, it is not accurate and may
+> > harm
+> > > the performance.(need search)
+> > >
+> > > So only setting KVM_REQ_EVENT in wakeup_handler cannot cover the
+> > notification
+> > > event for 'POSTED_INTR_VECTOR'.
+> > >
+> > > >
+> > > > The point of this comment is that you can keep the
+> > > >
+> > > > "if (kvm_x86_ops->hwapic_irr_update)
+> > > > 	kvm_x86_ops->hwapic_irr_update(vcpu,
+> > > > 			kvm_lapic_find_highest_irr(vcpu));
+> > > > "
+> > > >
+> > > > Code inside KVM_REQ_EVENT handling section of vcpu_run, as long as
+> > > > wakeup_handler sets KVM_REQ_EVENT.
+> > >
+> > > Please see above.
+> > 
+> > OK can you set KVM_REQ_EVENT in case the ON bit is set,
+> > after disabling interrupts ?
+> > 
+> Currently, the following code is executed before local_irq_disable() is called,
+> so do you mean 1)moving local_irq_disable() to the place before it. 2) after interrupt
+> is disabled, set KVM_REQ_EVENT in case the ON bit is set?
+
+2) after interrupt is disabled, set KVM_REQ_EVENT in case the ON bit 
+is set.
+
+> 
+> "if (kvm_x86_ops->hwapic_irr_update)
+> 	kvm_x86_ops->hwapic_irr_update(vcpu,
+> 			kvm_lapic_find_highest_irr(vcpu));
+> 
+> > kvm_lapic_find_highest_irr(vcpu) eats some cache
+> > (4 cachelines) versus 1 cacheline for reading ON bit.
+> > 
+> > > > > > Please remove blocked and wakeup_cpu, they should not be necessary.
+> > > > >
+> > > > > Why do you think wakeup_cpu is not needed, when vCPU is blocked,
+> > > > > wakeup_cpu saves the cpu which the vCPU is blocked on, after vCPU
+> > > > > is woken up, it can run on a different cpu, so we need wakeup_cpu to
+> > > > > find the right list to wake up the vCPU.
+> > > >
+> > > > If the vCPU was moved it should have updated IRTE destination field
+> > > > to the pCPU which it has moved to?
+> > >
+> > > Every time a vCPU is scheduled to a new pCPU, the IRTE destination filed
+> > > would be updated accordingly.
+> > >
+> > > When vCPU is blocked. To wake up the blocked vCPU, we need to find which
+> > > list the vCPU is blocked on, and this is what wakeup_cpu used for?
+> > 
+> > Right, perhaps prev_vcpu is a better name.
+> 
+> Do you mean "prev_pcpu"?
+
+Yes.
