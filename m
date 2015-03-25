@@ -1,159 +1,153 @@
-From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Subject: Master-aware devices and sideband ID data
-Date: Tue, 24 Mar 2015 15:50:07 +0000
-Message-ID: <20150324155007.GC23005@leverpostej>
+From: Emil Medve <Emilian.Medve@Freescale.com>
+Subject: [PATCH v2] iommu/fsl: Really fix init section(s) content
+Date: Wed, 25 Mar 2015 00:28:48 -0500
+Message-ID: <1427261328-23798-1-git-send-email-Emilian.Medve@Freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain
+Return-path: <stable-owner@vger.kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, joro@8bytes.org
+Cc: Emil Medve <Emilian.Medve@Freescale.com>, stable@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi all,
+'0f1fb99 iommu/fsl: Fix section mismatch' was intended to address the modpost
+warning and the potential crash. Crash which is actually easy to trigger with a
+'unbind' followed by a 'bind' sequence. The fix is wrong as
+fsl_of_pamu_driver.driver gets added by bus_add_driver() to a couple of
+klist(s) which become invalid/corrupted as soon as the init sections are freed.
+Depending on when/how the init sections storage is reused various/random errors
+and crashes will happen
 
-For some devices, identification of particular masters is critical to
-their operation (e.g. IOMMUs, MSI controllers). The identity of masters
-is determined from sideband signals on the bus, and it may or may not be
-possible to probe and/or configure this information. Worse still, these
-information may be rewritten by intermediate buses, so the
-information for a given master may differ at different points in the bus
-hierarchy.
+'cd70d46 iommu/fsl: Various cleanups' contains annotations that go further down
+the wrong path laid by '0f1fb99 iommu/fsl: Fix section mismatch'
 
-We currently describe this master information for devices attached to
-IOMMUs, with a master ID being encoded in the iommu-cells. However this
-only covers the ID between the master and its IOMMU(s), and we don't
-currently have a mechanism to describe the master IDs as they are seen
-by devices beyond the IOMMU(s), or in the absence of any IOMMU(s).
+Now remove all the incorrect annotations from the above mentioned patches (not
+exactly a revert) and those previously existing in the code, This fixes the
+modpost warning(s), the unbind/bind sequence crashes and the random
+errors/crashes
 
-The following are example of master IDs:
-* PCIe Requester IDs (RIDs) (bus:device.function AKA BDF)
-* SMMU Stream IDs (SIDs)
-* GICv3 ITS Device IDs (DIDs)
+Fixes: 0f1fb99b62ce ("iommu/fsl: Fix section mismatch")
+Fixes: cd70d4659ff3 ("iommu/fsl: Various cleanups")
+Signed-off-by: Emil Medve <Emilian.Medve@Freescale.com>
+Acked-by: Varun Sethi <Varun.Sethi@freescale.com>
+Cc: stable@vger.kernel.org
+---
+ drivers/iommu/fsl_pamu.c | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-In the case of a system with PCIe, SMMU and GICv3, the master IDs are
-rewritten in a chain of RID=>SID=>DID, as in the following diagram:
-
-+-------------+
-| PCIe master |
-+-------------+
-    ||
-    || Requester ID (RID)
-    || Probeable from RC.
-    \/
-+-------------------+
-| PCIe Root Complex |
-+-------------------+
-    ||
-    || SMMU Stream ID (SID)
-    || Derived from RID, static non-probeable mapping.
-    \/
-+--------------+
-| SMMU (IOMMU) |
-+--------------+
-    ||
-    || ITS Device ID (DID)
-    || Derived from SID, static non-probeable mapping.
-    \/
-+----------------------------+
-| GICv3 ITS (MSI controller) |
-+----------------------------+
-
-In simpler cases, you might have a simpler set of master ID
-translations, e.g. just a DID:
-
-+-----------------+
-| Platform device |
-+-----------------+
-    ||
-    || ITS Device ID (DID)
-    || Hard-wired on the bus.
-    \/
-+----------------------------+
-| GICv3 ITS (MSI controller) |
-+----------------------------+
-
-Ignoring current bindings for the moment, I can see how we can describe
-this with a generic master id-binding, with master-id-map along the
-lines of interrupt-map, with a tuple format like:
-<child-id-base child-id-length parent parent-id-base>
-
-For the PCIe example, this would look something like the following (with
-properties omitted for brevity):
-
-PCI: pci@af000000 {
-	...
-	
-	/* Requester ID of PCIe endpoints, implicit at runtime */
-	master-id-cells = <1>;
-
-	/* RIDS idmapped to SIDS @ SMMU */
-	master-id-map = <0 0x10000 &SMMU 0>;
-}
-
-SMMU: iommu@bf000000 {
-	...
-
-	/* SID, derived from RID */
-	master-id-cells = <1>;
-
-	/* 
-	 * For some reason the high bit of the ID was negated.
-	 */
-	master-id-map = <0x0000 0x8000 &ITS 0x0 0x8000>,
-	                <0x8000 0x8000 &ITS 0x0 0x0000>;
-
-};
-
-ITS: its@cf000000 {
-	...
-
-	/* DID, derived from SID */
-	master-id-cells = <2>;
-
-	/* 
-	 * Master traffic not propagated beyond this point, so no
-	 * master-id-ranges
-	 */
-};
-
-For the simpler case, this would look something like:
-
-DEV: device@af000000 {
-	master-id-cells = <1>;
-	master-ids = <0xf>, <0xb>;
-	master-id-map = <0 0xf &ITS 0 0>;
-};
-
-ITS: its@cf000000 {
-	...
-
-	/* DID */
-	master-id-cells = <2>;
-};
-
-
-However, this conflicts/overlaps with existing bindings (at least iommus
-and msi-parent), and I'm not sure how to reconcile them. Am I missing a
-neat way of describing this that works with the existing bindings?
-
-It's also not clear to me if it's sufficient to have a generic
-"master-ids" property (with the relevant type being implicit from
-context), or if each type of ID needs each type of ID (RID, SID, DID,
-etc) needs its own.
-
-Which other devices out there which require side-band master
-information, and what do they require?
-
-Thanks,
-Mark.
+diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
+index abeedc9..2570f2a 100644
+--- a/drivers/iommu/fsl_pamu.c
++++ b/drivers/iommu/fsl_pamu.c
+@@ -41,7 +41,6 @@ struct pamu_isr_data {
+ 
+ static struct paace *ppaact;
+ static struct paace *spaact;
+-static struct ome *omt __initdata;
+ 
+ /*
+  * Table for matching compatible strings, for device tree
+@@ -50,7 +49,7 @@ static struct ome *omt __initdata;
+  * SOCs. For the older SOCs "fsl,qoriq-device-config-1.0"
+  * string would be used.
+  */
+-static const struct of_device_id guts_device_ids[] __initconst = {
++static const struct of_device_id guts_device_ids[] = {
+ 	{ .compatible = "fsl,qoriq-device-config-1.0", },
+ 	{ .compatible = "fsl,qoriq-device-config-2.0", },
+ 	{}
+@@ -599,7 +598,7 @@ found_cpu_node:
+  * Memory accesses to QMAN and BMAN private memory need not be coherent, so
+  * clear the PAACE entry coherency attribute for them.
+  */
+-static void __init setup_qbman_paace(struct paace *ppaace, int  paace_type)
++static void setup_qbman_paace(struct paace *ppaace, int  paace_type)
+ {
+ 	switch (paace_type) {
+ 	case QMAN_PAACE:
+@@ -629,7 +628,7 @@ static void __init setup_qbman_paace(struct paace *ppaace, int  paace_type)
+  * this table to translate device transaction to appropriate corenet
+  * transaction.
+  */
+-static void __init setup_omt(struct ome *omt)
++static void setup_omt(struct ome *omt)
+ {
+ 	struct ome *ome;
+ 
+@@ -666,7 +665,7 @@ static void __init setup_omt(struct ome *omt)
+  * Get the maximum number of PAACT table entries
+  * and subwindows supported by PAMU
+  */
+-static void __init get_pamu_cap_values(unsigned long pamu_reg_base)
++static void get_pamu_cap_values(unsigned long pamu_reg_base)
+ {
+ 	u32 pc_val;
+ 
+@@ -676,9 +675,9 @@ static void __init get_pamu_cap_values(unsigned long pamu_reg_base)
+ }
+ 
+ /* Setup PAMU registers pointing to PAACT, SPAACT and OMT */
+-static int __init setup_one_pamu(unsigned long pamu_reg_base, unsigned long pamu_reg_size,
+-				 phys_addr_t ppaact_phys, phys_addr_t spaact_phys,
+-				 phys_addr_t omt_phys)
++static int setup_one_pamu(unsigned long pamu_reg_base, unsigned long pamu_reg_size,
++			  phys_addr_t ppaact_phys, phys_addr_t spaact_phys,
++			  phys_addr_t omt_phys)
+ {
+ 	u32 *pc;
+ 	struct pamu_mmap_regs *pamu_regs;
+@@ -720,7 +719,7 @@ static int __init setup_one_pamu(unsigned long pamu_reg_base, unsigned long pamu
+ }
+ 
+ /* Enable all device LIODNS */
+-static void __init setup_liodns(void)
++static void setup_liodns(void)
+ {
+ 	int i, len;
+ 	struct paace *ppaace;
+@@ -846,7 +845,7 @@ struct ccsr_law {
+ /*
+  * Create a coherence subdomain for a given memory block.
+  */
+-static int __init create_csd(phys_addr_t phys, size_t size, u32 csd_port_id)
++static int create_csd(phys_addr_t phys, size_t size, u32 csd_port_id)
+ {
+ 	struct device_node *np;
+ 	const __be32 *iprop;
+@@ -988,7 +987,7 @@ error:
+ static const struct {
+ 	u32 svr;
+ 	u32 port_id;
+-} port_id_map[] __initconst = {
++} port_id_map[] = {
+ 	{(SVR_P2040 << 8) | 0x10, 0xFF000000},	/* P2040 1.0 */
+ 	{(SVR_P2040 << 8) | 0x11, 0xFF000000},	/* P2040 1.1 */
+ 	{(SVR_P2041 << 8) | 0x10, 0xFF000000},	/* P2041 1.0 */
+@@ -1006,7 +1005,7 @@ static const struct {
+ 
+ #define SVR_SECURITY	0x80000	/* The Security (E) bit */
+ 
+-static int __init fsl_pamu_probe(struct platform_device *pdev)
++static int fsl_pamu_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	void __iomem *pamu_regs = NULL;
+@@ -1022,6 +1021,7 @@ static int __init fsl_pamu_probe(struct platform_device *pdev)
+ 	int irq;
+ 	phys_addr_t ppaact_phys;
+ 	phys_addr_t spaact_phys;
++	struct ome *omt;
+ 	phys_addr_t omt_phys;
+ 	size_t mem_size = 0;
+ 	unsigned int order = 0;
+@@ -1200,7 +1200,7 @@ error:
+ 	return ret;
+ }
+ 
+-static struct platform_driver fsl_of_pamu_driver __initdata = {
++static struct platform_driver fsl_of_pamu_driver = {
+ 	.driver = {
+ 		.name = "fsl-of-pamu",
+ 	},
+-- 
+2.3.3
