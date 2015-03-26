@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 10/16] iommu/tegra-gart: Make use of domain_alloc and
-	domain_free
-Date: Thu, 26 Mar 2015 13:43:13 +0100
-Message-ID: <1427373799-18662-11-git-send-email-joro@8bytes.org>
+Subject: [PATCH 04/16] iommu/amd: Make use of domain_alloc and domain_free
+Date: Thu, 26 Mar 2015 13:43:07 +0100
+Message-ID: <1427373799-18662-5-git-send-email-joro@8bytes.org>
 References: <1427373799-18662-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,157 +23,254 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Implement domain_alloc and domain_free iommu-ops as a
-replacement for domain_init/domain_destroy.
+Implement the new iommu-ops function pointers and remove the
+obsolete domain_init and domain_destroy functions.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/tegra-gart.c | 67 +++++++++++++++++++++++++++++++---------------
- 1 file changed, 46 insertions(+), 21 deletions(-)
+ drivers/iommu/amd_iommu.c       | 84 ++++++++++++++++++++++-------------------
+ drivers/iommu/amd_iommu_types.h |  7 ++--
+ 2 files changed, 48 insertions(+), 43 deletions(-)
 
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index c48da05..fc588a1 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -63,11 +63,21 @@ struct gart_device {
- 	struct device		*dev;
- };
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 48882c1..e8c412d 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -126,6 +126,11 @@ static int __init alloc_passthrough_domain(void);
+  *
+  ****************************************************************************/
  
-+struct gart_domain {
-+	struct iommu_domain domain;		/* generic domain handle */
-+	struct gart_device *gart;		/* link to gart device   */
-+};
-+
- static struct gart_device *gart_handle; /* unique for a system */
- 
- #define GART_PTE(_pfn)						\
- 	(GART_ENTRY_PHYS_ADDR_VALID | ((_pfn) << PAGE_SHIFT))
- 
-+static struct gart_domain *to_gart_domain(struct iommu_domain *dom)
++static struct protection_domain *to_pdomain(struct iommu_domain *dom)
 +{
-+	return container_of(dom, struct gart_domain, domain);
++	return container_of(dom, struct protection_domain, domain);
 +}
 +
- /*
-  * Any interaction between any block on PPSB and a block on APB or AHB
-  * must have these read-back to ensure the APB/AHB bus transaction is
-@@ -156,6 +166,7 @@ static inline bool gart_iova_range_valid(struct gart_device *gart,
- static int gart_iommu_attach_dev(struct iommu_domain *domain,
- 				 struct device *dev)
+ static struct iommu_dev_data *alloc_dev_data(u16 devid)
  {
-+	struct gart_domain *gart_domain = to_gart_domain(domain);
- 	struct gart_device *gart;
- 	struct gart_client *client, *c;
- 	int err = 0;
-@@ -163,7 +174,7 @@ static int gart_iommu_attach_dev(struct iommu_domain *domain,
- 	gart = gart_handle;
- 	if (!gart)
- 		return -EINVAL;
--	domain->priv = gart;
-+	gart_domain->gart = gart;
+ 	struct iommu_dev_data *dev_data;
+@@ -3236,42 +3241,45 @@ static int __init alloc_passthrough_domain(void)
  
- 	domain->geometry.aperture_start = gart->iovmm_base;
- 	domain->geometry.aperture_end   = gart->iovmm_base +
-@@ -198,7 +209,8 @@ fail:
- static void gart_iommu_detach_dev(struct iommu_domain *domain,
- 				  struct device *dev)
- {
--	struct gart_device *gart = domain->priv;
-+	struct gart_domain *gart_domain = to_gart_domain(domain);
-+	struct gart_device *gart = gart_domain->gart;
- 	struct gart_client *c;
- 
- 	spin_lock(&gart->client_lock);
-@@ -216,33 +228,44 @@ out:
- 	spin_unlock(&gart->client_lock);
+ 	return 0;
  }
- 
--static int gart_iommu_domain_init(struct iommu_domain *domain)
-+static struct iommu_domain *gart_iommu_domain_alloc(unsigned type)
- {
--	return 0;
-+	struct gart_domain *gart_domain;
+-static int amd_iommu_domain_init(struct iommu_domain *dom)
 +
++static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
+ {
+-	struct protection_domain *domain;
++	struct protection_domain *pdomain;
+ 
+-	domain = protection_domain_alloc();
+-	if (!domain)
+-		goto out_free;
++	/* We only support unmanaged domains for now */
 +	if (type != IOMMU_DOMAIN_UNMANAGED)
 +		return NULL;
-+
-+	gart_domain = kzalloc(sizeof(*gart_domain), GFP_KERNEL);
-+	if (!gart_domain)
-+		return NULL;
-+
-+	return &gart_domain->domain;
- }
  
--static void gart_iommu_domain_destroy(struct iommu_domain *domain)
-+static void gart_iommu_domain_free(struct iommu_domain *domain)
- {
--	struct gart_device *gart = domain->priv;
+-	domain->mode    = PAGE_MODE_3_LEVEL;
+-	domain->pt_root = (void *)get_zeroed_page(GFP_KERNEL);
+-	if (!domain->pt_root)
++	pdomain = protection_domain_alloc();
++	if (!pdomain)
+ 		goto out_free;
+ 
+-	domain->iommu_domain = dom;
 -
--	if (!gart)
--		return;
-+	struct gart_domain *gart_domain = to_gart_domain(domain);
-+	struct gart_device *gart = gart_domain->gart;
+-	dom->priv = domain;
++	pdomain->mode    = PAGE_MODE_3_LEVEL;
++	pdomain->pt_root = (void *)get_zeroed_page(GFP_KERNEL);
++	if (!pdomain->pt_root)
++		goto out_free;
  
--	spin_lock(&gart->client_lock);
--	if (!list_empty(&gart->client)) {
--		struct gart_client *c;
-+	if (gart) {
-+		spin_lock(&gart->client_lock);
-+		if (!list_empty(&gart->client)) {
-+			struct gart_client *c;
+-	dom->geometry.aperture_start = 0;
+-	dom->geometry.aperture_end   = ~0ULL;
+-	dom->geometry.force_aperture = true;
++	pdomain->domain.geometry.aperture_start = 0;
++	pdomain->domain.geometry.aperture_end   = ~0ULL;
++	pdomain->domain.geometry.force_aperture = true;
  
--		list_for_each_entry(c, &gart->client, list)
--			gart_iommu_detach_dev(domain, c->dev);
-+			list_for_each_entry(c, &gart->client, list)
-+				gart_iommu_detach_dev(domain, c->dev);
-+		}
-+		spin_unlock(&gart->client_lock);
- 	}
--	spin_unlock(&gart->client_lock);
--	domain->priv = NULL;
-+
-+	kfree(gart_domain);
+-	return 0;
++	return &pdomain->domain;
+ 
+ out_free:
+-	protection_domain_free(domain);
++	protection_domain_free(pdomain);
+ 
+-	return -ENOMEM;
++	return NULL;
  }
  
- static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
- 			  phys_addr_t pa, size_t bytes, int prot)
+-static void amd_iommu_domain_destroy(struct iommu_domain *dom)
++static void amd_iommu_domain_free(struct iommu_domain *dom)
  {
--	struct gart_device *gart = domain->priv;
-+	struct gart_domain *gart_domain = to_gart_domain(domain);
-+	struct gart_device *gart = gart_domain->gart;
- 	unsigned long flags;
- 	unsigned long pfn;
+-	struct protection_domain *domain = dom->priv;
++	struct protection_domain *domain;
  
-@@ -265,7 +288,8 @@ static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
- static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- 			       size_t bytes)
+-	if (!domain)
++	if (!dom)
+ 		return;
+ 
++	domain = to_pdomain(dom);
++
+ 	if (domain->dev_cnt > 0)
+ 		cleanup_domain(domain);
+ 
+@@ -3284,8 +3292,6 @@ static void amd_iommu_domain_destroy(struct iommu_domain *dom)
+ 		free_gcr3_table(domain);
+ 
+ 	protection_domain_free(domain);
+-
+-	dom->priv = NULL;
+ }
+ 
+ static void amd_iommu_detach_device(struct iommu_domain *dom,
+@@ -3313,7 +3319,7 @@ static void amd_iommu_detach_device(struct iommu_domain *dom,
+ static int amd_iommu_attach_device(struct iommu_domain *dom,
+ 				   struct device *dev)
  {
--	struct gart_device *gart = domain->priv;
-+	struct gart_domain *gart_domain = to_gart_domain(domain);
-+	struct gart_device *gart = gart_domain->gart;
- 	unsigned long flags;
- 
- 	if (!gart_iova_range_valid(gart, iova, bytes))
-@@ -281,7 +305,8 @@ static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- static phys_addr_t gart_iommu_iova_to_phys(struct iommu_domain *domain,
- 					   dma_addr_t iova)
+-	struct protection_domain *domain = dom->priv;
++	struct protection_domain *domain = to_pdomain(dom);
+ 	struct iommu_dev_data *dev_data;
+ 	struct amd_iommu *iommu;
+ 	int ret;
+@@ -3340,7 +3346,7 @@ static int amd_iommu_attach_device(struct iommu_domain *dom,
+ static int amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
+ 			 phys_addr_t paddr, size_t page_size, int iommu_prot)
  {
--	struct gart_device *gart = domain->priv;
-+	struct gart_domain *gart_domain = to_gart_domain(domain);
-+	struct gart_device *gart = gart_domain->gart;
- 	unsigned long pte;
- 	phys_addr_t pa;
- 	unsigned long flags;
-@@ -310,8 +335,8 @@ static bool gart_iommu_capable(enum iommu_cap cap)
+-	struct protection_domain *domain = dom->priv;
++	struct protection_domain *domain = to_pdomain(dom);
+ 	int prot = 0;
+ 	int ret;
  
- static const struct iommu_ops gart_iommu_ops = {
- 	.capable	= gart_iommu_capable,
--	.domain_init	= gart_iommu_domain_init,
--	.domain_destroy	= gart_iommu_domain_destroy,
-+	.domain_alloc	= gart_iommu_domain_alloc,
-+	.domain_free	= gart_iommu_domain_free,
- 	.attach_dev	= gart_iommu_attach_dev,
- 	.detach_dev	= gart_iommu_detach_dev,
- 	.map		= gart_iommu_map,
+@@ -3362,7 +3368,7 @@ static int amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
+ static size_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
+ 			   size_t page_size)
+ {
+-	struct protection_domain *domain = dom->priv;
++	struct protection_domain *domain = to_pdomain(dom);
+ 	size_t unmap_size;
+ 
+ 	if (domain->mode == PAGE_MODE_NONE)
+@@ -3380,7 +3386,7 @@ static size_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
+ static phys_addr_t amd_iommu_iova_to_phys(struct iommu_domain *dom,
+ 					  dma_addr_t iova)
+ {
+-	struct protection_domain *domain = dom->priv;
++	struct protection_domain *domain = to_pdomain(dom);
+ 	unsigned long offset_mask;
+ 	phys_addr_t paddr;
+ 	u64 *pte, __pte;
+@@ -3420,8 +3426,8 @@ static bool amd_iommu_capable(enum iommu_cap cap)
+ 
+ static const struct iommu_ops amd_iommu_ops = {
+ 	.capable = amd_iommu_capable,
+-	.domain_init = amd_iommu_domain_init,
+-	.domain_destroy = amd_iommu_domain_destroy,
++	.domain_alloc = amd_iommu_domain_alloc,
++	.domain_free  = amd_iommu_domain_free,
+ 	.attach_dev = amd_iommu_attach_device,
+ 	.detach_dev = amd_iommu_detach_device,
+ 	.map = amd_iommu_map,
+@@ -3483,7 +3489,7 @@ EXPORT_SYMBOL(amd_iommu_unregister_ppr_notifier);
+ 
+ void amd_iommu_domain_direct_map(struct iommu_domain *dom)
+ {
+-	struct protection_domain *domain = dom->priv;
++	struct protection_domain *domain = to_pdomain(dom);
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&domain->lock, flags);
+@@ -3504,7 +3510,7 @@ EXPORT_SYMBOL(amd_iommu_domain_direct_map);
+ 
+ int amd_iommu_domain_enable_v2(struct iommu_domain *dom, int pasids)
+ {
+-	struct protection_domain *domain = dom->priv;
++	struct protection_domain *domain = to_pdomain(dom);
+ 	unsigned long flags;
+ 	int levels, ret;
+ 
+@@ -3616,7 +3622,7 @@ static int __amd_iommu_flush_page(struct protection_domain *domain, int pasid,
+ int amd_iommu_flush_page(struct iommu_domain *dom, int pasid,
+ 			 u64 address)
+ {
+-	struct protection_domain *domain = dom->priv;
++	struct protection_domain *domain = to_pdomain(dom);
+ 	unsigned long flags;
+ 	int ret;
+ 
+@@ -3638,7 +3644,7 @@ static int __amd_iommu_flush_tlb(struct protection_domain *domain, int pasid)
+ 
+ int amd_iommu_flush_tlb(struct iommu_domain *dom, int pasid)
+ {
+-	struct protection_domain *domain = dom->priv;
++	struct protection_domain *domain = to_pdomain(dom);
+ 	unsigned long flags;
+ 	int ret;
+ 
+@@ -3718,7 +3724,7 @@ static int __clear_gcr3(struct protection_domain *domain, int pasid)
+ int amd_iommu_domain_set_gcr3(struct iommu_domain *dom, int pasid,
+ 			      unsigned long cr3)
+ {
+-	struct protection_domain *domain = dom->priv;
++	struct protection_domain *domain = to_pdomain(dom);
+ 	unsigned long flags;
+ 	int ret;
+ 
+@@ -3732,7 +3738,7 @@ EXPORT_SYMBOL(amd_iommu_domain_set_gcr3);
+ 
+ int amd_iommu_domain_clear_gcr3(struct iommu_domain *dom, int pasid)
+ {
+-	struct protection_domain *domain = dom->priv;
++	struct protection_domain *domain = to_pdomain(dom);
+ 	unsigned long flags;
+ 	int ret;
+ 
+@@ -3765,17 +3771,17 @@ EXPORT_SYMBOL(amd_iommu_complete_ppr);
+ 
+ struct iommu_domain *amd_iommu_get_v2_domain(struct pci_dev *pdev)
+ {
+-	struct protection_domain *domain;
++	struct protection_domain *pdomain;
+ 
+-	domain = get_domain(&pdev->dev);
+-	if (IS_ERR(domain))
++	pdomain = get_domain(&pdev->dev);
++	if (IS_ERR(pdomain))
+ 		return NULL;
+ 
+ 	/* Only return IOMMUv2 domains */
+-	if (!(domain->flags & PD_IOMMUV2_MASK))
++	if (!(pdomain->flags & PD_IOMMUV2_MASK))
+ 		return NULL;
+ 
+-	return domain->iommu_domain;
++	return &pdomain->domain;
+ }
+ EXPORT_SYMBOL(amd_iommu_get_v2_domain);
+ 
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index c4fffb7..2b1276b 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -400,6 +400,8 @@ struct iommu_domain;
+ struct protection_domain {
+ 	struct list_head list;  /* for list of all protection domains */
+ 	struct list_head dev_list; /* List of all devices in this domain */
++	struct iommu_domain domain; /* generic domain handle used by
++				       iommu core code */
+ 	spinlock_t lock;	/* mostly used to lock the page table*/
+ 	struct mutex api_lock;	/* protect page tables in the iommu-api path */
+ 	u16 id;			/* the domain id written to the device table */
+@@ -411,10 +413,7 @@ struct protection_domain {
+ 	bool updated;		/* complete domain flush required */
+ 	unsigned dev_cnt;	/* devices assigned to this domain */
+ 	unsigned dev_iommu[MAX_IOMMUS]; /* per-IOMMU reference count */
+-	void *priv;		/* private data */
+-	struct iommu_domain *iommu_domain; /* Pointer to generic
+-					      domain structure */
+-
++	void *priv;             /* private data */
+ };
+ 
+ /*
 -- 
 1.9.1
