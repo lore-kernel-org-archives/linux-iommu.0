@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 09/16] iommu/tegra-smmu: Make use of domain_alloc and
-	domain_free
-Date: Thu, 26 Mar 2015 13:43:12 +0100
-Message-ID: <1427373799-18662-10-git-send-email-joro@8bytes.org>
+Subject: [PATCH 11/16] iommu/msm: Make use of domain_alloc and domain_free
+Date: Thu, 26 Mar 2015 13:43:14 +0100
+Message-ID: <1427373799-18662-12-git-send-email-joro@8bytes.org>
 References: <1427373799-18662-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -29,145 +28,178 @@ replacement for domain_init/domain_destroy.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/tegra-smmu.c | 41 +++++++++++++++++++++++------------------
- 1 file changed, 23 insertions(+), 18 deletions(-)
+ drivers/iommu/msm_iommu.c | 73 +++++++++++++++++++++++------------------------
+ 1 file changed, 36 insertions(+), 37 deletions(-)
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 6e134c7..7208297 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -31,7 +31,7 @@ struct tegra_smmu {
- };
- 
- struct tegra_smmu_as {
--	struct iommu_domain *domain;
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index e1b0537..15a2063 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -52,8 +52,14 @@ DEFINE_SPINLOCK(msm_iommu_lock);
+ struct msm_priv {
+ 	unsigned long *pgtable;
+ 	struct list_head list_attached;
 +	struct iommu_domain domain;
- 	struct tegra_smmu *smmu;
- 	unsigned int use_count;
- 	struct page *count;
-@@ -40,6 +40,11 @@ struct tegra_smmu_as {
- 	u32 attr;
  };
  
-+static struct tegra_smmu_as *to_smmu_as(struct iommu_domain *dom)
++static struct msm_priv *to_msm_priv(struct iommu_domain *dom)
 +{
-+	return container_of(dom, struct tegra_smmu_as, domain);
++	return container_of(dom, struct msm_priv, domain);
 +}
 +
- static inline void smmu_writel(struct tegra_smmu *smmu, u32 value,
- 			       unsigned long offset)
+ static int __enable_clocks(struct msm_iommu_drvdata *drvdata)
  {
-@@ -224,30 +229,32 @@ static bool tegra_smmu_capable(enum iommu_cap cap)
- 	return false;
+ 	int ret;
+@@ -79,7 +85,7 @@ static void __disable_clocks(struct msm_iommu_drvdata *drvdata)
+ 
+ static int __flush_iotlb(struct iommu_domain *domain)
+ {
+-	struct msm_priv *priv = domain->priv;
++	struct msm_priv *priv = to_msm_priv(domain);
+ 	struct msm_iommu_drvdata *iommu_drvdata;
+ 	struct msm_iommu_ctx_drvdata *ctx_drvdata;
+ 	int ret = 0;
+@@ -209,10 +215,14 @@ static void __program_context(void __iomem *base, int ctx, phys_addr_t pgtable)
+ 	SET_M(base, ctx, 1);
  }
  
--static int tegra_smmu_domain_init(struct iommu_domain *domain)
-+static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
+-static int msm_iommu_domain_init(struct iommu_domain *domain)
++static struct iommu_domain *msm_iommu_domain_alloc(unsigned type)
  {
- 	struct tegra_smmu_as *as;
- 	unsigned int i;
- 	uint32_t *pd;
+-	struct msm_priv *priv = kzalloc(sizeof(*priv), GFP_KERNEL);
++	struct msm_priv *priv;
  
 +	if (type != IOMMU_DOMAIN_UNMANAGED)
 +		return NULL;
 +
- 	as = kzalloc(sizeof(*as), GFP_KERNEL);
- 	if (!as)
--		return -ENOMEM;
-+		return NULL;
++	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+ 	if (!priv)
+ 		goto fail_nomem;
  
- 	as->attr = SMMU_PD_READABLE | SMMU_PD_WRITABLE | SMMU_PD_NONSECURE;
--	as->domain = domain;
+@@ -224,20 +234,19 @@ static int msm_iommu_domain_init(struct iommu_domain *domain)
+ 		goto fail_nomem;
  
- 	as->pd = alloc_page(GFP_KERNEL | __GFP_DMA);
- 	if (!as->pd) {
- 		kfree(as);
--		return -ENOMEM;
-+		return NULL;
- 	}
+ 	memset(priv->pgtable, 0, SZ_16K);
+-	domain->priv = priv;
  
- 	as->count = alloc_page(GFP_KERNEL);
- 	if (!as->count) {
- 		__free_page(as->pd);
- 		kfree(as);
--		return -ENOMEM;
-+		return NULL;
- 	}
+-	domain->geometry.aperture_start = 0;
+-	domain->geometry.aperture_end   = (1ULL << 32) - 1;
+-	domain->geometry.force_aperture = true;
++	priv->domain.geometry.aperture_start = 0;
++	priv->domain.geometry.aperture_end   = (1ULL << 32) - 1;
++	priv->domain.geometry.force_aperture = true;
  
- 	/* clear PDEs */
-@@ -264,14 +271,12 @@ static int tegra_smmu_domain_init(struct iommu_domain *domain)
- 	for (i = 0; i < SMMU_NUM_PDE; i++)
- 		pd[i] = 0;
- 
--	domain->priv = as;
--
 -	return 0;
-+	return &as->domain;
++	return &priv->domain;
+ 
+ fail_nomem:
+ 	kfree(priv);
+-	return -ENOMEM;
++	return NULL;
  }
  
--static void tegra_smmu_domain_destroy(struct iommu_domain *domain)
-+static void tegra_smmu_domain_free(struct iommu_domain *domain)
+-static void msm_iommu_domain_destroy(struct iommu_domain *domain)
++static void msm_iommu_domain_free(struct iommu_domain *domain)
  {
--	struct tegra_smmu_as *as = domain->priv;
-+	struct tegra_smmu_as *as = to_smmu_as(domain);
+ 	struct msm_priv *priv;
+ 	unsigned long flags;
+@@ -245,20 +254,17 @@ static void msm_iommu_domain_destroy(struct iommu_domain *domain)
+ 	int i;
  
- 	/* TODO: free page directory and page tables */
- 	ClearPageReserved(as->pd);
-@@ -395,7 +400,7 @@ static int tegra_smmu_attach_dev(struct iommu_domain *domain,
- 				 struct device *dev)
- {
- 	struct tegra_smmu *smmu = dev->archdata.iommu;
--	struct tegra_smmu_as *as = domain->priv;
-+	struct tegra_smmu_as *as = to_smmu_as(domain);
- 	struct device_node *np = dev->of_node;
- 	struct of_phandle_args args;
- 	unsigned int index = 0;
-@@ -428,7 +433,7 @@ static int tegra_smmu_attach_dev(struct iommu_domain *domain,
+ 	spin_lock_irqsave(&msm_iommu_lock, flags);
+-	priv = domain->priv;
+-	domain->priv = NULL;
++	priv = to_msm_priv(domain);
  
- static void tegra_smmu_detach_dev(struct iommu_domain *domain, struct device *dev)
- {
--	struct tegra_smmu_as *as = domain->priv;
-+	struct tegra_smmu_as *as = to_smmu_as(domain);
- 	struct device_node *np = dev->of_node;
- 	struct tegra_smmu *smmu = as->smmu;
- 	struct of_phandle_args args;
-@@ -524,7 +529,7 @@ static void as_put_pte(struct tegra_smmu_as *as, dma_addr_t iova)
- static int tegra_smmu_map(struct iommu_domain *domain, unsigned long iova,
- 			  phys_addr_t paddr, size_t size, int prot)
- {
--	struct tegra_smmu_as *as = domain->priv;
-+	struct tegra_smmu_as *as = to_smmu_as(domain);
- 	struct tegra_smmu *smmu = as->smmu;
- 	unsigned long offset;
- 	struct page *page;
-@@ -548,7 +553,7 @@ static int tegra_smmu_map(struct iommu_domain *domain, unsigned long iova,
- static size_t tegra_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
- 			       size_t size)
- {
--	struct tegra_smmu_as *as = domain->priv;
-+	struct tegra_smmu_as *as = to_smmu_as(domain);
- 	struct tegra_smmu *smmu = as->smmu;
- 	unsigned long offset;
- 	struct page *page;
-@@ -572,7 +577,7 @@ static size_t tegra_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
- static phys_addr_t tegra_smmu_iova_to_phys(struct iommu_domain *domain,
- 					   dma_addr_t iova)
- {
--	struct tegra_smmu_as *as = domain->priv;
-+	struct tegra_smmu_as *as = to_smmu_as(domain);
- 	struct page *page;
- 	unsigned long pfn;
- 	u32 *pte;
-@@ -633,8 +638,8 @@ static void tegra_smmu_remove_device(struct device *dev)
+-	if (priv) {
+-		fl_table = priv->pgtable;
++	fl_table = priv->pgtable;
  
- static const struct iommu_ops tegra_smmu_ops = {
- 	.capable = tegra_smmu_capable,
--	.domain_init = tegra_smmu_domain_init,
--	.domain_destroy = tegra_smmu_domain_destroy,
-+	.domain_alloc = tegra_smmu_domain_alloc,
-+	.domain_free = tegra_smmu_domain_free,
- 	.attach_dev = tegra_smmu_attach_dev,
- 	.detach_dev = tegra_smmu_detach_dev,
- 	.add_device = tegra_smmu_add_device,
+-		for (i = 0; i < NUM_FL_PTE; i++)
+-			if ((fl_table[i] & 0x03) == FL_TYPE_TABLE)
+-				free_page((unsigned long) __va(((fl_table[i]) &
+-								FL_BASE_MASK)));
++	for (i = 0; i < NUM_FL_PTE; i++)
++		if ((fl_table[i] & 0x03) == FL_TYPE_TABLE)
++			free_page((unsigned long) __va(((fl_table[i]) &
++							FL_BASE_MASK)));
+ 
+-		free_pages((unsigned long)priv->pgtable, get_order(SZ_16K));
+-		priv->pgtable = NULL;
+-	}
++	free_pages((unsigned long)priv->pgtable, get_order(SZ_16K));
++	priv->pgtable = NULL;
+ 
+ 	kfree(priv);
+ 	spin_unlock_irqrestore(&msm_iommu_lock, flags);
+@@ -276,9 +282,9 @@ static int msm_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 
+ 	spin_lock_irqsave(&msm_iommu_lock, flags);
+ 
+-	priv = domain->priv;
++	priv = to_msm_priv(domain);
+ 
+-	if (!priv || !dev) {
++	if (!dev) {
+ 		ret = -EINVAL;
+ 		goto fail;
+ 	}
+@@ -330,9 +336,9 @@ static void msm_iommu_detach_dev(struct iommu_domain *domain,
+ 	int ret;
+ 
+ 	spin_lock_irqsave(&msm_iommu_lock, flags);
+-	priv = domain->priv;
++	priv = to_msm_priv(domain);
+ 
+-	if (!priv || !dev)
++	if (!dev)
+ 		goto fail;
+ 
+ 	iommu_drvdata = dev_get_drvdata(dev->parent);
+@@ -382,11 +388,7 @@ static int msm_iommu_map(struct iommu_domain *domain, unsigned long va,
+ 		goto fail;
+ 	}
+ 
+-	priv = domain->priv;
+-	if (!priv) {
+-		ret = -EINVAL;
+-		goto fail;
+-	}
++	priv = to_msm_priv(domain);
+ 
+ 	fl_table = priv->pgtable;
+ 
+@@ -484,10 +486,7 @@ static size_t msm_iommu_unmap(struct iommu_domain *domain, unsigned long va,
+ 
+ 	spin_lock_irqsave(&msm_iommu_lock, flags);
+ 
+-	priv = domain->priv;
+-
+-	if (!priv)
+-		goto fail;
++	priv = to_msm_priv(domain);
+ 
+ 	fl_table = priv->pgtable;
+ 
+@@ -566,7 +565,7 @@ static phys_addr_t msm_iommu_iova_to_phys(struct iommu_domain *domain,
+ 
+ 	spin_lock_irqsave(&msm_iommu_lock, flags);
+ 
+-	priv = domain->priv;
++	priv = to_msm_priv(domain);
+ 	if (list_empty(&priv->list_attached))
+ 		goto fail;
+ 
+@@ -674,8 +673,8 @@ fail:
+ 
+ static const struct iommu_ops msm_iommu_ops = {
+ 	.capable = msm_iommu_capable,
+-	.domain_init = msm_iommu_domain_init,
+-	.domain_destroy = msm_iommu_domain_destroy,
++	.domain_alloc = msm_iommu_domain_alloc,
++	.domain_free = msm_iommu_domain_free,
+ 	.attach_dev = msm_iommu_attach_dev,
+ 	.detach_dev = msm_iommu_detach_dev,
+ 	.map = msm_iommu_map,
 -- 
 1.9.1
