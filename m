@@ -1,13 +1,25 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 14/16] iommu/rockchip: Make use of domain_alloc and domain_free
-Date: Thu, 26 Mar 2015 13:43:17 +0100
-Message-ID: <1427373799-18662-15-git-send-email-joro@8bytes.org>
+Subject: [PATCH 13/16] iommu/ipmmu-vmsa: Make use of domain_alloc and
+	domain_free
+Date: Thu, 26 Mar 2015 13:43:16 +0100
+Message-ID: <1427373799-18662-14-git-send-email-joro@8bytes.org>
 References: <1427373799-18662-1-git-send-email-joro@8bytes.org>
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 In-Reply-To: <1427373799-18662-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, jroedel-l3A5Bk7waGM@public.gmane.org
+Cc: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, jroedel-l3A5Bk7waGM@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
@@ -17,140 +29,141 @@ replacement for domain_init/domain_destroy.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/rockchip-iommu.c | 40 ++++++++++++++++++++++++----------------
- 1 file changed, 24 insertions(+), 16 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c | 41 +++++++++++++++++++++++------------------
+ 1 file changed, 23 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 9f74fdd..4015560 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -80,6 +80,8 @@ struct rk_iommu_domain {
- 	u32 *dt; /* page directory table */
- 	spinlock_t iommus_lock; /* lock for iommus list */
- 	spinlock_t dt_lock; /* lock for modifying page directory table */
-+
-+	struct iommu_domain domain;
- };
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 10186ca..274c08d 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -38,7 +38,7 @@ struct ipmmu_vmsa_device {
  
- struct rk_iommu {
-@@ -100,6 +102,11 @@ static inline void rk_table_flush(u32 *va, unsigned int count)
- 	outer_flush_range(pa_start, pa_end);
- }
+ struct ipmmu_vmsa_domain {
+ 	struct ipmmu_vmsa_device *mmu;
+-	struct iommu_domain *io_domain;
++	struct iommu_domain io_domain;
  
-+static struct rk_iommu_domain *to_rk_domain(struct iommu_domain *dom)
+ 	struct io_pgtable_cfg cfg;
+ 	struct io_pgtable_ops *iop;
+@@ -56,6 +56,11 @@ struct ipmmu_vmsa_archdata {
+ static DEFINE_SPINLOCK(ipmmu_devices_lock);
+ static LIST_HEAD(ipmmu_devices);
+ 
++static struct ipmmu_vmsa_domain *to_vmsa_domain(struct iommu_domain *dom)
 +{
-+	return container_of(dom, struct rk_iommu_domain, domain);
++	return container_of(dom, struct ipmmu_vmsa_domain, io_domain);
 +}
 +
- /**
-  * Inspired by _wait_for in intel_drv.h
-  * This is NOT safe for use in interrupt context.
-@@ -503,7 +510,7 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_id)
- static phys_addr_t rk_iommu_iova_to_phys(struct iommu_domain *domain,
- 					 dma_addr_t iova)
- {
--	struct rk_iommu_domain *rk_domain = domain->priv;
-+	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
- 	unsigned long flags;
- 	phys_addr_t pt_phys, phys = 0;
- 	u32 dte, pte;
-@@ -639,7 +646,7 @@ unwind:
- static int rk_iommu_map(struct iommu_domain *domain, unsigned long _iova,
- 			phys_addr_t paddr, size_t size, int prot)
- {
--	struct rk_iommu_domain *rk_domain = domain->priv;
-+	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
- 	unsigned long flags;
- 	dma_addr_t iova = (dma_addr_t)_iova;
- 	u32 *page_table, *pte_addr;
-@@ -670,7 +677,7 @@ static int rk_iommu_map(struct iommu_domain *domain, unsigned long _iova,
- static size_t rk_iommu_unmap(struct iommu_domain *domain, unsigned long _iova,
- 			     size_t size)
- {
--	struct rk_iommu_domain *rk_domain = domain->priv;
-+	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
- 	unsigned long flags;
- 	dma_addr_t iova = (dma_addr_t)_iova;
- 	phys_addr_t pt_phys;
-@@ -726,7 +733,7 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
- 				  struct device *dev)
- {
- 	struct rk_iommu *iommu;
--	struct rk_iommu_domain *rk_domain = domain->priv;
-+	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
- 	unsigned long flags;
- 	int ret;
- 	phys_addr_t dte_addr;
-@@ -778,7 +785,7 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
- 				   struct device *dev)
- {
- 	struct rk_iommu *iommu;
--	struct rk_iommu_domain *rk_domain = domain->priv;
-+	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
- 	unsigned long flags;
+ #define TLB_LOOP_TIMEOUT		100	/* 100us */
  
- 	/* Allow 'virtual devices' (eg drm) to detach from domain */
-@@ -804,13 +811,16 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
- 	dev_info(dev, "Detached from iommu domain\n");
+ /* -----------------------------------------------------------------------------
+@@ -428,7 +433,7 @@ static irqreturn_t ipmmu_domain_irq(struct ipmmu_vmsa_domain *domain)
+ 	 * TODO: We need to look up the faulty device based on the I/O VA. Use
+ 	 * the IOMMU device for now.
+ 	 */
+-	if (!report_iommu_fault(domain->io_domain, mmu->dev, iova, 0))
++	if (!report_iommu_fault(&domain->io_domain, mmu->dev, iova, 0))
+ 		return IRQ_HANDLED;
+ 
+ 	dev_err_ratelimited(mmu->dev,
+@@ -448,7 +453,7 @@ static irqreturn_t ipmmu_irq(int irq, void *dev)
+ 		return IRQ_NONE;
+ 
+ 	io_domain = mmu->mapping->domain;
+-	domain = io_domain->priv;
++	domain = to_vmsa_domain(io_domain);
+ 
+ 	return ipmmu_domain_irq(domain);
  }
+@@ -457,25 +462,25 @@ static irqreturn_t ipmmu_irq(int irq, void *dev)
+  * IOMMU Operations
+  */
  
--static int rk_iommu_domain_init(struct iommu_domain *domain)
-+static struct iommu_domain *rk_iommu_domain_alloc(unsigned type)
+-static int ipmmu_domain_init(struct iommu_domain *io_domain)
++static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
  {
- 	struct rk_iommu_domain *rk_domain;
+ 	struct ipmmu_vmsa_domain *domain;
  
 +	if (type != IOMMU_DOMAIN_UNMANAGED)
 +		return NULL;
 +
- 	rk_domain = kzalloc(sizeof(*rk_domain), GFP_KERNEL);
- 	if (!rk_domain)
+ 	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
+ 	if (!domain)
 -		return -ENOMEM;
 +		return NULL;
  
- 	/*
- 	 * rk32xx iommus use a 2 level pagetable.
-@@ -827,17 +837,16 @@ static int rk_iommu_domain_init(struct iommu_domain *domain)
- 	spin_lock_init(&rk_domain->dt_lock);
- 	INIT_LIST_HEAD(&rk_domain->iommus);
+ 	spin_lock_init(&domain->lock);
  
--	domain->priv = rk_domain;
-+	return &rk_domain->domain;
- 
+-	io_domain->priv = domain;
+-	domain->io_domain = io_domain;
+-
 -	return 0;
- err_dt:
- 	kfree(rk_domain);
--	return -ENOMEM;
-+	return NULL;
++	return &domain->io_domain;
  }
  
--static void rk_iommu_domain_destroy(struct iommu_domain *domain)
-+static void rk_iommu_domain_free(struct iommu_domain *domain)
+-static void ipmmu_domain_destroy(struct iommu_domain *io_domain)
++static void ipmmu_domain_free(struct iommu_domain *io_domain)
  {
--	struct rk_iommu_domain *rk_domain = domain->priv;
-+	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
- 	int i;
+-	struct ipmmu_vmsa_domain *domain = io_domain->priv;
++	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
  
- 	WARN_ON(!list_empty(&rk_domain->iommus));
-@@ -852,8 +861,7 @@ static void rk_iommu_domain_destroy(struct iommu_domain *domain)
- 	}
+ 	/*
+ 	 * Free the domain resources. We assume that all devices have already
+@@ -491,7 +496,7 @@ static int ipmmu_attach_device(struct iommu_domain *io_domain,
+ {
+ 	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
+ 	struct ipmmu_vmsa_device *mmu = archdata->mmu;
+-	struct ipmmu_vmsa_domain *domain = io_domain->priv;
++	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+ 	unsigned long flags;
+ 	unsigned int i;
+ 	int ret = 0;
+@@ -532,7 +537,7 @@ static void ipmmu_detach_device(struct iommu_domain *io_domain,
+ 				struct device *dev)
+ {
+ 	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
+-	struct ipmmu_vmsa_domain *domain = io_domain->priv;
++	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+ 	unsigned int i;
  
- 	free_page((unsigned long)rk_domain->dt);
--	kfree(domain->priv);
--	domain->priv = NULL;
-+	kfree(rk_domain);
+ 	for (i = 0; i < archdata->num_utlbs; ++i)
+@@ -546,7 +551,7 @@ static void ipmmu_detach_device(struct iommu_domain *io_domain,
+ static int ipmmu_map(struct iommu_domain *io_domain, unsigned long iova,
+ 		     phys_addr_t paddr, size_t size, int prot)
+ {
+-	struct ipmmu_vmsa_domain *domain = io_domain->priv;
++	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+ 
+ 	if (!domain)
+ 		return -ENODEV;
+@@ -557,7 +562,7 @@ static int ipmmu_map(struct iommu_domain *io_domain, unsigned long iova,
+ static size_t ipmmu_unmap(struct iommu_domain *io_domain, unsigned long iova,
+ 			  size_t size)
+ {
+-	struct ipmmu_vmsa_domain *domain = io_domain->priv;
++	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+ 
+ 	return domain->iop->unmap(domain->iop, iova, size);
+ }
+@@ -565,7 +570,7 @@ static size_t ipmmu_unmap(struct iommu_domain *io_domain, unsigned long iova,
+ static phys_addr_t ipmmu_iova_to_phys(struct iommu_domain *io_domain,
+ 				      dma_addr_t iova)
+ {
+-	struct ipmmu_vmsa_domain *domain = io_domain->priv;
++	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+ 
+ 	/* TODO: Is locking needed ? */
+ 
+@@ -737,8 +742,8 @@ static void ipmmu_remove_device(struct device *dev)
  }
  
- static bool rk_iommu_is_dev_iommu_master(struct device *dev)
-@@ -952,8 +960,8 @@ static void rk_iommu_remove_device(struct device *dev)
- }
- 
- static const struct iommu_ops rk_iommu_ops = {
--	.domain_init = rk_iommu_domain_init,
--	.domain_destroy = rk_iommu_domain_destroy,
-+	.domain_alloc = rk_iommu_domain_alloc,
-+	.domain_free = rk_iommu_domain_free,
- 	.attach_dev = rk_iommu_attach_device,
- 	.detach_dev = rk_iommu_detach_device,
- 	.map = rk_iommu_map,
+ static const struct iommu_ops ipmmu_ops = {
+-	.domain_init = ipmmu_domain_init,
+-	.domain_destroy = ipmmu_domain_destroy,
++	.domain_alloc = ipmmu_domain_alloc,
++	.domain_free = ipmmu_domain_free,
+ 	.attach_dev = ipmmu_attach_device,
+ 	.detach_dev = ipmmu_detach_device,
+ 	.map = ipmmu_map,
 -- 
 1.9.1
