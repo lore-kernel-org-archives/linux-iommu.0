@@ -1,176 +1,107 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 05/16] iommu/vt-d: Make use of domain_alloc and domain_free
-Date: Thu, 26 Mar 2015 13:43:08 +0100
-Message-ID: <1427373799-18662-6-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 16/16] iommu: Remove domain_init and domain_free iommu_ops
+Date: Thu, 26 Mar 2015 13:43:19 +0100
+Message-ID: <1427373799-18662-17-git-send-email-joro@8bytes.org>
 References: <1427373799-18662-1-git-send-email-joro@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1427373799-18662-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, jroedel-l3A5Bk7waGM@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1427373799-18662-1-git-send-email-joro@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: Will Deacon <will.deacon@arm.com>, Kukjin Kim <kgene@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Heiko Stuebner <heiko@sntech.de>, Hiroshi Doyu <hdoyu@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Thierry Reding <thierry.reding@gmail.com>, Alexandre Courbot <gnurou@gmail.com>, Alex Williamson <alex.williamson@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Yingjoe Chen <yingjoe.chen@mediatek.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-rockchip@lists.infradead.org, linux-tegra@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, jroedel@suse.de
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+From: Joerg Roedel <jroedel@suse.de>
 
-Get rid of domain_init and domain_destroy and implement
-domain_alloc/domain_free instead.
+All drivers have been converted to the new domain_alloc and
+domain_free iommu-ops. So remove the old ones and get rid of
+iommu_domain->priv too, as this is no longer needed when the
+struct iommu_domain is embedded in the private structures of
+the iommu drivers.
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/intel-iommu.c | 48 ++++++++++++++++++++++++++-------------------
- 1 file changed, 28 insertions(+), 20 deletions(-)
+ drivers/iommu/iommu.c | 30 ++----------------------------
+ include/linux/iommu.h |  3 ---
+ 2 files changed, 2 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index ae4c1a8..a312e49 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -339,7 +339,7 @@ struct dmar_domain {
- 	DECLARE_BITMAP(iommu_bmp, DMAR_UNITS_SUPPORTED);
- 					/* bitmap of iommus this domain uses*/
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 656b949..d4f527e 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -900,51 +900,25 @@ EXPORT_SYMBOL_GPL(iommu_set_fault_handler);
  
--	struct list_head devices; 	/* all devices' list */
-+	struct list_head devices;	/* all devices' list */
- 	struct iova_domain iovad;	/* iova's that belong to this domain */
- 
- 	struct dma_pte	*pgd;		/* virtual address */
-@@ -358,6 +358,9 @@ struct dmar_domain {
- 					   2 == 1GiB, 3 == 512GiB, 4 == 1TiB */
- 	spinlock_t	iommu_lock;	/* protect iommu set in domain */
- 	u64		max_addr;	/* maximum mapped address */
-+
-+	struct iommu_domain domain;	/* generic domain data structure for
-+					   iommu core */
- };
- 
- /* PCI domain-device relationship */
-@@ -449,6 +452,12 @@ static LIST_HEAD(device_domain_list);
- 
- static const struct iommu_ops intel_iommu_ops;
- 
-+/* Convert generic 'struct iommu_domain to private struct dmar_domain */
-+static struct dmar_domain *to_dmar_domain(struct iommu_domain *dom)
-+{
-+	return container_of(dom, struct dmar_domain, domain);
-+}
-+
- static int __init intel_iommu_setup(char *str)
+ struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
  {
- 	if (!str)
-@@ -4340,44 +4349,45 @@ static int md_domain_init(struct dmar_domain *domain, int guest_width)
- 	return 0;
- }
+-	const struct iommu_ops *ops;
+ 	struct iommu_domain *domain;
  
--static int intel_iommu_domain_init(struct iommu_domain *domain)
-+static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
- {
- 	struct dmar_domain *dmar_domain;
-+	struct iommu_domain *domain;
-+
-+	if (type != IOMMU_DOMAIN_UNMANAGED)
-+		return NULL;
+ 	if (bus == NULL || bus->iommu_ops == NULL)
+ 		return NULL;
  
- 	dmar_domain = alloc_domain(DOMAIN_FLAG_VIRTUAL_MACHINE);
- 	if (!dmar_domain) {
- 		printk(KERN_ERR
- 			"intel_iommu_domain_init: dmar_domain == NULL\n");
--		return -ENOMEM;
-+		return NULL;
- 	}
- 	if (md_domain_init(dmar_domain, DEFAULT_DOMAIN_ADDRESS_WIDTH)) {
- 		printk(KERN_ERR
- 			"intel_iommu_domain_init() failed\n");
- 		domain_exit(dmar_domain);
--		return -ENOMEM;
-+		return NULL;
- 	}
- 	domain_update_iommu_cap(dmar_domain);
--	domain->priv = dmar_domain;
- 
-+	domain = &dmar_domain->domain;
- 	domain->geometry.aperture_start = 0;
- 	domain->geometry.aperture_end   = __DOMAIN_MAX_ADDR(dmar_domain->gaw);
- 	domain->geometry.force_aperture = true;
- 
--	return 0;
-+	return domain;
- }
- 
--static void intel_iommu_domain_destroy(struct iommu_domain *domain)
-+static void intel_iommu_domain_free(struct iommu_domain *domain)
- {
--	struct dmar_domain *dmar_domain = domain->priv;
+-	ops = bus->iommu_ops;
 -
--	domain->priv = NULL;
--	domain_exit(dmar_domain);
-+	domain_exit(to_dmar_domain(domain));
- }
- 
- static int intel_iommu_attach_device(struct iommu_domain *domain,
- 				     struct device *dev)
- {
--	struct dmar_domain *dmar_domain = domain->priv;
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- 	struct intel_iommu *iommu;
- 	int addr_width;
- 	u8 bus, devfn;
-@@ -4442,16 +4452,14 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
- static void intel_iommu_detach_device(struct iommu_domain *domain,
- 				      struct device *dev)
- {
--	struct dmar_domain *dmar_domain = domain->priv;
+-	if (ops->domain_alloc)
+-		domain = ops->domain_alloc(IOMMU_DOMAIN_UNMANAGED);
+-	else
+-		domain = kzalloc(sizeof(*domain), GFP_KERNEL);
 -
--	domain_remove_one_dev_info(dmar_domain, dev);
-+	domain_remove_one_dev_info(to_dmar_domain(domain), dev);
++	domain = bus->iommu_ops->domain_alloc(IOMMU_DOMAIN_UNMANAGED);
+ 	if (!domain)
+ 		return NULL;
+ 
+ 	domain->ops  = bus->iommu_ops;
+ 	domain->type = IOMMU_DOMAIN_UNMANAGED;
+ 
+-	if (ops->domain_init && domain->ops->domain_init(domain))
+-		goto out_free;
+-
+ 	return domain;
+-
+-out_free:
+-	if (ops->domain_free)
+-		ops->domain_free(domain);
+-	else
+-		kfree(domain);
+-
+-	return NULL;
  }
+ EXPORT_SYMBOL_GPL(iommu_domain_alloc);
  
- static int intel_iommu_map(struct iommu_domain *domain,
- 			   unsigned long iova, phys_addr_t hpa,
- 			   size_t size, int iommu_prot)
+ void iommu_domain_free(struct iommu_domain *domain)
  {
--	struct dmar_domain *dmar_domain = domain->priv;
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- 	u64 max_addr;
- 	int prot = 0;
- 	int ret;
-@@ -4488,7 +4496,7 @@ static int intel_iommu_map(struct iommu_domain *domain,
- static size_t intel_iommu_unmap(struct iommu_domain *domain,
- 				unsigned long iova, size_t size)
- {
--	struct dmar_domain *dmar_domain = domain->priv;
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- 	struct page *freelist = NULL;
- 	struct intel_iommu *iommu;
- 	unsigned long start_pfn, last_pfn;
-@@ -4536,7 +4544,7 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
- static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
- 					    dma_addr_t iova)
- {
--	struct dmar_domain *dmar_domain = domain->priv;
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- 	struct dma_pte *pte;
- 	int level = 0;
- 	u64 phys = 0;
-@@ -4595,8 +4603,8 @@ static void intel_iommu_remove_device(struct device *dev)
+-	const struct iommu_ops *ops = domain->ops;
+-
+-	if (likely(ops->domain_destroy != NULL))
+-		ops->domain_destroy(domain);
+-
+-	if (ops->domain_free)
+-		ops->domain_free(domain);
+-	else
+-		kfree(domain);
++	domain->ops->domain_free(domain);
+ }
+ EXPORT_SYMBOL_GPL(iommu_domain_free);
  
- static const struct iommu_ops intel_iommu_ops = {
- 	.capable	= intel_iommu_capable,
--	.domain_init	= intel_iommu_domain_init,
--	.domain_destroy = intel_iommu_domain_destroy,
-+	.domain_alloc	= intel_iommu_domain_alloc,
-+	.domain_free	= intel_iommu_domain_free,
- 	.attach_dev	= intel_iommu_attach_device,
- 	.detach_dev	= intel_iommu_detach_device,
- 	.map		= intel_iommu_map,
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 72d03fe..0546b87 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -78,7 +78,6 @@ struct iommu_domain_geometry {
+ struct iommu_domain {
+ 	unsigned type;
+ 	const struct iommu_ops *ops;
+-	void *priv;
+ 	iommu_fault_handler_t handler;
+ 	void *handler_token;
+ 	struct iommu_domain_geometry geometry;
+@@ -138,8 +137,6 @@ enum iommu_attr {
+  */
+ struct iommu_ops {
+ 	bool (*capable)(enum iommu_cap);
+-	int (*domain_init)(struct iommu_domain *domain);
+-	void (*domain_destroy)(struct iommu_domain *domain);
+ 
+ 	/* Domain allocation and freeing by the iommu driver */
+ 	struct iommu_domain *(*domain_alloc)(unsigned iommu_domain_type);
 -- 
 1.9.1
