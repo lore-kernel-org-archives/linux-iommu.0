@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 08/16] iommu/exynos: Make use of domain_alloc and domain_free
-Date: Thu, 26 Mar 2015 13:43:11 +0100
-Message-ID: <1427373799-18662-9-git-send-email-joro@8bytes.org>
+Subject: [PATCH 06/16] iommu/omap: Make use of domain_alloc and domain_free
+Date: Thu, 26 Mar 2015 13:43:09 +0100
+Message-ID: <1427373799-18662-7-git-send-email-joro@8bytes.org>
 References: <1427373799-18662-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,194 +23,153 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Implement domain_alloc and domain_free iommu-ops as a
-replacement for domain_init/domain_destroy.
+Implement the new domain_alloc and domain_free call-backs
+and remove the old domain_init/destroy ones.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c | 87 ++++++++++++++++++++++++--------------------
- 1 file changed, 47 insertions(+), 40 deletions(-)
+ drivers/iommu/omap-iommu.c | 49 +++++++++++++++++++++++++++-------------------
+ 1 file changed, 29 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index dc14fec4..3e89850 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -200,6 +200,7 @@ struct exynos_iommu_domain {
- 	short *lv2entcnt; /* free lv2 entry counter for each section */
- 	spinlock_t lock; /* lock for this structure */
- 	spinlock_t pgtablelock; /* lock for modifying page table @ pgtable */
-+	struct iommu_domain domain; /* generic domain data structure */
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index a4ba851..a22c33d 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -59,6 +59,7 @@ struct omap_iommu_domain {
+ 	struct omap_iommu *iommu_dev;
+ 	struct device *dev;
+ 	spinlock_t lock;
++	struct iommu_domain domain;
  };
  
- struct sysmmu_drvdata {
-@@ -214,6 +215,11 @@ struct sysmmu_drvdata {
- 	phys_addr_t pgtable;
- };
+ #define MMU_LOCK_BASE_SHIFT	10
+@@ -80,6 +81,15 @@ static struct platform_driver omap_iommu_driver;
+ static struct kmem_cache *iopte_cachep;
  
-+static struct exynos_iommu_domain *to_exynos_domain(struct iommu_domain *dom)
+ /**
++ * to_omap_domain - Get struct omap_iommu_domain from generic iommu_domain
++ * @dom:	generic iommu domain handle
++ **/
++static struct omap_iommu_domain *to_omap_domain(struct iommu_domain *dom)
 +{
-+	return container_of(dom, struct exynos_iommu_domain, domain);
++	return container_of(dom, struct omap_iommu_domain, domain);
 +}
 +
- static bool set_sysmmu_active(struct sysmmu_drvdata *data)
++/**
+  * omap_iommu_save_ctx - Save registers for pm off-mode support
+  * @dev:	client device
+  **/
+@@ -901,7 +911,7 @@ static irqreturn_t iommu_fault_handler(int irq, void *data)
+ 	u32 *iopgd, *iopte;
+ 	struct omap_iommu *obj = data;
+ 	struct iommu_domain *domain = obj->domain;
+-	struct omap_iommu_domain *omap_domain = domain->priv;
++	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
+ 
+ 	if (!omap_domain->iommu_dev)
+ 		return IRQ_NONE;
+@@ -1113,7 +1123,7 @@ static u32 iotlb_init_entry(struct iotlb_entry *e, u32 da, u32 pa, int pgsz)
+ static int omap_iommu_map(struct iommu_domain *domain, unsigned long da,
+ 			 phys_addr_t pa, size_t bytes, int prot)
  {
- 	/* return true if the System MMU was not active previously
-@@ -696,58 +702,60 @@ static inline void pgtable_flush(void *vastart, void *vaend)
- 				virt_to_phys(vaend));
+-	struct omap_iommu_domain *omap_domain = domain->priv;
++	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
+ 	struct omap_iommu *oiommu = omap_domain->iommu_dev;
+ 	struct device *dev = oiommu->dev;
+ 	struct iotlb_entry e;
+@@ -1140,7 +1150,7 @@ static int omap_iommu_map(struct iommu_domain *domain, unsigned long da,
+ static size_t omap_iommu_unmap(struct iommu_domain *domain, unsigned long da,
+ 			    size_t size)
+ {
+-	struct omap_iommu_domain *omap_domain = domain->priv;
++	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
+ 	struct omap_iommu *oiommu = omap_domain->iommu_dev;
+ 	struct device *dev = oiommu->dev;
+ 
+@@ -1152,7 +1162,7 @@ static size_t omap_iommu_unmap(struct iommu_domain *domain, unsigned long da,
+ static int
+ omap_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ {
+-	struct omap_iommu_domain *omap_domain = domain->priv;
++	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
+ 	struct omap_iommu *oiommu;
+ 	struct omap_iommu_arch_data *arch_data = dev->archdata.iommu;
+ 	int ret = 0;
+@@ -1212,17 +1222,20 @@ static void _omap_iommu_detach_dev(struct omap_iommu_domain *omap_domain,
+ static void omap_iommu_detach_dev(struct iommu_domain *domain,
+ 				 struct device *dev)
+ {
+-	struct omap_iommu_domain *omap_domain = domain->priv;
++	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
+ 
+ 	spin_lock(&omap_domain->lock);
+ 	_omap_iommu_detach_dev(omap_domain, dev);
+ 	spin_unlock(&omap_domain->lock);
  }
  
--static int exynos_iommu_domain_init(struct iommu_domain *domain)
-+static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
+-static int omap_iommu_domain_init(struct iommu_domain *domain)
++static struct iommu_domain *omap_iommu_domain_alloc(unsigned type)
  {
--	struct exynos_iommu_domain *priv;
-+	struct exynos_iommu_domain *exynos_domain;
- 	int i;
+ 	struct omap_iommu_domain *omap_domain;
  
--	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
--	if (!priv)
--		return -ENOMEM;
 +	if (type != IOMMU_DOMAIN_UNMANAGED)
 +		return NULL;
 +
-+	exynos_domain = kzalloc(sizeof(*exynos_domain), GFP_KERNEL);
-+	if (!exynos_domain)
-+		return NULL;
+ 	omap_domain = kzalloc(sizeof(*omap_domain), GFP_KERNEL);
+ 	if (!omap_domain) {
+ 		pr_err("kzalloc failed\n");
+@@ -1244,25 +1257,21 @@ static int omap_iommu_domain_init(struct iommu_domain *domain)
+ 	clean_dcache_area(omap_domain->pgtable, IOPGD_TABLE_SIZE);
+ 	spin_lock_init(&omap_domain->lock);
  
--	priv->pgtable = (sysmmu_pte_t *)__get_free_pages(GFP_KERNEL, 2);
--	if (!priv->pgtable)
-+	exynos_domain->pgtable = (sysmmu_pte_t *)__get_free_pages(GFP_KERNEL, 2);
-+	if (!exynos_domain->pgtable)
- 		goto err_pgtable;
- 
--	priv->lv2entcnt = (short *)__get_free_pages(GFP_KERNEL | __GFP_ZERO, 1);
--	if (!priv->lv2entcnt)
-+	exynos_domain->lv2entcnt = (short *)__get_free_pages(GFP_KERNEL | __GFP_ZERO, 1);
-+	if (!exynos_domain->lv2entcnt)
- 		goto err_counter;
- 
- 	/* Workaround for System MMU v3.3 to prevent caching 1MiB mapping */
- 	for (i = 0; i < NUM_LV1ENTRIES; i += 8) {
--		priv->pgtable[i + 0] = ZERO_LV2LINK;
--		priv->pgtable[i + 1] = ZERO_LV2LINK;
--		priv->pgtable[i + 2] = ZERO_LV2LINK;
--		priv->pgtable[i + 3] = ZERO_LV2LINK;
--		priv->pgtable[i + 4] = ZERO_LV2LINK;
--		priv->pgtable[i + 5] = ZERO_LV2LINK;
--		priv->pgtable[i + 6] = ZERO_LV2LINK;
--		priv->pgtable[i + 7] = ZERO_LV2LINK;
-+		exynos_domain->pgtable[i + 0] = ZERO_LV2LINK;
-+		exynos_domain->pgtable[i + 1] = ZERO_LV2LINK;
-+		exynos_domain->pgtable[i + 2] = ZERO_LV2LINK;
-+		exynos_domain->pgtable[i + 3] = ZERO_LV2LINK;
-+		exynos_domain->pgtable[i + 4] = ZERO_LV2LINK;
-+		exynos_domain->pgtable[i + 5] = ZERO_LV2LINK;
-+		exynos_domain->pgtable[i + 6] = ZERO_LV2LINK;
-+		exynos_domain->pgtable[i + 7] = ZERO_LV2LINK;
- 	}
- 
--	pgtable_flush(priv->pgtable, priv->pgtable + NUM_LV1ENTRIES);
-+	pgtable_flush(exynos_domain->pgtable, exynos_domain->pgtable + NUM_LV1ENTRIES);
- 
--	spin_lock_init(&priv->lock);
--	spin_lock_init(&priv->pgtablelock);
--	INIT_LIST_HEAD(&priv->clients);
-+	spin_lock_init(&exynos_domain->lock);
-+	spin_lock_init(&exynos_domain->pgtablelock);
-+	INIT_LIST_HEAD(&exynos_domain->clients);
+-	domain->priv = omap_domain;
++	omap_domain->domain.geometry.aperture_start = 0;
++	omap_domain->domain.geometry.aperture_end   = (1ULL << 32) - 1;
++	omap_domain->domain.geometry.force_aperture = true;
  
 -	domain->geometry.aperture_start = 0;
--	domain->geometry.aperture_end   = ~0UL;
+-	domain->geometry.aperture_end   = (1ULL << 32) - 1;
 -	domain->geometry.force_aperture = true;
-+	exynos_domain->domain.geometry.aperture_start = 0;
-+	exynos_domain->domain.geometry.aperture_end   = ~0UL;
-+	exynos_domain->domain.geometry.force_aperture = true;
- 
--	domain->priv = priv;
+-
 -	return 0;
-+	return &exynos_domain->domain;
++	return &omap_domain->domain;
  
- err_counter:
--	free_pages((unsigned long)priv->pgtable, 2);
-+	free_pages((unsigned long)exynos_domain->pgtable, 2);
- err_pgtable:
--	kfree(priv);
+ fail_nomem:
+ 	kfree(omap_domain);
+ out:
 -	return -ENOMEM;
-+	kfree(exynos_domain);
 +	return NULL;
  }
  
--static void exynos_iommu_domain_destroy(struct iommu_domain *domain)
-+static void exynos_iommu_domain_free(struct iommu_domain *domain)
+-static void omap_iommu_domain_destroy(struct iommu_domain *domain)
++static void omap_iommu_domain_free(struct iommu_domain *domain)
  {
--	struct exynos_iommu_domain *priv = domain->priv;
-+	struct exynos_iommu_domain *priv = to_exynos_domain(domain);
- 	struct exynos_iommu_owner *owner;
- 	unsigned long flags;
- 	int i;
-@@ -773,15 +781,14 @@ static void exynos_iommu_domain_destroy(struct iommu_domain *domain)
- 
- 	free_pages((unsigned long)priv->pgtable, 2);
- 	free_pages((unsigned long)priv->lv2entcnt, 1);
--	kfree(domain->priv);
+-	struct omap_iommu_domain *omap_domain = domain->priv;
+-
 -	domain->priv = NULL;
-+	kfree(priv);
++	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
+ 
+ 	/*
+ 	 * An iommu device is still attached
+@@ -1278,7 +1287,7 @@ static void omap_iommu_domain_destroy(struct iommu_domain *domain)
+ static phys_addr_t omap_iommu_iova_to_phys(struct iommu_domain *domain,
+ 					  dma_addr_t da)
+ {
+-	struct omap_iommu_domain *omap_domain = domain->priv;
++	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
+ 	struct omap_iommu *oiommu = omap_domain->iommu_dev;
+ 	struct device *dev = oiommu->dev;
+ 	u32 *pgd, *pte;
+@@ -1358,8 +1367,8 @@ static void omap_iommu_remove_device(struct device *dev)
  }
  
- static int exynos_iommu_attach_device(struct iommu_domain *domain,
- 				   struct device *dev)
- {
- 	struct exynos_iommu_owner *owner = dev->archdata.iommu;
--	struct exynos_iommu_domain *priv = domain->priv;
-+	struct exynos_iommu_domain *priv = to_exynos_domain(domain);
- 	phys_addr_t pagetable = virt_to_phys(priv->pgtable);
- 	unsigned long flags;
- 	int ret;
-@@ -812,7 +819,7 @@ static void exynos_iommu_detach_device(struct iommu_domain *domain,
- 				    struct device *dev)
- {
- 	struct exynos_iommu_owner *owner;
--	struct exynos_iommu_domain *priv = domain->priv;
-+	struct exynos_iommu_domain *priv = to_exynos_domain(domain);
- 	phys_addr_t pagetable = virt_to_phys(priv->pgtable);
- 	unsigned long flags;
- 
-@@ -988,7 +995,7 @@ static int lv2set_page(sysmmu_pte_t *pent, phys_addr_t paddr, size_t size,
- static int exynos_iommu_map(struct iommu_domain *domain, unsigned long l_iova,
- 			 phys_addr_t paddr, size_t size, int prot)
- {
--	struct exynos_iommu_domain *priv = domain->priv;
-+	struct exynos_iommu_domain *priv = to_exynos_domain(domain);
- 	sysmmu_pte_t *entry;
- 	sysmmu_iova_t iova = (sysmmu_iova_t)l_iova;
- 	unsigned long flags;
-@@ -1042,7 +1049,7 @@ static void exynos_iommu_tlb_invalidate_entry(struct exynos_iommu_domain *priv,
- static size_t exynos_iommu_unmap(struct iommu_domain *domain,
- 					unsigned long l_iova, size_t size)
- {
--	struct exynos_iommu_domain *priv = domain->priv;
-+	struct exynos_iommu_domain *priv = to_exynos_domain(domain);
- 	sysmmu_iova_t iova = (sysmmu_iova_t)l_iova;
- 	sysmmu_pte_t *ent;
- 	size_t err_pgsize;
-@@ -1119,7 +1126,7 @@ err:
- static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *domain,
- 					  dma_addr_t iova)
- {
--	struct exynos_iommu_domain *priv = domain->priv;
-+	struct exynos_iommu_domain *priv = to_exynos_domain(domain);
- 	sysmmu_pte_t *entry;
- 	unsigned long flags;
- 	phys_addr_t phys = 0;
-@@ -1171,8 +1178,8 @@ static void exynos_iommu_remove_device(struct device *dev)
- }
- 
- static const struct iommu_ops exynos_iommu_ops = {
--	.domain_init = exynos_iommu_domain_init,
--	.domain_destroy = exynos_iommu_domain_destroy,
-+	.domain_alloc = exynos_iommu_domain_alloc,
-+	.domain_free = exynos_iommu_domain_free,
- 	.attach_dev = exynos_iommu_attach_device,
- 	.detach_dev = exynos_iommu_detach_device,
- 	.map = exynos_iommu_map,
+ static const struct iommu_ops omap_iommu_ops = {
+-	.domain_init	= omap_iommu_domain_init,
+-	.domain_destroy	= omap_iommu_domain_destroy,
++	.domain_alloc	= omap_iommu_domain_alloc,
++	.domain_free	= omap_iommu_domain_free,
+ 	.attach_dev	= omap_iommu_attach_dev,
+ 	.detach_dev	= omap_iommu_detach_dev,
+ 	.map		= omap_iommu_map,
 -- 
 1.9.1
