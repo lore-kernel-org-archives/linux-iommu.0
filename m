@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 03/16] iommu: Only allow iommu_map/unmap for paging domains
-Date: Thu, 26 Mar 2015 13:43:06 +0100
-Message-ID: <1427373799-18662-4-git-send-email-joro@8bytes.org>
+Subject: [PATCH 01/16] iommu: Introduce domain_alloc and domain_free iommu_ops
+Date: Thu, 26 Mar 2015 13:43:04 +0100
+Message-ID: <1427373799-18662-2-git-send-email-joro@8bytes.org>
 References: <1427373799-18662-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,37 +23,97 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Check for the new __IOMMU_DOMAIN_PAGING flag before calling
-into the iommu drivers ->map and ->unmap call-backs.
+These new call-backs defer the allocation and destruction of
+'struct iommu_domain' to the iommu driver. This allows
+drivers to embed this struct into their private domain
+structures and to get rid of the domain_init and
+domain_destroy call-backs when all drivers have been
+converted.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/iommu/iommu.c | 29 +++++++++++++++++++++--------
+ include/linux/iommu.h |  5 +++++
+ 2 files changed, 26 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 4920605..656b949 100644
+index 72e683d..11de262 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -1063,6 +1063,9 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 		     domain->ops->pgsize_bitmap == 0UL))
- 		return -ENODEV;
+@@ -900,26 +900,34 @@ EXPORT_SYMBOL_GPL(iommu_set_fault_handler);
  
-+	if (unlikely(!(domain->type & __IOMMU_DOMAIN_PAGING)))
-+		return -EINVAL;
+ struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
+ {
++	const struct iommu_ops *ops;
+ 	struct iommu_domain *domain;
+-	int ret;
+ 
+ 	if (bus == NULL || bus->iommu_ops == NULL)
+ 		return NULL;
+ 
+-	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
++	ops = bus->iommu_ops;
 +
- 	/* find out the minimum page size supported */
- 	min_pagesz = 1 << __ffs(domain->ops->pgsize_bitmap);
- 
-@@ -1114,6 +1117,9 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
- 		     domain->ops->pgsize_bitmap == 0UL))
- 		return -ENODEV;
- 
-+	if (unlikely(!(domain->type & __IOMMU_DOMAIN_PAGING)))
-+		return -EINVAL;
++	if (ops->domain_alloc)
++		domain = ops->domain_alloc();
++	else
++		domain = kzalloc(sizeof(*domain), GFP_KERNEL);
 +
- 	/* find out the minimum page size supported */
- 	min_pagesz = 1 << __ffs(domain->ops->pgsize_bitmap);
+ 	if (!domain)
+ 		return NULL;
  
+ 	domain->ops = bus->iommu_ops;
+ 
+-	ret = domain->ops->domain_init(domain);
+-	if (ret)
++	if (ops->domain_init && domain->ops->domain_init(domain))
+ 		goto out_free;
+ 
+ 	return domain;
+ 
+ out_free:
+-	kfree(domain);
++	if (ops->domain_free)
++		ops->domain_free(domain);
++	else
++		kfree(domain);
+ 
+ 	return NULL;
+ }
+@@ -927,10 +935,15 @@ EXPORT_SYMBOL_GPL(iommu_domain_alloc);
+ 
+ void iommu_domain_free(struct iommu_domain *domain)
+ {
+-	if (likely(domain->ops->domain_destroy != NULL))
+-		domain->ops->domain_destroy(domain);
++	const struct iommu_ops *ops = domain->ops;
+ 
+-	kfree(domain);
++	if (likely(ops->domain_destroy != NULL))
++		ops->domain_destroy(domain);
++
++	if (ops->domain_free)
++		ops->domain_free(domain);
++	else
++		kfree(domain);
+ }
+ EXPORT_SYMBOL_GPL(iommu_domain_free);
+ 
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 38daa45..69d1d12 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -115,6 +115,11 @@ struct iommu_ops {
+ 	bool (*capable)(enum iommu_cap);
+ 	int (*domain_init)(struct iommu_domain *domain);
+ 	void (*domain_destroy)(struct iommu_domain *domain);
++
++	/* Domain allocation and freeing by the iommu driver */
++	struct iommu_domain *(*domain_alloc)(void);
++	void (*domain_free)(struct iommu_domain *);
++
+ 	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
+ 	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
+ 	int (*map)(struct iommu_domain *domain, unsigned long iova,
 -- 
 1.9.1
