@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 07/16] iommu/arm-smmu: Make use of domain_alloc and domain_free
-Date: Thu, 26 Mar 2015 13:43:10 +0100
-Message-ID: <1427373799-18662-8-git-send-email-joro@8bytes.org>
+Subject: [PATCH 08/16] iommu/exynos: Make use of domain_alloc and domain_free
+Date: Thu, 26 Mar 2015 13:43:11 +0100
+Message-ID: <1427373799-18662-9-git-send-email-joro@8bytes.org>
 References: <1427373799-18662-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -28,179 +28,189 @@ replacement for domain_init/domain_destroy.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 46 +++++++++++++++++++++++++++-------------------
- 1 file changed, 27 insertions(+), 19 deletions(-)
+ drivers/iommu/exynos-iommu.c | 87 ++++++++++++++++++++++++--------------------
+ 1 file changed, 47 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index fc13dd5..5575c3d 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -343,6 +343,7 @@ struct arm_smmu_domain {
- 	struct arm_smmu_cfg		cfg;
- 	enum arm_smmu_domain_stage	stage;
- 	struct mutex			init_mutex; /* Protects smmu pointer */
-+	struct iommu_domain		domain;
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index dc14fec4..3e89850 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -200,6 +200,7 @@ struct exynos_iommu_domain {
+ 	short *lv2entcnt; /* free lv2 entry counter for each section */
+ 	spinlock_t lock; /* lock for this structure */
+ 	spinlock_t pgtablelock; /* lock for modifying page table @ pgtable */
++	struct iommu_domain domain; /* generic domain data structure */
  };
  
- static struct iommu_ops arm_smmu_ops;
-@@ -360,6 +361,11 @@ static struct arm_smmu_option_prop arm_smmu_options[] = {
- 	{ 0, NULL},
+ struct sysmmu_drvdata {
+@@ -214,6 +215,11 @@ struct sysmmu_drvdata {
+ 	phys_addr_t pgtable;
  };
  
-+static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
++static struct exynos_iommu_domain *to_exynos_domain(struct iommu_domain *dom)
 +{
-+	return container_of(dom, struct arm_smmu_domain, domain);
++	return container_of(dom, struct exynos_iommu_domain, domain);
 +}
 +
- static void parse_driver_options(struct arm_smmu_device *smmu)
+ static bool set_sysmmu_active(struct sysmmu_drvdata *data)
  {
- 	int i = 0;
-@@ -645,7 +651,7 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- 	u32 fsr, far, fsynr, resume;
- 	unsigned long iova;
- 	struct iommu_domain *domain = dev;
--	struct arm_smmu_domain *smmu_domain = domain->priv;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	void __iomem *cb_base;
-@@ -836,7 +842,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	struct io_pgtable_ops *pgtbl_ops;
- 	struct io_pgtable_cfg pgtbl_cfg;
- 	enum io_pgtable_fmt fmt;
--	struct arm_smmu_domain *smmu_domain = domain->priv;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
- 
- 	mutex_lock(&smmu_domain->init_mutex);
-@@ -958,7 +964,7 @@ out_unlock:
- 
- static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
- {
--	struct arm_smmu_domain *smmu_domain = domain->priv;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
- 	void __iomem *cb_base;
-@@ -985,10 +991,12 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
- 	__arm_smmu_free_bitmap(smmu->context_map, cfg->cbndx);
+ 	/* return true if the System MMU was not active previously
+@@ -696,58 +702,60 @@ static inline void pgtable_flush(void *vastart, void *vaend)
+ 				virt_to_phys(vaend));
  }
  
--static int arm_smmu_domain_init(struct iommu_domain *domain)
-+static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+-static int exynos_iommu_domain_init(struct iommu_domain *domain)
++static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
  {
- 	struct arm_smmu_domain *smmu_domain;
+-	struct exynos_iommu_domain *priv;
++	struct exynos_iommu_domain *exynos_domain;
+ 	int i;
  
+-	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
+-		return -ENOMEM;
 +	if (type != IOMMU_DOMAIN_UNMANAGED)
 +		return NULL;
- 	/*
- 	 * Allocate the domain and initialise some of its data structures.
- 	 * We can't really do anything meaningful until we've added a
-@@ -996,17 +1004,17 @@ static int arm_smmu_domain_init(struct iommu_domain *domain)
- 	 */
- 	smmu_domain = kzalloc(sizeof(*smmu_domain), GFP_KERNEL);
- 	if (!smmu_domain)
--		return -ENOMEM;
++
++	exynos_domain = kzalloc(sizeof(*exynos_domain), GFP_KERNEL);
++	if (!exynos_domain)
 +		return NULL;
  
- 	mutex_init(&smmu_domain->init_mutex);
- 	spin_lock_init(&smmu_domain->pgtbl_lock);
--	domain->priv = smmu_domain;
+-	priv->pgtable = (sysmmu_pte_t *)__get_free_pages(GFP_KERNEL, 2);
+-	if (!priv->pgtable)
++	exynos_domain->pgtable = (sysmmu_pte_t *)__get_free_pages(GFP_KERNEL, 2);
++	if (!exynos_domain->pgtable)
+ 		goto err_pgtable;
+ 
+-	priv->lv2entcnt = (short *)__get_free_pages(GFP_KERNEL | __GFP_ZERO, 1);
+-	if (!priv->lv2entcnt)
++	exynos_domain->lv2entcnt = (short *)__get_free_pages(GFP_KERNEL | __GFP_ZERO, 1);
++	if (!exynos_domain->lv2entcnt)
+ 		goto err_counter;
+ 
+ 	/* Workaround for System MMU v3.3 to prevent caching 1MiB mapping */
+ 	for (i = 0; i < NUM_LV1ENTRIES; i += 8) {
+-		priv->pgtable[i + 0] = ZERO_LV2LINK;
+-		priv->pgtable[i + 1] = ZERO_LV2LINK;
+-		priv->pgtable[i + 2] = ZERO_LV2LINK;
+-		priv->pgtable[i + 3] = ZERO_LV2LINK;
+-		priv->pgtable[i + 4] = ZERO_LV2LINK;
+-		priv->pgtable[i + 5] = ZERO_LV2LINK;
+-		priv->pgtable[i + 6] = ZERO_LV2LINK;
+-		priv->pgtable[i + 7] = ZERO_LV2LINK;
++		exynos_domain->pgtable[i + 0] = ZERO_LV2LINK;
++		exynos_domain->pgtable[i + 1] = ZERO_LV2LINK;
++		exynos_domain->pgtable[i + 2] = ZERO_LV2LINK;
++		exynos_domain->pgtable[i + 3] = ZERO_LV2LINK;
++		exynos_domain->pgtable[i + 4] = ZERO_LV2LINK;
++		exynos_domain->pgtable[i + 5] = ZERO_LV2LINK;
++		exynos_domain->pgtable[i + 6] = ZERO_LV2LINK;
++		exynos_domain->pgtable[i + 7] = ZERO_LV2LINK;
+ 	}
+ 
+-	pgtable_flush(priv->pgtable, priv->pgtable + NUM_LV1ENTRIES);
++	pgtable_flush(exynos_domain->pgtable, exynos_domain->pgtable + NUM_LV1ENTRIES);
+ 
+-	spin_lock_init(&priv->lock);
+-	spin_lock_init(&priv->pgtablelock);
+-	INIT_LIST_HEAD(&priv->clients);
++	spin_lock_init(&exynos_domain->lock);
++	spin_lock_init(&exynos_domain->pgtablelock);
++	INIT_LIST_HEAD(&exynos_domain->clients);
+ 
+-	domain->geometry.aperture_start = 0;
+-	domain->geometry.aperture_end   = ~0UL;
+-	domain->geometry.force_aperture = true;
++	exynos_domain->domain.geometry.aperture_start = 0;
++	exynos_domain->domain.geometry.aperture_end   = ~0UL;
++	exynos_domain->domain.geometry.force_aperture = true;
+ 
+-	domain->priv = priv;
 -	return 0;
-+
-+	return &smmu_domain->domain;
++	return &exynos_domain->domain;
+ 
+ err_counter:
+-	free_pages((unsigned long)priv->pgtable, 2);
++	free_pages((unsigned long)exynos_domain->pgtable, 2);
+ err_pgtable:
+-	kfree(priv);
+-	return -ENOMEM;
++	kfree(exynos_domain);
++	return NULL;
  }
  
--static void arm_smmu_domain_destroy(struct iommu_domain *domain)
-+static void arm_smmu_domain_free(struct iommu_domain *domain)
+-static void exynos_iommu_domain_destroy(struct iommu_domain *domain)
++static void exynos_iommu_domain_free(struct iommu_domain *domain)
  {
--	struct arm_smmu_domain *smmu_domain = domain->priv;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+-	struct exynos_iommu_domain *priv = domain->priv;
++	struct exynos_iommu_domain *priv = to_exynos_domain(domain);
+ 	struct exynos_iommu_owner *owner;
+ 	unsigned long flags;
+ 	int i;
+@@ -773,15 +781,14 @@ static void exynos_iommu_domain_destroy(struct iommu_domain *domain)
  
- 	/*
- 	 * Free the domain resources. We assume that all devices have
-@@ -1143,7 +1151,7 @@ static void arm_smmu_domain_remove_master(struct arm_smmu_domain *smmu_domain,
- static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	free_pages((unsigned long)priv->pgtable, 2);
+ 	free_pages((unsigned long)priv->lv2entcnt, 1);
+-	kfree(domain->priv);
+-	domain->priv = NULL;
++	kfree(priv);
+ }
+ 
+ static int exynos_iommu_attach_device(struct iommu_domain *domain,
+ 				   struct device *dev)
  {
+ 	struct exynos_iommu_owner *owner = dev->archdata.iommu;
+-	struct exynos_iommu_domain *priv = domain->priv;
++	struct exynos_iommu_domain *priv = to_exynos_domain(domain);
+ 	phys_addr_t pagetable = virt_to_phys(priv->pgtable);
+ 	unsigned long flags;
  	int ret;
--	struct arm_smmu_domain *smmu_domain = domain->priv;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_device *smmu;
- 	struct arm_smmu_master_cfg *cfg;
- 
-@@ -1187,7 +1195,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 
- static void arm_smmu_detach_dev(struct iommu_domain *domain, struct device *dev)
+@@ -812,7 +819,7 @@ static void exynos_iommu_detach_device(struct iommu_domain *domain,
+ 				    struct device *dev)
  {
--	struct arm_smmu_domain *smmu_domain = domain->priv;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_master_cfg *cfg;
- 
- 	cfg = find_smmu_master_cfg(dev);
-@@ -1203,7 +1211,7 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
- {
- 	int ret;
+ 	struct exynos_iommu_owner *owner;
+-	struct exynos_iommu_domain *priv = domain->priv;
++	struct exynos_iommu_domain *priv = to_exynos_domain(domain);
+ 	phys_addr_t pagetable = virt_to_phys(priv->pgtable);
  	unsigned long flags;
--	struct arm_smmu_domain *smmu_domain = domain->priv;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
  
- 	if (!ops)
-@@ -1220,7 +1228,7 @@ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
+@@ -988,7 +995,7 @@ static int lv2set_page(sysmmu_pte_t *pent, phys_addr_t paddr, size_t size,
+ static int exynos_iommu_map(struct iommu_domain *domain, unsigned long l_iova,
+ 			 phys_addr_t paddr, size_t size, int prot)
  {
- 	size_t ret;
+-	struct exynos_iommu_domain *priv = domain->priv;
++	struct exynos_iommu_domain *priv = to_exynos_domain(domain);
+ 	sysmmu_pte_t *entry;
+ 	sysmmu_iova_t iova = (sysmmu_iova_t)l_iova;
  	unsigned long flags;
--	struct arm_smmu_domain *smmu_domain = domain->priv;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
- 
- 	if (!ops)
-@@ -1235,7 +1243,7 @@ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
- static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
- 					      dma_addr_t iova)
+@@ -1042,7 +1049,7 @@ static void exynos_iommu_tlb_invalidate_entry(struct exynos_iommu_domain *priv,
+ static size_t exynos_iommu_unmap(struct iommu_domain *domain,
+ 					unsigned long l_iova, size_t size)
  {
--	struct arm_smmu_domain *smmu_domain = domain->priv;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
- 	struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
-@@ -1281,7 +1289,7 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
+-	struct exynos_iommu_domain *priv = domain->priv;
++	struct exynos_iommu_domain *priv = to_exynos_domain(domain);
+ 	sysmmu_iova_t iova = (sysmmu_iova_t)l_iova;
+ 	sysmmu_pte_t *ent;
+ 	size_t err_pgsize;
+@@ -1119,7 +1126,7 @@ err:
+ static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *domain,
+ 					  dma_addr_t iova)
  {
- 	phys_addr_t ret;
+-	struct exynos_iommu_domain *priv = domain->priv;
++	struct exynos_iommu_domain *priv = to_exynos_domain(domain);
+ 	sysmmu_pte_t *entry;
  	unsigned long flags;
--	struct arm_smmu_domain *smmu_domain = domain->priv;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
+ 	phys_addr_t phys = 0;
+@@ -1171,8 +1178,8 @@ static void exynos_iommu_remove_device(struct device *dev)
+ }
  
- 	if (!ops)
-@@ -1389,7 +1397,7 @@ static void arm_smmu_remove_device(struct device *dev)
- static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
- 				    enum iommu_attr attr, void *data)
- {
--	struct arm_smmu_domain *smmu_domain = domain->priv;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 
- 	switch (attr) {
- 	case DOMAIN_ATTR_NESTING:
-@@ -1404,7 +1412,7 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
- 				    enum iommu_attr attr, void *data)
- {
- 	int ret = 0;
--	struct arm_smmu_domain *smmu_domain = domain->priv;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 
- 	mutex_lock(&smmu_domain->init_mutex);
- 
-@@ -1432,8 +1440,8 @@ out_unlock:
- 
- static struct iommu_ops arm_smmu_ops = {
- 	.capable		= arm_smmu_capable,
--	.domain_init		= arm_smmu_domain_init,
--	.domain_destroy		= arm_smmu_domain_destroy,
-+	.domain_alloc		= arm_smmu_domain_alloc,
-+	.domain_free		= arm_smmu_domain_free,
- 	.attach_dev		= arm_smmu_attach_dev,
- 	.detach_dev		= arm_smmu_detach_dev,
- 	.map			= arm_smmu_map,
+ static const struct iommu_ops exynos_iommu_ops = {
+-	.domain_init = exynos_iommu_domain_init,
+-	.domain_destroy = exynos_iommu_domain_destroy,
++	.domain_alloc = exynos_iommu_domain_alloc,
++	.domain_free = exynos_iommu_domain_free,
+ 	.attach_dev = exynos_iommu_attach_device,
+ 	.detach_dev = exynos_iommu_detach_device,
+ 	.map = exynos_iommu_map,
 -- 
 1.9.1
