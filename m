@@ -1,251 +1,86 @@
-From: "Wu, Feng" <feng.wu@intel.com>
-Subject: RE: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU
- is blocked
-Date: Fri, 27 Mar 2015 06:34:14 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F0024697E0@SHSMSX104.ccr.corp.intel.com>
-References: <1418397300-10870-1-git-send-email-feng.wu@intel.com>
- <1418397300-10870-25-git-send-email-feng.wu@intel.com>
- <20150226234048.GA7784@amt.cnet>
- <E959C4978C3B6342920538CF579893F0023F5A98@SHSMSX104.ccr.corp.intel.com>
- <20150304120608.GA26762@amt.cnet>
- <E959C4978C3B6342920538CF579893F002409841@SHSMSX104.ccr.corp.intel.com>
- <20150312011526.GA5878@amt.cnet>
- <E959C4978C3B6342920538CF579893F00243A819@SHSMSX104.ccr.corp.intel.com>
- <20150325231738.GA7333@amt.cnet>
+From: Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 2/5] iommu/mediatek: Add mt8173 IOMMU driver
+Date: Fri, 27 Mar 2015 18:41:09 +0900
+Message-ID: <CAAFQd5DOzFmfXki8GwUC75VQFEWzxBUNUgOtSuRtV6tc27kD2A@mail.gmail.com>
+References: <1425638900-24989-1-git-send-email-yong.wu@mediatek.com>
+ <1425638900-24989-3-git-send-email-yong.wu@mediatek.com> <CAAFQd5ASywTX7P9L8cogBbBTra0W1=oVxeWfK5=K7L+SR2xaFA@mail.gmail.com>
+ <1426677749.22581.38.camel@mhfsdcap03>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150325231738.GA7333@amt.cnet>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Marcelo Tosatti <mtosatti@redhat.com>
-Cc: "tglx@linutronix.de" <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>, "hpa@zytor.com" <hpa@zytor.com>, "x86@kernel.org" <x86@kernel.org>, "gleb@kernel.org" <gleb@kernel.org>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "eric.auger@linaro.org" <eric.auger@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Wu, Feng" <feng.wu@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1426677749.22581.38.camel@mhfsdcap03>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Yong Wu,
 
+Sorry for long delay, I had to figure out some time to look at this again.
 
-> -----Original Message-----
-> From: Marcelo Tosatti [mailto:mtosatti@redhat.com]
-> Sent: Thursday, March 26, 2015 7:18 AM
-> To: Wu, Feng; hpa@zytor.com
-> Cc: tglx@linutronix.de; mingo@redhat.com; hpa@zytor.com; x86@kernel.org;
-> gleb@kernel.org; pbonzini@redhat.com; dwmw2@infradead.org;
-> joro@8bytes.org; alex.williamson@redhat.com; jiang.liu@linux.intel.com;
-> eric.auger@linaro.org; linux-kernel@vger.kernel.org;
-> iommu@lists.linux-foundation.org; kvm@vger.kernel.org
-> Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU
-> is blocked
-> 
-> On Mon, Mar 16, 2015 at 11:42:06AM +0000, Wu, Feng wrote:
-> > > Do you have any reason why having the code at vcpu_put/vcpu_load is
-> > > better than the proposal to have the code at kvm_vcpu_block?
-> >
-> > I think your proposal is good, I just want to better understand your idea
-> here.:)
-> 
-> Reduce the overhead of vcpu sched in / vcpu sched out, basically.
-> 
-> > One thing, even we put the code to kvm_vcpu_block, we still need to add
-> code
-> > at vcpu_put/vcpu_load for the preemption case like what I did now.
-> >
-> > >
-> > > >
-> > > > Global vector is a limited resources in the system, and this involves
-> > > > common x86 interrupt code changes. I am not sure we can allocate
-> > > > so many dedicated global vector for KVM usage.
-> > >
-> > > Why not? Have KVM use all free vectors (so if vectors are necessary for
-> > > other purposes, people should shrink the KVM vector pool).
-> >
-> > If we want to allocate more global vector for this usage, we need hpa's
-> > input about it. Peter, what is your opinion?
-> 
-> Peter?
-> 
-> > > BTW the Intel docs talk about that ("one vector per vCPU").
-> > Yes, the Spec talks about this, but it is more complex using one vector per
-> vCPU.
-> >
-> > >
-> > > > > > > It seems there is a bunch free:
-> > > > > > >
-> > > > > > > commit 52aec3308db85f4e9f5c8b9f5dc4fbd0138c6fa4
-> > > > > > > Author: Alex Shi <alex.shi@intel.com>
-> > > > > > > Date:   Thu Jun 28 09:02:23 2012 +0800
-> > > > > > >
-> > > > > > >     x86/tlb: replace INVALIDATE_TLB_VECTOR by
-> > > > > CALL_FUNCTION_VECTOR
-> > > > > > >
-> > > > > > > Can you add only vcpus which have posted IRTEs that point to this
-> pCPU
-> > > > > > > to the HLT'ed vcpu lists? (so for example, vcpus without assigned
-> > > > > > > devices are not part of the list).
-> > > > > >
-> > > > > > Is it easy to find whether a vCPU (or the associated domain) has
-> assigned
-> > > > > devices?
-> > > > > > If so, we can only add those vCPUs with assigned devices.
-> > > > >
-> > > > > When configuring IRTE, at kvm_arch_vfio_update_pi_irte?
-> > > >
-> > > > Yes.
-> > > >
-> > > > >
-> > > > > > > > +
-> > > > > > > >  static int __init vmx_init(void)
-> > > > > > > >  {
-> > > > > > > >  	int r, i, msr;
-> > > > > > > > @@ -9429,6 +9523,8 @@ static int __init vmx_init(void)
-> > > > > > > >
-> > > > > > > >  	update_ple_window_actual_max();
-> > > > > > > >
-> > > > > > > > +	wakeup_handler_callback = wakeup_handler;
-> > > > > > > > +
-> > > > > > > >  	return 0;
-> > > > > > > >
-> > > > > > > >  out7:
-> > > > > > > > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> > > > > > > > index 0033df3..1551a46 100644
-> > > > > > > > --- a/arch/x86/kvm/x86.c
-> > > > > > > > +++ b/arch/x86/kvm/x86.c
-> > > > > > > > @@ -6152,6 +6152,21 @@ static int vcpu_enter_guest(struct
-> > > kvm_vcpu
-> > > > > > > *vcpu)
-> > > > > > > >  			kvm_vcpu_reload_apic_access_page(vcpu);
-> > > > > > > >  	}
-> > > > > > > >
-> > > > > > > > +	/*
-> > > > > > > > +	 * Since posted-interrupts can be set by VT-d HW now, in this
-> > > > > > > > +	 * case, KVM_REQ_EVENT is not set. We move the following
-> > > > > > > > +	 * operations out of the if statement.
-> > > > > > > > +	 */
-> > > > > > > > +	if (kvm_lapic_enabled(vcpu)) {
-> > > > > > > > +		/*
-> > > > > > > > +		 * Update architecture specific hints for APIC
-> > > > > > > > +		 * virtual interrupt delivery.
-> > > > > > > > +		 */
-> > > > > > > > +		if (kvm_x86_ops->hwapic_irr_update)
-> > > > > > > > +			kvm_x86_ops->hwapic_irr_update(vcpu,
-> > > > > > > > +				kvm_lapic_find_highest_irr(vcpu));
-> > > > > > > > +	}
-> > > > > > > > +
-> > > > > > >
-> > > > > > > This is a hot fast path. You can set KVM_REQ_EVENT from
-> > > wakeup_handler.
-> > > > > >
-> > > > > > I am afraid Setting KVM_REQ_EVENT from wakeup_handler doesn't
-> help
-> > > > > much,
-> > > > > > if vCPU is running in ROOT mode, and VT-d hardware issues an
-> notification
-> > > > > event,
-> > > > > > POSTED_INTR_VECTOR interrupt handler will be called.
-> > > > >
-> > > > > If vCPU is in root mode, remapping HW will find IRTE configured with
-> > > > > vector == POSTED_INTR_WAKEUP_VECTOR, use that vector, which will
-> > > > > VM-exit, and execute the interrupt handler wakeup_handler. Right?
-> > > >
-> > > > There are two cases:
-> > > > Case 1: vCPU is blocked, so it is in root mode, this is what you described
-> > > above.
-> > > > Case 2, vCPU is running in root mode, such as, handling vm-exits, in this
-> case,
-> > > > the notification vector is 'POSTED_INTR_VECTOR', and if external
-> interrupts
-> > > > from assigned devices happen, the handled of 'POSTED_INTR_VECTOR'
-> will
-> > > > be called ( it is 'smp_kvm_posted_intr_ipi' in fact), this routine doesn't
-> need
-> > > > do real things, since the pending interrupts in PIR will be synced to vIRR
-> > > before
-> > > > VM-Entry (this code have already been there when enabling CPU-side
-> > > > posted-interrupt along with APICv). Like what I said before, it is a little
-> hard
-> > > to
-> > > > get vCPU related information in it, even if we get, it is not accurate and
-> may
-> > > harm
-> > > > the performance.(need search)
-> > > >
-> > > > So only setting KVM_REQ_EVENT in wakeup_handler cannot cover the
-> > > notification
-> > > > event for 'POSTED_INTR_VECTOR'.
-> > > >
-> > > > >
-> > > > > The point of this comment is that you can keep the
-> > > > >
-> > > > > "if (kvm_x86_ops->hwapic_irr_update)
-> > > > > 	kvm_x86_ops->hwapic_irr_update(vcpu,
-> > > > > 			kvm_lapic_find_highest_irr(vcpu));
-> > > > > "
-> > > > >
-> > > > > Code inside KVM_REQ_EVENT handling section of vcpu_run, as long as
-> > > > > wakeup_handler sets KVM_REQ_EVENT.
-> > > >
-> > > > Please see above.
-> > >
-> > > OK can you set KVM_REQ_EVENT in case the ON bit is set,
-> > > after disabling interrupts ?
-> > >
-> > Currently, the following code is executed before local_irq_disable() is called,
-> > so do you mean 1)moving local_irq_disable() to the place before it. 2) after
-> interrupt
-> > is disabled, set KVM_REQ_EVENT in case the ON bit is set?
-> 
-> 2) after interrupt is disabled, set KVM_REQ_EVENT in case the ON bit
-> is set.
+On Wed, Mar 18, 2015 at 8:22 PM, Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
+>>
+>> > +               imudev = piommu->dev;
+>> > +
+>> > +       spin_lock_irqsave(&priv->portlock, flags);
+>>
+>> What is protected by this spinlock?
+>         We will write a register of the local arbiter while config port. If
+> some modules are in the same local arbiter, it may be overwrite. so I
+> add it here.
+>>
 
-Here is my understanding about your comments here:
-- Disable interrupts
-- Check 'ON'
-- Set KVM_REQ_EVENT if 'ON' is set
+OK. Maybe it could be called larb_lock then? It would be good to have
+structures or code that should be running under this spinlock
+annotated with proper comments. And purpose of the lock documented in
+a comment as well (probably in a kerneldoc-style documentation of
+priv).
 
-Then we can put the above code inside " if (kvm_check_request(KVM_REQ_EVENT, vcpu) || req_int_win) "
-just like it used to be. However, I still have some questions about this comment:
+>> > +static void mtk_iommu_detach_device(struct iommu_domain *domain,
+>> > +                                   struct device *dev)
+>> > +{
+>>
+>> No hardware (de)configuration or clean-up necessary?
+> I will add it. Actually we design like this:If a device have attached to
+> iommu domain, it won't detach from it.
 
-1. Where should I set KVM_REQ_EVENT? In function vcpu_enter_guest(), or other places?
-If in vcpu_enter_guest(), since currently local_irq_disable() is called after 'KVM_REQ_EVENT'
-is checked, is it helpful to set KVM_REQ_EVENT after local_irq_disable() is called?
-2. 'ON' is set by VT-d hardware, it can be set even when interrupt is disabled (the related bit in PIR is also set).
-So does it make sense to check 'ON' and set KVM_REQ_EVENT accordingly after interrupt is disabled?
+Isn't proper clean-up required for module removal? Some drivers might
+be required to be loadable modules, which should be unloadable.
 
-I might miss something in your comments, if so please point out. Thanks a lot!
+>>
+>> > +
+>> > +       piommu->protect_va = devm_kmalloc(piommu->dev, MTK_PROTECT_PA_ALIGN*2,
+>>
+>> style: Operators like * should have space on both sides.
+>>
+>> > +                                         GFP_KERNEL);
+>>
+>> Shouldn't dma_alloc_coherent() be used for this?
+>      We don't care the data in it. I think they are the same. Could you
+> help tell me why dma_alloc_coherent may be better.
 
-Thanks,
-Feng
+Can you guarantee that at the time you allocate the memory using
+devm_kmalloc() the memory is not dirty (i.e. some write back data are
+stored in CPU cache) and is not going to be written back in some time,
+overwriting data put there by IOMMU hardware?
 
-> 
-> >
-> > "if (kvm_x86_ops->hwapic_irr_update)
-> > 	kvm_x86_ops->hwapic_irr_update(vcpu,
-> > 			kvm_lapic_find_highest_irr(vcpu));
-> >
-> > > kvm_lapic_find_highest_irr(vcpu) eats some cache
-> > > (4 cachelines) versus 1 cacheline for reading ON bit.
-> > >
-> > > > > > > Please remove blocked and wakeup_cpu, they should not be
-> necessary.
-> > > > > >
-> > > > > > Why do you think wakeup_cpu is not needed, when vCPU is blocked,
-> > > > > > wakeup_cpu saves the cpu which the vCPU is blocked on, after vCPU
-> > > > > > is woken up, it can run on a different cpu, so we need wakeup_cpu to
-> > > > > > find the right list to wake up the vCPU.
-> > > > >
-> > > > > If the vCPU was moved it should have updated IRTE destination field
-> > > > > to the pCPU which it has moved to?
-> > > >
-> > > > Every time a vCPU is scheduled to a new pCPU, the IRTE destination filed
-> > > > would be updated accordingly.
-> > > >
-> > > > When vCPU is blocked. To wake up the blocked vCPU, we need to find
-> which
-> > > > list the vCPU is blocked on, and this is what wakeup_cpu used for?
-> > >
-> > > Right, perhaps prev_vcpu is a better name.
-> >
-> > Do you mean "prev_pcpu"?
-> 
-> Yes.
-> 
+>> > +
+>> > +       iommu_set_fault_handler(domain, mtk_iommu_fault_handler, piommu);
+>>
+>> I don't see any other drivers doing this. Isn't this for upper layers,
+>> so that they can set their own generic fault handlers?
+>      I think that this function is related with the iommu domain, we
+> have only one multimedia iommu domain. so I add it after the iommu
+> domain are created.
+
+No, this function is for drivers of IOMMU clients (i.e. master IP
+blocks) which want to subscribe to page fault to do things like paging
+on demand and so on. It shouldn't be called by IOMMU driver. Please
+see other IOMMU drivers, for example rockchip-iommmu.c.
+
+Best regards,
+Tomasz
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
