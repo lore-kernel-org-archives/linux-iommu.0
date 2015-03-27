@@ -1,109 +1,84 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 4/4] iommu/tegra: smmu: Compute PFN mask at runtime
-Date: Fri, 27 Mar 2015 11:07:27 +0100
-Message-ID: <1427450847-17719-4-git-send-email-thierry.reding@gmail.com>
+Subject: Re: [PATCH 1/4] iommu/tegra-smmu: Add debugfs support
+Date: Fri, 27 Mar 2015 11:15:41 +0100
+Message-ID: <20150327101539.GA17976@ulmo.nvidia.com>
 References: <1427450847-17719-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="YZ5djTAD1cGYuMQK"
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
 In-Reply-To: <1427450847-17719-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-The SMMU on Tegra30 and Tegra114 supports addressing up to 4 GiB of
-physical memory. On Tegra124 the addressable physical memory was
-extended to 16 GiB. The page frame number stored in PTEs therefore
-requires 20 or 22 bits, depending on SoC generation.
+--YZ5djTAD1cGYuMQK
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-In order to cope with this, compute the proper value at runtime.
+On Fri, Mar 27, 2015 at 11:07:24AM +0100, Thierry Reding wrote:
+> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+>=20
+> Provide clients and swgroups files in debugfs. These files show for
+> which clients IOMMU translation is enabled and which ASID is associated
+> with each SWGROUP.
+>=20
+> Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/iommu/tegra-smmu.c | 109 +++++++++++++++++++++++++++++++++++++++=
+++++++
+>  include/soc/tegra/mc.h     |   5 +++
+>  2 files changed, 114 insertions(+)
 
-Reported-by: Joseph Lo <josephl-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/tegra-smmu.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+Hi Joerg,
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 7b36760ae087..f0496e34ada3 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -6,6 +6,7 @@
-  * published by the Free Software Foundation.
-  */
- 
-+#include <linux/bitops.h>
- #include <linux/debugfs.h>
- #include <linux/err.h>
- #include <linux/iommu.h>
-@@ -25,6 +26,8 @@ struct tegra_smmu {
- 	struct tegra_mc *mc;
- 	const struct tegra_smmu_soc *soc;
- 
-+	unsigned long pfn_mask;
-+
- 	unsigned long *asids;
- 	struct mutex lock;
- 
-@@ -108,8 +111,6 @@ static inline u32 smmu_readl(struct tegra_smmu *smmu, unsigned long offset)
- #define SMMU_PDE_SHIFT 22
- #define SMMU_PTE_SHIFT 12
- 
--#define SMMU_PFN_MASK 0x000fffff
--
- #define SMMU_PD_READABLE	(1 << 31)
- #define SMMU_PD_WRITABLE	(1 << 30)
- #define SMMU_PD_NONSECURE	(1 << 29)
-@@ -489,7 +490,7 @@ static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
- 		smmu_flush_tlb_section(smmu, as->id, iova);
- 		smmu_flush(smmu);
- 	} else {
--		page = pfn_to_page(pd[pde] & SMMU_PFN_MASK);
-+		page = pfn_to_page(pd[pde] & smmu->pfn_mask);
- 		pt = page_address(page);
- 	}
- 
-@@ -511,7 +512,7 @@ static void as_put_pte(struct tegra_smmu_as *as, dma_addr_t iova)
- 	u32 *pd = page_address(as->pd), *pt;
- 	struct page *page;
- 
--	page = pfn_to_page(pd[pde] & SMMU_PFN_MASK);
-+	page = pfn_to_page(pd[pde] & as->smmu->pfn_mask);
- 	pt = page_address(page);
- 
- 	/*
-@@ -586,7 +587,7 @@ static phys_addr_t tegra_smmu_iova_to_phys(struct iommu_domain *domain,
- 	u32 *pte;
- 
- 	pte = as_get_pte(as, iova, &page);
--	pfn = *pte & SMMU_PFN_MASK;
-+	pfn = *pte & as->smmu->pfn_mask;
- 
- 	return PFN_PHYS(pfn);
- }
-@@ -807,6 +808,10 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
- 	smmu->dev = dev;
- 	smmu->mc = mc;
- 
-+	smmu->pfn_mask = BIT_MASK(mc->soc->num_address_bits - PAGE_SHIFT) - 1;
-+	dev_dbg(dev, "address bits: %u, PFN mask: %#lx\n",
-+		mc->soc->num_address_bits, smmu->pfn_mask);
-+
- 	value = SMMU_PTC_CONFIG_ENABLE | SMMU_PTC_CONFIG_INDEX_MAP(0x3f);
- 
- 	if (soc->supports_request_limit)
--- 
-2.3.2
+I forgot to mention that this patch depends on another patch that I plan
+to take through the Tegra tree. That patch adds the group names that are
+used by the debugfs support introduced here.
+
+There are a couple of ways to solve this: omit this patch for v4.1 and
+merge it for v4.2, at which point the dependency will have been merged.
+That's obviously the simplest one and given that this is debugfs support
+it isn't very critical, just nice to have.
+
+Another possibility would be for you to ack this patch so that I can
+take it into the same branch as the dependency. The remainder of this
+series doesn't depend on either of the two patches, so they should be
+fine for you to take into your tree.
+
+Yet another alternative would be for me to provide a stable branch that
+can be merged into the Tegra and IOMMU trees, but quite frankly I don't
+think it's worth jumping through hoops like that for this particular
+patch. I'd prefer either the first or second alternative, whichever
+suits you best.
+
+Thanks,
+Thierry
+
+--YZ5djTAD1cGYuMQK
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJVFS3JAAoJEN0jrNd/PrOhhGEP/A9UooGg/9jmJPpvulSeA0r4
+5zt4b3RuBzTbmesdgEdgP0LKpzeCMjSnYBM8K+j+KH+CphtzeeDxzxIqs9x7KKjp
+aPts3PTD/V4KdRX09bvTBL845z6FrvGJ8skPbYW442apf21pQ9D9sHlk2cXFTh97
+xqiFfNbQERZzc0wmlH7Rjg3xLMza+WhPgO1aJrHCtk4a9vbkQSQpjV/+v018zJ8P
+Ziy7DHNtBEf4B/EigMAjkwW/FJjENEmG3oPbxaUqDxgeanBueLQ2MnsStTUAKNrr
+zChRYSCoRoZ2HBro4beEWLzc997oMLanTFdqZMVpyOOYYK/0Akm0jTUWQy9WwSiw
++UPnr7N9OLrcO1Ou3uDod4GWy854kJoEMXbH1hm6pPL1VCPiC6JBYkjR1FM2xzQy
+QfdPxbs3Qs3WFGEDRy9T2M/virCVvT2klNR25nZhujWxcHJe2bMvXxsy4o5LyQHb
+xgp9P5jPU1L7jDxfHvKnDYuuRHCX1xcRDBgaoB0DipznEMSZIA018aO9z4BfDun9
+begQzE2nddsTA5mUCLUVedPttVa3+nS0HYm1FAidojwSecaAqtzujZ9vGvT3J5sw
+bZ9dOSWjok2tX7De/n0XXLZBsJUYv+y5emEq1ZB3WUSVoNS8IqiE3phRZzGDR6Zi
+59KbyToeRLDJXsiimQeb
+=2pv/
+-----END PGP SIGNATURE-----
+
+--YZ5djTAD1cGYuMQK--
