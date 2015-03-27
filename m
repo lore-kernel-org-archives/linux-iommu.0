@@ -1,123 +1,77 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 00/16 v2] iommu: Move domain allocation into drivers
-Date: Fri, 27 Mar 2015 12:03:43 +0100
-Message-ID: <20150327110341.GC5440@ulmo.nvidia.com>
-References: <1427373799-18662-1-git-send-email-joro@8bytes.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [GIT PULL] iommu: Kill off pgsize_bitmap field from struct iommu_ops
+Date: Fri, 27 Mar 2015 17:19:46 +0000
+Message-ID: <20150327171946.GL1562@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="hOcCNbCCxyk/YU74"
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1427373799-18662-1-git-send-email-joro@8bytes.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, Will Deacon <will.deacon@arm.com>, Kukjin Kim <kgene@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Heiko Stuebner <heiko@sntech.de>, Hiroshi Doyu <hdoyu@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Alexandre Courbot <gnurou@gmail.com>, Alex Williamson <alex.williamson@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Yingjoe Chen <yingjoe.chen@mediatek.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-rockchip@lists.infradead.org, linux-tegra@vger.kernel.org, jroedel@suse.de
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Joerg,
 
---hOcCNbCCxyk/YU74
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Please can you pull the following IOMMU changes for 4.1? They move the
+per-iommu_ops pgsize_bitmap field into the iommu_domain, which allows
+IOMMUs such as the ARM SMMU to support different page sizes within a
+given SoC.
 
-On Thu, Mar 26, 2015 at 01:43:03PM +0100, Joerg Roedel wrote:
-> Changes v1-v2:
->=20
-> 	* Rebased to v4.0-rc5
-> 	* Converted domain-types to a bit-field
->=20
-> Hi,
->=20
-> here is patch-set to replace the existing domain_init and
-> domain_destroy iommu-ops with the new domain_alloc and
-> domain_free callbacks
->=20
-> The new callbacks move the allocation of iommu domains into
-> the iommu driver, allowing them to put a generic
-> iommu_domain struct into their own domain struct. This makes
-> domain handling in the drivers more cache efficient and
-> prepares the introduction of default domains in another
-> patch-set.
->=20
-> While at it, this patch-set also introduces domain types.
-> These are internal to the iommu core code for now, there are
-> three of them:
->=20
-> 	* DMA-API domains
-> 	* Identity mapped domains
-> 	* Domains unmanaged by the iommu-core, used for
-> 	  iommu-api so that the users can create their own
-> 	  mappings
->=20
-> The patches have been compile tested for x86, ARM and PPC
-> and runtime tested on x86 (Intel VT-d and AMD IOMMU).
->=20
-> Please review.
->=20
-> Thanks,
->=20
-> 	Joerg
->=20
-> Joerg Roedel (15):
->   iommu: Introduce domain_alloc and domain_free iommu_ops
->   iommu: Introduce iommu domain types
->   iommu/amd: Make use of domain_alloc and domain_free
->   iommu/vt-d: Make use of domain_alloc and domain_free
->   iommu/omap: Make use of domain_alloc and domain_free
->   iommu/arm-smmu: Make use of domain_alloc and domain_free
->   iommu/exynos: Make use of domain_alloc and domain_free
->   iommu/tegra-smmu: Make use of domain_alloc and domain_free
->   iommu/tegra-gart: Make use of domain_alloc and domain_free
->   iommu/msm: Make use of domain_alloc and domain_free
->   iommu/shmobile: Make use of domain_alloc and domain_free
->   iommu/ipmmu-vmsa: Make use of domain_alloc and domain_free
->   iommu/rockchip: Make use of domain_alloc and domain_free
->   iommu/fsl: Make use of domain_alloc and domain_free
->   iommu: Remove domain_init and domain_free iommu_ops
->=20
->  drivers/iommu/amd_iommu.c       | 84 +++++++++++++++++++++--------------=
-----
->  drivers/iommu/amd_iommu_types.h |  7 ++--
->  drivers/iommu/arm-smmu.c        | 46 +++++++++++++---------
->  drivers/iommu/exynos-iommu.c    | 87 ++++++++++++++++++++++-------------=
-------
->  drivers/iommu/fsl_pamu_domain.c | 60 +++++++++++++++-------------
->  drivers/iommu/fsl_pamu_domain.h |  2 +-
->  drivers/iommu/intel-iommu.c     | 48 +++++++++++++----------
->  drivers/iommu/iommu.c           | 20 ++--------
->  drivers/iommu/ipmmu-vmsa.c      | 43 +++++++++++---------
->  drivers/iommu/msm_iommu.c       | 73 +++++++++++++++++-----------------
->  drivers/iommu/omap-iommu.c      | 49 +++++++++++++----------
->  drivers/iommu/rockchip-iommu.c  | 40 +++++++++++--------
->  drivers/iommu/shmobile-iommu.c  | 40 +++++++++++--------
->  drivers/iommu/tegra-gart.c      | 67 +++++++++++++++++++++----------
->  drivers/iommu/tegra-smmu.c      | 41 ++++++++++---------
->  include/linux/iommu.h           | 17 ++++++--
->  16 files changed, 407 insertions(+), 317 deletions(-)
+Cheers,
 
-The core and Tegra bits:
+Will
 
-Tested-by: Thierry Reding <treding@nvidia.com>
+--->8
 
---hOcCNbCCxyk/YU74
-Content-Type: application/pgp-signature
+The following changes since commit 06e5801b8cb3fc057d88cb4dc03c0b64b2744cda:
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+  Linux 4.0-rc4 (2015-03-15 17:38:20 -0700)
 
-iQIcBAABCAAGBQJVFTkNAAoJEN0jrNd/PrOhOnAP/0c1ukOr7WBy0Q18WxVj8j7F
-VZj1NFFiReYH75D3J7LYVMCFoEnw8HaKQxjCwgy25WID6q9fBQD00SmTsj8y4vxW
-L3BhV2mWMmhtGoIVt110rtS6DRbMBzwzVWJ3uMp7y53FMr2BsQF9O1qOGYsgOmuM
-NahD7DaofEeJ+vgc/Uq0NH6ccae4lKRKxcszEicCdZ+/a7kQFikqQ1olR/oNw/Sz
-127aL97Cj8ASlnTRzeH2K2R6eETcareoBAYIIoBLHb84jfx9/npqU9TKW+z3EPB1
-ulMK8geAd0+wQcQe2h39IyBXWGf8ILwCfUjVNjq9W0PXkaLexE0VlktcZDYveeaj
-GGnKNSHFfPYmfsg3aIIVkt5sTs4dfw77opKH6wjRm3QPalNv86ELt9EwLx5YgM1I
-xi11a536l9ztHtZZ24NREd/7OAhXQV7Q6xbMdhiLsRIJiYclc58rFivMUMCvRavN
-qoOjS1TlIKoA6Jx01j76ejxVQfZoecsmyaa7D8RsVkN2S+GCfvsloqaM96ye6MNs
-IT9wCsPI93RuR1PWE5pcna1ltNId/Xwl3R90Kzj1vfa5csTHhiN3kXl7tVvvNhbG
-sMieuj/XF0XX5FpyoFGPud3wu7ZlDjASTInGWTFMZfr64vBiYIR7Tvh1ET7/dJ7p
-E1DQqZ9NjO0HmEjRmBMR
-=uhCB
------END PGP SIGNATURE-----
+are available in the git repository at:
 
---hOcCNbCCxyk/YU74--
+  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/pgsize
+
+for you to fetch changes up to 0232a7bfdab918a0cfdc7545abf09e359eb8c32c:
+
+  iommu: of: enforce const-ness of struct iommu_ops (2015-03-20 17:39:34 +0000)
+
+----------------------------------------------------------------
+Robin Murphy (1):
+      iommu: of: enforce const-ness of struct iommu_ops
+
+Will Deacon (2):
+      iommu: remove unused priv field from struct iommu_ops
+      iommu: move pgsize_bitmap from struct iommu_ops to struct iommu_domain
+
+ arch/arm/include/asm/dma-mapping.h   |  2 +-
+ arch/arm/mm/dma-mapping.c            |  6 +++---
+ arch/arm64/include/asm/dma-mapping.h |  3 ++-
+ drivers/iommu/amd_iommu.c            |  2 +-
+ drivers/iommu/arm-smmu.c             | 12 +++++-------
+ drivers/iommu/exynos-iommu.c         |  3 ++-
+ drivers/iommu/intel-iommu.c          |  2 +-
+ drivers/iommu/iommu.c                | 16 ++++++++--------
+ drivers/iommu/ipmmu-vmsa.c           |  2 +-
+ drivers/iommu/msm_iommu.c            |  3 ++-
+ drivers/iommu/of_iommu.c             | 12 ++++++------
+ drivers/iommu/omap-iommu.c           |  3 ++-
+ drivers/iommu/rockchip-iommu.c       |  2 +-
+ drivers/iommu/shmobile-iommu.c       |  2 +-
+ drivers/iommu/tegra-gart.c           |  2 +-
+ drivers/iommu/tegra-smmu.c           |  3 +--
+ drivers/of/platform.c                |  2 +-
+ drivers/vfio/vfio_iommu_type1.c      |  2 +-
+ include/linux/dma-mapping.h          |  2 +-
+ include/linux/iommu.h                |  6 +-----
+ include/linux/of_iommu.h             |  8 ++++----
+ 21 files changed, 46 insertions(+), 49 deletions(-)
