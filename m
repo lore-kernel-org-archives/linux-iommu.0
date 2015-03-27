@@ -1,80 +1,80 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 2/4] iommu/tegra: Setup aperture
-Date: Fri, 27 Mar 2015 11:19:36 +0100
-Message-ID: <20150327101935.GB17976@ulmo.nvidia.com>
-References: <1427450847-17719-1-git-send-email-thierry.reding@gmail.com>
- <1427450847-17719-2-git-send-email-thierry.reding@gmail.com>
+Subject: Re: [PATCH 09/16] iommu/tegra-smmu: Make use of domain_alloc and
+	domain_free
+Date: Fri, 27 Mar 2015 11:59:48 +0100
+Message-ID: <20150327105946.GA5440@ulmo.nvidia.com>
+References: <1427373799-18662-1-git-send-email-joro@8bytes.org>
+	<1427373799-18662-10-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="O5XBE6gyVG5Rl6Rj"
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1427450847-17719-2-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: multipart/mixed; boundary="===============3845829274076137479=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1427373799-18662-10-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, jroedel-l3A5Bk7waGM@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 
---O5XBE6gyVG5Rl6Rj
+--===============3845829274076137479==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="UugvWAfsgieZRqgk"
+Content-Disposition: inline
+
+
+--UugvWAfsgieZRqgk
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Mar 27, 2015 at 11:07:25AM +0100, Thierry Reding wrote:
-> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+On Thu, Mar 26, 2015 at 01:43:12PM +0100, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 >=20
-> Each address space in the Tegra SMMU provides 4 GiB worth of addresses.
+> Implement domain_alloc and domain_free iommu-ops as a
+> replacement for domain_init/domain_destroy.
 >=20
-> Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 > ---
->  drivers/iommu/tegra-smmu.c | 5 +++++
->  1 file changed, 5 insertions(+)
->=20
-> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-> index fff45b3d3e57..7b36760ae087 100644
-> --- a/drivers/iommu/tegra-smmu.c
-> +++ b/drivers/iommu/tegra-smmu.c
-> @@ -269,6 +269,11 @@ static int tegra_smmu_domain_init(struct iommu_domai=
-n *domain)
-> =20
->  	domain->priv =3D as;
-> =20
-> +	/* setup aperture */
-> +	domain->geometry.aperture_start =3D 0;
-> +	domain->geometry.aperture_end =3D 0xffffffff;
-> +	domain->geometry.force_aperture =3D true;
-> +
->  	return 0;
->  }
+>  drivers/iommu/tegra-smmu.c | 41 +++++++++++++++++++++++------------------
+>  1 file changed, 23 insertions(+), 18 deletions(-)
 
-I also just realized that this hunk conflicts with the IOMMU domain
-alloc/free series that you sent out yesterday. Were you planning on
-merging that series for 4.1? If so I can regenerate these patches on
-top of your series.
+Acked-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-Thierry
-
---O5XBE6gyVG5Rl6Rj
+--UugvWAfsgieZRqgk
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJVFS62AAoJEN0jrNd/PrOhlnoP/06eStfdZyjj+Carpf/TZwzA
-AEt595+IZ0pvK9kDuFts4QWNjl1c7gG0P6K9DUMvqlXAg7P0KVOdlGH3FV4+nVyV
-mLV3xFusdXlkCm7dZNT8Lufe/UbuNUNLflWZR+h4TjWUQRYAzJNt8avjD0S8DcaU
-MiHb2KXam7pZ1wVy6vVHYTISH6gfmanGgT8GRqiTtGZ6ZYHOmQKV/+zGXi75CpKE
-a2nPAmN8u8S2sjY6IRnkq/8rgbYzqS+hWR3tOh0buJXaUs+gkgFS13AxYRzhcJbO
-A6kd4uVn5T0P87IcV7do0xoBXEomkPamyha8fFCz9fyxtohfiCAy8OwzzErpFe0Y
-vm7/cQnmyjqulYcDFVjc6tTEYfWFPdNQih5s5IUvFSorewVO626Suar2YqOG7Nqa
-124pM37KvWzLnN0kCeB7sRm18G1BOO/eV8MaYSYNuZ+RgB2x2DyGK+du5qGpkoIZ
-IeN0nQV07GXLbz2xqoeYGKUkHFPBEJVk7f/NknEt0Kx1LwZOsUEblKKfkXuuBAEp
-SvEqpyKJ/0q0M3n0e6s9ig7+gXzNpvkOOeJOvlKcxVNA98ULXVrhxGbkea5BJXxs
-r2J12nX4OHBHw46Rh/+r4g3dGCq9z4QfpPBVmauOep6xek6fNFhKK3zPv+gxhAE5
-2G418jTqbiqTLwGogxuw
-=iMcL
+iQIcBAABCAAGBQJVFTgfAAoJEN0jrNd/PrOhVFAQALuslBm7B5Zb7XsdRKPJHaTZ
+pCO5rUG52jL8tgU/r1uq9sim4gGcAyxzDXQ80ixQaO3sNBAIev4CsKxYXHZjD5V2
+5XqaQPakejzZldUcnD8c7B/gZFsW3E5PQieCEmmj1H5v3RP1OVLblgsF6MGsOU42
+RKErLUs3Jcw7w9CCck1F88jzraOABlk5/YOR8TBVo82IC6VBwdaQDeNCeYkBAuE4
+0QPhiXs11vbHoXcWEXc90CpSKXg4kUG3Bmxq8fvnXUzdmizJXAqeUXytJGLA2z8Z
+T/CrDgORQHsUMwaZSku9amFlao0kYH77QAN7HVhJ6OVjOJ3P6pIW+K/Pmdc0sV3F
+wurkpkLEORnRZTzdkpB3DCdlzsOTtJO0yXdgff3FGlgc52cyMwvjGrIivg7z+Zgg
+Bgl1CbfJmPumbkWWpB9jU2uTGa2gu0nXnShCsN58DmAh33o5uiXA0MSuEzDBRtqK
+6gG0rKYQ6jFT0RT0tUaVhKzqW6NjI6EYYqQprRk6ouAVTOdwOY8dLm3pN79PdMSm
++wISPj5+/iI8ZfWJV7otgjgpcO6boehvWeL5F6lob7N8PjfgWXFVX7ttxVEAD2r+
+02bjD47lX0KZdfl/jmbsD1ddX9wLaPAyDPHUFApjzUavHPa2JDEU01vtDqk9eVdK
+/e9BDnaJqBFAnpG1JQOg
+=bESF
 -----END PGP SIGNATURE-----
 
---O5XBE6gyVG5Rl6Rj--
+--UugvWAfsgieZRqgk--
+
+--===============3845829274076137479==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============3845829274076137479==--
