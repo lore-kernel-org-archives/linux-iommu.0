@@ -1,81 +1,123 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 10/16] iommu/tegra-gart: Make use of domain_alloc and
-	domain_free
-Date: Fri, 27 Mar 2015 12:00:03 +0100
-Message-ID: <20150327110002.GB5440@ulmo.nvidia.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 00/16 v2] iommu: Move domain allocation into drivers
+Date: Fri, 27 Mar 2015 12:03:43 +0100
+Message-ID: <20150327110341.GC5440@ulmo.nvidia.com>
 References: <1427373799-18662-1-git-send-email-joro@8bytes.org>
-	<1427373799-18662-11-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============4433924136772586255=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1427373799-18662-11-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, jroedel-l3A5Bk7waGM@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="hOcCNbCCxyk/YU74"
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1427373799-18662-1-git-send-email-joro@8bytes.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, Will Deacon <will.deacon@arm.com>, Kukjin Kim <kgene@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Heiko Stuebner <heiko@sntech.de>, Hiroshi Doyu <hdoyu@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Alexandre Courbot <gnurou@gmail.com>, Alex Williamson <alex.williamson@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Yingjoe Chen <yingjoe.chen@mediatek.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-rockchip@lists.infradead.org, linux-tegra@vger.kernel.org, jroedel@suse.de
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============4433924136772586255==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="pvezYHf7grwyp3Bc"
-Content-Disposition: inline
-
-
---pvezYHf7grwyp3Bc
+--hOcCNbCCxyk/YU74
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Mar 26, 2015 at 01:43:13PM +0100, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+On Thu, Mar 26, 2015 at 01:43:03PM +0100, Joerg Roedel wrote:
+> Changes v1-v2:
 >=20
-> Implement domain_alloc and domain_free iommu-ops as a
-> replacement for domain_init/domain_destroy.
+> 	* Rebased to v4.0-rc5
+> 	* Converted domain-types to a bit-field
 >=20
-> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> ---
->  drivers/iommu/tegra-gart.c | 67 +++++++++++++++++++++++++++++++---------=
+> Hi,
+>=20
+> here is patch-set to replace the existing domain_init and
+> domain_destroy iommu-ops with the new domain_alloc and
+> domain_free callbacks
+>=20
+> The new callbacks move the allocation of iommu domains into
+> the iommu driver, allowing them to put a generic
+> iommu_domain struct into their own domain struct. This makes
+> domain handling in the drivers more cache efficient and
+> prepares the introduction of default domains in another
+> patch-set.
+>=20
+> While at it, this patch-set also introduces domain types.
+> These are internal to the iommu core code for now, there are
+> three of them:
+>=20
+> 	* DMA-API domains
+> 	* Identity mapped domains
+> 	* Domains unmanaged by the iommu-core, used for
+> 	  iommu-api so that the users can create their own
+> 	  mappings
+>=20
+> The patches have been compile tested for x86, ARM and PPC
+> and runtime tested on x86 (Intel VT-d and AMD IOMMU).
+>=20
+> Please review.
+>=20
+> Thanks,
+>=20
+> 	Joerg
+>=20
+> Joerg Roedel (15):
+>   iommu: Introduce domain_alloc and domain_free iommu_ops
+>   iommu: Introduce iommu domain types
+>   iommu/amd: Make use of domain_alloc and domain_free
+>   iommu/vt-d: Make use of domain_alloc and domain_free
+>   iommu/omap: Make use of domain_alloc and domain_free
+>   iommu/arm-smmu: Make use of domain_alloc and domain_free
+>   iommu/exynos: Make use of domain_alloc and domain_free
+>   iommu/tegra-smmu: Make use of domain_alloc and domain_free
+>   iommu/tegra-gart: Make use of domain_alloc and domain_free
+>   iommu/msm: Make use of domain_alloc and domain_free
+>   iommu/shmobile: Make use of domain_alloc and domain_free
+>   iommu/ipmmu-vmsa: Make use of domain_alloc and domain_free
+>   iommu/rockchip: Make use of domain_alloc and domain_free
+>   iommu/fsl: Make use of domain_alloc and domain_free
+>   iommu: Remove domain_init and domain_free iommu_ops
+>=20
+>  drivers/iommu/amd_iommu.c       | 84 +++++++++++++++++++++--------------=
+----
+>  drivers/iommu/amd_iommu_types.h |  7 ++--
+>  drivers/iommu/arm-smmu.c        | 46 +++++++++++++---------
+>  drivers/iommu/exynos-iommu.c    | 87 ++++++++++++++++++++++-------------=
 ------
->  1 file changed, 46 insertions(+), 21 deletions(-)
+>  drivers/iommu/fsl_pamu_domain.c | 60 +++++++++++++++-------------
+>  drivers/iommu/fsl_pamu_domain.h |  2 +-
+>  drivers/iommu/intel-iommu.c     | 48 +++++++++++++----------
+>  drivers/iommu/iommu.c           | 20 ++--------
+>  drivers/iommu/ipmmu-vmsa.c      | 43 +++++++++++---------
+>  drivers/iommu/msm_iommu.c       | 73 +++++++++++++++++-----------------
+>  drivers/iommu/omap-iommu.c      | 49 +++++++++++++----------
+>  drivers/iommu/rockchip-iommu.c  | 40 +++++++++++--------
+>  drivers/iommu/shmobile-iommu.c  | 40 +++++++++++--------
+>  drivers/iommu/tegra-gart.c      | 67 +++++++++++++++++++++----------
+>  drivers/iommu/tegra-smmu.c      | 41 ++++++++++---------
+>  include/linux/iommu.h           | 17 ++++++--
+>  16 files changed, 407 insertions(+), 317 deletions(-)
 
-Acked-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+The core and Tegra bits:
 
---pvezYHf7grwyp3Bc
+Tested-by: Thierry Reding <treding@nvidia.com>
+
+--hOcCNbCCxyk/YU74
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJVFTgyAAoJEN0jrNd/PrOhpKgQAK2SZy1EcgzClwawBAzTCHpY
-gJPTKPTfKoLEqTgLMM4LYtjip6HpX4yLJz5QZyS1zglXlC21yZ3+sEDktCZXREa2
-9L9NrEe754TimgoIuJs9aaeU7oZ9NGz/ERVDXvfCbvMFrQhmAkIyllYYE1Vom+in
-kYdouTrlALN/RnCRAH/ofvOedmuAXIggHRDrJSZbP6jbYk6kcVcedPXBTAdgoq6f
-CwMDoS/LCGmCHGngfNiLGpy6FnGD3gcuxvXmFZV0p5NrCsGF205H9hYDmjT8XbW4
-+vw9qszZLOD11FKepmEdOoQZBOS6HYRkMbnjhuEAerBN/fMxzeg/0SiS2e7EHlfI
-vinVahzSNBq/1Ptw8p15Ggyugmjkj5Sm29zLzn9ow98WxRnaWDg19J5f8rrvXUPQ
-a9iwgMIed6S7im1/tRhXMTx/dXc5138sO3vuffvr5dSw0cusZQMcT+LeCkqsKjUL
-19dAoZs4kZdLy2dddosb/B3oh7O2FPTz8iHnZgY5ZAONEKWoYy5i+gKs+mLNAbAX
-SzS5DdIExM9EVTTP4OC/JGX7E2mE2iiX0n+j/9iSlmxZONJgVYFxnze+5JPInL5A
-rZVRfUz6+n5S0UiE4wkCfzLa5Riacak250unyims5FeLn2Eg+tCEtUfewHhGlvqL
-uT8HWBgZeMDk0liVTNjJ
-=luI4
+iQIcBAABCAAGBQJVFTkNAAoJEN0jrNd/PrOhOnAP/0c1ukOr7WBy0Q18WxVj8j7F
+VZj1NFFiReYH75D3J7LYVMCFoEnw8HaKQxjCwgy25WID6q9fBQD00SmTsj8y4vxW
+L3BhV2mWMmhtGoIVt110rtS6DRbMBzwzVWJ3uMp7y53FMr2BsQF9O1qOGYsgOmuM
+NahD7DaofEeJ+vgc/Uq0NH6ccae4lKRKxcszEicCdZ+/a7kQFikqQ1olR/oNw/Sz
+127aL97Cj8ASlnTRzeH2K2R6eETcareoBAYIIoBLHb84jfx9/npqU9TKW+z3EPB1
+ulMK8geAd0+wQcQe2h39IyBXWGf8ILwCfUjVNjq9W0PXkaLexE0VlktcZDYveeaj
+GGnKNSHFfPYmfsg3aIIVkt5sTs4dfw77opKH6wjRm3QPalNv86ELt9EwLx5YgM1I
+xi11a536l9ztHtZZ24NREd/7OAhXQV7Q6xbMdhiLsRIJiYclc58rFivMUMCvRavN
+qoOjS1TlIKoA6Jx01j76ejxVQfZoecsmyaa7D8RsVkN2S+GCfvsloqaM96ye6MNs
+IT9wCsPI93RuR1PWE5pcna1ltNId/Xwl3R90Kzj1vfa5csTHhiN3kXl7tVvvNhbG
+sMieuj/XF0XX5FpyoFGPud3wu7ZlDjASTInGWTFMZfr64vBiYIR7Tvh1ET7/dJ7p
+E1DQqZ9NjO0HmEjRmBMR
+=uhCB
 -----END PGP SIGNATURE-----
 
---pvezYHf7grwyp3Bc--
-
---===============4433924136772586255==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============4433924136772586255==--
+--hOcCNbCCxyk/YU74--
