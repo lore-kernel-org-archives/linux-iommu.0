@@ -1,51 +1,140 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 00/16 v2] iommu: Move domain allocation into drivers
-Date: Mon, 30 Mar 2015 18:43:15 +0100
-Message-ID: <20150330174315.GD15655@arm.com>
-References: <1427373799-18662-1-git-send-email-joro@8bytes.org>
+From: Marcelo Tosatti <mtosatti@redhat.com>
+Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU is
+ blocked
+Date: Mon, 30 Mar 2015 20:55:33 -0300
+Message-ID: <20150330235533.GA15792@amt.cnet>
+References: <20150226234048.GA7784@amt.cnet>
+ <E959C4978C3B6342920538CF579893F0023F5A98@SHSMSX104.ccr.corp.intel.com>
+ <20150304120608.GA26762@amt.cnet>
+ <E959C4978C3B6342920538CF579893F002409841@SHSMSX104.ccr.corp.intel.com>
+ <20150312011526.GA5878@amt.cnet>
+ <E959C4978C3B6342920538CF579893F00243A819@SHSMSX104.ccr.corp.intel.com>
+ <20150325231738.GA7333@amt.cnet>
+ <E959C4978C3B6342920538CF579893F0024697E0@SHSMSX104.ccr.corp.intel.com>
+ <20150327193013.GA6502@amt.cnet>
+ <E959C4978C3B6342920538CF579893F002479E58@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <kvm-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1427373799-18662-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <E959C4978C3B6342920538CF579893F002479E58@SHSMSX104.ccr.corp.intel.com>
+Sender: kvm-owner@vger.kernel.org
+To: "Wu, Feng" <feng.wu@intel.com>, f@amt.cnet
+Cc: "hpa@zytor.com" <hpa@zytor.com>, "tglx@linutronix.de" <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>, "x86@kernel.org" <x86@kernel.org>, "gleb@kernel.org" <gleb@kernel.org>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "eric.auger@linaro.org" <eric.auger@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-
-On Thu, Mar 26, 2015 at 12:43:03PM +0000, Joerg Roedel wrote:
-> Changes v1-v2:
+On Mon, Mar 30, 2015 at 04:46:55AM +0000, Wu, Feng wrote:
 > 
-> 	* Rebased to v4.0-rc5
-> 	* Converted domain-types to a bit-field
 > 
-> Hi,
+> > -----Original Message-----
+> > From: Marcelo Tosatti [mailto:mtosatti@redhat.com]
+> > Sent: Saturday, March 28, 2015 3:30 AM
+> > To: Wu, Feng
+> > Cc: hpa@zytor.com; tglx@linutronix.de; mingo@redhat.com; x86@kernel.org;
+> > gleb@kernel.org; pbonzini@redhat.com; dwmw2@infradead.org;
+> > joro@8bytes.org; alex.williamson@redhat.com; jiang.liu@linux.intel.com;
+> > eric.auger@linaro.org; linux-kernel@vger.kernel.org;
+> > iommu@lists.linux-foundation.org; kvm@vger.kernel.org
+> > Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU
+> > is blocked
+> > 
+> > On Fri, Mar 27, 2015 at 06:34:14AM +0000, Wu, Feng wrote:
+> > > > > Currently, the following code is executed before local_irq_disable() is
+> > called,
+> > > > > so do you mean 1)moving local_irq_disable() to the place before it. 2) after
+> > > > interrupt
+> > > > > is disabled, set KVM_REQ_EVENT in case the ON bit is set?
+> > > >
+> > > > 2) after interrupt is disabled, set KVM_REQ_EVENT in case the ON bit
+> > > > is set.
+> > >
+> > > Here is my understanding about your comments here:
+> > > - Disable interrupts
+> > > - Check 'ON'
+> > > - Set KVM_REQ_EVENT if 'ON' is set
+> > >
+> > > Then we can put the above code inside " if
+> > (kvm_check_request(KVM_REQ_EVENT, vcpu) || req_int_win) "
+> > > just like it used to be. However, I still have some questions about this
+> > comment:
+> > >
+> > > 1. Where should I set KVM_REQ_EVENT? In function vcpu_enter_guest(), or
+> > other places?
+> > 
+> > See below:
+> > 
+> > > If in vcpu_enter_guest(), since currently local_irq_disable() is called after
+> > 'KVM_REQ_EVENT'
+> > > is checked, is it helpful to set KVM_REQ_EVENT after local_irq_disable() is
+> > called?
+> > 
+> >         local_irq_disable();
+> > 
+> > 	*** add code here ***
 > 
-> here is patch-set to replace the existing domain_init and
-> domain_destroy iommu-ops with the new domain_alloc and
-> domain_free callbacks
+> So we need add code like the following here, right?
+> 
+>           if ('ON' is set)
+>               kvm_make_request(KVM_REQ_EVENT, vcpu);
 
-Whilst I'm still a bit worried about the ability of the IOMMU driver to do
-very much in the ->domain_alloc callback (since we don't know which IOMMU
-instance the domain is for), it doesn't leave us any worse off than we
-currently are.
+Yes.
 
-So, for the arm-smmu patch and the core IOMMU changes:
+> >         if (vcpu->mode == EXITING_GUEST_MODE || vcpu->requests
+> > 						^^^^^^^^^^^^^^
 
-  Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Point *1.
 
-Hopefully this doesn't conflict too badly with my outstanding arm-smmu
-pull requests to you, but do shout if you have any trouble.
+> >             || need_resched() || signal_pending(current)) {
+> >                 vcpu->mode = OUTSIDE_GUEST_MODE;
+> >                 smp_wmb();
+> >                 local_irq_enable();
+> >                 preempt_enable();
+> >                 vcpu->srcu_idx = srcu_read_lock(&vcpu->kvm->srcu);
+> >                 r = 1;
+> >                 goto cancel_injection;
+> >         }
+> > 
+> > > 2. 'ON' is set by VT-d hardware, it can be set even when interrupt is disabled
+> > (the related bit in PIR is also set).
+> > 
+> > Yes, we are checking if the HW has set an interrupt in PIR while
+> > outside VM (which requires PIR->VIRR transfer by software).
+> > 
+> > If the interrupt it set by hardware after local_irq_disable(),
+> > VMX-entry will handle the interrupt and perform the PIR->VIRR
+> > transfer and reevaluate interrupts, injecting to guest
+> > if necessary, is that correct ?
+> > 
+> > > So does it make sense to check 'ON' and set KVM_REQ_EVENT accordingly
+> > after interrupt is disabled?
+> > 
+> > To replace the costly
+> > 
+> > +            */
+> > +           if (kvm_x86_ops->hwapic_irr_update)
+> > +                   kvm_x86_ops->hwapic_irr_update(vcpu,
+> > +                           kvm_lapic_find_highest_irr(vcpu));
+> > 
+> > Yes, i think so.
+> 
+> After adding the "checking ON and setting KVM_REQ_EVENT" operations listed in my
+> comments above, do you mean we still need to keep the costly code above
+> inside "if (kvm_check_request(KVM_REQ_EVENT, vcpu) || req_int_win) {}" in function
+> vcpu_enter_guest() as it used to be? If yes, my question is what is the exact purpose
+> of "checking ON and setting KVM_REQ_EVENT" operations? Here is the code flow in
+> vcpu_enter_guest():
+> 
+> 1. Check KVM_REQ_EVENT, if it is set, sync pir->virr
+> 2. Disable interrupts
+> 3. Check ON and set KVM_REQ_EVENT -- Here, we set KVM_REQ_EVENT, but it is
+> checked in the step 1, which means, we cannot get any benefits even we set it here,
+> since the "pir->virr" sync operation was done in step 1, between step 3 and VM-Entry,
+> we don't synchronize the pir to virr. So even we set KVM_REQ_EVENT here, the interrupts
+> remaining in PIR cannot be delivered to guest during this VM-Entry, right?
 
-Will
+Please check point *1 above. The code will go back to  
+
+"if (kvm_check_request(KVM_REQ_EVENT, vcpu)"
+
+And perform the pir->virr sync.
+
