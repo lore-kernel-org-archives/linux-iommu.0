@@ -1,35 +1,37 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/4] iommu/tegra-smmu: Add debugfs support
-Date: Tue, 31 Mar 2015 17:02:14 +0200
-Message-ID: <20150331150214.GE22683@8bytes.org>
-References: <1427450847-17719-1-git-send-email-thierry.reding@gmail.com>
- <20150327101539.GA17976@ulmo.nvidia.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [v4 2/8] iommu, x86: Define new irte structure for VT-d
+ Posted-Interrupts
+Date: Tue, 31 Mar 2015 17:16:43 +0200
+Message-ID: <20150331151643.GF22683@8bytes.org>
+References: <1422864424-19411-1-git-send-email-feng.wu@intel.com>
+ <1422864424-19411-3-git-send-email-feng.wu@intel.com>
+ <20150323115754.GN4441@8bytes.org>
+ <E959C4978C3B6342920538CF579893F00245824F@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20150327101539.GA17976-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <E959C4978C3B6342920538CF579893F00245824F@SHSMSX104.ccr.corp.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Wu, Feng" <feng.wu@intel.com>
+Cc: "dwmw2@infradead.org" <dwmw2@infradead.org>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Thierry,
+On Tue, Mar 24, 2015 at 02:32:01AM +0000, Wu, Feng wrote:
+> > I think it is better to put this as a union into struct irte. It saves
+> > memory and unnecessary casting in later patches.
+> 
+> Thanks for the comments!
 
-On Fri, Mar 27, 2015 at 11:15:41AM +0100, Thierry Reding wrote:
-> Another possibility would be for you to ack this patch so that I can
-> take it into the same branch as the dependency. The remainder of this
-> series doesn't depend on either of the two patches, so they should be
-> fine for you to take into your tree.
+Thinking more about this, I think its probably fine to keep the two
+versions of the irte seperate like in this patch-set. It allows to
+update the non-posted irte when the posted irte is active at the moment
+and makes the transition between both irte variants easier.
 
-This solution sounds like the best one. You have my
-
-	Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-
-on the first patch. I merged patches 2-4 into the arm/tegra branch. As
-you noticed there were conflict merging the branch into next. Please
-have a look into my solution for that when I pushed it out later today
-and let me know if it looks good and still works.
+But what I still don't like is the type casting necessary when calling
+modify_irte(). Can you abstract this and put the decission whether irte
+or irte_pi is set active into modify_irte? It required to change the
+interface of modify_irte, but that should be easy.
 
 
 	Joerg
