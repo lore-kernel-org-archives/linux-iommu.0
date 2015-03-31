@@ -1,140 +1,68 @@
-From: Marcelo Tosatti <mtosatti@redhat.com>
-Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU is
- blocked
-Date: Mon, 30 Mar 2015 20:55:33 -0300
-Message-ID: <20150330235533.GA15792@amt.cnet>
-References: <20150226234048.GA7784@amt.cnet>
- <E959C4978C3B6342920538CF579893F0023F5A98@SHSMSX104.ccr.corp.intel.com>
- <20150304120608.GA26762@amt.cnet>
- <E959C4978C3B6342920538CF579893F002409841@SHSMSX104.ccr.corp.intel.com>
- <20150312011526.GA5878@amt.cnet>
- <E959C4978C3B6342920538CF579893F00243A819@SHSMSX104.ccr.corp.intel.com>
- <20150325231738.GA7333@amt.cnet>
- <E959C4978C3B6342920538CF579893F0024697E0@SHSMSX104.ccr.corp.intel.com>
- <20150327193013.GA6502@amt.cnet>
- <E959C4978C3B6342920538CF579893F002479E58@SHSMSX104.ccr.corp.intel.com>
+From: AceLan Kao <acelan.kao-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>
+Subject: Re: Any side effect if turn off amd_iommu
+Date: Tue, 31 Mar 2015 08:30:43 +0800
+Message-ID: <CAFv23QmOjFb9NgLY0aW55OpQSecFA83jNOU1TY7o3qWuft1_Cw@mail.gmail.com>
+References: <CAFv23QmxQ3vJnMEGN0TNR3vLAx1MN7ptB0y3QQLKciqfT3OBsQ@mail.gmail.com>
+	<20150325140410.GS4441@8bytes.org>
+	<CAFv23Qn93z4pE6RtURgoiBADpgCWZ6gfpMPn3akfJibudRi+Qg@mail.gmail.com>
+	<20150326120547.GU4441@8bytes.org>
+	<CAFv23QnUO+w0EXUx8DtgPx0W=fz37_R04EW6P-g+PF_y_U1dfA@mail.gmail.com>
+	<20150330160910.GZ4441@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <kvm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <E959C4978C3B6342920538CF579893F002479E58@SHSMSX104.ccr.corp.intel.com>
-Sender: kvm-owner@vger.kernel.org
-To: "Wu, Feng" <feng.wu@intel.com>, f@amt.cnet
-Cc: "hpa@zytor.com" <hpa@zytor.com>, "tglx@linutronix.de" <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>, "x86@kernel.org" <x86@kernel.org>, "gleb@kernel.org" <gleb@kernel.org>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "eric.auger@linaro.org" <eric.auger@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150330160910.GZ4441-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Mar 30, 2015 at 04:46:55AM +0000, Wu, Feng wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Marcelo Tosatti [mailto:mtosatti@redhat.com]
-> > Sent: Saturday, March 28, 2015 3:30 AM
-> > To: Wu, Feng
-> > Cc: hpa@zytor.com; tglx@linutronix.de; mingo@redhat.com; x86@kernel.org;
-> > gleb@kernel.org; pbonzini@redhat.com; dwmw2@infradead.org;
-> > joro@8bytes.org; alex.williamson@redhat.com; jiang.liu@linux.intel.com;
-> > eric.auger@linaro.org; linux-kernel@vger.kernel.org;
-> > iommu@lists.linux-foundation.org; kvm@vger.kernel.org
-> > Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU
-> > is blocked
-> > 
-> > On Fri, Mar 27, 2015 at 06:34:14AM +0000, Wu, Feng wrote:
-> > > > > Currently, the following code is executed before local_irq_disable() is
-> > called,
-> > > > > so do you mean 1)moving local_irq_disable() to the place before it. 2) after
-> > > > interrupt
-> > > > > is disabled, set KVM_REQ_EVENT in case the ON bit is set?
-> > > >
-> > > > 2) after interrupt is disabled, set KVM_REQ_EVENT in case the ON bit
-> > > > is set.
-> > >
-> > > Here is my understanding about your comments here:
-> > > - Disable interrupts
-> > > - Check 'ON'
-> > > - Set KVM_REQ_EVENT if 'ON' is set
-> > >
-> > > Then we can put the above code inside " if
-> > (kvm_check_request(KVM_REQ_EVENT, vcpu) || req_int_win) "
-> > > just like it used to be. However, I still have some questions about this
-> > comment:
-> > >
-> > > 1. Where should I set KVM_REQ_EVENT? In function vcpu_enter_guest(), or
-> > other places?
-> > 
-> > See below:
-> > 
-> > > If in vcpu_enter_guest(), since currently local_irq_disable() is called after
-> > 'KVM_REQ_EVENT'
-> > > is checked, is it helpful to set KVM_REQ_EVENT after local_irq_disable() is
-> > called?
-> > 
-> >         local_irq_disable();
-> > 
-> > 	*** add code here ***
-> 
-> So we need add code like the following here, right?
-> 
->           if ('ON' is set)
->               kvm_make_request(KVM_REQ_EVENT, vcpu);
+Hi Joerg,
 
-Yes.
+Thank you so much, I'll try asking BIOS engineer to deliver us a new
+BIOS for testing.
 
-> >         if (vcpu->mode == EXITING_GUEST_MODE || vcpu->requests
-> > 						^^^^^^^^^^^^^^
+Best regards,
+AceLan Kao.
 
-Point *1.
-
-> >             || need_resched() || signal_pending(current)) {
-> >                 vcpu->mode = OUTSIDE_GUEST_MODE;
-> >                 smp_wmb();
-> >                 local_irq_enable();
-> >                 preempt_enable();
-> >                 vcpu->srcu_idx = srcu_read_lock(&vcpu->kvm->srcu);
-> >                 r = 1;
-> >                 goto cancel_injection;
-> >         }
-> > 
-> > > 2. 'ON' is set by VT-d hardware, it can be set even when interrupt is disabled
-> > (the related bit in PIR is also set).
-> > 
-> > Yes, we are checking if the HW has set an interrupt in PIR while
-> > outside VM (which requires PIR->VIRR transfer by software).
-> > 
-> > If the interrupt it set by hardware after local_irq_disable(),
-> > VMX-entry will handle the interrupt and perform the PIR->VIRR
-> > transfer and reevaluate interrupts, injecting to guest
-> > if necessary, is that correct ?
-> > 
-> > > So does it make sense to check 'ON' and set KVM_REQ_EVENT accordingly
-> > after interrupt is disabled?
-> > 
-> > To replace the costly
-> > 
-> > +            */
-> > +           if (kvm_x86_ops->hwapic_irr_update)
-> > +                   kvm_x86_ops->hwapic_irr_update(vcpu,
-> > +                           kvm_lapic_find_highest_irr(vcpu));
-> > 
-> > Yes, i think so.
-> 
-> After adding the "checking ON and setting KVM_REQ_EVENT" operations listed in my
-> comments above, do you mean we still need to keep the costly code above
-> inside "if (kvm_check_request(KVM_REQ_EVENT, vcpu) || req_int_win) {}" in function
-> vcpu_enter_guest() as it used to be? If yes, my question is what is the exact purpose
-> of "checking ON and setting KVM_REQ_EVENT" operations? Here is the code flow in
-> vcpu_enter_guest():
-> 
-> 1. Check KVM_REQ_EVENT, if it is set, sync pir->virr
-> 2. Disable interrupts
-> 3. Check ON and set KVM_REQ_EVENT -- Here, we set KVM_REQ_EVENT, but it is
-> checked in the step 1, which means, we cannot get any benefits even we set it here,
-> since the "pir->virr" sync operation was done in step 1, between step 3 and VM-Entry,
-> we don't synchronize the pir to virr. So even we set KVM_REQ_EVENT here, the interrupts
-> remaining in PIR cannot be delivered to guest during this VM-Entry, right?
-
-Please check point *1 above. The code will go back to  
-
-"if (kvm_check_request(KVM_REQ_EVENT, vcpu)"
-
-And perform the pir->virr sync.
-
+2015-03-31 0:09 GMT+08:00 Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>:
+> Hi AceLan,
+>
+> On Fri, Mar 27, 2015 at 08:48:22AM +0800, AceLan Kao wrote:
+>> Very thanks for your time.
+>> This is the log booting with kernel 4.0rc5 without fglrx loaded.
+>
+> Thanks, it scheds some light on the issue. See below.
+>
+>> [    0.080177] AMD-Vi: device: 00:00.2 cap: 0040 seg: 0 flags: b8 info 0000
+>> [    0.080181] AMD-Vi:        mmio-addr: 00000000feb80000
+>> [    0.080198] AMD-Vi:   DEV_SELECT_RANGE_START        devid: 00:01.0 flags: 00
+>> [    0.080200] AMD-Vi:   DEV_RANGE_END                 devid: ff:1f.6
+>> [    0.081192] AMD-Vi:   DEV_ALIAS_RANGE               devid: 05:00.0 flags: 00 devid_to: 00:14.4
+>> [    0.081194] AMD-Vi:   DEV_RANGE_END                 devid: 05:1f.7
+>> [    0.081204] AMD-Vi:   DEV_SPECIAL(HPET[0])         devid: 00:14.0
+>> [    0.081207] AMD-Vi:   DEV_SPECIAL(IOAPIC[4])               devid: 00:14.0
+>> [    0.081208] AMD-Vi:   DEV_SPECIAL(IOAPIC[5])               devid: 00:00.0
+>
+> This is dump of the IVRS table contents. It tells us that IOAPIC with ID
+> 5 uses PCI request-id 00:00.0. But this information is wrong, it uses
+> request-id 00:00.1, as seen below:
+>
+>> [   23.515063] AMD-Vi: Event logged [INVALID_DEVICE_REQUEST device=00:00.1 address=0x000000fdf80c0020 flags=0x0a00]
+>
+> This message comes from an interrupt request sent by the IOAPIC, and it
+> uses a different request-id. Can you try to update the BIOS on that
+> machine and test if it fixes the issue?
+>
+>
+>         Joerg
+>
