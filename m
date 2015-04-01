@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 1/9] iommu/amd: Use BUS_NOTIFY_REMOVED_DEVICE
-Date: Wed,  1 Apr 2015 14:58:44 +0200
-Message-ID: <1427893132-18310-2-git-send-email-joro@8bytes.org>
+Subject: [PATCH 6/9] iommu/amd: Optimize iommu_unmap_page for new fetch_pte
+	interface
+Date: Wed,  1 Apr 2015 14:58:49 +0200
+Message-ID: <1427893132-18310-7-git-send-email-joro@8bytes.org>
 References: <1427893132-18310-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,28 +24,63 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Use the new device-notifier event instead of the old
-BUS_NOTIFY_DEL_DEVICE to make sure the device driver had a
-chance to uninit the device before all its mappings are
-teared down.
+Now that fetch_pte returns the page-size of the pte, this
+function can be optimized a lot.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/amd_iommu.c | 32 ++++++++------------------------
+ 1 file changed, 8 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 48882c1..8a1dea4 100644
+index 24ef9e6..c9ee444 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -2467,7 +2467,7 @@ static int device_change_notifier(struct notifier_block *nb,
- 		dev->archdata.dma_ops = &amd_iommu_dma_ops;
+@@ -1428,8 +1428,8 @@ static unsigned long iommu_unmap_page(struct protection_domain *dom,
+ 				      unsigned long bus_addr,
+ 				      unsigned long page_size)
+ {
+-	unsigned long long unmap_size, unmapped;
+-	unsigned long pte_pgsize;
++	unsigned long long unmapped;
++	unsigned long unmap_size;
+ 	u64 *pte;
  
- 		break;
--	case BUS_NOTIFY_DEL_DEVICE:
-+	case BUS_NOTIFY_REMOVED_DEVICE:
+ 	BUG_ON(!is_power_of_2(page_size));
+@@ -1438,28 +1438,12 @@ static unsigned long iommu_unmap_page(struct protection_domain *dom,
  
- 		iommu_uninit_device(dev);
+ 	while (unmapped < page_size) {
  
+-		pte = fetch_pte(dom, bus_addr, &pte_pgsize);
+-
+-		if (!pte) {
+-			/*
+-			 * No PTE for this address
+-			 * move forward in 4kb steps
+-			 */
+-			unmap_size = PAGE_SIZE;
+-		} else if (PM_PTE_LEVEL(*pte) == 0) {
+-			/* 4kb PTE found for this address */
+-			unmap_size = PAGE_SIZE;
+-			*pte       = 0ULL;
+-		} else {
+-			int count, i;
+-
+-			/* Large PTE found which maps this address */
+-			unmap_size = PTE_PAGE_SIZE(*pte);
+-
+-			/* Only unmap from the first pte in the page */
+-			if ((unmap_size - 1) & bus_addr)
+-				break;
+-			count      = PAGE_SIZE_PTE_COUNT(unmap_size);
++		pte = fetch_pte(dom, bus_addr, &unmap_size);
++
++		if (pte) {
++			int i, count;
++
++			count = PAGE_SIZE_PTE_COUNT(unmap_size);
+ 			for (i = 0; i < count; i++)
+ 				pte[i] = 0ULL;
+ 		}
 -- 
 1.9.1
