@@ -1,13 +1,17 @@
-From: Suravee Suthikulanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH 0/9] AMD IOMMU Updates for v4.1
-Date: Wed, 1 Apr 2015 14:11:57 -0500
-Message-ID: <551C42FD.1040209@amd.com>
-References: <1427893132-18310-1-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [GIT PULL] iommu: Kill off pgsize_bitmap field from struct
+	iommu_ops
+Date: Wed, 1 Apr 2015 23:24:40 +0200
+Message-ID: <20150401212440.GJ4441@8bytes.org>
+References: <20150327171946.GL1562@arm.com> <20150331142440.GD22683@8bytes.org>
+	<20150331144956.GA24094@arm.com> <20150401153854.GG4441@8bytes.org>
+	<20150401170330.GO1552@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1427893132-18310-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20150401170330.GO1552-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,39 +21,40 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 4/1/2015 7:58 AM, Joerg Roedel wrote:
-> Hi,
->
-> here are a few fixes and enhancements for the AMD IOMMU
-> driver for the next merge window. They are tested on
-> different versions of AMD IOMMUs. Please review.
->
-> Thanks,
->
-> 	Joerg
->
-> Joerg Roedel (9):
->    iommu/amd: Use BUS_NOTIFY_REMOVED_DEVICE
->    iommu/amd: Ignore BUS_NOTIFY_UNBOUND_DRIVER event
->    iommu/amd: Don't allocate with __GFP_ZERO in alloc_coherent
->    iommu/amd: Add support for contiguous dma allocator
->    iommu/amd: Return the pte page-size in fetch_pte
->    iommu/amd: Optimize iommu_unmap_page for new fetch_pte interface
->    iommu/amd: Optimize alloc_new_range for new fetch_pte interface
->    iommu/amd: Optimize amd_iommu_iova_to_phys for new fetch_pte interface
->    iommu/amd: Correctly encode huge pages in iommu page tables
->
->   drivers/iommu/amd_iommu.c       | 166 +++++++++++++++++++---------------------
->   drivers/iommu/amd_iommu_types.h |   6 ++
->   2 files changed, 83 insertions(+), 89 deletions(-)
->
+Hi Will,
 
-Tested-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+On Wed, Apr 01, 2015 at 06:03:30PM +0100, Will Deacon wrote:
+> Agreed. How would you feel about restricting domains to be per-IOMMU
+> instance?
 
-Thanks,
+If we find a good way to do that it would be fine. We need to expose
+information about individual IOMMUs for that. The question is whether we
+need to expose them to the IOMMU-API user or just from the drivers to
+the IOMMU core code.
 
-Suravee
+I prefer the second option, but if there is a good and clean way for the
+first one I am open for discussions.
+
+> VFIO already copes with this, so I think we'd just need something to
+> keep legacy KVM device passthrough working on x86.
+
+VFIO uses a lot of implicit and internal knowledge about the backend
+IOMMU drivers to decide if a second domain is needed. I think this logic
+should either be moved into the iommu core code or made generic enough
+that it works not only for different supported page-size, but also for
+snooping flags or whatever differences exist between iommus in a system.
+
+> Maybe we could add a new domain type using your new series
+> (DOMAIN_X86_KVM_LEGACY or something) and avoid the cross-IOMMU domain
+> checks for that.
+
+The legacy device assignment code can also be adapted to whatever
+changes we agree upon, no need to support a stable API in the iommu
+code.
+
+
+	Joerg
