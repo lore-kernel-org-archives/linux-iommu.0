@@ -1,14 +1,19 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [GIT PULL] iommu: Kill off pgsize_bitmap field from struct
-	iommu_ops
-Date: Tue, 31 Mar 2015 17:07:01 +0100
-Message-ID: <551AC625.6000200@arm.com>
-References: <20150327171946.GL1562@arm.com> <20150331142440.GD22683@8bytes.org>
+From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [v4 2/8] iommu, x86: Define new irte structure for VT-d
+	Posted-Interrupts
+Date: Wed, 1 Apr 2015 08:51:47 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F00248433E@SHSMSX104.ccr.corp.intel.com>
+References: <1422864424-19411-1-git-send-email-feng.wu@intel.com>
+	<1422864424-19411-3-git-send-email-feng.wu@intel.com>
+	<20150323115754.GN4441@8bytes.org>
+	<E959C4978C3B6342920538CF579893F00245824F@SHSMSX104.ccr.corp.intel.com>
+	<20150331151643.GF22683@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150331142440.GD22683-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20150331151643.GF22683-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,53 +23,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-
-On 31/03/15 15:24, Joerg Roedel wrote:
-> Hi Will,
->
-> On Fri, Mar 27, 2015 at 05:19:46PM +0000, Will Deacon wrote:
->> Please can you pull the following IOMMU changes for 4.1? They move the
->> per-iommu_ops pgsize_bitmap field into the iommu_domain, which allows
->> IOMMUs such as the ARM SMMU to support different page sizes within a
->> given SoC.
->
-> I have some concerns about the direction taken with this patch-set. The
-> goal for the IOMMU-API is still to have domains that can be attached to
-> arbitrary devices (even when mappings already exist). But with this
-> patch-set we move into a direction where a domain can only be used on
-> IOMMUs that support the page-sizes required by the domain. In the end
-> this would be visible to the user of the IOMMU-API, which is not what we
-> want.
-
-I think the notion of sharing domains between arbitrary devices is 
-already broken for systems with multiple IOMMU devices - with the 
-iommu_domain itself now embedded in a private data structure, it's 
-certainly not safe to pass it to two different drivers, should the 
-client devices be behind heterogeneous IOMMUs. Furthermore, since most 
-of those private data structures contain instance-specific data, that 
-prevents a domain spanning even two homogeneous IOMMU devices.
-
-If the goal is for iommu_domains to be a hardware-independent 
-abstraction, then shouldn't we be looking to move the other 
-instance-specific features like attributes and geometry out of them? 
-Perhaps the answer is the opposite; accept the existing iommu_domain as 
-what it appears to be used as - a fairly thin abstraction of one or more 
-context banks/uTLBs/DMARs/whatever on a single IOMMU device - and 
-consider some higher-level interface for grouping one or more of these 
-"device domains" together and sharing a single IOVA space between them.
 
 
-Robin.
+> -----Original Message-----
+> From: Joerg Roedel [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
+> Sent: Tuesday, March 31, 2015 11:17 PM
+> To: Wu, Feng
+> Cc: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org;
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Subject: Re: [v4 2/8] iommu, x86: Define new irte structure for VT-d
+> Posted-Interrupts
+> 
+> On Tue, Mar 24, 2015 at 02:32:01AM +0000, Wu, Feng wrote:
+> > > I think it is better to put this as a union into struct irte. It saves
+> > > memory and unnecessary casting in later patches.
+> >
+> > Thanks for the comments!
+> 
+> Thinking more about this, I think its probably fine to keep the two
+> versions of the irte seperate like in this patch-set. It allows to
+> update the non-posted irte when the posted irte is active at the moment
+> and makes the transition between both irte variants easier.
+> 
+> But what I still don't like is the type casting necessary when calling
+> modify_irte(). Can you abstract this and put the decission whether irte
+> or irte_pi is set active into modify_irte? It required to change the
+> interface of modify_irte, but that should be easy.
+> 
 
-> I can understand the motivation behind these patches, but we need to
-> think about how this could work with the desired semantics of the
-> IOMMU-API.
->
->
+Sound good! Then we can keep the difference inside modify_irte().
+
+BTW, could you please have a look at other patches in this series?
+
+Thanks,
+Feng
+
+> 
 > 	Joerg
->
