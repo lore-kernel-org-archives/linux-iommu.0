@@ -1,36 +1,83 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [v4 0/8] Add VT-d Posted-Interrupts support - IOMMU part
-Date: Thu, 2 Apr 2015 13:28:33 +0200
-Message-ID: <20150402112833.GN4441@8bytes.org>
-References: <1422864424-19411-1-git-send-email-feng.wu@intel.com>
+From: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Subject: Re: [PATCH v9 07/10] iommu/vt-d: enable kdump support in iommu module
+Date: Fri, 03 Apr 2015 15:45:19 +0800
+Message-ID: <551E450F.4030903@hp.com>
+References: <1426743388-26908-1-git-send-email-zhen-hual@hp.com>
+	<1426743388-26908-8-git-send-email-zhen-hual@hp.com>
+	<20150402110608.GL4441@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1422864424-19411-1-git-send-email-feng.wu@intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Feng Wu <feng.wu@intel.com>
-Cc: dwmw2@infradead.org, jiang.liu@linux.intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, "Li, Zhen-Hua" <zhen-hual@hp.com>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150402110608.GL4441-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Li,
+	ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 02, 2015 at 04:06:56PM +0800, Feng Wu wrote:
-> VT-d Posted-Interrupts is an enhancement to CPU side Posted-Interrupt.
-> With VT-d Posted-Interrupts enabled, external interrupts from
-> direct-assigned devices can be delivered to guests without VMM
-> intervention when guest is running in non-root mode.
-> 
-> You can find the VT-d Posted-Interrtups Spec. in the following URL:
-> http://www.intel.com/content/www/us/en/intelligent-systems/intel-technology/vt-directed-io-spec.html
-> 
-> This series was part of http://thread.gmane.org/gmane.linux.kernel.iommu/7708. To make things clear, send out IOMMU part here.
+Hi Joerg,
+Thinking about it carefully, I think you suggestions are very helpful, 
+and the checks should be:
+* All these things should be done in the second kernel, not only the 
+kdump kernel. Sometimes user may use kexec manually start a new kernel.
+* Copying those tables should only happen in the second kernel, only in 
+this situation: iommu is enabled in both first and second kernel.
 
-Besides the modify_irte() changes I asked for the patch-set looks good.
-I just have some concerns what these changes mean for the VT-d kdump
-improvements Zhen-Hua Li is working on. Can you please discuss the
-implications of having both patch-sets applied with him and make sure
-they work together? I think in its current form your patch-set breaks
-the kdump support patches. I added Zhen-Hua to Cc.
+So, I think we can do this:
+1. Use a new variable iommu_enabled_in_last_kernel;
+2. When iommu module is loaded, it means the iommu is enabled in current 
+kernel.  Then we check DMA_GSTS_TES:
+    * if DMA_GSTS_TES is set, then it should be the second kernel(kexec 
+starts this kernel manually, or it is kdump kernel), and the first 
+kernel used iommu tables.  Here we need to copy these tables; then set 
+iommu_enabled_in_last_kernel to 1.
+    * if DMA_GSTS_TES is NOT set, then we do not need to care about 
+these tables.
 
-Thanks,
+3. Replace all
+#ifdef CONFIG_CRASH_DUMP
+	if (is_kdump_kernel()) {
+             // Do some thing
+         }
+#endif
 
-	Joerg
+To:
+if (iommu_enabled_in_last_kernel) {
+      // Do some thing
+}
+
+Do you agree with these?
+
+Thanks
+Zhenhua
+
+On 04/02/2015 07:06 PM, Joerg Roedel wrote:
+> On Thu, Mar 19, 2015 at 01:36:25PM +0800, Li, Zhen-Hua wrote:
+>> +#ifdef CONFIG_CRASH_DUMP
+>> +		if (is_kdump_kernel())
+>> +			__iommu_update_old_root_entry(iommu, bus);
+>> +#endif
+>
+> All the is_kdump_kernel checks in this patch (and maybe in other patches
+> too) should really be checks whether translation on the IOMMU was
+> enabled or not when the kernel booted. You might also boot from a kernel
+> that had translation disabled into a kdump kernel that wants to enable
+> it. In this case these checks would break.
+>
+> Speaking of booting from kernels with translation disabled, there is a
+> valid use of is_kdump_enabled(), to omit iommu initialization in the
+> kdump kernel when translation was disabled before. But the other checks
+> should depend on the state the iommu had when booting the kdump kernel.
+>
+>
+> 	Joerg
+>
