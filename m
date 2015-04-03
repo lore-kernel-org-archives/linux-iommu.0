@@ -1,64 +1,185 @@
-From: Dave Young <dyoung@redhat.com>
-Subject: Re: [PATCH v9 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
-Date: Fri, 3 Apr 2015 17:21:11 +0800
-Message-ID: <20150403092111.GG22579@dhcp-128-53.nay.redhat.com>
-References: <1426743388-26908-1-git-send-email-zhen-hual@hp.com>
- <20150403084031.GF22579@dhcp-128-53.nay.redhat.com>
- <551E56F6.60503@hp.com>
+From: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Subject: Re: SMMU 2-stage support
+Date: Fri, 3 Apr 2015 11:55:02 +0200
+Message-ID: <CAN9JPjFvg=e948ZLLtrUTnvDp8UWHCX2NGB4iUEES733T9YytQ@mail.gmail.com>
+References: <CAN9JPjFf1Lb+L8sWq0SWt8f6P6DX2i308OeF+TdnFdstRoU3hA@mail.gmail.com>
+	<20150218185600.GN22017@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <551E56F6.60503@hp.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: "Li, ZhenHua" <zhen-hual@hp.com>
-Cc: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, joro@8bytes.org, vgoyal@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
+Content-Type: multipart/mixed; boundary="===============3502497535196315292=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150218185600.GN22017-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/03/15 at 05:01pm, Li, ZhenHua wrote:
-> Hi Dave,
-> 
-> There may be some possibilities that the old iommu data is corrupted by
-> some other modules. Currently we do not have a better solution for the
-> dmar faults.
-> 
-> But I think when this happens, we need to fix the module that corrupted
-> the old iommu data. I once met a similar problem in normal kernel, the
-> queue used by the qi_* functions was written again by another module.
-> The fix was in that module, not in iommu module.
+--===============3502497535196315292==
+Content-Type: multipart/alternative; boundary=001a11c0792c34a3be0512cef1d0
 
-It is too late, there will be no chance to save vmcore then.
+--001a11c0792c34a3be0512cef1d0
+Content-Type: text/plain; charset=UTF-8
 
-Also if it is possible to continue corrupt other area of oldmem because
-of using old iommu tables then it will cause more problems.
+Hello,
 
-So I think the tables at least need some verifycation before being used.
+We are eventually working on the vSMMU implementation. Relying on the talk
+Will Deacon gave at the Linux Plumbers IOMMU Microconference on October
+2014 (http://linuxplumbersconf.org/2014/ocw/proposals/2019), I tried the
+vSMMU initialization.
 
-> 
-> 
-> Thanks
-> Zhenhua
-> 
-> On 04/03/2015 04:40 PM, Dave Young wrote:
-> >>To fix this problem, we modifies the behaviors of the intel vt-d in the
-> >>crashdump kernel:
-> >>
-> >>For DMA Remapping:
-> >>1. To accept the vt-d hardware in an active state,
-> >>2. Do not disable and re-enable the translation, keep it enabled.
-> >>3. Use the old root entry table, do not rewrite the RTA register.
-> >>4. Malloc and use new context entry table, copy data from the old ones that
-> >>    used by the old kernel.
+I have a question about the KVM_DEV_ARM_SMMU_V2_CFG_INIT call. What is
+exactly expected as parameters ?
+My guess is, as it is the base address of the vSMMU, it should be the
+address expected to be the "physical address" of the vSMMU on the guest
+side. Am I right ?
+
+Thanks,
+Baptiste
+
+On Wed, Feb 18, 2015 at 7:56 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+
+> On Wed, Feb 18, 2015 at 05:04:21PM +0000, Baptiste Reynal wrote:
+> > We are currently working on the ARM SMMU 2-stage support in order to
+> > expose SMMU capabilities to a guest OS.
+> > By doing some research, we noticed some work has already be done by Will
+> > Deacon on exposing virtual IOMMU interface to KVM guest. After going
+> > through slides and code (on
+> > git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git<
+> http://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git>,
+> > branch: iommu/vsmmu), we have some questions :
 > >
-> >Have not read all the patches, but I have a question, not sure this has been
-> >answered before. Old memory is not reliable, what if the old memory get corrupted
-> >before panic? Is it safe to continue using it in 2nd kernel, I worry that it will
-> >cause problems.
-> >
-> >Hope I'm wrong though.
-> >
-> >Thanks
-> >Dave
-> >
-> >
-> 
+> > - What is the status of this work ? Is Alex still working on it ?
+>
+> I got a reasonable way through implementing something, but ran into a
+> wall for a few reasons:
+>
+>   (1) I don't have anything where I can test this (yet)
+>
+>   (2) Nobody's actually asking for it...
+>
+> > - Are there any test case about the current vsmmu implementation ?
+>
+> No.
+>
+> > - What is exposed to the guest in the current implementation ?
+>
+> An emulation of a stage-1 only SMMU.
+>
+> > - How do the guest program the stage-1 translation ?
+>
+> Just like it would for a physical SMMU.
+> It's probably easiest if you look at the (incomplete, WIP) code:
+>
+>
+> https://git.kernel.org/cgit/linux/kernel/git/will/linux.git/commit/?h=iommu/vsmmu&id=539dbcb964e5c730791a6a31a4f58ceff4b945c2
+>
+> Anyway, until somebody actually wants this feature I've put it on ice as
+> it adds a whole bunch of complication to the ARM SMMU driver, as well as
+> new user ABI extensions that I don't really want to maintain for fun.
+>
+> The only murmurs I've heard about IOMMU usage from a guest relate to a
+> paravirtualised interface, which abstracts the details of the host IOMMU
+> altogether and allows the translation to be collapsed (which can be
+> better for TLB utilisation).
+>
+> Will
+>
+
+--001a11c0792c34a3be0512cef1d0
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div><div><div><div><div>Hello,<br><br></div>We are eventu=
+ally working on the vSMMU implementation. Relying on the talk Will Deacon g=
+ave at the Linux Plumbers IOMMU Microconference on October 2014 (<a href=3D=
+"http://linuxplumbersconf.org/2014/ocw/proposals/2019">http://linuxplumbers=
+conf.org/2014/ocw/proposals/2019</a>), I tried the vSMMU initialization.<br=
+><br></div>I have a question about the KVM_DEV_ARM_SMMU_V2_CFG_INIT call. W=
+hat is exactly expected as parameters ?<br></div>My guess is, as it is the =
+base address of the vSMMU, it should be the address expected to be the &quo=
+t;physical address&quot; of the vSMMU on the guest side. Am I right ?<br><b=
+r></div>Thanks,<br></div>Baptiste<br></div><div class=3D"gmail_extra"><br><=
+div class=3D"gmail_quote">On Wed, Feb 18, 2015 at 7:56 PM, Will Deacon <spa=
+n dir=3D"ltr">&lt;<a href=3D"mailto:will.deacon-5wv7dgnIgG8@public.gmane.org" target=3D"_blank">=
+will.deacon-5wv7dgnIgG8@public.gmane.org</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quo=
+te" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"=
+><span class=3D"">On Wed, Feb 18, 2015 at 05:04:21PM +0000, Baptiste Reynal=
+ wrote:<br>
+&gt; We are currently working on the ARM SMMU 2-stage support in order to<b=
+r>
+&gt; expose SMMU capabilities to a guest OS.<br>
+&gt; By doing some research, we noticed some work has already be done by Wi=
+ll<br>
+&gt; Deacon on exposing virtual IOMMU interface to KVM guest. After going<b=
+r>
+&gt; through slides and code (on<br>
+</span>&gt; git://<a href=3D"http://git.kernel.org/pub/scm/linux/kernel/git=
+/will/linux.git" target=3D"_blank">git.kernel.org/pub/scm/linux/kernel/git/=
+will/linux.git</a>&lt;<a href=3D"http://git.kernel.org/pub/scm/linux/kernel=
+/git/will/linux.git" target=3D"_blank">http://git.kernel.org/pub/scm/linux/=
+kernel/git/will/linux.git</a>&gt;,<br>
+<span class=3D"">&gt; branch: iommu/vsmmu), we have some questions :<br>
+&gt;<br>
+&gt; - What is the status of this work ? Is Alex still working on it ?<br>
+<br>
+</span>I got a reasonable way through implementing something, but ran into =
+a<br>
+wall for a few reasons:<br>
+<br>
+=C2=A0 (1) I don&#39;t have anything where I can test this (yet)<br>
+<br>
+=C2=A0 (2) Nobody&#39;s actually asking for it...<br>
+<span class=3D""><br>
+&gt; - Are there any test case about the current vsmmu implementation ?<br>
+<br>
+</span>No.<br>
+<span class=3D""><br>
+&gt; - What is exposed to the guest in the current implementation ?<br>
+<br>
+</span>An emulation of a stage-1 only SMMU.<br>
+<span class=3D""><br>
+&gt; - How do the guest program the stage-1 translation ?<br>
+<br>
+</span>Just like it would for a physical SMMU.<br>
+It&#39;s probably easiest if you look at the (incomplete, WIP) code:<br>
+<br>
+=C2=A0 <a href=3D"https://git.kernel.org/cgit/linux/kernel/git/will/linux.g=
+it/commit/?h=3Diommu/vsmmu&amp;id=3D539dbcb964e5c730791a6a31a4f58ceff4b945c=
+2" target=3D"_blank">https://git.kernel.org/cgit/linux/kernel/git/will/linu=
+x.git/commit/?h=3Diommu/vsmmu&amp;id=3D539dbcb964e5c730791a6a31a4f58ceff4b9=
+45c2</a><br>
+<br>
+Anyway, until somebody actually wants this feature I&#39;ve put it on ice a=
+s<br>
+it adds a whole bunch of complication to the ARM SMMU driver, as well as<br=
+>
+new user ABI extensions that I don&#39;t really want to maintain for fun.<b=
+r>
+<br>
+The only murmurs I&#39;ve heard about IOMMU usage from a guest relate to a<=
+br>
+paravirtualised interface, which abstracts the details of the host IOMMU<br=
+>
+altogether and allows the translation to be collapsed (which can be<br>
+better for TLB utilisation).<br>
+<span class=3D"HOEnZb"><font color=3D"#888888"><br>
+Will<br>
+</font></span></blockquote></div><br></div>
+
+--001a11c0792c34a3be0512cef1d0--
+
+--===============3502497535196315292==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============3502497535196315292==--
