@@ -1,53 +1,66 @@
-From: "Li, Zhen-Hua" <zhen-hual@hp.com>
-Subject: Re: [PATCH v9 0/10] iommu/vt-d: Fix intel vt-d faults in kdump
- kernel
-Date: Fri, 3 Apr 2015 14:05:36 +0000
-Message-ID: <534F7596-2172-4BE1-B374-4D18D2DA5110@hp.com>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v9 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
+Date: Sun, 5 Apr 2015 09:54:53 +0800
+Message-ID: <20150405015453.GB1562@dhcp-17-102.nay.redhat.com>
 References: <1426743388-26908-1-git-send-email-zhen-hual@hp.com>
- <20150403084031.GF22579@dhcp-128-53.nay.redhat.com>
- <551E56F6.60503@hp.com>,<20150403092111.GG22579@dhcp-128-53.nay.redhat.com>
+	<20150403084031.GF22579@dhcp-128-53.nay.redhat.com>
+	<551E56F6.60503@hp.com>
+	<20150403092111.GG22579@dhcp-128-53.nay.redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20150403092111.GG22579@dhcp-128-53.nay.redhat.com>
-Content-Language: zh-CN
-Sender: linux-pci-owner@vger.kernel.org
-To: Dave Young <dyoung@redhat.com>
-Cc: "dwmw2@infradead.org" <dwmw2@infradead.org>, "indou.takao@jp.fujitsu.com" <indou.takao@jp.fujitsu.com>, "bhe@redhat.com" <bhe@redhat.com>, "joro@8bytes.org" <joro@8bytes.org>, "vgoyal@redhat.com" <vgoyal@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "kexec@lists.infradead.org" <kexec@lists.infradead.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "ddutile@redhat.com" <ddutile@redhat.com>, "ishii.hironobu@jp.fujitsu.com" <ishii.hironobu@jp.fujitsu.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "Hatch, Douglas B (HPS Linux PM)" <doug.hatch@hp.com>, "Hoemann, Jerry" <jerry.hoemann@hp.com>, "Vaden, Tom (HP Server OS Architecture)" <tom.vaden@hp.com>, "Zhang, Li (Zoe@HPservers-Core-OE-PSC)" <li.zh>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20150403092111.GG22579-0VdLhd/A9PldIt/LePPtNh/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Li,
+	ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-VGhlIGhhcmR3YXJlIHdpbGwgZG8gc29tZSB2ZXJpZmljYXRpb24sIGJ1dCBub3QgY29tcGxldGVs
-eS4gIElmIHBlb3BsZSB0aGluayB0aGUgT1Mgc2hvdWxkIGFsc28gZG8gdGhpcywgdGhlbiBpdCBz
-aG91bGQgYmUgYW5vdGhlciBwYXRjaHNldCwgSSB0aGluay4NCg0KVGhhbmtzDQpaaGVuaHVhIA0K
-DQo+INTaIDIwMTXE6jTUwjPI1aOsMTc6MjGjrERhdmUgWW91bmcgPGR5b3VuZ0ByZWRoYXQuY29t
-PiDQtLXAo7oNCj4gDQo+PiBPbiAwNC8wMy8xNSBhdCAwNTowMXBtLCBMaSwgWmhlbkh1YSB3cm90
-ZToNCj4+IEhpIERhdmUsDQo+PiANCj4+IFRoZXJlIG1heSBiZSBzb21lIHBvc3NpYmlsaXRpZXMg
-dGhhdCB0aGUgb2xkIGlvbW11IGRhdGEgaXMgY29ycnVwdGVkIGJ5DQo+PiBzb21lIG90aGVyIG1v
-ZHVsZXMuIEN1cnJlbnRseSB3ZSBkbyBub3QgaGF2ZSBhIGJldHRlciBzb2x1dGlvbiBmb3IgdGhl
-DQo+PiBkbWFyIGZhdWx0cy4NCj4+IA0KPj4gQnV0IEkgdGhpbmsgd2hlbiB0aGlzIGhhcHBlbnMs
-IHdlIG5lZWQgdG8gZml4IHRoZSBtb2R1bGUgdGhhdCBjb3JydXB0ZWQNCj4+IHRoZSBvbGQgaW9t
-bXUgZGF0YS4gSSBvbmNlIG1ldCBhIHNpbWlsYXIgcHJvYmxlbSBpbiBub3JtYWwga2VybmVsLCB0
-aGUNCj4+IHF1ZXVlIHVzZWQgYnkgdGhlIHFpXyogZnVuY3Rpb25zIHdhcyB3cml0dGVuIGFnYWlu
-IGJ5IGFub3RoZXIgbW9kdWxlLg0KPj4gVGhlIGZpeCB3YXMgaW4gdGhhdCBtb2R1bGUsIG5vdCBp
-biBpb21tdSBtb2R1bGUuDQo+IA0KPiBJdCBpcyB0b28gbGF0ZSwgdGhlcmUgd2lsbCBiZSBubyBj
-aGFuY2UgdG8gc2F2ZSB2bWNvcmUgdGhlbi4NCj4gDQo+IEFsc28gaWYgaXQgaXMgcG9zc2libGUg
-dG8gY29udGludWUgY29ycnVwdCBvdGhlciBhcmVhIG9mIG9sZG1lbSBiZWNhdXNlDQo+IG9mIHVz
-aW5nIG9sZCBpb21tdSB0YWJsZXMgdGhlbiBpdCB3aWxsIGNhdXNlIG1vcmUgcHJvYmxlbXMuDQo+
-IA0KPiBTbyBJIHRoaW5rIHRoZSB0YWJsZXMgYXQgbGVhc3QgbmVlZCBzb21lIHZlcmlmeWNhdGlv
-biBiZWZvcmUgYmVpbmcgdXNlZC4NCj4gDQo+PiANCj4+IA0KPj4gVGhhbmtzDQo+PiBaaGVuaHVh
-DQo+PiANCj4+IE9uIDA0LzAzLzIwMTUgMDQ6NDAgUE0sIERhdmUgWW91bmcgd3JvdGU6DQo+Pj4+
-IFRvIGZpeCB0aGlzIHByb2JsZW0sIHdlIG1vZGlmaWVzIHRoZSBiZWhhdmlvcnMgb2YgdGhlIGlu
-dGVsIHZ0LWQgaW4gdGhlDQo+Pj4+IGNyYXNoZHVtcCBrZXJuZWw6DQo+Pj4+IA0KPj4+PiBGb3Ig
-RE1BIFJlbWFwcGluZzoNCj4+Pj4gMS4gVG8gYWNjZXB0IHRoZSB2dC1kIGhhcmR3YXJlIGluIGFu
-IGFjdGl2ZSBzdGF0ZSwNCj4+Pj4gMi4gRG8gbm90IGRpc2FibGUgYW5kIHJlLWVuYWJsZSB0aGUg
-dHJhbnNsYXRpb24sIGtlZXAgaXQgZW5hYmxlZC4NCj4+Pj4gMy4gVXNlIHRoZSBvbGQgcm9vdCBl
-bnRyeSB0YWJsZSwgZG8gbm90IHJld3JpdGUgdGhlIFJUQSByZWdpc3Rlci4NCj4+Pj4gNC4gTWFs
-bG9jIGFuZCB1c2UgbmV3IGNvbnRleHQgZW50cnkgdGFibGUsIGNvcHkgZGF0YSBmcm9tIHRoZSBv
-bGQgb25lcyB0aGF0DQo+Pj4+ICAgdXNlZCBieSB0aGUgb2xkIGtlcm5lbC4NCj4+PiANCj4+PiBI
-YXZlIG5vdCByZWFkIGFsbCB0aGUgcGF0Y2hlcywgYnV0IEkgaGF2ZSBhIHF1ZXN0aW9uLCBub3Qg
-c3VyZSB0aGlzIGhhcyBiZWVuDQo+Pj4gYW5zd2VyZWQgYmVmb3JlLiBPbGQgbWVtb3J5IGlzIG5v
-dCByZWxpYWJsZSwgd2hhdCBpZiB0aGUgb2xkIG1lbW9yeSBnZXQgY29ycnVwdGVkDQo+Pj4gYmVm
-b3JlIHBhbmljPyBJcyBpdCBzYWZlIHRvIGNvbnRpbnVlIHVzaW5nIGl0IGluIDJuZCBrZXJuZWws
-IEkgd29ycnkgdGhhdCBpdCB3aWxsDQo+Pj4gY2F1c2UgcHJvYmxlbXMuDQo+Pj4gDQo+Pj4gSG9w
-ZSBJJ20gd3JvbmcgdGhvdWdoLg0KPj4+IA0KPj4+IFRoYW5rcw0KPj4+IERhdmUNCj4+IA0K
+On 04/03/15 at 05:21pm, Dave Young wrote:
+> On 04/03/15 at 05:01pm, Li, ZhenHua wrote:
+> > Hi Dave,
+> > 
+> > There may be some possibilities that the old iommu data is corrupted by
+> > some other modules. Currently we do not have a better solution for the
+> > dmar faults.
+> > 
+> > But I think when this happens, we need to fix the module that corrupted
+> > the old iommu data. I once met a similar problem in normal kernel, the
+> > queue used by the qi_* functions was written again by another module.
+> > The fix was in that module, not in iommu module.
+> 
+> It is too late, there will be no chance to save vmcore then.
+> 
+> Also if it is possible to continue corrupt other area of oldmem because
+> of using old iommu tables then it will cause more problems.
+> 
+> So I think the tables at least need some verifycation before being used.
+> 
+
+Yes, it's a good thinking anout this and verification is also an
+interesting idea. kexec/kdump do a sha256 calculation on loaded kernel
+and then verify this again when panic happens in purgatory. This checks
+whether any code stomps into region reserved for kexec/kernel and corrupt
+the loaded kernel.
+
+If this is decided to do it should be an enhancement to current
+patchset but not a approach change. Since this patchset is going very
+close to point as maintainers expected maybe this can be merged firstly,
+then think about enhancement. After all without this patchset vt-d often
+raised error message, hung.
+
+By the way I tested this patchset it works very well on my HP z420 work
+station.
+
+Thanks
+Baoquan
