@@ -1,7 +1,7 @@
 From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH v10 06/10] iommu/vt-d: datatypes and functions used for kdump
-Date: Fri, 10 Apr 2015 16:42:09 +0800
-Message-ID: <1428655333-19504-7-git-send-email-zhen-hual@hp.com>
+Subject: [PATCH v10 07/10] iommu/vt-d: enable kdump support in iommu module
+Date: Fri, 10 Apr 2015 16:42:10 +0800
+Message-ID: <1428655333-19504-8-git-send-email-zhen-hual@hp.com>
 References: <1428655333-19504-1-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,182 +21,221 @@ To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtd
 Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, zhen-hual-VXdhtT5mjnY@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Populate it with support functions to copy iommu translation tables from
-from the panicked kernel into the kdump kernel in the event of a crash.
-
-Functions:
-    Use old root entry table, and load the old data to root_entry as cache.
-    Malloc new context table and copy old context table to the new one.
+Modify the operation of the following functions when called during crash dump:
+    device_to_context_entry
+    free_context_table
+    get_domain_for_dev
+    init_dmars
+    intel_iommu_init
 
 Bill Sumner:
-    Original version, the creation of the data types and functions.
+    Original version.
 
-Li, Zhenhua:
-    Create new function iommu_check_pre_te_status() to check status.
-    Update the caller of context_get_* and context_put*, use context_*
-        and context_set_* for replacement.
-    Update the name of the function that loads root entry table.
-    Use new function to copy old context entry tables and page tables.
-    Use "unsigned long" for physical address.
-    Remove the functions to copy page table in Bill's version.
-    Remove usage of dve and ppap in Bill's version.
+Zhenhua:
+    The name of new calling functions.
+    Do not disable and re-enable TE in kdump kernel.
+    Use the did and gaw from old context entry;
 
 Signed-off-by: Bill Sumner <billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 121 ++++++++++++++++++++++++++++++++++++++++++++
- include/linux/intel-iommu.h |   3 ++
- 2 files changed, 124 insertions(+)
+ drivers/iommu/intel-iommu.c | 94 +++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 82 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index ef8a99c..78c1d65 100644
+index 78c1d65..3d4ea43 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -388,6 +388,18 @@ struct iommu_remapped_entry {
- static LIST_HEAD(__iommu_remapped_mem);
- static DEFINE_MUTEX(__iommu_mem_list_lock);
+@@ -399,6 +399,7 @@ static int copy_root_entry_table(struct intel_iommu *iommu);
+ static int intel_iommu_load_translation_tables(struct intel_iommu *iommu);
  
-+/* ========================================================================
-+ * Copy iommu translation tables from old kernel into new  kernel.
-+ * Entry to this set of functions is: intel_iommu_load_translation_tables()
-+ * ------------------------------------------------------------------------
-+ */
-+
-+static int copy_root_entry_table(struct intel_iommu *iommu);
-+
-+static int intel_iommu_load_translation_tables(struct intel_iommu *iommu);
-+
-+static void iommu_check_pre_te_status(struct intel_iommu *iommu);
-+
+ static void iommu_check_pre_te_status(struct intel_iommu *iommu);
++static u8 g_translation_pre_enabled;
+ 
  /*
   * This domain is a statically identity mapping domain.
-  *	1. This domain creats a static 1:1 mapping to all usable memory.
-@@ -4971,3 +4983,112 @@ static void __iommu_update_old_root_entry(struct intel_iommu *iommu, int index)
- 	__iommu_flush_cache(iommu, to + start, size);
- }
+@@ -839,6 +840,9 @@ static struct context_entry * device_to_context_entry(struct intel_iommu *iommu,
+ 		set_root_value(root, phy_addr);
+ 		set_root_present(root);
+ 		__iommu_flush_cache(iommu, root, sizeof(*root));
++
++		if (iommu->pre_enabled_trans)
++			__iommu_update_old_root_entry(iommu, bus);
+ 	}
+ 	spin_unlock_irqrestore(&iommu->lock, flags);
+ 	return &context[devfn];
+@@ -890,7 +894,8 @@ static void free_context_table(struct intel_iommu *iommu)
  
-+/*
-+ * Load root entry tables from old kernel.
-+ */
-+static int copy_root_entry_table(struct intel_iommu *iommu)
-+{
-+	u32 bus;				/* Index: root-entry-table */
-+	struct root_entry  *re;			/* Virt(iterator: new table) */
-+	unsigned long context_old_phys;		/* Phys(context table entry) */
-+	struct context_entry *context_new_virt;	/* Virt(new context_entry) */
+ 	spin_lock_irqsave(&iommu->lock, flags);
+ 	if (!iommu->root_entry) {
+-		goto out;
++		spin_unlock_irqrestore(&iommu->lock, flags);
++		return;
+ 	}
+ 	for (i = 0; i < ROOT_ENTRY_NR; i++) {
+ 		root = &iommu->root_entry[i];
+@@ -898,10 +903,23 @@ static void free_context_table(struct intel_iommu *iommu)
+ 		if (context)
+ 			free_pgtable_page(context);
+ 	}
 +
-+	/*
-+	 * A new root entry table has been allocated ,
-+	 * we need copy re from old kernel to the new allocated one.
-+	 */
-+
-+	if (!iommu->root_entry_old_phys)
-+		return -ENOMEM;
-+
-+	for (bus = 0, re = iommu->root_entry; bus < 256; bus += 1, re += 1) {
-+		if (!root_present(re))
-+			continue;
-+
-+		context_old_phys = get_context_phys_from_root(re);
-+
-+		if (!context_old_phys)
-+			continue;
-+
-+		context_new_virt =
-+			(struct context_entry *)alloc_pgtable_page(iommu->node);
-+
-+		if (!context_new_virt)
-+			return -ENOMEM;
-+
-+		__iommu_load_from_oldmem(context_new_virt,
-+					context_old_phys,
-+					VTD_PAGE_SIZE);
-+
-+		__iommu_flush_cache(iommu, context_new_virt, VTD_PAGE_SIZE);
-+
-+		set_root_value(re, virt_to_phys(context_new_virt));
++	if (iommu->pre_enabled_trans) {
++		iommu->root_entry_old_phys = 0;
++		root = iommu->root_entry_old_virt;
++		iommu->root_entry_old_virt = NULL;
 +	}
 +
-+	return 0;
-+}
+ 	free_pgtable_page(iommu->root_entry);
+ 	iommu->root_entry = NULL;
+-out:
 +
-+/*
-+ * Interface to the "load translation tables" set of functions
-+ * from mainline code.
-+ */
-+static int intel_iommu_load_translation_tables(struct intel_iommu *iommu)
-+{
-+	unsigned long long q;		/* quadword scratch */
-+	int ret = 0;			/* Integer return code */
-+	unsigned long flags;
+ 	spin_unlock_irqrestore(&iommu->lock, flags);
 +
-+	q = dmar_readq(iommu->reg + DMAR_RTADDR_REG);
-+	if (!q)
-+		return -1;
-+
-+	spin_lock_irqsave(&iommu->lock, flags);
-+
-+	/* Load the root-entry table from the old kernel
-+	 * foreach context_entry_table in root_entry
-+	 *   Copy each entry table from old kernel
++	/* We put this out of spin_unlock is because iounmap() may
++	 * cause error if surrounded by spin_lock and unlock;
 +	 */
-+	if (!iommu->root_entry) {
-+		iommu->root_entry =
-+			(struct root_entry *)alloc_pgtable_page(iommu->node);
-+		if (!iommu->root_entry) {
-+			spin_unlock_irqrestore(&iommu->lock, flags);
-+			return -ENOMEM;
++	if (iommu->pre_enabled_trans)
++		iounmap(root);
+ }
+ 
+ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
+@@ -2319,6 +2337,7 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
+ 	unsigned long flags;
+ 	u8 bus, devfn;
+ 	int did = -1;   /* Default to "no domain_id supplied" */
++	struct context_entry *ce = NULL;
+ 
+ 	domain = find_domain(dev);
+ 	if (domain)
+@@ -2352,6 +2371,20 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
+ 	domain = alloc_domain(0);
+ 	if (!domain)
+ 		return NULL;
++
++	if (iommu->pre_enabled_trans) {
++		/*
++		 * if this device had a did in the old kernel
++		 * use its values instead of generating new ones
++		 */
++		ce = device_to_existing_context_entry(iommu, bus, devfn);
++
++		if (ce) {
++			did = context_domain_id(ce);
++			gaw = agaw_to_width(context_address_width(ce));
 +		}
 +	}
 +
-+	iommu->root_entry_old_phys = q & VTD_PAGE_MASK;
-+	if (!iommu->root_entry_old_phys) {
-+		pr_err("Could not read old root entry address.");
-+		return -1;
-+	}
-+
-+	iommu->root_entry_old_virt = ioremap_cache(iommu->root_entry_old_phys,
-+						VTD_PAGE_SIZE);
-+	if (!iommu->root_entry_old_virt) {
-+		pr_err("Could not map the old root entry.");
-+		return -ENOMEM;
-+	}
-+
-+	__iommu_load_old_root_entry(iommu);
-+	ret = copy_root_entry_table(iommu);
-+	__iommu_flush_cache(iommu, iommu->root_entry, PAGE_SIZE);
-+	__iommu_update_old_root_entry(iommu, -1);
-+
-+	spin_unlock_irqrestore(&iommu->lock, flags);
-+
-+	__iommu_free_mapped_mem();
-+
-+	return ret;
-+}
-+
-+static void iommu_check_pre_te_status(struct intel_iommu *iommu)
-+{
-+	u32 sts;
-+
-+	sts = readl(iommu->reg + DMAR_GSTS_REG);
-+	if (sts & DMA_GSTS_TES) {
-+		pr_info("Translation is enabled prior to OS.\n");
-+		iommu->pre_enabled_trans = 1;
-+	}
-+}
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 6fa0804..9ca025a 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -328,6 +328,9 @@ struct intel_iommu {
- 	spinlock_t	lock; /* protect context, domain ids */
- 	struct root_entry *root_entry; /* virtual address */
+ 	domain->id = iommu_attach_domain_with_id(domain, iommu, did);
+ 	if (domain->id < 0) {
+ 		free_domain_mem(domain);
+@@ -2879,6 +2912,7 @@ static int __init init_dmars(void)
+ 		goto free_g_iommus;
+ 	}
  
-+	/* whether translation is enabled prior to OS*/
-+	u8		pre_enabled_trans;
-+
- 	void __iomem	*root_entry_old_virt; /* mapped from old root entry */
- 	unsigned long	root_entry_old_phys; /* root entry in old kernel */
++	g_translation_pre_enabled = 0; /* To know whether to skip RMRR */
+ 	for_each_active_iommu(iommu, drhd) {
+ 		g_iommus[iommu->seq_id] = iommu;
  
+@@ -2886,14 +2920,30 @@ static int __init init_dmars(void)
+ 		if (ret)
+ 			goto free_iommu;
+ 
+-		/*
+-		 * TBD:
+-		 * we could share the same root & context tables
+-		 * among all IOMMU's. Need to Split it later.
+-		 */
+-		ret = iommu_alloc_root_entry(iommu);
+-		if (ret)
+-			goto free_iommu;
++		iommu_check_pre_te_status(iommu);
++		if (iommu->pre_enabled_trans) {
++			pr_info("IOMMU Copying translate tables from panicked kernel\n");
++			ret = intel_iommu_load_translation_tables(iommu);
++			if (ret) {
++				pr_err("IOMMU: Copy translate tables failed\n");
++
++				/* Best to stop trying */
++				goto free_iommu;
++			}
++			pr_info("IOMMU: root_cache:0x%12.12llx phys:0x%12.12llx\n",
++				(u64)iommu->root_entry,
++				(u64)iommu->root_entry_old_phys);
++		} else {
++			/*
++			 * TBD:
++			 * we could share the same root & context tables
++			 * among all IOMMU's. Need to Split it later.
++			 */
++			ret = iommu_alloc_root_entry(iommu);
++			if (ret)
++				goto free_iommu;
++		}
++
+ 		if (!ecap_pass_through(iommu->ecap))
+ 			hw_pass_through = 0;
+ 	}
+@@ -2911,6 +2961,14 @@ static int __init init_dmars(void)
+ 	check_tylersburg_isoch();
+ 
+ 	/*
++	 * In the second kernel: Skip setting-up new domains for
++	 * si, rmrr, and the isa bus on the expectation that these
++	 * translations were copied from the old kernel.
++	 */
++	if (g_translation_pre_enabled)
++		goto skip_new_domains_for_si_rmrr_isa;
++
++	/*
+ 	 * If pass through is not set or not enabled, setup context entries for
+ 	 * identity mappings for rmrr, gfx, and isa and may fall back to static
+ 	 * identity mapping if iommu_identity_mapping is set.
+@@ -2950,6 +3008,8 @@ static int __init init_dmars(void)
+ 
+ 	iommu_prepare_isa();
+ 
++skip_new_domains_for_si_rmrr_isa:;
++
+ 	/*
+ 	 * for each drhd
+ 	 *   enable fault log
+@@ -2978,7 +3038,13 @@ static int __init init_dmars(void)
+ 
+ 		iommu->flush.flush_context(iommu, 0, 0, 0, DMA_CCMD_GLOBAL_INVL);
+ 		iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
+-		iommu_enable_translation(iommu);
++
++		if (iommu->pre_enabled_trans) {
++			if (!(iommu->gcmd & DMA_GCMD_TE))
++				iommu_enable_translation(iommu);
++		} else
++			iommu_enable_translation(iommu);
++
+ 		iommu_disable_protect_mem_regions(iommu);
+ 	}
+ 
+@@ -4264,11 +4330,14 @@ int __init intel_iommu_init(void)
+ 	}
+ 
+ 	/*
+-	 * Disable translation if already enabled prior to OS handover.
++	 * We do not need to disable translation if already enabled prior
++	 * to OS handover. Because we will try to copy old tables;
+ 	 */
++	/*
+ 	for_each_active_iommu(iommu, drhd)
+ 		if (iommu->gcmd & DMA_GCMD_TE)
+ 			iommu_disable_translation(iommu);
++	*/
+ 
+ 	if (dmar_dev_scope_init() < 0) {
+ 		if (force_on)
+@@ -5090,5 +5159,6 @@ static void iommu_check_pre_te_status(struct intel_iommu *iommu)
+ 	if (sts & DMA_GSTS_TES) {
+ 		pr_info("Translation is enabled prior to OS.\n");
+ 		iommu->pre_enabled_trans = 1;
++		g_translation_pre_enabled = 1;
+ 	}
+ }
 -- 
 2.0.0-rc0
