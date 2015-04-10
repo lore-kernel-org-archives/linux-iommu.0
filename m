@@ -1,159 +1,190 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [iommu:ppc/pamu 1/1] drivers/iommu/fsl_pamu.h:24:32: fatal error:
-	asm/fsl_pamu_stash.h: No such file or directory
-Date: Wed, 8 Apr 2015 13:24:16 +0000
-Message-ID: <BN3PR0301MB12198F55BD2619F392B58AD4EAFC0@BN3PR0301MB1219.namprd03.prod.outlook.com>
-References: <201503240804.8vcZXNOY%fengguang.wu@intel.com>
-	<551122E2.1040408@Freescale.com>
-	<BN3PR0301MB12195D8782612E67CDE2BFD9EA0B0@BN3PR0301MB1219.namprd03.prod.outlook.com>
-	<55125179.8040801@Freescale.com>
-	<BN3PR0301MB12193C6929AE8CF767B8A78AEA0B0@BN3PR0301MB1219.namprd03.prod.outlook.com>
-	<55126585.7040903@Freescale.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <55126585.7040903-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Madalin-Cristian Bucur <madalin.bucur-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+From: "Li, Zhen-Hua" <zhen-hual@hp.com>
+Subject: [PATCH v10 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
+Date: Fri, 10 Apr 2015 16:42:03 +0800
+Message-ID: <1428655333-19504-1-git-send-email-zhen-hual@hp.com>
+Return-path: <linux-pci-owner@vger.kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, joro@8bytes.org, vgoyal@redhat.com, dyoung@redhat.com
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, zhen-hual@hp.com, rwright@hp.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-Following issue was observed while building (compile test) for a non-powerpc (e500mc) based platform. The pamu driver includes a file which is available in the architecture include directory. Should we move the header file to general Linux kernel include directory?
+This patchset is an update of Bill Sumner's patchset, implements a fix for:
+If a kernel boots with intel_iommu=on on a system that supports intel vt-d, 
+when a panic happens, the kdump kernel will boot with these faults:
 
-Regards
-Varun
+    dmar: DRHD: handling fault status reg 102
+    dmar: DMAR:[DMA Read] Request device [01:00.0] fault addr fff80000
+    DMAR:[fault reason 01] Present bit in root entry is clear
 
-> -----Original Message-----
-> From: Emil Medve [mailto:Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org]
-> Sent: Wednesday, March 25, 2015 1:07 PM
-> To: Sethi Varun-B16395; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> Subject: Re: [iommu:ppc/pamu 1/1] drivers/iommu/fsl_pamu.h:24:32: fatal
-> error: asm/fsl_pamu_stash.h: No such file or directory
-> 
-> Hello Varun,
-> 
-> 
-> On 03/25/2015 01:25 AM, Sethi Varun-B16395 wrote:
-> > Hi Emil,
-> >
-> >> -----Original Message-----
-> >> From: Emil Medve [mailto:Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org]
-> >> Sent: Wednesday, March 25, 2015 11:41 AM
-> >> To: Sethi Varun-B16395; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; jroedel-l3A5Bk7waGM@public.gmane.org
-> >> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> >> Subject: Re: [iommu:ppc/pamu 1/1] drivers/iommu/fsl_pamu.h:24:32:
-> >> fatal
-> >> error: asm/fsl_pamu_stash.h: No such file or directory
-> >>
-> >> Hello Varun,
-> >>
-> >>
-> >> On 03/25/2015 12:46 AM, Sethi Varun-B16395 wrote:
-> >>>> -----Original Message-----
-> >>>> From: Emil Medve [mailto:Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org]
-> >>>> Sent: Tuesday, March 24, 2015 2:10 PM
-> >>>> To: linuxppc-dev-50dRxjG7WBCY5r8RbUyfqNHuzzzSOjJt@public.gmane.org; Sethi Varun-B16395
-> >>>> Subject: Re: [iommu:ppc/pamu 1/1] drivers/iommu/fsl_pamu.h:24:32:
-> >>>> fatal
-> >>>> error: asm/fsl_pamu_stash.h: No such file or directory
-> >>>>
-> >>>> Hello Varun,
-> >>>>
-> >>>>
-> >>>> On 03/23/2015 07:02 PM, kbuild test robot wrote:
-> >>>>> tree:   git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
-> >>>> ppc/pamu
-> >>>>> head:   f2fafdd954d743a0e68e5cd76dbef2f2454deefa
-> >>>>> commit: f2fafdd954d743a0e68e5cd76dbef2f2454deefa [1/1]
-> iommu/fsl:
-> >>>> PAMU
-> >>>>> is also present on 64-bit SoC(s)
-> >>>>> config: microblaze-allyesconfig (attached as .config)
-> >>>>> reproduce:
-> >>>>>   wget https://git.kernel.org/cgit/linux/kernel/git/wfg/lkp-
-> >>>> tests.git/plain/sbin/make.cross -O ~/bin/make.cross
-> >>>>>   chmod +x ~/bin/make.cross
-> >>>>>   git checkout f2fafdd954d743a0e68e5cd76dbef2f2454deefa
-> >>>>>   # save the attached .config to linux build tree
-> >>>>>   make.cross ARCH=microblaze
-> >>>>>
-> >>>>> All error/warnings:
-> >>>>>
-> >>>>>    In file included from drivers/iommu/fsl_pamu.c:21:0:
-> >>>>>>> drivers/iommu/fsl_pamu.h:24:32: fatal error:
-> asm/fsl_pamu_stash.h:
-> >>>>>>> No such file or directory
-> >>>>>     #include <asm/fsl_pamu_stash.h>
-> >>>>>                                    ^
-> >>>>>    compilation terminated.
-> >>>>>
-> >>>>> vim +24 drivers/iommu/fsl_pamu.h
-> >>>>>
-> >>>>> 695093e3 Varun Sethi 2013-07-15   8   * MERCHANTABILITY or FITNESS
-> >> FOR
-> >>>> A PARTICULAR PURPOSE.  See the
-> >>>>> 695093e3 Varun Sethi 2013-07-15   9   * GNU General Public License for
-> >>>> more details.
-> >>>>> 695093e3 Varun Sethi 2013-07-15  10   *
-> >>>>> 695093e3 Varun Sethi 2013-07-15  11   * You should have received a
-> copy
-> >> of
-> >>>> the GNU General Public License
-> >>>>> 695093e3 Varun Sethi 2013-07-15  12   * along with this program; if not,
-> >>>> write to the Free Software
-> >>>>> 695093e3 Varun Sethi 2013-07-15  13   * Foundation, 51 Franklin Street,
-> >> Fifth
-> >>>> Floor, Boston, MA  02110-1301, USA.
-> >>>>> 695093e3 Varun Sethi 2013-07-15  14   *
-> >>>>> 695093e3 Varun Sethi 2013-07-15  15   * Copyright (C) 2013 Freescale
-> >>>> Semiconductor, Inc.
-> >>>>> 695093e3 Varun Sethi 2013-07-15  16   *
-> >>>>> 695093e3 Varun Sethi 2013-07-15  17   */
-> >>>>> 695093e3 Varun Sethi 2013-07-15  18
-> >>>>> 695093e3 Varun Sethi 2013-07-15  19  #ifndef __FSL_PAMU_H
-> >>>>> 695093e3 Varun Sethi 2013-07-15  20  #define __FSL_PAMU_H
-> >>>>> 695093e3 Varun Sethi 2013-07-15  21
-> >>>>> cd70d465 Emil Medve  2015-01-28  22  #include <linux/iommu.h>
-> >>>>> cd70d465 Emil Medve  2015-01-28  23
-> >>>>> 695093e3 Varun Sethi 2013-07-15 @24  #include
-> >> <asm/fsl_pamu_stash.h>
-> >>>>
-> >>>> The patch just triggered the build and for some reason these folks
-> >>>> are building the driver on non-e500mc arches/defconfigs
-> >>>>
-> >>> Hmm.... I believe PAMU driver got included due to the COMPILE_TEST
-> >>> dependency. This is an issue, if we add the COMPILE_TEST dependency,
-> >>> then we can't include architecture specific include files?
-> >>
-> >> What in fsl_pamu_stash.h is "even more" arch/platform specific then
-> >> the content of drivers/iommu/fsl_pamu*?
-> >>
-> > This was discussed during early PAMU driver reviews. Joerg's idea was
-> > that PAMU would specific to the Power architecture platform, so we
-> > should place the include file in the arch specific directory
-> > (originally I had placed it under include/linux).
-> 
-> But the only content that ended up in arch/powerpc is one file with two
-> definitions that don't seem particularly specific. The line is a bit blurry and
-> until (if ever) we get different PAMU integration I doubt we can reasonably
-> make it sharper
-> 
-> Anyway, I'm unsure what an immediately acceptable answer is. I mean if
-> we're to spend time supporting universal builds of the PAMU driver there is a
-> list of (some non-trivial) changes we ought to do. This particular build issue is
-> just the first
-> 
-> 
-> Cheers,
+    dmar: DRHD: handling fault status reg 2
+    dmar: INTR-REMAP: Request device [[61:00.0] fault index 42
+    INTR-REMAP:[fault reason 34] Present field in the IRTE entry is clear
+
+On some system, the interrupt remapping fault will also happen even if the 
+intel_iommu is not set to on, because the interrupt remapping will be enabled 
+when x2apic is needed by the system.
+
+The cause of the DMA fault is described in Bill's original version, and the 
+INTR-Remap fault is caused by a similar reason. In short, the initialization 
+of vt-d drivers causes the in-flight DMA and interrupt requests get wrong 
+response.
+
+To fix this problem, we modifies the behaviors of the intel vt-d in the 
+crashdump kernel:
+
+For DMA Remapping:
+1. To accept the vt-d hardware in an active state,
+2. Do not disable and re-enable the translation, keep it enabled.
+3. Use the old root entry table, do not rewrite the RTA register.
+4. Malloc and use new context entry table, copy data from the old ones that
+   used by the old kernel.
+5. Keep using the old page tables before driver is loaded.
+6. After device driver is loaded, when it issues the first dma_map command, 
+   free the dmar_domain structure for this device, and generate a new one, so 
+   that the device can be assigned a new and empty page table. 
+7. When a new context entry table is generated, we also save its address to 
+   the old root entry table.
+
+For Interrupt Remapping:
+1. To accept the vt-d hardware in an active state,
+2. Do not disable and re-enable the interrupt remapping, keep it enabled.
+3. Use the old interrupt remapping table, do not rewrite the IRTA register.
+4. When ioapic entry is setup, the interrupt remapping table is changed, and 
+   the updated data will be stored to the old interrupt remapping table.
+
+Advantages of this approach:
+1. All manipulation of the IO-device is done by the Linux device-driver
+   for that device.
+2. This approach behaves in a manner very similar to operation without an
+   active iommu.
+3. Any activity between the IO-device and its RMRR areas is handled by the
+   device-driver in the same manner as during a non-kdump boot.
+4. If an IO-device has no driver in the kdump kernel, it is simply left alone.
+   This supports the practice of creating a special kdump kernel without
+   drivers for any devices that are not required for taking a crashdump. 
+5. Minimal code-changes among the existing mainline intel vt-d code.
+
+Summary of changes in this patch set:
+1. Added some useful function for root entry table in code intel-iommu.c
+2. Added new members to struct root_entry and struct irte;
+3. Functions to load old root entry table to iommu->root_entry from the memory 
+   of old kernel.
+4. Functions to malloc new context entry table and copy the data from the old
+   ones to the malloced new ones.
+5. Functions to enable support for DMA remapping in kdump kernel.
+6. Functions to load old irte data from the old kernel to the kdump kernel.
+7. Some code changes that support other behaviours that have been listed.
+8. In the new functions, use physical address as "unsigned long" type, not 
+   pointers.
+
+Original version by Bill Sumner:
+    https://lkml.org/lkml/2014/1/10/518
+    https://lkml.org/lkml/2014/4/15/716
+    https://lkml.org/lkml/2014/4/24/836
+
+Zhenhua's updates:
+    https://lkml.org/lkml/2014/10/21/134
+    https://lkml.org/lkml/2014/12/15/121
+    https://lkml.org/lkml/2014/12/22/53
+    https://lkml.org/lkml/2015/1/6/1166
+    https://lkml.org/lkml/2015/1/12/35
+    https://lkml.org/lkml/2015/3/19/33
+
+Changelog[v10]:
+    1. Do not use CONFIG_CRASH_DUMP and is_kdump_kernel().
+       Use one flag which stores the te and ir status in last kernel:
+           iommu->pre_enabled_trans
+           iommu->pre_enabled_ir
+
+Changelog[v9]:
+    1. Add new function iommu_attach_domain_with_id.
+    2. Do not copy old page tables, keep using the old ones.
+    3. Remove functions:
+           intel_iommu_did_to_domain_values_entry
+           intel_iommu_get_dids_from_old_kernel
+           device_to_domain_id
+           copy_page_addr
+           copy_page_table
+           copy_context_entry
+           copy_context_entry_table
+    4. Add new function device_to_existing_context_entry.
+
+Changelog[v8]:
+    1. Add a missing __iommu_flush_cache in function copy_page_table.
+
+Changelog[v7]:
+    1. Use __iommu_flush_cache to flush the data to hardware.
+
+Changelog[v6]:
+    1. Use "unsigned long" as type of physical address.
+    2. Use new function unmap_device_dma to unmap the old dma.
+    3. Some small incorrect bits order for aw shift.
+
+Changelog[v5]:
+    1. Do not disable and re-enable traslation and interrupt remapping. 
+    2. Use old root entry table.
+    3. Use old interrupt remapping table.
+    4. New functions to copy data from old kernel, and save to old kernel mem.
+    5. New functions to save updated root entry table and irte table.
+    6. Use intel_unmap to unmap the old dma;
+    7. Allocate new pages while driver is being loaded.
+
+Changelog[v4]:
+    1. Cut off the patches that move some defines and functions to new files.
+    2. Reduce the numbers of patches to five, make it more easier to read.
+    3. Changed the name of functions, make them consistent with current context
+       get/set functions.
+    4. Add change to function __iommu_attach_domain.
+
+Changelog[v3]:
+    1. Commented-out "#define DEBUG 1" to eliminate debug messages.
+    2. Updated the comments about changes in each version.
+    3. Fixed: one-line added to Copy-Translations patch to initialize the iovad
+          struct as recommended by Baoquan He [bhe@redhat.com]
+          init_iova_domain(&domain->iovad, DMA_32BIT_PFN);
+
+Changelog[v2]:
+    The following series implements a fix for:
+    A kdump problem about DMA that has been discussed for a long time. That is,
+    when a kernel panics and boots into the kdump kernel, DMA started by the
+    panicked kernel is not stopped before the kdump kernel is booted and the
+    kdump kernel disables the IOMMU while this DMA continues.  This causes the
+    IOMMU to stop translating the DMA addresses as IOVAs and begin to treat
+    them as physical memory addresses -- which causes the DMA to either:
+        (1) generate DMAR errors or 
+        (2) generate PCI SERR errors or 
+        (3) transfer data to or from incorrect areas of memory. Often this 
+            causes the dump to fail.
+
+Changelog[v1]:
+    The original version.
+
+Changed in this version:
+1. Do not disable and re-enable traslation and interrupt remapping. 
+2. Use old root entry table.
+3. Use old interrupt remapping table.
+4. Use "unsigned long" as physical address.
+5. Use intel_unmap to unmap the old dma;
+
+Baoquan He <bhe@redhat.com> helps testing this patchset.
+Takao Indoh <indou.takao@jp.fujitsu.com> gives valuable suggestions.
+
+Li, Zhen-Hua (10):
+  iommu/vt-d: New function to attach domain with id
+  iommu/vt-d: Items required for kdump
+  iommu/vt-d: Function to get old context entry
+  iommu/vt-d: functions to copy data from old mem
+  iommu/vt-d: Add functions to load and save old re
+  iommu/vt-d: datatypes and functions used for kdump
+  iommu/vt-d: enable kdump support in iommu module
+  iommu/vt-d: assign new page table for dma_map
+  iommu/vt-d: Copy functions for irte
+  iommu/vt-d: Use old irte in kdump kernel
+
+ drivers/iommu/intel-iommu.c         | 518 ++++++++++++++++++++++++++++++++++--
+ drivers/iommu/intel_irq_remapping.c |  96 ++++++-
+ include/linux/intel-iommu.h         |  16 ++
+ 3 files changed, 605 insertions(+), 25 deletions(-)
+
+-- 
+2.0.0-rc0
