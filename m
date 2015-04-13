@@ -1,15 +1,14 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH 15/16] iommu/fsl: Make use of domain_alloc and domain_free
-Date: Sun, 12 Apr 2015 14:25:58 +0000
-Message-ID: <BN3PR0301MB1219162C883B327D4D9F55FCEAF80@BN3PR0301MB1219.namprd03.prod.outlook.com>
-References: <1427373799-18662-1-git-send-email-joro@8bytes.org>
-	<1427373799-18662-16-git-send-email-joro@8bytes.org>
+From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [Patch Part1 v8 08/37] irq_remapping: Introduce new interfaces to
+	support hierarchy irqdomain
+Date: Mon, 13 Apr 2015 14:11:30 +0800
+Message-ID: <1428905519-23704-9-git-send-email-jiang.liu@linux.intel.com>
+References: <1428905519-23704-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1427373799-18662-16-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1428905519-23704-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,269 +18,290 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Dimitri Sivanich <sivanich-sJ/iWh9BUns@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Cohen <david.a.cohen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Sander Eikelenboom <linux-6SM94LqRVpn6gRhOQ7JHfg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, David Vrabel <david.vrabel-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Introduce new interfaces for interrupt remapping drivers to support
+hierarchy irqdomain:
+1) irq_remapping_get_ir_irq_domain(): get irqdomain associated with an
+   interrupt remapping unit. IOAPIC/HPET drivers use this interface to
+   get parent interrupt remapping irqdomain.
+2) irq_remapping_get_irq_domain(): get irqdomain for an IRQ allocation.
+   This is mainly used to support MSI irqdomain. We must build one MSI
+   irqdomain for each interrupt remapping unit. MSI driver calls this
+   interface to get MSI irqdomain associated with an IR irqdomain which
+   manages the PCI devices. In a further step we will store the irqdomain
+   pointer in the device struct to avoid this call in the irq allocation
+   path.
 
+Architecture specific needs to implement two hooks:
+1) arch_get_ir_parent_domain(): get parent irqdomain for IR irqdomain,
+   which is x86_vector_domain on x86 platforms.
+2) arch_create_msi_irq_domain(): create an MSI irqdomain associated with
+   the interrupt remapping unit.
 
-> -----Original Message-----
-> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
-> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Joerg Roedel
-> Sent: Thursday, March 26, 2015 6:13 PM
-> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> Cc: Alexandre Courbot; linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Heiko Stuebner;
-> Arnd Bergmann; Stephen Warren; Will Deacon; linux-
-> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; Kukjin Kim;
-> Thierry Reding; jroedel-l3A5Bk7waGM@public.gmane.org; linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Yingjoe
-> Chen; David Woodhouse; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> Subject: [PATCH 15/16] iommu/fsl: Make use of domain_alloc and
-> domain_free
-> 
-> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> 
-> Implement domain_alloc and domain_free iommu-ops as a replacement for
-> domain_init/domain_destroy.
-> 
-> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> ---
->  drivers/iommu/fsl_pamu_domain.c | 60 ++++++++++++++++++++++--------
-> -----------
->  drivers/iommu/fsl_pamu_domain.h |  2 +-
->  2 files changed, 33 insertions(+), 29 deletions(-)
-> 
-> diff --git a/drivers/iommu/fsl_pamu_domain.c
-> b/drivers/iommu/fsl_pamu_domain.c index ceebd28..1d45293 100644
-> --- a/drivers/iommu/fsl_pamu_domain.c
-> +++ b/drivers/iommu/fsl_pamu_domain.c
-> @@ -33,6 +33,11 @@ static struct kmem_cache *fsl_pamu_domain_cache;
-> static struct kmem_cache *iommu_devinfo_cache;  static
-> DEFINE_SPINLOCK(device_domain_lock);
-> 
-> +static struct fsl_dma_domain *to_fsl_dma_domain(struct iommu_domain
-> +*dom) {
-> +	return container_of(dom, struct fsl_dma_domain, iommu_domain);
-> }
-> +
->  static int __init iommu_init_mempool(void)  {
->  	fsl_pamu_domain_cache =
-> kmem_cache_create("fsl_pamu_domain",
-> @@ -65,7 +70,7 @@ static phys_addr_t get_phys_addr(struct
-> fsl_dma_domain *dma_domain, dma_addr_t i
->  	struct dma_window *win_ptr = &dma_domain->win_arr[0];
->  	struct iommu_domain_geometry *geom;
-> 
-> -	geom = &dma_domain->iommu_domain->geometry;
-> +	geom = &dma_domain->iommu_domain.geometry;
-> 
->  	if (!win_cnt || !dma_domain->geom_size) {
->  		pr_debug("Number of windows/geometry not configured
-> for the domain\n"); @@ -123,7 +128,7 @@ static int map_win(int liodn,
-> struct fsl_dma_domain *dma_domain)  {
->  	int ret;
->  	struct dma_window *wnd = &dma_domain->win_arr[0];
-> -	phys_addr_t wnd_addr = dma_domain->iommu_domain-
-> >geometry.aperture_start;
-> +	phys_addr_t wnd_addr =
-> +dma_domain->iommu_domain.geometry.aperture_start;
->  	unsigned long flags;
-> 
->  	spin_lock_irqsave(&iommu_lock, flags); @@ -172,7 +177,7 @@ static
-> int update_liodn(int liodn, struct fsl_dma_domain *dma_domain, u32
-> wnd_nr
->  	} else {
->  		phys_addr_t wnd_addr;
-> 
-> -		wnd_addr = dma_domain->iommu_domain-
-> >geometry.aperture_start;
-> +		wnd_addr = dma_domain-
-> >iommu_domain.geometry.aperture_start;
-> 
->  		ret = pamu_config_ppaace(liodn, wnd_addr,
->  					 wnd->size,
-> @@ -384,7 +389,7 @@ static void attach_device(struct fsl_dma_domain
-> *dma_domain, int liodn, struct d  static phys_addr_t
-> fsl_pamu_iova_to_phys(struct iommu_domain *domain,
->  					 dma_addr_t iova)
->  {
-> -	struct fsl_dma_domain *dma_domain = domain->priv;
-> +	struct fsl_dma_domain *dma_domain =
-> to_fsl_dma_domain(domain);
-> 
->  	if (iova < domain->geometry.aperture_start ||
->  	    iova > domain->geometry.aperture_end) @@ -398,11 +403,9 @@
-> static bool fsl_pamu_capable(enum iommu_cap cap)
->  	return cap == IOMMU_CAP_CACHE_COHERENCY;  }
-> 
-> -static void fsl_pamu_domain_destroy(struct iommu_domain *domain)
-> +static void fsl_pamu_domain_free(struct iommu_domain *domain)
->  {
-> -	struct fsl_dma_domain *dma_domain = domain->priv;
-> -
-> -	domain->priv = NULL;
-> +	struct fsl_dma_domain *dma_domain =
-> to_fsl_dma_domain(domain);
-> 
->  	/* remove all the devices from the device list */
->  	detach_device(NULL, dma_domain);
-> @@ -413,23 +416,24 @@ static void fsl_pamu_domain_destroy(struct
-> iommu_domain *domain)
->  	kmem_cache_free(fsl_pamu_domain_cache, dma_domain);  }
-> 
-> -static int fsl_pamu_domain_init(struct iommu_domain *domain)
-> +static struct iommu_domain *fsl_pamu_domain_alloc(unsigned type)
->  {
->  	struct fsl_dma_domain *dma_domain;
-> 
-> +	if (type != IOMMU_DOMAIN_UNMANAGED)
-> +		return NULL;
-> +
->  	dma_domain = iommu_alloc_dma_domain();
->  	if (!dma_domain) {
->  		pr_debug("dma_domain allocation failed\n");
-> -		return -ENOMEM;
-> +		return NULL;
->  	}
-> -	domain->priv = dma_domain;
-> -	dma_domain->iommu_domain = domain;
->  	/* defaul geometry 64 GB i.e. maximum system address */
-> -	domain->geometry.aperture_start = 0;
-> -	domain->geometry.aperture_end = (1ULL << 36) - 1;
-> -	domain->geometry.force_aperture = true;
-> +	dma_domain->iommu_domain. geometry.aperture_start = 0;
-> +	dma_domain->iommu_domain.geometry.aperture_end = (1ULL <<
-> 36) - 1;
-> +	dma_domain->iommu_domain.geometry.force_aperture = true;
-> 
-> -	return 0;
-> +	return &dma_domain->iommu_domain;
->  }
-> 
->  /* Configure geometry settings for all LIODNs associated with domain */
-> @@ -499,7 +503,7 @@ static int disable_domain_win(struct fsl_dma_domain
-> *dma_domain, u32 wnd_nr)
-> 
->  static void fsl_pamu_window_disable(struct iommu_domain *domain, u32
-> wnd_nr)  {
-> -	struct fsl_dma_domain *dma_domain = domain->priv;
-> +	struct fsl_dma_domain *dma_domain =
-> to_fsl_dma_domain(domain);
->  	unsigned long flags;
->  	int ret;
-> 
-> @@ -530,7 +534,7 @@ static void fsl_pamu_window_disable(struct
-> iommu_domain *domain, u32 wnd_nr)  static int
-> fsl_pamu_window_enable(struct iommu_domain *domain, u32 wnd_nr,
->  				  phys_addr_t paddr, u64 size, int prot)  {
-> -	struct fsl_dma_domain *dma_domain = domain->priv;
-> +	struct fsl_dma_domain *dma_domain =
-> to_fsl_dma_domain(domain);
->  	struct dma_window *wnd;
->  	int pamu_prot = 0;
->  	int ret;
-> @@ -607,7 +611,7 @@ static int handle_attach_device(struct
-> fsl_dma_domain *dma_domain,
->  				int num)
->  {
->  	unsigned long flags;
-> -	struct iommu_domain *domain = dma_domain->iommu_domain;
-> +	struct iommu_domain *domain = &dma_domain->iommu_domain;
->  	int ret = 0;
->  	int i;
-> 
-> @@ -653,7 +657,7 @@ static int handle_attach_device(struct
-> fsl_dma_domain *dma_domain,  static int fsl_pamu_attach_device(struct
-> iommu_domain *domain,
->  				  struct device *dev)
->  {
-> -	struct fsl_dma_domain *dma_domain = domain->priv;
-> +	struct fsl_dma_domain *dma_domain =
-> to_fsl_dma_domain(domain);
->  	const u32 *liodn;
->  	u32 liodn_cnt;
->  	int len, ret = 0;
-> @@ -691,7 +695,7 @@ static int fsl_pamu_attach_device(struct
-> iommu_domain *domain,  static void fsl_pamu_detach_device(struct
-> iommu_domain *domain,
->  				   struct device *dev)
->  {
-> -	struct fsl_dma_domain *dma_domain = domain->priv;
-> +	struct fsl_dma_domain *dma_domain =
-> to_fsl_dma_domain(domain);
->  	const u32 *prop;
->  	int len;
->  	struct pci_dev *pdev = NULL;
-> @@ -723,7 +727,7 @@ static void fsl_pamu_detach_device(struct
-> iommu_domain *domain,  static  int configure_domain_geometry(struct
-> iommu_domain *domain, void *data)  {
->  	struct iommu_domain_geometry *geom_attr = data;
-> -	struct fsl_dma_domain *dma_domain = domain->priv;
-> +	struct fsl_dma_domain *dma_domain =
-> to_fsl_dma_domain(domain);
->  	dma_addr_t geom_size;
->  	unsigned long flags;
-> 
-> @@ -813,7 +817,7 @@ static int configure_domain_dma_state(struct
-> fsl_dma_domain *dma_domain, bool en  static int
-> fsl_pamu_set_domain_attr(struct iommu_domain *domain,
->  				    enum iommu_attr attr_type, void *data)  {
-> -	struct fsl_dma_domain *dma_domain = domain->priv;
-> +	struct fsl_dma_domain *dma_domain =
-> to_fsl_dma_domain(domain);
->  	int ret = 0;
-> 
->  	switch (attr_type) {
-> @@ -838,7 +842,7 @@ static int fsl_pamu_set_domain_attr(struct
-> iommu_domain *domain,  static int fsl_pamu_get_domain_attr(struct
-> iommu_domain *domain,
->  				    enum iommu_attr attr_type, void *data)  {
-> -	struct fsl_dma_domain *dma_domain = domain->priv;
-> +	struct fsl_dma_domain *dma_domain =
-> to_fsl_dma_domain(domain);
->  	int ret = 0;
-> 
->  	switch (attr_type) {
-> @@ -999,7 +1003,7 @@ static void fsl_pamu_remove_device(struct device
-> *dev)
-> 
->  static int fsl_pamu_set_windows(struct iommu_domain *domain, u32
-> w_count)  {
-> -	struct fsl_dma_domain *dma_domain = domain->priv;
-> +	struct fsl_dma_domain *dma_domain =
-> to_fsl_dma_domain(domain);
->  	unsigned long flags;
->  	int ret;
-> 
-> @@ -1048,15 +1052,15 @@ static int fsl_pamu_set_windows(struct
-> iommu_domain *domain, u32 w_count)
-> 
->  static u32 fsl_pamu_get_windows(struct iommu_domain *domain)  {
-> -	struct fsl_dma_domain *dma_domain = domain->priv;
-> +	struct fsl_dma_domain *dma_domain =
-> to_fsl_dma_domain(domain);
-> 
->  	return dma_domain->win_cnt;
->  }
-> 
->  static const struct iommu_ops fsl_pamu_ops = {
->  	.capable	= fsl_pamu_capable,
-> -	.domain_init	= fsl_pamu_domain_init,
-> -	.domain_destroy = fsl_pamu_domain_destroy,
-> +	.domain_alloc	= fsl_pamu_domain_alloc,
-> +	.domain_free    = fsl_pamu_domain_free,
->  	.attach_dev	= fsl_pamu_attach_device,
->  	.detach_dev	= fsl_pamu_detach_device,
->  	.domain_window_enable = fsl_pamu_window_enable, diff --git
-> a/drivers/iommu/fsl_pamu_domain.h b/drivers/iommu/fsl_pamu_domain.h
-> index c90293f..f2b0f74 100644
-> --- a/drivers/iommu/fsl_pamu_domain.h
-> +++ b/drivers/iommu/fsl_pamu_domain.h
-> @@ -71,7 +71,7 @@ struct fsl_dma_domain {
->  	u32				stash_id;
->  	struct pamu_stash_attribute	dma_stash;
->  	u32				snoop_id;
-> -	struct iommu_domain		*iommu_domain;
-> +	struct iommu_domain		iommu_domain;
->  	spinlock_t			domain_lock;
->  };
-Acked-by: Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+We also add following callbacks into struct irq_remap_ops:
+	struct irq_domain *(*get_ir_irq_domain)(struct irq_alloc_info *);
+	struct irq_domain *(*get_irq_domain)(struct irq_alloc_info *);
+
+Once all clients of IR have been converted to new hierarchy irqdomain
+interfaces, we will:
+1) Remove set_ioapic_entry, set_affinity, free_irq, compose_msi_msg,
+   msi_alloc_irq, msi_setup_irq, setup_hpet_msi from struct remap_osp
+2) Kill setup_ioapic_remapped_entry, free_remapped_irq,
+   compose_remapped_msi_msg, setup_hpet_msi_remapped, setup_remapped_irq.
+3) Simplify x86_io_apic_ops and x86_msi.
+
+We could achieve a much more clear architecture with all these changes
+applied.
+
+Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
+Cc: Rafael J. Wysocki <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
+Cc: Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Link: http://lkml.kernel.org/r/1416894816-23245-9-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+---
+ arch/x86/include/asm/hw_irq.h        |   37 +++++++++++++++++++++++++
+ arch/x86/include/asm/irq_remapping.h |   36 ++++++++++++++++++++++++
+ drivers/iommu/irq_remapping.c        |   50 +++++++++++++++++++++++++++++++++-
+ drivers/iommu/irq_remapping.h        |   10 +++++++
+ 4 files changed, 132 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
+index eb7692c9ab93..bd7881c5a57a 100644
+--- a/arch/x86/include/asm/hw_irq.h
++++ b/arch/x86/include/asm/hw_irq.h
+@@ -113,10 +113,47 @@ struct irq_2_irte {
+ #ifdef	CONFIG_X86_LOCAL_APIC
+ struct irq_data;
+ struct irq_domain;
++struct pci_dev;
++struct msi_desc;
++
++enum irq_alloc_type {
++	X86_IRQ_ALLOC_TYPE_IOAPIC = 1,
++	X86_IRQ_ALLOC_TYPE_HPET,
++	X86_IRQ_ALLOC_TYPE_MSI,
++	X86_IRQ_ALLOC_TYPE_MSIX,
++};
+ 
+ struct irq_alloc_info {
++	enum irq_alloc_type	type;
+ 	u32			flags;
+ 	const struct cpumask	*mask;	/* CPU mask for vector allocation */
++	union {
++		int		unused;
++#ifdef	CONFIG_HPET_TIMER
++		struct {
++			int		hpet_id;
++			int		hpet_index;
++			void		*hpet_data;
++		};
++#endif
++#ifdef	CONFIG_PCI_MSI
++		struct {
++			struct pci_dev	*msi_dev;
++			irq_hw_number_t	msi_hwirq;
++		};
++#endif
++#ifdef	CONFIG_X86_IO_APIC
++		struct {
++			int		ioapic_id;
++			int		ioapic_pin;
++			int		ioapic_node;
++			u32		ioapic_trigger : 1;
++			u32		ioapic_polarity : 1;
++			u32		ioapic_valid : 1;
++			struct IO_APIC_route_entry *ioapic_entry;
++		};
++#endif
++	};
+ };
+ 
+ enum {
+diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
+index 86d897bc15dd..0cd6195cc375 100644
+--- a/arch/x86/include/asm/irq_remapping.h
++++ b/arch/x86/include/asm/irq_remapping.h
+@@ -22,6 +22,8 @@
+ #ifndef __X86_IRQ_REMAPPING_H
+ #define __X86_IRQ_REMAPPING_H
+ 
++#include <linux/irqdomain.h>
++#include <asm/hw_irq.h>
+ #include <asm/io_apic.h>
+ 
+ struct IO_APIC_route_entry;
+@@ -30,6 +32,7 @@ struct irq_chip;
+ struct msi_msg;
+ struct pci_dev;
+ struct irq_cfg;
++struct irq_alloc_info;
+ 
+ #ifdef CONFIG_IRQ_REMAP
+ 
+@@ -56,6 +59,25 @@ extern bool setup_remapped_irq(int irq,
+ 
+ void irq_remap_modify_chip_defaults(struct irq_chip *chip);
+ 
++extern struct irq_domain *
++irq_remapping_get_ir_irq_domain(struct irq_alloc_info *info);
++extern struct irq_domain *
++irq_remapping_get_irq_domain(struct irq_alloc_info *info);
++extern void irq_remapping_print_chip(struct irq_data *data, struct seq_file *p);
++
++/* Create PCI MSI/MSIx irqdomain, use @parent as the parent irqdomain. */
++static inline struct irq_domain *
++arch_create_msi_irq_domain(struct irq_domain *parent)
++{
++	return NULL;
++}
++
++/* Get parent irqdomain for interrupt remapping irqdomain */
++static inline struct irq_domain *arch_get_ir_parent_domain(void)
++{
++	return x86_vector_domain;
++}
++
+ #else  /* CONFIG_IRQ_REMAP */
+ 
+ static inline void set_irq_remapping_broken(void) { }
+@@ -97,6 +119,20 @@ static inline bool setup_remapped_irq(int irq,
+ {
+ 	return false;
+ }
++
++static inline struct irq_domain *
++irq_remapping_get_ir_irq_domain(struct irq_alloc_info *info)
++{
++	return NULL;
++}
++
++static inline struct irq_domain *
++irq_remapping_get_irq_domain(struct irq_alloc_info *info)
++{
++	return NULL;
++}
++
++#define	irq_remapping_print_chip	NULL
+ #endif /* CONFIG_IRQ_REMAP */
+ 
+ extern int dmar_alloc_hwirq(void);
+diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+index 5617150fd8fb..c306421d86c1 100644
+--- a/drivers/iommu/irq_remapping.c
++++ b/drivers/iommu/irq_remapping.c
+@@ -345,7 +345,7 @@ void panic_if_irq_remap(const char *msg)
+ 		panic(msg);
+ }
+ 
+-static void ir_ack_apic_edge(struct irq_data *data)
++void ir_ack_apic_edge(struct irq_data *data)
+ {
+ 	ack_APIC_irq();
+ }
+@@ -356,6 +356,19 @@ static void ir_ack_apic_level(struct irq_data *data)
+ 	eoi_ioapic_irq(data->irq, irqd_cfg(data));
+ }
+ 
++void irq_remapping_print_chip(struct irq_data *data, struct seq_file *p)
++{
++	/*
++	 * Assume interrupt is remapped if the parent irqdomain isn't the
++	 * vector domain, which is true for MSI, HPET and IOAPIC on x86
++	 * platforms.
++	 */
++	if (data->domain && data->domain->parent != arch_get_ir_parent_domain())
++		seq_printf(p, " IR-%s", data->chip->name);
++	else
++		seq_printf(p, " %s", data->chip->name);
++}
++
+ static void ir_print_prefix(struct irq_data *data, struct seq_file *p)
+ {
+ 	seq_printf(p, " IR-%s", data->chip->name);
+@@ -377,3 +390,38 @@ bool setup_remapped_irq(int irq, struct irq_cfg *cfg, struct irq_chip *chip)
+ 	irq_remap_modify_chip_defaults(chip);
+ 	return true;
+ }
++
++/**
++ * irq_remapping_get_ir_irq_domain - Get the irqdomain associated with the IOMMU
++ *				     device serving request @info
++ * @info: interrupt allocation information, used to identify the IOMMU device
++ *
++ * It's used to get parent irqdomain for HPET and IOAPIC irqdomains.
++ * Returns pointer to IRQ domain, or NULL on failure.
++ */
++struct irq_domain *
++irq_remapping_get_ir_irq_domain(struct irq_alloc_info *info)
++{
++	if (!remap_ops || !remap_ops->get_ir_irq_domain)
++		return NULL;
++
++	return remap_ops->get_ir_irq_domain(info);
++}
++
++/**
++ * irq_remapping_get_irq_domain - Get the irqdomain serving the request @info
++ * @info: interrupt allocation information, used to identify the IOMMU device
++ *
++ * There will be one PCI MSI/MSIX irqdomain associated with each interrupt
++ * remapping device, so this interface is used to retrieve the PCI MSI/MSIX
++ * irqdomain serving request @info.
++ * Returns pointer to IRQ domain, or NULL on failure.
++ */
++struct irq_domain *
++irq_remapping_get_irq_domain(struct irq_alloc_info *info)
++{
++	if (!remap_ops || !remap_ops->get_irq_domain)
++		return NULL;
++
++	return remap_ops->get_irq_domain(info);
++}
+diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
+index 7c70cc29ffe6..3e109b1ea688 100644
+--- a/drivers/iommu/irq_remapping.h
++++ b/drivers/iommu/irq_remapping.h
+@@ -30,6 +30,8 @@ struct irq_data;
+ struct cpumask;
+ struct pci_dev;
+ struct msi_msg;
++struct irq_domain;
++struct irq_alloc_info;
+ 
+ extern int irq_remap_broken;
+ extern int disable_sourceid_checking;
+@@ -77,11 +79,19 @@ struct irq_remap_ops {
+ 
+ 	/* Setup interrupt remapping for an HPET MSI */
+ 	int (*alloc_hpet_msi)(unsigned int, unsigned int);
++
++	/* Get the irqdomain associated the IOMMU device */
++	struct irq_domain *(*get_ir_irq_domain)(struct irq_alloc_info *);
++
++	/* Get the MSI irqdomain associated with the IOMMU device */
++	struct irq_domain *(*get_irq_domain)(struct irq_alloc_info *);
+ };
+ 
+ extern struct irq_remap_ops intel_irq_remap_ops;
+ extern struct irq_remap_ops amd_iommu_irq_ops;
+ 
++extern void ir_ack_apic_edge(struct irq_data *data);
++
+ #else  /* CONFIG_IRQ_REMAP */
+ 
+ #define irq_remapping_enabled 0
+-- 
+1.7.10.4
