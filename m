@@ -1,90 +1,52 @@
-From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] iommu: rockchip: fix build without CONFIG_OF
-Date: Mon, 13 Apr 2015 12:10:53 +0200
-Message-ID: <20150413101050.GA3654@ulmo.nvidia.com>
-References: <3138014.xYAj3FssJ8@wuerfel>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: SMMU 2-stage support
+Date: Mon, 13 Apr 2015 11:41:22 +0100
+Message-ID: <20150413104122.GC2869@arm.com>
+References: <CAN9JPjFf1Lb+L8sWq0SWt8f6P6DX2i308OeF+TdnFdstRoU3hA@mail.gmail.com>
+	<20150218185600.GN22017@arm.com>
+	<CAN9JPjFvg=e948ZLLtrUTnvDp8UWHCX2NGB4iUEES733T9YytQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============3115469805948313993=="
-Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <3138014.xYAj3FssJ8@wuerfel>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
-List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAN9JPjFvg=e948ZLLtrUTnvDp8UWHCX2NGB4iUEES733T9YytQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Cc: Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
---===============3115469805948313993==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="zhXaljGHf11kAtnf"
-Content-Disposition: inline
+On Fri, Apr 03, 2015 at 10:55:02AM +0100, Baptiste Reynal wrote:
+> We are eventually working on the vSMMU implementation. Relying on the talk
+> Will Deacon gave at the Linux Plumbers IOMMU Microconference on October
+> 2014 (http://linuxplumbersconf.org/2014/ocw/proposals/2019), I tried the
+> vSMMU initialization.
 
---zhXaljGHf11kAtnf
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+My position on the vSMMU still hasn't changed:
 
-On Fri, Apr 10, 2015 at 11:58:24PM +0200, Arnd Bergmann wrote:
-> The rockchip iommu driver references its of_device_id table
-> from the init function, which fails to build when the table
-> is undefined:
->=20
-> iommu/rockchip-iommu.c: In function 'rk_iommu_init':
-> iommu/rockchip-iommu.c:1029:35: error: 'rk_iommu_dt_ids' undeclared (firs=
-t use in this function)
->   np =3D of_find_matching_node(NULL, rk_iommu_dt_ids);
->=20
-> This removes the #ifdef and the corresponding of_match_ptr wrapper
-> to make it build both with CONFIG_OF enabled or disabled.
->=20
-> Signed-off-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-> Fixes: 425061b0f5074 ("iommu/rockchip: Play nice in multi-platform builds=
-")
+> > Anyway, until somebody actually wants this feature I've put it on ice as
+> > it adds a whole bunch of complication to the ARM SMMU driver, as well as
+> > new user ABI extensions that I don't really want to maintain for fun.
 
-How can this even happen? Rockchip depends on multiplatform, and
-multiplatform pulls in OF. Ah... COMPILE_TEST... oh well.
+So, whilst it's great that you're looking at the code, I'm not very keen
+on merging anything until we have people committed to using it. Right now,
+the only feedback I've had has been going in the para-virt direction and I
+don't think we should do this "for fun".
 
-Reviewed-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> I have a question about the KVM_DEV_ARM_SMMU_V2_CFG_INIT call. What is
+> exactly expected as parameters ?
 
---zhXaljGHf11kAtnf
-Content-Type: application/pgp-signature
+Yes, it's the IPA of the vSMMU device. I hacked something into kvmtool
+when I was playing with this before:
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+  https://git.kernel.org/cgit/linux/kernel/git/will/kvmtool.git/commit/?h=kvmtool/vfio
 
-iQIcBAABCAAGBQJVK5YnAAoJEN0jrNd/PrOhCs8P/iOYuBjtq1BFP0M2CHp11WYq
-PlrgGWiz70jRvCq49UOuNVqpGFnYhK7wQub5U7z+M582ZfRYEnSl2laYaxmTGoVk
-iteLLQ3b+1WhUWXyVS80kWGVxHeyP8TBqg9vHMwHXgd9aC3vQ+bl5xTFRw4TmI+E
-itzAID+QqmH03srCVXWjeuJ+9g6iuyVwrZupvlneax8XYd0sqdpjh5DiIz1CLqei
-8y4V6Tk0EB7YeKllB3FW0qCf4HDZ86Pu5Ms6N8fYXVL2UuYFO3nLTjQWW4rzkoA9
-hYRkfH/WgktpWvEbmvPmfcD/CWE2ptsPBQaeX6qgJwOmmIomKBAZxrTo6litwxfv
-30QkU/E0wyFDXsXvenX89++wU5gc3VkaJv15cMY1B0zCfmCSlcLfshQxREI4KPhq
-oe2ZBi/O/fOPUvRWtTMOaci7/4/yzQ9XfbYFPKBYsWc0q/OOgQkxKHyXg6UmpEp7
-g+BBfje495BDQXENI1v+mmESLu7wLsrTavDa2OMDLOKGKo0ukmDfNyC77tGQ+U7j
-PhzFk4WvWslwdk6cM/c5Db+LFlxBSSbRJed3tF1FaTV7b3nWDKL8W9zdZ8cWVolj
-3dq+7JPVz3Cp8DPEjnoeHSdFBqtUg3TgJ/BdjCORsPIiuogcktOQD74bfqHynL4P
-RcyCjFsNXe71jK1AMB0b
-=yNPE
------END PGP SIGNATURE-----
-
---zhXaljGHf11kAtnf--
-
-
---===============3115469805948313993==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-Linux-rockchip mailing list
-Linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-http://lists.infradead.org/mailman/listinfo/linux-rockchip
-
---===============3115469805948313993==--
+Will
