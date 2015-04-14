@@ -1,7 +1,7 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part2 v5 11/33] irq_remapping/amd: Clean up unsued code
-Date: Tue, 14 Apr 2015 10:29:48 +0800
-Message-ID: <1428978610-28986-12-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part2 v5 13/33] x86/irq: Kill irq_cfg.irq_remapped
+Date: Tue, 14 Apr 2015 10:29:50 +0800
+Message-ID: <1428978610-28986-14-git-send-email-jiang.liu@linux.intel.com>
 References: <1428978610-28986-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -17,11 +17,11 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Dimitri Sivanich <sivanich-sJ/iWh9BUns@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Cohen <david.a.cohen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Sander Eikelenboom <linux-6SM94LqRVpn6gRhOQ7JHfg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Vrabel <david.vrabel-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Dimitri Sivanich <sivanich-sJ/iWh9BUns@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Cohen <david.a.cohen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Sander Eikelenboom <linux-6SM94LqRVpn6gRhOQ7JHfg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Vrabel <david.vrabel-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Now we have converted to hierarchy irqdomain, so clean up unused code.
+Now there is no user of irq_cfg.irq_remapped, so kill it.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
@@ -35,181 +35,58 @@ Cc: Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 Cc: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
 Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Link: http://lkml.kernel.org/r/1416901802-24211-21-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+Link: http://lkml.kernel.org/r/1416901802-24211-23-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
 Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 Tested-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c |  144 ---------------------------------------------
- 1 file changed, 144 deletions(-)
+ arch/x86/include/asm/hw_irq.h       |    1 -
+ drivers/iommu/amd_iommu.c           |    1 -
+ drivers/iommu/intel_irq_remapping.c |    2 --
+ 3 files changed, 4 deletions(-)
 
+diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
+index bbf90fe2a224..88632ea75fe0 100644
+--- a/arch/x86/include/asm/hw_irq.h
++++ b/arch/x86/include/asm/hw_irq.h
+@@ -193,7 +193,6 @@ struct irq_cfg {
+ 	u8			vector;
+ 	u8			move_in_progress : 1;
+ #ifdef CONFIG_IRQ_REMAP
+-	u8			remapped : 1;
+ 	union {
+ 		struct irq_2_iommu irq_2_iommu;
+ 		struct irq_2_irte  irq_2_irte;
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 62fce11e1cfd..20abdbaf80d9 100644
+index 20abdbaf80d9..fa26c742bc39 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -3999,22 +3999,6 @@ out:
- 	return index;
- }
+@@ -4131,7 +4131,6 @@ static void irq_remapping_prepare_irte(struct amd_ir_data *data,
+ 	struct msi_msg *msg = &data->msi_entry;
+ 	struct IO_APIC_route_entry *entry;
  
--static int get_irte(u16 devid, int index, union irte *irte)
--{
--	struct irq_remap_table *table;
--	unsigned long flags;
--
--	table = get_irq_table(devid, false);
--	if (!table)
--		return -ENOMEM;
--
--	spin_lock_irqsave(&table->lock, flags);
--	irte->val = table->table[index];
--	spin_unlock_irqrestore(&table->lock, flags);
--
--	return 0;
--}
--
- static int modify_irte(u16 devid, int index, union irte irte)
- {
- 	struct irq_remap_table *table;
-@@ -4061,131 +4045,6 @@ static void free_irte(u16 devid, int index)
- 	iommu_completion_wait(iommu);
- }
+-	irq_cfg->remapped = 1;
+ 	data->irq_2_irte.devid = devid;
+ 	data->irq_2_irte.index = index + sub_handle;
  
--static int setup_ioapic_entry(int irq, struct IO_APIC_route_entry *entry,
--			      unsigned int destination, int vector,
--			      struct io_apic_irq_attr *attr)
--{
--	struct irq_remap_table *table;
--	struct irq_2_irte *irte_info;
--	struct irq_cfg *cfg;
--	union irte irte;
--	int ioapic_id;
--	int index;
--	int devid;
--	int ret;
--
--	cfg = irq_cfg(irq);
--	if (!cfg)
--		return -EINVAL;
--
--	irte_info = &cfg->irq_2_irte;
--	ioapic_id = mpc_ioapic_id(attr->ioapic);
--	devid     = get_ioapic_devid(ioapic_id);
--
--	if (devid < 0)
--		return devid;
--
--	table = get_irq_table(devid, true);
--	if (table == NULL)
--		return -ENOMEM;
--
--	index = attr->ioapic_pin;
--
--	/* Setup IRQ remapping info */
--	cfg->remapped	      = 1;
--	irte_info->devid      = devid;
--	irte_info->index      = index;
--
--	/* Setup IRTE for IOMMU */
--	irte.val		= 0;
--	irte.fields.vector      = vector;
--	irte.fields.int_type    = apic->irq_delivery_mode;
--	irte.fields.destination = destination;
--	irte.fields.dm          = apic->irq_dest_mode;
--	irte.fields.valid       = 1;
--
--	ret = modify_irte(devid, index, irte);
--	if (ret)
--		return ret;
--
--	/* Setup IOAPIC entry */
--	memset(entry, 0, sizeof(*entry));
--
--	entry->vector        = index;
--	entry->mask          = 0;
--	entry->trigger       = attr->trigger;
--	entry->polarity      = attr->polarity;
--
--	/*
--	 * Mask level triggered irqs.
--	 */
--	if (attr->trigger)
--		entry->mask = 1;
--
--	return 0;
--}
--
--static int set_affinity(struct irq_data *data, const struct cpumask *mask,
--			bool force)
--{
--	struct irq_2_irte *irte_info;
--	unsigned int dest, irq;
--	struct irq_cfg *cfg;
--	union irte irte;
--	int err;
--
--	if (!config_enabled(CONFIG_SMP))
--		return -1;
--
--	cfg       = irqd_cfg(data);
--	irq       = data->irq;
--	irte_info = &cfg->irq_2_irte;
--
--	if (!cpumask_intersects(mask, cpu_online_mask))
--		return -EINVAL;
--
--	if (get_irte(irte_info->devid, irte_info->index, &irte))
--		return -EBUSY;
--
--	if (assign_irq_vector(irq, cfg, mask))
--		return -EBUSY;
--
--	err = apic->cpu_mask_to_apicid_and(cfg->domain, mask, &dest);
--	if (err) {
--		if (assign_irq_vector(irq, cfg, data->affinity))
--			pr_err("AMD-Vi: Failed to recover vector for irq %d\n", irq);
--		return err;
--	}
--
--	irte.fields.vector      = cfg->vector;
--	irte.fields.destination = dest;
--
--	modify_irte(irte_info->devid, irte_info->index, irte);
--
--	if (cfg->move_in_progress)
--		send_cleanup_vector(cfg);
--
--	cpumask_copy(data->affinity, mask);
--
--	return 0;
--}
--
--static int free_irq(int irq)
--{
--	struct irq_2_irte *irte_info;
--	struct irq_cfg *cfg;
--
--	cfg = irq_cfg(irq);
--	if (!cfg)
--		return -EINVAL;
--
--	irte_info = &cfg->irq_2_irte;
--
--	free_irte(irte_info->devid, irte_info->index);
--
--	return 0;
--}
--
- static int get_devid(struct irq_alloc_info *info)
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index e76e5723ae87..21fc899e7c49 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -67,7 +67,6 @@ static int alloc_irte(struct intel_iommu *iommu, int irq,
+ 		      struct irq_2_iommu *irq_iommu, u16 count)
  {
- 	int devid = -1;
-@@ -4258,9 +4117,6 @@ struct irq_remap_ops amd_iommu_irq_ops = {
- 	.disable		= amd_iommu_disable,
- 	.reenable		= amd_iommu_reenable,
- 	.enable_faulting	= amd_iommu_enable_faulting,
--	.setup_ioapic_entry	= setup_ioapic_entry,
--	.set_affinity		= set_affinity,
--	.free_irq		= free_irq,
- 	.get_ir_irq_domain	= get_ir_irq_domain,
- 	.get_irq_domain		= get_irq_domain,
- };
+ 	struct ir_table *table = iommu->ir_table;
+-	struct irq_cfg *cfg = irq_cfg(irq);
+ 	unsigned int mask = 0;
+ 	unsigned long flags;
+ 	int index;
+@@ -94,7 +93,6 @@ static int alloc_irte(struct intel_iommu *iommu, int irq,
+ 	if (index < 0) {
+ 		pr_warn("IR%d: can't allocate an IRTE\n", iommu->seq_id);
+ 	} else {
+-		cfg->remapped = 1;
+ 		irq_iommu->iommu = iommu;
+ 		irq_iommu->irte_index =  index;
+ 		irq_iommu->sub_handle = 0;
 -- 
 1.7.10.4
