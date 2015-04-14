@@ -1,59 +1,142 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: SMMU 2-stage support
-Date: Tue, 14 Apr 2015 13:32:26 +0000
-Message-ID: <BN3PR0301MB12194C697DBE9D721BC97F5DEAE60@BN3PR0301MB1219.namprd03.prod.outlook.com>
-References: <CAN9JPjFf1Lb+L8sWq0SWt8f6P6DX2i308OeF+TdnFdstRoU3hA@mail.gmail.com>
-	<20150218185600.GN22017@arm.com>
-	<CAN9JPjFvg=e948ZLLtrUTnvDp8UWHCX2NGB4iUEES733T9YytQ@mail.gmail.com>
-	<20150413104122.GC2869@arm.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH 3/5] dt-bindings: mediatek: Add smi dts binding
+Date: Tue, 14 Apr 2015 21:49:49 +0800
+Message-ID: <1429019389.16264.5.camel@mhfsdcap03>
+References: <1425638900-24989-1-git-send-email-yong.wu@mediatek.com>
+	 <1425638900-24989-4-git-send-email-yong.wu@mediatek.com>
+	 <20150306111338.GD8700@leverpostej> <1429002474.14855.7.camel@mhfsdcap03>
+	 <20150414100657.GB28709@leverpostej>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150413104122.GC2869-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20150414100657.GB28709@leverpostej>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+Hi Mark,
 
-> -----Original Message-----
-> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
-> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Will Deacon
-> Sent: Monday, April 13, 2015 4:11 PM
-> To: Baptiste Reynal
-> Cc: Linux IOMMU
-> Subject: Re: SMMU 2-stage support
-> 
-> On Fri, Apr 03, 2015 at 10:55:02AM +0100, Baptiste Reynal wrote:
-> > We are eventually working on the vSMMU implementation. Relying on the
-> > talk Will Deacon gave at the Linux Plumbers IOMMU Microconference on
-> > October
-> > 2014 (http://linuxplumbersconf.org/2014/ocw/proposals/2019), I tried
-> > the vSMMU initialization.
-> 
-> My position on the vSMMU still hasn't changed:
-> 
-> > > Anyway, until somebody actually wants this feature I've put it on
-> > > ice as it adds a whole bunch of complication to the ARM SMMU driver,
-> > > as well as new user ABI extensions that I don't really want to maintain for
-> fun.
-> 
-> So, whilst it's great that you're looking at the code, I'm not very keen on
-> merging anything until we have people committed to using it. Right now, the
-> only feedback I've had has been going in the para-virt direction and I don't
-> think we should do this "for fun".
-Freescale would be interested in using the vSMMU implementation. We have use cases for assigning devices to guest user space. Are you suggesting that you are more inclined to using the para virtualized approach?
+On Tue, 2015-04-14 at 11:06 +0100, Mark Rutland wrote:
+> On Tue, Apr 14, 2015 at 10:07:54AM +0100, Yong Wu wrote:
+> > Hi Mark,
+> >     Thanks very much for review.=20
+> >     About the clock name should be the PoV of _this_ device. Could =
+you
+> > help check below?
+> >=20
+> > On Fri, 2015-03-06 at 11:13 +0000, Mark Rutland wrote:
+> > > On Fri, Mar 06, 2015 at 10:48:18AM +0000, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org wr=
+ote:
+> > > > From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> > > >=20
+> > > > This patch add smi binding document.
+> > >=20
+> > > Please move binding documents to the start of the series. It make=
+s
+> > > things far easier to review.
+> > > =20
+> > > What does "larb" mean? It would be nice for the intorductory para=
+graph
+> > > in this file to explain.
+> > >=20
+> > > > +- reg : the register of each local arbiter
+> > > > +- clocks : the clocks of each local arbiter
+> > > > +- clock-name: larb_sub*(3 clockes at most)
+> > >=20
+> > > The names required _must_ be specified here, or clock-names is
+> > > pointless.
+> > >=20
+> > > The clock names should be from the PoV of _this_ device (i.e. the=
+y
+> > > should be the names of the inputs) not from the PoV of the provid=
+er
+> > > (i.e. they should not be the names of the outputs from the provid=
+er).
+> > >=20
+> > > Mark.
+> > >=20
+> >      After we check with our SMI Designer. Every SMI local arbiter =
+need
+> > two clocks, which is called  APB clocks and SMI clock.
+> >      APB clock : Advanced Peripheral Bus Clock. It is the clock for
+> > setting the register of local arbiter.
+> >      SMI clock : Smart Multimedia Interface Clock, It is the clock =
+for
+> > transfering the data and command.=20
+> >=20
+> >      And all the local arbiters need the smi common clock, so we
+> > separate it.=20
+> >=20
+> >      Then I prepare to design the smi the dtsi like this:=20
+> >=20
+> >       smi_common:smi@14022000 {
+> >                  compatible =3D =E2=80=9Cmediate, mt8173-smi=E2=80=9D=
+;
+> >                  reg =3D <0 0x14022000 0 0x1000>;
+> >                  clocks =3D <&mmsys MM_SMI_COMMON>;
+> >                  clocks-names =3D =E2=80=9Csmi_common=E2=80=9D;
+> >       };
+> >=20
+> >       larb0: larb@14021000 {
+> >                  compatible =3D =E2=80=9Cmediate, mt8173-smi-larb=E2=
+=80=9D;
+> >                  reg =3D <0 0x14021000 0 0x1000>;
+> >                  smi =3D <&smi_common>;
+> >                  clocks =3D <&mmsys MM_SMI_LARB0>,=20
+> > 		 	<&mmsys MM_SMI_LARB0>;
+> >                  clocks-names =3D =E2=80=9Capb_clk=E2=80=9D, =E2=80=
+=9Csmi_clk=E2=80=9D;
+> >      };
+> >=20
+> >      larb1: larb@16010000 {
+> >                  compatible =3D =E2=80=9Cmediate, mt8173-smi-larb=E2=
+=80=9D;
+> >                  reg =3D <0 0x16010000 0 0x1000>;
+> >                  smi =3D <&smi_common>;
+> >                  clocks =3D <&vdecsys VDEC_CKEN>,=20
+> > 			 <&mmsys VDEC_LARB_CKEN>;
+> >                  clocks-names =3D =E2=80=9Capb_clk=E2=80=9D, =E2=80=
+=9Csmi_clk=E2=80=9D;
+> >       };
+> >       =E2=80=A6=20
+> >      In some local arbiter, the source clock of the APB clock and t=
+he
+> > SMI clock may be the same, like larb0. so the two clocks are the sa=
+me.
+> > And they may be different in other local arbiteres, like larb1.    =
+ =20
+> >=20
+> >      If it is designed like this, is it ok?
+>=20
+> That looks pretty good; the clocks and names on the larb nodes seem
+> sensible.
+>=20
+> The naming of the "smi_common" clock on the smi_common node looks a b=
+it
+> odd though. Is that really what the clock input is called?
+>=20
+> Mark.
+     After check with DE, the smi_common clock also have its APB clock
+and the smi clock(they have the same clock source).
+    And I prepare to delete "_clk" in all the clock-names.
+    So it may be like this:
+         smi_common:smi@14022000 {
+                 compatible =3D =E2=80=9Cmediate, mt8173-smi=E2=80=9D;
+                    reg =3D <0 0x14022000 0 0x1000>;
+                  clocks =3D <&mmsys MM_SMI_COMMON>,=20
+			   <&mmsys MM_SMI_COMMON>;
+                  clocks-names =3D =E2=80=9Capk=E2=80=9D,"smi";
+        };
+     How about this?
+  =20
 
-Thanks,
-Varun
+
+
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" i=
+n
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
