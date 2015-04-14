@@ -1,130 +1,95 @@
-From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 3/5] dt-bindings: mediatek: Add smi dts binding
-Date: Tue, 14 Apr 2015 11:06:58 +0100
-Message-ID: <20150414100657.GB28709@leverpostej>
-References: <1425638900-24989-1-git-send-email-yong.wu@mediatek.com>
- <1425638900-24989-4-git-send-email-yong.wu@mediatek.com>
- <20150306111338.GD8700@leverpostej>
- <1429002474.14855.7.camel@mhfsdcap03>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 1/4] iommu/tegra-smmu: Add debugfs support
+Date: Tue, 14 Apr 2015 13:07:26 +0200
+Message-ID: <20150414110725.GA15878@ulmo.nvidia.com>
+References: <1427450847-17719-1-git-send-email-thierry.reding@gmail.com>
+	<20150327101539.GA17976@ulmo.nvidia.com>
+	<20150331150214.GE22683@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1429002474.14855.7.camel@mhfsdcap03>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: multipart/mixed; boundary="===============7557853999973040794=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150331150214.GE22683-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 14, 2015 at 10:07:54AM +0100, Yong Wu wrote:
-> Hi Mark,
->     Thanks very much for review.=20
->     About the clock name should be the PoV of _this_ device. Could yo=
-u
-> help check below?
->=20
-> On Fri, 2015-03-06 at 11:13 +0000, Mark Rutland wrote:
-> > On Fri, Mar 06, 2015 at 10:48:18AM +0000, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org wrot=
-e:
-> > > From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> > >=20
-> > > This patch add smi binding document.
-> >=20
-> > Please move binding documents to the start of the series. It makes
-> > things far easier to review.
-> >=20
-> > >=20
-> > > Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> > > +++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi=
-=2Etxt
-> > > @@ -0,0 +1,17 @@
-> > > +SMI hardware block diagram please help check <bindings/iommu/med=
-iatek,iommu.txt>
-> > > +
-> > > +Required properties:
-> > > +- compatible : must be "mediatek,mediatek,mt8173-smi-larb"
-> >=20
-> > Double vendor prefix?
-> >=20
-> > What does "larb" mean? It would be nice for the intorductory paragr=
-aph
-> > in this file to explain.
-> >=20
-> > > +- reg : the register of each local arbiter
-> > > +- clocks : the clocks of each local arbiter
-> > > +- clock-name: larb_sub*(3 clockes at most)
-> >=20
-> > The names required _must_ be specified here, or clock-names is
-> > pointless.
-> >=20
-> > The clock names should be from the PoV of _this_ device (i.e. they
-> > should be the names of the inputs) not from the PoV of the provider
-> > (i.e. they should not be the names of the outputs from the provider=
-).
-> >=20
-> > Mark.
-> >=20
->      After we check with our SMI Designer. Every SMI local arbiter ne=
-ed
-> two clocks, which is called  APB clocks and SMI clock.
->      APB clock : Advanced Peripheral Bus Clock. It is the clock for
-> setting the register of local arbiter.
->      SMI clock : Smart Multimedia Interface Clock, It is the clock fo=
-r
-> transfering the data and command.=20
->=20
->      And all the local arbiters need the smi common clock, so we
-> separate it.=20
->=20
->      Then I prepare to design the smi the dtsi like this:=20
->=20
->       smi_common:smi@14022000 {
->                  compatible =3D =E2=80=9Cmediate, mt8173-smi=E2=80=9D=
-;
->                  reg =3D <0 0x14022000 0 0x1000>;
->                  clocks =3D <&mmsys MM_SMI_COMMON>;
->                  clocks-names =3D =E2=80=9Csmi_common=E2=80=9D;
->       };
->=20
->       larb0: larb@14021000 {
->                  compatible =3D =E2=80=9Cmediate, mt8173-smi-larb=E2=80=
-=9D;
->                  reg =3D <0 0x14021000 0 0x1000>;
->                  smi =3D <&smi_common>;
->                  clocks =3D <&mmsys MM_SMI_LARB0>,=20
-> 		 	<&mmsys MM_SMI_LARB0>;
->                  clocks-names =3D =E2=80=9Capb_clk=E2=80=9D, =E2=80=9C=
-smi_clk=E2=80=9D;
->      };
->=20
->      larb1: larb@16010000 {
->                  compatible =3D =E2=80=9Cmediate, mt8173-smi-larb=E2=80=
-=9D;
->                  reg =3D <0 0x16010000 0 0x1000>;
->                  smi =3D <&smi_common>;
->                  clocks =3D <&vdecsys VDEC_CKEN>,=20
-> 			 <&mmsys VDEC_LARB_CKEN>;
->                  clocks-names =3D =E2=80=9Capb_clk=E2=80=9D, =E2=80=9C=
-smi_clk=E2=80=9D;
->       };
->       =E2=80=A6=20
->      In some local arbiter, the source clock of the APB clock and the
-> SMI clock may be the same, like larb0. so the two clocks are the same=
-=2E
-> And they may be different in other local arbiteres, like larb1.     =20
->=20
->      If it is designed like this, is it ok?
 
-That looks pretty good; the clocks and names on the larb nodes seem
-sensible.
+--===============7557853999973040794==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="qMm9M+Fa2AknHoGS"
+Content-Disposition: inline
 
-The naming of the "smi_common" clock on the smi_common node looks a bit
-odd though. Is that really what the clock input is called?
 
-Mark.
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" i=
-n
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--qMm9M+Fa2AknHoGS
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, Mar 31, 2015 at 05:02:14PM +0200, Joerg Roedel wrote:
+> Hi Thierry,
+>=20
+> On Fri, Mar 27, 2015 at 11:15:41AM +0100, Thierry Reding wrote:
+> > Another possibility would be for you to ack this patch so that I can
+> > take it into the same branch as the dependency. The remainder of this
+> > series doesn't depend on either of the two patches, so they should be
+> > fine for you to take into your tree.
+>=20
+> This solution sounds like the best one. You have my
+>=20
+> 	Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+>=20
+> on the first patch.
+
+Thanks.
+
+> I merged patches 2-4 into the arm/tegra branch. As
+> you noticed there were conflict merging the branch into next. Please
+> have a look into my solution for that when I pushed it out later today
+> and let me know if it looks good and still works.
+
+Yes, the resolution looks correct and I've been running linux-next
+without issues for a couple of days now.
+
+Thanks,
+Thierry
+
+--qMm9M+Fa2AknHoGS
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJVLPTqAAoJEN0jrNd/PrOhhAkQAIF+CMvxyMzcZWuHWv/SNRCu
+4+SyISQkpLvetewjzeROHWwPzhGOxw3fcTC/tXUIpZuUSVZtbKg/lWAEpOzaAcrb
+8FIbdbEhF4LL2HzkJXGK1/CX0JNX/jFIkOx1N6HpRD7MIGKUpCXiRH2/ueFZROMP
+4OL9QJ0aJqvgVshzba6CWHpbwR2vuGaIm+lfsz2buDkTJt68n56qYXlx6vqYMzsr
+ivt72x7YxfHYEENytRlT72GKDMNQ7fpN6HlDeCsvpH3FEMhnrasNSU5//LRGN9y8
+a1VmWzqZxp7z0D+ePGQXOTeafYrY7vfb3uPSGVdpMaPw+ISywQgxpkGlwByrvCRW
+veAYekVCOOq8kwIJa8CpW+YxQALho/EB097b7Zmu2weWNsjTR4W9U4MR8thCWXo+
+0Fnk4GZLZXniPuVojIkmxDWDtPjLIrLSPHYYadW4Ds+cvrOxnzK96ZCY0n+5jqWL
+0iNVMS872ouMsqDW4+r5WFM1LFkigb6b3EItKZzTchHJ0vX4PiqbnVyNS9JbqmxC
+IQ+0BhmpYoKxC5FxiARuiT5xVvajT1mnQmqeumKm898WaGiXgC203/8QXmmxEvah
+BYpFp/Wl9ZDNXTgEofMhI4K4mydNR/Iz28KoYaOPfF22wc+YGLiRAydHq0EceXf0
+9RkrYebu0jX8UzslJt7y
+=vzp7
+-----END PGP SIGNATURE-----
+
+--qMm9M+Fa2AknHoGS--
+
+--===============7557853999973040794==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============7557853999973040794==--
