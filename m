@@ -1,14 +1,17 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 1/4] iommu/tegra-smmu: Add debugfs support
-Date: Tue, 14 Apr 2015 13:07:26 +0200
-Message-ID: <20150414110725.GA15878@ulmo.nvidia.com>
-References: <1427450847-17719-1-git-send-email-thierry.reding@gmail.com>
-	<20150327101539.GA17976@ulmo.nvidia.com>
-	<20150331150214.GE22683@8bytes.org>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: SMMU 2-stage support
+Date: Tue, 14 Apr 2015 13:32:26 +0000
+Message-ID: <BN3PR0301MB12194C697DBE9D721BC97F5DEAE60@BN3PR0301MB1219.namprd03.prod.outlook.com>
+References: <CAN9JPjFf1Lb+L8sWq0SWt8f6P6DX2i308OeF+TdnFdstRoU3hA@mail.gmail.com>
+	<20150218185600.GN22017@arm.com>
+	<CAN9JPjFvg=e948ZLLtrUTnvDp8UWHCX2NGB4iUEES733T9YytQ@mail.gmail.com>
+	<20150413104122.GC2869@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============7557853999973040794=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150331150214.GE22683-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20150413104122.GC2869-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,78 +21,39 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Cc: Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Will,
 
---===============7557853999973040794==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="qMm9M+Fa2AknHoGS"
-Content-Disposition: inline
-
-
---qMm9M+Fa2AknHoGS
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Mar 31, 2015 at 05:02:14PM +0200, Joerg Roedel wrote:
-> Hi Thierry,
->=20
-> On Fri, Mar 27, 2015 at 11:15:41AM +0100, Thierry Reding wrote:
-> > Another possibility would be for you to ack this patch so that I can
-> > take it into the same branch as the dependency. The remainder of this
-> > series doesn't depend on either of the two patches, so they should be
-> > fine for you to take into your tree.
->=20
-> This solution sounds like the best one. You have my
->=20
-> 	Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
->=20
-> on the first patch.
-
-Thanks.
-
-> I merged patches 2-4 into the arm/tegra branch. As
-> you noticed there were conflict merging the branch into next. Please
-> have a look into my solution for that when I pushed it out later today
-> and let me know if it looks good and still works.
-
-Yes, the resolution looks correct and I've been running linux-next
-without issues for a couple of days now.
+> -----Original Message-----
+> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Will Deacon
+> Sent: Monday, April 13, 2015 4:11 PM
+> To: Baptiste Reynal
+> Cc: Linux IOMMU
+> Subject: Re: SMMU 2-stage support
+> 
+> On Fri, Apr 03, 2015 at 10:55:02AM +0100, Baptiste Reynal wrote:
+> > We are eventually working on the vSMMU implementation. Relying on the
+> > talk Will Deacon gave at the Linux Plumbers IOMMU Microconference on
+> > October
+> > 2014 (http://linuxplumbersconf.org/2014/ocw/proposals/2019), I tried
+> > the vSMMU initialization.
+> 
+> My position on the vSMMU still hasn't changed:
+> 
+> > > Anyway, until somebody actually wants this feature I've put it on
+> > > ice as it adds a whole bunch of complication to the ARM SMMU driver,
+> > > as well as new user ABI extensions that I don't really want to maintain for
+> fun.
+> 
+> So, whilst it's great that you're looking at the code, I'm not very keen on
+> merging anything until we have people committed to using it. Right now, the
+> only feedback I've had has been going in the para-virt direction and I don't
+> think we should do this "for fun".
+Freescale would be interested in using the vSMMU implementation. We have use cases for assigning devices to guest user space. Are you suggesting that you are more inclined to using the para virtualized approach?
 
 Thanks,
-Thierry
-
---qMm9M+Fa2AknHoGS
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAABCAAGBQJVLPTqAAoJEN0jrNd/PrOhhAkQAIF+CMvxyMzcZWuHWv/SNRCu
-4+SyISQkpLvetewjzeROHWwPzhGOxw3fcTC/tXUIpZuUSVZtbKg/lWAEpOzaAcrb
-8FIbdbEhF4LL2HzkJXGK1/CX0JNX/jFIkOx1N6HpRD7MIGKUpCXiRH2/ueFZROMP
-4OL9QJ0aJqvgVshzba6CWHpbwR2vuGaIm+lfsz2buDkTJt68n56qYXlx6vqYMzsr
-ivt72x7YxfHYEENytRlT72GKDMNQ7fpN6HlDeCsvpH3FEMhnrasNSU5//LRGN9y8
-a1VmWzqZxp7z0D+ePGQXOTeafYrY7vfb3uPSGVdpMaPw+ISywQgxpkGlwByrvCRW
-veAYekVCOOq8kwIJa8CpW+YxQALho/EB097b7Zmu2weWNsjTR4W9U4MR8thCWXo+
-0Fnk4GZLZXniPuVojIkmxDWDtPjLIrLSPHYYadW4Ds+cvrOxnzK96ZCY0n+5jqWL
-0iNVMS872ouMsqDW4+r5WFM1LFkigb6b3EItKZzTchHJ0vX4PiqbnVyNS9JbqmxC
-IQ+0BhmpYoKxC5FxiARuiT5xVvajT1mnQmqeumKm898WaGiXgC203/8QXmmxEvah
-BYpFp/Wl9ZDNXTgEofMhI4K4mydNR/Iz28KoYaOPfF22wc+YGLiRAydHq0EceXf0
-9RkrYebu0jX8UzslJt7y
-=vzp7
------END PGP SIGNATURE-----
-
---qMm9M+Fa2AknHoGS--
-
---===============7557853999973040794==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============7557853999973040794==--
+Varun
