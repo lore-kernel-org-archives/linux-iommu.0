@@ -1,8 +1,8 @@
 From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part2 v5 14/33] irq_remapping/vt-d: Move struct irq_2_iommu
-	into intel_irq_remapping.c
-Date: Tue, 14 Apr 2015 10:29:51 +0800
-Message-ID: <1428978610-28986-15-git-send-email-jiang.liu@linux.intel.com>
+Subject: [Patch Part2 v5 15/33] irq_remapping/amd: Move struct irq_2_irte into
+	amd_iommu.c
+Date: Tue, 14 Apr 2015 10:29:52 +0800
+Message-ID: <1428978610-28986-16-git-send-email-jiang.liu@linux.intel.com>
 References: <1428978610-28986-1-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,8 +22,8 @@ To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Benjamin H
 Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Cohen <david.a.cohen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Sander Eikelenboom <linux-6SM94LqRVpn6gRhOQ7JHfg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Vrabel <david.vrabel-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Now only intel_irq_remapping.c access irq_2_iommu, so move it from
-hw_irq.h into intel_irq_remapping.c.
+Now only amd_iommu.c access irq_2_irte, so move it from hw_irq.h into
+amd_iommu.c.
 
 Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
@@ -37,58 +37,60 @@ Cc: Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 Cc: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
 Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Link: http://lkml.kernel.org/r/1416901802-24211-24-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+Link: http://lkml.kernel.org/r/1416901802-24211-25-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
 Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 Tested-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- arch/x86/include/asm/hw_irq.h       |    9 ---------
- drivers/iommu/intel_irq_remapping.c |    7 +++++++
- 2 files changed, 7 insertions(+), 9 deletions(-)
+ arch/x86/include/asm/hw_irq.h |   13 -------------
+ drivers/iommu/amd_iommu.c     |    5 +++++
+ 2 files changed, 5 insertions(+), 13 deletions(-)
 
 diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
-index 88632ea75fe0..3520f71f168b 100644
+index 3520f71f168b..494d541d2aee 100644
 --- a/arch/x86/include/asm/hw_irq.h
 +++ b/arch/x86/include/asm/hw_irq.h
-@@ -95,14 +95,6 @@ extern void trace_call_function_single_interrupt(void);
+@@ -94,14 +94,6 @@ extern void trace_call_function_single_interrupt(void);
+ #define trace_kvm_posted_intr_ipi kvm_posted_intr_ipi
  #endif /* CONFIG_TRACING */
  
- #ifdef CONFIG_IRQ_REMAP
--/* Intel specific interrupt remapping information */
--struct irq_2_iommu {
--	struct intel_iommu *iommu;
--	u16 irte_index;
--	u16 sub_handle;
--	u8  irte_mask;
+-#ifdef CONFIG_IRQ_REMAP
+-/* AMD specific interrupt remapping information */
+-struct irq_2_irte {
+-	u16 devid; /* Device ID for IRTE table */
+-	u16 index; /* Index into IRTE table*/
 -};
+-#endif	/* CONFIG_IRQ_REMAP */
 -
- /* AMD specific interrupt remapping information */
- struct irq_2_irte {
- 	u16 devid; /* Device ID for IRTE table */
-@@ -194,7 +186,6 @@ struct irq_cfg {
+ struct irq_domain;
+ 
+ #ifdef	CONFIG_X86_LOCAL_APIC
+@@ -184,11 +176,6 @@ struct irq_cfg {
+ 	unsigned int		dest_apicid;
+ 	u8			vector;
  	u8			move_in_progress : 1;
- #ifdef CONFIG_IRQ_REMAP
+-#ifdef CONFIG_IRQ_REMAP
+-	union {
+-		struct irq_2_irte  irq_2_irte;
+-	};
+-#endif
  	union {
--		struct irq_2_iommu irq_2_iommu;
- 		struct irq_2_irte  irq_2_irte;
- 	};
- #endif
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 21fc899e7c49..8a71ef6af93c 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -32,6 +32,13 @@ struct hpet_scope {
- 	unsigned int devfn;
+ #ifdef CONFIG_X86_IO_APIC
+ 		struct {
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index fa26c742bc39..a5a17f50691c 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3858,6 +3858,11 @@ union irte {
+ 	} fields;
  };
  
-+struct irq_2_iommu {
-+	struct intel_iommu *iommu;
-+	u16 irte_index;
-+	u16 sub_handle;
-+	u8  irte_mask;
++struct irq_2_irte {
++	u16 devid; /* Device ID for IRTE table */
++	u16 index; /* Index into IRTE table*/
 +};
 +
- struct intel_ir_data {
- 	struct irq_2_iommu			irq_2_iommu;
- 	struct irte				irte_entry;
+ struct amd_ir_data {
+ 	struct irq_2_irte			irq_2_irte;
+ 	union irte				irte_entry;
 -- 
 1.7.10.4
