@@ -1,104 +1,186 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH 2/5] iommu/mediatek: Add mt8173 IOMMU driver
-Date: Tue, 14 Apr 2015 14:50:09 +0800
-Message-ID: <1428994209.13552.29.camel@mhfsdcap03>
-References: <1425638900-24989-1-git-send-email-yong.wu@mediatek.com>
-	<1425638900-24989-3-git-send-email-yong.wu@mediatek.com>
-	<CAAFQd5ASywTX7P9L8cogBbBTra0W1=oVxeWfK5=K7L+SR2xaFA@mail.gmail.com>
-	<1426677749.22581.38.camel@mhfsdcap03> <550C71B3.1080708@arm.com>
+From: "Wu, Feng" <feng.wu@intel.com>
+Subject: RE: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU
+ is blocked
+Date: Tue, 14 Apr 2015 07:37:44 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F0024A7FBF@SHSMSX104.ccr.corp.intel.com>
+References: <20150226234048.GA7784@amt.cnet>
+ <E959C4978C3B6342920538CF579893F0023F5A98@SHSMSX104.ccr.corp.intel.com>
+ <20150304120608.GA26762@amt.cnet>
+ <E959C4978C3B6342920538CF579893F002409841@SHSMSX104.ccr.corp.intel.com>
+ <20150312011526.GA5878@amt.cnet>
+ <E959C4978C3B6342920538CF579893F00243A819@SHSMSX104.ccr.corp.intel.com>
+ <20150325231738.GA7333@amt.cnet>
+ <E959C4978C3B6342920538CF579893F0024697E0@SHSMSX104.ccr.corp.intel.com>
+ <20150327193013.GA6502@amt.cnet>
+ <E959C4978C3B6342920538CF579893F002479E58@SHSMSX104.ccr.corp.intel.com>
+ <20150330235533.GA15792@amt.cnet>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <550C71B3.1080708-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <20150330235533.GA15792@amt.cnet>
+Content-Language: en-US
+Sender: kvm-owner@vger.kernel.org
+To: Marcelo Tosatti <mtosatti@redhat.com>
+Cc: "hpa@zytor.com" <hpa@zytor.com>, "tglx@linutronix.de" <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>, "x86@kernel.org" <x86@kernel.org>, "gleb@kernel.org" <gleb@kernel.org>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "eric.auger@linaro.org" <eric.auger@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Wu, Feng" <feng.wu@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgUm9iaW4sCiAgICAgIFRoYW5rcyB2ZXJ5IG11Y2ggZm9yIHlvdXIgY29uZmlybS4KICAgICAg
-QWJvdXQgdGhlIHYzIG9mIHRoZSBETUEtbWFwcGluZywgSSBoYXZlIHNvbWUgcXVlc3Rpb24gYmVs
-b3cuCgpPbiBGcmksIDIwMTUtMDMtMjAgYXQgMTk6MTQgKzAwMDAsIFJvYmluIE11cnBoeSB3cm90
-ZToKPiBPbiAxOC8wMy8xNSAxMToyMiwgWW9uZyBXdSB3cm90ZToKPiA+IEhpIFRvbWFzeiwKPiA+
-ICAgICBUaGFua3MgdmVyeSBtdWNoIGZvciB5b3VyIHJldmlldy4gcGxlYXNlIGhlbHAgY2hlY2sg
-YmVsb3cuCj4gPiBUaGUgb3RoZXJzIEkgd2lsbCBmaXggaW4gdGhlIG5leHQgdmVyc2lvbi4KPiA+
-Cj4gPiBIaSBSb2JpbiwKPiA+ICAgICBUaGVyZSBhcmUgc29tZSBwbGFjZSBJIHdvdWxkIGxpa2Ug
-eW91IGNhbiBoYXZlIGEgbG9vayBhbmQgZ2l2ZSBtZQo+ID4gc29tZSBzdWdnZXN0aW9uLgo+ID4K
-PiA+IE9uIFdlZCwgMjAxNS0wMy0xMSBhdCAxOTo1MyArMDkwMCwgVG9tYXN6IEZpZ2Egd3JvdGU6
-Cj4gPj4gSGksCj4gPj4KPiA+PiBQbGVhc2UgZmluZCBuZXh0IHBhcnQgb2YgbXkgY29tbWVudHMg
-aW5saW5lLgo+ID4+Cj4gPj4+ICsvKgo+ID4+PiArICogcGltdWRldiBpcyBhIGdsb2JhbCB2YXIg
-Zm9yIGRtYV9hbGxvY19jb2hlcmVudC4KPiA+Pj4gKyAqIEl0IGlzIG5vdCBhY2NlcGF0YWJsZSwg
-d2Ugd2lsbCBkZWxldGUgaXQgaWYgImRvbWFpbl9hbGxvYyIgaXMgZW5hYmxlZAo+ID4+Cj4gPj4g
-SXQgbG9va3MgbGlrZSB3ZSBpbmRlZWQgbmVlZCB0byB1c2UgZG1hX2FsbG9jX2NvaGVyZW50KCkg
-YW5kIHdlIGRvbid0Cj4gPj4gaGF2ZSBhIGdvb2Qgd2F5IHRvIHBhc3MgdGhlIGRldmljZSBwb2lu
-dGVyIHRvIGRvbWFpbl9pbml0IGNhbGxiYWNrLgo+ID4+Cj4gPj4gSWYgeW91IGRvbid0IGV4cGVj
-dCBTb0NzIGluIHRoZSBuZWFyZXN0IGZ1dHVyZSB0byBoYXZlIG11bHRpcGxlIE00VQo+ID4+IGJs
-b2NrcywgdGhlbiBJIGd1ZXNzIHRoaXMgZ2xvYmFsIHZhcmlhYmxlIGNvdWxkIHN0YXksIGFmdGVy
-IGNoYW5naW5nCj4gPj4gdGhlIGNvbW1lbnQgaW50byBhbiBleHBsYW5hdGlvbiB3aHkgaXQncyBj
-b3JyZWN0LiBBbHNvIGl0IHNob3VsZCBiZQo+ID4+IG1vdmVkIHRvIHRoZSB0b3Agb2YgdGhlIGZp
-bGUsIGJlbG93ICNpbmNsdWRlIGRpcmVjdGl2ZXMsIGFzIHRoaXMgaXMKPiA+PiB3aGVyZSB1c3Vh
-bGx5IGdsb2JhbCB2YXJpYWJsZXMgYXJlIGxvY2F0ZWQuCj4gPiBAUm9iaW4sCj4gPiAgICAgICBX
-ZSBoYXZlIG1lcmdlZCB0aGlzIHBhdGNoWzBdIGluIG9yZGVyIHRvIGRlbGV0ZSB0aGUgZ2xvYmFs
-IHZhciwgQnV0Cj4gPiBpdCBzZWVtcyB0aGF0IHlvdXIgcGF0Y2ggb2YgImFybTY0OklPTU1VIiBp
-c24ndCBiYXNlZCBvbiBpdCByaWdodCByb3cuCj4gPiBpdCB3aWxsIGJ1aWxkIGZhaWwuCj4gCj4g
-WWVhaCwgSSd2ZSBub3QgeWV0IG1hbmFnZWQgdG8gdHJ5IHB1bGxpbmcgaW4gdGhhdCBzZXJpZXMg
-KG11Y2ggYXMgSSAKPiBhcHByb3ZlIG9mIGl0KSwgcGFydGx5IGFzIEkga25vdyBkb2luZyBzbyBp
-cyBnb2luZyB0byBsZWFuIHRvd2FyZHMgYSAKPiBub3QtaW5zaWduaWZpY2FudCByZXdvcmsgYW5k
-IEknZCByYXRoZXIgYXZvaWQgcGlja2luZyB1cCBtb3JlIHVubWVyZ2VkIAo+IGRlcGVuZGVuY2ll
-cyB0byBibG9jayBnZXR0aW5nIF9zb21ldGhpbmdfIGluIGZvciBhcm02NCAod2hpY2ggd2UgY2Fu
-IAo+IHRoZW4gaW1wcm92ZSkuCj4gCj4gPgo+ID4gWzBdOmh0dHA6Ly9saXN0cy5saW51eGZvdW5k
-YXRpb24ub3JnL3BpcGVybWFpbC9pb21tdS8yMDE1LUphbnVhcnkvMDExOTM5Lmh0bWwKPiA+Cltz
-bmlwXQo+IAo+IENhbGxpbmcgYXJjaF9zZXR1cF9kbWFfb3BzKCkgZnJvbSB0aGUgZHJpdmVyIGxv
-b2tzIHBsYWluIHdyb25nLCAKPiBlc3BlY2lhbGx5IGdpdmVuIHRoYXQgeW91IGFwcGFyZW50bHkg
-YXR0YWNoIHRoZSBJT01NVSB0byBpdHNlbGYgLSBpZiB5b3UgCj4gd2FudCB5b3VyIG93biBkb21h
-aW4geW91IHNob3VsZCB1c2UgaW9tbXVfZG1hX2NyZWF0ZV9kb21haW4oKS4gSSBhZG1pdCAKPiB0
-aGF0IHN0aWxsIGxlYXZlcyB5b3UgaGF2aW5nIHRvIGRhbmNlIGFyb3VuZCBhIGJpdCBpbiBvcmRl
-ciB0byB0ZWFyIGRvd24gCj4gdGhlIGF1dG9tYXRpYyBkb21haW5zIGZvciBub3csIGJ1dCBob3Bl
-ZnVsbHkgd2UnbGwgZ2V0IHRoZSBjb3JlIGNvZGUgCj4gc29ydGVkIG91dCBzb29uZXIgcmF0aGVy
-IHRoYW4gbGF0ZXIuCj4gPj4+ICsKPiA+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgbXRrX2lv
-bW11X2NvbmZpZ19wb3J0KHBpb21tdSwgcG9ydGlkKTsKPiA+Pj4gKwo+ID4+PiArICAgICAgICAg
-ICAgICAgICAgICAgICBpZiAoaSA9PSAwKQo+ID4+PiArICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIGRldi0+YXJjaGRhdGEuZG1hX29wcyA9Cj4gPj4+ICsgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICBwaW9tbXUtPmRldi0+YXJjaGRhdGEuZG1hX29wczsKPiA+Pgo+
-ID4+IFNob3VsZG4ndCB0aGlzIGJlIHNldCBhdXRvbWF0aWNhbGx5IGJ5IElPTU1VIG9yIERNQSBt
-YXBwaW5nIGNvcmU/Cj4gPiBAUm9iaW4sCj4gPiAgICAgICBJbiB0aGUgb3JpZ2luYWwgImFybV9p
-b21tdV9hdHRhY2hfZGV2aWNlIiBvZiBhcm0vbW0sIGl0IHdpbGwgY2FsbAo+ID4gc2V0X2RtYV9v
-cHMgdG8gYWRkIGlvbW11X29wcyBmb3IgZWFjaCBpb21tdSBkZXZpY2UuCj4gPiBCdXQgaW9tbXVf
-ZG1hX2F0dGFjaF9kZXZpY2UgZG9uJ3QgaGVscCB0aGlzLCBzbyBJIGhhdmUgdG8gYWRkIGl0IGhl
-cmUuCj4gPiBDb3VsZCB0aGlzIGJlIGltcHJvdmVkPwo+IAo+IElmIHlvdSBpbXBsZW1lbnRlZCBh
-IHNpbXBsZSBvZl94bGF0ZSBjYWxsYmFjayBzbyB0aGF0IHRoZSBjb3JlIGNvZGUgCj4gaGFuZGxl
-cyB0aGUgZG1hX29wcyBhcyBpbnRlbmRlZCwgSSB0aGluayB0aGUgc2ltcGxlc3QgY2hlYXQgd291
-bGQgYmUgdG8gCj4gY2hlY2sgdGhlIGNsaWVudCBkZXZpY2UncyBkb21haW4sIGVpdGhlciBvbiBh
-dHRhY2htZW50IG9yIHdoZW4gdGhleSAKPiBzdGFydCBtYXBwaW5nL3VubWFwcGluZywgYW5kIG1v
-dmUgdGhlbSB0byB5b3VyIG93biBkb21haW4gaWYgbmVjZXNzYXJ5LiAKPiBJJ20gcHV0dGluZyB0
-b2dldGhlciBhIHYzIG9mIHRoZSBETUEgbWFwcGluZyBzZXJpZXMsIHNvIEknbGwgaGF2ZSBhIGxv
-b2sgCj4gdG8gc2VlIGlmIEkgY2FuIHNxdWVlemUgaW4gYSB3YXkgdG8gbWFrZSB0aGF0IGEgYml0
-IGxlc3MgcGFpbmZ1bCB1bnRpbCAKPiB3ZSBzb2x2ZSBpdCBwcm9wZXJseS4KPiAKPiAKPiBSb2Jp
-bi4KPiAKICAgICAgSSBoYXZlIGltcGxlbWVudGVkIGEgc2ltcGxlIG9mX3hsYXRlLCBidXQgSSBj
-YW7igJl0IGdldCB0aGUgc3RhbmRhcmQKc3RydWN0IGRtYV9tYXBfb3BzIOKAnGlvbW11X2RtYV9v
-cHPigJ0gdG8gYXNzaWduZWQgaXQgdG8gdGhlIGNsaWVudCBkZXZpY2UuClNvIHRoZSB2MyBvZiBk
-bWEgbWFwcGluZyB3aWxsIGltcHJvdmUgdGhpcyBpc3N1ZT8gIAoKICAgICAgQW5kIElzIHRoZSB2
-MyBvZiB0aGUgRE1BLW1hcHBpbmcgYmFzZWQgb24gNC4wLXJjMT8gYmVjYXVzZSB3ZQpleHBlY3Qg
-aXQgY291bGQgY29udGFpbiB3aWxs4oCZcyBpby1wYWdldGFibGUuCgogICAgICBBbmQgd2hlbiB0
-aGUgdjMgd2lsbCBiZSByZWFkeT8KPiA+Pgo+ID4+PiArICAgICAgICAgICAgICAgfQo+ID4+PiAr
-ICAgICAgICAgICAgICAgaSsrOwo+ID4+PiArICAgICAgIH0KPiA+Pj4gKwo+ID4+PiArICAgICAg
-IHNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJnByaXYtPnBvcnRsb2NrLCBmbGFncyk7Cj4gPj4+ICsK
-PiA+Pj4gK2ltdWRldjoKPiA+Pj4gKyAgICAgICByZXR1cm4gMDsKPiA+Pj4gK30KPiA+Pj4gKwo+
-ID4+PiArc3RhdGljIHZvaWQgbXRrX2lvbW11X2RldGFjaF9kZXZpY2Uoc3RydWN0IGlvbW11X2Rv
-bWFpbiAqZG9tYWluLAo+ID4+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBz
-dHJ1Y3QgZGV2aWNlICpkZXYpCj4gPj4+ICt7Cj4gPj4KPiA+PiBObyBoYXJkd2FyZSAoZGUpY29u
-ZmlndXJhdGlvbiBvciBjbGVhbi11cCBuZWNlc3Nhcnk/Cj4gPiBJIHdpbGwgYWRkIGl0LiBBY3R1
-YWxseSB3ZSBkZXNpZ24gbGlrZSB0aGlzOklmIGEgZGV2aWNlIGhhdmUgYXR0YWNoZWQgdG8KPiA+
-IGlvbW11IGRvbWFpbiwgaXQgd29uJ3QgZGV0YWNoIGZyb20gaXQuCj4gPj4KPiA+Pj4gK30KPiA+
-Pj4gKwo+ID4gW3NuaXBdCgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
-b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
-bW11
+
+
+> -----Original Message-----
+> From: Marcelo Tosatti [mailto:mtosatti@redhat.com]
+> Sent: Tuesday, March 31, 2015 7:56 AM
+> To: Wu, Feng
+> Cc: hpa@zytor.com; tglx@linutronix.de; mingo@redhat.com; x86@kernel.org;
+> gleb@kernel.org; pbonzini@redhat.com; dwmw2@infradead.org;
+> joro@8bytes.org; alex.williamson@redhat.com; jiang.liu@linux.intel.com;
+> eric.auger@linaro.org; linux-kernel@vger.kernel.org;
+> iommu@lists.linux-foundation.org; kvm@vger.kernel.org
+> Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU
+> is blocked
+> 
+> On Mon, Mar 30, 2015 at 04:46:55AM +0000, Wu, Feng wrote:
+> >
+> >
+> > > -----Original Message-----
+> > > From: Marcelo Tosatti [mailto:mtosatti@redhat.com]
+> > > Sent: Saturday, March 28, 2015 3:30 AM
+> > > To: Wu, Feng
+> > > Cc: hpa@zytor.com; tglx@linutronix.de; mingo@redhat.com;
+> x86@kernel.org;
+> > > gleb@kernel.org; pbonzini@redhat.com; dwmw2@infradead.org;
+> > > joro@8bytes.org; alex.williamson@redhat.com; jiang.liu@linux.intel.com;
+> > > eric.auger@linaro.org; linux-kernel@vger.kernel.org;
+> > > iommu@lists.linux-foundation.org; kvm@vger.kernel.org
+> > > Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when
+> vCPU
+> > > is blocked
+> > >
+> > > On Fri, Mar 27, 2015 at 06:34:14AM +0000, Wu, Feng wrote:
+> > > > > > Currently, the following code is executed before local_irq_disable() is
+> > > called,
+> > > > > > so do you mean 1)moving local_irq_disable() to the place before it. 2)
+> after
+> > > > > interrupt
+> > > > > > is disabled, set KVM_REQ_EVENT in case the ON bit is set?
+> > > > >
+> > > > > 2) after interrupt is disabled, set KVM_REQ_EVENT in case the ON bit
+> > > > > is set.
+> > > >
+> > > > Here is my understanding about your comments here:
+> > > > - Disable interrupts
+> > > > - Check 'ON'
+> > > > - Set KVM_REQ_EVENT if 'ON' is set
+> > > >
+> > > > Then we can put the above code inside " if
+> > > (kvm_check_request(KVM_REQ_EVENT, vcpu) || req_int_win) "
+> > > > just like it used to be. However, I still have some questions about this
+> > > comment:
+> > > >
+> > > > 1. Where should I set KVM_REQ_EVENT? In function vcpu_enter_guest(),
+> or
+> > > other places?
+> > >
+> > > See below:
+> > >
+> > > > If in vcpu_enter_guest(), since currently local_irq_disable() is called after
+> > > 'KVM_REQ_EVENT'
+> > > > is checked, is it helpful to set KVM_REQ_EVENT after local_irq_disable() is
+> > > called?
+> > >
+> > >         local_irq_disable();
+> > >
+> > > 	*** add code here ***
+> >
+> > So we need add code like the following here, right?
+> >
+> >           if ('ON' is set)
+> >               kvm_make_request(KVM_REQ_EVENT, vcpu);
+> 
+
+Hi Marcelo,
+
+I changed the code as above, then I found that the ping latency was extremely big, (70ms - 400ms).
+I digged into it and got the root cause. We cannot use "checking-on" as the judgment, since 'ON'
+can be cleared by hypervisor software in lots of places. In this case, KVM_REQ_EVENT cannot be
+set when we check 'ON' bit, hence the interrupts are not injected to the guest in time.
+
+Please refer to the following code, in which 'ON' bit can be cleared:
+
+apic_find_highest_irr () --> vmx_sync_pir_to_irr () --> pi_test_and_clear_on()
+
+Searching from the code step by step, apic_find_highest_irr() can be called by many other guys.
+
+Thanks,
+Feng
+
+> Yes.
+> 
+> > >         if (vcpu->mode == EXITING_GUEST_MODE || vcpu->requests
+> > > 						^^^^^^^^^^^^^^
+> 
+> Point *1.
+> 
+> > >             || need_resched() || signal_pending(current)) {
+> > >                 vcpu->mode = OUTSIDE_GUEST_MODE;
+> > >                 smp_wmb();
+> > >                 local_irq_enable();
+> > >                 preempt_enable();
+> > >                 vcpu->srcu_idx = srcu_read_lock(&vcpu->kvm->srcu);
+> > >                 r = 1;
+> > >                 goto cancel_injection;
+> > >         }
+> > >
+> > > > 2. 'ON' is set by VT-d hardware, it can be set even when interrupt is
+> disabled
+> > > (the related bit in PIR is also set).
+> > >
+> > > Yes, we are checking if the HW has set an interrupt in PIR while
+> > > outside VM (which requires PIR->VIRR transfer by software).
+> > >
+> > > If the interrupt it set by hardware after local_irq_disable(),
+> > > VMX-entry will handle the interrupt and perform the PIR->VIRR
+> > > transfer and reevaluate interrupts, injecting to guest
+> > > if necessary, is that correct ?
+> > >
+> > > > So does it make sense to check 'ON' and set KVM_REQ_EVENT accordingly
+> > > after interrupt is disabled?
+> > >
+> > > To replace the costly
+> > >
+> > > +            */
+> > > +           if (kvm_x86_ops->hwapic_irr_update)
+> > > +                   kvm_x86_ops->hwapic_irr_update(vcpu,
+> > > +                           kvm_lapic_find_highest_irr(vcpu));
+> > >
+> > > Yes, i think so.
+> >
+> > After adding the "checking ON and setting KVM_REQ_EVENT" operations
+> listed in my
+> > comments above, do you mean we still need to keep the costly code above
+> > inside "if (kvm_check_request(KVM_REQ_EVENT, vcpu) || req_int_win) {}" in
+> function
+> > vcpu_enter_guest() as it used to be? If yes, my question is what is the exact
+> purpose
+> > of "checking ON and setting KVM_REQ_EVENT" operations? Here is the code
+> flow in
+> > vcpu_enter_guest():
+> >
+> > 1. Check KVM_REQ_EVENT, if it is set, sync pir->virr
+> > 2. Disable interrupts
+> > 3. Check ON and set KVM_REQ_EVENT -- Here, we set KVM_REQ_EVENT, but
+> it is
+> > checked in the step 1, which means, we cannot get any benefits even we set
+> it here,
+> > since the "pir->virr" sync operation was done in step 1, between step 3 and
+> VM-Entry,
+> > we don't synchronize the pir to virr. So even we set KVM_REQ_EVENT here,
+> the interrupts
+> > remaining in PIR cannot be delivered to guest during this VM-Entry, right?
+> 
+> Please check point *1 above. The code will go back to
+> 
+> "if (kvm_check_request(KVM_REQ_EVENT, vcpu)"
+> 
+> And perform the pir->virr sync.
+
