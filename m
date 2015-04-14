@@ -1,107 +1,87 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+From: Mark Rutland <mark.rutland@arm.com>
 Subject: Re: [PATCH 3/5] dt-bindings: mediatek: Add smi dts binding
-Date: Tue, 14 Apr 2015 21:55:42 +0800
-Message-ID: <1429019742.16400.1.camel@mhfsdcap03>
+Date: Tue, 14 Apr 2015 14:56:47 +0100
+Message-ID: <20150414135647.GG28709@leverpostej>
 References: <1425638900-24989-1-git-send-email-yong.wu@mediatek.com>
-	<1425638900-24989-4-git-send-email-yong.wu@mediatek.com>
-	<20150306111338.GD8700@leverpostej>
-	<1429002474.14855.7.camel@mhfsdcap03>
-	<20150414100657.GB28709@leverpostej>
-	<1429019389.16264.5.camel@mhfsdcap03>
+ <1425638900-24989-4-git-send-email-yong.wu@mediatek.com>
+ <20150306111338.GD8700@leverpostej>
+ <1429002474.14855.7.camel@mhfsdcap03>
+ <20150414100657.GB28709@leverpostej>
+ <1429019389.16264.5.camel@mhfsdcap03>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
 In-Reply-To: <1429019389.16264.5.camel@mhfsdcap03>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Yong Wu <yong.wu@mediatek.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <Robin.Murphy@arm.com>, Will Deacon <Will.Deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Lucas Stach <l.stach@pengutronix.de>, Catalin Marinas <Catalin.Marinas@arm.com>, "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>, Sasha Hauer <kernel@pengutronix.de>, "srv_heupstream@mediatek.com" <srv_heupstream@mediatek.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCAyMDE1LTA0LTE0IGF0IDIxOjQ5ICswODAwLCBZb25nIFd1IHdyb3RlOgo+IEhpIE1h
-cmssCj4gCj4gT24gVHVlLCAyMDE1LTA0LTE0IGF0IDExOjA2ICswMTAwLCBNYXJrIFJ1dGxhbmQg
-d3JvdGU6Cj4gPiBPbiBUdWUsIEFwciAxNCwgMjAxNSBhdCAxMDowNzo1NEFNICswMTAwLCBZb25n
-IFd1IHdyb3RlOgo+ID4gPiBIaSBNYXJrLAo+ID4gPiAgICAgVGhhbmtzIHZlcnkgbXVjaCBmb3Ig
-cmV2aWV3LiAKPiA+ID4gICAgIEFib3V0IHRoZSBjbG9jayBuYW1lIHNob3VsZCBiZSB0aGUgUG9W
-IG9mIF90aGlzXyBkZXZpY2UuIENvdWxkIHlvdQo+ID4gPiBoZWxwIGNoZWNrIGJlbG93Pwo+ID4g
-PiAKPiA+ID4gT24gRnJpLCAyMDE1LTAzLTA2IGF0IDExOjEzICswMDAwLCBNYXJrIFJ1dGxhbmQg
-d3JvdGU6Cj4gPiA+ID4gT24gRnJpLCBNYXIgMDYsIDIwMTUgYXQgMTA6NDg6MThBTSArMDAwMCwg
-eW9uZy53dUBtZWRpYXRlay5jb20gd3JvdGU6Cj4gPiA+ID4gPiBGcm9tOiBZb25nIFd1IDx5b25n
-Lnd1QG1lZGlhdGVrLmNvbT4KPiA+ID4gPiA+IAo+ID4gPiA+ID4gVGhpcyBwYXRjaCBhZGQgc21p
-IGJpbmRpbmcgZG9jdW1lbnQuCj4gPiA+ID4gCj4gPiA+ID4gUGxlYXNlIG1vdmUgYmluZGluZyBk
-b2N1bWVudHMgdG8gdGhlIHN0YXJ0IG9mIHRoZSBzZXJpZXMuIEl0IG1ha2VzCj4gPiA+ID4gdGhp
-bmdzIGZhciBlYXNpZXIgdG8gcmV2aWV3Lgo+ID4gPiA+ICAKPiA+ID4gPiBXaGF0IGRvZXMgImxh
-cmIiIG1lYW4/IEl0IHdvdWxkIGJlIG5pY2UgZm9yIHRoZSBpbnRvcmR1Y3RvcnkgcGFyYWdyYXBo
-Cj4gPiA+ID4gaW4gdGhpcyBmaWxlIHRvIGV4cGxhaW4uCj4gPiA+ID4gCj4gPiA+ID4gPiArLSBy
-ZWcgOiB0aGUgcmVnaXN0ZXIgb2YgZWFjaCBsb2NhbCBhcmJpdGVyCj4gPiA+ID4gPiArLSBjbG9j
-a3MgOiB0aGUgY2xvY2tzIG9mIGVhY2ggbG9jYWwgYXJiaXRlcgo+ID4gPiA+ID4gKy0gY2xvY2st
-bmFtZTogbGFyYl9zdWIqKDMgY2xvY2tlcyBhdCBtb3N0KQo+ID4gPiA+IAo+ID4gPiA+IFRoZSBu
-YW1lcyByZXF1aXJlZCBfbXVzdF8gYmUgc3BlY2lmaWVkIGhlcmUsIG9yIGNsb2NrLW5hbWVzIGlz
-Cj4gPiA+ID4gcG9pbnRsZXNzLgo+ID4gPiA+IAo+ID4gPiA+IFRoZSBjbG9jayBuYW1lcyBzaG91
-bGQgYmUgZnJvbSB0aGUgUG9WIG9mIF90aGlzXyBkZXZpY2UgKGkuZS4gdGhleQo+ID4gPiA+IHNo
-b3VsZCBiZSB0aGUgbmFtZXMgb2YgdGhlIGlucHV0cykgbm90IGZyb20gdGhlIFBvViBvZiB0aGUg
-cHJvdmlkZXIKPiA+ID4gPiAoaS5lLiB0aGV5IHNob3VsZCBub3QgYmUgdGhlIG5hbWVzIG9mIHRo
-ZSBvdXRwdXRzIGZyb20gdGhlIHByb3ZpZGVyKS4KPiA+ID4gPiAKPiA+ID4gPiBNYXJrLgo+ID4g
-PiA+IAo+ID4gPiAgICAgIEFmdGVyIHdlIGNoZWNrIHdpdGggb3VyIFNNSSBEZXNpZ25lci4gRXZl
-cnkgU01JIGxvY2FsIGFyYml0ZXIgbmVlZAo+ID4gPiB0d28gY2xvY2tzLCB3aGljaCBpcyBjYWxs
-ZWQgIEFQQiBjbG9ja3MgYW5kIFNNSSBjbG9jay4KPiA+ID4gICAgICBBUEIgY2xvY2sgOiBBZHZh
-bmNlZCBQZXJpcGhlcmFsIEJ1cyBDbG9jay4gSXQgaXMgdGhlIGNsb2NrIGZvcgo+ID4gPiBzZXR0
-aW5nIHRoZSByZWdpc3RlciBvZiBsb2NhbCBhcmJpdGVyLgo+ID4gPiAgICAgIFNNSSBjbG9jayA6
-IFNtYXJ0IE11bHRpbWVkaWEgSW50ZXJmYWNlIENsb2NrLCBJdCBpcyB0aGUgY2xvY2sgZm9yCj4g
-PiA+IHRyYW5zZmVyaW5nIHRoZSBkYXRhIGFuZCBjb21tYW5kLiAKPiA+ID4gCj4gPiA+ICAgICAg
-QW5kIGFsbCB0aGUgbG9jYWwgYXJiaXRlcnMgbmVlZCB0aGUgc21pIGNvbW1vbiBjbG9jaywgc28g
-d2UKPiA+ID4gc2VwYXJhdGUgaXQuIAo+ID4gPiAKPiA+ID4gICAgICBUaGVuIEkgcHJlcGFyZSB0
-byBkZXNpZ24gdGhlIHNtaSB0aGUgZHRzaSBsaWtlIHRoaXM6IAo+ID4gPiAKPiA+ID4gICAgICAg
-c21pX2NvbW1vbjpzbWlAMTQwMjIwMDAgewo+ID4gPiAgICAgICAgICAgICAgICAgIGNvbXBhdGli
-bGUgPSDigJxtZWRpYXRlLCBtdDgxNzMtc21p4oCdOwo+ID4gPiAgICAgICAgICAgICAgICAgIHJl
-ZyA9IDwwIDB4MTQwMjIwMDAgMCAweDEwMDA+Owo+ID4gPiAgICAgICAgICAgICAgICAgIGNsb2Nr
-cyA9IDwmbW1zeXMgTU1fU01JX0NPTU1PTj47Cj4gPiA+ICAgICAgICAgICAgICAgICAgY2xvY2tz
-LW5hbWVzID0g4oCcc21pX2NvbW1vbuKAnTsKPiA+ID4gICAgICAgfTsKPiA+ID4gCj4gPiA+ICAg
-ICAgIGxhcmIwOiBsYXJiQDE0MDIxMDAwIHsKPiA+ID4gICAgICAgICAgICAgICAgICBjb21wYXRp
-YmxlID0g4oCcbWVkaWF0ZSwgbXQ4MTczLXNtaS1sYXJi4oCdOwo+ID4gPiAgICAgICAgICAgICAg
-ICAgIHJlZyA9IDwwIDB4MTQwMjEwMDAgMCAweDEwMDA+Owo+ID4gPiAgICAgICAgICAgICAgICAg
-IHNtaSA9IDwmc21pX2NvbW1vbj47Cj4gPiA+ICAgICAgICAgICAgICAgICAgY2xvY2tzID0gPCZt
-bXN5cyBNTV9TTUlfTEFSQjA+LCAKPiA+ID4gCQkgCTwmbW1zeXMgTU1fU01JX0xBUkIwPjsKPiA+
-ID4gICAgICAgICAgICAgICAgICBjbG9ja3MtbmFtZXMgPSDigJxhcGJfY2xr4oCdLCDigJxzbWlf
-Y2xr4oCdOwo+ID4gPiAgICAgIH07Cj4gPiA+IAo+ID4gPiAgICAgIGxhcmIxOiBsYXJiQDE2MDEw
-MDAwIHsKPiA+ID4gICAgICAgICAgICAgICAgICBjb21wYXRpYmxlID0g4oCcbWVkaWF0ZSwgbXQ4
-MTczLXNtaS1sYXJi4oCdOwo+ID4gPiAgICAgICAgICAgICAgICAgIHJlZyA9IDwwIDB4MTYwMTAw
-MDAgMCAweDEwMDA+Owo+ID4gPiAgICAgICAgICAgICAgICAgIHNtaSA9IDwmc21pX2NvbW1vbj47
-Cj4gPiA+ICAgICAgICAgICAgICAgICAgY2xvY2tzID0gPCZ2ZGVjc3lzIFZERUNfQ0tFTj4sIAo+
-ID4gPiAJCQkgPCZtbXN5cyBWREVDX0xBUkJfQ0tFTj47Cj4gPiA+ICAgICAgICAgICAgICAgICAg
-Y2xvY2tzLW5hbWVzID0g4oCcYXBiX2Nsa+KAnSwg4oCcc21pX2Nsa+KAnTsKPiA+ID4gICAgICAg
-fTsKPiA+ID4gICAgICAg4oCmIAo+ID4gPiAgICAgIEluIHNvbWUgbG9jYWwgYXJiaXRlciwgdGhl
-IHNvdXJjZSBjbG9jayBvZiB0aGUgQVBCIGNsb2NrIGFuZCB0aGUKPiA+ID4gU01JIGNsb2NrIG1h
-eSBiZSB0aGUgc2FtZSwgbGlrZSBsYXJiMC4gc28gdGhlIHR3byBjbG9ja3MgYXJlIHRoZSBzYW1l
-Lgo+ID4gPiBBbmQgdGhleSBtYXkgYmUgZGlmZmVyZW50IGluIG90aGVyIGxvY2FsIGFyYml0ZXJl
-cywgbGlrZSBsYXJiMS4gICAgICAKPiA+ID4gCj4gPiA+ICAgICAgSWYgaXQgaXMgZGVzaWduZWQg
-bGlrZSB0aGlzLCBpcyBpdCBvaz8KPiA+IAo+ID4gVGhhdCBsb29rcyBwcmV0dHkgZ29vZDsgdGhl
-IGNsb2NrcyBhbmQgbmFtZXMgb24gdGhlIGxhcmIgbm9kZXMgc2VlbQo+ID4gc2Vuc2libGUuCj4g
-PiAKPiA+IFRoZSBuYW1pbmcgb2YgdGhlICJzbWlfY29tbW9uIiBjbG9jayBvbiB0aGUgc21pX2Nv
-bW1vbiBub2RlIGxvb2tzIGEgYml0Cj4gPiBvZGQgdGhvdWdoLiBJcyB0aGF0IHJlYWxseSB3aGF0
-IHRoZSBjbG9jayBpbnB1dCBpcyBjYWxsZWQ/Cj4gPiAKPiA+IE1hcmsuCj4gICAgICBBZnRlciBj
-aGVjayB3aXRoIERFLCB0aGUgc21pX2NvbW1vbiBjbG9jayBhbHNvIGhhdmUgaXRzIEFQQiBjbG9j
-awo+IGFuZCB0aGUgc21pIGNsb2NrKHRoZXkgaGF2ZSB0aGUgc2FtZSBjbG9jayBzb3VyY2UpLgo+
-ICAgICBBbmQgSSBwcmVwYXJlIHRvIGRlbGV0ZSAiX2NsayIgaW4gYWxsIHRoZSBjbG9jay1uYW1l
-cy4KPiAgICAgU28gaXQgbWF5IGJlIGxpa2UgdGhpczoKPiAgICAgICAgICBzbWlfY29tbW9uOnNt
-aUAxNDAyMjAwMCB7Cj4gICAgICAgICAgICAgICAgICBjb21wYXRpYmxlID0g4oCcbWVkaWF0ZSwg
-bXQ4MTczLXNtaeKAnTsKPiAgICAgICAgICAgICAgICAgICByZWcgPSA8MCAweDE0MDIyMDAwIDAg
-MHgxMDAwPjsKPiAgICAgICAgICAgICAgICAgICBjbG9ja3MgPSA8Jm1tc3lzIE1NX1NNSV9DT01N
-T04+LCAKPiAJCQkgICA8Jm1tc3lzIE1NX1NNSV9DT01NT04+Owo+ICAgICAgICAgICAgICAgICAg
-IGNsb2Nrcy1uYW1lcyA9IOKAnGFwa+KAnSwic21pIjsKPiAgICAgICAgIH07Cj4gICAgICBIb3cg
-YWJvdXQgdGhpcz8KICAgICAgU29ycnksIEkgd3JvdGUgd3JvbmcsIGl0IHNob3VsZCBiZSAKICAg
-ICAgY2xvY2stbmFtZXMgPSDigJxhcGLigJ0sInNtaSI7Cj4gCj4gX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KPiBMaW51eC1tZWRpYXRlayBtYWlsaW5nIGxp
-c3QKPiBMaW51eC1tZWRpYXRla0BsaXN0cy5pbmZyYWRlYWQub3JnCj4gaHR0cDovL2xpc3RzLmlu
-ZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1tZWRpYXRlawoKCl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdApp
-b21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRh
-dGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+> > >       smi_common:smi@14022000 {
+> > >                  compatible =3D =E2=80=9Cmediate, mt8173-smi=E2=80=
+=9D;
+> > >                  reg =3D <0 0x14022000 0 0x1000>;
+> > >                  clocks =3D <&mmsys MM_SMI_COMMON>;
+> > >                  clocks-names =3D =E2=80=9Csmi_common=E2=80=9D;
+> > >       };
+> > >=20
+> > >       larb0: larb@14021000 {
+> > >                  compatible =3D =E2=80=9Cmediate, mt8173-smi-larb=
+=E2=80=9D;
+> > >                  reg =3D <0 0x14021000 0 0x1000>;
+> > >                  smi =3D <&smi_common>;
+> > >                  clocks =3D <&mmsys MM_SMI_LARB0>,=20
+> > > 		 	<&mmsys MM_SMI_LARB0>;
+> > >                  clocks-names =3D =E2=80=9Capb_clk=E2=80=9D, =E2=80=
+=9Csmi_clk=E2=80=9D;
+> > >      };
+> > >=20
+> > >      larb1: larb@16010000 {
+> > >                  compatible =3D =E2=80=9Cmediate, mt8173-smi-larb=
+=E2=80=9D;
+> > >                  reg =3D <0 0x16010000 0 0x1000>;
+> > >                  smi =3D <&smi_common>;
+> > >                  clocks =3D <&vdecsys VDEC_CKEN>,=20
+> > > 			 <&mmsys VDEC_LARB_CKEN>;
+> > >                  clocks-names =3D =E2=80=9Capb_clk=E2=80=9D, =E2=80=
+=9Csmi_clk=E2=80=9D;
+> > >       };
+> > >       =E2=80=A6=20
+> > >      In some local arbiter, the source clock of the APB clock and=
+ the
+> > > SMI clock may be the same, like larb0. so the two clocks are the =
+same.
+> > > And they may be different in other local arbiteres, like larb1.  =
+   =20
+> > >=20
+> > >      If it is designed like this, is it ok?
+> >=20
+> > That looks pretty good; the clocks and names on the larb nodes seem
+> > sensible.
+> >=20
+> > The naming of the "smi_common" clock on the smi_common node looks a=
+ bit
+> > odd though. Is that really what the clock input is called?
+> >=20
+> > Mark.
+>      After check with DE, the smi_common clock also have its APB cloc=
+k
+> and the smi clock(they have the same clock source).
+>     And I prepare to delete "_clk" in all the clock-names.
+>     So it may be like this:
+>          smi_common:smi@14022000 {
+>                  compatible =3D =E2=80=9Cmediate, mt8173-smi=E2=80=9D=
+;
+>                     reg =3D <0 0x14022000 0 0x1000>;
+>                   clocks =3D <&mmsys MM_SMI_COMMON>,=20
+> 			   <&mmsys MM_SMI_COMMON>;
+>                   clocks-names =3D =E2=80=9Capk=E2=80=9D,"smi";
+>         };
+>      How about this?
+
+That looks fine to me. I assume "apk" should be "apb" in the last
+example.
+
+Mark.
