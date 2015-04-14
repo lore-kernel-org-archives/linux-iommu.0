@@ -1,14 +1,17 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [Patch Part2 v5 25/33] x86/irq: Move check of cfg->move_in_progress
-	into send_cleanup_vector()
-Date: Tue, 14 Apr 2015 10:30:02 +0800
-Message-ID: <1428978610-28986-26-git-send-email-jiang.liu@linux.intel.com>
-References: <1428978610-28986-1-git-send-email-jiang.liu@linux.intel.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH 2/5] iommu/mediatek: Add mt8173 IOMMU driver
+Date: Tue, 14 Apr 2015 14:31:07 +0800
+Message-ID: <1428993067.13552.14.camel@mhfsdcap03>
+References: <1425638900-24989-1-git-send-email-yong.wu@mediatek.com>
+	<1425638900-24989-3-git-send-email-yong.wu@mediatek.com>
+	<CAAFQd5ASywTX7P9L8cogBbBTra0W1=oVxeWfK5=K7L+SR2xaFA@mail.gmail.com>
+	<1426677749.22581.38.camel@mhfsdcap03>
+	<CAAFQd5DOzFmfXki8GwUC75VQFEWzxBUNUgOtSuRtV6tc27kD2A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1428978610-28986-1-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <CAAFQd5DOzFmfXki8GwUC75VQFEWzxBUNUgOtSuRtV6tc27kD2A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,111 +21,72 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Dimitri Sivanich <sivanich-sJ/iWh9BUns@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Cohen <david.a.cohen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Sander Eikelenboom <linux-6SM94LqRVpn6gRhOQ7JHfg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Vrabel <david.vrabel-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+To: Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Move check of cfg->move_in_progress into send_cleanup_vector() to
-prepare for simplifying struct irq_cfg.
-
-Signed-off-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
-Cc: Rafael J. Wysocki <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
-Cc: Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Link: http://lkml.kernel.org/r/1416901802-24211-34-git-send-email-jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
-Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Tested-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- arch/x86/kernel/apic/vector.c       |   10 ++++++++--
- arch/x86/platform/uv/uv_irq.c       |    3 +--
- drivers/iommu/amd_iommu.c           |    3 +--
- drivers/iommu/intel_irq_remapping.c |    3 +--
- 4 files changed, 11 insertions(+), 8 deletions(-)
-
-diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
-index 436a3400d9ac..a5ce2eef0528 100644
---- a/arch/x86/kernel/apic/vector.c
-+++ b/arch/x86/kernel/apic/vector.c
-@@ -495,7 +495,7 @@ static struct irq_chip lapic_controller = {
- };
- 
- #ifdef CONFIG_SMP
--void send_cleanup_vector(struct irq_cfg *cfg)
-+static void __send_cleanup_vector(struct irq_cfg *cfg)
- {
- 	cpumask_var_t cleanup_mask;
- 
-@@ -513,6 +513,12 @@ void send_cleanup_vector(struct irq_cfg *cfg)
- 	cfg->move_in_progress = 0;
- }
- 
-+void send_cleanup_vector(struct irq_cfg *cfg)
-+{
-+	if (cfg->move_in_progress)
-+		__send_cleanup_vector(cfg);
-+}
-+
- asmlinkage __visible void smp_irq_move_cleanup_interrupt(void)
- {
- 	unsigned vector, me;
-@@ -583,7 +589,7 @@ static void __irq_complete_move(struct irq_cfg *cfg, unsigned vector)
- 	me = smp_processor_id();
- 
- 	if (vector == cfg->vector && cpumask_test_cpu(me, cfg->domain))
--		send_cleanup_vector(cfg);
-+		__send_cleanup_vector(cfg);
- }
- 
- void irq_complete_move(struct irq_cfg *cfg)
-diff --git a/arch/x86/platform/uv/uv_irq.c b/arch/x86/platform/uv/uv_irq.c
-index 54af6e388a12..091b36ac44c4 100644
---- a/arch/x86/platform/uv/uv_irq.c
-+++ b/arch/x86/platform/uv/uv_irq.c
-@@ -63,8 +63,7 @@ uv_set_irq_affinity(struct irq_data *data, const struct cpumask *mask,
- 	ret = parent->chip->irq_set_affinity(parent, mask, force);
- 	if (ret >= 0) {
- 		uv_program_mmr(cfg, data->chip_data);
--		if (cfg->move_in_progress)
--			send_cleanup_vector(cfg);
-+		send_cleanup_vector(cfg);
- 	}
- 
- 	return ret;
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index a5a17f50691c..a8901fbaee0e 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -4333,8 +4333,7 @@ static int amd_ir_set_affinity(struct irq_data *data,
- 	 * at the new destination. So, time to cleanup the previous
- 	 * vector allocation.
- 	 */
--	if (cfg->move_in_progress)
--		send_cleanup_vector(cfg);
-+	send_cleanup_vector(cfg);
- 
- 	return IRQ_SET_MASK_OK_DONE;
- }
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 8a71ef6af93c..55e72ce52fc4 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -1003,8 +1003,7 @@ intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
- 	 * at the new destination. So, time to cleanup the previous
- 	 * vector allocation.
- 	 */
--	if (cfg->move_in_progress)
--		send_cleanup_vector(cfg);
-+	send_cleanup_vector(cfg);
- 
- 	return IRQ_SET_MASK_OK_DONE;
- }
--- 
-1.7.10.4
+SGkgVG9tYXN6LAoKICAgICBUaGFua3MgdmVyeSBtdWNoIGZvciB5b3Ugc3VnZ2VzdGlvbiBhbmQg
+ZXhwbGFpbiBzbyBkZXRhaWwuCiAgICAgcGxlYXNlIGhlbHAgY2hlY2sgYmVsb3cuCgpPbiBGcmks
+IDIwMTUtMDMtMjcgYXQgMTg6NDEgKzA5MDAsIFRvbWFzeiBGaWdhIHdyb3RlOgo+IEhpIFlvbmcg
+V3UsCj4gCj4gU29ycnkgZm9yIGxvbmcgZGVsYXksIEkgaGFkIHRvIGZpZ3VyZSBvdXQgc29tZSB0
+aW1lIHRvIGxvb2sgYXQgdGhpcyBhZ2Fpbi4KPiAKPiBPbiBXZWQsIE1hciAxOCwgMjAxNSBhdCA4
+OjIyIFBNLCBZb25nIFd1IDx5b25nLnd1QG1lZGlhdGVrLmNvbT4gd3JvdGU6Cj4gPj4KPiA+PiA+
+ICsgICAgICAgICAgICAgICBpbXVkZXYgPSBwaW9tbXUtPmRldjsKPiA+PiA+ICsKPiA+PiA+ICsg
+ICAgICAgc3Bpbl9sb2NrX2lycXNhdmUoJnByaXYtPnBvcnRsb2NrLCBmbGFncyk7Cj4gPj4KPiA+
+PiBXaGF0IGlzIHByb3RlY3RlZCBieSB0aGlzIHNwaW5sb2NrPwo+ID4gICAgICAgICBXZSB3aWxs
+IHdyaXRlIGEgcmVnaXN0ZXIgb2YgdGhlIGxvY2FsIGFyYml0ZXIgd2hpbGUgY29uZmlnIHBvcnQu
+IElmCj4gPiBzb21lIG1vZHVsZXMgYXJlIGluIHRoZSBzYW1lIGxvY2FsIGFyYml0ZXIsIGl0IG1h
+eSBiZSBvdmVyd3JpdGUuIHNvIEkKPiA+IGFkZCBpdCBoZXJlLgo+ID4+Cj4gCj4gT0suIE1heWJl
+IGl0IGNvdWxkIGJlIGNhbGxlZCBsYXJiX2xvY2sgdGhlbj8gSXQgd291bGQgYmUgZ29vZCB0byBo
+YXZlCj4gc3RydWN0dXJlcyBvciBjb2RlIHRoYXQgc2hvdWxkIGJlIHJ1bm5pbmcgdW5kZXIgdGhp
+cyBzcGlubG9jawo+IGFubm90YXRlZCB3aXRoIHByb3BlciBjb21tZW50cy4gQW5kIHB1cnBvc2Ug
+b2YgdGhlIGxvY2sgZG9jdW1lbnRlZCBpbgo+IGEgY29tbWVudCBhcyB3ZWxsIChwcm9iYWJseSBp
+biBhIGtlcm5lbGRvYy1zdHlsZSBkb2N1bWVudGF0aW9uIG9mCj4gcHJpdikuCiAgIFRoYW5rcy4g
+SSBoYXZlIG1vdmUgdGhlIHNwaW5sb2NrIGludG8gdGhlIHNtaSBkcml2ZXIsIGl0IHdpbGwgbG9j
+awpmb3Igd3JpdGluZyB0aGUgbG9jYWwgYXJiaXRlciByZWdzaXRlciBvbmx5Lgo+IAo+ID4+ID4g
+K3N0YXRpYyB2b2lkIG10a19pb21tdV9kZXRhY2hfZGV2aWNlKHN0cnVjdCBpb21tdV9kb21haW4g
+KmRvbWFpbiwKPiA+PiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0cnVj
+dCBkZXZpY2UgKmRldikKPiA+PiA+ICt7Cj4gPj4KPiA+PiBObyBoYXJkd2FyZSAoZGUpY29uZmln
+dXJhdGlvbiBvciBjbGVhbi11cCBuZWNlc3Nhcnk/Cj4gPiBJIHdpbGwgYWRkIGl0LiBBY3R1YWxs
+eSB3ZSBkZXNpZ24gbGlrZSB0aGlzOklmIGEgZGV2aWNlIGhhdmUgYXR0YWNoZWQgdG8KPiA+IGlv
+bW11IGRvbWFpbiwgaXQgd29uJ3QgZGV0YWNoIGZyb20gaXQuCj4gCj4gSXNuJ3QgcHJvcGVyIGNs
+ZWFuLXVwIHJlcXVpcmVkIGZvciBtb2R1bGUgcmVtb3ZhbD8gU29tZSBkcml2ZXJzIG1pZ2h0Cj4g
+YmUgcmVxdWlyZWQgdG8gYmUgbG9hZGFibGUgbW9kdWxlcywgd2hpY2ggc2hvdWxkIGJlIHVubG9h
+ZGFibGUuCj4gCj4gPj4KPiA+PiA+ICsKPiA+PiA+ICsgICAgICAgcGlvbW11LT5wcm90ZWN0X3Zh
+ID0gZGV2bV9rbWFsbG9jKHBpb21tdS0+ZGV2LCBNVEtfUFJPVEVDVF9QQV9BTElHTioyLAo+ID4+
+Cj4gPj4gc3R5bGU6IE9wZXJhdG9ycyBsaWtlICogc2hvdWxkIGhhdmUgc3BhY2Ugb24gYm90aCBz
+aWRlcy4KPiA+Pgo+ID4+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgR0ZQX0tFUk5FTCk7Cj4gPj4KPiA+PiBTaG91bGRuJ3QgZG1hX2FsbG9jX2NvaGVyZW50KCkg
+YmUgdXNlZCBmb3IgdGhpcz8KPiA+ICAgICAgV2UgZG9uJ3QgY2FyZSB0aGUgZGF0YSBpbiBpdC4g
+SSB0aGluayB0aGV5IGFyZSB0aGUgc2FtZS4gQ291bGQgeW91Cj4gPiBoZWxwIHRlbGwgbWUgd2h5
+IGRtYV9hbGxvY19jb2hlcmVudCBtYXkgYmUgYmV0dGVyLgo+IAo+IENhbiB5b3UgZ3VhcmFudGVl
+IHRoYXQgYXQgdGhlIHRpbWUgeW91IGFsbG9jYXRlIHRoZSBtZW1vcnkgdXNpbmcKPiBkZXZtX2tt
+YWxsb2MoKSB0aGUgbWVtb3J5IGlzIG5vdCBkaXJ0eSAoaS5lLiBzb21lIHdyaXRlIGJhY2sgZGF0
+YSBhcmUKPiBzdG9yZWQgaW4gQ1BVIGNhY2hlKSBhbmQgaXMgbm90IGdvaW5nIHRvIGJlIHdyaXR0
+ZW4gYmFjayBpbiBzb21lIHRpbWUsCj4gb3ZlcndyaXRpbmcgZGF0YSBwdXQgdGhlcmUgYnkgSU9N
+TVUgaGFyZHdhcmU/Cj4gCkFzIEkgbm90ZWQgaW4gdGhlIGZ1bmN0aW9uICJtdGtfaW9tbXVfaHdf
+aW5pdCI6CgogICAgICAgLyogcHJvdGVjdCBtZW1vcnksSFcgd2lsbCB3cml0ZSBoZXJlIHdoaWxl
+IHRyYW5zbGF0aW9uIGZhdWx0ICovCiAgICAgICBwcm90ZWN0cGEgPSBfX3ZpcnRfdG9fcGh5cyhw
+aW9tbXUtPnByb3RlY3RfdmEpOwoKICAgICBXZSBkb27igJl0IGNhcmUgdGhlIGNvbnRlbnQgb2Yg
+dGhpcyBidWZmZXIsIEl0IGlzIG9rIGV2ZW4gdGhvdWdoIGl0cwpkYXRhIGlzIGRpcnR5LgogICAg
+SXQgc2VlbSB0byBiZSBhIHRoZSBwcm90ZWN0IG1lbW9yeS4gV2hpbGUgYSB0cmFuc2xhdGlvbiBm
+YXVsdApoYXBwZW5lZCwgVGhlIGlvbW11IEhXIHdpbGwgb3ZlcndyaXRlIGhlcmUgaW5zdGVhZCBv
+ZiB3cml0aW5nIHRvIHRoZQpmYXVsdCBwaHlzaWNhbCBhZGRyZXNzIHdoaWNoIG1heSBiZSAwIG9y
+IHNvbWUgcmFuZG9tIGFkZHJlc3MuCgo+ID4+ID4gKwo+ID4+ID4gKyAgICAgICBpb21tdV9zZXRf
+ZmF1bHRfaGFuZGxlcihkb21haW4sIG10a19pb21tdV9mYXVsdF9oYW5kbGVyLCBwaW9tbXUpOwo+
+ID4+Cj4gPj4gSSBkb24ndCBzZWUgYW55IG90aGVyIGRyaXZlcnMgZG9pbmcgdGhpcy4gSXNuJ3Qg
+dGhpcyBmb3IgdXBwZXIgbGF5ZXJzLAo+ID4+IHNvIHRoYXQgdGhleSBjYW4gc2V0IHRoZWlyIG93
+biBnZW5lcmljIGZhdWx0IGhhbmRsZXJzPwo+ID4gICAgICBJIHRoaW5rIHRoYXQgdGhpcyBmdW5j
+dGlvbiBpcyByZWxhdGVkIHdpdGggdGhlIGlvbW11IGRvbWFpbiwgd2UKPiA+IGhhdmUgb25seSBv
+bmUgbXVsdGltZWRpYSBpb21tdSBkb21haW4uIHNvIEkgYWRkIGl0IGFmdGVyIHRoZSBpb21tdQo+
+ID4gZG9tYWluIGFyZSBjcmVhdGVkLgo+IAo+IE5vLCB0aGlzIGZ1bmN0aW9uIGlzIGZvciBkcml2
+ZXJzIG9mIElPTU1VIGNsaWVudHMgKGkuZS4gbWFzdGVyIElQCj4gYmxvY2tzKSB3aGljaCB3YW50
+IHRvIHN1YnNjcmliZSB0byBwYWdlIGZhdWx0IHRvIGRvIHRoaW5ncyBsaWtlIHBhZ2luZwo+IG9u
+IGRlbWFuZCBhbmQgc28gb24uIEl0IHNob3VsZG4ndCBiZSBjYWxsZWQgYnkgSU9NTVUgZHJpdmVy
+LiBQbGVhc2UKPiBzZWUgb3RoZXIgSU9NTVUgZHJpdmVycywgZm9yIGV4YW1wbGUgcm9ja2NoaXAt
+aW9tbW11LmMuCiAgICAgVGhhbmtzLiBJIGhhdmUgcmVhZCBpdC4gSSB3aWxsIGRlbGV0ZSBpdCBh
+bmQgcHJpbnQgdGhlIGVycm9yIGluZm8KaW4gdGhlIElTUi4gQWxzbyBjYWxsIHRoZSByZXBvcnRf
+aW9tbXVfZmF1bHQgaW4gdGhlIElTUi4KCj4gQmVzdCByZWdhcmRzLAo+IFRvbWFzegoKCl9fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcg
+bGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4
+Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
