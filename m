@@ -1,66 +1,96 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+From: Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 Subject: Re: [PATCH 2/5] iommu/mediatek: Add mt8173 IOMMU driver
-Date: Wed, 15 Apr 2015 15:06:07 +0800
-Message-ID: <1429081567.16400.16.camel@mhfsdcap03>
+Date: Wed, 15 Apr 2015 16:41:17 +0900
+Message-ID: <CAAFQd5A2FgsbusEbxVVqSeC7hY=Ewe-YbJ7bbvk-SjpSC==xDw@mail.gmail.com>
 References: <1425638900-24989-1-git-send-email-yong.wu@mediatek.com>
-	<1425638900-24989-3-git-send-email-yong.wu@mediatek.com>
-	<CAAFQd5ASywTX7P9L8cogBbBTra0W1=oVxeWfK5=K7L+SR2xaFA@mail.gmail.com>
-	<1426677749.22581.38.camel@mhfsdcap03>
-	<CAAFQd5DOzFmfXki8GwUC75VQFEWzxBUNUgOtSuRtV6tc27kD2A@mail.gmail.com>
-	<1428993067.13552.14.camel@mhfsdcap03>
-	<CAAFQd5Db+DacQYa1pdr=w5JpU76AYa-Xhd20wHBF=F6m=Efokw@mail.gmail.com>
+ <1425638900-24989-3-git-send-email-yong.wu@mediatek.com> <CAAFQd5ASywTX7P9L8cogBbBTra0W1=oVxeWfK5=K7L+SR2xaFA@mail.gmail.com>
+ <1426677749.22581.38.camel@mhfsdcap03> <CAAFQd5DOzFmfXki8GwUC75VQFEWzxBUNUgOtSuRtV6tc27kD2A@mail.gmail.com>
+ <1428993067.13552.14.camel@mhfsdcap03> <CAAFQd5Db+DacQYa1pdr=w5JpU76AYa-Xhd20wHBF=F6m=Efokw@mail.gmail.com>
+ <1429081567.16400.16.camel@mhfsdcap03>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAAFQd5Db+DacQYa1pdr=w5JpU76AYa-Xhd20wHBF=F6m=Efokw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1429081567.16400.16.camel@mhfsdcap03>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gV2VkLCAyMDE1LTA0LTE1IGF0IDExOjIwICswOTAwLCBUb21hc3ogRmlnYSB3cm90ZToKPiBP
-biBUdWUsIEFwciAxNCwgMjAxNSBhdCAzOjMxIFBNLCBZb25nIFd1IDx5b25nLnd1QG1lZGlhdGVr
-LmNvbT4gd3JvdGU6Cj4gPj4gPj4KPiA+PiA+PiA+ICsKPiA+PiA+PiA+ICsgICAgICAgcGlvbW11
-LT5wcm90ZWN0X3ZhID0gZGV2bV9rbWFsbG9jKHBpb21tdS0+ZGV2LCBNVEtfUFJPVEVDVF9QQV9B
-TElHTioyLAo+ID4+ID4+Cj4gPj4gPj4gc3R5bGU6IE9wZXJhdG9ycyBsaWtlICogc2hvdWxkIGhh
-dmUgc3BhY2Ugb24gYm90aCBzaWRlcy4KPiA+PiA+Pgo+ID4+ID4+ID4gKyAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgR0ZQX0tFUk5FTCk7Cj4gPj4gPj4KPiA+PiA+PiBT
-aG91bGRuJ3QgZG1hX2FsbG9jX2NvaGVyZW50KCkgYmUgdXNlZCBmb3IgdGhpcz8KPiA+PiA+ICAg
-ICAgV2UgZG9uJ3QgY2FyZSB0aGUgZGF0YSBpbiBpdC4gSSB0aGluayB0aGV5IGFyZSB0aGUgc2Ft
-ZS4gQ291bGQgeW91Cj4gPj4gPiBoZWxwIHRlbGwgbWUgd2h5IGRtYV9hbGxvY19jb2hlcmVudCBt
-YXkgYmUgYmV0dGVyLgo+ID4+Cj4gPj4gQ2FuIHlvdSBndWFyYW50ZWUgdGhhdCBhdCB0aGUgdGlt
-ZSB5b3UgYWxsb2NhdGUgdGhlIG1lbW9yeSB1c2luZwo+ID4+IGRldm1fa21hbGxvYygpIHRoZSBt
-ZW1vcnkgaXMgbm90IGRpcnR5IChpLmUuIHNvbWUgd3JpdGUgYmFjayBkYXRhIGFyZQo+ID4+IHN0
-b3JlZCBpbiBDUFUgY2FjaGUpIGFuZCBpcyBub3QgZ29pbmcgdG8gYmUgd3JpdHRlbiBiYWNrIGlu
-IHNvbWUgdGltZSwKPiA+PiBvdmVyd3JpdGluZyBkYXRhIHB1dCB0aGVyZSBieSBJT01NVSBoYXJk
-d2FyZT8KPiA+Pgo+ID4gQXMgSSBub3RlZCBpbiB0aGUgZnVuY3Rpb24gIm10a19pb21tdV9od19p
-bml0IjoKPiA+Cj4gPiAgICAgICAgLyogcHJvdGVjdCBtZW1vcnksSFcgd2lsbCB3cml0ZSBoZXJl
-IHdoaWxlIHRyYW5zbGF0aW9uIGZhdWx0ICovCj4gPiAgICAgICAgcHJvdGVjdHBhID0gX192aXJ0
-X3RvX3BoeXMocGlvbW11LT5wcm90ZWN0X3ZhKTsKPiA+Cj4gPiAgICAgIFdlIGRvbuKAmXQgY2Fy
-ZSB0aGUgY29udGVudCBvZiB0aGlzIGJ1ZmZlciwgSXQgaXMgb2sgZXZlbiB0aG91Z2ggaXRzCj4g
-PiBkYXRhIGlzIGRpcnR5Lgo+ID4gICAgIEl0IHNlZW0gdG8gYmUgYSB0aGUgcHJvdGVjdCBtZW1v
-cnkuIFdoaWxlIGEgdHJhbnNsYXRpb24gZmF1bHQKPiA+IGhhcHBlbmVkLCBUaGUgaW9tbXUgSFcg
-d2lsbCBvdmVyd3JpdGUgaGVyZSBpbnN0ZWFkIG9mIHdyaXRpbmcgdG8gdGhlCj4gPiBmYXVsdCBw
-aHlzaWNhbCBhZGRyZXNzIHdoaWNoIG1heSBiZSAwIG9yIHNvbWUgcmFuZG9tIGFkZHJlc3MuCj4g
-Pgo+IAo+IERvIHlvdSBtZWFuIHRoYXQgaXQncyBqdXN0IGEgZHVtbXkgcGFnZSBmb3IgaGFyZHdh
-cmUgYmVoaW5kIHRoZSBJT01NVQo+IHRvIGFjY2VzcyB3aGVuIHRoZSBtYXBwaW5nIGlzIG5vdCBh
-dmFpbGFibGU/IEhvdyB3b3VsZCB0aGF0IHdvcmsgd2l0aAo+IHBvdGVudGlhbCBvbiBkZW1hbmQg
-cGFnaW5nIHdoZW4gdGhlIGhhcmR3YXJlIG5lZWRzIHRvIGJlIGJsb2NrZWQgdW50aWwKPiB0aGUg
-bWFwcGluZyBpcyBjcmVhdGVkPwo+IAo+IEJlc3QgcmVnYXJkcywKPiBUb21hc3oKIDEuIFlFUwog
-Mi4gU29ycnkuIE91ciBpb21tdSBIVyBjYW4gbm90IHN1cHBvcnQgdGhpcyByaWdodCBub3cuIFRo
-ZSBIVyBjYW4gbm90CmJlIGJsb2NrZWQgdW50aWwgdGhlIG1hcHBpbmcgaXMgY3JlYXRlZC4KICAg
-IElmIHRoZSBwYWdlIGlzIG5vdCByZWFkeSwgd2UgY2FuIG5vdCBnZXQgdGhlIHBoeXNpY2FsIGFk
-ZHJlc3MsIHRoZW4KSG93IHRvIGZpbGwgdGhlIHBhZ2V0YWJsZSBmb3IgdGhhdCBtZW1vcnkuIEkg
-dGhpbmsgdGhlIGRtYSZpb21tdSBtYXkKZ3VhcmFudHkgaXQ/CgoKX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxp
-c3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9y
-Zy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Wed, Apr 15, 2015 at 4:06 PM, Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
+> On Wed, 2015-04-15 at 11:20 +0900, Tomasz Figa wrote:
+>> On Tue, Apr 14, 2015 at 3:31 PM, Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrot=
+e:
+>> >> >>
+>> >> >> > +
+>> >> >> > +       piommu->protect_va =3D devm_kmalloc(piommu->dev, MTK=
+_PROTECT_PA_ALIGN*2,
+>> >> >>
+>> >> >> style: Operators like * should have space on both sides.
+>> >> >>
+>> >> >> > +                                         GFP_KERNEL);
+>> >> >>
+>> >> >> Shouldn't dma_alloc_coherent() be used for this?
+>> >> >      We don't care the data in it. I think they are the same. C=
+ould you
+>> >> > help tell me why dma_alloc_coherent may be better.
+>> >>
+>> >> Can you guarantee that at the time you allocate the memory using
+>> >> devm_kmalloc() the memory is not dirty (i.e. some write back data=
+ are
+>> >> stored in CPU cache) and is not going to be written back in some =
+time,
+>> >> overwriting data put there by IOMMU hardware?
+>> >>
+>> > As I noted in the function "mtk_iommu_hw_init":
+>> >
+>> >        /* protect memory,HW will write here while translation faul=
+t */
+>> >        protectpa =3D __virt_to_phys(piommu->protect_va);
+>> >
+>> >      We don=E2=80=99t care the content of this buffer, It is ok ev=
+en though its
+>> > data is dirty.
+>> >     It seem to be a the protect memory. While a translation fault
+>> > happened, The iommu HW will overwrite here instead of writing to t=
+he
+>> > fault physical address which may be 0 or some random address.
+>> >
+>>
+>> Do you mean that it's just a dummy page for hardware behind the IOMM=
+U
+>> to access when the mapping is not available? How would that work wit=
+h
+>> potential on demand paging when the hardware needs to be blocked unt=
+il
+>> the mapping is created?
+>>
+>> Best regards,
+>> Tomasz
+>  1. YES
+>  2. Sorry. Our iommu HW can not support this right now. The HW can no=
+t
+> be blocked until the mapping is created.
+
+OK, that explains it. Well, then I guess this is necessary and
+contents of that memory don't matter that much. (Although, this might
+be a minor security issue, because the faulting hardware would get
+access to some data previously stored by kernel code. Not sure how
+much of a threat would that be, though.)
+
+>     If the page is not ready, we can not get the physical address, th=
+en
+> How to fill the pagetable for that memory. I think the dma&iommu may
+> guaranty it?
+
+If your hardware can't block until the mapping is created then what
+you do currently seems to be the only option. (+/- the missing cache
+maintenance at initialization)
+
+Best regards,
+Tomasz
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" i=
+n
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
