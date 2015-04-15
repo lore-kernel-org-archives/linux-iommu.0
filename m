@@ -1,54 +1,66 @@
-From: Dave Young <dyoung@redhat.com>
-Subject: Re: [PATCH v10 0/10] iommu/vt-d: Fix intel vt-d faults in kdump
- kernel
-Date: Wed, 15 Apr 2015 14:48:03 +0800
-Message-ID: <20150415064803.GF19051@localhost.localdomain>
-References: <1428655333-19504-1-git-send-email-zhen-hual@hp.com>
- <20150415005731.GC19051@localhost.localdomain>
- <552DFB56.1070600@hp.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH 2/5] iommu/mediatek: Add mt8173 IOMMU driver
+Date: Wed, 15 Apr 2015 15:06:07 +0800
+Message-ID: <1429081567.16400.16.camel@mhfsdcap03>
+References: <1425638900-24989-1-git-send-email-yong.wu@mediatek.com>
+	<1425638900-24989-3-git-send-email-yong.wu@mediatek.com>
+	<CAAFQd5ASywTX7P9L8cogBbBTra0W1=oVxeWfK5=K7L+SR2xaFA@mail.gmail.com>
+	<1426677749.22581.38.camel@mhfsdcap03>
+	<CAAFQd5DOzFmfXki8GwUC75VQFEWzxBUNUgOtSuRtV6tc27kD2A@mail.gmail.com>
+	<1428993067.13552.14.camel@mhfsdcap03>
+	<CAAFQd5Db+DacQYa1pdr=w5JpU76AYa-Xhd20wHBF=F6m=Efokw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <552DFB56.1070600@hp.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: "Li, ZhenHua" <zhen-hual@hp.com>
-Cc: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, joro@8bytes.org, vgoyal@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAAFQd5Db+DacQYa1pdr=w5JpU76AYa-Xhd20wHBF=F6m=Efokw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/15/15 at 01:47pm, Li, ZhenHua wrote:
-> On 04/15/2015 08:57 AM, Dave Young wrote:
-> >Again, I think it is bad to use old page table, below issues need consider:
-> >1) make sure old page table are reliable across crash
-> >2) do not allow writing oldmem after crash
-> >
-> >Please correct me if I'm wrong, or if above is not doable I think I will vote for
-> >resetting pci bus.
-> >
-> >Thanks
-> >Dave
-> >
-> Hi Dave,
-> 
-> When updating the context tables, we have to write their address to root
-> tables, this will cause writing to old mem.
-> 
-> Resetting the pci bus has been discussed, please check this:
-> http://lists.infradead.org/pipermail/kexec/2014-October/012752.html
-> https://lkml.org/lkml/2014/10/21/890
-
-I know one reason to use old pgtable is this looks better because it fixes the
-real problem, but it is not a good way if it introduce more problems because of
-it have to use oldmem. I will be glad if this is not a problem but I have not
-been convinced.
-
-OTOH, there's many types of iommu, intel, amd, a lot of other types. They need
-their own fixes, so it looks not that elegant.
-
-For pci reset, it is not perfect, but it has another advantage, the patch is
-simpler. The problem I see from the old discusssion is, reset bus in 2nd kernel
-is acceptable but it does not fix things on sparc platform. AFAIK current reported
-problems are intel and amd iommu, at least pci reset stuff does not make it worse.
-
-Thanks
-Dave
+T24gV2VkLCAyMDE1LTA0LTE1IGF0IDExOjIwICswOTAwLCBUb21hc3ogRmlnYSB3cm90ZToKPiBP
+biBUdWUsIEFwciAxNCwgMjAxNSBhdCAzOjMxIFBNLCBZb25nIFd1IDx5b25nLnd1QG1lZGlhdGVr
+LmNvbT4gd3JvdGU6Cj4gPj4gPj4KPiA+PiA+PiA+ICsKPiA+PiA+PiA+ICsgICAgICAgcGlvbW11
+LT5wcm90ZWN0X3ZhID0gZGV2bV9rbWFsbG9jKHBpb21tdS0+ZGV2LCBNVEtfUFJPVEVDVF9QQV9B
+TElHTioyLAo+ID4+ID4+Cj4gPj4gPj4gc3R5bGU6IE9wZXJhdG9ycyBsaWtlICogc2hvdWxkIGhh
+dmUgc3BhY2Ugb24gYm90aCBzaWRlcy4KPiA+PiA+Pgo+ID4+ID4+ID4gKyAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgR0ZQX0tFUk5FTCk7Cj4gPj4gPj4KPiA+PiA+PiBT
+aG91bGRuJ3QgZG1hX2FsbG9jX2NvaGVyZW50KCkgYmUgdXNlZCBmb3IgdGhpcz8KPiA+PiA+ICAg
+ICAgV2UgZG9uJ3QgY2FyZSB0aGUgZGF0YSBpbiBpdC4gSSB0aGluayB0aGV5IGFyZSB0aGUgc2Ft
+ZS4gQ291bGQgeW91Cj4gPj4gPiBoZWxwIHRlbGwgbWUgd2h5IGRtYV9hbGxvY19jb2hlcmVudCBt
+YXkgYmUgYmV0dGVyLgo+ID4+Cj4gPj4gQ2FuIHlvdSBndWFyYW50ZWUgdGhhdCBhdCB0aGUgdGlt
+ZSB5b3UgYWxsb2NhdGUgdGhlIG1lbW9yeSB1c2luZwo+ID4+IGRldm1fa21hbGxvYygpIHRoZSBt
+ZW1vcnkgaXMgbm90IGRpcnR5IChpLmUuIHNvbWUgd3JpdGUgYmFjayBkYXRhIGFyZQo+ID4+IHN0
+b3JlZCBpbiBDUFUgY2FjaGUpIGFuZCBpcyBub3QgZ29pbmcgdG8gYmUgd3JpdHRlbiBiYWNrIGlu
+IHNvbWUgdGltZSwKPiA+PiBvdmVyd3JpdGluZyBkYXRhIHB1dCB0aGVyZSBieSBJT01NVSBoYXJk
+d2FyZT8KPiA+Pgo+ID4gQXMgSSBub3RlZCBpbiB0aGUgZnVuY3Rpb24gIm10a19pb21tdV9od19p
+bml0IjoKPiA+Cj4gPiAgICAgICAgLyogcHJvdGVjdCBtZW1vcnksSFcgd2lsbCB3cml0ZSBoZXJl
+IHdoaWxlIHRyYW5zbGF0aW9uIGZhdWx0ICovCj4gPiAgICAgICAgcHJvdGVjdHBhID0gX192aXJ0
+X3RvX3BoeXMocGlvbW11LT5wcm90ZWN0X3ZhKTsKPiA+Cj4gPiAgICAgIFdlIGRvbuKAmXQgY2Fy
+ZSB0aGUgY29udGVudCBvZiB0aGlzIGJ1ZmZlciwgSXQgaXMgb2sgZXZlbiB0aG91Z2ggaXRzCj4g
+PiBkYXRhIGlzIGRpcnR5Lgo+ID4gICAgIEl0IHNlZW0gdG8gYmUgYSB0aGUgcHJvdGVjdCBtZW1v
+cnkuIFdoaWxlIGEgdHJhbnNsYXRpb24gZmF1bHQKPiA+IGhhcHBlbmVkLCBUaGUgaW9tbXUgSFcg
+d2lsbCBvdmVyd3JpdGUgaGVyZSBpbnN0ZWFkIG9mIHdyaXRpbmcgdG8gdGhlCj4gPiBmYXVsdCBw
+aHlzaWNhbCBhZGRyZXNzIHdoaWNoIG1heSBiZSAwIG9yIHNvbWUgcmFuZG9tIGFkZHJlc3MuCj4g
+Pgo+IAo+IERvIHlvdSBtZWFuIHRoYXQgaXQncyBqdXN0IGEgZHVtbXkgcGFnZSBmb3IgaGFyZHdh
+cmUgYmVoaW5kIHRoZSBJT01NVQo+IHRvIGFjY2VzcyB3aGVuIHRoZSBtYXBwaW5nIGlzIG5vdCBh
+dmFpbGFibGU/IEhvdyB3b3VsZCB0aGF0IHdvcmsgd2l0aAo+IHBvdGVudGlhbCBvbiBkZW1hbmQg
+cGFnaW5nIHdoZW4gdGhlIGhhcmR3YXJlIG5lZWRzIHRvIGJlIGJsb2NrZWQgdW50aWwKPiB0aGUg
+bWFwcGluZyBpcyBjcmVhdGVkPwo+IAo+IEJlc3QgcmVnYXJkcywKPiBUb21hc3oKIDEuIFlFUwog
+Mi4gU29ycnkuIE91ciBpb21tdSBIVyBjYW4gbm90IHN1cHBvcnQgdGhpcyByaWdodCBub3cuIFRo
+ZSBIVyBjYW4gbm90CmJlIGJsb2NrZWQgdW50aWwgdGhlIG1hcHBpbmcgaXMgY3JlYXRlZC4KICAg
+IElmIHRoZSBwYWdlIGlzIG5vdCByZWFkeSwgd2UgY2FuIG5vdCBnZXQgdGhlIHBoeXNpY2FsIGFk
+ZHJlc3MsIHRoZW4KSG93IHRvIGZpbGwgdGhlIHBhZ2V0YWJsZSBmb3IgdGhhdCBtZW1vcnkuIEkg
+dGhpbmsgdGhlIGRtYSZpb21tdSBtYXkKZ3VhcmFudHkgaXQ/CgoKX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxp
+c3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9y
+Zy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
