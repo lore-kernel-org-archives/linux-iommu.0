@@ -1,39 +1,71 @@
-From: Oded Gabbay <oded.gabbay@amd.com>
-Subject: [PATCH] iommu/amd: Fix bug in put_pasid_state_wait
-Date: Thu, 16 Apr 2015 17:08:44 +0300
-Message-ID: <1429193324-20398-1-git-send-email-oded.gabbay@amd.com>
+From: Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>
+Subject: Error: DMA: Out of SW-IOMMU space [was: External USB drives become
+ unresponsive after few hours.]
+Date: Thu, 16 Apr 2015 10:15:59 -0400 (EDT)
+Message-ID: <Pine.LNX.4.44L0.1504161010370.1391-100000@iolanthe.rowland.org>
+References: <CAJ2095qWQ7S2W9i1NiM6C-0cM=wnceyA9n-0UVLygUXHJ7yxzA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: joro@8bytes.org
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAJ2095qWQ7S2W9i1NiM6C-0cM=wnceyA9n-0UVLygUXHJ7yxzA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Dorian Gray <yourfavouritegod-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: USB list <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kernel development list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch fixes a bug in put_pasid_state_wait that appeared in kernel 4.0
-The bug is that pasid_state->count wasn't decremented before entering the
-wait_event. Thus, the condition in wait_event will never be true.
+On Thu, 16 Apr 2015, Dorian Gray wrote:
 
-The fix is to decrement (atomically) the pasid_state->count before the
-wait_event.
+> I have tested the following kernel versions:
+> - 3.18.4, 3.18.6, 3.18.7, 3.19.4 [all affected]
+> - 3.17.1 [unaffected]
+> - 3.17.8 [probably the last unaffected version; I'm using it currently]
+> 
+> Also, I've been using the very same configuration (hardware) along
+> with 2.6.x, 3.2.x, 3.4.x, 3.10.x and have never encountered such a
+> behavior before.
+> 
+> And the problem is:
+> 
+> When at least one external drive is plugged-in AND mounted, after ~2-4
+> hours the following occurs (@11315.681561):
+> 
+> [ 5570.110523] usb 2-1.2: new high-speed USB device number 5 using ehci-pci
+> [ 5570.852917] usb 2-1.2: New USB device found, idVendor=1058, idProduct=0730
+> [ 5570.852923] usb 2-1.2: New USB device strings: Mfr=1, Product=2,
+> SerialNumber=3
+> [ 5570.852927] usb 2-1.2: Product: My Passport 0730
+> [ 5570.852930] usb 2-1.2: Manufacturer: Western Digital
+> [ 5570.852933] usb 2-1.2: SerialNumber:
+> [ 5570.853517] usb-storage 2-1.2:1.0: USB Mass Storage device detected
+> [ 5570.853691] scsi host8: usb-storage 2-1.2:1.0
+> [ 5572.932659] scsi 8:0:0:0: Direct-Access     WD       My Passport
+> 0730 1012 PQ: 0 ANSI: 6
+> [ 5572.933013] sd 8:0:0:0: Attached scsi generic sg5 type 0
+> [ 5575.306801] scsi 8:0:0:1: Enclosure         WD       SES Device
+>   1012 PQ: 0 ANSI: 6
+> [ 5575.307160] sd 8:0:0:0: [sdc] 976707584 512-byte logical blocks:
+> (500 GB/465 GiB)
+> [ 5575.308405] sd 8:0:0:0: [sdc] Write Protect is off
+> [ 5575.308416] sd 8:0:0:0: [sdc] Mode Sense: 47 00 10 08
+> [ 5575.309772] sd 8:0:0:0: [sdc] No Caching mode page found
+> [ 5575.309776] sd 8:0:0:0: [sdc] Assuming drive cache: write through
+> [ 5575.311176] scsi 8:0:0:1: Attached scsi generic sg6 type 13
+> [ 5575.328540]  sdc: sdc1
+> [ 5575.331026] sd 8:0:0:0: [sdc] Attached SCSI disk
+> [11315.681561] ehci-pci 0000:00:1d.0: swiotlb buffer is full (sz: 32768 bytes)
+> [11315.681565] DMA: Out of SW-IOMMU space for 32768 bytes at device 0000:00:1d.0
+> [11315.681874] ehci-pci 0000:00:1d.0: swiotlb buffer is full (sz: 32768 bytes)
+> [11315.681876] DMA: Out of SW-IOMMU space for 32768 bytes at device 0000:00:1d.0
+> [11315.682171] ehci-pci 0000:00:1d.0: swiotlb buffer is full (sz: 32768 bytes)
+> [11315.682174] DMA: Out of SW-IOMMU space for 32768 bytes at device 0000:00:1d.0
+> [...and so on...]
 
-Signed-off-by: Oded Gabbay <oded.gabbay@amd.com>
-Cc: stable@vger.kernel.org
----
- drivers/iommu/amd_iommu_v2.c | 1 +
- 1 file changed, 1 insertion(+)
+This appears to be a problem with the IOMMU or SWIOTLB subsystems, not
+the USB subsystem.  I have CC'ed the appropriate mailing lists.
 
-diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index 6d5a5c4..173e70d 100644
---- a/drivers/iommu/amd_iommu_v2.c
-+++ b/drivers/iommu/amd_iommu_v2.c
-@@ -266,6 +266,7 @@ static void put_pasid_state(struct pasid_state *pasid_state)
- 
- static void put_pasid_state_wait(struct pasid_state *pasid_state)
- {
-+	atomic_dec(&pasid_state->count);
- 	wait_event(pasid_state->wq, !atomic_read(&pasid_state->count));
- 	free_pasid_state(pasid_state);
- }
--- 
-1.9.1
+Alan Stern
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
