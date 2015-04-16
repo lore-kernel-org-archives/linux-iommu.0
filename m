@@ -1,86 +1,62 @@
-From: Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: SMMU 2-stage support
-Date: Thu, 16 Apr 2015 15:46:59 +0000
-Message-ID: <CY1PR0301MB0748D6CF4A434A441442D84087E40@CY1PR0301MB0748.namprd03.prod.outlook.com>
-References: <CAN9JPjFf1Lb+L8sWq0SWt8f6P6DX2i308OeF+TdnFdstRoU3hA@mail.gmail.com>
-	<20150218185600.GN22017@arm.com>
-	<CAN9JPjFvg=e948ZLLtrUTnvDp8UWHCX2NGB4iUEES733T9YytQ@mail.gmail.com>
-	<20150413104122.GC2869@arm.com>
-	<BN3PR0301MB12194C697DBE9D721BC97F5DEAE60@BN3PR0301MB1219.namprd03.prod.outlook.com>
-	<20150415161739.GD18864@arm.com>
+From: Dorian Gray <yourfavouritegod-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: Error: DMA: Out of SW-IOMMU space [was: External USB drives
+ become unresponsive after few hours.]
+Date: Thu, 16 Apr 2015 18:57:46 +0200
+Message-ID: <CAJ2095q3Gs=+e4ndKiD4EEX9LMh0Mjkv0nNOT=C-0aLD7tBDew@mail.gmail.com>
+References: <Pine.LNX.4.44L0.1504161010370.1391-100000@iolanthe.rowland.org>
+	<552FCD25.9060807@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150415161739.GD18864-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <552FCD25.9060807-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alexander Duyck <alexander.duyck-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, Suman Tripathi <stripathi-qTEPVZfXA3Y@public.gmane.org>
+Cc: USB list <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kernel development list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On 16 April 2015 at 16:15, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org> wrote:
+> This appears to be a problem with the IOMMU or SWIOTLB subsystems, not
+> the USB subsystem.  I have CC'ed the appropriate mailing lists.
+
+Thanks, I'm far from being a kernel expert, so was expecting it could
+be wrong subsection.
 
 
-> -----Original Message-----
-> From: Will Deacon [mailto:will.deacon-5wv7dgnIgG8@public.gmane.org]
-> Sent: Wednesday, April 15, 2015 11:18 AM
-> To: Sethi Varun-B16395
-> Cc: Baptiste Reynal; Linux IOMMU; Yoder Stuart-B08248
-> Subject: Re: SMMU 2-stage support
-> 
-> On Tue, Apr 14, 2015 at 02:32:26PM +0100, Varun Sethi wrote:
-> > Hi Will,
-> 
-> Hey Varun,
-> 
-> > > -----Original Message-----
-> > > From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
-> > > bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Will Deacon
-> > > Sent: Monday, April 13, 2015 4:11 PM
-> > > To: Baptiste Reynal
-> > > Cc: Linux IOMMU
-> > > Subject: Re: SMMU 2-stage support
-> > >
-> > > On Fri, Apr 03, 2015 at 10:55:02AM +0100, Baptiste Reynal wrote:
-> > > > We are eventually working on the vSMMU implementation. Relying on the
-> > > > talk Will Deacon gave at the Linux Plumbers IOMMU Microconference on
-> > > > October
-> > > > 2014 (http://linuxplumbersconf.org/2014/ocw/proposals/2019), I tried
-> > > > the vSMMU initialization.
-> > >
-> > > My position on the vSMMU still hasn't changed:
-> > >
-> > > > > Anyway, until somebody actually wants this feature I've put it on
-> > > > > ice as it adds a whole bunch of complication to the ARM SMMU driver,
-> > > > > as well as new user ABI extensions that I don't really want to maintain for
-> > > fun.
-> > >
-> > > So, whilst it's great that you're looking at the code, I'm not very keen on
-> > > merging anything until we have people committed to using it. Right now, the
-> > > only feedback I've had has been going in the para-virt direction and I don't
-> > > think we should do this "for fun".
-> > Freescale would be interested in using the vSMMU implementation. We have
-> > use cases for assigning devices to guest user space. Are you suggesting
-> > that you are more inclined to using the para virtualized approach?
-> 
-> I can see arguments either way; the vSMMU means that the guest can use the
-> same SMMU driver as the host but a para-virtualised approach could
-> theoretically be used across multiple SMMU implementations as well as
-> potentially being kinder on the TLB.
 
-In the paravirt approach is the guest managing its own stage 1 
-page tables (read directly by the hardware SMMU)?
+On 16 April 2015 at 16:24, Suman Tripathi <stripathi-qTEPVZfXA3Y@public.gmane.org> wrote:
+> Try increasing the SWIOTLB size to 128MB .Default is 64MB.
 
-Is there anything written up anywhere sketching out how the paravirt
-approach would work?   Are there any limitations vs the vSMMU?
+Ok, so I'm back to k3.18.7 (default in the latest Fatdog), although
+I'm not sure what should be the exact value of swiotlb boot param?
+Got totally mixed results from uncle Google - some says the unit is in
+MiB, some that it's 4k pages and another that 128MiB = 65536, so I
+played it safe and used swiotlb=131072.
+Is this correct?
+It may take a few days, but I'll let you know if it worked (or for how
+long, if not).
 
-Thanks,
-Stuart
+
+
+On 16 April 2015 at 16:54, Alexander Duyck <alexander.duyck-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> More likely would be a device driver that is DMA mapping memory but not
+> unmapping it after it is done resulting in the bounce buffer pool being
+> depleted.
+> You might want dump the list of drivers loaded on the system with lsmod,
+> and then possibly look at doing a git bisect for something introduced
+> between 3.17 and 3.18 since that seems to be when you started seeing
+> this issue.
+
+Ok, I'll (try to) look at this, but like I said - I'm not a kernel
+(nor git) expert.
+Anyway, I guess I'm gonna start with this:
+https://wiki.gentoo.org/wiki/Kernel_git-bisect
+Who knows...perhaps I'll find something...
+
+
+
+Thank you all for the replies.
+Jake
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
