@@ -1,14 +1,19 @@
-From: Alexander Duyck <alexander.duyck-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: Error: DMA: Out of SW-IOMMU space [was: External USB drives become
-	unresponsive after few hours.]
-Date: Thu, 16 Apr 2015 07:54:29 -0700
-Message-ID: <552FCD25.9060807@gmail.com>
-References: <Pine.LNX.4.44L0.1504161010370.1391-100000@iolanthe.rowland.org>
+From: Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: SMMU 2-stage support
+Date: Thu, 16 Apr 2015 15:46:59 +0000
+Message-ID: <CY1PR0301MB0748D6CF4A434A441442D84087E40@CY1PR0301MB0748.namprd03.prod.outlook.com>
+References: <CAN9JPjFf1Lb+L8sWq0SWt8f6P6DX2i308OeF+TdnFdstRoU3hA@mail.gmail.com>
+	<20150218185600.GN22017@arm.com>
+	<CAN9JPjFvg=e948ZLLtrUTnvDp8UWHCX2NGB4iUEES733T9YytQ@mail.gmail.com>
+	<20150413104122.GC2869@arm.com>
+	<BN3PR0301MB12194C697DBE9D721BC97F5DEAE60@BN3PR0301MB1219.namprd03.prod.outlook.com>
+	<20150415161739.GD18864@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <Pine.LNX.4.44L0.1504161010370.1391-100000-IYeN2dnnYyZXsRXLowluHWD2FQJk+8+b@public.gmane.org>
+In-Reply-To: <20150415161739.GD18864-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,69 +23,64 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, Dorian Gray <yourfavouritegod-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, USB list <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kernel development list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/16/2015 07:15 AM, Alan Stern wrote:
-> On Thu, 16 Apr 2015, Dorian Gray wrote:
->
->> I have tested the following kernel versions:
->> - 3.18.4, 3.18.6, 3.18.7, 3.19.4 [all affected]
->> - 3.17.1 [unaffected]
->> - 3.17.8 [probably the last unaffected version; I'm using it currently]
->>
->> Also, I've been using the very same configuration (hardware) along
->> with 2.6.x, 3.2.x, 3.4.x, 3.10.x and have never encountered such a
->> behavior before.
->>
->> And the problem is:
->>
->> When at least one external drive is plugged-in AND mounted, after ~2-4
->> hours the following occurs (@11315.681561):
->>
->> [ 5570.110523] usb 2-1.2: new high-speed USB device number 5 using ehci-pci
->> [ 5570.852917] usb 2-1.2: New USB device found, idVendor=1058, idProduct=0730
->> [ 5570.852923] usb 2-1.2: New USB device strings: Mfr=1, Product=2,
->> SerialNumber=3
->> [ 5570.852927] usb 2-1.2: Product: My Passport 0730
->> [ 5570.852930] usb 2-1.2: Manufacturer: Western Digital
->> [ 5570.852933] usb 2-1.2: SerialNumber:
->> [ 5570.853517] usb-storage 2-1.2:1.0: USB Mass Storage device detected
->> [ 5570.853691] scsi host8: usb-storage 2-1.2:1.0
->> [ 5572.932659] scsi 8:0:0:0: Direct-Access     WD       My Passport
->> 0730 1012 PQ: 0 ANSI: 6
->> [ 5572.933013] sd 8:0:0:0: Attached scsi generic sg5 type 0
->> [ 5575.306801] scsi 8:0:0:1: Enclosure         WD       SES Device
->>   1012 PQ: 0 ANSI: 6
->> [ 5575.307160] sd 8:0:0:0: [sdc] 976707584 512-byte logical blocks:
->> (500 GB/465 GiB)
->> [ 5575.308405] sd 8:0:0:0: [sdc] Write Protect is off
->> [ 5575.308416] sd 8:0:0:0: [sdc] Mode Sense: 47 00 10 08
->> [ 5575.309772] sd 8:0:0:0: [sdc] No Caching mode page found
->> [ 5575.309776] sd 8:0:0:0: [sdc] Assuming drive cache: write through
->> [ 5575.311176] scsi 8:0:0:1: Attached scsi generic sg6 type 13
->> [ 5575.328540]  sdc: sdc1
->> [ 5575.331026] sd 8:0:0:0: [sdc] Attached SCSI disk
->> [11315.681561] ehci-pci 0000:00:1d.0: swiotlb buffer is full (sz: 32768 bytes)
->> [11315.681565] DMA: Out of SW-IOMMU space for 32768 bytes at device 0000:00:1d.0
->> [11315.681874] ehci-pci 0000:00:1d.0: swiotlb buffer is full (sz: 32768 bytes)
->> [11315.681876] DMA: Out of SW-IOMMU space for 32768 bytes at device 0000:00:1d.0
->> [11315.682171] ehci-pci 0000:00:1d.0: swiotlb buffer is full (sz: 32768 bytes)
->> [11315.682174] DMA: Out of SW-IOMMU space for 32768 bytes at device 0000:00:1d.0
->> [...and so on...]
-> This appears to be a problem with the IOMMU or SWIOTLB subsystems, not
-> the USB subsystem.  I have CC'ed the appropriate mailing lists.
->
-> Alan Stern
 
-More likely would be a device driver that is DMA mapping memory but not
-unmapping it after it is done resulting in the bounce buffer pool being
-depleted.
 
-You might want dump the list of drivers loaded on the system with lsmod,
-and then possibly look at doing a git bisect for something introduced
-between 3.17 and 3.18 since that seems to be when you started seeing
-this issue.
+> -----Original Message-----
+> From: Will Deacon [mailto:will.deacon-5wv7dgnIgG8@public.gmane.org]
+> Sent: Wednesday, April 15, 2015 11:18 AM
+> To: Sethi Varun-B16395
+> Cc: Baptiste Reynal; Linux IOMMU; Yoder Stuart-B08248
+> Subject: Re: SMMU 2-stage support
+> 
+> On Tue, Apr 14, 2015 at 02:32:26PM +0100, Varun Sethi wrote:
+> > Hi Will,
+> 
+> Hey Varun,
+> 
+> > > -----Original Message-----
+> > > From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+> > > bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Will Deacon
+> > > Sent: Monday, April 13, 2015 4:11 PM
+> > > To: Baptiste Reynal
+> > > Cc: Linux IOMMU
+> > > Subject: Re: SMMU 2-stage support
+> > >
+> > > On Fri, Apr 03, 2015 at 10:55:02AM +0100, Baptiste Reynal wrote:
+> > > > We are eventually working on the vSMMU implementation. Relying on the
+> > > > talk Will Deacon gave at the Linux Plumbers IOMMU Microconference on
+> > > > October
+> > > > 2014 (http://linuxplumbersconf.org/2014/ocw/proposals/2019), I tried
+> > > > the vSMMU initialization.
+> > >
+> > > My position on the vSMMU still hasn't changed:
+> > >
+> > > > > Anyway, until somebody actually wants this feature I've put it on
+> > > > > ice as it adds a whole bunch of complication to the ARM SMMU driver,
+> > > > > as well as new user ABI extensions that I don't really want to maintain for
+> > > fun.
+> > >
+> > > So, whilst it's great that you're looking at the code, I'm not very keen on
+> > > merging anything until we have people committed to using it. Right now, the
+> > > only feedback I've had has been going in the para-virt direction and I don't
+> > > think we should do this "for fun".
+> > Freescale would be interested in using the vSMMU implementation. We have
+> > use cases for assigning devices to guest user space. Are you suggesting
+> > that you are more inclined to using the para virtualized approach?
+> 
+> I can see arguments either way; the vSMMU means that the guest can use the
+> same SMMU driver as the host but a para-virtualised approach could
+> theoretically be used across multiple SMMU implementations as well as
+> potentially being kinder on the TLB.
 
-- Alex
+In the paravirt approach is the guest managing its own stage 1 
+page tables (read directly by the hardware SMMU)?
+
+Is there anything written up anywhere sketching out how the paravirt
+approach would work?   Are there any limitations vs the vSMMU?
+
+Thanks,
+Stuart
