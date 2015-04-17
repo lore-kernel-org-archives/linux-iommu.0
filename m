@@ -1,13 +1,19 @@
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH] iommu: rockchip: fix build without CONFIG_OF
-Date: Fri, 17 Apr 2015 22:01:39 +0200
-Message-ID: <5765512.Hv9Xq97Xsz@diego>
-References: <3138014.xYAj3FssJ8@wuerfel>
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: Error: DMA: Out of SW-IOMMU space [was: External USB drives
+	become unresponsive after few hours.]
+Date: Fri, 17 Apr 2015 16:06:24 -0400
+Message-ID: <20150417200623.GA14442@l.oracle.com>
+References: <Pine.LNX.4.44L0.1504161010370.1391-100000@iolanthe.rowland.org>
+	<552FCD25.9060807@gmail.com>
+	<CAJ2095q3Gs=+e4ndKiD4EEX9LMh0Mjkv0nNOT=C-0aLD7tBDew@mail.gmail.com>
+	<20150416184252.GE7388@x230.dumpdata.com>
+	<CAJ2095qW5rQ4VfCDmZQtgUp1FgGQrB1Q3DBSSKrWvvLo+B8OSw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <3138014.xYAj3FssJ8@wuerfel>
+Content-Disposition: inline
+In-Reply-To: <CAJ2095qW5rQ4VfCDmZQtgUp1FgGQrB1Q3DBSSKrWvvLo+B8OSw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,25 +23,26 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+To: Dorian Gray <yourfavouritegod-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: USB list <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kernel development list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alexander Duyck <alexander.duyck-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Am Freitag, 10. April 2015, 23:58:24 schrieb Arnd Bergmann:
-> The rockchip iommu driver references its of_device_id table
-> from the init function, which fails to build when the table
-> is undefined:
+On Fri, Apr 17, 2015 at 05:14:20PM +0200, Dorian Gray wrote:
+> On 16 April 2015 at 20:42, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org> wrote:
+> > And easier way is to compile the kernel with CONFIG_DMA_API_DEBUG
+> > and then load the attached module.
+> >
+> > That should tell you who and what else is holding on the buffers.
 > 
-> iommu/rockchip-iommu.c: In function 'rk_iommu_init':
-> iommu/rockchip-iommu.c:1029:35: error: 'rk_iommu_dt_ids' undeclared (first
-> use in this function) np = of_find_matching_node(NULL, rk_iommu_dt_ids);
-> 
-> This removes the #ifdef and the corresponding of_match_ptr wrapper
-> to make it build both with CONFIG_OF enabled or disabled.
-> 
-> Signed-off-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-> Fixes: 425061b0f5074 ("iommu/rockchip: Play nice in multi-platform builds")
+> Ok, I have compiled 3.19.4 w/ CONFIG_DMA_API_DEBUG=y + the module you sent me.
+> Now, I'm not sure if I've done it right - I waited until the error
+> occured and then modprobe'd dump_dma.
+> I have attached the kernel log, but it tells me not much, if anything...
 
-not sure if another one is needed, but nevertheless
+The network driver is quite hungry for DMA. Did it do the same thing
+in the earlier kernels?
 
-Reviewed-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Thanks.
+> 
+> Thanks again.
+> Jake
