@@ -1,59 +1,77 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: SMMU 2-stage support
-Date: Fri, 17 Apr 2015 13:41:28 +0100
-Message-ID: <20150417124128.GB29348@arm.com>
-References: <CAN9JPjFf1Lb+L8sWq0SWt8f6P6DX2i308OeF+TdnFdstRoU3hA@mail.gmail.com>
-	<20150218185600.GN22017@arm.com>
-	<CAN9JPjFvg=e948ZLLtrUTnvDp8UWHCX2NGB4iUEES733T9YytQ@mail.gmail.com>
-	<20150413104122.GC2869@arm.com>
-	<BN3PR0301MB12194C697DBE9D721BC97F5DEAE60@BN3PR0301MB1219.namprd03.prod.outlook.com>
-	<20150415161739.GD18864@arm.com>
-	<CY1PR0301MB0748D6CF4A434A441442D84087E40@CY1PR0301MB0748.namprd03.prod.outlook.com>
+From: Javier Martinez Canillas <javier@dowhile0.org>
+Subject: Re: [PATCH v5 00/18] Exynos SYSMMU (IOMMU) integration with DT and
+ DMA-mapping subsystem
+Date: Fri, 17 Apr 2015 16:33:28 +0200
+Message-ID: <CABxcv=mXENvPHvvN5iOaUBZKORF49RhDs-tL_PBT4Urh54pd0Q@mail.gmail.com>
+References: <1422028288-891-1-git-send-email-m.szyprowski@samsung.com>
+	<20150204142149.GM3702@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CY1PR0301MB0748D6CF4A434A441442D84087E40-YrwGdl+PljkyhdUd3pz1uJwN6zqB+hSMnBOFsp37pqbUKgpGm//BTAC/G2K4zDHf@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <20150204142149.GM3702@8bytes.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Apr 16, 2015 at 04:46:59PM +0100, Stuart Yoder wrote:
-> > > > So, whilst it's great that you're looking at the code, I'm not very keen on
-> > > > merging anything until we have people committed to using it. Right now, the
-> > > > only feedback I've had has been going in the para-virt direction and I don't
-> > > > think we should do this "for fun".
-> > > Freescale would be interested in using the vSMMU implementation. We have
-> > > use cases for assigning devices to guest user space. Are you suggesting
-> > > that you are more inclined to using the para virtualized approach?
-> > 
-> > I can see arguments either way; the vSMMU means that the guest can use the
-> > same SMMU driver as the host but a para-virtualised approach could
-> > theoretically be used across multiple SMMU implementations as well as
-> > potentially being kinder on the TLB.
-> 
-> In the paravirt approach is the guest managing its own stage 1 
-> page tables (read directly by the hardware SMMU)?
+Hello Marek,
 
-No; ideally the paravirtualised interface would abstract any details of
-the hardware, including page table format. So you might have a "map" hvc
-call that takes iova, (guest) phys, size, for example. Then the hypervisor
-would manually collapse that into the current page tables using iommu_map.
+On Wed, Feb 4, 2015 at 3:21 PM, Joerg Roedel <joro@8bytes.org> wrote:
+> Hi Marek,
+>
+> On Fri, Jan 23, 2015 at 04:51:10PM +0100, Marek Szyprowski wrote:
+>> 1. All iommu related patches (with 'iommu: exynos') can be merged to
+>> iommu tree. They don't have any direct dependencies on the DTS, DRM and
+>> power domain initialization change - without them the driver will simply
+>> not initialize, when no exynos,sysmmu nodes are provided in device tree.
+>>
+>> Joerg, could you merge those patches?
+>
+> Given the previous comments and tests on this patch set I am still
+> waiting for some Acked-bys and/or Tested-bys on this. Can you collect
+> these and resend then (probably after the v3.20 merge window)?
+>
 
-> Is there anything written up anywhere sketching out how the paravirt
-> approach would work?   Are there any limitations vs the vSMMU?
+I rebased your patches on top of latest linux-next (next-20150415) and
+tested it on my Exynos5420 Peach Pit. HDMI display is working
+correctly (both console and X) when CONFIG_DRM_EXYNOS_IOMMU is
+enabled. I also see that the mixer is attached to the IOMMU domain:
 
-Not yet, and that's exactly the kind of research/investigation I'd like to
-see happening before we commit ourselves one way or the other.
+exynos-mixer 14450000.mixer: exynos_iommu_attach_device: Attached
+IOMMU with pgtable 0x6e5e0000
+...
+exynos-sysmmu 14650000.sysmmu: Enabled
 
-Will
+As I mentioned before [0] on your v4 series, I still have the boot
+hang when CONFIG_DRM_EXYNOS_FIMD is enabled. You said that the cause
+is u-boot leaving the FIMD DMA engine enabled and so causing IOMMU
+page faults on init [1].
+
+I tried disabling the display on u-boot but the system hangs remains.
+But since I do a chain loading using the verified u-boot that comes
+with the Chromebooks, I don't know if the RO boot-loader is leaving
+something enabled.
+
+In any case since HDMI with sysmmu is working correctly, that issue is
+orthogonal to your series and can be fixed as a followup so:
+
+Tested-by: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
+
+NOTE: Most of the patches don't apply cleanly so I pushed a branch [2]
+with my conflict resolution so you don't have to do the same. I also
+did some small changes like using bool instead of int when were
+assigning it to true and renaming some of the subject lines to match
+the format used by the subsystem.
+
+What I didn't change is to re-order the sysmmu device nodes according
+to the unit address that was asked by Andreas since the DTS patches
+are likely to conflict with the work Krzysztof is doing to use labels
+instead of overriding nodes in Exynos 4 and 5 DTS[i]. So you may need
+to change those anyways once Krzysztof patches land.
+
+Best regards,
+Javier
+
+[0]: http://lists.infradead.org/pipermail/linux-arm-kernel/2015-January/317727.html
+[1]: http://lists.infradead.org/pipermail/linux-arm-kernel/2015-January/319178.html
+[2]: http://cgit.collabora.com/git/user/javier/linux.git/log/?h=next20150415-exynos-iommu
