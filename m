@@ -1,13 +1,12 @@
-From: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [git pull] IOMMU Updates for Linux v4.1
-Date: Mon, 20 Apr 2015 09:23:56 +0300
-Message-ID: <55349B7C.2090109@amd.com>
-References: <20150420023433.GA3719@8bytes.org>
+From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: [PATCH v2] CHROMIUM: iommu: rockchip: Make sure that page table state
+	is coherent
+Date: Mon, 20 Apr 2015 20:43:44 +0900
+Message-ID: <1429530224-24719-1-git-send-email-tfiga@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150420023433.GA3719-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,127 +16,84 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+To flush created mappings, current mapping code relies on the fact that
+during unmap the driver zaps every IOVA being unmapped and that it is
+enough to zap a single IOVA of page table to remove the entire page
+table from IOMMU cache. Based on these assumptions the driver was made to
+simply zap the first IOVA of the mapping being created. This is enough
+to invalidate first page table, which could be shared with another
+mapping (and thus could be already present in IOMMU cache), but
+unfortunately it does not do anything about the last page table that
+could be shared with other mappings as well.
 
-I sent to you (cc iommu mailing list) an important fix on Apr-16 for a bug in 
-amd_iommu_v2.c (from kernel 4.0). See:
-http://lists.linuxfoundation.org/pipermail/iommu/2015-April/012757.html
+Moreover, the flushing is performed before page table contents are
+actually modified, so there is a race between the CPU updating the page
+tables and hardware that could be possibly running at the same time and
+triggering IOMMU look-ups, which could bring back the page tables back
+to the cache.
 
-Could you please add that to the pull request ?
-Its creating problems when running HSA applications.
+To fix both issues, this patch makes the mapping code zap first and last
+(if they are different) IOVAs of new mapping after the page table is
+updated.
 
-Thanks,
+Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Reviewed-by: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Tested-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+---
+ drivers/iommu/rockchip-iommu.c | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
 
-	Oded
-
-On 04/20/2015 05:34 AM, Joerg Roedel wrote:
-> Hi Linus,
->
-> The following changes since commit e42391cd048809d903291d07f86ed3934ce138e9:
->
->    Linux 4.0-rc6 (2015-03-29 15:26:31 -0700)
->
-> are available in the git repository at:
->
->    git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v4.1
->
-> for you to fetch changes up to 7f65ef01e131650d455875598099cd06fea6096b:
->
->    Merge branches 'iommu/fixes', 'x86/vt-d', 'x86/amd', 'arm/smmu', 'arm/tegra' and 'core' into next (2015-04-02 13:33:19 +0200)
->
-> ----------------------------------------------------------------
->
-> IOMMU Updates for Linux v4.1
->
-> Not much this time, but the changes include:
->
-> 	* Moving domain allocation into the iommu drivers to prepare for
-> 	  the introduction of default domains for devices
->
-> 	* Fixing the IO page-table code in the AMD IOMMU driver to
-> 	  correctly encode large page sizes
->
-> 	* Extension of the PCI support in the ARM-SMMU driver
->
-> 	* Various fixes and cleanups
->
-> ----------------------------------------------------------------
-> Dan Carpenter (1):
->        iommu/amd: Small cleanup in mn_release()
->
-> Joerg Roedel (27):
->        iommu: Introduce domain_alloc and domain_free iommu_ops
->        iommu: Introduce iommu domain types
->        iommu: Only allow iommu_map/unmap for paging domains
->        iommu/amd: Make use of domain_alloc and domain_free
->        iommu/vt-d: Make use of domain_alloc and domain_free
->        iommu/omap: Make use of domain_alloc and domain_free
->        iommu/arm-smmu: Make use of domain_alloc and domain_free
->        iommu/exynos: Make use of domain_alloc and domain_free
->        iommu/tegra-smmu: Make use of domain_alloc and domain_free
->        iommu/tegra-gart: Make use of domain_alloc and domain_free
->        iommu/msm: Make use of domain_alloc and domain_free
->        iommu/shmobile: Make use of domain_alloc and domain_free
->        iommu/ipmmu-vmsa: Make use of domain_alloc and domain_free
->        iommu/rockchip: Make use of domain_alloc and domain_free
->        iommu/fsl: Make use of domain_alloc and domain_free
->        iommu: Remove domain_init and domain_free iommu_ops
->        Merge branch 'for-joerg/arm-smmu/updates' of git://git.kernel.org/.../will/linux into arm/smmu
->        iommu/amd: Use BUS_NOTIFY_REMOVED_DEVICE
->        iommu/amd: Ignore BUS_NOTIFY_UNBOUND_DRIVER event
->        iommu/amd: Don't allocate with __GFP_ZERO in alloc_coherent
->        iommu/amd: Add support for contiguous dma allocator
->        iommu/amd: Return the pte page-size in fetch_pte
->        iommu/amd: Optimize iommu_unmap_page for new fetch_pte interface
->        iommu/amd: Optimize alloc_new_range for new fetch_pte interface
->        iommu/amd: Optimize amd_iommu_iova_to_phys for new fetch_pte interface
->        iommu/amd: Correctly encode huge pages in iommu page tables
->        Merge branches 'iommu/fixes', 'x86/vt-d', 'x86/amd', 'arm/smmu', 'arm/tegra' and 'core' into next
->
-> Quentin Lambert (1):
->        iommu/vt-d: Convert non-returned local variable to boolean when relevant
->
-> Robin Murphy (1):
->        iommu/arm-smmu: set a more appropriate DMA mask
->
-> Thierry Reding (3):
->        iommu/tegra: Setup aperture
->        iommu/tegra: gart: Set aperture at domain initialization time
->        iommu/tegra: smmu: Compute PFN mask at runtime
->
-> Will Deacon (3):
->        iommu/arm-smmu: ensure CBA2R is initialised before CBAR on SMMUv2
->        iommu/arm-smmu: handle multi-alias IOMMU groups for PCI devices
->        iommu/io-pgtable-arm: avoid speculative walks through TTBR1
->
->   drivers/iommu/amd_iommu.c           | 250 ++++++++++++++++++------------------
->   drivers/iommu/amd_iommu_types.h     |  13 +-
->   drivers/iommu/amd_iommu_v2.c        |   2 +-
->   drivers/iommu/arm-smmu.c            | 180 ++++++++++++++++----------
->   drivers/iommu/exynos-iommu.c        |  87 +++++++------
->   drivers/iommu/fsl_pamu_domain.c     |  60 +++++----
->   drivers/iommu/fsl_pamu_domain.h     |   2 +-
->   drivers/iommu/intel-iommu.c         |  68 +++++-----
->   drivers/iommu/intel_irq_remapping.c |  12 +-
->   drivers/iommu/io-pgtable-arm.c      |   5 +
->   drivers/iommu/iommu.c               |  26 ++--
->   drivers/iommu/ipmmu-vmsa.c          |  42 +++---
->   drivers/iommu/msm_iommu.c           |  73 ++++++-----
->   drivers/iommu/omap-iommu.c          |  49 ++++---
->   drivers/iommu/rockchip-iommu.c      |  40 +++---
->   drivers/iommu/shmobile-iommu.c      |  39 +++---
->   drivers/iommu/tegra-gart.c          |  88 ++++++++-----
->   drivers/iommu/tegra-smmu.c          |  59 +++++----
->   include/linux/iommu.h               |  33 ++++-
->   19 files changed, 644 insertions(+), 484 deletions(-)
->
-> Please pull.
->
-> Thanks,
->
-> 	Joerg
->
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 4015560..31004c0 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -551,6 +551,15 @@ static void rk_iommu_zap_iova(struct rk_iommu_domain *rk_domain,
+ 	spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
+ }
+ 
++static void rk_iommu_zap_iova_first_last(struct rk_iommu_domain *rk_domain,
++					 dma_addr_t iova, size_t size)
++{
++	rk_iommu_zap_iova(rk_domain, iova, SPAGE_SIZE);
++	if (size > SPAGE_SIZE)
++		rk_iommu_zap_iova(rk_domain, iova + size - SPAGE_SIZE,
++					SPAGE_SIZE);
++}
++
+ static u32 *rk_dte_get_page_table(struct rk_iommu_domain *rk_domain,
+ 				  dma_addr_t iova)
+ {
+@@ -575,12 +584,6 @@ static u32 *rk_dte_get_page_table(struct rk_iommu_domain *rk_domain,
+ 	rk_table_flush(page_table, NUM_PT_ENTRIES);
+ 	rk_table_flush(dte_addr, 1);
+ 
+-	/*
+-	 * Zap the first iova of newly allocated page table so iommu evicts
+-	 * old cached value of new dte from the iotlb.
+-	 */
+-	rk_iommu_zap_iova(rk_domain, iova, SPAGE_SIZE);
+-
+ done:
+ 	pt_phys = rk_dte_pt_address(dte);
+ 	return (u32 *)phys_to_virt(pt_phys);
+@@ -630,6 +633,14 @@ static int rk_iommu_map_iova(struct rk_iommu_domain *rk_domain, u32 *pte_addr,
+ 
+ 	rk_table_flush(pte_addr, pte_count);
+ 
++	/*
++	 * Zap the first and last iova to evict from iotlb any previously
++	 * mapped cachelines holding stale values for its dte and pte.
++	 * We only zap the first and last iova, since only they could have
++	 * dte or pte shared with an existing mapping.
++	 */
++	rk_iommu_zap_iova_first_last(rk_domain, iova, size);
++
+ 	return 0;
+ unwind:
+ 	/* Unmap the range of iovas that we just mapped */
+-- 
+2.2.0.rc0.207.ga3a616c
