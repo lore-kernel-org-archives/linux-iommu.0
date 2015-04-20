@@ -1,182 +1,149 @@
-From: Dorian Gray <yourfavouritegod@gmail.com>
-Subject: Re: Error: DMA: Out of SW-IOMMU space [was: External USB drives
- become unresponsive after few hours.]
-Date: Sun, 19 Apr 2015 17:43:18 +0200
-Message-ID: <CAJ2095rrd2ZR9mNJegBn1qO2-obod51GXL1bOJTtB+wH2MF+7g@mail.gmail.com>
-References: <Pine.LNX.4.44L0.1504161010370.1391-100000@iolanthe.rowland.org>
-	<552FCD25.9060807@gmail.com>
-	<CAJ2095q3Gs=+e4ndKiD4EEX9LMh0Mjkv0nNOT=C-0aLD7tBDew@mail.gmail.com>
-	<20150416184252.GE7388@x230.dumpdata.com>
-	<CAJ2095qW5rQ4VfCDmZQtgUp1FgGQrB1Q3DBSSKrWvvLo+B8OSw@mail.gmail.com>
-	<20150417200623.GA14442@l.oracle.com>
-	<CAJ2095qSqTY3fDx5UCub9gkE_bPmX2jyHnuZrcsYtuaHOhSiQQ@mail.gmail.com>
-	<CAJ2095pQGBP7LeH+c0UmSbUMk81SxxVfpUaUXkn90Thq+iH1Nw@mail.gmail.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [git pull] IOMMU Updates for Linux v4.1
+Date: Mon, 20 Apr 2015 04:34:35 +0200
+Message-ID: <20150420023433.GA3719@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="EVF5PPMfhYS0aIcm"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAJ2095pQGBP7LeH+c0UmSbUMk81SxxVfpUaUXkn90Thq+iH1Nw@mail.gmail.com>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: Alexander Duyck <alexander.duyck@gmail.com>, Alan Stern <stern@rowland.harvard.edu>, Suman Tripathi <stripathi@apm.com>, iommu@lists.linux-foundation.org, USB list <linux-usb@vger.kernel.org>, Kernel development list <linux-kernel@vger.kernel.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-I think the case is closed.
-Now that I know it's not USB, but wireless driver, I looked through
-the new k3.19.5's changelog and saw this:
+
+--EVF5PPMfhYS0aIcm
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Linus,
+
+The following changes since commit e42391cd048809d903291d07f86ed3934ce138e9:
+
+  Linux 4.0-rc6 (2015-03-29 15:26:31 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v4.1
+
+for you to fetch changes up to 7f65ef01e131650d455875598099cd06fea6096b:
+
+  Merge branches 'iommu/fixes', 'x86/vt-d', 'x86/amd', 'arm/smmu', 'arm/tegra' and 'core' into next (2015-04-02 13:33:19 +0200)
+
+----------------------------------------------------------------
+
+IOMMU Updates for Linux v4.1
+
+Not much this time, but the changes include:
+
+	* Moving domain allocation into the iommu drivers to prepare for
+	  the introduction of default domains for devices
+
+	* Fixing the IO page-table code in the AMD IOMMU driver to
+	  correctly encode large page sizes
+
+	* Extension of the PCI support in the ARM-SMMU driver
+
+	* Various fixes and cleanups
+
+----------------------------------------------------------------
+Dan Carpenter (1):
+      iommu/amd: Small cleanup in mn_release()
+
+Joerg Roedel (27):
+      iommu: Introduce domain_alloc and domain_free iommu_ops
+      iommu: Introduce iommu domain types
+      iommu: Only allow iommu_map/unmap for paging domains
+      iommu/amd: Make use of domain_alloc and domain_free
+      iommu/vt-d: Make use of domain_alloc and domain_free
+      iommu/omap: Make use of domain_alloc and domain_free
+      iommu/arm-smmu: Make use of domain_alloc and domain_free
+      iommu/exynos: Make use of domain_alloc and domain_free
+      iommu/tegra-smmu: Make use of domain_alloc and domain_free
+      iommu/tegra-gart: Make use of domain_alloc and domain_free
+      iommu/msm: Make use of domain_alloc and domain_free
+      iommu/shmobile: Make use of domain_alloc and domain_free
+      iommu/ipmmu-vmsa: Make use of domain_alloc and domain_free
+      iommu/rockchip: Make use of domain_alloc and domain_free
+      iommu/fsl: Make use of domain_alloc and domain_free
+      iommu: Remove domain_init and domain_free iommu_ops
+      Merge branch 'for-joerg/arm-smmu/updates' of git://git.kernel.org/.../will/linux into arm/smmu
+      iommu/amd: Use BUS_NOTIFY_REMOVED_DEVICE
+      iommu/amd: Ignore BUS_NOTIFY_UNBOUND_DRIVER event
+      iommu/amd: Don't allocate with __GFP_ZERO in alloc_coherent
+      iommu/amd: Add support for contiguous dma allocator
+      iommu/amd: Return the pte page-size in fetch_pte
+      iommu/amd: Optimize iommu_unmap_page for new fetch_pte interface
+      iommu/amd: Optimize alloc_new_range for new fetch_pte interface
+      iommu/amd: Optimize amd_iommu_iova_to_phys for new fetch_pte interface
+      iommu/amd: Correctly encode huge pages in iommu page tables
+      Merge branches 'iommu/fixes', 'x86/vt-d', 'x86/amd', 'arm/smmu', 'arm/tegra' and 'core' into next
+
+Quentin Lambert (1):
+      iommu/vt-d: Convert non-returned local variable to boolean when relevant
+
+Robin Murphy (1):
+      iommu/arm-smmu: set a more appropriate DMA mask
+
+Thierry Reding (3):
+      iommu/tegra: Setup aperture
+      iommu/tegra: gart: Set aperture at domain initialization time
+      iommu/tegra: smmu: Compute PFN mask at runtime
+
+Will Deacon (3):
+      iommu/arm-smmu: ensure CBA2R is initialised before CBAR on SMMUv2
+      iommu/arm-smmu: handle multi-alias IOMMU groups for PCI devices
+      iommu/io-pgtable-arm: avoid speculative walks through TTBR1
+
+ drivers/iommu/amd_iommu.c           | 250 ++++++++++++++++++------------------
+ drivers/iommu/amd_iommu_types.h     |  13 +-
+ drivers/iommu/amd_iommu_v2.c        |   2 +-
+ drivers/iommu/arm-smmu.c            | 180 ++++++++++++++++----------
+ drivers/iommu/exynos-iommu.c        |  87 +++++++------
+ drivers/iommu/fsl_pamu_domain.c     |  60 +++++----
+ drivers/iommu/fsl_pamu_domain.h     |   2 +-
+ drivers/iommu/intel-iommu.c         |  68 +++++-----
+ drivers/iommu/intel_irq_remapping.c |  12 +-
+ drivers/iommu/io-pgtable-arm.c      |   5 +
+ drivers/iommu/iommu.c               |  26 ++--
+ drivers/iommu/ipmmu-vmsa.c          |  42 +++---
+ drivers/iommu/msm_iommu.c           |  73 ++++++-----
+ drivers/iommu/omap-iommu.c          |  49 ++++---
+ drivers/iommu/rockchip-iommu.c      |  40 +++---
+ drivers/iommu/shmobile-iommu.c      |  39 +++---
+ drivers/iommu/tegra-gart.c          |  88 ++++++++-----
+ drivers/iommu/tegra-smmu.c          |  59 +++++----
+ include/linux/iommu.h               |  33 ++++-
+ 19 files changed, 644 insertions(+), 484 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
 
 
-commit b943e69d33fac1e5f6db57868e061096b0aae67a
-Author: Larry Finger <Larry.Finger@lwfinger.net>
-Date:   Sat Mar 21 15:16:05 2015 -0500
+--EVF5PPMfhYS0aIcm
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-    rtlwifi: Fix IOMMU mapping leak in AP mode
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-    commit be0b5e635883678bfbc695889772fed545f3427d upstream.
+iQIcBAEBAgAGBQJVNGW5AAoJECvwRC2XARrjG/AP/3yDyLfwXih2xH4wOXAM2h8V
+aH7evNFKVuCuQklVmVgNExR8Nlzww3X084D65uU7KP2ga4kbTj4pC4Y87Ok0Tk2n
+EOy5EAjrVoBpxMSAuvU2spPNpXzumcqq6jfaXM8jm9B6b3AkynZHzLJgQ57+Us1t
+o2K7IN654klICKCNjql48FZoG+igQqA1i9T7YKZ8qeGdFYhyFlGtwH8KKikQdO6S
+CenypuHfuQvIglJkRUHrZS3wxo5uw5oErwVh9txr+ABXK5VgCjMuAAYnwV6iA6on
+/1+9HiyzvXXYzYXJQ+lJAAx69/H+uh0Ay4rH1QHReNCuc71OjTl6uSaGa3aa0R9B
+XEtXNn+WIM8dtq4WsUjN0F/wC8Q849WkRVdehvj1YwoIogQZRpTNpDxjV4uROxQN
+3i/r2bsfLXxRRI3LGOwC0+wB+HQKPJeG1RgiWmo+d4XTwN6gbGs0EpehYN4+YTTx
+Q/BPEJXvOi2iiDMrJJOE7Or9xfvUKrOy4sfq19JsvdCXTP1DIA9oav3/M/9ZnyQ0
+dMxJh4q4yuW6TeVsk4PR7q8gvs0SIYzeQT2w0KOd4YPiKBMjWP/FGoKkFzqtoMoY
+sjilZhJQvRYKzG0LMRcFcFl4+2+O7YPCtfMw5w7JnP7eiFv2NGUIb7sZ34NP5K03
+UwMZjdUyu9Kgxp4FX1hi
+=Ntwn
+-----END PGP SIGNATURE-----
 
-    Transmission of an AP beacon does not call the TX interrupt service routine,
-    which usually does the cleanup. Instead, cleanup is handled in a tasklet
-    completion routine. Unfortunately, this routine has a serious bug
-in that it does
-    not release the DMA mapping before it frees the skb, thus one
-IOMMU mapping is
-    leaked for each beacon. The test system failed with no free IOMMU
-mapping slots
-    approximately one hour after hostapd was used to start an AP.
-
-    This issue was reported and tested at
-https://github.com/lwfinger/rtlwifi_new/issues/30.
-
-    Reported-and-tested-by: Kevin Mullican <kevin@mullican.com>
-    Cc: Kevin Mullican <kevin@mullican.com>
-    Signed-off-by: Shao Fu <shaofu@realtek.com>
-    Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
-    Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-
-Looks very related, especially because my wireless card is also always
-in AP mode, however I haven't been actually using it lately, so
-probably that's why I didn't notice anything related to it (and kept
-focused on USB), until I used dump_dma.
-
-Well, due to my minimal knowledge regarding kernel's internals I can't
-be 100% sure that this was it, but so far 3.19.5 is working stable
-(uptime 6hrs and counting).
-
-Thank you Konrad (and everyone else involved) for helping me out to
-pinpoint the actual culprit.
-Jake
-
-
-On 18 April 2015 at 21:59, Dorian Gray <yourfavouritegod@gmail.com> wrote:
-> On 18 April 2015 at 12:10, Dorian Gray <yourfavouritegod@gmail.com> wrote:
->> On 17 April 2015 at 22:06, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com> wrote:
->>> On Fri, Apr 17, 2015 at 05:14:20PM +0200, Dorian Gray wrote:
->>>> On 16 April 2015 at 20:42, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com> wrote:
->>>> > And easier way is to compile the kernel with CONFIG_DMA_API_DEBUG
->>>> > and then load the attached module.
->>>> >
->>>> > That should tell you who and what else is holding on the buffers.
->>>>
->>>> Ok, I have compiled 3.19.4 w/ CONFIG_DMA_API_DEBUG=y + the module you sent me.
->>>> Now, I'm not sure if I've done it right - I waited until the error
->>>> occured and then modprobe'd dump_dma.
->>>> I have attached the kernel log, but it tells me not much, if anything...
->>>
->>> The network driver is quite hungry for DMA. Did it do the same thing
->>> in the earlier kernels?
->>>
->>> Thanks.
->>>>
->>>> Thanks again.
->>>> Jake
->>>
->>>
->>
->> Yeah, you're right:
->>
->> # grep rtl8192se dump_dma_k3.19.4.log | wc -l
->> 6789
->> #
->> # grep rtl8192se dump_dma_k3.17.8.log | wc -l
->> 162
->> #
->>
->> So, wlan driver would be the real culprit then..?
->> I would have never thought...
->>
->> I guess I'm gonna test 3.19.4 once more (just to be sure) with
->> rtl8192se removed and see what happens.
->>
->> Thanks!
->> Jake
->
->
-> [update]
->
-> Ok, 6 hours of uptime (3.19.4 + blacklisted rtl8192se) and everything
-> was fine...
-> However, I was checking periodically and noticed that 'radeon' also
-> tends to grow continuously over time, whereas ethernet driver sticks
-> to, more or less, the same range:
->
-> # uname -r
-> 3.19.4
-> #
-> # grep -Eo 'radeon|r8169' L1.log | sort | uniq -c
->      62 r8169
->    4183 radeon
-> #
-> # grep -Eo 'radeon|r8169' L2.log | sort | uniq -c
->      33 r8169
->    5582 radeon
-> #
-> # grep -Eo 'radeon|r8169' L3.log | sort | uniq -c
->      54 r8169
->    7007 radeon
-> #
-> # grep -Eo 'radeon|r8169' L4.log | sort | uniq -c
->      49 r8169
->    7429 radeon
-> #
-> # grep -Eo 'radeon|r8169' L5.log | sort | uniq -c
->      34 r8169
->    9360 radeon
-> #
->
-> It doesn't grow that much in 3.17.8:
->
-> # uname -r
-> 3.17.8
-> #
-> # grep -Eo 'radeon|r8169|rtl8192se' L1.log | sort | uniq -c
->     265 r8169
->    1229 radeon
->     142 rtl8192se
-> #
-> # grep -Eo 'radeon|r8169|rtl8192se' L2.log | sort | uniq -c
->     187 r8169
->    3159 radeon
->     124 rtl8192se
-> #
-> # grep -Eo 'radeon|r8169|rtl8192se' L3.log | sort | uniq -c
->      41 r8169
->    1894 radeon
->      39 rtl8192se
-> #
-> # grep -Eo 'radeon|r8169|rtl8192se' L4.log | sort | uniq -c
->      64 r8169
->    3370 radeon
->      77 rtl8192se
-> #
-> # grep -Eo 'radeon|r8169|rtl8192se' L5.log | sort | uniq -c
->      52 r8169
->    2597 radeon
->      49 rtl8192se
-> #
->
->
-> Btw, at some point (3.19.4) I encounetered this:
-> [21631.181909] DMA-API: debugging out of memory - disabling
->
-> Jake
+--EVF5PPMfhYS0aIcm--
