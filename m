@@ -1,18 +1,10 @@
-From: Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v10 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
-Date: Tue, 21 Apr 2015 10:53:17 +0800
-Message-ID: <20150421025317.GA14720@dhcp-128-82.nay.redhat.com>
-References: <1428655333-19504-1-git-send-email-zhen-hual@hp.com>
-	<20150415005731.GC19051@localhost.localdomain>
-	<552DFB56.1070600@hp.com>
-	<20150415064803.GF19051@localhost.localdomain>
-	<5535AA57.6010404@hp.com>
+From: Alejandro Lucero <alejandro.lucero-wFxRvT7yatFl57MIdRCFDg@public.gmane.org>
+Subject: SRIOV and clear_context_table
+Date: Tue, 21 Apr 2015 18:38:55 +0100
+Message-ID: <CAD+H990_L1fWeb9b1LRH=h2E+vbz1whZpDSBwrtLp8=si1hP=w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary=20cf307cfd0e4ccaf705143f85c9
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <5535AA57.6010404-VXdhtT5mjnY@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,81 +14,155 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Cc: bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
+
+--20cf307cfd0e4ccaf705143f85c9
+Content-Type: multipart/alternative; boundary=20cf307cfd0e4ccaf405143f85c7
+
+--20cf307cfd0e4ccaf405143f85c7
+Content-Type: text/plain; charset=UTF-8
 
 Hi,
 
-On 04/21/15 at 09:39am, Li, ZhenHua wrote:
-> Hi Dave,
-> I found the old mail:
-> http://lkml.iu.edu/hypermail/linux/kernel/1410.2/03584.html
+I've been trying to understand some DMAR errors we got with our device
+which supports SRIOV. We create 8 VFs and we use two of them for
+configuring two ethernet interfaces. No VM is involved. The first time
+interfaces are upped all works fine. Some time later they are downed and
+the VFs removed. If we create the VFs again then we got this when upping
+the interfaces:
 
-I know and I have read it before.
+[ 611.152374] dmar: DMAR:[DMA Read] Request device [02:08.0] fault addr
+fffe8000
+[ 611.152374] DMAR:[fault reason 06] PTE Read access is not set
+[ 611.324461] dmar: DMAR:[DMA Read] Request device [02:08.1] fault addr
+fffe8000
+[ 611.324461] DMAR:[fault reason 06] PTE Read access is not set
 
-==================  quote  ===================
-> > > So with this in mind I would prefer initially taking over the
-> > > page-tables from the old kernel before the device drivers re-initialize
-> > > the devices.
-> >
-> > This makes the dump kernel more dependent on data from the old kernel,
-> > which we obviously want to avoid when possible.
+The address involved is just the first dma address used by the device for
+getting RX ring descriptors. I have used iommu kernel traces and also some
+specific ones (as I found those events not helpful enough) and I could see
+the mappings being done both times the devices are upped and with the right
+read/write permissions.
 
-> Sure, but this is not really possible here (unless we have a generic and
-> reliable way to reset all PCI endpoint devices and cancel all in-flight
-> DMA before we disable the IOMMU in the kdump kernel).
-> Otherwise we always risk data corruption somewhere, in system memory or
-> on disk.
-=================  quote  ====================
+Then I looked at the work done each time the VFs are created and I found
+out the context entry is not created the second time. When VFs are removed
+the iommu_bus_notifier gets action for removing device calling
+intel_iommu_remove_device. There just call for removing the iommu group is
+done so the context entry is used later on.
 
-What I understand above is it is not really possible to avoid the problem.
+I have seen that more work is done when a device is detached from a VM. In
+that case code calls to clear_context_entry and also some calls to flushing
+iotlb. So I have tried adding the same code when removing the VF and this
+solves the issue.
 
-But IMHO we should avoid it or we will have problems in the future, if we
-really cannot avoid it I would say switching to pci reset way is better.
+I do not know if this is the right thing to do. I know attaching and
+detaching devices to VMs is likely more usual and then that functionality
+is well tested. By other hand, creating and destroying VFs could be
+unlikely or even considered unsense and then this has never been tested.
 
-> 
-> Please check this and you will find the discussion.
-> 
-> Regards
-> Zhenhua
-> 
-> On 04/15/2015 02:48 PM, Dave Young wrote:
-> >On 04/15/15 at 01:47pm, Li, ZhenHua wrote:
-> >>On 04/15/2015 08:57 AM, Dave Young wrote:
-> >>>Again, I think it is bad to use old page table, below issues need consider:
-> >>>1) make sure old page table are reliable across crash
-> >>>2) do not allow writing oldmem after crash
-> >>>
-> >>>Please correct me if I'm wrong, or if above is not doable I think I will vote for
-> >>>resetting pci bus.
-> >>>
-> >>>Thanks
-> >>>Dave
-> >>>
-> >>Hi Dave,
-> >>
-> >>When updating the context tables, we have to write their address to root
-> >>tables, this will cause writing to old mem.
-> >>
-> >>Resetting the pci bus has been discussed, please check this:
-> >>http://lists.infradead.org/pipermail/kexec/2014-October/012752.html
-> >>https://lkml.org/lkml/2014/10/21/890
-> >
-> >I know one reason to use old pgtable is this looks better because it fixes the
-> >real problem, but it is not a good way if it introduce more problems because of
-> >it have to use oldmem. I will be glad if this is not a problem but I have not
-> >been convinced.
-> >
-> >OTOH, there's many types of iommu, intel, amd, a lot of other types. They need
-> >their own fixes, so it looks not that elegant.
-> >
-> >For pci reset, it is not perfect, but it has another advantage, the patch is
-> >simpler. The problem I see from the old discusssion is, reset bus in 2nd kernel
-> >is acceptable but it does not fix things on sparc platform. AFAIK current reported
-> >problems are intel and amd iommu, at least pci reset stuff does not make it worse.
-> >
-> >Thanks
-> >Dave
-> >
-> 
+I'm working with a 3.13.0-49 Ubuntu kernel. Last stable kernel from Linus
+Torvalds is not doing anything different related to the remove device
+action.
+
+The patch applied to intel-iommu.c is attached.
+
+--20cf307cfd0e4ccaf405143f85c7
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi,<div><br></div><div>I&#39;ve been trying to understand =
+some DMAR errors we got with our device which supports SRIOV. We create 8 V=
+Fs and we use two of them for configuring two ethernet interfaces. No VM is=
+ involved. The first time interfaces are upped all works fine. Some time la=
+ter they are downed and the VFs removed. If we create the VFs again then we=
+ got this when upping the interfaces:</div><div><br></div><div><span style=
+=3D"color:rgb(51,51,51);font-family:Arial,sans-serif;font-size:14px;line-he=
+ight:18.1818180084229px">[ 611.152374] dmar: DMAR:</span><span class=3D"" s=
+tyle=3D"color:rgb(51,51,51);font-family:Arial,sans-serif;font-size:14px;lin=
+e-height:18.1818180084229px">[DMA Read]</span><span style=3D"color:rgb(51,5=
+1,51);font-family:Arial,sans-serif;font-size:14px;line-height:18.1818180084=
+229px">=C2=A0Request device=C2=A0</span><span class=3D"" style=3D"color:rgb=
+(51,51,51);font-family:Arial,sans-serif;font-size:14px;line-height:18.18181=
+80084229px">[02:08.0]</span><span style=3D"color:rgb(51,51,51);font-family:=
+Arial,sans-serif;font-size:14px;line-height:18.1818180084229px">=C2=A0fault=
+ addr fffe8000=C2=A0</span><br style=3D"color:rgb(51,51,51);font-family:Ari=
+al,sans-serif;font-size:14px;line-height:18.1818180084229px"><span style=3D=
+"color:rgb(51,51,51);font-family:Arial,sans-serif;font-size:14px;line-heigh=
+t:18.1818180084229px">[ 611.152374] DMAR:</span><span class=3D"" style=3D"c=
+olor:rgb(51,51,51);font-family:Arial,sans-serif;font-size:14px;line-height:=
+18.1818180084229px">[fault reason 06]</span><span style=3D"color:rgb(51,51,=
+51);font-family:Arial,sans-serif;font-size:14px;line-height:18.181818008422=
+9px">=C2=A0PTE Read access is not set</span><br style=3D"color:rgb(51,51,51=
+);font-family:Arial,sans-serif;font-size:14px;line-height:18.1818180084229p=
+x"><span style=3D"color:rgb(51,51,51);font-family:Arial,sans-serif;font-siz=
+e:14px;line-height:18.1818180084229px">[ 611.324461] dmar: DMAR:</span><spa=
+n class=3D"" style=3D"color:rgb(51,51,51);font-family:Arial,sans-serif;font=
+-size:14px;line-height:18.1818180084229px">[DMA Read]</span><span style=3D"=
+color:rgb(51,51,51);font-family:Arial,sans-serif;font-size:14px;line-height=
+:18.1818180084229px">=C2=A0Request device=C2=A0</span><span class=3D"" styl=
+e=3D"color:rgb(51,51,51);font-family:Arial,sans-serif;font-size:14px;line-h=
+eight:18.1818180084229px">[02:08.1]</span><span style=3D"color:rgb(51,51,51=
+);font-family:Arial,sans-serif;font-size:14px;line-height:18.1818180084229p=
+x">=C2=A0fault addr fffe8000=C2=A0</span><br style=3D"color:rgb(51,51,51);f=
+ont-family:Arial,sans-serif;font-size:14px;line-height:18.1818180084229px">=
+<span style=3D"color:rgb(51,51,51);font-family:Arial,sans-serif;font-size:1=
+4px;line-height:18.1818180084229px">[ 611.324461] DMAR:</span><span class=
+=3D"" style=3D"color:rgb(51,51,51);font-family:Arial,sans-serif;font-size:1=
+4px;line-height:18.1818180084229px">[fault reason 06]</span><span style=3D"=
+color:rgb(51,51,51);font-family:Arial,sans-serif;font-size:14px;line-height=
+:18.1818180084229px">=C2=A0PTE Read access is not set</span><br></div><div>=
+<span style=3D"color:rgb(51,51,51);font-family:Arial,sans-serif;font-size:1=
+4px;line-height:18.1818180084229px"><br></span></div><div><span style=3D"co=
+lor:rgb(51,51,51);font-family:Arial,sans-serif;font-size:14px;line-height:1=
+8.1818180084229px">The address involved is just the first dma address used =
+by the device for getting RX ring descriptors. I have used iommu kernel tra=
+ces and also some specific ones (as I found those events not helpful enough=
+) and I could see the mappings being done both times the devices are upped =
+and with the right read/write permissions.=C2=A0</span></div><div><br></div=
+><div>Then I looked at the work done each time the VFs are created and I fo=
+und out the context entry is not created the second time. When VFs are remo=
+ved the iommu_bus_notifier gets action for removing device calling intel_io=
+mmu_remove_device. There just call for removing the iommu group is done so =
+the context entry is used later on.</div><div><br></div><div>I have seen th=
+at more work is done when a device is detached from a VM. In that case code=
+ calls to clear_context_entry and also some calls to flushing iotlb. So I h=
+ave tried adding the same code when removing the VF and this solves the iss=
+ue.</div><div><br></div><div>I do not know if this is the right thing to do=
+. I know attaching and detaching devices to VMs is likely more usual and th=
+en that functionality is well tested. By other hand, creating and destroyin=
+g VFs could be unlikely or even considered unsense and then this has never =
+been tested.</div><div><br></div><div>I&#39;m working with a 3.13.0-49 Ubun=
+tu kernel. Last stable kernel from Linus Torvalds is not doing anything dif=
+ferent related to the remove device action.</div><div><br></div><div>The pa=
+tch applied to intel-iommu.c is attached.</div><div><br></div><div><br></di=
+v></div>
+
+--20cf307cfd0e4ccaf405143f85c7--
+
+--20cf307cfd0e4ccaf705143f85c9
+Content-Type: application/octet-stream; name="intel-iommu.patch"
+Content-Disposition: attachment; filename="intel-iommu.patch"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_i8rkpv7e0
+
+LS0tIGludGVsLWlvbW11LmMub3JpZwkyMDE1LTA0LTIxIDE4OjExOjMyLjY5MDIxOTk2NiArMDEw
+MAorKysgaW50ZWwtaW9tbXUuYwkyMDE1LTA0LTIxIDE4OjEzOjI3Ljk3NjA1NDIzMiArMDEwMApA
+QCAtNDI0Miw2ICs0MjQyLDE4IEBACiAKIHN0YXRpYyB2b2lkIGludGVsX2lvbW11X3JlbW92ZV9k
+ZXZpY2Uoc3RydWN0IGRldmljZSAqZGV2KQogeworCXN0cnVjdCBpbnRlbF9pb21tdSAqaW9tbXU7
+CisJc3RydWN0IHBjaV9kZXYgKnBkZXYgPSB0b19wY2lfZGV2KGRldik7CisKKwlpb21tdSA9IGRl
+dmljZV90b19pb21tdShwY2lfZG9tYWluX25yKHBkZXYtPmJ1cyksIHBkZXYtPmJ1cy0+bnVtYmVy
+LAorCQkJCQkJCXBkZXYtPmRldmZuKTsKKworCWlmIChpb21tdSAmJiAocGRldi0+ZGV2Zm4gPT0g
+MHg0MCB8fCBwZGV2LT5kZXZmbiA9PSAweDQxKSkgeworCQljbGVhcl9jb250ZXh0X3RhYmxlKGlv
+bW11LCBwZGV2LT5idXMtPm51bWJlciwgcGRldi0+ZGV2Zm4pOworCQlpb21tdS0+Zmx1c2guZmx1
+c2hfY29udGV4dChpb21tdSwgMCwgMCwgMCwgRE1BX0NDTURfR0xPQkFMX0lOVkwpOworCQlpb21t
+dS0+Zmx1c2guZmx1c2hfaW90bGIoaW9tbXUsIDAsIDAsIDAsIERNQV9UTEJfR0xPQkFMX0ZMVVNI
+KTsKKwl9CisKIAlpb21tdV9ncm91cF9yZW1vdmVfZGV2aWNlKGRldik7CiB9CiAK
+--20cf307cfd0e4ccaf705143f85c9
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--20cf307cfd0e4ccaf705143f85c9--
