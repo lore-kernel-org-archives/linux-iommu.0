@@ -1,10 +1,19 @@
-From: Alejandro Lucero <alejandro.lucero-wFxRvT7yatFl57MIdRCFDg@public.gmane.org>
-Subject: SRIOV and clear_context_table
-Date: Tue, 21 Apr 2015 18:38:55 +0100
-Message-ID: <CAD+H990_L1fWeb9b1LRH=h2E+vbz1whZpDSBwrtLp8=si1hP=w@mail.gmail.com>
+From: AceLan Kao <acelan.kao-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>
+Subject: Re: Any side effect if turn off amd_iommu
+Date: Thu, 23 Apr 2015 10:15:33 +0800
+Message-ID: <CAFv23Q==+tXTif9uQfyTHE28hxGt80WYS=A6qN7q0Q4q7re6kw@mail.gmail.com>
+References: <CAFv23QmxQ3vJnMEGN0TNR3vLAx1MN7ptB0y3QQLKciqfT3OBsQ@mail.gmail.com>
+	<20150325140410.GS4441@8bytes.org>
+	<CAFv23Qn93z4pE6RtURgoiBADpgCWZ6gfpMPn3akfJibudRi+Qg@mail.gmail.com>
+	<20150326120547.GU4441@8bytes.org>
+	<CAFv23QnUO+w0EXUx8DtgPx0W=fz37_R04EW6P-g+PF_y_U1dfA@mail.gmail.com>
+	<20150330160910.GZ4441@8bytes.org>
+	<CAFv23QmOjFb9NgLY0aW55OpQSecFA83jNOU1TY7o3qWuft1_Cw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary=20cf307cfd0e4ccaf705143f85c9
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAFv23QmOjFb9NgLY0aW55OpQSecFA83jNOU1TY7o3qWuft1_Cw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -14,155 +23,65 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
---20cf307cfd0e4ccaf705143f85c9
-Content-Type: multipart/alternative; boundary=20cf307cfd0e4ccaf405143f85c7
+Hi Joerg,
 
---20cf307cfd0e4ccaf405143f85c7
-Content-Type: text/plain; charset=UTF-8
+We can confirm that the issue comes from the resources conflict,
+adding this boot option can solve the issue.
+   ivrs_ioapic[5]=00:00.1
+We've tried to negotiate with the OEM BIOS team, but they refused to
+modify the BIOS code, since there is no issue on MS Windows and it'll
+require to re-start a full test if the BIOS code is changed, so they
+don't want to do that.
 
-Hi,
+I'm wondering if we can add a quirk to list those machine and assign
+them the correct ivrs_ioapic value in amd_iommu driver?
+Thanks.
 
-I've been trying to understand some DMAR errors we got with our device
-which supports SRIOV. We create 8 VFs and we use two of them for
-configuring two ethernet interfaces. No VM is involved. The first time
-interfaces are upped all works fine. Some time later they are downed and
-the VFs removed. If we create the VFs again then we got this when upping
-the interfaces:
+Best regards,
+AceLan Kao.
 
-[ 611.152374] dmar: DMAR:[DMA Read] Request device [02:08.0] fault addr
-fffe8000
-[ 611.152374] DMAR:[fault reason 06] PTE Read access is not set
-[ 611.324461] dmar: DMAR:[DMA Read] Request device [02:08.1] fault addr
-fffe8000
-[ 611.324461] DMAR:[fault reason 06] PTE Read access is not set
-
-The address involved is just the first dma address used by the device for
-getting RX ring descriptors. I have used iommu kernel traces and also some
-specific ones (as I found those events not helpful enough) and I could see
-the mappings being done both times the devices are upped and with the right
-read/write permissions.
-
-Then I looked at the work done each time the VFs are created and I found
-out the context entry is not created the second time. When VFs are removed
-the iommu_bus_notifier gets action for removing device calling
-intel_iommu_remove_device. There just call for removing the iommu group is
-done so the context entry is used later on.
-
-I have seen that more work is done when a device is detached from a VM. In
-that case code calls to clear_context_entry and also some calls to flushing
-iotlb. So I have tried adding the same code when removing the VF and this
-solves the issue.
-
-I do not know if this is the right thing to do. I know attaching and
-detaching devices to VMs is likely more usual and then that functionality
-is well tested. By other hand, creating and destroying VFs could be
-unlikely or even considered unsense and then this has never been tested.
-
-I'm working with a 3.13.0-49 Ubuntu kernel. Last stable kernel from Linus
-Torvalds is not doing anything different related to the remove device
-action.
-
-The patch applied to intel-iommu.c is attached.
-
---20cf307cfd0e4ccaf405143f85c7
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi,<div><br></div><div>I&#39;ve been trying to understand =
-some DMAR errors we got with our device which supports SRIOV. We create 8 V=
-Fs and we use two of them for configuring two ethernet interfaces. No VM is=
- involved. The first time interfaces are upped all works fine. Some time la=
-ter they are downed and the VFs removed. If we create the VFs again then we=
- got this when upping the interfaces:</div><div><br></div><div><span style=
-=3D"color:rgb(51,51,51);font-family:Arial,sans-serif;font-size:14px;line-he=
-ight:18.1818180084229px">[ 611.152374] dmar: DMAR:</span><span class=3D"" s=
-tyle=3D"color:rgb(51,51,51);font-family:Arial,sans-serif;font-size:14px;lin=
-e-height:18.1818180084229px">[DMA Read]</span><span style=3D"color:rgb(51,5=
-1,51);font-family:Arial,sans-serif;font-size:14px;line-height:18.1818180084=
-229px">=C2=A0Request device=C2=A0</span><span class=3D"" style=3D"color:rgb=
-(51,51,51);font-family:Arial,sans-serif;font-size:14px;line-height:18.18181=
-80084229px">[02:08.0]</span><span style=3D"color:rgb(51,51,51);font-family:=
-Arial,sans-serif;font-size:14px;line-height:18.1818180084229px">=C2=A0fault=
- addr fffe8000=C2=A0</span><br style=3D"color:rgb(51,51,51);font-family:Ari=
-al,sans-serif;font-size:14px;line-height:18.1818180084229px"><span style=3D=
-"color:rgb(51,51,51);font-family:Arial,sans-serif;font-size:14px;line-heigh=
-t:18.1818180084229px">[ 611.152374] DMAR:</span><span class=3D"" style=3D"c=
-olor:rgb(51,51,51);font-family:Arial,sans-serif;font-size:14px;line-height:=
-18.1818180084229px">[fault reason 06]</span><span style=3D"color:rgb(51,51,=
-51);font-family:Arial,sans-serif;font-size:14px;line-height:18.181818008422=
-9px">=C2=A0PTE Read access is not set</span><br style=3D"color:rgb(51,51,51=
-);font-family:Arial,sans-serif;font-size:14px;line-height:18.1818180084229p=
-x"><span style=3D"color:rgb(51,51,51);font-family:Arial,sans-serif;font-siz=
-e:14px;line-height:18.1818180084229px">[ 611.324461] dmar: DMAR:</span><spa=
-n class=3D"" style=3D"color:rgb(51,51,51);font-family:Arial,sans-serif;font=
--size:14px;line-height:18.1818180084229px">[DMA Read]</span><span style=3D"=
-color:rgb(51,51,51);font-family:Arial,sans-serif;font-size:14px;line-height=
-:18.1818180084229px">=C2=A0Request device=C2=A0</span><span class=3D"" styl=
-e=3D"color:rgb(51,51,51);font-family:Arial,sans-serif;font-size:14px;line-h=
-eight:18.1818180084229px">[02:08.1]</span><span style=3D"color:rgb(51,51,51=
-);font-family:Arial,sans-serif;font-size:14px;line-height:18.1818180084229p=
-x">=C2=A0fault addr fffe8000=C2=A0</span><br style=3D"color:rgb(51,51,51);f=
-ont-family:Arial,sans-serif;font-size:14px;line-height:18.1818180084229px">=
-<span style=3D"color:rgb(51,51,51);font-family:Arial,sans-serif;font-size:1=
-4px;line-height:18.1818180084229px">[ 611.324461] DMAR:</span><span class=
-=3D"" style=3D"color:rgb(51,51,51);font-family:Arial,sans-serif;font-size:1=
-4px;line-height:18.1818180084229px">[fault reason 06]</span><span style=3D"=
-color:rgb(51,51,51);font-family:Arial,sans-serif;font-size:14px;line-height=
-:18.1818180084229px">=C2=A0PTE Read access is not set</span><br></div><div>=
-<span style=3D"color:rgb(51,51,51);font-family:Arial,sans-serif;font-size:1=
-4px;line-height:18.1818180084229px"><br></span></div><div><span style=3D"co=
-lor:rgb(51,51,51);font-family:Arial,sans-serif;font-size:14px;line-height:1=
-8.1818180084229px">The address involved is just the first dma address used =
-by the device for getting RX ring descriptors. I have used iommu kernel tra=
-ces and also some specific ones (as I found those events not helpful enough=
-) and I could see the mappings being done both times the devices are upped =
-and with the right read/write permissions.=C2=A0</span></div><div><br></div=
-><div>Then I looked at the work done each time the VFs are created and I fo=
-und out the context entry is not created the second time. When VFs are remo=
-ved the iommu_bus_notifier gets action for removing device calling intel_io=
-mmu_remove_device. There just call for removing the iommu group is done so =
-the context entry is used later on.</div><div><br></div><div>I have seen th=
-at more work is done when a device is detached from a VM. In that case code=
- calls to clear_context_entry and also some calls to flushing iotlb. So I h=
-ave tried adding the same code when removing the VF and this solves the iss=
-ue.</div><div><br></div><div>I do not know if this is the right thing to do=
-. I know attaching and detaching devices to VMs is likely more usual and th=
-en that functionality is well tested. By other hand, creating and destroyin=
-g VFs could be unlikely or even considered unsense and then this has never =
-been tested.</div><div><br></div><div>I&#39;m working with a 3.13.0-49 Ubun=
-tu kernel. Last stable kernel from Linus Torvalds is not doing anything dif=
-ferent related to the remove device action.</div><div><br></div><div>The pa=
-tch applied to intel-iommu.c is attached.</div><div><br></div><div><br></di=
-v></div>
-
---20cf307cfd0e4ccaf405143f85c7--
-
---20cf307cfd0e4ccaf705143f85c9
-Content-Type: application/octet-stream; name="intel-iommu.patch"
-Content-Disposition: attachment; filename="intel-iommu.patch"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_i8rkpv7e0
-
-LS0tIGludGVsLWlvbW11LmMub3JpZwkyMDE1LTA0LTIxIDE4OjExOjMyLjY5MDIxOTk2NiArMDEw
-MAorKysgaW50ZWwtaW9tbXUuYwkyMDE1LTA0LTIxIDE4OjEzOjI3Ljk3NjA1NDIzMiArMDEwMApA
-QCAtNDI0Miw2ICs0MjQyLDE4IEBACiAKIHN0YXRpYyB2b2lkIGludGVsX2lvbW11X3JlbW92ZV9k
-ZXZpY2Uoc3RydWN0IGRldmljZSAqZGV2KQogeworCXN0cnVjdCBpbnRlbF9pb21tdSAqaW9tbXU7
-CisJc3RydWN0IHBjaV9kZXYgKnBkZXYgPSB0b19wY2lfZGV2KGRldik7CisKKwlpb21tdSA9IGRl
-dmljZV90b19pb21tdShwY2lfZG9tYWluX25yKHBkZXYtPmJ1cyksIHBkZXYtPmJ1cy0+bnVtYmVy
-LAorCQkJCQkJCXBkZXYtPmRldmZuKTsKKworCWlmIChpb21tdSAmJiAocGRldi0+ZGV2Zm4gPT0g
-MHg0MCB8fCBwZGV2LT5kZXZmbiA9PSAweDQxKSkgeworCQljbGVhcl9jb250ZXh0X3RhYmxlKGlv
-bW11LCBwZGV2LT5idXMtPm51bWJlciwgcGRldi0+ZGV2Zm4pOworCQlpb21tdS0+Zmx1c2guZmx1
-c2hfY29udGV4dChpb21tdSwgMCwgMCwgMCwgRE1BX0NDTURfR0xPQkFMX0lOVkwpOworCQlpb21t
-dS0+Zmx1c2guZmx1c2hfaW90bGIoaW9tbXUsIDAsIDAsIDAsIERNQV9UTEJfR0xPQkFMX0ZMVVNI
-KTsKKwl9CisKIAlpb21tdV9ncm91cF9yZW1vdmVfZGV2aWNlKGRldik7CiB9CiAK
---20cf307cfd0e4ccaf705143f85c9
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---20cf307cfd0e4ccaf705143f85c9--
+2015-03-31 8:30 GMT+08:00 AceLan Kao <acelan.kao-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>:
+> Hi Joerg,
+>
+> Thank you so much, I'll try asking BIOS engineer to deliver us a new
+> BIOS for testing.
+>
+> Best regards,
+> AceLan Kao.
+>
+> 2015-03-31 0:09 GMT+08:00 Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>:
+>> Hi AceLan,
+>>
+>> On Fri, Mar 27, 2015 at 08:48:22AM +0800, AceLan Kao wrote:
+>>> Very thanks for your time.
+>>> This is the log booting with kernel 4.0rc5 without fglrx loaded.
+>>
+>> Thanks, it scheds some light on the issue. See below.
+>>
+>>> [    0.080177] AMD-Vi: device: 00:00.2 cap: 0040 seg: 0 flags: b8 info 0000
+>>> [    0.080181] AMD-Vi:        mmio-addr: 00000000feb80000
+>>> [    0.080198] AMD-Vi:   DEV_SELECT_RANGE_START        devid: 00:01.0 flags: 00
+>>> [    0.080200] AMD-Vi:   DEV_RANGE_END                 devid: ff:1f.6
+>>> [    0.081192] AMD-Vi:   DEV_ALIAS_RANGE               devid: 05:00.0 flags: 00 devid_to: 00:14.4
+>>> [    0.081194] AMD-Vi:   DEV_RANGE_END                 devid: 05:1f.7
+>>> [    0.081204] AMD-Vi:   DEV_SPECIAL(HPET[0])         devid: 00:14.0
+>>> [    0.081207] AMD-Vi:   DEV_SPECIAL(IOAPIC[4])               devid: 00:14.0
+>>> [    0.081208] AMD-Vi:   DEV_SPECIAL(IOAPIC[5])               devid: 00:00.0
+>>
+>> This is dump of the IVRS table contents. It tells us that IOAPIC with ID
+>> 5 uses PCI request-id 00:00.0. But this information is wrong, it uses
+>> request-id 00:00.1, as seen below:
+>>
+>>> [   23.515063] AMD-Vi: Event logged [INVALID_DEVICE_REQUEST device=00:00.1 address=0x000000fdf80c0020 flags=0x0a00]
+>>
+>> This message comes from an interrupt request sent by the IOAPIC, and it
+>> uses a different request-id. Can you try to update the BIOS on that
+>> machine and test if it fixes the issue?
+>>
+>>
+>>         Joerg
+>>
