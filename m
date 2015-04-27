@@ -1,16 +1,17 @@
 From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 Subject: Re: [GIT PULL] Intel IOMMU for 4.1
-Date: Mon, 27 Apr 2015 18:12:32 +0100
-Message-ID: <1430154752.6377.19.camel@infradead.org>
+Date: Mon, 27 Apr 2015 18:28:39 +0100
+Message-ID: <1430155719.6377.34.camel@infradead.org>
 References: <1430038266.4833.14.camel@infradead.org>
 	<1430069591.8301.91.camel@redhat.com>
 	<1430070924.13479.5.camel@infradead.org>
 	<1430072207.8301.103.camel@redhat.com> <553E4109.5060903@hp.com>
 	<1430149195.4472.43.camel@redhat.com>
+	<CA+55aFx+QhMZpCtnG2sHib+kk5BR+PeEa99-CCushSA5oAqVxw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0704718160058109287=="
+Content-Type: multipart/mixed; boundary="===============1756773168035351432=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1430149195.4472.43.camel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <CA+55aFx+QhMZpCtnG2sHib+kk5BR+PeEa99-CCushSA5oAqVxw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,49 +21,108 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============0704718160058109287==
+--===============1756773168035351432==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-uicGNuqUGMskejC+hEex"
+	boundary="=-KivwhwqANNlHZZr40Sso"
 
 
---=-uicGNuqUGMskejC+hEex
+--=-KivwhwqANNlHZZr40Sso
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 2015-04-27 at 09:39 -0600, Alex Williamson wrote:
-> David,
+On Mon, 2015-04-27 at 08:48 -0700, Linus Torvalds wrote:
+> On Mon, Apr 27, 2015 at 8:39 AM, Alex Williamson
+> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+> >=20
+> > Since this got pulled anyway, do you plan to follow-up with=20
+> > patches to
+> > limit the graphics RMRR exception to the known and acceptable uses=20
+> > and
+> > document them, or should I send a revert patch?  I don't think=20
+> > what we
+> > have here is acceptable going forward or being backported to=20
+> > stable.
+> > Thanks,
 >=20
-> Since this got pulled anyway, do you plan to follow-up with patches to
-> limit the graphics RMRR exception to the known and acceptable uses and
-> document them, or should I send a revert patch?  I don't think what we
-> have here is acceptable going forward or being backported to stable.
-> Thanks,
+> Does anybody actually *care* about RMRR?
+>=20
+> The thing is shit. We know it's shit. We already had Linda pipe up to
+> tell us that there are bogus RMRR's for ever slot in older machines.
+> And we already ignore RMRR for USB controllers because it was just
+> useless garbage.
 
-I didn't plan to, no. So far we *only* know of acceptable uses of RMRR
-on graphics devices, and the false positives that Linda mentioned.
+RMRR for USB controllers was useless garbage because any operating
+system new enough to enable the IOMMU is *also* going to have USB
+support, so shouldn't need to rely on the BIOS doing legacy
+keyboard/mouse emulation. Which is the only reason the firmware would
+need to keep doing DMA from the USB controllers after we boot.
 
-The only cases we ever saw of RMRR being *problematic* when we tried
-to assign devices to guests were non-graphics devices, weren't they?
+They could have just said "quiesce the USB BIOS stuff before turning
+on the IOMMU" and they wouldn't have needed RMRR for USB.
 
-Although obviously I'm looking into the oops that sl4ever reported;
-currently I'm wondering if that was broken even before your patch that
-blacklisted all RMRR-afflicted devices. It looks like
-device_to_iommu() doesn't return the correct results for devices
-behind a disabled IOMMU; it incorrectly attributes them to a catch-all
-IOMMU instead.
+But even so, we don't just "ignore" the RMRR. We do set it the 1:1
+mapping as requested, otherwise we'd get a stream of faults and the
+BIOS might even lock up in SMM code if its error handling is crap.
 
-Or perhaps this is probably tied into the fact that your patch broke
-iommu=3Dpt for RMRR-afflicted devices too. They currently get full
-translation. Which surely shouldn't be necessary, since passthrough
-mode would obviously *also* preserve the RMRR regions of 1:1 mappings.
+
+The thing we *don't* do is faithfully preserve that 1:1 mapping for
+ever. If we assign the device to a VM guest, the RMRR mapping is lost.
+
+We've never preserved those mappings, and it's only ever been a
+problem on the insane crap that HP does with firmware-controlled DMA
+from stuff like storage controllers, which persists even at runtime
+after we're *using* said controller.
+
+(You might think it would have been easy enough for them to do their
+special DMA from another B-D-F but perhaps that would have been too
+easy for us.)
+
+It's extremely hard to preserve those mappings when assigning to a
+guest, because we'd actually have to poke a corresponding hole in the
+guest's physical address space (because in this case GPA=3D=3DIOVA and
+those IOVAs are being used by the BIOS with a 1:1 mapping to HPA).
+
+Hence Alex's patch which blacklisted the 'unknown' RMRR-afflicted
+devices and prevented them from being assigned to guests (and also it
+seems from honouring 'iommu=3Dpt'; qv.).
+
+> Is there any reason to *not* just ignore RMRR for all video devices
+> like we do now? Seriously?
+
+The video case is actually the *sanest* use of RMRR. With a
+framebuffer in main memory, the RMRR is the only thing that lets the
+graphics device continue to render pixels from the framebuffer after
+the IOMMU is initialised. So we *definitely* can't just 'ignore' the
+RMRR there. And we don't.
+
+But assignment of such graphics devices to guests *has* allegedly been
+working (and iommu=3Dpt is kind of nice too because of the performance
+issues), and there's no reason for them to be excluded. They can be
+lumped in with the USB devices as "OK to assign to guests".  We lose
+the 1:1 mapping indicated by the RMRR but that's OK because the guest
+has to initialise the hardware entirely for itself and set up its
+*own* framebuffer.
+
+> I'm *so* not impressed with firmware tables. These things are always
+> uniformly wrong. We should strive to generate the information from=20
+> our actual hardware knowledge, with BIOS tables being the absolutely
+> least trusted source of information.
+
+... which is why the whole of the VT-d design, exposing this crap
+through firmware tables instead of hardware discoverability, makes me
+cringe. But while I am tilting at windmills internally to at least get
+people to realise why that's such a design flaw, we still have to deal
+with this crap. And with the insane things that HP abuse it for.
+
 --=20
 dwmw2
---=-uicGNuqUGMskejC+hEex
+
+--=-KivwhwqANNlHZZr40Sso
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -156,28 +216,28 @@ Cmr47UQpqQ7BjK0xggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
 Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2
 BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMJ
 2TIwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMTUwNDI3MTcxMjMyWjAjBgkqhkiG9w0BCQQxFgQUEMbEFiK9k1WbZ4bOd/USl4IZNTcwgaUG
+DxcNMTUwNDI3MTcyODM5WjAjBgkqhkiG9w0BCQQxFgQUza9m6S42FqoMLRn+Rzp4f4ONEHIwgaUG
 CSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4x
 KzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0
 YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMJ2TIwgacGCyqG
 SIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEr
 MCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMvU3Rh
 cnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAwnZMjANBgkqhkiG
-9w0BAQEFAASCAQBBIcfw/DfcTQ7/BiR+XuVJSSmdNtgHqAshAOURU+LWen34oSaa2cBV7tjFzgHK
-KV8Oz74W2glrz7ETHcOWFomHppl3XF26hEmtYmojZH1D6sxEaougf8LTVTyDhCAiXCP/f4AKZGzM
-4FiOS8zk3w3B1SxgFRjEebkSdoi22nblnsvNoMoffk1QPZU1RtUvLbfariUH85mPVED52alfA+3e
-sRpBpOoCoZ7pgtsnPMeiDjviYgaUH3KE6iTWQv+6uurcSjiYZy6Cw1g6QQ2QNRMqwV5vOUYfDcGV
-tVC/nkEMzfv9xhckjFvTikDNzFiannayr2SBeRAiS0J3SJS2IEyaAAAAAAAA
+9w0BAQEFAASCAQCjZ4YmhC3FBIuxPRJO4UGBV2zccT+XDpIRYdI35gIkmwAo0My1Agz2cPpuK2gt
+EuFQO6BXpHesB5tQrszlljWXuA2TsZCwAys3A5dYOI6hyqxEwT86UxWiME7OqVUjA9oAedTSWZ+/
+JDl/JpNSyyehtX9Nsba4hVrPkSTTi70d0Mr8gKAVsBEETXXU1HONUqTYKYp2aM5TC9moUoJw3H73
+1GSk8TjHeABXgly6nHDFfwFeLokVCyKNR6q3a0fyWuW+QbxLDKvdhOh3Ajqta3LUS5xH3FUurXGy
+uin3JFkRyxDLOVN1aD3m36VG+ZirhtRneBy8Rj4z+uMYdJG5SN2GAAAAAAAA
 
 
---=-uicGNuqUGMskejC+hEex--
+--=-KivwhwqANNlHZZr40Sso--
 
 
---===============0704718160058109287==
+--===============1756773168035351432==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============0704718160058109287==--
+--===============1756773168035351432==--
