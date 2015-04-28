@@ -1,598 +1,70 @@
-From: Yong Wu <yong.wu@mediatek.com>
-Subject: [RFC PATCH] iommu: add ARM short descriptor page table allocator.
-Date: Tue, 28 Apr 2015 15:41:21 +0800
-Message-ID: <1430206881-18294-1-git-send-email-yong.wu@mediatek.com>
+From: Baoquan He <bhe@redhat.com>
+Subject: Re: [PATCH v10 0/10] iommu/vt-d: Fix intel vt-d faults in kdump
+ kernel
+Date: Tue, 28 Apr 2015 16:54:41 +0800
+Message-ID: <20150428085441.GI15033@dhcp-16-116.nay.redhat.com>
+References: <1428655333-19504-1-git-send-email-zhen-hual@hp.com>
+ <20150415005731.GC19051@localhost.localdomain>
+ <552DFB56.1070600@hp.com>
+ <20150415064803.GF19051@localhost.localdomain>
+ <20150424080147.GC4458@dhcp-16-116.nay.redhat.com>
+ <20150424082528.GA23912@dhcp-128-91.nay.redhat.com>
+ <20150424083530.GD4458@dhcp-16-116.nay.redhat.com>
+ <20150424084957.GC23912@dhcp-128-91.nay.redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Tomasz Figa <tfiga@google.com>, Lucas Stach <l.stach@pengutronix.de>, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, Yong Wu <yong.wu@mediatek.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20150424084957.GC23912@dhcp-128-91.nay.redhat.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Dave Young <dyoung@redhat.com>
+Cc: "Li, ZhenHua" <zhen-hual@hp.com>, dwmw2@infradead.org, indou.takao@jp.fujitsu.com, joro@8bytes.org, vgoyal@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
 List-Id: iommu@lists.linux-foundation.org
 
-This patch is for ARM Short Descriptor Format.It has 2-levels
-pagetable and the allocator supports 4K/64K/1M/16M.
+On 04/24/15 at 04:49pm, Dave Young wrote:
+> On 04/24/15 at 04:35pm, Baoquan He wrote:
+> > On 04/24/15 at 04:25pm, Dave Young wrote:
+> > > Hi, Baoquan
+> > > 
+> > > > I support this patchset.
+> > > > 
+> > > > We should not fear oldmem since reserved crashkernel region is similar.
+> > > > No one can guarantee that any crazy code won't step into crashkernel
+> > > > region just because 1st kernel says it's reversed for kdump kernel. Here
+> > > > the root table and context tables are also not built to allow legal code
+> > > > to danamge. Both of them has the risk to be corrupted, for trying our
+> > > > best to get a dumped vmcore the risk is worth being taken.
+> > > 
+> > > old mem is mapped in 1st kernel so compare with the reserved crashkernel
+> > > they are more likely to be corrupted. they are totally different. 
+> > 
+> > Could you tell how and why they are different? Wrong code will choose
+> > root tables and context tables to danamge when they totally lose
+> > control?
+> 
+> iommu will map io address to system ram, right? not to reserved ram, but
+> yes I'm assuming the page table is right, but I was worrying they are corrupted
+> while kernel panic is happening.
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
- drivers/iommu/Kconfig                |   7 +
- drivers/iommu/Makefile               |   1 +
- drivers/iommu/io-pgtable-arm-short.c | 489 +++++++++++++++++++++++++++++++++++
- drivers/iommu/io-pgtable.c           |   4 +
- drivers/iommu/io-pgtable.h           |   6 +
- 5 files changed, 507 insertions(+)
- create mode 100644 drivers/iommu/io-pgtable-arm-short.c
+OK, I think we may need to think more about the old context tables
+reuse. Currently dmar faults will cause error or warning message,
+occasionally will cause system with iommu hang in kdump kernel. I don't
+know what will happen if old root tables or context tables are corrupted
+by evil code. For kdump kernel which use the similar mechanism there's a
+verification. When load kdump kernel into reserved crashkernel region a
+sha256 sum is calculated, then verify it when jump into kdump kernel
+after panic. If corrupted context tables will bring worse result, then
+we need consider giving it up and change back to the old way and try
+to dump though there's error message.
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index baa0d97..8e50e73 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -38,6 +38,13 @@ config IOMMU_IO_PGTABLE_LPAE_SELFTEST
- 
- 	  If unsure, say N here.
- 
-+config IOMMU_IO_PGTABLE_SHORT
-+	bool "ARMv7/v8 Short Descriptor Format"
-+	select IOMMU_IO_PGTABLE
-+	help
-+	  Enable support for the ARM Short descriptor pagetable format.
-+	  It has 2-levels pagetable and The allocator supports 4K/64K/1M/16M.
-+
- endmenu
- 
- config IOMMU_IOVA
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 080ffab..815b3c8 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -3,6 +3,7 @@ obj-$(CONFIG_IOMMU_API) += iommu-traces.o
- obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
-+obj-$(CONFIG_IOMMU_IO_PGTABLE_SHORT) += io-pgtable-arm-short.o
- obj-$(CONFIG_IOMMU_IOVA) += iova.o
- obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
- obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o msm_iommu_dev.o
-diff --git a/drivers/iommu/io-pgtable-arm-short.c b/drivers/iommu/io-pgtable-arm-short.c
-new file mode 100644
-index 0000000..8d723ec
---- /dev/null
-+++ b/drivers/iommu/io-pgtable-arm-short.c
-@@ -0,0 +1,489 @@
-+/*
-+ * Copyright (c) 2014-2015 MediaTek Inc.
-+ * Author: Yong Wu <yong.wu@mediatek.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
-+#define pr_fmt(fmt)	"arm-short-desc io-pgtable: "fmt
-+
-+#include <linux/err.h>
-+#include <linux/mm.h>
-+#include <linux/iommu.h>
-+#include <linux/errno.h>
-+
-+#include "io-pgtable.h"
-+
-+typedef u32 arm_short_iopte;
-+
-+struct arm_short_io_pgtable {
-+	struct io_pgtable	iop;
-+	struct kmem_cache	*ptekmem;
-+	size_t			pgd_size;
-+	void			*pgd;
-+};
-+
-+#define io_pgtable_short_to_data(x)				\
-+	container_of((x), struct arm_short_io_pgtable, iop)
-+
-+#define io_pgtable_ops_to_pgtable(x)				\
-+	container_of((x), struct io_pgtable, ops)
-+
-+#define io_pgtable_short_ops_to_data(x)				\
-+	io_pgtable_short_to_data(io_pgtable_ops_to_pgtable(x))
-+
-+#define ARM_SHORT_MAX_ADDR_BITS			32
-+
-+#define ARM_SHORT_PGDIR_SHIFT			20
-+#define ARM_SHORT_PAGE_SHIFT			12
-+#define ARM_SHORT_PTRS_PER_PTE			256
-+#define ARM_SHORT_BYTES_PER_PTE			1024
-+
-+/* 1 level pagetable */
-+#define ARM_SHORT_F_PGD_TYPE_PAGE		(0x1)
-+#define ARM_SHORT_F_PGD_TYPE_PAGE_MSK		(0x3)
-+#define ARM_SHORT_F_PGD_TYPE_SECTION		(0x2)
-+#define ARM_SHORT_F_PGD_TYPE_SUPERSECTION	(0x2 | (1 << 18))
-+#define ARM_SHORT_F_PGD_TYPE_SECTION_MSK	(0x3 | (1 << 18))
-+#define ARM_SHORT_F_PGD_TYPE_IS_PAGE(pgd)	(((pgd) & 0x3) == 1)
-+#define ARM_SHORT_F_PGD_TYPE_IS_SECTION(pgd)		\
-+	(((pgd) & ARM_SHORT_F_PGD_TYPE_SECTION_MSK)	\
-+		== ARM_SHORT_F_PGD_TYPE_SECTION)
-+#define ARM_SHORT_F_PGD_TYPE_IS_SUPERSECTION(pgd)	\
-+	(((pgd) & ARM_SHORT_F_PGD_TYPE_SECTION_MSK)	\
-+		== ARM_SHORT_F_PGD_TYPE_SUPERSECTION)
-+
-+#define ARM_SHORT_F_PGD_B_BIT			BIT(2)
-+#define ARM_SHORT_F_PGD_C_BIT			BIT(3)
-+#define ARM_SHORT_F_PGD_IMPLE_BIT		BIT(9)
-+#define ARM_SHORT_F_PGD_S_BIT			BIT(16)
-+#define ARM_SHORT_F_PGD_NG_BIT			BIT(17)
-+#define ARM_SHORT_F_PGD_NS_BIT_PAGE		BIT(3)
-+#define ARM_SHORT_F_PGD_NS_BIT_SECTION		BIT(19)
-+
-+#define ARM_SHORT_F_PGD_PA_PAGETABLE_MSK	0xfffffc00
-+#define ARM_SHORT_F_PGD_PA_SECTION_MSK		0xfff00000
-+#define ARM_SHORT_F_PGD_PA_SUPERSECTION_MSK	0xff000000
-+
-+/* 2 level pagetable */
-+#define ARM_SHORT_F_PTE_TYPE_GET(val)		((val) & 0x3)
-+#define ARM_SHORT_F_PTE_TYPE_LARGE		BIT(0)
-+#define ARM_SHORT_F_PTE_TYPE_SMALL		BIT(1)
-+#define ARM_SHORT_F_PTE_B_BIT			BIT(2)
-+#define ARM_SHORT_F_PTE_C_BIT			BIT(3)
-+#define ARM_SHORT_F_PTE_IMPLE_BIT		BIT(9)
-+#define ARM_SHORT_F_PTE_S_BIT			BIT(10)
-+#define ARM_SHORT_F_PTE_PA_LARGE_MSK            0xffff0000
-+#define ARM_SHORT_F_PTE_PA_SMALL_MSK            0xfffff000
-+
-+#define ARM_SHORT_PGD_IDX(a)			((a) >> ARM_SHORT_PGDIR_SHIFT)
-+#define ARM_SHORT_PTE_IDX(a)			\
-+	(((a) >> ARM_SHORT_PAGE_SHIFT) & 0xff)
-+#define ARM_SHORT_GET_PTE_VA(pgd)		\
-+	(phys_to_virt((unsigned long)pgd & ARM_SHORT_F_PGD_PA_PAGETABLE_MSK))
-+
-+static arm_short_iopte *
-+arm_short_get_pte_in_pgd(arm_short_iopte curpgd, unsigned int iova)
-+{
-+	arm_short_iopte *pte;
-+
-+	pte = ARM_SHORT_GET_PTE_VA(curpgd);
-+	pte += ARM_SHORT_PTE_IDX(iova);
-+	return pte;
-+}
-+
-+static arm_short_iopte *
-+arm_short_supersection_start(arm_short_iopte *pgd)
-+{
-+	return (arm_short_iopte *)(round_down((unsigned long)pgd, (16 * 4)));
-+}
-+
-+static int _arm_short_check_free_pte(struct arm_short_io_pgtable *data,
-+				     arm_short_iopte *pgd)
-+{
-+	arm_short_iopte *pte;
-+	int i;
-+
-+	pte = ARM_SHORT_GET_PTE_VA(*pgd);
-+
-+	for (i = 0; i < ARM_SHORT_PTRS_PER_PTE; i++) {
-+		if (pte[i] != 0)
-+			return 1;
-+	}
-+
-+	/* Free PTE */
-+	kmem_cache_free(data->ptekmem, pte);
-+	*pgd = 0;
-+
-+	return 0;
-+}
-+
-+static phys_addr_t arm_short_iova_to_phys(struct io_pgtable_ops *ops,
-+					  unsigned long iova)
-+{
-+	struct arm_short_io_pgtable *data = io_pgtable_short_ops_to_data(ops);
-+	arm_short_iopte *pte, *pgd = data->pgd;
-+	phys_addr_t pa = 0;
-+
-+	pgd += ARM_SHORT_PGD_IDX(iova);
-+
-+	if (ARM_SHORT_F_PGD_TYPE_IS_PAGE(*pgd)) {
-+		pte = arm_short_get_pte_in_pgd(*pgd, iova);
-+
-+		if (ARM_SHORT_F_PTE_TYPE_GET(*pte)
-+		    == ARM_SHORT_F_PTE_TYPE_LARGE) {
-+			pa = (*pte) & ARM_SHORT_F_PTE_PA_LARGE_MSK;
-+			pa |= iova & (~ARM_SHORT_F_PTE_PA_LARGE_MSK);
-+		} else if (ARM_SHORT_F_PTE_TYPE_GET(*pte)
-+			   == ARM_SHORT_F_PTE_TYPE_SMALL) {
-+			pa = (*pte) & ARM_SHORT_F_PTE_PA_SMALL_MSK;
-+			pa |= iova & (~ARM_SHORT_F_PTE_PA_SMALL_MSK);
-+		}
-+	} else {
-+		if (ARM_SHORT_F_PGD_TYPE_IS_SECTION(*pgd)) {
-+			pa = (*pgd) & ARM_SHORT_F_PGD_PA_SECTION_MSK;
-+			pa |= iova & (~ARM_SHORT_F_PGD_PA_SECTION_MSK);
-+		} else if (ARM_SHORT_F_PGD_TYPE_IS_SUPERSECTION(*pgd)) {
-+			pa = (*pgd) & ARM_SHORT_F_PGD_PA_SUPERSECTION_MSK;
-+			pa |= iova & (~ARM_SHORT_F_PGD_PA_SUPERSECTION_MSK);
-+		}
-+	}
-+
-+	return pa;
-+}
-+
-+static int arm_short_unmap(struct io_pgtable_ops *ops, unsigned long iova,
-+			   size_t size)
-+{
-+	struct arm_short_io_pgtable *data = io_pgtable_short_ops_to_data(ops);
-+	arm_short_iopte *pgd;
-+	unsigned long iova_start = iova;
-+	unsigned long end_plus_1 = (unsigned long)iova + size;
-+	const struct iommu_gather_ops *tlb = data->iop.cfg.tlb;
-+	void *cookie = data->iop.cookie;
-+	int ret;
-+
-+	do {
-+		pgd = (arm_short_iopte *)data->pgd + ARM_SHORT_PGD_IDX(iova);
-+
-+		if (ARM_SHORT_F_PGD_TYPE_IS_PAGE(*pgd)) {
-+			arm_short_iopte *pte;
-+			unsigned int pte_offset;
-+			unsigned int num_to_clean;
-+
-+			pte_offset = ARM_SHORT_PTE_IDX(iova);
-+			num_to_clean =
-+			    min((unsigned int)((end_plus_1 - iova) / PAGE_SIZE),
-+				(ARM_SHORT_PTRS_PER_PTE - pte_offset));
-+
-+			pte = arm_short_get_pte_in_pgd(*pgd, iova);
-+
-+			memset(pte, 0, num_to_clean * sizeof(arm_short_iopte));
-+
-+			ret = _arm_short_check_free_pte(data, pgd);
-+			if (ret == 1)/* pte is not freed, need to flush pte */
-+				tlb->flush_pgtable(
-+					pte,
-+					num_to_clean * sizeof(arm_short_iopte),
-+					cookie);
-+			else
-+				tlb->flush_pgtable(pgd, sizeof(arm_short_iopte),
-+						   cookie);
-+
-+			iova += num_to_clean << PAGE_SHIFT;
-+		} else if (ARM_SHORT_F_PGD_TYPE_IS_SECTION(*pgd)) {
-+			*pgd = 0;
-+
-+			tlb->flush_pgtable(pgd, sizeof(arm_short_iopte),
-+					   cookie);
-+			iova += SZ_1M;
-+		} else if (ARM_SHORT_F_PGD_TYPE_IS_SUPERSECTION(*pgd)) {
-+			arm_short_iopte *start;
-+
-+			start = arm_short_supersection_start(pgd);
-+			if (unlikely(start != pgd))
-+				pr_warn("%s:suppersection start isn't aligned.iova=0x%lx,pgd=0x%x\n",
-+					__func__, iova, *pgd);
-+
-+			memset(start, 0, 16 * sizeof(arm_short_iopte));
-+
-+			tlb->flush_pgtable(start, 16 * sizeof(arm_short_iopte),
-+					   cookie);
-+
-+			iova = (iova + SZ_16M) & (~(SZ_16M - 1));
-+		} else {
-+			break;
-+		}
-+	} while (iova < end_plus_1 && iova);
-+
-+	tlb->tlb_add_flush(iova_start, size, true, cookie);
-+
-+	return 0;
-+}
-+
-+static arm_short_iopte __arm_short_pte_port(unsigned int prot, bool large)
-+{
-+	arm_short_iopte pteprot;
-+
-+	pteprot = ARM_SHORT_F_PTE_S_BIT;
-+
-+	pteprot |= large ? ARM_SHORT_F_PTE_TYPE_LARGE :
-+				ARM_SHORT_F_PTE_TYPE_SMALL;
-+
-+	if (prot & IOMMU_CACHE)
-+		pteprot |=  ARM_SHORT_F_PTE_B_BIT | ARM_SHORT_F_PTE_C_BIT;
-+
-+	return pteprot;
-+}
-+
-+static arm_short_iopte __arm_short_pgd_port(int prot, bool super)
-+{
-+	arm_short_iopte pgdprot;
-+
-+	pgdprot = ARM_SHORT_F_PGD_S_BIT;
-+	pgdprot |= super ? ARM_SHORT_F_PGD_TYPE_SUPERSECTION :
-+				ARM_SHORT_F_PGD_TYPE_SECTION;
-+	if (prot & IOMMU_CACHE)
-+		pgdprot |= ARM_SHORT_F_PGD_C_BIT | ARM_SHORT_F_PGD_B_BIT;
-+
-+	return pgdprot;
-+}
-+
-+static int _arm_short_map_page(struct arm_short_io_pgtable *data,
-+			       unsigned int iova, phys_addr_t pa,
-+			       unsigned int prot, bool largepage)
-+{
-+	arm_short_iopte *pgd = data->pgd;
-+	arm_short_iopte *pte;
-+	arm_short_iopte pgdprot, pteprot;
-+	arm_short_iopte mask = largepage ? ARM_SHORT_F_PTE_PA_LARGE_MSK :
-+						ARM_SHORT_F_PTE_PA_SMALL_MSK;
-+	int i, ptenum = largepage ? 16 : 1;
-+	bool ptenew = false;
-+	void *pte_new_va;
-+	void *cookie = data->iop.cookie;
-+
-+	if ((iova | pa) & (~mask)) {
-+		pr_err("IOVA|PA Not Aligned(iova=0x%x pa=0x%pa type=%s)\n",
-+		       iova, &pa, largepage ? "large page" : "small page");
-+		return -EINVAL;
-+	}
-+
-+	pgdprot = ARM_SHORT_F_PGD_TYPE_PAGE;
-+	if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_ARM_NS)
-+		pgdprot |= ARM_SHORT_F_PGD_NS_BIT_PAGE;
-+
-+	pgd += ARM_SHORT_PGD_IDX(iova);
-+
-+	if (!(*pgd)) {
-+		pte_new_va = kmem_cache_zalloc(data->ptekmem, GFP_KERNEL);
-+		if (unlikely(!pte_new_va)) {
-+			pr_err("Failed to alloc pte\n");
-+			return -ENOMEM;
-+		}
-+
-+		/* Check pte alignment -- must 1K align */
-+		if (unlikely((unsigned long)pte_new_va &
-+			     (ARM_SHORT_BYTES_PER_PTE - 1))) {
-+			pr_err("The new pte is not aligned! (va=0x%p)\n",
-+			       pte_new_va);
-+			kmem_cache_free(data->ptekmem, (void *)pte_new_va);
-+			return -ENOMEM;
-+		}
-+		ptenew = true;
-+		*pgd = virt_to_phys(pte_new_va) | pgdprot;
-+		kmemleak_ignore(pte_new_va);
-+		data->iop.cfg.tlb->flush_pgtable(pgd, sizeof(arm_short_iopte),
-+						 cookie);
-+	} else {
-+		/* Someone else may have allocated for this pgd */
-+		if (((*pgd) & (~ARM_SHORT_F_PGD_PA_PAGETABLE_MSK)) != pgdprot) {
-+			pr_err("The prot of old pgd is not Right!iova=0x%x pgd=0x%x pgprot=0x%x\n",
-+			       iova, (*pgd), pgdprot);
-+			return -EEXIST;
-+		}
-+	}
-+
-+	pteprot = (arm_short_iopte)pa;
-+	pteprot |= __arm_short_pte_port(prot, largepage);
-+
-+	pte = arm_short_get_pte_in_pgd(*pgd, iova);
-+
-+	pr_debug("iova:0x%x,pte:0x%p(0x%x),prot:0x%x-%s\n",
-+		 iova, pte, ARM_SHORT_PTE_IDX(iova), pteprot,
-+		 largepage ? "large page" : "small page");
-+
-+	for (i = 0; i < ptenum; i++) {
-+		if (pte[i]) {
-+			pr_err("The To-Map pte exists!(iova=0x%x pte=0x%x i=%d)\n",
-+			       iova, pte[i], i);
-+			goto err_out;
-+		}
-+		pte[i] = pteprot;
-+	}
-+
-+	data->iop.cfg.tlb->flush_pgtable(pte, ptenum * sizeof(arm_short_iopte),
-+					 cookie);
-+	return 0;
-+
-+ err_out:
-+	for (i--; i >= 0; i--)
-+		pte[i] = 0;
-+	if (ptenew)
-+		kmem_cache_free(data->ptekmem, pte_new_va);
-+	return -EEXIST;
-+}
-+
-+static int _arm_short_map_section(struct arm_short_io_pgtable *data,
-+				  unsigned int iova, phys_addr_t pa,
-+				  int prot, bool supersection)
-+{
-+	arm_short_iopte pgprot;
-+	arm_short_iopte mask = supersection ?
-+				ARM_SHORT_F_PGD_PA_SUPERSECTION_MSK :
-+				ARM_SHORT_F_PGD_PA_SECTION_MSK;
-+	arm_short_iopte *pgd = data->pgd;
-+	int i;
-+	unsigned int pgdnum = supersection ? 16 : 1;
-+
-+	if ((iova | pa) & (~mask)) {
-+		pr_err("IOVA|PA Not Aligned(iova=0x%x pa=0x%pa type=%s)\n",
-+		       iova, &pa, supersection ? "supersection" : "section");
-+		return -EINVAL;
-+	}
-+
-+	pgprot = (arm_short_iopte)pa;
-+
-+	if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_ARM_NS)
-+		pgprot |= ARM_SHORT_F_PGD_NS_BIT_SECTION;
-+
-+	pgprot |= __arm_short_pgd_port(prot, supersection);
-+
-+	pgd += ARM_SHORT_PGD_IDX(iova);
-+
-+	pr_debug("iova:0x%x,pgd:0x%p(0x%p+0x%x),value:0x%x-%s\n",
-+		 iova, pgd, data->pgd, ARM_SHORT_PGD_IDX(iova),
-+		 pgprot, supersection ? "supersection" : "section");
-+
-+	for (i = 0; i < pgdnum; i++) {
-+		if (unlikely(*pgd)) {
-+			pr_err("The To-Map pdg exists!(iova=0x%x pgd=0x%x i=%d)\n",
-+			       iova, pgd[i], i);
-+			goto err_out;
-+		}
-+		pgd[i] = pgprot;
-+	}
-+	data->iop.cfg.tlb->flush_pgtable(pgd,
-+					 pgdnum * sizeof(arm_short_iopte),
-+					 data->iop.cookie);
-+	return 0;
-+
-+ err_out:
-+	for (i--; i >= 0; i--)
-+		pgd[i] = 0;
-+	return -EEXIST;
-+}
-+
-+static int arm_short_map(struct io_pgtable_ops *ops, unsigned long iova,
-+			 phys_addr_t paddr, size_t size, int prot)
-+{
-+	struct arm_short_io_pgtable *data = io_pgtable_short_ops_to_data(ops);
-+	const struct iommu_gather_ops *tlb = data->iop.cfg.tlb;
-+	int ret;
-+
-+	if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
-+		return -EINVAL;
-+
-+	if (size == SZ_4K) {/* most case */
-+		ret = _arm_short_map_page(data, iova, paddr, prot, false);
-+	} else if (size == SZ_64K) {
-+		ret = _arm_short_map_page(data, iova, paddr, prot, true);
-+	} else if (size == SZ_1M) {
-+		ret = _arm_short_map_section(data, iova, paddr, prot, false);
-+	} else if (size == SZ_16M) {
-+		ret = _arm_short_map_section(data, iova, paddr, prot, true);
-+	} else {
-+		ret = -EINVAL;
-+	}
-+	tlb->tlb_add_flush(iova, size, true, data->iop.cookie);
-+	return ret;
-+}
-+
-+static struct io_pgtable *
-+arm_short_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
-+{
-+	struct arm_short_io_pgtable *data;
-+
-+	if (cfg->ias != 32)
-+		return NULL;
-+
-+	if (cfg->oas > ARM_SHORT_MAX_ADDR_BITS)
-+		return NULL;
-+
-+	cfg->pgsize_bitmap &= SZ_4K | SZ_64K | SZ_1M | SZ_16M;
-+
-+	data = kzalloc(sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return NULL;
-+
-+	data->pgd_size = SZ_16K;
-+
-+	data->pgd = alloc_pages_exact(data->pgd_size, GFP_KERNEL | __GFP_ZERO);
-+	if (!data->pgd)
-+		goto out_free_data;
-+
-+	cfg->tlb->flush_pgtable(data->pgd, data->pgd_size, cookie);
-+
-+	/* kmem for pte */
-+	data->ptekmem = kmem_cache_create("short-descriptor-pte",
-+					   ARM_SHORT_BYTES_PER_PTE,
-+					   ARM_SHORT_BYTES_PER_PTE,
-+					   0, NULL);
-+
-+	if (IS_ERR_OR_NULL(data->ptekmem)) {
-+		pr_err("Failed to Create cached mem for PTE %ld\n",
-+		       PTR_ERR(data->ptekmem));
-+		goto out_free_pte;
-+	}
-+
-+	/* TTBRs */
-+	cfg->arm_short_cfg.ttbr[0] = virt_to_phys(data->pgd);
-+	cfg->arm_short_cfg.ttbr[1] = 0;
-+
-+	cfg->arm_short_cfg.tcr = 0;
-+
-+	data->iop.ops = (struct io_pgtable_ops) {
-+		.map		= arm_short_map,
-+		.unmap		= arm_short_unmap,
-+		.iova_to_phys	= arm_short_iova_to_phys,
-+	};
-+
-+	return &data->iop;
-+
-+out_free_pte:
-+	free_pages_exact(data->pgd, data->pgd_size);
-+out_free_data:
-+	kfree(data);
-+	return NULL;
-+}
-+
-+static void arm_short_free_pgtable(struct io_pgtable *iop)
-+{
-+	struct arm_short_io_pgtable *data = io_pgtable_short_to_data(iop);
-+
-+	kmem_cache_destroy(data->ptekmem);
-+	free_pages_exact(data->pgd, data->pgd_size);
-+	kfree(data);
-+}
-+
-+struct io_pgtable_init_fns io_pgtable_arm_short_init_fns = {
-+	.alloc	= arm_short_alloc_pgtable,
-+	.free	= arm_short_free_pgtable,
-+};
-+
-diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
-index 6436fe2..14a9b3a 100644
---- a/drivers/iommu/io-pgtable.c
-+++ b/drivers/iommu/io-pgtable.c
-@@ -28,6 +28,7 @@ extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s1_init_fns;
- extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s2_init_fns;
- extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns;
- extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns;
-+extern struct io_pgtable_init_fns io_pgtable_arm_short_init_fns;
- 
- static const struct io_pgtable_init_fns *
- io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] =
-@@ -38,6 +39,9 @@ io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] =
- 	[ARM_64_LPAE_S1] = &io_pgtable_arm_64_lpae_s1_init_fns,
- 	[ARM_64_LPAE_S2] = &io_pgtable_arm_64_lpae_s2_init_fns,
- #endif
-+#ifdef CONFIG_IOMMU_IO_PGTABLE_SHORT
-+	[ARM_SHORT_DESC] = &io_pgtable_arm_short_init_fns,
-+#endif
- };
- 
- struct io_pgtable_ops *alloc_io_pgtable_ops(enum io_pgtable_fmt fmt,
-diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-index 10e32f6..47efaab 100644
---- a/drivers/iommu/io-pgtable.h
-+++ b/drivers/iommu/io-pgtable.h
-@@ -9,6 +9,7 @@ enum io_pgtable_fmt {
- 	ARM_32_LPAE_S2,
- 	ARM_64_LPAE_S1,
- 	ARM_64_LPAE_S2,
-+	ARM_SHORT_DESC,
- 	IO_PGTABLE_NUM_FMTS,
- };
- 
-@@ -62,6 +63,11 @@ struct io_pgtable_cfg {
- 			u64	vttbr;
- 			u64	vtcr;
- 		} arm_lpae_s2_cfg;
-+
-+		struct {
-+			u64	ttbr[2];
-+			u64	tcr;
-+		} arm_short_cfg;
- 	};
- };
- 
--- 
-1.8.1.1.dirty
+Hi Zhenhua,
+
+I don't know what's your plan about verification whether old root tables
+or old context tables are corrupted. Or have you experimented that what
+will happen if old tables are corrupted on purpose.
+
+I am fine if you just put this in a TODO list since that's truly in a
+rare case. But it maybe necessary to tell it in patch log.
+
+Thanks
+Baoquan
