@@ -1,79 +1,79 @@
-From: "Li, ZhenHua" <zhen-hual@hp.com>
-Subject: Re: [PATCH v10 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
-Date: Tue, 28 Apr 2015 17:00:28 +0800
-Message-ID: <553F4C2C.30707@hp.com>
-References: <1428655333-19504-1-git-send-email-zhen-hual@hp.com> <20150415005731.GC19051@localhost.localdomain> <552DFB56.1070600@hp.com> <20150415064803.GF19051@localhost.localdomain> <20150424080147.GC4458@dhcp-16-116.nay.redhat.com> <20150424082528.GA23912@dhcp-128-91.nay.redhat.com> <20150424083530.GD4458@dhcp-16-116.nay.redhat.com> <20150424084957.GC23912@dhcp-128-91.nay.redhat.com> <20150428085441.GI15033@dhcp-16-116.nay.redhat.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH] arm: dma-mapping: fix off-by-one check in
+	arm_setup_iommu_dma_ops
+Date: Tue, 28 Apr 2015 11:08:09 +0200
+Message-ID: <1430212089-5418-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20150428085441.GI15033@dhcp-16-116.nay.redhat.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Baoquan He <bhe@redhat.com>
-Cc: Dave Young <dyoung@redhat.com>, dwmw2@infradead.org, indou.takao@jp.fujitsu.com, joro@8bytes.org, vgoyal@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com, "Li, ZhenHua" <zhen-hual@hp.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Baoquan,
+Patch 22b3c181c6c324a46f71aae806d8ddbe61d25761 ("arm: dma-mapping: limit
+IOMMU mapping size") added a check for IO address space size. However
+this patch broke IOMMU initialization for typical platforms initialized
+from device tree, which get the default IO address space size of 4GiB.
+This value doesn't fit into size_t and fails a check introduced by that
+commit resulting in failed dma-mapping/iommu initialization. This patch
+fixes this issue by adding proper support for full 4GiB address space
+size.
 
-If old tables are corrupted, we will see the DMAR faults or INTR faults
-(which we have seen), or some other error messages. Most of these
-messages are from hardware. This means, hardware will do some check when 
-running. But I don't think hardware will completely check the
-tables.
+Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+---
+ arch/arm/include/asm/dma-iommu.h | 2 +-
+ arch/arm/mm/dma-mapping.c        | 9 +++------
+ 2 files changed, 4 insertions(+), 7 deletions(-)
 
-Till now, I do not have a good idea to do the check in kdump kernel.
-
-
-Thanks
-Zhenhua
-
-
-On 04/28/2015 04:54 PM, Baoquan He wrote:
-> On 04/24/15 at 04:49pm, Dave Young wrote:
->> On 04/24/15 at 04:35pm, Baoquan He wrote:
->>> On 04/24/15 at 04:25pm, Dave Young wrote:
->>>> Hi, Baoquan
->>>>
->>>>> I support this patchset.
->>>>>
->>>>> We should not fear oldmem since reserved crashkernel region is similar.
->>>>> No one can guarantee that any crazy code won't step into crashkernel
->>>>> region just because 1st kernel says it's reversed for kdump kernel. Here
->>>>> the root table and context tables are also not built to allow legal code
->>>>> to danamge. Both of them has the risk to be corrupted, for trying our
->>>>> best to get a dumped vmcore the risk is worth being taken.
->>>>
->>>> old mem is mapped in 1st kernel so compare with the reserved crashkernel
->>>> they are more likely to be corrupted. they are totally different.
->>>
->>> Could you tell how and why they are different? Wrong code will choose
->>> root tables and context tables to danamge when they totally lose
->>> control?
->>
->> iommu will map io address to system ram, right? not to reserved ram, but
->> yes I'm assuming the page table is right, but I was worrying they are corrupted
->> while kernel panic is happening.
->
-> OK, I think we may need to think more about the old context tables
-> reuse. Currently dmar faults will cause error or warning message,
-> occasionally will cause system with iommu hang in kdump kernel. I don't
-> know what will happen if old root tables or context tables are corrupted
-> by evil code. For kdump kernel which use the similar mechanism there's a
-> verification. When load kdump kernel into reserved crashkernel region a
-> sha256 sum is calculated, then verify it when jump into kdump kernel
-> after panic. If corrupted context tables will bring worse result, then
-> we need consider giving it up and change back to the old way and try
-> to dump though there's error message.
->
-> Hi Zhenhua,
->
-> I don't know what's your plan about verification whether old root tables
-> or old context tables are corrupted. Or have you experimented that what
-> will happen if old tables are corrupted on purpose.
->
-> I am fine if you just put this in a TODO list since that's truly in a
-> rare case. But it maybe necessary to tell it in patch log.
->
-> Thanks
-> Baoquan
->
+diff --git a/arch/arm/include/asm/dma-iommu.h b/arch/arm/include/asm/dma-iommu.h
+index 8e3fcb924db6..2ef282f96651 100644
+--- a/arch/arm/include/asm/dma-iommu.h
++++ b/arch/arm/include/asm/dma-iommu.h
+@@ -25,7 +25,7 @@ struct dma_iommu_mapping {
+ };
+ 
+ struct dma_iommu_mapping *
+-arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, size_t size);
++arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, u64 size);
+ 
+ void arm_iommu_release_mapping(struct dma_iommu_mapping *mapping);
+ 
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index 09c5fe3d30c2..b43b762eebc1 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -1878,7 +1878,7 @@ struct dma_map_ops iommu_coherent_ops = {
+  * arm_iommu_attach_device function.
+  */
+ struct dma_iommu_mapping *
+-arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, size_t size)
++arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, u64 size)
+ {
+ 	unsigned int bits = size >> PAGE_SHIFT;
+ 	unsigned int bitmap_size = BITS_TO_LONGS(bits) * sizeof(long);
+@@ -2057,11 +2057,8 @@ static bool arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size,
+ 	if (!iommu)
+ 		return false;
+ 
+-	/*
+-	 * currently arm_iommu_create_mapping() takes a max of size_t
+-	 * for size param. So check this limit for now.
+-	 */
+-	if (size > SIZE_MAX)
++	/* Only 32-bit DMA address space is supported for now */
++	if (size > DMA_BIT_MASK(32) + 1)
+ 		return false;
+ 
+ 	mapping = arm_iommu_create_mapping(dev->bus, dma_base, size);
+-- 
+1.9.2
