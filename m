@@ -1,17 +1,15 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH 2/5] iommu/mediatek: Add mt8173 IOMMU driver
-Date: Wed, 29 Apr 2015 14:23:27 +0800
-Message-ID: <1430288607.24151.40.camel@mhfsdcap03>
-References: <1425638900-24989-1-git-send-email-yong.wu@mediatek.com>
-	<1425638900-24989-3-git-send-email-yong.wu@mediatek.com>
-	<CAAFQd5ASywTX7P9L8cogBbBTra0W1=oVxeWfK5=K7L+SR2xaFA@mail.gmail.com>
-	<1426677749.22581.38.camel@mhfsdcap03>
-	<CAAFQd5DOzFmfXki8GwUC75VQFEWzxBUNUgOtSuRtV6tc27kD2A@mail.gmail.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH] arm: dma-mapping: fix off-by-one check in
+	arm_setup_iommu_dma_ops
+Date: Wed, 29 Apr 2015 08:46:06 +0200
+Message-ID: <55407E2E.7060102@samsung.com>
+References: <1430212089-5418-1-git-send-email-m.szyprowski@samsung.com>
+	<553F9EA8.7030403@arm.com> <553FA2E3.30402@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAAFQd5DOzFmfXki8GwUC75VQFEWzxBUNUgOtSuRtV6tc27kD2A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-reply-to: <553FA2E3.30402-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,95 +19,112 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Murali Karicheri <m-karicheri2-l0cyMroinI0@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Dear Tomasz,
-     About a hardcode your comment, please help check below.
+Hello,
 
-Dear Mark,
-      I would like to add a item in the dtsi of mtk-iommu. Please also
-help have a look.
+On 2015-04-28 17:10, Robin Murphy wrote:
+> On 28/04/15 15:52, Robin Murphy wrote:
+>> Hi Marek,
+>>
+>> On 28/04/15 10:08, Marek Szyprowski wrote:
+>>> Patch 22b3c181c6c324a46f71aae806d8ddbe61d25761 ("arm: dma-mapping: 
+>>> limit
+>>> IOMMU mapping size") added a check for IO address space size. However
+>>> this patch broke IOMMU initialization for typical platforms initialized
+>>> from device tree, which get the default IO address space size of 4GiB.
+>>> This value doesn't fit into size_t and fails a check introduced by that
+>>> commit resulting in failed dma-mapping/iommu initialization. This patch
+>>> fixes this issue by adding proper support for full 4GiB address space
+>>> size.
+>>>
+>>> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+>>
+>> Much nicer than my hack of just passing in size-1, thanks! I'd offer a
+>> tested-by for the default 32-bit case, however...
+>>
+>>> ---
+>>>    arch/arm/include/asm/dma-iommu.h | 2 +-
+>>>    arch/arm/mm/dma-mapping.c        | 9 +++------
+>>>    2 files changed, 4 insertions(+), 7 deletions(-)
+>>>
+>>> diff --git a/arch/arm/include/asm/dma-iommu.h 
+>>> b/arch/arm/include/asm/dma-iommu.h
+>>> index 8e3fcb924db6..2ef282f96651 100644
+>>> --- a/arch/arm/include/asm/dma-iommu.h
+>>> +++ b/arch/arm/include/asm/dma-iommu.h
+>>> @@ -25,7 +25,7 @@ struct dma_iommu_mapping {
+>>>    };
+>>>
+>>>    struct dma_iommu_mapping *
+>>> -arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, 
+>>> size_t size);
+>>> +arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, u64 
+>>> size);
+>>>
+>>>    void arm_iommu_release_mapping(struct dma_iommu_mapping *mapping);
+>>>
+>>> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+>>> index 09c5fe3d30c2..b43b762eebc1 100644
+>>> --- a/arch/arm/mm/dma-mapping.c
+>>> +++ b/arch/arm/mm/dma-mapping.c
+>>> @@ -1878,7 +1878,7 @@ struct dma_map_ops iommu_coherent_ops = {
+>>>     * arm_iommu_attach_device function.
+>>>     */
+>>>    struct dma_iommu_mapping *
+>>> -arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, 
+>>> size_t size)
+>>> +arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, u64 
+>>> size)
+>>>    {
+>>>        unsigned int bits = size >> PAGE_SHIFT;
+>>
+>> ...doesn't this u64->int conversion now have the potential to truncate
+>> (if the device has a large enough DMA mask specified) and end up
+>> generating a weirdly small mapping rather than failing outright?
+>> Admittedly you'd have to have a 44-bit or larger DMA mask, and I'm not
+>> sure what the practical likelihood of seeing that even on LPAE systems
+>> is, but still I'm a little uneasy about it.
+>
+> ...by which I mean we should move the current size check into 
+> arm_iommu_create_mapping itself, rather than relying on the caller, 
+> because looking at dependent bits of code in isolation can be 
+> confusing ;)
 
+Okay, no problem. I will move this check to arm_iommu_create_mapping() 
+and the
+problem of potential truncating will be solved. This fix is really 
+needed for
+v4.1-rcX. For next releases this will be probably rewritten for common 
+code with
+arm64 anyway.
 
-> > > +static const struct mtk_iommu_port mtk_iommu_mt8173_port[] = {
-> > > +       /* port name                m4uid slaveid larbid portid
-tfid */
-> > > +       /* larb0 */
-> > > +       {"M4U_PORT_DISP_OVL0",          0,  0,    0,  0,
-MTK_TFID(0, 0)},
-> > > +       {"M4U_PORT_DISP_RDMA0",         0,  0,    0,  1,
-MTK_TFID(0, 1)},
-> > > +       {"M4U_PORT_DISP_WDMA0",         0,  0,    0,  2,
-MTK_TFID(0, 2)},
-> > > +       {"M4U_PORT_DISP_OD_R",          0,  0,    0,  3,
-MTK_TFID(0, 3)},
-> > > +       {"M4U_PORT_DISP_OD_W",          0,  0,    0,  4,
-MTK_TFID(0, 4)},
-> > > +       {"M4U_PORT_MDP_RDMA0",          0,  0,    0,  5,
-MTK_TFID(0, 5)},
-> > > +       {"M4U_PORT_MDP_WDMA",           0,  0,    0,  6,
-MTK_TFID(0, 6)},
-> > > +       {"M4U_PORT_MDP_WROT0",          0,  0,    0,  7,
-MTK_TFID(0, 7)},
-[...]
-> 
-> > > +};
-> > > +
-> > 
-> > Anyway, is it really necessary to hardcode the SoC specific topology
-> > data in this driver? Is there really any use besides of printing
-port
-> > name? If not, you could just print the values in a way letting you
-> > quickly look up in the datasheet, without hardcoding this. Or even
-> > better, you could print which devices are attached to the port.
-> > 
-> a) Printing the port name is for debug. We could not request every
-iommu
-> user to understand smi&local arbiter. When there is irq, they have to
-> look up the iommu's datasheet to find out which port error. if we
-print
-> it directly, It may be more easily to debug.
-> 
-> b) In mtk_iommu_config_port, according to this hardcode we can be
-easily
-> to get out which local arbiter and which port we prepare to config.
-> 
-> c) If we support different SOCs, we could change this arrays easily.
-> 
-> > 
-     There is no similar code in the others iommu, so I prepare to
-delete it, But we really need know which local arbiter and which port we
-are going to config(which port will enable iommu)
-        so we prepare add a item in the dtsi like this:
+>
+> Robin.
+>
+>>>        unsigned int bitmap_size = BITS_TO_LONGS(bits) * sizeof(long);
+>>> @@ -2057,11 +2057,8 @@ static bool arm_setup_iommu_dma_ops(struct 
+>>> device *dev, u64 dma_base, u64 size,
+>>>        if (!iommu)
+>>>            return false;
+>>>
+>>> -    /*
+>>> -     * currently arm_iommu_create_mapping() takes a max of size_t
+>>> -     * for size param. So check this limit for now.
+>>> -     */
+>>> -    if (size > SIZE_MAX)
+>>> +    /* Only 32-bit DMA address space is supported for now */
+>>> +    if (size > DMA_BIT_MASK(32) + 1)
+>>>            return false;
+>>>
+>>>        mapping = arm_iommu_create_mapping(dev->bus, dma_base, size);
+>>>
+>>
+>
 
-	iommu: mmsys_iommu@10205000 {
-			compatible = "mediatek,mt8173-iommu";
-			<...>
-+			larb-portes-nr = <M4U_LARB0_PORT_NR
-+					 M4U_LARB1_PORT_NR
-+					 M4U_LARB2_PORT_NR
-+					 M4U_LARB3_PORT_NR
-+					 M4U_LARB4_PORT_NR
-+					 M4U_LARB5_PORT_NR>;
-			larb = <&larb0 &larb1 &larb2 &larb3 &larb4 &larb5>;
-			#iommu-cells = <1>;
-		};
-	larb-portes-nr : the number of the portes in each local arbiter.
-        
-	If we have this item, we can get which larb and which port from the
-portid in the dtsi of the iommu user.
-
-        And while there is isr, I will print the larb-id and the port-id
-instead of the string of the port name.
-
-	The M4U_LARB0_PORT_NR/... will be added in
-dt-bindings/iommu/mt8173-iommu-port.h[0]
-
-Dear Mark, 
-      As above, if I add this item in the dtsi of iommu, is it ok?
-
-
-[0]:http://lists.linuxfoundation.org/pipermail/iommu/2015-March/012450.html
- 
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
