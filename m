@@ -1,68 +1,52 @@
-From: <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 0/6] IOMMU/DMA map_resource support for peer-to-peer
-Date: Fri, 1 May 2015 13:32:12 -0500
-Message-ID: <1430505138-2877-1-git-send-email-wdavis@nvidia.com>
+From: <wdavis@nvidia.com>
+Subject: [PATCH 3/6] dma-mapping: pci: add pci_(un)map_resource
+Date: Fri, 1 May 2015 13:32:15 -0500
+Message-ID: <1430505138-2877-4-git-send-email-wdavis@nvidia.com>
+References: <1430505138-2877-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, tripperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1430505138-2877-1-git-send-email-wdavis@nvidia.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, tripperda@nvidia.com, jhubbard@nvidia.com, jglisse@redhat.com, Will Davis <wdavis@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+From: Will Davis <wdavis@nvidia.com>
 
-Hi,
+Simply route these through to the new dma_(un)map_resource APIs.
 
-This patch series adds DMA APIs to map and unmap a struct resource to and from
-a PCI device's IOVA domain, and implements the AMD, Intel, and nommu versions
-of these interfaces.
+Signed-off-by: Will Davis <wdavis@nvidia.com>
+Reviewed-by: Terence Ripperda <tripperda@nvidia.com>
+Reviewed-by: John Hubbard <jhubbard@nvidia.com>
+---
+ include/asm-generic/pci-dma-compat.h | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-This solves a long-standing problem with the existing DMA-remapping interfaces,
-which require that a struct page be given for the region to be mapped into a
-device's IOVA domain. This requirement cannot support peer device BAR ranges,
-for which no struct pages exist.
-
-The underlying implementations of map_page and map_sg convert the struct page
-into its physical address anyway, so we just need a way to route the physical
-address of the BAR region to these implementations. The new interfaces do this
-by taking the struct resource describing a device's BAR region, from which the
-physical address is derived.
-
-The Intel and nommu versions have been verified on a dual Intel Xeon E5405
-workstation. I'm in the process of obtaining hardware to test the AMD version
-as well. Please review.
-
-Thanks,
-Will
-
-Will Davis (6):
-  dma-debug: add checking for map/unmap_resource
-  DMA-API: Introduce dma_(un)map_resource
-  dma-mapping: pci: add pci_(un)map_resource
-  iommu/amd: Implement (un)map_resource
-  iommu/vt-d: implement (un)map_resource
-  x86: add pci-nommu implementation of map_resource
-
- arch/x86/kernel/pci-nommu.c              | 17 +++++++
- drivers/iommu/amd_iommu.c                | 76 ++++++++++++++++++++++++++------
- drivers/iommu/intel-iommu.c              | 18 ++++++++
- include/asm-generic/dma-mapping-broken.h |  9 ++++
- include/asm-generic/dma-mapping-common.h | 34 ++++++++++++++
- include/asm-generic/pci-dma-compat.h     | 14 ++++++
- include/linux/dma-debug.h                | 20 +++++++++
- include/linux/dma-mapping.h              |  7 +++
- lib/dma-debug.c                          | 48 ++++++++++++++++++++
- 9 files changed, 230 insertions(+), 13 deletions(-)
-
+diff --git a/include/asm-generic/pci-dma-compat.h b/include/asm-generic/pci-dma-compat.h
+index c110843..ac4a4ad 100644
+--- a/include/asm-generic/pci-dma-compat.h
++++ b/include/asm-generic/pci-dma-compat.h
+@@ -61,6 +61,20 @@ pci_unmap_page(struct pci_dev *hwdev, dma_addr_t dma_address,
+ 	dma_unmap_page(hwdev == NULL ? NULL : &hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
+ }
+ 
++static inline dma_addr_t
++pci_map_resource(struct pci_dev *hwdev, struct resource *resource,
++		 unsigned long offset, size_t size, int direction)
++{
++	return dma_map_resource(hwdev == NULL ? NULL : &hwdev->dev, resource, offset, size, (enum dma_data_direction)direction);
++}
++
++static inline void
++pci_unmap_resource(struct pci_dev *hwdev, dma_addr_t dma_address, size_t size,
++		   int direction)
++{
++	dma_unmap_resource(hwdev == NULL ? NULL : &hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
++}
++
+ static inline int
+ pci_map_sg(struct pci_dev *hwdev, struct scatterlist *sg,
+ 	   int nents, int direction)
 -- 
 2.3.7
