@@ -1,103 +1,62 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH] iommu/arm-smmu: Fix sign-extension of upstream bus addresses
-	at stage 1
-Date: Fri,  1 May 2015 17:19:20 +0100
-Message-ID: <1430497160-26427-1-git-send-email-will.deacon@arm.com>
+From: <wdavis@nvidia.com>
+Subject: [PATCH 6/6] x86: add pci-nommu implementation of map_resource
+Date: Fri, 1 May 2015 13:32:18 -0500
+Message-ID: <1430505138-2877-7-git-send-email-wdavis@nvidia.com>
+References: <1430505138-2877-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1430505138-2877-1-git-send-email-wdavis@nvidia.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, tripperda@nvidia.com, jhubbard@nvidia.com, jglisse@redhat.com, Will Davis <wdavis@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Stage 1 translation is controlled by two sets of page tables (TTBR0 and
-TTBR1) which grow up and down from zero respectively in the ARMv8
-translation regime. For the SMMU, we only care about TTBR0 and, in the
-case of a 48-bit virtual space, we expect to map virtual addresses 0x0
-through to 0xffff_ffff_ffff.
+From: Will Davis <wdavis@nvidia.com>
 
-Given that some masters may be incapable of emitting virtual addresses
-targetting TTBR1 (e.g. because they sit on a 48-bit bus), the SMMU
-architecture allows bit 47 to be sign-extended, halving the virtual
-range of TTBR0 but allowing TTBR1 to be used. This is controlled by the
-SEP field in TTBCR2.
+Simply pass through the physical address as the DMA address.
 
-The SMMU driver incorrectly enables this sign-extension feature, which
-causes problems when userspace addresses are programmed into a master
-device with the SMMU expecting to map the incoming transactions via
-TTBR0; if the top bit of address is set, we will instead get a
-translation fault since TTBR1 walks are disabled in the TTBCR.
-
-This patch fixes the issue by disabling sign-extension of a fixed
-virtual address bit and instead basing the behaviour on the upstream bus
-size: the incoming address is zero extended unless the upstream bus is
-only 49 bits wide, in which case bit 48 is used as the sign bit and is
-replicated to the upper bits.
-
-Cc: <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org> # v4.0+
-Reported-by: Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Will Davis <wdavis@nvidia.com>
+Reviewed-by: Terence Ripperda <tripperda@nvidia.com>
+Reviewed-by: John Hubbard <jhubbard@nvidia.com>
 ---
- drivers/iommu/arm-smmu.c | 30 ++----------------------------
- 1 file changed, 2 insertions(+), 28 deletions(-)
+ arch/x86/kernel/pci-nommu.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 9f7e1d34a32b..66a803b9dd3a 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -224,14 +224,7 @@
- #define RESUME_TERMINATE		(1 << 0)
+diff --git a/arch/x86/kernel/pci-nommu.c b/arch/x86/kernel/pci-nommu.c
+index da15918..6e9e66d 100644
+--- a/arch/x86/kernel/pci-nommu.c
++++ b/arch/x86/kernel/pci-nommu.c
+@@ -38,6 +38,22 @@ static dma_addr_t nommu_map_page(struct device *dev, struct page *page,
+ 	return bus;
+ }
  
- #define TTBCR2_SEP_SHIFT		15
--#define TTBCR2_SEP_MASK			0x7
--
--#define TTBCR2_ADDR_32			0
--#define TTBCR2_ADDR_36			1
--#define TTBCR2_ADDR_40			2
--#define TTBCR2_ADDR_42			3
--#define TTBCR2_ADDR_44			4
--#define TTBCR2_ADDR_48			5
-+#define TTBCR2_SEP_UPSTREAM		(0x7 << TTBCR2_SEP_SHIFT)
- 
- #define TTBRn_HI_ASID_SHIFT            16
- 
-@@ -793,26 +786,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
- 		if (smmu->version > ARM_SMMU_V1) {
- 			reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
--			switch (smmu->va_size) {
--			case 32:
--				reg |= (TTBCR2_ADDR_32 << TTBCR2_SEP_SHIFT);
--				break;
--			case 36:
--				reg |= (TTBCR2_ADDR_36 << TTBCR2_SEP_SHIFT);
--				break;
--			case 40:
--				reg |= (TTBCR2_ADDR_40 << TTBCR2_SEP_SHIFT);
--				break;
--			case 42:
--				reg |= (TTBCR2_ADDR_42 << TTBCR2_SEP_SHIFT);
--				break;
--			case 44:
--				reg |= (TTBCR2_ADDR_44 << TTBCR2_SEP_SHIFT);
--				break;
--			case 48:
--				reg |= (TTBCR2_ADDR_48 << TTBCR2_SEP_SHIFT);
--				break;
--			}
-+			reg |= TTBCR2_SEP_UPSTREAM;
- 			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR2);
- 		}
- 	} else {
++static dma_addr_t nommu_map_resource(struct device *dev, struct resource *res,
++				     unsigned long offset, size_t size,
++				     enum dma_data_direction dir,
++				     struct dma_attrs *attrs)
++{
++	dma_addr_t bus = res->start + offset;
++
++	WARN_ON(size == 0);
++
++	if (!check_addr("map_resource", dev, bus, size))
++		return DMA_ERROR_CODE;
++	flush_write_buffers();
++	return bus;
++}
++
++
+ /* Map a set of buffers described by scatterlist in streaming
+  * mode for DMA.  This is the scatter-gather version of the
+  * above pci_map_single interface.  Here the scatter gather list
+@@ -93,6 +109,7 @@ struct dma_map_ops nommu_dma_ops = {
+ 	.free			= dma_generic_free_coherent,
+ 	.map_sg			= nommu_map_sg,
+ 	.map_page		= nommu_map_page,
++	.map_resource		= nommu_map_resource,
+ 	.sync_single_for_device = nommu_sync_single_for_device,
+ 	.sync_sg_for_device	= nommu_sync_sg_for_device,
+ 	.is_phys		= 1,
 -- 
-2.1.4
+2.3.7
