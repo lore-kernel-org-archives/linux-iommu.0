@@ -1,7 +1,7 @@
 From: <wdavis@nvidia.com>
-Subject: [PATCH 2/6] DMA-API: Introduce dma_(un)map_resource
-Date: Fri, 1 May 2015 13:32:14 -0500
-Message-ID: <1430505138-2877-3-git-send-email-wdavis@nvidia.com>
+Subject: [PATCH 5/6] iommu/vt-d: implement (un)map_resource
+Date: Fri, 1 May 2015 13:32:17 -0500
+Message-ID: <1430505138-2877-6-git-send-email-wdavis@nvidia.com>
 References: <1430505138-2877-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -14,108 +14,62 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Will Davis <wdavis@nvidia.com>
 
-Add functions to DMA-map and -unmap a resource for a given device. This
-will allow devices to DMA-map a peer device's resource (for example,
-another device's BAR region on PCI) to enable peer-to-peer transactions.
+Implement 'map_resource' for the Intel IOMMU driver. Simply translate the
+resource to a physical address and route it to the same handlers used by
+the 'map_page' API.
+
+This allows a device to map another's resource, to enable peer-to-peer
+transactions.
 
 Signed-off-by: Will Davis <wdavis@nvidia.com>
 Reviewed-by: Terence Ripperda <tripperda@nvidia.com>
 Reviewed-by: John Hubbard <jhubbard@nvidia.com>
 ---
- include/asm-generic/dma-mapping-broken.h |  9 +++++++++
- include/asm-generic/dma-mapping-common.h | 34 ++++++++++++++++++++++++++++++++
- include/linux/dma-mapping.h              |  7 +++++++
- 3 files changed, 50 insertions(+)
+ drivers/iommu/intel-iommu.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/include/asm-generic/dma-mapping-broken.h b/include/asm-generic/dma-mapping-broken.h
-index 6c32af9..d171f01 100644
---- a/include/asm-generic/dma-mapping-broken.h
-+++ b/include/asm-generic/dma-mapping-broken.h
-@@ -59,6 +59,15 @@ extern void
- dma_unmap_page(struct device *dev, dma_addr_t dma_address, size_t size,
- 	       enum dma_data_direction direction);
- 
-+extern dma_addr_t
-+dma_map_resource(struct device *dev, struct resource *res,
-+		 unsigned long offset, size_t size,
-+		 enum dma_data_direction direction);
-+
-+extern void
-+dma_unmap_resource(struct device *dev, dma_addr_t dma_address, size_t size,
-+		   enum dma_data_direction direction);
-+
- extern void
- dma_sync_single_for_cpu(struct device *dev, dma_addr_t dma_handle, size_t size,
- 			enum dma_data_direction direction);
-diff --git a/include/asm-generic/dma-mapping-common.h b/include/asm-generic/dma-mapping-common.h
-index 940d5ec..cd9948d 100644
---- a/include/asm-generic/dma-mapping-common.h
-+++ b/include/asm-generic/dma-mapping-common.h
-@@ -73,6 +73,36 @@ static inline void dma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg
- 		ops->unmap_sg(dev, sg, nents, dir, attrs);
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 68d43be..0f49eff 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3095,6 +3095,15 @@ static dma_addr_t intel_map_page(struct device *dev, struct page *page,
+ 				  dir, *dev->dma_mask);
  }
  
-+static inline dma_addr_t dma_map_resource_attrs(struct device *dev,
-+						struct resource *res,
-+						size_t offset, size_t size,
-+						enum dma_data_direction dir,
-+						struct dma_attrs *attrs)
++static dma_addr_t intel_map_resource(struct device *dev, struct resource *res,
++				     unsigned long offset, size_t size,
++				     enum dma_data_direction dir,
++				     struct dma_attrs *attrs)
 +{
-+	const struct dma_map_ops *ops = get_dma_ops(dev);
-+	dma_addr_t addr = 0;
-+
-+	BUG_ON(!valid_dma_direction(dir));
-+	if (ops->map_resource)
-+		addr = ops->map_resource(dev, res, offset, size, dir, attrs);
-+	debug_dma_map_resource(dev, res, offset, size, dir, addr);
-+
-+	return addr;
++	return __intel_map_single(dev, res->start + offset, size,
++				  dir, *dev->dma_mask);
 +}
 +
-+static inline void dma_unmap_resource_attrs(struct device *dev, dma_addr_t addr,
-+					    size_t size,
-+					    enum dma_data_direction dir,
-+					    struct dma_attrs *attrs)
-+{
-+	const struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	BUG_ON(!valid_dma_direction(dir));
-+	if (ops->unmap_resource)
-+		ops->unmap_resource(dev, addr, size, dir, attrs);
-+	debug_dma_unmap_resource(dev, addr, size, dir);
-+}
-+
- static inline dma_addr_t dma_map_page(struct device *dev, struct page *page,
- 				      size_t offset, size_t size,
- 				      enum dma_data_direction dir)
-@@ -180,6 +210,10 @@ dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
- #define dma_unmap_single(d, a, s, r) dma_unmap_single_attrs(d, a, s, r, NULL)
- #define dma_map_sg(d, s, n, r) dma_map_sg_attrs(d, s, n, r, NULL)
- #define dma_unmap_sg(d, s, n, r) dma_unmap_sg_attrs(d, s, n, r, NULL)
-+#define dma_map_resource(d, e, o, s, r) \
-+	dma_map_resource_attrs(d, e, o, s, r, NULL)
-+#define dma_unmap_resource(d, a, s, r) \
-+	dma_unmap_resource_attrs(d, a, s, r, NULL)
+ static void flush_unmaps(void)
+ {
+ 	int i, j;
+@@ -3226,6 +3235,13 @@ static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
+ 	intel_unmap(dev, dev_addr);
+ }
  
- extern int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
- 			   void *cpu_addr, dma_addr_t dma_addr, size_t size);
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index ac07ff0..05b0b51 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -34,6 +34,13 @@ struct dma_map_ops {
- 	void (*unmap_page)(struct device *dev, dma_addr_t dma_handle,
- 			   size_t size, enum dma_data_direction dir,
- 			   struct dma_attrs *attrs);
-+	dma_addr_t (*map_resource)(struct device *dev, struct resource *res,
-+				   unsigned long offset, size_t size,
-+				   enum dma_data_direction dir,
-+				   struct dma_attrs *attrs);
-+	void (*unmap_resource)(struct device *dev, dma_addr_t dma_handle,
-+			       size_t size, enum dma_data_direction dir,
-+			       struct dma_attrs *attrs);
- 	/*
- 	 * map_sg returns 0 on error and a value > 0 on success.
- 	 * It should never return a value < 0.
++static void intel_unmap_resource(struct device *dev, dma_addr_t dev_addr,
++				 size_t size, enum dma_data_direction dir,
++				 struct dma_attrs *attrs)
++{
++	intel_unmap(dev, dev_addr);
++}
++
+ static void *intel_alloc_coherent(struct device *dev, size_t size,
+ 				  dma_addr_t *dma_handle, gfp_t flags,
+ 				  struct dma_attrs *attrs)
+@@ -3382,6 +3398,8 @@ struct dma_map_ops intel_dma_ops = {
+ 	.unmap_sg = intel_unmap_sg,
+ 	.map_page = intel_map_page,
+ 	.unmap_page = intel_unmap_page,
++	.map_resource = intel_map_resource,
++	.unmap_resource = intel_unmap_resource,
+ 	.mapping_error = intel_mapping_error,
+ };
+ 
 -- 
 2.3.7
