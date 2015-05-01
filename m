@@ -1,7 +1,8 @@
-From: Sakari Ailus <sakari.ailus-X3B1VOXEql0@public.gmane.org>
-Subject: [PATCH 1/1] PCI: Add function 1 DMA alias quirk for Marvell 9120
-Date: Thu, 30 Apr 2015 18:56:32 +0300
-Message-ID: <1430409392-32479-1-git-send-email-sakari.ailus@iki.fi>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu/arm-smmu: Fix sign-extension of upstream bus addresses
+	at stage 1
+Date: Fri,  1 May 2015 17:19:20 +0100
+Message-ID: <1430497160-26427-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -16,36 +17,87 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Marvell 9120 SATA controller has the same issue as a number of others, use
-the same quirk for this one. The other quirks were added by patch
-"PCI: Add function 1 DMA alias quirk for Marvell devices"
-(commit id cc346a4714a59d08c118e8f33fd86692d3563133).
+Stage 1 translation is controlled by two sets of page tables (TTBR0 and
+TTBR1) which grow up and down from zero respectively in the ARMv8
+translation regime. For the SMMU, we only care about TTBR0 and, in the
+case of a 48-bit virtual space, we expect to map virtual addresses 0x0
+through to 0xffff_ffff_ffff.
 
-Signed-off-by: Sakari Ailus <sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Given that some masters may be incapable of emitting virtual addresses
+targetting TTBR1 (e.g. because they sit on a 48-bit bus), the SMMU
+architecture allows bit 47 to be sign-extended, halving the virtual
+range of TTBR0 but allowing TTBR1 to be used. This is controlled by the
+SEP field in TTBCR2.
+
+The SMMU driver incorrectly enables this sign-extension feature, which
+causes problems when userspace addresses are programmed into a master
+device with the SMMU expecting to map the incoming transactions via
+TTBR0; if the top bit of address is set, we will instead get a
+translation fault since TTBR1 walks are disabled in the TTBCR.
+
+This patch fixes the issue by disabling sign-extension of a fixed
+virtual address bit and instead basing the behaviour on the upstream bus
+size: the incoming address is zero extended unless the upstream bus is
+only 49 bits wide, in which case bit 48 is used as the sign bit and is
+replicated to the upper bits.
+
+Cc: <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org> # v4.0+
+Reported-by: Varun Sethi <varun.sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
-Hi,
+ drivers/iommu/arm-smmu.c | 30 ++----------------------------
+ 1 file changed, 2 insertions(+), 28 deletions(-)
 
-I just booted the v4.0.1 kernel with intel-iommu enabled and had similar
-issues as in the original bug report with Marvell 88SE9120 (rev 12). The
-same quirk appears to work for that one as well.
-
- drivers/pci/quirks.c |    2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 85f247e..d4af5a8 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -3572,6 +3572,8 @@ static void quirk_dma_func1_alias(struct pci_dev *dev)
-  * SKUs this function is not present, making this a ghost requester.
-  * https://bugzilla.kernel.org/show_bug.cgi?id=42679
-  */
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9120,
-+			 quirk_dma_func1_alias);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9123,
- 			 quirk_dma_func1_alias);
- /* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c14 */
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 9f7e1d34a32b..66a803b9dd3a 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -224,14 +224,7 @@
+ #define RESUME_TERMINATE		(1 << 0)
+ 
+ #define TTBCR2_SEP_SHIFT		15
+-#define TTBCR2_SEP_MASK			0x7
+-
+-#define TTBCR2_ADDR_32			0
+-#define TTBCR2_ADDR_36			1
+-#define TTBCR2_ADDR_40			2
+-#define TTBCR2_ADDR_42			3
+-#define TTBCR2_ADDR_44			4
+-#define TTBCR2_ADDR_48			5
++#define TTBCR2_SEP_UPSTREAM		(0x7 << TTBCR2_SEP_SHIFT)
+ 
+ #define TTBRn_HI_ASID_SHIFT            16
+ 
+@@ -793,26 +786,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
+ 		if (smmu->version > ARM_SMMU_V1) {
+ 			reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
+-			switch (smmu->va_size) {
+-			case 32:
+-				reg |= (TTBCR2_ADDR_32 << TTBCR2_SEP_SHIFT);
+-				break;
+-			case 36:
+-				reg |= (TTBCR2_ADDR_36 << TTBCR2_SEP_SHIFT);
+-				break;
+-			case 40:
+-				reg |= (TTBCR2_ADDR_40 << TTBCR2_SEP_SHIFT);
+-				break;
+-			case 42:
+-				reg |= (TTBCR2_ADDR_42 << TTBCR2_SEP_SHIFT);
+-				break;
+-			case 44:
+-				reg |= (TTBCR2_ADDR_44 << TTBCR2_SEP_SHIFT);
+-				break;
+-			case 48:
+-				reg |= (TTBCR2_ADDR_48 << TTBCR2_SEP_SHIFT);
+-				break;
+-			}
++			reg |= TTBCR2_SEP_UPSTREAM;
+ 			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR2);
+ 		}
+ 	} else {
 -- 
-1.7.10.4
+2.1.4
