@@ -1,8 +1,7 @@
 From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v6 02/25] arm: exynos: pm_domains: register power domain driver
- from core_initcall
-Date: Mon, 04 May 2015 10:15:57 +0200
-Message-ID: <1430727380-10912-3-git-send-email-m.szyprowski@samsung.com>
+Subject: [PATCH v6 09/25] iommu: exynos: remove unused functions, part 2
+Date: Mon, 04 May 2015 10:16:04 +0200
+Message-ID: <1430727380-10912-10-git-send-email-m.szyprowski@samsung.com>
 References: <1430727380-10912-1-git-send-email-m.szyprowski@samsung.com>
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 In-reply-to: <1430727380-10912-1-git-send-email-m.szyprowski@samsung.com>
@@ -11,82 +10,68 @@ To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-a
 Cc: Marek Szyprowski <m.szyprowski@samsung.com>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SYSMMU devices are registered very early in arch_initcall, so ensure
-that they can get access to power domains by registering power domain
-driver from earlier initcall. This change requires dropping usage of the
-platform device associated with each power domain and replacing clock
-calls with respective of_clk_* equivalents.
+After refactoring functions to use pointer to struct sysmmu_drvdata
+directly, some functions became useless and thus never used, so remove
+them completely.
 
 Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- arch/arm/mach-exynos/pm_domains.c | 18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
+ drivers/iommu/exynos-iommu.c | 43 -------------------------------------------
+ 1 file changed, 43 deletions(-)
 
-diff --git a/arch/arm/mach-exynos/pm_domains.c b/arch/arm/mach-exynos/pm_domains.c
-index cbe56b35aea0..708eb88aa677 100644
---- a/arch/arm/mach-exynos/pm_domains.c
-+++ b/arch/arm/mach-exynos/pm_domains.c
-@@ -117,16 +117,11 @@ static int exynos_pd_power_off(struct generic_pm_domain *domain)
- 
- static __init int exynos4_pm_init_power_domain(void)
- {
--	struct platform_device *pdev;
- 	struct device_node *np;
- 
- 	for_each_compatible_node(np, NULL, "samsung,exynos4210-pd") {
- 		struct exynos_pm_domain *pd;
- 		int on, i;
--		struct device *dev;
--
--		pdev = of_find_device_by_node(np);
--		dev = &pdev->dev;
- 
- 		pd = kzalloc(sizeof(*pd), GFP_KERNEL);
- 		if (!pd) {
-@@ -135,7 +130,8 @@ static __init int exynos4_pm_init_power_domain(void)
- 			return -ENOMEM;
- 		}
- 
--		pd->pd.name = kstrdup(dev_name(dev), GFP_KERNEL);
-+		pd->pd.name = kstrdup_const(strrchr(np->full_name, '/') + 1,
-+					    GFP_KERNEL);
- 		pd->name = pd->pd.name;
- 		pd->base = of_iomap(np, 0);
- 		pd->pd.power_off = exynos_pd_power_off;
-@@ -145,12 +141,12 @@ static __init int exynos4_pm_init_power_domain(void)
- 			char clk_name[8];
- 
- 			snprintf(clk_name, sizeof(clk_name), "asb%d", i);
--			pd->asb_clk[i] = clk_get(dev, clk_name);
-+			pd->asb_clk[i] = of_clk_get_by_name(np, clk_name);
- 			if (IS_ERR(pd->asb_clk[i]))
- 				break;
- 		}
- 
--		pd->oscclk = clk_get(dev, "oscclk");
-+		pd->oscclk = of_clk_get_by_name(np, "oscclk");
- 		if (IS_ERR(pd->oscclk))
- 			goto no_clk;
- 
-@@ -158,11 +154,11 @@ static __init int exynos4_pm_init_power_domain(void)
- 			char clk_name[8];
- 
- 			snprintf(clk_name, sizeof(clk_name), "clk%d", i);
--			pd->clk[i] = clk_get(dev, clk_name);
-+			pd->clk[i] = of_clk_get_by_name(np, clk_name);
- 			if (IS_ERR(pd->clk[i]))
- 				break;
- 			snprintf(clk_name, sizeof(clk_name), "pclk%d", i);
--			pd->pclk[i] = clk_get(dev, clk_name);
-+			pd->pclk[i] = of_clk_get_by_name(np, clk_name);
- 			if (IS_ERR(pd->pclk[i])) {
- 				clk_put(pd->clk[i]);
- 				pd->clk[i] = ERR_PTR(-EINVAL);
-@@ -210,4 +206,4 @@ no_clk:
- 
- 	return 0;
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 0c23b69022cd..7d62715ab51e 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -463,49 +463,6 @@ static int __sysmmu_enable(struct sysmmu_drvdata *data,
+ 	return ret;
  }
--arch_initcall(exynos4_pm_init_power_domain);
-+core_initcall(exynos4_pm_init_power_domain);
+ 
+-/* __exynos_sysmmu_enable: Enables System MMU
+- *
+- * returns -error if an error occurred and System MMU is not enabled,
+- * 0 if the System MMU has been just enabled and 1 if System MMU was already
+- * enabled before.
+- */
+-static int __exynos_sysmmu_enable(struct device *dev, phys_addr_t pgtable,
+-				  struct iommu_domain *domain)
+-{
+-	int ret = 0;
+-	unsigned long flags;
+-	struct exynos_iommu_owner *owner = dev->archdata.iommu;
+-	struct sysmmu_drvdata *data;
+-
+-	BUG_ON(!has_sysmmu(dev));
+-
+-	data = dev_get_drvdata(owner->sysmmu);
+-
+-	ret = __sysmmu_enable(data, pgtable, domain);
+-	if (ret >= 0)
+-		data->master = dev;
+-
+-	return ret;
+-}
+-
+-static bool exynos_sysmmu_disable(struct device *dev)
+-{
+-	unsigned long flags;
+-	bool disabled = true;
+-	struct exynos_iommu_owner *owner = dev->archdata.iommu;
+-	struct sysmmu_drvdata *data;
+-
+-	BUG_ON(!has_sysmmu(dev));
+-
+-	data = dev_get_drvdata(owner->sysmmu);
+-
+-	disabled = __sysmmu_disable(data);
+-	if (disabled)
+-		data->master = NULL;
+-
+-	return disabled;
+-}
+-
+ static void __sysmmu_tlb_invalidate_flpdcache(struct sysmmu_drvdata *data,
+ 					      sysmmu_iova_t iova)
+ {
 -- 
 1.9.2
