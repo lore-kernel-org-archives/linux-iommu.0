@@ -1,46 +1,107 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v10 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
-Date: Mon, 4 May 2015 18:23:18 +0200
-Message-ID: <20150504162318.GH15736@8bytes.org>
-References: <1428655333-19504-1-git-send-email-zhen-hual@hp.com>
-	<20150415005731.GC19051@localhost.localdomain>
-	<552DFB56.1070600@hp.com>
-	<20150415064803.GF19051@localhost.localdomain>
-	<20150424080147.GC4458@dhcp-16-116.nay.redhat.com>
-	<20150424082528.GA23912@dhcp-128-91.nay.redhat.com>
-	<20150424083530.GD4458@dhcp-16-116.nay.redhat.com>
-	<20150424084957.GC23912@dhcp-128-91.nay.redhat.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v6 01/25] arm: dma-mapping: add support for creating
+ reserved mappings in iova space
+Date: Mon, 4 May 2015 17:12:00 -0500
+Message-ID: <CAL_JsqKB4F8tspydBFrL-PH3gXcyu-pwQwBETMizJzTpAF3yzg@mail.gmail.com>
+References: <1430727380-10912-1-git-send-email-m.szyprowski@samsung.com> <1430727380-10912-2-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20150424084957.GC23912-0VdLhd/A9Pns0dwjj9W26R/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Li,
-	ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <1430727380-10912-2-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Linux IOMMU <iommu@lists.linux-foundation.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Apr 24, 2015 at 04:49:57PM +0800, Dave Young wrote:
-> I'm more than happy to see this issue can be fixed in the patchset, I
-> do not agree to add the code there with such problems. OTOH, for now
-> seems there's no way to fix it.
+On Mon, May 4, 2015 at 3:15 AM, Marek Szyprowski
+<m.szyprowski@samsung.com> wrote:
+> Some devices (like frame buffers) are enabled by bootloader and configured
+> to perform DMA operations automatically (like displaying boot logo or splash
+> screen). Such devices operate and perform DMA operation usually until the
+> proper driver for them is loaded and probed. However before that happens,
+> system usually loads IOMMU drivers and configures dma parameters for each
+> device. When such initial configuration is created and enabled, it usually
+> contains empty translation rules betweem IO address space and physical
+> memory, because no buffers nor memory regions have been requested by the
+> respective driver.
+>
+> This patch adds support for "iommu-reserved-mapping", which can be used
+> to provide definitions for mappings that need to be created on system
+> boot to let such devices (enabled by bootloader) to operate properly
+> until respective driver is probed.
+>
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> ---
+>  Documentation/devicetree/bindings/iommu/iommu.txt |  44 +++++++++
+>  arch/arm/mm/dma-mapping.c                         | 112 ++++++++++++++++++++++
+>  2 files changed, 156 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/iommu/iommu.txt b/Documentation/devicetree/bindings/iommu/iommu.txt
+> index 5a8b4624defc..fd54e6b597f0 100644
+> --- a/Documentation/devicetree/bindings/iommu/iommu.txt
+> +++ b/Documentation/devicetree/bindings/iommu/iommu.txt
+> @@ -86,6 +86,35 @@ have a means to turn off translation. But it is invalid in such cases to
+>  disable the IOMMU's device tree node in the first place because it would
+>  prevent any driver from properly setting up the translations.
+>
+> +Optional properties:
+> +--------------------
+> +- iommu-reserved-mapping: A list of entries describing additional
+> +  reserved mapping, that will be inserted to the default IO address space
+> +  created for given master device. Each entry consist of IO address,
+> +  physical memory address and size of the region.
+> +
+> +Some devices (like frame buffers) are enabled by bootloader and configured
+> +to perform DMA operations automatically (like displaying boot logo or splash
+> +screen). Such devices operate and perform DMA operation usually until the
+> +proper driver for them is loaded and probed. However before that happens,
+> +system usually loads IOMMU drivers and configures dma parameters for each
 
-And that's the point. We discuss this issue and possible solutions for
-years by now, and what ZhenHua implemented is what we agreed to be the
-best-effort on what we can do in the kdump case with IOMMU enabled.
+s/dma/DMA/
 
-Of course there are still failure scenarios left, but that is not
-different from systems without any IOMMU.
+> +device. When such initial configuration is created and enabled, it usually
+> +contains empty translation rules betweem IO address space and physical
 
+s/betweem/between/
 
-	Joerg
+> +memory, because no buffers nor memory regions have been requested by the
+> +respective driver.
+> +
+> +To avoid IOMMU page fault, one can provide "iommu-reserved-mapping"
+> +property, which defines all memory regions which must be mapped to IO
+> +address space to boot properly when device has been enabled by the
+> +bootloader. More than one region can be defined for given master device.
+> +Each region is defined by the following triplet: first entry is IO
+> +address (encoded in "address" cells), second is base physical memory
+> +address for this regions (also encoded in "address" cells) and the last
+> +is size of the region (encoded in "size" cells). To ensure that that
+> +given master device will not trigger page fault after enabling IOMMU,
+> +one should define identity mapping between physical memory and IO
+> +address space for the range of addresses accessed by the device.
+> +
+>
+>  Notes:
+>  ======
+> @@ -113,6 +142,21 @@ Single-master IOMMU:
+>                 iommus = <&{/iommu}>;
+>         };
+>
+> +
+> +Single-master IOMMU, which has been left enabled by bootloader:
+> +---------------------------------------------------------------
+> +
+> +       iommu {
+> +               #iommu-cells = <0>;
+> +       };
+> +
+> +       master {
+> +               iommus = <&{/iommu}>;
+> +               /* bootloader configures framebuffer at 0x40000000 (32MiB)
+> +               iommu-reserved-mapping = <0x40000000 0x40000000 0x2000000>;
+
+Is there not an ordering problem if kernel initializes the IOMMU
+before parsing this for each master? I would think the IOMMU driver
+needs to find all of these mappings and cleanly switch the page tables
+with the new reserved mapping.
+
+Rob
