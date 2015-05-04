@@ -1,94 +1,41 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v6 27/26] iommu: exynos: add system suspend/resume support
-Date: Mon, 04 May 2015 12:30:26 +0200
-Message-ID: <1430735426-23172-1-git-send-email-m.szyprowski@samsung.com>
-References: <1430727380-10912-1-git-send-email-m.szyprowski@samsung.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v9 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
+Date: Mon, 4 May 2015 13:05:51 +0200
+Message-ID: <20150504110551.GD15736@8bytes.org>
+References: <1426743388-26908-1-git-send-email-zhen-hual@hp.com>
+ <20150403084031.GF22579@dhcp-128-53.nay.redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1430727380-10912-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Seung-Woo Kim <sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20150403084031.GF22579@dhcp-128-53.nay.redhat.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Dave Young <dyoung@redhat.com>
+Cc: "Li, Zhen-Hua" <zhen-hual@hp.com>, dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, vgoyal@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
 List-Id: iommu@lists.linux-foundation.org
 
-When system goes into suspend state, iommu should save it's state and
-restore after system resume. This is handled by 'late' pm ops to ensure
-that sysmmu will be suspended after its master devices and restored
-before them.
+On Fri, Apr 03, 2015 at 04:40:31PM +0800, Dave Young wrote:
+> Have not read all the patches, but I have a question, not sure this
+> has been answered before. Old memory is not reliable, what if the old
+> memory get corrupted before panic? Is it safe to continue using it in
+> 2nd kernel, I worry that it will cause problems.
 
-Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
----
-Hello,
+Yes, the old memory could be corrupted, and there are more failure cases
+left which we have no way of handling yet (if iommu data structures are
+in kdump backup areas).
 
-This patch got lost in the rebase, I'm really sorry. Please process it
-together with other iommu patches from "[PATCH v6 00/25] Exynos SYSMMU
-(IOMMU) integration with DT and DMA-mapping subsystem" patchset.
+The question is what to do if we find some of the old data structures
+corrupted, hand how far should the tests go. Should we also check the
+page-tables, for example? I think if some of the data structures for a
+device are corrupted it probably already failed in the old kernel and
+things won't get worse in the new one.
 
-Best regards
-Marek Szyprowski
-Samsung R&D Institute Poland
----
- drivers/iommu/exynos-iommu.c | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+So checking is not strictly necessary in the first version of these
+patches (unless we find a valid failure scenario). Once we have some
+good plan on what to do if we find corruption, we can add checking of
+course.
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 821797328c52..074e6cb05cc8 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -606,6 +606,36 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
- 	return 0;
- }
- 
-+#ifdef CONFIG_PM_SLEEP
-+static int exynos_sysmmu_suspend(struct device *dev)
-+{
-+	struct sysmmu_drvdata *data = dev_get_drvdata(dev);
-+
-+	dev_dbg(dev, "suspend\n");
-+	if (is_sysmmu_active(data)) {
-+		__sysmmu_disable_nocount(data);
-+		pm_runtime_put(dev);
-+	}
-+	return 0;
-+}
-+
-+static int exynos_sysmmu_resume(struct device *dev)
-+{
-+	struct sysmmu_drvdata *data = dev_get_drvdata(dev);
-+
-+	dev_dbg(dev, "resume\n");
-+	if (is_sysmmu_active(data)) {
-+		pm_runtime_get_sync(dev);
-+		__sysmmu_enable_nocount(data);
-+	}
-+	return 0;
-+}
-+#endif
-+
-+static const struct dev_pm_ops sysmmu_pm_ops = {
-+	SET_LATE_SYSTEM_SLEEP_PM_OPS(exynos_sysmmu_suspend, exynos_sysmmu_resume)
-+};
-+
- static const struct of_device_id sysmmu_of_match[] __initconst = {
- 	{ .compatible	= "samsung,exynos-sysmmu", },
- 	{ },
-@@ -616,6 +646,7 @@ static struct platform_driver exynos_sysmmu_driver __refdata = {
- 	.driver	= {
- 		.name		= "exynos-sysmmu",
- 		.of_match_table	= sysmmu_of_match,
-+		.pm		= &sysmmu_pm_ops,
- 	}
- };
- 
--- 
-1.9.2
+
+Regards,
+
+	Joerg
