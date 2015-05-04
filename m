@@ -1,72 +1,40 @@
-From: Jiang Liu <jiang.liu@linux.intel.com>
-Subject: [Patch 1/2] irq_remapping/vt-d: Fix regression caused by commit b106ee63abcc
-Date: Mon,  4 May 2015 10:47:40 +0800
-Message-ID: <1430707662-28598-2-git-send-email-jiang.liu@linux.intel.com>
-References: <1430707662-28598-1-git-send-email-jiang.liu@linux.intel.com>
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1430707662-28598-1-git-send-email-jiang.liu@linux.intel.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Randy Dunlap <rdunlap@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Borislav Petkov <bp@alien8.de>, Dimitri Sivanich <sivanich@sgi.com>, Joerg Roedel <joro@8bytes.org>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, David Cohen <david.a.cohen@linux.intel.com>, Sander Eikelenboom <linux@eikelenboom.it>, David Vrabel <david.vrabel@citrix.com>, Andrew Morton <akpm@linux-foundation.org>, Tony Luck <tony.luck@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, x86@kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org
+From: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Subject: Re: [PATCH v10 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
+Date: Mon, 04 May 2015 11:06:40 +0800
+Message-ID: <5546E240.5090403@hp.com>
+References: <1428655333-19504-1-git-send-email-zhen-hual@hp.com>
+	<20150429112024.GB5799@dhcp-16-116.nay.redhat.com>
+	<20150503085530.GK15033@dhcp-16-116.nay.redhat.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150503085530.GK15033-je1gSBvt1Tcx0jIIkfS+Ph/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Commit b106ee63abcc ("irq_remapping/vt-d: Enhance Intel IR driver to
-support hierarchical irqdomains") caused a regression, which forgot
-to initialize remapping data structures other than the first entry
-when setting up remapping entries for multiple MSIs.
+Hi baoquan,
+Could you paste the kernel log of the first kernel ?
 
-Code is written by Thomas and commit message is written by Jiang.
-
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
----
-Hi Thomas,
-	I missed this patch when rebasing my patch set. It may be
-fold into commit b106ee63abcc ("irq_remapping/vt-d: Enhance Intel IR
-driver to support hierarchical irqdomains").
-Thanks!
-Gerry
----
- drivers/iommu/intel_irq_remapping.c |   16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 14d95694fc1b..7ecc6b3180ba 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -1113,7 +1113,7 @@ static int intel_irq_remapping_alloc(struct irq_domain *domain,
- {
- 	struct intel_iommu *iommu = domain->host_data;
- 	struct irq_alloc_info *info = arg;
--	struct intel_ir_data *data;
-+	struct intel_ir_data *data, *ird;
- 	struct irq_data *irq_data;
- 	struct irq_cfg *irq_cfg;
- 	int i, ret, index;
-@@ -1158,14 +1158,20 @@ static int intel_irq_remapping_alloc(struct irq_domain *domain,
- 		}
- 
- 		if (i > 0) {
--			data = kzalloc(sizeof(*data), GFP_KERNEL);
--			if (!data)
-+			ird = kzalloc(sizeof(*ird), GFP_KERNEL);
-+			if (!ird)
- 				goto out_free_data;
-+			/* Initialize the common data */
-+			ird->irq_2_iommu = data->irq_2_iommu;
-+			ird->irq_2_iommu.sub_handle = i;
-+		} else {
-+			ird = data;
- 		}
-+
- 		irq_data->hwirq = (index << 16) + i;
--		irq_data->chip_data = data;
-+		irq_data->chip_data = ird;
- 		irq_data->chip = &intel_ir_chip;
--		intel_irq_remapping_prepare_irte(data, irq_cfg, info, index, i);
-+		intel_irq_remapping_prepare_irte(ird, irq_cfg, info, index, i);
- 		irq_set_status_flags(virq + i, IRQ_MOVE_PCNTXT);
- 	}
- 	return 0;
--- 
-1.7.10.4
+Thanks
+Zhenhua
+On 05/03/2015 04:55 PM, Baoquan He wrote:
+> On 04/29/15 at 07:20pm, Baoquan He wrote:
+>> Bad news, I rebuilt a kernel with your patchset on 4.0.0+ (this commit
+>> f614c81). Now dmar fault is  seen again.
+>>
+>> The lspci log and kdump log are attached, please check:
+>
+> I found the lspci log previously attached is emtyp, resend it again.
+>
+>
