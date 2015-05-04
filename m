@@ -1,138 +1,246 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v6 00/25] Exynos SYSMMU (IOMMU) integration with DT and
- DMA-mapping subsystem
-Date: Mon, 04 May 2015 10:15:55 +0200
-Message-ID: <1430727380-10912-1-git-send-email-m.szyprowski@samsung.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH v6 01/25] arm: dma-mapping: add support for creating reserved
+	mappings in iova space
+Date: Mon, 04 May 2015 10:15:56 +0200
+Message-ID: <1430727380-10912-2-git-send-email-m.szyprowski@samsung.com>
+References: <1430727380-10912-1-git-send-email-m.szyprowski@samsung.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <1430727380-10912-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Seung-Woo Kim <sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello Everyone,
+Some devices (like frame buffers) are enabled by bootloader and configured
+to perform DMA operations automatically (like displaying boot logo or splash
+screen). Such devices operate and perform DMA operation usually until the
+proper driver for them is loaded and probed. However before that happens,
+system usually loads IOMMU drivers and configures dma parameters for each
+device. When such initial configuration is created and enabled, it usually
+contains empty translation rules betweem IO address space and physical
+memory, because no buffers nor memory regions have been requested by the
+respective driver.
 
-This is yet another attempt to get Exynos SYSMMU driver with integrated
-with IOMMU & DMA-mapping subsystems. The main change from previous
-version is addition of the patches to define iommu-mapping, which need
-to be created during system boot to avoid IOMMU fault by devices, which
-has been left enabled by bootloader (i.e. framebuffer displaying slash
-screen).
+This patch adds support for "iommu-reserved-mapping", which can be used
+to provide definitions for mappings that need to be created on system
+boot to let such devices (enabled by bootloader) to operate properly
+until respective driver is probed.
 
-Patches has been also rebased onto v4.1-rc2 with 'arm: dma-mapping: fix
-off-by-one check in arm_setup_iommu_dma_ops' patch applied (see commit
-1424532b2163bf1580f4b1091a5801e12310fac5 on fixes branch in
-git://ftp.arm.linux.org.uk/pub/linux/arm/kernel/git-cur/linux-arm.git,
-more information:
-http://www.spinics.net/lists/arm-kernel/msg414722.html).
+Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+---
+ Documentation/devicetree/bindings/iommu/iommu.txt |  44 +++++++++
+ arch/arm/mm/dma-mapping.c                         | 112 ++++++++++++++++++++++
+ 2 files changed, 156 insertions(+)
 
-All patches are also available in the following git repository:
-https://git.linaro.org/people/marek.szyprowski/linux-srpol.git
-branch v4.1-exynos-iommu.
-
-Best regards
-Marek Szyprowski
-Samsung R&D Institute Poland
-
-
-Changelog:
-
-v6:
-- rebased onto v4.1-rc2 with 'arm: dma-mapping: fix off-by-one check in
-  arm_setup_iommu_dma_ops' patch
-- added exynos 3250 and 4415 dts patches
-- added support for devices, which have been left enabled by bootloader
-  (i.e. framebuffer displaying slash screen)
-- fixed freeze in fimd iommu initialization caused by lack of proper
-  runtime pm management
-- resolved issues with power domains by moving pd initialization to
-  core_initcall
-
-v5: https://lists.linaro.org/pipermail/linaro-mm-sig/2015-February/004442.html
-- rebased onto 'Add HDMI support for Exynos5420 platform' patchset
-- fixed 'const' issue in 'iommu: exynos: init from dt-specific callback
-  instead of initcall' patch, thanks to Tobias Jakobi for reporting it
-- fixed copy-paste typo in exynos5250 dts patch
-
-v4: http://www.spinics.net/lists/linux-samsung-soc/msg41177.html
-- rebased onto v3.19-rc4 and other Exynos DTS queued patches
-- added DTS patch for Exynos 5250 & 5420/5422/5800
-
-v3: http://www.spinics.net/lists/linux-samsung-soc/msg39168.html
-- rebased onto "[RFC PATCH v4 0/8] Introduce automatic DMA
-  configuration for IOMMU masters"
-- added some minor fixes for iommu and dma-mapping frameworks
-
-v2: http://thread.gmane.org/gmane.linux.kernel.iommu/6472/
-- rebased onto "[RFC PATCH v3 0/7] Introduce automatic DMA
-  configuration for IOMMU masters" patches:
-  http://www.spinics.net/lists/arm-kernel/msg362076.html
-- changed initialization from bus notifiers to DT related callbacks
-- removed support for separate IO address spaces - this will be
-  discussed separately after the basic support gets merged
-- removed support for power domain notifier-based runtime power
-  management - this also will be discussed separately later
-
-v1: https://lkml.org/lkml/2014/8/5/183
-- initial version, feature complete, completely rewrote integration
-  approach
-
-
-Patch summary:
-
-Marek Szyprowski (25):
-  arm: dma-mapping: add support for creating reserved mappings in iova
-    space
-  arm: exynos: pm_domains: register power domain driver from
-    core_initcall
-  drm/exynos: iommu: detach from default dma-mapping domain on init
-  drm/exynos: fimd: ensure proper hw state in fimd_clear_channel()
-  iommu: exynos: don't read version register on every tlb operation
-  iommu: exynos: remove unused functions
-  iommu: exynos: remove useless spinlock
-  iommu: exynos: refactor function parameters to simplify code
-  iommu: exynos: remove unused functions, part 2
-  iommu: exynos: remove useless device_add/remove callbacks
-  iommu: exynos: add support for binding more than one sysmmu to master
-    device
-  iommu: exynos: add support for runtime_pm
-  iommu: exynos: rename variables to reflect their purpose
-  iommu: exynos: use struct exynos_iommu_domain in internal structures
-  iommu: exynos: document internal structures
-  iommu: exynos: remove excessive includes and sort others
-    alphabetically
-  iommu: exynos: init from dt-specific callback instead of initcall
-  iommu: exynos: add callback for initializing devices from device tree
-  iommu: exynos: remove unneeded code
-  ARM: dts: exynos4: add sysmmu nodes
-  ARM: dts: exynos3250: add sysmmu nodes
-  ARM: dts: exynos4415: add sysmmu nodes
-  ARM: dts: exynos5250: add sysmmu nodes
-  ARM: dts: exynos5420: add sysmmu nodes
-  ARM: dts: exynos: add iommu reserved regions for bootloader's splash
-    screen
-
- Documentation/devicetree/bindings/iommu/iommu.txt |  44 ++
- arch/arm/boot/dts/exynos3250-rinato.dts           |   1 +
- arch/arm/boot/dts/exynos3250.dtsi                 |  22 +
- arch/arm/boot/dts/exynos4.dtsi                    | 118 ++++++
- arch/arm/boot/dts/exynos4210-trats.dts            |   1 +
- arch/arm/boot/dts/exynos4210-universal_c210.dts   |   1 +
- arch/arm/boot/dts/exynos4210.dtsi                 |  23 +
- arch/arm/boot/dts/exynos4412-trats2.dts           |   1 +
- arch/arm/boot/dts/exynos4415.dtsi                 |  11 +
- arch/arm/boot/dts/exynos4x12.dtsi                 |  82 ++++
- arch/arm/boot/dts/exynos5250-snow.dts             |   1 +
- arch/arm/boot/dts/exynos5250-spring.dts           |   1 +
- arch/arm/boot/dts/exynos5250.dtsi                 | 250 +++++++++++
- arch/arm/boot/dts/exynos5420-peach-pit.dts        |   1 +
- arch/arm/boot/dts/exynos5420.dtsi                 | 181 ++++++++
- arch/arm/boot/dts/exynos5800-peach-pi.dts         |   1 +
- arch/arm/mach-exynos/pm_domains.c                 |  18 +-
- arch/arm/mm/dma-mapping.c                         | 112 +++++
- drivers/gpu/drm/exynos/exynos_drm_fimd.c          |  27 +-
- drivers/gpu/drm/exynos/exynos_drm_iommu.c         |   3 +
- drivers/iommu/exynos-iommu.c                      | 495 ++++++++++------------
- 21 files changed, 1098 insertions(+), 296 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/iommu/iommu.txt b/Documentation/devicetree/bindings/iommu/iommu.txt
+index 5a8b4624defc..fd54e6b597f0 100644
+--- a/Documentation/devicetree/bindings/iommu/iommu.txt
++++ b/Documentation/devicetree/bindings/iommu/iommu.txt
+@@ -86,6 +86,35 @@ have a means to turn off translation. But it is invalid in such cases to
+ disable the IOMMU's device tree node in the first place because it would
+ prevent any driver from properly setting up the translations.
+ 
++Optional properties:
++--------------------
++- iommu-reserved-mapping: A list of entries describing additional
++  reserved mapping, that will be inserted to the default IO address space
++  created for given master device. Each entry consist of IO address,
++  physical memory address and size of the region.
++
++Some devices (like frame buffers) are enabled by bootloader and configured
++to perform DMA operations automatically (like displaying boot logo or splash
++screen). Such devices operate and perform DMA operation usually until the
++proper driver for them is loaded and probed. However before that happens,
++system usually loads IOMMU drivers and configures dma parameters for each
++device. When such initial configuration is created and enabled, it usually
++contains empty translation rules betweem IO address space and physical
++memory, because no buffers nor memory regions have been requested by the
++respective driver.
++
++To avoid IOMMU page fault, one can provide "iommu-reserved-mapping"
++property, which defines all memory regions which must be mapped to IO
++address space to boot properly when device has been enabled by the
++bootloader. More than one region can be defined for given master device.
++Each region is defined by the following triplet: first entry is IO
++address (encoded in "address" cells), second is base physical memory
++address for this regions (also encoded in "address" cells) and the last
++is size of the region (encoded in "size" cells). To ensure that that
++given master device will not trigger page fault after enabling IOMMU,
++one should define identity mapping between physical memory and IO
++address space for the range of addresses accessed by the device.
++
+ 
+ Notes:
+ ======
+@@ -113,6 +142,21 @@ Single-master IOMMU:
+ 		iommus = <&{/iommu}>;
+ 	};
+ 
++
++Single-master IOMMU, which has been left enabled by bootloader:
++---------------------------------------------------------------
++
++	iommu {
++		#iommu-cells = <0>;
++	};
++
++	master {
++		iommus = <&{/iommu}>;
++		/* bootloader configures framebuffer at 0x40000000 (32MiB)
++		iommu-reserved-mapping = <0x40000000 0x40000000 0x2000000>;
++	};
++
++
+ Multiple-master IOMMU with fixed associations:
+ ----------------------------------------------
+ 
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index 7e7583ddd607..3b4a94695b68 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -1019,6 +1019,50 @@ fs_initcall(dma_debug_do_init);
+ 
+ static int extend_iommu_mapping(struct dma_iommu_mapping *mapping);
+ 
++static inline int __reserve_iova(struct dma_iommu_mapping *mapping,
++				 dma_addr_t iova, size_t size)
++{
++	unsigned long count, start;
++	unsigned long flags;
++	int i, sbitmap, ebitmap;
++
++	if (iova < mapping->base)
++		return -EINVAL;
++
++	start = (iova - mapping->base) >> PAGE_SHIFT;
++	count = PAGE_ALIGN(size) >> PAGE_SHIFT;
++
++	sbitmap = start / mapping->bits;
++	ebitmap = (start + count) / mapping->bits;
++	start = start % mapping->bits;
++
++	if (ebitmap > mapping->extensions)
++		return -EINVAL;
++
++	spin_lock_irqsave(&mapping->lock, flags);
++
++	for (i = mapping->nr_bitmaps; i <= ebitmap; i++) {
++		if (extend_iommu_mapping(mapping)) {
++			spin_unlock_irqrestore(&mapping->lock, flags);
++			return -ENOMEM;
++		}
++	}
++
++	for (i = sbitmap; count && i < mapping->nr_bitmaps; i++) {
++		int bits = count;
++
++		if (bits + start > mapping->bits)
++			bits = mapping->bits - start;
++		bitmap_set(mapping->bitmaps[i], start, bits);
++		start = 0;
++		count -= bits;
++	}
++
++	spin_unlock_irqrestore(&mapping->lock, flags);
++
++	return 0;
++}
++
+ static inline dma_addr_t __alloc_iova(struct dma_iommu_mapping *mapping,
+ 				      size_t size)
+ {
+@@ -2048,6 +2092,66 @@ void arm_iommu_detach_device(struct device *dev)
+ }
+ EXPORT_SYMBOL_GPL(arm_iommu_detach_device);
+ 
++static int arm_iommu_add_reserved(struct device *dev,
++			struct dma_iommu_mapping *domain, phys_addr_t phys,
++			dma_addr_t dma, size_t size)
++{
++	int ret;
++
++	ret = __reserve_iova(domain, dma, size);
++	if (ret) {
++		dev_err(dev, "failed to reserve mapping\n");
++		return -EINVAL;
++	}
++
++	ret = iommu_map(domain->domain, dma, phys, size, IOMMU_READ);
++	if (ret != 0) {
++		dev_err(dev, "create IOMMU mapping\n");
++		return ret;
++	}
++
++	dev_info(dev, "created reserved DMA mapping (%pa -> %pad, %zu bytes)\n",
++		 &phys, &dma, size);
++
++	return 0;
++}
++
++static int arm_iommu_init_reserved(struct device *dev,
++				   struct dma_iommu_mapping *domain)
++{
++	const char *name = "iommu-reserved-mapping";
++	const __be32 *prop = NULL;
++	int len, naddr, nsize;
++	struct device_node *node = dev->of_node;
++	phys_addr_t phys;
++	dma_addr_t dma;
++	size_t size;
++
++	if (!node)
++		return 0;
++
++	naddr = of_n_addr_cells(node);
++	nsize = of_n_size_cells(node);
++
++	prop = of_get_property(node, name, &len);
++	if (!prop)
++		return 0;
++
++	len /= sizeof(u32);
++
++	if (len < 2 * naddr + nsize) {
++		dev_err(dev, "invalid length (%d cells) of %s property\n",
++			len, name);
++		return -EINVAL;
++	}
++
++	phys = of_read_number(prop, naddr);
++	dma = of_read_number(prop + naddr, naddr);
++	size = of_read_number(prop + 2*naddr, nsize);
++
++	return arm_iommu_add_reserved(dev, domain, phys, dma, size);
++}
++
+ static struct dma_map_ops *arm_get_iommu_dma_map_ops(bool coherent)
+ {
+ 	return coherent ? &iommu_coherent_ops : &iommu_ops;
+@@ -2068,6 +2172,14 @@ static bool arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size,
+ 		return false;
+ 	}
+ 
++	if (arm_iommu_init_reserved(dev, mapping) != 0) {
++		pr_warn("Failed to initialize reserved mapping for device %s\n",
++			dev_name(dev));
++		__arm_iommu_detach_device(dev);
++		arm_iommu_release_mapping(mapping);
++		return false;
++	}
++
+ 	if (__arm_iommu_attach_device(dev, mapping)) {
+ 		pr_warn("Failed to attached device %s to IOMMU_mapping\n",
+ 				dev_name(dev));
 -- 
 1.9.2
