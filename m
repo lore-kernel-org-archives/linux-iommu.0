@@ -1,41 +1,51 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v9 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
-Date: Mon, 4 May 2015 13:05:51 +0200
-Message-ID: <20150504110551.GD15736@8bytes.org>
-References: <1426743388-26908-1-git-send-email-zhen-hual@hp.com>
- <20150403084031.GF22579@dhcp-128-53.nay.redhat.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: Any side effect if turn off amd_iommu
+Date: Mon, 4 May 2015 13:08:02 +0200
+Message-ID: <20150504110802.GE15736@8bytes.org>
+References: <CAFv23QmxQ3vJnMEGN0TNR3vLAx1MN7ptB0y3QQLKciqfT3OBsQ@mail.gmail.com>
+	<20150325140410.GS4441@8bytes.org>
+	<CAFv23Qn93z4pE6RtURgoiBADpgCWZ6gfpMPn3akfJibudRi+Qg@mail.gmail.com>
+	<20150326120547.GU4441@8bytes.org>
+	<CAFv23QnUO+w0EXUx8DtgPx0W=fz37_R04EW6P-g+PF_y_U1dfA@mail.gmail.com>
+	<20150330160910.GZ4441@8bytes.org>
+	<CAFv23QmOjFb9NgLY0aW55OpQSecFA83jNOU1TY7o3qWuft1_Cw@mail.gmail.com>
+	<CAFv23Q==+tXTif9uQfyTHE28hxGt80WYS=A6qN7q0Q4q7re6kw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20150403084031.GF22579@dhcp-128-53.nay.redhat.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Dave Young <dyoung@redhat.com>
-Cc: "Li, Zhen-Hua" <zhen-hual@hp.com>, dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, vgoyal@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
+In-Reply-To: <CAFv23Q==+tXTif9uQfyTHE28hxGt80WYS=A6qN7q0Q4q7re6kw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: AceLan Kao <acelan.kao-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Apr 03, 2015 at 04:40:31PM +0800, Dave Young wrote:
-> Have not read all the patches, but I have a question, not sure this
-> has been answered before. Old memory is not reliable, what if the old
-> memory get corrupted before panic? Is it safe to continue using it in
-> 2nd kernel, I worry that it will cause problems.
+Hi Acelan,
 
-Yes, the old memory could be corrupted, and there are more failure cases
-left which we have no way of handling yet (if iommu data structures are
-in kdump backup areas).
+On Thu, Apr 23, 2015 at 10:15:33AM +0800, AceLan Kao wrote:
+> We can confirm that the issue comes from the resources conflict,
+> adding this boot option can solve the issue.
+>    ivrs_ioapic[5]=00:00.1
+> We've tried to negotiate with the OEM BIOS team, but they refused to
+> modify the BIOS code, since there is no issue on MS Windows and it'll
+> require to re-start a full test if the BIOS code is changed, so they
+> don't want to do that.
+> 
+> I'm wondering if we can add a quirk to list those machine and assign
+> them the correct ivrs_ioapic value in amd_iommu driver?
 
-The question is what to do if we find some of the old data structures
-corrupted, hand how far should the tests go. Should we also check the
-page-tables, for example? I think if some of the data structures for a
-device are corrupted it probably already failed in the old kernel and
-things won't get worse in the new one.
+It is probably hard to match a specific machine which has the bug. What
+do you think would be a good indicator to check whether this BIOS bug is
+present?
 
-So checking is not strictly necessary in the first version of these
-patches (unless we find a valid failure scenario). Once we have some
-good plan on what to do if we find corruption, we can add checking of
-course.
-
-
-Regards,
 
 	Joerg
