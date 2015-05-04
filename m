@@ -1,82 +1,241 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v6 06/25] iommu: exynos: remove unused functions
-Date: Mon, 04 May 2015 10:16:01 +0200
-Message-ID: <1430727380-10912-7-git-send-email-m.szyprowski@samsung.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCH v6 08/25] iommu: exynos: refactor function parameters to
+ simplify code
+Date: Mon, 04 May 2015 10:16:03 +0200
+Message-ID: <1430727380-10912-9-git-send-email-m.szyprowski@samsung.com>
 References: <1430727380-10912-1-git-send-email-m.szyprowski@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1430727380-10912-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Seung-Woo Kim <sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <1430727380-10912-1-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch removes two unneeded functions, which are not a part of
-generic IOMMU API and were never used by any other driver.
+This patch simplifies the code by:
+- refactoring function parameters from struct device pointer to direct
+  pointer to struct sysmmu drvdata
+- moving list_head enteries from struct exynos_iommu_owner directly to
+  struct sysmmu_drvdata
 
-Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- drivers/iommu/exynos-iommu.c | 31 -------------------------------
- 1 file changed, 31 deletions(-)
+ drivers/iommu/exynos-iommu.c | 93 ++++++++++++++++++++++----------------------
+ 1 file changed, 46 insertions(+), 47 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 3861485f0689..98aa7e9c2507 100644
+index c307c400613c..0c23b69022cd 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -496,13 +496,6 @@ static int __exynos_sysmmu_enable(struct device *dev, phys_addr_t pgtable,
- 	return ret;
+@@ -186,8 +186,6 @@ static char *sysmmu_fault_name[SYSMMU_FAULTS_NUM] = {
+ 
+ /* attached to dev.archdata.iommu of the master device */
+ struct exynos_iommu_owner {
+-	struct list_head client; /* entry of exynos_iommu_domain.clients */
+-	struct device *dev;
+ 	struct device *sysmmu;
+ };
+ 
+@@ -209,6 +207,7 @@ struct sysmmu_drvdata {
+ 	int activations;
+ 	spinlock_t lock;
+ 	struct iommu_domain *domain;
++	struct list_head domain_node;
+ 	phys_addr_t pgtable;
+ 	int version;
+ };
+@@ -514,12 +513,10 @@ static void __sysmmu_tlb_invalidate_flpdcache(struct sysmmu_drvdata *data,
+ 		__raw_writel(iova | 0x1, data->sfrbase + REG_MMU_FLUSH_ENTRY);
  }
  
--int exynos_sysmmu_enable(struct device *dev, phys_addr_t pgtable)
--{
--	BUG_ON(!memblock_is_memory(pgtable));
--
--	return __exynos_sysmmu_enable(dev, pgtable, NULL);
--}
--
- static bool exynos_sysmmu_disable(struct device *dev)
+-static void sysmmu_tlb_invalidate_flpdcache(struct device *dev,
++static void sysmmu_tlb_invalidate_flpdcache(struct sysmmu_drvdata *data,
+ 					    sysmmu_iova_t iova)
  {
  	unsigned long flags;
-@@ -594,30 +587,6 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, sysmmu_iova_t iova,
- 	spin_unlock_irqrestore(&data->lock, flags);
+-	struct exynos_iommu_owner *owner = dev->archdata.iommu;
+-	struct sysmmu_drvdata *data = dev_get_drvdata(owner->sysmmu);
+ 
+ 	if (!IS_ERR(data->clk_master))
+ 		clk_enable(data->clk_master);
+@@ -533,14 +530,10 @@ static void sysmmu_tlb_invalidate_flpdcache(struct device *dev,
+ 		clk_disable(data->clk_master);
  }
  
--void exynos_sysmmu_tlb_invalidate(struct device *dev)
--{
+-static void sysmmu_tlb_invalidate_entry(struct device *dev, sysmmu_iova_t iova,
+-					size_t size)
++static void sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
++					sysmmu_iova_t iova, size_t size)
+ {
 -	struct exynos_iommu_owner *owner = dev->archdata.iommu;
--	unsigned long flags;
+ 	unsigned long flags;
 -	struct sysmmu_drvdata *data;
 -
 -	data = dev_get_drvdata(owner->sysmmu);
--
--	spin_lock_irqsave(&data->lock, flags);
--	if (is_sysmmu_active(data)) {
--		if (!IS_ERR(data->clk_master))
--			clk_enable(data->clk_master);
--		if (sysmmu_block(data->sfrbase)) {
--			__sysmmu_tlb_invalidate(data->sfrbase);
--			sysmmu_unblock(data->sfrbase);
--		}
--		if (!IS_ERR(data->clk_master))
--			clk_disable(data->clk_master);
--	} else {
--		dev_dbg(dev, "disabled. Skipping TLB invalidation\n");
--	}
--	spin_unlock_irqrestore(&data->lock, flags);
--}
--
- static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+ 
+ 	spin_lock_irqsave(&data->lock, flags);
+ 	if (is_sysmmu_active(data)) {
+@@ -570,8 +563,8 @@ static void sysmmu_tlb_invalidate_entry(struct device *dev, sysmmu_iova_t iova,
+ 		if (!IS_ERR(data->clk_master))
+ 			clk_disable(data->clk_master);
+ 	} else {
+-		dev_dbg(dev, "disabled. Skipping TLB invalidation @ %#x\n",
+-			iova);
++		dev_dbg(data->master,
++			"disabled. Skipping TLB invalidation @ %#x\n", iova);
+ 	}
+ 	spin_unlock_irqrestore(&data->lock, flags);
+ }
+@@ -711,7 +704,7 @@ err_pgtable:
+ static void exynos_iommu_domain_free(struct iommu_domain *domain)
  {
- 	int irq, ret;
+ 	struct exynos_iommu_domain *priv = to_exynos_domain(domain);
+-	struct exynos_iommu_owner *owner;
++	struct sysmmu_drvdata *data;
+ 	unsigned long flags;
+ 	int i;
+ 
+@@ -719,14 +712,12 @@ static void exynos_iommu_domain_free(struct iommu_domain *domain)
+ 
+ 	spin_lock_irqsave(&priv->lock, flags);
+ 
+-	list_for_each_entry(owner, &priv->clients, client) {
+-		while (!exynos_sysmmu_disable(owner->dev))
+-			; /* until System MMU is actually disabled */
++	list_for_each_entry(data, &priv->clients, domain_node) {
++		if (__sysmmu_disable(data))
++			data->master = NULL;
++		list_del_init(&data->domain_node);
+ 	}
+ 
+-	while (!list_empty(&priv->clients))
+-		list_del_init(priv->clients.next);
+-
+ 	spin_unlock_irqrestore(&priv->lock, flags);
+ 
+ 	for (i = 0; i < NUM_LV1ENTRIES; i++)
+@@ -744,20 +735,26 @@ static int exynos_iommu_attach_device(struct iommu_domain *domain,
+ {
+ 	struct exynos_iommu_owner *owner = dev->archdata.iommu;
+ 	struct exynos_iommu_domain *priv = to_exynos_domain(domain);
++	struct sysmmu_drvdata *data;
+ 	phys_addr_t pagetable = virt_to_phys(priv->pgtable);
+ 	unsigned long flags;
+-	int ret;
++	int ret = -ENODEV;
+ 
+-	spin_lock_irqsave(&priv->lock, flags);
++	if (!has_sysmmu(dev))
++		return -ENODEV;
+ 
+-	ret = __exynos_sysmmu_enable(dev, pagetable, domain);
+-	if (ret == 0) {
+-		list_add_tail(&owner->client, &priv->clients);
+-		owner->domain = domain;
++	data = dev_get_drvdata(owner->sysmmu);
++	if (data) {
++		ret = __sysmmu_enable(data, pagetable, domain);
++		if (ret >= 0) {
++			data->master = dev;
++
++			spin_lock_irqsave(&priv->lock, flags);
++			list_add_tail(&data->domain_node, &priv->clients);
++			spin_unlock_irqrestore(&priv->lock, flags);
++		}
+ 	}
+ 
+-	spin_unlock_irqrestore(&priv->lock, flags);
+-
+ 	if (ret < 0) {
+ 		dev_err(dev, "%s: Failed to attach IOMMU with pgtable %pa\n",
+ 					__func__, &pagetable);
+@@ -773,26 +770,29 @@ static int exynos_iommu_attach_device(struct iommu_domain *domain,
+ static void exynos_iommu_detach_device(struct iommu_domain *domain,
+ 				    struct device *dev)
+ {
+-	struct exynos_iommu_owner *owner;
+ 	struct exynos_iommu_domain *priv = to_exynos_domain(domain);
+ 	phys_addr_t pagetable = virt_to_phys(priv->pgtable);
++	struct sysmmu_drvdata *data;
+ 	unsigned long flags;
++	bool found = false;
+ 
+-	spin_lock_irqsave(&priv->lock, flags);
++	if (!has_sysmmu(dev))
++		return;
+ 
+-	list_for_each_entry(owner, &priv->clients, client) {
+-		if (owner == dev->archdata.iommu) {
+-			if (exynos_sysmmu_disable(dev)) {
+-				list_del_init(&owner->client);
+-				owner->domain = NULL;
++	spin_lock_irqsave(&priv->lock, flags);
++	list_for_each_entry(data, &priv->clients, domain_node) {
++		if (data->master == dev) {
++			if (__sysmmu_disable(data)) {
++				data->master = NULL;
++				list_del_init(&data->domain_node);
+ 			}
++			found = true;
+ 			break;
+ 		}
+ 	}
+-
+ 	spin_unlock_irqrestore(&priv->lock, flags);
+ 
+-	if (owner == dev->archdata.iommu)
++	if (found)
+ 		dev_dbg(dev, "%s: Detached IOMMU with pgtable %pa\n",
+ 					__func__, &pagetable);
+ 	else
+@@ -839,12 +839,11 @@ static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *priv,
+ 		 * not currently mapped.
+ 		 */
+ 		if (need_flush_flpd_cache) {
+-			struct exynos_iommu_owner *owner;
++			struct sysmmu_drvdata *data;
+ 
+ 			spin_lock(&priv->lock);
+-			list_for_each_entry(owner, &priv->clients, client)
+-				sysmmu_tlb_invalidate_flpdcache(
+-							owner->dev, iova);
++			list_for_each_entry(data, &priv->clients, domain_node)
++				sysmmu_tlb_invalidate_flpdcache(data, iova);
+ 			spin_unlock(&priv->lock);
+ 		}
+ 	}
+@@ -879,13 +878,13 @@ static int lv1set_section(struct exynos_iommu_domain *priv,
+ 
+ 	spin_lock(&priv->lock);
+ 	if (lv1ent_page_zero(sent)) {
+-		struct exynos_iommu_owner *owner;
++		struct sysmmu_drvdata *data;
+ 		/*
+ 		 * Flushing FLPD cache in System MMU v3.3 that may cache a FLPD
+ 		 * entry by speculative prefetch of SLPD which has no mapping.
+ 		 */
+-		list_for_each_entry(owner, &priv->clients, client)
+-			sysmmu_tlb_invalidate_flpdcache(owner->dev, iova);
++		list_for_each_entry(data, &priv->clients, domain_node)
++			sysmmu_tlb_invalidate_flpdcache(data, iova);
+ 	}
+ 	spin_unlock(&priv->lock);
+ 
+@@ -990,13 +989,13 @@ static int exynos_iommu_map(struct iommu_domain *domain, unsigned long l_iova,
+ static void exynos_iommu_tlb_invalidate_entry(struct exynos_iommu_domain *priv,
+ 						sysmmu_iova_t iova, size_t size)
+ {
+-	struct exynos_iommu_owner *owner;
++	struct sysmmu_drvdata *data;
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&priv->lock, flags);
+ 
+-	list_for_each_entry(owner, &priv->clients, client)
+-		sysmmu_tlb_invalidate_entry(owner->dev, iova, size);
++	list_for_each_entry(data, &priv->clients, domain_node)
++		sysmmu_tlb_invalidate_entry(data, iova, size);
+ 
+ 	spin_unlock_irqrestore(&priv->lock, flags);
+ }
 -- 
 1.9.2
