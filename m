@@ -1,14 +1,16 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: PROBLEM: Deadlock in attach_device() in AMD IOMMU driver
-Date: Tue, 5 May 2015 16:41:59 +0200
-Message-ID: <20150505144159.GI15736@8bytes.org>
-References: <55488C3D.50509@solarflare.com>
+Subject: Re: [PATCH v6 08/25] iommu: exynos: refactor function parameters to
+	simplify code
+Date: Tue, 5 May 2015 16:52:35 +0200
+Message-ID: <20150505145235.GJ15736@8bytes.org>
+References: <1430727380-10912-1-git-send-email-m.szyprowski@samsung.com>
+	<1430727380-10912-9-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <55488C3D.50509-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
+In-Reply-To: <1430727380-10912-9-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,28 +20,22 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Gregor Dick <gdick-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kieran Mansley <kmansley-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Seung-Woo Kim <sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Gregor,
+On Mon, May 04, 2015 at 10:16:03AM +0200, Marek Szyprowski wrote:
+> @@ -719,14 +712,12 @@ static void exynos_iommu_domain_free(struct iommu_domain *domain)
+>  
+>  	spin_lock_irqsave(&priv->lock, flags);
+>  
+> -	list_for_each_entry(owner, &priv->clients, client) {
+> -		while (!exynos_sysmmu_disable(owner->dev))
+> -			; /* until System MMU is actually disabled */
+> +	list_for_each_entry(data, &priv->clients, domain_node) {
+> +		if (__sysmmu_disable(data))
+> +			data->master = NULL;
+> +		list_del_init(&data->domain_node);
+>  	}
 
-On Tue, May 05, 2015 at 10:24:13AM +0100, Gregor Dick wrote:
-> The problem occurs when a network driver (sfc.ko, here an internal
-> testing version) enables SR-IOV on its device by calling
-> pci_enable_sriov(). There are two PFs for this physical device. This
-> call in turn results in a call to virtfn_add(), which takes the
-> pci_sriov lock for the first function on the bus. The AMD IOMMU driver
-> then handles the device-change notification by calling attach_device()
-> which in turn calls pci_enable_ats().  This latter function also
-> attempts to take the pci_sriov lock (although this time for
-> dev->physfn rather than dev->sriov->dev, but these need not be
-> distinct).
-
-Do you see a real deadlock or only the lockdep warning? In the code it
-looks like virtfn_add() takes the sriov->lock of the physical device
-while pci_enable_ats() (when called from there) takes the sriov->lock of
-the virtual function. In this case it couldn't deadlock.
-
-
-	Joerg
+This needs list_for_each_entry_safe.
