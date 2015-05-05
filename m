@@ -1,21 +1,21 @@
-From: AceLan Kao <acelan.kao-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>
-Subject: Re: Any side effect if turn off amd_iommu
-Date: Tue, 5 May 2015 15:30:41 +0800
-Message-ID: <CAFv23QkRouVJ6siu==-EjLndP2Z7inz+qVeKxLci3=R=9r8+zQ@mail.gmail.com>
-References: <CAFv23QmxQ3vJnMEGN0TNR3vLAx1MN7ptB0y3QQLKciqfT3OBsQ@mail.gmail.com>
-	<20150325140410.GS4441@8bytes.org>
-	<CAFv23Qn93z4pE6RtURgoiBADpgCWZ6gfpMPn3akfJibudRi+Qg@mail.gmail.com>
-	<20150326120547.GU4441@8bytes.org>
-	<CAFv23QnUO+w0EXUx8DtgPx0W=fz37_R04EW6P-g+PF_y_U1dfA@mail.gmail.com>
-	<20150330160910.GZ4441@8bytes.org>
-	<CAFv23QmOjFb9NgLY0aW55OpQSecFA83jNOU1TY7o3qWuft1_Cw@mail.gmail.com>
-	<CAFv23Q==+tXTif9uQfyTHE28hxGt80WYS=A6qN7q0Q4q7re6kw@mail.gmail.com>
-	<20150504110802.GE15736@8bytes.org>
+From: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: [iommu:ppc/pamu 1/1] drivers/iommu/fsl_pamu.h:24:32: fatal
+	error: asm/fsl_pamu_stash.h: No such file or directory
+Date: Tue, 5 May 2015 15:17:13 +0200
+Message-ID: <20150505131713.GD5438@suse.de>
+References: <201503240804.8vcZXNOY%fengguang.wu@intel.com>
+	<551122E2.1040408@Freescale.com>
+	<BN3PR0301MB12195D8782612E67CDE2BFD9EA0B0@BN3PR0301MB1219.namprd03.prod.outlook.com>
+	<55125179.8040801@Freescale.com>
+	<BN3PR0301MB12193C6929AE8CF767B8A78AEA0B0@BN3PR0301MB1219.namprd03.prod.outlook.com>
+	<55126585.7040903@Freescale.com>
+	<BN3PR0301MB12198F55BD2619F392B58AD4EAFC0@BN3PR0301MB1219.namprd03.prod.outlook.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150504110802.GE15736-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <BN3PR0301MB12198F55BD2619F392B58AD4EAFC0-CEkquS/Gb81uuip9JPHoc5wN6zqB+hSMnBOFsp37pqbUKgpGm//BTAC/G2K4zDHf@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,42 +25,24 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Madalin-Cristian Bucur <madalin.bucur-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+Hi Varun,
 
-There is no easy way to check whether this BIOS bug is present, so we
-have to list them explicitly.
-I think we can do just like what platform drivers(ex. asus_quirks[1])
-do, check the system vendor and product name to identify those
-machines, and give them a working ioapic value.
+On Wed, Apr 08, 2015 at 01:24:16PM +0000, Varun Sethi wrote:
+> Following issue was observed while building (compile test) for a
+> non-powerpc (e500mc) based platform. The pamu driver includes a file
+> which is available in the architecture include directory. Should we
+> move the header file to general Linux kernel include directory?
 
-1. drivers/platform/x86/asus-nb-wmi.c
+Before I added the COMPILE_TEST dependency it looked like this:
 
-Best regards,
-AceLan Kao.
+	depends on PPC_E500MC
 
-2015-05-04 19:08 GMT+08:00 Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>:
-> Hi Acelan,
->
-> On Thu, Apr 23, 2015 at 10:15:33AM +0800, AceLan Kao wrote:
->> We can confirm that the issue comes from the resources conflict,
->> adding this boot option can solve the issue.
->>    ivrs_ioapic[5]=00:00.1
->> We've tried to negotiate with the OEM BIOS team, but they refused to
->> modify the BIOS code, since there is no issue on MS Windows and it'll
->> require to re-start a full test if the BIOS code is changed, so they
->> don't want to do that.
->>
->> I'm wondering if we can add a quirk to list those machine and assign
->> them the correct ivrs_ioapic value in amd_iommu driver?
->
-> It is probably hard to match a specific machine which has the bug. What
-> do you think would be a good indicator to check whether this BIOS bug is
-> present?
->
->
->         Joerg
->
+Which means the driver was only buildable on e500mc and now you are
+telling me that this is broken. What am I missing?
+
+
+	Joerg
