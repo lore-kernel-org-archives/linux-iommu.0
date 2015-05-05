@@ -1,21 +1,14 @@
-From: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [iommu:ppc/pamu 1/1] drivers/iommu/fsl_pamu.h:24:32: fatal
-	error: asm/fsl_pamu_stash.h: No such file or directory
-Date: Tue, 5 May 2015 15:17:13 +0200
-Message-ID: <20150505131713.GD5438@suse.de>
-References: <201503240804.8vcZXNOY%fengguang.wu@intel.com>
-	<551122E2.1040408@Freescale.com>
-	<BN3PR0301MB12195D8782612E67CDE2BFD9EA0B0@BN3PR0301MB1219.namprd03.prod.outlook.com>
-	<55125179.8040801@Freescale.com>
-	<BN3PR0301MB12193C6929AE8CF767B8A78AEA0B0@BN3PR0301MB1219.namprd03.prod.outlook.com>
-	<55126585.7040903@Freescale.com>
-	<BN3PR0301MB12198F55BD2619F392B58AD4EAFC0@BN3PR0301MB1219.namprd03.prod.outlook.com>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: [PATCH] iommu: rockchip: fix build without CONFIG_OF
+Date: Tue, 5 May 2015 15:19:29 +0200
+Message-ID: <20150505131929.GE5438@suse.de>
+References: <3138014.xYAj3FssJ8@wuerfel>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <BN3PR0301MB12198F55BD2619F392B58AD4EAFC0-CEkquS/Gb81uuip9JPHoc5wN6zqB+hSMnBOFsp37pqbUKgpGm//BTAC/G2K4zDHf@public.gmane.org>
+In-Reply-To: <3138014.xYAj3FssJ8@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,24 +18,23 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Madalin-Cristian Bucur <madalin.bucur-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Varun,
+On Fri, Apr 10, 2015 at 11:58:24PM +0200, Arnd Bergmann wrote:
+> The rockchip iommu driver references its of_device_id table
+> from the init function, which fails to build when the table
+> is undefined:
+> 
+> iommu/rockchip-iommu.c: In function 'rk_iommu_init':
+> iommu/rockchip-iommu.c:1029:35: error: 'rk_iommu_dt_ids' undeclared (first use in this function)
+>   np = of_find_matching_node(NULL, rk_iommu_dt_ids);
+> 
+> This removes the #ifdef and the corresponding of_match_ptr wrapper
+> to make it build both with CONFIG_OF enabled or disabled.
+> 
+> Signed-off-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+> Fixes: 425061b0f5074 ("iommu/rockchip: Play nice in multi-platform builds")
 
-On Wed, Apr 08, 2015 at 01:24:16PM +0000, Varun Sethi wrote:
-> Following issue was observed while building (compile test) for a
-> non-powerpc (e500mc) based platform. The pamu driver includes a file
-> which is available in the architecture include directory. Should we
-> move the header file to general Linux kernel include directory?
-
-Before I added the COMPILE_TEST dependency it looked like this:
-
-	depends on PPC_E500MC
-
-Which means the driver was only buildable on e500mc and now you are
-telling me that this is broken. What am I missing?
-
-
-	Joerg
+Applied to iommu/fixes, thanks.
