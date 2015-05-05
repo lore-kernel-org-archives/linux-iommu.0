@@ -1,42 +1,66 @@
-From: Dave Young <dyoung@redhat.com>
-Subject: Re: [PATCH v10 0/10] iommu/vt-d: Fix intel vt-d faults in kdump
- kernel
-Date: Tue, 5 May 2015 14:14:23 +0800
-Message-ID: <20150505061423.GC31063@dhcp-128-4.nay.redhat.com>
-References: <1428655333-19504-1-git-send-email-zhen-hual@hp.com>
- <20150415005731.GC19051@localhost.localdomain>
- <552DFB56.1070600@hp.com>
- <20150415064803.GF19051@localhost.localdomain>
- <20150424080147.GC4458@dhcp-16-116.nay.redhat.com>
- <20150424082528.GA23912@dhcp-128-91.nay.redhat.com>
- <20150424083530.GD4458@dhcp-16-116.nay.redhat.com>
- <20150424084957.GC23912@dhcp-128-91.nay.redhat.com>
- <20150504162318.GH15736@8bytes.org>
+From: AceLan Kao <acelan.kao-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>
+Subject: Re: Any side effect if turn off amd_iommu
+Date: Tue, 5 May 2015 15:30:41 +0800
+Message-ID: <CAFv23QkRouVJ6siu==-EjLndP2Z7inz+qVeKxLci3=R=9r8+zQ@mail.gmail.com>
+References: <CAFv23QmxQ3vJnMEGN0TNR3vLAx1MN7ptB0y3QQLKciqfT3OBsQ@mail.gmail.com>
+	<20150325140410.GS4441@8bytes.org>
+	<CAFv23Qn93z4pE6RtURgoiBADpgCWZ6gfpMPn3akfJibudRi+Qg@mail.gmail.com>
+	<20150326120547.GU4441@8bytes.org>
+	<CAFv23QnUO+w0EXUx8DtgPx0W=fz37_R04EW6P-g+PF_y_U1dfA@mail.gmail.com>
+	<20150330160910.GZ4441@8bytes.org>
+	<CAFv23QmOjFb9NgLY0aW55OpQSecFA83jNOU1TY7o3qWuft1_Cw@mail.gmail.com>
+	<CAFv23Q==+tXTif9uQfyTHE28hxGt80WYS=A6qN7q0Q4q7re6kw@mail.gmail.com>
+	<20150504110802.GE15736@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150504162318.GH15736@8bytes.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Baoquan He <bhe@redhat.com>, "Li, ZhenHua" <zhen-hual@hp.com>, dwmw2@infradead.org, indou.takao@jp.fujitsu.com, vgoyal@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150504110802.GE15736-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/04/15 at 06:23pm, Joerg Roedel wrote:
-> On Fri, Apr 24, 2015 at 04:49:57PM +0800, Dave Young wrote:
-> > I'm more than happy to see this issue can be fixed in the patchset, I
-> > do not agree to add the code there with such problems. OTOH, for now
-> > seems there's no way to fix it.
-> 
-> And that's the point. We discuss this issue and possible solutions for
-> years by now, and what ZhenHua implemented is what we agreed to be the
-> best-effort on what we can do in the kdump case with IOMMU enabled.
-> 
-> Of course there are still failure scenarios left, but that is not
-> different from systems without any IOMMU.
+Hi Joerg,
 
-The failure is nothing different, but as I said in another reply the
-difference is we could use corrupted data to possiblly cause more failure. 
+There is no easy way to check whether this BIOS bug is present, so we
+have to list them explicitly.
+I think we can do just like what platform drivers(ex. asus_quirks[1])
+do, check the system vendor and product name to identify those
+machines, and give them a working ioapic value.
 
-Thanks
-Dave
+1. drivers/platform/x86/asus-nb-wmi.c
+
+Best regards,
+AceLan Kao.
+
+2015-05-04 19:08 GMT+08:00 Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>:
+> Hi Acelan,
+>
+> On Thu, Apr 23, 2015 at 10:15:33AM +0800, AceLan Kao wrote:
+>> We can confirm that the issue comes from the resources conflict,
+>> adding this boot option can solve the issue.
+>>    ivrs_ioapic[5]=00:00.1
+>> We've tried to negotiate with the OEM BIOS team, but they refused to
+>> modify the BIOS code, since there is no issue on MS Windows and it'll
+>> require to re-start a full test if the BIOS code is changed, so they
+>> don't want to do that.
+>>
+>> I'm wondering if we can add a quirk to list those machine and assign
+>> them the correct ivrs_ioapic value in amd_iommu driver?
+>
+> It is probably hard to match a specific machine which has the bug. What
+> do you think would be a good indicator to check whether this BIOS bug is
+> present?
+>
+>
+>         Joerg
+>
