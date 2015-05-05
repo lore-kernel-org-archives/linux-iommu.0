@@ -1,23 +1,14 @@
-From: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [iommu:ppc/pamu 1/1] drivers/iommu/fsl_pamu.h:24:32: fatal
-	error: asm/fsl_pamu_stash.h: No such file or directory
-Date: Tue, 5 May 2015 15:42:51 +0200
-Message-ID: <20150505134251.GG5438@suse.de>
-References: <201503240804.8vcZXNOY%fengguang.wu@intel.com>
-	<551122E2.1040408@Freescale.com>
-	<BN3PR0301MB12195D8782612E67CDE2BFD9EA0B0@BN3PR0301MB1219.namprd03.prod.outlook.com>
-	<55125179.8040801@Freescale.com>
-	<BN3PR0301MB12193C6929AE8CF767B8A78AEA0B0@BN3PR0301MB1219.namprd03.prod.outlook.com>
-	<55126585.7040903@Freescale.com>
-	<BN3PR0301MB12198F55BD2619F392B58AD4EAFC0@BN3PR0301MB1219.namprd03.prod.outlook.com>
-	<20150505131713.GD5438@suse.de>
-	<BN1PR0301MB06271FBAE46B4CBDD9781D0FEAD10@BN1PR0301MB0627.namprd03.prod.outlook.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: PROBLEM: Deadlock in attach_device() in AMD IOMMU driver
+Date: Tue, 5 May 2015 16:41:59 +0200
+Message-ID: <20150505144159.GI15736@8bytes.org>
+References: <55488C3D.50509@solarflare.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <BN1PR0301MB06271FBAE46B4CBDD9781D0FEAD10-RQSpjbwlmjSD1ymB6+i1+JwN6zqB+hSMnBOFsp37pqbUKgpGm//BTAC/G2K4zDHf@public.gmane.org>
+In-Reply-To: <55488C3D.50509-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,23 +18,28 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Madalin-Cristian Bucur <madalin.bucur-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+To: Gregor Dick <gdick-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kieran Mansley <kmansley-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Gregor,
 
+On Tue, May 05, 2015 at 10:24:13AM +0100, Gregor Dick wrote:
+> The problem occurs when a network driver (sfc.ko, here an internal
+> testing version) enables SR-IOV on its device by calling
+> pci_enable_sriov(). There are two PFs for this physical device. This
+> call in turn results in a call to virtfn_add(), which takes the
+> pci_sriov lock for the first function on the bus. The AMD IOMMU driver
+> then handles the device-change notification by calling attach_device()
+> which in turn calls pci_enable_ats().  This latter function also
+> attempts to take the pci_sriov lock (although this time for
+> dev->physfn rather than dev->sriov->dev, but these need not be
+> distinct).
 
-On Tue, May 05, 2015 at 01:22:24PM +0000, Varun Sethi wrote:
-> > Which means the driver was only buildable on e500mc and now you are
-> > telling me that this is broken. What am I missing?
-> > 
-> PPC_E500MC dependency is fine, but with the COMPIL_TEST flag ("or"
-> condition) the PAMU driver code would be built on any platform if the
-> compile test is selected.
-
-You said it is now also selected on non-ppc platforms, but there is a
-PPC32 dependency, so this shouldn't happen. It should build fine on any
-ppc platform as the include file is in arch/powerpc/include/asm, no?
+Do you see a real deadlock or only the lockdep warning? In the code it
+looks like virtfn_add() takes the sriov->lock of the physical device
+while pci_enable_ats() (when called from there) takes the sriov->lock of
+the virtual function. In this case it couldn't deadlock.
 
 
 	Joerg
