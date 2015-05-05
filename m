@@ -1,15 +1,23 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v6 00/25] Exynos SYSMMU (IOMMU) integration with DT and
-	DMA-mapping subsystem
-Date: Tue, 5 May 2015 17:05:54 +0200
-Message-ID: <20150505150554.GN15736@8bytes.org>
-References: <1430727380-10912-1-git-send-email-m.szyprowski@samsung.com>
+Subject: Re: Any side effect if turn off amd_iommu
+Date: Tue, 5 May 2015 17:13:19 +0200
+Message-ID: <20150505151319.GO15736@8bytes.org>
+References: <CAFv23QmxQ3vJnMEGN0TNR3vLAx1MN7ptB0y3QQLKciqfT3OBsQ@mail.gmail.com>
+	<20150325140410.GS4441@8bytes.org>
+	<CAFv23Qn93z4pE6RtURgoiBADpgCWZ6gfpMPn3akfJibudRi+Qg@mail.gmail.com>
+	<20150326120547.GU4441@8bytes.org>
+	<CAFv23QnUO+w0EXUx8DtgPx0W=fz37_R04EW6P-g+PF_y_U1dfA@mail.gmail.com>
+	<20150330160910.GZ4441@8bytes.org>
+	<CAFv23QmOjFb9NgLY0aW55OpQSecFA83jNOU1TY7o3qWuft1_Cw@mail.gmail.com>
+	<CAFv23Q==+tXTif9uQfyTHE28hxGt80WYS=A6qN7q0Q4q7re6kw@mail.gmail.com>
+	<20150504110802.GE15736@8bytes.org>
+	<CAFv23QkRouVJ6siu==-EjLndP2Z7inz+qVeKxLci3=R=9r8+zQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1430727380-10912-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <CAFv23QkRouVJ6siu==-EjLndP2Z7inz+qVeKxLci3=R=9r8+zQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,45 +27,28 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Seung-Woo Kim <sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: AceLan Kao <acelan.kao-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Marek,
+Hi,
 
-On Mon, May 04, 2015 at 10:15:55AM +0200, Marek Szyprowski wrote:
->   iommu: exynos: don't read version register on every tlb operation
+On Tue, May 05, 2015 at 03:30:41PM +0800, AceLan Kao wrote:
+> There is no easy way to check whether this BIOS bug is present, so we
+> have to list them explicitly.
+> I think we can do just like what platform drivers(ex. asus_quirks[1])
+> do, check the system vendor and product name to identify those
+> machines, and give them a working ioapic value.
 
-Please use 'iommu/exynos:' as prefix for the iommu patches and start
-the remaining subject with a capital letter, like this:
+Problem here is that system vendor and platform name is not enough, the
+version of the BIOS is also important. To make things worse, the problem
+could be introduced into one BIOS version and fixes in another later
+version.
 
-	iommu/exynos: Don't read version register on every tlb operation
-
->  Documentation/devicetree/bindings/iommu/iommu.txt |  44 ++
->  arch/arm/boot/dts/exynos3250-rinato.dts           |   1 +
->  arch/arm/boot/dts/exynos3250.dtsi                 |  22 +
->  arch/arm/boot/dts/exynos4.dtsi                    | 118 ++++++
->  arch/arm/boot/dts/exynos4210-trats.dts            |   1 +
->  arch/arm/boot/dts/exynos4210-universal_c210.dts   |   1 +
->  arch/arm/boot/dts/exynos4210.dtsi                 |  23 +
->  arch/arm/boot/dts/exynos4412-trats2.dts           |   1 +
->  arch/arm/boot/dts/exynos4415.dtsi                 |  11 +
->  arch/arm/boot/dts/exynos4x12.dtsi                 |  82 ++++
->  arch/arm/boot/dts/exynos5250-snow.dts             |   1 +
->  arch/arm/boot/dts/exynos5250-spring.dts           |   1 +
->  arch/arm/boot/dts/exynos5250.dtsi                 | 250 +++++++++++
->  arch/arm/boot/dts/exynos5420-peach-pit.dts        |   1 +
->  arch/arm/boot/dts/exynos5420.dtsi                 | 181 ++++++++
->  arch/arm/boot/dts/exynos5800-peach-pi.dts         |   1 +
->  arch/arm/mach-exynos/pm_domains.c                 |  18 +-
->  arch/arm/mm/dma-mapping.c                         | 112 +++++
->  drivers/gpu/drm/exynos/exynos_drm_fimd.c          |  27 +-
->  drivers/gpu/drm/exynos/exynos_drm_iommu.c         |   3 +
->  drivers/iommu/exynos-iommu.c                      | 495 ++++++++++------------
->  21 files changed, 1098 insertions(+), 296 deletions(-)
-
-What is the plan for merging this, should it go through the iommu tree
-or some other path?
+My feeling is that trying to make guesses here will open a can of
+worms we better keep closed. The strategy for now has been to search for
+broken configurations and disable interrupt remapping when they are
+detected.
 
 
 	Joerg
