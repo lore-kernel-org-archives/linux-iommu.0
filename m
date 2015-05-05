@@ -1,64 +1,47 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [iommu:ppc/pamu 1/1] drivers/iommu/fsl_pamu.h:24:32: fatal error:
-	asm/fsl_pamu_stash.h: No such file or directory
-Date: Tue, 5 May 2015 17:57:32 +0000
-Message-ID: <BN1PR0301MB0627F543CF6AE00CFED18B47EAD10@BN1PR0301MB0627.namprd03.prod.outlook.com>
-References: <201503240804.8vcZXNOY%fengguang.wu@intel.com>
-	<551122E2.1040408@Freescale.com>
-	<BN3PR0301MB12195D8782612E67CDE2BFD9EA0B0@BN3PR0301MB1219.namprd03.prod.outlook.com>
-	<55125179.8040801@Freescale.com>
-	<BN3PR0301MB12193C6929AE8CF767B8A78AEA0B0@BN3PR0301MB1219.namprd03.prod.outlook.com>
-	<55126585.7040903@Freescale.com>
-	<BN3PR0301MB12198F55BD2619F392B58AD4EAFC0@BN3PR0301MB1219.namprd03.prod.outlook.com>
-	<20150505131713.GD5438@suse.de>
-	<BN1PR0301MB06271FBAE46B4CBDD9781D0FEAD10@BN1PR0301MB0627.namprd03.prod.outlook.com>
-	<20150505134251.GG5438@suse.de>
+From: Josh Boyer <jwboyer@fedoraproject.org>
+Subject: Re: [git pull] IOMMU Updates for Linux v4.1
+Date: Tue, 5 May 2015 14:22:02 -0400
+Message-ID: <CA+5PVA63kPZcbzsjd1EE=rzL_CwF8yNXTdoZf=6RvGCpvtq04Q@mail.gmail.com>
+References: <20150420023433.GA3719@8bytes.org>
+	<55349B7C.2090109@amd.com>
+	<5545027B.1010704@amd.com>
+	<20150502221444.GB15736@8bytes.org>
+	<5545BDB2.6020006@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150505134251.GG5438-l3A5Bk7waGM@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Madalin-Cristian Bucur <madalin.bucur-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5545BDB2.6020006@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Oded Gabbay <oded.gabbay@amd.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Linus Torvalds <torvalds@linux-foundation.org>, "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+On Sun, May 3, 2015 at 2:18 AM, Oded Gabbay <oded.gabbay@amd.com> wrote:
+>
+>
+> On 05/03/2015 01:14 AM, Joerg Roedel wrote:
+>>
+>> Hi Oded,
+>>
+>> On Sat, May 02, 2015 at 07:59:39PM +0300, Oded Gabbay wrote:
+>>>
+>>> However, Joerg is not answering my emails for some reason
+>>> (vacation/sick?)
+>>
+>>
+>> Sorry, I was travelling for the last 3 weeks and had bad internet
+>> access. But I am back and will take care of this on Monday.
+>>
+>>
+>>         Joerg
+>>
+> Glad to hear it was vacation and not my other guess :)
+> Usually I'd be more patient, but as Fedora 22 already uses kernel 4.0, I
+> wanted to get this fix asap into stable.
 
-> -----Original Message-----
-> From: jroedel-l3A5Bk7waGM@public.gmane.org [mailto:jroedel-l3A5Bk7waGM@public.gmane.org]
-> Sent: Tuesday, May 05, 2015 7:13 PM
-> To: Sethi Varun-B16395
-> Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Bucur Madalin-
-> Cristian-B32716
-> Subject: Re: [iommu:ppc/pamu 1/1] drivers/iommu/fsl_pamu.h:24:32: fatal
-> error: asm/fsl_pamu_stash.h: No such file or directory
-> 
-> 
-> 
-> On Tue, May 05, 2015 at 01:22:24PM +0000, Varun Sethi wrote:
-> > > Which means the driver was only buildable on e500mc and now you are
-> > > telling me that this is broken. What am I missing?
-> > >
-> > PPC_E500MC dependency is fine, but with the COMPIL_TEST flag ("or"
-> > condition) the PAMU driver code would be built on any platform if the
-> > compile test is selected.
-> 
-> You said it is now also selected on non-ppc platforms, but there is a
-> PPC32 dependency, so this shouldn't happen. It should build fine on any ppc
-> platform as the include file is in arch/powerpc/include/asm, no?
-Actually PPC32 dependency is incorrect, that's what Emil's patch removed. As a result PAMU driver got built on other platforms as well.
-commit f2fafdd954d743a0e68e5cd76dbef2f2454deefa
+Is Fedora a particular concern here, or did you just happen to notice
+we're shipping with 4.0?  I'm curious if there is a Fedora bug that
+was reported for the issue you're concerned about that we may have
+missed.
 
-PAMU driver should depend on PPC_E500MC.
-
--Varun
+josh
