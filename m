@@ -1,40 +1,59 @@
-From: Gregor Dick <gdick-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
-Subject: Re: PROBLEM: Deadlock in attach_device() in AMD IOMMU driver
-Date: Wed, 6 May 2015 12:44:33 +0100
-Message-ID: <5549FEA1.9080801@solarflare.com>
-References: <55488C3D.50509@solarflare.com> <20150505144159.GI15736@8bytes.org>
-	<5548D814.6020807@solarflare.com>
-	<20150505153344.GR15736@8bytes.org>
+From: Oded Gabbay <oded.gabbay@gmail.com>
+Subject: Re: [git pull] IOMMU Updates for Linux v4.1
+Date: Wed, 6 May 2015 15:03:11 +0300
+Message-ID: <CAFCwf10kJoD1iCD0MrOComfJm_dfb6ukiWuxEwrc=xvrd5ofMA@mail.gmail.com>
+References: <20150420023433.GA3719@8bytes.org> <55349B7C.2090109@amd.com>
+ <5545027B.1010704@amd.com> <20150502221444.GB15736@8bytes.org>
+ <5545BDB2.6020006@amd.com> <CA+5PVA63kPZcbzsjd1EE=rzL_CwF8yNXTdoZf=6RvGCpvtq04Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150505153344.GR15736-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kieran Mansley <kmansley-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CA+5PVA63kPZcbzsjd1EE=rzL_CwF8yNXTdoZf=6RvGCpvtq04Q@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Josh Boyer <jwboyer@fedoraproject.org>
+Cc: Oded Gabbay <oded.gabbay@amd.com>, Linus Torvalds <torvalds@linux-foundation.org>, "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/05/15 16:33, Joerg Roedel wrote:
-> Okay, I'll have a look into the SLES12 kernel sources to check there.
-> Can you reproduce this with a recent upstream kernel?
+On Tue, May 5, 2015 at 9:22 PM, Josh Boyer <jwboyer@fedoraproject.org> wrote:
+> On Sun, May 3, 2015 at 2:18 AM, Oded Gabbay <oded.gabbay@amd.com> wrote:
+>>
+>>
+>> On 05/03/2015 01:14 AM, Joerg Roedel wrote:
+>>>
+>>> Hi Oded,
+>>>
+>>> On Sat, May 02, 2015 at 07:59:39PM +0300, Oded Gabbay wrote:
+>>>>
+>>>> However, Joerg is not answering my emails for some reason
+>>>> (vacation/sick?)
+>>>
+>>>
+>>> Sorry, I was travelling for the last 3 weeks and had bad internet
+>>> access. But I am back and will take care of this on Monday.
+>>>
+>>>
+>>>         Joerg
+>>>
+>> Glad to hear it was vacation and not my other guess :)
+>> Usually I'd be more patient, but as Fedora 22 already uses kernel 4.0, I
+>> wanted to get this fix asap into stable.
+>
+> Is Fedora a particular concern here, or did you just happen to notice
+> we're shipping with 4.0?  I'm curious if there is a Fedora bug that
+> was reported for the issue you're concerned about that we may have
+> missed.
+>
+> josh
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 
-I've done some more tests this morning and can reproduce the problem on
-a vanilla 4.0 kernel with a SLES12 userland, and also on a stock
-installation of Ubuntu 14.10 with a 3.16-derived kernel.
+AFAIK, this is not a reported bug.
 
-I neglected to mention kernel command-line options earlier:
+When I encountered the bug, I knew F22 uses 4.0, so I'm assuming that
+any user which installs F22 on Kaveri system AND executes an HSA
+application, will encounter this bug.
 
-iommu=on,pt amd_iommu=on
-
-Thanks,
-Gregor
-The information contained in this message is confidential and is intended for the addressee(s) only. If you have received this message in error, please notify the sender immediately and delete the message. Unless you are an addressee (or authorized to receive for an addressee), you may not use, copy or disclose to anyone this message or any information contained in this message. The unauthorized use, disclosure, copying or alteration of this message is strictly prohibited.
+-- 
+          Oded
