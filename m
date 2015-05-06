@@ -1,24 +1,15 @@
-From: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [iommu:ppc/pamu 1/1] drivers/iommu/fsl_pamu.h:24:32: fatal
-	error: asm/fsl_pamu_stash.h: No such file or directory
-Date: Wed, 6 May 2015 10:41:33 +0200
-Message-ID: <20150506084133.GD20611@8bytes.org>
-References: <551122E2.1040408@Freescale.com>
-	<BN3PR0301MB12195D8782612E67CDE2BFD9EA0B0@BN3PR0301MB1219.namprd03.prod.outlook.com>
-	<55125179.8040801@Freescale.com>
-	<BN3PR0301MB12193C6929AE8CF767B8A78AEA0B0@BN3PR0301MB1219.namprd03.prod.outlook.com>
-	<55126585.7040903@Freescale.com>
-	<BN3PR0301MB12198F55BD2619F392B58AD4EAFC0@BN3PR0301MB1219.namprd03.prod.outlook.com>
-	<20150505131713.GD5438@suse.de>
-	<BN1PR0301MB06271FBAE46B4CBDD9781D0FEAD10@BN1PR0301MB0627.namprd03.prod.outlook.com>
-	<20150505134251.GG5438@suse.de>
-	<BN1PR0301MB0627F543CF6AE00CFED18B47EAD10@BN1PR0301MB0627.namprd03.prod.outlook.com>
+From: Gregor Dick <gdick-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
+Subject: Re: PROBLEM: Deadlock in attach_device() in AMD IOMMU driver
+Date: Wed, 6 May 2015 12:44:33 +0100
+Message-ID: <5549FEA1.9080801@solarflare.com>
+References: <55488C3D.50509@solarflare.com> <20150505144159.GI15736@8bytes.org>
+	<5548D814.6020807@solarflare.com>
+	<20150505153344.GR15736@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <BN1PR0301MB0627F543CF6AE00CFED18B47EAD10-RQSpjbwlmjSD1ymB6+i1+JwN6zqB+hSMnBOFsp37pqbUKgpGm//BTAC/G2K4zDHf@public.gmane.org>
+In-Reply-To: <20150505153344.GR15736-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -28,23 +19,22 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Madalin-Cristian Bucur <madalin.bucur-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kieran Mansley <kmansley-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Varun,
+On 05/05/15 16:33, Joerg Roedel wrote:
+> Okay, I'll have a look into the SLES12 kernel sources to check there.
+> Can you reproduce this with a recent upstream kernel?
 
-On Tue, May 05, 2015 at 05:57:32PM +0000, Varun Sethi wrote:
-> Actually PPC32 dependency is incorrect, that's what Emil's patch
-> removed. As a result PAMU driver got built on other platforms as well.
-> commit f2fafdd954d743a0e68e5cd76dbef2f2454deefa
-> 
-> PAMU driver should depend on PPC_E500MC.
+I've done some more tests this morning and can reproduce the problem on
+a vanilla 4.0 kernel with a SLES12 userland, and also on a stock
+installation of Ubuntu 14.10 with a 3.16-derived kernel.
 
-Instead of only removing the PPC32 dependency you guys should have
-replaced it with the correct architecture config symbol to prevent it
-from being built on anything else than PPC. I am pretty sure there is
-one you can rely on.
+I neglected to mention kernel command-line options earlier:
 
+iommu=on,pt amd_iommu=on
 
-	Joerg
+Thanks,
+Gregor
+The information contained in this message is confidential and is intended for the addressee(s) only. If you have received this message in error, please notify the sender immediately and delete the message. Unless you are an addressee (or authorized to receive for an addressee), you may not use, copy or disclose to anyone this message or any information contained in this message. The unauthorized use, disclosure, copying or alteration of this message is strictly prohibited.
