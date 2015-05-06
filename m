@@ -1,23 +1,24 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v10 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
-Date: Wed, 6 May 2015 10:25:59 +0200
-Message-ID: <20150506082559.GC20611@8bytes.org>
-References: <552DFB56.1070600@hp.com>
-	<20150415064803.GF19051@localhost.localdomain>
-	<20150424080147.GC4458@dhcp-16-116.nay.redhat.com>
-	<20150424082528.GA23912@dhcp-128-91.nay.redhat.com>
-	<20150424083530.GD4458@dhcp-16-116.nay.redhat.com>
-	<20150424084957.GC23912@dhcp-128-91.nay.redhat.com>
-	<20150504162318.GH15736@8bytes.org>
-	<20150505061423.GC31063@dhcp-128-4.nay.redhat.com>
-	<20150505153157.GQ15736@8bytes.org>
-	<20150506015135.GB14065@dhcp-128-4.nay.redhat.com>
+From: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [iommu:ppc/pamu 1/1] drivers/iommu/fsl_pamu.h:24:32: fatal
+	error: asm/fsl_pamu_stash.h: No such file or directory
+Date: Wed, 6 May 2015 10:41:33 +0200
+Message-ID: <20150506084133.GD20611@8bytes.org>
+References: <551122E2.1040408@Freescale.com>
+	<BN3PR0301MB12195D8782612E67CDE2BFD9EA0B0@BN3PR0301MB1219.namprd03.prod.outlook.com>
+	<55125179.8040801@Freescale.com>
+	<BN3PR0301MB12193C6929AE8CF767B8A78AEA0B0@BN3PR0301MB1219.namprd03.prod.outlook.com>
+	<55126585.7040903@Freescale.com>
+	<BN3PR0301MB12198F55BD2619F392B58AD4EAFC0@BN3PR0301MB1219.namprd03.prod.outlook.com>
+	<20150505131713.GD5438@suse.de>
+	<BN1PR0301MB06271FBAE46B4CBDD9781D0FEAD10@BN1PR0301MB0627.namprd03.prod.outlook.com>
+	<20150505134251.GG5438@suse.de>
+	<BN1PR0301MB0627F543CF6AE00CFED18B47EAD10@BN1PR0301MB0627.namprd03.prod.outlook.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20150506015135.GB14065-0VdLhd/A9PlTxLCkMk2GaBcY2uh10dtjAL8bYrjMMd8@public.gmane.org>
+In-Reply-To: <BN1PR0301MB0627F543CF6AE00CFED18B47EAD10-RQSpjbwlmjSD1ymB6+i1+JwN6zqB+hSMnBOFsp37pqbUKgpGm//BTAC/G2K4zDHf@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,19 +28,23 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Li,
-	ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Madalin-Cristian Bucur <madalin.bucur-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, May 06, 2015 at 09:51:35AM +0800, Dave Young wrote:
-> DMA write will modify system ram, if the old data is corrupted  it is possible
-> that DMA operation modify wrong ram regions because of wrong mapping.
-> Am I missing something and is it not possible?
+Hi Varun,
 
-This might have happened already before the kdump kernel even boots.
-Also, if there is no IOMMU, this can happen as well. This (unlikely
-but possible) situation doesn't make things worse.
+On Tue, May 05, 2015 at 05:57:32PM +0000, Varun Sethi wrote:
+> Actually PPC32 dependency is incorrect, that's what Emil's patch
+> removed. As a result PAMU driver got built on other platforms as well.
+> commit f2fafdd954d743a0e68e5cd76dbef2f2454deefa
+> 
+> PAMU driver should depend on PPC_E500MC.
+
+Instead of only removing the PPC32 dependency you guys should have
+replaced it with the correct architecture config symbol to prevent it
+from being built on anything else than PPC. I am pretty sure there is
+one you can rely on.
 
 
 	Joerg
