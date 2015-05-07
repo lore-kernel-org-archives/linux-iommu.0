@@ -1,230 +1,142 @@
-From: Stuart Yoder <b08248-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: Master-aware devices and sideband ID data
-Date: Thu, 7 May 2015 12:49:32 -0500
-Message-ID: <CALRxmdAE_=SubN7dY-W1K44cjVVRhKLKknpgG9af_g64+GHPtw@mail.gmail.com>
-References: <20150324155007.GC23005@leverpostej>
+From: Jerome Glisse <j.glisse@gmail.com>
+Subject: Re: [PATCH 0/6] IOMMU/DMA map_resource support for peer-to-peer
+Date: Thu, 7 May 2015 14:11:10 -0400
+Message-ID: <20150507181110.GB5966@gmail.com>
+References: <1430505138-2877-1-git-send-email-wdavis@nvidia.com>
+ <20150506221818.GH24643@google.com>
+ <554AC48A.2030209@huawei.com>
+ <CAErSpo6xp5kM57PX9RkXKr5MM4BQM7-uXPtvCBL8=9Br8FYLdA@mail.gmail.com>
+ <ec4d9f89290441a79e0caf986383c5df@HQMAIL106.nvidia.com>
+ <CAErSpo7dv=q+v+zEvT8Fbt26_Xq+AVZQBjJOZX9y5o+A5kFhTA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150324155007.GC23005@leverpostej>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAErSpo7dv=q+v+zEvT8Fbt26_Xq+AVZQBjJOZX9y5o+A5kFhTA@mail.gmail.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: William Davis <wdavis@nvidia.com>, Dave Jiang <dave.jiang@intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Jerome Glisse <jglisse@redhat.com>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, John Hubbard <jhubbard@nvidia.com>, Terence Ripperda <TRipperda@nvidia.com>, "David S. Miller" <davem@davemloft.net>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Mar 24, 2015 at 10:50 AM, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org> wrote:
-> Hi all,
->
-> For some devices, identification of particular masters is critical to
-> their operation (e.g. IOMMUs, MSI controllers). The identity of masters
-> is determined from sideband signals on the bus, and it may or may not be
-> possible to probe and/or configure this information. Worse still, these
-> information may be rewritten by intermediate buses, so the
-> information for a given master may differ at different points in the bus
-> hierarchy.
->
-> We currently describe this master information for devices attached to
-> IOMMUs, with a master ID being encoded in the iommu-cells. However this
-> only covers the ID between the master and its IOMMU(s), and we don't
-> currently have a mechanism to describe the master IDs as they are seen
-> by devices beyond the IOMMU(s),
+On Thu, May 07, 2015 at 12:16:30PM -0500, Bjorn Helgaas wrote:
+> On Thu, May 7, 2015 at 11:23 AM, William Davis <wdavis@nvidia.com> wr=
+ote:
+> >> From: Bjorn Helgaas [mailto:bhelgaas@google.com]
+> >> Sent: Thursday, May 7, 2015 8:13 AM
+> >> To: Yijing Wang
+> >> Cc: William Davis; Joerg Roedel; open list:INTEL IOMMU (VT-d); lin=
+ux-
+> >> pci@vger.kernel.org; Terence Ripperda; John Hubbard; Jerome Glisse=
+; Dave
+> >> Jiang; David S. Miller; Alex Williamson
+> >> Subject: Re: [PATCH 0/6] IOMMU/DMA map_resource support for peer-t=
+o-peer
+> >>
+> >> On Wed, May 6, 2015 at 8:48 PM, Yijing Wang <wangyijing@huawei.com=
+> wrote:
+> >> > On 2015/5/7 6:18, Bjorn Helgaas wrote:
+> >> >> [+cc Yijing, Dave J, Dave M, Alex]
+> >> >>
+> >> >> On Fri, May 01, 2015 at 01:32:12PM -0500, wdavis@nvidia.com wro=
+te:
+> >> >>> From: Will Davis <wdavis@nvidia.com>
+> >> >>>
+> >> >>> Hi,
+> >> >>>
+> >> >>> This patch series adds DMA APIs to map and unmap a struct reso=
+urce
+> >> >>> to and from a PCI device's IOVA domain, and implements the AMD=
+,
+> >> >>> Intel, and nommu versions of these interfaces.
+> >> >>>
+> >> >>> This solves a long-standing problem with the existing DMA-rema=
+pping
+> >> >>> interfaces, which require that a struct page be given for the =
+region
+> >> >>> to be mapped into a device's IOVA domain. This requirement can=
+not
+> >> >>> support peer device BAR ranges, for which no struct pages exis=
+t.
+> >> >>> ...
+> >>
+> >> >> I think we currently assume there's no peer-to-peer traffic.
+> >> >>
+> >> >> I don't know whether changing that will break anything, but I'm
+> >> >> concerned about these:
+> >> >>
+> >> >>   - PCIe MPS configuration (see pcie_bus_configure_settings()).
+> >> >
+> >> > I think it should be ok for PCIe MPS configuration, PCIE_BUS_PEE=
+R2PEER
+> >> > force every device's MPS to 128B, what its concern is the TLP pa=
+yload
+> >> > size. In this series, it seems to only map a iova for device bar=
+ region.
+> >>
+> >> MPS configuration makes assumptions about whether there will be an=
+y peer-
+> >> to-peer traffic.  If there will be none, MPS can be configured mor=
+e
+> >> aggressively.
+> >>
+> >> I don't think Linux has any way to detect whether a driver is doin=
+g peer-
+> >> to-peer, and there's no way to prevent a driver from doing it.
+> >> We're stuck with requiring the user to specify boot options
+> >> ("pci=3Dpcie_bus_safe", "pci=3Dpcie_bus_perf", "pci=3Dpcie_bus_pee=
+r2peer",
+> >> etc.) that tell the PCI core what the user expects to happen.
+> >>
+> >> This is a terrible user experience.  The user has no way to tell w=
+hat
+> >> drivers are going to do.  If he specifies the wrong thing, e.g., "=
+assume no
+> >> peer-to-peer traffic," and then loads a driver that does peer-to-p=
+eer, the
+> >> kernel will configure MPS aggressively and when the device does a =
+peer-to-
+> >> peer transfer, it may cause a Malformed TLP error.
+> >>
+> >
+> > I agree that this isn't a great user experience, but just want to c=
+larify
+> > that this problem is orthogonal to this patch series, correct?
+> >
+> > Prior to this series, the MPS mismatch is still possible with p2p t=
+raffic,
+> > but when an IOMMU is enabled p2p traffic will result in DMAR faults=
+=2E The
+> > aim of the series is to allow drivers to fix the latter, not the fo=
+rmer.
+>=20
+> Prior to this series, there wasn't any infrastructure for drivers to
+> do p2p, so it was mostly reasonable to assume that there *was* no p2p
+> traffic.
+>=20
+> I think we currently default to doing nothing to MPS.  Prior to this
+> series, it might have been reasonable to optimize based on a "no-p2p"
+> assumption, e.g., default to pcie_bus_safe or pcie_bus_perf.  After
+> this series, I'm not sure what we could do, because p2p will be much
+> more likely.
+>=20
+> It's just an issue; I don't know what the resolution is.
 
-Is there a specific case you've run across where conveying this additional
-master info would be needed,  or are you just thinking through how to fully
-describe hardware?
+Can't we just have each device update its MPS at runtime. So if device =
+A
+decide to map something from device B then device A update MPS for A an=
+d
+B to lowest common supported value.
 
-Are there really cases out there were there is a hardwired hardware
-relationship between RID and SID?
+Of course you need to keep track of that per device so that if a device=
+ C
+comes around and want to exchange with device B and both C and B suppor=
+t
+higher payload than A then if C reprogram B it will trigger issue for A=
+=2E
 
-> or in the absence of any IOMMU(s).
->
-> The following are example of master IDs:
-> * PCIe Requester IDs (RIDs) (bus:device.function AKA BDF)
-> * SMMU Stream IDs (SIDs)
-> * GICv3 ITS Device IDs (DIDs)
->
-> In the case of a system with PCIe, SMMU and GICv3, the master IDs are
-> rewritten in a chain of RID=>SID=>DID, as in the following diagram:
->
-> +-------------+
-> | PCIe master |
-> +-------------+
->     ||
->     || Requester ID (RID)
->     || Probeable from RC.
->     \/
-> +-------------------+
-> | PCIe Root Complex |
-> +-------------------+
->     ||
->     || SMMU Stream ID (SID)
->     || Derived from RID, static non-probeable mapping.
+I know we update other PCIE configuration parameter at runtime for GPU,
+dunno if it is widely tested for other devices.
 
-The FSL LS2085A SoC has an actual RID->SID mapping table in the PCI
-controller, but it is not static in the sense of fixed in hardware or
-firmware.  It's
-a programmable mapping table, and we envision Linux programming this table.
-
->     \/
-> +--------------+
-> | SMMU (IOMMU) |
-> +--------------+
->     ||
->     || ITS Device ID (DID)
->     || Derived from SID, static non-probeable mapping.
->     \/
-
-Is this even architecturally possible on ARM?  Can the SMMU transform stream
-IDs into some different number?
-
-> +----------------------------+
-> | GICv3 ITS (MSI controller) |
-> +----------------------------+
->
-> In simpler cases, you might have a simpler set of master ID
-> translations, e.g. just a DID:
->
-> +-----------------+
-> | Platform device |
-> +-----------------+
->     ||
->     || ITS Device ID (DID)
->     || Hard-wired on the bus.
->     \/
-> +----------------------------+
-> | GICv3 ITS (MSI controller) |
-> +----------------------------+
->
-> Ignoring current bindings for the moment, I can see how we can describe
-> this with a generic master id-binding, with master-id-map along the
-> lines of interrupt-map, with a tuple format like:
-> <child-id-base child-id-length parent parent-id-base>
->
-> For the PCIe example, this would look something like the following (with
-> properties omitted for brevity):
->
-> PCI: pci@af000000 {
->         ...
->
->         /* Requester ID of PCIe endpoints, implicit at runtime */
->         master-id-cells = <1>;
->
->         /* RIDS idmapped to SIDS @ SMMU */
->         master-id-map = <0 0x10000 &SMMU 0>;
-> }
->
-> SMMU: iommu@bf000000 {
->         ...
->
->         /* SID, derived from RID */
->         master-id-cells = <1>;
->
->         /*
->          * For some reason the high bit of the ID was negated.
->          */
->         master-id-map = <0x0000 0x8000 &ITS 0x0 0x8000>,
->                         <0x8000 0x8000 &ITS 0x0 0x0000>;
->
-> };
->
-> ITS: its@cf000000 {
->         ...
->
->         /* DID, derived from SID */
->         master-id-cells = <2>;
->
->         /*
->          * Master traffic not propagated beyond this point, so no
->          * master-id-ranges
->          */
-> };
->
-> For the simpler case, this would look something like:
->
-> DEV: device@af000000 {
->         master-id-cells = <1>;
->         master-ids = <0xf>, <0xb>;
->         master-id-map = <0 0xf &ITS 0 0>;
-> };
->
-> ITS: its@cf000000 {
->         ...
->
->         /* DID */
->         master-id-cells = <2>;
-> };
->
->
-> However, this conflicts/overlaps with existing bindings (at least iommus
-> and msi-parent), and I'm not sure how to reconcile them. Am I missing a
-> neat way of describing this that works with the existing bindings?
->
-> It's also not clear to me if it's sufficient to have a generic
-> "master-ids" property (with the relevant type being implicit from
-> context), or if each type of ID needs each type of ID (RID, SID, DID,
-> etc) needs its own.
->
-> Which other devices out there which require side-band master
-> information, and what do they require?
-
-For us, at least, the  master-id-map cannot be a static property.
-Our PCI controller's DID->SID mapping table is programmable
-and we won't know how to program it until Linux is running.  A PCI
-SRIOV card may have virtual functions that appear as hot-plugged
-devices and there is no way that boot firmware would have the knowledge
-to have set that table up ahead of time.
-
-What we do need is some way to have boot firmware convey to
-the OS what SIDs are available to be used in the DID->SID
-table.   We have a very limited number of SIDs available and boot
-firmware may need to convey to Linux that for example-- PCI controller #2
-has only 8 SIDs available for DID->SID mappings.
-
-We had invented a property called "available-stream-ids" for some
-proof of concept work, but perhaps the master-id-map property could
-be used to convey available stream IDs by using a child-id-length
-of 0.  So to convey that stream IDs 5,6,7,8 are available:
-
-  PCI: pci@af000000 {
-         ...
-         /* Requester ID of PCIe endpoints, implicit at runtime */
-         master-id-cells = <1>;
-
-         /* RIDS idmapped to SIDS @ SMMU */
-         master-id-map = <0 0 &SMMU 5
-                                    0 0 &SMMU 6
-                                    0 0 &SMMU 7
-                                    0 0 &SMMU 8>;
-  };
-
-I'm not sure the above would conflict with the existing IOMMU
-binding, but would seem to be an extension of it.
-
-If you have a simple master with 2 stream IDS do this:          ...
-          iommus = <&{/smmu} 23>, <&{/smmu} 24>;
-
-If you have a static DID->SID mapping to convey, use the map as
-you proposed:
-         master-id-cells = <1>;
-         master-id-map = <0 0x10000 &SMMU 0>;;
-
-If your DID->SID is not static, but you need to convey the SIDs that are
-available to this bus:
-         master-id-cells = <1>;
-         master-id-map = <0 0 &SMMU 23
-                                    0 0 &SMMU 24>;
-
-I am less sure about how to deal with expressing the relationship of masters to
-the GIC ITS, but is there really a problem there?
-
-Thanks,
-Stuart
+Cheers,
+J=E9r=F4me
