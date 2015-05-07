@@ -1,45 +1,61 @@
-From: Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+From: Dave Young <dyoung@redhat.com>
 Subject: Re: [PATCH v9 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
-Date: Thu, 7 May 2015 21:25:36 +0800
-Message-ID: <20150507132536.GA4559@localhost.localdomain>
+Date: Thu, 7 May 2015 21:56:00 +0800
+Message-ID: <20150507135600.GB4559@localhost.localdomain>
 References: <1426743388-26908-1-git-send-email-zhen-hual@hp.com>
-	<20150403084031.GF22579@dhcp-128-53.nay.redhat.com>
-	<20150504110551.GD15736@8bytes.org>
-	<20150505060931.GB31063@dhcp-128-4.nay.redhat.com>
-	<20150505152343.GP15736@8bytes.org>
-	<20150506014649.GA14065@dhcp-128-4.nay.redhat.com>
-	<20150506081617.GB20611@8bytes.org>
+ <20150403084031.GF22579@dhcp-128-53.nay.redhat.com>
+ <20150504110551.GD15736@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20150506081617.GB20611-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Li,
-	Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+In-Reply-To: <20150504110551.GD15736@8bytes.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: "Li, Zhen-Hua" <zhen-hual@hp.com>, dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, vgoyal@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/06/15 at 10:16am, Joerg Roedel wrote:
-> On Wed, May 06, 2015 at 09:46:49AM +0800, Dave Young wrote:
-> > For the original problem, the key issue is dmar faults cause kdump kernel
-> > hang so that vmcore can not be saved. I do not know the reason why it hangs
-> > I think it is acceptable if kdump kernel boot ok with some dma errors..
+On 05/04/15 at 01:05pm, Joerg Roedel wrote:
+> On Fri, Apr 03, 2015 at 04:40:31PM +0800, Dave Young wrote:
+> > Have not read all the patches, but I have a question, not sure this
+> > has been answered before. Old memory is not reliable, what if the old
+> > memory get corrupted before panic? Is it safe to continue using it in
+> > 2nd kernel, I worry that it will cause problems.
 > 
-> It hangs because some devices can't handle the DMAR faults and the kdump
-> kernel can't initialize them and will hang itself. For that it doesn't
-> matter whether the fault was caused by a read or write request.
+> Yes, the old memory could be corrupted, and there are more failure cases
+> left which we have no way of handling yet (if iommu data structures are
+> in kdump backup areas).
+> 
+> The question is what to do if we find some of the old data structures
+> corrupted, hand how far should the tests go. Should we also check the
+> page-tables, for example? I think if some of the data structures for a
+> device are corrupted it probably already failed in the old kernel and
+> things won't get worse in the new one.
 
-Ok, thanks for explanation. so it explains sometimes kdump kernel boot ok
-with faults, sometimes it hangs instead.
+Joreg, I can not find the last reply from you, so just reply here about
+my worries here.
 
+I said that the patchset will cause more problems, let me explain about
+it more here:
+
+Suppose page table was corrupted, ie. original mapping iova1 -> page 1
+it was changed to iova1 -> page 2 accidently while crash happening,
+thus future dma will read/write page 2 instead page 1, right?
+
+so the behavior changes like:
+originally, dmar faults happen, but kdump kernel may boot ok with these
+faults, and vmcore can be saved.
+with the patchset, dmar faults does not happen, dma translation will be
+handled, but dma write could corrupt unrelevant memory.
+
+This might be corner case, but who knows because kernel paniced we can
+not assume old page table is right.
+
+But seems you all think it is safe, but let us understand each other
+first then go to a solution.
+
+Today we talked with Zhenhua about the problem I think both of us are clear
+about the problems. Just he think it can be left as future work.
+
+Thanks
 Dave
