@@ -1,67 +1,62 @@
-From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 3/6] dma-mapping: pci: add pci_(un)map_resource
-Date: Thu, 7 May 2015 10:19:05 -0500
-Message-ID: <20150507151905.GL24643@google.com>
+From: William Davis <wdavis@nvidia.com>
+Subject: RE: [PATCH 6/6] x86: add pci-nommu implementation of map_resource
+Date: Thu, 7 May 2015 16:07:45 +0000
+Message-ID: <29f8d3a0ed1b436d9473e1ba312adbbe@HQMAIL106.nvidia.com>
 References: <1430505138-2877-1-git-send-email-wdavis@nvidia.com>
-	<1430505138-2877-4-git-send-email-wdavis@nvidia.com>
+ <1430505138-2877-7-git-send-email-wdavis@nvidia.com>
+ <20150507150804.GJ24643@google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1430505138-2877-4-git-send-email-wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, tripperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20150507150804.GJ24643@google.com>
+Content-Language: en-US
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: "joro@8bytes.org" <joro@8bytes.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Terence Ripperda <TRipperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, "jglisse@redhat.com" <jglisse@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-[+cc Dave for sparc64, Yinghai]
 
-On Fri, May 01, 2015 at 01:32:15PM -0500, wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org wrote:
-> From: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+
+> -----Original Message-----
+> From: Bjorn Helgaas [mailto:bhelgaas@google.com]
+> Sent: Thursday, May 7, 2015 10:08 AM
+> To: William Davis
+> Cc: joro@8bytes.org; iommu@lists.linux-foundation.org; linux-
+> pci@vger.kernel.org; Terence Ripperda; John Hubbard; jglisse@redhat.com
+> Subject: Re: [PATCH 6/6] x86: add pci-nommu implementation of map_resource
 > 
-> Simply route these through to the new dma_(un)map_resource APIs.
+> On Fri, May 01, 2015 at 01:32:18PM -0500, wdavis@nvidia.com wrote:
+> > From: Will Davis <wdavis@nvidia.com>
+> >
+> > diff --git a/arch/x86/kernel/pci-nommu.c b/arch/x86/kernel/pci-nommu.c
+> > index da15918..6e9e66d 100644
+> > --- a/arch/x86/kernel/pci-nommu.c
+> > +++ b/arch/x86/kernel/pci-nommu.c
+> > @@ -38,6 +38,22 @@ static dma_addr_t nommu_map_page(struct device *dev,
+> struct page *page,
+> >  	return bus;
+> >  }
+> >
+> > +static dma_addr_t nommu_map_resource(struct device *dev, struct resource
+> *res,
+> > +				     unsigned long offset, size_t size,
+> > +				     enum dma_data_direction dir,
+> > +				     struct dma_attrs *attrs)
+> > +{
+> > +	dma_addr_t bus = res->start + offset;
 > 
-> Signed-off-by: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> Reviewed-by: Terence Ripperda <tripperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> Reviewed-by: John Hubbard <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> ---
->  include/asm-generic/pci-dma-compat.h | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
+> "res->start" is the CPU physical address, not the bus address.  There is a
+> pci_bus_address() interface to get the bus address.
 > 
-> diff --git a/include/asm-generic/pci-dma-compat.h b/include/asm-generic/pci-dma-compat.h
-> index c110843..ac4a4ad 100644
-> --- a/include/asm-generic/pci-dma-compat.h
-> +++ b/include/asm-generic/pci-dma-compat.h
-> @@ -61,6 +61,20 @@ pci_unmap_page(struct pci_dev *hwdev, dma_addr_t dma_address,
->  	dma_unmap_page(hwdev == NULL ? NULL : &hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
->  }
->  
-> +static inline dma_addr_t
-> +pci_map_resource(struct pci_dev *hwdev, struct resource *resource,
-> +		 unsigned long offset, size_t size, int direction)
-> +{
-> +	return dma_map_resource(hwdev == NULL ? NULL : &hwdev->dev, resource, offset, size, (enum dma_data_direction)direction);
-> +}
+> On many, but not all, x86 platforms the CPU physical address is identical
+> to the PCI bus address.
+> 
 
-On sparc64, PCI bus addresses, e.g., raw BAR values, can be 64 bits wide,
-but dma_addr_t is only 32 bits [1].  So dma_addr_t is a bit of a problem
-here.  It's likely that we will add a pci_bus_addr_t, but that hasn't
-happened yet [2].
+Thanks for pointing that out. Since we already have the resource here (and not the BAR index), I'll use pcibios_resource_to_bus(), as pci_bus_address() does.
 
-We do have existing problems already, e.g,. pci_bus_address() returns a
-dma_addr_t, so it has the same problem.  So I guess this is just a heads-up
-that this needs to be fixed eventually.
+Thanks,
+Will
 
-Bjorn
-
-[1] http://lkml.kernel.org/r/20150327.145016.86183910134380870.davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org
-[2] http://lkml.kernel.org/r/1427857069-6789-2-git-send-email-yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+--
+nvpublic
