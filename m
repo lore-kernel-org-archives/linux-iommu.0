@@ -1,113 +1,77 @@
-From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v9 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
-Date: Thu, 07 May 2015 10:25:26 -0400
-Message-ID: <554B75D6.1060204@redhat.com>
-References: <1426743388-26908-1-git-send-email-zhen-hual@hp.com>
-	<20150403084031.GF22579@dhcp-128-53.nay.redhat.com>
-	<551E56F6.60503@hp.com>
-	<20150403092111.GG22579@dhcp-128-53.nay.redhat.com>
-	<20150405015453.GB1562@dhcp-17-102.nay.redhat.com>
-	<20150407034622.GB7213@localhost.localdomain>
-	<5523E5DB.2090001@redhat.com>
-	<20150507140029.GC4559@localhost.localdomain>
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH 6/6] x86: add pci-nommu implementation of map_resource
+Date: Thu, 7 May 2015 10:08:04 -0500
+Message-ID: <20150507150804.GJ24643@google.com>
+References: <1430505138-2877-1-git-send-email-wdavis@nvidia.com>
+ <1430505138-2877-7-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150507140029.GC4559-bi+AKbBUZKY6gyzm1THtWbp2dZbC/Bob@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Li,
-	ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1430505138-2877-7-git-send-email-wdavis@nvidia.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: wdavis@nvidia.com
+Cc: joro@8bytes.org, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, tripperda@nvidia.com, jhubbard@nvidia.com, jglisse@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/07/2015 10:00 AM, Dave Young wrote:
-> On 04/07/15 at 10:12am, Don Dutile wrote:
->> On 04/06/2015 11:46 PM, Dave Young wrote:
->>> On 04/05/15 at 09:54am, Baoquan He wrote:
->>>> On 04/03/15 at 05:21pm, Dave Young wrote:
->>>>> On 04/03/15 at 05:01pm, Li, ZhenHua wrote:
->>>>>> Hi Dave,
->>>>>>
->>>>>> There may be some possibilities that the old iommu data is corrupted by
->>>>>> some other modules. Currently we do not have a better solution for the
->>>>>> dmar faults.
->>>>>>
->>>>>> But I think when this happens, we need to fix the module that corrupted
->>>>>> the old iommu data. I once met a similar problem in normal kernel, the
->>>>>> queue used by the qi_* functions was written again by another module.
->>>>>> The fix was in that module, not in iommu module.
->>>>>
->>>>> It is too late, there will be no chance to save vmcore then.
->>>>>
->>>>> Also if it is possible to continue corrupt other area of oldmem because
->>>>> of using old iommu tables then it will cause more problems.
->>>>>
->>>>> So I think the tables at least need some verifycation before being used.
->>>>>
->>>>
->>>> Yes, it's a good thinking anout this and verification is also an
->>>> interesting idea. kexec/kdump do a sha256 calculation on loaded kernel
->>>> and then verify this again when panic happens in purgatory. This checks
->>>> whether any code stomps into region reserved for kexec/kernel and corrupt
->>>> the loaded kernel.
->>>>
->>>> If this is decided to do it should be an enhancement to current
->>>> patchset but not a approach change. Since this patchset is going very
->>>> close to point as maintainers expected maybe this can be merged firstly,
->>>> then think about enhancement. After all without this patchset vt-d often
->>>> raised error message, hung.
->>>
->>> It does not convince me, we should do it right at the beginning instead of
->>> introduce something wrong.
->>>
->>> I wonder why the old dma can not be remap to a specific page in kdump kernel
->>> so that it will not corrupt more memory. But I may missed something, I will
->>> looking for old threads and catch up.
->>>
->>> Thanks
->>> Dave
->>>
->> The (only) issue is not corruption, but once the iommu is re-configured, the old,
->> not-stopped-yet, dma engines will use iova's that will generate dmar faults, which
->> will be enabled when the iommu is re-configured (even to a single/simple paging scheme)
->> in the kexec kernel.
->>
->
-> Don, so if iommu is not reconfigured then these faults will not happen?
->
-Well, if iommu is not reconfigured, then if the crash isn't caused by
-an IOMMU fault (some systems have firmware-first catch the IOMMU fault & convert
-them into NMI_IOCK), then the DMA's will continue into the old kernel memory space.
+On Fri, May 01, 2015 at 01:32:18PM -0500, wdavis@nvidia.com wrote:
+> From: Will Davis <wdavis@nvidia.com>
+> 
+> Simply pass through the physical address as the DMA address.
+> 
+> Signed-off-by: Will Davis <wdavis@nvidia.com>
+> Reviewed-by: Terence Ripperda <tripperda@nvidia.com>
+> Reviewed-by: John Hubbard <jhubbard@nvidia.com>
+> ---
+>  arch/x86/kernel/pci-nommu.c | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
+> 
+> diff --git a/arch/x86/kernel/pci-nommu.c b/arch/x86/kernel/pci-nommu.c
+> index da15918..6e9e66d 100644
+> --- a/arch/x86/kernel/pci-nommu.c
+> +++ b/arch/x86/kernel/pci-nommu.c
+> @@ -38,6 +38,22 @@ static dma_addr_t nommu_map_page(struct device *dev, struct page *page,
+>  	return bus;
+>  }
+>  
+> +static dma_addr_t nommu_map_resource(struct device *dev, struct resource *res,
+> +				     unsigned long offset, size_t size,
+> +				     enum dma_data_direction dir,
+> +				     struct dma_attrs *attrs)
+> +{
+> +	dma_addr_t bus = res->start + offset;
 
-> Baoquan and me has a confusion below today about iommu=off/intel_iommu=off:
->
-> intel_iommu_init()
-> {
-> ...
->
->         dmar_table_init();
->
->         disable active iommu translations;
->
->         if (no_iommu || dmar_disabled)
->                  goto out_free_dmar;
->
-> ...
-> }
->
-> Any reason not move no_iommu check to the begining of intel_iommu_init function?
->
-What does that do/help?
+"res->start" is the CPU physical address, not the bus address.  There is a
+pci_bus_address() interface to get the bus address.
 
-> Thanks
-> Dave
->
+On many, but not all, x86 platforms the CPU physical address is identical
+to the PCI bus address.
+
+> +
+> +	WARN_ON(size == 0);
+> +
+> +	if (!check_addr("map_resource", dev, bus, size))
+> +		return DMA_ERROR_CODE;
+> +	flush_write_buffers();
+> +	return bus;
+> +}
+> +
+> +
+>  /* Map a set of buffers described by scatterlist in streaming
+>   * mode for DMA.  This is the scatter-gather version of the
+>   * above pci_map_single interface.  Here the scatter gather list
+> @@ -93,6 +109,7 @@ struct dma_map_ops nommu_dma_ops = {
+>  	.free			= dma_generic_free_coherent,
+>  	.map_sg			= nommu_map_sg,
+>  	.map_page		= nommu_map_page,
+> +	.map_resource		= nommu_map_resource,
+>  	.sync_single_for_device = nommu_sync_single_for_device,
+>  	.sync_sg_for_device	= nommu_sync_sg_for_device,
+>  	.is_phys		= 1,
+> -- 
+> 2.3.7
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-pci" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
