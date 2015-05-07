@@ -1,71 +1,92 @@
-From: William Davis <wdavis@nvidia.com>
-Subject: RE: [PATCH 0/6] IOMMU/DMA map_resource support for peer-to-peer
-Date: Thu, 7 May 2015 16:23:07 +0000
-Message-ID: <ec4d9f89290441a79e0caf986383c5df@HQMAIL106.nvidia.com>
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH 0/6] IOMMU/DMA map_resource support for peer-to-peer
+Date: Thu, 7 May 2015 12:16:30 -0500
+Message-ID: <CAErSpo7dv=q+v+zEvT8Fbt26_Xq+AVZQBjJOZX9y5o+A5kFhTA@mail.gmail.com>
 References: <1430505138-2877-1-git-send-email-wdavis@nvidia.com>
  <20150506221818.GH24643@google.com> <554AC48A.2030209@huawei.com>
- <CAErSpo6xp5kM57PX9RkXKr5MM4BQM7-uXPtvCBL8=9Br8FYLdA@mail.gmail.com>
+ <CAErSpo6xp5kM57PX9RkXKr5MM4BQM7-uXPtvCBL8=9Br8FYLdA@mail.gmail.com> <ec4d9f89290441a79e0caf986383c5df@HQMAIL106.nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <CAErSpo6xp5kM57PX9RkXKr5MM4BQM7-uXPtvCBL8=9Br8FYLdA@mail.gmail.com>
-Content-Language: en-US
+In-Reply-To: <ec4d9f89290441a79e0caf986383c5df@HQMAIL106.nvidia.com>
 Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>, Yijing Wang <wangyijing@huawei.com>
-Cc: Joerg Roedel <joro@8bytes.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Terence Ripperda <TRipperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>, Dave Jiang <dave.jiang@intel.com>, "David S. Miller" <davem@davemloft.net>, Alex Williamson <alex.williamson@redhat.com>
+To: William Davis <wdavis@nvidia.com>
+Cc: Yijing Wang <wangyijing@huawei.com>, Joerg Roedel <joro@8bytes.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Terence Ripperda <TRipperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>, Dave Jiang <dave.jiang@intel.com>, "David S. Miller" <davem@davemloft.net>, Alex Williamson <alex.williamson@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQmpvcm4gSGVsZ2FhcyBb
-bWFpbHRvOmJoZWxnYWFzQGdvb2dsZS5jb21dDQo+IFNlbnQ6IFRodXJzZGF5LCBNYXkgNywgMjAx
-NSA4OjEzIEFNDQo+IFRvOiBZaWppbmcgV2FuZw0KPiBDYzogV2lsbGlhbSBEYXZpczsgSm9lcmcg
-Um9lZGVsOyBvcGVuIGxpc3Q6SU5URUwgSU9NTVUgKFZULWQpOyBsaW51eC0NCj4gcGNpQHZnZXIu
-a2VybmVsLm9yZzsgVGVyZW5jZSBSaXBwZXJkYTsgSm9obiBIdWJiYXJkOyBKZXJvbWUgR2xpc3Nl
-OyBEYXZlDQo+IEppYW5nOyBEYXZpZCBTLiBNaWxsZXI7IEFsZXggV2lsbGlhbXNvbg0KPiBTdWJq
-ZWN0OiBSZTogW1BBVENIIDAvNl0gSU9NTVUvRE1BIG1hcF9yZXNvdXJjZSBzdXBwb3J0IGZvciBw
-ZWVyLXRvLXBlZXINCj4gDQo+IE9uIFdlZCwgTWF5IDYsIDIwMTUgYXQgODo0OCBQTSwgWWlqaW5n
-IFdhbmcgPHdhbmd5aWppbmdAaHVhd2VpLmNvbT4gd3JvdGU6DQo+ID4gT24gMjAxNS81LzcgNjox
-OCwgQmpvcm4gSGVsZ2FhcyB3cm90ZToNCj4gPj4gWytjYyBZaWppbmcsIERhdmUgSiwgRGF2ZSBN
-LCBBbGV4XQ0KPiA+Pg0KPiA+PiBPbiBGcmksIE1heSAwMSwgMjAxNSBhdCAwMTozMjoxMlBNIC0w
-NTAwLCB3ZGF2aXNAbnZpZGlhLmNvbSB3cm90ZToNCj4gPj4+IEZyb206IFdpbGwgRGF2aXMgPHdk
-YXZpc0BudmlkaWEuY29tPg0KPiA+Pj4NCj4gPj4+IEhpLA0KPiA+Pj4NCj4gPj4+IFRoaXMgcGF0
-Y2ggc2VyaWVzIGFkZHMgRE1BIEFQSXMgdG8gbWFwIGFuZCB1bm1hcCBhIHN0cnVjdCByZXNvdXJj
-ZQ0KPiA+Pj4gdG8gYW5kIGZyb20gYSBQQ0kgZGV2aWNlJ3MgSU9WQSBkb21haW4sIGFuZCBpbXBs
-ZW1lbnRzIHRoZSBBTUQsDQo+ID4+PiBJbnRlbCwgYW5kIG5vbW11IHZlcnNpb25zIG9mIHRoZXNl
-IGludGVyZmFjZXMuDQo+ID4+Pg0KPiA+Pj4gVGhpcyBzb2x2ZXMgYSBsb25nLXN0YW5kaW5nIHBy
-b2JsZW0gd2l0aCB0aGUgZXhpc3RpbmcgRE1BLXJlbWFwcGluZw0KPiA+Pj4gaW50ZXJmYWNlcywg
-d2hpY2ggcmVxdWlyZSB0aGF0IGEgc3RydWN0IHBhZ2UgYmUgZ2l2ZW4gZm9yIHRoZSByZWdpb24N
-Cj4gPj4+IHRvIGJlIG1hcHBlZCBpbnRvIGEgZGV2aWNlJ3MgSU9WQSBkb21haW4uIFRoaXMgcmVx
-dWlyZW1lbnQgY2Fubm90DQo+ID4+PiBzdXBwb3J0IHBlZXIgZGV2aWNlIEJBUiByYW5nZXMsIGZv
-ciB3aGljaCBubyBzdHJ1Y3QgcGFnZXMgZXhpc3QuDQo+ID4+PiAuLi4NCj4gDQo+ID4+IEkgdGhp
-bmsgd2UgY3VycmVudGx5IGFzc3VtZSB0aGVyZSdzIG5vIHBlZXItdG8tcGVlciB0cmFmZmljLg0K
-PiA+Pg0KPiA+PiBJIGRvbid0IGtub3cgd2hldGhlciBjaGFuZ2luZyB0aGF0IHdpbGwgYnJlYWsg
-YW55dGhpbmcsIGJ1dCBJJ20NCj4gPj4gY29uY2VybmVkIGFib3V0IHRoZXNlOg0KPiA+Pg0KPiA+
-PiAgIC0gUENJZSBNUFMgY29uZmlndXJhdGlvbiAoc2VlIHBjaWVfYnVzX2NvbmZpZ3VyZV9zZXR0
-aW5ncygpKS4NCj4gPg0KPiA+IEkgdGhpbmsgaXQgc2hvdWxkIGJlIG9rIGZvciBQQ0llIE1QUyBj
-b25maWd1cmF0aW9uLCBQQ0lFX0JVU19QRUVSMlBFRVINCj4gPiBmb3JjZSBldmVyeSBkZXZpY2Un
-cyBNUFMgdG8gMTI4Qiwgd2hhdCBpdHMgY29uY2VybiBpcyB0aGUgVExQIHBheWxvYWQNCj4gPiBz
-aXplLiBJbiB0aGlzIHNlcmllcywgaXQgc2VlbXMgdG8gb25seSBtYXAgYSBpb3ZhIGZvciBkZXZp
-Y2UgYmFyIHJlZ2lvbi4NCj4gDQo+IE1QUyBjb25maWd1cmF0aW9uIG1ha2VzIGFzc3VtcHRpb25z
-IGFib3V0IHdoZXRoZXIgdGhlcmUgd2lsbCBiZSBhbnkgcGVlci0NCj4gdG8tcGVlciB0cmFmZmlj
-LiAgSWYgdGhlcmUgd2lsbCBiZSBub25lLCBNUFMgY2FuIGJlIGNvbmZpZ3VyZWQgbW9yZQ0KPiBh
-Z2dyZXNzaXZlbHkuDQo+IA0KPiBJIGRvbid0IHRoaW5rIExpbnV4IGhhcyBhbnkgd2F5IHRvIGRl
-dGVjdCB3aGV0aGVyIGEgZHJpdmVyIGlzIGRvaW5nIHBlZXItDQo+IHRvLXBlZXIsIGFuZCB0aGVy
-ZSdzIG5vIHdheSB0byBwcmV2ZW50IGEgZHJpdmVyIGZyb20gZG9pbmcgaXQuDQo+IFdlJ3JlIHN0
-dWNrIHdpdGggcmVxdWlyaW5nIHRoZSB1c2VyIHRvIHNwZWNpZnkgYm9vdCBvcHRpb25zDQo+ICgi
-cGNpPXBjaWVfYnVzX3NhZmUiLCAicGNpPXBjaWVfYnVzX3BlcmYiLCAicGNpPXBjaWVfYnVzX3Bl
-ZXIycGVlciIsDQo+IGV0Yy4pIHRoYXQgdGVsbCB0aGUgUENJIGNvcmUgd2hhdCB0aGUgdXNlciBl
-eHBlY3RzIHRvIGhhcHBlbi4NCj4gDQo+IFRoaXMgaXMgYSB0ZXJyaWJsZSB1c2VyIGV4cGVyaWVu
-Y2UuICBUaGUgdXNlciBoYXMgbm8gd2F5IHRvIHRlbGwgd2hhdA0KPiBkcml2ZXJzIGFyZSBnb2lu
-ZyB0byBkby4gIElmIGhlIHNwZWNpZmllcyB0aGUgd3JvbmcgdGhpbmcsIGUuZy4sICJhc3N1bWUg
-bm8NCj4gcGVlci10by1wZWVyIHRyYWZmaWMsIiBhbmQgdGhlbiBsb2FkcyBhIGRyaXZlciB0aGF0
-IGRvZXMgcGVlci10by1wZWVyLCB0aGUNCj4ga2VybmVsIHdpbGwgY29uZmlndXJlIE1QUyBhZ2dy
-ZXNzaXZlbHkgYW5kIHdoZW4gdGhlIGRldmljZSBkb2VzIGEgcGVlci10by0NCj4gcGVlciB0cmFu
-c2ZlciwgaXQgbWF5IGNhdXNlIGEgTWFsZm9ybWVkIFRMUCBlcnJvci4NCj4gDQoNCkkgYWdyZWUg
-dGhhdCB0aGlzIGlzbid0IGEgZ3JlYXQgdXNlciBleHBlcmllbmNlLCBidXQganVzdCB3YW50IHRv
-IGNsYXJpZnkgdGhhdCB0aGlzIHByb2JsZW0gaXMgb3J0aG9nb25hbCB0byB0aGlzIHBhdGNoIHNl
-cmllcywgY29ycmVjdD8NCg0KUHJpb3IgdG8gdGhpcyBzZXJpZXMsIHRoZSBNUFMgbWlzbWF0Y2gg
-aXMgc3RpbGwgcG9zc2libGUgd2l0aCBwMnAgdHJhZmZpYywgYnV0IHdoZW4gYW4gSU9NTVUgaXMg
-ZW5hYmxlZCBwMnAgdHJhZmZpYyB3aWxsIHJlc3VsdCBpbiBETUFSIGZhdWx0cy4gVGhlIGFpbSBv
-ZiB0aGUgc2VyaWVzIGlzIHRvIGFsbG93IGRyaXZlcnMgdG8gZml4IHRoZSBsYXR0ZXIsIG5vdCB0
-aGUgZm9ybWVyLg0KDQpUaGFua3MsDQpXaWxsDQoNCi0tDQpudnB1YmxpYw0K
+On Thu, May 7, 2015 at 11:23 AM, William Davis <wdavis@nvidia.com> wrote:
+>
+>
+>> -----Original Message-----
+>> From: Bjorn Helgaas [mailto:bhelgaas@google.com]
+>> Sent: Thursday, May 7, 2015 8:13 AM
+>> To: Yijing Wang
+>> Cc: William Davis; Joerg Roedel; open list:INTEL IOMMU (VT-d); linux-
+>> pci@vger.kernel.org; Terence Ripperda; John Hubbard; Jerome Glisse; Dave
+>> Jiang; David S. Miller; Alex Williamson
+>> Subject: Re: [PATCH 0/6] IOMMU/DMA map_resource support for peer-to-peer
+>>
+>> On Wed, May 6, 2015 at 8:48 PM, Yijing Wang <wangyijing@huawei.com> wrote:
+>> > On 2015/5/7 6:18, Bjorn Helgaas wrote:
+>> >> [+cc Yijing, Dave J, Dave M, Alex]
+>> >>
+>> >> On Fri, May 01, 2015 at 01:32:12PM -0500, wdavis@nvidia.com wrote:
+>> >>> From: Will Davis <wdavis@nvidia.com>
+>> >>>
+>> >>> Hi,
+>> >>>
+>> >>> This patch series adds DMA APIs to map and unmap a struct resource
+>> >>> to and from a PCI device's IOVA domain, and implements the AMD,
+>> >>> Intel, and nommu versions of these interfaces.
+>> >>>
+>> >>> This solves a long-standing problem with the existing DMA-remapping
+>> >>> interfaces, which require that a struct page be given for the region
+>> >>> to be mapped into a device's IOVA domain. This requirement cannot
+>> >>> support peer device BAR ranges, for which no struct pages exist.
+>> >>> ...
+>>
+>> >> I think we currently assume there's no peer-to-peer traffic.
+>> >>
+>> >> I don't know whether changing that will break anything, but I'm
+>> >> concerned about these:
+>> >>
+>> >>   - PCIe MPS configuration (see pcie_bus_configure_settings()).
+>> >
+>> > I think it should be ok for PCIe MPS configuration, PCIE_BUS_PEER2PEER
+>> > force every device's MPS to 128B, what its concern is the TLP payload
+>> > size. In this series, it seems to only map a iova for device bar region.
+>>
+>> MPS configuration makes assumptions about whether there will be any peer-
+>> to-peer traffic.  If there will be none, MPS can be configured more
+>> aggressively.
+>>
+>> I don't think Linux has any way to detect whether a driver is doing peer-
+>> to-peer, and there's no way to prevent a driver from doing it.
+>> We're stuck with requiring the user to specify boot options
+>> ("pci=pcie_bus_safe", "pci=pcie_bus_perf", "pci=pcie_bus_peer2peer",
+>> etc.) that tell the PCI core what the user expects to happen.
+>>
+>> This is a terrible user experience.  The user has no way to tell what
+>> drivers are going to do.  If he specifies the wrong thing, e.g., "assume no
+>> peer-to-peer traffic," and then loads a driver that does peer-to-peer, the
+>> kernel will configure MPS aggressively and when the device does a peer-to-
+>> peer transfer, it may cause a Malformed TLP error.
+>>
+>
+> I agree that this isn't a great user experience, but just want to clarify that this problem is orthogonal to this patch series, correct?
+>
+> Prior to this series, the MPS mismatch is still possible with p2p traffic, but when an IOMMU is enabled p2p traffic will result in DMAR faults. The aim of the series is to allow drivers to fix the latter, not the former.
+
+Prior to this series, there wasn't any infrastructure for drivers to
+do p2p, so it was mostly reasonable to assume that there *was* no p2p
+traffic.
+
+I think we currently default to doing nothing to MPS.  Prior to this
+series, it might have been reasonable to optimize based on a "no-p2p"
+assumption, e.g., default to pcie_bus_safe or pcie_bus_perf.  After
+this series, I'm not sure what we could do, because p2p will be much
+more likely.
+
+It's just an issue; I don't know what the resolution is.
+
+Bjorn
