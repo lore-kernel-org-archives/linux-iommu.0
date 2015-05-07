@@ -1,92 +1,42 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH 0/6] IOMMU/DMA map_resource support for peer-to-peer
-Date: Thu, 7 May 2015 12:16:30 -0500
-Message-ID: <CAErSpo7dv=q+v+zEvT8Fbt26_Xq+AVZQBjJOZX9y5o+A5kFhTA@mail.gmail.com>
-References: <1430505138-2877-1-git-send-email-wdavis@nvidia.com>
- <20150506221818.GH24643@google.com> <554AC48A.2030209@huawei.com>
- <CAErSpo6xp5kM57PX9RkXKr5MM4BQM7-uXPtvCBL8=9Br8FYLdA@mail.gmail.com> <ec4d9f89290441a79e0caf986383c5df@HQMAIL106.nvidia.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v10 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
+Date: Thu, 7 May 2015 19:32:00 +0200
+Message-ID: <20150507173200.GF20611@8bytes.org>
+References: <1428655333-19504-1-git-send-email-zhen-hual@hp.com>
+	<20150429112024.GB5799@dhcp-16-116.nay.redhat.com>
+	<20150503085530.GK15033@dhcp-16-116.nay.redhat.com>
+	<5546E240.5090403@hp.com>
+	<20150504031749.GF5799@dhcp-16-116.nay.redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <ec4d9f89290441a79e0caf986383c5df@HQMAIL106.nvidia.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: William Davis <wdavis@nvidia.com>
-Cc: Yijing Wang <wangyijing@huawei.com>, Joerg Roedel <joro@8bytes.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Terence Ripperda <TRipperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>, Dave Jiang <dave.jiang@intel.com>, "David S. Miller" <davem@davemloft.net>, Alex Williamson <alex.williamson@redhat.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20150504031749.GF5799-je1gSBvt1Tcx0jIIkfS+Ph/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Li,
+	ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, May 7, 2015 at 11:23 AM, William Davis <wdavis@nvidia.com> wrote:
->
->
->> -----Original Message-----
->> From: Bjorn Helgaas [mailto:bhelgaas@google.com]
->> Sent: Thursday, May 7, 2015 8:13 AM
->> To: Yijing Wang
->> Cc: William Davis; Joerg Roedel; open list:INTEL IOMMU (VT-d); linux-
->> pci@vger.kernel.org; Terence Ripperda; John Hubbard; Jerome Glisse; Dave
->> Jiang; David S. Miller; Alex Williamson
->> Subject: Re: [PATCH 0/6] IOMMU/DMA map_resource support for peer-to-peer
->>
->> On Wed, May 6, 2015 at 8:48 PM, Yijing Wang <wangyijing@huawei.com> wrote:
->> > On 2015/5/7 6:18, Bjorn Helgaas wrote:
->> >> [+cc Yijing, Dave J, Dave M, Alex]
->> >>
->> >> On Fri, May 01, 2015 at 01:32:12PM -0500, wdavis@nvidia.com wrote:
->> >>> From: Will Davis <wdavis@nvidia.com>
->> >>>
->> >>> Hi,
->> >>>
->> >>> This patch series adds DMA APIs to map and unmap a struct resource
->> >>> to and from a PCI device's IOVA domain, and implements the AMD,
->> >>> Intel, and nommu versions of these interfaces.
->> >>>
->> >>> This solves a long-standing problem with the existing DMA-remapping
->> >>> interfaces, which require that a struct page be given for the region
->> >>> to be mapped into a device's IOVA domain. This requirement cannot
->> >>> support peer device BAR ranges, for which no struct pages exist.
->> >>> ...
->>
->> >> I think we currently assume there's no peer-to-peer traffic.
->> >>
->> >> I don't know whether changing that will break anything, but I'm
->> >> concerned about these:
->> >>
->> >>   - PCIe MPS configuration (see pcie_bus_configure_settings()).
->> >
->> > I think it should be ok for PCIe MPS configuration, PCIE_BUS_PEER2PEER
->> > force every device's MPS to 128B, what its concern is the TLP payload
->> > size. In this series, it seems to only map a iova for device bar region.
->>
->> MPS configuration makes assumptions about whether there will be any peer-
->> to-peer traffic.  If there will be none, MPS can be configured more
->> aggressively.
->>
->> I don't think Linux has any way to detect whether a driver is doing peer-
->> to-peer, and there's no way to prevent a driver from doing it.
->> We're stuck with requiring the user to specify boot options
->> ("pci=pcie_bus_safe", "pci=pcie_bus_perf", "pci=pcie_bus_peer2peer",
->> etc.) that tell the PCI core what the user expects to happen.
->>
->> This is a terrible user experience.  The user has no way to tell what
->> drivers are going to do.  If he specifies the wrong thing, e.g., "assume no
->> peer-to-peer traffic," and then loads a driver that does peer-to-peer, the
->> kernel will configure MPS aggressively and when the device does a peer-to-
->> peer transfer, it may cause a Malformed TLP error.
->>
->
-> I agree that this isn't a great user experience, but just want to clarify that this problem is orthogonal to this patch series, correct?
->
-> Prior to this series, the MPS mismatch is still possible with p2p traffic, but when an IOMMU is enabled p2p traffic will result in DMAR faults. The aim of the series is to allow drivers to fix the latter, not the former.
+Hi Baoquan, ZhenHua,
 
-Prior to this series, there wasn't any infrastructure for drivers to
-do p2p, so it was mostly reasonable to assume that there *was* no p2p
-traffic.
+On Mon, May 04, 2015 at 11:17:49AM +0800, Baoquan He wrote:
+> On 05/04/15 at 11:06am, Li, ZhenHua wrote:
+> > Hi baoquan,
+> > Could you paste the kernel log of the first kernel ?
 
-I think we currently default to doing nothing to MPS.  Prior to this
-series, it might have been reasonable to optimize based on a "no-p2p"
-assumption, e.g., default to pcie_bus_safe or pcie_bus_perf.  After
-this series, I'm not sure what we could do, because p2p will be much
-more likely.
+Please let me know when you have worked this issue out.
 
-It's just an issue; I don't know what the resolution is.
 
-Bjorn
+Thanks,
+
+	Joerg
