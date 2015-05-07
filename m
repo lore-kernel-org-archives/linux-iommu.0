@@ -1,61 +1,95 @@
 From: Dave Young <dyoung@redhat.com>
 Subject: Re: [PATCH v9 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
-Date: Thu, 7 May 2015 21:56:00 +0800
-Message-ID: <20150507135600.GB4559@localhost.localdomain>
+Date: Thu, 7 May 2015 22:00:29 +0800
+Message-ID: <20150507140029.GC4559@localhost.localdomain>
 References: <1426743388-26908-1-git-send-email-zhen-hual@hp.com>
  <20150403084031.GF22579@dhcp-128-53.nay.redhat.com>
- <20150504110551.GD15736@8bytes.org>
+ <551E56F6.60503@hp.com>
+ <20150403092111.GG22579@dhcp-128-53.nay.redhat.com>
+ <20150405015453.GB1562@dhcp-17-102.nay.redhat.com>
+ <20150407034622.GB7213@localhost.localdomain>
+ <5523E5DB.2090001@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pci-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20150504110551.GD15736@8bytes.org>
+In-Reply-To: <5523E5DB.2090001@redhat.com>
 Sender: linux-pci-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: "Li, Zhen-Hua" <zhen-hual@hp.com>, dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, vgoyal@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
+To: Don Dutile <ddutile@redhat.com>
+Cc: Baoquan He <bhe@redhat.com>, "Li, ZhenHua" <zhen-hual@hp.com>, dwmw2@infradead.org, indou.takao@jp.fujitsu.com, joro@8bytes.org, vgoyal@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/04/15 at 01:05pm, Joerg Roedel wrote:
-> On Fri, Apr 03, 2015 at 04:40:31PM +0800, Dave Young wrote:
-> > Have not read all the patches, but I have a question, not sure this
-> > has been answered before. Old memory is not reliable, what if the old
-> > memory get corrupted before panic? Is it safe to continue using it in
-> > 2nd kernel, I worry that it will cause problems.
+On 04/07/15 at 10:12am, Don Dutile wrote:
+> On 04/06/2015 11:46 PM, Dave Young wrote:
+> >On 04/05/15 at 09:54am, Baoquan He wrote:
+> >>On 04/03/15 at 05:21pm, Dave Young wrote:
+> >>>On 04/03/15 at 05:01pm, Li, ZhenHua wrote:
+> >>>>Hi Dave,
+> >>>>
+> >>>>There may be some possibilities that the old iommu data is corrupted by
+> >>>>some other modules. Currently we do not have a better solution for the
+> >>>>dmar faults.
+> >>>>
+> >>>>But I think when this happens, we need to fix the module that corrupted
+> >>>>the old iommu data. I once met a similar problem in normal kernel, the
+> >>>>queue used by the qi_* functions was written again by another module.
+> >>>>The fix was in that module, not in iommu module.
+> >>>
+> >>>It is too late, there will be no chance to save vmcore then.
+> >>>
+> >>>Also if it is possible to continue corrupt other area of oldmem because
+> >>>of using old iommu tables then it will cause more problems.
+> >>>
+> >>>So I think the tables at least need some verifycation before being used.
+> >>>
+> >>
+> >>Yes, it's a good thinking anout this and verification is also an
+> >>interesting idea. kexec/kdump do a sha256 calculation on loaded kernel
+> >>and then verify this again when panic happens in purgatory. This checks
+> >>whether any code stomps into region reserved for kexec/kernel and corrupt
+> >>the loaded kernel.
+> >>
+> >>If this is decided to do it should be an enhancement to current
+> >>patchset but not a approach change. Since this patchset is going very
+> >>close to point as maintainers expected maybe this can be merged firstly,
+> >>then think about enhancement. After all without this patchset vt-d often
+> >>raised error message, hung.
+> >
+> >It does not convince me, we should do it right at the beginning instead of
+> >introduce something wrong.
+> >
+> >I wonder why the old dma can not be remap to a specific page in kdump kernel
+> >so that it will not corrupt more memory. But I may missed something, I will
+> >looking for old threads and catch up.
+> >
+> >Thanks
+> >Dave
+> >
+> The (only) issue is not corruption, but once the iommu is re-configured, the old,
+> not-stopped-yet, dma engines will use iova's that will generate dmar faults, which
+> will be enabled when the iommu is re-configured (even to a single/simple paging scheme)
+> in the kexec kernel.
 > 
-> Yes, the old memory could be corrupted, and there are more failure cases
-> left which we have no way of handling yet (if iommu data structures are
-> in kdump backup areas).
-> 
-> The question is what to do if we find some of the old data structures
-> corrupted, hand how far should the tests go. Should we also check the
-> page-tables, for example? I think if some of the data structures for a
-> device are corrupted it probably already failed in the old kernel and
-> things won't get worse in the new one.
 
-Joreg, I can not find the last reply from you, so just reply here about
-my worries here.
+Don, so if iommu is not reconfigured then these faults will not happen?
 
-I said that the patchset will cause more problems, let me explain about
-it more here:
+Baoquan and me has a confusion below today about iommu=off/intel_iommu=off:
 
-Suppose page table was corrupted, ie. original mapping iova1 -> page 1
-it was changed to iova1 -> page 2 accidently while crash happening,
-thus future dma will read/write page 2 instead page 1, right?
+intel_iommu_init()
+{
+...
 
-so the behavior changes like:
-originally, dmar faults happen, but kdump kernel may boot ok with these
-faults, and vmcore can be saved.
-with the patchset, dmar faults does not happen, dma translation will be
-handled, but dma write could corrupt unrelevant memory.
+       dmar_table_init();
 
-This might be corner case, but who knows because kernel paniced we can
-not assume old page table is right.
+       disable active iommu translations;
 
-But seems you all think it is safe, but let us understand each other
-first then go to a solution.
+       if (no_iommu || dmar_disabled)
+                goto out_free_dmar;
 
-Today we talked with Zhenhua about the problem I think both of us are clear
-about the problems. Just he think it can be left as future work.
+...
+}
+
+Any reason not move no_iommu check to the begining of intel_iommu_init function?
 
 Thanks
 Dave
