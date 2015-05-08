@@ -1,100 +1,77 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: [PATCH] iommu/arm-smmu: Fix sign-extension of upstream bus addresses at stage 1
-Date: Fri,  8 May 2015 17:44:22 +0100
-Message-ID: <1431103462-8153-1-git-send-email-will.deacon@arm.com>
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: joro@8bytes.org
-Cc: iommu@lists.linux-foundation.org, Varun.Sethi@freescale.com, linux-arm-kernel@lists.infradead.org, Will Deacon <will.deacon@arm.com>, stable@vger.kernel.org
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH 0/3] iommu/arm-smmu: Add driver for ARM SMMUv3 devices
+Date: Fri,  8 May 2015 19:00:43 +0100
+Message-ID: <1431108046-9675-1-git-send-email-will.deacon@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Stage 1 translation is controlled by two sets of page tables (TTBR0 and
-TTBR1) which grow up and down from zero respectively in the ARMv8
-translation regime. For the SMMU, we only care about TTBR0 and, in the
-case of a 48-bit virtual space, we expect to map virtual addresses 0x0
-through to 0xffff_ffff_ffff.
+Hi all,
 
-Given that some masters may be incapable of emitting virtual addresses
-targetting TTBR1 (e.g. because they sit on a 48-bit bus), the SMMU
-architecture allows bit 47 to be sign-extended, halving the virtual
-range of TTBR0 but allowing TTBR1 to be used. This is controlled by the
-SEP field in TTBCR2.
+SMMUv3 is a significant departure from previous ARM SMMU designs in that
+the majority of the configuration data has been moved from MMIO registers
+to in-memory data structures, with communication between the CPU and the
+SMMU being mediated via in-memory circular queues. It also has native
+support for MSI generation, PCI masters (e.g. ATS, PRI, PASIDs), ARM 8.1
+architectural extensions (e.g. hardware translation table updates) and
+optional RAS extensions. It is designed for large numbers of masters and
+consequently uses a 32-bit StreamID.
 
-The SMMU driver incorrectly enables this sign-extension feature, which
-causes problems when userspace addresses are programmed into a master
-device with the SMMU expecting to map the incoming transactions via
-TTBR0; if the top bit of address is set, we will instead get a
-translation fault since TTBR1 walks are disabled in the TTBCR.
+This patch series adds an initial driver for ARM SMMUv3 devices, which
+enables dma-mapping and VFIO for PCI masters. Unfortunately, there is
+not yet any documentation available for the hardware, but I have tested
+this successfully on internal simulation. Having the driver available at
+this early stage is useful for ARM partners building implementations and
+provides a common upstream base on which the driver can be developed.
 
-This patch fixes the issue by disabling sign-extension of a fixed
-virtual address bit and instead basing the behaviour on the upstream bus
-size: the incoming address is zero extended unless the upstream bus is
-only 49 bits wide, in which case bit 48 is used as the sign bit and is
-replicated to the upper bits.
+Future work will look at:
 
-Cc: <stable@vger.kernel.org> # v4.0+
-Reported-by: Varun Sethi <varun.sethi@freescale.com>
-Signed-off-by: Will Deacon <will.deacon@arm.com>
----
+  - DMA to paged memory using PRI (for now we send a PRI_DENY response
+    and dump the transaction to the console)
 
-Hi Joerg,
+  - MSI generation from the SMMU (requires generic changes to the
+    irqdomain code)
 
-I only have this one fix pending for arm-smmu, so please could you pick
-it up for 4.1? I can send a pull if you'd prefer, but it feels a bit
-OTT.
+  - Support for non-PCI masters (pending core of_xlate rework as
+    discussed on linux-arm-kernel)
+
+There's also the nested translation angle, but we should work out what
+we're doing on SMMUv2 before implementing anything here.
+
+All feedback welcome,
 
 Will
 
- drivers/iommu/arm-smmu.c | 30 ++----------------------------
- 1 file changed, 2 insertions(+), 28 deletions(-)
+--->8
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 9f7e1d34a32b..66a803b9dd3a 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -224,14 +224,7 @@
- #define RESUME_TERMINATE		(1 << 0)
- 
- #define TTBCR2_SEP_SHIFT		15
--#define TTBCR2_SEP_MASK			0x7
--
--#define TTBCR2_ADDR_32			0
--#define TTBCR2_ADDR_36			1
--#define TTBCR2_ADDR_40			2
--#define TTBCR2_ADDR_42			3
--#define TTBCR2_ADDR_44			4
--#define TTBCR2_ADDR_48			5
-+#define TTBCR2_SEP_UPSTREAM		(0x7 << TTBCR2_SEP_SHIFT)
- 
- #define TTBRn_HI_ASID_SHIFT            16
- 
-@@ -793,26 +786,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
- 		if (smmu->version > ARM_SMMU_V1) {
- 			reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
--			switch (smmu->va_size) {
--			case 32:
--				reg |= (TTBCR2_ADDR_32 << TTBCR2_SEP_SHIFT);
--				break;
--			case 36:
--				reg |= (TTBCR2_ADDR_36 << TTBCR2_SEP_SHIFT);
--				break;
--			case 40:
--				reg |= (TTBCR2_ADDR_40 << TTBCR2_SEP_SHIFT);
--				break;
--			case 42:
--				reg |= (TTBCR2_ADDR_42 << TTBCR2_SEP_SHIFT);
--				break;
--			case 44:
--				reg |= (TTBCR2_ADDR_44 << TTBCR2_SEP_SHIFT);
--				break;
--			case 48:
--				reg |= (TTBCR2_ADDR_48 << TTBCR2_SEP_SHIFT);
--				break;
--			}
-+			reg |= TTBCR2_SEP_UPSTREAM;
- 			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR2);
- 		}
- 	} else {
+Will Deacon (3):
+  Documentation: dt-bindings: Add device-tree binding for ARM SMMUv3
+    IOMMU
+  iommu/arm-smmu: Add initial driver support for ARM SMMUv3 devices
+  drivers/vfio: Allow type-1 IOMMU instantiation on top of an ARM SMMUv3
+
+ .../devicetree/bindings/iommu/arm,smmu-v3.txt      |   37 +
+ MAINTAINERS                                        |    3 +-
+ drivers/iommu/Kconfig                              |   13 +
+ drivers/iommu/Makefile                             |    1 +
+ drivers/iommu/arm-smmu-v3.c                        | 2599 ++++++++++++++++++++
+ drivers/vfio/Kconfig                               |    2 +-
+ 6 files changed, 2653 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+ create mode 100644 drivers/iommu/arm-smmu-v3.c
+
 -- 
 2.1.4
