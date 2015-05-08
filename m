@@ -1,117 +1,59 @@
-From: Dave Young <dyoung@redhat.com>
-Subject: Re: [PATCH v9 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
-Date: Fri, 8 May 2015 09:21:18 +0800
-Message-ID: <20150508012118.GA4809@dhcp-128-4.nay.redhat.com>
-References: <1426743388-26908-1-git-send-email-zhen-hual@hp.com>
- <20150403084031.GF22579@dhcp-128-53.nay.redhat.com>
- <551E56F6.60503@hp.com>
- <20150403092111.GG22579@dhcp-128-53.nay.redhat.com>
- <20150405015453.GB1562@dhcp-17-102.nay.redhat.com>
- <20150407034622.GB7213@localhost.localdomain>
- <5523E5DB.2090001@redhat.com>
- <20150507140029.GC4559@localhost.localdomain>
- <554B75D6.1060204@redhat.com>
+From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH v2] CHROMIUM: iommu: rockchip: Make sure that page table
+ state is coherent
+Date: Fri, 8 May 2015 17:22:10 +0900
+Message-ID: <CAAFQd5A2aN_nMtUY52GMbmRWP_ibzn-Nw0sRcZtQBN=25UKa1Q@mail.gmail.com>
+References: <1429530224-24719-1-git-send-email-tfiga@chromium.org>
+ <CAGS+omAPLMnwtMNhiakwc7Tn-yeMjdjiy3p=bxuj9AUQUrCO=A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <554B75D6.1060204@redhat.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Don Dutile <ddutile@redhat.com>
-Cc: Baoquan He <bhe@redhat.com>, "Li, ZhenHua" <zhen-hual@hp.com>, dwmw2@infradead.org, indou.takao@jp.fujitsu.com, joro@8bytes.org, vgoyal@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <CAGS+omAPLMnwtMNhiakwc7Tn-yeMjdjiy3p=bxuj9AUQUrCO=A@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/07/15 at 10:25am, Don Dutile wrote:
-> On 05/07/2015 10:00 AM, Dave Young wrote:
-> >On 04/07/15 at 10:12am, Don Dutile wrote:
-> >>On 04/06/2015 11:46 PM, Dave Young wrote:
-> >>>On 04/05/15 at 09:54am, Baoquan He wrote:
-> >>>>On 04/03/15 at 05:21pm, Dave Young wrote:
-> >>>>>On 04/03/15 at 05:01pm, Li, ZhenHua wrote:
-> >>>>>>Hi Dave,
-> >>>>>>
-> >>>>>>There may be some possibilities that the old iommu data is corrupted by
-> >>>>>>some other modules. Currently we do not have a better solution for the
-> >>>>>>dmar faults.
-> >>>>>>
-> >>>>>>But I think when this happens, we need to fix the module that corrupted
-> >>>>>>the old iommu data. I once met a similar problem in normal kernel, the
-> >>>>>>queue used by the qi_* functions was written again by another module.
-> >>>>>>The fix was in that module, not in iommu module.
-> >>>>>
-> >>>>>It is too late, there will be no chance to save vmcore then.
-> >>>>>
-> >>>>>Also if it is possible to continue corrupt other area of oldmem because
-> >>>>>of using old iommu tables then it will cause more problems.
-> >>>>>
-> >>>>>So I think the tables at least need some verifycation before being used.
-> >>>>>
-> >>>>
-> >>>>Yes, it's a good thinking anout this and verification is also an
-> >>>>interesting idea. kexec/kdump do a sha256 calculation on loaded kernel
-> >>>>and then verify this again when panic happens in purgatory. This checks
-> >>>>whether any code stomps into region reserved for kexec/kernel and corrupt
-> >>>>the loaded kernel.
-> >>>>
-> >>>>If this is decided to do it should be an enhancement to current
-> >>>>patchset but not a approach change. Since this patchset is going very
-> >>>>close to point as maintainers expected maybe this can be merged firstly,
-> >>>>then think about enhancement. After all without this patchset vt-d often
-> >>>>raised error message, hung.
-> >>>
-> >>>It does not convince me, we should do it right at the beginning instead of
-> >>>introduce something wrong.
-> >>>
-> >>>I wonder why the old dma can not be remap to a specific page in kdump kernel
-> >>>so that it will not corrupt more memory. But I may missed something, I will
-> >>>looking for old threads and catch up.
-> >>>
-> >>>Thanks
-> >>>Dave
-> >>>
-> >>The (only) issue is not corruption, but once the iommu is re-configured, the old,
-> >>not-stopped-yet, dma engines will use iova's that will generate dmar faults, which
-> >>will be enabled when the iommu is re-configured (even to a single/simple paging scheme)
-> >>in the kexec kernel.
-> >>
-> >
-> >Don, so if iommu is not reconfigured then these faults will not happen?
-> >
-> Well, if iommu is not reconfigured, then if the crash isn't caused by
-> an IOMMU fault (some systems have firmware-first catch the IOMMU fault & convert
-> them into NMI_IOCK), then the DMA's will continue into the old kernel memory space.
+On Thu, Apr 23, 2015 at 6:09 PM, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
+> On Mon, Apr 20, 2015 at 7:43 PM, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
+>> To flush created mappings, current mapping code relies on the fact that
+>> during unmap the driver zaps every IOVA being unmapped and that it is
+>> enough to zap a single IOVA of page table to remove the entire page
+>> table from IOMMU cache. Based on these assumptions the driver was made to
+>> simply zap the first IOVA of the mapping being created. This is enough
+>> to invalidate first page table, which could be shared with another
+>> mapping (and thus could be already present in IOMMU cache), but
+>> unfortunately it does not do anything about the last page table that
+>> could be shared with other mappings as well.
+>>
+>> Moreover, the flushing is performed before page table contents are
+>> actually modified, so there is a race between the CPU updating the page
+>> tables and hardware that could be possibly running at the same time and
+>> triggering IOMMU look-ups, which could bring back the page tables back
+>> to the cache.
+>>
+>> To fix both issues, this patch makes the mapping code zap first and last
+>> (if they are different) IOVAs of new mapping after the page table is
+>> updated.
+>>
+>> Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+>> Reviewed-by: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+>> Tested-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+>
+> You probably want to remove the "CHROMIUM: " label in the subject.
 
-So NMI_IOCK is one reason to cause kernel hang, I think I'm still not clear about
-what does re-configured means though. DMAR faults will happen originally this is the old
-behavior but we are removing the faults by alowing DMA continuing into old memory
-space.
+Sorry, I removed gerrit tags, but hurrying up too much, I missed the
+label. I see, though, that Joerg has applied this patch already with
+this fixed up. Thanks.
 
-> 
-> >Baoquan and me has a confusion below today about iommu=off/intel_iommu=off:
-> >
-> >intel_iommu_init()
-> >{
-> >...
-> >
-> >        dmar_table_init();
-> >
-> >        disable active iommu translations;
-> >
-> >        if (no_iommu || dmar_disabled)
-> >                 goto out_free_dmar;
-> >
-> >...
-> >}
-> >
-> >Any reason not move no_iommu check to the begining of intel_iommu_init function?
-> >
-> What does that do/help?
-
-Just do not know why the previous handling is necessary with iommu=off, shouldn't
-we do noting and return earlier?
-
-Also there is a guess, dmar faults appears after iommu_init, so not sure if the codes
-before dmar_disabled checking have some effect about enabling the faults messages.
-
-Thanks
-Dave
+Best regards,
+Tomasz
