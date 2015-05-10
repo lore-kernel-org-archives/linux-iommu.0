@@ -1,44 +1,42 @@
-From: Dmitry Torokhov <dtor@chromium.org>
-Subject: [PATCH] iommu: exynos: tell kmemleak to ignore 2nd level page tables
-Date: Fri, 8 May 2015 17:05:44 -0700
-Message-ID: <20150509000544.GA29904@dtor-ws>
+From: Cho KyongHo <pullip.cho@samsung.com>
+Subject: Re: [PATCH v6 05/25] iommu: exynos: don't read version register on
+ every tlb operation
+Date: Sun, 10 May 2015 21:59:50 +0900
+Message-ID: <20150510215950.c4d5dacc81d17c4b470cefb5@samsung.com>
+References: <1430727380-10912-1-git-send-email-m.szyprowski@samsung.com>
+ <1430727380-10912-6-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Content-Disposition: inline
+In-reply-to: <1430727380-10912-6-git-send-email-m.szyprowski@samsung.com>
 Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene@kernel.org>
-Cc: Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Colin Cross <ccross@android.com>, Doug Anderson <dianders@chromium.org>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Colin Cross <ccross@android.com>
+On Mon, 04 May 2015 10:16:00 +0200 Marek Szyprowski <m.szyprowski@samsung.com> wrote:
 
-The pointers to the 2nd level page tables are converted to 1st level
-page table entries, which means kmemleak can't find them and assumes
-they have been leaked.  Call kmemleak_ignore on the 2nd level page
-tables to prevent them from showing up in kmemleak reports.
+> This patch removes reading of REG_MMU_VERSION register on every tlb
+> operation and caches SYSMMU version in driver's internal data.
+> 
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> ---
+>  drivers/iommu/exynos-iommu.c | 13 +++++--------
+>  1 file changed, 5 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index 3e898504a7c4..3861485f0689 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -213,6 +213,7 @@ struct sysmmu_drvdata {
+>  	spinlock_t lock;
+>  	struct iommu_domain *domain;
+>  	phys_addr_t pgtable;
+> +	int version;
 
-Signed-off-by: Colin Cross <ccross@android.com>
-Signed-off-by: Dmitry Torokhov <dtor@chromium.org>
----
- drivers/iommu/exynos-iommu.c | 1 +
- 1 file changed, 1 insertion(+)
+Why don't you define its type as unsigned int or u32?
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index dc14fec4..16920b2 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -855,6 +855,7 @@ static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *priv,
- 			return ERR_PTR(-ENOMEM);
- 
- 		*sent = mk_lv1ent_page(virt_to_phys(pent));
-+		kmemleak_ignore(pent);
- 		*pgcounter = NUM_LV2ENTRIES;
- 		pgtable_flush(pent, pent + NUM_LV2ENTRIES);
- 		pgtable_flush(sent, sent + 1);
--- 
-2.2.0.rc0.207.ga3a616c
+Regards,
 
-
--- 
-Dmitry
+KyongHo
