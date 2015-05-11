@@ -1,65 +1,66 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH 3/6] dma-mapping: pci: add pci_(un)map_resource
-Date: Mon, 11 May 2015 10:27:53 -0500
-Message-ID: <CAErSpo4gJDEbGYnG+drdT-x8Rc0wEGjzYYp2FXvGnAQ90pDw_g@mail.gmail.com>
-References: <1430505138-2877-1-git-send-email-wdavis@nvidia.com>
- <1430505138-2877-4-git-send-email-wdavis@nvidia.com> <20150507151905.GL24643@google.com>
- <20150511143025.GD20282@l.oracle.com>
+From: Javier Martinez Canillas <javier@dowhile0.org>
+Subject: Re: [PATCH v6 00/25] Exynos SYSMMU (IOMMU) integration with DT and
+ DMA-mapping subsystem
+Date: Mon, 11 May 2015 18:00:54 +0200
+Message-ID: <CABxcv=mpCQKyuJOFsUgMdhD50yYdH+WwnEbYUNXByErMHpUuYA@mail.gmail.com>
+References: <1430727380-10912-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20150511143025.GD20282@l.oracle.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: William Davis <wdavis@nvidia.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, Jerome Glisse <jglisse@redhat.com>, John Hubbard <jhubbard@nvidia.com>, Terence Ripperda <tripperda@nvidia.com>, Yinghai Lu <yinghai@kernel.org>, "David S. Miller" <davem@davemloft.net>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <1430727380-10912-1-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 11, 2015 at 9:30 AM, Konrad Rzeszutek Wilk
-<konrad.wilk@oracle.com> wrote:
-> On Thu, May 07, 2015 at 10:19:05AM -0500, Bjorn Helgaas wrote:
->> [+cc Dave for sparc64, Yinghai]
->>
->> On Fri, May 01, 2015 at 01:32:15PM -0500, wdavis@nvidia.com wrote:
->> > From: Will Davis <wdavis@nvidia.com>
->> >
->> > Simply route these through to the new dma_(un)map_resource APIs.
->> >
->> > Signed-off-by: Will Davis <wdavis@nvidia.com>
->> > Reviewed-by: Terence Ripperda <tripperda@nvidia.com>
->> > Reviewed-by: John Hubbard <jhubbard@nvidia.com>
->> > ---
->> >  include/asm-generic/pci-dma-compat.h | 14 ++++++++++++++
->> >  1 file changed, 14 insertions(+)
->> >
->> > diff --git a/include/asm-generic/pci-dma-compat.h b/include/asm-generic/pci-dma-compat.h
->> > index c110843..ac4a4ad 100644
->> > --- a/include/asm-generic/pci-dma-compat.h
->> > +++ b/include/asm-generic/pci-dma-compat.h
->> > @@ -61,6 +61,20 @@ pci_unmap_page(struct pci_dev *hwdev, dma_addr_t dma_address,
->> >     dma_unmap_page(hwdev == NULL ? NULL : &hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
->> >  }
->> >
->> > +static inline dma_addr_t
->> > +pci_map_resource(struct pci_dev *hwdev, struct resource *resource,
->> > +            unsigned long offset, size_t size, int direction)
->> > +{
->> > +   return dma_map_resource(hwdev == NULL ? NULL : &hwdev->dev, resource, offset, size, (enum dma_data_direction)direction);
->> > +}
->>
->> On sparc64, PCI bus addresses, e.g., raw BAR values, can be 64 bits wide,
->> but dma_addr_t is only 32 bits [1].  So dma_addr_t is a bit of a problem
->> here.  It's likely that we will add a pci_bus_addr_t, but that hasn't
->> happened yet [2].
+Hello Marek,
+
+On Mon, May 4, 2015 at 10:15 AM, Marek Szyprowski
+<m.szyprowski@samsung.com> wrote:
+> Hello Everyone,
 >
-> Why not just expand the 'dma_addr_t' to be unsigned long (if to support
-> the T5-8 box)?
+> This is yet another attempt to get Exynos SYSMMU driver with integrated
+> with IOMMU & DMA-mapping subsystems. The main change from previous
+> version is addition of the patches to define iommu-mapping, which need
+> to be created during system boot to avoid IOMMU fault by devices, which
+> has been left enabled by bootloader (i.e. framebuffer displaying slash
+> screen).
+>
+> Patches has been also rebased onto v4.1-rc2 with 'arm: dma-mapping: fix
+> off-by-one check in arm_setup_iommu_dma_ops' patch applied (see commit
+> 1424532b2163bf1580f4b1091a5801e12310fac5 on fixes branch in
+> git://ftp.arm.linux.org.uk/pub/linux/arm/kernel/git-cur/linux-arm.git,
+> more information:
+> http://www.spinics.net/lists/arm-kernel/msg414722.html).
+>
+> All patches are also available in the following git repository:
+> https://git.linaro.org/people/marek.szyprowski/linux-srpol.git
+> branch v4.1-exynos-iommu.
+>
 
-That would work, but would increase the kernel memory footprint [3].
-I don't have numbers (maybe Dave does), but if it is really
-significant, other platforms with IOMMUs might want to explore using a
-dma_addr_t smaller than 64 bits, too.
+Thanks for the new series, this time I didn't get a system hang when I
+enabled both CONFIG_DRM_EXYNOS_FIMD and CONFIG_DRM_EXYNOS_DP on my
+Exynos5420 Peach Pit Chromebook.
 
->> [1] http://lkml.kernel.org/r/20150327.145016.86183910134380870.davem@davemloft.net
->> [2] http://lkml.kernel.org/r/1427857069-6789-2-git-send-email-yinghai@kernel.org
+The system finished booting and I have both a console on the HDMI and
+eDP/LVDS displays. But if I try to start X or weston, I again have a
+completele system hang with no output on the serial console. This
+works correctly without your IOMMU series.
 
-[3] http://lkml.kernel.org/r/20150403.124855.96516097693494126.davem@davemloft.net
+And again disabling CONFIG_DRM_EXYNOS_DP or CONFIG_DRM_EXYNOS_FIMD
+avoids the system to hang. If I only have CONFIG_DRM_EXYNOS_HDMI
+enabled, then I can start X with out issues and is displayed correctly
+in the HDMI output.
+
+So it seems your workaround for the boot-loader leaving the FIMD dma
+engine enabled is not enough? I'm not a graphics person so I can think
+of the top of my head what could trigger the system hang when X or
+weston are executed so I wondered if you have any ideas.
+
+> Best regards
+> Marek Szyprowski
+> Samsung R&D Institute Poland
+>
+
+Best regards,
+Javier
