@@ -1,7 +1,7 @@
 From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: [PATCH v11 02/10] iommu/vt-d: Items required for kdump
-Date: Mon, 11 May 2015 17:52:46 +0800
-Message-ID: <1431337974-545-3-git-send-email-zhen-hual@hp.com>
+Subject: [PATCH v11 03/10] iommu/vt-d: Function to get existing context entry
+Date: Mon, 11 May 2015 17:52:47 +0800
+Message-ID: <1431337974-545-4-git-send-email-zhen-hual@hp.com>
 References: <1431337974-545-1-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,118 +21,51 @@ To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, indou.takao-+CUm20s59erQFUHtd
 Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, zhen-hual-VXdhtT5mjnY@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add context entry functions needed for kdump.
+Interface for when a new domain in the old kernel needs some
+values from the panicked kernel's context entries.
 
-Bill Sumner:
-    Original version;
-
-Li, Zhenhua:
-    Changed the name of new functions, make them consistent with current
-    context get/set functions.
-    Remove the structure dve which is not used in new version.
-
-Signed-off-by: Bill Sumner <billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 72 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 72 insertions(+)
+ drivers/iommu/intel-iommu.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index cb9d6cc..1e7ceb5 100644
+index 1e7ceb5..07e6118 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -190,6 +190,31 @@ struct root_entry {
- };
- #define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
+@@ -367,6 +367,10 @@ static inline int first_pte_in_page(struct dma_pte *pte)
+  * do the same thing as crashdump kernel.
+  */
  
-+static inline bool root_present(struct root_entry *root)
-+{
-+	return (root->lo & 1);
-+}
++static struct context_entry *device_to_existing_context_entry(
++				struct intel_iommu *iommu,
++				u8 bus, u8 devfn);
 +
-+static inline void set_root_value(struct root_entry *root, unsigned long value)
-+{
-+	root->lo &= ~VTD_PAGE_MASK;
-+	root->lo |= value & VTD_PAGE_MASK;
-+}
-+
-+static inline struct context_entry *
-+get_context_addr_from_root(struct root_entry *root)
-+{
-+	return (struct context_entry *)
-+		(root_present(root)?phys_to_virt(
-+		root->lo & VTD_PAGE_MASK) :
-+		NULL);
-+}
-+
-+static inline unsigned long
-+get_context_phys_from_root(struct root_entry *root)
-+{
-+	return  root_present(root) ? (root->lo & VTD_PAGE_MASK) : 0;
-+}
  
- /*
-  * low 64 bits:
-@@ -211,6 +236,32 @@ static inline bool context_present(struct context_entry *context)
- {
- 	return (context->lo & 1);
- }
-+
-+static inline int context_fault_enable(struct context_entry *c)
-+{
-+	return((c->lo >> 1) & 0x1);
-+}
-+
-+static inline int context_translation_type(struct context_entry *c)
-+{
-+	return((c->lo >> 2) & 0x3);
-+}
-+
-+static inline u64 context_address_root(struct context_entry *c)
-+{
-+	return((c->lo >> VTD_PAGE_SHIFT));
-+}
-+
-+static inline int context_address_width(struct context_entry *c)
-+{
-+	return((c->hi >> 0) & 0x7);
-+}
-+
-+static inline int context_domain_id(struct context_entry *c)
-+{
-+	return((c->hi >> 8) & 0xffff);
-+}
-+
- static inline void context_set_present(struct context_entry *context)
- {
- 	context->lo |= 1;
-@@ -296,6 +347,27 @@ static inline int first_pte_in_page(struct dma_pte *pte)
- 	return !((unsigned long)pte & ~VTD_PAGE_MASK);
- }
- 
-+
-+/*
-+ * Fix Crashdump failure caused by leftover DMA through a hardware IOMMU
-+ *
-+ * Fixes the crashdump kernel to deal with an active iommu and legacy
-+ * DMA from the (old) panicked kernel in a manner similar to how legacy
-+ * DMA is handled when no hardware iommu was in use by the old kernel --
-+ * allow the legacy DMA to continue into its current buffers.
-+ *
-+ * In the crashdump kernel, this code:
-+ * 1. skips disabling the IOMMU's translating.
-+ * 2. Do not re-enable IOMMU's translating.
-+ * 3. In kdump kernel, use the old root entry table.
-+ * 4. Allocate pages for new context entry, copy data from old context entries
-+ *    in the old kernel to the new ones.
-+ *
-+ * In other kinds of kernel, for example, a kernel started by kexec,
-+ * do the same thing as crashdump kernel.
-+ */
-+
-+
  /*
   * This domain is a statically identity mapping domain.
-  *	1. This domain creats a static 1:1 mapping to all usable memory.
+@@ -4810,3 +4814,22 @@ static void __init check_tylersburg_isoch(void)
+ 	printk(KERN_WARNING "DMAR: Recommended TLB entries for ISOCH unit is 16; your BIOS set %d\n",
+ 	       vtisochctrl);
+ }
++
++static struct context_entry *device_to_existing_context_entry(
++				struct intel_iommu *iommu,
++				u8 bus, u8 devfn)
++{
++	struct root_entry *root;
++	struct context_entry *context;
++	struct context_entry *ret = NULL;
++	unsigned long flags;
++
++	spin_lock_irqsave(&iommu->lock, flags);
++	root = &iommu->root_entry[bus];
++	context = get_context_addr_from_root(root);
++	if (context && context_present(context+devfn))
++		ret = &context[devfn];
++	spin_unlock_irqrestore(&iommu->lock, flags);
++	return ret;
++}
++
 -- 
 2.0.0-rc0
