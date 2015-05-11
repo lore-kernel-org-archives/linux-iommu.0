@@ -1,29 +1,31 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu/arm-smmu: Fix sign-extension of upstream bus
- addresses at stage 1
-Date: Mon, 11 May 2015 18:46:02 +0200
-Message-ID: <20150511164601.GA10216@8bytes.org>
-References: <1431103462-8153-1-git-send-email-will.deacon@arm.com>
+Subject: Re: [PATCH] iommu: exynos: tell kmemleak to ignore 2nd level page
+ tables
+Date: Mon, 11 May 2015 18:50:09 +0200
+Message-ID: <20150511165008.GB10216@8bytes.org>
+References: <20150509000544.GA29904@dtor-ws>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <stable-owner@vger.kernel.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1431103462-8153-1-git-send-email-will.deacon@arm.com>
-Sender: stable-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: iommu@lists.linux-foundation.org, Varun.Sethi@freescale.com, linux-arm-kernel@lists.infradead.org, stable@vger.kernel.org
+In-Reply-To: <20150509000544.GA29904@dtor-ws>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Dmitry Torokhov <dtor@chromium.org>
+Cc: Kukjin Kim <kgene@kernel.org>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Colin Cross <ccross@android.com>, Doug Anderson <dianders@chromium.org>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 08, 2015 at 05:44:22PM +0100, Will Deacon wrote:
-> Hi Joerg,
+On Fri, May 08, 2015 at 05:05:44PM -0700, Dmitry Torokhov wrote:
+> From: Colin Cross <ccross@android.com>
 > 
-> I only have this one fix pending for arm-smmu, so please could you pick
-> it up for 4.1? I can send a pull if you'd prefer, but it feels a bit
-> OTT.
+> The pointers to the 2nd level page tables are converted to 1st level
+> page table entries, which means kmemleak can't find them and assumes
+> they have been leaked.  Call kmemleak_ignore on the 2nd level page
+> tables to prevent them from showing up in kmemleak reports.
 > 
-> Will
-> 
->  drivers/iommu/arm-smmu.c | 30 ++----------------------------
->  1 file changed, 2 insertions(+), 28 deletions(-)
+> Signed-off-by: Colin Cross <ccross@android.com>
+> Signed-off-by: Dmitry Torokhov <dtor@chromium.org>
+> ---
+>  drivers/iommu/exynos-iommu.c | 1 +
+>  1 file changed, 1 insertion(+)
 
-Applied to iommu/fixes, thanks.
+Applied to arm/exynos, thanks.
