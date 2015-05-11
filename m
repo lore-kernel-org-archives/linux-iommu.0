@@ -1,15 +1,17 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC PATCH] iommu: add ARM short descriptor page table allocator.
-Date: Mon, 11 May 2015 12:13:09 +0200
-Message-ID: <20150511101309.GH20611@8bytes.org>
-References: <1430206881-18294-1-git-send-email-yong.wu@mediatek.com>
-	<20150505161802.GA20611@8bytes.org> <20150505170541.GN1550@arm.com>
+Subject: Re: PROBLEM: Deadlock in attach_device() in AMD IOMMU driver
+Date: Mon, 11 May 2015 12:15:29 +0200
+Message-ID: <20150511101528.GI20611@8bytes.org>
+References: <55488C3D.50509@solarflare.com> <20150505144159.GI15736@8bytes.org>
+	<5548D814.6020807@solarflare.com>
+	<20150505153344.GR15736@8bytes.org>
+	<5549FEA1.9080801@solarflare.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20150505170541.GN1550-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <5549FEA1.9080801-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,18 +21,24 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+To: Gregor Dick <gdick-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kieran Mansley <kmansley-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, May 05, 2015 at 06:05:41PM +0100, Will Deacon wrote:
-> I think the MT8173 IOMMU [1] uses this format and, since it's part of
-> the ARM architecture, the ARM SMMU can make use of it too if the
-> implementation supports it.
+Hi Gregor,
 
-I think it makes more sense to merge this with a driver actually using
-it. I guess a driver for the above mentioned IOMMU will be submitted
-soon?
+On Wed, May 06, 2015 at 12:44:33PM +0100, Gregor Dick wrote:
+> On 05/05/15 16:33, Joerg Roedel wrote:
+> >Okay, I'll have a look into the SLES12 kernel sources to check there.
+> >Can you reproduce this with a recent upstream kernel?
+> 
+> I've done some more tests this morning and can reproduce the problem on
+> a vanilla 4.0 kernel with a SLES12 userland, and also on a stock
+> installation of Ubuntu 14.10 with a 3.16-derived kernel.
+> 
+> I neglected to mention kernel command-line options earlier:
+
+Thanks for testing this, I will work on a fix.
 
 
 	Joerg
