@@ -1,71 +1,65 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 0/6] IOMMU/DMA map_resource support for peer-to-peer
-Date: Mon, 11 May 2015 10:32:11 -0400
-Message-ID: <20150511143211.GE20282@l.oracle.com>
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH 3/6] dma-mapping: pci: add pci_(un)map_resource
+Date: Mon, 11 May 2015 10:27:53 -0500
+Message-ID: <CAErSpo4gJDEbGYnG+drdT-x8Rc0wEGjzYYp2FXvGnAQ90pDw_g@mail.gmail.com>
 References: <1430505138-2877-1-git-send-email-wdavis@nvidia.com>
-	<20150508202134.GB26795@l.oracle.com> <554D2099.2030907@compro.net>
+ <1430505138-2877-4-git-send-email-wdavis@nvidia.com> <20150507151905.GL24643@google.com>
+ <20150511143025.GD20282@l.oracle.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <554D2099.2030907-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mark Hounschell <markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, tripperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20150511143025.GD20282@l.oracle.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: William Davis <wdavis@nvidia.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, Jerome Glisse <jglisse@redhat.com>, John Hubbard <jhubbard@nvidia.com>, Terence Ripperda <tripperda@nvidia.com>, Yinghai Lu <yinghai@kernel.org>, "David S. Miller" <davem@davemloft.net>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 08, 2015 at 04:46:17PM -0400, Mark Hounschell wrote:
-> On 05/08/2015 04:21 PM, Konrad Rzeszutek Wilk wrote:
-> >On Fri, May 01, 2015 at 01:32:12PM -0500, wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org wrote:
-> >>From: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> >>
-> >>Hi,
-> >>
-> >>This patch series adds DMA APIs to map and unmap a struct resource to and from
-> >>a PCI device's IOVA domain, and implements the AMD, Intel, and nommu versions
-> >>of these interfaces.
-> >>
-> >>This solves a long-standing problem with the existing DMA-remapping interfaces,
-> >>which require that a struct page be given for the region to be mapped into a
-> >>device's IOVA domain. This requirement cannot support peer device BAR ranges,
-> >>for which no struct pages exist.
-> >>
-> >>The underlying implementations of map_page and map_sg convert the struct page
-> >>into its physical address anyway, so we just need a way to route the physical
-> >>address of the BAR region to these implementations. The new interfaces do this
-> >>by taking the struct resource describing a device's BAR region, from which the
-> >>physical address is derived.
-> >>
-> >>The Intel and nommu versions have been verified on a dual Intel Xeon E5405
-> >>workstation. I'm in the process of obtaining hardware to test the AMD version
-> >>as well. Please review.
-> >
-> >Does it work if you boot with 'iommu=soft swiotlb=force' which will mandate
-> >an strict usage of the DMA API?
-> >
-> 
-> PCIe peer2peer is borked on all motherboards I've tried. Only writes are
+On Mon, May 11, 2015 at 9:30 AM, Konrad Rzeszutek Wilk
+<konrad.wilk@oracle.com> wrote:
+> On Thu, May 07, 2015 at 10:19:05AM -0500, Bjorn Helgaas wrote:
+>> [+cc Dave for sparc64, Yinghai]
+>>
+>> On Fri, May 01, 2015 at 01:32:15PM -0500, wdavis@nvidia.com wrote:
+>> > From: Will Davis <wdavis@nvidia.com>
+>> >
+>> > Simply route these through to the new dma_(un)map_resource APIs.
+>> >
+>> > Signed-off-by: Will Davis <wdavis@nvidia.com>
+>> > Reviewed-by: Terence Ripperda <tripperda@nvidia.com>
+>> > Reviewed-by: John Hubbard <jhubbard@nvidia.com>
+>> > ---
+>> >  include/asm-generic/pci-dma-compat.h | 14 ++++++++++++++
+>> >  1 file changed, 14 insertions(+)
+>> >
+>> > diff --git a/include/asm-generic/pci-dma-compat.h b/include/asm-generic/pci-dma-compat.h
+>> > index c110843..ac4a4ad 100644
+>> > --- a/include/asm-generic/pci-dma-compat.h
+>> > +++ b/include/asm-generic/pci-dma-compat.h
+>> > @@ -61,6 +61,20 @@ pci_unmap_page(struct pci_dev *hwdev, dma_addr_t dma_address,
+>> >     dma_unmap_page(hwdev == NULL ? NULL : &hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
+>> >  }
+>> >
+>> > +static inline dma_addr_t
+>> > +pci_map_resource(struct pci_dev *hwdev, struct resource *resource,
+>> > +            unsigned long offset, size_t size, int direction)
+>> > +{
+>> > +   return dma_map_resource(hwdev == NULL ? NULL : &hwdev->dev, resource, offset, size, (enum dma_data_direction)direction);
+>> > +}
+>>
+>> On sparc64, PCI bus addresses, e.g., raw BAR values, can be 64 bits wide,
+>> but dma_addr_t is only 32 bits [1].  So dma_addr_t is a bit of a problem
+>> here.  It's likely that we will add a pci_bus_addr_t, but that hasn't
+>> happened yet [2].
+>
+> Why not just expand the 'dma_addr_t' to be unsigned long (if to support
+> the T5-8 box)?
 
-:-(
+That would work, but would increase the kernel memory footprint [3].
+I don't have numbers (maybe Dave does), but if it is really
+significant, other platforms with IOMMUs might want to explore using a
+dma_addr_t smaller than 64 bits, too.
 
-> possible. Reads are not supported. I suppose if you have a platform with
-> only PCI and an IOMMU this would be very useful. Without both read and write
-> PCIe peer2peer support, this seems unnecessary.
-> 
+>> [1] http://lkml.kernel.org/r/20150327.145016.86183910134380870.davem@davemloft.net
+>> [2] http://lkml.kernel.org/r/1427857069-6789-2-git-send-email-yinghai@kernel.org
 
-It is a perfect way to test the code to make sure the API works (or it
-fails in the failure modes) _and_ that the drivers as well (use the
-pci_map_sync, and so on).
-
-> Mark
-> 
-> 
+[3] http://lkml.kernel.org/r/20150403.124855.96516097693494126.davem@davemloft.net
