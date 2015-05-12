@@ -1,234 +1,155 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH/RFC 0/4] Probe deferral for IOMMU DT integration
-Date: Tue, 12 May 2015 13:01:36 +0300
-Message-ID: <68165351.x47CMduWiL@avalon>
-References: <1423182722-16646-1-git-send-email-lauraa@codeaurora.org>
-	<1519819.qZaXvuQI61@avalon> <54F6CE64.8040503@samsung.com>
+From: Javier Martinez Canillas <javier@dowhile0.org>
+Subject: Re: [PATCH v6 00/25] Exynos SYSMMU (IOMMU) integration with DT and
+ DMA-mapping subsystem
+Date: Tue, 12 May 2015 17:35:53 +0200
+Message-ID: <CABxcv==0gbM_veanjHjtUgwo9hVuhLji5REi7nQfVTP8p-xAWg@mail.gmail.com>
+References: <1430727380-10912-1-git-send-email-m.szyprowski@samsung.com>
+	<CABxcv=mpCQKyuJOFsUgMdhD50yYdH+WwnEbYUNXByErMHpUuYA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <54F6CE64.8040503-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <CABxcv=mpCQKyuJOFsUgMdhD50yYdH+WwnEbYUNXByErMHpUuYA@mail.gmail.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Marek,
+On Mon, May 11, 2015 at 6:00 PM, Javier Martinez Canillas
+<javier@dowhile0.org> wrote:
+> Hello Marek,
+>
+> On Mon, May 4, 2015 at 10:15 AM, Marek Szyprowski
+> <m.szyprowski@samsung.com> wrote:
+>> Hello Everyone,
+>>
+>> This is yet another attempt to get Exynos SYSMMU driver with integrated
+>> with IOMMU & DMA-mapping subsystems. The main change from previous
+>> version is addition of the patches to define iommu-mapping, which need
+>> to be created during system boot to avoid IOMMU fault by devices, which
+>> has been left enabled by bootloader (i.e. framebuffer displaying slash
+>> screen).
+>>
+>> Patches has been also rebased onto v4.1-rc2 with 'arm: dma-mapping: fix
+>> off-by-one check in arm_setup_iommu_dma_ops' patch applied (see commit
+>> 1424532b2163bf1580f4b1091a5801e12310fac5 on fixes branch in
+>> git://ftp.arm.linux.org.uk/pub/linux/arm/kernel/git-cur/linux-arm.git,
+>> more information:
+>> http://www.spinics.net/lists/arm-kernel/msg414722.html).
+>>
+>> All patches are also available in the following git repository:
+>> https://git.linaro.org/people/marek.szyprowski/linux-srpol.git
+>> branch v4.1-exynos-iommu.
+>>
+>
+> Thanks for the new series, this time I didn't get a system hang when I
+> enabled both CONFIG_DRM_EXYNOS_FIMD and CONFIG_DRM_EXYNOS_DP on my
+> Exynos5420 Peach Pit Chromebook.
+>
+> The system finished booting and I have both a console on the HDMI and
+> eDP/LVDS displays. But if I try to start X or weston, I again have a
+> completele system hang with no output on the serial console. This
+> works correctly without your IOMMU series.
+>
+> And again disabling CONFIG_DRM_EXYNOS_DP or CONFIG_DRM_EXYNOS_FIMD
+> avoids the system to hang. If I only have CONFIG_DRM_EXYNOS_HDMI
+> enabled, then I can start X with out issues and is displayed correctly
+> in the HDMI output.
+>
+> So it seems your workaround for the boot-loader leaving the FIMD dma
+> engine enabled is not enough? I'm not a graphics person so I can think
+> of the top of my head what could trigger the system hang when X or
+> weston are executed so I wondered if you have any ideas.
+>
 
-On Wednesday 04 March 2015 10:20:36 Marek Szyprowski wrote:
-> On 2015-02-16 17:14, Laurent Pinchart wrote:
-> > On Thursday 05 February 2015 16:31:58 Laura Abbott wrote:
-> >> Hi,
-> >> 
-> >> On the heels of Exynos integrating SMMU in to the DT for probing,
-> >> this series attempts to add support to make SMMU drivers work with
-> >> deferred probing. This has been referenced before[1] but this is
-> >> some actual code to use as a starting point for discussion.
-> >> 
-> >> The requirement for this is based on a previous patch to add clock
-> >> support to the ARM SMMU driver[2]. Once we have clock support, it's
-> >> possible that the driver itself may need to be defered which breaks
-> >> a bunch of assumptions about how SMMU probing is supposed to work.
-> >> The concept here is to have the driver call of_dma_configure which
-> >> may return -EPROBE_DEFER. of_dma_configure could possibly be moved
-> >> up to probe level. The existing method of initialization still needs
-> >> to be done as well which might mean we have the worst of both worlds.
-> >> 
-> >> Open questions:
-> >> - This still doesn't really address Arnd's concerns[3] about disabling
-> >> IOMMUs
-> > 
-> > Arnd, Will and I have discussed IOMMU probe deferral last week. Here's a
-> > summary of the discussion, before the details blur away.
-> > 
-> > The discussion covered both higher level concepts and lower level details,
-> > in various directions. I'll try to make the summary clear by filling the
-> > gaps between pieces where needed, so some of the information below might
-> > not be a direct result of the discussions. Arnd and Will, please feel
-> > free to correct me.
-> > 
-> > The first question we've discussed was whether probe deferral for IOMMUs
-> > is really needed. Various dependencies between IOMMU devices and other
-> > devices exist, in particular on clocks (as you have mentioned above) and
-> > on power domains (as mentioned by Marek in
-> > http://lists.infradead.org/pipermail/linux-arm-kernel/2015-February/32323
-> > 8.html). While there are mechanism to handle some of them with probe
-> > deferral (for instance by using the OF_DECLARE macros to register clock
-> > drivers), generalizing those mechanisms would essentially recreate a
-> > probe ordering mechanism similar to link order probe ordering and
-> > couldn't really scale.
-> > 
-> > Additionally, IOMMUs could also be present hot-pluggable devices and
-> > depend on resources that are thus hot-plugged. OF_DECLARE wouldn't help
-> > in that case. For all those reasons we have concluded that probe deferral
-> > for IOMMUs is desired if it can be implemented cleanly.
-> > 
-> > The second question we've discussed was how to implement probe deferral
-> > cleanly :-)
-> > 
-> > The current implementation configures DMA at device creation time and sets
-> > the following properties:
-> > 
-> > - dma_map_ops (IOMMU, SWIOTLB, linear mapping)
-> > - initial DMA mask
-> > - DMA offset
-> > - DMA coherency
-> > 
-> > Additionally the IOMMU group (when an IOMMU is present) will also be
-> > configured at the same time (patches are under review).
-> > 
-> > The base idea is to defer probing of bus master devices when their IOMMU
-> > isn't present. Three cases need to be handled.
-> > 
-> > 1. No IOMMU is declared by the firmware (through DT, ACPI, ...) for the
-> > bus master device. The bus master device probe doesn't need to be deferred
-> > due to the IOMMU. dma_map_ops must be set to SWIOTLB or linear mapping
-> > (the later should likely be implemented through SWIOTLB).
-> > 
-> > 2. An IOMMU is declared for the bus master device and the IOMMU has been
-> > successfully probed and registered. The bus master device probe doesn't
-> > need to be deferred due to the IOMMU. dma_map_ops must be set to IOMMU
-> > ops.
-> > 
-> > 3. An IOMMU is declared for the bus master device but the IOMMU isn't
-> > registered. This can be caused by different reasons:
-> > 
-> > - a. No driver is loaded for this IOMMU (for instance because DT describes
-> > the IOMMU connection, but the IOMMU driver hasn't been developed yet, or
-> > an older kernel is used). If the IOMMU is optional the bus master device
-> > probe should succeed, and dma_map_ops should be set to linear. If the
-> > IOMMU is mandatory the bus master device probe should fail.
-> > 
-> > Note that, as we require IOMMU drivers to be compiled in, we don't need to
-> > handle the case of loadable IOMMU drivers that haven't been loaded yet.
-> > 
-> > - b. A driver is loaded for this IOMMU but the IOMMU hasn't been probed
-> > yet, or its probe has been deferred. The bus master device probe should
-> > be deferred.
-> > 
-> > - c. A driver is loaded for this IOMMU but the IOMMU probe has failed
-> > permanently. It's not clear at the moment whether we should try to recover
-> > from this automatically using the same mechanism as case 3.a, or if we can
-> > considered this as an abnormal failure and disable the bus master device.
-> > 
-> > Assuming that we should try to recover from such an error, we can't
-> > predict this case when the device is instantiated (even if IOMMUs are
-> > registered before bus master devices are added, for instance using the
-> > OF_DECLARE mechanism that Will has implemented). We thus need to setup the
-> > dma_map_ops and IOMMU group at bus master device probe time.
-> > 
-> > Furthermore, we can't distinguish cases 3.a and 3.b at bus master probe
-> > time without early registration of IOMMU drivers. Case 3.a would instead
-> > be considered as 3.b, leading to infinite probe deferral of bus master
-> > devices.
-> > 
-> > For those reasons we have concluded that IOMMU probe deferral needs to be
-> > implemented with a combination of several mechanisms. The following steps
-> > should happen at bus master device probe time.
-> > 
-> > 1. The IOMMU device referenced by the firmware with the bus master device
-> > is looked up. On DT-based systems, this will be the IOMMU DT node
-> > referenced by the iommus property. If no IOMMU device is associated,
-> > dma_map_ops will be set to linear mapping or SWIOTLB and device probe
-> > will continue.
-> > 
-> > 2. An IOMMU device is referenced for the bus master device.
-> > 
-> > The corresponding IOMMU instance is looked up. This requires a new IOMMU
-> > registration system. IOMMU drivers will create IOMMU instances at probe
-> > time and register them with the IOMMU core.
-> > 
-> > If an IOMMU instance is found for the referenced IOMMU device, the IOMMU
-> > instance's of_xlate function will be called to setup the IOMMU.
-> > 
-> > If the of_xlate call succeeds dma_map_ops will be set to IOMMU ops and
-> > device probe will continue. If the call fails we can either fail the bus
-> > master device probe, or fall back to non-IOMMU dma_map_ops (to be
-> > discussed).
-> > 
-> > 3. The IOMMU device referenced for the bus master device isn't present,
-> > due to the IOMMU device probe not having been performed yet, having been
-> > deferred, or having failed.
-> > 
-> > The IOMMU driver associated with the IOMMU device is looked up. This was
-> > initially thought to require an early registration mechanism for IOMMU
-> > drivers (using an OF_DECLARE mechanism for DT-based systems for
-> > instance), but on second thought it might be possible to implement this
-> > based on normal driver registration (to be researched).
-> > 
-> > If an IOMMU driver is found for the referenced IOMMU device, a callback
-> > function of the IOMMU driver is called to check whether an IOMMU instance
-> > is expected to be registered later (most IOMMU drivers will just return
-> > true, so we could skip this callback function until an IOMMU driver
-> > requires it). If an IOMMU instance is expected to be registered later the
-> > bus master device probe is deferred. Otherwise dma_map_ops will be set to
-> > linear mapping/SWIOTLB and device probe will continue.
-> > 
-> > 
-> > The initial DMA mask and the DMA offset can still be configured at device
-> > instantiation time if desired.
-> 
-> I'm sorry for not participating in the discussions, I was terribly busy
-> with our internal stuff.
+I looked a a bit more on this issue today and found that the system
+hang when dma_alloc_attrs() is called from lowlevel_buffer_allocate()
+in drivers/gpu/drm/exynos/exynos_drm_buf.c [0].
 
-No worries, I know the feeling. My reply is two months later :-/
+The call chain is:
 
-> The approach you have described looks fine although I would like also to
-> know a bit more about the roadmap of development. The IOMMU integration is
-> being discussed for over 2 years and right now we are STILL discussing.
-> 
-> Do you plan to post any patches implementing this approach? I would
-> really like to merge something simple, maybe not fully optimized and then
-> resolve all the corner cases and possible integration details.
+exynos_drm_gem_create_ioctl() -> exynos_drm_gem_create() ->
+exynos_drm_alloc_buf() -> lowlevel_buffer_allocate() ->
+dma_alloc_attrs().
 
-I secretly hoped that someone would beat me to it but that wasn't the case. I 
-started giving it a go, and I'll try to post patches soon. It will be an RFC 
-though.
+An interesting data point is that the allocation succeeds when a GEM
+buffer is created for fbdev but it causes a system hang when is
+created from the DRM ioctl API. For fbdev the call chain is:
 
-> >> - Currently tested where we knew the driver was going to be deferring.
-> >> Probably need some logic for calling of_dma_configure again.
-> >> 
-> >> This is based on Robin Murphy's work for dma mapping[4] and a few
-> >> patches from Murali Kaicheri[5] for of_dma_configure.
-> >> 
-> >> 
-> >> [1] http://lists.linuxfoundation.org/pipermail/iommu/2015-> >> January/011764.html
-> >> [2] http://lists.infradead.org/pipermail/linux-arm-kernel/2014-> >> August/279036.html
-> >> [3] http://lists.infradead.org/pipermail/linux-arm-kernel/2014-> >> December/311579.html
-> >> [4] http://lists.infradead.org/pipermail/linux-arm-kernel/2015-> >> January/315459.html
-> >> [5] http://lists.infradead.org/pipermail/linux-arm-kernel/2015-> >> January/319390.html
-> >> 
-> >> Laura Abbott (3):
-> >>    dma-mapping: Make arch_setup_dma_ops return an error code
-> >>    of: Return error codes from of_dma_configure
-> >>    iommu/arm-smmu: Support deferred probing
-> >> 
-> >> Mitchel Humpherys (1):
-> >>    iommu/arm-smmu: add support for specifying clocks
-> >>   
-> >>   arch/arm/include/asm/dma-mapping.h   |   2 +-
-> >>   arch/arm/mm/dma-mapping.c            |   4 +-
-> >>   arch/arm64/include/asm/dma-mapping.h |   2 +-
-> >>   arch/arm64/mm/dma-mapping.c          |  16 +--
-> >>   drivers/iommu/arm-smmu.c             | 186 ++++++++++++++++++++++++++--
-> >>   drivers/iommu/iommu.c                |  49 ++++++++-
-> >>   drivers/iommu/of_iommu.c             |  14 ++-
-> >>   drivers/of/device.c                  |   9 +-
-> >>   include/linux/dma-mapping.h          |   7 +-
-> >>   include/linux/iommu.h                |   2 +
-> >>   include/linux/of_device.h            |   4 +-
-> >>   11 files changed, 268 insertions(+), 27 deletions(-)
+exynos_drm_fbdev_init() -> exynos_drm_fbdev_init() ->
+exynos_drm_fbdev_create() -> exynos_drm_gem_create() ->
+exynos_drm_alloc_buf() -> lowlevel_buffer_allocated() ->
+dma_alloc_attrs().
 
--- 
-Regards,
+Although for fbdev, the EXYNOS_BO_CONTIG flag is passed to
+exynos_drm_gem_create() so the DMA_ATTR_FORCE_CONTIGUOUS attribute is
+set before calling  dma_alloc_attrs(). So I don't know if is only
+working because the allocated memory is physically contiguous so the
+IOMMU mapping is less of an issue here?
 
-Laurent Pinchart
+I also don't know if is relevant but I noticed that both for HDMI and
+DP, the address of the allocated a DMA buffer is always 0x20000000.
+Which is the start of the iommu-reserved-mapping region for the
+exynos5420 peach pit.
+
+While the address of the allocated DMA buffer for the GEM buffer
+allocated with EXYNOS_GEM_CREATE is always != 0x20000000 (i.e
+0x2184c000).
+
+So in summary, Exynos HDMI DRM can allocate GEM buffers correctly
+fbdev and DRM while EXYNOS DRM DP/FIMD can only allocate a GEM buffer
+for fbdev, trying to allocate with the EXYNOS_GEM_CREATE ioctl hangs
+the system. Both fbdev and DRM works correctly with Exynos IOMMU
+disabled.
+
+I included some DRM debug log [2] (drm.debug=0xff) for DP/FIMD fbdev
+and DRM GEM buffer creation.
+
+Thanks a lot and best regards,
+Javier
+
+[0]: http://lxr.free-electrons.com/source/drivers/gpu/drm/exynos/exynos_drm_buf.c#L84
+[1]: http://lxr.free-electrons.com/source/drivers/gpu/drm/exynos/exynos_drm_fbdev.c#L153
+[2]:
+
+DP fbdev:
+
+[    4.181241] [drm:drm_enable_connectors] connector 31 enabled? yes
+[    4.181248] [drm:drm_target_preferred] looking for cmdline mode on
+connector 25
+[    4.181254] [drm:drm_target_preferred] looking for preferred mode
+on connector 25 0
+[    4.181259] [drm:drm_target_preferred] found mode 1366x768
+[    4.181265] [drm:drm_target_preferred] looking for cmdline mode on
+connector 31
+[    4.181270] [drm:drm_target_preferred] looking for preferred mode
+on connector 31 0
+[    4.181276] [drm:drm_target_preferred] found mode 1920x1080
+[    4.181281] [drm:drm_setup_crtcs] picking CRTCs for 4096x4096 config
+[    4.181290] [drm:drm_setup_crtcs] desired mode 1366x768 set on crtc 23 (0,0)
+[    4.181298] [drm:drm_setup_crtcs] desired mode 1920x1080 set on crtc 29 (0,0)
+[    4.181307] [drm:exynos_drm_fbdev_create] surface width(1920),
+height(1080) and bpp(32
+[    4.181314] [drm:exynos_drm_init_buf] desired size = 0x7e9000
+[    4.181327] [drm:exynos_drm_gem_init] created file object = 0xedc68300
+[    4.187406] [drm:lowlevel_buffer_allocate] ccu
+dma_addr(0x20000000), size(0x7e9000)
+[    4.187418] [drm:exynos_drm_fb_buffer] dma_addr = 0x20000000
+
+DP DRM:
+
+[  206.210769] [drm:drm_mode_getconnector] [CONNECTOR:31:?]
+[  206.216074] [drm:drm_ioctl] pid=3458, dev=0xe200, auth=1,
+DRM_IOCTL_MODE_GETPROPERTY
+[  206.223798] [drm:drm_ioctl] pid=3458, dev=0xe200, auth=1,
+DRM_IOCTL_MODE_GETPROPERTY
+[  206.231538] [drm:drm_ioctl] pid=3458, dev=0xe200, auth=1,
+DRM_IOCTL_MODE_GETPROPBLOB
+[  206.239240] [drm:drm_ioctl] pid=3458, dev=0xe200, auth=1,
+DRM_IOCTL_MODE_GETPROPBLOB
+[  206.246965] [drm:drm_ioctl] pid=3458, dev=0xe200, auth=1,
+DRM_IOCTL_MODE_GETPROPERTY
+[  206.254680] [drm:drm_ioctl] pid=3458, dev=0xe200, auth=1,
+DRM_IOCTL_MODE_GETPROPERTY
+[  206.275736] [drm:drm_ioctl] pid=3458, dev=0xe200, auth=1, EXYNOS_GEM_CREATE
+[  206.281287] [drm:exynos_drm_init_buf] desired size = 0x408000
+[  206.286989] [drm:exynos_drm_gem_init] created file object = 0xed0d6400
