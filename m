@@ -1,139 +1,199 @@
-From: Dave Young <dyoung@redhat.com>
-Subject: Re: [PATCH v11 02/10] iommu/vt-d: Items required for kdump
-Date: Tue, 12 May 2015 16:17:23 +0800
-Message-ID: <20150512081723.GC4561@localhost.localdomain>
+From: Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v11 04/10] iommu/vt-d: functions to copy data from old mem
+Date: Tue, 12 May 2015 16:29:54 +0800
+Message-ID: <20150512082954.GD4561@localhost.localdomain>
 References: <1431337974-545-1-git-send-email-zhen-hual@hp.com>
- <1431337974-545-3-git-send-email-zhen-hual@hp.com>
+	<1431337974-545-5-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1431337974-545-3-git-send-email-zhen-hual@hp.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: "Li, Zhen-Hua" <zhen-hual@hp.com>
-Cc: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, joro@8bytes.org, vgoyal@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
+In-Reply-To: <1431337974-545-5-git-send-email-zhen-hual-VXdhtT5mjnY@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Cc: bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 On 05/11/15 at 05:52pm, Li, Zhen-Hua wrote:
-> Add context entry functions needed for kdump.
+> Add some functions to copy the data from old kernel.
+> These functions are used to copy context tables and page tables.
 > 
-> Bill Sumner:
->     Original version;
+> To avoid calling iounmap between spin_lock_irqsave and spin_unlock_irqrestore,
+> use a link here, store the pointers , and then use iounmap to free them in
+> another place.
 > 
-> Li, Zhenhua:
->     Changed the name of new functions, make them consistent with current
->     context get/set functions.
->     Remove the structure dve which is not used in new version.
+> Li, Zhen-hua:
+>     The functions and logics.
 > 
-> Signed-off-by: Bill Sumner <billsumnerlinux@gmail.com>
-> Signed-off-by: Li, Zhen-Hua <zhen-hual@hp.com>
+> Takao Indoh:
+>     Check if pfn is ram:
+>         if (page_is_ram(pfn))
+> 
+> Signed-off-by: Li, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+> Signed-off-by: Takao Indoh <indou.takao-+CUm20s59erQFUHtdCDX3A@public.gmane.org>
 > ---
->  drivers/iommu/intel-iommu.c | 72 +++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 72 insertions(+)
+>  drivers/iommu/intel-iommu.c | 102 ++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/intel-iommu.h |   6 +++
+>  2 files changed, 108 insertions(+)
 > 
 > diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index cb9d6cc..1e7ceb5 100644
+> index 07e6118..0b97c15 100644
 > --- a/drivers/iommu/intel-iommu.c
 > +++ b/drivers/iommu/intel-iommu.c
-> @@ -190,6 +190,31 @@ struct root_entry {
->  };
->  #define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
+> @@ -371,6 +371,17 @@ static struct context_entry *device_to_existing_context_entry(
+>  				struct intel_iommu *iommu,
+>  				u8 bus, u8 devfn);
 >  
-> +static inline bool root_present(struct root_entry *root)
-> +{
-> +	return (root->lo & 1);
-> +}
-> +
-> +static inline void set_root_value(struct root_entry *root, unsigned long value)
-> +{
-> +	root->lo &= ~VTD_PAGE_MASK;
-> +	root->lo |= value & VTD_PAGE_MASK;
-> +}
-> +
-> +static inline struct context_entry *
-> +get_context_addr_from_root(struct root_entry *root)
-> +{
-> +	return (struct context_entry *)
-> +		(root_present(root)?phys_to_virt(
-> +		root->lo & VTD_PAGE_MASK) :
-> +		NULL);
-> +}
-> +
-> +static inline unsigned long
-> +get_context_phys_from_root(struct root_entry *root)
-> +{
-> +	return  root_present(root) ? (root->lo & VTD_PAGE_MASK) : 0;
-> +}
->  
->  /*
->   * low 64 bits:
-> @@ -211,6 +236,32 @@ static inline bool context_present(struct context_entry *context)
->  {
->  	return (context->lo & 1);
->  }
-> +
-> +static inline int context_fault_enable(struct context_entry *c)
-> +{
-> +	return((c->lo >> 1) & 0x1);
-> +}
-> +
-> +static inline int context_translation_type(struct context_entry *c)
-> +{
-> +	return((c->lo >> 2) & 0x3);
-> +}
-> +
-> +static inline u64 context_address_root(struct context_entry *c)
-> +{
-> +	return((c->lo >> VTD_PAGE_SHIFT));
-> +}
-> +
-> +static inline int context_address_width(struct context_entry *c)
-> +{
-> +	return((c->hi >> 0) & 0x7);
-> +}
-> +
-> +static inline int context_domain_id(struct context_entry *c)
-> +{
-> +	return((c->hi >> 8) & 0xffff);
-> +}
-> +
->  static inline void context_set_present(struct context_entry *context)
->  {
->  	context->lo |= 1;
-> @@ -296,6 +347,27 @@ static inline int first_pte_in_page(struct dma_pte *pte)
->  	return !((unsigned long)pte & ~VTD_PAGE_MASK);
->  }
->  
-> +
 > +/*
-> + * Fix Crashdump failure caused by leftover DMA through a hardware IOMMU
-> + *
-> + * Fixes the crashdump kernel to deal with an active iommu and legacy
-> + * DMA from the (old) panicked kernel in a manner similar to how legacy
-> + * DMA is handled when no hardware iommu was in use by the old kernel --
-> + * allow the legacy DMA to continue into its current buffers.
-> + *
-> + * In the crashdump kernel, this code:
-> + * 1. skips disabling the IOMMU's translating.
-> + * 2. Do not re-enable IOMMU's translating.
-> + * 3. In kdump kernel, use the old root entry table.
-> + * 4. Allocate pages for new context entry, copy data from old context entries
-> + *    in the old kernel to the new ones.
-> + *
-> + * In other kinds of kernel, for example, a kernel started by kexec,
-> + * do the same thing as crashdump kernel.
+> + * A structure used to store the address allocated by ioremap();
+> + * The we need to call iounmap() to free them out of spin_lock_irqsave/unlock;
 > + */
+> +struct iommu_remapped_entry {
+> +	struct list_head list;
+> +	void __iomem *mem;
+> +};
+> +static LIST_HEAD(__iommu_remapped_mem);
+> +static DEFINE_MUTEX(__iommu_mem_list_lock);
 > +
-> +
-
-Above comments should come along with the code changes instead of putting it
-in this patch.
-
-BTW, there's one more blank line at the end..
-
+>  
 >  /*
 >   * This domain is a statically identity mapping domain.
->   *	1. This domain creats a static 1:1 mapping to all usable memory.
+> @@ -4833,3 +4844,94 @@ static struct context_entry *device_to_existing_context_entry(
+>  	return ret;
+>  }
+>  
+> +/*
+> + * Copy memory from a physically-addressed area into a virtually-addressed area
+> + */
+> +int __iommu_load_from_oldmem(void *to, unsigned long from, unsigned long size)
+> +{
+> +	unsigned long pfn;		/* Page Frame Number */
+> +	size_t csize = (size_t)size;	/* Num(bytes to copy) */
+> +	unsigned long offset;		/* Lower 12 bits of to */
+
+comment for above variable are unnecessary, they are clear enough.
+BTW, use size_t size in function argument is better.
+
+> +	void __iomem *virt_mem;
+> +	struct iommu_remapped_entry *mapped;
+> +
+> +	pfn = from >> VTD_PAGE_SHIFT;
+> +	offset = from & (~VTD_PAGE_MASK);
+> +
+> +	if (page_is_ram(pfn)) {
+> +		memcpy(to, pfn_to_kaddr(pfn) + offset, csize);
+> +	} else{
+> +
+> +		mapped = kzalloc(sizeof(struct iommu_remapped_entry),
+> +				GFP_KERNEL);
+> +		if (!mapped)
+> +			return -ENOMEM;
+> +
+> +		virt_mem = ioremap_cache((unsigned long)from, size);
+> +		if (!virt_mem) {
+> +			kfree(mapped);
+> +			return -ENOMEM;
+> +		}
+> +		memcpy(to, virt_mem, size);
+
+csize or size? as previous comment use size_t in argument it will be ok here.
+
+> +
+> +		mutex_lock(&__iommu_mem_list_lock);
+> +		mapped->mem = virt_mem;
+> +		list_add_tail(&mapped->list, &__iommu_remapped_mem);
+> +		mutex_unlock(&__iommu_mem_list_lock);
+> +	}
+> +	return size;
+
+type mismatch?
+
+> +}
+> +
+> +/*
+> + * Copy memory from a virtually-addressed area into a physically-addressed area
+> + */
+> +int __iommu_save_to_oldmem(unsigned long to, void *from, unsigned long size)
+> +{
+> +	unsigned long pfn;		/* Page Frame Number */
+> +	size_t csize = (size_t)size;	/* Num(bytes to copy) */
+> +	unsigned long offset;		/* Lower 12 bits of to */
+
+Ditto about data type and comments..
+
+> +	void __iomem *virt_mem;
+> +	struct iommu_remapped_entry *mapped;
+> +
+> +	pfn = to >> VTD_PAGE_SHIFT;
+> +	offset = to & (~VTD_PAGE_MASK);
+> +
+> +	if (page_is_ram(pfn)) {
+> +		memcpy(pfn_to_kaddr(pfn) + offset, from, csize);
+> +	} else{
+> +		mapped = kzalloc(sizeof(struct iommu_remapped_entry),
+> +				GFP_KERNEL);
+> +		if (!mapped)
+> +			return -ENOMEM;
+> +
+> +		virt_mem = ioremap_cache((unsigned long)to, size);
+> +		if (!virt_mem) {
+> +			kfree(mapped);
+> +			return -ENOMEM;
+> +		}
+> +		memcpy(virt_mem, from, size);
+> +		mutex_lock(&__iommu_mem_list_lock);
+> +		mapped->mem = virt_mem;
+> +		list_add_tail(&mapped->list, &__iommu_remapped_mem);
+> +		mutex_unlock(&__iommu_mem_list_lock);
+> +	}
+> +	return size;
+> +}
+
+Above two functions looks duplicate, can they be merged as one function and
+add a argument about direction?
+
+> +
+> +/*
+> + * Free the mapped memory for ioremap;
+> + */
+> +int __iommu_free_mapped_mem(void)
+> +{
+> +	struct iommu_remapped_entry *mem_entry, *tmp;
+> +
+> +	mutex_lock(&__iommu_mem_list_lock);
+> +	list_for_each_entry_safe(mem_entry, tmp, &__iommu_remapped_mem, list) {
+> +		iounmap(mem_entry->mem);
+> +		list_del(&mem_entry->list);
+> +		kfree(mem_entry);
+> +	}
+> +	mutex_unlock(&__iommu_mem_list_lock);
+> +	return 0;
+> +}
+> +
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index 796ef96..ced1fac 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -380,4 +380,10 @@ extern int dmar_ir_support(void);
+>  
+>  extern const struct attribute_group *intel_iommu_groups[];
+>  
+> +extern int __iommu_load_from_oldmem(void *to, unsigned long from,
+> +					unsigned long size);
+> +extern int __iommu_save_to_oldmem(unsigned long to, void *from,
+> +					unsigned long size);
+> +extern int __iommu_free_mapped_mem(void);
+> +
+>  #endif
 > -- 
 > 2.0.0-rc0
 > 
