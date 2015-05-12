@@ -1,444 +1,139 @@
-From: leizhen <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/3] iommu/arm-smmu: Add initial driver support for ARM
-	SMMUv3 devices
-Date: Tue, 12 May 2015 15:40:06 +0800
-Message-ID: <5551AE56.6050906@huawei.com>
-References: <1431108046-9675-1-git-send-email-will.deacon@arm.com>
-	<1431108046-9675-3-git-send-email-will.deacon@arm.com>
+From: Dave Young <dyoung@redhat.com>
+Subject: Re: [PATCH v11 02/10] iommu/vt-d: Items required for kdump
+Date: Tue, 12 May 2015 16:17:23 +0800
+Message-ID: <20150512081723.GC4561@localhost.localdomain>
+References: <1431337974-545-1-git-send-email-zhen-hual@hp.com>
+ <1431337974-545-3-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1431108046-9675-3-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Huxinwei <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Sanil kumar <sanil.kumar-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Gaojianbo <gaojianbo-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Dingtianhong <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1431337974-545-3-git-send-email-zhen-hual@hp.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: "Li, Zhen-Hua" <zhen-hual@hp.com>
+Cc: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, joro@8bytes.org, vgoyal@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
 List-Id: iommu@lists.linux-foundation.org
 
-
-> +
-> +static int queue_poll_cons(struct arm_smmu_queue *q, u32 until, bool wfe)
+On 05/11/15 at 05:52pm, Li, Zhen-Hua wrote:
+> Add context entry functions needed for kdump.
+> 
+> Bill Sumner:
+>     Original version;
+> 
+> Li, Zhenhua:
+>     Changed the name of new functions, make them consistent with current
+>     context get/set functions.
+>     Remove the structure dve which is not used in new version.
+> 
+> Signed-off-by: Bill Sumner <billsumnerlinux@gmail.com>
+> Signed-off-by: Li, Zhen-Hua <zhen-hual@hp.com>
+> ---
+>  drivers/iommu/intel-iommu.c | 72 +++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 72 insertions(+)
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index cb9d6cc..1e7ceb5 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -190,6 +190,31 @@ struct root_entry {
+>  };
+>  #define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
+>  
+> +static inline bool root_present(struct root_entry *root)
 > +{
-> +	ktime_t timeout = ktime_add_us(ktime_get(), ARM_SMMU_POLL_TIMEOUT_US);
-> +
-> +	while (queue_sync_cons(q), __queue_cons_before(q, until)) {
-> +		if (ktime_compare(ktime_get(), timeout) > 0)
-
-Is it good to limit hardware behavior? May be wait for ever will be better. If SMMU
-can not consume queue items under normal condition, the SMMU hardware is broken,
-will lead software system to be crashed later.
-
-> +			return -ETIMEDOUT;
-> +
-> +		if (wfe) {
-> +			wfe();
-> +		} else {
-> +			cpu_relax();
-> +			udelay(1);
-> +		}
-> +	}
-> +
-> +	return 0;
+> +	return (root->lo & 1);
 > +}
 > +
-> +static void queue_write(__le64 *dst, u64 *src, size_t n_dwords)
+> +static inline void set_root_value(struct root_entry *root, unsigned long value)
 > +{
-> +	int i;
-> +
-> +	for (i = 0; i < n_dwords; ++i)
-> +		*dst++ = cpu_to_le64(*src++);
+> +	root->lo &= ~VTD_PAGE_MASK;
+> +	root->lo |= value & VTD_PAGE_MASK;
 > +}
 > +
-> +static int queue_insert_raw(struct arm_smmu_queue *q, u64 *ent)
+> +static inline struct context_entry *
+> +get_context_addr_from_root(struct root_entry *root)
 > +{
-> +	if (queue_full(q))
-> +		return -ENOSPC;
-> +
-> +	queue_write(Q_ENT(q, q->prod), ent, q->ent_dwords);
-
-A dmb or dsb maybe needed. We must insure all data written are completed, then notify hardware to consume.
-
-> +	queue_inc_prod(q);
-> +	return 0;
+> +	return (struct context_entry *)
+> +		(root_present(root)?phys_to_virt(
+> +		root->lo & VTD_PAGE_MASK) :
+> +		NULL);
 > +}
 > +
-> +
-> +/* High-level queue accessors */
-> +static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+> +static inline unsigned long
+> +get_context_phys_from_root(struct root_entry *root)
 > +{
-> +	memset(cmd, 0, CMDQ_ENT_DWORDS << 3);
-> +	cmd[0] |= (ent->opcode & CMDQ_0_OP_MASK) << CMDQ_0_OP_SHIFT;
-> +
-> +	switch (ent->opcode) {
-> +	case CMDQ_OP_TLBI_EL2_ALL:
-
-> +	case CMDQ_OP_CMD_SYNC:
-> +		cmd[0] |= CMDQ_SYNC_0_CS_SEV;
-
-We can not always set SIG_SEV, actually it should base upon SMMU_IDR0.SEV(smmu->features & ARM_SMMU_FEAT_SEV)
-
-> +		break;
-> +	default:
-> +		return -ENOENT;
-> +	}
-> +
-> +	return 0;
+> +	return  root_present(root) ? (root->lo & VTD_PAGE_MASK) : 0;
 > +}
-
+>  
+>  /*
+>   * low 64 bits:
+> @@ -211,6 +236,32 @@ static inline bool context_present(struct context_entry *context)
+>  {
+>  	return (context->lo & 1);
+>  }
 > +
-> +static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
-> +				       struct io_pgtable_cfg *pgtbl_cfg)
+> +static inline int context_fault_enable(struct context_entry *c)
 > +{
-> +	int ret;
-> +	u16 asid;
-> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
-> +	struct arm_smmu_s1_cfg *cfg = &smmu_domain->s1_cfg;
-> +
-> +	asid = arm_smmu_bitmap_alloc(smmu->asid_map, smmu->asid_bits);
-> +	if (IS_ERR_VALUE(asid))
-> +		return asid;
-> +
-> +	cfg->cdptr = dma_zalloc_coherent(smmu->dev, CTXDESC_CD_DWORDS << 3,
-> +					 &cfg->cdptr_dma, GFP_KERNEL);
-
-Why use dma_zalloc_coherent? iova is coverted from PA by calling phys_to_dma. I afraid
-PA and iova maybe not equal. In fact, the mapping between iova and PA is rely on SMMU
-driver itself. Why not use virt_to_phys to get PA, SMMU hardware actually require PA.
-
-> +	if (!cfg->cdptr) {
-> +		dev_warn(smmu->dev, "failed to allocate context descriptor\n");
-> +		goto out_free_asid;
-> +	}
-> +
-> +	cfg->cd.asid	= asid;
-> +	cfg->cd.ttbr	= pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
-> +	cfg->cd.tcr	= pgtbl_cfg->arm_lpae_s1_cfg.tcr;
-> +	cfg->cd.mair	= pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
-> +	return 0;
-> +
-> +out_free_asid:
-> +	arm_smmu_bitmap_free(smmu->asid_map, asid);
-> +	return ret;
+> +	return((c->lo >> 1) & 0x1);
 > +}
 > +
-
-
-> +
-> +static int arm_smmu_add_device(struct device *dev)
+> +static inline int context_translation_type(struct context_entry *c)
 > +{
-> +	int i, ret;
-> +	u32 sid, *sids;
-> +	struct pci_dev *pdev;
-> +	struct iommu_group *group;
-> +	struct arm_smmu_group *smmu_group;
-> +
-> +	/* We only support PCI, for now */
-> +	if (!dev_is_pci(dev))
-> +		return -ENODEV;
-> +
-> +	pdev = to_pci_dev(dev);
-> +	group = iommu_group_get_for_dev(dev);
-> +	if (IS_ERR(group))
-> +		return PTR_ERR(group);
-> +
-> +	smmu_group = iommu_group_get_iommudata(group);
-> +	if (!smmu_group) {
-> +		struct arm_smmu_device *smmu = arm_smmu_get_for_pci_dev(pdev);
-> +		if (!smmu) {
-> +			ret = -ENOENT;
-> +			goto out_put_group;
-> +		}
-> +
-> +		smmu_group = kzalloc(sizeof(*smmu_group), GFP_KERNEL);
-> +		if (!smmu_group) {
-> +			ret = -ENOMEM;
-> +			goto out_put_group;
-> +		}
-> +
-> +		smmu_group->ste.valid	= true;
-> +		smmu_group->smmu	= smmu;
-> +		iommu_group_set_iommudata(group, smmu_group,
-> +					  __arm_smmu_release_pci_iommudata);
-> +	}
-> +
-> +	/* Assume SID == RID until firmware tells us otherwise */
-> +	pci_for_each_dma_alias(pdev, __arm_smmu_get_pci_sid, &sid);
-> +	for (i = 0; i < smmu_group->num_sids; ++i) {
-> +		/* If we already know about this SID, then we're done */
-> +		if (smmu_group->sids[i] == sid)
-> +			return 0;
-> +	}
-> +
-> +	/* Check the SID is in range of the SMMU and our stream table */
-> +	if (!arm_smmu_sid_in_range(smmu_group->smmu, sid)) {
-> +		ret = -ERANGE;
-> +		goto out_put_group;
-> +	}
-> +
-> +	/* Resize the SID array for the group */
-> +	smmu_group->num_sids++;
-> +	sids = krealloc(smmu_group->sids, smmu_group->num_sids * sizeof(*sids),
-> +			GFP_KERNEL);
-> +	if (!sids) {
-> +		smmu_group->num_sids--;
-> +		ret = -ENOMEM;
-> +		goto out_put_group;
-> +	}
-> +
-> +	/* Add the new SID */
-> +	sids[smmu_group->num_sids - 1] = sid;
-> +	smmu_group->sids = sids;
-> +	return 0;
-> +
-> +out_put_group:
-> +	iommu_group_put(group);
-> +	return ret;
-> +}
-
-> +static int arm_smmu_alloc_l2_strtab(struct arm_smmu_device *smmu)
-> +{
-> +	int ret;
-> +	unsigned int i;
-> +	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
-> +	size_t size = sizeof(*cfg->l1_desc) * cfg->num_l1_descs;
-> +	void *strtab = smmu->strtab_cfg.strtab;
-> +
-> +	cfg->l1_desc = devm_kzalloc(smmu->dev, size, GFP_KERNEL);
-> +	if (!cfg->l1_desc) {
-> +		dev_err(smmu->dev, "failed to allocate l1 stream table desc\n");
-> +		return -ENOMEM;
-> +	}
-> +
-> +	size = 1 << (STRTAB_SPLIT + ilog2(STRTAB_STE_DWORDS) + 3);
-> +	for (i = 0; i < cfg->num_l1_descs; ++i) {
-> +		struct arm_smmu_strtab_l1_desc *desc = &cfg->l1_desc[i];
-> +
-> +		desc->span = STRTAB_SPLIT + 1;
-> +		desc->l2ptr = dma_zalloc_coherent(smmu->dev, size,
-> +						  &desc->l2ptr_dma, GFP_KERNEL);
-
-No, no, please don't allocate all Lv2 table memory, we should dynamic allocation when needed.
-Otherwise we can not save memory relative to one level table. And cfg->l1_desc seems not necessary.
-Before create mapping for a specified StreamID, we read corresponding Lv1 table entry, if L2Ptr is NULL,
-then we build Lv2 table. Otherwise, means this Lv2 table have already been built, because a Lv2 table is
-shared by a group of StreamIDs.
-
-> +		if (!desc->l2ptr) {
-> +			dev_err(smmu->dev,
-> +				"failed to allocate l2 stream table %u\n", i);
-> +			ret = -ENOMEM;
-> +			goto out_free_l2;
-> +		}
-> +
-> +		arm_smmu_init_bypass_stes(desc->l2ptr, 1 << STRTAB_SPLIT);
-> +		arm_smmu_write_strtab_l1_desc(strtab, desc);
-> +		strtab += STRTAB_STE_DWORDS;
-> +	}
-> +
-> +	return 0;
-> +
-> +out_free_l2:
-> +	arm_smmu_free_l2_strtab(smmu);
-> +	return ret;
+> +	return((c->lo >> 2) & 0x3);
 > +}
 > +
-> +static int arm_smmu_init_strtab(struct arm_smmu_device *smmu)
+> +static inline u64 context_address_root(struct context_entry *c)
 > +{
-> +	void *strtab;
-> +	u64 reg;
-> +	u32 size;
-> +	int ret = 0;
-> +
-> +	strtab = dma_zalloc_coherent(smmu->dev, 1 << STRTAB_L1_SZ_SHIFT,
-> +				     &smmu->strtab_cfg.strtab_dma, GFP_KERNEL);
-
-As above, when Lv2 tables are dynamic allocation, we can create Lv1 table base on SMMU_IDR1.SIDSIZE
-and support non-pic devices. Oh, if SIDSIZE is too large, like 32. Maybe we should use 64K size Lv2 table.
-But we can only use PAGE_SIZE first, for lazy.
-
-> +	if (!strtab) {
-> +		dev_err(smmu->dev, "failed to allocate l1 stream table\n");
-> +		return -ENOMEM;
-> +	}
-> +	smmu->strtab_cfg.strtab = strtab;
-> +
-> +	reg  = smmu->strtab_cfg.strtab_dma &
-> +	       STRTAB_BASE_ADDR_MASK << STRTAB_BASE_ADDR_SHIFT;
-> +	reg |= STRTAB_BASE_RA;
-> +	smmu->strtab_cfg.strtab_base = reg;
-> +
-> +	if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB) {
-> +		size = STRTAB_L1_SZ_SHIFT - (ilog2(STRTAB_L1_DESC_DWORDS) + 3);
-> +		smmu->strtab_cfg.num_l1_descs = 1 << size;
-> +		size += STRTAB_SPLIT;
-> +		reg = STRTAB_BASE_CFG_FMT_2LVL;
-> +
-> +		ret = arm_smmu_alloc_l2_strtab(smmu);
-> +		if (ret)
-> +			goto out_free_l1;
-> +	} else {
-> +		size = STRTAB_L1_SZ_SHIFT - (ilog2(STRTAB_STE_DWORDS) + 3);
-> +		smmu->strtab_cfg.num_l1_descs = 0;
-> +		reg = STRTAB_BASE_CFG_FMT_LINEAR;
-> +		arm_smmu_init_bypass_stes(strtab, 1 << size);
-> +	}
-> +
-> +	if (size < smmu->sid_bits)
-> +		dev_warn(smmu->dev, "%s strtab only covers %u/%u bits of SID\n",
-> +			 smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB ?
-> +			 "2-level" : "linear",
-> +			 size, smmu->sid_bits);
-> +
-> +	reg |= (size & STRTAB_BASE_CFG_LOG2SIZE_MASK)
-> +		<< STRTAB_BASE_CFG_LOG2SIZE_SHIFT;
-> +	reg |= (STRTAB_SPLIT & STRTAB_BASE_CFG_SPLIT_MASK)
-> +		<< STRTAB_BASE_CFG_SPLIT_SHIFT;
-> +	smmu->strtab_cfg.strtab_base_cfg = reg;
-> +
-> +	/* Allocate the first VMID for stage-2 bypass STEs */
-> +	set_bit(0, smmu->vmid_map);
-> +	return 0;
-> +
-> +out_free_l1:
-> +	dma_free_coherent(smmu->dev, 1 << STRTAB_L1_SZ_SHIFT, strtab,
-> +			  smmu->strtab_cfg.strtab_dma);
-> +	return ret;
+> +	return((c->lo >> VTD_PAGE_SHIFT));
 > +}
 > +
-> +static void arm_smmu_free_strtab(struct arm_smmu_device *smmu)
+> +static inline int context_address_width(struct context_entry *c)
 > +{
-> +	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
-> +
-> +	arm_smmu_free_l2_strtab(smmu);
-> +	dma_free_coherent(smmu->dev, 1 << STRTAB_L1_SZ_SHIFT, cfg->strtab,
-> +			  cfg->strtab_dma);
+> +	return((c->hi >> 0) & 0x7);
 > +}
 > +
-
-> +
-> +static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
+> +static inline int context_domain_id(struct context_entry *c)
 > +{
-> +	int ret;
-> +	u32 reg, enables;
-> +	struct arm_smmu_cmdq_ent cmd;
-> +
-> +	/* Clear CR0 and sync (disables SMMU and queue processing) */
-> +	reg = readl_relaxed(smmu->base + ARM_SMMU_CR0);
-> +	if (reg & CR0_SMMUEN)
-> +		dev_warn(smmu->dev, "SMMU currently enabled! Resetting...\n");
-> +
-> +	ret = arm_smmu_device_disable(smmu);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* CR1 (table and queue memory attributes) */
-> +	reg = (CR1_SH_ISH << CR1_TABLE_SH_SHIFT) |
-> +	      (CR1_CACHE_WB << CR1_TABLE_OC_SHIFT) |
-> +	      (CR1_CACHE_WB << CR1_TABLE_IC_SHIFT) |
-> +	      (CR1_SH_ISH << CR1_QUEUE_SH_SHIFT) |
-> +	      (CR1_CACHE_WB << CR1_QUEUE_OC_SHIFT) |
-> +	      (CR1_CACHE_WB << CR1_QUEUE_IC_SHIFT);
-> +	writel_relaxed(reg, smmu->base + ARM_SMMU_CR1);
-> +
-> +	/* CR2 (random crap) */
-> +	reg = CR2_PTM | CR2_RECINVMID | CR2_E2H;
-
-Do we need to explicitly set CR2_E2H? Linux only run at EL1.
-
-> +	writel_relaxed(reg, smmu->base + ARM_SMMU_CR2);
-> +
-> +	/* Stream table */
-> +	writeq_relaxed(smmu->strtab_cfg.strtab_base,
-> +		       smmu->base + ARM_SMMU_STRTAB_BASE);
-> +	writel_relaxed(smmu->strtab_cfg.strtab_base_cfg,
-> +		       smmu->base + ARM_SMMU_STRTAB_BASE_CFG);
-> +
-> +	/* Command queue */
-> +	writeq_relaxed(smmu->cmdq.q.q_base, smmu->base + ARM_SMMU_CMDQ_BASE);
-> +	writel_relaxed(smmu->cmdq.q.prod, smmu->base + ARM_SMMU_CMDQ_PROD);
-> +	writel_relaxed(smmu->cmdq.q.cons, smmu->base + ARM_SMMU_CMDQ_CONS);
-> +
-> +	enables = CR0_CMDQEN;
-> +	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-> +				      ARM_SMMU_CR0ACK);
-> +	if (ret) {
-> +		dev_err(smmu->dev, "failed to enable command queue\n");
-> +		return ret;
-> +	}
-> +
-> +	/* Invalidate any cached configuration */
-> +	cmd.opcode = CMDQ_OP_CFGI_ALL;
-> +	arm_smmu_cmdq_issue_cmd(smmu, &cmd);
-> +	cmd.opcode = CMDQ_OP_CMD_SYNC;
-> +	arm_smmu_cmdq_issue_cmd(smmu, &cmd);
-> +
-> +	/* Invalidate any stale TLB entries */
-> +	cmd.opcode = CMDQ_OP_TLBI_EL2_ALL;
-
-Do we need to execute CMDQ_OP_TLBI_EL2_ALL? Linux only run at EL1. It at least rely
-on SMMU_IDR0.Hyp
-
-
-> +	arm_smmu_cmdq_issue_cmd(smmu, &cmd);
-> +	cmd.opcode = CMDQ_OP_TLBI_NSNH_ALL;
-> +	arm_smmu_cmdq_issue_cmd(smmu, &cmd);
-> +	cmd.opcode = CMDQ_OP_CMD_SYNC;
-> +	arm_smmu_cmdq_issue_cmd(smmu, &cmd);
-> +
-> +	/* Event queue */
-> +	writeq_relaxed(smmu->evtq.q.q_base, smmu->base + ARM_SMMU_EVTQ_BASE);
-> +	writel_relaxed(smmu->evtq.q.prod, smmu->base + ARM_SMMU_EVTQ_PROD);
-> +	writel_relaxed(smmu->evtq.q.cons, smmu->base + ARM_SMMU_EVTQ_CONS);
-> +
-> +	enables |= CR0_EVTQEN;
-> +	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-> +				      ARM_SMMU_CR0ACK);
-> +	if (ret) {
-> +		dev_err(smmu->dev, "failed to enable event queue\n");
-> +		return ret;
-> +	}
-> +
-> +	/* PRI queue */
-> +	if (smmu->features & ARM_SMMU_FEAT_PRI) {
-> +		writeq_relaxed(smmu->priq.q.q_base,
-> +			       smmu->base + ARM_SMMU_PRIQ_BASE);
-> +		writel_relaxed(smmu->priq.q.prod,
-> +			       smmu->base + ARM_SMMU_PRIQ_PROD);
-> +		writel_relaxed(smmu->priq.q.cons,
-> +			       smmu->base + ARM_SMMU_PRIQ_CONS);
-> +
-> +		enables |= CR0_PRIQEN;
-> +		ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-> +					      ARM_SMMU_CR0ACK);
-> +		if (ret) {
-> +			dev_err(smmu->dev, "failed to enable PRI queue\n");
-> +			return ret;
-> +		}
-> +	}
-> +
-> +	ret = arm_smmu_setup_irqs(smmu);
-> +	if (ret) {
-> +		dev_err(smmu->dev, "failed to setup irqs\n");
-> +		return ret;
-> +	}
-> +
-> +	/* Enable the SMMU interface */
-> +	enables |= CR0_SMMUEN;
-> +	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-> +				      ARM_SMMU_CR0ACK);
-> +	if (ret) {
-> +		dev_err(smmu->dev, "failed to enable SMMU interface\n");
-> +		return ret;
-> +	}
-> +
-> +	return 0;
+> +	return((c->hi >> 8) & 0xffff);
 > +}
 > +
+>  static inline void context_set_present(struct context_entry *context)
+>  {
+>  	context->lo |= 1;
+> @@ -296,6 +347,27 @@ static inline int first_pte_in_page(struct dma_pte *pte)
+>  	return !((unsigned long)pte & ~VTD_PAGE_MASK);
+>  }
+>  
+> +
+> +/*
+> + * Fix Crashdump failure caused by leftover DMA through a hardware IOMMU
+> + *
+> + * Fixes the crashdump kernel to deal with an active iommu and legacy
+> + * DMA from the (old) panicked kernel in a manner similar to how legacy
+> + * DMA is handled when no hardware iommu was in use by the old kernel --
+> + * allow the legacy DMA to continue into its current buffers.
+> + *
+> + * In the crashdump kernel, this code:
+> + * 1. skips disabling the IOMMU's translating.
+> + * 2. Do not re-enable IOMMU's translating.
+> + * 3. In kdump kernel, use the old root entry table.
+> + * 4. Allocate pages for new context entry, copy data from old context entries
+> + *    in the old kernel to the new ones.
+> + *
+> + * In other kinds of kernel, for example, a kernel started by kexec,
+> + * do the same thing as crashdump kernel.
+> + */
+> +
+> +
+
+Above comments should come along with the code changes instead of putting it
+in this patch.
+
+BTW, there's one more blank line at the end..
+
+>  /*
+>   * This domain is a statically identity mapping domain.
+>   *	1. This domain creats a static 1:1 mapping to all usable memory.
+> -- 
+> 2.0.0-rc0
+> 
