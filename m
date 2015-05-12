@@ -1,155 +1,364 @@
-From: Javier Martinez Canillas <javier@dowhile0.org>
-Subject: Re: [PATCH v6 00/25] Exynos SYSMMU (IOMMU) integration with DT and
- DMA-mapping subsystem
-Date: Tue, 12 May 2015 17:35:53 +0200
-Message-ID: <CABxcv==0gbM_veanjHjtUgwo9hVuhLji5REi7nQfVTP8p-xAWg@mail.gmail.com>
-References: <1430727380-10912-1-git-send-email-m.szyprowski@samsung.com>
-	<CABxcv=mpCQKyuJOFsUgMdhD50yYdH+WwnEbYUNXByErMHpUuYA@mail.gmail.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 2/3] iommu/arm-smmu: Add initial driver support for ARM
+	SMMUv3 devices
+Date: Tue, 12 May 2015 17:55:00 +0100
+Message-ID: <20150512165500.GE2062@arm.com>
+References: <1431108046-9675-1-git-send-email-will.deacon@arm.com>
+	<1431108046-9675-3-git-send-email-will.deacon@arm.com>
+	<5551AE56.6050906@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <CABxcv=mpCQKyuJOFsUgMdhD50yYdH+WwnEbYUNXByErMHpUuYA@mail.gmail.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <5551AE56.6050906-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: leizhen <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: "huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Sanil kumar <sanil.kumar-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Gaojianbo <gaojianbo-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Dingtianhong <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 11, 2015 at 6:00 PM, Javier Martinez Canillas
-<javier@dowhile0.org> wrote:
-> Hello Marek,
->
-> On Mon, May 4, 2015 at 10:15 AM, Marek Szyprowski
-> <m.szyprowski@samsung.com> wrote:
->> Hello Everyone,
->>
->> This is yet another attempt to get Exynos SYSMMU driver with integrated
->> with IOMMU & DMA-mapping subsystems. The main change from previous
->> version is addition of the patches to define iommu-mapping, which need
->> to be created during system boot to avoid IOMMU fault by devices, which
->> has been left enabled by bootloader (i.e. framebuffer displaying slash
->> screen).
->>
->> Patches has been also rebased onto v4.1-rc2 with 'arm: dma-mapping: fix
->> off-by-one check in arm_setup_iommu_dma_ops' patch applied (see commit
->> 1424532b2163bf1580f4b1091a5801e12310fac5 on fixes branch in
->> git://ftp.arm.linux.org.uk/pub/linux/arm/kernel/git-cur/linux-arm.git,
->> more information:
->> http://www.spinics.net/lists/arm-kernel/msg414722.html).
->>
->> All patches are also available in the following git repository:
->> https://git.linaro.org/people/marek.szyprowski/linux-srpol.git
->> branch v4.1-exynos-iommu.
->>
->
-> Thanks for the new series, this time I didn't get a system hang when I
-> enabled both CONFIG_DRM_EXYNOS_FIMD and CONFIG_DRM_EXYNOS_DP on my
-> Exynos5420 Peach Pit Chromebook.
->
-> The system finished booting and I have both a console on the HDMI and
-> eDP/LVDS displays. But if I try to start X or weston, I again have a
-> completele system hang with no output on the serial console. This
-> works correctly without your IOMMU series.
->
-> And again disabling CONFIG_DRM_EXYNOS_DP or CONFIG_DRM_EXYNOS_FIMD
-> avoids the system to hang. If I only have CONFIG_DRM_EXYNOS_HDMI
-> enabled, then I can start X with out issues and is displayed correctly
-> in the HDMI output.
->
-> So it seems your workaround for the boot-loader leaving the FIMD dma
-> engine enabled is not enough? I'm not a graphics person so I can think
-> of the top of my head what could trigger the system hang when X or
-> weston are executed so I wondered if you have any ideas.
->
+Hi Leizhen,
 
-I looked a a bit more on this issue today and found that the system
-hang when dma_alloc_attrs() is called from lowlevel_buffer_allocate()
-in drivers/gpu/drm/exynos/exynos_drm_buf.c [0].
+Thanks for the review!
 
-The call chain is:
+On Tue, May 12, 2015 at 08:40:06AM +0100, leizhen wrote:
+> 
+> > +
+> > +static int queue_poll_cons(struct arm_smmu_queue *q, u32 until, bool wfe)
+> > +{
+> > +     ktime_t timeout = ktime_add_us(ktime_get(), ARM_SMMU_POLL_TIMEOUT_US);
+> > +
+> > +     while (queue_sync_cons(q), __queue_cons_before(q, until)) {
+> > +             if (ktime_compare(ktime_get(), timeout) > 0)
+> 
+> Is it good to limit hardware behavior? May be wait for ever will be
+> better. If SMMU can not consume queue items under normal condition, the
+> SMMU hardware is broken, will lead software system to be crashed later.
 
-exynos_drm_gem_create_ioctl() -> exynos_drm_gem_create() ->
-exynos_drm_alloc_buf() -> lowlevel_buffer_allocate() ->
-dma_alloc_attrs().
+I disagree. Having a broken SMMU lock-up the entire kernel is considerably
+worse than having e.g. a DMA master get stuck. If this timeout expires,
+then we'll print a message and continue without waiting any longer for
+a CMD_SYNC completion (see arm_smmu_cmdq_issue_cmd).
 
-An interesting data point is that the allocation succeeds when a GEM
-buffer is created for fbdev but it causes a system hang when is
-created from the DRM ioctl API. For fbdev the call chain is:
+> > +                     return -ETIMEDOUT;
+> > +
+> > +             if (wfe) {
+> > +                     wfe();
+> > +             } else {
+> > +                     cpu_relax();
+> > +                     udelay(1);
+> > +             }
+> > +     }
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static void queue_write(__le64 *dst, u64 *src, size_t n_dwords)
+> > +{
+> > +     int i;
+> > +
+> > +     for (i = 0; i < n_dwords; ++i)
+> > +             *dst++ = cpu_to_le64(*src++);
+> > +}
+> > +
+> > +static int queue_insert_raw(struct arm_smmu_queue *q, u64 *ent)
+> > +{
+> > +     if (queue_full(q))
+> > +             return -ENOSPC;
+> > +
+> > +     queue_write(Q_ENT(q, q->prod), ent, q->ent_dwords);
+> 
+> A dmb or dsb maybe needed. We must insure all data written are completed,
+> then notify hardware to consume.
 
-exynos_drm_fbdev_init() -> exynos_drm_fbdev_init() ->
-exynos_drm_fbdev_create() -> exynos_drm_gem_create() ->
-exynos_drm_alloc_buf() -> lowlevel_buffer_allocated() ->
-dma_alloc_attrs().
+The dsb is performed when we update the producer pointer in queue_inc_prod
+(since we use writel as opposed to writel_relaxed).
 
-Although for fbdev, the EXYNOS_BO_CONTIG flag is passed to
-exynos_drm_gem_create() so the DMA_ATTR_FORCE_CONTIGUOUS attribute is
-set before calling  dma_alloc_attrs(). So I don't know if is only
-working because the allocated memory is physically contiguous so the
-IOMMU mapping is less of an issue here?
+> > +     queue_inc_prod(q);
+> > +     return 0;
+> > +}
+> > +
+> > +
+> > +/* High-level queue accessors */
+> > +static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+> > +{
+> > +     memset(cmd, 0, CMDQ_ENT_DWORDS << 3);
+> > +     cmd[0] |= (ent->opcode & CMDQ_0_OP_MASK) << CMDQ_0_OP_SHIFT;
+> > +
+> > +     switch (ent->opcode) {
+> > +     case CMDQ_OP_TLBI_EL2_ALL:
+> 
+> > +     case CMDQ_OP_CMD_SYNC:
+> > +             cmd[0] |= CMDQ_SYNC_0_CS_SEV;
+> 
+> We can not always set SIG_SEV, actually it should base upon
+> SMMU_IDR0.SEV(smmu->features & ARM_SMMU_FEAT_SEV)
 
-I also don't know if is relevant but I noticed that both for HDMI and
-DP, the address of the allocated a DMA buffer is always 0x20000000.
-Which is the start of the iommu-reserved-mapping region for the
-exynos5420 peach pit.
+It doesn't matter for the CMD_SYNC command (which treats SIG_SEV as
+SIG_NONE in this case). What actually matters is that we don't perform
+wfe() when the SMMU can't issue the event, but that's already taken care
+of in arm_smmu_cmdq_issue_cmd.
 
-While the address of the allocated DMA buffer for the GEM buffer
-allocated with EXYNOS_GEM_CREATE is always != 0x20000000 (i.e
-0x2184c000).
+> > +             break;
+> > +     default:
+> > +             return -ENOENT;
+> > +     }
+> > +
+> > +     return 0;
+> > +}
+> 
+> > +
+> > +static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
+> > +                                    struct io_pgtable_cfg *pgtbl_cfg)
+> > +{
+> > +     int ret;
+> > +     u16 asid;
+> > +     struct arm_smmu_device *smmu = smmu_domain->smmu;
+> > +     struct arm_smmu_s1_cfg *cfg = &smmu_domain->s1_cfg;
+> > +
+> > +     asid = arm_smmu_bitmap_alloc(smmu->asid_map, smmu->asid_bits);
+> > +     if (IS_ERR_VALUE(asid))
+> > +             return asid;
+> > +
+> > +     cfg->cdptr = dma_zalloc_coherent(smmu->dev, CTXDESC_CD_DWORDS << 3,
+> > +                                      &cfg->cdptr_dma, GFP_KERNEL);
+> 
+> Why use dma_zalloc_coherent? iova is coverted from PA by calling
+> phys_to_dma. I afraid PA and iova maybe not equal. In fact, the mapping
+> between iova and PA is rely on SMMU driver itself. Why not use
+> virt_to_phys to get PA, SMMU hardware actually require PA.
 
-So in summary, Exynos HDMI DRM can allocate GEM buffers correctly
-fbdev and DRM while EXYNOS DRM DP/FIMD can only allocate a GEM buffer
-for fbdev, trying to allocate with the EXYNOS_GEM_CREATE ioctl hangs
-the system. Both fbdev and DRM works correctly with Exynos IOMMU
-disabled.
+The SMMU structure walker is not allowed to be chained into another SMMU,
+so the physical and DMA addresses are equal here. That said, the walker
+does not need to be cache coherent, so I need to use the coherent DMA
+allocator to get memory of the correct attributes. I also need the table
+to be naturally aligned.
 
-I included some DRM debug log [2] (drm.debug=0xff) for DP/FIMD fbdev
-and DRM GEM buffer creation.
+An alternative would be something like __get_free_pages with homebrew
+cache maintenance for non-coherent SMMUs, but I don't want to re-invent
+the DMA mapping code in the driver (we already have a similar mess with
+the page tables, which I'd like to sort out).
 
-Thanks a lot and best regards,
-Javier
+> > +static int arm_smmu_alloc_l2_strtab(struct arm_smmu_device *smmu)
+> > +{
+> > +     int ret;
+> > +     unsigned int i;
+> > +     struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+> > +     size_t size = sizeof(*cfg->l1_desc) * cfg->num_l1_descs;
+> > +     void *strtab = smmu->strtab_cfg.strtab;
+> > +
+> > +     cfg->l1_desc = devm_kzalloc(smmu->dev, size, GFP_KERNEL);
+> > +     if (!cfg->l1_desc) {
+> > +             dev_err(smmu->dev, "failed to allocate l1 stream table desc\n");
+> > +             return -ENOMEM;
+> > +     }
+> > +
+> > +     size = 1 << (STRTAB_SPLIT + ilog2(STRTAB_STE_DWORDS) + 3);
+> > +     for (i = 0; i < cfg->num_l1_descs; ++i) {
+> > +             struct arm_smmu_strtab_l1_desc *desc = &cfg->l1_desc[i];
+> > +
+> > +             desc->span = STRTAB_SPLIT + 1;
+> > +             desc->l2ptr = dma_zalloc_coherent(smmu->dev, size,
+> > +                                               &desc->l2ptr_dma, GFP_KERNEL);
+> 
+> No, no, please don't allocate all Lv2 table memory, we should dynamic
+> allocation when needed.  Otherwise we can not save memory relative to one
+> level table. And cfg->l1_desc seems not necessary.  Before create mapping
+> for a specified StreamID, we read corresponding Lv1 table entry, if L2Ptr
+> is NULL, then we build Lv2 table. Otherwise, means this Lv2 table have
+> already been built, because a Lv2 table is shared by a group of StreamIDs.
 
-[0]: http://lxr.free-electrons.com/source/drivers/gpu/drm/exynos/exynos_drm_buf.c#L84
-[1]: http://lxr.free-electrons.com/source/drivers/gpu/drm/exynos/exynos_drm_fbdev.c#L153
-[2]:
+The purpose of the two level approach isn't to save memory; it's to remove
+the need for a single (large) contiguous block. Furthermore, we need all
+master devices in the system to come up in a state where their transactions
+bypass the SMMU (i.e. we don't require them to use the SMMU for
+translation). Achieving this necessitates a fully-populated stream-table
+before any DMA occurs.
 
-DP fbdev:
+I suppose we could look into populating it based on the ->add_device
+callback, which currently does have some range checks
+(arm_smmu_sid_in_range). Is that what you had in mind?
 
-[    4.181241] [drm:drm_enable_connectors] connector 31 enabled? yes
-[    4.181248] [drm:drm_target_preferred] looking for cmdline mode on
-connector 25
-[    4.181254] [drm:drm_target_preferred] looking for preferred mode
-on connector 25 0
-[    4.181259] [drm:drm_target_preferred] found mode 1366x768
-[    4.181265] [drm:drm_target_preferred] looking for cmdline mode on
-connector 31
-[    4.181270] [drm:drm_target_preferred] looking for preferred mode
-on connector 31 0
-[    4.181276] [drm:drm_target_preferred] found mode 1920x1080
-[    4.181281] [drm:drm_setup_crtcs] picking CRTCs for 4096x4096 config
-[    4.181290] [drm:drm_setup_crtcs] desired mode 1366x768 set on crtc 23 (0,0)
-[    4.181298] [drm:drm_setup_crtcs] desired mode 1920x1080 set on crtc 29 (0,0)
-[    4.181307] [drm:exynos_drm_fbdev_create] surface width(1920),
-height(1080) and bpp(32
-[    4.181314] [drm:exynos_drm_init_buf] desired size = 0x7e9000
-[    4.181327] [drm:exynos_drm_gem_init] created file object = 0xedc68300
-[    4.187406] [drm:lowlevel_buffer_allocate] ccu
-dma_addr(0x20000000), size(0x7e9000)
-[    4.187418] [drm:exynos_drm_fb_buffer] dma_addr = 0x20000000
+> > +             if (!desc->l2ptr) {
+> > +                     dev_err(smmu->dev,
+> > +                             "failed to allocate l2 stream table %u\n", i);
+> > +                     ret = -ENOMEM;
+> > +                     goto out_free_l2;
+> > +             }
+> > +
+> > +             arm_smmu_init_bypass_stes(desc->l2ptr, 1 << STRTAB_SPLIT);
+> > +             arm_smmu_write_strtab_l1_desc(strtab, desc);
+> > +             strtab += STRTAB_STE_DWORDS;
+> > +     }
+> > +
+> > +     return 0;
+> > +
+> > +out_free_l2:
+> > +     arm_smmu_free_l2_strtab(smmu);
+> > +     return ret;
+> > +}
+> > +
+> > +static int arm_smmu_init_strtab(struct arm_smmu_device *smmu)
+> > +{
+> > +     void *strtab;
+> > +     u64 reg;
+> > +     u32 size;
+> > +     int ret = 0;
+> > +
+> > +     strtab = dma_zalloc_coherent(smmu->dev, 1 << STRTAB_L1_SZ_SHIFT,
+> > +                                  &smmu->strtab_cfg.strtab_dma, GFP_KERNEL);
+> 
+> As above, when Lv2 tables are dynamic allocation, we can create Lv1 table
+> base on SMMU_IDR1.SIDSIZE and support non-pic devices. Oh, if SIDSIZE is
+> too large, like 32. Maybe we should use 64K size Lv2 table.  But we can
+> only use PAGE_SIZE first, for lazy.
 
-DP DRM:
+Right now, the l2 tables are 4k and l1 table is 8k. That's (a) nice for
+allocation on a system with 4k pages and (b) enough to cover a PCI host
+controller. The problem with supporting 32-bit SIDs is that the l1 will
+become a sizeable contiguous chunk which we'll have to allocate
+regardless.
 
-[  206.210769] [drm:drm_mode_getconnector] [CONNECTOR:31:?]
-[  206.216074] [drm:drm_ioctl] pid=3458, dev=0xe200, auth=1,
-DRM_IOCTL_MODE_GETPROPERTY
-[  206.223798] [drm:drm_ioctl] pid=3458, dev=0xe200, auth=1,
-DRM_IOCTL_MODE_GETPROPERTY
-[  206.231538] [drm:drm_ioctl] pid=3458, dev=0xe200, auth=1,
-DRM_IOCTL_MODE_GETPROPBLOB
-[  206.239240] [drm:drm_ioctl] pid=3458, dev=0xe200, auth=1,
-DRM_IOCTL_MODE_GETPROPBLOB
-[  206.246965] [drm:drm_ioctl] pid=3458, dev=0xe200, auth=1,
-DRM_IOCTL_MODE_GETPROPERTY
-[  206.254680] [drm:drm_ioctl] pid=3458, dev=0xe200, auth=1,
-DRM_IOCTL_MODE_GETPROPERTY
-[  206.275736] [drm:drm_ioctl] pid=3458, dev=0xe200, auth=1, EXYNOS_GEM_CREATE
-[  206.281287] [drm:exynos_drm_init_buf] desired size = 0x408000
-[  206.286989] [drm:exynos_drm_gem_init] created file object = 0xed0d6400
+So, if we keep the l2 size at 4k for the moment, how big would you like
+the l1? For a 32-bit numberspace, it would be 4MB, which I don't think is
+practical.
+
+> > +     if (!strtab) {
+> > +             dev_err(smmu->dev, "failed to allocate l1 stream table\n");
+> > +             return -ENOMEM;
+> > +     }
+> > +     smmu->strtab_cfg.strtab = strtab;
+> > +
+> > +     reg  = smmu->strtab_cfg.strtab_dma &
+> > +            STRTAB_BASE_ADDR_MASK << STRTAB_BASE_ADDR_SHIFT;
+> > +     reg |= STRTAB_BASE_RA;
+> > +     smmu->strtab_cfg.strtab_base = reg;
+> > +
+> > +     if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB) {
+> > +             size = STRTAB_L1_SZ_SHIFT - (ilog2(STRTAB_L1_DESC_DWORDS) + 3);
+> > +             smmu->strtab_cfg.num_l1_descs = 1 << size;
+> > +             size += STRTAB_SPLIT;
+> > +             reg = STRTAB_BASE_CFG_FMT_2LVL;
+> > +
+> > +             ret = arm_smmu_alloc_l2_strtab(smmu);
+> > +             if (ret)
+> > +                     goto out_free_l1;
+> > +     } else {
+> > +             size = STRTAB_L1_SZ_SHIFT - (ilog2(STRTAB_STE_DWORDS) + 3);
+> > +             smmu->strtab_cfg.num_l1_descs = 0;
+> > +             reg = STRTAB_BASE_CFG_FMT_LINEAR;
+> > +             arm_smmu_init_bypass_stes(strtab, 1 << size);
+> > +     }
+> > +
+> > +     if (size < smmu->sid_bits)
+> > +             dev_warn(smmu->dev, "%s strtab only covers %u/%u bits of SID\n",
+> > +                      smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB ?
+> > +                      "2-level" : "linear",
+> > +                      size, smmu->sid_bits);
+> > +
+> > +     reg |= (size & STRTAB_BASE_CFG_LOG2SIZE_MASK)
+> > +             << STRTAB_BASE_CFG_LOG2SIZE_SHIFT;
+> > +     reg |= (STRTAB_SPLIT & STRTAB_BASE_CFG_SPLIT_MASK)
+> > +             << STRTAB_BASE_CFG_SPLIT_SHIFT;
+> > +     smmu->strtab_cfg.strtab_base_cfg = reg;
+> > +
+> > +     /* Allocate the first VMID for stage-2 bypass STEs */
+> > +     set_bit(0, smmu->vmid_map);
+> > +     return 0;
+> > +
+> > +out_free_l1:
+> > +     dma_free_coherent(smmu->dev, 1 << STRTAB_L1_SZ_SHIFT, strtab,
+> > +                       smmu->strtab_cfg.strtab_dma);
+> > +     return ret;
+> > +}
+> > +
+> > +static void arm_smmu_free_strtab(struct arm_smmu_device *smmu)
+> > +{
+> > +     struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+> > +
+> > +     arm_smmu_free_l2_strtab(smmu);
+> > +     dma_free_coherent(smmu->dev, 1 << STRTAB_L1_SZ_SHIFT, cfg->strtab,
+> > +                       cfg->strtab_dma);
+> > +}
+> > +
+> 
+> > +
+> > +static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
+> > +{
+> > +     int ret;
+> > +     u32 reg, enables;
+> > +     struct arm_smmu_cmdq_ent cmd;
+> > +
+> > +     /* Clear CR0 and sync (disables SMMU and queue processing) */
+> > +     reg = readl_relaxed(smmu->base + ARM_SMMU_CR0);
+> > +     if (reg & CR0_SMMUEN)
+> > +             dev_warn(smmu->dev, "SMMU currently enabled! Resetting...\n");
+> > +
+> > +     ret = arm_smmu_device_disable(smmu);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     /* CR1 (table and queue memory attributes) */
+> > +     reg = (CR1_SH_ISH << CR1_TABLE_SH_SHIFT) |
+> > +           (CR1_CACHE_WB << CR1_TABLE_OC_SHIFT) |
+> > +           (CR1_CACHE_WB << CR1_TABLE_IC_SHIFT) |
+> > +           (CR1_SH_ISH << CR1_QUEUE_SH_SHIFT) |
+> > +           (CR1_CACHE_WB << CR1_QUEUE_OC_SHIFT) |
+> > +           (CR1_CACHE_WB << CR1_QUEUE_IC_SHIFT);
+> > +     writel_relaxed(reg, smmu->base + ARM_SMMU_CR1);
+> > +
+> > +     /* CR2 (random crap) */
+> > +     reg = CR2_PTM | CR2_RECINVMID | CR2_E2H;
+> 
+> Do we need to explicitly set CR2_E2H? Linux only run at EL1.
+
+Setting E2H won't cause any harm and I'd expect Linux to run there in the
+future. If we ever decide to share CPU page tables with the SMMU, then we'll
+need this set to participate in DVM.
+
+> > +     writel_relaxed(reg, smmu->base + ARM_SMMU_CR2);
+> > +
+> > +     /* Stream table */
+> > +     writeq_relaxed(smmu->strtab_cfg.strtab_base,
+> > +                    smmu->base + ARM_SMMU_STRTAB_BASE);
+> > +     writel_relaxed(smmu->strtab_cfg.strtab_base_cfg,
+> > +                    smmu->base + ARM_SMMU_STRTAB_BASE_CFG);
+> > +
+> > +     /* Command queue */
+> > +     writeq_relaxed(smmu->cmdq.q.q_base, smmu->base + ARM_SMMU_CMDQ_BASE);
+> > +     writel_relaxed(smmu->cmdq.q.prod, smmu->base + ARM_SMMU_CMDQ_PROD);
+> > +     writel_relaxed(smmu->cmdq.q.cons, smmu->base + ARM_SMMU_CMDQ_CONS);
+> > +
+> > +     enables = CR0_CMDQEN;
+> > +     ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
+> > +                                   ARM_SMMU_CR0ACK);
+> > +     if (ret) {
+> > +             dev_err(smmu->dev, "failed to enable command queue\n");
+> > +             return ret;
+> > +     }
+> > +
+> > +     /* Invalidate any cached configuration */
+> > +     cmd.opcode = CMDQ_OP_CFGI_ALL;
+> > +     arm_smmu_cmdq_issue_cmd(smmu, &cmd);
+> > +     cmd.opcode = CMDQ_OP_CMD_SYNC;
+> > +     arm_smmu_cmdq_issue_cmd(smmu, &cmd);
+> > +
+> > +     /* Invalidate any stale TLB entries */
+> > +     cmd.opcode = CMDQ_OP_TLBI_EL2_ALL;
+> 
+> Do we need to execute CMDQ_OP_TLBI_EL2_ALL? Linux only run at EL1. It at
+> least rely on SMMU_IDR0.Hyp
+
+The SMMU isn't guaranteed to come up clean out of reset, so it's a good
+idea to perform this invalidation in case of junk in the TLB. Given that
+Linux owns the stage-2 translation, then this is the right place to do it.
+
+Will
