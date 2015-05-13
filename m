@@ -1,36 +1,59 @@
-From: Baoquan He <bhe@redhat.com>
-Subject: Re: [PATCH v11 04/10] iommu/vt-d: functions to copy data from old mem
-Date: Wed, 13 May 2015 17:00:35 +0800
-Message-ID: <20150513090035.GE3736@dhcp-128-28.nay.redhat.com>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v11 06/10] iommu/vt-d: datatypes and functions used for
+	kdump
+Date: Wed, 13 May 2015 17:10:59 +0800
+Message-ID: <20150513091059.GF3736@dhcp-128-28.nay.redhat.com>
 References: <1431337974-545-1-git-send-email-zhen-hual@hp.com>
- <1431337974-545-5-git-send-email-zhen-hual@hp.com>
+	<1431337974-545-7-git-send-email-zhen-hual@hp.com>
+	<20150513085609.GD3736@dhcp-128-28.nay.redhat.com>
+	<55531231.6040506@hp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1431337974-545-5-git-send-email-zhen-hual@hp.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: "Li, Zhen-Hua" <zhen-hual@hp.com>
-Cc: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, joro@8bytes.org, vgoyal@redhat.com, dyoung@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
+In-Reply-To: <55531231.6040506-VXdhtT5mjnY@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Cc: tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/11/15 at 05:52pm, Li, Zhen-Hua wrote:
-> Add some functions to copy the data from old kernel.
-> These functions are used to copy context tables and page tables.
+On 05/13/15 at 04:58pm, Li, ZhenHua wrote:
+> Hi Dave,
 > 
-> To avoid calling iounmap between spin_lock_irqsave and spin_unlock_irqrestore,
-> use a link here, store the pointers , and then use iounmap to free them in
-> another place.
+> iommu->root_entry_old_virt is used to store the mapped old rta.
+> iommu->root_entry_old_phys is used to store the physical address
+> stored in registers.
+> So we must not free/unmap iommu->root_entry_old_phys .
 
-Hi Zhenhua,
+Oh, yes. I was mistaken on this. Thanks for telling.
 
-I remember you mentioned iounmap will cause error inside
-spin_lock_irqsave. Do you know why it happened now? And could you also
-describe why avoid calling iounmap between
-spin_lock_irqsave/unlock_irqsave  is needed here and what's the status
-now? 
-
-I think other reviewer may want to know it too.
-
-Thanks
-Baoquan
+> 
+> Zhenhua
+> On 05/13/2015 04:56 PM, Baoquan He wrote:
+> >>+
+> >>+	iommu->root_entry_old_phys = q & VTD_PAGE_MASK;
+> >>+	if (!iommu->root_entry_old_phys) {
+> >>+		pr_err("Could not read old root entry address.");
+> >>+		return -1;
+> >>+	}
+> >>+
+> >
+> >I didn't find where you call iounmap to free mapping of
+> >iommu->root_entry_old_phys. Am I missing anything?
+> >
+> >>+	iommu->root_entry_old_virt = ioremap_cache(iommu->root_entry_old_phys,
+> >>+						VTD_PAGE_SIZE);
+> >>+	if (!iommu->root_entry_old_virt) {
+> >>+		pr_err("Could not map the old root entry.");
+> >>+		return -ENOMEM;
+> >>+	}
+> 
