@@ -1,62 +1,62 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [RFC PATCH] iommu: add ARM short descriptor page table allocator.
-Date: Wed, 13 May 2015 10:52:43 +0800
-Message-ID: <1431485563.4799.2.camel@mhfsdcap03>
-References: <1430206881-18294-1-git-send-email-yong.wu@mediatek.com>
- <CABuKBeKupM0zmWu6T3g5omH7PRo9Oxp85bfpQVhC1ur16_dzvg@mail.gmail.com>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Subject: Re: [PATCH v11 02/10] iommu/vt-d: Items required for kdump
+Date: Tue, 12 May 2015 23:31:44 -0700
+Message-ID: <5552EFD0.3020307@gmail.com>
+References: <1431337974-545-1-git-send-email-zhen-hual@hp.com> <1431337974-545-3-git-send-email-zhen-hual@hp.com> <20150512081723.GC4561@localhost.localdomain> <5552ACB9.5050309@hp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <CABuKBeKupM0zmWu6T3g5omH7PRo9Oxp85bfpQVhC1ur16_dzvg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
-List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: srv_heupstream <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <5552ACB9.5050309@hp.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: "Li, ZhenHua" <zhen-hual@hp.com>, Dave Young <dyoung@redhat.com>
+Cc: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, joro@8bytes.org, vgoyal@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2015-05-12 at 11:15 +0200, Matthias Brugger wrote:
-> 2015-04-28 9:41 GMT+02:00 Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>:
-> > This patch is for ARM Short Descriptor Format.It has 2-levels
-> > pagetable and the allocator supports 4K/64K/1M/16M.
-> >
-> > Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-[snip]
-> > +static phys_addr_t arm_short_iova_to_phys(struct io_pgtable_ops *ops,
-> > +                                         unsigned long iova)
-> > +{
-> > +       struct arm_short_io_pgtable *data = io_pgtable_short_ops_to_data(ops);
-> > +       arm_short_iopte *pte, *pgd = data->pgd;
-> > +       phys_addr_t pa = 0;
-> > +
-> > +       pgd += ARM_SHORT_PGD_IDX(iova);
-> > +
-> > +       if (ARM_SHORT_F_PGD_TYPE_IS_PAGE(*pgd)) {
-> > +               pte = arm_short_get_pte_in_pgd(*pgd, iova);
-> > +
-> > +               if (ARM_SHORT_F_PTE_TYPE_GET(*pte)
-> > +                   == ARM_SHORT_F_PTE_TYPE_LARGE) {
-> > +                       pa = (*pte) & ARM_SHORT_F_PTE_PA_LARGE_MSK;
-> > +                       pa |= iova & (~ARM_SHORT_F_PTE_PA_LARGE_MSK);
-> > +               } else if (ARM_SHORT_F_PTE_TYPE_GET(*pte)
-> > +                          == ARM_SHORT_F_PTE_TYPE_SMALL) {
-> 
-> Would make it easier to read:
-> u8 pte_type;
-> 
-> [...]
-> 
-> pte_type = ARM_SHORT_F_PTE_TYPE_GET(*pte)
-> if (pte_type == ARM_SHORT_F_PTE_TYPE_LARGE) {
-> [...]
-> } else if (pte_type == ARM_SHORT_F_PTE_TYPE_SMALL) {
-> [...]
-Hi Matthias,
-	Thanks for your review.I will fix this in next version.
+On 05/12/2015 06:45 PM, Li, ZhenHua wrote:
+> On 05/12/2015 04:17 PM, Dave Young wrote:
+>> On 05/11/15 at 05:52pm, Li, Zhen-Hua wrote:
+>>> Add context entry functions needed for kdump.
+>>> +/*
+>>> + * Fix Crashdump failure caused by leftover DMA through a hardware
+>>> IOMMU
+>>> + *
+>>> + * Fixes the crashdump kernel to deal with an active iommu and legacy
+>>> + * DMA from the (old) panicked kernel in a manner similar to how legacy
+>>> + * DMA is handled when no hardware iommu was in use by the old
+>>> kernel --
+>>> + * allow the legacy DMA to continue into its current buffers.
+>>> + *
+>>> + * In the crashdump kernel, this code:
+>>> + * 1. skips disabling the IOMMU's translating.
+>>> + * 2. Do not re-enable IOMMU's translating.
+>>> + * 3. In kdump kernel, use the old root entry table.
+>>> + * 4. Allocate pages for new context entry, copy data from old
+>>> context entries
+>>> + *    in the old kernel to the new ones.
+>>> + *
+>>> + * In other kinds of kernel, for example, a kernel started by kexec,
+>>> + * do the same thing as crashdump kernel.
+>>> + */
+>>> +
+>>> +
+>>
+>> Above comments should come along with the code changes instead of
+>> putting it
+>> in this patch.
+>>
+>> BTW, there's one more blank line at the end..
+> Code change is in 00/10, the cover letter.
+> And the blank does not matter, I checked the patch with
+> scripts/checkpatch.pl,  no warnings, no errors.
+
+I agree with Dave.  The comment by itself makes no sense.  You would be 
+better off moving this to patch 3 where you actually start to add code.
+
+You remove the double space in patch 5 of your set so it must of 
+triggered something.
+
+Neither of these are grounds for rejecting the patches, but it is 
+something you may want to clean up if you end up resubmitting.
+
+- Alex
