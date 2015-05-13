@@ -1,48 +1,36 @@
-From: "Li, ZhenHua" <zhen-hual@hp.com>
-Subject: Re: [PATCH v11 04/10] iommu/vt-d: functions to copy data from old
- mem
-Date: Wed, 13 May 2015 17:13:05 +0800
-Message-ID: <555315A1.5020402@hp.com>
-References: <1431337974-545-1-git-send-email-zhen-hual@hp.com> <1431337974-545-5-git-send-email-zhen-hual@hp.com> <20150513090035.GE3736@dhcp-128-28.nay.redhat.com>
+From: Baoquan He <bhe@redhat.com>
+Subject: Re: [PATCH v11 04/10] iommu/vt-d: functions to copy data from old mem
+Date: Wed, 13 May 2015 17:21:02 +0800
+Message-ID: <20150513092102.GG3736@dhcp-128-28.nay.redhat.com>
+References: <1431337974-545-1-git-send-email-zhen-hual@hp.com>
+ <1431337974-545-5-git-send-email-zhen-hual@hp.com>
+ <20150513090035.GE3736@dhcp-128-28.nay.redhat.com>
+ <555315A1.5020402@hp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20150513090035.GE3736@dhcp-128-28.nay.redhat.com>
+Content-Disposition: inline
+In-Reply-To: <555315A1.5020402@hp.com>
 Sender: linux-pci-owner@vger.kernel.org
-To: Baoquan He <bhe@redhat.com>
-Cc: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, joro@8bytes.org, vgoyal@redhat.com, dyoung@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com, "Li, ZhenHua" <zhen-hual@hp.com>
+To: "Li, ZhenHua" <zhen-hual@hp.com>
+Cc: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, joro@8bytes.org, vgoyal@redhat.com, dyoung@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Baoquan,
-I am using a list here to store all the mapped addresses, and unmap them 
-out of iounmap.
+On 05/13/15 at 05:13pm, Li, ZhenHua wrote:
+> Hi Baoquan,
+> I am using a list here to store all the mapped addresses, and unmap
+> them out of iounmap.
 
-About the reason, please check the old mails. I cannot remember the 
-detailed reasons.
+> 
+> About the reason, please check the old mails. I cannot remember the
+> detailed reasons.
+
+Yeah, I understand that the list is used to collect all mapped addresses
+and unmap them all after spin_unlock_irqsave. 
+
+that's why it's better to put the reason in patch log. Patch log is used
+to record this kind of explanation so that you needn't say it again and
+again. My personal opinion.
 
 Thanks
-Zhenhua
-
-On 05/13/2015 05:00 PM, Baoquan He wrote:
-> On 05/11/15 at 05:52pm, Li, Zhen-Hua wrote:
->> Add some functions to copy the data from old kernel.
->> These functions are used to copy context tables and page tables.
->>
->> To avoid calling iounmap between spin_lock_irqsave and spin_unlock_irqrestore,
->> use a link here, store the pointers , and then use iounmap to free them in
->> another place.
->
-> Hi Zhenhua,
->
-> I remember you mentioned iounmap will cause error inside
-> spin_lock_irqsave. Do you know why it happened now? And could you also
-> describe why avoid calling iounmap between
-> spin_lock_irqsave/unlock_irqsave  is needed here and what's the status
-> now?
->
-> I think other reviewer may want to know it too.
->
-> Thanks
-> Baoquan
->
+Baoquan
