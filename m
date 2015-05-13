@@ -1,46 +1,43 @@
-From: "Li, ZhenHua" <zhen-hual@hp.com>
-Subject: Re: [PATCH v11 02/10] iommu/vt-d: Items required for kdump
-Date: Wed, 13 May 2015 09:45:29 +0800
-Message-ID: <5552ACB9.5050309@hp.com>
-References: <1431337974-545-1-git-send-email-zhen-hual@hp.com> <1431337974-545-3-git-send-email-zhen-hual@hp.com> <20150512081723.GC4561@localhost.localdomain>
+From: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Subject: Re: [PATCH v11 05/10] iommu/vt-d: Add functions to load and save
+	old re
+Date: Wed, 13 May 2015 09:47:07 +0800
+Message-ID: <5552AD1B.6030208@hp.com>
+References: <1431337974-545-1-git-send-email-zhen-hual@hp.com>
+	<1431337974-545-6-git-send-email-zhen-hual@hp.com>
+	<20150512083745.GE4561@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20150512081723.GC4561@localhost.localdomain>
-Sender: linux-pci-owner@vger.kernel.org
-To: Dave Young <dyoung@redhat.com>
-Cc: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, joro@8bytes.org, vgoyal@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com, "Li, ZhenHua" <zhen-hual@hp.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150512083745.GE4561-bi+AKbBUZKY6gyzm1THtWbp2dZbC/Bob@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Li,
+	ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/12/2015 04:17 PM, Dave Young wrote:
+On 05/12/2015 04:37 PM, Dave Young wrote:
+> Seems the subject was truncated? Maybe "re" means root entry? Then please fix it
+>
 > On 05/11/15 at 05:52pm, Li, Zhen-Hua wrote:
->> Add context entry functions needed for kdump.
->> +/*
->> + * Fix Crashdump failure caused by leftover DMA through a hardware IOMMU
->> + *
->> + * Fixes the crashdump kernel to deal with an active iommu and legacy
->> + * DMA from the (old) panicked kernel in a manner similar to how legacy
->> + * DMA is handled when no hardware iommu was in use by the old kernel --
->> + * allow the legacy DMA to continue into its current buffers.
->> + *
->> + * In the crashdump kernel, this code:
->> + * 1. skips disabling the IOMMU's translating.
->> + * 2. Do not re-enable IOMMU's translating.
->> + * 3. In kdump kernel, use the old root entry table.
->> + * 4. Allocate pages for new context entry, copy data from old context entries
->> + *    in the old kernel to the new ones.
->> + *
->> + * In other kinds of kernel, for example, a kernel started by kexec,
->> + * do the same thing as crashdump kernel.
->> + */
->> +
->> +
+>> Add functions to load root entry table from old kernel, and to save updated
+>> root entry table.
+>> Add two member in struct intel_iommu, to store the RTA in old kernel, and
+>> the mapped virt address of it.
 >
-> Above comments should come along with the code changes instead of putting it
-> in this patch.
+> Please explain a bit what is "RTA" in patch log, it is unclear to most of people
+> who do not know iommu details.
 >
-> BTW, there's one more blank line at the end..
-Code change is in 00/10, the cover letter.
-And the blank does not matter, I checked the patch with 
-scripts/checkpatch.pl,  no warnings, no errors.
+>>
+
+If people want to understand this patchset, I assume they have read the 
+vt-d specs. RTA is defined clearly in this spec.
