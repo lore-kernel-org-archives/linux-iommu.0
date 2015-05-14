@@ -1,86 +1,44 @@
-From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH] iommu/ipmmu-vmsa: Replace spinlock with mutex
-Date: Thu, 14 May 2015 15:42:19 +0300
-Message-ID: <1431607339-27378-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
-Sender: linux-sh-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-sh@vger.kernel.org
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: [PATCH] iommu/fsl: Fix the dependency check for PAMU driver.
+Date: Thu, 14 May 2015 23:11:12 +0530
+Message-ID: <1431625272-17869-1-git-send-email-Varun.Sethi@freescale.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org
+Cc: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The spinlock is used to protect domain initialization when attaching a
-device, which allocates memory with GFP_KERNEL. Replace it with a mutex
-as the initialization always runs in a sleepable context.
+Fix the build dependency for the PAMU driver. PPC32 build dependecy is incorrect.
+Add the CORENET_GENERIC build dependency for PAMU driver.
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Signed-off-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 ---
- drivers/iommu/ipmmu-vmsa.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/iommu/Kconfig |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 1a67c531a07e..24a950091458 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -16,6 +16,7 @@
- #include <linux/io.h>
- #include <linux/iommu.h>
- #include <linux/module.h>
-+#include <linux/mutex.h>
- #include <linux/of.h>
- #include <linux/platform_device.h>
- #include <linux/sizes.h>
-@@ -44,7 +45,7 @@ struct ipmmu_vmsa_domain {
- 	struct io_pgtable_ops *iop;
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 1ae4e54..4ace8db 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -50,7 +50,7 @@ config OF_IOMMU
  
- 	unsigned int context_id;
--	spinlock_t lock;			/* Protects mappings */
-+	struct mutex lock;			/* Protects domain init */
- };
- 
- struct ipmmu_vmsa_archdata {
-@@ -473,7 +474,7 @@ static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
- 	if (!domain)
- 		return NULL;
- 
--	spin_lock_init(&domain->lock);
-+	mutex_init(&domain->lock);
- 
- 	return &domain->io_domain;
- }
-@@ -488,6 +489,7 @@ static void ipmmu_domain_free(struct iommu_domain *io_domain)
- 	 */
- 	ipmmu_domain_destroy_context(domain);
- 	free_io_pgtable_ops(domain->iop);
-+	mutex_destroy(&domain->lock);
- 	kfree(domain);
- }
- 
-@@ -497,7 +499,6 @@ static int ipmmu_attach_device(struct iommu_domain *io_domain,
- 	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
- 	struct ipmmu_vmsa_device *mmu = archdata->mmu;
- 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
--	unsigned long flags;
- 	unsigned int i;
- 	int ret = 0;
- 
-@@ -506,7 +507,7 @@ static int ipmmu_attach_device(struct iommu_domain *io_domain,
- 		return -ENXIO;
- 	}
- 
--	spin_lock_irqsave(&domain->lock, flags);
-+	mutex_lock(&domain->lock);
- 
- 	if (!domain->mmu) {
- 		/* The domain hasn't been used yet, initialize it. */
-@@ -522,7 +523,7 @@ static int ipmmu_attach_device(struct iommu_domain *io_domain,
- 		ret = -EINVAL;
- 	}
- 
--	spin_unlock_irqrestore(&domain->lock, flags);
-+	mutex_unlock(&domain->lock);
- 
- 	if (ret < 0)
- 		return ret;
+ config FSL_PAMU
+ 	bool "Freescale IOMMU support"
+-	depends on PPC32
++	depends on CORENET_GENERIC
+ 	depends on PPC_E500MC || COMPILE_TEST
+ 	select IOMMU_API
+ 	select GENERIC_ALLOCATOR
 -- 
-2.3.6
-
+1.7.9.5
