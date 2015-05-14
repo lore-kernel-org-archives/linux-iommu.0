@@ -1,62 +1,86 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: Any side effect if turn off amd_iommu
-Date: Wed, 13 May 2015 15:44:39 +0200
-Message-ID: <20150513134439.GJ20611@8bytes.org>
-References: <CAFv23Qn93z4pE6RtURgoiBADpgCWZ6gfpMPn3akfJibudRi+Qg@mail.gmail.com>
-	<20150326120547.GU4441@8bytes.org>
-	<CAFv23QnUO+w0EXUx8DtgPx0W=fz37_R04EW6P-g+PF_y_U1dfA@mail.gmail.com>
-	<20150330160910.GZ4441@8bytes.org>
-	<CAFv23QmOjFb9NgLY0aW55OpQSecFA83jNOU1TY7o3qWuft1_Cw@mail.gmail.com>
-	<CAFv23Q==+tXTif9uQfyTHE28hxGt80WYS=A6qN7q0Q4q7re6kw@mail.gmail.com>
-	<20150504110802.GE15736@8bytes.org>
-	<CAFv23QkRouVJ6siu==-EjLndP2Z7inz+qVeKxLci3=R=9r8+zQ@mail.gmail.com>
-	<20150505151319.GO15736@8bytes.org>
-	<CAFv23Q=iU7X1EOcZDUh6NhcnuvyyNSKUGEot6ZhCg8uZ7kRNAQ@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAFv23Q=iU7X1EOcZDUh6NhcnuvyyNSKUGEot6ZhCg8uZ7kRNAQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: AceLan Kao <acelan.kao-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH] iommu/ipmmu-vmsa: Replace spinlock with mutex
+Date: Thu, 14 May 2015 15:42:19 +0300
+Message-ID: <1431607339-27378-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-sh@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi AceLan Kao,
+The spinlock is used to protect domain initialization when attaching a
+device, which allocates memory with GFP_KERNEL. Replace it with a mutex
+as the initialization always runs in a sleepable context.
 
-On Wed, May 13, 2015 at 03:37:57PM +0800, AceLan Kao wrote:
-> The method I described is not making any guess, we need a table to
-> write down the correct ioapic value for those machines, we can add the
-> BIOS version check(DMI_BIOS_VERSION) if you think the behavior may
-> change with different version of BIOSes.
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+---
+ drivers/iommu/ipmmu-vmsa.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-You don't know which IO-APIC is which one without a correct IVRS table.
-AMD desktop systems have usually have up to two IO-APICs, one in the SB
-and one in the NB. But the ids of these IO-APICs are not fixed and
-can depend on the BIOS version as well as on the processor that is
-plugged into the board. So since we don't know which IO-APIC is which
-one we can't make any good guesses that work for everybody. When we
-implement workarounds we may fix it for one user, but risk breakage for
-others.
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 1a67c531a07e..24a950091458 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -16,6 +16,7 @@
+ #include <linux/io.h>
+ #include <linux/iommu.h>
+ #include <linux/module.h>
++#include <linux/mutex.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/sizes.h>
+@@ -44,7 +45,7 @@ struct ipmmu_vmsa_domain {
+ 	struct io_pgtable_ops *iop;
+ 
+ 	unsigned int context_id;
+-	spinlock_t lock;			/* Protects mappings */
++	struct mutex lock;			/* Protects domain init */
+ };
+ 
+ struct ipmmu_vmsa_archdata {
+@@ -473,7 +474,7 @@ static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
+ 	if (!domain)
+ 		return NULL;
+ 
+-	spin_lock_init(&domain->lock);
++	mutex_init(&domain->lock);
+ 
+ 	return &domain->io_domain;
+ }
+@@ -488,6 +489,7 @@ static void ipmmu_domain_free(struct iommu_domain *io_domain)
+ 	 */
+ 	ipmmu_domain_destroy_context(domain);
+ 	free_io_pgtable_ops(domain->iop);
++	mutex_destroy(&domain->lock);
+ 	kfree(domain);
+ }
+ 
+@@ -497,7 +499,6 @@ static int ipmmu_attach_device(struct iommu_domain *io_domain,
+ 	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
+ 	struct ipmmu_vmsa_device *mmu = archdata->mmu;
+ 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+-	unsigned long flags;
+ 	unsigned int i;
+ 	int ret = 0;
+ 
+@@ -506,7 +507,7 @@ static int ipmmu_attach_device(struct iommu_domain *io_domain,
+ 		return -ENXIO;
+ 	}
+ 
+-	spin_lock_irqsave(&domain->lock, flags);
++	mutex_lock(&domain->lock);
+ 
+ 	if (!domain->mmu) {
+ 		/* The domain hasn't been used yet, initialize it. */
+@@ -522,7 +523,7 @@ static int ipmmu_attach_device(struct iommu_domain *io_domain,
+ 		ret = -EINVAL;
+ 	}
+ 
+-	spin_unlock_irqrestore(&domain->lock, flags);
++	mutex_unlock(&domain->lock);
+ 
+ 	if (ret < 0)
+ 		return ret;
+-- 
+2.3.6
 
-> If you still feel uncomfortable, I'm okay with any solutions, but I
-> don't get it how to do it in your way.
-> We can found those machines from bug reports(I have some machines on
-> my hand, too), so we need a table to record those machines? And how to
-> disable interrupt remapping, will it lead to any side effect?
-
-Disabling interrupt remapping has no big side effect. You only have to
-load vfio with a special parameter so allow unsafe interrupts to do
-device assignment with KVM.
-
-
-	Joerg
