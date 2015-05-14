@@ -1,7 +1,8 @@
 From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: [RFC/PATCH 4/9] of: dma: Make of_dma_deconfigure() public
-Date: Fri, 15 May 2015 02:00:05 +0300
-Message-ID: <1431644410-2997-5-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [RFC/PATCH 6/9] drivers: platform: Configure dma operations at probe
+	time
+Date: Fri, 15 May 2015 02:00:07 +0300
+Message-ID: <1431644410-2997-7-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 References: <1431644410-2997-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,77 +22,78 @@ To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Cc: Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-As part of moving DMA initializing to probe time the
-of_dma_deconfigure() function will need to be called from different
-source files. Make it public and move it to drivers/of/device.c where
-the of_dma_configure() function is.
+Configuring DMA ops at probe time will allow deferring device probe when
+the IOMMU isn't available yet.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 ---
- drivers/of/device.c       | 12 ++++++++++++
- drivers/of/platform.c     |  5 -----
- include/linux/of_device.h |  3 +++
- 3 files changed, 15 insertions(+), 5 deletions(-)
+ drivers/base/platform.c | 9 +++++++++
+ drivers/of/platform.c   | 7 +++----
+ 2 files changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/of/device.c b/drivers/of/device.c
-index 530aa1ed3e1b..f1b84f464fe1 100644
---- a/drivers/of/device.c
-+++ b/drivers/of/device.c
-@@ -135,6 +135,18 @@ void of_dma_configure(struct device *dev, struct device_node *np)
- }
- EXPORT_SYMBOL_GPL(of_dma_configure);
+diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+index ebf034b97278..508a866859dc 100644
+--- a/drivers/base/platform.c
++++ b/drivers/base/platform.c
+@@ -516,6 +516,10 @@ static int platform_drv_probe(struct device *_dev)
+ 	if (ret < 0)
+ 		return ret;
  
-+/**
-+ * of_dma_deconfigure - Clean up DMA configuration
-+ * @dev:	Device for which to clean up DMA configuration
-+ *
-+ * Clean up all configuration performed by of_dma_configure_ops() and free all
-+ * resources that have been allocated.
-+ */
-+void of_dma_deconfigure(struct device *dev)
-+{
-+	arch_teardown_dma_ops(dev);
-+}
++	ret = of_dma_configure_ops(_dev, _dev->of_node);
++	if (ret < 0)
++		goto done;
 +
- int of_device_register(struct platform_device *pdev)
- {
- 	device_initialize(&pdev->dev);
+ 	ret = dev_pm_domain_attach(_dev, true);
+ 	if (ret != -EPROBE_DEFER) {
+ 		ret = drv->probe(dev);
+@@ -523,6 +527,10 @@ static int platform_drv_probe(struct device *_dev)
+ 			dev_pm_domain_detach(_dev, true);
+ 	}
+ 
++	if (ret)
++		of_dma_deconfigure(_dev);
++
++done:
+ 	if (drv->prevent_deferred_probe && ret == -EPROBE_DEFER) {
+ 		dev_warn(_dev, "probe deferral not supported\n");
+ 		ret = -ENXIO;
+@@ -544,6 +552,7 @@ static int platform_drv_remove(struct device *_dev)
+ 
+ 	ret = drv->remove(dev);
+ 	dev_pm_domain_detach(_dev, true);
++	of_dma_deconfigure(_dev);
+ 
+ 	return ret;
+ }
 diff --git a/drivers/of/platform.c b/drivers/of/platform.c
-index a01f57c9e34e..7a660c79ff84 100644
+index 9a29f09b7723..fc939bec799e 100644
 --- a/drivers/of/platform.c
 +++ b/drivers/of/platform.c
-@@ -149,11 +149,6 @@ struct platform_device *of_device_alloc(struct device_node *np,
- }
- EXPORT_SYMBOL(of_device_alloc);
+@@ -178,10 +178,8 @@ static struct platform_device *of_platform_device_create_pdata(
+ 	dev->dev.bus = &platform_bus_type;
+ 	dev->dev.platform_data = platform_data;
+ 	of_dma_configure_masks(&dev->dev, dev->dev.of_node);
+-	of_dma_configure_ops(&dev->dev, dev->dev.of_node);
  
--static void of_dma_deconfigure(struct device *dev)
--{
--	arch_teardown_dma_ops(dev);
--}
--
- /**
-  * of_platform_device_create_pdata - Alloc, initialize and register an of_device
-  * @np: pointer to node to create device for
-diff --git a/include/linux/of_device.h b/include/linux/of_device.h
-index 22801b10cef5..6710807b0653 100644
---- a/include/linux/of_device.h
-+++ b/include/linux/of_device.h
-@@ -54,6 +54,7 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
- }
+ 	if (of_device_add(dev) != 0) {
+-		of_dma_deconfigure(&dev->dev);
+ 		platform_device_put(dev);
+ 		goto err_clear_flag;
+ 	}
+@@ -465,11 +463,12 @@ static int of_platform_device_destroy(struct device *dev, void *data)
+ 	if (dev->bus == &platform_bus_type)
+ 		platform_device_unregister(to_platform_device(dev));
+ #ifdef CONFIG_ARM_AMBA
+-	else if (dev->bus == &amba_bustype)
++	else if (dev->bus == &amba_bustype) {
+ 		amba_device_unregister(to_amba_device(dev));
++		of_dma_deconfigure(dev);
++	}
+ #endif
  
- void of_dma_configure(struct device *dev, struct device_node *np);
-+void of_dma_deconfigure(struct device *dev);
- #else /* CONFIG_OF */
- 
- static inline int of_driver_match_device(struct device *dev,
-@@ -93,6 +94,8 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
- }
- static inline void of_dma_configure(struct device *dev, struct device_node *np)
- {}
-+static inline void of_dma_deconfigure(struct device *dev)
-+{}
- #endif /* CONFIG_OF */
- 
- #endif /* _LINUX_OF_DEVICE_H */
+-	of_dma_deconfigure(dev);
+ 	of_node_clear_flag(dev->of_node, OF_POPULATED);
+ 	of_node_clear_flag(dev->of_node, OF_POPULATED_BUS);
+ 	return 0;
 -- 
 2.3.6
