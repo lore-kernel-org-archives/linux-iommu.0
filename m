@@ -1,109 +1,96 @@
-From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: [RFC/PATCH 8/9] iommu: of: Handle IOMMU lookup failure with deferred
-	probing or error
-Date: Fri, 15 May 2015 02:00:09 +0300
-Message-ID: <1431644410-2997-9-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-References: <1431644410-2997-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Yong Wu <yong.wu@mediatek.com>
+Subject: [RFC v2 PATCH 0/6] MT8173 IOMMU SUPPORT
+Date: Fri, 15 May 2015 17:43:23 +0800
+Message-ID: <1431683009-18158-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1431644410-2997-1-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Herring <robh+dt@kernel.org>, Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Lucas Stach <l.stach@pengutronix.de>, Mark Rutland <mark.rutland@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org, Sasha Hauer <kernel@pengutronix.de>, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, pebolle@tiscali.nl, arnd@arndb.de, mitchelh@codeaurora.org, k.zhang@mediatek.com, youhua.li@mediatek.com
 List-Id: iommu@lists.linux-foundation.org
 
-Failures to look up an IOMMU when parsing the DT iommus property need to
-be handled separately from the .of_xlate() failures to support deferred
-probing.
+  This patch adds support for m4u(Multimedia Memory Management Unit),
+Currently it only support the m4u with 2 levels of page table on mt8173.
 
-The lack of a registered IOMMU can be caused by the lack of a driver for
-the IOMMU, the IOMMU device probe not having been performed yet, having
-been deferred, or having failed.
+  It is based on Robin Murphy's arm64: IOMMU-backed DMA mapping[1]. 
+ 
+  Please check the hardware block diagram of Mediatek IOMMU.
+ 
+              EMI (External Memory Interface)
+               |
+              m4u (Multimedia Memory Management Unit)
+               |
+              smi (Smart Multimedia Interface)
+               |
+        +---------------+-------
+        |               |
+        |               |
+    vdec larb       disp larb      ... SoCs have different local arbiter(larb).
+        |               |
+        |               |
+   +----+----+    +-----+-----+
+   |    |    |    |     |     |    ...
+   |    |    |    |     |     |    ...
+   |    |    |    |     |     |    ...
+  MC   PP   VLD  OVL0 RDMA0 WDMA0  ... There are different ports in each larb.
+  
+  Normally we specify a local arbiter(larb) for each multimedia hardware like
+display, video decode, video encode and camera. And there are different ports in
+each larb. Take a example, there are some ports like MC, PP, UFO, VLD, AVC_MV,
+PRED_RD, PRED_WR in video larb, all the ports are according to the video hardware.
+ 
+  From the diagram, all the multimedia module connect with m4u via smi.
+SMI is responsible to enable/disable iommu and control the clocks for each local
+arbiter. If we should enable the iommu of video decode, it should config the 
+video's ports. And if the video hardware work wether enable/disable iommu, 
+it should enable the clock of its larb's clock. So we add a special driver for smi.
+ 
+[1] http://lists.linuxfoundation.org/pipermail/iommu/2015-February/012236.html
 
-The first case occurs when the device tree describes the bus master and
-IOMMU topology correctly but no device driver exists for the IOMMU yet
-or the device driver has not been compiled in. Return NULL, the caller
-will configure the device without an IOMMU.
+v2:
+-add arm short descriptor support.
+-seperate smi common from smi and change the clock-names according
+ to smi HW.
+-delete the hardcode of the port-names in mt8173.
+ replace this with larb-portes-nr in dtsi.
+-fix some coding style issues.
 
-The second and third cases are handled by deferring the probe of the bus
-master device which will eventually get reprobed after the IOMMU.
+v1:
+http://lists.infradead.org/pipermail/linux-mediatek/2015-March/000058.html
 
-The last case is currently handled by deferring the probe of the bus
-master device as well. A mechanism to either configure the bus master
-device without an IOMMU or to fail the bus master device probe depending
-on whether the IOMMU is optional or mandatory would be a good
-enhancement.
+Yong Wu (6):
+  dt-bindings: iommu: Add binding for mediatek IOMMU
+  dt-bindings: mediatek: Add smi dts binding
+  iommu: add ARM short descriptor page table allocator.
+  iommu/mediatek: Add mt8173 IOMMU driver
+  soc: mediatek: Add SMI driver
+  dts: mt8173: Add iommu/smi nodes for mt8173
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
----
- drivers/iommu/of_iommu.c | 16 +++++++++++++---
- drivers/of/device.c      |  2 ++
- 2 files changed, 15 insertions(+), 3 deletions(-)
+ .../devicetree/bindings/iommu/mediatek,iommu.txt   |  51 ++
+ .../bindings/soc/mediatek/mediatek,smi-larb.txt    |  24 +
+ .../bindings/soc/mediatek/mediatek,smi.txt         |  22 +
+ arch/arm64/boot/dts/mediatek/mt8173.dtsi           |  79 +++
+ drivers/iommu/Kconfig                              |  18 +
+ drivers/iommu/Makefile                             |   2 +
+ drivers/iommu/io-pgtable-arm-short.c               | 490 +++++++++++++++
+ drivers/iommu/io-pgtable.c                         |   4 +
+ drivers/iommu/io-pgtable.h                         |   6 +
+ drivers/iommu/mtk_iommu.c                          | 657 +++++++++++++++++++++
+ drivers/soc/mediatek/Kconfig                       |   6 +
+ drivers/soc/mediatek/Makefile                      |   1 +
+ drivers/soc/mediatek/mt8173-smi.c                  | 298 ++++++++++
+ include/dt-bindings/iommu/mt8173-iommu-port.h      | 112 ++++
+ include/linux/mtk-smi.h                            |  39 ++
+ 15 files changed, 1809 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
+ create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mediatek,smi-larb.txt
+ create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mediatek,smi.txt
+ create mode 100644 drivers/iommu/io-pgtable-arm-short.c
+ create mode 100644 drivers/iommu/mtk_iommu.c
+ create mode 100644 drivers/soc/mediatek/mt8173-smi.c
+ create mode 100644 include/dt-bindings/iommu/mt8173-iommu-port.h
+ create mode 100644 include/linux/mtk-smi.h
 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index b922ed4f9fb3..e98f19a3b740 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -170,8 +170,18 @@ struct iommu_ops *of_iommu_configure(struct device *dev,
- 		np = iommu_spec.np;
- 		ops = of_iommu_get_ops(np);
- 
--		if (!ops || !ops->of_xlate || ops->of_xlate(dev, &iommu_spec))
-+		if (!ops) {
-+			const struct of_device_id *oid;
-+
-+			oid = of_match_node(&__iommu_of_table, np);
-+			ops = oid ? ERR_PTR(-EPROBE_DEFER) : NULL;
-+			goto err_put_node;
-+		}
-+
-+		if (!ops->of_xlate || ops->of_xlate(dev, &iommu_spec)) {
-+			ops = NULL;
- 			goto err_put_node;
-+		}
- 
- 		of_node_put(np);
- 		idx++;
-@@ -181,7 +191,7 @@ struct iommu_ops *of_iommu_configure(struct device *dev,
- 
- err_put_node:
- 	of_node_put(np);
--	return NULL;
-+	return ops;
- }
- 
- void __init of_iommu_init(void)
-@@ -192,7 +202,7 @@ void __init of_iommu_init(void)
- 	for_each_matching_node_and_match(np, matches, &match) {
- 		const of_iommu_init_fn init_fn = match->data;
- 
--		if (init_fn(np))
-+		if (init_fn && init_fn(np))
- 			pr_err("Failed to initialise IOMMU %s\n",
- 				of_node_full_name(np));
- 	}
-diff --git a/drivers/of/device.c b/drivers/of/device.c
-index 3cb3f78a6d13..f4964ab21026 100644
---- a/drivers/of/device.c
-+++ b/drivers/of/device.c
-@@ -148,6 +148,8 @@ int of_dma_configure_ops(struct device *dev, struct device_node *np)
- 		coherent ? " " : " not ");
- 
- 	iommu = of_iommu_configure(dev, np);
-+	if (IS_ERR(iommu))
-+		return PTR_ERR(iommu);
- 	dev_dbg(dev, "device is%sbehind an iommu\n",
- 		iommu ? " " : " not ");
- 
 -- 
-2.3.6
+1.8.1.1.dirty
