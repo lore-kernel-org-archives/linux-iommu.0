@@ -1,13 +1,16 @@
-From: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC v2 PATCH 0/6] MT8173 IOMMU SUPPORT
-Date: Mon, 18 May 2015 14:09:16 +0200
-Message-ID: <CABuKBe+3EOx1viFJzXKirY_J9g7ChN+TOZceBvnvff3PdKe7Aw@mail.gmail.com>
-References: <1431683009-18158-1-git-send-email-yong.wu@mediatek.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v6 01/25] arm: dma-mapping: add support for creating
+	reserved mappings in iova space
+Date: Mon, 18 May 2015 14:09:12 +0200
+Message-ID: <5559D668.3050308@samsung.com>
+References: <1430727380-10912-1-git-send-email-m.szyprowski@samsung.com>
+	<1430727380-10912-2-git-send-email-m.szyprowski@samsung.com>
+	<CAL_JsqKB4F8tspydBFrL-PH3gXcyu-pwQwBETMizJzTpAF3yzg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1431683009-18158-1-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+In-reply-to: <CAL_JsqKB4F8tspydBFrL-PH3gXcyu-pwQwBETMizJzTpAF3yzg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,79 +20,110 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, srv_heupstream <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Seung-Woo Kim <sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Yong,
+Hello,
 
-2015-05-15 11:43 GMT+02:00 Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>:
->   This patch adds support for m4u(Multimedia Memory Management Unit),
-> Currently it only support the m4u with 2 levels of page table on mt8173.
+On 2015-05-05 00:12, Rob Herring wrote:
+> On Mon, May 4, 2015 at 3:15 AM, Marek Szyprowski
+> <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrote:
+>> Some devices (like frame buffers) are enabled by bootloader and configured
+>> to perform DMA operations automatically (like displaying boot logo or splash
+>> screen). Such devices operate and perform DMA operation usually until the
+>> proper driver for them is loaded and probed. However before that happens,
+>> system usually loads IOMMU drivers and configures dma parameters for each
+>> device. When such initial configuration is created and enabled, it usually
+>> contains empty translation rules betweem IO address space and physical
+>> memory, because no buffers nor memory regions have been requested by the
+>> respective driver.
+>>
+>> This patch adds support for "iommu-reserved-mapping", which can be used
+>> to provide definitions for mappings that need to be created on system
+>> boot to let such devices (enabled by bootloader) to operate properly
+>> until respective driver is probed.
+>>
+>> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+>> ---
+>>   Documentation/devicetree/bindings/iommu/iommu.txt |  44 +++++++++
+>>   arch/arm/mm/dma-mapping.c                         | 112 ++++++++++++++++++++++
+>>   2 files changed, 156 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/iommu/iommu.txt b/Documentation/devicetree/bindings/iommu/iommu.txt
+>> index 5a8b4624defc..fd54e6b597f0 100644
+>> --- a/Documentation/devicetree/bindings/iommu/iommu.txt
+>> +++ b/Documentation/devicetree/bindings/iommu/iommu.txt
+>> @@ -86,6 +86,35 @@ have a means to turn off translation. But it is invalid in such cases to
+>>   disable the IOMMU's device tree node in the first place because it would
+>>   prevent any driver from properly setting up the translations.
+>>
+>> +Optional properties:
+>> +--------------------
+>> +- iommu-reserved-mapping: A list of entries describing additional
+>> +  reserved mapping, that will be inserted to the default IO address space
+>> +  created for given master device. Each entry consist of IO address,
+>> +  physical memory address and size of the region.
+>> +
+>> +Some devices (like frame buffers) are enabled by bootloader and configured
+>> +to perform DMA operations automatically (like displaying boot logo or splash
+>> +screen). Such devices operate and perform DMA operation usually until the
+>> +proper driver for them is loaded and probed. However before that happens,
+>> +system usually loads IOMMU drivers and configures dma parameters for each
+> s/dma/DMA/
 >
->   It is based on Robin Murphy's arm64: IOMMU-backed DMA mapping[1].
+>> +device. When such initial configuration is created and enabled, it usually
+>> +contains empty translation rules betweem IO address space and physical
+> s/betweem/between/
 >
->   Please check the hardware block diagram of Mediatek IOMMU.
->
->               EMI (External Memory Interface)
->                |
->               m4u (Multimedia Memory Management Unit)
->                |
->               smi (Smart Multimedia Interface)
->                |
->         +---------------+-------
->         |               |
->         |               |
->     vdec larb       disp larb      ... SoCs have different local arbiter(larb).
->         |               |
->         |               |
->    +----+----+    +-----+-----+
->    |    |    |    |     |     |    ...
->    |    |    |    |     |     |    ...
->    |    |    |    |     |     |    ...
->   MC   PP   VLD  OVL0 RDMA0 WDMA0  ... There are different ports in each larb.
->
->   Normally we specify a local arbiter(larb) for each multimedia hardware like
-> display, video decode, video encode and camera. And there are different ports in
-> each larb. Take a example, there are some ports like MC, PP, UFO, VLD, AVC_MV,
-> PRED_RD, PRED_WR in video larb, all the ports are according to the video hardware.
->
->   From the diagram, all the multimedia module connect with m4u via smi.
-> SMI is responsible to enable/disable iommu and control the clocks for each local
-> arbiter. If we should enable the iommu of video decode, it should config the
-> video's ports. And if the video hardware work wether enable/disable iommu,
-> it should enable the clock of its larb's clock. So we add a special driver for smi.
->
-> [1] http://lists.linuxfoundation.org/pipermail/iommu/2015-February/012236.html
->
-> v2:
-> -add arm short descriptor support.
-> -seperate smi common from smi and change the clock-names according
->  to smi HW.
-> -delete the hardcode of the port-names in mt8173.
->  replace this with larb-portes-nr in dtsi.
-> -fix some coding style issues.
->
-> v1:
-> http://lists.infradead.org/pipermail/linux-mediatek/2015-March/000058.html
->
-> Yong Wu (6):
->   dt-bindings: iommu: Add binding for mediatek IOMMU
->   dt-bindings: mediatek: Add smi dts binding
->   iommu: add ARM short descriptor page table allocator.
->   iommu/mediatek: Add mt8173 IOMMU driver
->   soc: mediatek: Add SMI driver
->   dts: mt8173: Add iommu/smi nodes for mt8173
->
+>> +memory, because no buffers nor memory regions have been requested by the
+>> +respective driver.
+>> +
+>> +To avoid IOMMU page fault, one can provide "iommu-reserved-mapping"
+>> +property, which defines all memory regions which must be mapped to IO
+>> +address space to boot properly when device has been enabled by the
+>> +bootloader. More than one region can be defined for given master device.
+>> +Each region is defined by the following triplet: first entry is IO
+>> +address (encoded in "address" cells), second is base physical memory
+>> +address for this regions (also encoded in "address" cells) and the last
+>> +is size of the region (encoded in "size" cells). To ensure that that
+>> +given master device will not trigger page fault after enabling IOMMU,
+>> +one should define identity mapping between physical memory and IO
+>> +address space for the range of addresses accessed by the device.
+>> +
+>>
+>>   Notes:
+>>   ======
+>> @@ -113,6 +142,21 @@ Single-master IOMMU:
+>>                  iommus = <&{/iommu}>;
+>>          };
+>>
+>> +
+>> +Single-master IOMMU, which has been left enabled by bootloader:
+>> +---------------------------------------------------------------
+>> +
+>> +       iommu {
+>> +               #iommu-cells = <0>;
+>> +       };
+>> +
+>> +       master {
+>> +               iommus = <&{/iommu}>;
+>> +               /* bootloader configures framebuffer at 0x40000000 (32MiB)
+>> +               iommu-reserved-mapping = <0x40000000 0x40000000 0x2000000>;
+> Is there not an ordering problem if kernel initializes the IOMMU
+> before parsing this for each master? I would think the IOMMU driver
+> needs to find all of these mappings and cleanly switch the page tables
+> with the new reserved mapping.
 
-Some general comments.
-It seems that your patches are not based on v4.1.-rc1, can you please
-fix this in the next version, they don't apply cleanly.
-Please use the checkpatch script before sending the next version, I
-had some whitespace errors reported when applying the series.
+The proper ordering is guaranteed by arm_get_iommu_dma_map_ops function, 
+which first
+created iommu domain for given master device, then scans for reserved 
+regions and
+adds them to the given domains. Only then it attaches such domain to the 
+iommu
+driver.
 
-Thanks,
-Matthias
-
+Best regards
 -- 
-motzblog.wordpress.com
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
