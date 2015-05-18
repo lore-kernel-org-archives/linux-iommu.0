@@ -1,7 +1,7 @@
 From: <wdavis@nvidia.com>
-Subject: [PATCH v2 2/7] DMA-API: Introduce dma_(un)map_resource
-Date: Mon, 18 May 2015 13:24:59 -0500
-Message-ID: <1431973504-5903-3-git-send-email-wdavis@nvidia.com>
+Subject: [PATCH v2 5/7] iommu/amd: Implement (un)map_resource
+Date: Mon, 18 May 2015 13:25:02 -0500
+Message-ID: <1431973504-5903-6-git-send-email-wdavis@nvidia.com>
 References: <1431973504-5903-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -14,108 +14,153 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Will Davis <wdavis@nvidia.com>
 
-Add functions to DMA-map and -unmap a resource for a given device. This
-will allow devices to DMA-map a peer device's resource (for example,
-another device's BAR region on PCI) to enable peer-to-peer transactions.
+Implement 'map_resource' for the AMD IOMMU driver. Generalize the existing
+map_page implementation to operate on a physical address, and make both
+map_page and map_resource wrappers around that helper (and similiarly, for
+unmap_page and unmap_resource).
+
+This allows a device to map another's resource, to enable peer-to-peer
+transactions.
 
 Signed-off-by: Will Davis <wdavis@nvidia.com>
 Reviewed-by: Terence Ripperda <tripperda@nvidia.com>
 Reviewed-by: John Hubbard <jhubbard@nvidia.com>
 ---
- include/asm-generic/dma-mapping-broken.h |  9 +++++++++
- include/asm-generic/dma-mapping-common.h | 34 ++++++++++++++++++++++++++++++++
- include/linux/dma-mapping.h              |  7 +++++++
- 3 files changed, 50 insertions(+)
+ drivers/iommu/amd_iommu.c | 76 +++++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 63 insertions(+), 13 deletions(-)
 
-diff --git a/include/asm-generic/dma-mapping-broken.h b/include/asm-generic/dma-mapping-broken.h
-index 6c32af9..d171f01 100644
---- a/include/asm-generic/dma-mapping-broken.h
-+++ b/include/asm-generic/dma-mapping-broken.h
-@@ -59,6 +59,15 @@ extern void
- dma_unmap_page(struct device *dev, dma_addr_t dma_address, size_t size,
- 	       enum dma_data_direction direction);
- 
-+extern dma_addr_t
-+dma_map_resource(struct device *dev, struct resource *res,
-+		 unsigned long offset, size_t size,
-+		 enum dma_data_direction direction);
-+
-+extern void
-+dma_unmap_resource(struct device *dev, dma_addr_t dma_address, size_t size,
-+		   enum dma_data_direction direction);
-+
- extern void
- dma_sync_single_for_cpu(struct device *dev, dma_addr_t dma_handle, size_t size,
- 			enum dma_data_direction direction);
-diff --git a/include/asm-generic/dma-mapping-common.h b/include/asm-generic/dma-mapping-common.h
-index 940d5ec..cd9948d 100644
---- a/include/asm-generic/dma-mapping-common.h
-+++ b/include/asm-generic/dma-mapping-common.h
-@@ -73,6 +73,36 @@ static inline void dma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg
- 		ops->unmap_sg(dev, sg, nents, dir, attrs);
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index e43d489..ca2dac6 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -503,6 +503,8 @@ DECLARE_STATS_COUNTER(cnt_map_single);
+ DECLARE_STATS_COUNTER(cnt_unmap_single);
+ DECLARE_STATS_COUNTER(cnt_map_sg);
+ DECLARE_STATS_COUNTER(cnt_unmap_sg);
++DECLARE_STATS_COUNTER(cnt_map_resource);
++DECLARE_STATS_COUNTER(cnt_unmap_resource);
+ DECLARE_STATS_COUNTER(cnt_alloc_coherent);
+ DECLARE_STATS_COUNTER(cnt_free_coherent);
+ DECLARE_STATS_COUNTER(cross_page);
+@@ -541,6 +543,8 @@ static void amd_iommu_stats_init(void)
+ 	amd_iommu_stats_add(&cnt_unmap_single);
+ 	amd_iommu_stats_add(&cnt_map_sg);
+ 	amd_iommu_stats_add(&cnt_unmap_sg);
++	amd_iommu_stats_add(&cnt_map_resource);
++	amd_iommu_stats_add(&cnt_unmap_resource);
+ 	amd_iommu_stats_add(&cnt_alloc_coherent);
+ 	amd_iommu_stats_add(&cnt_free_coherent);
+ 	amd_iommu_stats_add(&cross_page);
+@@ -2752,20 +2756,16 @@ static void __unmap_single(struct dma_ops_domain *dma_dom,
  }
  
-+static inline dma_addr_t dma_map_resource_attrs(struct device *dev,
-+						struct resource *res,
-+						size_t offset, size_t size,
-+						enum dma_data_direction dir,
-+						struct dma_attrs *attrs)
-+{
-+	const struct dma_map_ops *ops = get_dma_ops(dev);
-+	dma_addr_t addr = 0;
-+
-+	BUG_ON(!valid_dma_direction(dir));
-+	if (ops->map_resource)
-+		addr = ops->map_resource(dev, res, offset, size, dir, attrs);
-+	debug_dma_map_resource(dev, res, offset, size, dir, addr);
-+
-+	return addr;
-+}
-+
-+static inline void dma_unmap_resource_attrs(struct device *dev, dma_addr_t addr,
-+					    size_t size,
-+					    enum dma_data_direction dir,
-+					    struct dma_attrs *attrs)
-+{
-+	const struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	BUG_ON(!valid_dma_direction(dir));
-+	if (ops->unmap_resource)
-+		ops->unmap_resource(dev, addr, size, dir, attrs);
-+	debug_dma_unmap_resource(dev, addr, size, dir);
-+}
-+
- static inline dma_addr_t dma_map_page(struct device *dev, struct page *page,
- 				      size_t offset, size_t size,
- 				      enum dma_data_direction dir)
-@@ -180,6 +210,10 @@ dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
- #define dma_unmap_single(d, a, s, r) dma_unmap_single_attrs(d, a, s, r, NULL)
- #define dma_map_sg(d, s, n, r) dma_map_sg_attrs(d, s, n, r, NULL)
- #define dma_unmap_sg(d, s, n, r) dma_unmap_sg_attrs(d, s, n, r, NULL)
-+#define dma_map_resource(d, e, o, s, r) \
-+	dma_map_resource_attrs(d, e, o, s, r, NULL)
-+#define dma_unmap_resource(d, a, s, r) \
-+	dma_unmap_resource_attrs(d, a, s, r, NULL)
+ /*
+- * The exported map_single function for dma_ops.
++ * Wrapper function that contains code common to mapping a physical address
++ * range from a page or a resource.
+  */
+-static dma_addr_t map_page(struct device *dev, struct page *page,
+-			   unsigned long offset, size_t size,
+-			   enum dma_data_direction dir,
+-			   struct dma_attrs *attrs)
++static dma_addr_t __map_phys(struct device *dev, phys_addr_t paddr,
++			     size_t size, enum dma_data_direction dir)
+ {
+ 	unsigned long flags;
+ 	struct protection_domain *domain;
+ 	dma_addr_t addr;
+ 	u64 dma_mask;
+-	phys_addr_t paddr = page_to_phys(page) + offset;
+-
+-	INC_STATS_COUNTER(cnt_map_single);
  
- extern int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
- 			   void *cpu_addr, dma_addr_t dma_addr, size_t size);
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index ac07ff0..05b0b51 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -34,6 +34,13 @@ struct dma_map_ops {
- 	void (*unmap_page)(struct device *dev, dma_addr_t dma_handle,
- 			   size_t size, enum dma_data_direction dir,
- 			   struct dma_attrs *attrs);
-+	dma_addr_t (*map_resource)(struct device *dev, struct resource *res,
-+				   unsigned long offset, size_t size,
-+				   enum dma_data_direction dir,
-+				   struct dma_attrs *attrs);
-+	void (*unmap_resource)(struct device *dev, dma_addr_t dma_handle,
-+			       size_t size, enum dma_data_direction dir,
-+			       struct dma_attrs *attrs);
- 	/*
- 	 * map_sg returns 0 on error and a value > 0 on success.
- 	 * It should never return a value < 0.
+ 	domain = get_domain(dev);
+ 	if (PTR_ERR(domain) == -EINVAL)
+@@ -2791,16 +2791,15 @@ out:
+ }
+ 
+ /*
+- * The exported unmap_single function for dma_ops.
++ * Wrapper function that contains code common to unmapping a physical address
++ * range from a page or a resource.
+  */
+-static void unmap_page(struct device *dev, dma_addr_t dma_addr, size_t size,
+-		       enum dma_data_direction dir, struct dma_attrs *attrs)
++static void __unmap_phys(struct device *dev, dma_addr_t dma_addr, size_t size,
++			 enum dma_data_direction dir)
+ {
+ 	unsigned long flags;
+ 	struct protection_domain *domain;
+ 
+-	INC_STATS_COUNTER(cnt_unmap_single);
+-
+ 	domain = get_domain(dev);
+ 	if (IS_ERR(domain))
+ 		return;
+@@ -2815,6 +2814,55 @@ static void unmap_page(struct device *dev, dma_addr_t dma_addr, size_t size,
+ }
+ 
+ /*
++ * The exported map_single function for dma_ops.
++ */
++static dma_addr_t map_page(struct device *dev, struct page *page,
++			   unsigned long offset, size_t size,
++			   enum dma_data_direction dir,
++			   struct dma_attrs *attrs)
++{
++	INC_STATS_COUNTER(cnt_map_single);
++
++	return __map_phys(dev, page_to_phys(page) + offset, size, dir);
++}
++
++/*
++ * The exported unmap_single function for dma_ops.
++ */
++static void unmap_page(struct device *dev, dma_addr_t dma_addr, size_t size,
++		       enum dma_data_direction dir, struct dma_attrs *attrs)
++{
++	INC_STATS_COUNTER(cnt_unmap_single);
++
++	__unmap_phys(dev, dma_addr, size, dir);
++}
++
++/*
++ * The exported map_resource function for dma_ops.
++ */
++static dma_addr_t map_resource(struct device *dev, struct resource *res,
++			       unsigned long offset, size_t size,
++			       enum dma_data_direction dir,
++			       struct dma_attrs *attrs)
++{
++	INC_STATS_COUNTER(cnt_map_resource);
++
++	return __map_phys(dev, res->start + offset, size, dir);
++}
++
++/*
++ * The exported unmap_resource function for dma_ops.
++ */
++static void unmap_resource(struct device *dev, dma_addr_t dma_addr,
++			   size_t size, enum dma_data_direction dir,
++			   struct dma_attrs *attrs)
++{
++	INC_STATS_COUNTER(cnt_unmap_resource);
++
++	__unmap_phys(dev, dma_addr, size, dir);
++}
++
++/*
+  * The exported map_sg function for dma_ops (handles scatter-gather
+  * lists).
+  */
+@@ -3066,6 +3114,8 @@ static struct dma_map_ops amd_iommu_dma_ops = {
+ 	.unmap_page = unmap_page,
+ 	.map_sg = map_sg,
+ 	.unmap_sg = unmap_sg,
++	.map_resource = map_resource,
++	.unmap_resource = unmap_resource,
+ 	.dma_supported = amd_iommu_dma_supported,
+ };
+ 
 -- 
 2.4.0
