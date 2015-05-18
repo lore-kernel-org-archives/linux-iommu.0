@@ -1,10 +1,12 @@
 From: <wdavis@nvidia.com>
-Subject: [PATCH v2 0/7] IOMMU/DMA map_resource support for peer-to-peer
-Date: Mon, 18 May 2015 13:24:57 -0500
-Message-ID: <1431973504-5903-1-git-send-email-wdavis@nvidia.com>
+Subject: [PATCH v2 3/7] dma-mapping: pci: add pci_(un)map_resource
+Date: Mon, 18 May 2015 13:25:00 -0500
+Message-ID: <1431973504-5903-4-git-send-email-wdavis@nvidia.com>
+References: <1431973504-5903-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1431973504-5903-1-git-send-email-wdavis@nvidia.com>
 Sender: linux-pci-owner@vger.kernel.org
 To: joro@8bytes.org, bhelgaas@google.com
 Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, tripperda@nvidia.com, jhubbard@nvidia.com, jglisse@redhat.com, konrad.wilk@oracle.com, Will Davis <wdavis@nvidia.com>
@@ -12,45 +14,39 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Will Davis <wdavis@nvidia.com>
 
-Hi,
+Simply route these through to the new dma_(un)map_resource APIs.
 
-This is a second attempt at adding the DMA APIs necessary to map and unmap
-a struct resource to and from a PCI device's IOVA domain. This allows a
-PCI device to access a peer device's BAR resource when a hardware IOMMU is
-enabled.
+Signed-off-by: Will Davis <wdavis@nvidia.com>
+Reviewed-by: Terence Ripperda <tripperda@nvidia.com>
+Reviewed-by: John Hubbard <jhubbard@nvidia.com>
+---
+ include/asm-generic/pci-dma-compat.h | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-Thanks,
-Will
-
-Changelog:
-
-v2:
-- added documentation for the new DMA APIs
-- fixed physical-to-bus address conversion in the nommu implementation
-
-v1: http://www.spinics.net/lists/linux-pci/msg40747.html
-
-Will Davis (7):
-  dma-debug: add checking for map/unmap_resource
-  DMA-API: Introduce dma_(un)map_resource
-  dma-mapping: pci: add pci_(un)map_resource
-  DMA-API: Add dma_(un)map_resource() documentation
-  iommu/amd: Implement (un)map_resource
-  iommu/vt-d: implement (un)map_resource
-  x86: add pci-nommu implementation of map_resource
-
- Documentation/DMA-API-HOWTO.txt          | 39 +++++++++++++++-
- Documentation/DMA-API.txt                | 36 ++++++++++++---
- arch/x86/kernel/pci-nommu.c              | 32 ++++++++++++++
- drivers/iommu/amd_iommu.c                | 76 ++++++++++++++++++++++++++------
- drivers/iommu/intel-iommu.c              | 18 ++++++++
- include/asm-generic/dma-mapping-broken.h |  9 ++++
- include/asm-generic/dma-mapping-common.h | 34 ++++++++++++++
- include/asm-generic/pci-dma-compat.h     | 14 ++++++
- include/linux/dma-debug.h                | 20 +++++++++
- include/linux/dma-mapping.h              |  7 +++
- lib/dma-debug.c                          | 47 ++++++++++++++++++++
- 11 files changed, 312 insertions(+), 20 deletions(-)
-
+diff --git a/include/asm-generic/pci-dma-compat.h b/include/asm-generic/pci-dma-compat.h
+index c110843..ac4a4ad 100644
+--- a/include/asm-generic/pci-dma-compat.h
++++ b/include/asm-generic/pci-dma-compat.h
+@@ -61,6 +61,20 @@ pci_unmap_page(struct pci_dev *hwdev, dma_addr_t dma_address,
+ 	dma_unmap_page(hwdev == NULL ? NULL : &hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
+ }
+ 
++static inline dma_addr_t
++pci_map_resource(struct pci_dev *hwdev, struct resource *resource,
++		 unsigned long offset, size_t size, int direction)
++{
++	return dma_map_resource(hwdev == NULL ? NULL : &hwdev->dev, resource, offset, size, (enum dma_data_direction)direction);
++}
++
++static inline void
++pci_unmap_resource(struct pci_dev *hwdev, dma_addr_t dma_address, size_t size,
++		   int direction)
++{
++	dma_unmap_resource(hwdev == NULL ? NULL : &hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
++}
++
+ static inline int
+ pci_map_sg(struct pci_dev *hwdev, struct scatterlist *sg,
+ 	   int nents, int direction)
 -- 
 2.4.0
