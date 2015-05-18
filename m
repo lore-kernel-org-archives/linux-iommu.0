@@ -1,35 +1,132 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v6 10/25] iommu: exynos: remove useless device_add/remove
- callbacks
-Date: Mon, 18 May 2015 19:04:30 +0200
-Message-ID: <20150518170430.GK20611@8bytes.org>
-References: <1430727380-10912-1-git-send-email-m.szyprowski@samsung.com>
- <1430727380-10912-11-git-send-email-m.szyprowski@samsung.com>
- <20150505145538.GL15736@8bytes.org>
- <5559D66A.5070406@samsung.com>
+From: <wdavis@nvidia.com>
+Subject: [PATCH v2 1/7] dma-debug: add checking for map/unmap_resource
+Date: Mon, 18 May 2015 13:24:58 -0500
+Message-ID: <1431973504-5903-2-git-send-email-wdavis@nvidia.com>
+References: <1431973504-5903-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5559D66A.5070406@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>
+Content-Type: text/plain
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1431973504-5903-1-git-send-email-wdavis@nvidia.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: joro@8bytes.org, bhelgaas@google.com
+Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, tripperda@nvidia.com, jhubbard@nvidia.com, jglisse@redhat.com, konrad.wilk@oracle.com, Will Davis <wdavis@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Marek,
+From: Will Davis <wdavis@nvidia.com>
 
-On Mon, May 18, 2015 at 02:09:14PM +0200, Marek Szyprowski wrote:
-> >Hmm, will this remove support for iommu-groups in the exynos driver? I
-> >am still working on the default-domain patch-set which makes iommu-group
-> >support mandatory for iommu-drivers.
-> 
-> I you wish, I can leave this code. iommu-groups were not used at all
-> on Exynos,
-> so I thought that there is no point keeping useless code.
+Add debug callbacks for the new dma_map_resource and dma_unmap_resource
+functions.
 
-Yes, please keep the iommu-goups support, it will be required at some
-point.
+Signed-off-by: Will Davis <wdavis@nvidia.com>
+Reviewed-by: Terence Ripperda <tripperda@nvidia.com>
+Reviewed-by: John Hubbard <jhubbard@nvidia.com>
+---
+ include/linux/dma-debug.h | 20 ++++++++++++++++++++
+ lib/dma-debug.c           | 47 +++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 67 insertions(+)
 
-
-	Joerg
+diff --git a/include/linux/dma-debug.h b/include/linux/dma-debug.h
+index fe8cb61..19f328c 100644
+--- a/include/linux/dma-debug.h
++++ b/include/linux/dma-debug.h
+@@ -44,6 +44,13 @@ extern void debug_dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
+ extern void debug_dma_unmap_page(struct device *dev, dma_addr_t addr,
+ 				 size_t size, int direction, bool map_single);
+ 
++extern void debug_dma_map_resource(struct device *dev, struct resource *res,
++				   size_t offset, size_t size, int direction,
++				   dma_addr_t dma_addr);
++
++extern void debug_dma_unmap_resource(struct device *dev, dma_addr_t addr,
++				     size_t size, int direction);
++
+ extern void debug_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 			     int nents, int mapped_ents, int direction);
+ 
+@@ -120,6 +127,19 @@ static inline void debug_dma_unmap_page(struct device *dev, dma_addr_t addr,
+ {
+ }
+ 
++static inline void debug_dma_map_resource(struct device *dev,
++					  struct resource *res, size_t offset,
++					  size_t size, int direction,
++					  dma_addr_t dma_addr)
++{
++}
++
++static inline void debug_dma_unmap_resource(struct device *dev,
++					    dma_addr_t addr, size_t size,
++					    int direction)
++{
++}
++
+ static inline void debug_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 				    int nents, int mapped_ents, int direction)
+ {
+diff --git a/lib/dma-debug.c b/lib/dma-debug.c
+index ae4b65e..a6d8fa7 100644
+--- a/lib/dma-debug.c
++++ b/lib/dma-debug.c
+@@ -43,6 +43,7 @@ enum {
+ 	dma_debug_page,
+ 	dma_debug_sg,
+ 	dma_debug_coherent,
++	dma_debug_resource,
+ };
+ 
+ enum map_err_types {
+@@ -1348,6 +1349,52 @@ void debug_dma_unmap_page(struct device *dev, dma_addr_t addr,
+ }
+ EXPORT_SYMBOL(debug_dma_unmap_page);
+ 
++void debug_dma_map_resource(struct device *dev, struct resource *resource,
++			    size_t offset, size_t size, int direction,
++			    dma_addr_t dma_addr)
++{
++	struct dma_debug_entry *entry;
++
++	if (unlikely(dma_debug_disabled()))
++		return;
++
++	if (dma_mapping_error(dev, dma_addr))
++		return;
++
++	entry = dma_entry_alloc();
++	if (!entry)
++		return;
++
++	entry->dev       = dev;
++	entry->type      = dma_debug_resource;
++	entry->pfn       = resource->start >> PAGE_SHIFT;
++	entry->offset    = offset,
++	entry->dev_addr  = dma_addr;
++	entry->size      = size;
++	entry->direction = direction;
++
++	add_dma_entry(entry);
++}
++EXPORT_SYMBOL(debug_dma_map_resource);
++
++void debug_dma_unmap_resource(struct device *dev, dma_addr_t addr,
++			      size_t size, int direction)
++{
++	struct dma_debug_entry ref = {
++		.type           = dma_debug_resource,
++		.dev            = dev,
++		.dev_addr       = addr,
++		.size           = size,
++		.direction      = direction,
++	};
++
++	if (unlikely(dma_debug_disabled()))
++		return;
++
++	check_unmap(&ref);
++}
++EXPORT_SYMBOL(debug_dma_unmap_resource);
++
+ void debug_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 		      int nents, int mapped_ents, int direction)
+ {
+-- 
+2.4.0
