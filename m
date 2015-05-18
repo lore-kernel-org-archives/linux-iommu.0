@@ -1,147 +1,54 @@
-From: <wdavis@nvidia.com>
-Subject: [PATCH v2 4/7] DMA-API: Add dma_(un)map_resource() documentation
-Date: Mon, 18 May 2015 13:25:01 -0500
-Message-ID: <1431973504-5903-5-git-send-email-wdavis@nvidia.com>
-References: <1431973504-5903-1-git-send-email-wdavis@nvidia.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH v6 10/25] iommu: exynos: remove useless device_add/remove
+	callbacks
+Date: Mon, 18 May 2015 22:37:35 +0300
+Message-ID: <3790451.FWdEsNZUcL@avalon>
+References: <1430727380-10912-1-git-send-email-m.szyprowski@samsung.com>
+	<5559D66A.5070406@samsung.com> <20150518170430.GK20611@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1431973504-5903-1-git-send-email-wdavis@nvidia.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: joro@8bytes.org, bhelgaas@google.com
-Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, tripperda@nvidia.com, jhubbard@nvidia.com, jglisse@redhat.com, konrad.wilk@oracle.com, Will Davis <wdavis@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150518170430.GK20611-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Seung-Woo Kim <sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Will Davis <wdavis@nvidia.com>
+Hi Joerg,
 
-Add references to both the general API documentation as well as the HOWTO.
+On Monday 18 May 2015 19:04:30 Joerg Roedel wrote:
+> On Mon, May 18, 2015 at 02:09:14PM +0200, Marek Szyprowski wrote:
+> > > Hmm, will this remove support for iommu-groups in the exynos driver? I
+> > > am still working on the default-domain patch-set which makes iommu-group
+> > > support mandatory for iommu-drivers.
+> > 
+> > I you wish, I can leave this code. iommu-groups were not used at all
+> > on Exynos, so I thought that there is no point keeping useless code.
+> 
+> Yes, please keep the iommu-goups support, it will be required at some
+> point.
 
-Signed-off-by: Will Davis <wdavis@nvidia.com>
----
- Documentation/DMA-API-HOWTO.txt | 39 +++++++++++++++++++++++++++++++++++++--
- Documentation/DMA-API.txt       | 36 +++++++++++++++++++++++++++++++-----
- 2 files changed, 68 insertions(+), 7 deletions(-)
+I think the concept of iommu groups isn't very well understood, hence the 
+little love it receives from developers who conclude it's useless. I can't 
+blame anyone, I don't do any better. Could I convince you to include 
+documentation in your next patch series that touches iommu groups ?
 
-diff --git a/Documentation/DMA-API-HOWTO.txt b/Documentation/DMA-API-HOWTO.txt
-index 0f7afb2..89bd730 100644
---- a/Documentation/DMA-API-HOWTO.txt
-+++ b/Documentation/DMA-API-HOWTO.txt
-@@ -138,6 +138,10 @@ What about block I/O and networking buffers?  The block I/O and
- networking subsystems make sure that the buffers they use are valid
- for you to DMA from/to.
- 
-+In some systems, it may also be possible to DMA to and/or from a peer
-+device's MMIO region, as described by a 'struct resource'. This is
-+referred to as a peer-to-peer mapping.
-+
- 			DMA addressing limitations
- 
- Does your device have any DMA addressing limitations?  For example, is
-@@ -648,6 +652,35 @@ Every dma_map_{single,sg}() call should have its dma_unmap_{single,sg}()
- counterpart, because the bus address space is a shared resource and
- you could render the machine unusable by consuming all bus addresses.
- 
-+Peer-to-peer DMA mappings can be obtained using dma_map_resource() to map
-+another device's MMIO region for the given device:
-+
-+	struct resource *peer_mmio_res = &other_dev->resource[0];
-+	dma_addr_t dma_handle = dma_map_resource(dev, peer_mmio_res,
-+						 offset, size, direction);
-+	if (dma_handle == 0 || dma_mapping_error(dev, dma_handle))
-+	{
-+		/*
-+		 * If dma_handle == 0, dma_map_resource() is not
-+		 * implemented, and peer-to-peer transactions will not
-+		 * work.
-+		 */
-+		goto map_error_handling;
-+	}
-+
-+	...
-+
-+	dma_unmap_resource(dev, dma_handle, size, direction);
-+
-+Here, "offset" means byte offset within the given resource.
-+
-+You should both check for a 0 return value and call dma_mapping_error(),
-+as dma_map_resource() can either be not implemented or fail and return
-+error as outlined under the dma_map_single() discussion.
-+
-+You should call dma_unmap_resource() when DMA activity is finished, e.g.,
-+from the interrupt which told you that the DMA transfer is done.
-+
- If you need to use the same streaming DMA region multiple times and touch
- the data in between the DMA transfers, the buffer needs to be synced
- properly in order for the CPU and device to see the most up-to-date and
-@@ -765,8 +798,8 @@ failure can be determined by:
- 
- - checking if dma_alloc_coherent() returns NULL or dma_map_sg returns 0
- 
--- checking the dma_addr_t returned from dma_map_single() and dma_map_page()
--  by using dma_mapping_error():
-+- checking the dma_addr_t returned from dma_map_single(), dma_map_resource(),
-+  and dma_map_page() by using dma_mapping_error():
- 
- 	dma_addr_t dma_handle;
- 
-@@ -780,6 +813,8 @@ failure can be determined by:
- 		goto map_error_handling;
- 	}
- 
-+- checking if dma_map_resource() returns 0
-+
- - unmap pages that are already mapped, when mapping error occurs in the middle
-   of a multiple page mapping attempt. These example are applicable to
-   dma_map_page() as well.
-diff --git a/Documentation/DMA-API.txt b/Documentation/DMA-API.txt
-index 5208840..c25c549 100644
---- a/Documentation/DMA-API.txt
-+++ b/Documentation/DMA-API.txt
-@@ -283,14 +283,40 @@ and <size> parameters are provided to do partial page mapping, it is
- recommended that you never use these unless you really know what the
- cache width is.
- 
-+dma_addr_t
-+dma_map_resource(struct device *dev, struct resource *res,
-+		 unsigned long offset, size_t size,
-+		 enum dma_data_direction_direction)
-+
-+API for mapping resources. This API allows a driver to map a peer
-+device's resource for DMA. All the notes and warnings for the other
-+APIs apply here. Also, the success of this API does not validate or
-+guarantee that peer-to-peer transactions between the device and its
-+peer will be functional. They only grant access so that if such
-+transactions are possible, an IOMMU will not prevent them from
-+succeeding.
-+
-+If this API is not provided by the underlying implementation, 0 is
-+returned and the driver must take appropriate action. Otherwise, the
-+DMA address is returned, and that DMA address should be checked by
-+the driver (see dma_mapping_error() below).
-+
-+void
-+dma_unmap_resource(struct device *dev, dma_addr_t dma_address, size_t size,
-+		   enum dma_data_direction direction)
-+
-+Unmaps the resource previously mapped. All the parameters passed in
-+must be identical to those passed in to (and returned by) the mapping
-+API.
-+
- int
- dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
- 
--In some circumstances dma_map_single() and dma_map_page() will fail to create
--a mapping. A driver can check for these errors by testing the returned
--DMA address with dma_mapping_error(). A non-zero return value means the mapping
--could not be created and the driver should take appropriate action (e.g.
--reduce current DMA mapping usage or delay and try again later).
-+In some circumstances dma_map_single(), dma_map_page() and dma_map_resource()
-+will fail to create a mapping. A driver can check for these errors by testing
-+the returned DMA address with dma_mapping_error(). A non-zero return value
-+means the mapping could not be created and the driver should take appropriate
-+action (e.g. reduce current DMA mapping usage or delay and try again later).
- 
- 	int
- 	dma_map_sg(struct device *dev, struct scatterlist *sg,
+Could you please have a look at my "[RFC/PATCH 0/9] IOMMU probe deferral 
+support" patch series in the context of iommu groups ? The series pretty much 
+drops groups support from the ipmmu-vmsa driver, not because of a real desire 
+to do so, but because I wasn't sure how to keep them. Tips would be 
+appreciated.
+
 -- 
-2.4.0
+Regards,
+
+Laurent Pinchart
