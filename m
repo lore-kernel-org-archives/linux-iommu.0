@@ -1,53 +1,97 @@
-From: "Li, ZhenHua" <zhen-hual@hp.com>
-Subject: Re: [PATCH v11 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
-Date: Tue, 19 May 2015 15:43:39 +0800
-Message-ID: <555AE9AB.8060106@hp.com>
-References: <1431337974-545-1-git-send-email-zhen-hual@hp.com> <5552AEE9.80408@hp.com> <5559B97B.5090805@hp.com> <20150519011322.GA7065@dhcp-128-76.nay.redhat.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC/PATCH 2/9] arm: dma-mapping: Support IOMMU mappings spanning
+	the full 32 bits range
+Date: Tue, 19 May 2015 11:17:32 +0100
+Message-ID: <555B0DBC.6090204@arm.com>
+References: <1431644410-2997-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+	<1431644410-2997-3-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20150519011322.GA7065@dhcp-128-76.nay.redhat.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Dave Young <dyoung@redhat.com>
-Cc: joro@8bytes.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, bhelgaas@google.com, dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, vgoyal@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com, "Li, ZhenHua" <zhen-hual@hp.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1431644410-2997-3-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Dave,
+Hi Laurent,
 
-Don't worry :).
-Of cause I have read your comments, but most of them contains no actual
-code change request, so I did not reply them one by one.
-When we are sure there is no actual code change needed, I will update
-the comments and other format problems if necessary.
+On 15/05/15 00:00, Laurent Pinchart wrote:
+> The arm_iommu_create_mapping() function takes the IOMMU mapping size as
+> a size_t, limiting the size to 4GB - 1 on 32 bit platforms while most
+> bus masters would support the full 32 bits range. Fix this by passing
+> the size as a 64 bits integer, and limiting it to 4GB for now.
 
-Regards
-Zhenhua
+FYI there's already an almost-identical patch in -rc3 from Marek fixing 
+this: 1424532b2163 ("ARM: 8347/1: dma-mapping: fix off-by-one check in 
+arm_setup_iommu_dma_ops").
 
-On 05/19/2015 09:13 AM, Dave Young wrote:
-> Hi,
+Robin.
+
 >
-> On 05/18/15 at 06:05pm, Li, ZhenHua wrote:
->> Hi Joerg,
->>
->> Testing from HP: passed.
->> Testing from He Baoquan(Redhat): passed
->>
->> The problem that dmar fault came again when running v10 with latest
->> kernel is fixed.
->> And I think there is no need to update the code to a new version now.
->>
->> So please tell me if there are still any code need to be changed.
+> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> ---
+>   arch/arm/include/asm/dma-iommu.h |  2 +-
+>   arch/arm/mm/dma-mapping.c        | 12 +++---------
+>   2 files changed, 4 insertions(+), 10 deletions(-)
 >
-> Have you reviewed all my comments? Although it is only iommu driver fixes,
-> The patches are sent to lkml, no? If you do not want other people's comments
-> why will you send to us? I would say do not assume it is a closed circle for
-> only iommu driver.
+> diff --git a/arch/arm/include/asm/dma-iommu.h b/arch/arm/include/asm/dma-iommu.h
+> index 8e3fcb924db6..2ef282f96651 100644
+> --- a/arch/arm/include/asm/dma-iommu.h
+> +++ b/arch/arm/include/asm/dma-iommu.h
+> @@ -25,7 +25,7 @@ struct dma_iommu_mapping {
+>   };
 >
-> It is not easy to review patches actually, frankly I feel kernel code review
-> is not so strict like the early days, maybe one reason is people are getting
-> tired to argue.
+>   struct dma_iommu_mapping *
+> -arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, size_t size);
+> +arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, u64 size);
 >
-> Thanks
-> Dave
+>   void arm_iommu_release_mapping(struct dma_iommu_mapping *mapping);
+>
+> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> index 7aa5e339a596..c69e216a0cf9 100644
+> --- a/arch/arm/mm/dma-mapping.c
+> +++ b/arch/arm/mm/dma-mapping.c
+> @@ -1878,7 +1878,7 @@ struct dma_map_ops iommu_coherent_ops = {
+>    * arm_iommu_attach_device function.
+>    */
+>   struct dma_iommu_mapping *
+> -arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, size_t size)
+> +arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, u64 size)
+>   {
+>   	unsigned int bits = size >> PAGE_SHIFT;
+>   	unsigned int bitmap_size = BITS_TO_LONGS(bits) * sizeof(long);
+> @@ -1886,7 +1886,8 @@ arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, size_t size)
+>   	int extensions = 1;
+>   	int err = -ENOMEM;
+>
+> -	if (!bitmap_size)
+> +	/* Limit the size to 4GB for now. */
+> +	if (!size || size > (1ULL << 32))
+>   		return ERR_PTR(-EINVAL);
+>
+>   	if (bitmap_size > PAGE_SIZE) {
+> @@ -2057,13 +2058,6 @@ static bool arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size,
+>   	if (!iommu)
+>   		return false;
+>
+> -	/*
+> -	 * currently arm_iommu_create_mapping() takes a max of size_t
+> -	 * for size param. So check this limit for now.
+> -	 */
+> -	if (size > SIZE_MAX)
+> -		return false;
+> -
+>   	mapping = arm_iommu_create_mapping(dev->bus, dma_base, size);
+>   	if (IS_ERR(mapping)) {
+>   		pr_warn("Failed to create %llu-byte IOMMU mapping for device %s\n",
 >
