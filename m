@@ -1,110 +1,192 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC/PATCH 6/9] drivers: platform: Configure dma operations at
- probe time
-Date: Tue, 19 May 2015 11:39:17 +0100
-Message-ID: <555B12D5.5080608@arm.com>
-References: <1431644410-2997-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <1431644410-2997-7-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH v6 01/25] arm: dma-mapping: add support for creating
+ reserved mappings in iova space
+Date: Tue, 19 May 2015 12:49:36 +0200
+Message-ID: <555B1540.4040104@samsung.com>
+References: <1430727380-10912-1-git-send-email-m.szyprowski@samsung.com>
+ <1430727380-10912-2-git-send-email-m.szyprowski@samsung.com>
+ <554A1E9C.7060101@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=WINDOWS-1252; format=flowed
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1431644410-2997-7-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Laura Abbott <lauraa@codeaurora.org>, Arnd Bergmann <arnd@arndb.de>, Mitchel Humpherys <mitchelh@codeaurora.org>, Joreg Roedel <joro@8bytes.org>, Will Deacon <Will.Deacon@arm.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <554A1E9C.7060101@arm.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Cc: Rob Herring <robh@kernel.org>, Thierry Reding <treding@nvidia.com>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Inki Dae <inki.dae@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Will Deacon <Will.Deacon@arm.com>, Tomasz Figa <tomasz.figa@gmail.com>, "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>, Kyungmin Park <kyungmin.park@samsung.com>, Kukjin Kim <kgene@kernel.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Javier Martinez Canillas <javier@dowhile0.org>, Cho KyongHo <pullip.cho@samsung.com>, David Wodhouse <dwmw2@infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Laurent,
+Hello,
 
-On 15/05/15 00:00, Laurent Pinchart wrote:
-> Configuring DMA ops at probe time will allow deferring device probe when
-> the IOMMU isn't available yet.
+On 2015-05-06 16:01, Robin Murphy wrote:
+> Hi Marek,
+>
+> On 04/05/15 09:15, Marek Szyprowski wrote:
+>> Some devices (like frame buffers) are enabled by bootloader and 
+>> configured
+>> to perform DMA operations automatically (like displaying boot logo or 
+>> splash
+>> screen). Such devices operate and perform DMA operation usually until 
+>> the
+>> proper driver for them is loaded and probed. However before that 
+>> happens,
+>> system usually loads IOMMU drivers and configures dma parameters for 
+>> each
+>> device. When such initial configuration is created and enabled, it 
+>> usually
+>> contains empty translation rules betweem IO address space and physical
+>> memory, because no buffers nor memory regions have been requested by the
+>> respective driver.
+>>
+>> This patch adds support for "iommu-reserved-mapping", which can be used
+>> to provide definitions for mappings that need to be created on system
+>> boot to let such devices (enabled by bootloader) to operate properly
+>> until respective driver is probed.
+>
+> This appears to only work if you assume the driver is going to tear 
+> down the existing domain entirely; what about drivers that don't 
+> manage IOMMUs explicitly, or if there are multiple active devices 
+> behind the same IOMMU which (in future) start out in the same default 
+> domain? If any device is happy to remain in the default domain then it 
+> would be nice to clear the reservations once they are no longer needed.
 
-This is great, as I think it also subtly solves the ordering problem the 
-current domain allocation has with platform devices. WRT to your comment 
-on the other thread, this actually makes things slightly saner for IOMMU 
-groups - the group assignment has to happen after device creation or 
-else some sysfs stuff blows up, so of_xlate is far too early and the 
-add_device callback is a reasonable place for it to be (until we can 
-move it out of every driver and into bus code). However, we're currently 
-attaching the device to the automatic domain long before that, so things 
-happen logically backwards and drivers like the ARM SMMU which actually 
-use the group to store relevant data get all confused.
+Right, this need to be somehow worked out, but frankly right now I don't 
+have
+good idea which code should do it. The only idea that comes to my mind 
+is using
+a BUS_NOTIFY_BOUND_DRIVER notifier, but I don't like this approach.
 
-With this change, the existing attach_device call in arch_setup_dma_ops 
-will actually work far more reliably, and I might be able to revive my 
-attempt to port the ARM SMMU driver over to of_xlate :D
+> Could we not address the issue in a more robust way, like fleshing out 
+> an implementation of the nascent IOMMU_DOMAIN_IDENTITY type, then just 
+> flagging such devices to stipulate that their boot-time default domain 
+> must be an identity-mapped one?
 
-Robin.
+I'm open for any solution that will cover this case. Maybe my idea of iommu
+reserved regions is a bit over-engineered? Maybe instead of defining 
+reserved
+ranges it will be enough to add something like 
+'iommu-on-boot-identity-mapping'
+property? This way one can later use it for IOMMU_DOMAIN_IDENTITY 
+approach or
+something else what will be agreed?
 
-> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-> ---
->   drivers/base/platform.c | 9 +++++++++
->   drivers/of/platform.c   | 7 +++----
->   2 files changed, 12 insertions(+), 4 deletions(-)
 >
-> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-> index ebf034b97278..508a866859dc 100644
-> --- a/drivers/base/platform.c
-> +++ b/drivers/base/platform.c
-> @@ -516,6 +516,10 @@ static int platform_drv_probe(struct device *_dev)
->   	if (ret < 0)
->   		return ret;
+>> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>> ---
+>>   Documentation/devicetree/bindings/iommu/iommu.txt |  44 +++++++++
+>>   arch/arm/mm/dma-mapping.c                         | 112 
+>> ++++++++++++++++++++++
+>>   2 files changed, 156 insertions(+)
+>>
+> [...]
+>> @@ -2048,6 +2092,66 @@ void arm_iommu_detach_device(struct device *dev)
+>>   }
+>>   EXPORT_SYMBOL_GPL(arm_iommu_detach_device);
+>>
+>> +static int arm_iommu_add_reserved(struct device *dev,
+>> +                       struct dma_iommu_mapping *domain, phys_addr_t 
+>> phys,
+>> +                       dma_addr_t dma, size_t size)
+>> +{
+>> +       int ret;
+>> +
+>> +       ret = __reserve_iova(domain, dma, size);
+>> +       if (ret) {
+>> +               dev_err(dev, "failed to reserve mapping\n");
+>> +               return -EINVAL;
+>> +       }
+>> +
+>> +       ret = iommu_map(domain->domain, dma, phys, size, IOMMU_READ);
+>> +       if (ret != 0) {
+>> +               dev_err(dev, "create IOMMU mapping\n");
+>> +               return ret;
+>> +       }
+>> +
+>> +       dev_info(dev, "created reserved DMA mapping (%pa -> %pad, %zu 
+>> bytes)\n",
+>> +                &phys, &dma, size);
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +static int arm_iommu_init_reserved(struct device *dev,
+>> +                                  struct dma_iommu_mapping *domain)
+>> +{
+>> +       const char *name = "iommu-reserved-mapping";
+>> +       const __be32 *prop = NULL;
+>> +       int len, naddr, nsize;
+>> +       struct device_node *node = dev->of_node;
+>> +       phys_addr_t phys;
+>> +       dma_addr_t dma;
+>> +       size_t size;
+>> +
+>> +       if (!node)
+>> +               return 0;
+>> +
+>> +       naddr = of_n_addr_cells(node);
+>> +       nsize = of_n_size_cells(node);
+>> +
+>> +       prop = of_get_property(node, name, &len);
+>> +       if (!prop)
+>> +               return 0;
+>> +
+>> +       len /= sizeof(u32);
+>> +
+>> +       if (len < 2 * naddr + nsize) {
+>> +               dev_err(dev, "invalid length (%d cells) of %s 
+>> property\n",
+>> +                       len, name);
+>> +               return -EINVAL;
+>> +       }
+>> +
+>> +       phys = of_read_number(prop, naddr);
+>> +       dma = of_read_number(prop + naddr, naddr);
+>> +       size = of_read_number(prop + 2*naddr, nsize);
+>> +
+>> +       return arm_iommu_add_reserved(dev, domain, phys, dma, size);
+> > +}
 >
-> +	ret = of_dma_configure_ops(_dev, _dev->of_node);
-> +	if (ret < 0)
-> +		goto done;
-> +
->   	ret = dev_pm_domain_attach(_dev, true);
->   	if (ret != -EPROBE_DEFER) {
->   		ret = drv->probe(dev);
-> @@ -523,6 +527,10 @@ static int platform_drv_probe(struct device *_dev)
->   			dev_pm_domain_detach(_dev, true);
->   	}
+> I may be missing something, but I don't see how this can handle 
+> multiple ranges for the same device as the binding says.
 >
-> +	if (ret)
-> +		of_dma_deconfigure(_dev);
-> +
-> +done:
->   	if (drv->prevent_deferred_probe && ret == -EPROBE_DEFER) {
->   		dev_warn(_dev, "probe deferral not supported\n");
->   		ret = -ENXIO;
-> @@ -544,6 +552,7 @@ static int platform_drv_remove(struct device *_dev)
+
+Right, loop is missing in the above calls.
+
+>>   static struct dma_map_ops *arm_get_iommu_dma_map_ops(bool coherent)
+>>   {
+>>          return coherent ? &iommu_coherent_ops : &iommu_ops;
+>> @@ -2068,6 +2172,14 @@ static bool arm_setup_iommu_dma_ops(struct 
+>> device *dev, u64 dma_base, u64 size,
+>>                  return false;
+>>          }
+>>
+>> +       if (arm_iommu_init_reserved(dev, mapping) != 0) {
+>> +               pr_warn("Failed to initialize reserved mapping for 
+>> device %s\n",
+>> +                       dev_name(dev));
+>> +               __arm_iommu_detach_device(dev);
+>> +               arm_iommu_release_mapping(mapping);
+>> +               return false;
+>> +       }
+>> +
+>>          if (__arm_iommu_attach_device(dev, mapping)) {
+>>                  pr_warn("Failed to attached device %s to 
+>> IOMMU_mapping\n",
+>>                                  dev_name(dev));
 >
->   	ret = drv->remove(dev);
->   	dev_pm_domain_detach(_dev, true);
-> +	of_dma_deconfigure(_dev);
->
->   	return ret;
->   }
-> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
-> index 9a29f09b7723..fc939bec799e 100644
-> --- a/drivers/of/platform.c
-> +++ b/drivers/of/platform.c
-> @@ -178,10 +178,8 @@ static struct platform_device *of_platform_device_create_pdata(
->   	dev->dev.bus = &platform_bus_type;
->   	dev->dev.platform_data = platform_data;
->   	of_dma_configure_masks(&dev->dev, dev->dev.of_node);
-> -	of_dma_configure_ops(&dev->dev, dev->dev.of_node);
->
->   	if (of_device_add(dev) != 0) {
-> -		of_dma_deconfigure(&dev->dev);
->   		platform_device_put(dev);
->   		goto err_clear_flag;
->   	}
-> @@ -465,11 +463,12 @@ static int of_platform_device_destroy(struct device *dev, void *data)
->   	if (dev->bus == &platform_bus_type)
->   		platform_device_unregister(to_platform_device(dev));
->   #ifdef CONFIG_ARM_AMBA
-> -	else if (dev->bus == &amba_bustype)
-> +	else if (dev->bus == &amba_bustype) {
->   		amba_device_unregister(to_amba_device(dev));
-> +		of_dma_deconfigure(dev);
-> +	}
->   #endif
->
-> -	of_dma_deconfigure(dev);
->   	of_node_clear_flag(dev->of_node, OF_POPULATED);
->   	of_node_clear_flag(dev->of_node, OF_POPULATED_BUS);
->   	return 0;
->
+> I'm hoping Joerg is still working on his default domain series, 
+> because the domain creation in arch_setup_dma_ops turns out to be 
+> horrible on a number of levels (like everything happening in the wrong 
+> order for platform devices). If that doesn't negate this issue 
+> entirely, it's going to significantly break this way of hooking up the 
+> solution (depending on what the drivers do) - worth some 
+> consideration, at least.
+
+I would really like to have something working soon, it's been a lot of 
+discussion but still
+very little of code that actually implements anything...
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
