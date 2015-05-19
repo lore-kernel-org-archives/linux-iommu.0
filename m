@@ -1,43 +1,53 @@
-From: Dave Young <dyoung@redhat.com>
-Subject: Re: [PATCH v11 0/10] iommu/vt-d: Fix intel vt-d faults in kdump
- kernel
-Date: Tue, 19 May 2015 09:13:22 +0800
-Message-ID: <20150519011322.GA7065@dhcp-128-76.nay.redhat.com>
-References: <1431337974-545-1-git-send-email-zhen-hual@hp.com>
- <5552AEE9.80408@hp.com>
- <5559B97B.5090805@hp.com>
+From: "Li, ZhenHua" <zhen-hual@hp.com>
+Subject: Re: [PATCH v11 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
+Date: Tue, 19 May 2015 15:43:39 +0800
+Message-ID: <555AE9AB.8060106@hp.com>
+References: <1431337974-545-1-git-send-email-zhen-hual@hp.com> <5552AEE9.80408@hp.com> <5559B97B.5090805@hp.com> <20150519011322.GA7065@dhcp-128-76.nay.redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5559B97B.5090805@hp.com>
+In-Reply-To: <20150519011322.GA7065@dhcp-128-76.nay.redhat.com>
 Sender: linux-pci-owner@vger.kernel.org
-To: "Li, ZhenHua" <zhen-hual@hp.com>
-Cc: joro@8bytes.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, bhelgaas@google.com, dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, vgoyal@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
+To: Dave Young <dyoung@redhat.com>
+Cc: joro@8bytes.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, bhelgaas@google.com, dwmw2@infradead.org, indou.takao@jp.fujitsu.com, bhe@redhat.com, vgoyal@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com, "Li, ZhenHua" <zhen-hual@hp.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Hi Dave,
 
-On 05/18/15 at 06:05pm, Li, ZhenHua wrote:
-> Hi Joerg,
-> 
-> Testing from HP: passed.
-> Testing from He Baoquan(Redhat): passed
-> 
-> The problem that dmar fault came again when running v10 with latest
-> kernel is fixed.
-> And I think there is no need to update the code to a new version now.
-> 
-> So please tell me if there are still any code need to be changed.
+Don't worry :).
+Of cause I have read your comments, but most of them contains no actual
+code change request, so I did not reply them one by one.
+When we are sure there is no actual code change needed, I will update
+the comments and other format problems if necessary.
 
-Have you reviewed all my comments? Although it is only iommu driver fixes,
-The patches are sent to lkml, no? If you do not want other people's comments
-why will you send to us? I would say do not assume it is a closed circle for
-only iommu driver.
+Regards
+Zhenhua
 
-It is not easy to review patches actually, frankly I feel kernel code review
-is not so strict like the early days, maybe one reason is people are getting
-tired to argue.
-
-Thanks
-Dave
+On 05/19/2015 09:13 AM, Dave Young wrote:
+> Hi,
+>
+> On 05/18/15 at 06:05pm, Li, ZhenHua wrote:
+>> Hi Joerg,
+>>
+>> Testing from HP: passed.
+>> Testing from He Baoquan(Redhat): passed
+>>
+>> The problem that dmar fault came again when running v10 with latest
+>> kernel is fixed.
+>> And I think there is no need to update the code to a new version now.
+>>
+>> So please tell me if there are still any code need to be changed.
+>
+> Have you reviewed all my comments? Although it is only iommu driver fixes,
+> The patches are sent to lkml, no? If you do not want other people's comments
+> why will you send to us? I would say do not assume it is a closed circle for
+> only iommu driver.
+>
+> It is not easy to review patches actually, frankly I feel kernel code review
+> is not so strict like the early days, maybe one reason is people are getting
+> tired to argue.
+>
+> Thanks
+> Dave
+>
