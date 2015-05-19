@@ -1,52 +1,83 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v7 21/25] ARM: dts: exynos4415: add sysmmu nodes
-Date: Tue, 19 May 2015 15:20:41 +0200
-Message-ID: <1432041645-11172-22-git-send-email-m.szyprowski@samsung.com>
-References: <1432041645-11172-1-git-send-email-m.szyprowski@samsung.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1432041645-11172-1-git-send-email-m.szyprowski@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 2/3] iommu/arm-smmu: Add initial driver support for ARM
+	SMMUv3 devices
+Date: Tue, 19 May 2015 17:24:35 +0200
+Message-ID: <20150519152435.GL20611@8bytes.org>
+References: <1431108046-9675-1-git-send-email-will.deacon@arm.com>
+	<1431108046-9675-3-git-send-email-will.deacon@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1431108046-9675-3-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds System MMU nodes to all defined devices that are specific
-to Exynos4415 series.
+Hi Will,
 
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Acked-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
----
- arch/arm/boot/dts/exynos4415.dtsi | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+the code looks good overall, I just have some questions below.
 
-diff --git a/arch/arm/boot/dts/exynos4415.dtsi b/arch/arm/boot/dts/exynos4415.dtsi
-index 5caea996e090..7c4e44cfe75d 100644
---- a/arch/arm/boot/dts/exynos4415.dtsi
-+++ b/arch/arm/boot/dts/exynos4415.dtsi
-@@ -249,6 +249,7 @@
- 			clocks = <&cmu CLK_SCLK_FIMD0>, <&cmu CLK_FIMD0>;
- 			clock-names = "sclk_fimd", "fimd";
- 			samsung,power-domain = <&pd_lcd0>;
-+			iommus = <&sysmmu_fimd0>;
- 			samsung,sysreg = <&sysreg_system_controller>;
- 			status = "disabled";
- 		};
-@@ -268,6 +269,16 @@
- 			status = "disabled";
- 		};
- 
-+		sysmmu_fimd0: sysmmu@11E20000 {
-+			compatible = "samsung,exynos-sysmmu";
-+			reg = <0x11e20000 0x1000>;
-+			interrupts = <0 80 0>, <0 81 0>;
-+			clock-names = "sysmmu", "master";
-+			clocks = <&cmu CLK_SMMUFIMD0>, <&cmu CLK_FIMD0>;
-+			samsung,power-domain = <&pd_lcd0>;
-+			#iommu-cells = <0>;
-+		};
-+
- 		hsotg: hsotg@12480000 {
- 			compatible = "samsung,s3c6400-hsotg";
- 			reg = <0x12480000 0x20000>;
--- 
-1.9.2
+On Fri, May 08, 2015 at 07:00:45PM +0100, Will Deacon wrote:
+> +static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+> +{
+> +	int ret = 0;
+> +	struct arm_smmu_device *smmu;
+> +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+> +	struct arm_smmu_group *smmu_group = arm_smmu_group_get(dev);
+> +
+> +	if (!smmu_group)
+> +		return -ENOENT;
+> +
+> +	/* Already attached to a different domain? */
+> +	if (smmu_group->domain && smmu_group->domain != smmu_domain)
+> +		return -EEXIST;
+> +
+> +	smmu = smmu_group->smmu;
+> +	mutex_lock(&smmu_domain->init_mutex);
+> +
+> +	if (!smmu_domain->smmu) {
+> +		smmu_domain->smmu = smmu;
+> +		ret = arm_smmu_domain_finalise(domain);
+> +		if (ret) {
+> +			smmu_domain->smmu = NULL;
+> +			goto out_unlock;
+> +		}
+> +	} else if (smmu_domain->smmu != smmu) {
+> +		dev_err(dev,
+> +			"cannot attach to SMMU %s (upstream of %s)\n",
+> +			dev_name(smmu_domain->smmu->dev),
+> +			dev_name(smmu->dev));
+> +		ret = -ENXIO;
+> +		goto out_unlock;
+> +	}
+
+This looks like all devices in a domain need to be behind the same SMMU
+device, right?
+
+
+> +	/* Page sizes */
+> +	if (reg & IDR5_GRAN64K)
+> +		pgsize_bitmap |= SZ_64K | SZ_512M;
+> +	if (reg & IDR5_GRAN16K)
+> +		pgsize_bitmap |= SZ_16K | SZ_32M;
+> +	if (reg & IDR5_GRAN4K)
+> +		pgsize_bitmap |= SZ_4K | SZ_2M | SZ_1G;
+> +
+> +	arm_smmu_ops.pgsize_bitmap &= pgsize_bitmap;
+
+So this could effictivly lead to a zero pgsize_bitmap when there are
+SMMUs in the system with support for different page sizes, no?
+
+
+	Joerg
