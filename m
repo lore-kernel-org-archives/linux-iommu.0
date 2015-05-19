@@ -1,97 +1,110 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC/PATCH 2/9] arm: dma-mapping: Support IOMMU mappings spanning
-	the full 32 bits range
-Date: Tue, 19 May 2015 11:17:32 +0100
-Message-ID: <555B0DBC.6090204@arm.com>
-References: <1431644410-2997-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-	<1431644410-2997-3-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [RFC/PATCH 6/9] drivers: platform: Configure dma operations at
+ probe time
+Date: Tue, 19 May 2015 11:39:17 +0100
+Message-ID: <555B12D5.5080608@arm.com>
+References: <1431644410-2997-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <1431644410-2997-7-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1431644410-2997-3-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset=WINDOWS-1252; format=flowed
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1431644410-2997-7-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Laura Abbott <lauraa@codeaurora.org>, Arnd Bergmann <arnd@arndb.de>, Mitchel Humpherys <mitchelh@codeaurora.org>, Joreg Roedel <joro@8bytes.org>, Will Deacon <Will.Deacon@arm.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Laurent,
 
 On 15/05/15 00:00, Laurent Pinchart wrote:
-> The arm_iommu_create_mapping() function takes the IOMMU mapping size as
-> a size_t, limiting the size to 4GB - 1 on 32 bit platforms while most
-> bus masters would support the full 32 bits range. Fix this by passing
-> the size as a 64 bits integer, and limiting it to 4GB for now.
+> Configuring DMA ops at probe time will allow deferring device probe when
+> the IOMMU isn't available yet.
 
-FYI there's already an almost-identical patch in -rc3 from Marek fixing 
-this: 1424532b2163 ("ARM: 8347/1: dma-mapping: fix off-by-one check in 
-arm_setup_iommu_dma_ops").
+This is great, as I think it also subtly solves the ordering problem the 
+current domain allocation has with platform devices. WRT to your comment 
+on the other thread, this actually makes things slightly saner for IOMMU 
+groups - the group assignment has to happen after device creation or 
+else some sysfs stuff blows up, so of_xlate is far too early and the 
+add_device callback is a reasonable place for it to be (until we can 
+move it out of every driver and into bus code). However, we're currently 
+attaching the device to the automatic domain long before that, so things 
+happen logically backwards and drivers like the ARM SMMU which actually 
+use the group to store relevant data get all confused.
+
+With this change, the existing attach_device call in arch_setup_dma_ops 
+will actually work far more reliably, and I might be able to revive my 
+attempt to port the ARM SMMU driver over to of_xlate :D
 
 Robin.
 
->
-> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 > ---
->   arch/arm/include/asm/dma-iommu.h |  2 +-
->   arch/arm/mm/dma-mapping.c        | 12 +++---------
->   2 files changed, 4 insertions(+), 10 deletions(-)
+>   drivers/base/platform.c | 9 +++++++++
+>   drivers/of/platform.c   | 7 +++----
+>   2 files changed, 12 insertions(+), 4 deletions(-)
 >
-> diff --git a/arch/arm/include/asm/dma-iommu.h b/arch/arm/include/asm/dma-iommu.h
-> index 8e3fcb924db6..2ef282f96651 100644
-> --- a/arch/arm/include/asm/dma-iommu.h
-> +++ b/arch/arm/include/asm/dma-iommu.h
-> @@ -25,7 +25,7 @@ struct dma_iommu_mapping {
->   };
+> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+> index ebf034b97278..508a866859dc 100644
+> --- a/drivers/base/platform.c
+> +++ b/drivers/base/platform.c
+> @@ -516,6 +516,10 @@ static int platform_drv_probe(struct device *_dev)
+>   	if (ret < 0)
+>   		return ret;
 >
->   struct dma_iommu_mapping *
-> -arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, size_t size);
-> +arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, u64 size);
+> +	ret = of_dma_configure_ops(_dev, _dev->of_node);
+> +	if (ret < 0)
+> +		goto done;
+> +
+>   	ret = dev_pm_domain_attach(_dev, true);
+>   	if (ret != -EPROBE_DEFER) {
+>   		ret = drv->probe(dev);
+> @@ -523,6 +527,10 @@ static int platform_drv_probe(struct device *_dev)
+>   			dev_pm_domain_detach(_dev, true);
+>   	}
 >
->   void arm_iommu_release_mapping(struct dma_iommu_mapping *mapping);
+> +	if (ret)
+> +		of_dma_deconfigure(_dev);
+> +
+> +done:
+>   	if (drv->prevent_deferred_probe && ret == -EPROBE_DEFER) {
+>   		dev_warn(_dev, "probe deferral not supported\n");
+>   		ret = -ENXIO;
+> @@ -544,6 +552,7 @@ static int platform_drv_remove(struct device *_dev)
 >
-> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> index 7aa5e339a596..c69e216a0cf9 100644
-> --- a/arch/arm/mm/dma-mapping.c
-> +++ b/arch/arm/mm/dma-mapping.c
-> @@ -1878,7 +1878,7 @@ struct dma_map_ops iommu_coherent_ops = {
->    * arm_iommu_attach_device function.
->    */
->   struct dma_iommu_mapping *
-> -arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, size_t size)
-> +arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, u64 size)
->   {
->   	unsigned int bits = size >> PAGE_SHIFT;
->   	unsigned int bitmap_size = BITS_TO_LONGS(bits) * sizeof(long);
-> @@ -1886,7 +1886,8 @@ arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, size_t size)
->   	int extensions = 1;
->   	int err = -ENOMEM;
+>   	ret = drv->remove(dev);
+>   	dev_pm_domain_detach(_dev, true);
+> +	of_dma_deconfigure(_dev);
 >
-> -	if (!bitmap_size)
-> +	/* Limit the size to 4GB for now. */
-> +	if (!size || size > (1ULL << 32))
->   		return ERR_PTR(-EINVAL);
+>   	return ret;
+>   }
+> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+> index 9a29f09b7723..fc939bec799e 100644
+> --- a/drivers/of/platform.c
+> +++ b/drivers/of/platform.c
+> @@ -178,10 +178,8 @@ static struct platform_device *of_platform_device_create_pdata(
+>   	dev->dev.bus = &platform_bus_type;
+>   	dev->dev.platform_data = platform_data;
+>   	of_dma_configure_masks(&dev->dev, dev->dev.of_node);
+> -	of_dma_configure_ops(&dev->dev, dev->dev.of_node);
 >
->   	if (bitmap_size > PAGE_SIZE) {
-> @@ -2057,13 +2058,6 @@ static bool arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size,
->   	if (!iommu)
->   		return false;
+>   	if (of_device_add(dev) != 0) {
+> -		of_dma_deconfigure(&dev->dev);
+>   		platform_device_put(dev);
+>   		goto err_clear_flag;
+>   	}
+> @@ -465,11 +463,12 @@ static int of_platform_device_destroy(struct device *dev, void *data)
+>   	if (dev->bus == &platform_bus_type)
+>   		platform_device_unregister(to_platform_device(dev));
+>   #ifdef CONFIG_ARM_AMBA
+> -	else if (dev->bus == &amba_bustype)
+> +	else if (dev->bus == &amba_bustype) {
+>   		amba_device_unregister(to_amba_device(dev));
+> +		of_dma_deconfigure(dev);
+> +	}
+>   #endif
 >
-> -	/*
-> -	 * currently arm_iommu_create_mapping() takes a max of size_t
-> -	 * for size param. So check this limit for now.
-> -	 */
-> -	if (size > SIZE_MAX)
-> -		return false;
-> -
->   	mapping = arm_iommu_create_mapping(dev->bus, dma_base, size);
->   	if (IS_ERR(mapping)) {
->   		pr_warn("Failed to create %llu-byte IOMMU mapping for device %s\n",
+> -	of_dma_deconfigure(dev);
+>   	of_node_clear_flag(dev->of_node, OF_POPULATED);
+>   	of_node_clear_flag(dev->of_node, OF_POPULATED_BUS);
+>   	return 0;
 >
