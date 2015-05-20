@@ -1,66 +1,54 @@
-From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v5 0/9] Add VT-d Posted-Interrupts support - IOMMU part
-Date: Wed, 20 May 2015 13:15:28 +0800
-Message-ID: <1432098937-19527-1-git-send-email-feng.wu@intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Feng Wu <feng.wu@intel.com>
+Subject: [v5 1/9] iommu: Add new member capability to struct irq_remap_ops
+Date: Wed, 20 May 2015 13:15:29 +0800
+Message-ID: <1432098937-19527-2-git-send-email-feng.wu@intel.com>
+References: <1432098937-19527-1-git-send-email-feng.wu@intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1432098937-19527-1-git-send-email-feng.wu@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, dwmw2@infradead.org
+Cc: tglx@linutronix.de, jiang.liu@linux.intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Feng Wu <feng.wu@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-VT-d Posted-Interrupts is an enhancement to CPU side Posted-Interrupt.
-With VT-d Posted-Interrupts enabled, external interrupts from
-direct-assigned devices can be delivered to guests without VMM
-intervention when guest is running in non-root mode.
+This patch adds a new member capability to struct irq_remap_ops,
+this new function ops can be used to check whether some
+features are supported, such as VT-d Posted-Interrupts.
 
-You can find the VT-d Posted-Interrtups Spec. in the following URL:
-http://www.intel.com/content/www/us/en/intelligent-systems/intel-technology/vt-directed-io-spec.html
+Signed-off-by: Feng Wu <feng.wu@intel.com>
+Reviewed-by: Jiang Liu <jiang.liu@linux.intel.com>
+---
+ arch/x86/include/asm/irq_remapping.h | 4 ++++
+ drivers/iommu/irq_remapping.h        | 3 +++
+ 2 files changed, 7 insertions(+)
 
-This series was part of http://thread.gmane.org/gmane.linux.kernel.iommu/7708. To make things clear, send out IOMMU part here.
-
-This patch-set is based on the lastest x86/apic branch of tip tree.
-
-the whole series which contain multiple components into three parts:
-- Prerequisite changes to irq subsystem (already merged in tip tree x86/apic branch)
-- IOMMU part (in this series)
-- KVM and VFIO parts (will send out this part once the first two parts are accepted)
-
-v4->v5:
-* Abstract modify_irte() to accept two format of irte.
-
-v3->v4:
-* Change capability to a int variant flags instead of a function call.
-* Add hotplug case for VT-d PI.
-
-Feng Wu (9):
-  iommu: Add new member capability to struct irq_remap_ops
-  iommu, x86: Define new irte structure for VT-d Posted-Interrupts
-  iommu, x86: Abstract modify_irte() to accept two format of irte
-  iommu, x86: Implement irq_set_vcpu_affinity for intel_ir_chip
-  iommu, x86: No need to migrating irq for VT-d Posted-Interrupts
-  iommu, x86: Add cap_pi_support() to detect VT-d PI capability
-  iommu, x86: Setup Posted-Interrupts capability for Intel iommu
-  iommu, x86: define irq_remapping_cap()
-  iommu, x86: Properly handler PI for IOMMU hotplug
-
- arch/x86/include/asm/irq_remapping.h | 11 +++++
- drivers/iommu/intel_irq_remapping.c  | 82 ++++++++++++++++++++++++++++++++++--
- drivers/iommu/irq_remapping.c        | 11 +++++
- drivers/iommu/irq_remapping.h        |  6 +++
- include/linux/dmar.h                 | 32 ++++++++++++++
- include/linux/intel-iommu.h          |  1 +
- 6 files changed, 140 insertions(+), 3 deletions(-)
-
+diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
+index 78974fb..0953723 100644
+--- a/arch/x86/include/asm/irq_remapping.h
++++ b/arch/x86/include/asm/irq_remapping.h
+@@ -31,6 +31,10 @@ struct irq_alloc_info;
+ 
+ #ifdef CONFIG_IRQ_REMAP
+ 
++enum irq_remap_cap {
++	IRQ_POSTING_CAP = 0,
++};
++
+ extern void set_irq_remapping_broken(void);
+ extern int irq_remapping_prepare(void);
+ extern int irq_remapping_enable(void);
+diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
+index 91d5a11..b6ca30d 100644
+--- a/drivers/iommu/irq_remapping.h
++++ b/drivers/iommu/irq_remapping.h
+@@ -35,6 +35,9 @@ extern int no_x2apic_optout;
+ extern int irq_remapping_enabled;
+ 
+ struct irq_remap_ops {
++	/* The supported capabilities */
++	int capability;
++
+ 	/* Initializes hardware and makes it ready for remapping interrupts */
+ 	int  (*prepare)(void);
+ 
 -- 
 2.1.0
