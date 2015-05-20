@@ -1,209 +1,129 @@
-From: Mark Hounschell <markh@compro.net>
-Subject: Re: [PATCH v2 4/7] DMA-API: Add dma_(un)map_resource() documentation
-Date: Wed, 20 May 2015 16:07:22 -0400
-Message-ID: <555CE97A.1030805@compro.net>
-References: <1431973504-5903-1-git-send-email-wdavis@nvidia.com> <1431973504-5903-5-git-send-email-wdavis@nvidia.com> <20150519234300.GA31666@google.com> <555C79E5.9040507@compro.net> <ea891abe867444d193742030348a6ad1@HQMAIL106.nvidia.com> <555CDD6F.40304@compro.net> <202fc76456cf4f3aac02034d5366780c@HQMAIL106.nvidia.com>
-Reply-To: markh@compro.net
+From: Baoquan He <bhe@redhat.com>
+Subject: Re: [PATCH v11 08/10] iommu/vt-d: assign new page table for dma_map
+Date: Thu, 21 May 2015 07:52:42 +0800
+Message-ID: <20150520235242.GA2342@dhcp-17-102.nay.redhat.com>
+References: <1431337974-545-1-git-send-email-zhen-hual@hp.com>
+ <1431337974-545-9-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <202fc76456cf4f3aac02034d5366780c@HQMAIL106.nvidia.com>
+Content-Disposition: inline
+In-Reply-To: <1431337974-545-9-git-send-email-zhen-hual@hp.com>
 Sender: linux-pci-owner@vger.kernel.org
-To: William Davis <wdavis@nvidia.com>, Bjorn Helgaas <bhelgaas@google.com>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Terence Ripperda <TRipperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, "jglisse@redhat.com" <jglisse@redhat.com>, "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>, Jonathan Corbet <corbet@lwn.net>, "David S. Miller" <davem@davemloft.net>
+To: "Li, Zhen-Hua" <zhen-hual@hp.com>
+Cc: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, joro@8bytes.org, vgoyal@redhat.com, dyoung@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/20/2015 03:51 PM, William Davis wrote:
->
->
->> -----Original Message-----
->> From: Mark Hounschell [mailto:markh@compro.net]
->> Sent: Wednesday, May 20, 2015 2:16 PM
->> To: William Davis; Bjorn Helgaas
->> Cc: joro@8bytes.org; iommu@lists.linux-foundation.org; linux-
->> pci@vger.kernel.org; Terence Ripperda; John Hubbard; jglisse@redhat.com;
->> konrad.wilk@oracle.com; Jonathan Corbet; David S. Miller
->> Subject: Re: [PATCH v2 4/7] DMA-API: Add dma_(un)map_resource()
->> documentation
->>
->> On 05/20/2015 01:30 PM, William Davis wrote:
->>>
->>>
->>>> -----Original Message-----
->>>> From: Mark Hounschell [mailto:markh@compro.net]
->>>> Sent: Wednesday, May 20, 2015 7:11 AM
->>>> To: Bjorn Helgaas; William Davis
->>>> Cc: joro@8bytes.org; iommu@lists.linux-foundation.org; linux-
->>>> pci@vger.kernel.org; Terence Ripperda; John Hubbard;
->>>> jglisse@redhat.com; konrad.wilk@oracle.com; Jonathan Corbet; David S.
->>>> Miller
->>>> Subject: Re: [PATCH v2 4/7] DMA-API: Add dma_(un)map_resource()
->>>> documentation
->>>>
->>>> On 05/19/2015 07:43 PM, Bjorn Helgaas wrote:
->>>>> [+cc Dave, Jonathan]
->>>>>
->>>>> On Mon, May 18, 2015 at 01:25:01PM -0500, wdavis@nvidia.com wrote:
->>>>>> From: Will Davis <wdavis@nvidia.com>
->>>>>>
->>>>>> Add references to both the general API documentation as well as the
->>>> HOWTO.
->>>>>>
->>>>>> Signed-off-by: Will Davis <wdavis@nvidia.com>
->>>>>> ---
->>>>>>     Documentation/DMA-API-HOWTO.txt | 39
->>>> +++++++++++++++++++++++++++++++++++++--
->>>>>>     Documentation/DMA-API.txt       | 36
->> +++++++++++++++++++++++++++++++--
->>>> ---
->>>>>>     2 files changed, 68 insertions(+), 7 deletions(-)
->>>>>>
->>>>>> diff --git a/Documentation/DMA-API-HOWTO.txt
->>>>>> b/Documentation/DMA-API-HOWTO.txt index 0f7afb2..89bd730 100644
->>>>>> --- a/Documentation/DMA-API-HOWTO.txt
->>>>>> +++ b/Documentation/DMA-API-HOWTO.txt
->>>>>> @@ -138,6 +138,10 @@ What about block I/O and networking buffers?
->>>>>> The
->>>> block I/O and
->>>>>>     networking subsystems make sure that the buffers they use are valid
->>>>>>     for you to DMA from/to.
->>>>>>
->>>>>> +In some systems, it may also be possible to DMA to and/or from a
->>>>>> +peer device's MMIO region, as described by a 'struct resource'.
->>>>>> +This is referred to as a peer-to-peer mapping.
->>>>>> +
->>>>>>     			DMA addressing limitations
->>>>>>
->>>>>>     Does your device have any DMA addressing limitations?  For
->>>>>> example, is @@ -648,6 +652,35 @@ Every dma_map_{single,sg}() call
->>>>>> should have its
->>>> dma_unmap_{single,sg}()
->>>>>>     counterpart, because the bus address space is a shared resource and
->>>>>>     you could render the machine unusable by consuming all bus
->> addresses.
->>>>>>
->>>>>> +Peer-to-peer DMA mappings can be obtained using dma_map_resource()
->>>>>> +to map another device's MMIO region for the given device:
->>>>>> +
->>>>>> +	struct resource *peer_mmio_res = &other_dev->resource[0];
->>>>>> +	dma_addr_t dma_handle = dma_map_resource(dev, peer_mmio_res,
->>>>>> +						 offset, size, direction);
->>>>>> +	if (dma_handle == 0 || dma_mapping_error(dev, dma_handle))
->>>>>> +	{
->>>>>> +		/*
->>>>>> +		 * If dma_handle == 0, dma_map_resource() is not
->>>>>> +		 * implemented, and peer-to-peer transactions will not
->>>>>> +		 * work.
->>>>>> +		 */
->>>>>> +		goto map_error_handling;
->>>>>> +	}
->>>>>> +
->>>>>> +	...
->>>>>> +
->>>>>> +	dma_unmap_resource(dev, dma_handle, size, direction);
->>>>>> +
->>>>>> +Here, "offset" means byte offset within the given resource.
->>>>>> +
->>>>>> +You should both check for a 0 return value and call
->>>>>> +dma_mapping_error(), as dma_map_resource() can either be not
->>>>>> +implemented or fail and return error as outlined under the
->>>> dma_map_single() discussion.
->>>>>> +
->>>>>> +You should call dma_unmap_resource() when DMA activity is
->>>>>> +finished, e.g., from the interrupt which told you that the DMA
->> transfer is done.
->>>>>> +
->>>>>>     If you need to use the same streaming DMA region multiple times
->>>>>> and
->>>> touch
->>>>>>     the data in between the DMA transfers, the buffer needs to be
->> synced
->>>>>>     properly in order for the CPU and device to see the most
->>>>>> up-to-date and @@ -765,8 +798,8 @@ failure can be determined by:
->>>>>>
->>>>>>     - checking if dma_alloc_coherent() returns NULL or dma_map_sg
->>>>>> returns 0
->>>>>>
->>>>>> -- checking the dma_addr_t returned from dma_map_single() and
->>>>>> dma_map_page()
->>>>>> -  by using dma_mapping_error():
->>>>>> +- checking the dma_addr_t returned from dma_map_single(),
->>>>>> +dma_map_resource(),
->>>>>> +  and dma_map_page() by using dma_mapping_error():
->>>>>>
->>>>>>     	dma_addr_t dma_handle;
->>>>>>
->>>>>> @@ -780,6 +813,8 @@ failure can be determined by:
->>>>>>     		goto map_error_handling;
->>>>>>     	}
->>>>>>
->>>>>> +- checking if dma_map_resource() returns 0
->>>>>> +
->>>>>>     - unmap pages that are already mapped, when mapping error occurs
->>>>>> in
->>>> the middle
->>>>>>       of a multiple page mapping attempt. These example are applicable
->> to
->>>>>>       dma_map_page() as well.
->>>>>> diff --git a/Documentation/DMA-API.txt b/Documentation/DMA-API.txt
->>>>>> index 5208840..c25c549 100644
->>>>>> --- a/Documentation/DMA-API.txt
->>>>>> +++ b/Documentation/DMA-API.txt
->>>>>> @@ -283,14 +283,40 @@ and <size> parameters are provided to do
->>>>>> partial
->>>> page mapping, it is
->>>>>>     recommended that you never use these unless you really know what
->> the
->>>>>>     cache width is.
->>>>>>
->>>>>> +dma_addr_t
->>>>>> +dma_map_resource(struct device *dev, struct resource *res,
->>>>>> +		 unsigned long offset, size_t size,
->>>>>> +		 enum dma_data_direction_direction)
->>>>>> +
->>>>>> +API for mapping resources. This API allows a driver to map a peer
->>>>>> +device's resource for DMA. All the notes and warnings for the
->>>>>> +other APIs apply here. Also, the success of this API does not
->>>>>> +validate or guarantee that peer-to-peer transactions between the
->>>>>> +device and its peer will be functional. They only grant access so
->>>>>> +that if such transactions are possible, an IOMMU will not prevent
->>>>>> +them from succeeding.
->>>>>
->>>>> If the driver can't tell whether peer-to-peer accesses will actually
->>>>> work, this seems like sort of a dubious API.  I'm trying to imagine
->>>>> how a driver would handle this.  I guess whether peer-to-peer works
->>>>> depends on the underlying platform (not the devices themselves)?  If
->>>>> we run the driver on a platform where peer-to-peer *doesn't* work,
->>>>> what happens?  The driver can't tell, so we just rely on the user to
->>>>> say "this isn't working as expected"?
->>>>>
->>>>
->>>
->>> Yes, it's quite difficult to tell whether peer-to-peer will actually
->>> work, and it usually involves some probing and heuristics on the driver's
->> part.
->>> I wouldn't say that this makes it a dubious API - it's a piece of the
->>> puzzle that's absolutely necessary for a driver to set up peer-to-peer
->>> in an IOMMU environment.
->>>
->>
->> I currently just do
->>
->> page = virt_to_page(__va(bus_address));
->>
->> then just use the normal API. Works for writes anyway.
->>
->
-> What platform is this on? I don't understand how that could work for
-> peer-to-peer. As I understand it, there are no 'struct page's for MMIO
-> regions, and you could actually end up with a very different page as a
-> result of that unchecked translation (e.g., a "valid" struct page, but
-> not in the peer's MMIO range at all).
->
+On 05/11/15 at 05:52pm, Li, Zhen-Hua wrote:
+> When a device driver issues the first dma_map command for a device, we
+> assign a new and empty page-table, thus removing all mappings from the
+> old kernel for the device.
 
-This is an x86-64 AMD 990FX chip set. Works fine. Every time. I do have 
-the peers memory that is being written to mmap'd by the task that is 
-doing this, but this works.
+Hi Zhenhua,
 
-Mark
+>From your patch I got it will remove all mappings, assign a new
+page-table. But I didn't got why you stress an empty page-table. Did I
+miss anything?
+
+Thanks
+Baoquan
+
+> 
+> Signed-off-by: Li, Zhen-Hua <zhen-hual@hp.com>
+> ---
+>  drivers/iommu/intel-iommu.c | 58 ++++++++++++++++++++++++++++++++++++++-------
+>  1 file changed, 50 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 91545bf..3cc1027 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -396,6 +396,9 @@ static int copy_root_entry_table(struct intel_iommu *iommu);
+>  
+>  static int intel_iommu_load_translation_tables(struct intel_iommu *iommu);
+>  
+> +static void unmap_device_dma(struct dmar_domain *domain,
+> +				struct device *dev,
+> +				struct intel_iommu *iommu);
+>  static void iommu_check_pre_te_status(struct intel_iommu *iommu);
+>  static u8 g_translation_pre_enabled;
+>  
+> @@ -3115,6 +3118,7 @@ static struct iova *intel_alloc_iova(struct device *dev,
+>  static struct dmar_domain *__get_valid_domain_for_dev(struct device *dev)
+>  {
+>  	struct dmar_domain *domain;
+> +	struct intel_iommu *iommu;
+>  	int ret;
+>  
+>  	domain = get_domain_for_dev(dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
+> @@ -3124,14 +3128,30 @@ static struct dmar_domain *__get_valid_domain_for_dev(struct device *dev)
+>  		return NULL;
+>  	}
+>  
+> -	/* make sure context mapping is ok */
+> -	if (unlikely(!domain_context_mapped(dev))) {
+> -		ret = domain_context_mapping(domain, dev, CONTEXT_TT_MULTI_LEVEL);
+> -		if (ret) {
+> -			printk(KERN_ERR "Domain context map for %s failed",
+> -			       dev_name(dev));
+> -			return NULL;
+> -		}
+> +	/* if in kdump kernel, we need to unmap the mapped dma pages,
+> +	 * detach this device first.
+> +	 */
+> +	if (likely(domain_context_mapped(dev))) {
+> +		iommu = domain_get_iommu(domain);
+> +		if (iommu->pre_enabled_trans) {
+> +			unmap_device_dma(domain, dev, iommu);
+> +
+> +			domain = get_domain_for_dev(dev,
+> +				DEFAULT_DOMAIN_ADDRESS_WIDTH);
+> +			if (!domain) {
+> +				pr_err("Allocating domain for %s failed",
+> +				       dev_name(dev));
+> +				return NULL;
+> +			}
+> +		} else
+> +			return domain;
+> +	}
+> +
+> +	ret = domain_context_mapping(domain, dev, CONTEXT_TT_MULTI_LEVEL);
+> +	if (ret) {
+> +		pr_err("Domain context map for %s failed",
+> +		       dev_name(dev));
+> +		return NULL;
+>  	}
+>  
+>  	return domain;
+> @@ -5168,6 +5188,28 @@ static int intel_iommu_load_translation_tables(struct intel_iommu *iommu)
+>  	return ret;
+>  }
+>  
+> +static void unmap_device_dma(struct dmar_domain *domain,
+> +				struct device *dev,
+> +				struct intel_iommu *iommu)
+> +{
+> +	struct context_entry *ce;
+> +	struct iova *iova;
+> +	phys_addr_t phys_addr;
+> +	dma_addr_t dev_addr;
+> +	struct pci_dev *pdev;
+> +
+> +	pdev = to_pci_dev(dev);
+> +	ce = iommu_context_addr(iommu, pdev->bus->number, pdev->devfn, 1);
+> +	phys_addr = context_address_root(ce) << VTD_PAGE_SHIFT;
+> +	dev_addr = phys_to_dma(dev, phys_addr);
+> +
+> +	iova = find_iova(&domain->iovad, IOVA_PFN(dev_addr));
+> +	if (iova)
+> +		intel_unmap(dev, dev_addr);
+> +
+> +	domain_remove_one_dev_info(domain, dev);
+> +}
+> +
+>  static void iommu_check_pre_te_status(struct intel_iommu *iommu)
+>  {
+>  	u32 sts;
+> -- 
+> 2.0.0-rc0
+> 
