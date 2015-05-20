@@ -1,35 +1,66 @@
-From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-Subject: Re: [PATCH v7 18/25] ARM: Exynos: pm_domains: register power domain
- driver from core_initcall
-Date: Wed, 20 May 2015 09:51:23 +0900
-Message-ID: <555BDA8B.30402@samsung.com>
-References: <1432041645-11172-1-git-send-email-m.szyprowski@samsung.com>
- <1432041645-11172-19-git-send-email-m.szyprowski@samsung.com>
+From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [v5 0/9] Add VT-d Posted-Interrupts support - IOMMU part
+Date: Wed, 20 May 2015 13:15:28 +0800
+Message-ID: <1432098937-19527-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1432041645-11172-19-git-send-email-m.szyprowski@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 19.05.2015 22:20, Marek Szyprowski wrote:
-> SYSMMU devices are registered very early in arch_initcall, so ensure
-> that they can get access to power domains by registering power domain
-> driver from earlier initcall. This change requires dropping usage of the
-> platform device associated with each power domain and replacing clock
-> calls with respective of_clk_* equivalents.
-> 
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> ---
->  arch/arm/mach-exynos/pm_domains.c | 18 +++++++-----------
->  1 file changed, 7 insertions(+), 11 deletions(-)
+VT-d Posted-Interrupts is an enhancement to CPU side Posted-Interrupt.
+With VT-d Posted-Interrupts enabled, external interrupts from
+direct-assigned devices can be delivered to guests without VMM
+intervention when guest is running in non-root mode.
 
-Looks good:
+You can find the VT-d Posted-Interrtups Spec. in the following URL:
+http://www.intel.com/content/www/us/en/intelligent-systems/intel-technology/vt-directed-io-spec.html
 
-Reviewed-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+This series was part of http://thread.gmane.org/gmane.linux.kernel.iommu/7708. To make things clear, send out IOMMU part here.
 
-Best regards,
-Krzysztof
+This patch-set is based on the lastest x86/apic branch of tip tree.
+
+the whole series which contain multiple components into three parts:
+- Prerequisite changes to irq subsystem (already merged in tip tree x86/apic branch)
+- IOMMU part (in this series)
+- KVM and VFIO parts (will send out this part once the first two parts are accepted)
+
+v4->v5:
+* Abstract modify_irte() to accept two format of irte.
+
+v3->v4:
+* Change capability to a int variant flags instead of a function call.
+* Add hotplug case for VT-d PI.
+
+Feng Wu (9):
+  iommu: Add new member capability to struct irq_remap_ops
+  iommu, x86: Define new irte structure for VT-d Posted-Interrupts
+  iommu, x86: Abstract modify_irte() to accept two format of irte
+  iommu, x86: Implement irq_set_vcpu_affinity for intel_ir_chip
+  iommu, x86: No need to migrating irq for VT-d Posted-Interrupts
+  iommu, x86: Add cap_pi_support() to detect VT-d PI capability
+  iommu, x86: Setup Posted-Interrupts capability for Intel iommu
+  iommu, x86: define irq_remapping_cap()
+  iommu, x86: Properly handler PI for IOMMU hotplug
+
+ arch/x86/include/asm/irq_remapping.h | 11 +++++
+ drivers/iommu/intel_irq_remapping.c  | 82 ++++++++++++++++++++++++++++++++++--
+ drivers/iommu/irq_remapping.c        | 11 +++++
+ drivers/iommu/irq_remapping.h        |  6 +++
+ include/linux/dmar.h                 | 32 ++++++++++++++
+ include/linux/intel-iommu.h          |  1 +
+ 6 files changed, 140 insertions(+), 3 deletions(-)
+
+-- 
+2.1.0
