@@ -1,54 +1,53 @@
-From: Feng Wu <feng.wu@intel.com>
-Subject: [v5 1/9] iommu: Add new member capability to struct irq_remap_ops
-Date: Wed, 20 May 2015 13:15:29 +0800
-Message-ID: <1432098937-19527-2-git-send-email-feng.wu@intel.com>
+From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [v5 3/9] iommu,
+	x86: Abstract modify_irte() to accept two format of irte
+Date: Wed, 20 May 2015 13:15:31 +0800
+Message-ID: <1432098937-19527-4-git-send-email-feng.wu@intel.com>
 References: <1432098937-19527-1-git-send-email-feng.wu@intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1432098937-19527-1-git-send-email-feng.wu@intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org, dwmw2@infradead.org
-Cc: tglx@linutronix.de, jiang.liu@linux.intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Feng Wu <feng.wu@intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1432098937-19527-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds a new member capability to struct irq_remap_ops,
-this new function ops can be used to check whether some
-features are supported, such as VT-d Posted-Interrupts.
+After introducing VT-d posted-interrupts, we have two format
+of IRTE: remapped and posted. This patch make modify_irte()
+suitable for both of them.
 
-Signed-off-by: Feng Wu <feng.wu@intel.com>
-Reviewed-by: Jiang Liu <jiang.liu@linux.intel.com>
+Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/include/asm/irq_remapping.h | 4 ++++
- drivers/iommu/irq_remapping.h        | 3 +++
- 2 files changed, 7 insertions(+)
+ drivers/iommu/intel_irq_remapping.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
-index 78974fb..0953723 100644
---- a/arch/x86/include/asm/irq_remapping.h
-+++ b/arch/x86/include/asm/irq_remapping.h
-@@ -31,6 +31,10 @@ struct irq_alloc_info;
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 8fad71c..1575b9e 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -122,11 +122,11 @@ static int qi_flush_iec(struct intel_iommu *iommu, int index, int mask)
+ }
  
- #ifdef CONFIG_IRQ_REMAP
+ static int modify_irte(struct irq_2_iommu *irq_iommu,
+-		       struct irte *irte_modified)
++		       void *data)
+ {
+ 	struct intel_iommu *iommu;
+ 	unsigned long flags;
+-	struct irte *irte;
++	struct irte *irte, *irte_modified = (struct irte *)data;
+ 	int rc, index;
  
-+enum irq_remap_cap {
-+	IRQ_POSTING_CAP = 0,
-+};
-+
- extern void set_irq_remapping_broken(void);
- extern int irq_remapping_prepare(void);
- extern int irq_remapping_enable(void);
-diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
-index 91d5a11..b6ca30d 100644
---- a/drivers/iommu/irq_remapping.h
-+++ b/drivers/iommu/irq_remapping.h
-@@ -35,6 +35,9 @@ extern int no_x2apic_optout;
- extern int irq_remapping_enabled;
- 
- struct irq_remap_ops {
-+	/* The supported capabilities */
-+	int capability;
-+
- 	/* Initializes hardware and makes it ready for remapping interrupts */
- 	int  (*prepare)(void);
- 
+ 	if (!irq_iommu)
 -- 
 2.1.0
