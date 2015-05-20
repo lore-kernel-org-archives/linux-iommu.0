@@ -1,129 +1,64 @@
-From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v5 7/9] iommu,
-	x86: Setup Posted-Interrupts capability for Intel iommu
-Date: Wed, 20 May 2015 13:15:35 +0800
-Message-ID: <1432098937-19527-8-git-send-email-feng.wu@intel.com>
-References: <1432098937-19527-1-git-send-email-feng.wu@intel.com>
+From: Javier Martinez Canillas <javier@dowhile0.org>
+Subject: Re: [PATCH v7 00/25] Exynos SYSMMU (IOMMU) integration with DT and
+ DMA-mapping subsystem
+Date: Wed, 20 May 2015 09:31:27 +0200
+Message-ID: <CABxcv=nP5n1d=yv5EyD3aUcBBuD7Bka_7VQ1KsbFb9=ju37rdA@mail.gmail.com>
+References: <1432041645-11172-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1432098937-19527-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <1432041645-11172-1-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Krzysztof
 List-Id: iommu@lists.linux-foundation.org
 
-Set Posted-Interrupts capability for Intel iommu when IR is enabled,
-clear it when IR is disabled.
+Hello Marek,
 
-Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
----
- drivers/iommu/intel_irq_remapping.c | 34 ++++++++++++++++++++++++++++++++++
- drivers/iommu/irq_remapping.c       |  2 ++
- drivers/iommu/irq_remapping.h       |  3 +++
- 3 files changed, 39 insertions(+)
+On Tue, May 19, 2015 at 3:20 PM, Marek Szyprowski
+<m.szyprowski@samsung.com> wrote:
+> Hello Everyone,
+>
+> This is yet another attempt to get Exynos SYSMMU driver with integrated
+> with IOMMU & DMA-mapping subsystems. This version includes minor fixes
+> suggested by Joerg Roedel, Cho KyongHo and Robin Murphy.
+>
+> All patches are also available in the following git repository:
+> https://git.linaro.org/people/marek.szyprowski/linux-srpol.git
+> branch v4.1-exynos-iommu-v7.
+>
+> My plan for merging this patchset is as follows:
+> - DTS changes and power domain changes should go via Samsung tree to avoid
+>   conflicts with other pending DTS patches
+> - all exynos-iommu patches and dma-mapping/reserved iommu region should go
+>   via IOMMU tree,
+> - all Exynos DRM patches should go via DRM/Exynos tree.
+>
+> There are no build cross-subsystem dependencies and IOMMU on Exynos is
+> already nonfunctional (and disabled in defconfig), so merging patches in
+> parts doesn't break anything.
+>
+> There are knowns issues with Exynos DRM driver and IOMMU support
+> (i.e. Xorg freeze reported by Javier Martinez Canillas:
+> http://www.spinics.net/lists/linux-samsung-soc/msg44350.html ). They
+> will be handled by a separate fixes to Exynos DRM drivers. This patchset
+> fixes only those issues in Exynos DRM FIMD driver, which prevents
+> booting to console.
+>
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index cb54c0a..ba141e9 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -647,6 +647,20 @@ static int __init intel_enable_irq_remapping(void)
- 
- 	irq_remapping_enabled = 1;
- 
-+	/*
-+	 * Set Posted-Interrupts capability.
-+	 */
-+	if (!disable_irq_post) {
-+		intel_irq_remap_ops.capability |= 1 << IRQ_POSTING_CAP;
-+
-+		for_each_iommu(iommu, drhd)
-+			if (!cap_pi_support(iommu->cap)) {
-+				intel_irq_remap_ops.capability &=
-+						~(1 << IRQ_POSTING_CAP);
-+				break;
-+			}
-+	}
-+
- 	pr_info("Enabled IRQ remapping in %s mode\n", eim ? "x2apic" : "xapic");
- 
- 	return eim ? IRQ_REMAP_X2APIC_MODE : IRQ_REMAP_XAPIC_MODE;
-@@ -847,6 +861,12 @@ static void disable_irq_remapping(void)
- 
- 		iommu_disable_irq_remapping(iommu);
- 	}
-+
-+	/*
-+	 * Clear Posted-Interrupts capability.
-+	 */
-+	if (!disable_irq_post)
-+		intel_irq_remap_ops.capability &= ~(1 << IRQ_POSTING_CAP);
- }
- 
- static int reenable_irq_remapping(int eim)
-@@ -874,6 +894,20 @@ static int reenable_irq_remapping(int eim)
- 	if (!setup)
- 		goto error;
- 
-+	/*
-+	 * Set Posted-Interrupts capability.
-+	 */
-+	if (!disable_irq_post) {
-+		intel_irq_remap_ops.capability |= 1 << IRQ_POSTING_CAP;
-+
-+		for_each_iommu(iommu, drhd)
-+			if (!cap_pi_support(iommu->cap)) {
-+				intel_irq_remap_ops.capability &=
-+						~(1 << IRQ_POSTING_CAP);
-+				break;
-+			}
-+	}
-+
- 	return 0;
- 
- error:
-diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index fc78b0d..ed605a9 100644
---- a/drivers/iommu/irq_remapping.c
-+++ b/drivers/iommu/irq_remapping.c
-@@ -22,6 +22,8 @@ int irq_remap_broken;
- int disable_sourceid_checking;
- int no_x2apic_optout;
- 
-+int disable_irq_post = 1;
-+
- static int disable_irq_remap;
- static struct irq_remap_ops *remap_ops;
- 
-diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
-index b6ca30d..039c7af 100644
---- a/drivers/iommu/irq_remapping.h
-+++ b/drivers/iommu/irq_remapping.h
-@@ -34,6 +34,8 @@ extern int disable_sourceid_checking;
- extern int no_x2apic_optout;
- extern int irq_remapping_enabled;
- 
-+extern int disable_irq_post;
-+
- struct irq_remap_ops {
- 	/* The supported capabilities */
- 	int capability;
-@@ -69,6 +71,7 @@ extern void ir_ack_apic_edge(struct irq_data *data);
- 
- #define irq_remapping_enabled 0
- #define irq_remap_broken      0
-+#define disable_irq_post      1
- 
- #endif /* CONFIG_IRQ_REMAP */
- 
--- 
-2.1.0
+I tested your v7 using exynos_defconfig + CONFIG_EXYNOS_IOMMU on both
+Exynos5250 Snow and Exynos5420 Peach Pit Chromebooks.
+
+I can only reproduce the complete system hang on Xorg if I use the
+xf86-video-armsoc DDX. If I use the -fbdev DDX instead, X starts
+correctly and the system does not freeze. Also, this only happens on
+Exynos5420 Peach Pit, Exynos5250 Snow is working correctly even when
+using the -armsoc DDX.
+
+So as you said, this is a separate issue with the Exynos DRM driver
+IOMMU support and is not related to your series. For the whole series:
+
+Tested-by: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
+
+Best regards,
+Javier
