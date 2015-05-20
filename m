@@ -1,8 +1,8 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v5 3/9] iommu,
-	x86: Abstract modify_irte() to accept two format of irte
-Date: Wed, 20 May 2015 13:15:31 +0800
-Message-ID: <1432098937-19527-4-git-send-email-feng.wu@intel.com>
+Subject: [v5 5/9] iommu,
+	x86: No need to migrating irq for VT-d Posted-Interrupts
+Date: Wed, 20 May 2015 13:15:33 +0800
+Message-ID: <1432098937-19527-6-git-send-email-feng.wu@intel.com>
 References: <1432098937-19527-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,32 +22,45 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@p
 Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-After introducing VT-d posted-interrupts, we have two format
-of IRTE: remapped and posted. This patch make modify_irte()
-suitable for both of them.
+We don't need to migrate the irqs for VT-d Posted-Interrupts here.
+When 'pst' is set in IRTE, the associated irq will be posted to
+guests instead of interrupt remapping. The destination of the
+interrupt is set in Posted-Interrupts Descriptor, and the migration
+happens during vCPU scheduling.
+
+However, we still update the cached irte here, which can be used
+when changing back to remapping mode.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Acked-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/intel_irq_remapping.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 8fad71c..1575b9e 100644
+index 741896e..cb54c0a 100644
 --- a/drivers/iommu/intel_irq_remapping.c
 +++ b/drivers/iommu/intel_irq_remapping.c
-@@ -122,11 +122,11 @@ static int qi_flush_iec(struct intel_iommu *iommu, int index, int mask)
- }
- 
- static int modify_irte(struct irq_2_iommu *irq_iommu,
--		       struct irte *irte_modified)
-+		       void *data)
+@@ -980,6 +980,7 @@ intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
  {
- 	struct intel_iommu *iommu;
- 	unsigned long flags;
--	struct irte *irte;
-+	struct irte *irte, *irte_modified = (struct irte *)data;
- 	int rc, index;
+ 	struct intel_ir_data *ir_data = data->chip_data;
+ 	struct irte *irte = &ir_data->irte_entry;
++	struct irte_pi *irte_pi = (struct irte_pi *)irte;
+ 	struct irq_cfg *cfg = irqd_cfg(data);
+ 	struct irq_data *parent = data->parent_data;
+ 	int ret;
+@@ -994,7 +995,10 @@ intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
+ 	 */
+ 	irte->vector = cfg->vector;
+ 	irte->dest_id = IRTE_DEST(cfg->dest_apicid);
+-	modify_irte(&ir_data->irq_2_iommu, irte);
++
++	/* We don't need to modify irte if the interrupt is for posting. */
++	if (irte_pi->pst != 1)
++		modify_irte(&ir_data->irq_2_iommu, irte);
  
- 	if (!irq_iommu)
+ 	/*
+ 	 * After this point, all the interrupts will start arriving
 -- 
 2.1.0
