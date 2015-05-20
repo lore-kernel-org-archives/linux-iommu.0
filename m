@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v5 9/9] iommu, x86: Properly handler PI for IOMMU hotplug
-Date: Wed, 20 May 2015 13:15:37 +0800
-Message-ID: <1432098937-19527-10-git-send-email-feng.wu@intel.com>
+Subject: [v5 6/9] iommu, x86: Add cap_pi_support() to detect VT-d PI capability
+Date: Wed, 20 May 2015 13:15:34 +0800
+Message-ID: <1432098937-19527-7-git-send-email-feng.wu@intel.com>
 References: <1432098937-19527-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,27 +21,26 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@p
 Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Return error when inserting a new IOMMU which doesn't support PI
-if PI is currently in use.
+Add helper function to detect VT-d Posted-Interrupts capability.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Acked-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c | 3 +++
- 1 file changed, 3 insertions(+)
+ include/linux/intel-iommu.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index ba141e9..d1b3779 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -1348,6 +1348,9 @@ int dmar_ir_hotplug(struct dmar_drhd_unit *dmaru, bool insert)
- 		return -EINVAL;
- 	if (!ecap_ir_support(iommu->ecap))
- 		return 0;
-+	if (irq_remapping_cap(IRQ_POSTING_CAP) &&
-+	    !cap_pi_support(iommu->cap))
-+		return -EBUSY;
- 
- 	if (insert) {
- 		if (!iommu->ir_table)
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 0af9b03..0c251be 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -87,6 +87,7 @@ static inline void dmar_writeq(void __iomem *addr, u64 val)
+ /*
+  * Decoding Capability Register
+  */
++#define cap_pi_support(c)	(((c) >> 59) & 1)
+ #define cap_read_drain(c)	(((c) >> 55) & 1)
+ #define cap_write_drain(c)	(((c) >> 54) & 1)
+ #define cap_max_amask_val(c)	(((c) >> 48) & 0x3f)
 -- 
 2.1.0
