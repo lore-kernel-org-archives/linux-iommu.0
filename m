@@ -1,8 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v6 6/8] iommu,
-	x86: Setup Posted-Interrupts capability for Intel iommu
-Date: Thu, 21 May 2015 14:59:13 +0800
-Message-ID: <1432191555-3516-7-git-send-email-feng.wu@intel.com>
+Subject: [v6 3/8] iommu, x86: Implement irq_set_vcpu_affinity for intel_ir_chip
+Date: Thu, 21 May 2015 14:59:10 +0800
+Message-ID: <1432191555-3516-4-git-send-email-feng.wu@intel.com>
 References: <1432191555-3516-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,108 +21,88 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@p
 Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Set Posted-Interrupts capability for Intel iommu when IR is enabled,
-clear it when IR is disabled.
+Implement irq_set_vcpu_affinity for intel_ir_chip.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Acked-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c | 34 ++++++++++++++++++++++++++++++++++
- drivers/iommu/irq_remapping.c       |  2 ++
- drivers/iommu/irq_remapping.h       |  3 +++
- 3 files changed, 39 insertions(+)
+ arch/x86/include/asm/irq_remapping.h |  5 +++++
+ drivers/iommu/intel_irq_remapping.c  | 35 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 40 insertions(+)
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 13b21d1..776b65a 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -647,6 +647,20 @@ static int __init intel_enable_irq_remapping(void)
- 
- 	irq_remapping_enabled = 1;
- 
-+	/*
-+	 * Set Posted-Interrupts capability.
-+	 */
-+	if (!disable_irq_post) {
-+		intel_irq_remap_ops.capability |= 1 << IRQ_POSTING_CAP;
-+
-+		for_each_iommu(iommu, drhd)
-+			if (!cap_pi_support(iommu->cap)) {
-+				intel_irq_remap_ops.capability &=
-+						~(1 << IRQ_POSTING_CAP);
-+				break;
-+			}
-+	}
-+
- 	pr_info("Enabled IRQ remapping in %s mode\n", eim ? "x2apic" : "xapic");
- 
- 	return eim ? IRQ_REMAP_X2APIC_MODE : IRQ_REMAP_XAPIC_MODE;
-@@ -847,6 +861,12 @@ static void disable_irq_remapping(void)
- 
- 		iommu_disable_irq_remapping(iommu);
- 	}
-+
-+	/*
-+	 * Clear Posted-Interrupts capability.
-+	 */
-+	if (!disable_irq_post)
-+		intel_irq_remap_ops.capability &= ~(1 << IRQ_POSTING_CAP);
+diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
+index 0953723..202e040 100644
+--- a/arch/x86/include/asm/irq_remapping.h
++++ b/arch/x86/include/asm/irq_remapping.h
+@@ -57,6 +57,11 @@ static inline struct irq_domain *arch_get_ir_parent_domain(void)
+ 	return x86_vector_domain;
  }
  
- static int reenable_irq_remapping(int eim)
-@@ -874,6 +894,20 @@ static int reenable_irq_remapping(int eim)
- 	if (!setup)
- 		goto error;
- 
-+	/*
-+	 * Set Posted-Interrupts capability.
-+	 */
-+	if (!disable_irq_post) {
-+		intel_irq_remap_ops.capability |= 1 << IRQ_POSTING_CAP;
++struct vcpu_data {
++	u64 pi_desc_addr;	/* Physical address of PI Descriptor */
++	u32 vector;		/* Guest vector of the interrupt */
++};
 +
-+		for_each_iommu(iommu, drhd)
-+			if (!cap_pi_support(iommu->cap)) {
-+				intel_irq_remap_ops.capability &=
-+						~(1 << IRQ_POSTING_CAP);
-+				break;
-+			}
+ #else  /* CONFIG_IRQ_REMAP */
+ 
+ static inline void set_irq_remapping_broken(void) { }
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 8fad71c..a20bf6c 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -42,6 +42,7 @@ struct irq_2_iommu {
+ struct intel_ir_data {
+ 	struct irq_2_iommu			irq_2_iommu;
+ 	struct irte				irte_entry;
++	struct irte				irte_pi_entry;
+ 	union {
+ 		struct msi_msg			msi_entry;
+ 	};
+@@ -1013,10 +1014,44 @@ static void intel_ir_compose_msi_msg(struct irq_data *irq_data,
+ 	*msg = ir_data->msi_entry;
+ }
+ 
++static int intel_ir_set_vcpu_affinity(struct irq_data *data, void *vcpu_info)
++{
++	struct intel_ir_data *ir_data = data->chip_data;
++	struct irte *irte_pi = &ir_data->irte_pi_entry;
++	struct vcpu_data *vcpu_pi_info;
++
++	/* stop posting interrupts, back to remapping mode */
++	if (!vcpu_info)
++		modify_irte(&ir_data->irq_2_iommu, &ir_data->irte_entry);
++	else {
++		vcpu_pi_info = (struct vcpu_data *)vcpu_info;
++		memcpy(irte_pi, &ir_data->irte_entry, sizeof(struct irte));
++
++		irte_pi->p_urgent = 0;
++		irte_pi->p_vector = vcpu_pi_info->vector;
++		irte_pi->pda_l = (vcpu_pi_info->pi_desc_addr >>
++				 (32 - PDA_LOW_BIT)) & ~(-1UL << PDA_LOW_BIT);
++		irte_pi->pda_h = (vcpu_pi_info->pi_desc_addr >> 32) &
++				 ~(-1UL << PDA_HIGH_BIT);
++
++		irte_pi->p_res0 = 0;
++		irte_pi->p_res1 = 0;
++		irte_pi->p_res2 = 0;
++		irte_pi->p_res3 = 0;
++
++		irte_pi->p_pst = 1;
++
++		modify_irte(&ir_data->irq_2_iommu, irte_pi);
 +	}
 +
- 	return 0;
- 
- error:
-diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index fc78b0d..ed605a9 100644
---- a/drivers/iommu/irq_remapping.c
-+++ b/drivers/iommu/irq_remapping.c
-@@ -22,6 +22,8 @@ int irq_remap_broken;
- int disable_sourceid_checking;
- int no_x2apic_optout;
- 
-+int disable_irq_post = 1;
++	return 0;
++}
 +
- static int disable_irq_remap;
- static struct irq_remap_ops *remap_ops;
+ static struct irq_chip intel_ir_chip = {
+ 	.irq_ack = ir_ack_apic_edge,
+ 	.irq_set_affinity = intel_ir_set_affinity,
+ 	.irq_compose_msi_msg = intel_ir_compose_msi_msg,
++	.irq_set_vcpu_affinity = intel_ir_set_vcpu_affinity,
+ };
  
-diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
-index b6ca30d..039c7af 100644
---- a/drivers/iommu/irq_remapping.h
-+++ b/drivers/iommu/irq_remapping.h
-@@ -34,6 +34,8 @@ extern int disable_sourceid_checking;
- extern int no_x2apic_optout;
- extern int irq_remapping_enabled;
- 
-+extern int disable_irq_post;
-+
- struct irq_remap_ops {
- 	/* The supported capabilities */
- 	int capability;
-@@ -69,6 +71,7 @@ extern void ir_ack_apic_edge(struct irq_data *data);
- 
- #define irq_remapping_enabled 0
- #define irq_remap_broken      0
-+#define disable_irq_post      1
- 
- #endif /* CONFIG_IRQ_REMAP */
- 
+ static void intel_irq_remapping_prepare_irte(struct intel_ir_data *data,
 -- 
 2.1.0
