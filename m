@@ -1,18 +1,11 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 2/3] iommu/arm-smmu: Add initial driver support for ARM
-	SMMUv3 devices
-Date: Thu, 21 May 2015 12:25:55 +0100
-Message-ID: <20150521112555.GH21920@arm.com>
-References: <1431108046-9675-1-git-send-email-will.deacon@arm.com>
-	<1431108046-9675-3-git-send-email-will.deacon@arm.com>
-	<5551AE56.6050906@huawei.com> <20150512165500.GE2062@arm.com>
-	<55530C4F.5000605@huawei.com>
+From: Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>
+Subject: [BUG 4.1-rc4] i40e VF creation breaks vt-d
+Date: Thu, 21 May 2015 13:33:28 +0200
+Message-ID: <555DC288.5030108@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <55530C4F.5000605-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,118 +15,140 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: leizhen <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: "huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Sanil kumar <sanil.kumar-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Gaojianbo <gaojianbo-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Dingtianhong <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: "Williams, Mitch A" <mitch.a.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, jesse.brandeburg-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgYWdhaW4sCgpTb3JyeSBmb3IgdGhlIGRlbGF5IGluIHJlcGx5aW5nLCBJJ3ZlIGJlZW4gdGll
-ZCB1cCB3aXRoIG90aGVyIHN0dWZmLgoKT24gV2VkLCBNYXkgMTMsIDIwMTUgYXQgMDk6MzM6MTlB
-TSArMDEwMCwgbGVpemhlbiB3cm90ZToKPiBPbiAyMDE1LzUvMTMgMDo1NSwgV2lsbCBEZWFjb24g
-d3JvdGU6Cj4gPiBUaGUgcHVycG9zZSBvZiB0aGUgdHdvIGxldmVsIGFwcHJvYWNoIGlzbid0IHRv
-IHNhdmUgbWVtb3J5OyBpdCdzIHRvIHJlbW92ZQo+ID4gdGhlIG5lZWQgZm9yIGEgc2luZ2xlIChs
-YXJnZSkgY29udGlndW91cyBibG9jay4gRnVydGhlcm1vcmUsIHdlIG5lZWQgYWxsCj4gPiBtYXN0
-ZXIgZGV2aWNlcyBpbiB0aGUgc3lzdGVtIHRvIGNvbWUgdXAgaW4gYSBzdGF0ZSB3aGVyZSB0aGVp
-ciB0cmFuc2FjdGlvbnMKPiA+IGJ5cGFzcyB0aGUgU01NVSAoaS5lLiB3ZSBkb24ndCByZXF1aXJl
-IHRoZW0gdG8gdXNlIHRoZSBTTU1VIGZvcgo+ID4gdHJhbnNsYXRpb24pLiBBY2hpZXZpbmcgdGhp
-cyBuZWNlc3NpdGF0ZXMgYSBmdWxseS1wb3B1bGF0ZWQgc3RyZWFtLXRhYmxlCj4gPiBiZWZvcmUg
-YW55IERNQSBvY2N1cnMuCj4gCj4gT0ssIGJ1dCBmb3Igbm9uLXBjaSBkZXZpY2VzKG1heWJlIHBj
-aSBkZXZpY2VzIGFsc28pLCBpbml0aWFsaXplIGFsbAo+IGRldmljZXMoU3RyZWFtSURzKSB0byBi
-eXBhc3MgbW9kZSBtYXliZSBpbmNvcnJlY3QuIFNvbWUgZGV2aWNlcyBtYXliZQo+IGNhcGFibGUg
-YnJpbmcgYXR0cmlidXRlcyBieSBpdHNlbGYsIGFuZCBhY2Nlc3MgZGlmZmVyZW50IG1lbW9yeSB3
-aXRoCj4gZGlmZmVyZW50IGF0dHJpYnV0ZXMoZGV2aWNlIGF0dHJpYnV0ZSBvciBjYWNoZWFibGUg
-YXR0cmlidXRlKTsgc29tZQo+IGRldmljZXMgbWF5YmUgbm90IGNhcGFibGUgYnJpbmcgYXR0cmli
-dXRlcyBieSBpdHNlbGYsIGJ1dCBuZWVkIGFjY2Vzcwo+IG1lbW9yeSB3aXRoIGNhY2hlYWJsZSBh
-dHRyaWJ1dGUgb25seSwgc28gd2Ugc2hvdWxkIHNldCBTVEUuTVRDRkcgPSAxLgo+IFByb3ZpZGUg
-ZHRzIGNvbmZpZ3VyYXRpb24gd2lsbCBiZSBiZXR0ZXIuCgpJZiB3ZSB3YW50IHRvIG1ha2UgdXNl
-IG9mIG1lbW9yeSBvdmVycmlkZXMsIHRoZW4gSSB0aGluayB3ZSBzaG91bGQgYWRkCnRoYXQgYXMg
-YSBzZXBhcmF0ZSBwYXRjaCBiZWNhdXNlIGl0IHdvdWxkIGhhdmUgaW1wbGljYXRpb25zIG9uIHRo
-ZSBJT01NVQpBUEkuIEkgZG9uJ3QgcGFydGljdWxhcmx5IGxpa2UgcHV0dGluZyB0aGlzIHBvbGlj
-eSBpbmZvcm1hdGlvbiBpbiB0aGUKZGV2aWNlLXRyZWUgYmluZGluZyBvbiBhIHBlci1kcml2ZXIg
-YmFzaXMuCgo+IEZ1cnRoZXJtb3JlLCBJIGRvbid0IGFncmVlIGluaXRpYWxpemUgYWxsIGRldmlj
-ZXMgdG8gYnlwYXNzIGJ5IGRlZmF1bHQuCj4gU3VwcG9zZSBhIG5vbi1wY2kgZGV2aWNlJ3MgU3Ry
-ZWFtSUQgY2FuIGJlIGR5bmFtaWMgY29uZmlndXJlZC4gV2UgcmVxdWlyZQo+IFN0cmVhbUlELUEs
-IGJ1dCB0aGUgZGV2aWNlIGFjdHVhbGx5IGlzc3VlIFN0cmVhbUlELUIgYmVjYXVzZSBvZiBzb2Z0
-d2FyZQo+IGNvbmZpZ3VyYXRpb24gZmF1bHQuIFdlIHJlYWxseSBob3BlIFNNTVUgY2FuIHJlcG9y
-dCBCYWQgU3RyZWFtSUQgZmF1bHQuCgpJIHRoaW5rIHRoZSBkZWZhdWx0IGJlaGF2aW91ciBoYXMg
-dG8gYmUgdG8gYnlwYXNzIGJ5IGRlZmF1bHQsIG90aGVyd2lzZQp3ZSBjYW4gYnJlYWsgRE1BIGZv
-ciBhbnkgZGV2aWNlcyBiZWhpbmQgYW4gU01NVSBidXQgbm90IGF0dGFjaGVkIHRvIGFuCklPTU1V
-IGRvbWFpbi4gSG93IGFib3V0IEkgYWRkIGEgY21kbGluZSBwYXJhbWV0ZXIgdG8gY2hhbmdlIHRo
-ZSBkZWZhdWx0CmJlaGF2aW91cj8KCj4gPiBJIHN1cHBvc2Ugd2UgY291bGQgbG9vayBpbnRvIHBv
-cHVsYXRpbmcgaXQgYmFzZWQgb24gdGhlIC0+YWRkX2RldmljZQo+ID4gY2FsbGJhY2ssIHdoaWNo
-IGN1cnJlbnRseSBkb2VzIGhhdmUgc29tZSByYW5nZSBjaGVja3MKPiA+IChhcm1fc21tdV9zaWRf
-aW5fcmFuZ2UpLiBJcyB0aGF0IHdoYXQgeW91IGhhZCBpbiBtaW5kPwo+IAo+IFllcywgbWF5YmUg
-YXR0YWNoX2Rldi4gQnV0IHdlIHNob3VsZCBhbGxvY2F0ZWQgdGhlIHdob2xlIEx2MSB0YWJsZSBi
-YXNlIG9uCj4gU01NVV9JRFIxLlNJRFNJWkUKCkkgdGhpbmsgaXQgbmVlZHMgdG8gYmUgaW4gYWRk
-X2RldmljZSBzbyB0aGF0IHdlIGNhbiBpbXBsZW1lbnQgdGhlIGRlZmF1bHQKYnlwYXNzIGNhc2Uu
-IFdlIGNvdWxkIGV2ZW4gaGF2ZSBvbmUgTDIgdGFibGUgcGVyIFBDSSBidXMsIGJ1dCBJIG5lZWQg
-dG8KdGhpbmsgYWJvdXQgaG93IGJpZyB0aGUgTDEgdGFibGUgc2hvdWxkIGJlLgoKPiA+Pj4gKyAg
-ICAgICAgICAgICBpZiAoIWRlc2MtPmwycHRyKSB7Cj4gPj4+ICsgICAgICAgICAgICAgICAgICAg
-ICBkZXZfZXJyKHNtbXUtPmRldiwKPiA+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ImZhaWxlZCB0byBhbGxvY2F0ZSBsMiBzdHJlYW0gdGFibGUgJXVcbiIsIGkpOwo+ID4+PiArICAg
-ICAgICAgICAgICAgICAgICAgcmV0ID0gLUVOT01FTTsKPiA+Pj4gKyAgICAgICAgICAgICAgICAg
-ICAgIGdvdG8gb3V0X2ZyZWVfbDI7Cj4gPj4+ICsgICAgICAgICAgICAgfQo+ID4+PiArCj4gPj4+
-ICsgICAgICAgICAgICAgYXJtX3NtbXVfaW5pdF9ieXBhc3Nfc3RlcyhkZXNjLT5sMnB0ciwgMSA8
-PCBTVFJUQUJfU1BMSVQpOwo+ID4+PiArICAgICAgICAgICAgIGFybV9zbW11X3dyaXRlX3N0cnRh
-Yl9sMV9kZXNjKHN0cnRhYiwgZGVzYyk7Cj4gPj4+ICsgICAgICAgICAgICAgc3RydGFiICs9IFNU
-UlRBQl9TVEVfRFdPUkRTOwo+ID4+PiArICAgICB9Cj4gPj4+ICsKPiA+Pj4gKyAgICAgcmV0dXJu
-IDA7Cj4gPj4+ICsKPiA+Pj4gK291dF9mcmVlX2wyOgo+ID4+PiArICAgICBhcm1fc21tdV9mcmVl
-X2wyX3N0cnRhYihzbW11KTsKPiA+Pj4gKyAgICAgcmV0dXJuIHJldDsKPiA+Pj4gK30KPiA+Pj4g
-Kwo+ID4+PiArc3RhdGljIGludCBhcm1fc21tdV9pbml0X3N0cnRhYihzdHJ1Y3QgYXJtX3NtbXVf
-ZGV2aWNlICpzbW11KQo+ID4+PiArewo+ID4+PiArICAgICB2b2lkICpzdHJ0YWI7Cj4gPj4+ICsg
-ICAgIHU2NCByZWc7Cj4gPj4+ICsgICAgIHUzMiBzaXplOwo+ID4+PiArICAgICBpbnQgcmV0ID0g
-MDsKPiA+Pj4gKwo+ID4+PiArICAgICBzdHJ0YWIgPSBkbWFfemFsbG9jX2NvaGVyZW50KHNtbXUt
-PmRldiwgMSA8PCBTVFJUQUJfTDFfU1pfU0hJRlQsCj4gPj4+ICsgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgJnNtbXUtPnN0cnRhYl9jZmcuc3RydGFiX2RtYSwgR0ZQX0tFUk5FTCk7
-Cj4gPj4KPiA+PiBBcyBhYm92ZSwgd2hlbiBMdjIgdGFibGVzIGFyZSBkeW5hbWljIGFsbG9jYXRp
-b24sIHdlIGNhbiBjcmVhdGUgTHYxIHRhYmxlCj4gPj4gYmFzZSBvbiBTTU1VX0lEUjEuU0lEU0la
-RSBhbmQgc3VwcG9ydCBub24tcGljIGRldmljZXMuIE9oLCBpZiBTSURTSVpFIGlzCj4gPj4gdG9v
-IGxhcmdlLCBsaWtlIDMyLiBNYXliZSB3ZSBzaG91bGQgdXNlIDY0SyBzaXplIEx2MiB0YWJsZS4g
-IEJ1dCB3ZSBjYW4KPiA+PiBvbmx5IHVzZSBQQUdFX1NJWkUgZmlyc3QsIGZvciBsYXp5Lgo+ID4K
-PiA+IFJpZ2h0IG5vdywgdGhlIGwyIHRhYmxlcyBhcmUgNGsgYW5kIGwxIHRhYmxlIGlzIDhrLiBU
-aGF0J3MgKGEpIG5pY2UgZm9yCj4gPiBhbGxvY2F0aW9uIG9uIGEgc3lzdGVtIHdpdGggNGsgcGFn
-ZXMgYW5kIChiKSBlbm91Z2ggdG8gY292ZXIgYSBQQ0kgaG9zdAo+ID4gY29udHJvbGxlci4gVGhl
-IHByb2JsZW0gd2l0aCBzdXBwb3J0aW5nIDMyLWJpdCBTSURzIGlzIHRoYXQgdGhlIGwxIHdpbGwK
-PiA+IGJlY29tZSBhIHNpemVhYmxlIGNvbnRpZ3VvdXMgY2h1bmsgd2hpY2ggd2UnbGwgaGF2ZSB0
-byBhbGxvY2F0ZQo+ID4gcmVnYXJkbGVzcy4KPiA+Cj4gPiBTbywgaWYgd2Uga2VlcCB0aGUgbDIg
-c2l6ZSBhdCA0ayBmb3IgdGhlIG1vbWVudCwgaG93IGJpZyB3b3VsZCB5b3UgbGlrZQo+ID4gdGhl
-IGwxPyBGb3IgYSAzMi1iaXQgbnVtYmVyc3BhY2UsIGl0IHdvdWxkIGJlIDRNQiwgd2hpY2ggSSBk
-b24ndCB0aGluayBpcwo+ID4gcHJhY3RpY2FsLgo+IAo+IFllcywgYmVjYXVzZSBJIGRvbid0IHRo
-aW5rIFNNTVVfSURSMS5TSURTSVpFID0gMzIgcmVhbGx5IGV4aXN0LCBzbyBJIHNhaWQKPiB1c2Ug
-UEFHRV9TSVpFIGZpcnN0LgoKV2VsbCwgSSBjZXJ0YWlubHkgd291bGRuJ3QgcnVsZSBhbnl0aGlu
-ZyBvdXQuCgo+IEJ1dCBub3csIHRoaXMgcGF0Y2ggb25seSBzdXBwb3J0IFNNTVVfSURSMS5TSURT
-SVpFIDw9IDE2LiBTdXBwb3NlCj4gU01NVV9JRFIxLlNJRFNJWkUgPSAyNe+8jEx2MiB0YWJsZSBz
-aXplIGF0IDRLLCB0aGVuIEx2MSB0YWJsZSBuZWVkIDJeKDI1IC0KPiA2ICsgMykgPSAyXjIyID0g
-NE0uIElmIHdlIHByZS1hbGxvY2F0ZWQgYWxsIEx2MiB0YWJsZSwgd2UgbmVlZCAyXjI1ICogNjQg
-PQo+IDJeMzEgPSAyRywgdGhhdCdzIHRvbyBiaWcuIFNvIHdlIG11c3Qgb25seSBhbGxvY2F0ZSBM
-djIgdGFibGUgd2hlbiB3ZQo+IG5lZWRlZC4KCkkgYWdyZWUgdGhhdCdzIHdheSB0b28gYmlnLCBi
-dXQgSSBoYXZlIGxpbWl0ZWQgdGhpbmdzIHRvIDE2LWJpdCBmb3IgYSByZWFzb24KOykKCj4gSWYg
-U01NVV9JRFIxLlNJRFNJWkUgPSAzMiByZWFsbHkgZXhpc3Qob3IgdG9vIGJpZyksIHdlIG5lZWQg
-ZHluYW1pYyBjaG9vc2UKPiBMdjIgdGFibGUgc2l6ZSg0SywxNkssNjRLKS4gIEJlY2F1c2UgTHYx
-IHRhYmxlIG1heWJlIHRvbyBiaWcsIGFuZCBjYW4gbm90Cj4gYmUgYWxsb2NhdGVkIGJ5IGN1cnJl
-bnQgQVBJLCBhIGR0cyBjb25maWd1cmF0aW9uIHNob3VsZCBiZSBhZGRlZCwgbGlrZQo+IGx2MS10
-YWJsZS1iYXNlID0gPDB4MCAweDA+LCBhbmQgd2UgdXNlIGlvcmVtYXBfY2FjaGUgZ2V0IFZBKG1h
-eWJlIGlvcmVtYXAsCj4gZm9yIG5vbi1jb2hlcmVudCBTTU1VKS4KPiAKPiBPaCwgSSBjYW4gZG8g
-aXQgYWZ0ZXIgeW91ciBwYXRjaGVzIHVwc3RyZWFtZWQsIGJlY2F1c2UgdGhpcyBwcm9ibGVtIG1h
-eWJlCj4gb25seSBJIG1ldC4KCkknbGwgaGF2ZSBhIHRoaW5rIGFib3V0IHRoaXMgYW5kIHNlZSB3
-aGF0IEkgY2FuIGNvbWUgdXAgd2l0aCBmb3IgdmVyc2lvbgoyIG9mIHRoZSBwYXRjaC4gSSdkIGxp
-a2UgdG8gYXZvaWQgYWRkaW5nIGFkZGl0aW9uYWwgcHJvcGVydGllcyB0byB0aGUgRFQKdW50aWwg
-dGhleSdyZSBhY3R1YWxseSBuZWVkZWQsIHRob3VnaC4KCj4gPj4+ICsgICAgIC8qIEludmFsaWRh
-dGUgYW55IGNhY2hlZCBjb25maWd1cmF0aW9uICovCj4gPj4+ICsgICAgIGNtZC5vcGNvZGUgPSBD
-TURRX09QX0NGR0lfQUxMOwo+ID4+PiArICAgICBhcm1fc21tdV9jbWRxX2lzc3VlX2NtZChzbW11
-LCAmY21kKTsKPiA+Pj4gKyAgICAgY21kLm9wY29kZSA9IENNRFFfT1BfQ01EX1NZTkM7Cj4gPj4+
-ICsgICAgIGFybV9zbW11X2NtZHFfaXNzdWVfY21kKHNtbXUsICZjbWQpOwo+ID4+PiArCj4gPj4+
-ICsgICAgIC8qIEludmFsaWRhdGUgYW55IHN0YWxlIFRMQiBlbnRyaWVzICovCj4gPj4+ICsgICAg
-IGNtZC5vcGNvZGUgPSBDTURRX09QX1RMQklfRUwyX0FMTDsKPiA+Pgo+ID4+IERvIHdlIG5lZWQg
-dG8gZXhlY3V0ZSBDTURRX09QX1RMQklfRUwyX0FMTD8gTGludXggb25seSBydW4gYXQgRUwxLiBJ
-dCBhdAo+ID4+IGxlYXN0IHJlbHkgb24gU01NVV9JRFIwLkh5cAo+ID4KPiA+IFRoZSBTTU1VIGlz
-bid0IGd1YXJhbnRlZWQgdG8gY29tZSB1cCBjbGVhbiBvdXQgb2YgcmVzZXQsIHNvIGl0J3MgYSBn
-b29kCj4gPiBpZGVhIHRvIHBlcmZvcm0gdGhpcyBpbnZhbGlkYXRpb24gaW4gY2FzZSBvZiBqdW5r
-IGluIHRoZSBUTEIuIEdpdmVuIHRoYXQKPiA+IExpbnV4IG93bnMgdGhlIHN0YWdlLTIgdHJhbnNs
-YXRpb24sIHRoZW4gdGhpcyBpcyB0aGUgcmlnaHQgcGxhY2UgdG8gZG8gaXQuCj4gCj4gT0suIEJ1
-dCBpdCBzaG91bGQgYmUgY29udHJvbGVkIGJ5IFNNTVVfSURSMC5IeXAuIEkgbWVhbnM6Cj4gaWYg
-KFNNTVVfSURSMC5IeXApCj4gICAgICAgICBleGVjdXRlIGNvbW1hbmQgQ01EUV9PUF9UTEJJX0VM
-Ml9BTEwKPiAKPiBXaGVuIFNNTVVfSURSMC5IeXA94oCZMOKAmSwgdGhpcyBjb21tYW5kIGNhdXNl
-cyBDRVJST1JfSUxMCgpXZWxsIHNwb3R0ZWQsIHRoYW5rcyEKCldpbGwKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11
-QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9u
-Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi,
+
+While trying to get a sense for performance of i40e and i40evf, I
+figured I'd try and create a VF device on the host and activate it.
+However, as soon as I brought the VF up, my host became unreachable. The
+kernel is current 4.1-rc4.
+
+Main network is connected through ixgbe (eth1), i40e is on a
+direct-connect connection with another system. The host is an Intel
+Haswell box with XAPIC and Vt-d enabled.
+
+What I did was pretty simple:
+
+$ echo 1 > /sys/devices/pci0000:80/0000:80:02.2/0000:82:00.0/sriov_numvfs
+anderson:~/:[0]# ip a
+[...]
+2: eth3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc mq state UP
+group default qlen 1000
+    link/ether 68:05:ca:30:dc:f8 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.2/24 brd 192.168.1.255 scope global eth3
+       valid_lft forever preferred_lft forever
+    inet6 fe80::6a05:caff:fe30:dcf8/64 scope link
+       valid_lft forever preferred_lft forever
+3: eth4: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group
+default qlen 1000
+    link/ether 68:05:ca:30:dc:f9 brd ff:ff:ff:ff:ff:ff
+4: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP
+group default qlen 1000
+    link/ether a0:36:9f:24:43:bc brd ff:ff:ff:ff:ff:ff
+    inet 10.161.16.35/18 brd 10.161.63.255 scope global eth1
+       valid_lft forever preferred_lft forever
+    inet6 2620:113:80c0:8000:c::5ca/64 scope global dynamic
+       valid_lft 2517977sec preferred_lft 530777sec
+    inet6 fe80::a236:9fff:fe24:43bc/64 scope link
+       valid_lft forever preferred_lft forever
+5: eth2: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group
+default qlen 1000
+    link/ether a0:36:9f:24:43:be brd ff:ff:ff:ff:ff:ff
+6: eth3.vf0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group
+default qlen 1000
+    link/ether a2:7a:bd:32:e0:21 brd ff:ff:ff:ff:ff:ff
+$ ip addr del 192.168.1.2/24 dev eth3
+$ ifconfig eth3.vf0 192.168.1.3 mtu 9000
+
+After that network (on eth3) died. On the serial console I can see the
+following:
+
+[    0.000000] x2apic: enabled by BIOS, switching to x2apic ops
+[...]
+[    0.000000] Setting APIC routing to cluster x2apic.
+[...]
+[    0.560163] dmar: Host address width 46
+[    0.568628] dmar: DRHD base: 0x000000c7ffc000 flags: 0x0
+[    0.580361] dmar: IOMMU 0: reg_base_addr c7ffc000 ver 1:0 cap
+d2078c106f0466 ecap f020df
+[    0.598229] dmar: DRHD base: 0x000000e3ffc000 flags: 0x0
+[    0.609957] dmar: IOMMU 1: reg_base_addr e3ffc000 ver 1:0 cap
+d2078c106f0466 ecap f020df
+[    0.627826] dmar: DRHD base: 0x000000fbffc000 flags: 0x0
+[    0.639554] dmar: IOMMU 2: reg_base_addr fbffc000 ver 1:0 cap
+d2078c106f0466 ecap f020df
+[    0.657422] dmar: DRHD base: 0x000000abffc000 flags: 0x1
+[    0.669149] dmar: IOMMU 3: reg_base_addr abffc000 ver 1:0 cap
+d2078c106f0466 ecap f020df
+[    0.687020] dmar: RMRR base: 0x00000070d58000 end: 0x00000070d5afff
+[    0.700859] dmar: ATSR flags: 0x0
+[    0.708169] dmar: ATSR flags: 0x0
+[    0.715479] dmar: ATSR flags: 0x0
+[    0.722788] dmar: ATSR flags: 0x0
+[    0.730101] IOAPIC id 12 under DRHD base  0xfbffc000 IOMMU 2
+[    0.742592] IOAPIC id 11 under DRHD base  0xe3ffc000 IOMMU 1
+[    0.755085] IOAPIC id 10 under DRHD base  0xc7ffc000 IOMMU 0
+[    0.767577] IOAPIC id 8 under DRHD base  0xabffc000 IOMMU 3
+[    0.779861] IOAPIC id 9 under DRHD base  0xabffc000 IOMMU 3
+[    0.792145] HPET id 0 under DRHD base 0xabffc000
+[    0.804579] Queued invalidation will be enabled to support x2apic and
+Intr-remapping.
+[    0.821902] Enabled IRQ remapping in x2apic mode
+[...]
+[    1.260956] NMI watchdog: enabled on all CPUs, permanently consumes
+one hw-PMU counter.
+
+---- almost 2 days pass ----
+
+[    9.061798] dmar: DRHD: handling fault status reg 2
+[    9.072566] dmar: INTR-REMAP: Request device [[03:00.0] fault index 5e
+[    9.072566] INTR-REMAP:[fault reason 34] Present field in the IRTE
+entry is clear
+[   20.835402] dmar: DRHD: handling fault status reg 102
+[   20.846536] dmar: INTR-REMAP: Request device [[03:00.0] fault index 4b
+[   20.846536] INTR-REMAP:[fault reason 34] Present field in the IRTE
+entry is clear
+[   80.219290] dmar: DRHD: handling fault status reg 202
+[   80.230441] dmar: INTR-REMAP: Request device [[03:00.0] fault index 42
+[   80.230441] INTR-REMAP:[fault reason 34] Present field in the IRTE
+entry is clear
+[   84.430008] dmar: DRHD: handling fault status reg 302
+[   84.441159] dmar: INTR-REMAP: Request device [[03:00.0] fault index 48
+[   84.441159] INTR-REMAP:[fault reason 34] Present field in the IRTE
+entry is clear
+[   89.019287] dmar: DRHD: handling fault status reg 402
+[   89.030437] dmar: INTR-REMAP: Request device [[03:00.0] fault index 4f
+[   89.030437] INTR-REMAP:[fault reason 34] Present field in the IRTE
+entry is clear
+[  105.350472] dmar: DRHD: handling fault status reg 502
+[  105.361623] dmar: INTR-REMAP: Request device [[03:00.0] fault index 4e
+[  105.361623] INTR-REMAP:[fault reason 34] Present field in the IRTE
+entry is clear
+[  149.464602] dmar: DRHD: handling fault status reg 602
+[  149.475753] dmar: INTR-REMAP: Request device [[03:00.0] fault index 4a
+[  149.475753] INTR-REMAP:[fault reason 34] Present field in the IRTE
+entry is clear
+[  641.689787] dmar: DRHD: handling fault status reg 2
+[  641.700554] dmar: INTR-REMAP: Request device [[82:00.0] fault index 101
+[  641.700554] INTR-REMAP:[fault reason 34] Present field in the IRTE
+entry is clear
+
+
+There are a few things striking me as weird. The first is obviously that
+the messages above sound surprisingly close to Jiang Lui's patch when
+using xapic vs x2apic.
+
+The other thing that I can see above is that time is completely off. At
+the point in time when I started up the VF, the system was already up
+for almost 2 days. Why is time back to 9s on the first DMAR error
+message? The messages also correlate to traffic on the network, so it's
+probably an RX interrupt triggering.
+
+Please let me know if there's any more detail that could be of help to
+figure out what's going wrong.
+
+
+Alex
