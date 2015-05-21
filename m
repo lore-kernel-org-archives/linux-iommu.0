@@ -1,61 +1,141 @@
-From: Feng Wu <feng.wu@intel.com>
-Subject: [v6 0/8] Add VT-d Posted-Interrupts support - IOMMU part
-Date: Thu, 21 May 2015 14:59:07 +0800
-Message-ID: <1432191555-3516-1-git-send-email-feng.wu@intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org, dwmw2@infradead.org
-Cc: tglx@linutronix.de, jiang.liu@linux.intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Feng Wu <feng.wu@intel.com>
+From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [v6 2/8] iommu: dmar: Extend struct irte for VT-d Posted-Interrupts
+Date: Thu, 21 May 2015 14:59:09 +0800
+Message-ID: <1432191555-3516-3-git-send-email-feng.wu@intel.com>
+References: <1432191555-3516-1-git-send-email-feng.wu@intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1432191555-3516-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-VT-d Posted-Interrupts is an enhancement to CPU side Posted-Interrupt.
-With VT-d Posted-Interrupts enabled, external interrupts from
-direct-assigned devices can be delivered to guests without VMM
-intervention when guest is running in non-root mode.
+From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 
-You can find the VT-d Posted-Interrtups Spec. in the following URL:
-http://www.intel.com/content/www/us/en/intelligent-systems/intel-technology/vt-directed-io-spec.html
+The IRTE (Interrupt Remapping Table Entry) is either an entry for
+remapped or for posted interrupts. The hardware distiguishes between
+remapped and posted entries by bit 15 in the low 64 bit of the
+IRTE. If cleared the entry is remapped, if set it's posted.
 
-This series was part of http://thread.gmane.org/gmane.linux.kernel.iommu/7708. To make things clear, send out IOMMU part here.
+The entries have common fields and dependent on the posted bit fields
+with different meanings.
 
-This patch-set is based on the lastest x86/apic branch of tip tree.
+Extend struct irte to handle the differences between remap and posted
+mode by having three structs in the unions:
 
-Divide the whole series which contain multiple components into three parts:
-- Prerequisite changes to irq subsystem (already merged in tip tree x86/apic branch)
-- IOMMU part (in this series)
-- KVM and VFIO parts (will send out this part once the first two parts are accepted)
+	- Shared
+	- Remapped
+	- Posted
 
-v5->v6:
-* Extend 'struct irte' for VT-d Posted-Interrupts, combine remapped
-and posted mode into one irte structure.
+Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+---
+ include/linux/dmar.h | 70 +++++++++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 55 insertions(+), 15 deletions(-)
 
-v4->v5:
-* Abstract modify_irte() to accept two format of irte.
-
-v3->v4:
-* Change capability to a int variant flags instead of a function call.
-* Add hotplug case for VT-d PI.
-
-
-Feng Wu (7):
-  iommu: Add new member capability to struct irq_remap_ops
-  iommu, x86: Implement irq_set_vcpu_affinity for intel_ir_chip
-  iommu, x86: No need to migrating irq for VT-d Posted-Interrupts
-  iommu, x86: Add cap_pi_support() to detect VT-d PI capability
-  iommu, x86: Setup Posted-Interrupts capability for Intel iommu
-  iommu, x86: define irq_remapping_cap()
-  iommu, x86: Properly handler PI for IOMMU hotplug
-
-Thomas Gleixner (1):
-  iommu: dmar: Extend struct irte for VT-d Posted-Interrupts
-
- arch/x86/include/asm/irq_remapping.h | 11 ++++++
- drivers/iommu/intel_irq_remapping.c  | 77 +++++++++++++++++++++++++++++++++++-
- drivers/iommu/irq_remapping.c        | 11 ++++++
- drivers/iommu/irq_remapping.h        |  6 +++
- include/linux/dmar.h                 | 70 +++++++++++++++++++++++++-------
- include/linux/intel-iommu.h          |  1 +
- 6 files changed, 160 insertions(+), 16 deletions(-)
-
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index 8473756..0dbcabc 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -185,33 +185,73 @@ static inline int dmar_device_remove(void *handle)
+ 
+ struct irte {
+ 	union {
++		/* Shared between remapped and posted mode*/
+ 		struct {
+-			__u64	present 	: 1,
+-				fpd		: 1,
+-				dst_mode	: 1,
+-				redir_hint	: 1,
+-				trigger_mode	: 1,
+-				dlvry_mode	: 3,
+-				avail		: 4,
+-				__reserved_1	: 4,
+-				vector		: 8,
+-				__reserved_2	: 8,
+-				dest_id		: 32;
++			__u64	present		: 1,  /*  0      */
++				fpd		: 1,  /*  1      */
++				__res0		: 6,  /*  2 -  6 */
++				avail		: 4,  /*  8 - 11 */
++				__res1		: 3,  /* 12 - 14 */
++				pst		: 1,  /* 15      */
++				vector		: 8,  /* 16 - 23 */
++				__res2		: 40; /* 24 - 63 */
++		};
++
++		/* Remapped mode */
++		struct {
++			__u64	r_present	: 1,  /*  0      */
++				r_fpd		: 1,  /*  1      */
++				dst_mode	: 1,  /*  2      */
++				redir_hint	: 1,  /*  3      */
++				trigger_mode	: 1,  /*  4      */
++				dlvry_mode	: 3,  /*  5 -  7 */
++				r_avail		: 4,  /*  8 - 11 */
++				r_res0		: 4,  /* 12 - 15 */
++				r_vector	: 8,  /* 16 - 23 */
++				r_res1		: 8,  /* 24 - 31 */
++				dest_id		: 32; /* 32 - 63 */
++		};
++
++		/* Posted mode */
++		struct {
++			__u64	p_present	: 1,  /*  0      */
++				p_fpd		: 1,  /*  1      */
++				p_res0		: 6,  /*  2 -  7 */
++				p_avail		: 4,  /*  8 - 11 */
++				p_res1		: 2,  /* 12 - 13 */
++				p_urgent	: 1,  /* 14      */
++				p_pst		: 1,  /* 15      */
++				p_vector	: 8,  /* 16 - 23 */
++				p_res2		: 14, /* 24 - 37 */
++				pda_l		: 26; /* 38 - 63 */
+ 		};
+ 		__u64 low;
+ 	};
+ 
+ 	union {
++		/* Shared between remapped and posted mode*/
+ 		struct {
+-			__u64	sid		: 16,
+-				sq		: 2,
+-				svt		: 2,
+-				__reserved_3	: 44;
++			__u64	sid		: 16,  /* 64 - 79  */
++				sq		: 2,   /* 80 - 81  */
++				svt		: 2,   /* 82 - 83  */
++				__res3		: 44;  /* 84 - 127 */
++		};
++
++		/* Posted mode*/
++		struct {
++			__u64	p_sid		: 16,  /* 64 - 79  */
++				p_sq		: 2,   /* 80 - 81  */
++				p_svt		: 2,   /* 82 - 83  */
++				p_res3		: 12,  /* 84 - 95  */
++				pda_h		: 32;  /* 96 - 127 */
+ 		};
+ 		__u64 high;
+ 	};
+ };
+ 
++#define PDA_LOW_BIT    26
++#define PDA_HIGH_BIT   32
++
+ enum {
+ 	IRQ_REMAP_XAPIC_MODE,
+ 	IRQ_REMAP_X2APIC_MODE,
 -- 
 2.1.0
