@@ -1,149 +1,194 @@
-From: Baoquan He <bhe@redhat.com>
-Subject: Re: [PATCH v11 08/10] iommu/vt-d: assign new page table for dma_map
-Date: Thu, 21 May 2015 14:54:51 +0800
-Message-ID: <20150521065451.GA23661@dhcp-128-28.nay.redhat.com>
-References: <1431337974-545-1-git-send-email-zhen-hual@hp.com>
- <1431337974-545-9-git-send-email-zhen-hual@hp.com>
- <20150520235242.GA2342@dhcp-17-102.nay.redhat.com>
- <555D3470.7060902@hp.com>
+From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [v5 3/9] iommu, x86: Abstract modify_irte() to accept two
+	format of irte
+Date: Thu, 21 May 2015 07:01:34 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F00254319E@SHSMSX104.ccr.corp.intel.com>
+References: <1432098937-19527-1-git-send-email-feng.wu@intel.com>
+	<1432098937-19527-4-git-send-email-feng.wu@intel.com>
+	<alpine.DEB.2.11.1505201144370.4225@nanos>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <555D3470.7060902@hp.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: "Li, ZhenHua" <zhen-hual@hp.com>
-Cc: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, joro@8bytes.org, vgoyal@redhat.com, dyoung@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <alpine.DEB.2.11.1505201144370.4225@nanos>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/21/15 at 09:27am, Li, ZhenHua wrote:
-> Hi Baoquan,
-> 
-> In the early version of this patchset, old page tables are used by new
-> kernel.  But as discussed, we need to make kernel use new pages when
-> there is a new dma request , so we need to unmap the pages which were
-> mapped in old kernel, and this is what this patch does.
 
-OK, just a new page table allocated in init_domain(), right? I thought a
-specific empty page-table is allocated for these new domains in kdump
-kernel.
 
+> -----Original Message-----
+> From: Thomas Gleixner [mailto:tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org]
+> Sent: Wednesday, May 20, 2015 7:46 PM
+> To: Wu, Feng
+> Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org;
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Subject: Re: [v5 3/9] iommu, x86: Abstract modify_irte() to accept two format
+> of irte
 > 
-> Thanks
-> Zhenhua
+> On Wed, 20 May 2015, Feng Wu wrote:
 > 
-> On 05/21/2015 07:52 AM, Baoquan He wrote:
-> >On 05/11/15 at 05:52pm, Li, Zhen-Hua wrote:
-> >>When a device driver issues the first dma_map command for a device, we
-> >>assign a new and empty page-table, thus removing all mappings from the
-> >>old kernel for the device.
-> >
-> >Hi Zhenhua,
-> >
-> > From your patch I got it will remove all mappings, assign a new
-> >page-table. But I didn't got why you stress an empty page-table. Did I
-> >miss anything?
-> >
-> >Thanks
-> >Baoquan
-> >
-> >>
-> >>Signed-off-by: Li, Zhen-Hua <zhen-hual@hp.com>
-> >>---
-> >>  drivers/iommu/intel-iommu.c | 58 ++++++++++++++++++++++++++++++++++++++-------
-> >>  1 file changed, 50 insertions(+), 8 deletions(-)
-> >>
-> >>diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> >>index 91545bf..3cc1027 100644
-> >>--- a/drivers/iommu/intel-iommu.c
-> >>+++ b/drivers/iommu/intel-iommu.c
-> >>@@ -396,6 +396,9 @@ static int copy_root_entry_table(struct intel_iommu *iommu);
-> >>
-> >>  static int intel_iommu_load_translation_tables(struct intel_iommu *iommu);
-> >>
-> >>+static void unmap_device_dma(struct dmar_domain *domain,
-> >>+				struct device *dev,
-> >>+				struct intel_iommu *iommu);
-> >>  static void iommu_check_pre_te_status(struct intel_iommu *iommu);
-> >>  static u8 g_translation_pre_enabled;
-> >>
-> >>@@ -3115,6 +3118,7 @@ static struct iova *intel_alloc_iova(struct device *dev,
-> >>  static struct dmar_domain *__get_valid_domain_for_dev(struct device *dev)
-> >>  {
-> >>  	struct dmar_domain *domain;
-> >>+	struct intel_iommu *iommu;
-> >>  	int ret;
-> >>
-> >>  	domain = get_domain_for_dev(dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
-> >>@@ -3124,14 +3128,30 @@ static struct dmar_domain *__get_valid_domain_for_dev(struct device *dev)
-> >>  		return NULL;
-> >>  	}
-> >>
-> >>-	/* make sure context mapping is ok */
-> >>-	if (unlikely(!domain_context_mapped(dev))) {
-> >>-		ret = domain_context_mapping(domain, dev, CONTEXT_TT_MULTI_LEVEL);
-> >>-		if (ret) {
-> >>-			printk(KERN_ERR "Domain context map for %s failed",
-> >>-			       dev_name(dev));
-> >>-			return NULL;
-> >>-		}
-> >>+	/* if in kdump kernel, we need to unmap the mapped dma pages,
-> >>+	 * detach this device first.
-> >>+	 */
-> >>+	if (likely(domain_context_mapped(dev))) {
-> >>+		iommu = domain_get_iommu(domain);
-> >>+		if (iommu->pre_enabled_trans) {
-> >>+			unmap_device_dma(domain, dev, iommu);
-> >>+
-> >>+			domain = get_domain_for_dev(dev,
-> >>+				DEFAULT_DOMAIN_ADDRESS_WIDTH);
-> >>+			if (!domain) {
-> >>+				pr_err("Allocating domain for %s failed",
-> >>+				       dev_name(dev));
-> >>+				return NULL;
-> >>+			}
-> >>+		} else
-> >>+			return domain;
-> >>+	}
-> >>+
-> >>+	ret = domain_context_mapping(domain, dev, CONTEXT_TT_MULTI_LEVEL);
-> >>+	if (ret) {
-> >>+		pr_err("Domain context map for %s failed",
-> >>+		       dev_name(dev));
-> >>+		return NULL;
-> >>  	}
-> >>
-> >>  	return domain;
-> >>@@ -5168,6 +5188,28 @@ static int intel_iommu_load_translation_tables(struct intel_iommu *iommu)
-> >>  	return ret;
-> >>  }
-> >>
-> >>+static void unmap_device_dma(struct dmar_domain *domain,
-> >>+				struct device *dev,
-> >>+				struct intel_iommu *iommu)
-> >>+{
-> >>+	struct context_entry *ce;
-> >>+	struct iova *iova;
-> >>+	phys_addr_t phys_addr;
-> >>+	dma_addr_t dev_addr;
-> >>+	struct pci_dev *pdev;
-> >>+
-> >>+	pdev = to_pci_dev(dev);
-> >>+	ce = iommu_context_addr(iommu, pdev->bus->number, pdev->devfn, 1);
-> >>+	phys_addr = context_address_root(ce) << VTD_PAGE_SHIFT;
-> >>+	dev_addr = phys_to_dma(dev, phys_addr);
-> >>+
-> >>+	iova = find_iova(&domain->iovad, IOVA_PFN(dev_addr));
-> >>+	if (iova)
-> >>+		intel_unmap(dev, dev_addr);
-> >>+
-> >>+	domain_remove_one_dev_info(domain, dev);
-> >>+}
-> >>+
-> >>  static void iommu_check_pre_te_status(struct intel_iommu *iommu)
-> >>  {
-> >>  	u32 sts;
-> >>--
-> >>2.0.0-rc0
-> >>
+> > After introducing VT-d posted-interrupts, we have two format
+> > of IRTE: remapped and posted. This patch make modify_irte()
+> > suitable for both of them.
 > 
+> >  static int modify_irte(struct irq_2_iommu *irq_iommu,
+> > -		       struct irte *irte_modified)
+> > +		       void *data)
+> 
+> That's hardly an abstraction. You just make the pointer void so you
+> can hand in arbitrary nonsense.
+> 
+> And with the new struct you having crap like this:
+> 
+> +               memcpy(irte_pi, &ir_data->irte_entry, sizeof(struct irte));
+> 
+> and this:
+> 
+> +       struct irte_pi *irte_pi = (struct irte_pi *)irte;
+> 
+> Why not extending struct irte proper and avoid the whole void pointer
+> and mempcy and other crappola.
+> 
+> Patch below.
+> 
+> Thanks,
+> 
+> 	tglx
+> 
+> ------------->
+> 
+> iommu: dmar: Extend struct irte for VT-d Posted-Interrrupts
+> 
+> The IRTE (Interrupt Remapping Table Entry) is either an entry for
+> remapped or for posted interrupts. The hardware distiguishes between
+> remapped and posted entries by bit 15 in the low 64 bit of the
+> IRTE. If cleared the entry is remapped, if set it's posted.
+> 
+> The entries have common fields and dependent on the posted bit fields
+> with different meanings.
+> 
+> Extend struct irte to handle the differences between remap and posted
+> mode by having three structs in the unions:
+> 
+> 	- Shared
+> 	- Remapped
+> 	- Posted
+> 
+> Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+> ---
+>  include/linux/dmar.h |   68
+> +++++++++++++++++++++++++++++++++++++++------------
+>  1 file changed, 53 insertions(+), 15 deletions(-)
+> 
+> Index: linux/include/linux/dmar.h
+> ================================================================
+> ===
+> --- linux.orig/include/linux/dmar.h
+> +++ linux/include/linux/dmar.h
+> @@ -185,28 +185,66 @@ static inline int dmar_device_remove(voi
+> 
+>  struct irte {
+>  	union {
+> +		/* Shared between remap and posted mode*/
+>  		struct {
+> -			__u64	present 	: 1,
+> -				fpd		: 1,
+> -				dst_mode	: 1,
+> -				redir_hint	: 1,
+> -				trigger_mode	: 1,
+> -				dlvry_mode	: 3,
+> -				avail		: 4,
+> -				__reserved_1	: 4,
+> -				vector		: 8,
+> -				__reserved_2	: 8,
+> -				dest_id		: 32;
+> +			__u64	present		: 1,  /*  0      */
+> +				fpd		: 1,  /*  1      */
+> +				__res0		: 6,  /*  2 -  6 */
+> +				avail		: 4,  /*  8 - 11 */
+> +				__res1		: 3,  /* 12 - 14 */
+> +				posted		: 1,  /* 15      */
+> +				vector		: 8,  /* 16 - 23 */
+> +				__res2		: 40; /* 24 - 63 */
+> +		};
+> +
+> +		/* Remap mode */
+> +		struct {
+> +			__u64	r_present	: 1,  /*  0      */
+> +				r_fpd		: 1,  /*  1      */
+> +				dst_mode	: 1,  /*  2      */
+> +				redir_hint	: 1,  /*  3      */
+> +				trigger_mode	: 1,  /*  4      */
+> +				dlvry_mode	: 3,  /*  5 -  7 */
+> +				r_avail		: 4,  /*  8 - 11 */
+> +				r_res1		: 4,  /* 12 - 13 */
+> +				r_posted	: 1,  /* 15      */
+> +				r_vector	: 8,  /* 16 - 23 */
+> +				r_res2		: 8,  /* 24 - 31 */
+> +				dest_id		: 32; /* 32 - 63 */
+> +		};
+> +
+> +		/* Posted mode */
+> +		struct {
+> +			__u64	p_present	: 1,  /*  0      */
+> +				p_fpd		: 1,  /*  1      */
+> +				p_res0		: 6,  /*  2 -  6 */
+> +				p_avail		: 4,  /*  8 - 11 */
+> +				p_res1		: 4,  /* 12 - 13 */
+> +				p_urgent	: 1,  /* 14      */
+> +				p_posted	: 1,  /* 15      */
+> +				p_vector	: 8,  /* 16 - 23 */
+> +				p_res2		: 14, /* 24 - 37 */
+> +				pda_l		: 26; /* 38 - 63 */
+>  		};
+>  		__u64 low;
+>  	};
+> 
+>  	union {
+> +		/* Shared between remap and posted mode*/
+> +		struct {
+> +			__u64	sid		: 16,  /* 64 - 79 */
+> +				sq		: 2,   /* 80 - 81 */
+> +				svt		: 2,   /* 82 - 83 */
+> +				__res3		: 44;  /* 84 - 127 */
+> +		};
+> +
+> +		/* Posted mode*/
+>  		struct {
+> -			__u64	sid		: 16,
+> -				sq		: 2,
+> -				svt		: 2,
+> -				__reserved_3	: 44;
+> +			__u64	p_sid		: 16,  /* 64 - 79 */
+> +				p_sq		: 2,   /* 80 - 81 */
+> +				p_svt		: 2,   /* 82 - 83 */
+> +				p_res3		: 12,  /* 84 - 95 */
+> +				pda_h		: 32;  /* 96 - 127 */
+>  		};
+>  		__u64 high;
+>  	};
+
+This looks great, thanks for your suggestion!
+
+In fact, I also thought about combining this two formats into one structure,
+but I encountered two problems:
+1. Need change the current remapping code which uses this structure.
+2. Building errors.
+
+You patch solves the first issue by generating a shared part in the union,
+and based on that it is easy to address the build error issue by renaming
+the members.
+
+Thanks,
+Feng
