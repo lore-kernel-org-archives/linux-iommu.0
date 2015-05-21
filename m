@@ -1,15 +1,15 @@
 From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: Re: [v6 3/8] iommu, x86: Implement irq_set_vcpu_affinity for
-	intel_ir_chip
-Date: Thu, 21 May 2015 12:48:04 +0200 (CEST)
-Message-ID: <alpine.DEB.2.11.1505211244110.4225@nanos>
+Subject: Re: [v6 6/8] iommu, x86: Setup Posted-Interrupts capability for
+	Intel iommu
+Date: Thu, 21 May 2015 12:51:13 +0200 (CEST)
+Message-ID: <alpine.DEB.2.11.1505211249280.4225@nanos>
 References: <1432191555-3516-1-git-send-email-feng.wu@intel.com>
-	<1432191555-3516-4-git-send-email-feng.wu@intel.com>
+	<1432191555-3516-7-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1432191555-3516-4-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1432191555-3516-7-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,24 +24,39 @@ Cc: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9
 List-Id: iommu@lists.linux-foundation.org
 
 On Thu, 21 May 2015, Feng Wu wrote:
-> +static int intel_ir_set_vcpu_affinity(struct irq_data *data, void *vcpu_info)
-> +{
-> +	struct intel_ir_data *ir_data = data->chip_data;
-> +	struct irte *irte_pi = &ir_data->irte_pi_entry;
-> +	struct vcpu_data *vcpu_pi_info;
+> @@ -647,6 +647,20 @@ static int __init intel_enable_irq_remapping(void)
+> +	/*
+> +	 * Set Posted-Interrupts capability.
+> +	 */
+> +	if (!disable_irq_post) {
+> +		intel_irq_remap_ops.capability |= 1 << IRQ_POSTING_CAP;
 > +
-> +	/* stop posting interrupts, back to remapping mode */
-> +	if (!vcpu_info)
-> +		modify_irte(&ir_data->irq_2_iommu, &ir_data->irte_entry);
-> +	else {
+> +		for_each_iommu(iommu, drhd)
+> +			if (!cap_pi_support(iommu->cap)) {
+> +				intel_irq_remap_ops.capability &=
+> +						~(1 << IRQ_POSTING_CAP);
+> +				break;
+> +			}
+> +	}
+> +
 
-We add braces to both branches if one requires it.
+> @@ -874,6 +894,20 @@ static int reenable_irq_remapping(int eim)
+> +	/*
+> +	 * Set Posted-Interrupts capability.
+> +	 */
+> +	if (!disable_irq_post) {
+> +		intel_irq_remap_ops.capability |= 1 << IRQ_POSTING_CAP;
+> +
+> +		for_each_iommu(iommu, drhd)
+> +			if (!cap_pi_support(iommu->cap)) {
+> +				intel_irq_remap_ops.capability &=
+> +						~(1 << IRQ_POSTING_CAP);
+> +				break;
+> +			}
+> +	}
+> +
 
-> +		vcpu_pi_info = (struct vcpu_data *)vcpu_info;
-> +		memcpy(irte_pi, &ir_data->irte_entry, sizeof(struct irte));
-
-This lacks a comment WHY you copy irte_entry to irte_pi_entry and WHY
-we have two seperate entries stored in ir_data.
+Verbatim copy and paste. Ever heard about the concept of helper functions?
 
 Thanks,
 
