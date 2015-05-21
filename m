@@ -1,139 +1,75 @@
-From: "Li, ZhenHua" <zhen-hual@hp.com>
-Subject: Re: [PATCH v11 08/10] iommu/vt-d: assign new page table for dma_map
-Date: Thu, 21 May 2015 09:27:12 +0800
-Message-ID: <555D3470.7060902@hp.com>
-References: <1431337974-545-1-git-send-email-zhen-hual@hp.com> <1431337974-545-9-git-send-email-zhen-hual@hp.com> <20150520235242.GA2342@dhcp-17-102.nay.redhat.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v2 4/6] soc: mediatek: Add SMI driver
+Date: Thu, 21 May 2015 14:16:30 +0800
+Message-ID: <1432188990.5092.12.camel@mhfsdcap03>
+References: <1431683009-18158-1-git-send-email-yong.wu@mediatek.com>
+	<1431683009-18158-5-git-send-email-yong.wu@mediatek.com>
+	<CABuKBeJvh2PGi3i6O0uu-7ggdBzKMb3tPE_XKhT1i-+tkKc5gg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20150520235242.GA2342@dhcp-17-102.nay.redhat.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Baoquan He <bhe@redhat.com>
-Cc: dwmw2@infradead.org, indou.takao@jp.fujitsu.com, joro@8bytes.org, vgoyal@redhat.com, dyoung@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com, "Li, ZhenHua" <zhen-hual@hp.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CABuKBeJvh2PGi3i6O0uu-7ggdBzKMb3tPE_XKhT1i-+tkKc5gg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, srv_heupstream <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Baoquan,
+Hi Matthias,
+     Thanks very much for your suggestion.
+     Abort the smi clock name, Could you help check below.
+     The others I will improve in next time.
 
-In the early version of this patchset, old page tables are used by new
-kernel.  But as discussed, we need to make kernel use new pages when
-there is a new dma request , so we need to unmap the pages which were
-mapped in old kernel, and this is what this patch does.
-
-Thanks
-Zhenhua
-
-On 05/21/2015 07:52 AM, Baoquan He wrote:
-> On 05/11/15 at 05:52pm, Li, Zhen-Hua wrote:
->> When a device driver issues the first dma_map command for a device, we
->> assign a new and empty page-table, thus removing all mappings from the
->> old kernel for the device.
->
-> Hi Zhenhua,
->
->  From your patch I got it will remove all mappings, assign a new
-> page-table. But I didn't got why you stress an empty page-table. Did I
-> miss anything?
->
-> Thanks
-> Baoquan
->
->>
->> Signed-off-by: Li, Zhen-Hua <zhen-hual@hp.com>
->> ---
->>   drivers/iommu/intel-iommu.c | 58 ++++++++++++++++++++++++++++++++++++++-------
->>   1 file changed, 50 insertions(+), 8 deletions(-)
->>
->> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->> index 91545bf..3cc1027 100644
->> --- a/drivers/iommu/intel-iommu.c
->> +++ b/drivers/iommu/intel-iommu.c
->> @@ -396,6 +396,9 @@ static int copy_root_entry_table(struct intel_iommu *iommu);
->>
->>   static int intel_iommu_load_translation_tables(struct intel_iommu *iommu);
->>
->> +static void unmap_device_dma(struct dmar_domain *domain,
->> +				struct device *dev,
->> +				struct intel_iommu *iommu);
->>   static void iommu_check_pre_te_status(struct intel_iommu *iommu);
->>   static u8 g_translation_pre_enabled;
->>
->> @@ -3115,6 +3118,7 @@ static struct iova *intel_alloc_iova(struct device *dev,
->>   static struct dmar_domain *__get_valid_domain_for_dev(struct device *dev)
->>   {
->>   	struct dmar_domain *domain;
->> +	struct intel_iommu *iommu;
->>   	int ret;
->>
->>   	domain = get_domain_for_dev(dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
->> @@ -3124,14 +3128,30 @@ static struct dmar_domain *__get_valid_domain_for_dev(struct device *dev)
->>   		return NULL;
->>   	}
->>
->> -	/* make sure context mapping is ok */
->> -	if (unlikely(!domain_context_mapped(dev))) {
->> -		ret = domain_context_mapping(domain, dev, CONTEXT_TT_MULTI_LEVEL);
->> -		if (ret) {
->> -			printk(KERN_ERR "Domain context map for %s failed",
->> -			       dev_name(dev));
->> -			return NULL;
->> -		}
->> +	/* if in kdump kernel, we need to unmap the mapped dma pages,
->> +	 * detach this device first.
->> +	 */
->> +	if (likely(domain_context_mapped(dev))) {
->> +		iommu = domain_get_iommu(domain);
->> +		if (iommu->pre_enabled_trans) {
->> +			unmap_device_dma(domain, dev, iommu);
->> +
->> +			domain = get_domain_for_dev(dev,
->> +				DEFAULT_DOMAIN_ADDRESS_WIDTH);
->> +			if (!domain) {
->> +				pr_err("Allocating domain for %s failed",
->> +				       dev_name(dev));
->> +				return NULL;
->> +			}
->> +		} else
->> +			return domain;
->> +	}
->> +
->> +	ret = domain_context_mapping(domain, dev, CONTEXT_TT_MULTI_LEVEL);
->> +	if (ret) {
->> +		pr_err("Domain context map for %s failed",
->> +		       dev_name(dev));
->> +		return NULL;
->>   	}
->>
->>   	return domain;
->> @@ -5168,6 +5188,28 @@ static int intel_iommu_load_translation_tables(struct intel_iommu *iommu)
->>   	return ret;
->>   }
->>
->> +static void unmap_device_dma(struct dmar_domain *domain,
->> +				struct device *dev,
->> +				struct intel_iommu *iommu)
->> +{
->> +	struct context_entry *ce;
->> +	struct iova *iova;
->> +	phys_addr_t phys_addr;
->> +	dma_addr_t dev_addr;
->> +	struct pci_dev *pdev;
->> +
->> +	pdev = to_pci_dev(dev);
->> +	ce = iommu_context_addr(iommu, pdev->bus->number, pdev->devfn, 1);
->> +	phys_addr = context_address_root(ce) << VTD_PAGE_SHIFT;
->> +	dev_addr = phys_to_dma(dev, phys_addr);
->> +
->> +	iova = find_iova(&domain->iovad, IOVA_PFN(dev_addr));
->> +	if (iova)
->> +		intel_unmap(dev, dev_addr);
->> +
->> +	domain_remove_one_dev_info(domain, dev);
->> +}
->> +
->>   static void iommu_check_pre_te_status(struct intel_iommu *iommu)
->>   {
->>   	u32 sts;
->> --
->> 2.0.0-rc0
->>
+On Tue, 2015-05-19 at 13:14 +0200, Matthias Brugger wrote:
+> 2015-05-15 11:43 GMT+02:00 Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>:
+> >     This patch add SMI(Smart Multimedia Interface) driver. This driver is
+> > responsible to enable/disable iommu and control the clocks of each local arbiter.
+> >
+[snip]
+> > +
+> > +#define SMI_LARB_MMU_EN                (0xf00)
+> > +#define F_SMI_MMU_EN(port)     (1 << (port))
+> > +
+> > +enum {
+> > +       MTK_CLK_APB,
+> > +       MTK_CLK_SMI,
+> > +       MTK_CLK_MAX,
+> 
+> Maybe add something like:
+> MTK_CLK_FIRST = MTK_CLK_APB,
+> to make the for loops better readable.
+> 
+Then, Is it like this? : 
+ enum {
+        MTK_CLK_FIRST = MTK_CLK_APB,
+        MTK_CLK_SMI,
+        MTK_CLK_MAX,
+ }
+or the CLK_SMI also need MTK_CLK_SECOND = MTK_CLK_SMI.
+> > +};
+> > +
+> > +struct mtk_smi_common {
+> > +       void __iomem            *base;
+> 
+> That seems to be never used. Please delete it.
+> 
+> > +       struct clk              *clk[MTK_CLK_MAX];
+> > +};
+> > +
+> > +struct mtk_smi_larb {
+> > +       void __iomem            *base;
+> > +       spinlock_t              portlock; /* lock for config port */
+> > +       struct clk              *clk[MTK_CLK_MAX];
+> > +       struct device           *smi;
+> > +};
+> > +
+> Thanks,
+> Matthias
