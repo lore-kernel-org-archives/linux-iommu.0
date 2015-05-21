@@ -1,94 +1,55 @@
-From: Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH v2 4/6] soc: mediatek: Add SMI driver
-Date: Thu, 21 May 2015 15:38:28 +0800
-Message-ID: <1432193908.5092.14.camel@mhfsdcap03>
-References: <1431683009-18158-1-git-send-email-yong.wu@mediatek.com>
-	 <1431683009-18158-5-git-send-email-yong.wu@mediatek.com>
-	 <CABuKBeJvh2PGi3i6O0uu-7ggdBzKMb3tPE_XKhT1i-+tkKc5gg@mail.gmail.com>
-	 <1432188990.5092.12.camel@mhfsdcap03>
-	 <CABuKBe+FmAzr_Cu=fUDwDHYzH4mW_2p4z1SYmp7+W=Tu-MLEuA@mail.gmail.com>
+From: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Subject: [PATCH] iommu/rockchip: silence attaching and detaching of devices
+Date: Thu, 21 May 2015 09:57:29 +0200
+Message-ID: <1638542.l3M1oAbtAT@phil>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CABuKBe+FmAzr_Cu=fUDwDHYzH4mW_2p4z1SYmp7+W=Tu-MLEuA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Lucas Stach <l.stach@pengutronix.de>, Mark Rutland <mark.rutland@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org, Sasha Hauer <kernel@pengutronix.de>, srv_heupstream <srv_heupstream@mediatek.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, Paul Bolle <pebolle@tiscali.nl>, Arnd Bergmann <arnd@arndb.de>, mitchelh@codeaurora.org, k.zhang@mediatek.com, youhua.li@mediatek.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2015-05-21 at 09:30 +0200, Matthias Brugger wrote:
-> 2015-05-21 8:16 GMT+02:00 Yong Wu <yong.wu@mediatek.com>:
-> > Hi Matthias,
-> >      Thanks very much for your suggestion.
-> >      Abort the smi clock name, Could you help check below.
-> >      The others I will improve in next time.
-> >
-> > On Tue, 2015-05-19 at 13:14 +0200, Matthias Brugger wrote:
-> >> 2015-05-15 11:43 GMT+02:00 Yong Wu <yong.wu@mediatek.com>:
-> >> >     This patch add SMI(Smart Multimedia Interface) driver. This driver is
-> >> > responsible to enable/disable iommu and control the clocks of each local arbiter.
-> >> >
-> > [snip]
-> >> > +
-> >> > +#define SMI_LARB_MMU_EN                (0xf00)
-> >> > +#define F_SMI_MMU_EN(port)     (1 << (port))
-> >> > +
-> >> > +enum {
-> >> > +       MTK_CLK_APB,
-> >> > +       MTK_CLK_SMI,
-> >> > +       MTK_CLK_MAX,
-> >>
-> >> Maybe add something like:
-> >> MTK_CLK_FIRST = MTK_CLK_APB,
-> >> to make the for loops better readable.
-> >>
-> > Then, Is it like this? :
-> >  enum {
-> >         MTK_CLK_FIRST = MTK_CLK_APB,
-> >         MTK_CLK_SMI,
-> >         MTK_CLK_MAX,
-> >  }
-> > or the CLK_SMI also need MTK_CLK_SECOND = MTK_CLK_SMI.
-> 
-> 
-> something like:
-> enum {
->          MTK_CLK_FIRST,
->          MTK_CLK_APB = MTK_CLK_FIRST,
->          MTK_CLK_SMI,
->          MTK_CLK_LAST,
-> }
-> 
-> So you can rewrite the for loop:
-> if (i = MTK_CLK_FIRST; i < MTK_CLK_LAST; i++)
-Get it.
-Thanks very much.
-> 
-> Regards,
-> Matthias
-> 
-> >> > +};
-> >> > +
-> >> > +struct mtk_smi_common {
-> >> > +       void __iomem            *base;
-> >>
-> >> That seems to be never used. Please delete it.
-> >>
-> >> > +       struct clk              *clk[MTK_CLK_MAX];
-> >> > +};
-> >> > +
-> >> > +struct mtk_smi_larb {
-> >> > +       void __iomem            *base;
-> >> > +       spinlock_t              portlock; /* lock for config port */
-> >> > +       struct clk              *clk[MTK_CLK_MAX];
-> >> > +       struct device           *smi;
-> >> > +};
-> >> > +
-> >> Thanks,
-> >> Matthias
-> >
-> >
-> 
-> 
-> 
+Currently the driver emits a log line every time a device attaches or
+detaches - which happens at every unblank/blank of the drm for example.
+The message itself also has no real value to the average user and is
+merely useful when debugging a problem, so make it a dev_dbg instead.
+
+Signed-off-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+---
+ drivers/iommu/rockchip-iommu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 140a7bb..ebf0adb 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -785,7 +785,7 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+ 	list_add_tail(&iommu->node, &rk_domain->iommus);
+ 	spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
+ 
+-	dev_info(dev, "Attached to iommu domain\n");
++	dev_dbg(dev, "Attached to iommu domain\n");
+ 
+ 	rk_iommu_disable_stall(iommu);
+ 
+@@ -819,7 +819,7 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
+ 
+ 	iommu->domain = NULL;
+ 
+-	dev_info(dev, "Detached from iommu domain\n");
++	dev_dbg(dev, "Detached from iommu domain\n");
+ }
+ 
+ static struct iommu_domain *rk_iommu_domain_alloc(unsigned type)
+-- 
+2.1.4
