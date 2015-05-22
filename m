@@ -1,16 +1,16 @@
 From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [v6 3/8] iommu, x86: Implement irq_set_vcpu_affinity for
-	intel_ir_chip
-Date: Fri, 22 May 2015 01:02:42 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F002546B0D@SHSMSX104.ccr.corp.intel.com>
+Subject: RE: [v6 6/8] iommu, x86: Setup Posted-Interrupts capability for
+	Intel iommu
+Date: Fri, 22 May 2015 01:03:17 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F002546B1B@SHSMSX104.ccr.corp.intel.com>
 References: <1432191555-3516-1-git-send-email-feng.wu@intel.com>
-	<1432191555-3516-4-git-send-email-feng.wu@intel.com>
-	<alpine.DEB.2.11.1505211244110.4225@nanos>
+	<1432191555-3516-7-git-send-email-feng.wu@intel.com>
+	<alpine.DEB.2.11.1505211249280.4225@nanos>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <alpine.DEB.2.11.1505211244110.4225@nanos>
+In-Reply-To: <alpine.DEB.2.11.1505211249280.4225@nanos>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -29,41 +29,49 @@ List-Id: iommu@lists.linux-foundation.org
 
 > -----Original Message-----
 > From: Thomas Gleixner [mailto:tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org]
-> Sent: Thursday, May 21, 2015 6:48 PM
+> Sent: Thursday, May 21, 2015 6:51 PM
 > To: Wu, Feng
 > Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org;
 > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [v6 3/8] iommu, x86: Implement irq_set_vcpu_affinity for
-> intel_ir_chip
+> Subject: Re: [v6 6/8] iommu, x86: Setup Posted-Interrupts capability for Intel
+> iommu
 > 
 > On Thu, 21 May 2015, Feng Wu wrote:
-> > +static int intel_ir_set_vcpu_affinity(struct irq_data *data, void *vcpu_info)
-> > +{
-> > +	struct intel_ir_data *ir_data = data->chip_data;
-> > +	struct irte *irte_pi = &ir_data->irte_pi_entry;
-> > +	struct vcpu_data *vcpu_pi_info;
+> > @@ -647,6 +647,20 @@ static int __init intel_enable_irq_remapping(void)
+> > +	/*
+> > +	 * Set Posted-Interrupts capability.
+> > +	 */
+> > +	if (!disable_irq_post) {
+> > +		intel_irq_remap_ops.capability |= 1 << IRQ_POSTING_CAP;
 > > +
-> > +	/* stop posting interrupts, back to remapping mode */
-> > +	if (!vcpu_info)
-> > +		modify_irte(&ir_data->irq_2_iommu, &ir_data->irte_entry);
-> > +	else {
+> > +		for_each_iommu(iommu, drhd)
+> > +			if (!cap_pi_support(iommu->cap)) {
+> > +				intel_irq_remap_ops.capability &=
+> > +						~(1 << IRQ_POSTING_CAP);
+> > +				break;
+> > +			}
+> > +	}
+> > +
 > 
-> We add braces to both branches if one requires it.
+> > @@ -874,6 +894,20 @@ static int reenable_irq_remapping(int eim)
+> > +	/*
+> > +	 * Set Posted-Interrupts capability.
+> > +	 */
+> > +	if (!disable_irq_post) {
+> > +		intel_irq_remap_ops.capability |= 1 << IRQ_POSTING_CAP;
+> > +
+> > +		for_each_iommu(iommu, drhd)
+> > +			if (!cap_pi_support(iommu->cap)) {
+> > +				intel_irq_remap_ops.capability &=
+> > +						~(1 << IRQ_POSTING_CAP);
+> > +				break;
+> > +			}
+> > +	}
+> > +
 > 
-> > +		vcpu_pi_info = (struct vcpu_data *)vcpu_info;
-> > +		memcpy(irte_pi, &ir_data->irte_entry, sizeof(struct irte));
-> 
-> This lacks a comment WHY you copy irte_entry to irte_pi_entry and WHY
-> we have two seperate entries stored in ir_data.
+> Verbatim copy and paste. Ever heard about the concept of helper functions?
 
-"ir_data->irte_entry" saves the remapped format of IRTE, as you can see
-from patch [4/8], it being a cached irte is still updated when setting the
-affinity even when we are in posted mode. So this make it possible to switch
-back to remapped mode from posted mode, we can just set "ir_data->irte_entry"
-to hardware for that purpose. I will add the comments, thanks for the suggestion!
-
-BTW, do you have any other comments/suggestions about this series?
-Any comments are appreciated!
+Good idea!
 
 Thanks,
 Feng
