@@ -1,55 +1,71 @@
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [BUG 4.1-rc4] i40e VF creation breaks vt-d
-Date: Fri, 22 May 2015 12:09:26 +0200
-Message-ID: <20150522100926.GA1928@suse.de>
-References: <555DC288.5030108@suse.de>
+From: Gerd Hoffmann <kraxel@redhat.com>
+Subject: [PATCH v3 2/4] break kconfig dependency loop
+Date: Fri, 22 May 2015 15:11:50 +0200
+Message-ID: <1432300312-24792-3-git-send-email-kraxel@redhat.com>
+References: <1432300312-24792-1-git-send-email-kraxel@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <555DC288.5030108-l3A5Bk7waGM@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Williams,
-	Mitch A" <mitch.a.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, jesse.brandeburg-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <1432300312-24792-1-git-send-email-kraxel@redhat.com>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: dri-devel@lists.freedesktop.org
+Cc: Mauro Carvalho Chehab <mchehab@osg.samsung.com>, mst@redhat.com, open list <linux-kernel@vger.kernel.org>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, airlied@redhat.com, "open list:MEDIA INPUT INFRA..." <linux-media@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hey Alex,
-
-On Thu, May 21, 2015 at 01:33:28PM +0200, Alexander Graf wrote:
-> While trying to get a sense for performance of i40e and i40evf, I
-> figured I'd try and create a VF device on the host and activate it.
-> However, as soon as I brought the VF up, my host became unreachable. The
-> kernel is current 4.1-rc4.
-> 
-> Main network is connected through ixgbe (eth1), i40e is on a
-> direct-connect connection with another system. The host is an Intel
-> Haswell box with XAPIC and Vt-d enabled.
-
-It is weird that you see DMAR faults two days after you tried this. Are
-there any messages from the IOMMU around the time you enabled the VF?
-
-Does it work with iommu disabled?
-
-> ---- almost 2 days pass ----
-> 
-> [    9.061798] dmar: DRHD: handling fault status reg 2
-> [    9.072566] dmar: INTR-REMAP: Request device [[03:00.0] fault index 5e
-> [    9.072566] INTR-REMAP:[fault reason 34] Present field in the IRTE
-> entry is clear
-
-The timing info is indeed weird and might indicate another problem
-outside of the iommu space. The DMAR faults might just be a follow-on
-error then.
-
-
-	Joerg
+QWZ0ZXIgYWRkaW5nIHZpcnRpby1ncHUgSSBnZXQgdGhpcyBmdW5reSBrY29uZmlnIGRlcGVuZGVu
+Y3kgbG9vcC4KCnNjcmlwdHMva2NvbmZpZy9jb25mIC0tb2xkY29uZmlnIEtjb25maWcKZHJpdmVy
+cy92aWRlby9mYmRldi9LY29uZmlnOjU6ZXJyb3I6IHJlY3Vyc2l2ZSBkZXBlbmRlbmN5IGRldGVj
+dGVkIQpkcml2ZXJzL3ZpZGVvL2ZiZGV2L0tjb25maWc6NTogIHN5bWJvbCBGQiBpcyBzZWxlY3Rl
+ZCBieSBEUk1fS01TX0ZCX0hFTFBFUgpkcml2ZXJzL2dwdS9kcm0vS2NvbmZpZzozNDogICAgIHN5
+bWJvbCBEUk1fS01TX0ZCX0hFTFBFUiBpcyBzZWxlY3RlZCBieSBEUk1fVklSVElPX0dQVQpkcml2
+ZXJzL2dwdS9kcm0vdmlydGlvL0tjb25maWc6MTogICAgICAgc3ltYm9sIERSTV9WSVJUSU9fR1BV
+IGRlcGVuZHMgb24gVklSVElPCmRyaXZlcnMvdmlydGlvL0tjb25maWc6MTogICAgICAgc3ltYm9s
+IFZJUlRJTyBpcyBzZWxlY3RlZCBieSBSRU1PVEVQUk9DCmRyaXZlcnMvcmVtb3RlcHJvYy9LY29u
+ZmlnOjQ6ICAgc3ltYm9sIFJFTU9URVBST0MgaXMgc2VsZWN0ZWQgYnkgT01BUF9SRU1PVEVQUk9D
+CmRyaXZlcnMvcmVtb3RlcHJvYy9LY29uZmlnOjEyOiAgc3ltYm9sIE9NQVBfUkVNT1RFUFJPQyBk
+ZXBlbmRzIG9uIE9NQVBfSU9NTVUKZHJpdmVycy9pb21tdS9LY29uZmlnOjE0MTogICAgICBzeW1i
+b2wgT01BUF9JT01NVSBpcyBzZWxlY3RlZCBieSBWSURFT19PTUFQMwpkcml2ZXJzL21lZGlhL3Bs
+YXRmb3JtL0tjb25maWc6OTY6ICAgICAgc3ltYm9sIFZJREVPX09NQVAzIGRlcGVuZHMgb24gVklE
+RU9fVjRMMgpkcml2ZXJzL21lZGlhL3Y0bDItY29yZS9LY29uZmlnOjY6ICAgICAgc3ltYm9sIFZJ
+REVPX1Y0TDIgZGVwZW5kcyBvbiBJMkMKZHJpdmVycy9pMmMvS2NvbmZpZzo3OiAgc3ltYm9sIEky
+QyBpcyBzZWxlY3RlZCBieSBGQl9EREMKZHJpdmVycy92aWRlby9mYmRldi9LY29uZmlnOjU5OiBz
+eW1ib2wgRkJfRERDIGlzIHNlbGVjdGVkIGJ5IEZCX0NZQkVSMjAwMF9EREMKZHJpdmVycy92aWRl
+by9mYmRldi9LY29uZmlnOjM3NDogICAgICAgIHN5bWJvbCBGQl9DWUJFUjIwMDBfRERDIGRlcGVu
+ZHMgb24gRkJfQ1lCRVIyMDAwCmRyaXZlcnMvdmlkZW8vZmJkZXYvS2NvbmZpZzozNjI6ICAgICAg
+ICBzeW1ib2wgRkJfQ1lCRVIyMDAwIGRlcGVuZHMgb24gRkIKCk1ha2luZyBWSURFT19PTUFQMyBk
+ZXBlbmQgb24gT01BUF9JT01NVSBpbnN0ZWFkIG9mIHNlbGVjdGluZyBpdCBicmVha3MgdGhlCmxv
+b3AsIHdoaWNoIGxvb2tzIGxpa2UgdGhlIGJlc3Qgd2F5IHRvIGhhbmRsZSBpdCB0byBtZS4gIFVw
+ZGF0ZWQgT01BUF9JT01NVQpoZWxwIHRleHQgYWNjb3JkaW5nbHkuCgpTaWduZWQtb2ZmLWJ5OiBH
+ZXJkIEhvZmZtYW5uIDxrcmF4ZWxAcmVkaGF0LmNvbT4KQWNrZWQtYnk6IE1hdXJvIENhcnZhbGhv
+IENoZWhhYiA8bWNoZWhhYkBvc2cuc2Ftc3VuZy5jb20+Ci0tLQogZHJpdmVycy9pb21tdS9LY29u
+ZmlnICAgICAgICAgIHwgMyArKysKIGRyaXZlcnMvbWVkaWEvcGxhdGZvcm0vS2NvbmZpZyB8IDIg
+Ky0KIDIgZmlsZXMgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCgpkaWZm
+IC0tZ2l0IGEvZHJpdmVycy9pb21tdS9LY29uZmlnIGIvZHJpdmVycy9pb21tdS9LY29uZmlnCmlu
+ZGV4IDFhZTRlNTQuLmE1YzhkNWUgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvaW9tbXUvS2NvbmZpZwor
+KysgYi9kcml2ZXJzL2lvbW11L0tjb25maWcKQEAgLTE3OCw2ICsxNzgsOSBAQCBjb25maWcgT01B
+UF9JT01NVQogCWRlcGVuZHMgb24gQVJNICYmIE1NVQogCWRlcGVuZHMgb24gQVJDSF9PTUFQMlBM
+VVMgfHwgQ09NUElMRV9URVNUCiAJc2VsZWN0IElPTU1VX0FQSQorCS0tLWhlbHAtLS0KKwkgIFRo
+ZSBPTUFQMyBtZWRpYSBwbGF0Zm9ybSBkcml2ZXJzIGRlcGVuZCBvbiBpb21tdSBzdXBwb3J0LAor
+CSAgaWYgeW91IG5lZWQgdGhlbSBzYXkgWSBoZXJlLgogCiBjb25maWcgT01BUF9JT01NVV9ERUJV
+RwogCWJvb2wgIkV4cG9ydCBPTUFQIElPTU1VIGludGVybmFscyBpbiBEZWJ1Z0ZTIgpkaWZmIC0t
+Z2l0IGEvZHJpdmVycy9tZWRpYS9wbGF0Zm9ybS9LY29uZmlnIGIvZHJpdmVycy9tZWRpYS9wbGF0
+Zm9ybS9LY29uZmlnCmluZGV4IDQyMWY1MzEuLjE5MzA2ZjcyIDEwMDY0NAotLS0gYS9kcml2ZXJz
+L21lZGlhL3BsYXRmb3JtL0tjb25maWcKKysrIGIvZHJpdmVycy9tZWRpYS9wbGF0Zm9ybS9LY29u
+ZmlnCkBAIC04Nyw4ICs4Nyw4IEBAIGNvbmZpZyBWSURFT19PTUFQMwogCXRyaXN0YXRlICJPTUFQ
+IDMgQ2FtZXJhIHN1cHBvcnQiCiAJZGVwZW5kcyBvbiBWSURFT19WNEwyICYmIEkyQyAmJiBWSURF
+T19WNEwyX1NVQkRFVl9BUEkgJiYgQVJDSF9PTUFQMwogCWRlcGVuZHMgb24gSEFTX0RNQQorCWRl
+cGVuZHMgb24gT01BUF9JT01NVQogCXNlbGVjdCBBUk1fRE1BX1VTRV9JT01NVQotCXNlbGVjdCBP
+TUFQX0lPTU1VCiAJc2VsZWN0IFZJREVPQlVGMl9ETUFfQ09OVElHCiAJc2VsZWN0IE1GRF9TWVND
+T04KIAktLS1oZWxwLS0tCi0tIAoxLjguMy4xCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0
+cy5mcmVlZGVza3RvcC5vcmcKaHR0cDovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xp
+c3RpbmZvL2RyaS1kZXZlbAo=
