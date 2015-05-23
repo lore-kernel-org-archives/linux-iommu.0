@@ -1,71 +1,69 @@
-From: Gerd Hoffmann <kraxel@redhat.com>
-Subject: [PATCH v3 2/4] break kconfig dependency loop
-Date: Fri, 22 May 2015 15:11:50 +0200
-Message-ID: <1432300312-24792-3-git-send-email-kraxel@redhat.com>
-References: <1432300312-24792-1-git-send-email-kraxel@redhat.com>
+From: Kukjin Kim <kgene@kernel.org>
+Subject: Re: [PATCH v7 00/25] Exynos SYSMMU (IOMMU) integration with DT andDMA-mapping
+ subsystem
+Date: Sat, 23 May 2015 12:56:20 +0900
+Message-ID: <555FFA64.6030709@kernel.org>
+References: <1432041645-11172-1-git-send-email-m.szyprowski@samsung.com> <CABxcv=nP5n1d=yv5EyD3aUcBBuD7Bka_7VQ1KsbFb9=ju37rdA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1432300312-24792-1-git-send-email-kraxel@redhat.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: dri-devel@lists.freedesktop.org
-Cc: Mauro Carvalho Chehab <mchehab@osg.samsung.com>, mst@redhat.com, open list <linux-kernel@vger.kernel.org>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, airlied@redhat.com, "open list:MEDIA INPUT INFRA..." <linux-media@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <CABxcv=nP5n1d=yv5EyD3aUcBBuD7Bka_7VQ1KsbFb9=ju37rdA@mail.gmail.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Javier Martinez Canillas <javier@dowhile0.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo
 List-Id: iommu@lists.linux-foundation.org
 
-QWZ0ZXIgYWRkaW5nIHZpcnRpby1ncHUgSSBnZXQgdGhpcyBmdW5reSBrY29uZmlnIGRlcGVuZGVu
-Y3kgbG9vcC4KCnNjcmlwdHMva2NvbmZpZy9jb25mIC0tb2xkY29uZmlnIEtjb25maWcKZHJpdmVy
-cy92aWRlby9mYmRldi9LY29uZmlnOjU6ZXJyb3I6IHJlY3Vyc2l2ZSBkZXBlbmRlbmN5IGRldGVj
-dGVkIQpkcml2ZXJzL3ZpZGVvL2ZiZGV2L0tjb25maWc6NTogIHN5bWJvbCBGQiBpcyBzZWxlY3Rl
-ZCBieSBEUk1fS01TX0ZCX0hFTFBFUgpkcml2ZXJzL2dwdS9kcm0vS2NvbmZpZzozNDogICAgIHN5
-bWJvbCBEUk1fS01TX0ZCX0hFTFBFUiBpcyBzZWxlY3RlZCBieSBEUk1fVklSVElPX0dQVQpkcml2
-ZXJzL2dwdS9kcm0vdmlydGlvL0tjb25maWc6MTogICAgICAgc3ltYm9sIERSTV9WSVJUSU9fR1BV
-IGRlcGVuZHMgb24gVklSVElPCmRyaXZlcnMvdmlydGlvL0tjb25maWc6MTogICAgICAgc3ltYm9s
-IFZJUlRJTyBpcyBzZWxlY3RlZCBieSBSRU1PVEVQUk9DCmRyaXZlcnMvcmVtb3RlcHJvYy9LY29u
-ZmlnOjQ6ICAgc3ltYm9sIFJFTU9URVBST0MgaXMgc2VsZWN0ZWQgYnkgT01BUF9SRU1PVEVQUk9D
-CmRyaXZlcnMvcmVtb3RlcHJvYy9LY29uZmlnOjEyOiAgc3ltYm9sIE9NQVBfUkVNT1RFUFJPQyBk
-ZXBlbmRzIG9uIE9NQVBfSU9NTVUKZHJpdmVycy9pb21tdS9LY29uZmlnOjE0MTogICAgICBzeW1i
-b2wgT01BUF9JT01NVSBpcyBzZWxlY3RlZCBieSBWSURFT19PTUFQMwpkcml2ZXJzL21lZGlhL3Bs
-YXRmb3JtL0tjb25maWc6OTY6ICAgICAgc3ltYm9sIFZJREVPX09NQVAzIGRlcGVuZHMgb24gVklE
-RU9fVjRMMgpkcml2ZXJzL21lZGlhL3Y0bDItY29yZS9LY29uZmlnOjY6ICAgICAgc3ltYm9sIFZJ
-REVPX1Y0TDIgZGVwZW5kcyBvbiBJMkMKZHJpdmVycy9pMmMvS2NvbmZpZzo3OiAgc3ltYm9sIEky
-QyBpcyBzZWxlY3RlZCBieSBGQl9EREMKZHJpdmVycy92aWRlby9mYmRldi9LY29uZmlnOjU5OiBz
-eW1ib2wgRkJfRERDIGlzIHNlbGVjdGVkIGJ5IEZCX0NZQkVSMjAwMF9EREMKZHJpdmVycy92aWRl
-by9mYmRldi9LY29uZmlnOjM3NDogICAgICAgIHN5bWJvbCBGQl9DWUJFUjIwMDBfRERDIGRlcGVu
-ZHMgb24gRkJfQ1lCRVIyMDAwCmRyaXZlcnMvdmlkZW8vZmJkZXYvS2NvbmZpZzozNjI6ICAgICAg
-ICBzeW1ib2wgRkJfQ1lCRVIyMDAwIGRlcGVuZHMgb24gRkIKCk1ha2luZyBWSURFT19PTUFQMyBk
-ZXBlbmQgb24gT01BUF9JT01NVSBpbnN0ZWFkIG9mIHNlbGVjdGluZyBpdCBicmVha3MgdGhlCmxv
-b3AsIHdoaWNoIGxvb2tzIGxpa2UgdGhlIGJlc3Qgd2F5IHRvIGhhbmRsZSBpdCB0byBtZS4gIFVw
-ZGF0ZWQgT01BUF9JT01NVQpoZWxwIHRleHQgYWNjb3JkaW5nbHkuCgpTaWduZWQtb2ZmLWJ5OiBH
-ZXJkIEhvZmZtYW5uIDxrcmF4ZWxAcmVkaGF0LmNvbT4KQWNrZWQtYnk6IE1hdXJvIENhcnZhbGhv
-IENoZWhhYiA8bWNoZWhhYkBvc2cuc2Ftc3VuZy5jb20+Ci0tLQogZHJpdmVycy9pb21tdS9LY29u
-ZmlnICAgICAgICAgIHwgMyArKysKIGRyaXZlcnMvbWVkaWEvcGxhdGZvcm0vS2NvbmZpZyB8IDIg
-Ky0KIDIgZmlsZXMgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCgpkaWZm
-IC0tZ2l0IGEvZHJpdmVycy9pb21tdS9LY29uZmlnIGIvZHJpdmVycy9pb21tdS9LY29uZmlnCmlu
-ZGV4IDFhZTRlNTQuLmE1YzhkNWUgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvaW9tbXUvS2NvbmZpZwor
-KysgYi9kcml2ZXJzL2lvbW11L0tjb25maWcKQEAgLTE3OCw2ICsxNzgsOSBAQCBjb25maWcgT01B
-UF9JT01NVQogCWRlcGVuZHMgb24gQVJNICYmIE1NVQogCWRlcGVuZHMgb24gQVJDSF9PTUFQMlBM
-VVMgfHwgQ09NUElMRV9URVNUCiAJc2VsZWN0IElPTU1VX0FQSQorCS0tLWhlbHAtLS0KKwkgIFRo
-ZSBPTUFQMyBtZWRpYSBwbGF0Zm9ybSBkcml2ZXJzIGRlcGVuZCBvbiBpb21tdSBzdXBwb3J0LAor
-CSAgaWYgeW91IG5lZWQgdGhlbSBzYXkgWSBoZXJlLgogCiBjb25maWcgT01BUF9JT01NVV9ERUJV
-RwogCWJvb2wgIkV4cG9ydCBPTUFQIElPTU1VIGludGVybmFscyBpbiBEZWJ1Z0ZTIgpkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9tZWRpYS9wbGF0Zm9ybS9LY29uZmlnIGIvZHJpdmVycy9tZWRpYS9wbGF0
-Zm9ybS9LY29uZmlnCmluZGV4IDQyMWY1MzEuLjE5MzA2ZjcyIDEwMDY0NAotLS0gYS9kcml2ZXJz
-L21lZGlhL3BsYXRmb3JtL0tjb25maWcKKysrIGIvZHJpdmVycy9tZWRpYS9wbGF0Zm9ybS9LY29u
-ZmlnCkBAIC04Nyw4ICs4Nyw4IEBAIGNvbmZpZyBWSURFT19PTUFQMwogCXRyaXN0YXRlICJPTUFQ
-IDMgQ2FtZXJhIHN1cHBvcnQiCiAJZGVwZW5kcyBvbiBWSURFT19WNEwyICYmIEkyQyAmJiBWSURF
-T19WNEwyX1NVQkRFVl9BUEkgJiYgQVJDSF9PTUFQMwogCWRlcGVuZHMgb24gSEFTX0RNQQorCWRl
-cGVuZHMgb24gT01BUF9JT01NVQogCXNlbGVjdCBBUk1fRE1BX1VTRV9JT01NVQotCXNlbGVjdCBP
-TUFQX0lPTU1VCiAJc2VsZWN0IFZJREVPQlVGMl9ETUFfQ09OVElHCiAJc2VsZWN0IE1GRF9TWVND
-T04KIAktLS1oZWxwLS0tCi0tIAoxLjguMy4xCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0
-cy5mcmVlZGVza3RvcC5vcmcKaHR0cDovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xp
-c3RpbmZvL2RyaS1kZXZlbAo=
+On 05/20/15 16:31, Javier Martinez Canillas wrote:
+> Hello Marek,
+> 
+> On Tue, May 19, 2015 at 3:20 PM, Marek Szyprowski
+> <m.szyprowski@samsung.com> wrote:
+>> Hello Everyone,
+>>
+>> This is yet another attempt to get Exynos SYSMMU driver with integrated
+>> with IOMMU & DMA-mapping subsystems. This version includes minor fixes
+>> suggested by Joerg Roedel, Cho KyongHo and Robin Murphy.
+>>
+>> All patches are also available in the following git repository:
+>> https://git.linaro.org/people/marek.szyprowski/linux-srpol.git
+>> branch v4.1-exynos-iommu-v7.
+>>
+>> My plan for merging this patchset is as follows:
+>> - DTS changes and power domain changes should go via Samsung tree to avoid
+>>   conflicts with other pending DTS patches
+>> - all exynos-iommu patches and dma-mapping/reserved iommu region should go
+>>   via IOMMU tree,
+>> - all Exynos DRM patches should go via DRM/Exynos tree.
+>>
+>> There are no build cross-subsystem dependencies and IOMMU on Exynos is
+>> already nonfunctional (and disabled in defconfig), so merging patches in
+>> parts doesn't break anything.
+>>
+>> There are knowns issues with Exynos DRM driver and IOMMU support
+>> (i.e. Xorg freeze reported by Javier Martinez Canillas:
+>> http://www.spinics.net/lists/linux-samsung-soc/msg44350.html ). They
+>> will be handled by a separate fixes to Exynos DRM drivers. This patchset
+>> fixes only those issues in Exynos DRM FIMD driver, which prevents
+>> booting to console.
+>>
+> 
+> I tested your v7 using exynos_defconfig + CONFIG_EXYNOS_IOMMU on both
+> Exynos5250 Snow and Exynos5420 Peach Pit Chromebooks.
+> 
+> I can only reproduce the complete system hang on Xorg if I use the
+> xf86-video-armsoc DDX. If I use the -fbdev DDX instead, X starts
+> correctly and the system does not freeze. Also, this only happens on
+> Exynos5420 Peach Pit, Exynos5250 Snow is working correctly even when
+> using the -armsoc DDX.
+> 
+> So as you said, this is a separate issue with the Exynos DRM driver
+> IOMMU support and is not related to your series. For the whole series:
+> 
+> Tested-by: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
+> 
+Thanks for your test on the boards.
+
+I'll sort out the arch/ side changes into samsung tree in this weekend.
+
+- Kukjin
