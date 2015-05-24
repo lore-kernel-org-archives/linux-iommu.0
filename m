@@ -1,61 +1,101 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH v7 03/25] iommu: Init iommu-groups support earlier,
-	in core_initcall
-Date: Sat, 23 May 2015 19:23:34 +0300
-Message-ID: <2209337.hhg3lyvUbi@avalon>
-References: <1432041645-11172-1-git-send-email-m.szyprowski@samsung.com>
-	<1432041645-11172-4-git-send-email-m.szyprowski@samsung.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [RFC/PATCH 2/9] arm: dma-mapping: Support IOMMU mappings spanning the full 32 bits range
+Date: Mon, 25 May 2015 01:38:40 +0300
+Message-ID: <3504657.zdfVEnYr60@avalon>
+References: <1431644410-2997-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <1431644410-2997-3-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <555B0DBC.6090204@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1432041645-11172-4-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Seung-Woo Kim <sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, David Wodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <555B0DBC.6090204@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Laura Abbott <lauraa@codeaurora.org>, Arnd Bergmann <arnd@arndb.de>, Mitchel Humpherys <mitchelh@codeaurora.org>, Joreg Roedel <joro@8bytes.org>, Will Deacon <Will.Deacon@arm.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Marek,
+Hi Robin,
 
-Thank you for the patch.
-
-On Tuesday 19 May 2015 15:20:23 Marek Szyprowski wrote:
-> iommu_group_alloc might be called very early in case of iommu controllers
-> activated from of_iommu, so ensure that this part of subsystem is ready
-> when devices are being populated from device-tree (core_initcall seems to
-> be okay for this case).
+On Tuesday 19 May 2015 11:17:32 Robin Murphy wrote:
+> On 15/05/15 00:00, Laurent Pinchart wrote:
+> > The arm_iommu_create_mapping() function takes the IOMMU mapping size as
+> > a size_t, limiting the size to 4GB - 1 on 32 bit platforms while most
+> > bus masters would support the full 32 bits range. Fix this by passing
+> > the size as a 64 bits integer, and limiting it to 4GB for now.
 > 
-> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> ---
->  drivers/iommu/iommu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index d4f527e56679..37a6aa8f318b 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1207,7 +1207,7 @@ static int __init iommu_init(void)
-> 
->  	return 0;
->  }
-> -arch_initcall(iommu_init);
-> +core_initcall(iommu_init);
+> FYI there's already an almost-identical patch in -rc3 from Marek fixing
+> this: 1424532b2163 ("ARM: 8347/1: dma-mapping: fix off-by-one check in
+> arm_setup_iommu_dma_ops").
 
-I'll let Joerg comment on this, but this initcall ordering dance always makes 
-me feel that something isn't quite right. Have you had a chance to look at the 
-patch series I posted about a week ago to implement IOMMU probe deferral 
-support ?
+Indeed, I should have rebased on top of -rc3. I suppose it's a good indication 
+that I was on the right track :-) I'll drop this patch from my series.
 
->  int iommu_domain_get_attr(struct iommu_domain *domain,
->  			  enum iommu_attr attr, void *data)
+> > Signed-off-by: Laurent Pinchart
+> > <laurent.pinchart+renesas@ideasonboard.com>
+> > ---
+> > 
+> >   arch/arm/include/asm/dma-iommu.h |  2 +-
+> >   arch/arm/mm/dma-mapping.c        | 12 +++---------
+> >   2 files changed, 4 insertions(+), 10 deletions(-)
+> > 
+> > diff --git a/arch/arm/include/asm/dma-iommu.h
+> > b/arch/arm/include/asm/dma-iommu.h index 8e3fcb924db6..2ef282f96651
+> > 100644
+> > --- a/arch/arm/include/asm/dma-iommu.h
+> > +++ b/arch/arm/include/asm/dma-iommu.h
+> > @@ -25,7 +25,7 @@ struct dma_iommu_mapping {
+> >   };
+> >   
+> >   struct dma_iommu_mapping *
+> > -arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, size_t
+> > size);
+> > +arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, u64
+> > size);
+> >   void arm_iommu_release_mapping(struct dma_iommu_mapping *mapping);
+> > 
+> > diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> > index 7aa5e339a596..c69e216a0cf9 100644
+> > --- a/arch/arm/mm/dma-mapping.c
+> > +++ b/arch/arm/mm/dma-mapping.c
+> > @@ -1878,7 +1878,7 @@ struct dma_map_ops iommu_coherent_ops = {
+> > 
+> >    * arm_iommu_attach_device function.
+> >    */
+> >   
+> >   struct dma_iommu_mapping *
+> > 
+> > -arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base, size_t
+> > size) +arm_iommu_create_mapping(struct bus_type *bus, dma_addr_t base,
+> > u64 size)
+> >   {
+> >   	unsigned int bits = size >> PAGE_SHIFT;
+> >   	unsigned int bitmap_size = BITS_TO_LONGS(bits) * sizeof(long);
+> > @@ -1886,7 +1886,8 @@ arm_iommu_create_mapping(struct bus_type *bus,
+> > dma_addr_t base, size_t size)
+> >   	int extensions = 1;
+> >   	int err = -ENOMEM;
+> > 
+> > -	if (!bitmap_size)
+> > +	/* Limit the size to 4GB for now. */
+> > +	if (!size || size > (1ULL << 32))
+> >   		return ERR_PTR(-EINVAL);
+> >   	
+> >   	if (bitmap_size > PAGE_SIZE) {
+> > @@ -2057,13 +2058,6 @@ static bool arm_setup_iommu_dma_ops(struct device
+> > *dev, u64 dma_base, u64 size,
+> >   	if (!iommu)
+> >   		return false;
+> > 
+> > -	/*
+> > -	 * currently arm_iommu_create_mapping() takes a max of size_t
+> > -	 * for size param. So check this limit for now.
+> > -	 */
+> > -	if (size > SIZE_MAX)
+> > -		return false;
+> > -
+> >   	mapping = arm_iommu_create_mapping(dev->bus, dma_base, size);
+> >   	if (IS_ERR(mapping)) {
+> >   		pr_warn("Failed to create %llu-byte IOMMU mapping for device 
+%s\n",
 
 -- 
 Regards,
