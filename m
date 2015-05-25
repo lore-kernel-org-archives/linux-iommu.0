@@ -1,125 +1,116 @@
-From: Tomasz Figa <tfiga@chromium.org>
-Subject: Re: [PATCH v2 1/6] dt-bindings: iommu: Add binding for mediatek IOMMU
-Date: Mon, 25 May 2015 15:31:48 +0900
-Message-ID: <CAAFQd5AF5UVb35PEg+GjzLAqqr0q=Wg+XONRmK4XR=HLuJv2rA@mail.gmail.com>
-References: <1431683009-18158-1-git-send-email-yong.wu@mediatek.com> <1431683009-18158-2-git-send-email-yong.wu@mediatek.com>
+From: Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2 2/6] dt-bindings: mediatek: Add smi dts binding
+Date: Mon, 25 May 2015 15:48:36 +0900
+Message-ID: <CAAFQd5D_-FrVNNPfMTwaWgDHfOPWVnRCvBCV2JS6Q2xPUiEScA@mail.gmail.com>
+References: <1431683009-18158-1-git-send-email-yong.wu@mediatek.com> <1431683009-18158-3-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1431683009-18158-2-git-send-email-yong.wu@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Yong Wu <yong.wu@mediatek.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, Lucas Stach <l.stach@pengutronix.de>, Mark Rutland <mark.rutland@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org, Sasha Hauer <kernel@pengutronix.de>, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, pebolle@tiscali.nl, arnd@arndb.de, mitchelh@codeaurora.org, k.zhang@mediatek.com, youhua.li@mediatek.com
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1431683009-18158-3-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 Hi,
 
 Please see my comments inline.
 
-On Fri, May 15, 2015 at 6:43 PM, Yong Wu <yong.wu@mediatek.com> wrote:
-> This patch add mediatek iommu dts binding document.
+On Fri, May 15, 2015 at 6:43 PM, Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
+> This patch add smi binding document.
 >
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 > ---
->  .../devicetree/bindings/iommu/mediatek,iommu.txt   |  51 ++++++++++
->  include/dt-bindings/iommu/mt8173-iommu-port.h      | 112 +++++++++++++++++++++
->  2 files changed, 163 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
->  create mode 100644 include/dt-bindings/iommu/mt8173-iommu-port.h
+>  .../bindings/soc/mediatek/mediatek,smi-larb.txt    | 24 ++++++++++++++++++++++
+>  .../bindings/soc/mediatek/mediatek,smi.txt         | 22 ++++++++++++++++++++
+>  2 files changed, 46 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mediatek,smi-larb.txt
+>  create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mediatek,smi.txt
 >
-> diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
+> diff --git a/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi-larb.txt b/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi-larb.txt
 > new file mode 100644
-> index 0000000..f2cc7c0
+> index 0000000..c06c5b6
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
-> @@ -0,0 +1,51 @@
-> +/******************************************************/
-> +/*    Mediatek IOMMU Hardware Block Diagram           */
-> +/******************************************************/
-
-nit: Could you follow one of existing styles of DT binding
-documentation? You might be able to use [1] as an example.
-
-[1] http://lxr.free-electrons.com/source/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-.
-
-> +              EMI (External Memory Interface)
-> +               |
-> +              m4u (Multimedia Memory Management Unit)
-> +               |
-> +              smi (Smart Multimedia Interface)
-> +               |
-> +        +---------------+-------
-> +        |               |
-> +        |               |
-> +    vdec larb       disp larb      ... SoCs have different local arbiter(larb).
-> +        |               |
-> +        |               |
-> +   +----+----+    +-----+-----+
-> +   |    |    |    |     |     |    ...
-> +   |    |    |    |     |     |    ...
-> +   |    |    |    |     |     |    ...
-> +  MC   PP   VLD  OVL0 RDMA0 WDMA0  ... There are different ports in each larb.
+> +++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi-larb.txt
+> @@ -0,0 +1,24 @@
+> +SMI(Smart Multimedia Interface) Local Arbiter
 > +
-
-This diagram is still quite meaningless without proper description of
-all the functionality off all the blocks and interfaces between them.
-
+> +The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
+> +
 > +Required properties:
-> +- compatible : must be "mediatek,mt8173-m4u".
-> +- reg : m4u register base and size.
-> +- interrupts : the interrupt of m4u.
+> +- compatible : must be "mediatek,mt8173-smi-larb"
+> +- reg : the register and size of each local arbiter.
+
+Shouldn't it be "of this local arbiter"?
+
+> +- smi : must be "&smi_common". Refer to bindings/soc/mediatek,smi.txt.
+
+This is incorrect. Device tree source authors are free to use any
+labels for their nodes and documentation should not rely on the fact
+that there is some node with some particular label. This should be
+something like:
+
+- smi : a phandle to node of XYZ
+
+with proper description of that node in place of XYZ.
+
 > +- clocks : must contain one entry for each clock-names.
-> +- clock-names : must be "bclk", It is the block clock of m4u.
-> +- larb-portes-nr : must contain the number of the portes for each larb(local
-> +       arbiter). The number is defined in dt-binding/iommu/mt8173-iommu-port.h.
+> +       There are 2 clockes:
+> +       APB clock : Advanced Peripheral Bus clock, It's the clock for setting
+> +               the register.
+> +       SMI clock : It's the clock for transfer data and command.
 
-typo: Should it be "ports" instead of "portes"?
+The description of each clock should go to "clock-names" property.
+Please use some of already existing bindings as an example.
 
-Anyway, shouldn't this be a property of larb nodes? I.e. the larb0
-node would have a port-count property set to M4U_LARB0_PORT_NR.
+> +- clock-name: must be "apb" and "smi".
 
-> +- larb : must contain the local arbiters of the current platform. Refer to
-> +       bindings/soc/mediatek/mediatek,smi.txt. It must sort according to the
-> +       local arbiter index, like larb0, larb1, larb2...
-> +- iommu-cells : must be 1. Specifies the client PortID as defined in
-> +       dt-binding/iommu/mt8173-iommu-port.h
+typo: Should be "clock-names".
 
-Looking at the driver, wouldn't a 2 cell system be more appropriate
-here? With first cell indexing the larbs and second the ports within
-that larb.
+I'd recommend describing this property as below:
 
-[snip]
-
-> +#define M4U_LARB0_PORT_NR      8
-> +#define M4U_LARB1_PORT_NR      10
-> +#define M4U_LARB2_PORT_NR      21
-> +#define M4U_LARB3_PORT_NR      15
-> +#define M4U_LARB4_PORT_NR      6
-> +#define M4U_LARB5_PORT_NR      9
-> +
-> +#define M4U_LARB0_PORT(n)      (n)
-> +#define M4U_LARB1_PORT(n)      ((n) + M4U_LARB0_PORT_NR + M4U_LARB0_PORT(0))
-> +#define M4U_LARB2_PORT(n)      ((n) + M4U_LARB1_PORT_NR + M4U_LARB1_PORT(0))
-> +#define M4U_LARB3_PORT(n)      ((n) + M4U_LARB2_PORT_NR + M4U_LARB2_PORT(0))
-> +#define M4U_LARB4_PORT(n)      ((n) + M4U_LARB3_PORT_NR + M4U_LARB3_PORT(0))
-> +#define M4U_LARB5_PORT(n)      ((n) + M4U_LARB4_PORT_NR + M4U_LARB4_PORT(0))
-
-This looks like some artificial indexing. Does it have any
-correspondence with actual hardware configuration?
+- clock-names: must contain 2 entries, as follows:
+  - "apb" : <here comes the description of APB clock>,
+  - "smi" : <here comes the description of SMI clock>.
 
 > +
-> +/* larb0 */
-> +#define        M4U_PORT_DISP_OVL0              M4U_LARB0_PORT(0)
-> +#define        M4U_PORT_DISP_RDMA0             M4U_LARB0_PORT(1)
-> +#define        M4U_PORT_DISP_WDMA0             M4U_LARB0_PORT(2)
-[snip]
-> +#define        M4U_PORT_VENC_CUR_CHROMA_SET2   M4U_LARB5_PORT(6)
-> +#define        M4U_PORT_VENC_RD_COMA_SET2      M4U_LARB5_PORT(7)
-> +#define        M4U_PORT_VENC_SV_COMA_SET2      M4U_LARB5_PORT(8)
+> +Example:
+> +       larb0:larb@14021000 {
+> +               compatible = "mediatek,mt8173-smi-larb";
+> +               reg = <0 0x14021000 0 0x1000>;
+> +               smi = <&smi_common>;
+> +               clocks = <&mmsys MM_SMI_LARB0>,
+> +                        <&mmsys MM_SMI_LARB0>;
+> +               clock-names = "apb", "smi";
+> +       };
+> diff --git a/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi.txt b/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi.txt
+> new file mode 100644
+> index 0000000..c2389b4
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi.txt
+> @@ -0,0 +1,22 @@
+> +SMI(Smart Multimedia Interface)
+> +
+> +The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
+> +
+> +Required properties:
+> +- compatible : must be "mediatek,mt8173-smi"
+> +- reg : the register and size of the smi.
 
-This convinces me even more that this binding actually needs
-#iommu-cells to be 2 and the indexing system I described above.
+nit: s/smi/SMI block/
+
+> +- clocks : must contain one entry for each clock-names.
+> +       There are 2 clockes:
+> +       APB clock : Advanced Peripheral Bus clock, It's the clock for setting
+> +               the register.
+> +       SMI clock : It's the clock for transfer data and command.
+> +- clock-name: must be "apb" and "smi".
+
+See my comment for those properties in the first binding.
 
 Best regards,
 Tomasz
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
