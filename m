@@ -1,116 +1,82 @@
-From: Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 2/6] dt-bindings: mediatek: Add smi dts binding
-Date: Mon, 25 May 2015 15:48:36 +0900
-Message-ID: <CAAFQd5D_-FrVNNPfMTwaWgDHfOPWVnRCvBCV2JS6Q2xPUiEScA@mail.gmail.com>
-References: <1431683009-18158-1-git-send-email-yong.wu@mediatek.com> <1431683009-18158-3-git-send-email-yong.wu@mediatek.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH v7 03/25] iommu: Init iommu-groups support earlier,
+ in core_initcall
+Date: Mon, 25 May 2015 09:28:37 +0200
+Message-ID: <5562CF25.2070602@samsung.com>
+References: <1432041645-11172-1-git-send-email-m.szyprowski@samsung.com>
+ <1432041645-11172-4-git-send-email-m.szyprowski@samsung.com>
+ <2209337.hhg3lyvUbi@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1431683009-18158-3-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <2209337.hhg3lyvUbi@avalon>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Hello,
 
-Please see my comments inline.
-
-On Fri, May 15, 2015 at 6:43 PM, Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
-> This patch add smi binding document.
+On 2015-05-23 18:23, Laurent Pinchart wrote:
+> Hi Marek,
 >
-> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> ---
->  .../bindings/soc/mediatek/mediatek,smi-larb.txt    | 24 ++++++++++++++++++++++
->  .../bindings/soc/mediatek/mediatek,smi.txt         | 22 ++++++++++++++++++++
->  2 files changed, 46 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mediatek,smi-larb.txt
->  create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mediatek,smi.txt
+> Thank you for the patch.
 >
-> diff --git a/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi-larb.txt b/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi-larb.txt
-> new file mode 100644
-> index 0000000..c06c5b6
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi-larb.txt
-> @@ -0,0 +1,24 @@
-> +SMI(Smart Multimedia Interface) Local Arbiter
-> +
-> +The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
-> +
-> +Required properties:
-> +- compatible : must be "mediatek,mt8173-smi-larb"
-> +- reg : the register and size of each local arbiter.
+> On Tuesday 19 May 2015 15:20:23 Marek Szyprowski wrote:
+>> iommu_group_alloc might be called very early in case of iommu controllers
+>> activated from of_iommu, so ensure that this part of subsystem is ready
+>> when devices are being populated from device-tree (core_initcall seems to
+>> be okay for this case).
+>>
+>> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>> ---
+>>   drivers/iommu/iommu.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index d4f527e56679..37a6aa8f318b 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -1207,7 +1207,7 @@ static int __init iommu_init(void)
+>>
+>>   	return 0;
+>>   }
+>> -arch_initcall(iommu_init);
+>> +core_initcall(iommu_init);
+> I'll let Joerg comment on this, but this initcall ordering dance always makes
+> me feel that something isn't quite right. Have you had a chance to look at the
+> patch series I posted about a week ago to implement IOMMU probe deferral
+> support ?
 
-Shouldn't it be "of this local arbiter"?
+I will try to check your IOMMU probe deferal, but for the time being 
+changing the
+initcall priority was the simplest way to get everything working with 
+iommu_groups
+(what was a requirement from Joerg).
 
-> +- smi : must be "&smi_common". Refer to bindings/soc/mediatek,smi.txt.
+I also don't like the initcall ordering hacks, but this change seems to 
+be the
+right approach. Probe deferal is convenient for development purpose and 
+all king of
+hotpluggable solutions, but imho for typical cases system should be 
+tuned to avoid
+deferal to reduce overhead on boot.
 
-This is incorrect. Device tree source authors are free to use any
-labels for their nodes and documentation should not rely on the fact
-that there is some node with some particular label. This should be
-something like:
+If possible I would like to avoid having dependency on your 
+deferal-probe patches
+and get the basic Exynos IOMMU support finally merged. There are still other
+enhancements to Exynos IOMMU driver that depend on it and need real 
+discussion
+(like real runtime pm and exposing particular iommu controllers via dma 
+api).
 
-- smi : a phandle to node of XYZ
+>
+>>   int iommu_domain_get_attr(struct iommu_domain *domain,
+>>   			  enum iommu_attr attr, void *data)
+>
 
-with proper description of that node in place of XYZ.
-
-> +- clocks : must contain one entry for each clock-names.
-> +       There are 2 clockes:
-> +       APB clock : Advanced Peripheral Bus clock, It's the clock for setting
-> +               the register.
-> +       SMI clock : It's the clock for transfer data and command.
-
-The description of each clock should go to "clock-names" property.
-Please use some of already existing bindings as an example.
-
-> +- clock-name: must be "apb" and "smi".
-
-typo: Should be "clock-names".
-
-I'd recommend describing this property as below:
-
-- clock-names: must contain 2 entries, as follows:
-  - "apb" : <here comes the description of APB clock>,
-  - "smi" : <here comes the description of SMI clock>.
-
-> +
-> +Example:
-> +       larb0:larb@14021000 {
-> +               compatible = "mediatek,mt8173-smi-larb";
-> +               reg = <0 0x14021000 0 0x1000>;
-> +               smi = <&smi_common>;
-> +               clocks = <&mmsys MM_SMI_LARB0>,
-> +                        <&mmsys MM_SMI_LARB0>;
-> +               clock-names = "apb", "smi";
-> +       };
-> diff --git a/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi.txt b/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi.txt
-> new file mode 100644
-> index 0000000..c2389b4
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi.txt
-> @@ -0,0 +1,22 @@
-> +SMI(Smart Multimedia Interface)
-> +
-> +The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
-> +
-> +Required properties:
-> +- compatible : must be "mediatek,mt8173-smi"
-> +- reg : the register and size of the smi.
-
-nit: s/smi/SMI block/
-
-> +- clocks : must contain one entry for each clock-names.
-> +       There are 2 clockes:
-> +       APB clock : Advanced Peripheral Bus clock, It's the clock for setting
-> +               the register.
-> +       SMI clock : It's the clock for transfer data and command.
-> +- clock-name: must be "apb" and "smi".
-
-See my comment for those properties in the first binding.
-
-Best regards,
-Tomasz
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
