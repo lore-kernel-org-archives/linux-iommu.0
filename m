@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v7 5/8] iommu, x86: Add cap_pi_support() to detect VT-d PI capability
-Date: Mon, 25 May 2015 13:28:51 +0800
-Message-ID: <1432531734-25978-6-git-send-email-feng.wu@intel.com>
+Subject: [v7 7/8] iommu, x86: define irq_remapping_cap()
+Date: Mon, 25 May 2015 13:28:53 +0800
+Message-ID: <1432531734-25978-8-git-send-email-feng.wu@intel.com>
 References: <1432531734-25978-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,26 +21,57 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@p
 Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add helper function to detect VT-d Posted-Interrupts capability.
+This patch adds a new interface irq_remapping_cap() to detect
+whether irq remapping supports new features, such as VT-d
+Posted-Interrupts. We export this function out, so that KVM
+code can check this and use this mechanism properly.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Acked-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- include/linux/intel-iommu.h | 1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/include/asm/irq_remapping.h | 2 ++
+ drivers/iommu/irq_remapping.c        | 9 +++++++++
+ 2 files changed, 11 insertions(+)
 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 0af9b03..0c251be 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -87,6 +87,7 @@ static inline void dmar_writeq(void __iomem *addr, u64 val)
- /*
-  * Decoding Capability Register
-  */
-+#define cap_pi_support(c)	(((c) >> 59) & 1)
- #define cap_read_drain(c)	(((c) >> 55) & 1)
- #define cap_write_drain(c)	(((c) >> 54) & 1)
- #define cap_max_amask_val(c)	(((c) >> 48) & 0x3f)
+diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
+index 202e040..61aa8ad 100644
+--- a/arch/x86/include/asm/irq_remapping.h
++++ b/arch/x86/include/asm/irq_remapping.h
+@@ -35,6 +35,7 @@ enum irq_remap_cap {
+ 	IRQ_POSTING_CAP = 0,
+ };
+ 
++extern bool irq_remapping_cap(enum irq_remap_cap cap);
+ extern void set_irq_remapping_broken(void);
+ extern int irq_remapping_prepare(void);
+ extern int irq_remapping_enable(void);
+@@ -64,6 +65,7 @@ struct vcpu_data {
+ 
+ #else  /* CONFIG_IRQ_REMAP */
+ 
++static bool irq_remapping_cap(enum irq_remap_cap cap) { return 0; }
+ static inline void set_irq_remapping_broken(void) { }
+ static inline int irq_remapping_prepare(void) { return -ENODEV; }
+ static inline int irq_remapping_enable(void) { return -ENODEV; }
+diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+index ed605a9..2d99930 100644
+--- a/drivers/iommu/irq_remapping.c
++++ b/drivers/iommu/irq_remapping.c
+@@ -81,6 +81,15 @@ void set_irq_remapping_broken(void)
+ 	irq_remap_broken = 1;
+ }
+ 
++bool irq_remapping_cap(enum irq_remap_cap cap)
++{
++	if (!remap_ops || disable_irq_post)
++		return 0;
++
++	return (remap_ops->capability & (1 << cap));
++}
++EXPORT_SYMBOL_GPL(irq_remapping_cap);
++
+ int __init irq_remapping_prepare(void)
+ {
+ 	if (disable_irq_remap)
 -- 
 2.1.0
