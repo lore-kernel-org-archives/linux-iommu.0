@@ -1,16 +1,17 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [RFC/PATCH 6/9] drivers: platform: Configure dma operations at
-	probe time
-Date: Mon, 25 May 2015 01:41:42 +0300
-Message-ID: <6368894.049YN38x4u@avalon>
-References: <1431644410-2997-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-	<1431644410-2997-7-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-	<555B12D5.5080608@arm.com>
+From: leizhen <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 2/3] iommu/arm-smmu: Add initial driver support for ARM
+	SMMUv3 devices
+Date: Mon, 25 May 2015 10:07:17 +0800
+Message-ID: <556283D5.4030901@huawei.com>
+References: <1431108046-9675-1-git-send-email-will.deacon@arm.com>
+	<1431108046-9675-3-git-send-email-will.deacon@arm.com>
+	<5551AE56.6050906@huawei.com> <20150512165500.GE2062@arm.com>
+	<55530C4F.5000605@huawei.com> <20150521112555.GH21920@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <555B12D5.5080608-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20150521112555.GH21920-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,113 +21,124 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Sanil kumar <sanil.kumar-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Gaojianbo <gaojianbo-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Dingtianhong <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-
-On Tuesday 19 May 2015 11:39:17 Robin Murphy wrote:
-> On 15/05/15 00:00, Laurent Pinchart wrote:
-> > Configuring DMA ops at probe time will allow deferring device probe when
-> > the IOMMU isn't available yet.
-> 
-> This is great, as I think it also subtly solves the ordering problem the
-> current domain allocation has with platform devices. WRT to your comment
-> on the other thread, this actually makes things slightly saner for IOMMU
-> groups - the group assignment has to happen after device creation or
-> else some sysfs stuff blows up, so of_xlate is far too early and the
-> add_device callback is a reasonable place for it to be (until we can
-> move it out of every driver and into bus code). However, we're currently
-> attaching the device to the automatic domain long before that, so things
-> happen logically backwards and drivers like the ARM SMMU which actually
-> use the group to store relevant data get all confused.
-> 
-> With this change, the existing attach_device call in arch_setup_dma_ops
-> will actually work far more reliably, and I might be able to revive my
-> attempt to port the ARM SMMU driver over to of_xlate :D
-
-Please do :-) I second IOMMU driver using the of_xlate + probe deferral 
-mechanism would help validate this patch series.
-
-> > Signed-off-by: Laurent Pinchart
-> > <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-> > ---
-> > 
-> >   drivers/base/platform.c | 9 +++++++++
-> >   drivers/of/platform.c   | 7 +++----
-> >   2 files changed, 12 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-> > index ebf034b97278..508a866859dc 100644
-> > --- a/drivers/base/platform.c
-> > +++ b/drivers/base/platform.c
-> > @@ -516,6 +516,10 @@ static int platform_drv_probe(struct device *_dev)
-> >   	if (ret < 0)
-> >   		return ret;
-> > 
-> > +	ret = of_dma_configure_ops(_dev, _dev->of_node);
-> > +	if (ret < 0)
-> > +		goto done;
-> > +
-> >   	ret = dev_pm_domain_attach(_dev, true);
-> >   	if (ret != -EPROBE_DEFER) {
-> >   		ret = drv->probe(dev);
-> > @@ -523,6 +527,10 @@ static int platform_drv_probe(struct device *_dev)
-> >   			dev_pm_domain_detach(_dev, true);
-> >   	}
-> > 
-> > +	if (ret)
-> > +		of_dma_deconfigure(_dev);
-> > +
-> > 
-> > +done:
-> >   	if (drv->prevent_deferred_probe && ret == -EPROBE_DEFER) {
-> >   		dev_warn(_dev, "probe deferral not supported\n");
-> >   		ret = -ENXIO;
-> > @@ -544,6 +552,7 @@ static int platform_drv_remove(struct device *_dev)
-> > 
-> >   	ret = drv->remove(dev);
-> >   	dev_pm_domain_detach(_dev, true);
-> > +	of_dma_deconfigure(_dev);
-> >   	return ret;
-> >   }
-> > 
-> > diff --git a/drivers/of/platform.c b/drivers/of/platform.c
-> > index 9a29f09b7723..fc939bec799e 100644
-> > --- a/drivers/of/platform.c
-> > +++ b/drivers/of/platform.c
-> > @@ -178,10 +178,8 @@ static struct platform_device
-> > *of_platform_device_create_pdata(
-> >   	dev->dev.bus = &platform_bus_type;
-> >   	dev->dev.platform_data = platform_data;
-> >   	of_dma_configure_masks(&dev->dev, dev->dev.of_node);
-> > -	of_dma_configure_ops(&dev->dev, dev->dev.of_node);
-> > 
-> >   	if (of_device_add(dev) != 0) {
-> > -		of_dma_deconfigure(&dev->dev);
-> >   		platform_device_put(dev);
-> >   		goto err_clear_flag;
-> >   	}
-> > @@ -465,11 +463,12 @@ static int of_platform_device_destroy(struct device
-> > *dev, void *data)
-> >   	if (dev->bus == &platform_bus_type)
-> >   		platform_device_unregister(to_platform_device(dev));
-> >   
-> >   #ifdef CONFIG_ARM_AMBA
-> > -	else if (dev->bus == &amba_bustype)
-> > +	else if (dev->bus == &amba_bustype) {
-> >   		amba_device_unregister(to_amba_device(dev));
-> > +		of_dma_deconfigure(dev);
-> > +	}
-> >   #endif
-> > 
-> > -	of_dma_deconfigure(dev);
-> >   	of_node_clear_flag(dev->of_node, OF_POPULATED);
-> >   	of_node_clear_flag(dev->of_node, OF_POPULATED_BUS);
-> >   	return 0;
-
--- 
-Regards,
-
-Laurent Pinchart
+T24gMjAxNS81LzIxIDE5OjI1LCBXaWxsIERlYWNvbiB3cm90ZToKPiBIaSBhZ2FpbiwKPiAKPiBT
+b3JyeSBmb3IgdGhlIGRlbGF5IGluIHJlcGx5aW5nLCBJJ3ZlIGJlZW4gdGllZCB1cCB3aXRoIG90
+aGVyIHN0dWZmLgo+IAo+IE9uIFdlZCwgTWF5IDEzLCAyMDE1IGF0IDA5OjMzOjE5QU0gKzAxMDAs
+IGxlaXpoZW4gd3JvdGU6Cj4+IE9uIDIwMTUvNS8xMyAwOjU1LCBXaWxsIERlYWNvbiB3cm90ZToK
+Pj4+IFRoZSBwdXJwb3NlIG9mIHRoZSB0d28gbGV2ZWwgYXBwcm9hY2ggaXNuJ3QgdG8gc2F2ZSBt
+ZW1vcnk7IGl0J3MgdG8gcmVtb3ZlCj4+PiB0aGUgbmVlZCBmb3IgYSBzaW5nbGUgKGxhcmdlKSBj
+b250aWd1b3VzIGJsb2NrLiBGdXJ0aGVybW9yZSwgd2UgbmVlZCBhbGwKPj4+IG1hc3RlciBkZXZp
+Y2VzIGluIHRoZSBzeXN0ZW0gdG8gY29tZSB1cCBpbiBhIHN0YXRlIHdoZXJlIHRoZWlyIHRyYW5z
+YWN0aW9ucwo+Pj4gYnlwYXNzIHRoZSBTTU1VIChpLmUuIHdlIGRvbid0IHJlcXVpcmUgdGhlbSB0
+byB1c2UgdGhlIFNNTVUgZm9yCj4+PiB0cmFuc2xhdGlvbikuIEFjaGlldmluZyB0aGlzIG5lY2Vz
+c2l0YXRlcyBhIGZ1bGx5LXBvcHVsYXRlZCBzdHJlYW0tdGFibGUKPj4+IGJlZm9yZSBhbnkgRE1B
+IG9jY3Vycy4KPj4KPj4gT0ssIGJ1dCBmb3Igbm9uLXBjaSBkZXZpY2VzKG1heWJlIHBjaSBkZXZp
+Y2VzIGFsc28pLCBpbml0aWFsaXplIGFsbAo+PiBkZXZpY2VzKFN0cmVhbUlEcykgdG8gYnlwYXNz
+IG1vZGUgbWF5YmUgaW5jb3JyZWN0LiBTb21lIGRldmljZXMgbWF5YmUKPj4gY2FwYWJsZSBicmlu
+ZyBhdHRyaWJ1dGVzIGJ5IGl0c2VsZiwgYW5kIGFjY2VzcyBkaWZmZXJlbnQgbWVtb3J5IHdpdGgK
+Pj4gZGlmZmVyZW50IGF0dHJpYnV0ZXMoZGV2aWNlIGF0dHJpYnV0ZSBvciBjYWNoZWFibGUgYXR0
+cmlidXRlKTsgc29tZQo+PiBkZXZpY2VzIG1heWJlIG5vdCBjYXBhYmxlIGJyaW5nIGF0dHJpYnV0
+ZXMgYnkgaXRzZWxmLCBidXQgbmVlZCBhY2Nlc3MKPj4gbWVtb3J5IHdpdGggY2FjaGVhYmxlIGF0
+dHJpYnV0ZSBvbmx5LCBzbyB3ZSBzaG91bGQgc2V0IFNURS5NVENGRyA9IDEuCj4+IFByb3ZpZGUg
+ZHRzIGNvbmZpZ3VyYXRpb24gd2lsbCBiZSBiZXR0ZXIuCj4gCj4gSWYgd2Ugd2FudCB0byBtYWtl
+IHVzZSBvZiBtZW1vcnkgb3ZlcnJpZGVzLCB0aGVuIEkgdGhpbmsgd2Ugc2hvdWxkIGFkZAo+IHRo
+YXQgYXMgYSBzZXBhcmF0ZSBwYXRjaCBiZWNhdXNlIGl0IHdvdWxkIGhhdmUgaW1wbGljYXRpb25z
+IG9uIHRoZSBJT01NVQo+IEFQSS4gSSBkb24ndCBwYXJ0aWN1bGFybHkgbGlrZSBwdXR0aW5nIHRo
+aXMgcG9saWN5IGluZm9ybWF0aW9uIGluIHRoZQo+IGRldmljZS10cmVlIGJpbmRpbmcgb24gYSBw
+ZXItZHJpdmVyIGJhc2lzLgoKT0suIEkgd2lsbCByZWNvbnNpZGVyLgoKPiAKPj4gRnVydGhlcm1v
+cmUsIEkgZG9uJ3QgYWdyZWUgaW5pdGlhbGl6ZSBhbGwgZGV2aWNlcyB0byBieXBhc3MgYnkgZGVm
+YXVsdC4KPj4gU3VwcG9zZSBhIG5vbi1wY2kgZGV2aWNlJ3MgU3RyZWFtSUQgY2FuIGJlIGR5bmFt
+aWMgY29uZmlndXJlZC4gV2UgcmVxdWlyZQo+PiBTdHJlYW1JRC1BLCBidXQgdGhlIGRldmljZSBh
+Y3R1YWxseSBpc3N1ZSBTdHJlYW1JRC1CIGJlY2F1c2Ugb2Ygc29mdHdhcmUKPj4gY29uZmlndXJh
+dGlvbiBmYXVsdC4gV2UgcmVhbGx5IGhvcGUgU01NVSBjYW4gcmVwb3J0IEJhZCBTdHJlYW1JRCBm
+YXVsdC4KPiAKPiBJIHRoaW5rIHRoZSBkZWZhdWx0IGJlaGF2aW91ciBoYXMgdG8gYmUgdG8gYnlw
+YXNzIGJ5IGRlZmF1bHQsIG90aGVyd2lzZQo+IHdlIGNhbiBicmVhayBETUEgZm9yIGFueSBkZXZp
+Y2VzIGJlaGluZCBhbiBTTU1VIGJ1dCBub3QgYXR0YWNoZWQgdG8gYW4KPiBJT01NVSBkb21haW4u
+IEhvdyBhYm91dCBJIGFkZCBhIGNtZGxpbmUgcGFyYW1ldGVyIHRvIGNoYW5nZSB0aGUgZGVmYXVs
+dAo+IGJlaGF2aW91cj8KPiAKClN1cmUsIHNvIHRoYXQgcGVvcGxlIGNhbiBjaG9vc2UgYnkgdGhl
+bXNlbHZlcy4gVGhlIGNtZGxpbmUgcGFyYW1ldGVyIHdpbGwgYmUgZ29vZApmb3Igbm9uLXBjaSBk
+ZXZpY2VzLgoKPj4+IEkgc3VwcG9zZSB3ZSBjb3VsZCBsb29rIGludG8gcG9wdWxhdGluZyBpdCBi
+YXNlZCBvbiB0aGUgLT5hZGRfZGV2aWNlCj4+PiBjYWxsYmFjaywgd2hpY2ggY3VycmVudGx5IGRv
+ZXMgaGF2ZSBzb21lIHJhbmdlIGNoZWNrcwo+Pj4gKGFybV9zbW11X3NpZF9pbl9yYW5nZSkuIElz
+IHRoYXQgd2hhdCB5b3UgaGFkIGluIG1pbmQ/Cj4+Cj4+IFllcywgbWF5YmUgYXR0YWNoX2Rldi4g
+QnV0IHdlIHNob3VsZCBhbGxvY2F0ZWQgdGhlIHdob2xlIEx2MSB0YWJsZSBiYXNlIG9uCj4+IFNN
+TVVfSURSMS5TSURTSVpFCj4gCj4gSSB0aGluayBpdCBuZWVkcyB0byBiZSBpbiBhZGRfZGV2aWNl
+IHNvIHRoYXQgd2UgY2FuIGltcGxlbWVudCB0aGUgZGVmYXVsdAoKT0sKCj4gYnlwYXNzIGNhc2Uu
+IFdlIGNvdWxkIGV2ZW4gaGF2ZSBvbmUgTDIgdGFibGUgcGVyIFBDSSBidXMsIGJ1dCBJIG5lZWQg
+dG8KPiB0aGluayBhYm91dCBob3cgYmlnIHRoZSBMMSB0YWJsZSBzaG91bGQgYmUuCj4gCj4+Pj4+
+ICsgICAgICAgICAgICAgaWYgKCFkZXNjLT5sMnB0cikgewo+Pj4+PiArICAgICAgICAgICAgICAg
+ICAgICAgZGV2X2VycihzbW11LT5kZXYsCj4+Pj4+ICsgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICJmYWlsZWQgdG8gYWxsb2NhdGUgbDIgc3RyZWFtIHRhYmxlICV1XG4iLCBpKTsKPj4+Pj4g
+KyAgICAgICAgICAgICAgICAgICAgIHJldCA9IC1FTk9NRU07Cj4+Pj4+ICsgICAgICAgICAgICAg
+ICAgICAgICBnb3RvIG91dF9mcmVlX2wyOwo+Pj4+PiArICAgICAgICAgICAgIH0KPj4+Pj4gKwo+
+Pj4+PiArICAgICAgICAgICAgIGFybV9zbW11X2luaXRfYnlwYXNzX3N0ZXMoZGVzYy0+bDJwdHIs
+IDEgPDwgU1RSVEFCX1NQTElUKTsKPj4+Pj4gKyAgICAgICAgICAgICBhcm1fc21tdV93cml0ZV9z
+dHJ0YWJfbDFfZGVzYyhzdHJ0YWIsIGRlc2MpOwo+Pj4+PiArICAgICAgICAgICAgIHN0cnRhYiAr
+PSBTVFJUQUJfU1RFX0RXT1JEUzsKPj4+Pj4gKyAgICAgfQo+Pj4+PiArCj4+Pj4+ICsgICAgIHJl
+dHVybiAwOwo+Pj4+PiArCj4+Pj4+ICtvdXRfZnJlZV9sMjoKPj4+Pj4gKyAgICAgYXJtX3NtbXVf
+ZnJlZV9sMl9zdHJ0YWIoc21tdSk7Cj4+Pj4+ICsgICAgIHJldHVybiByZXQ7Cj4+Pj4+ICt9Cj4+
+Pj4+ICsKPj4+Pj4gK3N0YXRpYyBpbnQgYXJtX3NtbXVfaW5pdF9zdHJ0YWIoc3RydWN0IGFybV9z
+bW11X2RldmljZSAqc21tdSkKPj4+Pj4gK3sKPj4+Pj4gKyAgICAgdm9pZCAqc3RydGFiOwo+Pj4+
+PiArICAgICB1NjQgcmVnOwo+Pj4+PiArICAgICB1MzIgc2l6ZTsKPj4+Pj4gKyAgICAgaW50IHJl
+dCA9IDA7Cj4+Pj4+ICsKPj4+Pj4gKyAgICAgc3RydGFiID0gZG1hX3phbGxvY19jb2hlcmVudChz
+bW11LT5kZXYsIDEgPDwgU1RSVEFCX0wxX1NaX1NISUZULAo+Pj4+PiArICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICZzbW11LT5zdHJ0YWJfY2ZnLnN0cnRhYl9kbWEsIEdGUF9LRVJO
+RUwpOwo+Pj4+Cj4+Pj4gQXMgYWJvdmUsIHdoZW4gTHYyIHRhYmxlcyBhcmUgZHluYW1pYyBhbGxv
+Y2F0aW9uLCB3ZSBjYW4gY3JlYXRlIEx2MSB0YWJsZQo+Pj4+IGJhc2Ugb24gU01NVV9JRFIxLlNJ
+RFNJWkUgYW5kIHN1cHBvcnQgbm9uLXBpYyBkZXZpY2VzLiBPaCwgaWYgU0lEU0laRSBpcwo+Pj4+
+IHRvbyBsYXJnZSwgbGlrZSAzMi4gTWF5YmUgd2Ugc2hvdWxkIHVzZSA2NEsgc2l6ZSBMdjIgdGFi
+bGUuICBCdXQgd2UgY2FuCj4+Pj4gb25seSB1c2UgUEFHRV9TSVpFIGZpcnN0LCBmb3IgbGF6eS4K
+Pj4+Cj4+PiBSaWdodCBub3csIHRoZSBsMiB0YWJsZXMgYXJlIDRrIGFuZCBsMSB0YWJsZSBpcyA4
+ay4gVGhhdCdzIChhKSBuaWNlIGZvcgo+Pj4gYWxsb2NhdGlvbiBvbiBhIHN5c3RlbSB3aXRoIDRr
+IHBhZ2VzIGFuZCAoYikgZW5vdWdoIHRvIGNvdmVyIGEgUENJIGhvc3QKPj4+IGNvbnRyb2xsZXIu
+IFRoZSBwcm9ibGVtIHdpdGggc3VwcG9ydGluZyAzMi1iaXQgU0lEcyBpcyB0aGF0IHRoZSBsMSB3
+aWxsCj4+PiBiZWNvbWUgYSBzaXplYWJsZSBjb250aWd1b3VzIGNodW5rIHdoaWNoIHdlJ2xsIGhh
+dmUgdG8gYWxsb2NhdGUKPj4+IHJlZ2FyZGxlc3MuCj4+Pgo+Pj4gU28sIGlmIHdlIGtlZXAgdGhl
+IGwyIHNpemUgYXQgNGsgZm9yIHRoZSBtb21lbnQsIGhvdyBiaWcgd291bGQgeW91IGxpa2UKPj4+
+IHRoZSBsMT8gRm9yIGEgMzItYml0IG51bWJlcnNwYWNlLCBpdCB3b3VsZCBiZSA0TUIsIHdoaWNo
+IEkgZG9uJ3QgdGhpbmsgaXMKPj4+IHByYWN0aWNhbC4KPj4KPj4gWWVzLCBiZWNhdXNlIEkgZG9u
+J3QgdGhpbmsgU01NVV9JRFIxLlNJRFNJWkUgPSAzMiByZWFsbHkgZXhpc3QsIHNvIEkgc2FpZAo+
+PiB1c2UgUEFHRV9TSVpFIGZpcnN0Lgo+IAo+IFdlbGwsIEkgY2VydGFpbmx5IHdvdWxkbid0IHJ1
+bGUgYW55dGhpbmcgb3V0Lgo+IAo+PiBCdXQgbm93LCB0aGlzIHBhdGNoIG9ubHkgc3VwcG9ydCBT
+TU1VX0lEUjEuU0lEU0laRSA8PSAxNi4gU3VwcG9zZQo+PiBTTU1VX0lEUjEuU0lEU0laRSA9IDI1
+77yMTHYyIHRhYmxlIHNpemUgYXQgNEssIHRoZW4gTHYxIHRhYmxlIG5lZWQgMl4oMjUgLQo+PiA2
+ICsgMykgPSAyXjIyID0gNE0uIElmIHdlIHByZS1hbGxvY2F0ZWQgYWxsIEx2MiB0YWJsZSwgd2Ug
+bmVlZCAyXjI1ICogNjQgPQo+PiAyXjMxID0gMkcsIHRoYXQncyB0b28gYmlnLiBTbyB3ZSBtdXN0
+IG9ubHkgYWxsb2NhdGUgTHYyIHRhYmxlIHdoZW4gd2UKPj4gbmVlZGVkLgo+IAo+IEkgYWdyZWUg
+dGhhdCdzIHdheSB0b28gYmlnLCBidXQgSSBoYXZlIGxpbWl0ZWQgdGhpbmdzIHRvIDE2LWJpdCBm
+b3IgYSByZWFzb24KPiA7KQo+IAo+PiBJZiBTTU1VX0lEUjEuU0lEU0laRSA9IDMyIHJlYWxseSBl
+eGlzdChvciB0b28gYmlnKSwgd2UgbmVlZCBkeW5hbWljIGNob29zZQo+PiBMdjIgdGFibGUgc2l6
+ZSg0SywxNkssNjRLKS4gIEJlY2F1c2UgTHYxIHRhYmxlIG1heWJlIHRvbyBiaWcsIGFuZCBjYW4g
+bm90Cj4+IGJlIGFsbG9jYXRlZCBieSBjdXJyZW50IEFQSSwgYSBkdHMgY29uZmlndXJhdGlvbiBz
+aG91bGQgYmUgYWRkZWQsIGxpa2UKPj4gbHYxLXRhYmxlLWJhc2UgPSA8MHgwIDB4MD4sIGFuZCB3
+ZSB1c2UgaW9yZW1hcF9jYWNoZSBnZXQgVkEobWF5YmUgaW9yZW1hcCwKPj4gZm9yIG5vbi1jb2hl
+cmVudCBTTU1VKS4KPj4KPj4gT2gsIEkgY2FuIGRvIGl0IGFmdGVyIHlvdXIgcGF0Y2hlcyB1cHN0
+cmVhbWVkLCBiZWNhdXNlIHRoaXMgcHJvYmxlbSBtYXliZQo+PiBvbmx5IEkgbWV0Lgo+IAo+IEkn
+bGwgaGF2ZSBhIHRoaW5rIGFib3V0IHRoaXMgYW5kIHNlZSB3aGF0IEkgY2FuIGNvbWUgdXAgd2l0
+aCBmb3IgdmVyc2lvbgo+IDIgb2YgdGhlIHBhdGNoLiBJJ2QgbGlrZSB0byBhdm9pZCBhZGRpbmcg
+YWRkaXRpb25hbCBwcm9wZXJ0aWVzIHRvIHRoZSBEVAo+IHVudGlsIHRoZXkncmUgYWN0dWFsbHkg
+bmVlZGVkLCB0aG91Z2guCgpPSy4gV2lsbCB5b3Ugc3VwcG9ydCBub24tcGNpIGRldmljZXMgaW4g
+cGF0Y2ggdmVyc2lvbiAyPwoKPiAKPj4+Pj4gKyAgICAgLyogSW52YWxpZGF0ZSBhbnkgY2FjaGVk
+IGNvbmZpZ3VyYXRpb24gKi8KPj4+Pj4gKyAgICAgY21kLm9wY29kZSA9IENNRFFfT1BfQ0ZHSV9B
+TEw7Cj4+Pj4+ICsgICAgIGFybV9zbW11X2NtZHFfaXNzdWVfY21kKHNtbXUsICZjbWQpOwo+Pj4+
+PiArICAgICBjbWQub3Bjb2RlID0gQ01EUV9PUF9DTURfU1lOQzsKPj4+Pj4gKyAgICAgYXJtX3Nt
+bXVfY21kcV9pc3N1ZV9jbWQoc21tdSwgJmNtZCk7Cj4+Pj4+ICsKPj4+Pj4gKyAgICAgLyogSW52
+YWxpZGF0ZSBhbnkgc3RhbGUgVExCIGVudHJpZXMgKi8KPj4+Pj4gKyAgICAgY21kLm9wY29kZSA9
+IENNRFFfT1BfVExCSV9FTDJfQUxMOwo+Pj4+Cj4+Pj4gRG8gd2UgbmVlZCB0byBleGVjdXRlIENN
+RFFfT1BfVExCSV9FTDJfQUxMPyBMaW51eCBvbmx5IHJ1biBhdCBFTDEuIEl0IGF0Cj4+Pj4gbGVh
+c3QgcmVseSBvbiBTTU1VX0lEUjAuSHlwCj4+Pgo+Pj4gVGhlIFNNTVUgaXNuJ3QgZ3VhcmFudGVl
+ZCB0byBjb21lIHVwIGNsZWFuIG91dCBvZiByZXNldCwgc28gaXQncyBhIGdvb2QKPj4+IGlkZWEg
+dG8gcGVyZm9ybSB0aGlzIGludmFsaWRhdGlvbiBpbiBjYXNlIG9mIGp1bmsgaW4gdGhlIFRMQi4g
+R2l2ZW4gdGhhdAo+Pj4gTGludXggb3ducyB0aGUgc3RhZ2UtMiB0cmFuc2xhdGlvbiwgdGhlbiB0
+aGlzIGlzIHRoZSByaWdodCBwbGFjZSB0byBkbyBpdC4KPj4KPj4gT0suIEJ1dCBpdCBzaG91bGQg
+YmUgY29udHJvbGVkIGJ5IFNNTVVfSURSMC5IeXAuIEkgbWVhbnM6Cj4+IGlmIChTTU1VX0lEUjAu
+SHlwKQo+PiAgICAgICAgIGV4ZWN1dGUgY29tbWFuZCBDTURRX09QX1RMQklfRUwyX0FMTAo+Pgo+
+PiBXaGVuIFNNTVVfSURSMC5IeXA94oCZMOKAmSwgdGhpcyBjb21tYW5kIGNhdXNlcyBDRVJST1Jf
+SUxMCj4gCj4gV2VsbCBzcG90dGVkLCB0aGFua3MhCj4gCj4gV2lsbAo+IAo+IC4KPiAKCgpfX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
+IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
+eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
