@@ -1,17 +1,11 @@
-From: leizhen <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/3] iommu/arm-smmu: Add initial driver support for ARM
-	SMMUv3 devices
-Date: Mon, 25 May 2015 10:07:17 +0800
-Message-ID: <556283D5.4030901@huawei.com>
-References: <1431108046-9675-1-git-send-email-will.deacon@arm.com>
-	<1431108046-9675-3-git-send-email-will.deacon@arm.com>
-	<5551AE56.6050906@huawei.com> <20150512165500.GE2062@arm.com>
-	<55530C4F.5000605@huawei.com> <20150521112555.GH21920@arm.com>
+From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [v7 0/8] Add VT-d Posted-Interrupts support - IOMMU part
+Date: Mon, 25 May 2015 13:28:46 +0800
+Message-ID: <1432531734-25978-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150521112555.GH21920-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,124 +15,62 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Sanil kumar <sanil.kumar-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Gaojianbo <gaojianbo-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Dingtianhong <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjAxNS81LzIxIDE5OjI1LCBXaWxsIERlYWNvbiB3cm90ZToKPiBIaSBhZ2FpbiwKPiAKPiBT
-b3JyeSBmb3IgdGhlIGRlbGF5IGluIHJlcGx5aW5nLCBJJ3ZlIGJlZW4gdGllZCB1cCB3aXRoIG90
-aGVyIHN0dWZmLgo+IAo+IE9uIFdlZCwgTWF5IDEzLCAyMDE1IGF0IDA5OjMzOjE5QU0gKzAxMDAs
-IGxlaXpoZW4gd3JvdGU6Cj4+IE9uIDIwMTUvNS8xMyAwOjU1LCBXaWxsIERlYWNvbiB3cm90ZToK
-Pj4+IFRoZSBwdXJwb3NlIG9mIHRoZSB0d28gbGV2ZWwgYXBwcm9hY2ggaXNuJ3QgdG8gc2F2ZSBt
-ZW1vcnk7IGl0J3MgdG8gcmVtb3ZlCj4+PiB0aGUgbmVlZCBmb3IgYSBzaW5nbGUgKGxhcmdlKSBj
-b250aWd1b3VzIGJsb2NrLiBGdXJ0aGVybW9yZSwgd2UgbmVlZCBhbGwKPj4+IG1hc3RlciBkZXZp
-Y2VzIGluIHRoZSBzeXN0ZW0gdG8gY29tZSB1cCBpbiBhIHN0YXRlIHdoZXJlIHRoZWlyIHRyYW5z
-YWN0aW9ucwo+Pj4gYnlwYXNzIHRoZSBTTU1VIChpLmUuIHdlIGRvbid0IHJlcXVpcmUgdGhlbSB0
-byB1c2UgdGhlIFNNTVUgZm9yCj4+PiB0cmFuc2xhdGlvbikuIEFjaGlldmluZyB0aGlzIG5lY2Vz
-c2l0YXRlcyBhIGZ1bGx5LXBvcHVsYXRlZCBzdHJlYW0tdGFibGUKPj4+IGJlZm9yZSBhbnkgRE1B
-IG9jY3Vycy4KPj4KPj4gT0ssIGJ1dCBmb3Igbm9uLXBjaSBkZXZpY2VzKG1heWJlIHBjaSBkZXZp
-Y2VzIGFsc28pLCBpbml0aWFsaXplIGFsbAo+PiBkZXZpY2VzKFN0cmVhbUlEcykgdG8gYnlwYXNz
-IG1vZGUgbWF5YmUgaW5jb3JyZWN0LiBTb21lIGRldmljZXMgbWF5YmUKPj4gY2FwYWJsZSBicmlu
-ZyBhdHRyaWJ1dGVzIGJ5IGl0c2VsZiwgYW5kIGFjY2VzcyBkaWZmZXJlbnQgbWVtb3J5IHdpdGgK
-Pj4gZGlmZmVyZW50IGF0dHJpYnV0ZXMoZGV2aWNlIGF0dHJpYnV0ZSBvciBjYWNoZWFibGUgYXR0
-cmlidXRlKTsgc29tZQo+PiBkZXZpY2VzIG1heWJlIG5vdCBjYXBhYmxlIGJyaW5nIGF0dHJpYnV0
-ZXMgYnkgaXRzZWxmLCBidXQgbmVlZCBhY2Nlc3MKPj4gbWVtb3J5IHdpdGggY2FjaGVhYmxlIGF0
-dHJpYnV0ZSBvbmx5LCBzbyB3ZSBzaG91bGQgc2V0IFNURS5NVENGRyA9IDEuCj4+IFByb3ZpZGUg
-ZHRzIGNvbmZpZ3VyYXRpb24gd2lsbCBiZSBiZXR0ZXIuCj4gCj4gSWYgd2Ugd2FudCB0byBtYWtl
-IHVzZSBvZiBtZW1vcnkgb3ZlcnJpZGVzLCB0aGVuIEkgdGhpbmsgd2Ugc2hvdWxkIGFkZAo+IHRo
-YXQgYXMgYSBzZXBhcmF0ZSBwYXRjaCBiZWNhdXNlIGl0IHdvdWxkIGhhdmUgaW1wbGljYXRpb25z
-IG9uIHRoZSBJT01NVQo+IEFQSS4gSSBkb24ndCBwYXJ0aWN1bGFybHkgbGlrZSBwdXR0aW5nIHRo
-aXMgcG9saWN5IGluZm9ybWF0aW9uIGluIHRoZQo+IGRldmljZS10cmVlIGJpbmRpbmcgb24gYSBw
-ZXItZHJpdmVyIGJhc2lzLgoKT0suIEkgd2lsbCByZWNvbnNpZGVyLgoKPiAKPj4gRnVydGhlcm1v
-cmUsIEkgZG9uJ3QgYWdyZWUgaW5pdGlhbGl6ZSBhbGwgZGV2aWNlcyB0byBieXBhc3MgYnkgZGVm
-YXVsdC4KPj4gU3VwcG9zZSBhIG5vbi1wY2kgZGV2aWNlJ3MgU3RyZWFtSUQgY2FuIGJlIGR5bmFt
-aWMgY29uZmlndXJlZC4gV2UgcmVxdWlyZQo+PiBTdHJlYW1JRC1BLCBidXQgdGhlIGRldmljZSBh
-Y3R1YWxseSBpc3N1ZSBTdHJlYW1JRC1CIGJlY2F1c2Ugb2Ygc29mdHdhcmUKPj4gY29uZmlndXJh
-dGlvbiBmYXVsdC4gV2UgcmVhbGx5IGhvcGUgU01NVSBjYW4gcmVwb3J0IEJhZCBTdHJlYW1JRCBm
-YXVsdC4KPiAKPiBJIHRoaW5rIHRoZSBkZWZhdWx0IGJlaGF2aW91ciBoYXMgdG8gYmUgdG8gYnlw
-YXNzIGJ5IGRlZmF1bHQsIG90aGVyd2lzZQo+IHdlIGNhbiBicmVhayBETUEgZm9yIGFueSBkZXZp
-Y2VzIGJlaGluZCBhbiBTTU1VIGJ1dCBub3QgYXR0YWNoZWQgdG8gYW4KPiBJT01NVSBkb21haW4u
-IEhvdyBhYm91dCBJIGFkZCBhIGNtZGxpbmUgcGFyYW1ldGVyIHRvIGNoYW5nZSB0aGUgZGVmYXVs
-dAo+IGJlaGF2aW91cj8KPiAKClN1cmUsIHNvIHRoYXQgcGVvcGxlIGNhbiBjaG9vc2UgYnkgdGhl
-bXNlbHZlcy4gVGhlIGNtZGxpbmUgcGFyYW1ldGVyIHdpbGwgYmUgZ29vZApmb3Igbm9uLXBjaSBk
-ZXZpY2VzLgoKPj4+IEkgc3VwcG9zZSB3ZSBjb3VsZCBsb29rIGludG8gcG9wdWxhdGluZyBpdCBi
-YXNlZCBvbiB0aGUgLT5hZGRfZGV2aWNlCj4+PiBjYWxsYmFjaywgd2hpY2ggY3VycmVudGx5IGRv
-ZXMgaGF2ZSBzb21lIHJhbmdlIGNoZWNrcwo+Pj4gKGFybV9zbW11X3NpZF9pbl9yYW5nZSkuIElz
-IHRoYXQgd2hhdCB5b3UgaGFkIGluIG1pbmQ/Cj4+Cj4+IFllcywgbWF5YmUgYXR0YWNoX2Rldi4g
-QnV0IHdlIHNob3VsZCBhbGxvY2F0ZWQgdGhlIHdob2xlIEx2MSB0YWJsZSBiYXNlIG9uCj4+IFNN
-TVVfSURSMS5TSURTSVpFCj4gCj4gSSB0aGluayBpdCBuZWVkcyB0byBiZSBpbiBhZGRfZGV2aWNl
-IHNvIHRoYXQgd2UgY2FuIGltcGxlbWVudCB0aGUgZGVmYXVsdAoKT0sKCj4gYnlwYXNzIGNhc2Uu
-IFdlIGNvdWxkIGV2ZW4gaGF2ZSBvbmUgTDIgdGFibGUgcGVyIFBDSSBidXMsIGJ1dCBJIG5lZWQg
-dG8KPiB0aGluayBhYm91dCBob3cgYmlnIHRoZSBMMSB0YWJsZSBzaG91bGQgYmUuCj4gCj4+Pj4+
-ICsgICAgICAgICAgICAgaWYgKCFkZXNjLT5sMnB0cikgewo+Pj4+PiArICAgICAgICAgICAgICAg
-ICAgICAgZGV2X2VycihzbW11LT5kZXYsCj4+Pj4+ICsgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICJmYWlsZWQgdG8gYWxsb2NhdGUgbDIgc3RyZWFtIHRhYmxlICV1XG4iLCBpKTsKPj4+Pj4g
-KyAgICAgICAgICAgICAgICAgICAgIHJldCA9IC1FTk9NRU07Cj4+Pj4+ICsgICAgICAgICAgICAg
-ICAgICAgICBnb3RvIG91dF9mcmVlX2wyOwo+Pj4+PiArICAgICAgICAgICAgIH0KPj4+Pj4gKwo+
-Pj4+PiArICAgICAgICAgICAgIGFybV9zbW11X2luaXRfYnlwYXNzX3N0ZXMoZGVzYy0+bDJwdHIs
-IDEgPDwgU1RSVEFCX1NQTElUKTsKPj4+Pj4gKyAgICAgICAgICAgICBhcm1fc21tdV93cml0ZV9z
-dHJ0YWJfbDFfZGVzYyhzdHJ0YWIsIGRlc2MpOwo+Pj4+PiArICAgICAgICAgICAgIHN0cnRhYiAr
-PSBTVFJUQUJfU1RFX0RXT1JEUzsKPj4+Pj4gKyAgICAgfQo+Pj4+PiArCj4+Pj4+ICsgICAgIHJl
-dHVybiAwOwo+Pj4+PiArCj4+Pj4+ICtvdXRfZnJlZV9sMjoKPj4+Pj4gKyAgICAgYXJtX3NtbXVf
-ZnJlZV9sMl9zdHJ0YWIoc21tdSk7Cj4+Pj4+ICsgICAgIHJldHVybiByZXQ7Cj4+Pj4+ICt9Cj4+
-Pj4+ICsKPj4+Pj4gK3N0YXRpYyBpbnQgYXJtX3NtbXVfaW5pdF9zdHJ0YWIoc3RydWN0IGFybV9z
-bW11X2RldmljZSAqc21tdSkKPj4+Pj4gK3sKPj4+Pj4gKyAgICAgdm9pZCAqc3RydGFiOwo+Pj4+
-PiArICAgICB1NjQgcmVnOwo+Pj4+PiArICAgICB1MzIgc2l6ZTsKPj4+Pj4gKyAgICAgaW50IHJl
-dCA9IDA7Cj4+Pj4+ICsKPj4+Pj4gKyAgICAgc3RydGFiID0gZG1hX3phbGxvY19jb2hlcmVudChz
-bW11LT5kZXYsIDEgPDwgU1RSVEFCX0wxX1NaX1NISUZULAo+Pj4+PiArICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICZzbW11LT5zdHJ0YWJfY2ZnLnN0cnRhYl9kbWEsIEdGUF9LRVJO
-RUwpOwo+Pj4+Cj4+Pj4gQXMgYWJvdmUsIHdoZW4gTHYyIHRhYmxlcyBhcmUgZHluYW1pYyBhbGxv
-Y2F0aW9uLCB3ZSBjYW4gY3JlYXRlIEx2MSB0YWJsZQo+Pj4+IGJhc2Ugb24gU01NVV9JRFIxLlNJ
-RFNJWkUgYW5kIHN1cHBvcnQgbm9uLXBpYyBkZXZpY2VzLiBPaCwgaWYgU0lEU0laRSBpcwo+Pj4+
-IHRvbyBsYXJnZSwgbGlrZSAzMi4gTWF5YmUgd2Ugc2hvdWxkIHVzZSA2NEsgc2l6ZSBMdjIgdGFi
-bGUuICBCdXQgd2UgY2FuCj4+Pj4gb25seSB1c2UgUEFHRV9TSVpFIGZpcnN0LCBmb3IgbGF6eS4K
-Pj4+Cj4+PiBSaWdodCBub3csIHRoZSBsMiB0YWJsZXMgYXJlIDRrIGFuZCBsMSB0YWJsZSBpcyA4
-ay4gVGhhdCdzIChhKSBuaWNlIGZvcgo+Pj4gYWxsb2NhdGlvbiBvbiBhIHN5c3RlbSB3aXRoIDRr
-IHBhZ2VzIGFuZCAoYikgZW5vdWdoIHRvIGNvdmVyIGEgUENJIGhvc3QKPj4+IGNvbnRyb2xsZXIu
-IFRoZSBwcm9ibGVtIHdpdGggc3VwcG9ydGluZyAzMi1iaXQgU0lEcyBpcyB0aGF0IHRoZSBsMSB3
-aWxsCj4+PiBiZWNvbWUgYSBzaXplYWJsZSBjb250aWd1b3VzIGNodW5rIHdoaWNoIHdlJ2xsIGhh
-dmUgdG8gYWxsb2NhdGUKPj4+IHJlZ2FyZGxlc3MuCj4+Pgo+Pj4gU28sIGlmIHdlIGtlZXAgdGhl
-IGwyIHNpemUgYXQgNGsgZm9yIHRoZSBtb21lbnQsIGhvdyBiaWcgd291bGQgeW91IGxpa2UKPj4+
-IHRoZSBsMT8gRm9yIGEgMzItYml0IG51bWJlcnNwYWNlLCBpdCB3b3VsZCBiZSA0TUIsIHdoaWNo
-IEkgZG9uJ3QgdGhpbmsgaXMKPj4+IHByYWN0aWNhbC4KPj4KPj4gWWVzLCBiZWNhdXNlIEkgZG9u
-J3QgdGhpbmsgU01NVV9JRFIxLlNJRFNJWkUgPSAzMiByZWFsbHkgZXhpc3QsIHNvIEkgc2FpZAo+
-PiB1c2UgUEFHRV9TSVpFIGZpcnN0Lgo+IAo+IFdlbGwsIEkgY2VydGFpbmx5IHdvdWxkbid0IHJ1
-bGUgYW55dGhpbmcgb3V0Lgo+IAo+PiBCdXQgbm93LCB0aGlzIHBhdGNoIG9ubHkgc3VwcG9ydCBT
-TU1VX0lEUjEuU0lEU0laRSA8PSAxNi4gU3VwcG9zZQo+PiBTTU1VX0lEUjEuU0lEU0laRSA9IDI1
-77yMTHYyIHRhYmxlIHNpemUgYXQgNEssIHRoZW4gTHYxIHRhYmxlIG5lZWQgMl4oMjUgLQo+PiA2
-ICsgMykgPSAyXjIyID0gNE0uIElmIHdlIHByZS1hbGxvY2F0ZWQgYWxsIEx2MiB0YWJsZSwgd2Ug
-bmVlZCAyXjI1ICogNjQgPQo+PiAyXjMxID0gMkcsIHRoYXQncyB0b28gYmlnLiBTbyB3ZSBtdXN0
-IG9ubHkgYWxsb2NhdGUgTHYyIHRhYmxlIHdoZW4gd2UKPj4gbmVlZGVkLgo+IAo+IEkgYWdyZWUg
-dGhhdCdzIHdheSB0b28gYmlnLCBidXQgSSBoYXZlIGxpbWl0ZWQgdGhpbmdzIHRvIDE2LWJpdCBm
-b3IgYSByZWFzb24KPiA7KQo+IAo+PiBJZiBTTU1VX0lEUjEuU0lEU0laRSA9IDMyIHJlYWxseSBl
-eGlzdChvciB0b28gYmlnKSwgd2UgbmVlZCBkeW5hbWljIGNob29zZQo+PiBMdjIgdGFibGUgc2l6
-ZSg0SywxNkssNjRLKS4gIEJlY2F1c2UgTHYxIHRhYmxlIG1heWJlIHRvbyBiaWcsIGFuZCBjYW4g
-bm90Cj4+IGJlIGFsbG9jYXRlZCBieSBjdXJyZW50IEFQSSwgYSBkdHMgY29uZmlndXJhdGlvbiBz
-aG91bGQgYmUgYWRkZWQsIGxpa2UKPj4gbHYxLXRhYmxlLWJhc2UgPSA8MHgwIDB4MD4sIGFuZCB3
-ZSB1c2UgaW9yZW1hcF9jYWNoZSBnZXQgVkEobWF5YmUgaW9yZW1hcCwKPj4gZm9yIG5vbi1jb2hl
-cmVudCBTTU1VKS4KPj4KPj4gT2gsIEkgY2FuIGRvIGl0IGFmdGVyIHlvdXIgcGF0Y2hlcyB1cHN0
-cmVhbWVkLCBiZWNhdXNlIHRoaXMgcHJvYmxlbSBtYXliZQo+PiBvbmx5IEkgbWV0Lgo+IAo+IEkn
-bGwgaGF2ZSBhIHRoaW5rIGFib3V0IHRoaXMgYW5kIHNlZSB3aGF0IEkgY2FuIGNvbWUgdXAgd2l0
-aCBmb3IgdmVyc2lvbgo+IDIgb2YgdGhlIHBhdGNoLiBJJ2QgbGlrZSB0byBhdm9pZCBhZGRpbmcg
-YWRkaXRpb25hbCBwcm9wZXJ0aWVzIHRvIHRoZSBEVAo+IHVudGlsIHRoZXkncmUgYWN0dWFsbHkg
-bmVlZGVkLCB0aG91Z2guCgpPSy4gV2lsbCB5b3Ugc3VwcG9ydCBub24tcGNpIGRldmljZXMgaW4g
-cGF0Y2ggdmVyc2lvbiAyPwoKPiAKPj4+Pj4gKyAgICAgLyogSW52YWxpZGF0ZSBhbnkgY2FjaGVk
-IGNvbmZpZ3VyYXRpb24gKi8KPj4+Pj4gKyAgICAgY21kLm9wY29kZSA9IENNRFFfT1BfQ0ZHSV9B
-TEw7Cj4+Pj4+ICsgICAgIGFybV9zbW11X2NtZHFfaXNzdWVfY21kKHNtbXUsICZjbWQpOwo+Pj4+
-PiArICAgICBjbWQub3Bjb2RlID0gQ01EUV9PUF9DTURfU1lOQzsKPj4+Pj4gKyAgICAgYXJtX3Nt
-bXVfY21kcV9pc3N1ZV9jbWQoc21tdSwgJmNtZCk7Cj4+Pj4+ICsKPj4+Pj4gKyAgICAgLyogSW52
-YWxpZGF0ZSBhbnkgc3RhbGUgVExCIGVudHJpZXMgKi8KPj4+Pj4gKyAgICAgY21kLm9wY29kZSA9
-IENNRFFfT1BfVExCSV9FTDJfQUxMOwo+Pj4+Cj4+Pj4gRG8gd2UgbmVlZCB0byBleGVjdXRlIENN
-RFFfT1BfVExCSV9FTDJfQUxMPyBMaW51eCBvbmx5IHJ1biBhdCBFTDEuIEl0IGF0Cj4+Pj4gbGVh
-c3QgcmVseSBvbiBTTU1VX0lEUjAuSHlwCj4+Pgo+Pj4gVGhlIFNNTVUgaXNuJ3QgZ3VhcmFudGVl
-ZCB0byBjb21lIHVwIGNsZWFuIG91dCBvZiByZXNldCwgc28gaXQncyBhIGdvb2QKPj4+IGlkZWEg
-dG8gcGVyZm9ybSB0aGlzIGludmFsaWRhdGlvbiBpbiBjYXNlIG9mIGp1bmsgaW4gdGhlIFRMQi4g
-R2l2ZW4gdGhhdAo+Pj4gTGludXggb3ducyB0aGUgc3RhZ2UtMiB0cmFuc2xhdGlvbiwgdGhlbiB0
-aGlzIGlzIHRoZSByaWdodCBwbGFjZSB0byBkbyBpdC4KPj4KPj4gT0suIEJ1dCBpdCBzaG91bGQg
-YmUgY29udHJvbGVkIGJ5IFNNTVVfSURSMC5IeXAuIEkgbWVhbnM6Cj4+IGlmIChTTU1VX0lEUjAu
-SHlwKQo+PiAgICAgICAgIGV4ZWN1dGUgY29tbWFuZCBDTURRX09QX1RMQklfRUwyX0FMTAo+Pgo+
-PiBXaGVuIFNNTVVfSURSMC5IeXA94oCZMOKAmSwgdGhpcyBjb21tYW5kIGNhdXNlcyBDRVJST1Jf
-SUxMCj4gCj4gV2VsbCBzcG90dGVkLCB0aGFua3MhCj4gCj4gV2lsbAo+IAo+IC4KPiAKCgpfX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
-IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
-eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+VT-d Posted-Interrupts is an enhancement to CPU side Posted-Interrupt.
+With VT-d Posted-Interrupts enabled, external interrupts from
+direct-assigned devices can be delivered to guests without VMM
+intervention when guest is running in non-root mode.
+
+You can find the VT-d Posted-Interrtups Spec. in the following URL:
+http://www.intel.com/content/www/us/en/intelligent-systems/intel-technology/vt-directed-io-spec.html
+
+This series was part of http://thread.gmane.org/gmane.linux.kernel.iommu/7708. To make things clear, send out IOMMU part here.
+
+This patch-set is based on the lastest x86/apic branch of tip tree.
+
+Divide the whole series which contain multiple components into three parts:
+- Prerequisite changes to irq subsystem (already merged in tip tree x86/apic branch)
+- IOMMU part (in this series)
+- KVM and VFIO parts (will send out this part once the first two parts are accepted)
+
+v6->v7:
+* Add an static inline helper function set_irq_posting_cap() to set
+the PI capability.
+* Add some comments for the new member "ir_data->irte_pi_entry".
+
+v5->v6:
+* Extend 'struct irte' for VT-d Posted-Interrupts, combine remapped
+and posted mode into one irte structure.
+
+v4->v5:
+* Abstract modify_irte() to accept two format of irte.
+
+v3->v4:
+* Change capability to a int variant flags instead of a function call.
+* Add hotplug case for VT-d PI.
+
+Feng Wu (7):
+  iommu: Add new member capability to struct irq_remap_ops
+  iommu, x86: Implement irq_set_vcpu_affinity for intel_ir_chip
+  iommu, x86: No need to migrating irq for VT-d Posted-Interrupts
+  iommu, x86: Add cap_pi_support() to detect VT-d PI capability
+  iommu, x86: Setup Posted-Interrupts capability for Intel iommu
+  iommu, x86: define irq_remapping_cap()
+  iommu, x86: Properly handler PI for IOMMU hotplug
+
+Thomas Gleixner (1):
+  iommu: dmar: Extend struct irte for VT-d Posted-Interrupts
+
+ arch/x86/include/asm/irq_remapping.h | 11 +++++
+ drivers/iommu/intel_irq_remapping.c  | 84 +++++++++++++++++++++++++++++++++++-
+ drivers/iommu/irq_remapping.c        | 11 +++++
+ drivers/iommu/irq_remapping.h        |  6 +++
+ include/linux/dmar.h                 | 70 +++++++++++++++++++++++-------
+ include/linux/intel-iommu.h          |  1 +
+ 6 files changed, 167 insertions(+), 16 deletions(-)
+
+-- 
+2.1.0
