@@ -1,103 +1,77 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [RFC/PATCH 3/9] of: dma: Move range size workaround to
- of_dma_get_range()
-Date: Wed, 27 May 2015 18:59:23 +0100
-Message-ID: <20150527175922.GE4232@arm.com>
-References: <1431644410-2997-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
- <1431644410-2997-4-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: William Davis <wdavis@nvidia.com>
+Subject: RE: [PATCH v2 4/7] DMA-API: Add dma_(un)map_resource() documentation
+Date: Wed, 27 May 2015 18:31:53 +0000
+Message-ID: <6f77384007cd47eea5ecb4b60977fdac@HQMAIL106.nvidia.com>
+References: <1431973504-5903-1-git-send-email-wdavis@nvidia.com>
+ <1431973504-5903-5-git-send-email-wdavis@nvidia.com>
+ <20150519234300.GA31666@google.com> <555C79E5.9040507@compro.net>
+ <ea891abe867444d193742030348a6ad1@HQMAIL106.nvidia.com>
+ <555CDD6F.40304@compro.net>
+ <202fc76456cf4f3aac02034d5366780c@HQMAIL106.nvidia.com>
+ <555CE97A.1030805@compro.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1431644410-2997-4-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Laura Abbott <lauraa@codeaurora.org>, Arnd Bergmann <arnd@arndb.de>, Mitchel Humpherys <mitchelh@codeaurora.org>, Joreg Roedel <joro@8bytes.org>, "grant.likely@linaro.org" <grant.likely@linaro.org>, Robin Murphy <Robin.Murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <555CE97A.1030805@compro.net>
+Content-Language: en-US
+Sender: linux-pci-owner@vger.kernel.org
+To: "markh@compro.net" <markh@compro.net>, Bjorn Helgaas <bhelgaas@google.com>
+Cc: "joro@8bytes.org" <joro@8bytes.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Terence Ripperda <TRipperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, "jglisse@redhat.com" <jglisse@redhat.com>, "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>, Jonathan Corbet <corbet@lwn.net>, "David S. Miller" <davem@davemloft.net>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 15, 2015 at 12:00:04AM +0100, Laurent Pinchart wrote:
-> Invalid dma-ranges values should be worked around when retrieving the
-> DMA range in of_dma_get_range(), not by all callers of the function.
-> This isn't much of a problem now that we have a single caller, but that
-> situation will change when moving DMA configuration to device probe
-> time.
+
+
+> -----Original Message-----
+> From: Mark Hounschell [mailto:markh@compro.net]
+> Sent: Wednesday, May 20, 2015 3:07 PM
+> To: William Davis; Bjorn Helgaas
+> Cc: joro@8bytes.org; iommu@lists.linux-foundation.org; linux-pci@vger.kernel.org; Terence Ripperda;
+> John Hubbard; jglisse@redhat.com; konrad.wilk@oracle.com; Jonathan Corbet; David S. Miller
+> Subject: Re: [PATCH v2 4/7] DMA-API: Add dma_(un)map_resource() documentation
 > 
-> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-> ---
->  drivers/of/address.c | 20 ++++++++++++++++++--
->  drivers/of/device.c  | 15 ---------------
->  2 files changed, 18 insertions(+), 17 deletions(-)
+> >>
+> >> I currently just do
+> >>
+> >> page = virt_to_page(__va(bus_address));
+> >>
+> >> then just use the normal API. Works for writes anyway.
+> >>
+> >
+> > What platform is this on? I don't understand how that could work for
+> > peer-to-peer. As I understand it, there are no 'struct page's for MMIO
+> > regions, and you could actually end up with a very different page as a
+> > result of that unchecked translation (e.g., a "valid" struct page, but
+> > not in the peer's MMIO range at all).
+> >
+> 
+> This is an x86-64 AMD 990FX chip set. Works fine. Every time. I do have
+> the peers memory that is being written to mmap'd by the task that is
+> doing this, but this works.
+> 
+> Mark
+> 
 
-Looks good to me:
+I spent some time looking into this, and I was surprised to find it worked
+for me too. At least, it seems like it works, but it is a dangerous
+accident that it did, and so I think the patch is still necessary.
 
-  Acked-by: Will Deacon <will.deacon@arm.com>
+In the IOMMU mapping paths, the IOMMU drivers (at least on x86) only
+really use the struct page * to get the physical address that it
+references, and I think that's usually done exclusively with pointer
+arithmetic these days. So you are getting a pointer to a struct page that
+actually doesn't exist, because it's either in a hole or off the end of
+the memory map.
 
+You can verify this by calling dump_page() on the struct page * returned
+by this calculation. On my Intel machine, this BUGs, unable to handle the
+paging request when looking at the struct page fields. If I just use the
+pointer without dereferencing it, the IOMMU paths can get the correct
+physical address without any issues, but this is by accident and not by
+design, nor is it portable, so we shouldn't rely on this technique.
+
+Thanks,
 Will
 
-> diff --git a/drivers/of/address.c b/drivers/of/address.c
-> index 78a7dcbec7d8..75eebd19ebfa 100644
-> --- a/drivers/of/address.c
-> +++ b/drivers/of/address.c
-> @@ -924,8 +924,8 @@ EXPORT_SYMBOL(of_io_request_and_map);
->   *	CPU addr (phys_addr_t)	: pna cells
->   *	size			: nsize cells
->   *
-> - * It returns -ENODEV if "dma-ranges" property was not found
-> - * for this device in DT.
-> + * Return 0 on success, -ENODEV if the "dma-ranges" property was not found for
-> + * this device in DT, or -EINVAL if the CPU address or size is invalid.
->   */
->  int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *size)
->  {
-> @@ -986,6 +986,22 @@ int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *siz
->  	*dma_addr = dmaaddr;
->  
->  	*size = of_read_number(ranges + naddr + pna, nsize);
-> +	/*
-> +	 * DT nodes sometimes incorrectly set the size as a mask. Work around
-> +	 * those incorrect DT by computing the size as mask + 1.
-> +	 */
-> +	if (*size & 1) {
-> +		pr_warn("%s: size 0x%llx for dma-range in node(%s) set as mask\n",
-> +			__func__, *size, np->full_name);
-> +		*size = *size + 1;
-> +	}
-> +
-> +	if (!*size) {
-> +		pr_err("%s: invalid size zero for dma-range in node(%s)\n",
-> +		       __func__, np->full_name);
-> +		ret = -EINVAL;
-> +		goto out;
-> +	}
->  
->  	pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
->  		 *dma_addr, *paddr, *size);
-> diff --git a/drivers/of/device.c b/drivers/of/device.c
-> index 20c1332a0018..530aa1ed3e1b 100644
-> --- a/drivers/of/device.c
-> +++ b/drivers/of/device.c
-> @@ -109,21 +109,6 @@ void of_dma_configure(struct device *dev, struct device_node *np)
->  		size = dev->coherent_dma_mask + 1;
->  	} else {
->  		offset = PFN_DOWN(paddr - dma_addr);
-> -
-> -		/*
-> -		 * Add a work around to treat the size as mask + 1 in case
-> -		 * it is defined in DT as a mask.
-> -		 */
-> -		if (size & 1) {
-> -			dev_warn(dev, "Invalid size 0x%llx for dma-range\n",
-> -				 size);
-> -			size = size + 1;
-> -		}
-> -
-> -		if (!size) {
-> -			dev_err(dev, "Adjusted size 0x%llx invalid\n", size);
-> -			return;
-> -		}
->  		dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
->  	}
->  
-> -- 
-> 2.3.6
-> 
+--
+nvpublic
