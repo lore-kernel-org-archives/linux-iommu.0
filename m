@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v8 2/9] iommu: dmar: Extend struct irte for VT-d Posted-Interrupts
-Date: Wed, 27 May 2015 12:05:37 +0800
-Message-ID: <1432699544-17444-3-git-send-email-feng.wu@intel.com>
+Subject: [v8 3/9] iommu, x86: Implement irq_set_vcpu_affinity for intel_ir_chip
+Date: Wed, 27 May 2015 12:05:38 +0800
+Message-ID: <1432699544-17444-4-git-send-email-feng.wu@intel.com>
 References: <1432699544-17444-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,121 +21,99 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@p
 Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Implement irq_set_vcpu_affinity for intel_ir_chip.
 
-The IRTE (Interrupt Remapping Table Entry) is either an entry for
-remapped or for posted interrupts. The hardware distiguishes between
-remapped and posted entries by bit 15 in the low 64 bit of the
-IRTE. If cleared the entry is remapped, if set it's posted.
-
-The entries have common fields and dependent on the posted bit fields
-with different meanings.
-
-Extend struct irte to handle the differences between remap and posted
-mode by having three structs in the unions:
-
-	- Shared
-	- Remapped
-	- Posted
-
-Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Acked-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- include/linux/dmar.h | 70 +++++++++++++++++++++++++++++++++++++++++-----------
- 1 file changed, 55 insertions(+), 15 deletions(-)
+ arch/x86/include/asm/irq_remapping.h |  5 ++++
+ drivers/iommu/intel_irq_remapping.c  | 46 ++++++++++++++++++++++++++++++++++++
+ 2 files changed, 51 insertions(+)
 
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 8473756..0dbcabc 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -185,33 +185,73 @@ static inline int dmar_device_remove(void *handle)
+diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
+index 0953723..202e040 100644
+--- a/arch/x86/include/asm/irq_remapping.h
++++ b/arch/x86/include/asm/irq_remapping.h
+@@ -57,6 +57,11 @@ static inline struct irq_domain *arch_get_ir_parent_domain(void)
+ 	return x86_vector_domain;
+ }
  
- struct irte {
- 	union {
-+		/* Shared between remapped and posted mode*/
- 		struct {
--			__u64	present 	: 1,
--				fpd		: 1,
--				dst_mode	: 1,
--				redir_hint	: 1,
--				trigger_mode	: 1,
--				dlvry_mode	: 3,
--				avail		: 4,
--				__reserved_1	: 4,
--				vector		: 8,
--				__reserved_2	: 8,
--				dest_id		: 32;
-+			__u64	present		: 1,  /*  0      */
-+				fpd		: 1,  /*  1      */
-+				__res0		: 6,  /*  2 -  6 */
-+				avail		: 4,  /*  8 - 11 */
-+				__res1		: 3,  /* 12 - 14 */
-+				pst		: 1,  /* 15      */
-+				vector		: 8,  /* 16 - 23 */
-+				__res2		: 40; /* 24 - 63 */
-+		};
++struct vcpu_data {
++	u64 pi_desc_addr;	/* Physical address of PI Descriptor */
++	u32 vector;		/* Guest vector of the interrupt */
++};
 +
-+		/* Remapped mode */
-+		struct {
-+			__u64	r_present	: 1,  /*  0      */
-+				r_fpd		: 1,  /*  1      */
-+				dst_mode	: 1,  /*  2      */
-+				redir_hint	: 1,  /*  3      */
-+				trigger_mode	: 1,  /*  4      */
-+				dlvry_mode	: 3,  /*  5 -  7 */
-+				r_avail		: 4,  /*  8 - 11 */
-+				r_res0		: 4,  /* 12 - 15 */
-+				r_vector	: 8,  /* 16 - 23 */
-+				r_res1		: 8,  /* 24 - 31 */
-+				dest_id		: 32; /* 32 - 63 */
-+		};
-+
-+		/* Posted mode */
-+		struct {
-+			__u64	p_present	: 1,  /*  0      */
-+				p_fpd		: 1,  /*  1      */
-+				p_res0		: 6,  /*  2 -  7 */
-+				p_avail		: 4,  /*  8 - 11 */
-+				p_res1		: 2,  /* 12 - 13 */
-+				p_urgent	: 1,  /* 14      */
-+				p_pst		: 1,  /* 15      */
-+				p_vector	: 8,  /* 16 - 23 */
-+				p_res2		: 14, /* 24 - 37 */
-+				pda_l		: 26; /* 38 - 63 */
- 		};
- 		__u64 low;
- 	};
+ #else  /* CONFIG_IRQ_REMAP */
  
+ static inline void set_irq_remapping_broken(void) { }
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 8fad71c..1955b09 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -42,6 +42,7 @@ struct irq_2_iommu {
+ struct intel_ir_data {
+ 	struct irq_2_iommu			irq_2_iommu;
+ 	struct irte				irte_entry;
++	struct irte				irte_pi_entry;
  	union {
-+		/* Shared between remapped and posted mode*/
- 		struct {
--			__u64	sid		: 16,
--				sq		: 2,
--				svt		: 2,
--				__reserved_3	: 44;
-+			__u64	sid		: 16,  /* 64 - 79  */
-+				sq		: 2,   /* 80 - 81  */
-+				svt		: 2,   /* 82 - 83  */
-+				__res3		: 44;  /* 84 - 127 */
-+		};
-+
-+		/* Posted mode*/
-+		struct {
-+			__u64	p_sid		: 16,  /* 64 - 79  */
-+				p_sq		: 2,   /* 80 - 81  */
-+				p_svt		: 2,   /* 82 - 83  */
-+				p_res3		: 12,  /* 84 - 95  */
-+				pda_h		: 32;  /* 96 - 127 */
- 		};
- 		__u64 high;
+ 		struct msi_msg			msi_entry;
  	};
+@@ -1013,10 +1014,55 @@ static void intel_ir_compose_msi_msg(struct irq_data *irq_data,
+ 	*msg = ir_data->msi_entry;
+ }
+ 
++static int intel_ir_set_vcpu_affinity(struct irq_data *data, void *vcpu_info)
++{
++	struct intel_ir_data *ir_data = data->chip_data;
++	struct irte *irte_pi = &ir_data->irte_pi_entry;
++	struct vcpu_data *vcpu_pi_info;
++
++	/* stop posting interrupts, back to remapping mode */
++	if (!vcpu_info) {
++		modify_irte(&ir_data->irq_2_iommu, &ir_data->irte_entry);
++	} else {
++		vcpu_pi_info = (struct vcpu_data *)vcpu_info;
++
++		/*
++		 * "ir_data->irte_entry" saves the remapped format of IRTE,
++		 * which being a cached irte is still updated when setting
++		 * the affinity even when we are in posted mode. So this make
++		 * it possible to switch back to remapped mode from posted mode,
++		 * we can just set "ir_data->irte_entry" to hardware for that
++		 * purpose. Here we store the posted format of IRTE in another
++		 * new member "ir_data->irte_pi_entry" to not corrupt
++		 * "ir_data->irte_entry".
++		 */
++		memcpy(irte_pi, &ir_data->irte_entry, sizeof(struct irte));
++
++		irte_pi->p_urgent = 0;
++		irte_pi->p_vector = vcpu_pi_info->vector;
++		irte_pi->pda_l = (vcpu_pi_info->pi_desc_addr >>
++				 (32 - PDA_LOW_BIT)) & ~(-1UL << PDA_LOW_BIT);
++		irte_pi->pda_h = (vcpu_pi_info->pi_desc_addr >> 32) &
++				 ~(-1UL << PDA_HIGH_BIT);
++
++		irte_pi->p_res0 = 0;
++		irte_pi->p_res1 = 0;
++		irte_pi->p_res2 = 0;
++		irte_pi->p_res3 = 0;
++
++		irte_pi->p_pst = 1;
++
++		modify_irte(&ir_data->irq_2_iommu, irte_pi);
++	}
++
++	return 0;
++}
++
+ static struct irq_chip intel_ir_chip = {
+ 	.irq_ack = ir_ack_apic_edge,
+ 	.irq_set_affinity = intel_ir_set_affinity,
+ 	.irq_compose_msi_msg = intel_ir_compose_msi_msg,
++	.irq_set_vcpu_affinity = intel_ir_set_vcpu_affinity,
  };
  
-+#define PDA_LOW_BIT    26
-+#define PDA_HIGH_BIT   32
-+
- enum {
- 	IRQ_REMAP_XAPIC_MODE,
- 	IRQ_REMAP_X2APIC_MODE,
+ static void intel_irq_remapping_prepare_irte(struct intel_ir_data *data,
 -- 
 2.1.0
