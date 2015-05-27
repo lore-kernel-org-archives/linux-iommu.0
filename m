@@ -1,185 +1,103 @@
-From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: Master-aware devices and sideband ID data
-Date: Wed, 27 May 2015 18:39:53 +0100
-Message-ID: <20150527173953.GC23176@leverpostej>
-References: <20150324155007.GC23005@leverpostej>
- <26BE36EF-2C5B-4DA6-8950-8FEBB031ED1B@caviumnetworks.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [RFC/PATCH 3/9] of: dma: Move range size workaround to
+ of_dma_get_range()
+Date: Wed, 27 May 2015 18:59:23 +0100
+Message-ID: <20150527175922.GE4232@arm.com>
+References: <1431644410-2997-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+ <1431644410-2997-4-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <26BE36EF-2C5B-4DA6-8950-8FEBB031ED1B-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Content-Language: en-US
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org" <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1431644410-2997-4-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Laura Abbott <lauraa@codeaurora.org>, Arnd Bergmann <arnd@arndb.de>, Mitchel Humpherys <mitchelh@codeaurora.org>, Joreg Roedel <joro@8bytes.org>, "grant.likely@linaro.org" <grant.likely@linaro.org>, Robin Murphy <Robin.Murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, May 26, 2015 at 11:20:59PM +0100, Chalamarla, Tirumalesh wrote:
-> This is some thing we also like to see in ITS and SMMU drivers. 
-> > On Mar 24, 2015, at 8:50 AM, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org> wrote:
-> > 
-> > Hi all,
-> > 
-> > For some devices, identification of particular masters is critical to
-> > their operation (e.g. IOMMUs, MSI controllers). The identity of masters
-> > is determined from sideband signals on the bus, and it may or may not be
-> > possible to probe and/or configure this information. Worse still, these
-> > information may be rewritten by intermediate buses, so the
-> > information for a given master may differ at different points in the bus
-> > hierarchy.
-> > 
-> > We currently describe this master information for devices attached to
-> > IOMMUs, with a master ID being encoded in the iommu-cells. However this
-> > only covers the ID between the master and its IOMMU(s), and we don't
-> > currently have a mechanism to describe the master IDs as they are seen
-> > by devices beyond the IOMMU(s), or in the absence of any IOMMU(s).
-> > 
-> > The following are example of master IDs:
-> > * PCIe Requester IDs (RIDs) (bus:device.function AKA BDF)
-> > * SMMU Stream IDs (SIDs)
-> > * GICv3 ITS Device IDs (DIDs)
-> > 
-> > In the case of a system with PCIe, SMMU and GICv3, the master IDs are
-> > rewritten in a chain of RID=>SID=>DID, as in the following diagram:
-> > 
-> > +-------------+
-> > | PCIe master |
-> > +-------------+
-> >    ||
-> >    || Requester ID (RID)
-> >    || Probeable from RC.
-> >    \/
-> > +-------------------+
-> > | PCIe Root Complex |
-> > +-------------------+
-> >    ||
-> >    || SMMU Stream ID (SID)
-> >    || Derived from RID, static non-probeable mapping.
-> >    \/
-> > +--------------+
-> > | SMMU (IOMMU) |
-> > +--------------+
-> >    ||
-> >    || ITS Device ID (DID)
-> >    || Derived from SID, static non-probeable mapping.
-> >    \/
-> > +----------------------------+
-> > | GICv3 ITS (MSI controller) |
-> > +----------------------------+
-> > 
-> > In simpler cases, you might have a simpler set of master ID
-> > translations, e.g. just a DID:
-> > 
-> > +-----------------+
-> > | Platform device |
-> > +-----------------+
-> >    ||
-> >    || ITS Device ID (DID)
-> >    || Hard-wired on the bus.
-> >    \/
-> > +----------------------------+
-> > | GICv3 ITS (MSI controller) |
-> > +----------------------------+
-> > 
-> > Ignoring current bindings for the moment, I can see how we can describe
-> > this with a generic master id-binding, with master-id-map along the
-> > lines of interrupt-map, with a tuple format like:
-> > <child-id-base child-id-length parent parent-id-base>
-> > 
-> > For the PCIe example, this would look something like the following (with
-> > properties omitted for brevity):
-> > 
-> > PCI: pci@af000000 {
-> > 	...
-> > 	
-> > 	/* Requester ID of PCIe endpoints, implicit at runtime */
-> > 	master-id-cells = <1>;
-> > 
-> > 	/* RIDS idmapped to SIDS @ SMMU */
-> > 	master-id-map = <0 0x10000 &SMMU 0>;
-> > }
-> > 
-> > SMMU: iommu@bf000000 {
-> > 	...
-> > 
-> > 	/* SID, derived from RID */
-> > 	master-id-cells = <1>;
-> > 
-> > 	/* 
-> > 	 * For some reason the high bit of the ID was negated.
-> > 	 */
-> > 	master-id-map = <0x0000 0x8000 &ITS 0x0 0x8000>,
-> > 	                <0x8000 0x8000 &ITS 0x0 0x0000>;
-> > 
-> > };
-> > 
-> > ITS: its@cf000000 {
-> > 	...
-> > 
-> > 	/* DID, derived from SID */
-> > 	master-id-cells = <2>;
-> > 
-> > 	/* 
-> > 	 * Master traffic not propagated beyond this point, so no
-> > 	 * master-id-ranges
-> > 	 */
-> > };
+On Fri, May 15, 2015 at 12:00:04AM +0100, Laurent Pinchart wrote:
+> Invalid dma-ranges values should be worked around when retrieving the
+> DMA range in of_dma_get_range(), not by all callers of the function.
+> This isn't much of a problem now that we have a single caller, but that
+> situation will change when moving DMA configuration to device probe
+> time.
 > 
-> I think it is nice to have max IDs supported by masters. so that drivers can check and enforce.  
+> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+> ---
+>  drivers/of/address.c | 20 ++++++++++++++++++--
+>  drivers/of/device.c  | 15 ---------------
+>  2 files changed, 18 insertions(+), 17 deletions(-)
 
-The set of IDs that we expect to transform (i.e. those masters use)
-would be implicit in the first master-id-map from a master. In the PCI
-example above, no master is expected to generate an ID outside of the
-range 0-0x10000 inclusive (and that's all the SMMU would see).
+Looks good to me:
 
-For devices which are not hotpluggable, the nodes for those devices
-would describe the specific set of IDs they use.
+  Acked-by: Will Deacon <will.deacon@arm.com>
 
-Generally, between a master and a slave there might not be one
-contiguous set of valid IDs as these may be rewritten along the way (as
-happens at the SMMU between the PCI root complex and the ITS in the
-example above).
+Will
 
-Which drivers do you think need this information? What exactly are they
-trying to check and enforce?
-
-> > For the simpler case, this would look something like:
-> > 
-> > DEV: device@af000000 {
-> > 	master-id-cells = <1>;
-> > 	master-ids = <0xf>, <0xb>;
-> > 	master-id-map = <0 0xf &ITS 0 0>;
-> > };
-> > 
-> > ITS: its@cf000000 {
-> > 	...
-> > 
-> > 	/* DID */
-> > 	master-id-cells = <2>;
-> > };
-> > 
-> Is this is not depending heavily on discover order, how do drivers
-> know which device to get which ID. is it implicitly assumed in
-> discovery order? 
-
-I'm not sure I follow the question. Could you elaborate?
-
-> what happens to hot pluggable devices.  
-
-It would be necessary to be able to discover the ID assigned to the
-device by the hotpluggable bus. For example, this could depend on which
-slot the device is plugged into.
-
-If you can't discover the ID associated with a hotpluggable device from
-the bus it is plugged into I can't see how hotplug could work.
-
->From that point on I would expect the ID transformations to be static as
-in the example.
-
-Thanks,
-Mark.
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/of/address.c b/drivers/of/address.c
+> index 78a7dcbec7d8..75eebd19ebfa 100644
+> --- a/drivers/of/address.c
+> +++ b/drivers/of/address.c
+> @@ -924,8 +924,8 @@ EXPORT_SYMBOL(of_io_request_and_map);
+>   *	CPU addr (phys_addr_t)	: pna cells
+>   *	size			: nsize cells
+>   *
+> - * It returns -ENODEV if "dma-ranges" property was not found
+> - * for this device in DT.
+> + * Return 0 on success, -ENODEV if the "dma-ranges" property was not found for
+> + * this device in DT, or -EINVAL if the CPU address or size is invalid.
+>   */
+>  int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *size)
+>  {
+> @@ -986,6 +986,22 @@ int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *siz
+>  	*dma_addr = dmaaddr;
+>  
+>  	*size = of_read_number(ranges + naddr + pna, nsize);
+> +	/*
+> +	 * DT nodes sometimes incorrectly set the size as a mask. Work around
+> +	 * those incorrect DT by computing the size as mask + 1.
+> +	 */
+> +	if (*size & 1) {
+> +		pr_warn("%s: size 0x%llx for dma-range in node(%s) set as mask\n",
+> +			__func__, *size, np->full_name);
+> +		*size = *size + 1;
+> +	}
+> +
+> +	if (!*size) {
+> +		pr_err("%s: invalid size zero for dma-range in node(%s)\n",
+> +		       __func__, np->full_name);
+> +		ret = -EINVAL;
+> +		goto out;
+> +	}
+>  
+>  	pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
+>  		 *dma_addr, *paddr, *size);
+> diff --git a/drivers/of/device.c b/drivers/of/device.c
+> index 20c1332a0018..530aa1ed3e1b 100644
+> --- a/drivers/of/device.c
+> +++ b/drivers/of/device.c
+> @@ -109,21 +109,6 @@ void of_dma_configure(struct device *dev, struct device_node *np)
+>  		size = dev->coherent_dma_mask + 1;
+>  	} else {
+>  		offset = PFN_DOWN(paddr - dma_addr);
+> -
+> -		/*
+> -		 * Add a work around to treat the size as mask + 1 in case
+> -		 * it is defined in DT as a mask.
+> -		 */
+> -		if (size & 1) {
+> -			dev_warn(dev, "Invalid size 0x%llx for dma-range\n",
+> -				 size);
+> -			size = size + 1;
+> -		}
+> -
+> -		if (!size) {
+> -			dev_err(dev, "Adjusted size 0x%llx invalid\n", size);
+> -			return;
+> -		}
+>  		dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
+>  	}
+>  
+> -- 
+> 2.3.6
+> 
