@@ -1,130 +1,78 @@
-From: Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH v2 2/6] dt-bindings: mediatek: Add smi dts binding
-Date: Wed, 27 May 2015 15:36:04 +0800
-Message-ID: <1432712164.721.135.camel@mhfsdcap03>
-References: <1431683009-18158-1-git-send-email-yong.wu@mediatek.com>
-	 <1431683009-18158-3-git-send-email-yong.wu@mediatek.com>
-	 <CAAFQd5D_-FrVNNPfMTwaWgDHfOPWVnRCvBCV2JS6Q2xPUiEScA@mail.gmail.com>
+From: leizhen <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 2/3] iommu/arm-smmu: Add initial driver support for ARM
+	SMMUv3 devices
+Date: Wed, 27 May 2015 17:12:44 +0800
+Message-ID: <55658A8C.4020903@huawei.com>
+References: <1431108046-9675-1-git-send-email-will.deacon@arm.com>
+	<1431108046-9675-3-git-send-email-will.deacon@arm.com>
+	<5551AE56.6050906@huawei.com> <20150512165500.GE2062@arm.com>
+	<55530C4F.5000605@huawei.com> <20150521112555.GH21920@arm.com>
+	<556283D5.4030901@huawei.com> <20150526161245.GR1565@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAAFQd5D_-FrVNNPfMTwaWgDHfOPWVnRCvBCV2JS6Q2xPUiEScA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tomasz Figa <tfiga@google.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, Lucas Stach <l.stach@pengutronix.de>, Mark Rutland <mark.rutland@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org, Sasha Hauer <kernel@pengutronix.de>, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, pebolle@tiscali.nl, arnd@arndb.de, mitchelh@codeaurora.org, k.zhang@mediatek.com, youhua.li@mediatek.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150526161245.GR1565-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Sanil kumar <sanil.kumar-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Gaojianbo <gaojianbo-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Dingtianhong <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Tomasz,
-	
-On Mon, 2015-05-25 at 15:48 +0900, Tomasz Figa wrote:
-> Hi,
+On 2015/5/27 0:12, Will Deacon wrote:
+> On Mon, May 25, 2015 at 03:07:17AM +0100, leizhen wrote:
+>> On 2015/5/21 19:25, Will Deacon wrote:
+>>> On Wed, May 13, 2015 at 09:33:19AM +0100, leizhen wrote:
+>>>> If SMMU_IDR1.SIDSIZE = 32 really exist(or too big), we need dynamic choose
+>>>> Lv2 table size(4K,16K,64K).  Because Lv1 table maybe too big, and can not
+>>>> be allocated by current API, a dts configuration should be added, like
+>>>> lv1-table-base = <0x0 0x0>, and we use ioremap_cache get VA(maybe ioremap,
+>>>> for non-coherent SMMU).
+>>>>
+>>>> Oh, I can do it after your patches upstreamed, because this problem maybe
+>>>> only I met.
+>>>
+>>> I'll have a think about this and see what I can come up with for version
+>>> 2 of the patch. I'd like to avoid adding additional properties to the DT
+>>> until they're actually needed, though.
+>>
+>> OK. Will you support non-pci devices in patch version 2?
 > 
-> Please see my comments inline.
+> I don't (yet) plan to support non-PCI devices, for two reasons:
 > 
-> On Fri, May 15, 2015 at 6:43 PM, Yong Wu <yong.wu@mediatek.com> wrote:
-> > This patch add smi binding document.
-> >
-> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > ---
-> >  .../bindings/soc/mediatek/mediatek,smi-larb.txt    | 24 ++++++++++++++++++++++
-> >  .../bindings/soc/mediatek/mediatek,smi.txt         | 22 ++++++++++++++++++++
-> >  2 files changed, 46 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mediatek,smi-larb.txt
-> >  create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mediatek,smi.txt
-> >
-> > diff --git a/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi-larb.txt b/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi-larb.txt
-> > new file mode 100644
-> > index 0000000..c06c5b6
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi-larb.txt
-> > @@ -0,0 +1,24 @@
-> > +SMI(Smart Multimedia Interface) Local Arbiter
-> > +
-> > +The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
-> > +
-> > +Required properties:
-> > +- compatible : must be "mediatek,mt8173-smi-larb"
-> > +- reg : the register and size of each local arbiter.
+>   (1) The support should be based on top of Laurent's RFC series here:
 > 
-> Shouldn't it be "of this local arbiter"?
+>   http://lists.infradead.org/pipermail/linux-arm-kernel/2015-May/343686.html
 > 
-> > +- smi : must be "&smi_common". Refer to bindings/soc/mediatek,smi.txt.
+>       which needs some review etc.
 > 
-> This is incorrect. Device tree source authors are free to use any
-> labels for their nodes and documentation should not rely on the fact
-> that there is some node with some particular label. This should be
-> something like:
+>   (2) My simulator only has PCI endpoints
 > 
-> - smi : a phandle to node of XYZ
-> 
-> with proper description of that node in place of XYZ.
-Thanks. how about this?
-smi : a phandle to the smi_common node 
-> 
-> > +- clocks : must contain one entry for each clock-names.
-> > +       There are 2 clockes:
-> > +       APB clock : Advanced Peripheral Bus clock, It's the clock for setting
-> > +               the register.
-> > +       SMI clock : It's the clock for transfer data and command.
-> 
-> The description of each clock should go to "clock-names" property.
-> Please use some of already existing bindings as an example.
-> 
-> > +- clock-name: must be "apb" and "smi".
-> 
-> typo: Should be "clock-names".
-> 
-> I'd recommend describing this property as below:
-> 
-> - clock-names: must contain 2 entries, as follows:
->   - "apb" : <here comes the description of APB clock>,
->   - "smi" : <here comes the description of SMI clock>.
-Thanks. I will follow this.
+> Of course, if you have something that you can test with, then I'm more
+> than happy to review patches adding this support providing that they're
+> based on the series above.
 
-> > +
-> > +Example:
-> > +       larb0:larb@14021000 {
-> > +               compatible = "mediatek,mt8173-smi-larb";
-> > +               reg = <0 0x14021000 0 0x1000>;
-> > +               smi = <&smi_common>;
-> > +               clocks = <&mmsys MM_SMI_LARB0>,
-> > +                        <&mmsys MM_SMI_LARB0>;
-> > +               clock-names = "apb", "smi";
-And another question,
-Could I add a item(port-count) in larb node. like:
-	          port-count = M4U_PORT_LARB0_NR;
-This item will only check the portid in client dsti is right or not?
-                   iommu = <&iommu larbid portid>
+OK. I'm so glad to do it.
 
-Then, the port-count is necessary to add? or we could assume all the
-input is correct.
+> 
+> On the table front, my current v2 patch uses 16k level-2 tables allocated
+> lazily (so each one has 256 entries and covers a single PCI bus). I've
+> also capped the SIDSIZE to 21 for the moment, which means we get a 64k
+> table there.
+> 
+> Sound reasonable for the time being?
 
-> > +       };
-> > diff --git a/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi.txt b/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi.txt
-> > new file mode 100644
-> > index 0000000..c2389b4
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,smi.txt
-> > @@ -0,0 +1,22 @@
-> > +SMI(Smart Multimedia Interface)
-> > +
-> > +The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
-> > +
-> > +Required properties:
-> > +- compatible : must be "mediatek,mt8173-smi"
-> > +- reg : the register and size of the smi.
+OK. My SIDSIZE is 25, I will also do this.
+
 > 
-> nit: s/smi/SMI block/
+> Will
 > 
-> > +- clocks : must contain one entry for each clock-names.
-> > +       There are 2 clockes:
-> > +       APB clock : Advanced Peripheral Bus clock, It's the clock for setting
-> > +               the register.
-> > +       SMI clock : It's the clock for transfer data and command.
-> > +- clock-name: must be "apb" and "smi".
+> .
 > 
-> See my comment for those properties in the first binding.
-> 
-> Best regards,
-> Tomasz
