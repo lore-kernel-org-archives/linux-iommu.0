@@ -1,74 +1,185 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC/PATCH 1/9] arm: dma-mapping: Don't override dma_ops in
-	arch_setup_dma_ops()
-Date: Wed, 27 May 2015 18:38:06 +0100
-Message-ID: <20150527173806.GD4232@arm.com>
-References: <1431644410-2997-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-	<1431644410-2997-2-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: Master-aware devices and sideband ID data
+Date: Wed, 27 May 2015 18:39:53 +0100
+Message-ID: <20150527173953.GC23176@leverpostej>
+References: <20150324155007.GC23005@leverpostej>
+ <26BE36EF-2C5B-4DA6-8950-8FEBB031ED1B@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1431644410-2997-2-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <26BE36EF-2C5B-4DA6-8950-8FEBB031ED1B-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Content-Language: en-US
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org" <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 15, 2015 at 12:00:02AM +0100, Laurent Pinchart wrote:
-> The arch_setup_dma_ops() function is in charge of setting dma_ops with a
-> call to set_dma_ops(). set_dma_ops() is also called from
+On Tue, May 26, 2015 at 11:20:59PM +0100, Chalamarla, Tirumalesh wrote:
+> This is some thing we also like to see in ITS and SMMU drivers. 
+> > On Mar 24, 2015, at 8:50 AM, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org> wrote:
+> > 
+> > Hi all,
+> > 
+> > For some devices, identification of particular masters is critical to
+> > their operation (e.g. IOMMUs, MSI controllers). The identity of masters
+> > is determined from sideband signals on the bus, and it may or may not be
+> > possible to probe and/or configure this information. Worse still, these
+> > information may be rewritten by intermediate buses, so the
+> > information for a given master may differ at different points in the bus
+> > hierarchy.
+> > 
+> > We currently describe this master information for devices attached to
+> > IOMMUs, with a master ID being encoded in the iommu-cells. However this
+> > only covers the ID between the master and its IOMMU(s), and we don't
+> > currently have a mechanism to describe the master IDs as they are seen
+> > by devices beyond the IOMMU(s), or in the absence of any IOMMU(s).
+> > 
+> > The following are example of master IDs:
+> > * PCIe Requester IDs (RIDs) (bus:device.function AKA BDF)
+> > * SMMU Stream IDs (SIDs)
+> > * GICv3 ITS Device IDs (DIDs)
+> > 
+> > In the case of a system with PCIe, SMMU and GICv3, the master IDs are
+> > rewritten in a chain of RID=>SID=>DID, as in the following diagram:
+> > 
+> > +-------------+
+> > | PCIe master |
+> > +-------------+
+> >    ||
+> >    || Requester ID (RID)
+> >    || Probeable from RC.
+> >    \/
+> > +-------------------+
+> > | PCIe Root Complex |
+> > +-------------------+
+> >    ||
+> >    || SMMU Stream ID (SID)
+> >    || Derived from RID, static non-probeable mapping.
+> >    \/
+> > +--------------+
+> > | SMMU (IOMMU) |
+> > +--------------+
+> >    ||
+> >    || ITS Device ID (DID)
+> >    || Derived from SID, static non-probeable mapping.
+> >    \/
+> > +----------------------------+
+> > | GICv3 ITS (MSI controller) |
+> > +----------------------------+
+> > 
+> > In simpler cases, you might have a simpler set of master ID
+> > translations, e.g. just a DID:
+> > 
+> > +-----------------+
+> > | Platform device |
+> > +-----------------+
+> >    ||
+> >    || ITS Device ID (DID)
+> >    || Hard-wired on the bus.
+> >    \/
+> > +----------------------------+
+> > | GICv3 ITS (MSI controller) |
+> > +----------------------------+
+> > 
+> > Ignoring current bindings for the moment, I can see how we can describe
+> > this with a generic master id-binding, with master-id-map along the
+> > lines of interrupt-map, with a tuple format like:
+> > <child-id-base child-id-length parent parent-id-base>
+> > 
+> > For the PCIe example, this would look something like the following (with
+> > properties omitted for brevity):
+> > 
+> > PCI: pci@af000000 {
+> > 	...
+> > 	
+> > 	/* Requester ID of PCIe endpoints, implicit at runtime */
+> > 	master-id-cells = <1>;
+> > 
+> > 	/* RIDS idmapped to SIDS @ SMMU */
+> > 	master-id-map = <0 0x10000 &SMMU 0>;
+> > }
+> > 
+> > SMMU: iommu@bf000000 {
+> > 	...
+> > 
+> > 	/* SID, derived from RID */
+> > 	master-id-cells = <1>;
+> > 
+> > 	/* 
+> > 	 * For some reason the high bit of the ID was negated.
+> > 	 */
+> > 	master-id-map = <0x0000 0x8000 &ITS 0x0 0x8000>,
+> > 	                <0x8000 0x8000 &ITS 0x0 0x0000>;
+> > 
+> > };
+> > 
+> > ITS: its@cf000000 {
+> > 	...
+> > 
+> > 	/* DID, derived from SID */
+> > 	master-id-cells = <2>;
+> > 
+> > 	/* 
+> > 	 * Master traffic not propagated beyond this point, so no
+> > 	 * master-id-ranges
+> > 	 */
+> > };
 > 
-> - highbank and mvebu bus notifiers
-> - dmabounce (to be replaced with swiotlb)
-> - arm_iommu_attach_device
-> 
-> (arm_iommu_attach_device is itself called from IOMMU and bus master
-> device drivers)
-> 
-> To allow the arch_setup_dma_ops() call to be moved from device add time
-> to device probe time we must ensure that dma_ops already setup by any of
-> the above callers will not be overriden.
-> 
-> Aftering replacing dmabounce with swiotlb, converting IOMMU drivers to
+> I think it is nice to have max IDs supported by masters. so that drivers can check and enforce.  
 
-s/Aftering/After/
+The set of IDs that we expect to transform (i.e. those masters use)
+would be implicit in the first master-id-map from a master. In the PCI
+example above, no master is expected to generate an ID outside of the
+range 0-0x10000 inclusive (and that's all the SMMU would see).
 
-> of_xlate and taking care of highbank and mvebu, the workaround should be
-> removed.
-> 
-> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-> ---
->  arch/arm/mm/dma-mapping.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> index 09c5fe3d30c2..7aa5e339a596 100644
-> --- a/arch/arm/mm/dma-mapping.c
-> +++ b/arch/arm/mm/dma-mapping.c
-> @@ -2117,6 +2117,15 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
->  	struct dma_map_ops *dma_ops;
->  
->  	dev->archdata.dma_coherent = coherent;
-> +
-> +	/*
-> +	 * Don't override the dma_ops if they have already been set. Ideally
-> +	 * this should be the only location where dma_ops are set, remove this
-> +	 * check when all other callers of set_dma_ops will have disappeared.
-> +	 */
-> +	if (dev->archdata.dma_ops)
-> +		return;
+For devices which are not hotpluggable, the nodes for those devices
+would describe the specific set of IDs they use.
 
-Maybe printing a warning at the same time will encourage people to migrate
-away from the existing behaviour?
+Generally, between a master and a slave there might not be one
+contiguous set of valid IDs as these may be rewritten along the way (as
+happens at the SMMU between the PCI root complex and the ITS in the
+example above).
 
-Will
+Which drivers do you think need this information? What exactly are they
+trying to check and enforce?
+
+> > For the simpler case, this would look something like:
+> > 
+> > DEV: device@af000000 {
+> > 	master-id-cells = <1>;
+> > 	master-ids = <0xf>, <0xb>;
+> > 	master-id-map = <0 0xf &ITS 0 0>;
+> > };
+> > 
+> > ITS: its@cf000000 {
+> > 	...
+> > 
+> > 	/* DID */
+> > 	master-id-cells = <2>;
+> > };
+> > 
+> Is this is not depending heavily on discover order, how do drivers
+> know which device to get which ID. is it implicitly assumed in
+> discovery order? 
+
+I'm not sure I follow the question. Could you elaborate?
+
+> what happens to hot pluggable devices.  
+
+It would be necessary to be able to discover the ID assigned to the
+device by the hotpluggable bus. For example, this could depend on which
+slot the device is plugged into.
+
+If you can't discover the ID associated with a hotpluggable device from
+the bus it is plugged into I can't see how hotplug could work.
+
+>From that point on I would expect the ID transformations to be static as
+in the example.
+
+Thanks,
+Mark.
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
