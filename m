@@ -1,78 +1,125 @@
-From: leizhen <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/3] iommu/arm-smmu: Add initial driver support for ARM
-	SMMUv3 devices
-Date: Wed, 27 May 2015 17:12:44 +0800
-Message-ID: <55658A8C.4020903@huawei.com>
-References: <1431108046-9675-1-git-send-email-will.deacon@arm.com>
-	<1431108046-9675-3-git-send-email-will.deacon@arm.com>
-	<5551AE56.6050906@huawei.com> <20150512165500.GE2062@arm.com>
-	<55530C4F.5000605@huawei.com> <20150521112555.GH21920@arm.com>
-	<556283D5.4030901@huawei.com> <20150526161245.GR1565@arm.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [RFC/PATCH 0/9] IOMMU probe deferral support
+Date: Wed, 27 May 2015 15:26:13 +0200
+Message-ID: <5565C5F5.1000000@samsung.com>
+References: <1431644410-2997-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150526161245.GR1565-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Sanil kumar <sanil.kumar-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Gaojianbo <gaojianbo-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Dingtianhong <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-reply-to: <1431644410-2997-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-kernel@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, Laura Abbott <lauraa@codeaurora.org>, Arnd Bergmann <arnd@arndb.de>, Mitchel Humpherys <mitchelh@codeaurora.org>, Joreg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Grant Likely <grant.likely@linaro.org>, Robin Murphy <robin.murphy@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2015/5/27 0:12, Will Deacon wrote:
-> On Mon, May 25, 2015 at 03:07:17AM +0100, leizhen wrote:
->> On 2015/5/21 19:25, Will Deacon wrote:
->>> On Wed, May 13, 2015 at 09:33:19AM +0100, leizhen wrote:
->>>> If SMMU_IDR1.SIDSIZE = 32 really exist(or too big), we need dynamic choose
->>>> Lv2 table size(4K,16K,64K).  Because Lv1 table maybe too big, and can not
->>>> be allocated by current API, a dts configuration should be added, like
->>>> lv1-table-base = <0x0 0x0>, and we use ioremap_cache get VA(maybe ioremap,
->>>> for non-coherent SMMU).
->>>>
->>>> Oh, I can do it after your patches upstreamed, because this problem maybe
->>>> only I met.
->>>
->>> I'll have a think about this and see what I can come up with for version
->>> 2 of the patch. I'd like to avoid adding additional properties to the DT
->>> until they're actually needed, though.
->>
->> OK. Will you support non-pci devices in patch version 2?
-> 
-> I don't (yet) plan to support non-PCI devices, for two reasons:
-> 
->   (1) The support should be based on top of Laurent's RFC series here:
-> 
->   http://lists.infradead.org/pipermail/linux-arm-kernel/2015-May/343686.html
-> 
->       which needs some review etc.
-> 
->   (2) My simulator only has PCI endpoints
-> 
-> Of course, if you have something that you can test with, then I'm more
-> than happy to review patches adding this support providing that they're
-> based on the series above.
+Hello,
 
-OK. I'm so glad to do it.
+On 2015-05-15 01:00, Laurent Pinchart wrote:
+> This patch series attempts to implement support for deferring probe of both
+> IOMMU drivers and bus master drivers.
+>
+> The relationship between bus masters and IOMMUs creates a strong ordering
+> during initialization of devices. As in the general case IOMMUs are hidden
+> behind the DMA mapping API, IOMMU support relies on the automatic setup of DMA
+> operations without any direct intervention of bus master drivers.
+>
+> DMA operations are set up when platform devices are added to the system. This
+> requires IOMMUs to be available at that time. On systems where ordering of
+> device add and probe can't be guaranteed (such as, but not limited to,
+> DT-based systems) this caused incorrect DMA operation setup. This has been
+> addressed by a patches series [1] that introduced a DT-based early
+> registration mechanism for IOMMUs.
+>
+> However, that mechanism fails to address all issues. Various dependencies
+> exist between IOMMU devices and other devices, in particular on clocks and on
+> power domains (as mentioned by Marek in [2]). While there are mechanisms to
+> handle some of them without probe deferral (for instance by using the
+> OF_DECLARE macros to register clock drivers), generalizing those mechanisms
+> would essentially recreate a probe ordering mechanism similar to link order
+> probe ordering and couldn't really scale.
+>
+> Additionally, IOMMUs could also be present hot-pluggable devices and depend on
+> resources that are thus hot-plugged. OF_DECLARE wouldn't help in that case.
+> For all those reasons probe deferral for IOMMUs has been considered as desired
+> if it can be implemented cleanly. For more in-depth information see [3].
+>
+> This RFC series is a first attempt at implementing IOMMU probe deferral
+> support cleanly.
+>
+> The core idea is to move setup of DMA operations from device add time to
+> device probe time, implemented in patch 6/9. It could be possible to move
+> setup of other DMA parameters (namely masks and offset) to probe time as well,
+> but that change would be more intrusive and has a higher risk of introducing
+> regressions. For that reason I've decided to keep DMA masks and offset setup
+> at device add time and thus split DMA configuration in masks and operations
+> (patch 5/9). This can be revisited if we decide that the DMA mapping API
+> shouldn't require masks and offset to be set before probe time.
+>
+> Patch 8/9 then defers probe of bus master drivers when required IOMMUs are not
+> available yet. This requires knowing when a failed IOMMU lookup should be
+> considered as permanent or temporary. I've reused the OF_DECLARE_IOMMU for
+> this purpose, considering that the presence of a driver compatible with the
+> IOMMU DT node indicates that the failure is temporary and probing of the bus
+> master device should be deferred.
+>
+> Note that only IOMMU drivers using the recent .of_xlate() mechanism for
+> DT-based IOMMU reference can cause probe deferral of bus master devices. The
+> .add_device() mechanism isn't supported in this case.
+>
+> As an example I've converted the ipmmu-vmsa driver to the new API in patch 9/9.
+>
+> At this point many enhancements are possible, but I'd like to receive feedback
+> on the proposed approach before basing more patches on this series. One
+> particular point I would like to address (or see being addressed) in the
+> future is the use of struct iommu_ops with of_iommu_get_ops() and
+> of_iommu_set_ops(). I believe we should introduct a struct iommu and register
+> IOMMU instances instead of IOMMU operations. That should bring us one step
+> closer to removing bus_set_iommu().
 
-> 
-> On the table front, my current v2 patch uses 16k level-2 tables allocated
-> lazily (so each one has 256 entries and covers a single PCI bus). I've
-> also capped the SIDSIZE to 21 for the moment, which means we get a 64k
-> table there.
-> 
-> Sound reasonable for the time being?
+I've checked this patchset with my recent updates to Exynos IOMMU driver. It
+works fine. Then I removed my exynos_iommu_of_setup() callback and 
+relied only
+on proper initialization from platform device probe() of all iommu 
+controllers.
+The driver also worked fine in such case.
 
-OK. My SIDSIZE is 25, I will also do this.
+The other change I had to make to get everything working was removal of some
+hackery in dma-mapping internal structures in Exynos DRM driver, but this is
+completely different story.
 
-> 
-> Will
-> 
-> .
-> 
+You can add the following tag for the of/iommu/dma-mapping patches:
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+
+> [1] http://www.spinics.net/lists/arm-kernel/msg382787.html
+> [2] http://lists.infradead.org/pipermail/linux-arm-kernel/2015-February/323238.html
+> [3] https://lkml.org/lkml/2015/2/16/345
+>
+> Laurent Pinchart (9):
+>    arm: dma-mapping: Don't override dma_ops in arch_setup_dma_ops()
+>    arm: dma-mapping: Support IOMMU mappings spanning the full 32 bits
+>      range
+>    of: dma: Move range size workaround to of_dma_get_range()
+>    of: dma: Make of_dma_deconfigure() public
+>    of: dma: Split of_configure_dma() into mask and ops configuration
+>    drivers: platform: Configure dma operations at probe time
+>    iommu: of: Document the of_iommu_configure() function
+>    iommu: of: Handle IOMMU lookup failure with deferred probing or error
+>    iommu/ipmmu-vmsa: Use DT-based instantiation
+>
+>   arch/arm/include/asm/dma-iommu.h |   2 +-
+>   arch/arm/mm/dma-mapping.c        |  21 +++--
+>   drivers/base/platform.c          |   9 ++
+>   drivers/iommu/ipmmu-vmsa.c       | 189 +++++++++++++--------------------------
+>   drivers/iommu/of_iommu.c         |  29 +++++-
+>   drivers/of/address.c             |  20 ++++-
+>   drivers/of/device.c              |  77 ++++++++++------
+>   drivers/of/of_pci.c              |   3 +-
+>   drivers/of/platform.c            |  16 ++--
+>   include/linux/of_device.h        |  14 ++-
+>   10 files changed, 195 insertions(+), 185 deletions(-)
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
