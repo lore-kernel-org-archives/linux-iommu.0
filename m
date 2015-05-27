@@ -1,8 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v8 7/9] iommu,
-	x86: Setup Posted-Interrupts capability for Intel iommu
-Date: Wed, 27 May 2015 12:05:42 +0800
-Message-ID: <1432699544-17444-8-git-send-email-feng.wu@intel.com>
+Subject: [v8 9/9] iommu, x86: Properly handler PI for IOMMU hotplug
+Date: Wed, 27 May 2015 12:05:44 +0800
+Message-ID: <1432699544-17444-10-git-send-email-feng.wu@intel.com>
 References: <1432699544-17444-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,111 +21,27 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@p
 Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Set Posted-Interrupts capability for Intel iommu when IR is enabled,
-clear it when IR is disabled.
+Return error when inserting a new IOMMU which doesn't support PI
+if PI is currently in use.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c | 30 ++++++++++++++++++++++++++++++
- drivers/iommu/irq_remapping.c       |  2 ++
- drivers/iommu/irq_remapping.h       |  3 +++
- 3 files changed, 35 insertions(+)
+ drivers/iommu/intel_irq_remapping.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index d230edc..c21a2a9 100644
+index c21a2a9..1f35d0b 100644
 --- a/drivers/iommu/intel_irq_remapping.c
 +++ b/drivers/iommu/intel_irq_remapping.c
-@@ -581,6 +581,26 @@ error:
- 	return -ENODEV;
- }
+@@ -1363,6 +1363,9 @@ int dmar_ir_hotplug(struct dmar_drhd_unit *dmaru, bool insert)
+ 		return -EINVAL;
+ 	if (!ecap_ir_support(iommu->ecap))
+ 		return 0;
++	if (irq_remapping_cap(IRQ_POSTING_CAP) &&
++	    !cap_pi_support(iommu->cap))
++		return -EBUSY;
  
-+/*
-+ * Set Posted-Interrupts capability.
-+ */
-+static inline void set_irq_posting_cap(void)
-+{
-+	struct dmar_drhd_unit *drhd;
-+	struct intel_iommu *iommu;
-+
-+	if (!disable_irq_post) {
-+		intel_irq_remap_ops.capability |= 1 << IRQ_POSTING_CAP;
-+
-+		for_each_iommu(iommu, drhd)
-+			if (!cap_pi_support(iommu->cap)) {
-+				intel_irq_remap_ops.capability &=
-+						~(1 << IRQ_POSTING_CAP);
-+				break;
-+			}
-+	}
-+}
-+
- static int __init intel_enable_irq_remapping(void)
- {
- 	struct dmar_drhd_unit *drhd;
-@@ -656,6 +676,8 @@ static int __init intel_enable_irq_remapping(void)
- 
- 	irq_remapping_enabled = 1;
- 
-+	set_irq_posting_cap();
-+
- 	pr_info("Enabled IRQ remapping in %s mode\n", eim ? "x2apic" : "xapic");
- 
- 	return eim ? IRQ_REMAP_X2APIC_MODE : IRQ_REMAP_XAPIC_MODE;
-@@ -856,6 +878,12 @@ static void disable_irq_remapping(void)
- 
- 		iommu_disable_irq_remapping(iommu);
- 	}
-+
-+	/*
-+	 * Clear Posted-Interrupts capability.
-+	 */
-+	if (!disable_irq_post)
-+		intel_irq_remap_ops.capability &= ~(1 << IRQ_POSTING_CAP);
- }
- 
- static int reenable_irq_remapping(int eim)
-@@ -883,6 +911,8 @@ static int reenable_irq_remapping(int eim)
- 	if (!setup)
- 		goto error;
- 
-+	set_irq_posting_cap();
-+
- 	return 0;
- 
- error:
-diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index fc78b0d..ed605a9 100644
---- a/drivers/iommu/irq_remapping.c
-+++ b/drivers/iommu/irq_remapping.c
-@@ -22,6 +22,8 @@ int irq_remap_broken;
- int disable_sourceid_checking;
- int no_x2apic_optout;
- 
-+int disable_irq_post = 1;
-+
- static int disable_irq_remap;
- static struct irq_remap_ops *remap_ops;
- 
-diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
-index b6ca30d..039c7af 100644
---- a/drivers/iommu/irq_remapping.h
-+++ b/drivers/iommu/irq_remapping.h
-@@ -34,6 +34,8 @@ extern int disable_sourceid_checking;
- extern int no_x2apic_optout;
- extern int irq_remapping_enabled;
- 
-+extern int disable_irq_post;
-+
- struct irq_remap_ops {
- 	/* The supported capabilities */
- 	int capability;
-@@ -69,6 +71,7 @@ extern void ir_ack_apic_edge(struct irq_data *data);
- 
- #define irq_remapping_enabled 0
- #define irq_remap_broken      0
-+#define disable_irq_post      1
- 
- #endif /* CONFIG_IRQ_REMAP */
- 
+ 	if (insert) {
+ 		if (!iommu->ir_table)
 -- 
 2.1.0
