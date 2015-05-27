@@ -1,13 +1,11 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v8 4/9] iommu, x86: Save the mode (posted or remapped) of an IRTE
-Date: Wed, 27 May 2015 12:05:39 +0800
-Message-ID: <1432699544-17444-5-git-send-email-feng.wu@intel.com>
-References: <1432699544-17444-1-git-send-email-feng.wu@intel.com>
+Subject: [v8 0/9] Add VT-d Posted-Interrupts support - IOMMU part
+Date: Wed, 27 May 2015 12:05:35 +0800
+Message-ID: <1432699544-17444-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1432699544-17444-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,55 +19,64 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@p
 Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds a new field in struct irq_2_iommu, which can
-capture whether the entry is in posted mode or remapped mode.
+VT-d Posted-Interrupts is an enhancement to CPU side Posted-Interrupt.
+With VT-d Posted-Interrupts enabled, external interrupts from
+direct-assigned devices can be delivered to guests without VMM
+intervention when guest is running in non-root mode.
 
-Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Suggested-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
----
- drivers/iommu/intel_irq_remapping.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+You can find the VT-d Posted-Interrtups Spec. in the following URL:
+http://www.intel.com/content/www/us/en/intelligent-systems/intel-technology/vt-directed-io-spec.html
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 1955b09..70a1b79 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -18,6 +18,11 @@
- 
- #include "irq_remapping.h"
- 
-+enum irq_mode {
-+	IRQ_REMAPPING,
-+	IRQ_POSTING,
-+};
-+
- struct ioapic_scope {
- 	struct intel_iommu *iommu;
- 	unsigned int id;
-@@ -37,6 +42,7 @@ struct irq_2_iommu {
- 	u16 irte_index;
- 	u16 sub_handle;
- 	u8  irte_mask;
-+	enum irq_mode mode;
- };
- 
- struct intel_ir_data {
-@@ -105,6 +111,7 @@ static int alloc_irte(struct intel_iommu *iommu, int irq,
- 		irq_iommu->irte_index =  index;
- 		irq_iommu->sub_handle = 0;
- 		irq_iommu->irte_mask = mask;
-+		irq_iommu->mode = IRQ_REMAPPING;
- 	}
- 	raw_spin_unlock_irqrestore(&irq_2_ir_lock, flags);
- 
-@@ -145,6 +152,8 @@ static int modify_irte(struct irq_2_iommu *irq_iommu,
- 	__iommu_flush_cache(iommu, irte, sizeof(*irte));
- 
- 	rc = qi_flush_iec(iommu, index, 0);
-+
-+	irq_iommu->mode = irte->pst ? IRQ_POSTING : IRQ_REMAPPING;
- 	raw_spin_unlock_irqrestore(&irq_2_ir_lock, flags);
- 
- 	return rc;
+This series was part of http://thread.gmane.org/gmane.linux.kernel.iommu/7708. To make things clear, send out IOMMU part here.
+
+This patch-set is based on the lastest x86/apic branch of tip tree.
+
+Divide the whole series which contain multiple components into three parts:
+- Prerequisite changes to irq subsystem (already merged in tip tree x86/apic branch)
+- IOMMU part (in this series)
+- KVM and VFIO parts (will send out this part once the first two parts are accepted)
+
+v7->v8:
+* Save the irq mode (posted or remapped) of an IRTE in struct irq_2_iommu.
+* Use this new mode to decide whether update the hardware when
+modifying irte in intel_ir_set_affinity().
+
+v6->v7:
+* Add an static inline helper function set_irq_posting_cap() to set
+the PI capability.
+* Add some comments for the new member "ir_data->irte_pi_entry".
+
+v5->v6:
+* Extend 'struct irte' for VT-d Posted-Interrupts, combine remapped
+and posted mode into one irte structure.
+
+v4->v5:
+* Abstract modify_irte() to accept two format of irte.
+
+v3->v4:
+* Change capability to a int variant flags instead of a function call.
+* Add hotplug case for VT-d PI.
+
+Feng Wu (8):
+  iommu: Add new member capability to struct irq_remap_ops
+  iommu, x86: Implement irq_set_vcpu_affinity for intel_ir_chip
+  iommu, x86: Save the mode (posted or remapped) of an IRTE
+  iommu, x86: No need to migrating irq for VT-d Posted-Interrupts
+  iommu, x86: Add cap_pi_support() to detect VT-d PI capability
+  iommu, x86: Setup Posted-Interrupts capability for Intel iommu
+  iommu, x86: define irq_remapping_cap()
+  iommu, x86: Properly handler PI for IOMMU hotplug
+
+Thomas Gleixner (1):
+  iommu: dmar: Extend struct irte for VT-d Posted-Interrupts
+
+ arch/x86/include/asm/irq_remapping.h | 11 +++++
+ drivers/iommu/intel_irq_remapping.c  | 93 +++++++++++++++++++++++++++++++++++-
+ drivers/iommu/irq_remapping.c        | 11 +++++
+ drivers/iommu/irq_remapping.h        |  6 +++
+ include/linux/dmar.h                 | 70 +++++++++++++++++++++------
+ include/linux/intel-iommu.h          |  1 +
+ 6 files changed, 176 insertions(+), 16 deletions(-)
+
 -- 
 2.1.0
