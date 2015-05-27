@@ -1,8 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v8 5/9] iommu,
-	x86: No need to migrating irq for VT-d Posted-Interrupts
-Date: Wed, 27 May 2015 12:05:40 +0800
-Message-ID: <1432699544-17444-6-git-send-email-feng.wu@intel.com>
+Subject: [v8 4/9] iommu, x86: Save the mode (posted or remapped) of an IRTE
+Date: Wed, 27 May 2015 12:05:39 +0800
+Message-ID: <1432699544-17444-5-git-send-email-feng.wu@intel.com>
 References: <1432699544-17444-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,37 +21,55 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@p
 Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-We don't need to migrate the irqs for VT-d Posted-Interrupts here.
-When 'pst' is set in IRTE, the associated irq will be posted to
-guests instead of interrupt remapping. The destination of the
-interrupt is set in Posted-Interrupts Descriptor, and the migration
-happens during vCPU scheduling.
-
-However, we still update the cached irte here, which can be used
-when changing back to remapping mode.
+This patch adds a new field in struct irq_2_iommu, which can
+capture whether the entry is in posted mode or remapped mode.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Acked-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Suggested-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/iommu/intel_irq_remapping.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
 diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 70a1b79..d230edc 100644
+index 1955b09..70a1b79 100644
 --- a/drivers/iommu/intel_irq_remapping.c
 +++ b/drivers/iommu/intel_irq_remapping.c
-@@ -1003,7 +1003,10 @@ intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
- 	 */
- 	irte->vector = cfg->vector;
- 	irte->dest_id = IRTE_DEST(cfg->dest_apicid);
--	modify_irte(&ir_data->irq_2_iommu, irte);
-+
-+	/* Update the hardware only if the interrupt is in remapped mode. */
-+	if (ir_data->irq_2_iommu.mode == IRQ_REMAPPING)
-+		modify_irte(&ir_data->irq_2_iommu, irte);
+@@ -18,6 +18,11 @@
  
- 	/*
- 	 * After this point, all the interrupts will start arriving
+ #include "irq_remapping.h"
+ 
++enum irq_mode {
++	IRQ_REMAPPING,
++	IRQ_POSTING,
++};
++
+ struct ioapic_scope {
+ 	struct intel_iommu *iommu;
+ 	unsigned int id;
+@@ -37,6 +42,7 @@ struct irq_2_iommu {
+ 	u16 irte_index;
+ 	u16 sub_handle;
+ 	u8  irte_mask;
++	enum irq_mode mode;
+ };
+ 
+ struct intel_ir_data {
+@@ -105,6 +111,7 @@ static int alloc_irte(struct intel_iommu *iommu, int irq,
+ 		irq_iommu->irte_index =  index;
+ 		irq_iommu->sub_handle = 0;
+ 		irq_iommu->irte_mask = mask;
++		irq_iommu->mode = IRQ_REMAPPING;
+ 	}
+ 	raw_spin_unlock_irqrestore(&irq_2_ir_lock, flags);
+ 
+@@ -145,6 +152,8 @@ static int modify_irte(struct irq_2_iommu *irq_iommu,
+ 	__iommu_flush_cache(iommu, irte, sizeof(*irte));
+ 
+ 	rc = qi_flush_iec(iommu, index, 0);
++
++	irq_iommu->mode = irte->pst ? IRQ_POSTING : IRQ_REMAPPING;
+ 	raw_spin_unlock_irqrestore(&irq_2_ir_lock, flags);
+ 
+ 	return rc;
 -- 
 2.1.0
