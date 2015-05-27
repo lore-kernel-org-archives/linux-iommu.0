@@ -1,7 +1,8 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v8 6/9] iommu, x86: Add cap_pi_support() to detect VT-d PI capability
-Date: Wed, 27 May 2015 12:05:41 +0800
-Message-ID: <1432699544-17444-7-git-send-email-feng.wu@intel.com>
+Subject: [v8 5/9] iommu,
+	x86: No need to migrating irq for VT-d Posted-Interrupts
+Date: Wed, 27 May 2015 12:05:40 +0800
+Message-ID: <1432699544-17444-6-git-send-email-feng.wu@intel.com>
 References: <1432699544-17444-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,26 +22,37 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@p
 Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add helper function to detect VT-d Posted-Interrupts capability.
+We don't need to migrate the irqs for VT-d Posted-Interrupts here.
+When 'pst' is set in IRTE, the associated irq will be posted to
+guests instead of interrupt remapping. The destination of the
+interrupt is set in Posted-Interrupts Descriptor, and the migration
+happens during vCPU scheduling.
+
+However, we still update the cached irte here, which can be used
+when changing back to remapping mode.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Acked-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- include/linux/intel-iommu.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/intel_irq_remapping.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 0af9b03..0c251be 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -87,6 +87,7 @@ static inline void dmar_writeq(void __iomem *addr, u64 val)
- /*
-  * Decoding Capability Register
-  */
-+#define cap_pi_support(c)	(((c) >> 59) & 1)
- #define cap_read_drain(c)	(((c) >> 55) & 1)
- #define cap_write_drain(c)	(((c) >> 54) & 1)
- #define cap_max_amask_val(c)	(((c) >> 48) & 0x3f)
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 70a1b79..d230edc 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -1003,7 +1003,10 @@ intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
+ 	 */
+ 	irte->vector = cfg->vector;
+ 	irte->dest_id = IRTE_DEST(cfg->dest_apicid);
+-	modify_irte(&ir_data->irq_2_iommu, irte);
++
++	/* Update the hardware only if the interrupt is in remapped mode. */
++	if (ir_data->irq_2_iommu.mode == IRQ_REMAPPING)
++		modify_irte(&ir_data->irq_2_iommu, irte);
+ 
+ 	/*
+ 	 * After this point, all the interrupts will start arriving
 -- 
 2.1.0
