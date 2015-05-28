@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 03/22] iommu: Propagate error in add_iommu_group
-Date: Thu, 28 May 2015 18:41:26 +0200
-Message-ID: <1432831305-11126-4-git-send-email-joro@8bytes.org>
+Subject: [PATCH 09/22] iommu: Add iommu_get_domain_for_dev function
+Date: Thu, 28 May 2015 18:41:32 +0200
+Message-ID: <1432831305-11126-10-git-send-email-joro@8bytes.org>
 References: <1432831305-11126-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,28 +23,67 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Make sure any errors reported from the IOMMU drivers get
-progapated back to the IOMMU core.
+This function can be used to request the current domain a
+device is attached to.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/iommu/iommu.c | 18 ++++++++++++++++++
+ include/linux/iommu.h |  6 ++++++
+ 2 files changed, 24 insertions(+)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 755e488..9c9336a 100644
+index 7bce522..a0a38bd 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -750,9 +750,7 @@ static int add_iommu_group(struct device *dev, void *data)
+@@ -1076,6 +1076,24 @@ out_unlock:
+ }
+ EXPORT_SYMBOL_GPL(iommu_detach_device);
  
- 	WARN_ON(dev->iommu_group);
- 
--	ops->add_device(dev);
--
--	return 0;
-+	return ops->add_device(dev);
++struct iommu_domain *iommu_get_domain_for_dev(struct device *dev)
++{
++	struct iommu_domain *domain;
++	struct iommu_group *group;
++
++	group = iommu_group_get(dev);
++	/* FIXME: Remove this when groups a mandatory for iommu drivers */
++	if (group == NULL)
++		return NULL;
++
++	domain = group->domain;
++
++	iommu_group_put(group);
++
++	return domain;
++}
++EXPORT_SYMBOL_GPL(iommu_get_domain_for_dev);
++
+ /*
+  * IOMMU groups are really the natrual working unit of the IOMMU, but
+  * the IOMMU API works on domains and devices.  Bridge that gap by
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 0546b87..683a1c4 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -193,6 +193,7 @@ extern int iommu_attach_device(struct iommu_domain *domain,
+ 			       struct device *dev);
+ extern void iommu_detach_device(struct iommu_domain *domain,
+ 				struct device *dev);
++extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
+ extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		     phys_addr_t paddr, size_t size, int prot);
+ extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+@@ -332,6 +333,11 @@ static inline void iommu_detach_device(struct iommu_domain *domain,
+ {
  }
  
- static int iommu_bus_notifier(struct notifier_block *nb,
++static inline struct iommu_domain *iommu_get_domain_for_dev(struct device *dev)
++{
++	return NULL;
++}
++
+ static inline int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 			    phys_addr_t paddr, int gfp_order, int prot)
+ {
 -- 
 1.9.1
