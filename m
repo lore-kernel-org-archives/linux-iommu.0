@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 13/22] iommu: Introduce iommu_request_dm_for_dev()
-Date: Thu, 28 May 2015 18:41:36 +0200
-Message-ID: <1432831305-11126-14-git-send-email-joro@8bytes.org>
+Subject: [PATCH 21/22] iommu/amd: Remove unused fields from struct
+	dma_ops_domain
+Date: Thu, 28 May 2015 18:41:44 +0200
+Message-ID: <1432831305-11126-22-git-send-email-joro@8bytes.org>
 References: <1432831305-11126-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,98 +24,52 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-This function can be called by an IOMMU driver to request
-that a device's default domain is direct mapped.
+The list_head and target_dev members are not used anymore.
+Remove them.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 52 +++++++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/iommu.h |  6 ++++++
- 2 files changed, 58 insertions(+)
+ drivers/iommu/amd_iommu.c       | 1 -
+ drivers/iommu/amd_iommu_types.h | 8 --------
+ 2 files changed, 9 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 224c6dd..cf6ea95 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1538,3 +1538,55 @@ void iommu_put_dm_regions(struct device *dev, struct list_head *list)
- 	if (ops && ops->put_dm_regions)
- 		ops->put_dm_regions(dev, list);
- }
-+
-+/* Request that a device is direct mapped by the IOMMU */
-+int iommu_request_dm_for_dev(struct device *dev)
-+{
-+	struct iommu_domain *dm_domain;
-+	struct iommu_group *group;
-+	int ret;
-+
-+	/* Device must already be in a group before calling this function */
-+	group = iommu_group_get_for_dev(dev);
-+	if (!group)
-+		return -EINVAL;
-+
-+	mutex_lock(&group->mutex);
-+
-+	/* Check if the default domain is already direct mapped */
-+	ret = 0;
-+	if (group->default_domain &&
-+	    group->default_domain->type == IOMMU_DOMAIN_IDENTITY)
-+		goto out;
-+
-+	/* Don't change mappings of existing devices */
-+	ret = -EBUSY;
-+	if (iommu_group_device_count(group) != 1)
-+		goto out;
-+
-+	/* Allocate a direct mapped domain */
-+	ret = -ENOMEM;
-+	dm_domain = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_IDENTITY);
-+	if (!dm_domain)
-+		goto out;
-+
-+	/* Attach the device to the domain */
-+	ret = __iommu_attach_group(dm_domain, group);
-+	if (ret) {
-+		iommu_domain_free(dm_domain);
-+		goto out;
-+	}
-+
-+	/* Make the direct mapped domain the default for this group */
-+	iommu_domain_free(group->default_domain);
-+	group->default_domain = dm_domain;
-+
-+	pr_info("Using direct mapping for device %s\n", dev_name(dev));
-+
-+	ret = 0;
-+out:
-+	mutex_unlock(&group->mutex);
-+	iommu_group_put(group);
-+
-+	return ret;
-+}
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index b944b2b..dc767f7 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -225,6 +225,7 @@ extern void iommu_set_fault_handler(struct iommu_domain *domain,
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 978741b..6e73fa1 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1886,7 +1886,6 @@ static struct dma_ops_domain *dma_ops_domain_alloc(void)
+ 		goto free_dma_dom;
  
- extern void iommu_get_dm_regions(struct device *dev, struct list_head *list);
- extern void iommu_put_dm_regions(struct device *dev, struct list_head *list);
-+extern int iommu_request_dm_for_dev(struct device *dev);
+ 	dma_dom->need_flush = false;
+-	dma_dom->target_dev = 0xffff;
  
- extern int iommu_attach_group(struct iommu_domain *domain,
- 			      struct iommu_group *group);
-@@ -411,6 +412,11 @@ static inline void iommu_put_dm_regions(struct device *dev,
- {
- }
+ 	add_domain_to_list(&dma_dom->domain);
  
-+static inline int iommu_request_dm_for_dev(struct device *dev)
-+{
-+	return -ENODEV;
-+}
-+
- static inline int iommu_attach_group(struct iommu_domain *domain,
- 				     struct iommu_group *group)
- {
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index fe796cf..bb56560 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -446,8 +446,6 @@ struct aperture_range {
+  * Data container for a dma_ops specific protection domain
+  */
+ struct dma_ops_domain {
+-	struct list_head list;
+-
+ 	/* generic protection domain information */
+ 	struct protection_domain domain;
+ 
+@@ -462,12 +460,6 @@ struct dma_ops_domain {
+ 
+ 	/* This will be set to true when TLB needs to be flushed */
+ 	bool need_flush;
+-
+-	/*
+-	 * if this is a preallocated domain, keep the device for which it was
+-	 * preallocated in this variable
+-	 */
+-	u16 target_dev;
+ };
+ 
+ /*
 -- 
 1.9.1
