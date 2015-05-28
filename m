@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 12/22] iommu: Add function to query the default domain of a
-	group
-Date: Thu, 28 May 2015 18:41:35 +0200
-Message-ID: <1432831305-11126-13-git-send-email-joro@8bytes.org>
+Subject: [PATCH 20/22] iommu/amd: Get rid of device_dma_ops_init()
+Date: Thu, 28 May 2015 18:41:43 +0200
+Message-ID: <1432831305-11126-21-git-send-email-joro@8bytes.org>
 References: <1432831305-11126-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,42 +23,81 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-This will be used to handle unity mappings in the iommu
-drivers.
+With device intialization done in the add_device call-back
+now there is no reason for this function anymore.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 5 +++++
- include/linux/iommu.h | 1 +
- 2 files changed, 6 insertions(+)
+ drivers/iommu/amd_iommu.c | 40 +---------------------------------------
+ 1 file changed, 1 insertion(+), 39 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index ffad1ea..224c6dd 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -837,6 +837,11 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
- 	return group;
- }
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 8682786..978741b 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2268,6 +2268,7 @@ static int amd_iommu_add_device(struct device *dev)
+ 	ret = iommu_init_device(dev);
+ 	if (ret == -ENOTSUPP) {
+ 		iommu_ignore_device(dev);
++		dev->archdata.dma_ops = &nommu_dma_ops;
+ 		goto out;
+ 	}
+ 	init_iommu_group(dev);
+@@ -2840,36 +2841,6 @@ static struct dma_map_ops amd_iommu_dma_ops = {
+ 	.dma_supported = amd_iommu_dma_supported,
+ };
  
-+struct iommu_domain *iommu_group_default_domain(struct iommu_group *group)
-+{
-+	return group->default_domain;
-+}
-+
- static int add_iommu_group(struct device *dev, void *data)
+-static unsigned device_dma_ops_init(void)
+-{
+-	struct iommu_dev_data *dev_data;
+-	struct pci_dev *pdev = NULL;
+-	unsigned unhandled = 0;
+-
+-	for_each_pci_dev(pdev) {
+-		if (!check_device(&pdev->dev)) {
+-
+-			iommu_ignore_device(&pdev->dev);
+-
+-			unhandled += 1;
+-			continue;
+-		}
+-
+-		dev_data = get_dev_data(&pdev->dev);
+-
+-		if (!dev_data->passthrough)
+-			pdev->dev.archdata.dma_ops = &amd_iommu_dma_ops;
+-		else
+-			pdev->dev.archdata.dma_ops = &nommu_dma_ops;
+-	}
+-
+-	return unhandled;
+-}
+-
+-/*
+- * The function which clues the AMD IOMMU driver into dma_ops.
+- */
+-
+ void __init amd_iommu_init_api(void)
  {
- 	struct iommu_callback_data *cb = data;
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 6894999..b944b2b 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -249,6 +249,7 @@ extern int iommu_group_unregister_notifier(struct iommu_group *group,
- 					   struct notifier_block *nb);
- extern int iommu_group_id(struct iommu_group *group);
- extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
-+extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
+ 	bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
+@@ -2877,18 +2848,9 @@ void __init amd_iommu_init_api(void)
  
- extern int iommu_domain_get_attr(struct iommu_domain *domain, enum iommu_attr,
- 				 void *data);
+ int __init amd_iommu_init_dma_ops(void)
+ {
+-	int unhandled;
+-
+ 	iommu_detected = 1;
+ 	swiotlb = 0;
+ 
+-	/* Make the driver finally visible to the drivers */
+-	unhandled = device_dma_ops_init();
+-	if (unhandled && max_pfn > MAX_DMA32_PFN) {
+-		/* There are unhandled devices - initialize swiotlb for them */
+-		swiotlb = 1;
+-	}
+-
+ 	amd_iommu_stats_init();
+ 
+ 	if (amd_iommu_unmap_flush)
 -- 
 1.9.1
