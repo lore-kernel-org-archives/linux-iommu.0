@@ -1,15 +1,15 @@
-From: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC/PATCH 3/9] of: dma: Move range size workaround to
-	of_dma_get_range()
-Date: Wed, 27 May 2015 21:37:33 -0500
-Message-ID: <CAL_JsqKdhrBX4VUvfEdkK8AeYpLq7332i3YG38P9ije_vOh0GQ@mail.gmail.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC/PATCH 4/9] of: dma: Make of_dma_deconfigure() public
+Date: Thu, 28 May 2015 13:42:22 +0100
+Message-ID: <20150528124222.GF31001@arm.com>
 References: <1431644410-2997-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-	<1431644410-2997-4-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+	<1431644410-2997-5-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1431644410-2997-4-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1431644410-2997-5-git-send-email-laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,99 +20,90 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Cc: Laura Abbott <lauraa-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, May 14, 2015 at 6:00 PM, Laurent Pinchart
-<laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org> wrote:
-> Invalid dma-ranges values should be worked around when retrieving the
-> DMA range in of_dma_get_range(), not by all callers of the function.
-> This isn't much of a problem now that we have a single caller, but that
-> situation will change when moving DMA configuration to device probe
-> time.
->
+(sorry for the mid-review delay, I got side-tracked yesterday evening)
+
+On Fri, May 15, 2015 at 12:00:05AM +0100, Laurent Pinchart wrote:
+> As part of moving DMA initializing to probe time the
+> of_dma_deconfigure() function will need to be called from different
+> source files. Make it public and move it to drivers/of/device.c where
+> the of_dma_configure() function is.
+> 
 > Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 > ---
->  drivers/of/address.c | 20 ++++++++++++++++++--
->  drivers/of/device.c  | 15 ---------------
+>  drivers/of/device.c       | 12 ++++++++++++
+>  drivers/of/platform.c     |  5 -----
+>  include/linux/of_device.h |  3 +++
+>  3 files changed, 15 insertions(+), 5 deletions(-)
 
-Please use get_maintainers.pl. Anyway, looks fine to me:
+Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cheers,
 
-Rob
+Will
 
->  2 files changed, 18 insertions(+), 17 deletions(-)
->
-> diff --git a/drivers/of/address.c b/drivers/of/address.c
-> index 78a7dcbec7d8..75eebd19ebfa 100644
-> --- a/drivers/of/address.c
-> +++ b/drivers/of/address.c
-> @@ -924,8 +924,8 @@ EXPORT_SYMBOL(of_io_request_and_map);
->   *     CPU addr (phys_addr_t)  : pna cells
->   *     size                    : nsize cells
->   *
-> - * It returns -ENODEV if "dma-ranges" property was not found
-> - * for this device in DT.
-> + * Return 0 on success, -ENODEV if the "dma-ranges" property was not found for
-> + * this device in DT, or -EINVAL if the CPU address or size is invalid.
->   */
->  int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *size)
->  {
-> @@ -986,6 +986,22 @@ int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *siz
->         *dma_addr = dmaaddr;
->
->         *size = of_read_number(ranges + naddr + pna, nsize);
-> +       /*
-> +        * DT nodes sometimes incorrectly set the size as a mask. Work around
-> +        * those incorrect DT by computing the size as mask + 1.
-> +        */
-> +       if (*size & 1) {
-> +               pr_warn("%s: size 0x%llx for dma-range in node(%s) set as mask\n",
-> +                       __func__, *size, np->full_name);
-> +               *size = *size + 1;
-> +       }
-> +
-> +       if (!*size) {
-> +               pr_err("%s: invalid size zero for dma-range in node(%s)\n",
-> +                      __func__, np->full_name);
-> +               ret = -EINVAL;
-> +               goto out;
-> +       }
->
->         pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
->                  *dma_addr, *paddr, *size);
 > diff --git a/drivers/of/device.c b/drivers/of/device.c
-> index 20c1332a0018..530aa1ed3e1b 100644
+> index 530aa1ed3e1b..f1b84f464fe1 100644
 > --- a/drivers/of/device.c
 > +++ b/drivers/of/device.c
-> @@ -109,21 +109,6 @@ void of_dma_configure(struct device *dev, struct device_node *np)
->                 size = dev->coherent_dma_mask + 1;
->         } else {
->                 offset = PFN_DOWN(paddr - dma_addr);
+> @@ -135,6 +135,18 @@ void of_dma_configure(struct device *dev, struct device_node *np)
+>  }
+>  EXPORT_SYMBOL_GPL(of_dma_configure);
+>  
+> +/**
+> + * of_dma_deconfigure - Clean up DMA configuration
+> + * @dev:	Device for which to clean up DMA configuration
+> + *
+> + * Clean up all configuration performed by of_dma_configure_ops() and free all
+> + * resources that have been allocated.
+> + */
+> +void of_dma_deconfigure(struct device *dev)
+> +{
+> +	arch_teardown_dma_ops(dev);
+> +}
+> +
+>  int of_device_register(struct platform_device *pdev)
+>  {
+>  	device_initialize(&pdev->dev);
+> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+> index a01f57c9e34e..7a660c79ff84 100644
+> --- a/drivers/of/platform.c
+> +++ b/drivers/of/platform.c
+> @@ -149,11 +149,6 @@ struct platform_device *of_device_alloc(struct device_node *np,
+>  }
+>  EXPORT_SYMBOL(of_device_alloc);
+>  
+> -static void of_dma_deconfigure(struct device *dev)
+> -{
+> -	arch_teardown_dma_ops(dev);
+> -}
 > -
-> -               /*
-> -                * Add a work around to treat the size as mask + 1 in case
-> -                * it is defined in DT as a mask.
-> -                */
-> -               if (size & 1) {
-> -                       dev_warn(dev, "Invalid size 0x%llx for dma-range\n",
-> -                                size);
-> -                       size = size + 1;
-> -               }
-> -
-> -               if (!size) {
-> -                       dev_err(dev, "Adjusted size 0x%llx invalid\n", size);
-> -                       return;
-> -               }
->                 dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
->         }
->
-> --
+>  /**
+>   * of_platform_device_create_pdata - Alloc, initialize and register an of_device
+>   * @np: pointer to node to create device for
+> diff --git a/include/linux/of_device.h b/include/linux/of_device.h
+> index 22801b10cef5..6710807b0653 100644
+> --- a/include/linux/of_device.h
+> +++ b/include/linux/of_device.h
+> @@ -54,6 +54,7 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
+>  }
+>  
+>  void of_dma_configure(struct device *dev, struct device_node *np);
+> +void of_dma_deconfigure(struct device *dev);
+>  #else /* CONFIG_OF */
+>  
+>  static inline int of_driver_match_device(struct device *dev,
+> @@ -93,6 +94,8 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
+>  }
+>  static inline void of_dma_configure(struct device *dev, struct device_node *np)
+>  {}
+> +static inline void of_dma_deconfigure(struct device *dev)
+> +{}
+>  #endif /* CONFIG_OF */
+>  
+>  #endif /* _LINUX_OF_DEVICE_H */
+> -- 
 > 2.3.6
->
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
