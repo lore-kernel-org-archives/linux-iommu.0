@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 05/22] iommu: Call remove_device call-back after driver release
-Date: Thu, 28 May 2015 18:41:28 +0200
-Message-ID: <1432831305-11126-6-git-send-email-joro@8bytes.org>
+Subject: [PATCH 03/22] iommu: Propagate error in add_iommu_group
+Date: Thu, 28 May 2015 18:41:26 +0200
+Message-ID: <1432831305-11126-4-git-send-email-joro@8bytes.org>
 References: <1432831305-11126-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,26 +23,28 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Do not remove the device from the IOMMU while the driver is
-still attached.
+Make sure any errors reported from the IOMMU drivers get
+progapated back to the IOMMU core.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/iommu.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index f0e0a23..d69e0ca 100644
+index 755e488..9c9336a 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -779,7 +779,7 @@ static int iommu_bus_notifier(struct notifier_block *nb,
- 	if (action == BUS_NOTIFY_ADD_DEVICE) {
- 		if (ops->add_device)
- 			return ops->add_device(dev);
--	} else if (action == BUS_NOTIFY_DEL_DEVICE) {
-+	} else if (action == BUS_NOTIFY_REMOVED_DEVICE) {
- 		if (ops->remove_device && dev->iommu_group) {
- 			ops->remove_device(dev);
- 			return 0;
+@@ -750,9 +750,7 @@ static int add_iommu_group(struct device *dev, void *data)
+ 
+ 	WARN_ON(dev->iommu_group);
+ 
+-	ops->add_device(dev);
+-
+-	return 0;
++	return ops->add_device(dev);
+ }
+ 
+ static int iommu_bus_notifier(struct notifier_block *nb,
 -- 
 1.9.1
