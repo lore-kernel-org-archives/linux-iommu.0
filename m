@@ -1,83 +1,112 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 22/22] iommu/amd: Propagate errors from amd_iommu_init_api
-Date: Thu, 28 May 2015 18:41:45 +0200
-Message-ID: <1432831305-11126-23-git-send-email-joro@8bytes.org>
-References: <1432831305-11126-1-git-send-email-joro@8bytes.org>
+From: Laura Abbott <labbott@redhat.com>
+Subject: Re: [RFC/PATCH 0/9] IOMMU probe deferral support
+Date: Thu, 28 May 2015 10:36:46 -0700
+Message-ID: <5567522E.3080003@redhat.com>
+References: <1431644410-2997-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1432831305-11126-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1431644410-2997-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-kernel@vger.kernel.org
+Cc: Arnd Bergmann <arnd@arndb.de>, Robin Murphy <robin.murphy@arm.com>, Joreg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Grant Likely <grant.likely@linaro.org>, Mitchel Humpherys <mitchelh@codeaurora.org>, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+On 05/14/2015 04:00 PM, Laurent Pinchart wrote:
+> Hello,
+>
+> This patch series attempts to implement support for deferring probe of both
+> IOMMU drivers and bus master drivers.
+>
+> The relationship between bus masters and IOMMUs creates a strong ordering
+> during initialization of devices. As in the general case IOMMUs are hidden
+> behind the DMA mapping API, IOMMU support relies on the automatic setup of DMA
+> operations without any direct intervention of bus master drivers.
+>
+> DMA operations are set up when platform devices are added to the system. This
+> requires IOMMUs to be available at that time. On systems where ordering of
+> device add and probe can't be guaranteed (such as, but not limited to,
+> DT-based systems) this caused incorrect DMA operation setup. This has been
+> addressed by a patches series [1] that introduced a DT-based early
+> registration mechanism for IOMMUs.
+>
+> However, that mechanism fails to address all issues. Various dependencies
+> exist between IOMMU devices and other devices, in particular on clocks and on
+> power domains (as mentioned by Marek in [2]). While there are mechanisms to
+> handle some of them without probe deferral (for instance by using the
+> OF_DECLARE macros to register clock drivers), generalizing those mechanisms
+> would essentially recreate a probe ordering mechanism similar to link order
+> probe ordering and couldn't really scale.
+>
+> Additionally, IOMMUs could also be present hot-pluggable devices and depend on
+> resources that are thus hot-plugged. OF_DECLARE wouldn't help in that case.
+> For all those reasons probe deferral for IOMMUs has been considered as desired
+> if it can be implemented cleanly. For more in-depth information see [3].
+>
+> This RFC series is a first attempt at implementing IOMMU probe deferral
+> support cleanly.
+>
+> The core idea is to move setup of DMA operations from device add time to
+> device probe time, implemented in patch 6/9. It could be possible to move
+> setup of other DMA parameters (namely masks and offset) to probe time as well,
+> but that change would be more intrusive and has a higher risk of introducing
+> regressions. For that reason I've decided to keep DMA masks and offset setup
+> at device add time and thus split DMA configuration in masks and operations
+> (patch 5/9). This can be revisited if we decide that the DMA mapping API
+> shouldn't require masks and offset to be set before probe time.
+>
+> Patch 8/9 then defers probe of bus master drivers when required IOMMUs are not
+> available yet. This requires knowing when a failed IOMMU lookup should be
+> considered as permanent or temporary. I've reused the OF_DECLARE_IOMMU for
+> this purpose, considering that the presence of a driver compatible with the
+> IOMMU DT node indicates that the failure is temporary and probing of the bus
+> master device should be deferred.
+>
+> Note that only IOMMU drivers using the recent .of_xlate() mechanism for
+> DT-based IOMMU reference can cause probe deferral of bus master devices. The
+> .add_device() mechanism isn't supported in this case.
+>
+> As an example I've converted the ipmmu-vmsa driver to the new API in patch 9/9.
+>
+> At this point many enhancements are possible, but I'd like to receive feedback
+> on the proposed approach before basing more patches on this series. One
+> particular point I would like to address (or see being addressed) in the
+> future is the use of struct iommu_ops with of_iommu_get_ops() and
+> of_iommu_set_ops(). I believe we should introduct a struct iommu and register
+> IOMMU instances instead of IOMMU operations. That should bring us one step
+> closer to removing bus_set_iommu().
+>
+> [1] http://www.spinics.net/lists/arm-kernel/msg382787.html
+> [2] http://lists.infradead.org/pipermail/linux-arm-kernel/2015-February/323238.html
+> [3] https://lkml.org/lkml/2015/2/16/345
+>
+> Laurent Pinchart (9):
+>    arm: dma-mapping: Don't override dma_ops in arch_setup_dma_ops()
+>    arm: dma-mapping: Support IOMMU mappings spanning the full 32 bits
+>      range
+>    of: dma: Move range size workaround to of_dma_get_range()
+>    of: dma: Make of_dma_deconfigure() public
+>    of: dma: Split of_configure_dma() into mask and ops configuration
+>    drivers: platform: Configure dma operations at probe time
+>    iommu: of: Document the of_iommu_configure() function
+>    iommu: of: Handle IOMMU lookup failure with deferred probing or error
+>    iommu/ipmmu-vmsa: Use DT-based instantiation
+>
+>   arch/arm/include/asm/dma-iommu.h |   2 +-
+>   arch/arm/mm/dma-mapping.c        |  21 +++--
+>   drivers/base/platform.c          |   9 ++
+>   drivers/iommu/ipmmu-vmsa.c       | 189 +++++++++++++--------------------------
+>   drivers/iommu/of_iommu.c         |  29 +++++-
+>   drivers/of/address.c             |  20 ++++-
+>   drivers/of/device.c              |  77 ++++++++++------
+>   drivers/of/of_pci.c              |   3 +-
+>   drivers/of/platform.c            |  16 ++--
+>   include/linux/of_device.h        |  14 ++-
+>   10 files changed, 195 insertions(+), 185 deletions(-)
+>
 
-This function can fail. Propagate any errors back to the
-initialization state machine.
+I no longer have hardware to test this on but the entire approach looks
+reasonable to me.
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/amd_iommu.c       | 4 ++--
- drivers/iommu/amd_iommu_init.c  | 5 +++--
- drivers/iommu/amd_iommu_proto.h | 2 +-
- 3 files changed, 6 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 6e73fa1..6659b51 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2840,9 +2840,9 @@ static struct dma_map_ops amd_iommu_dma_ops = {
- 	.dma_supported = amd_iommu_dma_supported,
- };
- 
--void __init amd_iommu_init_api(void)
-+int __init amd_iommu_init_api(void)
- {
--	bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
-+	return bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
- }
- 
- int __init amd_iommu_init_dma_ops(void)
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index e4a6e40..dbac49c 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1391,9 +1391,10 @@ static int __init amd_iommu_init_pci(void)
- 	for_each_iommu(iommu)
- 		iommu_flush_all_caches(iommu);
- 
--	amd_iommu_init_api();
-+	ret = amd_iommu_init_api();
- 
--	print_iommu_info();
-+	if (!ret)
-+		print_iommu_info();
- 
- 	return ret;
- }
-diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
-index 72b0fd4..9ed1c43 100644
---- a/drivers/iommu/amd_iommu_proto.h
-+++ b/drivers/iommu/amd_iommu_proto.h
-@@ -30,7 +30,7 @@ extern void amd_iommu_reset_cmd_buffer(struct amd_iommu *iommu);
- extern int amd_iommu_init_devices(void);
- extern void amd_iommu_uninit_devices(void);
- extern void amd_iommu_init_notifier(void);
--extern void amd_iommu_init_api(void);
-+extern int amd_iommu_init_api(void);
- 
- /* Needed for interrupt remapping */
- extern int amd_iommu_prepare(void);
--- 
-1.9.1
+Reviewed-by: Laura Abbott <labbott@redhat.com>
