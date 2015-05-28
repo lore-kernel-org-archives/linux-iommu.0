@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 01/22] iommu: Remove function name from pr_fmt()
-Date: Thu, 28 May 2015 18:41:24 +0200
-Message-ID: <1432831305-11126-2-git-send-email-joro@8bytes.org>
+Subject: [PATCH 02/22] iommu: Add a few printk messages to group handling code
+Date: Thu, 28 May 2015 18:41:25 +0200
+Message-ID: <1432831305-11126-3-git-send-email-joro@8bytes.org>
 References: <1432831305-11126-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,27 +23,55 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Including the function name is only useful for debugging
-messages. They don't belong into other messages from the
-iommu core.
+Write a message to the kernel log when a device is added or
+removed from a group and add debug messages to group
+allocation and release routines.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/iommu.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d4f527e..c31bfd0 100644
+index c31bfd0..755e488 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -16,7 +16,7 @@
-  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-  */
+@@ -128,6 +128,8 @@ static void iommu_group_release(struct kobject *kobj)
+ {
+ 	struct iommu_group *group = to_iommu_group(kobj);
  
--#define pr_fmt(fmt)    "%s: " fmt, __func__
-+#define pr_fmt(fmt)    "iommu: " fmt
++	pr_debug("Releasing group %d\n", group->id);
++
+ 	if (group->iommu_data_release)
+ 		group->iommu_data_release(group->iommu_data);
  
- #include <linux/device.h>
- #include <linux/kernel.h>
+@@ -207,6 +209,8 @@ again:
+ 	 */
+ 	kobject_put(&group->kobj);
+ 
++	pr_debug("Allocated group %d\n", group->id);
++
+ 	return group;
+ }
+ EXPORT_SYMBOL_GPL(iommu_group_alloc);
+@@ -372,6 +376,9 @@ rename:
+ 				     IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev);
+ 
+ 	trace_add_device_to_group(group->id, dev);
++
++	pr_info("Adding device %s to group %d\n", dev_name(dev), group->id);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(iommu_group_add_device);
+@@ -388,6 +395,8 @@ void iommu_group_remove_device(struct device *dev)
+ 	struct iommu_group *group = dev->iommu_group;
+ 	struct iommu_device *tmp_device, *device = NULL;
+ 
++	pr_info("Removing device %s from group %d\n", dev_name(dev), group->id);
++
+ 	/* Pre-notify listeners that a device is being removed. */
+ 	blocking_notifier_call_chain(&group->notifier,
+ 				     IOMMU_GROUP_NOTIFY_DEL_DEVICE, dev);
 -- 
 1.9.1
