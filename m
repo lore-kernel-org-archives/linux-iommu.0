@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 10/22] iommu: Introduce direct mapped region handling
-Date: Thu, 28 May 2015 18:41:33 +0200
-Message-ID: <1432831305-11126-11-git-send-email-joro@8bytes.org>
+Subject: [PATCH 14/22] iommu/amd: Implement dm_region call-backs
+Date: Thu, 28 May 2015 18:41:37 +0200
+Message-ID: <1432831305-11126-15-git-send-email-joro@8bytes.org>
 References: <1432831305-11126-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,104 +23,68 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Add two new functions to the IOMMU-API to allow the IOMMU
-drivers to export the requirements for direct mapped regions
-per device.
-This is useful for exporting the information in Intel VT-d's
-RMRR entries or AMD-Vi's unity mappings.
+Add the get_dm_regions and put_dm_regions callbacks to the
+iommu_ops of the AMD IOMMU driver.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 16 ++++++++++++++++
- include/linux/iommu.h | 31 +++++++++++++++++++++++++++++++
- 2 files changed, 47 insertions(+)
+ drivers/iommu/amd_iommu.c | 37 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index a0a38bd..6b8d6e7 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1469,3 +1469,19 @@ int iommu_domain_set_attr(struct iommu_domain *domain,
- 	return ret;
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index e43d489..9da3f0e 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3412,6 +3412,41 @@ static bool amd_iommu_capable(enum iommu_cap cap)
+ 	return false;
  }
- EXPORT_SYMBOL_GPL(iommu_domain_set_attr);
-+
-+void iommu_get_dm_regions(struct device *dev, struct list_head *list)
+ 
++static void amd_iommu_get_dm_regions(struct device *dev,
++				     struct list_head *head)
 +{
-+	const struct iommu_ops *ops = dev->bus->iommu_ops;
++	struct unity_map_entry *entry;
++	u16 devid;
 +
-+	if (ops && ops->get_dm_regions)
-+		ops->get_dm_regions(dev, list);
++	devid = get_device_id(dev);
++
++	list_for_each_entry(entry, &amd_iommu_unity_map, list) {
++		struct iommu_dm_region *region;
++
++		if (devid < entry->devid_start || devid > entry->devid_end)
++			continue;
++
++		region = kzalloc(sizeof(*region), GFP_KERNEL);
++		region->start = entry->address_start;
++		region->length = entry->address_end - entry->address_start;
++		if (entry->prot & IOMMU_PROT_IR)
++			region->prot |= IOMMU_READ;
++		if (entry->prot & IOMMU_PROT_IW)
++			region->prot |= IOMMU_WRITE;
++
++		list_add_tail(&region->list, head);
++	}
 +}
 +
-+void iommu_put_dm_regions(struct device *dev, struct list_head *list)
++static void amd_iommu_put_dm_regions(struct device *dev,
++				     struct list_head *head)
 +{
-+	const struct iommu_ops *ops = dev->bus->iommu_ops;
++	struct iommu_dm_region *entry, *next;
 +
-+	if (ops && ops->put_dm_regions)
-+		ops->put_dm_regions(dev, list);
++	list_for_each_entry_safe(entry, next, head, list)
++		kfree(entry);
 +}
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 683a1c4..6894999 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -114,6 +114,20 @@ enum iommu_attr {
- 	DOMAIN_ATTR_MAX,
++
+ static const struct iommu_ops amd_iommu_ops = {
+ 	.capable = amd_iommu_capable,
+ 	.domain_alloc = amd_iommu_domain_alloc,
+@@ -3422,6 +3457,8 @@ static const struct iommu_ops amd_iommu_ops = {
+ 	.unmap = amd_iommu_unmap,
+ 	.map_sg = default_iommu_map_sg,
+ 	.iova_to_phys = amd_iommu_iova_to_phys,
++	.get_dm_regions = amd_iommu_get_dm_regions,
++	.put_dm_regions = amd_iommu_put_dm_regions,
+ 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
  };
  
-+/**
-+ * struct iommu_dm_region - descriptor for a direct mapped memory region
-+ * @list: Linked list pointers
-+ * @start: System physical start address of the region
-+ * @length: Length of the region in bytes
-+ * @prot: IOMMU Protection flags (READ/WRITE/...)
-+ */
-+struct iommu_dm_region {
-+	struct list_head	list;
-+	phys_addr_t		start;
-+	size_t			length;
-+	int			prot;
-+};
-+
- #ifdef CONFIG_IOMMU_API
- 
- /**
-@@ -159,6 +173,10 @@ struct iommu_ops {
- 	int (*domain_set_attr)(struct iommu_domain *domain,
- 			       enum iommu_attr attr, void *data);
- 
-+	/* Request/Free a list of direct mapping requirements for a device */
-+	void (*get_dm_regions)(struct device *dev, struct list_head *list);
-+	void (*put_dm_regions)(struct device *dev, struct list_head *list);
-+
- 	/* Window handling functions */
- 	int (*domain_window_enable)(struct iommu_domain *domain, u32 wnd_nr,
- 				    phys_addr_t paddr, u64 size, int prot);
-@@ -205,6 +223,9 @@ extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t io
- extern void iommu_set_fault_handler(struct iommu_domain *domain,
- 			iommu_fault_handler_t handler, void *token);
- 
-+extern void iommu_get_dm_regions(struct device *dev, struct list_head *list);
-+extern void iommu_put_dm_regions(struct device *dev, struct list_head *list);
-+
- extern int iommu_attach_group(struct iommu_domain *domain,
- 			      struct iommu_group *group);
- extern void iommu_detach_group(struct iommu_domain *domain,
-@@ -379,6 +400,16 @@ static inline void iommu_set_fault_handler(struct iommu_domain *domain,
- {
- }
- 
-+static inline void iommu_get_dm_regions(struct device *dev,
-+					struct list_head *list)
-+{
-+}
-+
-+static inline void iommu_put_dm_regions(struct device *dev,
-+					struct list_head *list)
-+{
-+}
-+
- static inline int iommu_attach_group(struct iommu_domain *domain,
- 				     struct iommu_group *group)
- {
 -- 
 1.9.1
