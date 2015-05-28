@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 21/22] iommu/amd: Remove unused fields from struct
-	dma_ops_domain
-Date: Thu, 28 May 2015 18:41:44 +0200
-Message-ID: <1432831305-11126-22-git-send-email-joro@8bytes.org>
+Subject: [PATCH 19/22] iommu/amd: Put IOMMUv2 devices in a direct mapped domain
+Date: Thu, 28 May 2015 18:41:42 +0200
+Message-ID: <1432831305-11126-20-git-send-email-joro@8bytes.org>
 References: <1432831305-11126-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,52 +23,47 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-The list_head and target_dev members are not used anymore.
-Remove them.
+A device that might be used for HSA needs to be in a direct
+mapped domain so that all DMA-API mappings stay alive when
+the IOMMUv2 stack is used.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c       | 1 -
- drivers/iommu/amd_iommu_types.h | 8 --------
- 2 files changed, 9 deletions(-)
+ drivers/iommu/amd_iommu.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 978741b..6e73fa1 100644
+index 33bbb4d..8682786 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -1886,7 +1886,6 @@ static struct dma_ops_domain *dma_ops_domain_alloc(void)
- 		goto free_dma_dom;
+@@ -2253,6 +2253,8 @@ static void detach_device(struct device *dev)
  
- 	dma_dom->need_flush = false;
--	dma_dom->target_dev = 0xffff;
+ static int amd_iommu_add_device(struct device *dev)
+ {
++	struct iommu_dev_data *dev_data;
++	struct iommu_domain *domain;
+ 	struct amd_iommu *iommu;
+ 	u16 devid;
+ 	int ret;
+@@ -2270,7 +2272,18 @@ static int amd_iommu_add_device(struct device *dev)
+ 	}
+ 	init_iommu_group(dev);
  
- 	add_domain_to_list(&dma_dom->domain);
+-	dev->archdata.dma_ops = &amd_iommu_dma_ops;
++	dev_data = get_dev_data(dev);
++	if (dev_data && dev_data->iommu_v2)
++		iommu_request_dm_for_dev(dev);
++
++	/* Domains are initialized for this device - have a look what we ended up with */
++	domain = iommu_get_domain_for_dev(dev);
++	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
++		dev_data->passthrough = true;
++		dev->archdata.dma_ops = &nommu_dma_ops;
++	} else {
++		dev->archdata.dma_ops = &amd_iommu_dma_ops;
++	}
  
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index fe796cf..bb56560 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -446,8 +446,6 @@ struct aperture_range {
-  * Data container for a dma_ops specific protection domain
-  */
- struct dma_ops_domain {
--	struct list_head list;
--
- 	/* generic protection domain information */
- 	struct protection_domain domain;
- 
-@@ -462,12 +460,6 @@ struct dma_ops_domain {
- 
- 	/* This will be set to true when TLB needs to be flushed */
- 	bool need_flush;
--
--	/*
--	 * if this is a preallocated domain, keep the device for which it was
--	 * preallocated in this variable
--	 */
--	u16 target_dev;
- };
- 
- /*
+ out:
+ 	iommu_completion_wait(iommu);
 -- 
 1.9.1
