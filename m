@@ -1,12 +1,10 @@
 From: <wdavis@nvidia.com>
-Subject: [PATCH v3 2/7] DMA-API: Introduce dma_(un)map_resource
-Date: Fri, 29 May 2015 12:14:41 -0500
-Message-ID: <1432919686-32306-3-git-send-email-wdavis@nvidia.com>
-References: <1432919686-32306-1-git-send-email-wdavis@nvidia.com>
+Subject: [PATCH v3 0/7] IOMMU/DMA map_resource support for peer-to-peer
+Date: Fri, 29 May 2015 12:14:39 -0500
+Message-ID: <1432919686-32306-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1432919686-32306-1-git-send-email-wdavis@nvidia.com>
 Sender: linux-pci-owner@vger.kernel.org
 To: Joerg Roedel <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>
 Cc: Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>, Mark Hounschell <markh@compro.net>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jonathan Corbet <corbet@lwn.net>, "David S. Miller" <davem@davemloft.net>, Yijing Wang <wangyijing@huawei.com>, Alex Williamson <alex.williamson@redhat.com>, Dave Jiang <dave.jiang@intel.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Will Davis <wdavis@nvidia.com>
@@ -14,106 +12,53 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Will Davis <wdavis@nvidia.com>
 
-Add functions to DMA-map and -unmap a resource for a given device. This
-will allow devices to DMA-map a peer device's resource (for example,
-another device's BAR region on PCI) to enable peer-to-peer transactions.
+Hi,
 
-Signed-off-by: Will Davis <wdavis@nvidia.com>
----
- include/asm-generic/dma-mapping-broken.h |  9 +++++++++
- include/asm-generic/dma-mapping-common.h | 34 ++++++++++++++++++++++++++++++++
- include/linux/dma-mapping.h              |  7 +++++++
- 3 files changed, 50 insertions(+)
+This is the third version of a patchset to add the DMA APIs necessary to
+map and unmap a struct resource to and from a PCI device's IOVA domain.
+This allows a PCI device to access a peer device's BAR resource when a
+hardware IOMMU is enabled.
 
-diff --git a/include/asm-generic/dma-mapping-broken.h b/include/asm-generic/dma-mapping-broken.h
-index 6c32af9..d171f01 100644
---- a/include/asm-generic/dma-mapping-broken.h
-+++ b/include/asm-generic/dma-mapping-broken.h
-@@ -59,6 +59,15 @@ extern void
- dma_unmap_page(struct device *dev, dma_addr_t dma_address, size_t size,
- 	       enum dma_data_direction direction);
- 
-+extern dma_addr_t
-+dma_map_resource(struct device *dev, struct resource *res,
-+		 unsigned long offset, size_t size,
-+		 enum dma_data_direction direction);
-+
-+extern void
-+dma_unmap_resource(struct device *dev, dma_addr_t dma_address, size_t size,
-+		   enum dma_data_direction direction);
-+
- extern void
- dma_sync_single_for_cpu(struct device *dev, dma_addr_t dma_handle, size_t size,
- 			enum dma_data_direction direction);
-diff --git a/include/asm-generic/dma-mapping-common.h b/include/asm-generic/dma-mapping-common.h
-index 940d5ec..9e6c201 100644
---- a/include/asm-generic/dma-mapping-common.h
-+++ b/include/asm-generic/dma-mapping-common.h
-@@ -73,6 +73,36 @@ static inline void dma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg
- 		ops->unmap_sg(dev, sg, nents, dir, attrs);
- }
- 
-+static inline dma_addr_t dma_map_resource_attrs(struct device *dev,
-+						struct resource *res,
-+						size_t offset, size_t size,
-+						enum dma_data_direction dir,
-+						struct dma_attrs *attrs)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+	dma_addr_t addr;
-+
-+	BUG_ON(!valid_dma_direction(dir));
-+	BUG_ON(ops->map_resource == NULL);
-+	addr = ops->map_resource(dev, res, offset, size, dir, attrs);
-+	debug_dma_map_resource(dev, res, offset, size, dir, addr);
-+
-+	return addr;
-+}
-+
-+static inline void dma_unmap_resource_attrs(struct device *dev, dma_addr_t addr,
-+					    size_t size,
-+					    enum dma_data_direction dir,
-+					    struct dma_attrs *attrs)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	BUG_ON(!valid_dma_direction(dir));
-+	if (ops->unmap_resource)
-+		ops->unmap_resource(dev, addr, size, dir, attrs);
-+	debug_dma_unmap_resource(dev, addr, size, dir);
-+}
-+
- static inline dma_addr_t dma_map_page(struct device *dev, struct page *page,
- 				      size_t offset, size_t size,
- 				      enum dma_data_direction dir)
-@@ -180,6 +210,10 @@ dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
- #define dma_unmap_single(d, a, s, r) dma_unmap_single_attrs(d, a, s, r, NULL)
- #define dma_map_sg(d, s, n, r) dma_map_sg_attrs(d, s, n, r, NULL)
- #define dma_unmap_sg(d, s, n, r) dma_unmap_sg_attrs(d, s, n, r, NULL)
-+#define dma_map_resource(d, e, o, s, r) \
-+	dma_map_resource_attrs(d, e, o, s, r, NULL)
-+#define dma_unmap_resource(d, a, s, r) \
-+	dma_unmap_resource_attrs(d, a, s, r, NULL)
- 
- extern int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
- 			   void *cpu_addr, dma_addr_t dma_addr, size_t size);
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index ac07ff0..05b0b51 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -34,6 +34,13 @@ struct dma_map_ops {
- 	void (*unmap_page)(struct device *dev, dma_addr_t dma_handle,
- 			   size_t size, enum dma_data_direction dir,
- 			   struct dma_attrs *attrs);
-+	dma_addr_t (*map_resource)(struct device *dev, struct resource *res,
-+				   unsigned long offset, size_t size,
-+				   enum dma_data_direction dir,
-+				   struct dma_attrs *attrs);
-+	void (*unmap_resource)(struct device *dev, dma_addr_t dma_handle,
-+			       size_t size, enum dma_data_direction dir,
-+			       struct dma_attrs *attrs);
- 	/*
- 	 * map_sg returns 0 on error and a value > 0 on success.
- 	 * It should never return a value < 0.
+Thanks,
+Will
+
+Changelog:
+
+v3:
+- changed dma_map_resource() to BUG() if the map_resource DMA op is not
+  provided, instead of returning 0
+- updated documentation to remove requirement to check for 0 return value
+  as an error
+- remove const keyword from struct dma_map_ops in new DMA APIs for
+  consistency with other APIs
+
+v2: http://www.spinics.net/lists/linux-pci/msg41192.html
+- added documentation for the new DMA APIs
+- fixed physical-to-bus address conversion in the nommu implementation
+
+v1: http://www.spinics.net/lists/linux-pci/msg40747.html
+
+Will Davis (7):
+  dma-debug: add checking for map/unmap_resource
+  DMA-API: Introduce dma_(un)map_resource
+  dma-mapping: pci: add pci_(un)map_resource
+  DMA-API: Add dma_(un)map_resource() documentation
+  iommu/amd: Implement (un)map_resource
+  iommu/vt-d: implement (un)map_resource
+  x86: add pci-nommu implementation of map_resource
+
+ Documentation/DMA-API-HOWTO.txt          | 36 ++++++++++++++-
+ Documentation/DMA-API.txt                | 31 ++++++++++---
+ arch/x86/kernel/pci-nommu.c              | 32 ++++++++++++++
+ drivers/iommu/amd_iommu.c                | 76 ++++++++++++++++++++++++++------
+ drivers/iommu/intel-iommu.c              | 18 ++++++++
+ include/asm-generic/dma-mapping-broken.h |  9 ++++
+ include/asm-generic/dma-mapping-common.h | 34 ++++++++++++++
+ include/asm-generic/pci-dma-compat.h     | 14 ++++++
+ include/linux/dma-debug.h                | 20 +++++++++
+ include/linux/dma-mapping.h              |  7 +++
+ lib/dma-debug.c                          | 47 ++++++++++++++++++++
+ 11 files changed, 304 insertions(+), 20 deletions(-)
+
 -- 
 2.4.0
