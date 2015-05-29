@@ -1,7 +1,7 @@
 From: <wdavis@nvidia.com>
-Subject: [PATCH v3 3/7] dma-mapping: pci: add pci_(un)map_resource
-Date: Fri, 29 May 2015 12:14:42 -0500
-Message-ID: <1432919686-32306-4-git-send-email-wdavis@nvidia.com>
+Subject: [PATCH v3 6/7] iommu/vt-d: implement (un)map_resource
+Date: Fri, 29 May 2015 12:14:45 -0500
+Message-ID: <1432919686-32306-7-git-send-email-wdavis@nvidia.com>
 References: <1432919686-32306-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -14,39 +14,62 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Will Davis <wdavis@nvidia.com>
 
-Simply route these through to the new dma_(un)map_resource APIs.
+Implement 'map_resource' for the Intel IOMMU driver. Simply translate the
+resource to a physical address and route it to the same handlers used by
+the 'map_page' API.
+
+This allows a device to map another's resource, to enable peer-to-peer
+transactions.
 
 Signed-off-by: Will Davis <wdavis@nvidia.com>
 Reviewed-by: Terence Ripperda <tripperda@nvidia.com>
 Reviewed-by: John Hubbard <jhubbard@nvidia.com>
 ---
- include/asm-generic/pci-dma-compat.h | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/iommu/intel-iommu.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/include/asm-generic/pci-dma-compat.h b/include/asm-generic/pci-dma-compat.h
-index c110843..ac4a4ad 100644
---- a/include/asm-generic/pci-dma-compat.h
-+++ b/include/asm-generic/pci-dma-compat.h
-@@ -61,6 +61,20 @@ pci_unmap_page(struct pci_dev *hwdev, dma_addr_t dma_address,
- 	dma_unmap_page(hwdev == NULL ? NULL : &hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 68d43be..0f49eff 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3095,6 +3095,15 @@ static dma_addr_t intel_map_page(struct device *dev, struct page *page,
+ 				  dir, *dev->dma_mask);
  }
  
-+static inline dma_addr_t
-+pci_map_resource(struct pci_dev *hwdev, struct resource *resource,
-+		 unsigned long offset, size_t size, int direction)
++static dma_addr_t intel_map_resource(struct device *dev, struct resource *res,
++				     unsigned long offset, size_t size,
++				     enum dma_data_direction dir,
++				     struct dma_attrs *attrs)
 +{
-+	return dma_map_resource(hwdev == NULL ? NULL : &hwdev->dev, resource, offset, size, (enum dma_data_direction)direction);
++	return __intel_map_single(dev, res->start + offset, size,
++				  dir, *dev->dma_mask);
 +}
 +
-+static inline void
-+pci_unmap_resource(struct pci_dev *hwdev, dma_addr_t dma_address, size_t size,
-+		   int direction)
+ static void flush_unmaps(void)
+ {
+ 	int i, j;
+@@ -3226,6 +3235,13 @@ static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
+ 	intel_unmap(dev, dev_addr);
+ }
+ 
++static void intel_unmap_resource(struct device *dev, dma_addr_t dev_addr,
++				 size_t size, enum dma_data_direction dir,
++				 struct dma_attrs *attrs)
 +{
-+	dma_unmap_resource(hwdev == NULL ? NULL : &hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
++	intel_unmap(dev, dev_addr);
 +}
 +
- static inline int
- pci_map_sg(struct pci_dev *hwdev, struct scatterlist *sg,
- 	   int nents, int direction)
+ static void *intel_alloc_coherent(struct device *dev, size_t size,
+ 				  dma_addr_t *dma_handle, gfp_t flags,
+ 				  struct dma_attrs *attrs)
+@@ -3382,6 +3398,8 @@ struct dma_map_ops intel_dma_ops = {
+ 	.unmap_sg = intel_unmap_sg,
+ 	.map_page = intel_map_page,
+ 	.unmap_page = intel_unmap_page,
++	.map_resource = intel_map_resource,
++	.unmap_resource = intel_unmap_resource,
+ 	.mapping_error = intel_mapping_error,
+ };
+ 
 -- 
 2.4.0
