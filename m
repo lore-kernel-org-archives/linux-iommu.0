@@ -1,63 +1,42 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 2/3] iommu/arm-smmu: Add initial driver support for ARM
-	SMMUv3 devices
-Date: Fri, 29 May 2015 08:43:37 +0200
-Message-ID: <20150529064337.GN20611@8bytes.org>
-References: <1431108046-9675-1-git-send-email-will.deacon@arm.com>
-	<1431108046-9675-3-git-send-email-will.deacon@arm.com>
-	<20150519152435.GL20611@8bytes.org>
-	<20150520170926.GI11498@arm.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v2 2/7] DMA-API: Introduce dma_(un)map_resource
+Date: Fri, 29 May 2015 10:16:18 +0200
+Message-ID: <20150529081617.GA13130@8bytes.org>
+References: <1431973504-5903-1-git-send-email-wdavis@nvidia.com>
+ <1431973504-5903-3-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20150520170926.GI11498-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <1431973504-5903-3-git-send-email-wdavis@nvidia.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: wdavis@nvidia.com
+Cc: bhelgaas@google.com, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, tripperda@nvidia.com, jhubbard@nvidia.com, jglisse@redhat.com, konrad.wilk@oracle.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+On Mon, May 18, 2015 at 01:24:59PM -0500, wdavis@nvidia.com wrote:
+> +static inline dma_addr_t dma_map_resource_attrs(struct device *dev,
+> +						struct resource *res,
+> +						size_t offset, size_t size,
+> +						enum dma_data_direction dir,
+> +						struct dma_attrs *attrs)
+> +{
+> +	const struct dma_map_ops *ops = get_dma_ops(dev);
+> +	dma_addr_t addr = 0;
+> +
+> +	BUG_ON(!valid_dma_direction(dir));
+> +	if (ops->map_resource)
+> +		addr = ops->map_resource(dev, res, offset, size, dir,
+		> atops->map_resourcetrs);
+> +	debug_dma_map_resource(dev, res, offset, size, dir, addr);
+> +
+> +	return addr;
+> +}
 
-On Wed, May 20, 2015 at 06:09:26PM +0100, Will Deacon wrote:
-> On Tue, May 19, 2015 at 04:24:35PM +0100, Joerg Roedel wrote:
-> > > +	/* Page sizes */
-> > > +	if (reg & IDR5_GRAN64K)
-> > > +		pgsize_bitmap |= SZ_64K | SZ_512M;
-> > > +	if (reg & IDR5_GRAN16K)
-> > > +		pgsize_bitmap |= SZ_16K | SZ_32M;
-> > > +	if (reg & IDR5_GRAN4K)
-> > > +		pgsize_bitmap |= SZ_4K | SZ_2M | SZ_1G;
-> > > +
-> > > +	arm_smmu_ops.pgsize_bitmap &= pgsize_bitmap;
-> > 
-> > So this could effictivly lead to a zero pgsize_bitmap when there are
-> > SMMUs in the system with support for different page sizes, no?
-> 
-> Indeed, if there is no common page size then we end up not being able to
-> support any. I tried to resolve this by moving the bitmap out of the
-> iommu_ops and into the iommu_domain, but you weren't fond of that idea ;)
-
-Well, what you could do (and what I think the core should do at some
-point) is to build the resulting page-size bitmap by taking the biggest
-minimum page-size from all iommus and OR the page-size bigger than that
-together. For a system with 3 SMMUs supporting all of the above
-pgsize_bitmaps the resulting bitmap would look like this:
-
-	SZ_64K | SZ_32M | SZ_2M | SZ_512M | SZ_1G;
-
-With the biggest minimum page-size all of the bigger page-sizes can be
-emulated.  But that is not necessary for this patch-set, just a
-suggestion for future work.
+Please just do a BUG_ON(ops->map_resource == NULL) instead of checking the
+pointer and returning 0 if it is NULL. The 0 could be a valid dma_addr
+in some implementations, drivers are supposed to check the returned addr
+with dma_mapping_error only (and no '== 0' checks).
 
 
 	Joerg
