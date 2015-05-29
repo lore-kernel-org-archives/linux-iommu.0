@@ -1,213 +1,100 @@
-From: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla@caviumnetworks.com>
-Subject: Re: Master-aware devices and sideband ID data
-Date: Fri, 29 May 2015 17:46:07 +0000
-Message-ID: <E342D737-5DD5-48C7-BB01-B83C29CB6E31@caviumnetworks.com>
-References: <20150324155007.GC23005@leverpostej>
- <26BE36EF-2C5B-4DA6-8950-8FEBB031ED1B@caviumnetworks.com>
- <20150527173953.GC23176@leverpostej>
+From: kbuild test robot <fengguang.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [iommu:x86/vt-d 4/10] drivers/iommu/intel-iommu.c:4875:17: sparse:
+	incorrect type in argument 2 (different address spaces)
+Date: Sat, 30 May 2015 02:48:03 +0800
+Message-ID: <201505300200.zDmdNbJf%fengguang.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20150527173953.GC23176@leverpostej>
-Content-Language: en-US
-Content-ID: <A5EA07B24674914E93488525E7500B7B@namprd07.prod.outlook.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "arnd@arndb.de" <arnd@arndb.de>, "robh@kernel.org" <robh@kernel.org>, Marc Zyngier <Marc.Zyngier@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, Will Deacon <Will.Deacon@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla@caviumnetworks.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "laurent.pinchart@ideasonboard.com" <laurent.pinchart@ideasonboard.com>, "olof@lixom.net" <olof@lixom.net>, "Varun.Sethi@freescale.com" <Varun.Sethi@freescale.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "hdoyu@nvidia.com" <hdoyu@nvidia.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, kbuild-all-JC7UmRfGjtg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-> On May 27, 2015, at 10:39 AM, Mark Rutland <mark.rutland@arm.com> wrote:
-> 
-> On Tue, May 26, 2015 at 11:20:59PM +0100, Chalamarla, Tirumalesh wrote:
->> This is some thing we also like to see in ITS and SMMU drivers. 
->>> On Mar 24, 2015, at 8:50 AM, Mark Rutland <mark.rutland@arm.com> wrote:
->>> 
->>> Hi all,
->>> 
->>> For some devices, identification of particular masters is critical to
->>> their operation (e.g. IOMMUs, MSI controllers). The identity of masters
->>> is determined from sideband signals on the bus, and it may or may not be
->>> possible to probe and/or configure this information. Worse still, these
->>> information may be rewritten by intermediate buses, so the
->>> information for a given master may differ at different points in the bus
->>> hierarchy.
->>> 
->>> We currently describe this master information for devices attached to
->>> IOMMUs, with a master ID being encoded in the iommu-cells. However this
->>> only covers the ID between the master and its IOMMU(s), and we don't
->>> currently have a mechanism to describe the master IDs as they are seen
->>> by devices beyond the IOMMU(s), or in the absence of any IOMMU(s).
->>> 
->>> The following are example of master IDs:
->>> * PCIe Requester IDs (RIDs) (bus:device.function AKA BDF)
->>> * SMMU Stream IDs (SIDs)
->>> * GICv3 ITS Device IDs (DIDs)
->>> 
->>> In the case of a system with PCIe, SMMU and GICv3, the master IDs are
->>> rewritten in a chain of RID=>SID=>DID, as in the following diagram:
->>> 
->>> +-------------+
->>> | PCIe master |
->>> +-------------+
->>>   ||
->>>   || Requester ID (RID)
->>>   || Probeable from RC.
->>>   \/
->>> +-------------------+
->>> | PCIe Root Complex |
->>> +-------------------+
->>>   ||
->>>   || SMMU Stream ID (SID)
->>>   || Derived from RID, static non-probeable mapping.
->>>   \/
->>> +--------------+
->>> | SMMU (IOMMU) |
->>> +--------------+
->>>   ||
->>>   || ITS Device ID (DID)
->>>   || Derived from SID, static non-probeable mapping.
->>>   \/
->>> +----------------------------+
->>> | GICv3 ITS (MSI controller) |
->>> +----------------------------+
->>> 
->>> In simpler cases, you might have a simpler set of master ID
->>> translations, e.g. just a DID:
->>> 
->>> +-----------------+
->>> | Platform device |
->>> +-----------------+
->>>   ||
->>>   || ITS Device ID (DID)
->>>   || Hard-wired on the bus.
->>>   \/
->>> +----------------------------+
->>> | GICv3 ITS (MSI controller) |
->>> +----------------------------+
->>> 
->>> Ignoring current bindings for the moment, I can see how we can describe
->>> this with a generic master id-binding, with master-id-map along the
->>> lines of interrupt-map, with a tuple format like:
->>> <child-id-base child-id-length parent parent-id-base>
->>> 
->>> For the PCIe example, this would look something like the following (with
->>> properties omitted for brevity):
->>> 
->>> PCI: pci@af000000 {
->>> 	...
->>> 	
->>> 	/* Requester ID of PCIe endpoints, implicit at runtime */
->>> 	master-id-cells = <1>;
->>> 
->>> 	/* RIDS idmapped to SIDS @ SMMU */
->>> 	master-id-map = <0 0x10000 &SMMU 0>;
->>> }
->>> 
->>> SMMU: iommu@bf000000 {
->>> 	...
->>> 
->>> 	/* SID, derived from RID */
->>> 	master-id-cells = <1>;
->>> 
->>> 	/* 
->>> 	 * For some reason the high bit of the ID was negated.
->>> 	 */
->>> 	master-id-map = <0x0000 0x8000 &ITS 0x0 0x8000>,
->>> 	                <0x8000 0x8000 &ITS 0x0 0x0000>;
->>> 
->>> };
->>> 
->>> ITS: its@cf000000 {
->>> 	...
->>> 
->>> 	/* DID, derived from SID */
->>> 	master-id-cells = <2>;
->>> 
->>> 	/* 
->>> 	 * Master traffic not propagated beyond this point, so no
->>> 	 * master-id-ranges
->>> 	 */
->>> };
->> 
->> I think it is nice to have max IDs supported by masters. so that drivers can check and enforce.  
-> 
-> The set of IDs that we expect to transform (i.e. those masters use)
-> would be implicit in the first master-id-map from a master. In the PCI
-> example above, no master is expected to generate an ID outside of the
-> range 0-0x10000 inclusive (and that's all the SMMU would see).
-> 
-> For devices which are not hotpluggable, the nodes for those devices
-> would describe the specific set of IDs they use.
-> 
-> Generally, between a master and a slave there might not be one
-> contiguous set of valid IDs as these may be rewritten along the way (as
-> happens at the SMMU between the PCI root complex and the ITS in the
-> example above).
-> 
-> Which drivers do you think need this information? What exactly are they
-> trying to check and enforce?
-> 
-
-I think, i miss understood by the names, so it is not base it is some thing like
-
-x => f(x) => y           (and f(x) is bitwise | )
-
-ok now i see it. 
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git x86/vt-d
+head:   6c37b5ba0e4df96647677fac5d87d9fd561c3ef8
+commit: ebe05c7397dc63d99fb3ec69a37b4440952089bc [4/10] iommu/vt-d: Functions to copy data from old mem
+reproduce:
+  # apt-get install sparse
+  git checkout ebe05c7397dc63d99fb3ec69a37b4440952089bc
+  make ARCH=x86_64 allmodconfig
+  make C=1 CF=-D__CHECK_ENDIAN__
 
 
->>> For the simpler case, this would look something like:
->>> 
->>> DEV: device@af000000 {
->>> 	master-id-cells = <1>;
->>> 	master-ids = <0xf>, <0xb>;
->>> 	master-id-map = <0 0xf &ITS 0 0>;
->>> };
->>> 
->>> ITS: its@cf000000 {
->>> 	...
->>> 
->>> 	/* DID */
->>> 	master-id-cells = <2>;
->>> };
->>> 
->> Is this is not depending heavily on discover order, how do drivers
->> know which device to get which ID. is it implicitly assumed in
->> discovery order? 
-> 
-> I'm not sure I follow the question. Could you elaborate?
-> 
->> what happens to hot pluggable devices.  
-> 
-> It would be necessary to be able to discover the ID assigned to the
-> device by the hotpluggable bus. For example, this could depend on which
-> slot the device is plugged into.
-> 
-> If you can't discover the ID associated with a hotpluggable device from
-> the bus it is plugged into I can't see how hotplug could work.
-> 
-> From that point on I would expect the ID transformations to be static as
-> in the example.
-> 
+sparse warnings: (new ones prefixed by >>)
 
-what if i have an SMMU with two ITS masters and i want to decide which one to use based on runtime like which CPU i am serving.
+   drivers/iommu/intel-iommu.c:1158:13: sparse: symbol 'domain_unmap' was not declared. Should it be static?
+   drivers/iommu/intel-iommu.c:1184:6: sparse: symbol 'dma_free_pagelist' was not declared. Should it be static?
+>> drivers/iommu/intel-iommu.c:4875:17: sparse: incorrect type in argument 2 (different address spaces)
+   drivers/iommu/intel-iommu.c:4875:17:    expected void const *from
+   drivers/iommu/intel-iommu.c:4875:17:    got void [noderef] <asn:2>*[assigned] virt_mem
+>> drivers/iommu/intel-iommu.c:4912:17: sparse: incorrect type in argument 1 (different address spaces)
+   drivers/iommu/intel-iommu.c:4912:17:    expected void *to
+   drivers/iommu/intel-iommu.c:4912:17:    got void [noderef] <asn:2>*[assigned] virt_mem
+   drivers/iommu/intel-iommu.c:4829:30: warning: 'device_to_existing_context_entry' defined but not used [-Wunused-function]
+    static struct context_entry *device_to_existing_context_entry(
+                                 ^
 
-i am thinking in terms go NUMA based systems, where my pci device is on node 0, if the interrupt is targeted to CPU on node 1, i would like to use ITS1, otherwise 
-ITS0. 
+vim +4875 drivers/iommu/intel-iommu.c
 
-is it possible to specify some thing like that or do you think its is best to leave to ITS driver. 
+  4869	
+  4870			virt_mem = ioremap_cache((unsigned long)from, size);
+  4871			if (!virt_mem) {
+  4872				kfree(mapped);
+  4873				return -ENOMEM;
+  4874			}
+> 4875			memcpy(to, virt_mem, size);
+  4876	
+  4877			mutex_lock(&__iommu_mem_list_lock);
+  4878			mapped->mem = virt_mem;
+  4879			list_add_tail(&mapped->list, &__iommu_remapped_mem);
+  4880			mutex_unlock(&__iommu_mem_list_lock);
+  4881		}
+  4882		return size;
+  4883	}
+  4884	
+  4885	/*
+  4886	 * Copy memory from a virtually-addressed area into a physically-addressed area
+  4887	 */
+  4888	int __iommu_save_to_oldmem(unsigned long to, void *from, unsigned long size)
+  4889	{
+  4890		unsigned long pfn;		/* Page Frame Number */
+  4891		size_t csize = (size_t)size;	/* Num(bytes to copy) */
+  4892		unsigned long offset;		/* Lower 12 bits of to */
+  4893		void __iomem *virt_mem;
+  4894		struct iommu_remapped_entry *mapped;
+  4895	
+  4896		pfn = to >> VTD_PAGE_SHIFT;
+  4897		offset = to & (~VTD_PAGE_MASK);
+  4898	
+  4899		if (page_is_ram(pfn)) {
+  4900			memcpy(pfn_to_kaddr(pfn) + offset, from, csize);
+  4901		} else{
+  4902			mapped = kzalloc(sizeof(struct iommu_remapped_entry),
+  4903					GFP_KERNEL);
+  4904			if (!mapped)
+  4905				return -ENOMEM;
+  4906	
+  4907			virt_mem = ioremap_cache((unsigned long)to, size);
+  4908			if (!virt_mem) {
+  4909				kfree(mapped);
+  4910				return -ENOMEM;
+  4911			}
+> 4912			memcpy(virt_mem, from, size);
+  4913			mutex_lock(&__iommu_mem_list_lock);
+  4914			mapped->mem = virt_mem;
+  4915			list_add_tail(&mapped->list, &__iommu_remapped_mem);
 
-Thanks,
-Tirumalesh. 
-
-> Thanks,
-> Mark.
+---
+0-DAY kernel test infrastructure                Open Source Technology Center
+http://lists.01.org/mailman/listinfo/kbuild                 Intel Corporation
