@@ -1,36 +1,33 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/rockchip: silence attaching and detaching of devices
-Date: Fri, 29 May 2015 10:30:19 +0200
-Message-ID: <20150529083018.GC13130@8bytes.org>
-References: <1638542.l3M1oAbtAT@phil>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v7 03/25] iommu: Init iommu-groups support earlier, in
+ core_initcall
+Date: Fri, 29 May 2015 10:33:24 +0200
+Message-ID: <20150529083323.GD13130@8bytes.org>
+References: <1432041645-11172-1-git-send-email-m.szyprowski@samsung.com>
+ <1432041645-11172-4-git-send-email-m.szyprowski@samsung.com>
+ <2209337.hhg3lyvUbi@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1638542.l3M1oAbtAT@phil>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+In-Reply-To: <2209337.hhg3lyvUbi@avalon>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linaro-mm-sig@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Thierry Reding <treding@nvidia.com>, Olof Johansson <olof@lixom.net>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, David Wodhouse <dwmw2@infradead.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Kyungmin Park <kyungmin.park@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, May 21, 2015 at 09:57:29AM +0200, Heiko Stuebner wrote:
-> Currently the driver emits a log line every time a device attaches or
-> detaches - which happens at every unblank/blank of the drm for example.
-> The message itself also has no real value to the average user and is
-> merely useful when debugging a problem, so make it a dev_dbg instead.
+On Sat, May 23, 2015 at 07:23:34PM +0300, Laurent Pinchart wrote:
+> On Tuesday 19 May 2015 15:20:23 Marek Szyprowski wrote:
+> > -arch_initcall(iommu_init);
+> > +core_initcall(iommu_init);
 > 
-> Signed-off-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-> ---
->  drivers/iommu/rockchip-iommu.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> I'll let Joerg comment on this, but this initcall ordering dance always makes 
+> me feel that something isn't quite right. Have you had a chance to look at the 
+> patch series I posted about a week ago to implement IOMMU probe deferral 
+> support ?
 
-Applied, thanks.
+Yeah, this is hacky, but I can live with it until your probe deferal
+patch-set is merged.
+
+
+	Joerg
