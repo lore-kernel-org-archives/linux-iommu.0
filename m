@@ -1,13 +1,15 @@
-From: kbuild test robot <fengguang.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [iommu:x86/vt-d 7/10] drivers/iommu/intel-iommu.c:920:22: sparse:
-	incorrect type in assignment (different address spaces)
-Date: Sat, 30 May 2015 03:12:42 +0800
-Message-ID: <201505300339.JS0Vuh5k%fengguang.wu@intel.com>
+From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Subject: Re: [PATCH v11 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
+Date: Sat, 30 May 2015 11:23:36 +0000
+Message-ID: <3085F41B-FE6D-4E39-916A-F7B539B28BCB@hp.com>
+References: <1431337974-545-1-git-send-email-zhen-hual@hp.com>,
+	<20150529162151.GB20384@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
+In-Reply-To: <20150529162151.GB20384-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: zh-CN
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,73 +19,31 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Cc: Bill Sumner <billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, kbuild-all-JC7UmRfGjtg@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Vaden,
+	Tom (HP Server OS Architecture)" <tom.vaden-VXdhtT5mjnY@public.gmane.org>, "Wright,
+	Randy (HP Servers Linux)" <rwright-VXdhtT5mjnY@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Mitchell, Lisa (MCLinux in Fort Collins)" <lisa.mitchell-VXdhtT5mjnY@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Hatch, Douglas B (HPS Linux PM)" <doug.hatch-VXdhtT5mjnY@public.gmane.org>, "ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org" <ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Zhang, Li
+	(Zoe@HPservers-Core-OE-PSC)" <li.zhang6-VXdhtT5mjnY@public.gmane.org>, "dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git x86/vt-d
-head:   6c37b5ba0e4df96647677fac5d87d9fd561c3ef8
-commit: 60d69731b2742d12178b54844b852de0549bbd87 [7/10] iommu/vt-d: enable kdump support in iommu module
-reproduce:
-  # apt-get install sparse
-  git checkout 60d69731b2742d12178b54844b852de0549bbd87
-  make ARCH=x86_64 allmodconfig
-  make C=1 CF=-D__CHECK_ENDIAN__
-
-
-sparse warnings: (new ones prefixed by >>)
-
-   drivers/iommu/intel-iommu.c:5023:9: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/iommu/intel-iommu.c:5023:9:    expected void const *from
-   drivers/iommu/intel-iommu.c:5023:9:    got void [noderef] <asn:2>*root_entry_old_virt
-   drivers/iommu/intel-iommu.c:5057:9: sparse: incorrect type in argument 1 (different address spaces)
-   drivers/iommu/intel-iommu.c:5057:9:    expected void *to
-   drivers/iommu/intel-iommu.c:5057:9:    got void [noderef] <asn:2>*
-   drivers/iommu/intel-iommu.c:5059:39: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/iommu/intel-iommu.c:5059:39:    expected void *addr
-   drivers/iommu/intel-iommu.c:5059:39:    got void [noderef] <asn:2>*
->> drivers/iommu/intel-iommu.c:920:22: sparse: incorrect type in assignment (different address spaces)
-   drivers/iommu/intel-iommu.c:920:22:    expected struct root_entry *root
-   drivers/iommu/intel-iommu.c:920:22:    got void [noderef] <asn:2>*root_entry_old_virt
->> drivers/iommu/intel-iommu.c:933:25: sparse: incorrect type in argument 1 (different address spaces)
-   drivers/iommu/intel-iommu.c:933:25:    expected void volatile [noderef] <asn:2>*addr
-   drivers/iommu/intel-iommu.c:933:25:    got struct root_entry *root
-   drivers/iommu/intel-iommu.c:1192:13: sparse: symbol 'domain_unmap' was not declared. Should it be static?
-   drivers/iommu/intel-iommu.c:1218:6: sparse: symbol 'dma_free_pagelist' was not declared. Should it be static?
-   drivers/iommu/intel-iommu.c:4950:17: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/iommu/intel-iommu.c:4950:17:    expected void const *from
-   drivers/iommu/intel-iommu.c:4950:17:    got void [noderef] <asn:2>*[assigned] virt_mem
-   drivers/iommu/intel-iommu.c:4987:17: sparse: incorrect type in argument 1 (different address spaces)
-   drivers/iommu/intel-iommu.c:4987:17:    expected void *to
-   drivers/iommu/intel-iommu.c:4987:17:    got void [noderef] <asn:2>*[assigned] virt_mem
-   drivers/iommu/intel-iommu.c:5111:12: sparse: context imbalance in 'intel_iommu_load_translation_tables' - different lock contexts for basic block
-
-vim +920 drivers/iommu/intel-iommu.c
-
-   914				free_pgtable_page(context);
-   915	
-   916		}
-   917	
-   918		if (iommu->pre_enabled_trans) {
-   919			iommu->root_entry_old_phys = 0;
- > 920			root = iommu->root_entry_old_virt;
-   921			iommu->root_entry_old_virt = NULL;
-   922		}
-   923	
-   924		free_pgtable_page(iommu->root_entry);
-   925		iommu->root_entry = NULL;
-   926	
-   927		spin_unlock_irqrestore(&iommu->lock, flags);
-   928	
-   929		/* We put this out of spin_unlock is because iounmap() may
-   930		 * cause error if surrounded by spin_lock and unlock;
-   931		 */
-   932		if (iommu->pre_enabled_trans)
- > 933			iounmap(root);
-   934	}
-   935	
-   936	static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
-
----
-0-DAY kernel test infrastructure                Open Source Technology Center
-http://lists.01.org/mailman/listinfo/kbuild                 Intel Corporation
+DQpUaGFuayB5b3UgdmVyeSBtdWNoIGZvciB0aGlzLg0KDQp6aGVuaHVhDQoNCkZyb20gTXkgaVBo
+b25lDQoNCj4g1NogMjAxNcTqNdTCMzDI1aOsMDA6MjKjrEpvZXJnIFJvZWRlbCA8am9yb0A4Ynl0
+ZXMub3JnPiDQtLXAo7oNCj4gDQo+PiBPbiBNb24sIE1heSAxMSwgMjAxNSBhdCAwNTo1Mjo0NFBN
+ICswODAwLCBMaSwgWmhlbi1IdWEgd3JvdGU6DQo+PiBMaSwgWmhlbi1IdWEgKDEwKToNCj4+ICBp
+b21tdS92dC1kOiBOZXcgZnVuY3Rpb24gdG8gYXR0YWNoIGRvbWFpbiB3aXRoIGlkDQo+PiAgaW9t
+bXUvdnQtZDogSXRlbXMgcmVxdWlyZWQgZm9yIGtkdW1wDQo+PiAgaW9tbXUvdnQtZDogRnVuY3Rp
+b24gdG8gZ2V0IGV4aXN0aW5nIGNvbnRleHQgZW50cnkNCj4+ICBpb21tdS92dC1kOiBmdW5jdGlv
+bnMgdG8gY29weSBkYXRhIGZyb20gb2xkIG1lbQ0KPj4gIGlvbW11L3Z0LWQ6IEFkZCBmdW5jdGlv
+bnMgdG8gbG9hZCBhbmQgc2F2ZSBvbGQgcmUNCj4+ICBpb21tdS92dC1kOiBkYXRhdHlwZXMgYW5k
+IGZ1bmN0aW9ucyB1c2VkIGZvciBrZHVtcA0KPj4gIGlvbW11L3Z0LWQ6IGVuYWJsZSBrZHVtcCBz
+dXBwb3J0IGluIGlvbW11IG1vZHVsZQ0KPj4gIGlvbW11L3Z0LWQ6IGFzc2lnbiBuZXcgcGFnZSB0
+YWJsZSBmb3IgZG1hX21hcA0KPj4gIGlvbW11L3Z0LWQ6IENvcHkgZnVuY3Rpb25zIGZvciBpcnRl
+DQo+PiAgaW9tbXUvdnQtZDogVXNlIG9sZCBpcnRlIGluIGtkdW1wIGtlcm5lbA0KPj4gDQo+PiBk
+cml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMgICAgICAgICB8IDUzNiArKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrLS0NCj4+IGRyaXZlcnMvaW9tbXUvaW50ZWxfaXJxX3JlbWFwcGlu
+Zy5jIHwgIDk2ICsrKysrKy0NCj4+IGluY2x1ZGUvbGludXgvaW50ZWwtaW9tbXUuaCAgICAgICAg
+IHwgIDE2ICsrDQo+PiAzIGZpbGVzIGNoYW5nZWQsIDYyMyBpbnNlcnRpb25zKCspLCAyNSBkZWxl
+dGlvbnMoLSkNCj4gDQo+IEFwcGxpZWQgd2l0aCBhIGZldyBtaW5vciBjaGFuZ2VzLCB0aGFua3Mu
+DQo+IA0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9t
+bXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8v
+bGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
