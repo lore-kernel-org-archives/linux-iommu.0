@@ -1,58 +1,90 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 0/3] Exynos SYSMMU (IOMMU) updates for Exynos DRM
-Date: Mon, 01 Jun 2015 13:15:13 +0200
-Message-ID: <1433157316-6341-1-git-send-email-m.szyprowski@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Seung-Woo Kim <sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCH 1/3] drm/exynos: fimd: ensure proper hw state in
+ fimd_clear_channel()
+Date: Mon, 01 Jun 2015 13:15:14 +0200
+Message-ID: <1433157316-6341-2-git-send-email-m.szyprowski@samsung.com>
+References: <1433157316-6341-1-git-send-email-m.szyprowski@samsung.com>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <1433157316-6341-1-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Inki Dae <inki.dae@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+One should not do any assumptions on the stare of the fimd hardware
+during driver initialization, so to properly reset fimd before enabling
+IOMMU, one should ensure that all power domains and clocks are really
+enabled. This patch adds calls to power on/off in the
+fimd_clear_channel() function to ensure that any access to fimd
+registers will be performed with clocks and power domains enabled.
 
-Main changes for Exynos SYSMMU (IOMMU) driver has been finally scheduled
-for merging - see
-https://git.kernel.org/cgit/linux/kernel/git/joro/iommu.git/commit/?h=next
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Tested-by: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
+---
+ drivers/gpu/drm/exynos/exynos_drm_fimd.c | 26 +++++++++++++++++---------
+ 1 file changed, 17 insertions(+), 9 deletions(-)
 
-To let Exynos IOMMU driver work correctly, some fixes are also needed in
-Exynos DRM driver. To ease merge process I've decided to rebased Exynos
-DRM changes onto latest exynos-drm-next tree from:
-git://git.kernel.org/pub/scm/linux/kernel/git/daeinki/drm-exynos.git
-exynos-drm-next
-
-I've also added one more patch fixing issue, which can be observed when
-upcoming IOMMU probe deferal patches has been applied. To hide
-dma-mapping internals from Exynos DRM driver, a direct check for NULL
-has been replaced by more error-proof comparison of dma_get_ops()
-values.
-
-Inki: could you queue those patches to exynos-drm-next and get them
-merged to v4.2 to have it functional for the release?
-
-Best regards
-Marek Szyprowski
-Samsung R&D Institute Poland
-
-
-Marek Szyprowski (3):
-  drm/exynos: fimd: ensure proper hw state in fimd_clear_channel()
-  drm/exynos: iommu: detach from default dma-mapping domain on init
-  drm/exynos: iommu: improve a check for non-iommu dma_ops
-
- drivers/gpu/drm/exynos/exynos_drm_fimd.c  | 26 +++++++++++++++++---------
- drivers/gpu/drm/exynos/exynos_drm_iommu.c |  7 +++++--
- 2 files changed, 22 insertions(+), 11 deletions(-)
-
+diff --git a/drivers/gpu/drm/exynos/exynos_drm_fimd.c b/drivers/gpu/drm/exynos/exynos_drm_fimd.c
+index a0edab833148..d10ad3920e78 100644
+--- a/drivers/gpu/drm/exynos/exynos_drm_fimd.c
++++ b/drivers/gpu/drm/exynos/exynos_drm_fimd.c
+@@ -242,12 +242,21 @@ static void fimd_enable_shadow_channel_path(struct fimd_context *ctx,
+ 	writel(val, ctx->regs + SHADOWCON);
+ }
+ 
+-static void fimd_clear_channel(struct fimd_context *ctx)
++static int fimd_poweron(struct fimd_context *ctx);
++static int fimd_poweroff(struct fimd_context *ctx);
++
++static int fimd_clear_channel(struct fimd_context *ctx)
+ {
+ 	unsigned int win, ch_enabled = 0;
++	int ret;
+ 
+ 	DRM_DEBUG_KMS("%s\n", __FILE__);
+ 
++	/* Hardware is in unknown state, so ensure it get enabled properly */
++	ret = fimd_poweron(ctx);
++	if (ret)
++		return ret;
++
+ 	/* Check if any channel is enabled. */
+ 	for (win = 0; win < WINDOWS_NR; win++) {
+ 		u32 val = readl(ctx->regs + WINCON(win));
+@@ -258,19 +267,15 @@ static void fimd_clear_channel(struct fimd_context *ctx)
+ 			if (ctx->driver_data->has_shadowcon)
+ 				fimd_enable_shadow_channel_path(ctx, win,
+ 								false);
+-
+ 			ch_enabled = 1;
+ 		}
+ 	}
+ 
+ 	/* Wait for vsync, as disable channel takes effect at next vsync */
+-	if (ch_enabled) {
+-		unsigned int state = ctx->suspended;
+-
+-		ctx->suspended = 0;
++	if (ch_enabled)
+ 		fimd_wait_for_vblank(ctx->crtc);
+-		ctx->suspended = state;
+-	}
++
++	return fimd_poweroff(ctx);
+ }
+ 
+ static int fimd_iommu_attach_devices(struct fimd_context *ctx,
+@@ -285,7 +290,10 @@ static int fimd_iommu_attach_devices(struct fimd_context *ctx,
+ 		 * If any channel is already active, iommu will throw
+ 		 * a PAGE FAULT when enabled. So clear any channel if enabled.
+ 		 */
+-		fimd_clear_channel(ctx);
++		ret = fimd_clear_channel(ctx);
++		if (ret)
++			return ret;
++
+ 		ret = drm_iommu_attach_device(ctx->drm_dev, ctx->dev);
+ 		if (ret) {
+ 			DRM_ERROR("drm_iommu_attach failed.\n");
 -- 
 1.9.2
