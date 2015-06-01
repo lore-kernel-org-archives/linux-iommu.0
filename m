@@ -1,14 +1,20 @@
-From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [v8 0/9] Add VT-d Posted-Interrupts support - IOMMU part
-Date: Mon, 1 Jun 2015 02:18:05 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F0025662B8@SHSMSX104.ccr.corp.intel.com>
-References: <1432699544-17444-1-git-send-email-feng.wu@intel.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 2/3] iommu/arm-smmu: Add initial driver support for ARM
+	SMMUv3 devices
+Date: Mon, 1 Jun 2015 10:40:14 +0100
+Message-ID: <20150601094014.GC1641@arm.com>
+References: <1431108046-9675-1-git-send-email-will.deacon@arm.com>
+	<1431108046-9675-3-git-send-email-will.deacon@arm.com>
+	<20150519152435.GL20611@8bytes.org>
+	<20150520170926.GI11498@arm.com>
+	<20150529064337.GN20611@8bytes.org> <55684F1C.3050702@arm.com>
+	<20150529144043.GA20384@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1432699544-17444-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20150529144043.GA20384-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,89 +24,66 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Joerg,
 
-Any comments about this new version? Thanks a lot!
+On Fri, May 29, 2015 at 03:40:43PM +0100, Joerg Roedel wrote:
+> On Fri, May 29, 2015 at 12:35:56PM +0100, Robin Murphy wrote:
+> > The trouble with this is, what about the CPU page size? Say you have
+> > some multimedia subsystem with its own integrated SMMU and for that
+> > they've only implemented the 16K granule scheme because it works
+> > best for the video hardware (and the GPU driver is making direct
+> > IOMMU API calls to remap carved-out RAM rather than using
+> > DMA-mapping). Now, the SMMU on the compute side of the SoC serving
+> > the general peripherals will be rendered useless by bumping the
+> > system-wide minimum page size up to 16K, because it then can't map
+> > that scatterlist of discontiguous 4K pages that the USB controller
+> > needs...
+> > 
+> > I think this really represents another push to get away from (or at
+> > least around) the page-at-a-time paradigm - if the IOMMU API itself
+> > wasn't too fussed about page sizes and could let drivers handle the
+> > full map/unmap requests however they see fit, I think we could
+> > bypass a lot of these issues. We've already got the Intel IOMMU
+> > driver doing horrible hacks with the pgsize_bitmap to cheat the
+> > system, I'm sure we don't want to add any more of that. How about
+> > something like the below diff as a first step?
+> 
+> Moving functionality out of the iommu core code into the drivers is the
+> wrong direction imo. It is better to solve it with something like
+> 
+> 	struct iommu_domain *iommu_domain_alloc_for_group(struct iommu_group *group);
+> 
+> Which gets us a domain that can only be assigned to that particular
+> group. Since there is a clear one-to-many relationship between a
+> hardware iommu and the groups of devices behind it, we could propagate
+> the pgsize_bitmap from the iommu to the group and then to the domain.
+> 
+> Domains allocated via iommu_domain_alloc() would get the merged
+> pgsize_bitmap like I described in my previous mail.
+> 
+> But to make this happen we need a representation of single hardware
+> iommu instances in the iommu core first.
 
-Thanks,
-Feng
+I like this proposal. The only remaining part is that the pgsize bitmap
+inherited by the domain can only truly be finalised once the page table
+is allocated, which in turn can only happen once we've identified the
+IOMMU instance.
 
-> -----Original Message-----
-> From: Wu, Feng
-> Sent: Wednesday, May 27, 2015 12:06 PM
-> To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-> Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org;
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wu, Feng
-> Subject: [v8 0/9] Add VT-d Posted-Interrupts support - IOMMU part
-> 
-> VT-d Posted-Interrupts is an enhancement to CPU side Posted-Interrupt.
-> With VT-d Posted-Interrupts enabled, external interrupts from
-> direct-assigned devices can be delivered to guests without VMM
-> intervention when guest is running in non-root mode.
-> 
-> You can find the VT-d Posted-Interrtups Spec. in the following URL:
-> http://www.intel.com/content/www/us/en/intelligent-systems/intel-technolog
-> y/vt-directed-io-spec.html
-> 
-> This series was part of
-> http://thread.gmane.org/gmane.linux.kernel.iommu/7708. To make things
-> clear, send out IOMMU part here.
-> 
-> This patch-set is based on the lastest x86/apic branch of tip tree.
-> 
-> Divide the whole series which contain multiple components into three parts:
-> - Prerequisite changes to irq subsystem (already merged in tip tree x86/apic
-> branch)
-> - IOMMU part (in this series)
-> - KVM and VFIO parts (will send out this part once the first two parts are
-> accepted)
-> 
-> v7->v8:
-> * Save the irq mode (posted or remapped) of an IRTE in struct irq_2_iommu.
-> * Use this new mode to decide whether update the hardware when
-> modifying irte in intel_ir_set_affinity().
-> 
-> v6->v7:
-> * Add an static inline helper function set_irq_posting_cap() to set
-> the PI capability.
-> * Add some comments for the new member "ir_data->irte_pi_entry".
-> 
-> v5->v6:
-> * Extend 'struct irte' for VT-d Posted-Interrupts, combine remapped
-> and posted mode into one irte structure.
-> 
-> v4->v5:
-> * Abstract modify_irte() to accept two format of irte.
-> 
-> v3->v4:
-> * Change capability to a int variant flags instead of a function call.
-> * Add hotplug case for VT-d PI.
-> 
-> Feng Wu (8):
->   iommu: Add new member capability to struct irq_remap_ops
->   iommu, x86: Implement irq_set_vcpu_affinity for intel_ir_chip
->   iommu, x86: Save the mode (posted or remapped) of an IRTE
->   iommu, x86: No need to migrating irq for VT-d Posted-Interrupts
->   iommu, x86: Add cap_pi_support() to detect VT-d PI capability
->   iommu, x86: Setup Posted-Interrupts capability for Intel iommu
->   iommu, x86: define irq_remapping_cap()
->   iommu, x86: Properly handler PI for IOMMU hotplug
-> 
-> Thomas Gleixner (1):
->   iommu: dmar: Extend struct irte for VT-d Posted-Interrupts
-> 
->  arch/x86/include/asm/irq_remapping.h | 11 +++++
->  drivers/iommu/intel_irq_remapping.c  | 93
-> +++++++++++++++++++++++++++++++++++-
->  drivers/iommu/irq_remapping.c        | 11 +++++
->  drivers/iommu/irq_remapping.h        |  6 +++
->  include/linux/dmar.h                 | 70 +++++++++++++++++++++------
->  include/linux/intel-iommu.h          |  1 +
->  6 files changed, 176 insertions(+), 16 deletions(-)
-> 
-> --
-> 2.1.0
+In the case of iommu_domain_alloc_for_group, that's nice and
+straightforward (i.e. as part of the call) but for the default
+iommu_domain_alloc() case, we'd have to continue postponing things to
+->attach time before we could provide a reliable pgsize_bitmap. This is
+to handle the case where an SMMU may be able to support only a subset of
+the pgsize_bitmap on a per-domain basis.
+
+In which situation do you think the merged pgsize_bitmap would get used?
+The only place I can think of is if we're trying to call iommu_map on a
+domain with no devices attached. However, if that domain was created
+using iommu_domain_alloc() then the pgsize_bitmap is the least of our
+worries -- we don't even know the page table format!
+
+Will
