@@ -1,15 +1,14 @@
-From: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: Re: [PATCH v11 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
-Date: Sat, 30 May 2015 11:23:36 +0000
-Message-ID: <3085F41B-FE6D-4E39-916A-F7B539B28BCB@hp.com>
-References: <1431337974-545-1-git-send-email-zhen-hual@hp.com>,
-	<20150529162151.GB20384@8bytes.org>
+From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [v8 0/9] Add VT-d Posted-Interrupts support - IOMMU part
+Date: Mon, 1 Jun 2015 02:18:05 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F0025662B8@SHSMSX104.ccr.corp.intel.com>
+References: <1432699544-17444-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150529162151.GB20384-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: zh-CN
+In-Reply-To: <1432699544-17444-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,31 +18,89 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Vaden,
-	Tom (HP Server OS Architecture)" <tom.vaden-VXdhtT5mjnY@public.gmane.org>, "Wright,
-	Randy (HP Servers Linux)" <rwright-VXdhtT5mjnY@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Mitchell, Lisa (MCLinux in Fort Collins)" <lisa.mitchell-VXdhtT5mjnY@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Hatch, Douglas B (HPS Linux PM)" <doug.hatch-VXdhtT5mjnY@public.gmane.org>, "ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org" <ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Zhang, Li
-	(Zoe@HPservers-Core-OE-PSC)" <li.zhang6-VXdhtT5mjnY@public.gmane.org>, "dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-DQpUaGFuayB5b3UgdmVyeSBtdWNoIGZvciB0aGlzLg0KDQp6aGVuaHVhDQoNCkZyb20gTXkgaVBo
-b25lDQoNCj4g1NogMjAxNcTqNdTCMzDI1aOsMDA6MjKjrEpvZXJnIFJvZWRlbCA8am9yb0A4Ynl0
-ZXMub3JnPiDQtLXAo7oNCj4gDQo+PiBPbiBNb24sIE1heSAxMSwgMjAxNSBhdCAwNTo1Mjo0NFBN
-ICswODAwLCBMaSwgWmhlbi1IdWEgd3JvdGU6DQo+PiBMaSwgWmhlbi1IdWEgKDEwKToNCj4+ICBp
-b21tdS92dC1kOiBOZXcgZnVuY3Rpb24gdG8gYXR0YWNoIGRvbWFpbiB3aXRoIGlkDQo+PiAgaW9t
-bXUvdnQtZDogSXRlbXMgcmVxdWlyZWQgZm9yIGtkdW1wDQo+PiAgaW9tbXUvdnQtZDogRnVuY3Rp
-b24gdG8gZ2V0IGV4aXN0aW5nIGNvbnRleHQgZW50cnkNCj4+ICBpb21tdS92dC1kOiBmdW5jdGlv
-bnMgdG8gY29weSBkYXRhIGZyb20gb2xkIG1lbQ0KPj4gIGlvbW11L3Z0LWQ6IEFkZCBmdW5jdGlv
-bnMgdG8gbG9hZCBhbmQgc2F2ZSBvbGQgcmUNCj4+ICBpb21tdS92dC1kOiBkYXRhdHlwZXMgYW5k
-IGZ1bmN0aW9ucyB1c2VkIGZvciBrZHVtcA0KPj4gIGlvbW11L3Z0LWQ6IGVuYWJsZSBrZHVtcCBz
-dXBwb3J0IGluIGlvbW11IG1vZHVsZQ0KPj4gIGlvbW11L3Z0LWQ6IGFzc2lnbiBuZXcgcGFnZSB0
-YWJsZSBmb3IgZG1hX21hcA0KPj4gIGlvbW11L3Z0LWQ6IENvcHkgZnVuY3Rpb25zIGZvciBpcnRl
-DQo+PiAgaW9tbXUvdnQtZDogVXNlIG9sZCBpcnRlIGluIGtkdW1wIGtlcm5lbA0KPj4gDQo+PiBk
-cml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMgICAgICAgICB8IDUzNiArKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrLS0NCj4+IGRyaXZlcnMvaW9tbXUvaW50ZWxfaXJxX3JlbWFwcGlu
-Zy5jIHwgIDk2ICsrKysrKy0NCj4+IGluY2x1ZGUvbGludXgvaW50ZWwtaW9tbXUuaCAgICAgICAg
-IHwgIDE2ICsrDQo+PiAzIGZpbGVzIGNoYW5nZWQsIDYyMyBpbnNlcnRpb25zKCspLCAyNSBkZWxl
-dGlvbnMoLSkNCj4gDQo+IEFwcGxpZWQgd2l0aCBhIGZldyBtaW5vciBjaGFuZ2VzLCB0aGFua3Mu
-DQo+IA0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9t
-bXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8v
-bGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi Joerg,
+
+Any comments about this new version? Thanks a lot!
+
+Thanks,
+Feng
+
+> -----Original Message-----
+> From: Wu, Feng
+> Sent: Wednesday, May 27, 2015 12:06 PM
+> To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+> Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org;
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wu, Feng
+> Subject: [v8 0/9] Add VT-d Posted-Interrupts support - IOMMU part
+> 
+> VT-d Posted-Interrupts is an enhancement to CPU side Posted-Interrupt.
+> With VT-d Posted-Interrupts enabled, external interrupts from
+> direct-assigned devices can be delivered to guests without VMM
+> intervention when guest is running in non-root mode.
+> 
+> You can find the VT-d Posted-Interrtups Spec. in the following URL:
+> http://www.intel.com/content/www/us/en/intelligent-systems/intel-technolog
+> y/vt-directed-io-spec.html
+> 
+> This series was part of
+> http://thread.gmane.org/gmane.linux.kernel.iommu/7708. To make things
+> clear, send out IOMMU part here.
+> 
+> This patch-set is based on the lastest x86/apic branch of tip tree.
+> 
+> Divide the whole series which contain multiple components into three parts:
+> - Prerequisite changes to irq subsystem (already merged in tip tree x86/apic
+> branch)
+> - IOMMU part (in this series)
+> - KVM and VFIO parts (will send out this part once the first two parts are
+> accepted)
+> 
+> v7->v8:
+> * Save the irq mode (posted or remapped) of an IRTE in struct irq_2_iommu.
+> * Use this new mode to decide whether update the hardware when
+> modifying irte in intel_ir_set_affinity().
+> 
+> v6->v7:
+> * Add an static inline helper function set_irq_posting_cap() to set
+> the PI capability.
+> * Add some comments for the new member "ir_data->irte_pi_entry".
+> 
+> v5->v6:
+> * Extend 'struct irte' for VT-d Posted-Interrupts, combine remapped
+> and posted mode into one irte structure.
+> 
+> v4->v5:
+> * Abstract modify_irte() to accept two format of irte.
+> 
+> v3->v4:
+> * Change capability to a int variant flags instead of a function call.
+> * Add hotplug case for VT-d PI.
+> 
+> Feng Wu (8):
+>   iommu: Add new member capability to struct irq_remap_ops
+>   iommu, x86: Implement irq_set_vcpu_affinity for intel_ir_chip
+>   iommu, x86: Save the mode (posted or remapped) of an IRTE
+>   iommu, x86: No need to migrating irq for VT-d Posted-Interrupts
+>   iommu, x86: Add cap_pi_support() to detect VT-d PI capability
+>   iommu, x86: Setup Posted-Interrupts capability for Intel iommu
+>   iommu, x86: define irq_remapping_cap()
+>   iommu, x86: Properly handler PI for IOMMU hotplug
+> 
+> Thomas Gleixner (1):
+>   iommu: dmar: Extend struct irte for VT-d Posted-Interrupts
+> 
+>  arch/x86/include/asm/irq_remapping.h | 11 +++++
+>  drivers/iommu/intel_irq_remapping.c  | 93
+> +++++++++++++++++++++++++++++++++++-
+>  drivers/iommu/irq_remapping.c        | 11 +++++
+>  drivers/iommu/irq_remapping.h        |  6 +++
+>  include/linux/dmar.h                 | 70 +++++++++++++++++++++------
+>  include/linux/intel-iommu.h          |  1 +
+>  6 files changed, 176 insertions(+), 16 deletions(-)
+> 
+> --
+> 2.1.0
