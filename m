@@ -1,50 +1,45 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 2/3] drm/exynos: iommu: detach from default dma-mapping domain
-	on init
-Date: Mon, 01 Jun 2015 13:15:15 +0200
-Message-ID: <1433157316-6341-3-git-send-email-m.szyprowski@samsung.com>
-References: <1433157316-6341-1-git-send-email-m.szyprowski@samsung.com>
+From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Subject: Re: [PATCH 0/6] Exynos SYSMMU (IOMMU) dts and arch updates
+Date: Mon, 01 Jun 2015 20:34:26 +0900
+Message-ID: <556C4342.6060506@samsung.com>
+References: <1432041645-11172-1-git-send-email-m.szyprowski@samsung.com> <1433153450-3680-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1433157316-6341-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Seung-Woo Kim <sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <1433153450-3680-1-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>, Krzysztof Kozlowski <k.kozlowski.k@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds code, which detach sub-device nodes from default iommu
-domain if such has been configured. This lets Exynos DRM driver to properly
-attach sub-devices to its own, common for all sub-devices domain.
+W dniu 01.06.2015 o 19:10, Marek Szyprowski pisze:
+> Hello,
+> 
+> Main changes for Exynos SYSMMU (IOMMU) driver has been finally scheduled
+> for merging - see
+> https://git.kernel.org/cgit/linux/kernel/git/joro/iommu.git/commit/?h=next
+> In meantime there have been quite a lot of changes related to Exynos DTS
+> files queued for merging and my patches don't apply anymore. To ease
+> merge process I've decided to rebased all Exynos SYSMMU dts changes onto
+> latest exynos next tree from: https://github.com/krzk/linux dt-for-next
+> 
+> While rebasing I've fixes a few spotted issues: some nodes still used
+> old 'samsung,power-domain' properties (now replaced with 'power-domains')
+> and added properties to jpeg codec merged recently.
+> 
 
-Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Tested-by: Javier Martinez Canillas <javier.martinez-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>
----
- drivers/gpu/drm/exynos/exynos_drm_iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
+Thanks for rebasing this stuff.
 
-diff --git a/drivers/gpu/drm/exynos/exynos_drm_iommu.c b/drivers/gpu/drm/exynos/exynos_drm_iommu.c
-index b32b291f88ff..323601a52a25 100644
---- a/drivers/gpu/drm/exynos/exynos_drm_iommu.c
-+++ b/drivers/gpu/drm/exynos/exynos_drm_iommu.c
-@@ -100,6 +100,9 @@ int drm_iommu_attach_device(struct drm_device *drm_dev,
- 
- 	dma_set_max_seg_size(subdrv_dev, 0xffffffffu);
- 
-+	if (subdrv_dev->archdata.mapping)
-+		arm_iommu_detach_device(subdrv_dev);
-+
- 	ret = arm_iommu_attach_device(subdrv_dev, dev->archdata.mapping);
- 	if (ret < 0) {
- 		DRM_DEBUG_KMS("failed iommu attach.\n");
--- 
-1.9.2
+I picked whole patchset with Javier's tested-by. I'll send it to Kukjin
+later or directly to arm-soc (depending what will happen with last pull
+request).
+
+Kukjin, you mentioned that you will do something with this patchset the
+previous weekend. Since then nothing happened so I am not sure what are
+your plans... Can you share them? Do you want to pick it by yourself, do
+you have any comments or maybe you need something from our side? (I
+checked the patches and they look fine)
+
+Best regards,
+Krzysztof
