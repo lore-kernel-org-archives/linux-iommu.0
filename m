@@ -1,15 +1,13 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: randconfig build error with next-20150601, in
-	drivers/iommu/intel_irq_remapping.c
-Date: Tue, 2 Jun 2015 11:58:14 +0200
-Message-ID: <20150602095814.GH20384@8bytes.org>
-References: <CA+r1Zhj4c7QX0F9fvvc1Jt9JeHhnuQacAwJNisdAcJFfpaY6rQ@mail.gmail.com>
+From: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: [patch] iommu/vt-d: unlock on error in
+	intel_iommu_load_translation_tables()
+Date: Tue, 2 Jun 2015 13:09:58 +0300
+Message-ID: <20150602100958.GC11247@mwanda>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CA+r1Zhj4c7QX0F9fvvc1Jt9JeHhnuQacAwJNisdAcJFfpaY6rQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,18 +17,61 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jim Davis <jim.epost-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Stephen Rothwell <sfr-3FnU+UHB4dNDw9hX6IcOSA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-next <linux-next-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Li-p7QCHhHlqjPG026l+vzAeHxJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Zhen-Hua <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Cc: kernel-janitors-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgSmltLAoKT24gTW9uLCBKdW4gMDEsIDIwMTUgYXQgMDk6NTc6MDdBTSAtMDcwMCwgSmltIERh
-dmlzIHdyb3RlOgo+IEJ1aWxkaW5nIHdpdGggdGhlIGF0dGFjaGVkIHJhbmRvbSBjb25maWd1cmF0
-aW9uIGZpbGUsCj4gCj4gZHJpdmVycy9pb21tdS9pbnRlbF9pcnFfcmVtYXBwaW5nLmM6IEluIGZ1
-bmN0aW9uIOKAmG1vZGlmeV9pcnRl4oCZOgo+IGRyaXZlcnMvaW9tbXUvaW50ZWxfaXJxX3JlbWFw
-cGluZy5jOjE0OToxMTogZXJyb3I6IOKAmHN0cnVjdAo+IGludGVsX2lvbW114oCZIGhhcyBubyBt
-ZW1iZXIgbmFtZWQg4oCYcHJlX2VuYWJsZWRfaXLigJkKPiAgIGlmIChpb21tdS0+cHJlX2VuYWJs
-ZWRfaXIpCgpUaGFua3MgZm9yIHRoZSByZXBvcnQsIEkganVzdCBzZW50IGEgZml4IGZvciB0aGlz
-IGJyZWFrYWdlLgoKCglKb2VyZwoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
-b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
-L2lvbW11
+Smatch found some error paths that don't unlock.  Also we can return
+-ENOMEM instead of -1 if we don't have an old root entry.
+
+Fixes: 5908f10af4b9 ('iommu/vt-d: datatypes and functions used for kdump')
+Signed-off-by: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+---
+Releasing the lock is good, but we might need to do other error handling
+as well.  Presumably this function always succeeds anyway?  It seems
+like it might be essential for booting.
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 2926907..0e2e635 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5151,22 +5151,24 @@ static int intel_iommu_load_translation_tables(struct intel_iommu *iommu)
+ 		iommu->root_entry =
+ 			(struct root_entry *)alloc_pgtable_page(iommu->node);
+ 		if (!iommu->root_entry) {
+-			spin_unlock_irqrestore(&iommu->lock, flags);
+-			return -ENOMEM;
++			ret = -ENOMEM;
++			goto err_unlock;
+ 		}
+ 	}
+ 
+ 	iommu->root_entry_old_phys = q & VTD_PAGE_MASK;
+ 	if (!iommu->root_entry_old_phys) {
+ 		pr_err("Could not read old root entry address.");
+-		return -1;
++		ret = -ENOMEM;
++		goto err_unlock;
+ 	}
+ 
+ 	iommu->root_entry_old_virt = ioremap_cache(iommu->root_entry_old_phys,
+ 						VTD_PAGE_SIZE);
+ 	if (!iommu->root_entry_old_virt) {
+ 		pr_err("Could not map the old root entry.");
+-		return -ENOMEM;
++		ret = -ENOMEM;
++		goto err_unlock;
+ 	}
+ 
+ 	__iommu_load_old_root_entry(iommu);
+@@ -5179,6 +5181,10 @@ static int intel_iommu_load_translation_tables(struct intel_iommu *iommu)
+ 	__iommu_free_mapped_mem();
+ 
+ 	return ret;
++
++err_unlock:
++	spin_unlock_irqrestore(&iommu->lock, flags);
++	return ret;
+ }
+ 
+ static void unmap_device_dma(struct dmar_domain *domain,
