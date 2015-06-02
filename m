@@ -1,21 +1,11 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 2/3] iommu/arm-smmu: Add initial driver support for ARM
-	SMMUv3 devices
-Date: Tue, 2 Jun 2015 10:47:46 +0100
-Message-ID: <20150602094746.GC22569@arm.com>
-References: <1431108046-9675-1-git-send-email-will.deacon@arm.com>
-	<1431108046-9675-3-git-send-email-will.deacon@arm.com>
-	<20150519152435.GL20611@8bytes.org>
-	<20150520170926.GI11498@arm.com>
-	<20150529064337.GN20611@8bytes.org> <55684F1C.3050702@arm.com>
-	<20150529144043.GA20384@8bytes.org> <20150601094014.GC1641@arm.com>
-	<20150602073956.GG20384@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH] iommu/vt-d: Fix compile error when CONFIG_INTEL_IOMMU=n
+Date: Tue,  2 Jun 2015 11:56:34 +0200
+Message-ID: <1433238994-19119-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20150602073956.GG20384-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,68 +15,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Zhen-Hua Li <zhen-hual-VXdhtT5mjnY@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 02, 2015 at 08:39:56AM +0100, Joerg Roedel wrote:
-> On Mon, Jun 01, 2015 at 10:40:14AM +0100, Will Deacon wrote:
-> > I like this proposal. The only remaining part is that the pgsize bitmap
-> > inherited by the domain can only truly be finalised once the page table
-> > is allocated, which in turn can only happen once we've identified the
-> > IOMMU instance.
-> 
-> We know the IOMMU instance for domains allocted with
-> iommu_domain_alloc_for_group because every group is behind a single
-> IOMMU instance. So the page-table can be allocated at domain creation
-> time and mappings can be created before the group itself is attached.
-
-Indeed -- I think this form of allocation makes a lot of sense.
-
-> > In the case of iommu_domain_alloc_for_group, that's nice and
-> > straightforward (i.e. as part of the call) but for the default
-> > iommu_domain_alloc() case, we'd have to continue postponing things to
-> > ->attach time before we could provide a reliable pgsize_bitmap. This is
-> > to handle the case where an SMMU may be able to support only a subset of
-> > the pgsize_bitmap on a per-domain basis.
-> 
-> I don't think we need to postpone anything. Domains returned by
-> iommu_domain_alloc() need to work for all groups. If there are multiple
-> IOMMUs in the system with different capabilities/page-table formats the
-> IOMMU core needs to build multiple page-tables for that domain.
-
-I really don't think that's feasible. We support an awful lot of
-combinations that affect the page table format on ARM: there are 5
-different formats, each supporting different translation regimes (sets
-of page size) and each of those needs configuring for input/output
-address sizes to compute the number of levels. You could easily end up
-with over 20 page tables and their corresponding sets of control
-register values.
-
-Given that we only install one page table in the end, I'm struggling to
-see the issue with postponing its allocation until we've figured out
-the IOMMU instance thanks to a device attach.
-
-> VFIO already does that as a workaround of how things are done currently,
-> but I really think this should be done in the IOMMU core code.
-
-Postponing page table creation to ->attach works fine with VFIO today.
-AFAICT, it never tries to map pages for an empty domain and therefore
-the IOMMU instance is always known by the IOMMU driver at ->map time.
-
-> > In which situation do you think the merged pgsize_bitmap would get used?
-> > The only place I can think of is if we're trying to call iommu_map on a
-> > domain with no devices attached. However, if that domain was created
-> > using iommu_domain_alloc() then the pgsize_bitmap is the least of our
-> > worries -- we don't even know the page table format!
-> 
-> The first usecase for the merged pgsize_bitmap that comes to mind is to
-> determine the minimum page-size that can be used for a domain. In the
-> SMMUv3 case when there are IOMMUs with different minium page-sizes in one
-> system, this would be the biggest minimum page-size of all IOMMUs.
-
-Understood, but I'm trying to understand why you'd want to know that for
-an empty (no devices attached) domain. I don't think we currently have
-any use-cases for that and it's really not a practical thing to support.
-
-Will
+RnJvbTogSm9lcmcgUm9lZGVsIDxqcm9lZGVsQHN1c2UuZGU+CgpUaGUgcGF0Y2hlcyBmb3IgdGhl
+IEludGVsIElPTU1VIGRyaXZlciB0byBmaXggaXNzdWVzIHdpdGgKa2R1bXAgaW50cm9kdWNlZCBh
+IGNvbXBpbGUgZXJyb3Igd2l0aDoKCkNPTkZJR19ETUFSX1RBQkxFPXkKQ09ORklHX0lOVEVMX0lP
+TU1VPW4KQ09ORklHX0lSUV9SRU1BUD15CgpUaGUgZXJyb3IgbWFuaWZlc3RzIGFzOgoKZHJpdmVy
+cy9pb21tdS9pbnRlbF9pcnFfcmVtYXBwaW5nLmM6IEluIGZ1bmN0aW9uIOKAmG1vZGlmeV9pcnRl
+4oCZOgpkcml2ZXJzL2lvbW11L2ludGVsX2lycV9yZW1hcHBpbmcuYzoxNDk6MTE6IGVycm9yOiDi
+gJhzdHJ1Y3QKaW50ZWxfaW9tbXXigJkgaGFzIG5vIG1lbWJlciBuYW1lZCDigJhwcmVfZW5hYmxl
+ZF9pcuKAmQogIGlmIChpb21tdS0+cHJlX2VuYWJsZWRfaXIpCgpGaXggdGhpcyBieSBtb3Zpbmcg
+dGhlIGRlY2xhcmF0aW9uIG9mIHRoZSBwcmVfZW5hYmxlZF9pcgp1bmRlciAjaWZkZWYgQ09ORklH
+X0lSUV9SRU1BUFBJTkcgaW5zdGVhZCBvZgpDT05GSUdfSU5URUxfSU9NTVUuCgpSZXBvcnRlZC1i
+eTogSmltIERhdmlzIDxqaW0uZXBvc3RAZ21haWwuY29tPgpDYzogWmhlbi1IdWEgTGkgPHpoZW4t
+aHVhbEBocC5jb20+ClNpZ25lZC1vZmYtYnk6IEpvZXJnIFJvZWRlbCA8anJvZWRlbEBzdXNlLmRl
+PgotLS0KIGluY2x1ZGUvbGludXgvaW50ZWwtaW9tbXUuaCB8IDUgKysrLS0KIDEgZmlsZSBjaGFu
+Z2VkLCAzIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvaW5jbHVk
+ZS9saW51eC9pbnRlbC1pb21tdS5oIGIvaW5jbHVkZS9saW51eC9pbnRlbC1pb21tdS5oCmluZGV4
+IGQ3YTBiNWQuLmE4MWNlZWUgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvbGludXgvaW50ZWwtaW9tbXUu
+aAorKysgYi9pbmNsdWRlL2xpbnV4L2ludGVsLWlvbW11LmgKQEAgLTM0NCw4ICszNDQsNiBAQCBz
+dHJ1Y3QgaW50ZWxfaW9tbXUgewogCiAJLyogd2hldGhlciB0cmFuc2xhdGlvbiBpcyBlbmFibGVk
+IHByaW9yIHRvIE9TKi8KIAl1OAkJcHJlX2VuYWJsZWRfdHJhbnM7Ci0JLyogd2hldGhlciBpbnRl
+cnJ1cHQgcmVtYXBwaW5nIGlzIGVuYWJsZWQgcHJpb3IgdG8gT1MqLwotCXU4CQlwcmVfZW5hYmxl
+ZF9pcjsKIAogCXZvaWQgX19pb21lbQkqcm9vdF9lbnRyeV9vbGRfdmlydDsgLyogbWFwcGVkIGZy
+b20gb2xkIHJvb3QgZW50cnkgKi8KIAl1bnNpZ25lZCBsb25nCXJvb3RfZW50cnlfb2xkX3BoeXM7
+IC8qIHJvb3QgZW50cnkgaW4gb2xkIGtlcm5lbCAqLwpAQCAtMzU3LDYgKzM1NSw5IEBAIHN0cnVj
+dCBpbnRlbF9pb21tdSB7CiAKICNpZmRlZiBDT05GSUdfSVJRX1JFTUFQCiAJc3RydWN0IGlyX3Rh
+YmxlICppcl90YWJsZTsJLyogSW50ZXJydXB0IHJlbWFwcGluZyBpbmZvICovCisKKwkvKiB3aGV0
+aGVyIGludGVycnVwdCByZW1hcHBpbmcgaXMgZW5hYmxlZCBwcmlvciB0byBPUyovCisJdTgJCXBy
+ZV9lbmFibGVkX2lyOwogI2VuZGlmCiAJc3RydWN0IGRldmljZQkqaW9tbXVfZGV2OyAvKiBJT01N
+VS1zeXNmcyBkZXZpY2UgKi8KIAlpbnQJCW5vZGU7Ci0tIAoxLjguNC41CgpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9t
+bXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRp
+b24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
