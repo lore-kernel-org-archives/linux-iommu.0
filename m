@@ -1,94 +1,68 @@
-From: William Davis <wdavis@nvidia.com>
-Subject: RE: [PATCH v2 4/7] DMA-API: Add dma_(un)map_resource() documentation
-Date: Tue, 2 Jun 2015 14:27:05 +0000
-Message-ID: <37dbe5add91042539fd8dffd596d7738@HQMAIL106.nvidia.com>
-References: <1431973504-5903-1-git-send-email-wdavis@nvidia.com>
- <1431973504-5903-5-git-send-email-wdavis@nvidia.com>
- <20150601212528.GC7354@konrad-lan.dumpdata.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 2/3] iommu/arm-smmu: Add initial driver support for ARM
+	SMMUv3 devices
+Date: Tue, 2 Jun 2015 20:43:55 +0200
+Message-ID: <20150602184355.GI20384@8bytes.org>
+References: <1431108046-9675-1-git-send-email-will.deacon@arm.com>
+	<1431108046-9675-3-git-send-email-will.deacon@arm.com>
+	<20150519152435.GL20611@8bytes.org>
+	<20150520170926.GI11498@arm.com>
+	<20150529064337.GN20611@8bytes.org> <55684F1C.3050702@arm.com>
+	<20150529144043.GA20384@8bytes.org> <20150601094014.GC1641@arm.com>
+	<20150602073956.GG20384@8bytes.org>
+	<20150602094746.GC22569@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20150601212528.GC7354@konrad-lan.dumpdata.com>
-Content-Language: en-US
-Sender: linux-pci-owner@vger.kernel.org
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "bhelgaas@google.com" <bhelgaas@google.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Terence Ripperda <TRipperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, "jglisse@redhat.com" <jglisse@redhat.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20150602094746.GC22569-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
-> -----Original Message-----
-> From: Konrad Rzeszutek Wilk [mailto:konrad.wilk@oracle.com]
-> Sent: Monday, June 1, 2015 4:25 PM
-> To: William Davis
-> Cc: joro@8bytes.org; bhelgaas@google.com; iommu@lists.linux-foundation.org;
-> linux-pci@vger.kernel.org; Terence Ripperda; John Hubbard;
-> jglisse@redhat.com
-> Subject: Re: [PATCH v2 4/7] DMA-API: Add dma_(un)map_resource()
-> documentation
+On Tue, Jun 02, 2015 at 10:47:46AM +0100, Will Deacon wrote:
+> On Tue, Jun 02, 2015 at 08:39:56AM +0100, Joerg Roedel wrote:
+> > I don't think we need to postpone anything. Domains returned by
+> > iommu_domain_alloc() need to work for all groups. If there are multiple
+> > IOMMUs in the system with different capabilities/page-table formats the
+> > IOMMU core needs to build multiple page-tables for that domain.
 > 
-> On Mon, May 18, 2015 at 01:25:01PM -0500, wdavis@nvidia.com wrote:
-> > From: Will Davis <wdavis@nvidia.com>
-> >
-> > Add references to both the general API documentation as well as the
-> HOWTO.
-> >
-> > Signed-off-by: Will Davis <wdavis@nvidia.com>
-> > ---
-> >  Documentation/DMA-API-HOWTO.txt | 39
-> +++++++++++++++++++++++++++++++++++++--
-> >  Documentation/DMA-API.txt       | 36 +++++++++++++++++++++++++++++++----
-> -
-> >  2 files changed, 68 insertions(+), 7 deletions(-)
-> >
-> > diff --git a/Documentation/DMA-API-HOWTO.txt
-> > b/Documentation/DMA-API-HOWTO.txt index 0f7afb2..89bd730 100644
-> > --- a/Documentation/DMA-API-HOWTO.txt
-> > +++ b/Documentation/DMA-API-HOWTO.txt
-> > @@ -138,6 +138,10 @@ What about block I/O and networking buffers?  The
-> > block I/O and  networking subsystems make sure that the buffers they
-> > use are valid  for you to DMA from/to.
-> >
-> > +In some systems, it may also be possible to DMA to and/or from a peer
-> > +device's MMIO region, as described by a 'struct resource'. This is
-> > +referred to as a peer-to-peer mapping.
-> > +
-> >  			DMA addressing limitations
-> >
-> >  Does your device have any DMA addressing limitations?  For example,
-> > is @@ -648,6 +652,35 @@ Every dma_map_{single,sg}() call should have
-> > its dma_unmap_{single,sg}()  counterpart, because the bus address
-> > space is a shared resource and  you could render the machine unusable by
-> consuming all bus addresses.
-> >
-> > +Peer-to-peer DMA mappings can be obtained using dma_map_resource() to
-> > +map another device's MMIO region for the given device:
-> > +
-> > +	struct resource *peer_mmio_res = &other_dev->resource[0];
-> > +	dma_addr_t dma_handle = dma_map_resource(dev, peer_mmio_res,
-> > +						 offset, size, direction);
-> > +	if (dma_handle == 0 || dma_mapping_error(dev, dma_handle))
-> 
-> Don't check for 0. That can be a valid value.
-> 
-> > +	{
-> > +		/*
-> > +		 * If dma_handle == 0, dma_map_resource() is not
-> > +		 * implemented, and peer-to-peer transactions will not
-> > +		 * work.
-> 
-> Perhaps we should just have an dma_can_map_resource function instead to
-> check for this?
+> I really don't think that's feasible. We support an awful lot of
+> combinations that affect the page table format on ARM: there are 5
+> different formats, each supporting different translation regimes (sets
+> of page size) and each of those needs configuring for input/output
+> address sizes to compute the number of levels. You could easily end up
+> with over 20 page tables and their corresponding sets of control
+> register values.
 
-In v3 of this patch set, I've added a BUG_ON(ops->map_resource == NULL) to
-dma_map_resource() instead of possibly returning 0, at Joerg's suggestion.
+We only need to build page-tables for IOMMUs that are actually in the
+system. And this also only for domains that are not tied to a particular
+group. If some hardware vendor is crazy enough to put 20 IOMMUs in the
+system with each having its own page-table format, then be it so. But in
+reality I think we will have only a handful of different page-tables.
 
-In that case, a dma_can_map_resource() would do the same check a driver
-would before calling dma_map_resource(), e.g., that
-ops->map_resource != NULL. It does seem nicer to wrap that in an API call.
+> Given that we only install one page table in the end, I'm struggling to
+> see the issue with postponing its allocation until we've figured out
+> the IOMMU instance thanks to a device attach.
 
-Thanks,
-Will
+It is a question of the use-case for the domain. A device driver (like
+for USB or graphics) would allocate the domain with the _for_group
+function and end up with only one page-table.
 
---
-nvpublic
+But if VFIO comes around and wants to attach devices to a KVM guest it
+would use iommu_domain_alloc() and has then all page-tables it possibly
+needs (for devices attached at start and even devices that might later
+be hotplugged into the guest).
+
+
+	Joerg
