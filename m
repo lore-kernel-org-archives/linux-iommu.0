@@ -1,87 +1,33 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v2 1/3] drm/exynos: fimd: ensure proper hw state in
-	fimd_clear_channel()
-Date: Wed, 03 Jun 2015 10:26:22 +0200
-Message-ID: <1433319984-18683-2-git-send-email-m.szyprowski@samsung.com>
-References: <1433319984-18683-1-git-send-email-m.szyprowski@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1433319984-18683-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Seung-Woo Kim <sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>
+From: "xiaofeng.yan" <yanxiaofeng@inspur.com>
+Subject: [PATCH v2] Intel_irq_remapping: fix a comment error
+Date: Wed,  3 Jun 2015 16:46:23 +0800
+Message-ID: <1433321183-5021-1-git-send-email-yanxiaofeng@inspur.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: "xiaofeng.yan" <yanxiaofeng@inspur.com>
 List-Id: iommu@lists.linux-foundation.org
 
-One should not do any assumptions on the stare of the fimd hardware
-during driver initialization, so to properly reset fimd before enabling
-IOMMU, one should ensure that all power domains and clocks are really
-enabled. This patch adds pm_runtime and clocks management in the
-fimd_clear_channel() function to ensure that any access to fimd
-registers will be performed with clocks and power domains enabled.
+change tabke to take.
 
-Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Tested-by: Javier Martinez Canillas <javier.martinez-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>
+Signed-off-by: xiaofeng.yan <yanxiaofeng@inspur.com>
+Reviewed-by: Jiang Liu <jiang.liu@linux.intel.com>
 ---
- drivers/gpu/drm/exynos/exynos_drm_fimd.c | 22 ++++++++++++++++++----
- 1 file changed, 18 insertions(+), 4 deletions(-)
+ drivers/iommu/intel_irq_remapping.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/exynos/exynos_drm_fimd.c b/drivers/gpu/drm/exynos/exynos_drm_fimd.c
-index 96618534358e..3ec9d4299a86 100644
---- a/drivers/gpu/drm/exynos/exynos_drm_fimd.c
-+++ b/drivers/gpu/drm/exynos/exynos_drm_fimd.c
-@@ -242,12 +242,21 @@ static void fimd_enable_shadow_channel_path(struct fimd_context *ctx,
- 	writel(val, ctx->regs + SHADOWCON);
- }
- 
-+static int fimd_enable_vblank(struct exynos_drm_crtc *crtc);
-+static void fimd_disable_vblank(struct exynos_drm_crtc *crtc);
-+
- static void fimd_clear_channel(struct fimd_context *ctx)
- {
- 	unsigned int win, ch_enabled = 0;
- 
- 	DRM_DEBUG_KMS("%s\n", __FILE__);
- 
-+	/* Hardware is in unknown state, so ensure it gets enabled properly */
-+	pm_runtime_get_sync(ctx->dev);
-+
-+	clk_prepare_enable(ctx->bus_clk);
-+	clk_prepare_enable(ctx->lcd_clk);
-+
- 	/* Check if any channel is enabled. */
- 	for (win = 0; win < WINDOWS_NR; win++) {
- 		u32 val = readl(ctx->regs + WINCON(win));
-@@ -265,12 +274,17 @@ static void fimd_clear_channel(struct fimd_context *ctx)
- 
- 	/* Wait for vsync, as disable channel takes effect at next vsync */
- 	if (ch_enabled) {
--		unsigned int state = ctx->suspended;
--
--		ctx->suspended = 0;
-+		ctx->suspended = false;
-+		fimd_enable_vblank(ctx->crtc);
- 		fimd_wait_for_vblank(ctx->crtc);
--		ctx->suspended = state;
-+		fimd_disable_vblank(ctx->crtc);
-+		ctx->suspended = true;
- 	}
-+
-+	clk_disable_unprepare(ctx->lcd_clk);
-+	clk_disable_unprepare(ctx->bus_clk);
-+
-+	pm_runtime_put(ctx->dev);
- }
- 
- static int fimd_iommu_attach_devices(struct fimd_context *ctx,
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 5709ae9..85676d0 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -46,7 +46,7 @@ static struct hpet_scope ir_hpet[MAX_HPET_TBS];
+  *	->iommu->register_lock
+  * Note:
+  * intel_irq_remap_ops.{supported,prepare,enable,disable,reenable} are called
+- * in single-threaded environment with interrupt disabled, so no need to tabke
++ * in single-threaded environment with interrupt disabled, so no need to take
+  * the dmar_global_lock.
+  */
+ static DEFINE_RAW_SPINLOCK(irq_2_ir_lock);
 -- 
-1.9.2
+1.9.1
