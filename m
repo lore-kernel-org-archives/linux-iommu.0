@@ -1,59 +1,40 @@
-From: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: Re: [patch] iommu/vt-d: unlock on error in
-	intel_iommu_load_translation_tables()
-Date: Wed, 03 Jun 2015 13:25:30 +0800
-Message-ID: <556E8FCA.6050800@hp.com>
-References: <20150602100958.GC11247@mwanda> <20150602134505.GA20381@8bytes.org>
-	<20150602140656.GR11734@mwanda>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150602140656.GR11734@mwanda>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: kernel-janitors-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+From: "xiaofeng.yan" <yanxiaofeng@inspur.com>
+Subject: [PATCH] intel_irq_remapping: fix a comment error
+Date: Wed,  3 Jun 2015 16:20:15 +0800
+Message-ID: <1433319615-29776-1-git-send-email-yanxiaofeng@inspur.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: "xiaofeng.yan" <yanxiaofeng@inspur.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Dan,
+change tabke to take.
 
-Do not need to call __iommu_free_mapped_mem() for err_unlock. for
-no new elements are added into __iommu_remapped_mem when drops to
-err_unlock.
+Signed-off-by: xiaofeng.yan <yanxiaofeng@inspur.com>
+---
+ drivers/iommu/intel_irq_remapping.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-
-Thanks
-Zhenhua
-
-On 06/02/2015 10:06 PM, Dan Carpenter wrote:
-> On Tue, Jun 02, 2015 at 03:45:18PM +0200, Joerg Roedel wrote:
->> On Tue, Jun 02, 2015 at 01:09:58PM +0300, Dan Carpenter wrote:
->>> Smatch found some error paths that don't unlock.  Also we can return
->>> -ENOMEM instead of -1 if we don't have an old root entry.
->>>
->>> Fixes: 5908f10af4b9 ('iommu/vt-d: datatypes and functions used for kdump')
->>> Signed-off-by: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
->>
->> Applied, thanks.
->>
->>> Releasing the lock is good, but we might need to do other error handling
->>> as well.  Presumably this function always succeeds anyway?  It seems
->>> like it might be essential for booting.
->>
->> What do you mean by 'other error handling'? In error case a negative
->> value is returned and the caller checks that.
->
-> I was just worried we should call __iommu_free_mapped_mem() or
-> something.  I don't know this code very well is what I'm saying...
->
-> regards,
-> dan carpenter
->
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 5709ae9..d59f82d 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -46,7 +46,7 @@ static struct hpet_scope ir_hpet[MAX_HPET_TBS];
+  *	->iommu->register_lock
+  * Note:
+  * intel_irq_remap_ops.{supported,prepare,enable,disable,reenable} are called
+- * in single-threaded environment with interrupt disabled, so no need to tabke
++ * in single-threaded environment with interrupt disabled, so no need to take
+  * the dmar_global_lock.
+  */
+ static DEFINE_RAW_SPINLOCK(irq_2_ir_lock);
+@@ -185,6 +185,7 @@ static int modify_irte(int irq, struct irte *irte_modified)
+ 		return -1;
+ 
+ 	raw_spin_lock_irqsave(&irq_2_ir_lock, flags);
++	while(1):
+ 
+ 	iommu = irq_iommu->iommu;
+ 
+-- 
+1.9.1
