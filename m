@@ -1,22 +1,17 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 2/3] iommu/arm-smmu: Add initial driver support for ARM
-	SMMUv3 devices
-Date: Tue, 2 Jun 2015 20:43:55 +0200
-Message-ID: <20150602184355.GI20384@8bytes.org>
-References: <1431108046-9675-1-git-send-email-will.deacon@arm.com>
-	<1431108046-9675-3-git-send-email-will.deacon@arm.com>
-	<20150519152435.GL20611@8bytes.org>
-	<20150520170926.GI11498@arm.com>
-	<20150529064337.GN20611@8bytes.org> <55684F1C.3050702@arm.com>
-	<20150529144043.GA20384@8bytes.org> <20150601094014.GC1641@arm.com>
-	<20150602073956.GG20384@8bytes.org>
-	<20150602094746.GC22569@arm.com>
+From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [v8 3/9] iommu, x86: Implement irq_set_vcpu_affinity for
+	intel_ir_chip
+Date: Wed, 3 Jun 2015 01:05:24 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F00256FC4E@SHSMSX104.ccr.corp.intel.com>
+References: <1432699544-17444-1-git-send-email-feng.wu@intel.com>
+	<1432699544-17444-4-git-send-email-feng.wu@intel.com>
+	<alpine.DEB.2.11.1506021501070.3786@nanos>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20150602094746.GC22569-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <alpine.DEB.2.11.1506021501070.3786@nanos>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,43 +21,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 02, 2015 at 10:47:46AM +0100, Will Deacon wrote:
-> On Tue, Jun 02, 2015 at 08:39:56AM +0100, Joerg Roedel wrote:
-> > I don't think we need to postpone anything. Domains returned by
-> > iommu_domain_alloc() need to work for all groups. If there are multiple
-> > IOMMUs in the system with different capabilities/page-table formats the
-> > IOMMU core needs to build multiple page-tables for that domain.
+
+
+> -----Original Message-----
+> From: Thomas Gleixner [mailto:tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org]
+> Sent: Tuesday, June 02, 2015 9:59 PM
+> To: Wu, Feng
+> Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org;
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Subject: Re: [v8 3/9] iommu, x86: Implement irq_set_vcpu_affinity for
+> intel_ir_chip
 > 
-> I really don't think that's feasible. We support an awful lot of
-> combinations that affect the page table format on ARM: there are 5
-> different formats, each supporting different translation regimes (sets
-> of page size) and each of those needs configuring for input/output
-> address sizes to compute the number of levels. You could easily end up
-> with over 20 page tables and their corresponding sets of control
-> register values.
+> On Wed, 27 May 2015, Feng Wu wrote:
+> > +	/* stop posting interrupts, back to remapping mode */
+> > +	if (!vcpu_info) {
+> > +		modify_irte(&ir_data->irq_2_iommu, &ir_data->irte_entry);
+> > +	} else {
+> > +		vcpu_pi_info = (struct vcpu_data *)vcpu_info;
+> > +
+> > +		/*
+> > +		 * "ir_data->irte_entry" saves the remapped format of IRTE,
+> > +		 * which being a cached irte is still updated when setting
+> > +		 * the affinity even when we are in posted mode. So this make
+> 
+> s/make/makes/
+> 
+> > +		 * it possible to switch back to remapped mode from posted mode,
+> > +		 * we can just set "ir_data->irte_entry" to hardware for that
+> > +		 * purpose. Here we store the posted format of IRTE in another
+> > +		 * new member "ir_data->irte_pi_entry" to not corrupt
+> 
+> Remove the 'another new member' please. That member is not longer new
+> once that patch is applied.
+> 
+> Now there is another question. Are we actually using that pi_entry
+> cached value for anything else than this code here? If not, we can do
+> this on the stack and avoid the extra storage in ir_data.
+> 
 
-We only need to build page-tables for IOMMUs that are actually in the
-system. And this also only for domains that are not tied to a particular
-group. If some hardware vendor is crazy enough to put 20 IOMMUs in the
-system with each having its own page-table format, then be it so. But in
-reality I think we will have only a handful of different page-tables.
+That's a good comments. I also thought about this before. Right now the cached value
+is only used here in this function, but I am not sure whether we need it in future. Anyway,
+I think we can delete it now.
 
-> Given that we only install one page table in the end, I'm struggling to
-> see the issue with postponing its allocation until we've figured out
-> the IOMMU instance thanks to a device attach.
-
-It is a question of the use-case for the domain. A device driver (like
-for USB or graphics) would allocate the domain with the _for_group
-function and end up with only one page-table.
-
-But if VFIO comes around and wants to attach devices to a KVM guest it
-would use iommu_domain_alloc() and has then all page-tables it possibly
-needs (for devices attached at start and even devices that might later
-be hotplugged into the guest).
+Thanks,
+Feng
 
 
-	Joerg
+> Thanks,
+> 
+> 	tglx
