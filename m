@@ -1,57 +1,38 @@
-From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH] intel_irq_remapping: fix a comment error
-Date: Wed, 03 Jun 2015 16:25:22 +0800
-Message-ID: <556EB9F2.4040408@linux.intel.com>
-References: <1433319615-29776-1-git-send-email-yanxiaofeng@inspur.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1433319615-29776-1-git-send-email-yanxiaofeng-6gUaA8visnnQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "xiaofeng.yan" <yanxiaofeng-6gUaA8visnnQT0dZR+AlfA@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCH v2 0/3] Exynos SYSMMU (IOMMU) updates for Exynos DRM
+Date: Wed, 03 Jun 2015 10:26:21 +0200
+Message-ID: <1433319984-18683-1-git-send-email-m.szyprowski@samsung.com>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Inki Dae <inki.dae@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2015/6/3 16:20, xiaofeng.yan wrote:
-> change tabke to take.
-> 
-> Signed-off-by: xiaofeng.yan <yanxiaofeng-6gUaA8visnnQT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/iommu/intel_irq_remapping.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-> index 5709ae9..d59f82d 100644
-> --- a/drivers/iommu/intel_irq_remapping.c
-> +++ b/drivers/iommu/intel_irq_remapping.c
-> @@ -46,7 +46,7 @@ static struct hpet_scope ir_hpet[MAX_HPET_TBS];
->   *	->iommu->register_lock
->   * Note:
->   * intel_irq_remap_ops.{supported,prepare,enable,disable,reenable} are called
-> - * in single-threaded environment with interrupt disabled, so no need to tabke
-> + * in single-threaded environment with interrupt disabled, so no need to take
->   * the dmar_global_lock.
->   */
->  static DEFINE_RAW_SPINLOCK(irq_2_ir_lock);
-> @@ -185,6 +185,7 @@ static int modify_irte(int irq, struct irte *irte_modified)
->  		return -1;
->  
->  	raw_spin_lock_irqsave(&irq_2_ir_lock, flags);
-> +	while(1):
-Hi Xiaofeng,
-	Seems above change be removed.
-Thanks!
-Gerry
+Hello,
 
->  
->  	iommu = irq_iommu->iommu;
->  
-> 
+Main changes for Exynos SYSMMU (IOMMU) driver has been finally scheduled
+for merging - see
+https://git.kernel.org/cgit/linux/kernel/git/joro/iommu.git/commit/?h=next
+
+To let Exynos IOMMU driver work correctly, some fixes are also needed in
+Exynos DRM driver.
+
+v2 of this patchset has been rebased onto latest exynos-drm-next branch
+with atomic mode setting patches applied.
+
+Best regards
+Marek Szyprowski
+Samsung R&D Institute Poland
+
+
+Marek Szyprowski (3):
+  drm/exynos: fimd: ensure proper hw state in fimd_clear_channel()
+  drm/exynos: iommu: detach from default dma-mapping domain on init
+  drm/exynos: iommu: improve a check for non-iommu dma_ops
+
+ drivers/gpu/drm/exynos/exynos_drm_fimd.c  | 22 ++++++++++++++++++----
+ drivers/gpu/drm/exynos/exynos_drm_iommu.c |  7 +++++--
+ 2 files changed, 23 insertions(+), 6 deletions(-)
+
+-- 
+1.9.2
