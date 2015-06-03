@@ -1,76 +1,109 @@
-From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [v8 3/9] iommu, x86: Implement irq_set_vcpu_affinity for
-	intel_ir_chip
-Date: Wed, 3 Jun 2015 01:05:24 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F00256FC4E@SHSMSX104.ccr.corp.intel.com>
-References: <1432699544-17444-1-git-send-email-feng.wu@intel.com>
-	<1432699544-17444-4-git-send-email-feng.wu@intel.com>
-	<alpine.DEB.2.11.1506021501070.3786@nanos>
+From: Inki Dae <inki.dae@samsung.com>
+Subject: Re: [PATCH 1/3] drm/exynos: fimd: ensure proper hw state in
+ fimd_clear_channel()
+Date: Wed, 03 Jun 2015 11:18:56 +0900
+Message-ID: <556E6410.3040600@samsung.com>
+References: <1433157316-6341-1-git-send-email-m.szyprowski@samsung.com>
+ <1433157316-6341-2-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <alpine.DEB.2.11.1506021501070.3786@nanos>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <1433157316-6341-2-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Marek,
 
-
-> -----Original Message-----
-> From: Thomas Gleixner [mailto:tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org]
-> Sent: Tuesday, June 02, 2015 9:59 PM
-> To: Wu, Feng
-> Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org;
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [v8 3/9] iommu, x86: Implement irq_set_vcpu_affinity for
-> intel_ir_chip
-> 
-> On Wed, 27 May 2015, Feng Wu wrote:
-> > +	/* stop posting interrupts, back to remapping mode */
-> > +	if (!vcpu_info) {
-> > +		modify_irte(&ir_data->irq_2_iommu, &ir_data->irte_entry);
-> > +	} else {
-> > +		vcpu_pi_info = (struct vcpu_data *)vcpu_info;
-> > +
-> > +		/*
-> > +		 * "ir_data->irte_entry" saves the remapped format of IRTE,
-> > +		 * which being a cached irte is still updated when setting
-> > +		 * the affinity even when we are in posted mode. So this make
-> 
-> s/make/makes/
-> 
-> > +		 * it possible to switch back to remapped mode from posted mode,
-> > +		 * we can just set "ir_data->irte_entry" to hardware for that
-> > +		 * purpose. Here we store the posted format of IRTE in another
-> > +		 * new member "ir_data->irte_pi_entry" to not corrupt
-> 
-> Remove the 'another new member' please. That member is not longer new
-> once that patch is applied.
-> 
-> Now there is another question. Are we actually using that pi_entry
-> cached value for anything else than this code here? If not, we can do
-> this on the stack and avoid the extra storage in ir_data.
-> 
-
-That's a good comments. I also thought about this before. Right now the cached value
-is only used here in this function, but I am not sure whether we need it in future. Anyway,
-I think we can delete it now.
+I have merged atomic patch series. Can you re-base your patch series on
+top of exynos-drm-next?
 
 Thanks,
-Feng
+Inki Dae
 
-
-> Thanks,
-> 
-> 	tglx
+On 2015=EB=85=84 06=EC=9B=94 01=EC=9D=BC 20:15, Marek Szyprowski wrote:
+> One should not do any assumptions on the stare of the fimd hardware
+> during driver initialization, so to properly reset fimd before enabli=
+ng
+> IOMMU, one should ensure that all power domains and clocks are really
+> enabled. This patch adds calls to power on/off in the
+> fimd_clear_channel() function to ensure that any access to fimd
+> registers will be performed with clocks and power domains enabled.
+>=20
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Tested-by: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
+> ---
+>  drivers/gpu/drm/exynos/exynos_drm_fimd.c | 26 +++++++++++++++++-----=
+----
+>  1 file changed, 17 insertions(+), 9 deletions(-)
+>=20
+> diff --git a/drivers/gpu/drm/exynos/exynos_drm_fimd.c b/drivers/gpu/d=
+rm/exynos/exynos_drm_fimd.c
+> index a0edab833148..d10ad3920e78 100644
+> --- a/drivers/gpu/drm/exynos/exynos_drm_fimd.c
+> +++ b/drivers/gpu/drm/exynos/exynos_drm_fimd.c
+> @@ -242,12 +242,21 @@ static void fimd_enable_shadow_channel_path(str=
+uct fimd_context *ctx,
+>  	writel(val, ctx->regs + SHADOWCON);
+>  }
+> =20
+> -static void fimd_clear_channel(struct fimd_context *ctx)
+> +static int fimd_poweron(struct fimd_context *ctx);
+> +static int fimd_poweroff(struct fimd_context *ctx);
+> +
+> +static int fimd_clear_channel(struct fimd_context *ctx)
+>  {
+>  	unsigned int win, ch_enabled =3D 0;
+> +	int ret;
+> =20
+>  	DRM_DEBUG_KMS("%s\n", __FILE__);
+> =20
+> +	/* Hardware is in unknown state, so ensure it get enabled properly =
+*/
+> +	ret =3D fimd_poweron(ctx);
+> +	if (ret)
+> +		return ret;
+> +
+>  	/* Check if any channel is enabled. */
+>  	for (win =3D 0; win < WINDOWS_NR; win++) {
+>  		u32 val =3D readl(ctx->regs + WINCON(win));
+> @@ -258,19 +267,15 @@ static void fimd_clear_channel(struct fimd_cont=
+ext *ctx)
+>  			if (ctx->driver_data->has_shadowcon)
+>  				fimd_enable_shadow_channel_path(ctx, win,
+>  								false);
+> -
+>  			ch_enabled =3D 1;
+>  		}
+>  	}
+> =20
+>  	/* Wait for vsync, as disable channel takes effect at next vsync */
+> -	if (ch_enabled) {
+> -		unsigned int state =3D ctx->suspended;
+> -
+> -		ctx->suspended =3D 0;
+> +	if (ch_enabled)
+>  		fimd_wait_for_vblank(ctx->crtc);
+> -		ctx->suspended =3D state;
+> -	}
+> +
+> +	return fimd_poweroff(ctx);
+>  }
+> =20
+>  static int fimd_iommu_attach_devices(struct fimd_context *ctx,
+> @@ -285,7 +290,10 @@ static int fimd_iommu_attach_devices(struct fimd=
+_context *ctx,
+>  		 * If any channel is already active, iommu will throw
+>  		 * a PAGE FAULT when enabled. So clear any channel if enabled.
+>  		 */
+> -		fimd_clear_channel(ctx);
+> +		ret =3D fimd_clear_channel(ctx);
+> +		if (ret)
+> +			return ret;
+> +
+>  		ret =3D drm_iommu_attach_device(ctx->drm_dev, ctx->dev);
+>  		if (ret) {
+>  			DRM_ERROR("drm_iommu_attach failed.\n");
+>=20
