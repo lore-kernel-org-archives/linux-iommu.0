@@ -1,74 +1,219 @@
-From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-Subject: Re: [PATCH 0/6] Exynos SYSMMU (IOMMU) dts and arch updates
-Date: Thu, 04 Jun 2015 15:10:22 +0900
-Message-ID: <556FEBCE.9050604@samsung.com>
-References: <1432041645-11172-1-git-send-email-m.szyprowski@samsung.com>
- <1433153450-3680-1-git-send-email-m.szyprowski@samsung.com>
- <556C4342.6060506@samsung.com> <556F89B2.9010607@kernel.org>
- <556FCB2B.8090406@samsung.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH 3/4] arm64: Add IOMMU dma_ops
+Date: Thu, 4 Jun 2015 20:29:52 +0800
+Message-ID: <1433420992.4270.86.camel@mhfsdcap03>
+References: <cover.1432735420.git.robin.murphy@arm.com>
+	<cd32131caab8833f48180ee1df79c9da020c5a48.1432735420.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <556FCB2B.8090406@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Kukjin Kim <kgene@kernel.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, Inki Dae <inki.dae@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>, Krzysztof Kozlowski <k.kozlowski.k@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <cd32131caab8833f48180ee1df79c9da020c5a48.1432735420.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 04.06.2015 12:51, Krzysztof Kozlowski wrote:
-> On 04.06.2015 08:11, Kukjin Kim wrote:
->> On 06/01/15 20:34, Krzysztof Kozlowski wrote:
->>> W dniu 01.06.2015 o 19:10, Marek Szyprowski pisze:
->>>> Hello,
->>>>
->>>> Main changes for Exynos SYSMMU (IOMMU) driver has been finally scheduled
->>>> for merging - see
->>>> https://git.kernel.org/cgit/linux/kernel/git/joro/iommu.git/commit/?h=next
->>>> In meantime there have been quite a lot of changes related to Exynos DTS
->>>> files queued for merging and my patches don't apply anymore. To ease
->>>> merge process I've decided to rebased all Exynos SYSMMU dts changes onto
->>>> latest exynos next tree from: https://github.com/krzk/linux dt-for-next
->>>>
->>>> While rebasing I've fixes a few spotted issues: some nodes still used
->>>> old 'samsung,power-domain' properties (now replaced with 'power-domains')
->>>> and added properties to jpeg codec merged recently.
->>>>
->>>
->>> Thanks for rebasing this stuff.
->>>
->> Same here ;-)
->>
->>> I picked whole patchset with Javier's tested-by. I'll send it to Kukjin
->>> later or directly to arm-soc (depending what will happen with last pull
->>> request).
->>>
->>> Kukjin, you mentioned that you will do something with this patchset the
->>> previous weekend. Since then nothing happened so I am not sure what are
->>> your plans... Can you share them? Do you want to pick it by yourself, do
->>> you have any comments or maybe you need something from our side? (I
->>> checked the patches and they look fine)
->>>
->> Done, thanks.
+Hi Robin,
+     Sorry to disturb you. When prepare iommu based on this dma-v3. I
+meet some problem about how to use the dma-iommu.
+     I list some sample code like below:
+//========
+int mtk_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
+{
+        if (args->args_count != 2) {            
+                return -EINVAL;
+        }
+
+        /* save the private data from args  
+         * the private data is larbid and portid in our platform */
+        priv->larbid = args->args[0];
+        priv->portid = args->args[1];
+
+        /*list the private data */
+        list_add_tail(&priv->client, &head->client);
+
+        /* save the list to dev->archdata->iommu */
+        ...
+}
+static int mtk_iommu_init_fn(struct device_node *np)
+{
+        of_iommu_set_ops(np, &mtk_iommu_ops);   
+        return 0;
+}
+
+IOMMU_OF_DECLARE(mtkm4u, "mediatek,mt8173-m4u", mtk_iommu_init_fn);
+//=======
+
+Question :
+  1: if there are 2 client devices use iommu, it will be like this in
+dtsi,
+                disp:testiommu@1400c000 {
+                        compatible = "mediatek,mt8173-test";
+                        iommus = <&iommu M4U_LARB0_ID 0>,
+                                 <&iommu M4U_LARB1_ID 3>;
+                };
+                disp1:testiommu@1400D000 {
+                        compatible = "mediatek,mt8173-disptest1";
+                        iommus = <&iommu M4U_LARB0_ID 8>, 
+                                 <&iommu M4U_LARB1_ID 2>;
+                };
+    Then both devices will enter arch_setup_dma_ops and their parameter
+"struct iommu_ops *" is not zero, then it will create two
+dma-iommu-domain.
+    If we expect all the client device share a iommu domain, then how
+should i do?
+
+2. iommu_dma_attach_device will be called automatically in the notify
+"__iommu_attach_notifier". But it run before the probe of our iommu
+device.
+    Then we can't write the register to enable iommu in *_attach_device
+because we have not parsed the dtsi at that time.
+   ->I have tried to move parse dtsi into mtk_iommu_of_xlate, in order
+to read/write register in attach_device.
+But it will be warning like this:
+(150604_09:43:41.094)WARNING: CPU: 0 PID: 1
+at /proj/mtk40525/upstreamdev/chromebook_kernelonly/kernel/mediatek/drivers/base/dd.c:286 driver_probe_device+0x25c/0x29c()
+
+3.In mtk_iommu_probe, we can't get "struct iommu_domain *" from the
+current iommu device, we should use it while devm_request_irq.
+I have to use the global variable here?!
+
+4.If I don't implement the of_xlate and IOMMU_OF_DECLARE, I call
+iommu_dma_create_domain in the mtk_iommu_probe, but I can not
+get the "iommu_dma_ops" which is static in arch/arm64/mm/dma-mapping.c
+to assign to dev->archdata->dma_ops for the iommu client device.
+
+If i miss something, please tell me and help give some suggestion.
+Thanks very much.
+
+On Wed, 2015-05-27 at 15:09 +0100, Robin Murphy wrote:
+> Taking some inspiration from the arch/arm code, implement the
+> arch-specific side of the DMA mapping ops using the new IOMMU-DMA layer.
 > 
-> Thank you, I tested the for-next branch on some of my boards and
-> everything looked fine.
-
-Oh, something wrong happened on some of configs/boards:
-
-Arndale Octa: multi_v7_defconfig
-Last tests on samsung tree fail:
-1.
-http://kernelci.org/boot/exynos5420-arndale-octa_rootfs:nfs/job/samsung/kernel/v4.1-rc6-146-g1c07c562d9d5/defconfig/multi_v7_defconfig/lab/lab-tbaker/?_id=556fbaee59b5146b5cda4447
-2.
-http://kernelci.org/boot/exynos5420-arndale-octa_rootfs:nfs/job/samsung/kernel/v4.1-rc6-137-g1730fe10f4a8/defconfig/multi_v7_defconfig/lab/lab-tbaker/?_id=556e948659b5144e74da4445
-
-Odroid XU3: multi_v7_defconfig
-Last commit fails:
-http://kernelci.org/boot/exynos5422-odroidxu3_rootfs:nfs/job/samsung/kernel/v4.1-rc6-146-g1c07c562d9d5/defconfig/multi_v7_defconfig/lab/lab-tbaker/?_id=556fbb2d59b5146b63da4449
-
-I can test tonight on Odroid XU3 but I don't have access to Arndale Octa
-board. Maybe guys from SRPOL could test it?
-
-Best regards,
-Krzysztof
+> Whilst proliferating per-device private IOMMU data via dev->archdata is
+> less than ideal, it will do the job for now, especially since we can't
+> easily handle the kind of problematic system topologies in the current
+> IOMMU API anyway.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  arch/arm64/include/asm/device.h      |   3 +
+>  arch/arm64/include/asm/dma-mapping.h |  14 ++
+>  arch/arm64/mm/dma-mapping.c          | 342 +++++++++++++++++++++++++++++++++++
+>  include/linux/dma-iommu.h            |   4 +-
+>  4 files changed, 361 insertions(+), 2 deletions(-)
+> 
+[snip]
+> +struct iommu_dma_notifier_data {
+> +	struct list_head list;
+> +	struct device *dev;
+> +	struct iommu_dma_domain *dma_domain;
+> +};
+> +static LIST_HEAD(iommu_dma_masters);
+> +static DEFINE_MUTEX(iommu_dma_notifier_lock);
+> +
+> +static int __iommu_attach_notifier(struct notifier_block *nb,
+> +				   unsigned long action, void *data)
+> +{
+> +	struct iommu_dma_notifier_data *master, *tmp;
+> +
+> +	if (action != BUS_NOTIFY_ADD_DEVICE)
+> +		return 0;
+> +	/*
+> +	 * We expect the list to only contain the most recent addition,
+> +	 * which *should* be the same device as @data, so just process the
+> +	 * whole thing blindly. If any previous attachments did happen to
+> +	 * fail, they get a free retry since the domains are still live.
+> +	 */
+> +	mutex_lock(&iommu_dma_notifier_lock);
+> +	list_for_each_entry_safe(master, tmp, &iommu_dma_masters, list) {
+> +		if (iommu_dma_attach_device(master->dev, master->dma_domain)) {
+> +			pr_warn("Failed to attach device %s to IOMMU mapping; retaining platform DMA ops\n",
+> +				dev_name(master->dev));
+> +		} else {
+> +			master->dev->archdata.dma_ops = &iommu_dma_ops;
+> +			/* it's safe to drop the initial refcount now */
+> +			iommu_dma_release_domain(master->dma_domain);
+> +			list_del(&master->list);
+> +			kfree(master);
+> +		}
+> +	}
+> +	mutex_unlock(&iommu_dma_notifier_lock);
+> +	return 0;
+> +}
+> +
+> +static int register_iommu_dma_ops_notifier(struct bus_type *bus)
+> +{
+> +	int ret;
+> +	struct notifier_block *nb = kzalloc(sizeof(*nb), GFP_KERNEL);
+> +
+> +	/*
+> +	 * The device must be attached to a domain before its driver probe,
+> +	 * in case the driver allocates DMA buffers immediately. However, most
+> +	 * IOMMU drivers are currently configuring groups in their add_device
+> +	 * callback, so the attach should happen after that. Since the IOMMU
+> +	 * core uses a bus notifier for add_device, do the same but with a
+> +	 * stupidly low priority to ensure the appropriate ordering.
+> +	 *
+> +	 * This can hopefully all go away once we have default domains in the
+> +	 * IOMMU core.
+> +	 */
+> +	nb->notifier_call = __iommu_attach_notifier;
+> +	nb->priority = INT_MIN;
+> +
+> +	ret = bus_register_notifier(bus, nb);
+> +	if (ret) {
+> +		pr_warn("Failed to register DMA domain notifier; IOMMU DMA ops unavailable on bus '%s'\n",
+> +			bus->name);
+> +		kfree(nb);
+> +	}
+> +	return ret;
+> +}
+> +
+> +static int __init arm64_iommu_dma_init(void)
+> +{
+> +	int ret;
+> +
+> +	ret = iommu_dma_init();
+> +	if (!ret)
+> +		ret = register_iommu_dma_ops_notifier(&platform_bus_type);
+> +	if (!ret)
+> +		ret = register_iommu_dma_ops_notifier(&amba_bustype);
+> +	return ret;
+> +}
+> +arch_initcall(arm64_iommu_dma_init);
+> +
+> +static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> +				  const struct iommu_ops *ops)
+> +{
+> +	struct iommu_dma_notifier_data *iommudata;
+> +
+> +	if (!ops)
+> +		return;
+> +
+> +	iommudata = kzalloc(sizeof(*iommudata), GFP_KERNEL);
+> +	if (!iommudata)
+> +		return;
+> +
+> +	iommudata->dev = dev;
+> +	iommudata->dma_domain = iommu_dma_create_domain(ops, dma_base, size);
+> +	if (!iommudata->dma_domain) {
+> +		pr_warn("Failed to create %llu-byte IOMMU mapping for device %s\n",
+> +				size, dev_name(dev));
+> +		kfree(iommudata);
+> +		return;
+> +	}
+> +	mutex_lock(&iommu_dma_notifier_lock);
+> +	list_add(&iommudata->list, &iommu_dma_masters);
+> +	mutex_unlock(&iommu_dma_notifier_lock);
+> +}
+> +
