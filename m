@@ -1,14 +1,15 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH 3/4] arm64: Add IOMMU dma_ops
-Date: Thu, 4 Jun 2015 20:29:52 +0800
-Message-ID: <1433420992.4270.86.camel@mhfsdcap03>
-References: <cover.1432735420.git.robin.murphy@arm.com>
-	<cd32131caab8833f48180ee1df79c9da020c5a48.1432735420.git.robin.murphy@arm.com>
+From: Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v2 1/3] drm/exynos: fimd: ensure proper hw state in
+	fimd_clear_channel()
+Date: Thu, 04 Jun 2015 22:08:16 +0900
+Message-ID: <55704DC0.8000608@samsung.com>
+References: <1433319984-18683-1-git-send-email-m.szyprowski@samsung.com>
+	<1433319984-18683-2-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cd32131caab8833f48180ee1df79c9da020c5a48.1432735420.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-reply-to: <1433319984-18683-2-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,202 +19,69 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Seung-Woo Kim <sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-     Sorry to disturb you. When prepare iommu based on this dma-v3. I
-meet some problem about how to use the dma-iommu.
-     I list some sample code like below:
-//========
-int mtk_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
-{
-        if (args->args_count != 2) {            
-                return -EINVAL;
-        }
-
-        /* save the private data from args  
-         * the private data is larbid and portid in our platform */
-        priv->larbid = args->args[0];
-        priv->portid = args->args[1];
-
-        /*list the private data */
-        list_add_tail(&priv->client, &head->client);
-
-        /* save the list to dev->archdata->iommu */
-        ...
-}
-static int mtk_iommu_init_fn(struct device_node *np)
-{
-        of_iommu_set_ops(np, &mtk_iommu_ops);   
-        return 0;
-}
-
-IOMMU_OF_DECLARE(mtkm4u, "mediatek,mt8173-m4u", mtk_iommu_init_fn);
-//=======
-
-Question :
-  1: if there are 2 client devices use iommu, it will be like this in
-dtsi,
-                disp:testiommu@1400c000 {
-                        compatible = "mediatek,mt8173-test";
-                        iommus = <&iommu M4U_LARB0_ID 0>,
-                                 <&iommu M4U_LARB1_ID 3>;
-                };
-                disp1:testiommu@1400D000 {
-                        compatible = "mediatek,mt8173-disptest1";
-                        iommus = <&iommu M4U_LARB0_ID 8>, 
-                                 <&iommu M4U_LARB1_ID 2>;
-                };
-    Then both devices will enter arch_setup_dma_ops and their parameter
-"struct iommu_ops *" is not zero, then it will create two
-dma-iommu-domain.
-    If we expect all the client device share a iommu domain, then how
-should i do?
-
-2. iommu_dma_attach_device will be called automatically in the notify
-"__iommu_attach_notifier". But it run before the probe of our iommu
-device.
-    Then we can't write the register to enable iommu in *_attach_device
-because we have not parsed the dtsi at that time.
-   ->I have tried to move parse dtsi into mtk_iommu_of_xlate, in order
-to read/write register in attach_device.
-But it will be warning like this:
-(150604_09:43:41.094)WARNING: CPU: 0 PID: 1
-at /proj/mtk40525/upstreamdev/chromebook_kernelonly/kernel/mediatek/drivers/base/dd.c:286 driver_probe_device+0x25c/0x29c()
-
-3.In mtk_iommu_probe, we can't get "struct iommu_domain *" from the
-current iommu device, we should use it while devm_request_irq.
-I have to use the global variable here?!
-
-4.If I don't implement the of_xlate and IOMMU_OF_DECLARE, I call
-iommu_dma_create_domain in the mtk_iommu_probe, but I can not
-get the "iommu_dma_ops" which is static in arch/arm64/mm/dma-mapping.c
-to assign to dev->archdata->dma_ops for the iommu client device.
-
-If i miss something, please tell me and help give some suggestion.
-Thanks very much.
-
-On Wed, 2015-05-27 at 15:09 +0100, Robin Murphy wrote:
-> Taking some inspiration from the arch/arm code, implement the
-> arch-specific side of the DMA mapping ops using the new IOMMU-DMA layer.
-> 
-> Whilst proliferating per-device private IOMMU data via dev->archdata is
-> less than ideal, it will do the job for now, especially since we can't
-> easily handle the kind of problematic system topologies in the current
-> IOMMU API anyway.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
->  arch/arm64/include/asm/device.h      |   3 +
->  arch/arm64/include/asm/dma-mapping.h |  14 ++
->  arch/arm64/mm/dma-mapping.c          | 342 +++++++++++++++++++++++++++++++++++
->  include/linux/dma-iommu.h            |   4 +-
->  4 files changed, 361 insertions(+), 2 deletions(-)
-> 
-[snip]
-> +struct iommu_dma_notifier_data {
-> +	struct list_head list;
-> +	struct device *dev;
-> +	struct iommu_dma_domain *dma_domain;
-> +};
-> +static LIST_HEAD(iommu_dma_masters);
-> +static DEFINE_MUTEX(iommu_dma_notifier_lock);
-> +
-> +static int __iommu_attach_notifier(struct notifier_block *nb,
-> +				   unsigned long action, void *data)
-> +{
-> +	struct iommu_dma_notifier_data *master, *tmp;
-> +
-> +	if (action != BUS_NOTIFY_ADD_DEVICE)
-> +		return 0;
-> +	/*
-> +	 * We expect the list to only contain the most recent addition,
-> +	 * which *should* be the same device as @data, so just process the
-> +	 * whole thing blindly. If any previous attachments did happen to
-> +	 * fail, they get a free retry since the domains are still live.
-> +	 */
-> +	mutex_lock(&iommu_dma_notifier_lock);
-> +	list_for_each_entry_safe(master, tmp, &iommu_dma_masters, list) {
-> +		if (iommu_dma_attach_device(master->dev, master->dma_domain)) {
-> +			pr_warn("Failed to attach device %s to IOMMU mapping; retaining platform DMA ops\n",
-> +				dev_name(master->dev));
-> +		} else {
-> +			master->dev->archdata.dma_ops = &iommu_dma_ops;
-> +			/* it's safe to drop the initial refcount now */
-> +			iommu_dma_release_domain(master->dma_domain);
-> +			list_del(&master->list);
-> +			kfree(master);
-> +		}
-> +	}
-> +	mutex_unlock(&iommu_dma_notifier_lock);
-> +	return 0;
-> +}
-> +
-> +static int register_iommu_dma_ops_notifier(struct bus_type *bus)
-> +{
-> +	int ret;
-> +	struct notifier_block *nb = kzalloc(sizeof(*nb), GFP_KERNEL);
-> +
-> +	/*
-> +	 * The device must be attached to a domain before its driver probe,
-> +	 * in case the driver allocates DMA buffers immediately. However, most
-> +	 * IOMMU drivers are currently configuring groups in their add_device
-> +	 * callback, so the attach should happen after that. Since the IOMMU
-> +	 * core uses a bus notifier for add_device, do the same but with a
-> +	 * stupidly low priority to ensure the appropriate ordering.
-> +	 *
-> +	 * This can hopefully all go away once we have default domains in the
-> +	 * IOMMU core.
-> +	 */
-> +	nb->notifier_call = __iommu_attach_notifier;
-> +	nb->priority = INT_MIN;
-> +
-> +	ret = bus_register_notifier(bus, nb);
-> +	if (ret) {
-> +		pr_warn("Failed to register DMA domain notifier; IOMMU DMA ops unavailable on bus '%s'\n",
-> +			bus->name);
-> +		kfree(nb);
-> +	}
-> +	return ret;
-> +}
-> +
-> +static int __init arm64_iommu_dma_init(void)
-> +{
-> +	int ret;
-> +
-> +	ret = iommu_dma_init();
-> +	if (!ret)
-> +		ret = register_iommu_dma_ops_notifier(&platform_bus_type);
-> +	if (!ret)
-> +		ret = register_iommu_dma_ops_notifier(&amba_bustype);
-> +	return ret;
-> +}
-> +arch_initcall(arm64_iommu_dma_init);
-> +
-> +static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-> +				  const struct iommu_ops *ops)
-> +{
-> +	struct iommu_dma_notifier_data *iommudata;
-> +
-> +	if (!ops)
-> +		return;
-> +
-> +	iommudata = kzalloc(sizeof(*iommudata), GFP_KERNEL);
-> +	if (!iommudata)
-> +		return;
-> +
-> +	iommudata->dev = dev;
-> +	iommudata->dma_domain = iommu_dma_create_domain(ops, dma_base, size);
-> +	if (!iommudata->dma_domain) {
-> +		pr_warn("Failed to create %llu-byte IOMMU mapping for device %s\n",
-> +				size, dev_name(dev));
-> +		kfree(iommudata);
-> +		return;
-> +	}
-> +	mutex_lock(&iommu_dma_notifier_lock);
-> +	list_add(&iommudata->list, &iommu_dma_masters);
-> +	mutex_unlock(&iommu_dma_notifier_lock);
-> +}
-> +
+SGkgTWFyZWssCgpPbiAyMDE164WEIDA27JuUIDAz7J28IDE3OjI2LCBNYXJlayBTenlwcm93c2tp
+IHdyb3RlOgo+IE9uZSBzaG91bGQgbm90IGRvIGFueSBhc3N1bXB0aW9ucyBvbiB0aGUgc3RhcmUg
+b2YgdGhlIGZpbWQgaGFyZHdhcmUKPiBkdXJpbmcgZHJpdmVyIGluaXRpYWxpemF0aW9uLCBzbyB0
+byBwcm9wZXJseSByZXNldCBmaW1kIGJlZm9yZSBlbmFibGluZwo+IElPTU1VLCBvbmUgc2hvdWxk
+IGVuc3VyZSB0aGF0IGFsbCBwb3dlciBkb21haW5zIGFuZCBjbG9ja3MgYXJlIHJlYWxseQo+IGVu
+YWJsZWQuIFRoaXMgcGF0Y2ggYWRkcyBwbV9ydW50aW1lIGFuZCBjbG9ja3MgbWFuYWdlbWVudCBp
+biB0aGUKPiBmaW1kX2NsZWFyX2NoYW5uZWwoKSBmdW5jdGlvbiB0byBlbnN1cmUgdGhhdCBhbnkg
+YWNjZXNzIHRvIGZpbWQKPiByZWdpc3RlcnMgd2lsbCBiZSBwZXJmb3JtZWQgd2l0aCBjbG9ja3Mg
+YW5kIHBvd2VyIGRvbWFpbnMgZW5hYmxlZC4KCkkgaGF2ZSB0ZXN0ZWQgdGhpcyBwYXRjaCBzZXJp
+ZXMgb24gdHJhdHMyIGJvYXJkIHdoaWNoIHVzZXMgRXh5bm9zNDQxMgpTb0MuIEhvd2V2ZXIsIHRo
+ZSBib290aW5nIGlzIGhhbHRlZCBvdXQuIFdpdGhvdXQgaW9tbXUsIHRoZSBib290aW5nIGFuZApk
+aXNwbGF5IHdvcmtzIHdlbGwuCgpGb3IgdGhpcyB0ZXN0LCBJIGFsc28gbWVyZ2VkIGFub3RoZXIg
+eW91ciBwYXRjaCBzZXJpZXMgaW4gaW9tbXUgZXh5bm9zCnRyZWUgYW5kIGFkZGVkIGRldmljZSBu
+b2RlIHJlbGV2YW50IGNvZGVzIGxpa2UgYmVsb3csCgppbiBleHlub3M0LmR0c2kgZmlsZToKZmlt
+ZDogZmltZEAxMWMwMDAwMCB7CiAgICAgICAgICAgICAgICAgLi4uCiAgICAgICAgICAgICAgIGlv
+bW11cyA9IDwmc3lzbW11X2ZpbWQwPjsKICAgICAgICAgICAgICAgICAuLi4KCnN5c21tdV9maW1k
+MDogc3lzbW11QDExRTIwMDAwIHsKICAgICAgICBjb21wYXRpYmxlID0gInNhbXN1bmcsZXh5bm9z
+LXN5c21tdSI7CiAgICAgICAgcmVnID0gPDB4MTFFMjAwMDAgMHgxMDAwPjsKICAgICAgICBpbnRl
+cnJ1cHQtcGFyZW50ID0gPCZjb21iaW5lcj47CiAgICAgICAgaW50ZXJydXB0cyA9IDw1IDI+Owog
+ICAgICAgIGNsb2NrLW5hbWVzID0gInN5c21tdSIsICJtYXN0ZXIiOwogICAgICAgIGNsb2NrcyA9
+IDwmY2xvY2sgQ0xLX1NNTVVfRklNRDA+LCA8JmNsb2NrIENMS19GSU1EMD47CiAgICAgICAgIHBv
+d2VyLWRvbWFpbnMgPSA8JnBkX2xjZDA+OwogICAgICAgICNpb21tdS1jZWxscyA9IDwwPjsKfTsK
+CmluIGV4eW5vczQ0MTItdHJhdHMyLmR0cyBmaWxlOgpmaW1kQDExYzAwMDAwIHsKICAgICAgICAg
+ICAgICAgIHN0YXR1cyA9ICJva2F5IjsKICAgICAgICAgICAgICAgIGlvbW11LXJlc2VydmVkLW1h
+cHBpbmcgPSA8MHg0MDAwMDAwMCAweDQwMDAwMDAwIDB4NDAwMDAwMDA+Owp9OwoKQ2FuIHlvdSBj
+aGVjayBpdCBvdXQ/CgpUaGFua3MsCklua2kgRGFlCgo+IAo+IFNpZ25lZC1vZmYtYnk6IE1hcmVr
+IFN6eXByb3dza2kgPG0uc3p5cHJvd3NraUBzYW1zdW5nLmNvbT4KPiBUZXN0ZWQtYnk6IEphdmll
+ciBNYXJ0aW5leiBDYW5pbGxhcyA8amF2aWVyLm1hcnRpbmV6QGNvbGxhYm9yYS5jby51az4KPiAt
+LS0KPiAgZHJpdmVycy9ncHUvZHJtL2V4eW5vcy9leHlub3NfZHJtX2ZpbWQuYyB8IDIyICsrKysr
+KysrKysrKysrKysrKy0tLS0KPiAgMSBmaWxlIGNoYW5nZWQsIDE4IGluc2VydGlvbnMoKyksIDQg
+ZGVsZXRpb25zKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvZ3B1L2RybS9leHlub3MvZXh5
+bm9zX2RybV9maW1kLmMgYi9kcml2ZXJzL2dwdS9kcm0vZXh5bm9zL2V4eW5vc19kcm1fZmltZC5j
+Cj4gaW5kZXggOTY2MTg1MzQzNThlLi4zZWM5ZDQyOTlhODYgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVy
+cy9ncHUvZHJtL2V4eW5vcy9leHlub3NfZHJtX2ZpbWQuYwo+ICsrKyBiL2RyaXZlcnMvZ3B1L2Ry
+bS9leHlub3MvZXh5bm9zX2RybV9maW1kLmMKPiBAQCAtMjQyLDEyICsyNDIsMjEgQEAgc3RhdGlj
+IHZvaWQgZmltZF9lbmFibGVfc2hhZG93X2NoYW5uZWxfcGF0aChzdHJ1Y3QgZmltZF9jb250ZXh0
+ICpjdHgsCj4gIAl3cml0ZWwodmFsLCBjdHgtPnJlZ3MgKyBTSEFET1dDT04pOwo+ICB9Cj4gIAo+
+ICtzdGF0aWMgaW50IGZpbWRfZW5hYmxlX3ZibGFuayhzdHJ1Y3QgZXh5bm9zX2RybV9jcnRjICpj
+cnRjKTsKPiArc3RhdGljIHZvaWQgZmltZF9kaXNhYmxlX3ZibGFuayhzdHJ1Y3QgZXh5bm9zX2Ry
+bV9jcnRjICpjcnRjKTsKPiArCj4gIHN0YXRpYyB2b2lkIGZpbWRfY2xlYXJfY2hhbm5lbChzdHJ1
+Y3QgZmltZF9jb250ZXh0ICpjdHgpCj4gIHsKPiAgCXVuc2lnbmVkIGludCB3aW4sIGNoX2VuYWJs
+ZWQgPSAwOwo+ICAKPiAgCURSTV9ERUJVR19LTVMoIiVzXG4iLCBfX0ZJTEVfXyk7Cj4gIAo+ICsJ
+LyogSGFyZHdhcmUgaXMgaW4gdW5rbm93biBzdGF0ZSwgc28gZW5zdXJlIGl0IGdldHMgZW5hYmxl
+ZCBwcm9wZXJseSAqLwo+ICsJcG1fcnVudGltZV9nZXRfc3luYyhjdHgtPmRldik7Cj4gKwo+ICsJ
+Y2xrX3ByZXBhcmVfZW5hYmxlKGN0eC0+YnVzX2Nsayk7Cj4gKwljbGtfcHJlcGFyZV9lbmFibGUo
+Y3R4LT5sY2RfY2xrKTsKPiArCj4gIAkvKiBDaGVjayBpZiBhbnkgY2hhbm5lbCBpcyBlbmFibGVk
+LiAqLwo+ICAJZm9yICh3aW4gPSAwOyB3aW4gPCBXSU5ET1dTX05SOyB3aW4rKykgewo+ICAJCXUz
+MiB2YWwgPSByZWFkbChjdHgtPnJlZ3MgKyBXSU5DT04od2luKSk7Cj4gQEAgLTI2NSwxMiArMjc0
+LDE3IEBAIHN0YXRpYyB2b2lkIGZpbWRfY2xlYXJfY2hhbm5lbChzdHJ1Y3QgZmltZF9jb250ZXh0
+ICpjdHgpCj4gIAo+ICAJLyogV2FpdCBmb3IgdnN5bmMsIGFzIGRpc2FibGUgY2hhbm5lbCB0YWtl
+cyBlZmZlY3QgYXQgbmV4dCB2c3luYyAqLwo+ICAJaWYgKGNoX2VuYWJsZWQpIHsKPiAtCQl1bnNp
+Z25lZCBpbnQgc3RhdGUgPSBjdHgtPnN1c3BlbmRlZDsKPiAtCj4gLQkJY3R4LT5zdXNwZW5kZWQg
+PSAwOwo+ICsJCWN0eC0+c3VzcGVuZGVkID0gZmFsc2U7Cj4gKwkJZmltZF9lbmFibGVfdmJsYW5r
+KGN0eC0+Y3J0Yyk7Cj4gIAkJZmltZF93YWl0X2Zvcl92YmxhbmsoY3R4LT5jcnRjKTsKPiAtCQlj
+dHgtPnN1c3BlbmRlZCA9IHN0YXRlOwo+ICsJCWZpbWRfZGlzYWJsZV92YmxhbmsoY3R4LT5jcnRj
+KTsKPiArCQljdHgtPnN1c3BlbmRlZCA9IHRydWU7Cj4gIAl9Cj4gKwo+ICsJY2xrX2Rpc2FibGVf
+dW5wcmVwYXJlKGN0eC0+bGNkX2Nsayk7Cj4gKwljbGtfZGlzYWJsZV91bnByZXBhcmUoY3R4LT5i
+dXNfY2xrKTsKPiArCj4gKwlwbV9ydW50aW1lX3B1dChjdHgtPmRldik7Cj4gIH0KPiAgCj4gIHN0
+YXRpYyBpbnQgZmltZF9pb21tdV9hdHRhY2hfZGV2aWNlcyhzdHJ1Y3QgZmltZF9jb250ZXh0ICpj
+dHgsCj4gCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpp
+b21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6
+Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
