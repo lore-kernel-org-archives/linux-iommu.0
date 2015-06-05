@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 08/17] iommu/vt-d: Don't reuse domain-ids from old kernel
-Date: Fri,  5 Jun 2015 16:10:54 +0200
-Message-ID: <1433513463-19128-9-git-send-email-joro@8bytes.org>
+Subject: [PATCH 14/17] iommu/vt-d: Move kdump pointer intialization to
+	__iommu_load_old_irte
+Date: Fri,  5 Jun 2015 16:11:00 +0200
+Message-ID: <1433513463-19128-15-git-send-email-joro@8bytes.org>
 References: <1433513463-19128-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,145 +24,116 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Change the context table copy code to copy context
-entrys one by one and check whether they are present and
-mark the used domain-id as reserved in the allocation
-bitmap. This way the domain-id will not be reused by new
-domains allocated in the kdump kernel.
+We initialize the base_old_phys and base_old_virt in this
+function. This cleans up the caller and makes the code more
+readable. Also add a check for the size of the irq
+remapping table of the old kernel, break out if it does not
+match our size. Rename the function to iommu_load_old_irte
+while at it.
 
 Tested-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 80 ++++++++++++++-------------------------------
- 1 file changed, 25 insertions(+), 55 deletions(-)
+ drivers/iommu/intel_irq_remapping.c | 50 +++++++++++++++++++++----------------
+ include/linux/intel-iommu.h         |  1 +
+ 2 files changed, 29 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 2602b33..82239e3 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -367,10 +367,6 @@ static inline int first_pte_in_page(struct dma_pte *pte)
-  * do the same thing as crashdump kernel.
-  */
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index c3d1e63..fd6c25b 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -21,7 +21,7 @@
  
--static struct context_entry *device_to_existing_context_entry(
--				struct intel_iommu *iommu,
--				u8 bus, u8 devfn);
--
- /*
-  * A structure used to store the address allocated by ioremap();
-  * The we need to call iounmap() to free them out of spin_lock_irqsave/unlock;
-@@ -2337,7 +2333,6 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
- 	unsigned long flags;
- 	u8 bus, devfn;
- 	int did = -1;   /* Default to "no domain_id supplied" */
--	struct context_entry *ce = NULL;
+ #include "irq_remapping.h"
  
- 	domain = find_domain(dev);
- 	if (domain)
-@@ -2372,19 +2367,6 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
- 	if (!domain)
- 		return NULL;
+-static int __iommu_load_old_irte(struct intel_iommu *iommu);
++static int iommu_load_old_irte(struct intel_iommu *iommu);
+ static int __iommu_update_old_irte(struct intel_iommu *iommu, int index);
+ static void iommu_check_pre_ir_status(struct intel_iommu *iommu);
  
--	if (iommu->pre_enabled_trans) {
--		/*
--		 * if this device had a did in the old kernel
--		 * use its values instead of generating new ones
--		 */
--		ce = device_to_existing_context_entry(iommu, bus, devfn);
+@@ -698,14 +698,7 @@ static int __init intel_enable_irq_remapping(void)
+ 	 */
+ 	for_each_iommu(iommu, drhd) {
+ 		if (iommu->pre_enabled_ir) {
+-			unsigned long long q;
 -
--		if (ce) {
--			did = context_domain_id(ce);
--			gaw = agaw_to_width(context_address_width(ce));
--		}
--	}
--
- 	domain->id = iommu_attach_domain_with_id(domain, iommu, did);
- 	if (domain->id < 0) {
- 		free_domain_mem(domain);
-@@ -4931,49 +4913,37 @@ static void __init check_tylersburg_isoch(void)
- 	       vtisochctrl);
+-			q = dmar_readq(iommu->reg + DMAR_IRTA_REG);
+-			iommu->ir_table->base_old_phys = q & VTD_PAGE_MASK;
+-			iommu->ir_table->base_old_virt = ioremap_cache(
+-				iommu->ir_table->base_old_phys,
+-				INTR_REMAP_TABLE_ENTRIES*sizeof(struct irte));
+-			__iommu_load_old_irte(iommu);
++			iommu_load_old_irte(iommu);
+ 		} else {
+ 			iommu_set_irq_remapping(iommu, eim_mode);
+ 			iommu_enable_irq_remapping(iommu);
+@@ -1303,21 +1296,34 @@ int dmar_ir_hotplug(struct dmar_drhd_unit *dmaru, bool insert)
+ 	return ret;
  }
  
--static struct context_entry *device_to_existing_context_entry(
--				struct intel_iommu *iommu,
--				u8 bus, u8 devfn)
--{
--	struct root_entry *root;
--	struct context_entry *context;
--	struct context_entry *ret = NULL;
--	unsigned long flags;
--
--	spin_lock_irqsave(&iommu->lock, flags);
--	root = &iommu->root_entry[bus];
--	context = get_context_addr_from_root(root);
--	if (context && context_present(context+devfn))
--		ret = &context[devfn];
--	spin_unlock_irqrestore(&iommu->lock, flags);
--	return ret;
--}
--
- /*
-- * Copy memory from a physically-addressed area into a virtually-addressed area
-+ * Copy one context table
-  */
--static int copy_from_oldmem_phys(void *to, phys_addr_t from, size_t size)
-+static int copy_one_context_table(struct intel_iommu *iommu,
-+				  struct context_entry *ctxt_tbl,
-+				  phys_addr_t old_table_phys)
+-static int __iommu_load_old_irte(struct intel_iommu *iommu)
++static int iommu_load_old_irte(struct intel_iommu *iommu)
  {
--	void __iomem *virt_mem;
--	unsigned long offset;
--	unsigned long pfn;
-+	struct context_entry __iomem *ctxt_tbl_old, ce;
-+	int did, devfn;
- 
--	pfn    = from >> VTD_PAGE_SHIFT;
--	offset = from & (~VTD_PAGE_MASK);
-+	ctxt_tbl_old = ioremap_cache(old_table_phys, VTD_PAGE_SIZE);
-+	if (!ctxt_tbl_old)
+-	if ((!iommu)
+-		|| (!iommu->ir_table)
+-		|| (!iommu->ir_table->base)
+-		|| (!iommu->ir_table->base_old_phys)
+-		|| (!iommu->ir_table->base_old_virt))
+-		return -1;
++	struct irte *old_ir_table;
++	phys_addr_t irt_phys;
++	size_t size;
++	u64 irta;
++
++	/* Check whether the old ir-table has the same size as ours */
++	irta = dmar_readq(iommu->reg + DMAR_IRTA_REG);
++	if ((irta & INTR_REMAP_TABLE_REG_SIZE_MASK)
++		 != INTR_REMAP_TABLE_REG_SIZE)
++		return -EINVAL;
++
++	irt_phys = irta & VTD_PAGE_MASK;
++	size     = INTR_REMAP_TABLE_ENTRIES*sizeof(struct irte);
++
++	/* Map the old IR table */
++	old_ir_table = ioremap_cache(irt_phys, size);
++	if (!old_ir_table)
 +		return -ENOMEM;
- 
--	if (page_is_ram(pfn)) {
--		memcpy(to, pfn_to_kaddr(pfn) + offset, size);
--	} else {
--		virt_mem = ioremap_cache((unsigned long)from, size);
--		if (!virt_mem)
--			return -ENOMEM;
-+	for (devfn = 0; devfn < 256; devfn++) {
-+		memcpy_fromio(&ce, &ctxt_tbl_old[devfn],
-+			      sizeof(struct context_entry));
- 
--		memcpy(to, virt_mem, size);
-+		if (!context_present(&ce))
-+			continue;
 +
-+		did = context_domain_id(&ce);
-+		if (did >=0 && did < cap_ndoms(iommu->cap))
-+			set_bit(did, iommu->domain_ids);
++	/* Copy data over */
++	memcpy(iommu->ir_table->base, old_ir_table, size);
  
--		iounmap(virt_mem);
-+		ctxt_tbl[devfn] = ce;
- 	}
+-	memcpy(iommu->ir_table->base,
+-		iommu->ir_table->base_old_virt,
+-		INTR_REMAP_TABLE_ENTRIES*sizeof(struct irte));
++	__iommu_flush_cache(iommu, iommu->ir_table->base, size);
  
--	return size;
-+	iounmap(ctxt_tbl_old);
-+
-+	return 0;
+-	__iommu_flush_cache(iommu, iommu->ir_table->base,
+-		INTR_REMAP_TABLE_ENTRIES*sizeof(struct irte));
++	iommu->ir_table->base_old_phys = irt_phys;
++	iommu->ir_table->base_old_virt = old_ir_table;
+ 
+ 	return 0;
  }
+@@ -1327,7 +1333,7 @@ static int __iommu_update_old_irte(struct intel_iommu *iommu, int index)
+ 	int start;
+ 	unsigned long size;
+ 	void __iomem *to;
+-	void *from;
++void *from;
  
- /*
-@@ -5002,9 +4972,9 @@ static int copy_context_tables(struct intel_iommu *iommu,
- 		if (!context_new_virt)
- 			goto out_err;
+ 	if ((!iommu)
+ 		|| (!iommu->ir_table)
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 6c37de9..5aa8834 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -295,6 +295,7 @@ struct q_inval {
+ /* 1MB - maximum possible interrupt remapping table size */
+ #define INTR_REMAP_PAGE_ORDER	8
+ #define INTR_REMAP_TABLE_REG_SIZE	0xf
++#define INTR_REMAP_TABLE_REG_SIZE_MASK  0xf
  
--		ret = copy_from_oldmem_phys(context_new_virt, context_old_phys,
--					    VTD_PAGE_SIZE);
--		if (ret != VTD_PAGE_SIZE) {
-+		ret = copy_one_context_table(iommu, context_new_virt,
-+					     context_old_phys);
-+		if (ret) {
- 			pr_err("Failed to copy context table for bus %d from physical address 0x%llx\n",
- 			       bus, context_old_phys);
- 			free_pgtable_page(context_new_virt);
+ #define INTR_REMAP_TABLE_ENTRIES	65536
+ 
 -- 
 1.9.1
