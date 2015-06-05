@@ -1,15 +1,13 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [v9 0/9] Add VT-d Posted-Interrupts support - IOMMU part
-Date: Fri, 5 Jun 2015 15:33:33 +0200
-Message-ID: <20150605133333.GU20384@8bytes.org>
-References: <1433482974-14614-1-git-send-email-feng.wu@intel.com>
-	<alpine.DEB.2.11.1506051343510.7723@nanos>
+Subject: [PATCH 01/17] iommu/vt-d: Fix compile error when CONFIG_INTEL_IOMMU=n
+Date: Fri,  5 Jun 2015 16:10:47 +0200
+Message-ID: <1433513463-19128-2-git-send-email-joro@8bytes.org>
+References: <1433513463-19128-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.11.1506051343510.7723@nanos>
+In-Reply-To: <1433513463-19128-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,34 +17,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Cc: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, tom.vaden-VXdhtT5mjnY@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, zhen-hual-VXdhtT5mjnY@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 05, 2015 at 01:47:06PM +0200, Thomas Gleixner wrote:
-> On Fri, 5 Jun 2015, Feng Wu wrote:
-> > Divide the whole series which contain multiple components into three parts:
-> > - Prerequisite changes to irq subsystem (already merged in tip tree x86/apic branch)
-> > - IOMMU part (in this series)
-> 
-> Please add 
-> 
-> Reviewed-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-> 
-> Which tree should this go through? It depends on tip/x86/apic AFAICT,
-> so we can take it through that, if Joerg provides his ACK.
-
-Yeah, these changes depend on tip/x86/apic, so it doesn't make sense to
-send them through the iommu tree. There will be some conflicts when
-merging tip/x86/apic and the iommu tree together, though, mainly because
-of the vt-d kdump fixing patches I have in my tree. The conflicts are
-spread over 3 files, but not too serious and easy to resolve.
-
-Anyway, you have my
-
-Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-
-for those.
-
-
-	Joerg
+RnJvbTogSm9lcmcgUm9lZGVsIDxqcm9lZGVsQHN1c2UuZGU+CgpUaGUgcGF0Y2hlcyBmb3IgdGhl
+IEludGVsIElPTU1VIGRyaXZlciB0byBmaXggaXNzdWVzIHdpdGgKa2R1bXAgaW50cm9kdWNlZCBh
+IGNvbXBpbGUgZXJyb3Igd2l0aDoKCkNPTkZJR19ETUFSX1RBQkxFPXkKQ09ORklHX0lOVEVMX0lP
+TU1VPW4KQ09ORklHX0lSUV9SRU1BUD15CgpUaGUgZXJyb3IgbWFuaWZlc3RzIGFzOgoKZHJpdmVy
+cy9pb21tdS9pbnRlbF9pcnFfcmVtYXBwaW5nLmM6IEluIGZ1bmN0aW9uIOKAmG1vZGlmeV9pcnRl
+4oCZOgpkcml2ZXJzL2lvbW11L2ludGVsX2lycV9yZW1hcHBpbmcuYzoxNDk6MTE6IGVycm9yOiDi
+gJhzdHJ1Y3QKaW50ZWxfaW9tbXXigJkgaGFzIG5vIG1lbWJlciBuYW1lZCDigJhwcmVfZW5hYmxl
+ZF9pcuKAmQogIGlmIChpb21tdS0+cHJlX2VuYWJsZWRfaXIpCgpGaXggdGhpcyBieSBtb3Zpbmcg
+dGhlIGRlY2xhcmF0aW9uIG9mIHRoZSBwcmVfZW5hYmxlZF9pcgp1bmRlciAjaWZkZWYgQ09ORklH
+X0lSUV9SRU1BUFBJTkcgaW5zdGVhZCBvZgpDT05GSUdfSU5URUxfSU9NTVUuCgpSZXBvcnRlZC1i
+eTogSmltIERhdmlzIDxqaW0uZXBvc3RAZ21haWwuY29tPgpDYzogWmhlbi1IdWEgTGkgPHpoZW4t
+aHVhbEBocC5jb20+ClNpZ25lZC1vZmYtYnk6IEpvZXJnIFJvZWRlbCA8anJvZWRlbEBzdXNlLmRl
+PgotLS0KIGluY2x1ZGUvbGludXgvaW50ZWwtaW9tbXUuaCB8IDUgKysrLS0KIDEgZmlsZSBjaGFu
+Z2VkLCAzIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvaW5jbHVk
+ZS9saW51eC9pbnRlbC1pb21tdS5oIGIvaW5jbHVkZS9saW51eC9pbnRlbC1pb21tdS5oCmluZGV4
+IGQ3YTBiNWQuLmE4MWNlZWUgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvbGludXgvaW50ZWwtaW9tbXUu
+aAorKysgYi9pbmNsdWRlL2xpbnV4L2ludGVsLWlvbW11LmgKQEAgLTM0NCw4ICszNDQsNiBAQCBz
+dHJ1Y3QgaW50ZWxfaW9tbXUgewogCiAJLyogd2hldGhlciB0cmFuc2xhdGlvbiBpcyBlbmFibGVk
+IHByaW9yIHRvIE9TKi8KIAl1OAkJcHJlX2VuYWJsZWRfdHJhbnM7Ci0JLyogd2hldGhlciBpbnRl
+cnJ1cHQgcmVtYXBwaW5nIGlzIGVuYWJsZWQgcHJpb3IgdG8gT1MqLwotCXU4CQlwcmVfZW5hYmxl
+ZF9pcjsKIAogCXZvaWQgX19pb21lbQkqcm9vdF9lbnRyeV9vbGRfdmlydDsgLyogbWFwcGVkIGZy
+b20gb2xkIHJvb3QgZW50cnkgKi8KIAl1bnNpZ25lZCBsb25nCXJvb3RfZW50cnlfb2xkX3BoeXM7
+IC8qIHJvb3QgZW50cnkgaW4gb2xkIGtlcm5lbCAqLwpAQCAtMzU3LDYgKzM1NSw5IEBAIHN0cnVj
+dCBpbnRlbF9pb21tdSB7CiAKICNpZmRlZiBDT05GSUdfSVJRX1JFTUFQCiAJc3RydWN0IGlyX3Rh
+YmxlICppcl90YWJsZTsJLyogSW50ZXJydXB0IHJlbWFwcGluZyBpbmZvICovCisKKwkvKiB3aGV0
+aGVyIGludGVycnVwdCByZW1hcHBpbmcgaXMgZW5hYmxlZCBwcmlvciB0byBPUyovCisJdTgJCXBy
+ZV9lbmFibGVkX2lyOwogI2VuZGlmCiAJc3RydWN0IGRldmljZQkqaW9tbXVfZGV2OyAvKiBJT01N
+VS1zeXNmcyBkZXZpY2UgKi8KIAlpbnQJCW5vZGU7Ci0tIAoxLjkuMQoKX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11
+QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9u
+Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
