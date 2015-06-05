@@ -1,132 +1,44 @@
-From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v9 7/9] iommu,
-	x86: Setup Posted-Interrupts capability for Intel iommu
-Date: Fri,  5 Jun 2015 13:42:52 +0800
-Message-ID: <1433482974-14614-8-git-send-email-feng.wu@intel.com>
-References: <1433482974-14614-1-git-send-email-feng.wu@intel.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: Master-aware devices and sideband ID data
+Date: Fri, 5 Jun 2015 10:05:34 +0100
+Message-ID: <20150605090534.GC1198@arm.com>
+References: <20150324155007.GC23005@leverpostej>
+ <26BE36EF-2C5B-4DA6-8950-8FEBB031ED1B@caviumnetworks.com>
+ <20150527173953.GC23176@leverpostej>
+ <E342D737-5DD5-48C7-BB01-B83C29CB6E31@caviumnetworks.com>
+ <20150601102208.GD22406@leverpostej>
+ <158EFC9F-FCAF-44D3-AD40-804EDFE0CE25@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1433482974-14614-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <158EFC9F-FCAF-44D3-AD40-804EDFE0CE25-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org" <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Set Posted-Interrupts capability for Intel iommu when IR is enabled,
-clear it when IR is disabled.
+On Thu, Jun 04, 2015 at 11:19:30PM +0100, Chalamarla, Tirumalesh wrote:
+> > On Jun 1, 2015, at 3:22 AM, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org> wrote:
+> > It's possible to specify that the paths exist. I expect that software
+> > would select which to use at runtime.
+> > 
+> My worry is how to define any priorities/preferences between masters. 
+> in general the proposal looks reasonable.
 
-Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
----
- drivers/iommu/intel_irq_remapping.c | 30 ++++++++++++++++++++++++++++++
- drivers/iommu/irq_remapping.c       |  2 ++
- drivers/iommu/irq_remapping.h       |  3 +++
- 3 files changed, 35 insertions(+)
+I agree that the proposal looks reasonable (in terms of the ability to
+describe the sort of topologies that we will face) but I still don't
+understand what I need to do in e.g. my IOMMU driver to support this
+binding whilst continuing to support the existing iommus binding, which
+is relied upon to configure dma-mapping.
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index c30845a..554e203 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -580,6 +580,26 @@ error:
- 	return -ENODEV;
- }
- 
-+/*
-+ * Set Posted-Interrupts capability.
-+ */
-+static inline void set_irq_posting_cap(void)
-+{
-+	struct dmar_drhd_unit *drhd;
-+	struct intel_iommu *iommu;
-+
-+	if (!disable_irq_post) {
-+		intel_irq_remap_ops.capability |= 1 << IRQ_POSTING_CAP;
-+
-+		for_each_iommu(iommu, drhd)
-+			if (!cap_pi_support(iommu->cap)) {
-+				intel_irq_remap_ops.capability &=
-+						~(1 << IRQ_POSTING_CAP);
-+				break;
-+			}
-+	}
-+}
-+
- static int __init intel_enable_irq_remapping(void)
- {
- 	struct dmar_drhd_unit *drhd;
-@@ -655,6 +675,8 @@ static int __init intel_enable_irq_remapping(void)
- 
- 	irq_remapping_enabled = 1;
- 
-+	set_irq_posting_cap();
-+
- 	pr_info("Enabled IRQ remapping in %s mode\n", eim ? "x2apic" : "xapic");
- 
- 	return eim ? IRQ_REMAP_X2APIC_MODE : IRQ_REMAP_XAPIC_MODE;
-@@ -855,6 +877,12 @@ static void disable_irq_remapping(void)
- 
- 		iommu_disable_irq_remapping(iommu);
- 	}
-+
-+	/*
-+	 * Clear Posted-Interrupts capability.
-+	 */
-+	if (!disable_irq_post)
-+		intel_irq_remap_ops.capability &= ~(1 << IRQ_POSTING_CAP);
- }
- 
- static int reenable_irq_remapping(int eim)
-@@ -882,6 +910,8 @@ static int reenable_irq_remapping(int eim)
- 	if (!setup)
- 		goto error;
- 
-+	set_irq_posting_cap();
-+
- 	return 0;
- 
- error:
-diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index fc78b0d..ed605a9 100644
---- a/drivers/iommu/irq_remapping.c
-+++ b/drivers/iommu/irq_remapping.c
-@@ -22,6 +22,8 @@ int irq_remap_broken;
- int disable_sourceid_checking;
- int no_x2apic_optout;
- 
-+int disable_irq_post = 1;
-+
- static int disable_irq_remap;
- static struct irq_remap_ops *remap_ops;
- 
-diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
-index b6ca30d..039c7af 100644
---- a/drivers/iommu/irq_remapping.h
-+++ b/drivers/iommu/irq_remapping.h
-@@ -34,6 +34,8 @@ extern int disable_sourceid_checking;
- extern int no_x2apic_optout;
- extern int irq_remapping_enabled;
- 
-+extern int disable_irq_post;
-+
- struct irq_remap_ops {
- 	/* The supported capabilities */
- 	int capability;
-@@ -69,6 +71,7 @@ extern void ir_ack_apic_edge(struct irq_data *data);
- 
- #define irq_remapping_enabled 0
- #define irq_remap_broken      0
-+#define disable_irq_post      1
- 
- #endif /* CONFIG_IRQ_REMAP */
- 
--- 
-2.1.0
+Mark: how do you see this co-existing/merging with the current bindings?
+I don't think it's practical to throw away what we have and move over to
+something totally different all in one go, but there clearly *is* benefit
+in your proposal over the existing scheme.
+
+Will
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
