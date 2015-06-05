@@ -1,16 +1,14 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 10/22] iommu: Introduce direct mapped region handling
-Date: Fri, 5 Jun 2015 15:17:50 +0100
-Message-ID: <20150605141749.GA7420@arm.com>
+Subject: Re: [PATCH 00/22 v2] Introduce default domains for iommu groups
+Date: Fri, 5 Jun 2015 15:22:06 +0100
+Message-ID: <20150605142206.GB7420@arm.com>
 References: <1432831305-11126-1-git-send-email-joro@8bytes.org>
-	<1432831305-11126-11-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1432831305-11126-11-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1432831305-11126-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,75 +24,33 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi Joerg,
 
-On Thu, May 28, 2015 at 05:41:33PM +0100, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> 
-> Add two new functions to the IOMMU-API to allow the IOMMU
-> drivers to export the requirements for direct mapped regions
-> per device.
-> This is useful for exporting the information in Intel VT-d's
-> RMRR entries or AMD-Vi's unity mappings.
-> 
-> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> ---
->  drivers/iommu/iommu.c | 16 ++++++++++++++++
->  include/linux/iommu.h | 31 +++++++++++++++++++++++++++++++
->  2 files changed, 47 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index a0a38bd..6b8d6e7 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1469,3 +1469,19 @@ int iommu_domain_set_attr(struct iommu_domain *domain,
->  	return ret;
->  }
->  EXPORT_SYMBOL_GPL(iommu_domain_set_attr);
-> +
-> +void iommu_get_dm_regions(struct device *dev, struct list_head *list)
-> +{
-> +	const struct iommu_ops *ops = dev->bus->iommu_ops;
-> +
-> +	if (ops && ops->get_dm_regions)
-> +		ops->get_dm_regions(dev, list);
-> +}
-> +
-> +void iommu_put_dm_regions(struct device *dev, struct list_head *list)
-> +{
-> +	const struct iommu_ops *ops = dev->bus->iommu_ops;
-> +
-> +	if (ops && ops->put_dm_regions)
-> +		ops->put_dm_regions(dev, list);
-> +}
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 683a1c4..6894999 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -114,6 +114,20 @@ enum iommu_attr {
->  	DOMAIN_ATTR_MAX,
->  };
->  
-> +/**
-> + * struct iommu_dm_region - descriptor for a direct mapped memory region
-> + * @list: Linked list pointers
-> + * @start: System physical start address of the region
-> + * @length: Length of the region in bytes
-> + * @prot: IOMMU Protection flags (READ/WRITE/...)
-> + */
-> +struct iommu_dm_region {
-> +	struct list_head	list;
-> +	phys_addr_t		start;
-> +	size_t			length;
-> +	int			prot;
-> +};
+On Thu, May 28, 2015 at 05:41:23PM +0100, Joerg Roedel wrote:
+> here is the second version of my patch-set to introduce
+> default domains into the iommu core. This time it has a lot
+> more patches, mostly because I added a proof of concept
+> implementation by converting the AMD IOMMU driver to make
+> use of it.
 
-I'm slightly puzzled about this. It looks to me like we're asking the
-IOMMU driver to construct a description of the system's physical address
-space, but this information tends to be known elsewhere for things like
-initialising lowmem on the CPU using memblock.
+Most of this looks fine to me, modulo by comments about the dm regions
+(which I'm not sure how to implement for ARM).
 
-Also, it looks like we just use these regions to create the default
-domain using iommu_map calls -- why don't we just have an IOMMU callback
-to initialise the default domain instead? That would allow IOMMUs with a
-per-master bypass mode to avoid allocating page tables altogether.
+> Converting the first driver to the new concept triggered a
+> lot of changes and extensions in the patch-set to fit all
+> the needs of a more complex iommu driver. Converting other
+> drivers might need further changes, but that is something
+> for the future.
+> 
+> A major change is that now the default domain has to be
+> allocated by the code that allocates the iommu group. For
+> PCI devices this happens in the IOMMU core, but drivers
+> allocating the group on their own can now implement a policy
+> that fits their needs (e.g. not allocate one domain per
+> group but let multiple groups share one domain).
+
+Makes sense. I really think we should be moving group allocation out of
+the IOMMU drivers and into the bus code, like we already have for PCI.
+Once we've got a way to describe groups of platform devices (e.g. in the
+device-tree), then we can have the group creation happen automatically
+as part of Laurent's of_iommu work.
 
 Will
