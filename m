@@ -1,67 +1,97 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 15/17] iommu/vt-d: Mark irt entries from old kernel as
-	allocated
-Date: Fri,  5 Jun 2015 16:11:01 +0200
-Message-ID: <1433513463-19128-16-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 16/17] iommu/vt-d: Copy old irte in intel_setup_irq_remapping
+Date: Fri,  5 Jun 2015 16:11:02 +0200
+Message-ID: <1433513463-19128-17-git-send-email-joro@8bytes.org>
 References: <1433513463-19128-1-git-send-email-joro@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1433513463-19128-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, tom.vaden-VXdhtT5mjnY@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, zhen-hual-VXdhtT5mjnY@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1433513463-19128-1-git-send-email-joro@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: zhen-hual@hp.com, bhe@redhat.com, dwmw2@infradead.org, vgoyal@redhat.com, dyoung@redhat.com, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, indou.takao@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, joro@8bytes.org, jroedel@suse.de
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+From: Joerg Roedel <jroedel@suse.de>
 
-After we copied over all irq remapping entries from the old
-kernel we need to mark the present entries as allocated in
-our table too. Otherwise we might overwrite entries from the
-previous kernel and cause DMAR faults.
+Copy over the old irq remapping table in the
+intel_setup_irq_remapping function. The reason is that
+intel_enable_irq_remapping runs with irqs disabled and thus
+we can not safely call ioremap. Therefore we need to copy in
+the prepare stage when irqs are still enabled.
 
-Tested-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Tested-by: Baoquan He <bhe@redhat.com>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/intel_irq_remapping.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/iommu/intel_irq_remapping.c | 40 ++++++++++++++++++++-----------------
+ 1 file changed, 22 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index fd6c25b..f7b02ca 100644
+index f7b02ca..07a8e82 100644
 --- a/drivers/iommu/intel_irq_remapping.c
 +++ b/drivers/iommu/intel_irq_remapping.c
-@@ -1300,6 +1300,7 @@ static int iommu_load_old_irte(struct intel_iommu *iommu)
- {
- 	struct irte *old_ir_table;
- 	phys_addr_t irt_phys;
-+	unsigned int i;
- 	size_t size;
- 	u64 irta;
+@@ -24,6 +24,7 @@
+ static int iommu_load_old_irte(struct intel_iommu *iommu);
+ static int __iommu_update_old_irte(struct intel_iommu *iommu, int index);
+ static void iommu_check_pre_ir_status(struct intel_iommu *iommu);
++static void iommu_disable_irq_remapping(struct intel_iommu *iommu);
  
-@@ -1325,6 +1326,15 @@ static int iommu_load_old_irte(struct intel_iommu *iommu)
- 	iommu->ir_table->base_old_phys = irt_phys;
- 	iommu->ir_table->base_old_virt = old_ir_table;
+ struct ioapic_scope {
+ 	struct intel_iommu *iommu;
+@@ -538,6 +539,26 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu)
+ 		}
+ 	}
  
-+	/*
-+	 * Now check the table for used entries and mark those as
-+	 * allocated in the bitmap
-+	 */
-+	for (i = 0; i < INTR_REMAP_TABLE_ENTRIES; i++) {
-+		if (iommu->ir_table->base[i].present)
-+			bitmap_set(iommu->ir_table->bitmap, i, 1);
++	iommu_check_pre_ir_status(iommu);
++
++	if (!is_kdump_kernel() && iommu->pre_enabled_ir) {
++		iommu_disable_irq_remapping(iommu);
++		iommu->pre_enabled_ir = 0;
++		pr_warn("IRQ remapping was enabled on %s but we are not in kdump mode\n",
++				iommu->name);
 +	}
 +
++	if (iommu->pre_enabled_ir) {
++		if (iommu_load_old_irte(iommu))
++			pr_err("Failed to copy IR table for %s from previous kernel\n",
++			       iommu->name);
++		else
++			pr_info("Copied IR table for %s from previous kernel\n",
++				iommu->name);
++	}
++
++	iommu_set_irq_remapping(iommu, eim_mode);
++
  	return 0;
- }
+ 
+ out_free_pages:
+@@ -682,28 +703,11 @@ static int __init intel_enable_irq_remapping(void)
+ 	struct intel_iommu *iommu;
+ 	bool setup = false;
+ 
+-	for_each_iommu(iommu, drhd) {
+-		iommu_check_pre_ir_status(iommu);
+-
+-		if (!is_kdump_kernel() && iommu->pre_enabled_ir) {
+-			iommu_disable_irq_remapping(iommu);
+-			iommu->pre_enabled_ir = 0;
+-			pr_warn("IRQ remapping was enabled on %s but we are not in kdump mode\n",
+-				iommu->name);
+-		}
+-	}
+-
+ 	/*
+ 	 * Setup Interrupt-remapping for all the DRHD's now.
+ 	 */
+ 	for_each_iommu(iommu, drhd) {
+-		if (iommu->pre_enabled_ir) {
+-			iommu_load_old_irte(iommu);
+-		} else {
+-			iommu_set_irq_remapping(iommu, eim_mode);
+-			iommu_enable_irq_remapping(iommu);
+-		}
+-
++		iommu_enable_irq_remapping(iommu);
+ 		setup = true;
+ 	}
  
 -- 
 1.9.1
