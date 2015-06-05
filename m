@@ -1,11 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 00/17] Fixes and Cleanups for the Intel VT-d driver
-Date: Fri,  5 Jun 2015 16:10:46 +0200
-Message-ID: <1433513463-19128-1-git-send-email-joro@8bytes.org>
+Subject: [PATCH 04/17] iommu/vt-d: Load old data structures only in kdump
+	kernel
+Date: Fri,  5 Jun 2015 16:10:50 +0200
+Message-ID: <1433513463-19128-5-git-send-email-joro@8bytes.org>
+References: <1433513463-19128-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1433513463-19128-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,83 +22,81 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, tom.vaden-VXdhtT5mjnY@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, zhen-hual-VXdhtT5mjnY@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hey,
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-here are a couple of patches to fix the fall-out from the
-patch set fixing the kdump faults with VT-d enabled. A few
-important issues have been fixed:
+If we are not in a kdump kernel anybody could have left the
+iommu enabled. We have no reason at all to trust the data
+the data structures in this case, so don't even try to
+preserve anything.
 
-	* Moved sleeping functions out of atomic sections,
-	  mainly iremap_cache/iounmap.
+Tested-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c         | 14 ++++++++++++++
+ drivers/iommu/intel_irq_remapping.c | 12 +++++++-----
+ 2 files changed, 21 insertions(+), 5 deletions(-)
 
-	* Mark domain ids used in the old kernel as reserved
-	  in the kdump kernel, so that any new domains don't
-	  interfere with domains from the old kernel
-
-	* Mark all IRT entries from the old kernel as
-	  reservered in the new kernel, so that we don't
-	  overwrite an entry which might still be in use by
-	  a device
-
-	* Only try to load anything from the old kernel when
-	  we are in a kdump kernel. If we find the iommu
-	  hardware enabled and we are not in a kdump kernel,
-	  just disable the iommu and proceed with
-	  initialization.
-
-	* Fix a compile error
-
-Besides that I also cleaned up the code to simplify it:
-
-	* Move necessary initialization steps before the
-	  root entry table and the irq remapping table is
-	  programmed into hardware. This makes sure QI is
-	  initialized so that we can flush the iommu caches
-	  when hardware got the new tables.
-
-	* Make the new root entry table and irq remapping
-	  table visible to hardware immediatly after they
-	  are created and loaded with the data from the old
-	  kernel. This allows to remove the code to update
-	  both, the old and the new version of the table at
-	  the same time.
-
-	* Clean up log messages from the VT-d driver to have
-	  a common prefix that can be grepped for.
-
-	* Remove unused code
-
-The changes have been tested by me an Baoquan He. I'll plan
-to put them into the x86/vt-d branch for v4.2.
-
-Regards,
-
-	Joerg
-
-Joerg Roedel (17):
-  iommu/vt-d: Fix compile error when CONFIG_INTEL_IOMMU=n
-  iommu/vt-d: Remove __iommu_save_to_oldmem() function
-  iommu/vt-d: Make two functions static
-  iommu/vt-d: Load old data structures only in kdump kernel
-  iommu/vt-d: Mark root-entry present in set_root_entry
-  iommu/vt-d: Rework loading of old root-entry table
-  iommu/vt-d: Copy context-tables outside of spin_lock
-  iommu/vt-d: Don't reuse domain-ids from old kernel
-  iommu/vt-d: Clean up log messages in intel-iommu.c
-  iommu/vt-d: Allocate irq remapping table bitmap with GFP_KERNEL
-  iommu/vt-d: Move QI initialization to intel_setup_irq_remapping
-  iommu/vt-d: Move EIM detection to intel_prepare_irq_remapping
-  iommu/vt-d: Split up iommu_set_irq_remapping
-  iommu/vt-d: Move kdump pointer intialization to __iommu_load_old_irte
-  iommu/vt-d: Mark irt entries from old kernel as allocated
-  iommu/vt-d: Copy old irte in intel_setup_irq_remapping
-  iommu/vt-d: Remove update code for old ir-table
-
- drivers/iommu/dmar.c                |  26 +-
- drivers/iommu/intel-iommu.c         | 463 ++++++++++++++----------------------
- drivers/iommu/intel_irq_remapping.c | 263 +++++++++-----------
- include/linux/intel-iommu.h         |  17 +-
- 4 files changed, 299 insertions(+), 470 deletions(-)
-
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 982b8c8..d66bec6 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -40,6 +40,7 @@
+ #include <linux/pci-ats.h>
+ #include <linux/memblock.h>
+ #include <linux/dma-contiguous.h>
++#include <linux/crash_dump.h>
+ #include <asm/irq_remapping.h>
+ #include <asm/cacheflush.h>
+ #include <asm/iommu.h>
+@@ -2943,6 +2944,19 @@ static int __init init_dmars(void)
+ 			goto free_iommu;
+ 
+ 		iommu_check_pre_te_status(iommu);
++
++		/*
++		 * We don't even try to preserve anything when we are not in a
++		 * kdump kernel.
++		 */
++		if (!is_kdump_kernel() && iommu->pre_enabled_trans) {
++			iommu_disable_translation(iommu);
++			iommu->pre_enabled_trans = 0;
++			g_translation_pre_enabled = 0;
++			pr_warn("Translation was enabled for %s but we are not in kdump mode\n",
++					iommu->name);
++		}
++
+ 		if (iommu->pre_enabled_trans) {
+ 			pr_info("IOMMU Copying translate tables from panicked kernel\n");
+ 			ret = intel_iommu_load_translation_tables(iommu);
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 46d80ad..c3f0686 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -8,6 +8,7 @@
+ #include <linux/irq.h>
+ #include <linux/intel-iommu.h>
+ #include <linux/acpi.h>
++#include <linux/crash_dump.h>
+ #include <asm/io_apic.h>
+ #include <asm/smp.h>
+ #include <asm/cpu.h>
+@@ -666,11 +667,12 @@ static int __init intel_enable_irq_remapping(void)
+ 
+ 		iommu_check_pre_ir_status(iommu);
+ 
+-		/*
+-		 * Here we do not disable intr remapping,
+-		 * if already enabled prior to OS handover.
+-		 */
+-		/* iommu_disable_irq_remapping(iommu); */
++		if (!is_kdump_kernel() && iommu->pre_enabled_ir) {
++			iommu_disable_irq_remapping(iommu);
++			iommu->pre_enabled_ir = 0;
++			pr_warn("IRQ remapping was enabled on %s but we are not in kdump mode\n",
++				iommu->name);
++		}
+ 
+ 		dmar_disable_qi(iommu);
+ 	}
 -- 
 1.9.1
