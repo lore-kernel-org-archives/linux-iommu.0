@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 10/17] iommu/vt-d: Allocate irq remapping table bitmap with
-	GFP_KERNEL
-Date: Fri,  5 Jun 2015 16:10:56 +0200
-Message-ID: <1433513463-19128-11-git-send-email-joro@8bytes.org>
+Subject: [PATCH 05/17] iommu/vt-d: Mark root-entry present in set_root_entry
+Date: Fri,  5 Jun 2015 16:10:51 +0200
+Message-ID: <1433513463-19128-6-git-send-email-joro@8bytes.org>
 References: <1433513463-19128-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,27 +23,28 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-This function does not run in atomic context, so no reason
-to do a GFP_ATOMIC allocation.
+When we do no memcpy from the old to the new kernel for the
+root entry table, we have to set the present bit ourself.
 
 Tested-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/intel-iommu.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 34667d5..d22518d 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -510,7 +510,7 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu)
- 	}
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index d66bec6..cda0901 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -198,8 +198,7 @@ static inline bool root_present(struct root_entry *root)
  
- 	bitmap = kcalloc(BITS_TO_LONGS(INTR_REMAP_TABLE_ENTRIES),
--			 sizeof(long), GFP_ATOMIC);
-+			 sizeof(long), GFP_KERNEL | __GFP_ZERO);
- 	if (bitmap == NULL) {
- 		pr_err("Failed to allocate bitmap for IR[%d]\n", iommu->seq_id);
- 		goto out_free_pages;
+ static inline void set_root_value(struct root_entry *root, unsigned long value)
+ {
+-	root->lo &= ~VTD_PAGE_MASK;
+-	root->lo |= value & VTD_PAGE_MASK;
++	root->lo = (value & VTD_PAGE_MASK) | 1;
+ }
+ 
+ static inline struct context_entry *
 -- 
 1.9.1
