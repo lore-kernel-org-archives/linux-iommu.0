@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 02/17] iommu/vt-d: Remove __iommu_save_to_oldmem() function
-Date: Fri,  5 Jun 2015 16:10:48 +0200
-Message-ID: <1433513463-19128-3-git-send-email-joro@8bytes.org>
+Subject: [PATCH 11/17] iommu/vt-d: Move QI initialization to
+	intel_setup_irq_remapping
+Date: Fri,  5 Jun 2015 16:10:57 +0200
+Message-ID: <1433513463-19128-12-git-send-email-joro@8bytes.org>
 References: <1433513463-19128-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,74 +24,119 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-This function is unused and can be removed.
+This function needs a working QI later when kdump recovery
+is moved to this function.
 
 Tested-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 36 ------------------------------------
- include/linux/intel-iommu.h |  2 --
- 2 files changed, 38 deletions(-)
+ drivers/iommu/intel_irq_remapping.c | 63 ++++++++++---------------------------
+ 1 file changed, 16 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 60d5491..a061c3f 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4978,42 +4978,6 @@ int __iommu_load_from_oldmem(void *to, unsigned long from, unsigned long size)
- }
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index d22518d..70e4955 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -519,6 +519,19 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu)
+ 	ir_table->base = page_address(pages);
+ 	ir_table->bitmap = bitmap;
+ 	iommu->ir_table = ir_table;
++
++	if (!iommu->qi) {
++		/*
++		 * Clear previous faults.
++		 */
++		dmar_fault(-1, iommu);
++		dmar_disable_qi(iommu);
++		if (dmar_enable_qi(iommu)) {
++			pr_err("Failed to enable queued invalidation\n");
++			goto out_free_pages;
++		}
++	}
++
+ 	return 0;
  
- /*
-- * Copy memory from a virtually-addressed area into a physically-addressed area
-- */
--int __iommu_save_to_oldmem(unsigned long to, void *from, unsigned long size)
--{
--	unsigned long pfn;		/* Page Frame Number */
--	size_t csize = (size_t)size;	/* Num(bytes to copy) */
--	unsigned long offset;		/* Lower 12 bits of to */
--	void __iomem *virt_mem;
--	struct iommu_remapped_entry *mapped;
+ out_free_pages:
+@@ -655,18 +668,6 @@ static int __init intel_enable_irq_remapping(void)
+ 	}
+ 
+ 	for_each_iommu(iommu, drhd) {
+-		/*
+-		 * If the queued invalidation is already initialized,
+-		 * shouldn't disable it.
+-		 */
+-		if (iommu->qi)
+-			continue;
 -
--	pfn = to >> VTD_PAGE_SHIFT;
--	offset = to & (~VTD_PAGE_MASK);
+-		/*
+-		 * Clear previous faults.
+-		 */
+-		dmar_fault(-1, iommu);
 -
--	if (page_is_ram(pfn)) {
--		memcpy(pfn_to_kaddr(pfn) + offset, from, csize);
--	} else{
--		mapped = kzalloc(sizeof(struct iommu_remapped_entry),
--				GFP_KERNEL);
--		if (!mapped)
--			return -ENOMEM;
+ 		iommu_check_pre_ir_status(iommu);
+ 
+ 		if (!is_kdump_kernel() && iommu->pre_enabled_ir) {
+@@ -675,8 +676,6 @@ static int __init intel_enable_irq_remapping(void)
+ 			pr_warn("IRQ remapping was enabled on %s but we are not in kdump mode\n",
+ 				iommu->name);
+ 		}
 -
--		virt_mem = ioremap_cache((unsigned long)to, size);
--		if (!virt_mem) {
--			kfree(mapped);
--			return -ENOMEM;
+-		dmar_disable_qi(iommu);
+ 	}
+ 
+ 	/*
+@@ -693,20 +692,6 @@ static int __init intel_enable_irq_remapping(void)
+ 		pr_info("Queued invalidation will be enabled to support x2apic and Intr-remapping.\n");
+ 
+ 	/*
+-	 * Enable queued invalidation for all the DRHD's.
+-	 */
+-	for_each_iommu(iommu, drhd) {
+-		int ret = dmar_enable_qi(iommu);
+-
+-		if (ret) {
+-			printk(KERN_ERR "DRHD %Lx: failed to enable queued, "
+-			       " invalidation, ecap %Lx, ret %d\n",
+-			       drhd->reg_base_addr, iommu->ecap, ret);
+-			goto error;
 -		}
--		memcpy(virt_mem, from, size);
--		mutex_lock(&__iommu_mem_list_lock);
--		mapped->mem = virt_mem;
--		list_add_tail(&mapped->list, &__iommu_remapped_mem);
--		mutex_unlock(&__iommu_mem_list_lock);
 -	}
--	return size;
--}
 -
--/*
-  * Free the mapped memory for ioremap;
-  */
- int __iommu_free_mapped_mem(void)
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index a81ceee..9526c28 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -393,8 +393,6 @@ extern const struct attribute_group *intel_iommu_groups[];
+-	/*
+ 	 * Setup Interrupt-remapping for all the DRHD's now.
+ 	 */
+ 	for_each_iommu(iommu, drhd) {
+@@ -1270,28 +1255,12 @@ static int dmar_ir_add(struct dmar_drhd_unit *dmaru, struct intel_iommu *iommu)
+ 	/* Setup Interrupt-remapping now. */
+ 	ret = intel_setup_irq_remapping(iommu);
+ 	if (ret) {
+-		pr_err("DRHD %Lx: failed to allocate resource\n",
++		pr_err("DRHD %Lx: failed to setup IRQ remapping\n",
+ 		       iommu->reg_phys);
+-		ir_remove_ioapic_hpet_scope(iommu);
+-		return ret;
+-	}
+-
+-	if (!iommu->qi) {
+-		/* Clear previous faults. */
+-		dmar_fault(-1, iommu);
+-		iommu_disable_irq_remapping(iommu);
+-		dmar_disable_qi(iommu);
+-	}
+-
+-	/* Enable queued invalidation */
+-	ret = dmar_enable_qi(iommu);
+-	if (!ret) {
+-		iommu_set_irq_remapping(iommu, eim);
+-	} else {
+-		pr_err("DRHD %Lx: failed to enable queued invalidation, ecap %Lx, ret %d\n",
+-		       iommu->reg_phys, iommu->ecap, ret);
+ 		intel_teardown_irq_remapping(iommu);
+ 		ir_remove_ioapic_hpet_scope(iommu);
++	} else {
++		iommu_set_irq_remapping(iommu, eim);
+ 	}
  
- extern int __iommu_load_from_oldmem(void *to, unsigned long from,
- 					unsigned long size);
--extern int __iommu_save_to_oldmem(unsigned long to, void *from,
--					unsigned long size);
- extern int __iommu_free_mapped_mem(void);
- 
- #endif
+ 	return ret;
 -- 
 1.9.1
