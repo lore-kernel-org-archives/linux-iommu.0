@@ -1,44 +1,100 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: Master-aware devices and sideband ID data
-Date: Fri, 5 Jun 2015 10:05:34 +0100
-Message-ID: <20150605090534.GC1198@arm.com>
-References: <20150324155007.GC23005@leverpostej>
- <26BE36EF-2C5B-4DA6-8950-8FEBB031ED1B@caviumnetworks.com>
- <20150527173953.GC23176@leverpostej>
- <E342D737-5DD5-48C7-BB01-B83C29CB6E31@caviumnetworks.com>
- <20150601102208.GD22406@leverpostej>
- <158EFC9F-FCAF-44D3-AD40-804EDFE0CE25@caviumnetworks.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Fix for Linux v4.1-rc6
+Date: Fri, 5 Jun 2015 11:20:18 +0200
+Message-ID: <20150605092018.GA25227@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <158EFC9F-FCAF-44D3-AD40-804EDFE0CE25-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org" <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Type: multipart/mixed; boundary="===============4541292658728056067=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jun 04, 2015 at 11:19:30PM +0100, Chalamarla, Tirumalesh wrote:
-> > On Jun 1, 2015, at 3:22 AM, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org> wrote:
-> > It's possible to specify that the paths exist. I expect that software
-> > would select which to use at runtime.
-> > 
-> My worry is how to define any priorities/preferences between masters. 
-> in general the proposal looks reasonable.
 
-I agree that the proposal looks reasonable (in terms of the ability to
-describe the sort of topologies that we will face) but I still don't
-understand what I need to do in e.g. my IOMMU driver to support this
-binding whilst continuing to support the existing iommus binding, which
-is relied upon to configure dma-mapping.
+--===============4541292658728056067==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="/9DWx/yDrRhgMJTb"
+Content-Disposition: inline
 
-Mark: how do you see this co-existing/merging with the current bindings?
-I don't think it's practical to throw away what we have and move over to
-something totally different all in one go, but there clearly *is* benefit
-in your proposal over the existing scheme.
 
-Will
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--/9DWx/yDrRhgMJTb
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Linus,
+
+The following changes since commit c65b99f046843d2455aa231747b5a07a999a9f3d:
+
+  Linux 4.1-rc6 (2015-05-31 19:01:07 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.1-rc6
+
+for you to fetch changes up to 2d0ec7a19b5796aa958636eeeff072b506460501:
+
+  Revert "iommu/amd: Don't allocate with __GFP_ZERO in alloc_coherent" (2015-06-02 08:46:32 +0200)
+
+----------------------------------------------------------------
+IOMMU Fix for Linux v4.1-rc6
+
+Only one patch:
+
+	* Revert "iommu/amd: Don't allocate with __GFP_ZERO in alloc_coherent"
+	  This patch caused problems with some drivers, so it is better
+	  to revert it now until the drivers have been fixed.
+
+----------------------------------------------------------------
+Joerg Roedel (1):
+      Revert "iommu/amd: Don't allocate with __GFP_ZERO in alloc_coherent"
+
+ drivers/iommu/amd_iommu.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+
+--/9DWx/yDrRhgMJTb
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJVcWnSAAoJECvwRC2XARrjhjcP/ivl1knb3OSIkLIccgB1mf3b
+ZPfurkWDHP8KPTk8kqB/QoGVXuwT3ICyd58TrpmycQFS/3+Zw2ELJjmK8JTUDNVF
+BmfD7UIijOaNLE3aGRsqVptzAFIp5e0brLNrtpOB1sbPGCliHmGYl+e0uf8gJlc2
+JXDJyXGAW6KCXMrw9R7cLW7hgAvuYR6eNptSD9jzQvAPD/ZXW4XLpvbep2ZWEECE
+k+vSedHxNoetuXZX3Hh8jO25bC187huRP11DSTMGmlP0CwQMcIOYbHsYTEc6UoVQ
+uLMohm6FVMkrqQqIv5w6H+ojZN2sHW67qiuKE7bH6FlbYG+A8S/W7irjRIrGApN9
+9pB6HtiIbnbv+SSgo170tmS8W6dcMaw1ZvC/KVnlsLXOM8HTvO2UNg6lzrKzMw7o
++XFcfvqhzznoY8qTNLe6CA0oHdjmIHFfQyCPb44ErynKJlILbV9uTIRcX2fS6/eQ
+A1BkP6v2m7mGbCObgE2sPEzXM+OKxNSY1D+M/KR3d2WTjI+AaWhpe/UY80vCEWT+
+nxFB3DcBuXO8LwCPLwmQFmwSjW381m2qilq2oqd2F3lc2ekRX1lTX2m2Zs6mQZHC
+ZSdtB+AMbXYMJRfM7phEV3L218luvdLrWtt5cAPim1tw48dvJkJet31UprrVo0Ah
+1fog6/QTGaQFyLX0KizK
+=68Qa
+-----END PGP SIGNATURE-----
+
+--/9DWx/yDrRhgMJTb--
+
+--===============4541292658728056067==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============4541292658728056067==--
