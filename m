@@ -1,13 +1,16 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 17/17] iommu/vt-d: Remove update code for old ir-table
-Date: Fri,  5 Jun 2015 16:11:03 +0200
-Message-ID: <1433513463-19128-18-git-send-email-joro@8bytes.org>
-References: <1433513463-19128-1-git-send-email-joro@8bytes.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 10/22] iommu: Introduce direct mapped region handling
+Date: Fri, 5 Jun 2015 15:17:50 +0100
+Message-ID: <20150605141749.GA7420@arm.com>
+References: <1432831305-11126-1-git-send-email-joro@8bytes.org>
+	<1432831305-11126-11-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1433513463-19128-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1432831305-11126-11-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,118 +20,81 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, tom.vaden-VXdhtT5mjnY@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, zhen-hual-VXdhtT5mjnY@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Hi Joerg,
 
-The code to update the irq remapping table of the old kernel
-is not necessary anymore because we switch immidiatly to the
-new table after we copied the data over.
+On Thu, May 28, 2015 at 05:41:33PM +0100, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> 
+> Add two new functions to the IOMMU-API to allow the IOMMU
+> drivers to export the requirements for direct mapped regions
+> per device.
+> This is useful for exporting the information in Intel VT-d's
+> RMRR entries or AMD-Vi's unity mappings.
+> 
+> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> ---
+>  drivers/iommu/iommu.c | 16 ++++++++++++++++
+>  include/linux/iommu.h | 31 +++++++++++++++++++++++++++++++
+>  2 files changed, 47 insertions(+)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index a0a38bd..6b8d6e7 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1469,3 +1469,19 @@ int iommu_domain_set_attr(struct iommu_domain *domain,
+>  	return ret;
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_domain_set_attr);
+> +
+> +void iommu_get_dm_regions(struct device *dev, struct list_head *list)
+> +{
+> +	const struct iommu_ops *ops = dev->bus->iommu_ops;
+> +
+> +	if (ops && ops->get_dm_regions)
+> +		ops->get_dm_regions(dev, list);
+> +}
+> +
+> +void iommu_put_dm_regions(struct device *dev, struct list_head *list)
+> +{
+> +	const struct iommu_ops *ops = dev->bus->iommu_ops;
+> +
+> +	if (ops && ops->put_dm_regions)
+> +		ops->put_dm_regions(dev, list);
+> +}
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 683a1c4..6894999 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -114,6 +114,20 @@ enum iommu_attr {
+>  	DOMAIN_ATTR_MAX,
+>  };
+>  
+> +/**
+> + * struct iommu_dm_region - descriptor for a direct mapped memory region
+> + * @list: Linked list pointers
+> + * @start: System physical start address of the region
+> + * @length: Length of the region in bytes
+> + * @prot: IOMMU Protection flags (READ/WRITE/...)
+> + */
+> +struct iommu_dm_region {
+> +	struct list_head	list;
+> +	phys_addr_t		start;
+> +	size_t			length;
+> +	int			prot;
+> +};
 
-Tested-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/intel_irq_remapping.c | 44 -------------------------------------
- include/linux/intel-iommu.h         |  2 --
- 2 files changed, 46 deletions(-)
+I'm slightly puzzled about this. It looks to me like we're asking the
+IOMMU driver to construct a description of the system's physical address
+space, but this information tends to be known elsewhere for things like
+initialising lowmem on the CPU using memblock.
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 07a8e82..b49aa8c 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -22,7 +22,6 @@
- #include "irq_remapping.h"
- 
- static int iommu_load_old_irte(struct intel_iommu *iommu);
--static int __iommu_update_old_irte(struct intel_iommu *iommu, int index);
- static void iommu_check_pre_ir_status(struct intel_iommu *iommu);
- static void iommu_disable_irq_remapping(struct intel_iommu *iommu);
- 
-@@ -202,9 +201,6 @@ static int modify_irte(int irq, struct irte *irte_modified)
- 	set_64bit(&irte->low, irte_modified->low);
- 	set_64bit(&irte->high, irte_modified->high);
- 
--	if (iommu->pre_enabled_ir)
--		__iommu_update_old_irte(iommu, index);
--
- 	__iommu_flush_cache(iommu, irte, sizeof(*irte));
- 
- 	rc = qi_flush_iec(iommu, index, 0);
-@@ -266,9 +262,6 @@ static int clear_entries(struct irq_2_iommu *irq_iommu)
- 	bitmap_release_region(iommu->ir_table->bitmap, index,
- 			      irq_iommu->irte_mask);
- 
--	if (iommu->pre_enabled_ir)
--		__iommu_update_old_irte(iommu, -1);
--
- 	return qi_flush_iec(iommu, index, irq_iommu->irte_mask);
- }
- 
-@@ -1327,9 +1320,6 @@ static int iommu_load_old_irte(struct intel_iommu *iommu)
- 
- 	__iommu_flush_cache(iommu, iommu->ir_table->base, size);
- 
--	iommu->ir_table->base_old_phys = irt_phys;
--	iommu->ir_table->base_old_virt = old_ir_table;
--
- 	/*
- 	 * Now check the table for used entries and mark those as
- 	 * allocated in the bitmap
-@@ -1342,40 +1332,6 @@ static int iommu_load_old_irte(struct intel_iommu *iommu)
- 	return 0;
- }
- 
--static int __iommu_update_old_irte(struct intel_iommu *iommu, int index)
--{
--	int start;
--	unsigned long size;
--	void __iomem *to;
--void *from;
--
--	if ((!iommu)
--		|| (!iommu->ir_table)
--		|| (!iommu->ir_table->base)
--		|| (!iommu->ir_table->base_old_phys)
--		|| (!iommu->ir_table->base_old_virt))
--		return -1;
--
--	if (index < -1 || index >= INTR_REMAP_TABLE_ENTRIES)
--		return -1;
--
--	if (index == -1) {
--		start = 0;
--		size = INTR_REMAP_TABLE_ENTRIES * sizeof(struct irte);
--	} else {
--		start = index * sizeof(struct irte);
--		size = sizeof(struct irte);
--	}
--
--	to = iommu->ir_table->base_old_virt;
--	from = iommu->ir_table->base;
--	memcpy(to + start, from + start, size);
--
--	__iommu_flush_cache(iommu, to + start, size);
--
--	return 0;
--}
--
- static void iommu_check_pre_ir_status(struct intel_iommu *iommu)
- {
- 	u32 sts;
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 5aa8834..9fcdd9a 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -302,8 +302,6 @@ struct q_inval {
- struct ir_table {
- 	struct irte *base;
- 	unsigned long *bitmap;
--	void __iomem *base_old_virt;
--	unsigned long base_old_phys;
- };
- #endif
- 
--- 
-1.9.1
+Also, it looks like we just use these regions to create the default
+domain using iommu_map calls -- why don't we just have an IOMMU callback
+to initialise the default domain instead? That would allow IOMMUs with a
+per-master bypass mode to avoid allocating page tables altogether.
+
+Will
