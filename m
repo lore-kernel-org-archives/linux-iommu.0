@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v9 4/9] iommu, x86: Save the mode (posted or remapped) of an IRTE
-Date: Fri,  5 Jun 2015 13:42:49 +0800
-Message-ID: <1433482974-14614-5-git-send-email-feng.wu@intel.com>
+Subject: [v9 8/9] iommu, x86: define irq_remapping_cap()
+Date: Fri,  5 Jun 2015 13:42:53 +0800
+Message-ID: <1433482974-14614-9-git-send-email-feng.wu@intel.com>
 References: <1433482974-14614-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,55 +21,57 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@p
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds a new field in struct irq_2_iommu, which can
-capture whether the entry is in posted mode or remapped mode.
+This patch adds a new interface irq_remapping_cap() to detect
+whether irq remapping supports new features, such as VT-d
+Posted-Interrupts. We export this function out, so that KVM
+code can check this and use this mechanism properly.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Suggested-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/x86/include/asm/irq_remapping.h | 2 ++
+ drivers/iommu/irq_remapping.c        | 9 +++++++++
+ 2 files changed, 11 insertions(+)
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 9bbc235..028d628 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -18,6 +18,11 @@
- 
- #include "irq_remapping.h"
- 
-+enum irq_mode {
-+	IRQ_REMAPPING,
-+	IRQ_POSTING,
-+};
-+
- struct ioapic_scope {
- 	struct intel_iommu *iommu;
- 	unsigned int id;
-@@ -37,6 +42,7 @@ struct irq_2_iommu {
- 	u16 irte_index;
- 	u16 sub_handle;
- 	u8  irte_mask;
-+	enum irq_mode mode;
+diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
+index 202e040..61aa8ad 100644
+--- a/arch/x86/include/asm/irq_remapping.h
++++ b/arch/x86/include/asm/irq_remapping.h
+@@ -35,6 +35,7 @@ enum irq_remap_cap {
+ 	IRQ_POSTING_CAP = 0,
  };
  
- struct intel_ir_data {
-@@ -104,6 +110,7 @@ static int alloc_irte(struct intel_iommu *iommu, int irq,
- 		irq_iommu->irte_index =  index;
- 		irq_iommu->sub_handle = 0;
- 		irq_iommu->irte_mask = mask;
-+		irq_iommu->mode = IRQ_REMAPPING;
- 	}
- 	raw_spin_unlock_irqrestore(&irq_2_ir_lock, flags);
++extern bool irq_remapping_cap(enum irq_remap_cap cap);
+ extern void set_irq_remapping_broken(void);
+ extern int irq_remapping_prepare(void);
+ extern int irq_remapping_enable(void);
+@@ -64,6 +65,7 @@ struct vcpu_data {
  
-@@ -144,6 +151,8 @@ static int modify_irte(struct irq_2_iommu *irq_iommu,
- 	__iommu_flush_cache(iommu, irte, sizeof(*irte));
+ #else  /* CONFIG_IRQ_REMAP */
  
- 	rc = qi_flush_iec(iommu, index, 0);
++static bool irq_remapping_cap(enum irq_remap_cap cap) { return 0; }
+ static inline void set_irq_remapping_broken(void) { }
+ static inline int irq_remapping_prepare(void) { return -ENODEV; }
+ static inline int irq_remapping_enable(void) { return -ENODEV; }
+diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+index ed605a9..2d99930 100644
+--- a/drivers/iommu/irq_remapping.c
++++ b/drivers/iommu/irq_remapping.c
+@@ -81,6 +81,15 @@ void set_irq_remapping_broken(void)
+ 	irq_remap_broken = 1;
+ }
+ 
++bool irq_remapping_cap(enum irq_remap_cap cap)
++{
++	if (!remap_ops || disable_irq_post)
++		return 0;
 +
-+	irq_iommu->mode = irte->pst ? IRQ_POSTING : IRQ_REMAPPING;
- 	raw_spin_unlock_irqrestore(&irq_2_ir_lock, flags);
- 
- 	return rc;
++	return (remap_ops->capability & (1 << cap));
++}
++EXPORT_SYMBOL_GPL(irq_remapping_cap);
++
+ int __init irq_remapping_prepare(void)
+ {
+ 	if (disable_irq_remap)
 -- 
 2.1.0
