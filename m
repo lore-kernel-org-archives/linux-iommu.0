@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 12/17] iommu/vt-d: Move EIM detection to
-	intel_prepare_irq_remapping
-Date: Fri,  5 Jun 2015 16:10:58 +0200
-Message-ID: <1433513463-19128-13-git-send-email-joro@8bytes.org>
+Subject: [PATCH 17/17] iommu/vt-d: Remove update code for old ir-table
+Date: Fri,  5 Jun 2015 16:11:03 +0200
+Message-ID: <1433513463-19128-18-git-send-email-joro@8bytes.org>
 References: <1433513463-19128-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,103 +23,112 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-This needs to be set up before the ir-table can be
-programmed to the iommu hardware register. This programming
-will be moved to intel_setup_irq_remapping, so EIM needs to
-be set up earlier too.
+The code to update the irq remapping table of the old kernel
+is not necessary anymore because we switch immidiatly to the
+new table after we copied the data over.
 
 Tested-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c | 44 +++++++++++++++++--------------------
- 1 file changed, 20 insertions(+), 24 deletions(-)
+ drivers/iommu/intel_irq_remapping.c | 44 -------------------------------------
+ include/linux/intel-iommu.h         |  2 --
+ 2 files changed, 46 deletions(-)
 
 diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 70e4955..35d73f6 100644
+index 07a8e82..b49aa8c 100644
 --- a/drivers/iommu/intel_irq_remapping.c
 +++ b/drivers/iommu/intel_irq_remapping.c
-@@ -637,10 +637,26 @@ static int __init intel_prepare_irq_remapping(void)
- 		goto error;
- 	}
+@@ -22,7 +22,6 @@
+ #include "irq_remapping.h"
  
-+	if (x2apic_supported()) {
-+		eim_mode = !dmar_x2apic_optout();
-+		if (!eim_mode)
-+			pr_info("BIOS set x2apic opt out bit. Use "
-+				"'intremap=no_x2apic_optout' to enable x2apic\n");
-+	}
-+
- 	/* First make sure all IOMMUs support IRQ remapping */
--	for_each_iommu(iommu, drhd)
-+	for_each_iommu(iommu, drhd) {
- 		if (!ecap_ir_support(iommu->ecap))
- 			goto error;
-+		if (eim_mode && !ecap_eim_support(iommu->ecap)) {
-+			printk(KERN_INFO "DRHD %Lx: EIM not supported by DRHD, "
-+			       " ecap %Lx\n", drhd->reg_base_addr, iommu->ecap);
-+			eim_mode = 0;
-+		}
-+	}
-+
-+	if (eim_mode)
-+		pr_info("Queued invalidation will be enabled to support x2apic and Intr-remapping.\n");
+ static int iommu_load_old_irte(struct intel_iommu *iommu);
+-static int __iommu_update_old_irte(struct intel_iommu *iommu, int index);
+ static void iommu_check_pre_ir_status(struct intel_iommu *iommu);
+ static void iommu_disable_irq_remapping(struct intel_iommu *iommu);
  
- 	/* Do the allocations early */
- 	for_each_iommu(iommu, drhd)
-@@ -659,13 +675,6 @@ static int __init intel_enable_irq_remapping(void)
- 	struct dmar_drhd_unit *drhd;
- 	struct intel_iommu *iommu;
- 	bool setup = false;
--	int eim = 0;
+@@ -202,9 +201,6 @@ static int modify_irte(int irq, struct irte *irte_modified)
+ 	set_64bit(&irte->low, irte_modified->low);
+ 	set_64bit(&irte->high, irte_modified->high);
+ 
+-	if (iommu->pre_enabled_ir)
+-		__iommu_update_old_irte(iommu, index);
 -
--	if (x2apic_supported()) {
--		eim = !dmar_x2apic_optout();
--		if (!eim)
--			pr_info("x2apic is disabled because BIOS sets x2apic opt out bit. You can use 'intremap=no_x2apic_optout' to override the BIOS setting.\n");
--	}
+ 	__iommu_flush_cache(iommu, irte, sizeof(*irte));
  
- 	for_each_iommu(iommu, drhd) {
- 		iommu_check_pre_ir_status(iommu);
-@@ -679,19 +688,6 @@ static int __init intel_enable_irq_remapping(void)
- 	}
+ 	rc = qi_flush_iec(iommu, index, 0);
+@@ -266,9 +262,6 @@ static int clear_entries(struct irq_2_iommu *irq_iommu)
+ 	bitmap_release_region(iommu->ir_table->bitmap, index,
+ 			      irq_iommu->irte_mask);
  
+-	if (iommu->pre_enabled_ir)
+-		__iommu_update_old_irte(iommu, -1);
+-
+ 	return qi_flush_iec(iommu, index, irq_iommu->irte_mask);
+ }
+ 
+@@ -1327,9 +1320,6 @@ static int iommu_load_old_irte(struct intel_iommu *iommu)
+ 
+ 	__iommu_flush_cache(iommu, iommu->ir_table->base, size);
+ 
+-	iommu->ir_table->base_old_phys = irt_phys;
+-	iommu->ir_table->base_old_virt = old_ir_table;
+-
  	/*
--	 * check for the Interrupt-remapping support
--	 */
--	for_each_iommu(iommu, drhd)
--		if (eim && !ecap_eim_support(iommu->ecap)) {
--			printk(KERN_INFO "DRHD %Lx: EIM not supported by DRHD, "
--			       " ecap %Lx\n", drhd->reg_base_addr, iommu->ecap);
--			eim = 0;
--		}
--	eim_mode = eim;
--	if (eim)
--		pr_info("Queued invalidation will be enabled to support x2apic and Intr-remapping.\n");
+ 	 * Now check the table for used entries and mark those as
+ 	 * allocated in the bitmap
+@@ -1342,40 +1332,6 @@ static int iommu_load_old_irte(struct intel_iommu *iommu)
+ 	return 0;
+ }
+ 
+-static int __iommu_update_old_irte(struct intel_iommu *iommu, int index)
+-{
+-	int start;
+-	unsigned long size;
+-	void __iomem *to;
+-void *from;
 -
--	/*
- 	 * Setup Interrupt-remapping for all the DRHD's now.
- 	 */
- 	for_each_iommu(iommu, drhd) {
-@@ -705,7 +701,7 @@ static int __init intel_enable_irq_remapping(void)
- 				INTR_REMAP_TABLE_ENTRIES*sizeof(struct irte));
- 			__iommu_load_old_irte(iommu);
- 		} else
--			iommu_set_irq_remapping(iommu, eim);
-+			iommu_set_irq_remapping(iommu, eim_mode);
+-	if ((!iommu)
+-		|| (!iommu->ir_table)
+-		|| (!iommu->ir_table->base)
+-		|| (!iommu->ir_table->base_old_phys)
+-		|| (!iommu->ir_table->base_old_virt))
+-		return -1;
+-
+-	if (index < -1 || index >= INTR_REMAP_TABLE_ENTRIES)
+-		return -1;
+-
+-	if (index == -1) {
+-		start = 0;
+-		size = INTR_REMAP_TABLE_ENTRIES * sizeof(struct irte);
+-	} else {
+-		start = index * sizeof(struct irte);
+-		size = sizeof(struct irte);
+-	}
+-
+-	to = iommu->ir_table->base_old_virt;
+-	from = iommu->ir_table->base;
+-	memcpy(to + start, from + start, size);
+-
+-	__iommu_flush_cache(iommu, to + start, size);
+-
+-	return 0;
+-}
+-
+ static void iommu_check_pre_ir_status(struct intel_iommu *iommu)
+ {
+ 	u32 sts;
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 5aa8834..9fcdd9a 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -302,8 +302,6 @@ struct q_inval {
+ struct ir_table {
+ 	struct irte *base;
+ 	unsigned long *bitmap;
+-	void __iomem *base_old_virt;
+-	unsigned long base_old_phys;
+ };
+ #endif
  
- 		setup = true;
- 	}
-@@ -722,9 +718,9 @@ static int __init intel_enable_irq_remapping(void)
- 	 */
- 	x86_io_apic_ops.print_entries = intel_ir_io_apic_print_entries;
- 
--	pr_info("Enabled IRQ remapping in %s mode\n", eim ? "x2apic" : "xapic");
-+	pr_info("Enabled IRQ remapping in %s mode\n", eim_mode ? "x2apic" : "xapic");
- 
--	return eim ? IRQ_REMAP_X2APIC_MODE : IRQ_REMAP_XAPIC_MODE;
-+	return eim_mode ? IRQ_REMAP_X2APIC_MODE : IRQ_REMAP_XAPIC_MODE;
- 
- error:
- 	intel_cleanup_irq_remapping();
 -- 
 1.9.1
