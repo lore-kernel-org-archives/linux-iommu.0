@@ -1,53 +1,55 @@
-From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: [GIT PULL] Intel IOMMU fix for 4.1
-Date: Mon, 08 Jun 2015 15:00:15 +0100
-Message-ID: <1433772015.2952.44.camel@infradead.org>
+From: David Woodhouse <dwmw2@infradead.org>
+Subject: Re: [PATCH v11 04/10] iommu/vt-d: functions to copy data from old
+ mem
+Date: Mon, 08 Jun 2015 15:15:35 +0100
+Message-ID: <1433772935.2952.47.camel@infradead.org>
+References: <1431337974-545-1-git-send-email-zhen-hual@hp.com>
+	 <1431337974-545-5-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============3262682687044611645=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
+	boundary="=-XzKMuclTynvH65kZCcVX"
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1431337974-545-5-git-send-email-zhen-hual@hp.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: "Li, Zhen-Hua" <zhen-hual@hp.com>
+Cc: indou.takao@jp.fujitsu.com, bhe@redhat.com, joro@8bytes.org, vgoyal@redhat.com, dyoung@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============3262682687044611645==
-Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-86iLdssnBaMvYllP4I4g"
-
-
---=-86iLdssnBaMvYllP4I4g
+--=-XzKMuclTynvH65kZCcVX
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Linus, please pull from
-        git://git.infradead.org/intel-iommu.git
+On Mon, 2015-05-11 at 17:52 +0800, Li, Zhen-Hua wrote:
+> Add some functions to copy the data from old kernel.
+> These functions are used to copy context tables and page tables.
+>=20
+> To avoid calling iounmap between spin_lock_irqsave and=20
+> spin_unlock_irqrestore,
+> use a link here, store the pointers , and then use iounmap to free=20
+> them in
+> another place.
+>=20
+> Li, Zhen-hua:
+>     The functions and logics.
 
-This fixes an oops when attempting to enable 1:1 passthrough mode for
-devices on which VT-d translation was disabled anyway. It's actually a
-long-standing bug but recent changes (commit 18436afd) have made it
-much easier to trigger with 'iommu=3Dpt intel_iommu=3Digfx_off' on the
-command line.
+Surely this isn't specific to the Intel IOMMU? Shouldn't it live
+elsewhere =E2=80=94 either in generic IOMMU code or perhaps in generic kexe=
+c
+support code?
 
-David Woodhouse (1):
-      iommu/vt-d: Fix passthrough mode with translation-disabled devices
+Don't we need to solve the same kexec problem on *all* platforms with
+an IOMMU, and won't they all need something like this?
 
- drivers/iommu/intel-iommu.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+And I think you're misusing VTD_PAGE_{SHIFT,MASK} when you should be
+using the normal PAGE_{SHIFT,MASK}. And shouldn't physical addresses be
+phys_addr_t?
 
 --=20
 David Woodhouse                            Open Source Technology Centre
-David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
+David.Woodhouse@intel.com                              Intel Corporation
 
---=-86iLdssnBaMvYllP4I4g
+--=-XzKMuclTynvH65kZCcVX
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -140,28 +142,18 @@ Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
 ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
 AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUwNjA4MTQwMDE1WjAjBgkqhkiG9w0BCQQxFgQUtfGlP8TZeQVTxrSadt053gz9RD4w
+CQUxDxcNMTUwNjA4MTQxNTM1WjAjBgkqhkiG9w0BCQQxFgQUlJm3KcpkjN37k4LKBQIkWIZ9IS8w
 gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
 ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
 L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
 CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
 LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
 U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQBd1l/oviQXGB+rxHx++/nUeCYMQeVRwGgOY0D4cCgIh2lLAfbjnm6acNfq
-AxEWgOhQ/3m10xiY4uBoLWQZxlcPWIzzFqoY9VwXjgPI80s1ZZqFNkoYUFmdiofc7+Vuc9VsCeUb
-ov9zk9hRKBtqtYgdYIeIQNAuo/DGsulCPDyRiqTay84iZmhvWGqfeFNs/ikAhhLHtcWKnjCJeeNq
-jP9fqarvlAT1AZsJ7B8hhilulNyK/bonhMLAfwA3nDotN5oM2FiQ9RKH5b/FeraC0AD+1o05+0cc
-QJpGs13RLve+brmKrr3AdGA92pMBPrMU96pi//egBNE7KEXS4Fbb1lQsAAAAAAAA
+hkiG9w0BAQEFAASCAQC2tl0keTBc6yH0dV3kOqtWONY2aKl+3J5+RJVwrfIv0cV8ERd/L18zF+OK
+0WNRIHxXRL9bgjJl138Q0IKwdxl3QK48F9aANZeFK/+guRKfFVMGu4ic5JrW+NXk35wCy+IflYIN
+pyVFH1tC9VYjbnQ6tJOGuVPMPqCFruUHJuBSAZyF45yhde2fn5FZ82QodCfLASSytBKSM9TP1fLt
++RNjuAOJgx6EZk9eBbWP0OkrwxFWNbwyq4HTd1iaXi+i8kHi/GDCh2j8ddvJBqTE+jCnoLCEy66s
+kxN9XYaSp6YvlD4VhDevKeOZdBhTCOS/rg0pUvIm5f09e0W6Cmfug2WuAAAAAAAA
 
 
---=-86iLdssnBaMvYllP4I4g--
-
-
---===============3262682687044611645==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============3262682687044611645==--
+--=-XzKMuclTynvH65kZCcVX--
