@@ -1,80 +1,155 @@
-From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [v9 0/9] Add VT-d Posted-Interrupts support - IOMMU part
-Date: Mon, 8 Jun 2015 01:23:17 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F00257F274@SHSMSX104.ccr.corp.intel.com>
-References: <1433482974-14614-1-git-send-email-feng.wu@intel.com>
-	<alpine.DEB.2.11.1506051343510.7723@nanos>
-	<20150605133333.GU20384@8bytes.org>
+From: "Wu, Feng" <feng.wu@intel.com>
+Subject: RE: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU
+ is blocked
+Date: Mon, 8 Jun 2015 01:43:41 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F00257F319@SHSMSX104.ccr.corp.intel.com>
+References: <20150304120608.GA26762@amt.cnet>
+ <E959C4978C3B6342920538CF579893F002409841@SHSMSX104.ccr.corp.intel.com>
+ <20150312011526.GA5878@amt.cnet>
+ <E959C4978C3B6342920538CF579893F00243A819@SHSMSX104.ccr.corp.intel.com>
+ <20150325231738.GA7333@amt.cnet>
+ <E959C4978C3B6342920538CF579893F0024697E0@SHSMSX104.ccr.corp.intel.com>
+ <20150327193013.GA6502@amt.cnet>
+ <E959C4978C3B6342920538CF579893F002479E58@SHSMSX104.ccr.corp.intel.com>
+ <20150330235533.GA15792@amt.cnet>
+ <E959C4978C3B6342920538CF579893F0024A7FBF@SHSMSX104.ccr.corp.intel.com>
+ <20150605215915.GA1382@amt.cnet>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150605133333.GU20384-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <20150605215915.GA1382@amt.cnet>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: kvm-owner@vger.kernel.org
+To: Marcelo Tosatti <mtosatti@redhat.com>
+Cc: "hpa@zytor.com" <hpa@zytor.com>, "tglx@linutronix.de" <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>, "x86@kernel.org" <x86@kernel.org>, "gleb@kernel.org" <gleb@kernel.org>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "eric.auger@linaro.org" <eric.auger@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Wu, Feng" <feng.wu@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
 
 
 > -----Original Message-----
-> From: Joerg Roedel [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
-> Sent: Friday, June 05, 2015 9:34 PM
-> To: Thomas Gleixner
-> Cc: Wu, Feng; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org; jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org;
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [v9 0/9] Add VT-d Posted-Interrupts support - IOMMU part
+> From: Marcelo Tosatti [mailto:mtosatti@redhat.com]
+> Sent: Saturday, June 06, 2015 5:59 AM
+> To: Wu, Feng
+> Cc: hpa@zytor.com; tglx@linutronix.de; mingo@redhat.com; x86@kernel.org;
+> gleb@kernel.org; pbonzini@redhat.com; dwmw2@infradead.org;
+> joro@8bytes.org; alex.williamson@redhat.com; jiang.liu@linux.intel.com;
+> eric.auger@linaro.org; linux-kernel@vger.kernel.org;
+> iommu@lists.linux-foundation.org; kvm@vger.kernel.org
+> Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU
+> is blocked
 > 
-> On Fri, Jun 05, 2015 at 01:47:06PM +0200, Thomas Gleixner wrote:
-> > On Fri, 5 Jun 2015, Feng Wu wrote:
-> > > Divide the whole series which contain multiple components into three
-> parts:
-> > > - Prerequisite changes to irq subsystem (already merged in tip tree x86/apic
-> branch)
-> > > - IOMMU part (in this series)
+> On Tue, Apr 14, 2015 at 07:37:44AM +0000, Wu, Feng wrote:
 > >
-> > Please add
 > >
-> > Reviewed-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+> > > -----Original Message-----
+> > > From: Marcelo Tosatti [mailto:mtosatti@redhat.com]
+> > > Sent: Tuesday, March 31, 2015 7:56 AM
+> > > To: Wu, Feng
+> > > Cc: hpa@zytor.com; tglx@linutronix.de; mingo@redhat.com;
+> x86@kernel.org;
+> > > gleb@kernel.org; pbonzini@redhat.com; dwmw2@infradead.org;
+> > > joro@8bytes.org; alex.williamson@redhat.com; jiang.liu@linux.intel.com;
+> > > eric.auger@linaro.org; linux-kernel@vger.kernel.org;
+> > > iommu@lists.linux-foundation.org; kvm@vger.kernel.org
+> > > Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when
+> vCPU
+> > > is blocked
+> > >
+> > > On Mon, Mar 30, 2015 at 04:46:55AM +0000, Wu, Feng wrote:
+> > > >
+> > > >
+> > > > > -----Original Message-----
+> > > > > From: Marcelo Tosatti [mailto:mtosatti@redhat.com]
+> > > > > Sent: Saturday, March 28, 2015 3:30 AM
+> > > > > To: Wu, Feng
+> > > > > Cc: hpa@zytor.com; tglx@linutronix.de; mingo@redhat.com;
+> > > x86@kernel.org;
+> > > > > gleb@kernel.org; pbonzini@redhat.com; dwmw2@infradead.org;
+> > > > > joro@8bytes.org; alex.williamson@redhat.com;
+> jiang.liu@linux.intel.com;
+> > > > > eric.auger@linaro.org; linux-kernel@vger.kernel.org;
+> > > > > iommu@lists.linux-foundation.org; kvm@vger.kernel.org
+> > > > > Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when
+> > > vCPU
+> > > > > is blocked
+> > > > >
+> > > > > On Fri, Mar 27, 2015 at 06:34:14AM +0000, Wu, Feng wrote:
+> > > > > > > > Currently, the following code is executed before local_irq_disable()
+> is
+> > > > > called,
+> > > > > > > > so do you mean 1)moving local_irq_disable() to the place before it.
+> 2)
+> > > after
+> > > > > > > interrupt
+> > > > > > > > is disabled, set KVM_REQ_EVENT in case the ON bit is set?
+> > > > > > >
+> > > > > > > 2) after interrupt is disabled, set KVM_REQ_EVENT in case the ON
+> bit
+> > > > > > > is set.
+> > > > > >
+> > > > > > Here is my understanding about your comments here:
+> > > > > > - Disable interrupts
+> > > > > > - Check 'ON'
+> > > > > > - Set KVM_REQ_EVENT if 'ON' is set
+> > > > > >
+> > > > > > Then we can put the above code inside " if
+> > > > > (kvm_check_request(KVM_REQ_EVENT, vcpu) || req_int_win) "
+> > > > > > just like it used to be. However, I still have some questions about this
+> > > > > comment:
+> > > > > >
+> > > > > > 1. Where should I set KVM_REQ_EVENT? In function
+> vcpu_enter_guest(),
+> > > or
+> > > > > other places?
+> > > > >
+> > > > > See below:
+> > > > >
+> > > > > > If in vcpu_enter_guest(), since currently local_irq_disable() is called
+> after
+> > > > > 'KVM_REQ_EVENT'
+> > > > > > is checked, is it helpful to set KVM_REQ_EVENT after
+> local_irq_disable() is
+> > > > > called?
+> > > > >
+> > > > >         local_irq_disable();
+> > > > >
+> > > > > 	*** add code here ***
+> > > >
+> > > > So we need add code like the following here, right?
+> > > >
+> > > >           if ('ON' is set)
+> > > >               kvm_make_request(KVM_REQ_EVENT, vcpu);
+> > >
 > >
-> > Which tree should this go through? It depends on tip/x86/apic AFAICT,
-> > so we can take it through that, if Joerg provides his ACK.
+> > Hi Marcelo,
+> >
+> > I changed the code as above, then I found that the ping latency was
+> extremely big, (70ms - 400ms).
+> > I digged into it and got the root cause. We cannot use "checking-on" as the
+> judgment, since 'ON'
+> > can be cleared by hypervisor software in lots of places. In this case,
+> KVM_REQ_EVENT cannot be
+> > set when we check 'ON' bit, hence the interrupts are not injected to the guest
+> in time.
+> >
+> > Please refer to the following code, in which 'ON' bit can be cleared:
+> >
+> > apic_find_highest_irr () --> vmx_sync_pir_to_irr () --> pi_test_and_clear_on()
+> >
+> > Searching from the code step by step, apic_find_highest_irr() can be called by
+> many other guys.
+> >
+> > Thanks,
 > 
-> Yeah, these changes depend on tip/x86/apic, so it doesn't make sense to
-> send them through the iommu tree. There will be some conflicts when
-> merging tip/x86/apic and the iommu tree together, though, mainly because
-> of the vt-d kdump fixing patches I have in my tree. The conflicts are
-> spread over 3 files, but not too serious and easy to resolve.
+> Ok then, ignore my suggestion.
 > 
-> Anyway, you have my
-> 
-> Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> 
-> for those.
-> 
+> Can you resend the latest version please ?
 
-Hi Joerg,
-
-Thanks for your ACK on this series!
-
-Hi Thomas,
-
-Thanks a lot for your review!
-
-Do you need me to send another version which adds the reviewed-by and acked-by tags,
-or you can do it yourself on this version and merge it to tip/x86/apic?
+Thanks for your review, I will send the new version soon.
 
 Thanks,
 Feng
 
 > 
-> 	Joerg
+
