@@ -1,73 +1,87 @@
-From: David Woodhouse <dwmw2@infradead.org>
-Subject: Re: [PATCH v11 04/10] iommu/vt-d: functions to copy data from old
- mem
-Date: Mon, 08 Jun 2015 16:44:02 +0100
-Message-ID: <1433778242.2952.76.camel@infradead.org>
+From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: [PATCH v11 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
+Date: Mon, 08 Jun 2015 16:50:24 +0100
+Message-ID: <1433778624.2952.82.camel@infradead.org>
 References: <1431337974-545-1-git-send-email-zhen-hual@hp.com>
-	 <1431337974-545-5-git-send-email-zhen-hual@hp.com>
-	 <1433772935.2952.47.camel@infradead.org>
-	 <20150608152147.GV20384@8bytes.org>
+	<1433773583.2952.52.camel@infradead.org>
+	<20150608152957.GW20384@8bytes.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-0U2ifi1BApJCjGqxfXi2"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150608152147.GV20384@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: "Li, Zhen-Hua" <zhen-hual@hp.com>, indou.takao@jp.fujitsu.com, bhe@redhat.com, vgoyal@redhat.com, dyoung@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
+Content-Type: multipart/mixed; boundary="===============3150020842294017365=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150608152957.GW20384-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Li,
+	Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 
---=-0U2ifi1BApJCjGqxfXi2
+--===============3150020842294017365==
+Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
+	boundary="=-T8BtOgq74pECZEh1hTfz"
+
+
+--=-T8BtOgq74pECZEh1hTfz
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 2015-06-08 at 17:21 +0200, Joerg Roedel wrote:
-> Hi David,
+On Mon, 2015-06-08 at 17:29 +0200, Joerg Roedel wrote:
+> On Mon, Jun 08, 2015 at 03:26:23PM +0100, David Woodhouse wrote:
+> > There are some interesting corner cases to handle here.
+> >=20
+> > Firstly, you don't seem to handle the case of extended root/context
+> > tables (where ecap_ecs is set). You need to preserve the DMA_RTADDR_RT
+> > bit in the Root Table Address register, surely?
+> >=20
+> > I think we also need to cope with inheriting page tables from a kernel
+> > that *doesn't* use extended page tables, even on hardware that supports
+> > it. Which means the use of extended page tables in the new kernel would
+> > need to be contingent on something *other* than the pure hardware
+> > capabilities.
 >=20
-> On Mon, Jun 08, 2015 at 03:15:35PM +0100, David Woodhouse wrote:
-> > Surely this isn't specific to the Intel IOMMU? Shouldn't it live
-> > elsewhere =E2=80=94 either in generic IOMMU code or perhaps in generic =
-kexec
-> > support code?
+> Hmm, I also limited this functionality to kdump kernels. Do we still
+> need to preserve these extended data structures even when there is no
+> upstream support for them yet?
+
+We *do* have upstream support. The 4.1 kernel will use the extended
+root/context tables and will set the DMA_RTADDR_RTT bit in the Root
+Table Address register, even though it doesn't yet actually *use* any
+of the shiny new bits in the extended context tables.
+
+So the code which copies the context tables needs to take that into
+account.
+
+> That is still a problem, but not specific to this patch-set. RMRRs will
+> not be restored, because domains allocated out of the DMA-API path will
+> not get any RMRR mappings. This is also a problem with device hotplug
+> (unplug a device with RMRRs and replug it in and the RMRR mappings will
+>  be gone).
 >=20
-> I put a bigger rework of this on-top of Zhen-Hua's patches, you can find
-> the result in my x86/vt-d branch. With my patches I also removed this
-> pointer collecting concept and do the iomap_cache and iounmap calls
-> before the spin-lock is taken, so this problem is now solved
-> differently.
->=20
-> > And I think you're misusing VTD_PAGE_{SHIFT,MASK} when you should be
-> > using the normal PAGE_{SHIFT,MASK}.
->=20
-> I think VT_PAGE_* is correct, since the VT-d driver also runs on ia64.
-> There the system page-size is different from the VT-d page-size.
+> I agree that this needs to be fixed.
 
-That's the problem. In  __iommu_load_from_oldmem we start with a
-physical address in 'from', convert to a VT-d PFN in 'pfn':
-
-+       pfn =3D from >> VTD_PAGE_SHIFT;
-
-.. and then proceed to pass that pfn to non-VT-d functions like
-page_is_ram() and pfn_to_kaddr() which really need their input pfn
-values to be in terms of PAGE_SHIFT not VTD_PAGE_SHIFT.
-
-But it looks like you've completely eliminated that now (including the
-page_is_ram check). So although it *was* wrong, it doesn't matter now.
-
-> >  And shouldn't physical addresses be phys_addr_t?
->=20
-> This is changed where appropriate, I hope.
-
-OK. In fact once it's purely internal to intel-iommu.c it doesn't
-matter as much since we don't put page tables in high memory on 32-bit
-machines.
+Yeah. We need the same thing with hardware passthrough =E2=80=94 currently =
+I
+think we refuse to put RMRR-afflicted devices into the passthrough
+domain purely because we lack the capability to install the RMRR
+regions if/when we later take it *out* of the hardware passthrough
+domain. Although I can't quite remember the logic there; surely if it's
+RMRR-afflicted and we have iommu=3Dpt, it'll *never* be taken out of the
+1:1 domain? A device driver might come along and tell us it really is
+64-bit capable and thus we might put it *in* to the passthrough domain
+where previously we'd kept it out... but taking it *out*... ?
 
 --=20
-David Woodhouse                            Open Source Technology Centre
-David.Woodhouse@intel.com                              Intel Corporation
+dwmw2
 
---=-0U2ifi1BApJCjGqxfXi2
+--=-T8BtOgq74pECZEh1hTfz
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -160,18 +174,28 @@ Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
 ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
 AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUwNjA4MTU0NDAyWjAjBgkqhkiG9w0BCQQxFgQUPUjs016kyHfnof5kX2FPXcTSQsEw
+CQUxDxcNMTUwNjA4MTU1MDI0WjAjBgkqhkiG9w0BCQQxFgQUkzN9ZUDJ7N7ihwPj26F41AvgNwgw
 gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
 ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
 L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
 CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
 LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
 U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQCwsgVxhR4VWvAQKg0p0223uI3595zgHwVrBf5rzPtRFaNjGASlHur7hivu
-yFb0OWPJAY6lmin51EsulekPbbmeWLNPndHRCldkKhxHCa2jylL7rDOivMVAQGieupC7tczxTElP
-DhK+gb7+dzpOdCl1XAUEM1wQNDLXLWpTUVid2xqacGa7IRZNyPLwgx8txFY37bpYPh1d6jVTAZr4
-rI/qsL2qDqmEbx7VffrKqqHih8dwy4vifAUfU6jVq25Rfz80GMeG3PraNFkN3GWlsm7CWEdJiIfL
-YenW/yizu/4PY/be4iBNfxdz0gaYmwG+0Z0szxn2giVmFEDiUY5bwsrzAAAAAAAA
+hkiG9w0BAQEFAASCAQCmLdNhNyUiiA0WB790inWiG2yxkEcOEUw+kB7g8CEa20tGb89WtsaLrG23
+x6VjGEGlf0xwCFiCP5yyVu7UTptG+RT7489YxOcUj5uOLY57DBYH5omfG/VKczW3/tRnGwYAPdOa
+nDGRqEMiwTzZcZ3v+Afi7QLqTaN1WBy6dz7rSNurFRVb2tZmloC2Y9IcTZRxIBmHgBrmXdPhHicU
+UVVOw4u+KzkOZ99k+CCXpFeGTVMTWFPx20PlLY/vm+DAxNQ6cFQWTg5e04Y0kMzL93mtA3GvD1mr
+cBKCCqE0V2Jn/qk2O7LGdubTcoYKlqnwGltUVdu3J4svbVDIB3wYsOetAAAAAAAA
 
 
---=-0U2ifi1BApJCjGqxfXi2--
+--=-T8BtOgq74pECZEh1hTfz--
+
+
+--===============3150020842294017365==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============3150020842294017365==--
