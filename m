@@ -1,155 +1,108 @@
-From: "Wu, Feng" <feng.wu@intel.com>
-Subject: RE: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU
- is blocked
-Date: Mon, 8 Jun 2015 01:43:41 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F00257F319@SHSMSX104.ccr.corp.intel.com>
-References: <20150304120608.GA26762@amt.cnet>
- <E959C4978C3B6342920538CF579893F002409841@SHSMSX104.ccr.corp.intel.com>
- <20150312011526.GA5878@amt.cnet>
- <E959C4978C3B6342920538CF579893F00243A819@SHSMSX104.ccr.corp.intel.com>
- <20150325231738.GA7333@amt.cnet>
- <E959C4978C3B6342920538CF579893F0024697E0@SHSMSX104.ccr.corp.intel.com>
- <20150327193013.GA6502@amt.cnet>
- <E959C4978C3B6342920538CF579893F002479E58@SHSMSX104.ccr.corp.intel.com>
- <20150330235533.GA15792@amt.cnet>
- <E959C4978C3B6342920538CF579893F0024A7FBF@SHSMSX104.ccr.corp.intel.com>
- <20150605215915.GA1382@amt.cnet>
+From: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Subject: Re: [PATCH 00/17] Fixes and Cleanups for the Intel VT-d driver
+Date: Mon, 08 Jun 2015 16:06:45 +0800
+Message-ID: <55754D15.9090205@hp.com>
+References: <1433513463-19128-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <20150605215915.GA1382@amt.cnet>
-Content-Language: en-US
-Sender: kvm-owner@vger.kernel.org
-To: Marcelo Tosatti <mtosatti@redhat.com>
-Cc: "hpa@zytor.com" <hpa@zytor.com>, "tglx@linutronix.de" <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>, "x86@kernel.org" <x86@kernel.org>, "gleb@kernel.org" <gleb@kernel.org>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jiang.liu@linux.intel.com" <jiang.liu@linux.intel.com>, "eric.auger@linaro.org" <eric.auger@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Wu, Feng" <feng.wu@intel.com>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1433513463-19128-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, tom.vaden-VXdhtT5mjnY@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+Finished testing on my HP huge system, SuperDome X.
+It works well.
 
+Thanks
+Zhenhua
 
-> -----Original Message-----
-> From: Marcelo Tosatti [mailto:mtosatti@redhat.com]
-> Sent: Saturday, June 06, 2015 5:59 AM
-> To: Wu, Feng
-> Cc: hpa@zytor.com; tglx@linutronix.de; mingo@redhat.com; x86@kernel.org;
-> gleb@kernel.org; pbonzini@redhat.com; dwmw2@infradead.org;
-> joro@8bytes.org; alex.williamson@redhat.com; jiang.liu@linux.intel.com;
-> eric.auger@linaro.org; linux-kernel@vger.kernel.org;
-> iommu@lists.linux-foundation.org; kvm@vger.kernel.org
-> Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when vCPU
-> is blocked
-> 
-> On Tue, Apr 14, 2015 at 07:37:44AM +0000, Wu, Feng wrote:
-> >
-> >
-> > > -----Original Message-----
-> > > From: Marcelo Tosatti [mailto:mtosatti@redhat.com]
-> > > Sent: Tuesday, March 31, 2015 7:56 AM
-> > > To: Wu, Feng
-> > > Cc: hpa@zytor.com; tglx@linutronix.de; mingo@redhat.com;
-> x86@kernel.org;
-> > > gleb@kernel.org; pbonzini@redhat.com; dwmw2@infradead.org;
-> > > joro@8bytes.org; alex.williamson@redhat.com; jiang.liu@linux.intel.com;
-> > > eric.auger@linaro.org; linux-kernel@vger.kernel.org;
-> > > iommu@lists.linux-foundation.org; kvm@vger.kernel.org
-> > > Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when
-> vCPU
-> > > is blocked
-> > >
-> > > On Mon, Mar 30, 2015 at 04:46:55AM +0000, Wu, Feng wrote:
-> > > >
-> > > >
-> > > > > -----Original Message-----
-> > > > > From: Marcelo Tosatti [mailto:mtosatti@redhat.com]
-> > > > > Sent: Saturday, March 28, 2015 3:30 AM
-> > > > > To: Wu, Feng
-> > > > > Cc: hpa@zytor.com; tglx@linutronix.de; mingo@redhat.com;
-> > > x86@kernel.org;
-> > > > > gleb@kernel.org; pbonzini@redhat.com; dwmw2@infradead.org;
-> > > > > joro@8bytes.org; alex.williamson@redhat.com;
-> jiang.liu@linux.intel.com;
-> > > > > eric.auger@linaro.org; linux-kernel@vger.kernel.org;
-> > > > > iommu@lists.linux-foundation.org; kvm@vger.kernel.org
-> > > > > Subject: Re: [v3 24/26] KVM: Update Posted-Interrupts Descriptor when
-> > > vCPU
-> > > > > is blocked
-> > > > >
-> > > > > On Fri, Mar 27, 2015 at 06:34:14AM +0000, Wu, Feng wrote:
-> > > > > > > > Currently, the following code is executed before local_irq_disable()
-> is
-> > > > > called,
-> > > > > > > > so do you mean 1)moving local_irq_disable() to the place before it.
-> 2)
-> > > after
-> > > > > > > interrupt
-> > > > > > > > is disabled, set KVM_REQ_EVENT in case the ON bit is set?
-> > > > > > >
-> > > > > > > 2) after interrupt is disabled, set KVM_REQ_EVENT in case the ON
-> bit
-> > > > > > > is set.
-> > > > > >
-> > > > > > Here is my understanding about your comments here:
-> > > > > > - Disable interrupts
-> > > > > > - Check 'ON'
-> > > > > > - Set KVM_REQ_EVENT if 'ON' is set
-> > > > > >
-> > > > > > Then we can put the above code inside " if
-> > > > > (kvm_check_request(KVM_REQ_EVENT, vcpu) || req_int_win) "
-> > > > > > just like it used to be. However, I still have some questions about this
-> > > > > comment:
-> > > > > >
-> > > > > > 1. Where should I set KVM_REQ_EVENT? In function
-> vcpu_enter_guest(),
-> > > or
-> > > > > other places?
-> > > > >
-> > > > > See below:
-> > > > >
-> > > > > > If in vcpu_enter_guest(), since currently local_irq_disable() is called
-> after
-> > > > > 'KVM_REQ_EVENT'
-> > > > > > is checked, is it helpful to set KVM_REQ_EVENT after
-> local_irq_disable() is
-> > > > > called?
-> > > > >
-> > > > >         local_irq_disable();
-> > > > >
-> > > > > 	*** add code here ***
-> > > >
-> > > > So we need add code like the following here, right?
-> > > >
-> > > >           if ('ON' is set)
-> > > >               kvm_make_request(KVM_REQ_EVENT, vcpu);
-> > >
-> >
-> > Hi Marcelo,
-> >
-> > I changed the code as above, then I found that the ping latency was
-> extremely big, (70ms - 400ms).
-> > I digged into it and got the root cause. We cannot use "checking-on" as the
-> judgment, since 'ON'
-> > can be cleared by hypervisor software in lots of places. In this case,
-> KVM_REQ_EVENT cannot be
-> > set when we check 'ON' bit, hence the interrupts are not injected to the guest
-> in time.
-> >
-> > Please refer to the following code, in which 'ON' bit can be cleared:
-> >
-> > apic_find_highest_irr () --> vmx_sync_pir_to_irr () --> pi_test_and_clear_on()
-> >
-> > Searching from the code step by step, apic_find_highest_irr() can be called by
-> many other guys.
-> >
-> > Thanks,
-> 
-> Ok then, ignore my suggestion.
-> 
-> Can you resend the latest version please ?
-
-Thanks for your review, I will send the new version soon.
-
-Thanks,
-Feng
-
-> 
-
+On 06/05/2015 10:10 PM, Joerg Roedel wrote:
+> Hey,
+>
+> here are a couple of patches to fix the fall-out from the
+> patch set fixing the kdump faults with VT-d enabled. A few
+> important issues have been fixed:
+>
+> 	* Moved sleeping functions out of atomic sections,
+> 	  mainly iremap_cache/iounmap.
+>
+> 	* Mark domain ids used in the old kernel as reserved
+> 	  in the kdump kernel, so that any new domains don't
+> 	  interfere with domains from the old kernel
+>
+> 	* Mark all IRT entries from the old kernel as
+> 	  reservered in the new kernel, so that we don't
+> 	  overwrite an entry which might still be in use by
+> 	  a device
+>
+> 	* Only try to load anything from the old kernel when
+> 	  we are in a kdump kernel. If we find the iommu
+> 	  hardware enabled and we are not in a kdump kernel,
+> 	  just disable the iommu and proceed with
+> 	  initialization.
+>
+> 	* Fix a compile error
+>
+> Besides that I also cleaned up the code to simplify it:
+>
+> 	* Move necessary initialization steps before the
+> 	  root entry table and the irq remapping table is
+> 	  programmed into hardware. This makes sure QI is
+> 	  initialized so that we can flush the iommu caches
+> 	  when hardware got the new tables.
+>
+> 	* Make the new root entry table and irq remapping
+> 	  table visible to hardware immediatly after they
+> 	  are created and loaded with the data from the old
+> 	  kernel. This allows to remove the code to update
+> 	  both, the old and the new version of the table at
+> 	  the same time.
+>
+> 	* Clean up log messages from the VT-d driver to have
+> 	  a common prefix that can be grepped for.
+>
+> 	* Remove unused code
+>
+> The changes have been tested by me an Baoquan He. I'll plan
+> to put them into the x86/vt-d branch for v4.2.
+>
+> Regards,
+>
+> 	Joerg
+>
+> Joerg Roedel (17):
+>    iommu/vt-d: Fix compile error when CONFIG_INTEL_IOMMU=n
+>    iommu/vt-d: Remove __iommu_save_to_oldmem() function
+>    iommu/vt-d: Make two functions static
+>    iommu/vt-d: Load old data structures only in kdump kernel
+>    iommu/vt-d: Mark root-entry present in set_root_entry
+>    iommu/vt-d: Rework loading of old root-entry table
+>    iommu/vt-d: Copy context-tables outside of spin_lock
+>    iommu/vt-d: Don't reuse domain-ids from old kernel
+>    iommu/vt-d: Clean up log messages in intel-iommu.c
+>    iommu/vt-d: Allocate irq remapping table bitmap with GFP_KERNEL
+>    iommu/vt-d: Move QI initialization to intel_setup_irq_remapping
+>    iommu/vt-d: Move EIM detection to intel_prepare_irq_remapping
+>    iommu/vt-d: Split up iommu_set_irq_remapping
+>    iommu/vt-d: Move kdump pointer intialization to __iommu_load_old_irte
+>    iommu/vt-d: Mark irt entries from old kernel as allocated
+>    iommu/vt-d: Copy old irte in intel_setup_irq_remapping
+>    iommu/vt-d: Remove update code for old ir-table
+>
+>   drivers/iommu/dmar.c                |  26 +-
+>   drivers/iommu/intel-iommu.c         | 463 ++++++++++++++----------------------
+>   drivers/iommu/intel_irq_remapping.c | 263 +++++++++-----------
+>   include/linux/intel-iommu.h         |  17 +-
+>   4 files changed, 299 insertions(+), 470 deletions(-)
+>
