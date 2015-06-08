@@ -1,55 +1,76 @@
-From: David Woodhouse <dwmw2@infradead.org>
-Subject: Re: [PATCH v11 04/10] iommu/vt-d: functions to copy data from old
- mem
-Date: Mon, 08 Jun 2015 15:15:35 +0100
-Message-ID: <1433772935.2952.47.camel@infradead.org>
+From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: [PATCH v11 0/10] iommu/vt-d: Fix intel vt-d faults in kdump kernel
+Date: Mon, 08 Jun 2015 15:26:23 +0100
+Message-ID: <1433773583.2952.52.camel@infradead.org>
 References: <1431337974-545-1-git-send-email-zhen-hual@hp.com>
-	 <1431337974-545-5-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-XzKMuclTynvH65kZCcVX"
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1431337974-545-5-git-send-email-zhen-hual@hp.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: "Li, Zhen-Hua" <zhen-hual@hp.com>
-Cc: indou.takao@jp.fujitsu.com, bhe@redhat.com, joro@8bytes.org, vgoyal@redhat.com, dyoung@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, kexec@lists.infradead.org, alex.williamson@redhat.com, ddutile@redhat.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, doug.hatch@hp.com, jerry.hoemann@hp.com, tom.vaden@hp.com, li.zhang6@hp.com, lisa.mitchell@hp.com, billsumnerlinux@gmail.com, rwright@hp.com
+Content-Type: multipart/mixed; boundary="===============6752885585264292917=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1431337974-545-1-git-send-email-zhen-hual-VXdhtT5mjnY@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Li, Zhen-Hua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
+Cc: bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tom.vaden-VXdhtT5mjnY@public.gmane.org, rwright-VXdhtT5mjnY@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lisa.mitchell-VXdhtT5mjnY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, doug.hatch-VXdhtT5mjnY@public.gmane.org, ishii.hironobu-+CUm20s59erQFUHtdCDX3A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, billsumnerlinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, li.zhang6-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 
---=-XzKMuclTynvH65kZCcVX
+--===============6752885585264292917==
+Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
+	boundary="=-siEst4SHcAKD8uC4iZY8"
+
+
+--=-siEst4SHcAKD8uC4iZY8
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 On Mon, 2015-05-11 at 17:52 +0800, Li, Zhen-Hua wrote:
-> Add some functions to copy the data from old kernel.
-> These functions are used to copy context tables and page tables.
+> To fix this problem, we modifies the behaviors of the intel vt-d in the=
+=20
+> crashdump kernel:
 >=20
-> To avoid calling iounmap between spin_lock_irqsave and=20
-> spin_unlock_irqrestore,
-> use a link here, store the pointers , and then use iounmap to free=20
-> them in
-> another place.
->=20
-> Li, Zhen-hua:
->     The functions and logics.
+> For DMA Remapping:
+> 1. To accept the vt-d hardware in an active state,
+> 2. Do not disable and re-enable the translation, keep it enabled.
+> 3. Use the old root entry table, do not rewrite the RTA register.
+> 4. Malloc and use new context entry table, copy data from the old ones th=
+at
+>    used by the old kernel.
 
-Surely this isn't specific to the Intel IOMMU? Shouldn't it live
-elsewhere =E2=80=94 either in generic IOMMU code or perhaps in generic kexe=
-c
-support code?
+There are some interesting corner cases to handle here.
 
-Don't we need to solve the same kexec problem on *all* platforms with
-an IOMMU, and won't they all need something like this?
+Firstly, you don't seem to handle the case of extended root/context
+tables (where ecap_ecs is set). You need to preserve the DMA_RTADDR_RT
+bit in the Root Table Address register, surely?
 
-And I think you're misusing VTD_PAGE_{SHIFT,MASK} when you should be
-using the normal PAGE_{SHIFT,MASK}. And shouldn't physical addresses be
-phys_addr_t?
+I think we also need to cope with inheriting page tables from a kernel
+that *doesn't* use extended page tables, even on hardware that supports
+it. Which means the use of extended page tables in the new kernel would
+need to be contingent on something *other* than the pure hardware
+capabilities.
+
+> 5. Keep using the old page tables before driver is loaded.
+> 6. After device driver is loaded, when it issues the first dma_map comman=
+d,=20
+>    free the dmar_domain structure for this device, and generate a new one=
+, so=20
+>    that the device can be assigned a new and empty page table.=20
+
+What if there were RMRRs for this device? Don't we need to ensure that
+those are present in the "new and empty page table" when we take it
+over?
 
 --=20
 David Woodhouse                            Open Source Technology Centre
-David.Woodhouse@intel.com                              Intel Corporation
+David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
 
---=-XzKMuclTynvH65kZCcVX
+--=-siEst4SHcAKD8uC4iZY8
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -142,18 +163,28 @@ Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
 ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
 AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUwNjA4MTQxNTM1WjAjBgkqhkiG9w0BCQQxFgQUlJm3KcpkjN37k4LKBQIkWIZ9IS8w
+CQUxDxcNMTUwNjA4MTQyNjIzWjAjBgkqhkiG9w0BCQQxFgQU0JN70TiGsDavGm5sOTLZiQlkbSAw
 gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
 ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
 L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
 CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
 LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
 U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQC2tl0keTBc6yH0dV3kOqtWONY2aKl+3J5+RJVwrfIv0cV8ERd/L18zF+OK
-0WNRIHxXRL9bgjJl138Q0IKwdxl3QK48F9aANZeFK/+guRKfFVMGu4ic5JrW+NXk35wCy+IflYIN
-pyVFH1tC9VYjbnQ6tJOGuVPMPqCFruUHJuBSAZyF45yhde2fn5FZ82QodCfLASSytBKSM9TP1fLt
-+RNjuAOJgx6EZk9eBbWP0OkrwxFWNbwyq4HTd1iaXi+i8kHi/GDCh2j8ddvJBqTE+jCnoLCEy66s
-kxN9XYaSp6YvlD4VhDevKeOZdBhTCOS/rg0pUvIm5f09e0W6Cmfug2WuAAAAAAAA
+hkiG9w0BAQEFAASCAQCrKA23aRn0wDGy5hrpFEHKVuUtXjGxn3yY6EiPTYVxsQn2ile7O8qHM/bs
+Ok2i+iP/h/i5VlP/jWPIxR8CdX0iwec5Ga8qP69bed3dal6cN2k9mHJsakIGeR18yjzR4GeaqC/R
+3lUbOzYhZLPTNpdLp8XG2CWSkIpoQE5yOCmIQnOHbV4AYMXpRJZf59TYR0nwqcU+dRm1+nL+LHa0
+yI8Mt3D8YVAp+sPEFdRE2WjOa+9RYZB69w/maXldu+FrKuATuYmOjTSHLNoMTaYkJ2kuFy59EZd6
+/2YrGRkyq8JO4CachEpignuXEEJHkVTaRiFyyUZ57/YehLdMB1KrCpsEAAAAAAAA
 
 
---=-XzKMuclTynvH65kZCcVX--
+--=-siEst4SHcAKD8uC4iZY8--
+
+
+--===============6752885585264292917==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============6752885585264292917==--
