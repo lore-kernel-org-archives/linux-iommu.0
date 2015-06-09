@@ -1,14 +1,15 @@
-From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v10 10/10] iommu,
-	x86: Properly handle posted interrupts for IOMMU hotplug
-Date: Tue,  9 Jun 2015 13:20:37 +0800
-Message-ID: <1433827237-3382-11-git-send-email-feng.wu@intel.com>
-References: <1433827237-3382-1-git-send-email-feng.wu@intel.com>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: [iommu:default-domains 6/22] drivers/iommu/iommu.c:719:8: error:
+	'struct iommu_group' has no member named 'domain'
+Date: Tue, 9 Jun 2015 09:19:29 +0200
+Message-ID: <20150609071929.GW16345@suse.de>
+References: <201506081333.obotfEnw%fengguang.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1433827237-3382-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <201506081333.obotfEnw%fengguang.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,33 +19,41 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: kbuild test robot <fengguang.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kbuild-all-JC7UmRfGjtg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Return error when inserting a new IOMMU which doesn't support posted
-interrupts if posted interrupts are already enabled.
+On Mon, Jun 08, 2015 at 01:51:34PM +0800, kbuild test robot wrote:
+> tree:   git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git default-domains
+> head:   4c5de9feccd92ecab4cd5d8ef6d9e0b552e98268
+> commit: 840136773f5f2e0ed2a6ac671f8635792633c8cf [6/22] iommu: Allocate a default domain for iommu groups
+> config: x86_64-rhel (attached as .config)
+> reproduce:
+>   git checkout 840136773f5f2e0ed2a6ac671f8635792633c8cf
+>   # save the attached .config to linux build tree
+>   make ARCH=x86_64 
+> 
+> Note: the iommu/default-domains HEAD 4c5de9feccd92ecab4cd5d8ef6d9e0b552e98268 builds fine.
+>       It only hurts bisectibility.
+> 
+> All error/warnings (new ones prefixed by >>):
+> 
+>    drivers/iommu/iommu.c: In function 'iommu_group_get_for_pci_dev':
+> >> drivers/iommu/iommu.c:719:8: error: 'struct iommu_group' has no member named 'domain'
+>       group->domain = group->default_domain;
+>            ^
+> 
+> vim +719 drivers/iommu/iommu.c
+> 
+>    713			/*
+>    714			 * Try to allocate a default domain - needs support from the
+>    715			 * IOMMU driver.
+>    716			 */
+>    717			group->default_domain = __iommu_domain_alloc(pdev->dev.bus,
+>    718								     IOMMU_DOMAIN_DMA);
+>  > 719			group->domain = group->default_domain;
+>    720		}
+>    721	
+>    722		return group;
 
-Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Reviewed-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Acked-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
----
- drivers/iommu/intel_irq_remapping.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 0f57af7..80f1d14 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -1355,6 +1355,9 @@ int dmar_ir_hotplug(struct dmar_drhd_unit *dmaru, bool insert)
- 		return -EINVAL;
- 	if (!ecap_ir_support(iommu->ecap))
- 		return 0;
-+	if (irq_remapping_cap(IRQ_POSTING_CAP) &&
-+	    !cap_pi_support(iommu->cap))
-+		return -EBUSY;
- 
- 	if (insert) {
- 		if (!iommu->ir_table)
--- 
-2.1.0
+Fixed. Thanks for the report!
