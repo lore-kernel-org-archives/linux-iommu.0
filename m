@@ -1,79 +1,96 @@
-From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v10 05/10] iommu, x86: Save the mode (posted or remapped) of an IRTE
-Date: Tue,  9 Jun 2015 13:20:32 +0800
-Message-ID: <1433827237-3382-6-git-send-email-feng.wu@intel.com>
+From: Feng Wu <feng.wu@intel.com>
+Subject: [v10 04/10] iommu, x86: Implement irq_set_vcpu_affinity for intel_ir_chip
+Date: Tue,  9 Jun 2015 13:20:31 +0800
+Message-ID: <1433827237-3382-5-git-send-email-feng.wu@intel.com>
 References: <1433827237-3382-1-git-send-email-feng.wu@intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1433827237-3382-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1433827237-3382-1-git-send-email-feng.wu@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, dwmw2@infradead.org, tglx@linutronix.de
+Cc: jiang.liu@linux.intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Feng Wu <feng.wu@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Add a new field to struct irq_2_iommu, which captures whether the
-associated IRTE is in posted mode or remapped mode. We update this
-field when the IRTE is written into the table.
+Interrupt chip callback to set the VCPU affinity for posted interrupts.
 
-Suggested-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Reviewed-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Acked-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+[ tglx: Use the helper function to copy from the remap irte instead of
+        open coding it. Massage the comment as well ]
+
+Signed-off-by: Feng Wu <feng.wu@intel.com>
+Reviewed-by: Jiang Liu <jiang.liu@linux.intel.com>
+Acked-by: David Woodhouse <David.Woodhouse@intel.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- drivers/iommu/intel_irq_remapping.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ arch/x86/include/asm/irq_remapping.h |  5 +++++
+ drivers/iommu/intel_irq_remapping.c  | 37 ++++++++++++++++++++++++++++++++++++
+ 2 files changed, 42 insertions(+)
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index a643eec..68bce0a 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -18,6 +18,11 @@
+diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
+index 8b432dd..e479fbd 100644
+--- a/arch/x86/include/asm/irq_remapping.h
++++ b/arch/x86/include/asm/irq_remapping.h
+@@ -57,6 +57,11 @@ static inline struct irq_domain *arch_get_ir_parent_domain(void)
+ 	return x86_vector_domain;
+ }
  
- #include "irq_remapping.h"
- 
-+enum irq_mode {
-+	IRQ_REMAPPING,
-+	IRQ_POSTING,
++struct vcpu_data {
++	u64 pi_desc_addr;	/* Physical address of PI Descriptor */
++	u32 vector;		/* Guest vector of the interrupt */
 +};
 +
- struct ioapic_scope {
- 	struct intel_iommu *iommu;
- 	unsigned int id;
-@@ -37,6 +42,7 @@ struct irq_2_iommu {
- 	u16 irte_index;
- 	u16 sub_handle;
- 	u8  irte_mask;
-+	enum irq_mode mode;
+ #else  /* CONFIG_IRQ_REMAP */
+ 
+ static inline void set_irq_remapping_broken(void) { }
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 8fad71c..a643eec 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -1013,10 +1013,47 @@ static void intel_ir_compose_msi_msg(struct irq_data *irq_data,
+ 	*msg = ir_data->msi_entry;
+ }
+ 
++static int intel_ir_set_vcpu_affinity(struct irq_data *data, void *info)
++{
++	struct intel_ir_data *ir_data = data->chip_data;
++	struct vcpu_data *vcpu_pi_info = info;
++
++	/* stop posting interrupts, back to remapping mode */
++	if (!vcpu_pi_info) {
++		modify_irte(&ir_data->irq_2_iommu, &ir_data->irte_entry);
++	} else {
++		struct irte irte_pi;
++
++		/*
++		 * We are not caching the posted interrupt entry. We
++		 * copy the data from the remapped entry and modify
++		 * the fields which are relevant for posted mode. The
++		 * cached remapped entry is used for switching back to
++		 * remapped mode.
++		 */
++		memset(&irte_pi, 0, sizeof(irte_pi));
++		dmar_copy_shared_irte(&irte_pi, &ir_data->irte_entry);
++
++		/* Update the posted mode fields */
++		irte_pi.p_pst = 1;
++		irte_pi.p_urgent = 0;
++		irte_pi.p_vector = vcpu_pi_info->vector;
++		irte_pi.pda_l = (vcpu_pi_info->pi_desc_addr >>
++				(32 - PDA_LOW_BIT)) & ~(-1UL << PDA_LOW_BIT);
++		irte_pi.pda_h = (vcpu_pi_info->pi_desc_addr >> 32) &
++				~(-1UL << PDA_HIGH_BIT);
++
++		modify_irte(&ir_data->irq_2_iommu, &irte_pi);
++	}
++
++	return 0;
++}
++
+ static struct irq_chip intel_ir_chip = {
+ 	.irq_ack = ir_ack_apic_edge,
+ 	.irq_set_affinity = intel_ir_set_affinity,
+ 	.irq_compose_msi_msg = intel_ir_compose_msi_msg,
++	.irq_set_vcpu_affinity = intel_ir_set_vcpu_affinity,
  };
  
- struct intel_ir_data {
-@@ -104,6 +110,7 @@ static int alloc_irte(struct intel_iommu *iommu, int irq,
- 		irq_iommu->irte_index =  index;
- 		irq_iommu->sub_handle = 0;
- 		irq_iommu->irte_mask = mask;
-+		irq_iommu->mode = IRQ_REMAPPING;
- 	}
- 	raw_spin_unlock_irqrestore(&irq_2_ir_lock, flags);
- 
-@@ -144,6 +151,9 @@ static int modify_irte(struct irq_2_iommu *irq_iommu,
- 	__iommu_flush_cache(iommu, irte, sizeof(*irte));
- 
- 	rc = qi_flush_iec(iommu, index, 0);
-+
-+	/* Update iommu mode according to the IRTE mode */
-+	irq_iommu->mode = irte->pst ? IRQ_POSTING : IRQ_REMAPPING;
- 	raw_spin_unlock_irqrestore(&irq_2_ir_lock, flags);
- 
- 	return rc;
+ static void intel_irq_remapping_prepare_irte(struct intel_ir_data *data,
 -- 
 2.1.0
