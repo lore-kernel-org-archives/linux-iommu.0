@@ -1,7 +1,8 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v10 06/10] iommu, x86: Avoid migrating VT-d posted interrupts
-Date: Tue,  9 Jun 2015 13:20:33 +0800
-Message-ID: <1433827237-3382-7-git-send-email-feng.wu@intel.com>
+Subject: [v10 08/10] iommu,
+	x86: Setup Posted-Interrupts capability for Intel iommu
+Date: Tue,  9 Jun 2015 13:20:35 +0800
+Message-ID: <1433827237-3382-9-git-send-email-feng.wu@intel.com>
 References: <1433827237-3382-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,37 +22,113 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@p
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When the interrupt is configured in posted mode, the destination of
-the interrupt is set in the Posted-Interrupts Descriptor and the
-migration of these interrupts happens during vCPU scheduling.
-
-We still update the cached irte, which will be used when changing back
-to remapping mode, but we avoid writing the table entry.
+Set Posted-Interrupts capability for Intel iommu when Interrupt
+Remapping is enabled, clear it when disabled.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Acked-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Reviewed-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 Acked-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/iommu/intel_irq_remapping.c | 30 ++++++++++++++++++++++++++++++
+ drivers/iommu/irq_remapping.c       |  2 ++
+ drivers/iommu/irq_remapping.h       |  3 +++
+ 3 files changed, 35 insertions(+)
 
 diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 68bce0a..3bcb459 100644
+index 3bcb459..0f57af7 100644
 --- a/drivers/iommu/intel_irq_remapping.c
 +++ b/drivers/iommu/intel_irq_remapping.c
-@@ -1003,7 +1003,10 @@ intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
- 	 */
- 	irte->vector = cfg->vector;
- 	irte->dest_id = IRTE_DEST(cfg->dest_apicid);
--	modify_irte(&ir_data->irq_2_iommu, irte);
-+
-+	/* Update the hardware only if the interrupt is in remapped mode. */
-+	if (ir_data->irq_2_iommu.mode == IRQ_REMAPPING)
-+		modify_irte(&ir_data->irq_2_iommu, irte);
+@@ -581,6 +581,26 @@ error:
+ 	return -ENODEV;
+ }
  
- 	/*
- 	 * After this point, all the interrupts will start arriving
++/*
++ * Set Posted-Interrupts capability.
++ */
++static inline void set_irq_posting_cap(void)
++{
++	struct dmar_drhd_unit *drhd;
++	struct intel_iommu *iommu;
++
++	if (!disable_irq_post) {
++		intel_irq_remap_ops.capability |= 1 << IRQ_POSTING_CAP;
++
++		for_each_iommu(iommu, drhd)
++			if (!cap_pi_support(iommu->cap)) {
++				intel_irq_remap_ops.capability &=
++						~(1 << IRQ_POSTING_CAP);
++				break;
++			}
++	}
++}
++
+ static int __init intel_enable_irq_remapping(void)
+ {
+ 	struct dmar_drhd_unit *drhd;
+@@ -656,6 +676,8 @@ static int __init intel_enable_irq_remapping(void)
+ 
+ 	irq_remapping_enabled = 1;
+ 
++	set_irq_posting_cap();
++
+ 	pr_info("Enabled IRQ remapping in %s mode\n", eim ? "x2apic" : "xapic");
+ 
+ 	return eim ? IRQ_REMAP_X2APIC_MODE : IRQ_REMAP_XAPIC_MODE;
+@@ -856,6 +878,12 @@ static void disable_irq_remapping(void)
+ 
+ 		iommu_disable_irq_remapping(iommu);
+ 	}
++
++	/*
++	 * Clear Posted-Interrupts capability.
++	 */
++	if (!disable_irq_post)
++		intel_irq_remap_ops.capability &= ~(1 << IRQ_POSTING_CAP);
+ }
+ 
+ static int reenable_irq_remapping(int eim)
+@@ -883,6 +911,8 @@ static int reenable_irq_remapping(int eim)
+ 	if (!setup)
+ 		goto error;
+ 
++	set_irq_posting_cap();
++
+ 	return 0;
+ 
+ error:
+diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+index fc78b0d..ed605a9 100644
+--- a/drivers/iommu/irq_remapping.c
++++ b/drivers/iommu/irq_remapping.c
+@@ -22,6 +22,8 @@ int irq_remap_broken;
+ int disable_sourceid_checking;
+ int no_x2apic_optout;
+ 
++int disable_irq_post = 1;
++
+ static int disable_irq_remap;
+ static struct irq_remap_ops *remap_ops;
+ 
+diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
+index b6ca30d..039c7af 100644
+--- a/drivers/iommu/irq_remapping.h
++++ b/drivers/iommu/irq_remapping.h
+@@ -34,6 +34,8 @@ extern int disable_sourceid_checking;
+ extern int no_x2apic_optout;
+ extern int irq_remapping_enabled;
+ 
++extern int disable_irq_post;
++
+ struct irq_remap_ops {
+ 	/* The supported capabilities */
+ 	int capability;
+@@ -69,6 +71,7 @@ extern void ir_ack_apic_edge(struct irq_data *data);
+ 
+ #define irq_remapping_enabled 0
+ #define irq_remap_broken      0
++#define disable_irq_post      1
+ 
+ #endif /* CONFIG_IRQ_REMAP */
+ 
 -- 
 2.1.0
