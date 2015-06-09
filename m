@@ -1,7 +1,8 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [v10 09/10] iommu, x86: Provide irq_remapping_cap() interface
-Date: Tue,  9 Jun 2015 13:20:36 +0800
-Message-ID: <1433827237-3382-10-git-send-email-feng.wu@intel.com>
+Subject: [v10 10/10] iommu,
+	x86: Properly handle posted interrupts for IOMMU hotplug
+Date: Tue,  9 Jun 2015 13:20:37 +0800
+Message-ID: <1433827237-3382-11-git-send-email-feng.wu@intel.com>
 References: <1433827237-3382-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,60 +22,29 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@p
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add a new interface irq_remapping_cap() to detect whether irq
-remapping supports new features, such as VT-d Posted-Interrupts.
-
-Export the function, so that KVM code can check this and use this
-mechanism properly.
+Return error when inserting a new IOMMU which doesn't support posted
+interrupts if posted interrupts are already enabled.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Reviewed-by: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Reviewed-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 Acked-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 ---
- arch/x86/include/asm/irq_remapping.h | 2 ++
- drivers/iommu/irq_remapping.c        | 9 +++++++++
- 2 files changed, 11 insertions(+)
+ drivers/iommu/intel_irq_remapping.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
-index e479fbd..046c7fb 100644
---- a/arch/x86/include/asm/irq_remapping.h
-+++ b/arch/x86/include/asm/irq_remapping.h
-@@ -35,6 +35,7 @@ enum irq_remap_cap {
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 0f57af7..80f1d14 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -1355,6 +1355,9 @@ int dmar_ir_hotplug(struct dmar_drhd_unit *dmaru, bool insert)
+ 		return -EINVAL;
+ 	if (!ecap_ir_support(iommu->ecap))
+ 		return 0;
++	if (irq_remapping_cap(IRQ_POSTING_CAP) &&
++	    !cap_pi_support(iommu->cap))
++		return -EBUSY;
  
- #ifdef CONFIG_IRQ_REMAP
- 
-+extern bool irq_remapping_cap(enum irq_remap_cap cap);
- extern void set_irq_remapping_broken(void);
- extern int irq_remapping_prepare(void);
- extern int irq_remapping_enable(void);
-@@ -64,6 +65,7 @@ struct vcpu_data {
- 
- #else  /* CONFIG_IRQ_REMAP */
- 
-+static inline bool irq_remapping_cap(enum irq_remap_cap cap) { return 0; }
- static inline void set_irq_remapping_broken(void) { }
- static inline int irq_remapping_prepare(void) { return -ENODEV; }
- static inline int irq_remapping_enable(void) { return -ENODEV; }
-diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index ed605a9..2d99930 100644
---- a/drivers/iommu/irq_remapping.c
-+++ b/drivers/iommu/irq_remapping.c
-@@ -81,6 +81,15 @@ void set_irq_remapping_broken(void)
- 	irq_remap_broken = 1;
- }
- 
-+bool irq_remapping_cap(enum irq_remap_cap cap)
-+{
-+	if (!remap_ops || disable_irq_post)
-+		return 0;
-+
-+	return (remap_ops->capability & (1 << cap));
-+}
-+EXPORT_SYMBOL_GPL(irq_remapping_cap);
-+
- int __init irq_remapping_prepare(void)
- {
- 	if (disable_irq_remap)
+ 	if (insert) {
+ 		if (!iommu->ir_table)
 -- 
 2.1.0
