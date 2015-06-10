@@ -1,13 +1,13 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 07/19] iommu/vt-d: Mark copied context entries
-Date: Sat, 13 Jun 2015 08:47:15 +0200
-Message-ID: <1434178047-17809-8-git-send-email-joro@8bytes.org>
-References: <1434178047-17809-1-git-send-email-joro@8bytes.org>
+From: Christian Zander <christian-dt00mrq0sMmU+1/U8MakDg@public.gmane.org>
+Subject: [PATCH] iommu/vt-d: fix range computation when making room for large
+	pages
+Date: Wed, 10 Jun 2015 09:41:45 -0700
+Message-ID: <20150610164145.GA7583@oriole.nervanasys.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1434178047-17809-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Disposition: inline
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,107 +18,65 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, jroedel-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, zhen-hual-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+In preparation for the installation of a large page, any small page
+tables that may still exist in the target IOV address range are
+removed.  However, if a scatter/gather list entry is large enough to
+fit more than one large page, the address space for those secondary
+large pages is not cleared of conflicting small page tables.
 
-Mark the context entries we copied over from the old kernel,
-so that we don't detect them as present in other code paths.
-This makes sure we safely overwrite old context entries when
-a new domain is assigned.
+This can cause legitimate mapping requests to fail with errors of the
+form below, potentially followed by a series of IOMMU faults:
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+ERROR: DMA PTE for vPFN 0xfde00 already set (to 7f83a4003 not 7e9e00083)
+
+In this example, a 4MB scatter/gather list entry resulted in the
+successful installation of a large page @ vPFN 0xfdc00, followed by
+a failed attempt to install another large page @ vPFN 0xfde00, due to
+the presence of a pointer to a small page table @ 0x7f83a4000.
+
+To address this problem, compute the number of large pages that fit
+into a given scatter/gather list entry, and use it to derive the
+last vPFN covered by the large page(s).
+
+Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Signed-off-by: Christian Zander <christian-dt00mrq0sMmU+1/U8MakDg@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 53 +++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 51 insertions(+), 2 deletions(-)
+ drivers/iommu/intel-iommu.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 1d56696..1fdff58 100644
+index 2ffe589..cf81237 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -233,10 +233,38 @@ struct context_entry {
- 	u64 hi;
- };
+@@ -1986,6 +1986,7 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 	unsigned long sg_res = 0;
+ 	unsigned int largepage_lvl = 0;
+ 	unsigned long lvl_pages = 0;
++	unsigned long nr_superpages, end_pfn;
  
--static inline bool context_present(struct context_entry *context)
-+static inline void context_clear_pasid_enable(struct context_entry *context)
-+{
-+	context->lo &= ~(1ULL << 11);
-+}
-+
-+static inline bool context_pasid_enabled(struct context_entry *context)
-+{
-+	return !!(context->lo & (1ULL << 11));
-+}
-+
-+static inline void context_set_copied(struct context_entry *context)
-+{
-+	context->hi |= (1ull << 3);
-+}
-+
-+static inline bool context_copied(struct context_entry *context)
-+{
-+	return !!(context->hi & (1ULL << 3));
-+}
-+
-+static inline bool __context_present(struct context_entry *context)
- {
- 	return (context->lo & 1);
- }
-+
-+static inline bool context_present(struct context_entry *context)
-+{
-+	return context_pasid_enabled(context) ?
-+	     __context_present(context) :
-+	     __context_present(context) && !context_copied(context);
-+}
-+
- static inline void context_set_present(struct context_entry *context)
- {
- 	context->lo |= 1;
-@@ -1841,6 +1869,8 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 		return 0;
- 	}
+ 	BUG_ON(!domain_pfn_supported(domain, iov_pfn + nr_pages - 1));
  
-+	context_clear_entry(context);
+@@ -2020,13 +2021,16 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 			if (largepage_lvl > 1) {
+ 				pteval |= DMA_PTE_LARGE_PAGE;
+ 				lvl_pages = lvl_to_nr_pages(largepage_lvl);
 +
- 	id = domain->id;
- 	pgd = domain->pgd;
- 
-@@ -2839,13 +2869,32 @@ static int copy_context_table(struct intel_iommu *iommu,
- 		/* Now copy the context entry */
- 		ce = old_ce[idx];
- 
--		if (!context_present(&ce))
-+		if (!__context_present(&ce))
- 			continue;
- 
- 		did = context_domain_id(&ce);
- 		if (did >= 0 && did < cap_ndoms(iommu->cap))
- 			set_bit(did, iommu->domain_ids);
- 
-+		/*
-+		 * We need a marker for copied context entries. This
-+		 * marker needs to work for the old format as well as
-+		 * for extended context entries.
-+		 *
-+		 * Bit 67 of the context entry is used. In the old
-+		 * format this bit is available to software, in the
-+		 * extended format it is the PGE bit, but PGE is ignored
-+		 * by HW if PASIDs are disabled (and thus still
-+		 * available).
-+		 *
-+		 * So disable PASIDs first and then mark the entry
-+		 * copied. This means that we don't copy PASID
-+		 * translations from the old kernel, but this is fine as
-+		 * faults there are not fatal.
-+		 */
-+		context_clear_pasid_enable(&ce);
-+		context_set_copied(&ce);
++				nr_superpages = sg_res / lvl_pages;
++				end_pfn = iov_pfn + nr_superpages * lvl_pages - 1;
 +
- 		new_ce[idx] = ce;
- 	}
- 
--- 
-1.9.1
+ 				/*
+ 				 * Ensure that old small page tables are
+-				 * removed to make room for superpage,
+-				 * if they exist.
++				 * removed, if any exist, to make room for the
++				 * superpage(s).
+ 				 */
+-				dma_pte_free_pagetable(domain, iov_pfn,
+-						       iov_pfn + lvl_pages - 1);
++				dma_pte_free_pagetable(domain, iov_pfn, end_pfn);
+ 			} else {
+ 				pteval &= ~(uint64_t)DMA_PTE_LARGE_PAGE;
+ 			}
