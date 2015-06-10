@@ -1,7 +1,7 @@
 From: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: re: iommu/amd: Put IOMMUv2 devices in a direct mapped domain
-Date: Wed, 10 Jun 2015 18:36:18 +0300
-Message-ID: <20150610153618.GA10549@mwanda>
+Subject: re: iommu/amd: Implement dm_region call-backs
+Date: Wed, 10 Jun 2015 18:39:20 +0300
+Message-ID: <20150610153920.GC10549@mwanda>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -22,32 +22,42 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hello Joerg Roedel,
 
-This is a semi-automatic email about new static checker warnings.
+The patch b61238c4a5e1: "iommu/amd: Implement dm_region call-backs"
+from May 28, 2015, leads to the following static checker warning:
 
-The patch 0a3da4517107: "iommu/amd: Put IOMMUv2 devices in a direct 
-mapped domain" from May 28, 2015, leads to the following Smatch 
-complaint:
-
-drivers/iommu/amd_iommu.c:2285 amd_iommu_add_device()
-	 error: we previously assumed 'dev_data' could be null (see line 2279)
+	drivers/iommu/amd_iommu.c:3153 amd_iommu_get_dm_regions()
+	error: potential null dereference 'region'.  (kzalloc returns null)
 
 drivers/iommu/amd_iommu.c
-  2278		dev_data = get_dev_data(dev);
-  2279		if (dev_data && dev_data->iommu_v2)
-                    ^^^^^^^^
-Check.
+  3138  static void amd_iommu_get_dm_regions(struct device *dev,
+  3139                                       struct list_head *head)
+  3140  {
+  3141          struct unity_map_entry *entry;
+  3142          u16 devid;
+  3143  
+  3144          devid = get_device_id(dev);
+  3145  
+  3146          list_for_each_entry(entry, &amd_iommu_unity_map, list) {
+  3147                  struct iommu_dm_region *region;
+  3148  
+  3149                  if (devid < entry->devid_start || devid > entry->devid_end)
+  3150                          continue;
+  3151  
+  3152                  region = kzalloc(sizeof(*region), GFP_KERNEL);
 
-  2280			iommu_request_dm_for_dev(dev);
-  2281	
-  2282		/* Domains are initialized for this device - have a look what we ended up with */
-  2283		domain = iommu_get_domain_for_dev(dev);
-  2284		if (domain->type == IOMMU_DOMAIN_IDENTITY) {
-  2285			dev_data->passthrough = true;
-                        ^^^^^^^^^^
-Unchecked dereference.
+No check here.  We may not care and in that case just ignore this
+email.  Or add GFP_NOFAIL to silence the warning if you want.
 
-  2286			dev->archdata.dma_ops = &nommu_dma_ops;
-  2287		} else {
+  3153                  region->start = entry->address_start;
+  3154                  region->length = entry->address_end - entry->address_start;
+  3155                  if (entry->prot & IOMMU_PROT_IR)
+  3156                          region->prot |= IOMMU_READ;
+  3157                  if (entry->prot & IOMMU_PROT_IW)
+  3158                          region->prot |= IOMMU_WRITE;
+  3159  
+  3160                  list_add_tail(&region->list, head);
+  3161          }
+  3162  }
 
 regards,
 dan carpenter
