@@ -1,59 +1,69 @@
-From: Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [patch -next] iommu: checking for NULL instead of IS_ERR
-Date: Wed, 10 Jun 2015 13:59:27 +0300
-Message-ID: <20150610105926.GA21772@mwanda>
+From: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: re: iommu: Introduce iommu_request_dm_for_dev()
+Date: Wed, 10 Jun 2015 14:02:44 +0300
+Message-ID: <20150610110244.GA21994@mwanda>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <kernel-janitors-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-Sender: kernel-janitors-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, kernel-janitors@vger.kernel.org
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: jroedel-l3A5Bk7waGM@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The iommu_group_alloc() and iommu_group_get_for_dev() functions return
-error pointers, they never return NULL.
+Hello Joerg Roedel,
 
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+This is a semi-automatic email about new static checker warnings.
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index c520c0c..9c25e6be 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -788,15 +788,16 @@ static struct iommu_group *iommu_group_get_for_pci_dev(struct pci_dev *pdev)
- 
- 	/* No shared group found, allocate new */
- 	group = iommu_group_alloc();
--	if (group) {
--		/*
--		 * Try to allocate a default domain - needs support from the
--		 * IOMMU driver.
--		 */
--		group->default_domain = __iommu_domain_alloc(pdev->dev.bus,
--							     IOMMU_DOMAIN_DMA);
--		group->domain = group->default_domain;
--	}
-+	if (IS_ERR(group))
-+		return NULL;
-+
-+	/*
-+	 * Try to allocate a default domain - needs support from the
-+	 * IOMMU driver.
-+	 */
-+	group->default_domain = __iommu_domain_alloc(pdev->dev.bus,
-+						     IOMMU_DOMAIN_DMA);
-+	group->domain = group->default_domain;
- 
- 	return group;
- }
-@@ -1548,8 +1549,8 @@ int iommu_request_dm_for_dev(struct device *dev)
- 
- 	/* Device must already be in a group before calling this function */
- 	group = iommu_group_get_for_dev(dev);
--	if (!group)
--		return -EINVAL;
-+	if (IS_ERR(group))
-+		return PTR_ERR(group);
- 
- 	mutex_lock(&group->mutex);
- 
+The patch eeae3fba3afe: "iommu: Introduce iommu_request_dm_for_dev()" 
+from May 28, 2015, leads to the following Smatch complaint:
+
+drivers/iommu/iommu.c:1581 iommu_request_dm_for_dev()
+	 error: we previously assumed 'group->default_domain' could be null (see line 1558)
+
+drivers/iommu/iommu.c
+  1557		/* Check if the default domain is already direct mapped */
+  1558		ret = 0;
+  1559		if (group->default_domain &&
+                    ^^^^^^^^^^^^^^^^^^^^^
+Check for NULL.
+
+  1560		    group->default_domain->type == IOMMU_DOMAIN_IDENTITY)
+  1561			goto out;
+  1562	
+  1563		/* Don't change mappings of existing devices */
+  1564		ret = -EBUSY;
+  1565		if (iommu_group_device_count(group) != 1)
+  1566			goto out;
+  1567	
+  1568		/* Allocate a direct mapped domain */
+  1569		ret = -ENOMEM;
+  1570		dm_domain = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_IDENTITY);
+  1571		if (!dm_domain)
+  1572			goto out;
+  1573	
+  1574		/* Attach the device to the domain */
+  1575		ret = __iommu_attach_group(dm_domain, group);
+  1576		if (ret) {
+  1577			iommu_domain_free(dm_domain);
+  1578			goto out;
+  1579		}
+  1580	
+  1581		/* Make the direct mapped domain the default for this group */
+  1582		iommu_domain_free(group->default_domain);
+                                  ^^^^^^^^^^^^^^^^^^^^^
+Dereferenced inside function.
+
+  1583		group->default_domain = dm_domain;
+
+regards,
+dan carpenter
