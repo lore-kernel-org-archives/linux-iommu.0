@@ -1,63 +1,39 @@
-From: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: re: iommu/amd: Implement dm_region call-backs
-Date: Wed, 10 Jun 2015 18:39:20 +0300
-Message-ID: <20150610153920.GC10549@mwanda>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: jroedel-l3A5Bk7waGM@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+From: Will Deacon <will.deacon@arm.com>
+Subject: [PATCH] iommu/arm-smmu: Fix broken ATOS check
+Date: Wed, 10 Jun 2015 16:58:55 +0100
+Message-ID: <1433951935-6774-1-git-send-email-will.deacon@arm.com>
+Return-path: <stable-owner@vger.kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, b.reynal@virtualopensystems.com, varun.sethi@freescale.com, Will Deacon <will.deacon@arm.com>, stable@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello Joerg Roedel,
+Commit 83a60ed8f0b5 ("iommu/arm-smmu: fix ARM_SMMU_FEAT_TRANS_OPS
+condition") accidentally negated the ID0_ATOSNS predicate in the ATOS
+feature check, causing the driver to attempt ATOS requests on SMMUv2
+hardware without the ATOS feature implemented.
 
-The patch b61238c4a5e1: "iommu/amd: Implement dm_region call-backs"
-from May 28, 2015, leads to the following static checker warning:
+This patch restores the predicate to the correct value.
 
-	drivers/iommu/amd_iommu.c:3153 amd_iommu_get_dm_regions()
-	error: potential null dereference 'region'.  (kzalloc returns null)
+Cc: <stable@vger.kernel.org> # 4.0+
+Reported-by: Varun Sethi <varun.sethi@freescale.com>
+Signed-off-by: Will Deacon <will.deacon@arm.com>
+---
+ drivers/iommu/arm-smmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-drivers/iommu/amd_iommu.c
-  3138  static void amd_iommu_get_dm_regions(struct device *dev,
-  3139                                       struct list_head *head)
-  3140  {
-  3141          struct unity_map_entry *entry;
-  3142          u16 devid;
-  3143  
-  3144          devid = get_device_id(dev);
-  3145  
-  3146          list_for_each_entry(entry, &amd_iommu_unity_map, list) {
-  3147                  struct iommu_dm_region *region;
-  3148  
-  3149                  if (devid < entry->devid_start || devid > entry->devid_end)
-  3150                          continue;
-  3151  
-  3152                  region = kzalloc(sizeof(*region), GFP_KERNEL);
-
-No check here.  We may not care and in that case just ignore this
-email.  Or add GFP_NOFAIL to silence the warning if you want.
-
-  3153                  region->start = entry->address_start;
-  3154                  region->length = entry->address_end - entry->address_start;
-  3155                  if (entry->prot & IOMMU_PROT_IR)
-  3156                          region->prot |= IOMMU_READ;
-  3157                  if (entry->prot & IOMMU_PROT_IW)
-  3158                          region->prot |= IOMMU_WRITE;
-  3159  
-  3160                  list_add_tail(&region->list, head);
-  3161          }
-  3162  }
-
-regards,
-dan carpenter
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index dce041b1c139..9f1af00d0f68 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1566,7 +1566,7 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 		return -ENODEV;
+ 	}
+ 
+-	if ((id & ID0_S1TS) && ((smmu->version == 1) || (id & ID0_ATOSNS))) {
++	if ((id & ID0_S1TS) && ((smmu->version == 1) || (!(id & ID0_ATOSNS)))) {
+ 		smmu->features |= ARM_SMMU_FEAT_TRANS_OPS;
+ 		dev_notice(smmu->dev, "\taddress translation ops\n");
+ 	}
+-- 
+2.1.4
