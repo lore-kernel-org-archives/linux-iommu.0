@@ -1,77 +1,52 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH] iommu/vt-d: Don't copy translation tables if we find
-	unexpected RTT setting
-Date: Wed, 10 Jun 2015 11:10:31 +0200
-Message-ID: <1433927431-28574-1-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v11 0/10] iommu/vt-d: Fix intel vt-d faults in kdump
+ kernel
+Date: Wed, 10 Jun 2015 11:21:51 +0200
+Message-ID: <20150610092150.GZ20384@8bytes.org>
+References: <1431337974-545-1-git-send-email-zhen-hual@hp.com>
+ <1433773583.2952.52.camel@infradead.org>
+ <20150608152957.GW20384@8bytes.org>
+ <1433778624.2952.82.camel@infradead.org>
+ <20150608161315.GX20384@8bytes.org>
+ <1433854550.19447.15.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1433854550.19447.15.camel@infradead.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: David Woodhouse <dwmw2@infradead.org>
+Cc: bhe@redhat.com, tom.vaden@hp.com, rwright@hp.com, linux-pci@vger.kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, lisa.mitchell@hp.com, iommu@lists.linux-foundation.org, "Li, Zhen-Hua" <zhen-hual@hp.com>, doug.hatch@hp.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, billsumnerlinux@gmail.com, li.zhang6@hp.com, dyoung@redhat.com, vgoyal@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+On Tue, Jun 09, 2015 at 01:55:50PM +0100, David Woodhouse wrote:
+> On Mon, 2015-06-08 at 18:13 +0200, Joerg Roedel wrote:
+> > So I think we need to read out that bit when we find translation enabled
+> > and if it is different from what we would set it to, we bail out of any
+> > copying, disable translation and proceed as in a normal boot.
+> 
+> Given that this is only for kdump and not the general case of kexec,
+> that's probably tolerable. Of course we do still need to make it *not*
+> broken for the case where DMA_RTADDR_RTT is set, as it is at the
+> moment.
 
-The RTT bit in the RTADDR_REG can not be changed while
-translation is enabled. So check its value if we boot into a
-kdump kernel and find translation enabled, and if it is
-different from what we would set it to, bail out and don't
-try to copy over the translation tables from the old kernel.
+Yes, I just sent a patch for this and will include it into my x86/vt-d
+branch if not objections come in.
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/intel-iommu.c | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+> And I suspect if we're doing that, it might be simple enough to make it
+> convert to/from the extended page tables. I don't think we want to
+> preserve PASID tables; only the "second level" (i.e. traditional)
+> translation. So we could happily pull the page table pointer out of
+> either kind of context entry, and install it into either kind. I think
+> there's a simple mapping of translation types too. I need to sort out
+> the translation types when adding the real PASID support (imminently!)
+> anyway.
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 58abddb..08209c4 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -389,6 +389,7 @@ static void unmap_device_dma(struct dmar_domain *domain,
- 				struct device *dev,
- 				struct intel_iommu *iommu);
- static void iommu_check_pre_te_status(struct intel_iommu *iommu);
-+static bool iommu_check_rtt(struct intel_iommu *iommu);
- static u8 g_translation_pre_enabled;
- 
- /*
-@@ -2917,9 +2918,11 @@ static int __init init_dmars(void)
- 
- 		/*
- 		 * We don't even try to preserve anything when we are not in a
--		 * kdump kernel.
-+		 * kdump kernel or when we have to change the RTT bit in the
-+		 * RTADDR_REG.
- 		 */
--		if (!is_kdump_kernel() && iommu->pre_enabled_trans) {
-+		if (iommu->pre_enabled_trans &&
-+		    (!is_kdump_kernel() || iommu_check_rtt(iommu))) {
- 			iommu_disable_translation(iommu);
- 			iommu->pre_enabled_trans = 0;
- 			g_translation_pre_enabled = 0;
-@@ -5087,3 +5090,13 @@ static void iommu_check_pre_te_status(struct intel_iommu *iommu)
- 		g_translation_pre_enabled = 1;
- 	}
- }
-+
-+static bool iommu_check_rtt(struct intel_iommu *iommu)
-+{
-+	u64 rtaddr;
-+
-+	rtaddr = dmar_readq(iommu->reg + DMAR_RTADDR_REG);
-+
-+	return (!!ecap_ecs(iommu->ecap) != !!(rtaddr & DMA_RTADDR_RTT));
-+}
-+
--- 
-1.9.1
+What happens when we take away the PASID tables from a device? Can it
+also go into some failure state?
+When doing this, we need at least setup the page request queue before we
+copy over anything and change the root-entry. Then we can handle any
+faults that are caused by this and tell the device to not try further.
+
+
+	Joerg
