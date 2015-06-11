@@ -1,18 +1,15 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 2/4] iommu/vt-d: Don't consider copied context entries as
-	present
-Date: Thu, 11 Jun 2015 16:51:39 +0200
-Message-ID: <20150611145138.GI20384@8bytes.org>
-References: <1434030463-942-1-git-send-email-joro@8bytes.org>
-	<1434030463-942-3-git-send-email-joro@8bytes.org>
-	<1434031622.3907.40.camel@infradead.org>
-	<20150611142554.GG16345@suse.de>
+From: Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v2 1/3] drm/exynos: fimd: ensure proper hw state in
+	fimd_clear_channel()
+Date: Fri, 12 Jun 2015 00:04:44 +0900
+Message-ID: <5579A38C.8040604@samsung.com>
+References: <1433319984-18683-1-git-send-email-m.szyprowski@samsung.com>
+	<1433319984-18683-2-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20150611142554.GG16345-l3A5Bk7waGM@public.gmane.org>
+In-reply-to: <1433319984-18683-2-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,18 +19,58 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, zhen-hual-VXdhtT5mjnY@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Seung-Woo Kim <sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jun 11, 2015 at 04:25:54PM +0200, Joerg Roedel wrote:
-> Okay, reading the VT-d spec again, the extended context-entry table seem
-> to exist in parallel to the current context-entry table, right? So this
-> patch should still work, even with extended entries present.
-
-I found section 3.4.4. of the Spec, and learned that the two tables do
-not exist in parallel. The extended table ist just split into two parts
-because the context entry was doubled in size.
-
-
-	Joerg
+T24gMjAxNeuFhCAwNuyblCAwM+ydvCAxNzoyNiwgTWFyZWsgU3p5cHJvd3NraSB3cm90ZToKPiBP
+bmUgc2hvdWxkIG5vdCBkbyBhbnkgYXNzdW1wdGlvbnMgb24gdGhlIHN0YXJlIG9mIHRoZSBmaW1k
+IGhhcmR3YXJlCj4gZHVyaW5nIGRyaXZlciBpbml0aWFsaXphdGlvbiwgc28gdG8gcHJvcGVybHkg
+cmVzZXQgZmltZCBiZWZvcmUgZW5hYmxpbmcKPiBJT01NVSwgb25lIHNob3VsZCBlbnN1cmUgdGhh
+dCBhbGwgcG93ZXIgZG9tYWlucyBhbmQgY2xvY2tzIGFyZSByZWFsbHkKPiBlbmFibGVkLiBUaGlz
+IHBhdGNoIGFkZHMgcG1fcnVudGltZSBhbmQgY2xvY2tzIG1hbmFnZW1lbnQgaW4gdGhlCj4gZmlt
+ZF9jbGVhcl9jaGFubmVsKCkgZnVuY3Rpb24gdG8gZW5zdXJlIHRoYXQgYW55IGFjY2VzcyB0byBm
+aW1kCj4gcmVnaXN0ZXJzIHdpbGwgYmUgcGVyZm9ybWVkIHdpdGggY2xvY2tzIGFuZCBwb3dlciBk
+b21haW5zIGVuYWJsZWQuCj4gCj4gU2lnbmVkLW9mZi1ieTogTWFyZWsgU3p5cHJvd3NraSA8bS5z
+enlwcm93c2tpQHNhbXN1bmcuY29tPgo+IFRlc3RlZC1ieTogSmF2aWVyIE1hcnRpbmV6IENhbmls
+bGFzIDxqYXZpZXIubWFydGluZXpAY29sbGFib3JhLmNvLnVrPgo+IC0tLQo+ICBkcml2ZXJzL2dw
+dS9kcm0vZXh5bm9zL2V4eW5vc19kcm1fZmltZC5jIHwgMjIgKysrKysrKysrKysrKysrKysrLS0t
+LQo+ICAxIGZpbGUgY2hhbmdlZCwgMTggaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMoLSkKPiAK
+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL2V4eW5vcy9leHlub3NfZHJtX2ZpbWQuYyBi
+L2RyaXZlcnMvZ3B1L2RybS9leHlub3MvZXh5bm9zX2RybV9maW1kLmMKPiBpbmRleCA5NjYxODUz
+NDM1OGUuLjNlYzlkNDI5OWE4NiAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vZXh5bm9z
+L2V4eW5vc19kcm1fZmltZC5jCj4gKysrIGIvZHJpdmVycy9ncHUvZHJtL2V4eW5vcy9leHlub3Nf
+ZHJtX2ZpbWQuYwo+IEBAIC0yNDIsMTIgKzI0MiwyMSBAQCBzdGF0aWMgdm9pZCBmaW1kX2VuYWJs
+ZV9zaGFkb3dfY2hhbm5lbF9wYXRoKHN0cnVjdCBmaW1kX2NvbnRleHQgKmN0eCwKPiAgCXdyaXRl
+bCh2YWwsIGN0eC0+cmVncyArIFNIQURPV0NPTik7Cj4gIH0KPiAgCj4gK3N0YXRpYyBpbnQgZmlt
+ZF9lbmFibGVfdmJsYW5rKHN0cnVjdCBleHlub3NfZHJtX2NydGMgKmNydGMpOwo+ICtzdGF0aWMg
+dm9pZCBmaW1kX2Rpc2FibGVfdmJsYW5rKHN0cnVjdCBleHlub3NfZHJtX2NydGMgKmNydGMpOwoK
+WW91IGNhbiByZW1vdmUgYWJ2b2UgZGVjbGFyYXRpb25zLiBTZWUgdGhlIGJlbG93IGNvbW1lbnQu
+Cgo+ICsKPiAgc3RhdGljIHZvaWQgZmltZF9jbGVhcl9jaGFubmVsKHN0cnVjdCBmaW1kX2NvbnRl
+eHQgKmN0eCkKPiAgewo+ICAJdW5zaWduZWQgaW50IHdpbiwgY2hfZW5hYmxlZCA9IDA7Cj4gIAo+
+ICAJRFJNX0RFQlVHX0tNUygiJXNcbiIsIF9fRklMRV9fKTsKPiAgCj4gKwkvKiBIYXJkd2FyZSBp
+cyBpbiB1bmtub3duIHN0YXRlLCBzbyBlbnN1cmUgaXQgZ2V0cyBlbmFibGVkIHByb3Blcmx5ICov
+Cj4gKwlwbV9ydW50aW1lX2dldF9zeW5jKGN0eC0+ZGV2KTsKPiArCj4gKwljbGtfcHJlcGFyZV9l
+bmFibGUoY3R4LT5idXNfY2xrKTsKPiArCWNsa19wcmVwYXJlX2VuYWJsZShjdHgtPmxjZF9jbGsp
+Owo+ICsKPiAgCS8qIENoZWNrIGlmIGFueSBjaGFubmVsIGlzIGVuYWJsZWQuICovCj4gIAlmb3Ig
+KHdpbiA9IDA7IHdpbiA8IFdJTkRPV1NfTlI7IHdpbisrKSB7Cj4gIAkJdTMyIHZhbCA9IHJlYWRs
+KGN0eC0+cmVncyArIFdJTkNPTih3aW4pKTsKPiBAQCAtMjY1LDEyICsyNzQsMTcgQEAgc3RhdGlj
+IHZvaWQgZmltZF9jbGVhcl9jaGFubmVsKHN0cnVjdCBmaW1kX2NvbnRleHQgKmN0eCkKPiAgCj4g
+IAkvKiBXYWl0IGZvciB2c3luYywgYXMgZGlzYWJsZSBjaGFubmVsIHRha2VzIGVmZmVjdCBhdCBu
+ZXh0IHZzeW5jICovCj4gIAlpZiAoY2hfZW5hYmxlZCkgewo+IC0JCXVuc2lnbmVkIGludCBzdGF0
+ZSA9IGN0eC0+c3VzcGVuZGVkOwo+IC0KPiAtCQljdHgtPnN1c3BlbmRlZCA9IDA7Cj4gKwkJY3R4
+LT5zdXNwZW5kZWQgPSBmYWxzZTsKPiArCQlmaW1kX2VuYWJsZV92YmxhbmsoY3R4LT5jcnRjKTsK
+CkkgdGhpbmsgeW91IGNhbiBjYWxsIGVuYWJsZV92YmxhbmsgY2FsbGJhY2sgaW5zdGVhZCBvZgpm
+aW1kX2VuYWJsZV92YmxhbmsgZnVuY3Rpb24gYmVjYXVzZSBjdHggb2JqZWN0IGhhcyBleHlub3Nf
+Y3J0YyBvYmplY3QuCgppLmUuLAoJCXN0cnVjdCBleHlub3NfZHJtX2NydGNfb3BzICpvcHMgPSBj
+dHgtPmNydGMtPm9wczsKCQkuLi4KCQlpZiAob3BzLT5lbmFibGVfdmJsYW5rKQoJCQlvcHMtPmVu
+YWJsZV92YmxhbmsoY3R4LT5jcnRjKTsKCQkuLi4KCj4gIAkJZmltZF93YWl0X2Zvcl92Ymxhbmso
+Y3R4LT5jcnRjKTsKPiAtCQljdHgtPnN1c3BlbmRlZCA9IHN0YXRlOwo+ICsJCWZpbWRfZGlzYWJs
+ZV92YmxhbmsoY3R4LT5jcnRjKTsKCkRpdHRvLgoKVGhhbmtzLApJbmtpIERhZQoKPiArCQljdHgt
+PnN1c3BlbmRlZCA9IHRydWU7Cj4gIAl9Cj4gKwo+ICsJY2xrX2Rpc2FibGVfdW5wcmVwYXJlKGN0
+eC0+bGNkX2Nsayk7Cj4gKwljbGtfZGlzYWJsZV91bnByZXBhcmUoY3R4LT5idXNfY2xrKTsKPiAr
+Cj4gKwlwbV9ydW50aW1lX3B1dChjdHgtPmRldik7Cj4gIH0KPiAgCj4gIHN0YXRpYyBpbnQgZmlt
+ZF9pb21tdV9hdHRhY2hfZGV2aWNlcyhzdHJ1Y3QgZmltZF9jb250ZXh0ICpjdHgsCj4gCgpfX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
+IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
+eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
