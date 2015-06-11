@@ -1,15 +1,11 @@
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: iommu/amd: Implement dm_region call-backs
-Date: Thu, 11 Jun 2015 10:07:25 +0200
-Message-ID: <20150611080725.GE16345@suse.de>
-References: <20150610153920.GC10549@mwanda> <20150611074327.GD16345@suse.de>
-	<20150611080251.GF11734@mwanda>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 0/4] More cleanups and fixes for Intel VT-d
+Date: Thu, 11 Jun 2015 15:47:39 +0200
+Message-ID: <1434030463-942-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20150611080251.GF11734@mwanda>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,20 +15,29 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: zhen-hual-VXdhtT5mjnY@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jun 11, 2015 at 11:02:51AM +0300, Dan Carpenter wrote:
-> On Thu, Jun 11, 2015 at 09:43:27AM +0200, Joerg Roedel wrote:
-> > What static checker do you use, btw?
-> 
-> I'm using Smatch.
-> 
-> The ERR_PTR stuff requires that you run
-> 
-> 	smatch_scripts/build_kernel_data.sh
-> 
-> At the start and that takes a couple hours.
+Hi,
 
-I see, thanks.
+here are a number of additional fixes for the Intel VT-d
+driver and its behavior in a kdump kernel. The most
+important fix is the iommu=pt case, which is broken without
+these patches.
+
+Regards,
+
+	Joerg
+
+Joerg Roedel (4):
+  iommu/vt-d: Remove iommu_attach_domain_with_id()
+  iommu/vt-d: Don't consider copied context entries as present
+  iommu/vt-d: Remove unmap_device_dma()
+  iommu/vt-d: Make sure si_domain is allocated for kdump kernel
+
+ drivers/iommu/intel-iommu.c | 104 ++++++++++++++++----------------------------
+ 1 file changed, 38 insertions(+), 66 deletions(-)
+
+-- 
+1.9.1
