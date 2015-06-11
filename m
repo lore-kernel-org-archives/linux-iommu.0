@@ -1,8 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 4/4] iommu/vt-d: Make sure si_domain is allocated for kdump
-	kernel
-Date: Thu, 11 Jun 2015 15:47:43 +0200
-Message-ID: <1434030463-942-5-git-send-email-joro@8bytes.org>
+Subject: [PATCH 2/4] iommu/vt-d: Don't consider copied context entries as
+	present
+Date: Thu, 11 Jun 2015 15:47:41 +0200
+Message-ID: <1434030463-942-3-git-send-email-joro@8bytes.org>
 References: <1434030463-942-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,62 +24,82 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-The si_domain needs to be allocated in the kdump kernel too.
-Otherwise the iommu=pt case breaks with a panic of the kdump
-kernel.
+Hide the copied context entries from the IOMMU driver by
+considering them as non-present. This is implemented by
+setting the first AVL bit (bit 67) in the context entry to
+one. If this bit is set, the context_present() function
+returns false.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 23 +++++++++++++++--------
- 1 file changed, 15 insertions(+), 8 deletions(-)
+ drivers/iommu/intel-iommu.c | 24 ++++++++++++++++++++++--
+ 1 file changed, 22 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index fcb9310..e5af94a 100644
+index b0fd5f2..f50d065 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -2781,10 +2781,6 @@ static int __init iommu_prepare_static_identity_mapping(int hw)
- 	int i;
- 	int ret = 0;
+@@ -234,11 +234,21 @@ struct context_entry {
+ 	u64 hi;
+ };
  
--	ret = si_domain_init(hw);
--	if (ret)
--		return -EFAULT;
--
- 	for_each_pci_dev(pdev) {
- 		ret = dev_prepare_static_identity_mapping(&pdev->dev, hw);
- 		if (ret)
-@@ -2798,7 +2794,7 @@ static int __init iommu_prepare_static_identity_mapping(int hw)
+-static inline bool context_present(struct context_entry *context)
++static inline bool __context_present(struct context_entry *context)
+ {
+ 	return (context->lo & 1);
+ }
  
- 			if (dev->bus != &acpi_bus_type)
- 				continue;
--				
++static inline bool context_copied(struct context_entry *context)
++{
++	return (((context->hi >> 3) & 0xfULL) == 1);
++}
 +
- 			adev= to_acpi_device(dev);
- 			mutex_lock(&adev->physical_node_lock);
- 			list_for_each_entry(pn, &adev->physical_node_list, node) {
-@@ -2979,9 +2975,20 @@ static int __init init_dmars(void)
- 	check_tylersburg_isoch();
- 
- 	/*
--	 * In the second kernel: Skip setting-up new domains for
--	 * si, rmrr, and the isa bus on the expectation that these
--	 * translations were copied from the old kernel.
-+	 * Make sure the si_domain is allocated in the case we are in a
-+	 * kdump kernel.
-+	 */
-+	if (iommu_identity_mapping) {
-+		ret = si_domain_init(hw_pass_through);
-+		if (ret)
-+			goto free_iommu;
-+	}
++static inline bool context_present(struct context_entry *context)
++{
++	return __context_present(context) && !context_copied(context);
++}
 +
-+	/*
-+	 * In the second kernel: Skip setting-up new domains for rmrr
-+	 * and the isa bus, they will be allocated and assigned on the
-+	 * first DMA-API call. This is to keep the old mappings alive
-+	 * until the device driver of the kdump kernel takes over.
- 	 */
- 	if (g_translation_pre_enabled)
- 		goto skip_new_domains_for_si_rmrr_isa;
+ static inline int context_fault_enable(struct context_entry *c)
+ {
+ 	return((c->lo >> 1) & 0x1);
+@@ -269,6 +279,11 @@ static inline void context_set_present(struct context_entry *context)
+ 	context->lo |= 1;
+ }
+ 
++static inline void context_set_copied(struct context_entry *context)
++{
++	context->hi |= 1ULL << 3;
++}
++
+ static inline void context_set_fault_enable(struct context_entry *context)
+ {
+ 	context->lo &= (((u64)-1) << 2) | 1;
+@@ -1919,6 +1934,9 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+ 		}
+ 	}
+ 
++	/* First clear any left-overs, like a copied context entry */
++	context_clear_entry(context);
++
+ 	context_set_domain_id(context, id);
+ 
+ 	if (translation != CONTEXT_TT_PASS_THROUGH) {
+@@ -4911,13 +4929,15 @@ static int copy_one_context_table(struct intel_iommu *iommu,
+ 		memcpy_fromio(&ce, &ctxt_tbl_old[devfn],
+ 			      sizeof(struct context_entry));
+ 
+-		if (!context_present(&ce))
++		if (!__context_present(&ce))
+ 			continue;
+ 
+ 		did = context_domain_id(&ce);
+ 		if (did >=0 && did < cap_ndoms(iommu->cap))
+ 			set_bit(did, iommu->domain_ids);
+ 
++		context_set_copied(&ce);
++
+ 		ctxt_tbl[devfn] = ce;
+ 	}
+ 
 -- 
 1.9.1
