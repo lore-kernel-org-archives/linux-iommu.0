@@ -1,13 +1,15 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 2/4] iommu: Implement common IOMMU ops for DMA mapping
-Date: Thu, 11 Jun 2015 16:54:22 +0100
-Message-ID: <bf63d80c36533aa4dcc401b5a4b312ba00237e1c.1434036796.git.robin.murphy@arm.com>
-References: <cover.1434036796.git.robin.murphy@arm.com>
+Subject: Re: [PATCH 3/4] arm64: Add IOMMU dma_ops
+Date: Thu, 11 Jun 2015 17:23:11 +0100
+Message-ID: <5579B5EF.4090005@arm.com>
+References: <cover.1432735420.git.robin.murphy@arm.com>	
+	<cd32131caab8833f48180ee1df79c9da020c5a48.1432735420.git.robin.murphy@arm.com>
+	<1433420992.4270.86.camel@mhfsdcap03>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1434036796.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1433420992.4270.86.camel@mhfsdcap03>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,719 +19,233 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: "laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Taking inspiration from the existing arch/arm code, break out some
-generic functions to interface the DMA-API to the IOMMU-API. This will
-do the bulk of the heavy lifting for IOMMU-backed dma-mapping.
+On 04/06/15 13:29, Yong Wu wrote:
+> Hi Robin,
+>       Sorry to disturb you. When prepare iommu based on this dma-v3. I
+> meet some problem about how to use the dma-iommu.
+>       I list some sample code like below:
+> //========
+> int mtk_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
+> {
+>          if (args->args_count != 2) {
+>                  return -EINVAL;
+>          }
+>
+>          /* save the private data from args
+>           * the private data is larbid and portid in our platform */
+>          priv->larbid = args->args[0];
+>          priv->portid = args->args[1];
+>
+>          /*list the private data */
+>          list_add_tail(&priv->client, &head->client);
+>
+>          /* save the list to dev->archdata->iommu */
+>          ...
+> }
+> static int mtk_iommu_init_fn(struct device_node *np)
+> {
+>          of_iommu_set_ops(np, &mtk_iommu_ops);
+>          return 0;
+> }
+>
+> IOMMU_OF_DECLARE(mtkm4u, "mediatek,mt8173-m4u", mtk_iommu_init_fn);
+> //=======
+>
+> Question :
+>    1: if there are 2 client devices use iommu, it will be like this in
+> dtsi,
+>                  disp:testiommu@1400c000 {
+>                          compatible = "mediatek,mt8173-test";
+>                          iommus = <&iommu M4U_LARB0_ID 0>,
+>                                   <&iommu M4U_LARB1_ID 3>;
+>                  };
+>                  disp1:testiommu@1400D000 {
+>                          compatible = "mediatek,mt8173-disptest1";
+>                          iommus = <&iommu M4U_LARB0_ID 8>,
+>                                   <&iommu M4U_LARB1_ID 2>;
+>                  };
+>      Then both devices will enter arch_setup_dma_ops and their parameter
+> "struct iommu_ops *" is not zero, then it will create two
+> dma-iommu-domain.
+>      If we expect all the client device share a iommu domain, then how
+> should i do?
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/Kconfig     |   7 +
- drivers/iommu/Makefile    |   1 +
- drivers/iommu/dma-iommu.c | 560 ++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/dma-iommu.h |  94 ++++++++
- 4 files changed, 662 insertions(+)
- create mode 100644 drivers/iommu/dma-iommu.c
- create mode 100644 include/linux/dma-iommu.h
+Until we get IOMMU core default domains sorted out, there's no nice way 
+around this. The DMA mapping layer doesn't know enough to be able to 
+create per-IOMMU DMA domains, so the best it can do is create one DMA 
+domain per device (a single global domain wouldn't work across multiple 
+IOMMUs). For now, the only reasonable option I can come up with is your 
+driver using yet another bus notifier to run after the dma-iommu one, 
+detaching the relevant devices from their automatic DMA domains and 
+attaching them to its own private one.
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 1ae4e54..9107b6e 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -48,6 +48,13 @@ config OF_IOMMU
-        def_bool y
-        depends on OF && IOMMU_API
- 
-+# IOMMU-agnostic DMA-mapping layer
-+config IOMMU_DMA
-+	bool
-+	depends on NEED_SG_DMA_LENGTH
-+	select IOMMU_API
-+	select IOMMU_IOVA
-+
- config FSL_PAMU
- 	bool "Freescale IOMMU support"
- 	depends on PPC32
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 080ffab..574b241 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -1,6 +1,7 @@
- obj-$(CONFIG_IOMMU_API) += iommu.o
- obj-$(CONFIG_IOMMU_API) += iommu-traces.o
- obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
-+obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
- obj-$(CONFIG_IOMMU_IOVA) += iova.o
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-new file mode 100644
-index 0000000..ae65c76
---- /dev/null
-+++ b/drivers/iommu/dma-iommu.c
-@@ -0,0 +1,560 @@
-+/*
-+ * A fairly generic DMA-API to IOMMU-API glue layer.
-+ *
-+ * Copyright (C) 2014-2015 ARM Ltd.
-+ *
-+ * based in part on arch/arm/mm/dma-mapping.c:
-+ * Copyright (C) 2000-2004 Russell King
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-+ */
-+
-+#define pr_fmt(fmt)	"%s: " fmt, __func__
-+
-+#include <linux/device.h>
-+#include <linux/dma-iommu.h>
-+#include <linux/huge_mm.h>
-+#include <linux/iommu.h>
-+#include <linux/iova.h>
-+#include <linux/mm.h>
-+
-+int iommu_dma_init(void)
-+{
-+	return iommu_iova_cache_init();
-+}
-+
-+struct iommu_dma_domain {
-+	struct iommu_domain *domain;
-+	struct iova_domain *iovad;
-+	struct kref kref;
-+};
-+
-+/**
-+ * iommu_dma_create_domain - Create a DMA mapping domain
-+ * @ops: iommu_ops representing the IOMMU backing this domain. It is down to
-+ *       the IOMMU driver whether a domain may span multiple IOMMU instances
-+ * @base: IOVA at which the mappable address space starts
-+ * @size: Size of IOVA space
-+ *
-+ * @base and @size should be exact multiples of IOMMU page granularity to
-+ * avoid rounding surprises. If necessary, we reserve the page at address 0
-+ * to ensure it is an invalid IOVA.
-+ *
-+ * Return: Pointer to a domain initialised with the given IOVA range,
-+ *         or NULL on failure. If successful, the caller holds an initial
-+ *         reference, which may be released with iommu_dma_release_domain()
-+ *         once a device is attached.
-+ */
-+struct iommu_dma_domain *iommu_dma_create_domain(const struct iommu_ops *ops,
-+		dma_addr_t base, u64 size)
-+{
-+	struct iommu_dma_domain *dom;
-+	struct iommu_domain *domain;
-+	struct iova_domain *iovad;
-+	unsigned long order, base_pfn, end_pfn;
-+
-+	dom = kzalloc(sizeof(*dom), GFP_KERNEL);
-+	if (!dom)
-+		return NULL;
-+	/*
-+	 * HACK(sort of): These domains currently belong to this layer and are
-+	 * opaque from outside it, so they are "unmanaged" by the IOMMU API
-+	 * itself. Once we have default domain support worked out, then we can
-+	 * turn things inside out and put these inside managed IOMMU domains...
-+	 */
-+	domain = ops->domain_alloc(IOMMU_DOMAIN_UNMANAGED);
-+	if (!domain)
-+		goto out_free_dma_domain;
-+
-+	domain->ops = ops;
-+	domain->type = IOMMU_DOMAIN_UNMANAGED;
-+
-+	/* Use the smallest supported page size for IOVA granularity */
-+	order = __ffs(ops->pgsize_bitmap);
-+	base_pfn = max_t(unsigned long, 1, base >> order);
-+	end_pfn = (base + size - 1) >> order;
-+
-+	/* Check the domain allows at least some access to the device... */
-+	if (domain->geometry.force_aperture) {
-+		if (base > domain->geometry.aperture_end ||
-+		    base + size <= domain->geometry.aperture_start) {
-+			pr_warn("specified DMA range outside IOMMU capability\n");
-+			goto out_free_iommu_domain;
-+		}
-+		/* ...then finally give it a kicking to make sure it fits */
-+		base_pfn = max_t(unsigned long, base_pfn,
-+				domain->geometry.aperture_start >> order);
-+		end_pfn = min_t(unsigned long, end_pfn,
-+				domain->geometry.aperture_end >> order);
-+	}
-+	/*
-+	 * Note that this almost certainly breaks the case where multiple
-+	 * devices with different DMA capabilities need to share a domain,
-+	 * but we don't have the necessary information to handle that here
-+	 * anyway - "proper" group and domain allocation needs to involve
-+	 * the IOMMU driver and a complete view of the bus.
-+	 */
-+
-+	iovad = kzalloc(sizeof(*iovad), GFP_KERNEL);
-+	if (!iovad)
-+		goto out_free_iommu_domain;
-+
-+	init_iova_domain(iovad, 1UL << order, base_pfn, end_pfn);
-+
-+	dom->domain = domain;
-+	dom->iovad = iovad;
-+	kref_init(&dom->kref);
-+	return dom;
-+
-+out_free_iommu_domain:
-+	ops->domain_free(domain);
-+out_free_dma_domain:
-+	kfree(dom);
-+	return NULL;
-+}
-+
-+static void __iommu_dma_free_domain(struct kref *kref)
-+{
-+	struct iommu_dma_domain *dom;
-+
-+	dom = container_of(kref, struct iommu_dma_domain, kref);
-+	put_iova_domain(dom->iovad);
-+	iommu_domain_free(dom->domain);
-+	kfree(dom);
-+}
-+
-+void iommu_dma_release_domain(struct iommu_dma_domain *dom)
-+{
-+	kref_put(&dom->kref, __iommu_dma_free_domain);
-+}
-+
-+struct iommu_domain *iommu_dma_raw_domain(struct iommu_dma_domain *dom)
-+{
-+	return dom->domain;
-+}
-+
-+int iommu_dma_attach_device(struct device *dev, struct iommu_dma_domain *dom)
-+{
-+	int ret;
-+
-+	kref_get(&dom->kref);
-+	ret = iommu_attach_device(dom->domain, dev);
-+	if (!ret)
-+		arch_set_dma_domain(dev, dom);
-+	return ret;
-+}
-+
-+void iommu_dma_detach_device(struct device *dev)
-+{
-+	struct iommu_dma_domain *dom = arch_get_dma_domain(dev);
-+
-+	arch_set_dma_domain(dev, NULL);
-+	iommu_detach_device(dom->domain, dev);
-+	iommu_dma_release_domain(dom);
-+}
-+
-+/*
-+ * IOVAs are IOMMU _input_ addresses, so there still exists the possibility
-+ * for static bus translation between device output and IOMMU input (yuck).
-+ */
-+static inline dma_addr_t dev_dma_addr(struct device *dev, dma_addr_t addr)
-+{
-+	dma_addr_t offset = (dma_addr_t)dev->dma_pfn_offset << PAGE_SHIFT;
-+
-+	BUG_ON(addr < offset);
-+	return addr - offset;
-+}
-+
-+/**
-+ * dma_direction_to_prot - Translate DMA API directions to IOMMU API page flags
-+ * @dir: Direction of DMA transfer
-+ * @coherent: Is the DMA master cache-coherent?
-+ *
-+ * Return: corresponding IOMMU API page protection flags
-+ */
-+int dma_direction_to_prot(enum dma_data_direction dir, bool coherent)
-+{
-+	int prot = coherent ? IOMMU_CACHE : 0;
-+
-+	switch (dir) {
-+	case DMA_BIDIRECTIONAL:
-+		return prot | IOMMU_READ | IOMMU_WRITE;
-+	case DMA_TO_DEVICE:
-+		return prot | IOMMU_READ;
-+	case DMA_FROM_DEVICE:
-+		return prot | IOMMU_WRITE;
-+	default:
-+		return 0;
-+	}
-+}
-+
-+static struct iova *__alloc_iova(struct device *dev, size_t size, bool coherent)
-+{
-+	struct iommu_dma_domain *dom = arch_get_dma_domain(dev);
-+	struct iova_domain *iovad = dom->iovad;
-+	unsigned long shift = iova_shift(iovad);
-+	unsigned long length = iova_align(iovad, size) >> shift;
-+	u64 dma_limit = coherent ? dev->coherent_dma_mask : dma_get_mask(dev);
-+
-+	/*
-+	 * Enforce size-alignment to be safe - there should probably be
-+	 * an attribute to control this per-device, or at least per-domain...
-+	 */
-+	return alloc_iova(iovad, length, dma_limit >> shift, true);
-+}
-+
-+/* The IOVA allocator knows what we mapped, so just unmap whatever that was */
-+static void __iommu_dma_unmap(struct iommu_dma_domain *dom, dma_addr_t dma_addr)
-+{
-+	struct iova_domain *iovad = dom->iovad;
-+	unsigned long shift = iova_shift(iovad);
-+	unsigned long pfn = dma_addr >> shift;
-+	struct iova *iova = find_iova(iovad, pfn);
-+	size_t size = iova_size(iova) << shift;
-+
-+	/* ...and if we can't, then something is horribly, horribly wrong */
-+	BUG_ON(iommu_unmap(dom->domain, pfn << shift, size) < size);
-+	__free_iova(iovad, iova);
-+}
-+
-+static void __iommu_dma_free_pages(struct page **pages, int count)
-+{
-+	while (count--)
-+		__free_page(pages[count]);
-+	kvfree(pages);
-+}
-+
-+static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
-+{
-+	struct page **pages;
-+	unsigned int i = 0, array_size = count * sizeof(*pages);
-+
-+	if (array_size <= PAGE_SIZE)
-+		pages = kzalloc(array_size, GFP_KERNEL);
-+	else
-+		pages = vzalloc(array_size);
-+	if (!pages)
-+		return NULL;
-+
-+	while (count) {
-+		struct page *page = NULL;
-+		int j, order = __fls(count);
-+
-+		/*
-+		 * Higher-order allocations are a convenience rather
-+		 * than a necessity, hence using __GFP_NORETRY until
-+		 * falling back to single-page allocations.
-+		 */
-+		for (order = min(order, MAX_ORDER); order > 0; order--) {
-+			page = alloc_pages(gfp | __GFP_NORETRY, order);
-+			if (!page)
-+				continue;
-+			if (PageCompound(page)) {
-+				if (!split_huge_page(page))
-+					break;
-+				__free_pages(page, order);
-+			} else {
-+				split_page(page, order);
-+				break;
-+			}
-+		}
-+		if (!page)
-+			page = alloc_page(gfp);
-+		if (!page) {
-+			__iommu_dma_free_pages(pages, i);
-+			return NULL;
-+		}
-+		j = 1 << order;
-+		count -= j;
-+		while (j--)
-+			pages[i++] = page++;
-+	}
-+	return pages;
-+}
-+
-+/**
-+ * iommu_dma_free - Free a buffer allocated by iommu_dma_alloc()
-+ * @dev: Device which owns this buffer
-+ * @pages: Array of buffer pages as returned by iommu_dma_alloc()
-+ * @size: Size of buffer in bytes
-+ * @handle: DMA address of buffer
-+ *
-+ * Frees both the pages associated with the buffer, and the array
-+ * describing them
-+ */
-+void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
-+		dma_addr_t *handle)
-+{
-+	__iommu_dma_unmap(arch_get_dma_domain(dev), *handle);
-+	__iommu_dma_free_pages(pages, PAGE_ALIGN(size) >> PAGE_SHIFT);
-+	*handle = DMA_ERROR_CODE;
-+}
-+
-+/**
-+ * iommu_dma_alloc - Allocate and map a buffer contiguous in IOVA space
-+ * @dev: Device to allocate memory for. Must be a real device
-+ *	 attached to an iommu_dma_domain
-+ * @size: Size of buffer in bytes
-+ * @gfp: Allocation flags
-+ * @prot: IOMMU mapping flags
-+ * @coherent: Which dma_mask to base IOVA allocation on
-+ * @handle: Out argument for allocated DMA handle
-+ * @flush_page: Arch callback to flush a single page from caches as
-+ *		necessary. May be NULL for coherent allocations
-+ *
-+ * If @size is less than PAGE_SIZE, then a full CPU page will be allocated,
-+ * but an IOMMU which supports smaller pages might not map the whole thing.
-+ * For now, the buffer is unconditionally zeroed for compatibility
-+ *
-+ * Return: Array of struct page pointers describing the buffer,
-+ *	   or NULL on failure.
-+ */
-+struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
-+		int prot, bool coherent, dma_addr_t *handle,
-+		void (*flush_page)(const void *, phys_addr_t))
-+{
-+	struct iommu_dma_domain *dom = arch_get_dma_domain(dev);
-+	struct iova_domain *iovad = dom->iovad;
-+	struct iova *iova;
-+	struct page **pages;
-+	struct sg_table sgt;
-+	struct sg_mapping_iter miter;
-+	dma_addr_t dma_addr;
-+	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-+
-+	*handle = DMA_ERROR_CODE;
-+
-+	/* IOMMU can map any pages, so himem can also be used here */
-+	gfp |= __GFP_NOWARN | __GFP_HIGHMEM;
-+	pages = __iommu_dma_alloc_pages(count, gfp);
-+	if (!pages)
-+		return NULL;
-+
-+	iova = __alloc_iova(dev, size, coherent);
-+	if (!iova)
-+		goto out_free_pages;
-+
-+	if (sg_alloc_table_from_pages(&sgt, pages, count, 0, size, GFP_KERNEL))
-+		goto out_free_iova;
-+
-+	dma_addr = iova_dma_addr(iovad, iova);
-+	if (iommu_map_sg(dom->domain, dma_addr, sgt.sgl, sgt.orig_nents, prot)
-+			< size)
-+		goto out_free_sg;
-+
-+	/* Using the non-flushing flag since we're doing our own */
-+	sg_miter_start(&miter, sgt.sgl, sgt.orig_nents, SG_MITER_FROM_SG);
-+	while (sg_miter_next(&miter)) {
-+		memset(miter.addr, 0, PAGE_SIZE);
-+		if (flush_page)
-+			flush_page(miter.addr, page_to_phys(miter.page));
-+	}
-+	sg_miter_stop(&miter);
-+	sg_free_table(&sgt);
-+
-+	*handle = dma_addr;
-+	return pages;
-+
-+out_free_sg:
-+	sg_free_table(&sgt);
-+out_free_iova:
-+	__free_iova(iovad, iova);
-+out_free_pages:
-+	__iommu_dma_free_pages(pages, count);
-+	return NULL;
-+}
-+
-+/**
-+ * iommu_dma_mmap - Map a buffer into provided user VMA
-+ * @pages: Array representing buffer from iommu_dma_alloc()
-+ * @size: Size of buffer in bytes
-+ * @vma: VMA describing requested userspace mapping
-+ *
-+ * Maps the pages of the buffer in @pages into @vma. The caller is responsible
-+ * for verifying the correct size and protection of @vma beforehand.
-+ */
-+
-+int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma)
-+{
-+	unsigned long uaddr = vma->vm_start;
-+	unsigned int i, count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-+	int ret = -ENXIO;
-+
-+	for (i = vma->vm_pgoff; i < count && uaddr < vma->vm_end; i++) {
-+		ret = vm_insert_page(vma, uaddr, pages[i]);
-+		if (ret)
-+			break;
-+		uaddr += PAGE_SIZE;
-+	}
-+	return ret;
-+}
-+
-+dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
-+		unsigned long offset, size_t size, int prot, bool coherent)
-+{
-+	dma_addr_t dma_addr;
-+	struct iommu_dma_domain *dom = arch_get_dma_domain(dev);
-+	struct iova_domain *iovad = dom->iovad;
-+	phys_addr_t phys = page_to_phys(page) + offset;
-+	size_t iova_off = iova_offset(iovad, phys);
-+	size_t len = iova_align(iovad, size + iova_off);
-+	struct iova *iova = __alloc_iova(dev, len, coherent);
-+
-+	if (!iova)
-+		return DMA_ERROR_CODE;
-+
-+	dma_addr = iova_dma_addr(iovad, iova);
-+	if (!iommu_map(dom->domain, dma_addr, phys - iova_off, len, prot))
-+		return dev_dma_addr(dev, dma_addr + iova_off);
-+
-+	__free_iova(iovad, iova);
-+	return DMA_ERROR_CODE;
-+}
-+
-+void iommu_dma_unmap_page(struct device *dev, dma_addr_t handle, size_t size,
-+		enum dma_data_direction dir, struct dma_attrs *attrs)
-+{
-+	__iommu_dma_unmap(arch_get_dma_domain(dev), handle);
-+}
-+
-+static int __finalise_sg(struct device *dev, struct scatterlist *sg, int nents,
-+		dma_addr_t dma_addr)
-+{
-+	struct scatterlist *s, *seg = sg;
-+	unsigned long seg_mask = dma_get_seg_boundary(dev);
-+	unsigned int max_len = dma_get_max_seg_size(dev);
-+	unsigned int seg_len = 0, seg_dma = 0;
-+	int i, count = 1;
-+
-+	for_each_sg(sg, s, nents, i) {
-+		/* Un-swizzling the fields here, hence the naming mismatch */
-+		unsigned int s_offset = sg_dma_address(s);
-+		unsigned int s_length = sg_dma_len(s);
-+		unsigned int s_dma_len = s->length;
-+
-+		s->offset = s_offset;
-+		s->length = s_length;
-+		sg_dma_address(s) = DMA_ERROR_CODE;
-+		sg_dma_len(s) = 0;
-+
-+		if (seg_len && (seg_dma + seg_len == dma_addr + s_offset) &&
-+		    (seg_len + s_dma_len <= max_len) &&
-+		    ((seg_dma & seg_mask) <= seg_mask - (seg_len + s_length))
-+		   ) {
-+			sg_dma_len(seg) += s_dma_len;
-+		} else {
-+			if (seg_len) {
-+				seg = sg_next(seg);
-+				count++;
-+			}
-+			sg_dma_len(seg) = s_dma_len - s_offset;
-+			sg_dma_address(seg) = dma_addr + s_offset;
-+
-+			seg_len = s_offset;
-+			seg_dma = dma_addr + s_offset;
-+		}
-+		seg_len += s_length;
-+		dma_addr += s_dma_len;
-+	}
-+	return count;
-+}
-+
-+static void __invalidate_sg(struct scatterlist *sg, int nents)
-+{
-+	struct scatterlist *s;
-+	int i;
-+
-+	for_each_sg(sg, s, nents, i) {
-+		if (sg_dma_address(s) != DMA_ERROR_CODE)
-+			s->offset = sg_dma_address(s);
-+		if (sg_dma_len(s))
-+			s->length = sg_dma_len(s);
-+		sg_dma_address(s) = DMA_ERROR_CODE;
-+		sg_dma_len(s) = 0;
-+	}
-+}
-+
-+int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
-+		int nents, int prot, bool coherent)
-+{
-+	struct iommu_dma_domain *dom = arch_get_dma_domain(dev);
-+	struct iova_domain *iovad = dom->iovad;
-+	struct iova *iova;
-+	struct scatterlist *s;
-+	dma_addr_t dma_addr;
-+	size_t iova_len = 0;
-+	int i;
-+
-+	/*
-+	 * Work out how much IOVA space we need, and align the segments to
-+	 * IOVA granules for the IOMMU driver to handle. With some clever
-+	 * trickery we can modify the list in a reversible manner.
-+	 */
-+	for_each_sg(sg, s, nents, i) {
-+		size_t s_offset = iova_offset(iovad, s->offset);
-+		size_t s_length = s->length;
-+
-+		sg_dma_address(s) = s->offset;
-+		sg_dma_len(s) = s_length;
-+		s->offset -= s_offset;
-+		s_length = iova_align(iovad, s_length + s_offset);
-+		s->length = s_length;
-+
-+		iova_len += s_length;
-+	}
-+
-+	iova = __alloc_iova(dev, iova_len, coherent);
-+	if (!iova)
-+		goto out_restore_sg;
-+
-+	/*
-+	 * We'll leave any physical concatenation to the IOMMU driver's
-+	 * implementation - it knows better than we do.
-+	 */
-+	dma_addr = iova_dma_addr(iovad, iova);
-+	if (iommu_map_sg(dom->domain, dma_addr, sg, nents, prot) < iova_len)
-+		goto out_free_iova;
-+
-+	return __finalise_sg(dev, sg, nents, dev_dma_addr(dev, dma_addr));
-+
-+out_free_iova:
-+	__free_iova(iovad, iova);
-+out_restore_sg:
-+	__invalidate_sg(sg, nents);
-+	return 0;
-+}
-+
-+void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
-+		enum dma_data_direction dir, struct dma_attrs *attrs)
-+{
-+	/*
-+	 * The scatterlist segments are mapped contiguously
-+	 * in IOVA space, so this is incredibly easy.
-+	 */
-+	__iommu_dma_unmap(arch_get_dma_domain(dev), sg_dma_address(sg));
-+}
-+
-+int iommu_dma_supported(struct device *dev, u64 mask)
-+{
-+	/*
-+	 * 'Special' IOMMUs which don't have the same addressing capability
-+	 * as the CPU will have to wait until we have some way to query that
-+	 * before they'll be able to use this framework.
-+	 */
-+	return 1;
-+}
-+
-+int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
-+{
-+	return dma_addr == DMA_ERROR_CODE;
-+}
-diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-new file mode 100644
-index 0000000..6708a8a
---- /dev/null
-+++ b/include/linux/dma-iommu.h
-@@ -0,0 +1,94 @@
-+/*
-+ * Copyright (C) 2014-2015 ARM Ltd.
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-+ */
-+#ifndef __DMA_IOMMU_H
-+#define __DMA_IOMMU_H
-+
-+#ifdef __KERNEL__
-+
-+#include <linux/dma-mapping.h>
-+
-+#ifdef CONFIG_IOMMU_DMA
-+
-+int iommu_dma_init(void);
-+
-+/* Fundamental domain management */
-+struct iommu_dma_domain *iommu_dma_create_domain(const struct iommu_ops *ops,
-+		dma_addr_t base, u64 size);
-+void iommu_dma_release_domain(struct iommu_dma_domain *dma_domain);
-+
-+int iommu_dma_attach_device(struct device *dev, struct iommu_dma_domain *domain);
-+void iommu_dma_detach_device(struct device *dev);
-+
-+/* Helpers for DMA-API <-> IOMMU-API interaction */
-+struct iommu_domain *iommu_dma_raw_domain(struct iommu_dma_domain *dma_domain);
-+int dma_direction_to_prot(enum dma_data_direction dir, bool coherent);
-+
-+/*
-+ * Arch code must provide implementations of these - it can associate domains
-+ * with devices however it likes, provided the lookup is efficient
-+ */
-+static inline struct iommu_dma_domain *arch_get_dma_domain(struct device *dev);
-+static inline void arch_set_dma_domain(struct device *dev,
-+		struct iommu_dma_domain *dma_domain);
-+
-+/*
-+ * These implement the bulk of the relevant DMA mapping callbacks, but require
-+ * the arch code to handle attributes and provide IOMMU-specific parameters
-+ */
-+struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
-+		int prot, bool coherent, dma_addr_t *handle,
-+		void (*flush_page)(const void *, phys_addr_t));
-+void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
-+		dma_addr_t *handle);
-+
-+int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma);
-+
-+dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
-+		unsigned long offset, size_t size, int prot, bool coherent);
-+int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
-+		int nents, int prot, bool coherent);
-+
-+/*
-+ * Arch code with no special attribute handling may use these
-+ * directly as DMA mapping callbacks for simplicity
-+ */
-+void iommu_dma_unmap_page(struct device *dev, dma_addr_t handle, size_t size,
-+		enum dma_data_direction dir, struct dma_attrs *attrs);
-+void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
-+		enum dma_data_direction dir, struct dma_attrs *attrs);
-+int iommu_dma_supported(struct device *dev, u64 mask);
-+int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
-+
-+#else
-+
-+static inline int iommu_dma_init(void)
-+{
-+	return 0;
-+}
-+
-+#endif  /* CONFIG_IOMMU_DMA */
-+
-+static inline struct iommu_dma_domain *arch_get_dma_domain(struct device *dev)
-+{
-+	return NULL;
-+}
-+
-+static inline void arch_set_dma_domain(struct device *dev,
-+		struct iommu_dma_domain *dma_domain)
-+{ }
-+
-+#endif	/* __KERNEL__ */
-+#endif	/* __DMA_IOMMU_H */
--- 
-1.9.1
+> 2. iommu_dma_attach_device will be called automatically in the notify
+> "__iommu_attach_notifier". But it run before the probe of our iommu
+> device.
+>      Then we can't write the register to enable iommu in *_attach_device
+> because we have not parsed the dtsi at that time.
+>     ->I have tried to move parse dtsi into mtk_iommu_of_xlate, in order
+> to read/write register in attach_device.
+> But it will be warning like this:
+> (150604_09:43:41.094)WARNING: CPU: 0 PID: 1
+> at /proj/mtk40525/upstreamdev/chromebook_kernelonly/kernel/mediatek/drivers/base/dd.c:286 driver_probe_device+0x25c/0x29c()
+
+The current sort-of-acceptable workaround for that is to explicitly call 
+of_platform_device_create from mtk_iommu_init_fn - see Marek's 
+exynos-iommu implementation[1] or my work-in-progress iommu/smmu branch 
+for examples. Please take a look at Laurent's probe-deferral series[2] 
+if you'd like to help with the "proper" solution.
+
+> 3.In mtk_iommu_probe, we can't get "struct iommu_domain *" from the
+> current iommu device, we should use it while devm_request_irq.
+> I have to use the global variable here?!
+
+I'm not sure I follow - I was imagining you'd allocate your private DMA 
+domain during IOMMU device creation, then stash it in your 
+mtk_iommu_info and retrieve it as needed. If it's a "global" interrupt 
+it seems more logical to pass that iommu data to the handler anyway, but 
+if it's purely a "domain fault" interrupt couldn't you register it when 
+creating the domain, rather than at device probe? That seems to be how 
+we do it in the ARM SMMU driver, for example.
+
+Robin.
+
+[1]:http://article.gmane.org/gmane.linux.kernel.samsung-soc/45423
+[2]:http://thread.gmane.org/gmane.linux.kernel.iommu/9552
+
+> 4.If I don't implement the of_xlate and IOMMU_OF_DECLARE, I call
+> iommu_dma_create_domain in the mtk_iommu_probe, but I can not
+> get the "iommu_dma_ops" which is static in arch/arm64/mm/dma-mapping.c
+> to assign to dev->archdata->dma_ops for the iommu client device.
+>
+> If i miss something, please tell me and help give some suggestion.
+> Thanks very much.
+>
+> On Wed, 2015-05-27 at 15:09 +0100, Robin Murphy wrote:
+>> Taking some inspiration from the arch/arm code, implement the
+>> arch-specific side of the DMA mapping ops using the new IOMMU-DMA layer.
+>>
+>> Whilst proliferating per-device private IOMMU data via dev->archdata is
+>> less than ideal, it will do the job for now, especially since we can't
+>> easily handle the kind of problematic system topologies in the current
+>> IOMMU API anyway.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> ---
+>>   arch/arm64/include/asm/device.h      |   3 +
+>>   arch/arm64/include/asm/dma-mapping.h |  14 ++
+>>   arch/arm64/mm/dma-mapping.c          | 342 +++++++++++++++++++++++++++++++++++
+>>   include/linux/dma-iommu.h            |   4 +-
+>>   4 files changed, 361 insertions(+), 2 deletions(-)
+>>
+> [snip]
+>> +struct iommu_dma_notifier_data {
+>> +	struct list_head list;
+>> +	struct device *dev;
+>> +	struct iommu_dma_domain *dma_domain;
+>> +};
+>> +static LIST_HEAD(iommu_dma_masters);
+>> +static DEFINE_MUTEX(iommu_dma_notifier_lock);
+>> +
+>> +static int __iommu_attach_notifier(struct notifier_block *nb,
+>> +				   unsigned long action, void *data)
+>> +{
+>> +	struct iommu_dma_notifier_data *master, *tmp;
+>> +
+>> +	if (action != BUS_NOTIFY_ADD_DEVICE)
+>> +		return 0;
+>> +	/*
+>> +	 * We expect the list to only contain the most recent addition,
+>> +	 * which *should* be the same device as @data, so just process the
+>> +	 * whole thing blindly. If any previous attachments did happen to
+>> +	 * fail, they get a free retry since the domains are still live.
+>> +	 */
+>> +	mutex_lock(&iommu_dma_notifier_lock);
+>> +	list_for_each_entry_safe(master, tmp, &iommu_dma_masters, list) {
+>> +		if (iommu_dma_attach_device(master->dev, master->dma_domain)) {
+>> +			pr_warn("Failed to attach device %s to IOMMU mapping; retaining platform DMA ops\n",
+>> +				dev_name(master->dev));
+>> +		} else {
+>> +			master->dev->archdata.dma_ops = &iommu_dma_ops;
+>> +			/* it's safe to drop the initial refcount now */
+>> +			iommu_dma_release_domain(master->dma_domain);
+>> +			list_del(&master->list);
+>> +			kfree(master);
+>> +		}
+>> +	}
+>> +	mutex_unlock(&iommu_dma_notifier_lock);
+>> +	return 0;
+>> +}
+>> +
+>> +static int register_iommu_dma_ops_notifier(struct bus_type *bus)
+>> +{
+>> +	int ret;
+>> +	struct notifier_block *nb = kzalloc(sizeof(*nb), GFP_KERNEL);
+>> +
+>> +	/*
+>> +	 * The device must be attached to a domain before its driver probe,
+>> +	 * in case the driver allocates DMA buffers immediately. However, most
+>> +	 * IOMMU drivers are currently configuring groups in their add_device
+>> +	 * callback, so the attach should happen after that. Since the IOMMU
+>> +	 * core uses a bus notifier for add_device, do the same but with a
+>> +	 * stupidly low priority to ensure the appropriate ordering.
+>> +	 *
+>> +	 * This can hopefully all go away once we have default domains in the
+>> +	 * IOMMU core.
+>> +	 */
+>> +	nb->notifier_call = __iommu_attach_notifier;
+>> +	nb->priority = INT_MIN;
+>> +
+>> +	ret = bus_register_notifier(bus, nb);
+>> +	if (ret) {
+>> +		pr_warn("Failed to register DMA domain notifier; IOMMU DMA ops unavailable on bus '%s'\n",
+>> +			bus->name);
+>> +		kfree(nb);
+>> +	}
+>> +	return ret;
+>> +}
+>> +
+>> +static int __init arm64_iommu_dma_init(void)
+>> +{
+>> +	int ret;
+>> +
+>> +	ret = iommu_dma_init();
+>> +	if (!ret)
+>> +		ret = register_iommu_dma_ops_notifier(&platform_bus_type);
+>> +	if (!ret)
+>> +		ret = register_iommu_dma_ops_notifier(&amba_bustype);
+>> +	return ret;
+>> +}
+>> +arch_initcall(arm64_iommu_dma_init);
+>> +
+>> +static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+>> +				  const struct iommu_ops *ops)
+>> +{
+>> +	struct iommu_dma_notifier_data *iommudata;
+>> +
+>> +	if (!ops)
+>> +		return;
+>> +
+>> +	iommudata = kzalloc(sizeof(*iommudata), GFP_KERNEL);
+>> +	if (!iommudata)
+>> +		return;
+>> +
+>> +	iommudata->dev = dev;
+>> +	iommudata->dma_domain = iommu_dma_create_domain(ops, dma_base, size);
+>> +	if (!iommudata->dma_domain) {
+>> +		pr_warn("Failed to create %llu-byte IOMMU mapping for device %s\n",
+>> +				size, dev_name(dev));
+>> +		kfree(iommudata);
+>> +		return;
+>> +	}
+>> +	mutex_lock(&iommu_dma_notifier_lock);
+>> +	list_add(&iommudata->list, &iommu_dma_masters);
+>> +	mutex_unlock(&iommu_dma_notifier_lock);
+>> +}
+>> +
+>
+>
