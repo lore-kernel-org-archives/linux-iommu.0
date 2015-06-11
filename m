@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 3/4] iommu/vt-d: Remove unmap_device_dma()
-Date: Thu, 11 Jun 2015 15:47:42 +0200
-Message-ID: <1434030463-942-4-git-send-email-joro@8bytes.org>
+Subject: [PATCH 4/4] iommu/vt-d: Make sure si_domain is allocated for kdump
+	kernel
+Date: Thu, 11 Jun 2015 15:47:43 +0200
+Message-ID: <1434030463-942-5-git-send-email-joro@8bytes.org>
 References: <1434030463-942-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,87 +24,62 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-This removes the unmap_device_dma() function and the
-code-path calling it. That code looks like a left-over from
-Bill Sumners patch-set, as it only makes sense when kdump
-recovery is implemented like in his original patch-set.
-
-With the way it is implemented now this code doesn't make
-sense at all and can be removed.
+The si_domain needs to be allocated in the kdump kernel too.
+Otherwise the iommu=pt case breaks with a panic of the kdump
+kernel.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 44 --------------------------------------------
- 1 file changed, 44 deletions(-)
+ drivers/iommu/intel-iommu.c | 23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index f50d065..fcb9310 100644
+index fcb9310..e5af94a 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -400,9 +400,6 @@ static LIST_HEAD(__iommu_remapped_mem);
-  */
- static int intel_iommu_load_translation_tables(struct intel_iommu *iommu);
+@@ -2781,10 +2781,6 @@ static int __init iommu_prepare_static_identity_mapping(int hw)
+ 	int i;
+ 	int ret = 0;
  
--static void unmap_device_dma(struct dmar_domain *domain,
--				struct device *dev,
--				struct intel_iommu *iommu);
- static void iommu_check_pre_te_status(struct intel_iommu *iommu);
- static u8 g_translation_pre_enabled;
+-	ret = si_domain_init(hw);
+-	if (ret)
+-		return -EFAULT;
+-
+ 	for_each_pci_dev(pdev) {
+ 		ret = dev_prepare_static_identity_mapping(&pdev->dev, hw);
+ 		if (ret)
+@@ -2798,7 +2794,7 @@ static int __init iommu_prepare_static_identity_mapping(int hw)
  
-@@ -3120,25 +3117,6 @@ static struct dmar_domain *__get_valid_domain_for_dev(struct device *dev)
- 		return NULL;
- 	}
+ 			if (dev->bus != &acpi_bus_type)
+ 				continue;
+-				
++
+ 			adev= to_acpi_device(dev);
+ 			mutex_lock(&adev->physical_node_lock);
+ 			list_for_each_entry(pn, &adev->physical_node_list, node) {
+@@ -2979,9 +2975,20 @@ static int __init init_dmars(void)
+ 	check_tylersburg_isoch();
  
--	/* if in kdump kernel, we need to unmap the mapped dma pages,
--	 * detach this device first.
--	 */
--	if (likely(domain_context_mapped(dev))) {
--		iommu = domain_get_iommu(domain);
--		if (iommu->pre_enabled_trans) {
--			unmap_device_dma(domain, dev, iommu);
--
--			domain = get_domain_for_dev(dev,
--				DEFAULT_DOMAIN_ADDRESS_WIDTH);
--			if (!domain) {
--				pr_err("Allocating domain for %s failed",
--				       dev_name(dev));
--				return NULL;
--			}
--		} else
--			return domain;
--	}
--
- 	ret = domain_context_mapping(domain, dev, CONTEXT_TT_MULTI_LEVEL);
- 	if (ret) {
- 		pr_err("Domain context map for %s failed",
-@@ -5063,28 +5041,6 @@ out_unmap:
- 	return ret;
- }
- 
--static void unmap_device_dma(struct dmar_domain *domain,
--				struct device *dev,
--				struct intel_iommu *iommu)
--{
--	struct context_entry *ce;
--	struct iova *iova;
--	phys_addr_t phys_addr;
--	dma_addr_t dev_addr;
--	struct pci_dev *pdev;
--
--	pdev = to_pci_dev(dev);
--	ce = iommu_context_addr(iommu, pdev->bus->number, pdev->devfn, 1);
--	phys_addr = context_address_root(ce) << VTD_PAGE_SHIFT;
--	dev_addr = phys_to_dma(dev, phys_addr);
--
--	iova = find_iova(&domain->iovad, IOVA_PFN(dev_addr));
--	if (iova)
--		intel_unmap(dev, dev_addr);
--
--	domain_remove_one_dev_info(domain, dev);
--}
--
- static void iommu_check_pre_te_status(struct intel_iommu *iommu)
- {
- 	u32 sts;
+ 	/*
+-	 * In the second kernel: Skip setting-up new domains for
+-	 * si, rmrr, and the isa bus on the expectation that these
+-	 * translations were copied from the old kernel.
++	 * Make sure the si_domain is allocated in the case we are in a
++	 * kdump kernel.
++	 */
++	if (iommu_identity_mapping) {
++		ret = si_domain_init(hw_pass_through);
++		if (ret)
++			goto free_iommu;
++	}
++
++	/*
++	 * In the second kernel: Skip setting-up new domains for rmrr
++	 * and the isa bus, they will be allocated and assigned on the
++	 * first DMA-API call. This is to keep the old mappings alive
++	 * until the device driver of the kdump kernel takes over.
+ 	 */
+ 	if (g_translation_pre_enabled)
+ 		goto skip_new_domains_for_si_rmrr_isa;
 -- 
 1.9.1
