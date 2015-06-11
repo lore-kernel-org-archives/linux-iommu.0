@@ -1,87 +1,71 @@
 From: David Woodhouse <dwmw2@infradead.org>
-Subject: Re: [PATCH 2/4] iommu/vt-d: Don't consider copied context entries
- as present
-Date: Thu, 11 Jun 2015 16:12:40 +0100
-Message-ID: <1434035560.3907.74.camel@infradead.org>
-References: <1434030463-942-1-git-send-email-joro@8bytes.org>
-	 <1434030463-942-3-git-send-email-joro@8bytes.org>
-	 <1434031622.3907.40.camel@infradead.org> <20150611142554.GG16345@suse.de>
-	 <1434033896.3907.61.camel@infradead.org>
+Subject: Re: [PATCH v10 0/10] iommu/vt-d: Fix intel vt-d faults in kdump
+ kernel
+Date: Thu, 11 Jun 2015 16:40:12 +0100
+Message-ID: <1434037212.3907.82.camel@infradead.org>
+References: <1428655333-19504-1-git-send-email-zhen-hual@hp.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-9xJk6M2pa5sKCUa71XPH"
+	boundary="=-lDByxYIZC/Ch3KSraFDH"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1434033896.3907.61.camel@infradead.org>
+In-Reply-To: <1428655333-19504-1-git-send-email-zhen-hual@hp.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <jroedel@suse.de>
-Cc: zhen-hual@hp.com, iommu@lists.linux-foundation.org, bhe@redhat.com, linux-kernel@vger.kernel.org
+To: "Li, Zhen-Hua" <zhen-hual@hp.com>
+Cc: indou.takao@jp.fujitsu.com, bhe@redhat.com, joro@8bytes.org, vgoyal@redhat.com, dyoung@redhat.com, tom.vaden@hp.com, rwright@hp.com, linux-pci@vger.kernel.org, kexec@lists.infradead.org, iommu@lists.linux-foundation.org, lisa.mitchell@hp.com, linux-kernel@vger.kernel.org, doug.hatch@hp.com, ishii.hironobu@jp.fujitsu.com, bhelgaas@google.com, billsumnerlinux@gmail.com, li.zhang6@hp.com
 List-Id: iommu@lists.linux-foundation.org
 
 
---=-9xJk6M2pa5sKCUa71XPH
+--=-lDByxYIZC/Ch3KSraFDH
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2015-06-11 at 15:44 +0100, David Woodhouse wrote:
-> It used to look like this
-> ...
-> Now it looks like this
+On Fri, 2015-04-10 at 16:42 +0800, Li, Zhen-Hua wrote:
+> This patchset is an update of Bill Sumner's patchset, implements a fix fo=
+r:
+> If a kernel boots with intel_iommu=3Don on a system that supports intel v=
+t-d,=20
+> when a panic happens, the kdump kernel will boot with these faults:
 
-That's not quite right; each root entry is for only *one* bus, and the
-correct version looks more like this...
+But, in the general case, it *does* boot.
 
-It used to look like this:
+There are two cases where it doesn't actually boot, and those are the
+interesting ones.
 
-Root Table Address Register
-       |
-       V
+Firstly, a device just keeps generating faults and we die in an
+interrupt storm, reporting the same fault over and over again. That can
+actually happen without kdump/kexec and the correct fix for that is to
+have rate-limiting, disable fault reporting for the offending device
+after too many are seen, and then eventually to tie it in to the PCIe
+error handling as has been discussed elsewhere.
 
-Root Table (struct root_entry)     Context Table (struct context_entry)
-------------------------------     ------------------------------------
-0x00: CTX TBL for bus #0 --------->  CTX entry for 00:00.0 (bits 63-0)
-0x08: unused                         CTX entry for 00:00.0 (bits 127-64)
-0x10: CTX TBL for bus #1 ----.       CTX entry for 00:00.1 (bits 63-0)
-...   ...                    |       ...
-0xff8:unused                 |       CTX entry for 00:1f.7 (bits 127-64)
-                             |
-                             |
-                             |     Context Table (struct context_entry)
-                             |     ------------------------------------
-0x00:                        ----->  CTX entry for 01:00.0 (bits 63-0)
-0x00:                                CTX entry for 01:00.0 (bits 127-64)
-0x08:                                CTX entry for 01:00.1 (bits 63-0)
-...                                  ...
-0xff8:                               CTX entry for 01:1f.7 (bits 127-64)
+Secondly, there are devices which do not correctly respond to a
+hardware reset. This is broken hardware, and if we really have to copy
+the old contexts from the crashed kernel to work around it then I'd
+like it to be on a blacklist basis =E2=80=94 we do it only for hardware whi=
+ch
+is *known* to be broken in this way.
 
+(There's also some cases where the device driver doesn't even *try* to
+reset the hardware and just assumes it'll find it in a sane state as
+the BIOS or a cleanly shut down kexec would have left it. In those
+cases of course we can just fix the driver).
 
-Now it looks like this, with each context entry taking twice the amount
-of space:
+I don't much like the idea of doing this context copy for *all*
+hardware. That's masking hardware issues with reset that we really
+*ought* to be finding.
 
-Root Table Address Register
-       |
-       V
+I believe that most of the offending hardware is HP's; they like to do
+the most, erm, "interesting" things with odd hardware and RMRRs and
+stuff. So Zhen-Hua would you be able to provide the list of broken
+devices that HP has shipped, for the purpose of such a blacklist?
 
-Root Table (struct root_entry)     Context Table (struct context_entry)
-------------------------------     ------------------------------------
-0x00: CTX TBL LO for bus #0 ------>  CTX entry for 00:00.0 (bits 63-0)
-0x08: CTX TBL HI for bus #0 --.      CTX entry for 00:00.0 (bits 127-64)
-0x10: CTX TBL LO for bus #1   |      CTX entry for 00:00.0 (bits 191-128)
-...   ...                     |      ...
-0xff8:CTX TBL HI for bus #FF  |      CTX entry for 00:0f.7 (bits 255-192)
-                              |
-                              |
-                              |    Context Table (struct context_entry)
-                              |    ------------------------------------
-0x00:                         ---->  CTX entry for 00:10.0 (bits 63-0)
-0x00:                                CTX entry for 00:10.0 (bits 127-64)
-0x08:                                CTX entry for 00:10.0 (bits 191-128)
-...                                  ...
-0xff8:                               CTX entry for 00:1f.7 (bits 63-0)
+I assume you've already contacted the hardware folks responsible and
+insisted that their devices are fixed to be resettable already, right?
 
 --=20
 dwmw2
 
---=-9xJk6M2pa5sKCUa71XPH
+--=-lDByxYIZC/Ch3KSraFDH
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -174,18 +158,18 @@ Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
 ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
 AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUwNjExMTUxMjQwWjAjBgkqhkiG9w0BCQQxFgQUNciwjnu/yY8K4QUIHkqQVrlZNesw
+CQUxDxcNMTUwNjExMTU0MDEyWjAjBgkqhkiG9w0BCQQxFgQU3CEkruMDwwhvSqfYMkT+3deHZ30w
 gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
 ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
 L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
 CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
 LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
 U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQB13Pi+P3GBwEX2nVhOFTjM+LRAzLSbHxvr8xIgRzx9XMZmOFQnjVBxt9kN
-QoRBYa/f/ECMSDB//rWOv1cKeMW8rOZdOWWyqeVqE3Wycgmxsmby/aTrdRpwUwyfiAm1CXoRHV/R
-8U4s1kb44GBAe3esSlm+6S1/RWHhBTbbK9qzZ1mOyZZL72vkY4R97NQzNIxQGFPnOefVfqfESS6x
-0CHJ7GsH/5VWyJORXfkrknq+6DGurIYBuxWc5dZPs9r9xXnVMouAQLAoLhOsO6ULYvaxMjNpaPz8
-KDywJM9lY0fQ1ieTByx56Nj1FNsrLMixjldHMRuRJOxxlIxnMJrQjyc7AAAAAAAA
+hkiG9w0BAQEFAASCAQCdUbbEOxAO9B7Gt6SQPx3/IXbU1kO6kyBL2neXKU2yJJbix34s9HcyHYbK
+9s9KEi1l4Fw61ozNgpbYUuWRHlcH/cfOkWtQr/5jdn1eM+9toGCi42kgL1BU3MITfl0KtJnkUpRD
+5K4DJu/RnnkEGmwhw0XGu1zw+az8CYXyWFmPgTzhV+85gcLpcXWMkCFvH2PQxFV54pLnB9rgCCEm
+Yl5Ozp2Dj/MQMU7mBw6tS4vGefnQanYDLZDCreDQI0R5BjhHiceh2C9JGcXAeZmVToDGVh4ldmFM
+AD6uz4TTwGVzyCmimflus11qmcletfknQswv3be1AFRq+JpXtgU/j0OdAAAAAAAA
 
 
---=-9xJk6M2pa5sKCUa71XPH--
+--=-lDByxYIZC/Ch3KSraFDH--
