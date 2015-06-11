@@ -1,15 +1,14 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 08/22] iommu: Make sure a device is always attached to
-	a domain
-Date: Thu, 11 Jun 2015 18:41:54 +0100
-Message-ID: <5579C862.6090804@arm.com>
+Subject: Re: [PATCH 10/22] iommu: Introduce direct mapped region handling
+Date: Thu, 11 Jun 2015 20:22:44 +0100
+Message-ID: <5579E004.5080904@arm.com>
 References: <1432831305-11126-1-git-send-email-joro@8bytes.org>
-	<1432831305-11126-9-git-send-email-joro@8bytes.org>
+	<1432831305-11126-11-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1432831305-11126-9-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1432831305-11126-11-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,180 +25,123 @@ List-Id: iommu@lists.linux-foundation.org
 On 28/05/15 17:41, Joerg Roedel wrote:
 > From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 >
-> Make use of the default domain and re-attach a device to it
-> when it is detached from another domain. Also enforce that a
-> device has to be in the default domain before it can be
-> attached to a different domain.
->
-> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> ---
->   drivers/iommu/iommu.c | 83 ++++++++++++++++++++++++++++++++++++++++++++++-----
->   1 file changed, 75 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index adeedd2..7bce522 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -52,6 +52,7 @@ struct iommu_group {
->   	char *name;
->   	int id;
->   	struct iommu_domain *default_domain;
-> +	struct iommu_domain *domain;
->   };
->
->   struct iommu_device {
-> @@ -78,6 +79,12 @@ struct iommu_group_attribute iommu_group_attr_##_name =		\
->
->   static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
->   						 unsigned type);
-> +static int __iommu_attach_device(struct iommu_domain *domain,
-> +				 struct device *dev);
-> +static int __iommu_attach_group(struct iommu_domain *domain,
-> +				struct iommu_group *group);
-> +static void __iommu_detach_group(struct iommu_domain *domain,
-> +				 struct iommu_group *group);
->
->   static ssize_t iommu_group_attr_show(struct kobject *kobj,
->   				     struct attribute *__attr, char *buf)
-> @@ -376,6 +383,8 @@ rename:
->
->   	mutex_lock(&group->mutex);
->   	list_add_tail(&device->list, &group->devices);
-> +	if (group->domain)
-> +		__iommu_attach_device(group->domain, dev);
->   	mutex_unlock(&group->mutex);
->
->   	/* Notify any listeners about change to group. */
-> @@ -455,19 +464,30 @@ static int iommu_group_device_count(struct iommu_group *group)
->    * The group->mutex is held across callbacks, which will block calls to
->    * iommu_group_add/remove_device.
->    */
-> -int iommu_group_for_each_dev(struct iommu_group *group, void *data,
-> -			     int (*fn)(struct device *, void *))
-> +static int __iommu_group_for_each_dev(struct iommu_group *group, void *data,
-> +				      int (*fn)(struct device *, void *))
->   {
->   	struct iommu_device *device;
->   	int ret = 0;
->
-> -	mutex_lock(&group->mutex);
->   	list_for_each_entry(device, &group->devices, list) {
+> Add two new functions to the IOMMU-API to allow the IOMMU
+> drivers to export the requirements for direct mapped regions
+> per device.
+> This is useful for exporting the information in Intel VT-d's
+> RMRR entries or AMD-Vi's unity mappings.
 
-Maybe worth using list_for_each_entry_safe so we can reuse this for 
-things like group teardown?
+Whilst I agree with the utility of a common abstraction for the IOMMU 
+core to use (I think we could easily turn Marek's proposal for ARM[1] 
+into a generic of_iommu_ backend for this), I'm less convinced that it 
+needs to be exported as part of the API.
 
->   		ret = fn(device->dev, data);
->   		if (ret)
->   			break;
->   	}
-> +	return ret;
-> +}
-> +
-> +
-> +int iommu_group_for_each_dev(struct iommu_group *group, void *data,
-> +			     int (*fn)(struct device *, void *))
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&group->mutex);
-> +	ret = __iommu_group_for_each_dev(group, data, fn);
->   	mutex_unlock(&group->mutex);
-> +
->   	return ret;
->   }
->   EXPORT_SYMBOL_GPL(iommu_group_for_each_dev);
-> @@ -1013,7 +1033,7 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
->   	if (iommu_group_device_count(group) != 1)
->   		goto out_unlock;
->
-> -	ret = __iommu_attach_device(domain, dev);
-> +	ret = __iommu_attach_group(domain, group);
->
->   out_unlock:
->   	mutex_unlock(&group->mutex);
-> @@ -1048,7 +1068,7 @@ void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
->   		goto out_unlock;
->   	}
->
-> -	__iommu_detach_device(domain, dev);
-> +	__iommu_detach_group(domain, group);
->
->   out_unlock:
->   	mutex_unlock(&group->mutex);
-> @@ -1073,10 +1093,31 @@ static int iommu_group_do_attach_device(struct device *dev, void *data)
->   	return __iommu_attach_device(domain, dev);
->   }
->
-> +static int __iommu_attach_group(struct iommu_domain *domain,
-> +				struct iommu_group *group)
-> +{
-> +	int ret;
-> +
-> +	if (group->default_domain && group->domain != group->default_domain)
-> +		return -EBUSY;
-> +
-> +	ret = __iommu_group_for_each_dev(group, domain,
-> +					 iommu_group_do_attach_device);
-> +	if (ret == 0)
-> +		group->domain = domain;
-> +
-> +	return ret;
-> +}
-> +
->   int iommu_attach_group(struct iommu_domain *domain, struct iommu_group *group)
->   {
-> -	return iommu_group_for_each_dev(group, domain,
-> -					iommu_group_do_attach_device);
-> +	int ret;
-> +
-> +	mutex_lock(&group->mutex);
-> +	ret = __iommu_attach_group(domain, group);
-> +	mutex_unlock(&group->mutex);
-> +
-> +	return ret;
->   }
->   EXPORT_SYMBOL_GPL(iommu_attach_group);
->
-> @@ -1089,9 +1130,35 @@ static int iommu_group_do_detach_device(struct device *dev, void *data)
->   	return 0;
->   }
->
-> +static void __iommu_detach_group(struct iommu_domain *domain,
-> +				 struct iommu_group *group)
-> +{
-> +	int ret;
-> +
-> +	if (!group->default_domain) {
-> +		__iommu_group_for_each_dev(group, domain,
-> +					   iommu_group_do_detach_device);
-> +		group->domain = NULL;
-> +		return;
-> +	}
-> +
-> +	if (group->domain == group->default_domain)
-> +		return;
-> +
-> +	/* Detach by re-attaching to the default domain */
-> +	ret = __iommu_group_for_each_dev(group, group->default_domain,
-> +					 iommu_group_do_attach_device);
-> +	if (ret != 0)
-> +		WARN_ON(1);
-> +	else
+I was envisioning eventually moving the IOVA data inside the 
+iommu_domain itself for the managed DMA-API implementation, so that the 
+IOMMU core would be responsible for setting it up. Then the core just 
+needs to ask the driver about any relevant reservations as it creates a 
+domain/attaches a device, and the callers can remain in blissful 
+ignorance. Besides, beyond probe time, I don't see many good reasons at 
+all for a caller to have a struct device for something, yet not have 
+taken control of any DMA the firmware left running.
 
-	if (!(WARN_ON(ret)) ?
+Is that at odds with your ideas?
 
 Robin.
 
-> +		group->domain = group->default_domain;
+[1]:http://article.gmane.org/gmane.linux.kernel.samsung-soc/45429
+
+> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> ---
+>   drivers/iommu/iommu.c | 16 ++++++++++++++++
+>   include/linux/iommu.h | 31 +++++++++++++++++++++++++++++++
+>   2 files changed, 47 insertions(+)
+>
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index a0a38bd..6b8d6e7 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1469,3 +1469,19 @@ int iommu_domain_set_attr(struct iommu_domain *domain,
+>   	return ret;
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_domain_set_attr);
+> +
+> +void iommu_get_dm_regions(struct device *dev, struct list_head *list)
+> +{
+> +	const struct iommu_ops *ops = dev->bus->iommu_ops;
+> +
+> +	if (ops && ops->get_dm_regions)
+> +		ops->get_dm_regions(dev, list);
 > +}
 > +
->   void iommu_detach_group(struct iommu_domain *domain, struct iommu_group *group)
->   {
-> -	iommu_group_for_each_dev(group, domain, iommu_group_do_detach_device);
-> +	mutex_lock(&group->mutex);
-> +	__iommu_detach_group(domain, group);
-> +	mutex_unlock(&group->mutex);
->   }
->   EXPORT_SYMBOL_GPL(iommu_detach_group);
+> +void iommu_put_dm_regions(struct device *dev, struct list_head *list)
+> +{
+> +	const struct iommu_ops *ops = dev->bus->iommu_ops;
+> +
+> +	if (ops && ops->put_dm_regions)
+> +		ops->put_dm_regions(dev, list);
+> +}
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 683a1c4..6894999 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -114,6 +114,20 @@ enum iommu_attr {
+>   	DOMAIN_ATTR_MAX,
+>   };
 >
+> +/**
+> + * struct iommu_dm_region - descriptor for a direct mapped memory region
+> + * @list: Linked list pointers
+> + * @start: System physical start address of the region
+> + * @length: Length of the region in bytes
+> + * @prot: IOMMU Protection flags (READ/WRITE/...)
+> + */
+> +struct iommu_dm_region {
+> +	struct list_head	list;
+> +	phys_addr_t		start;
+> +	size_t			length;
+> +	int			prot;
+> +};
+> +
+>   #ifdef CONFIG_IOMMU_API
+>
+>   /**
+> @@ -159,6 +173,10 @@ struct iommu_ops {
+>   	int (*domain_set_attr)(struct iommu_domain *domain,
+>   			       enum iommu_attr attr, void *data);
+>
+> +	/* Request/Free a list of direct mapping requirements for a device */
+> +	void (*get_dm_regions)(struct device *dev, struct list_head *list);
+> +	void (*put_dm_regions)(struct device *dev, struct list_head *list);
+> +
+>   	/* Window handling functions */
+>   	int (*domain_window_enable)(struct iommu_domain *domain, u32 wnd_nr,
+>   				    phys_addr_t paddr, u64 size, int prot);
+> @@ -205,6 +223,9 @@ extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t io
+>   extern void iommu_set_fault_handler(struct iommu_domain *domain,
+>   			iommu_fault_handler_t handler, void *token);
+>
+> +extern void iommu_get_dm_regions(struct device *dev, struct list_head *list);
+> +extern void iommu_put_dm_regions(struct device *dev, struct list_head *list);
+> +
+>   extern int iommu_attach_group(struct iommu_domain *domain,
+>   			      struct iommu_group *group);
+>   extern void iommu_detach_group(struct iommu_domain *domain,
+> @@ -379,6 +400,16 @@ static inline void iommu_set_fault_handler(struct iommu_domain *domain,
+>   {
+>   }
+>
+> +static inline void iommu_get_dm_regions(struct device *dev,
+> +					struct list_head *list)
+> +{
+> +}
+> +
+> +static inline void iommu_put_dm_regions(struct device *dev,
+> +					struct list_head *list)
+> +{
+> +}
+> +
+>   static inline int iommu_attach_group(struct iommu_domain *domain,
+>   				     struct iommu_group *group)
+>   {
 >
