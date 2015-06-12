@@ -1,12 +1,11 @@
 From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v3 (alternative) 1/3] drm/exynos: fimd: ensure proper hw state
- in fimd_clear_channel()
-Date: Fri, 12 Jun 2015 11:07:17 +0200
-Message-ID: <1434100037-12304-2-git-send-email-m.szyprowski@samsung.com>
+Subject: [PATCH v3 1/3] drm/exynos: fimd: ensure proper hw state in
+ fimd_clear_channel()
+Date: Fri, 12 Jun 2015 11:07:16 +0200
+Message-ID: <1434100037-12304-1-git-send-email-m.szyprowski@samsung.com>
 References: <557AA0D3.8010808@samsung.com>
- <1434100037-12304-1-git-send-email-m.szyprowski@samsung.com>
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1434100037-12304-1-git-send-email-m.szyprowski@samsung.com>
+In-reply-to: <557AA0D3.8010808@samsung.com>
 Sender: linux-samsung-soc-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org
 Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Inki Dae <inki.dae@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Andrzej Hajda <a.hajda@samsung.com>
@@ -23,86 +22,22 @@ Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 Tested-by: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
 ---
 Changelog:
-v3 (alternative):
-- araranged code by moving fimd_{enable,disable}_vblank functions before
-  fimd_clear_channel to avoid forward declaration usage
+v3:
+- replaced forward declaration and calls to fimd_{enable,disable}_vblank
+  functions by calls throught ctrt ops
 
 v2:
 - rebased onto latest exynos-drm-next branch with atomic mode setting
   patches applied.
-
-
- drivers/gpu/drm/exynos/exynos_drm_fimd.c | 130 +++++++++++++++++--------------
- 1 file changed, 71 insertions(+), 59 deletions(-)
+---
+ drivers/gpu/drm/exynos/exynos_drm_fimd.c | 26 +++++++++++++++++++++-----
+ 1 file changed, 21 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/gpu/drm/exynos/exynos_drm_fimd.c b/drivers/gpu/drm/exynos/exynos_drm_fimd.c
-index 96618534358e..f490895a8b02 100644
+index 96618534358e..c67bb6b97399 100644
 --- a/drivers/gpu/drm/exynos/exynos_drm_fimd.c
 +++ b/drivers/gpu/drm/exynos/exynos_drm_fimd.c
-@@ -196,6 +196,62 @@ static inline struct fimd_driver_data *drm_fimd_get_driver_data(
- 	return (struct fimd_driver_data *)of_id->data;
- }
- 
-+static int fimd_enable_vblank(struct exynos_drm_crtc *crtc)
-+{
-+	struct fimd_context *ctx = crtc->ctx;
-+	u32 val;
-+
-+	if (ctx->suspended)
-+		return -EPERM;
-+
-+	if (!test_and_set_bit(0, &ctx->irq_flags)) {
-+		val = readl(ctx->regs + VIDINTCON0);
-+
-+		val |= VIDINTCON0_INT_ENABLE;
-+
-+		if (ctx->i80_if) {
-+			val |= VIDINTCON0_INT_I80IFDONE;
-+			val |= VIDINTCON0_INT_SYSMAINCON;
-+			val &= ~VIDINTCON0_INT_SYSSUBCON;
-+		} else {
-+			val |= VIDINTCON0_INT_FRAME;
-+
-+			val &= ~VIDINTCON0_FRAMESEL0_MASK;
-+			val |= VIDINTCON0_FRAMESEL0_VSYNC;
-+			val &= ~VIDINTCON0_FRAMESEL1_MASK;
-+			val |= VIDINTCON0_FRAMESEL1_NONE;
-+		}
-+
-+		writel(val, ctx->regs + VIDINTCON0);
-+	}
-+
-+	return 0;
-+}
-+
-+static void fimd_disable_vblank(struct exynos_drm_crtc *crtc)
-+{
-+	struct fimd_context *ctx = crtc->ctx;
-+	u32 val;
-+
-+	if (ctx->suspended)
-+		return;
-+
-+	if (test_and_clear_bit(0, &ctx->irq_flags)) {
-+		val = readl(ctx->regs + VIDINTCON0);
-+
-+		val &= ~VIDINTCON0_INT_ENABLE;
-+
-+		if (ctx->i80_if) {
-+			val &= ~VIDINTCON0_INT_I80IFDONE;
-+			val &= ~VIDINTCON0_INT_SYSMAINCON;
-+			val &= ~VIDINTCON0_INT_SYSSUBCON;
-+		} else
-+			val &= ~VIDINTCON0_INT_FRAME;
-+
-+		writel(val, ctx->regs + VIDINTCON0);
-+	}
-+}
-+
- static void fimd_wait_for_vblank(struct exynos_drm_crtc *crtc)
- {
- 	struct fimd_context *ctx = crtc->ctx;
-@@ -248,6 +304,12 @@ static void fimd_clear_channel(struct fimd_context *ctx)
+@@ -248,6 +248,12 @@ static void fimd_clear_channel(struct fimd_context *ctx)
  
  	DRM_DEBUG_KMS("%s\n", __FILE__);
  
@@ -115,18 +50,24 @@ index 96618534358e..f490895a8b02 100644
  	/* Check if any channel is enabled. */
  	for (win = 0; win < WINDOWS_NR; win++) {
  		u32 val = readl(ctx->regs + WINCON(win));
-@@ -265,12 +327,17 @@ static void fimd_clear_channel(struct fimd_context *ctx)
+@@ -265,12 +271,22 @@ static void fimd_clear_channel(struct fimd_context *ctx)
  
  	/* Wait for vsync, as disable channel takes effect at next vsync */
  	if (ch_enabled) {
 -		unsigned int state = ctx->suspended;
 -
 -		ctx->suspended = 0;
-+		ctx->suspended = false;
-+		fimd_enable_vblank(ctx->crtc);
- 		fimd_wait_for_vblank(ctx->crtc);
+-		fimd_wait_for_vblank(ctx->crtc);
 -		ctx->suspended = state;
-+		fimd_disable_vblank(ctx->crtc);
++		const struct exynos_drm_crtc_ops *ops = ctx->crtc->ops;
++
++		ctx->suspended = false;
++		if (ops->enable_vblank)
++			ops->enable_vblank(ctx->crtc);
++		if (ops->wait_for_vblank)
++			ops->wait_for_vblank(ctx->crtc);
++		if (ops->disable_vblank)
++			ops->disable_vblank(ctx->crtc);
 +		ctx->suspended = true;
  	}
 +
@@ -137,67 +78,5 @@ index 96618534358e..f490895a8b02 100644
  }
  
  static int fimd_iommu_attach_devices(struct fimd_context *ctx,
-@@ -434,61 +501,6 @@ static void fimd_commit(struct exynos_drm_crtc *crtc)
- 	writel(val, ctx->regs + VIDCON0);
- }
- 
--static int fimd_enable_vblank(struct exynos_drm_crtc *crtc)
--{
--	struct fimd_context *ctx = crtc->ctx;
--	u32 val;
--
--	if (ctx->suspended)
--		return -EPERM;
--
--	if (!test_and_set_bit(0, &ctx->irq_flags)) {
--		val = readl(ctx->regs + VIDINTCON0);
--
--		val |= VIDINTCON0_INT_ENABLE;
--
--		if (ctx->i80_if) {
--			val |= VIDINTCON0_INT_I80IFDONE;
--			val |= VIDINTCON0_INT_SYSMAINCON;
--			val &= ~VIDINTCON0_INT_SYSSUBCON;
--		} else {
--			val |= VIDINTCON0_INT_FRAME;
--
--			val &= ~VIDINTCON0_FRAMESEL0_MASK;
--			val |= VIDINTCON0_FRAMESEL0_VSYNC;
--			val &= ~VIDINTCON0_FRAMESEL1_MASK;
--			val |= VIDINTCON0_FRAMESEL1_NONE;
--		}
--
--		writel(val, ctx->regs + VIDINTCON0);
--	}
--
--	return 0;
--}
--
--static void fimd_disable_vblank(struct exynos_drm_crtc *crtc)
--{
--	struct fimd_context *ctx = crtc->ctx;
--	u32 val;
--
--	if (ctx->suspended)
--		return;
--
--	if (test_and_clear_bit(0, &ctx->irq_flags)) {
--		val = readl(ctx->regs + VIDINTCON0);
--
--		val &= ~VIDINTCON0_INT_ENABLE;
--
--		if (ctx->i80_if) {
--			val &= ~VIDINTCON0_INT_I80IFDONE;
--			val &= ~VIDINTCON0_INT_SYSMAINCON;
--			val &= ~VIDINTCON0_INT_SYSSUBCON;
--		} else
--			val &= ~VIDINTCON0_INT_FRAME;
--
--		writel(val, ctx->regs + VIDINTCON0);
--	}
--}
- 
- static void fimd_win_set_pixfmt(struct fimd_context *ctx, unsigned int win)
- {
 -- 
 1.9.2
