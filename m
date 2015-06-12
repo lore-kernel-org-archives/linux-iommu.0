@@ -1,88 +1,203 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v2 1/3] drm/exynos: fimd: ensure proper hw state in
-	fimd_clear_channel()
-Date: Fri, 12 Jun 2015 11:05:23 +0200
-Message-ID: <557AA0D3.8010808@samsung.com>
-References: <1433319984-18683-1-git-send-email-m.szyprowski@samsung.com>
-	<1433319984-18683-2-git-send-email-m.szyprowski@samsung.com>
-	<5579A38C.8040604@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <5579A38C.8040604-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joonyoung Shim <jy0922.shim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Seung-Woo Kim <sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCH v3 (alternative) 1/3] drm/exynos: fimd: ensure proper hw state
+ in fimd_clear_channel()
+Date: Fri, 12 Jun 2015 11:07:17 +0200
+Message-ID: <1434100037-12304-2-git-send-email-m.szyprowski@samsung.com>
+References: <557AA0D3.8010808@samsung.com>
+ <1434100037-12304-1-git-send-email-m.szyprowski@samsung.com>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <1434100037-12304-1-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Inki Dae <inki.dae@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Andrzej Hajda <a.hajda@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-SGVsbG8sCgpPbiAyMDE1LTA2LTExIDE3OjA0LCBJbmtpIERhZSB3cm90ZToKPiBPbiAyMDE164WE
-IDA27JuUIDAz7J28IDE3OjI2LCBNYXJlayBTenlwcm93c2tpIHdyb3RlOgo+PiBPbmUgc2hvdWxk
-IG5vdCBkbyBhbnkgYXNzdW1wdGlvbnMgb24gdGhlIHN0YXJlIG9mIHRoZSBmaW1kIGhhcmR3YXJl
-Cj4+IGR1cmluZyBkcml2ZXIgaW5pdGlhbGl6YXRpb24sIHNvIHRvIHByb3Blcmx5IHJlc2V0IGZp
-bWQgYmVmb3JlIGVuYWJsaW5nCj4+IElPTU1VLCBvbmUgc2hvdWxkIGVuc3VyZSB0aGF0IGFsbCBw
-b3dlciBkb21haW5zIGFuZCBjbG9ja3MgYXJlIHJlYWxseQo+PiBlbmFibGVkLiBUaGlzIHBhdGNo
-IGFkZHMgcG1fcnVudGltZSBhbmQgY2xvY2tzIG1hbmFnZW1lbnQgaW4gdGhlCj4+IGZpbWRfY2xl
-YXJfY2hhbm5lbCgpIGZ1bmN0aW9uIHRvIGVuc3VyZSB0aGF0IGFueSBhY2Nlc3MgdG8gZmltZAo+
-PiByZWdpc3RlcnMgd2lsbCBiZSBwZXJmb3JtZWQgd2l0aCBjbG9ja3MgYW5kIHBvd2VyIGRvbWFp
-bnMgZW5hYmxlZC4KPj4KPj4gU2lnbmVkLW9mZi1ieTogTWFyZWsgU3p5cHJvd3NraSA8bS5zenlw
-cm93c2tpQHNhbXN1bmcuY29tPgo+PiBUZXN0ZWQtYnk6IEphdmllciBNYXJ0aW5leiBDYW5pbGxh
-cyA8amF2aWVyLm1hcnRpbmV6QGNvbGxhYm9yYS5jby51az4KPj4gLS0tCj4+ICAgZHJpdmVycy9n
-cHUvZHJtL2V4eW5vcy9leHlub3NfZHJtX2ZpbWQuYyB8IDIyICsrKysrKysrKysrKysrKysrKy0t
-LS0KPj4gICAxIGZpbGUgY2hhbmdlZCwgMTggaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMoLSkK
-Pj4KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvZ3B1L2RybS9leHlub3MvZXh5bm9zX2RybV9maW1k
-LmMgYi9kcml2ZXJzL2dwdS9kcm0vZXh5bm9zL2V4eW5vc19kcm1fZmltZC5jCj4+IGluZGV4IDk2
-NjE4NTM0MzU4ZS4uM2VjOWQ0Mjk5YTg2IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0v
-ZXh5bm9zL2V4eW5vc19kcm1fZmltZC5jCj4+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS9leHlub3Mv
-ZXh5bm9zX2RybV9maW1kLmMKPj4gQEAgLTI0MiwxMiArMjQyLDIxIEBAIHN0YXRpYyB2b2lkIGZp
-bWRfZW5hYmxlX3NoYWRvd19jaGFubmVsX3BhdGgoc3RydWN0IGZpbWRfY29udGV4dCAqY3R4LAo+
-PiAgIAl3cml0ZWwodmFsLCBjdHgtPnJlZ3MgKyBTSEFET1dDT04pOwo+PiAgIH0KPj4gICAKPj4g
-K3N0YXRpYyBpbnQgZmltZF9lbmFibGVfdmJsYW5rKHN0cnVjdCBleHlub3NfZHJtX2NydGMgKmNy
-dGMpOwo+PiArc3RhdGljIHZvaWQgZmltZF9kaXNhYmxlX3ZibGFuayhzdHJ1Y3QgZXh5bm9zX2Ry
-bV9jcnRjICpjcnRjKTsKPiBZb3UgY2FuIHJlbW92ZSBhYnZvZSBkZWNsYXJhdGlvbnMuIFNlZSB0
-aGUgYmVsb3cgY29tbWVudC4KPgo+PiArCj4+ICAgc3RhdGljIHZvaWQgZmltZF9jbGVhcl9jaGFu
-bmVsKHN0cnVjdCBmaW1kX2NvbnRleHQgKmN0eCkKPj4gICB7Cj4+ICAgCXVuc2lnbmVkIGludCB3
-aW4sIGNoX2VuYWJsZWQgPSAwOwo+PiAgIAo+PiAgIAlEUk1fREVCVUdfS01TKCIlc1xuIiwgX19G
-SUxFX18pOwo+PiAgIAo+PiArCS8qIEhhcmR3YXJlIGlzIGluIHVua25vd24gc3RhdGUsIHNvIGVu
-c3VyZSBpdCBnZXRzIGVuYWJsZWQgcHJvcGVybHkgKi8KPj4gKwlwbV9ydW50aW1lX2dldF9zeW5j
-KGN0eC0+ZGV2KTsKPj4gKwo+PiArCWNsa19wcmVwYXJlX2VuYWJsZShjdHgtPmJ1c19jbGspOwo+
-PiArCWNsa19wcmVwYXJlX2VuYWJsZShjdHgtPmxjZF9jbGspOwo+PiArCj4+ICAgCS8qIENoZWNr
-IGlmIGFueSBjaGFubmVsIGlzIGVuYWJsZWQuICovCj4+ICAgCWZvciAod2luID0gMDsgd2luIDwg
-V0lORE9XU19OUjsgd2luKyspIHsKPj4gICAJCXUzMiB2YWwgPSByZWFkbChjdHgtPnJlZ3MgKyBX
-SU5DT04od2luKSk7Cj4+IEBAIC0yNjUsMTIgKzI3NCwxNyBAQCBzdGF0aWMgdm9pZCBmaW1kX2Ns
-ZWFyX2NoYW5uZWwoc3RydWN0IGZpbWRfY29udGV4dCAqY3R4KQo+PiAgIAo+PiAgIAkvKiBXYWl0
-IGZvciB2c3luYywgYXMgZGlzYWJsZSBjaGFubmVsIHRha2VzIGVmZmVjdCBhdCBuZXh0IHZzeW5j
-ICovCj4+ICAgCWlmIChjaF9lbmFibGVkKSB7Cj4+IC0JCXVuc2lnbmVkIGludCBzdGF0ZSA9IGN0
-eC0+c3VzcGVuZGVkOwo+PiAtCj4+IC0JCWN0eC0+c3VzcGVuZGVkID0gMDsKPj4gKwkJY3R4LT5z
-dXNwZW5kZWQgPSBmYWxzZTsKPj4gKwkJZmltZF9lbmFibGVfdmJsYW5rKGN0eC0+Y3J0Yyk7Cj4g
-SSB0aGluayB5b3UgY2FuIGNhbGwgZW5hYmxlX3ZibGFuayBjYWxsYmFjayBpbnN0ZWFkIG9mCj4g
-ZmltZF9lbmFibGVfdmJsYW5rIGZ1bmN0aW9uIGJlY2F1c2UgY3R4IG9iamVjdCBoYXMgZXh5bm9z
-X2NydGMgb2JqZWN0Lgo+Cj4gaS5lLiwKPiAJCXN0cnVjdCBleHlub3NfZHJtX2NydGNfb3BzICpv
-cHMgPSBjdHgtPmNydGMtPm9wczsKPiAJCS4uLgo+IAkJaWYgKG9wcy0+ZW5hYmxlX3ZibGFuaykK
-PiAJCQlvcHMtPmVuYWJsZV92YmxhbmsoY3R4LT5jcnRjKTsKPiAJCS4uLgoKV2VsbCwgSSBkb24n
-dCBsaWtlIHN1Y2ggaW5kaXJlY3QgY2FsbHMgdG8ga25vd24gZnVuY3Rpb25zLCBidXQgaWYgeW91
-IHByZWZlcgp0aGlzIGFwcHJvYWNoIEkgd2lsbCBzZW5kIGFuIHVwZGF0ZWQgcGF0Y2ggaW4gYSBt
-aW51dGUuIFRoZXJlIGlzIGFsc28gCmFsdGVybmF0aXZlCndheSBvZiBnZXR0aW5nIHJpZCBvZiBm
-b3J3YXJkIGRlY2xhcmF0aW9ucy4gQ29kZSBvZiBmaW1kX2VuYWJsZV92YmxhbmsgYW5kCmZpbWRf
-ZGlzYWJsZV92YmxhbmsgY2FuIGJlIG1vdmVkIGNsb3NlciB0byBmaW1kX3dhaXRfdmJsYW5rIGZ1
-bmN0aW9uLgpJIHdpbGwgYWxzbyBzZW5kIHN1Y2ggYWx0ZXJuYXRpdmUgcGF0Y2guIEZlZWwgZnJl
-ZSB0byBzZWxlY3QgdGhlIG9uZSAKdGhhdCBiZXR0ZXIKZml0cyB5b3VyIHByZWZlcmVuY2VzLgoK
-Pj4gICAJCWZpbWRfd2FpdF9mb3JfdmJsYW5rKGN0eC0+Y3J0Yyk7Cj4+IC0JCWN0eC0+c3VzcGVu
-ZGVkID0gc3RhdGU7Cj4+ICsJCWZpbWRfZGlzYWJsZV92YmxhbmsoY3R4LT5jcnRjKTsKPiBEaXR0
-by4KPgo+IFRoYW5rcywKPiBJbmtpIERhZQo+Cj4+ICsJCWN0eC0+c3VzcGVuZGVkID0gdHJ1ZTsK
-Pj4gICAJfQo+PiArCj4+ICsJY2xrX2Rpc2FibGVfdW5wcmVwYXJlKGN0eC0+bGNkX2Nsayk7Cj4+
-ICsJY2xrX2Rpc2FibGVfdW5wcmVwYXJlKGN0eC0+YnVzX2Nsayk7Cj4+ICsKPj4gKwlwbV9ydW50
-aW1lX3B1dChjdHgtPmRldik7Cj4+ICAgfQo+PiAgIAo+PiAgIHN0YXRpYyBpbnQgZmltZF9pb21t
-dV9hdHRhY2hfZGV2aWNlcyhzdHJ1Y3QgZmltZF9jb250ZXh0ICpjdHgsCj4+Cj4KCkJlc3QgcmVn
-YXJkcwotLSAKTWFyZWsgU3p5cHJvd3NraSwgUGhEClNhbXN1bmcgUiZEIEluc3RpdHV0ZSBQb2xh
-bmQKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11
-IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xp
-c3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+One should not do any assumptions on the stare of the fimd hardware
+during driver initialization, so to properly reset fimd before enabling
+IOMMU, one should ensure that all power domains and clocks are really
+enabled. This patch adds pm_runtime and clocks management in the
+fimd_clear_channel() function to ensure that any access to fimd
+registers will be performed with clocks and power domains enabled.
+
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Tested-by: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
+---
+Changelog:
+v3 (alternative):
+- araranged code by moving fimd_{enable,disable}_vblank functions before
+  fimd_clear_channel to avoid forward declaration usage
+
+v2:
+- rebased onto latest exynos-drm-next branch with atomic mode setting
+  patches applied.
+
+
+ drivers/gpu/drm/exynos/exynos_drm_fimd.c | 130 +++++++++++++++++--------------
+ 1 file changed, 71 insertions(+), 59 deletions(-)
+
+diff --git a/drivers/gpu/drm/exynos/exynos_drm_fimd.c b/drivers/gpu/drm/exynos/exynos_drm_fimd.c
+index 96618534358e..f490895a8b02 100644
+--- a/drivers/gpu/drm/exynos/exynos_drm_fimd.c
++++ b/drivers/gpu/drm/exynos/exynos_drm_fimd.c
+@@ -196,6 +196,62 @@ static inline struct fimd_driver_data *drm_fimd_get_driver_data(
+ 	return (struct fimd_driver_data *)of_id->data;
+ }
+ 
++static int fimd_enable_vblank(struct exynos_drm_crtc *crtc)
++{
++	struct fimd_context *ctx = crtc->ctx;
++	u32 val;
++
++	if (ctx->suspended)
++		return -EPERM;
++
++	if (!test_and_set_bit(0, &ctx->irq_flags)) {
++		val = readl(ctx->regs + VIDINTCON0);
++
++		val |= VIDINTCON0_INT_ENABLE;
++
++		if (ctx->i80_if) {
++			val |= VIDINTCON0_INT_I80IFDONE;
++			val |= VIDINTCON0_INT_SYSMAINCON;
++			val &= ~VIDINTCON0_INT_SYSSUBCON;
++		} else {
++			val |= VIDINTCON0_INT_FRAME;
++
++			val &= ~VIDINTCON0_FRAMESEL0_MASK;
++			val |= VIDINTCON0_FRAMESEL0_VSYNC;
++			val &= ~VIDINTCON0_FRAMESEL1_MASK;
++			val |= VIDINTCON0_FRAMESEL1_NONE;
++		}
++
++		writel(val, ctx->regs + VIDINTCON0);
++	}
++
++	return 0;
++}
++
++static void fimd_disable_vblank(struct exynos_drm_crtc *crtc)
++{
++	struct fimd_context *ctx = crtc->ctx;
++	u32 val;
++
++	if (ctx->suspended)
++		return;
++
++	if (test_and_clear_bit(0, &ctx->irq_flags)) {
++		val = readl(ctx->regs + VIDINTCON0);
++
++		val &= ~VIDINTCON0_INT_ENABLE;
++
++		if (ctx->i80_if) {
++			val &= ~VIDINTCON0_INT_I80IFDONE;
++			val &= ~VIDINTCON0_INT_SYSMAINCON;
++			val &= ~VIDINTCON0_INT_SYSSUBCON;
++		} else
++			val &= ~VIDINTCON0_INT_FRAME;
++
++		writel(val, ctx->regs + VIDINTCON0);
++	}
++}
++
+ static void fimd_wait_for_vblank(struct exynos_drm_crtc *crtc)
+ {
+ 	struct fimd_context *ctx = crtc->ctx;
+@@ -248,6 +304,12 @@ static void fimd_clear_channel(struct fimd_context *ctx)
+ 
+ 	DRM_DEBUG_KMS("%s\n", __FILE__);
+ 
++	/* Hardware is in unknown state, so ensure it gets enabled properly */
++	pm_runtime_get_sync(ctx->dev);
++
++	clk_prepare_enable(ctx->bus_clk);
++	clk_prepare_enable(ctx->lcd_clk);
++
+ 	/* Check if any channel is enabled. */
+ 	for (win = 0; win < WINDOWS_NR; win++) {
+ 		u32 val = readl(ctx->regs + WINCON(win));
+@@ -265,12 +327,17 @@ static void fimd_clear_channel(struct fimd_context *ctx)
+ 
+ 	/* Wait for vsync, as disable channel takes effect at next vsync */
+ 	if (ch_enabled) {
+-		unsigned int state = ctx->suspended;
+-
+-		ctx->suspended = 0;
++		ctx->suspended = false;
++		fimd_enable_vblank(ctx->crtc);
+ 		fimd_wait_for_vblank(ctx->crtc);
+-		ctx->suspended = state;
++		fimd_disable_vblank(ctx->crtc);
++		ctx->suspended = true;
+ 	}
++
++	clk_disable_unprepare(ctx->lcd_clk);
++	clk_disable_unprepare(ctx->bus_clk);
++
++	pm_runtime_put(ctx->dev);
+ }
+ 
+ static int fimd_iommu_attach_devices(struct fimd_context *ctx,
+@@ -434,61 +501,6 @@ static void fimd_commit(struct exynos_drm_crtc *crtc)
+ 	writel(val, ctx->regs + VIDCON0);
+ }
+ 
+-static int fimd_enable_vblank(struct exynos_drm_crtc *crtc)
+-{
+-	struct fimd_context *ctx = crtc->ctx;
+-	u32 val;
+-
+-	if (ctx->suspended)
+-		return -EPERM;
+-
+-	if (!test_and_set_bit(0, &ctx->irq_flags)) {
+-		val = readl(ctx->regs + VIDINTCON0);
+-
+-		val |= VIDINTCON0_INT_ENABLE;
+-
+-		if (ctx->i80_if) {
+-			val |= VIDINTCON0_INT_I80IFDONE;
+-			val |= VIDINTCON0_INT_SYSMAINCON;
+-			val &= ~VIDINTCON0_INT_SYSSUBCON;
+-		} else {
+-			val |= VIDINTCON0_INT_FRAME;
+-
+-			val &= ~VIDINTCON0_FRAMESEL0_MASK;
+-			val |= VIDINTCON0_FRAMESEL0_VSYNC;
+-			val &= ~VIDINTCON0_FRAMESEL1_MASK;
+-			val |= VIDINTCON0_FRAMESEL1_NONE;
+-		}
+-
+-		writel(val, ctx->regs + VIDINTCON0);
+-	}
+-
+-	return 0;
+-}
+-
+-static void fimd_disable_vblank(struct exynos_drm_crtc *crtc)
+-{
+-	struct fimd_context *ctx = crtc->ctx;
+-	u32 val;
+-
+-	if (ctx->suspended)
+-		return;
+-
+-	if (test_and_clear_bit(0, &ctx->irq_flags)) {
+-		val = readl(ctx->regs + VIDINTCON0);
+-
+-		val &= ~VIDINTCON0_INT_ENABLE;
+-
+-		if (ctx->i80_if) {
+-			val &= ~VIDINTCON0_INT_I80IFDONE;
+-			val &= ~VIDINTCON0_INT_SYSMAINCON;
+-			val &= ~VIDINTCON0_INT_SYSSUBCON;
+-		} else
+-			val &= ~VIDINTCON0_INT_FRAME;
+-
+-		writel(val, ctx->regs + VIDINTCON0);
+-	}
+-}
+ 
+ static void fimd_win_set_pixfmt(struct fimd_context *ctx, unsigned int win)
+ {
+-- 
+1.9.2
