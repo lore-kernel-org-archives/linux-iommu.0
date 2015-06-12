@@ -1,26 +1,23 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
+From: Inki Dae <inki.dae@samsung.com>
 Subject: Re: [PATCH v3 (alternative) 1/3] drm/exynos: fimd: ensure proper hw
  state in fimd_clear_channel()
-Date: Fri, 12 Jun 2015 15:00:53 +0200
-Message-ID: <557AD805.2050902@samsung.com>
+Date: Fri, 12 Jun 2015 22:51:03 +0900
+Message-ID: <557AE3C7.7090804@samsung.com>
 References: <557AA0D3.8010808@samsung.com>
  <1434100037-12304-1-git-send-email-m.szyprowski@samsung.com>
  <1434100037-12304-2-git-send-email-m.szyprowski@samsung.com>
  <557ACC51.9090109@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8;
-	format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 In-reply-to: <557ACC51.9090109@samsung.com>
 Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Inki Dae <inki.dae@samsung.com>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
 Cc: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Andrzej Hajda <a.hajda@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
-
-On 2015-06-12 14:10, Inki Dae wrote:
+On 2015=EB=85=84 06=EC=9B=94 12=EC=9D=BC 21:10, Inki Dae wrote:
 > On 2015=EB=85=84 06=EC=9B=94 12=EC=9D=BC 18:07, Marek Szyprowski wrot=
 e:
 >> One should not do any assumptions on the stare of the fimd hardware
@@ -40,19 +37,20 @@ y
 >> v3 (alternative):
 >> - araranged code by moving fimd_{enable,disable}_vblank functions be=
 fore
->>    fimd_clear_channel to avoid forward declaration usage
+>>   fimd_clear_channel to avoid forward declaration usage
+>=20
 > Marek,
->
+>=20
 > For the iommu and atomic feature test, I merged below patches in
 > addition and tested them.
->
+>=20
 > [PATCH v2 1/3] drm/exynos: remove to call mixer_wait_for_vblank
 > [PATCH v2 2/3] drm/exynos: remove chained calls to enable
 > [PATCH v2 3/3] drm/exynos: initialize VIDCON0 when fimd is disabled
->
->
+>=20
+>=20
 > However, I see below one warning log,
->
+>=20
 > [    1.227115] [drm] Initialized drm 1.1.0 20060810
 > [    1.235852] exynos-drm exynos-drm: bound exynos-drm-vidi (ops
 > vidi_component_ops)
@@ -101,14 +99,14 @@ fore
 > (__handle_domain_irq+0x7c/0xec)
 > [    1.374300] [<c0060248>] (__handle_domain_irq) from [<c0009434>]
 > (gic_handle_irq+0x30/0x68)
->
->
+>=20
+>=20
 > And below one page fault error when modetest is terminated,
->
+>=20
 > # modetest -M exynos -v -s 31@29:720x1280
 > setting mode 720x1280-60Hz@XR24 on connectors 31, crtc 29
 > freq: 59.99Hz
->
+>=20
 > [   34.831025] PAGE FAULT occurred at 0x20400000 by 11e20000.sysmmu(P=
 age
 > table base: 0x6e324000)
@@ -118,7 +116,7 @@ age
 > [   34.851614] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP ARM
 > [   34.857428] Modules linked in:
 > [   34.860472] CPU: 0 PID: 6 Comm: kworker/u8:0 Tainted: G        W
->    4.1.0-rc4-00574-gf8eb363-dirty #1412
+>   4.1.0-rc4-00574-gf8eb363-dirty #1412
 > [   34.870188] Hardware name: SAMSUNG EXYNOS (Flattened Device Tree)
 > [   34.876273] Workqueue: events_unbound async_run_entry_fn
 > [   34.881560] task: ee879540 ti: ee8a2000 task.ti: ee8a2000
@@ -221,32 +219,256 @@ a000
 > (gic_handle_irq+0x30/0x68)
 > [   35.281366] [<c0009434>] (gic_handle_irq) from [<c0012ec0>]
 > (__irq_svc+0x40/0x74)
->
+>=20
 > Could you check the iommu with atomic feature? I tested these feature=
 s
 > on trats2 board, and enabled one more crtc drivers - HDMI, VIDI, and =
 =46IMD.
-
-I've tested it on Trats2 with FIMD and Odroid U3 with HDMI and I didn't=
-=20
-manage to
-trigger page fault issue.
-
-I've pushed the branch I've used for testing here:
-https://git.linaro.org/people/marek.szyprowski/linux-srpol.git=20
-v4.1-exynos-drm-iommu
-
+>=20
 > To other Exynos guys,
 > could you guys check the same issues also? If you give some helps to =
 us,
 > we'd be glad.
->
+
+I resolved above page fault issue with below patch:
+	[PATCH] drm/exynos: fimd: fix page fault issue with iommu
+
+However, I still see above warning log. The problem is because
+dev->num_crtcs is 0 when drm_handle_vblank function is called by fimd
+irq handler.
+
+So I added one line for num_crtcs to be updated at end of
+exynos_drm_crtc_create function like below,
+	drm_dev->num_crtcs =3D drm_dev->mode_config.num_crtc;
+
+However, with this, kernel booting is halted. See the below booting mes=
+sage,
+
+[    1.226408] [drm] Initialized drm 1.1.0 20060810
+[    1.235144] exynos-drm exynos-drm: bound exynos-drm-vidi (ops
+vidi_component_ops)
+[    1.250154] BUG: spinlock bad magic on CPU#0, swapper/0/0
+[    1.254079]  lock: 0xee188128, .magic: 00000000, .owner: <none>/-1,
+=2Eowner_cpu: 0
+[    1.261544] CPU: 0 PID: 0 Comm: swapper/0 Not tainted
+4.1.0-rc4-00575-gfedbaf7-dirty #1433
+[    1.269783] Hardware name: SAMSUNG EXYNOS (Flattened Device Tree)
+[    1.275884] [<c0015464>] (unwind_backtrace) from [<c00123c0>]
+(show_stack+0x10/0x14)
+[    1.283595] [<c00123c0>] (show_stack) from [<c0528f94>]
+(dump_stack+0x84/0xc4)
+[    1.288136] exynos-sysmmu 11e20000.sysmmu: Disabled
+[    1.288161] exynos4-fb 11c00000.fimd: exynos_iommu_detach_device:
+Detached IOMMU with pgtable 0x6ea50000
+[    1.288180] exynos-sysmmu 11e20000.sysmmu: Enabled
+[    1.288187] exynos4-fb 11c00000.fimd: exynos_iommu_attach_device:
+Attached IOMMU with pgtable 0x6e3b4000
+[    1.288201] exynos-drm exynos-drm: bound 11c00000.fimd (ops
+fimd_component_ops)
+[    1.288538] exynos-drm exynos-drm: bound 11c80000.dsi (ops
+exynos_dsi_component_ops)
+[    1.288543] [drm] Supports vblank timestamp caching Rev 2 (21.10.201=
+3).
+[    1.288547] [drm] No driver support for vblank timestamp query.
+[    1.288588] [drm] Initialized exynos 1.0.0 20110530 on minor 0
+[    1.289957] panel_s6e8aa0 11c80000.dsi.0: GPIO lookup for consumer r=
+eset
+[    1.289963] panel_s6e8aa0 11c80000.dsi.0: using device tree for GPIO
+lookup
+[    1.290003] of_get_named_gpiod_flags: parsed 'reset-gpios' property
+of node '/dsi@11C80000/panel@0[0]' - status (0)
+
+We would need to resolve this issue somehow.
+
+Thanks,
+Inki Dae
+
+>=20
 > Thanks,
 > Inki Dae
-
-> > (...)
-
-Best regards
---=20
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+>=20
+>>
+>> v2:
+>> - rebased onto latest exynos-drm-next branch with atomic mode settin=
+g
+>>   patches applied.
+>>
+>>
+>>  drivers/gpu/drm/exynos/exynos_drm_fimd.c | 130 +++++++++++++++++---=
+-----------
+>>  1 file changed, 71 insertions(+), 59 deletions(-)
+>>
+>> diff --git a/drivers/gpu/drm/exynos/exynos_drm_fimd.c b/drivers/gpu/=
+drm/exynos/exynos_drm_fimd.c
+>> index 96618534358e..f490895a8b02 100644
+>> --- a/drivers/gpu/drm/exynos/exynos_drm_fimd.c
+>> +++ b/drivers/gpu/drm/exynos/exynos_drm_fimd.c
+>> @@ -196,6 +196,62 @@ static inline struct fimd_driver_data *drm_fimd=
+_get_driver_data(
+>>  	return (struct fimd_driver_data *)of_id->data;
+>>  }
+>> =20
+>> +static int fimd_enable_vblank(struct exynos_drm_crtc *crtc)
+>> +{
+>> +	struct fimd_context *ctx =3D crtc->ctx;
+>> +	u32 val;
+>> +
+>> +	if (ctx->suspended)
+>> +		return -EPERM;
+>> +
+>> +	if (!test_and_set_bit(0, &ctx->irq_flags)) {
+>> +		val =3D readl(ctx->regs + VIDINTCON0);
+>> +
+>> +		val |=3D VIDINTCON0_INT_ENABLE;
+>> +
+>> +		if (ctx->i80_if) {
+>> +			val |=3D VIDINTCON0_INT_I80IFDONE;
+>> +			val |=3D VIDINTCON0_INT_SYSMAINCON;
+>> +			val &=3D ~VIDINTCON0_INT_SYSSUBCON;
+>> +		} else {
+>> +			val |=3D VIDINTCON0_INT_FRAME;
+>> +
+>> +			val &=3D ~VIDINTCON0_FRAMESEL0_MASK;
+>> +			val |=3D VIDINTCON0_FRAMESEL0_VSYNC;
+>> +			val &=3D ~VIDINTCON0_FRAMESEL1_MASK;
+>> +			val |=3D VIDINTCON0_FRAMESEL1_NONE;
+>> +		}
+>> +
+>> +		writel(val, ctx->regs + VIDINTCON0);
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static void fimd_disable_vblank(struct exynos_drm_crtc *crtc)
+>> +{
+>> +	struct fimd_context *ctx =3D crtc->ctx;
+>> +	u32 val;
+>> +
+>> +	if (ctx->suspended)
+>> +		return;
+>> +
+>> +	if (test_and_clear_bit(0, &ctx->irq_flags)) {
+>> +		val =3D readl(ctx->regs + VIDINTCON0);
+>> +
+>> +		val &=3D ~VIDINTCON0_INT_ENABLE;
+>> +
+>> +		if (ctx->i80_if) {
+>> +			val &=3D ~VIDINTCON0_INT_I80IFDONE;
+>> +			val &=3D ~VIDINTCON0_INT_SYSMAINCON;
+>> +			val &=3D ~VIDINTCON0_INT_SYSSUBCON;
+>> +		} else
+>> +			val &=3D ~VIDINTCON0_INT_FRAME;
+>> +
+>> +		writel(val, ctx->regs + VIDINTCON0);
+>> +	}
+>> +}
+>> +
+>>  static void fimd_wait_for_vblank(struct exynos_drm_crtc *crtc)
+>>  {
+>>  	struct fimd_context *ctx =3D crtc->ctx;
+>> @@ -248,6 +304,12 @@ static void fimd_clear_channel(struct fimd_cont=
+ext *ctx)
+>> =20
+>>  	DRM_DEBUG_KMS("%s\n", __FILE__);
+>> =20
+>> +	/* Hardware is in unknown state, so ensure it gets enabled properl=
+y */
+>> +	pm_runtime_get_sync(ctx->dev);
+>> +
+>> +	clk_prepare_enable(ctx->bus_clk);
+>> +	clk_prepare_enable(ctx->lcd_clk);
+>> +
+>>  	/* Check if any channel is enabled. */
+>>  	for (win =3D 0; win < WINDOWS_NR; win++) {
+>>  		u32 val =3D readl(ctx->regs + WINCON(win));
+>> @@ -265,12 +327,17 @@ static void fimd_clear_channel(struct fimd_con=
+text *ctx)
+>> =20
+>>  	/* Wait for vsync, as disable channel takes effect at next vsync *=
+/
+>>  	if (ch_enabled) {
+>> -		unsigned int state =3D ctx->suspended;
+>> -
+>> -		ctx->suspended =3D 0;
+>> +		ctx->suspended =3D false;
+>> +		fimd_enable_vblank(ctx->crtc);
+>>  		fimd_wait_for_vblank(ctx->crtc);
+>> -		ctx->suspended =3D state;
+>> +		fimd_disable_vblank(ctx->crtc);
+>> +		ctx->suspended =3D true;
+>>  	}
+>> +
+>> +	clk_disable_unprepare(ctx->lcd_clk);
+>> +	clk_disable_unprepare(ctx->bus_clk);
+>> +
+>> +	pm_runtime_put(ctx->dev);
+>>  }
+>> =20
+>>  static int fimd_iommu_attach_devices(struct fimd_context *ctx,
+>> @@ -434,61 +501,6 @@ static void fimd_commit(struct exynos_drm_crtc =
+*crtc)
+>>  	writel(val, ctx->regs + VIDCON0);
+>>  }
+>> =20
+>> -static int fimd_enable_vblank(struct exynos_drm_crtc *crtc)
+>> -{
+>> -	struct fimd_context *ctx =3D crtc->ctx;
+>> -	u32 val;
+>> -
+>> -	if (ctx->suspended)
+>> -		return -EPERM;
+>> -
+>> -	if (!test_and_set_bit(0, &ctx->irq_flags)) {
+>> -		val =3D readl(ctx->regs + VIDINTCON0);
+>> -
+>> -		val |=3D VIDINTCON0_INT_ENABLE;
+>> -
+>> -		if (ctx->i80_if) {
+>> -			val |=3D VIDINTCON0_INT_I80IFDONE;
+>> -			val |=3D VIDINTCON0_INT_SYSMAINCON;
+>> -			val &=3D ~VIDINTCON0_INT_SYSSUBCON;
+>> -		} else {
+>> -			val |=3D VIDINTCON0_INT_FRAME;
+>> -
+>> -			val &=3D ~VIDINTCON0_FRAMESEL0_MASK;
+>> -			val |=3D VIDINTCON0_FRAMESEL0_VSYNC;
+>> -			val &=3D ~VIDINTCON0_FRAMESEL1_MASK;
+>> -			val |=3D VIDINTCON0_FRAMESEL1_NONE;
+>> -		}
+>> -
+>> -		writel(val, ctx->regs + VIDINTCON0);
+>> -	}
+>> -
+>> -	return 0;
+>> -}
+>> -
+>> -static void fimd_disable_vblank(struct exynos_drm_crtc *crtc)
+>> -{
+>> -	struct fimd_context *ctx =3D crtc->ctx;
+>> -	u32 val;
+>> -
+>> -	if (ctx->suspended)
+>> -		return;
+>> -
+>> -	if (test_and_clear_bit(0, &ctx->irq_flags)) {
+>> -		val =3D readl(ctx->regs + VIDINTCON0);
+>> -
+>> -		val &=3D ~VIDINTCON0_INT_ENABLE;
+>> -
+>> -		if (ctx->i80_if) {
+>> -			val &=3D ~VIDINTCON0_INT_I80IFDONE;
+>> -			val &=3D ~VIDINTCON0_INT_SYSMAINCON;
+>> -			val &=3D ~VIDINTCON0_INT_SYSSUBCON;
+>> -		} else
+>> -			val &=3D ~VIDINTCON0_INT_FRAME;
+>> -
+>> -		writel(val, ctx->regs + VIDINTCON0);
+>> -	}
+>> -}
+>> =20
+>>  static void fimd_win_set_pixfmt(struct fimd_context *ctx, unsigned =
+int win)
+>>  {
+>>
+>=20
