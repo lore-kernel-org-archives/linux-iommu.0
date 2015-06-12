@@ -1,14 +1,15 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC 0/6] vSMMU initialization
-Date: Fri, 12 Jun 2015 15:23:29 +0100
-Message-ID: <20150612142328.GF12174@arm.com>
-References: <1434118810-28219-1-git-send-email-b.reynal@virtualopensystems.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 0/4] More cleanups and fixes for Intel VT-d
+Date: Fri, 12 Jun 2015 22:29:27 +0200
+Message-ID: <20150612202927.GK20384@8bytes.org>
+References: <1434030463-942-1-git-send-email-joro@8bytes.org>
+	<1434038066.3907.85.camel@infradead.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1434118810-28219-1-git-send-email-b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+In-Reply-To: <1434038066.3907.85.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,25 +19,26 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org" <qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org>
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, zhen-hual-VXdhtT5mjnY@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 12, 2015 at 03:20:04PM +0100, Baptiste Reynal wrote:
-> The ARM SMMU has support for 2-stages address translations, allowing a virtual
-> address to be translated at two levels:
-> - Stage 1 translates a virtual address (VA) into an intermediate physical
-> address (IPA)
-> - Stage 2 translates an IPA into a physical address (PA)
-> 
-> Will Deacon introduced a virtual SMMU interface for KVM, which gives a virtual
-> machine the possibility to use an IOMMU with native drivers. While the VM will
-> program the first stage of translation (stage 1), the interface will program
-> the second (stage 2) on the physical SMMU.
+On Thu, Jun 11, 2015 at 04:54:26PM +0100, David Woodhouse wrote:
+> It looks like the original kdump patch set has basically now been
+> rewritten. Perhaps the best thing to do is for Zhenhua to resubmit an
+> updated and clean version rather than preserving that
+> churn?
 
-Please note that I have no plans to merge the kernel-side of this at the
-moment. It was merely an exploratory tool to see what a non-PV vSMMU
-implementation might look like and certainly not intended to be used in
-anger.
+Here is a cleaned up version:
 
-Will
+	git://git.kernel.org/pub/scm/linux/kernel/git/joro/linux.git vt-d-kdump
+
+It is based on v4.1-rc7 and in my testing it works as before. I also
+implemented support for copying over extended root-entrys and context
+tables.
+
+Baoquan, Zhen-Hua, can you please give it a test too? I plan to rebuild
+the current x86/vt-d branch with this cleaned up version.
+
+
+	Joerg
