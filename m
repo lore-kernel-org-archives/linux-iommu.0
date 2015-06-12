@@ -1,11 +1,13 @@
 From: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [RFC 0/6] vSMMU initialization
-Date: Fri, 12 Jun 2015 16:20:04 +0200
-Message-ID: <1434118810-28219-1-git-send-email-b.reynal@virtualopensystems.com>
+Subject: [RFC 1/6] headers sync
+Date: Fri, 12 Jun 2015 16:20:05 +0200
+Message-ID: <1434118810-28219-2-git-send-email-b.reynal@virtualopensystems.com>
+References: <1434118810-28219-1-git-send-email-b.reynal@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1434118810-28219-1-git-send-email-b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,52 +21,43 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, qemu-dev
 Cc: tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The ARM SMMU has support for 2-stages address translations, allowing a virtual
-address to be translated at two levels:
-- Stage 1 translates a virtual address (VA) into an intermediate physical
-address (IPA)
-- Stage 2 translates an IPA into a physical address (PA)
+Signed-off-by: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+---
+ linux-headers/linux/kvm.h | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-Will Deacon introduced a virtual SMMU interface for KVM, which gives a virtual
-machine the possibility to use an IOMMU with native drivers. While the VM will
-program the first stage of translation (stage 1), the interface will program
-the second (stage 2) on the physical SMMU.
-
-This RFC brings support for the vSMMU on QEMU-side, introducing the code for
-vSMMU initialization and the device tree operations needed to attach devices
-to it.
-
-The main purpose of such vSMMU device is to allow VFIO devices to benefit
-from an IOMMU on the guest side, for userspace drivers or nested VFIO.
-
-It is an early state of development so:
-- Interrupts are not handled for now
-- Only one device can be bound to the vSMMU
-
-I'm open to any comments or suggestions.
-
-Baptiste Reynal (6):
-  headers sync
-  hw/core/platform-bus: initialization notifier
-  hw/core/platform-bus: add base_address field
-  hw/vfio: vsmmu device
-  hw/arm/sysbus-fdt: enable vsmmu dynamic instantiation
-  hw/arm/sysbus-fdt: add smmu masters in device tree
-
- hw/arm/sysbus-fdt.c             |  78 ++++++++++++++++++++
- hw/arm/virt.c                   |   4 +
- hw/core/platform-bus.c          |  13 ++++
- hw/vfio/Makefile.objs           |   1 +
- hw/vfio/common.c                |   8 +-
- hw/vfio/platform.c              |   2 +
- hw/vfio/smmu.c                  | 157 ++++++++++++++++++++++++++++++++++++++++
- include/hw/platform-bus.h       |   3 +
- include/hw/vfio/vfio-platform.h |   1 +
- include/hw/vfio/vfio-smmu.h     |  50 +++++++++++++
- linux-headers/linux/kvm.h       |  15 ++++
- 11 files changed, 330 insertions(+), 2 deletions(-)
- create mode 100644 hw/vfio/smmu.c
- create mode 100644 include/hw/vfio/vfio-smmu.h
-
+diff --git a/linux-headers/linux/kvm.h b/linux-headers/linux/kvm.h
+index fad9e5c..d48d7b1 100644
+--- a/linux-headers/linux/kvm.h
++++ b/linux-headers/linux/kvm.h
+@@ -1003,6 +1003,19 @@ struct kvm_device_attr {
+ #define   KVM_DEV_VFIO_GROUP_ADD			1
+ #define   KVM_DEV_VFIO_GROUP_DEL			2
+ 
++#define  KVM_DEV_ARM_SMMU_V2_CFG		1
++#define   KVM_DEV_ARM_SMMU_V2_CFG_INIT			1
++#define   KVM_DEV_ARM_SMMU_V2_CFG_IRQ			2
++#define   KVM_DEV_ARM_SMMU_V2_CFG_SIZE			3
++#define  KVM_DEV_ARM_SMMU_V2_VFIO		2
++#define   KVM_DEV_ARM_SMMU_V2_VFIO_GROUP_ADD		1
++#define   KVM_DEV_ARM_SMMU_V2_VFIO_GROUP_DEL		2
++
++struct arm_smmu_v2_vfio_group_sid {
++	__u32	fd;	/* file descriptor of the VFIO group */
++	__u16	sid;
++};
++
+ enum kvm_device_type {
+ 	KVM_DEV_TYPE_FSL_MPIC_20	= 1,
+ #define KVM_DEV_TYPE_FSL_MPIC_20	KVM_DEV_TYPE_FSL_MPIC_20
+@@ -1018,6 +1031,8 @@ enum kvm_device_type {
+ #define KVM_DEV_TYPE_FLIC		KVM_DEV_TYPE_FLIC
+ 	KVM_DEV_TYPE_ARM_VGIC_V3,
+ #define KVM_DEV_TYPE_ARM_VGIC_V3	KVM_DEV_TYPE_ARM_VGIC_V3
++	KVM_DEV_TYPE_ARM_SMMU_V2,
++#define KVM_DEV_TYPE_ARM_SMMU_V2	KVM_DEV_TYPE_ARM_SMMU_V2
+ 	KVM_DEV_TYPE_MAX,
+ };
+ 
 -- 
 2.4.3
