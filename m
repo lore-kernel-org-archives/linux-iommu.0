@@ -1,15 +1,13 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 0/4] More cleanups and fixes for Intel VT-d
-Date: Fri, 12 Jun 2015 22:29:27 +0200
-Message-ID: <20150612202927.GK20384@8bytes.org>
-References: <1434030463-942-1-git-send-email-joro@8bytes.org>
-	<1434038066.3907.85.camel@infradead.org>
+Subject: [PATCH 04/19] iommu/vt-d: Detect pre enabled translation
+Date: Sat, 13 Jun 2015 08:47:12 +0200
+Message-ID: <1434178047-17809-5-git-send-email-joro@8bytes.org>
+References: <1434178047-17809-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1434038066.3907.85.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+In-Reply-To: <1434178047-17809-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,26 +17,80 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, zhen-hual-VXdhtT5mjnY@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, jroedel-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, zhen-hual-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jun 11, 2015 at 04:54:26PM +0100, David Woodhouse wrote:
-> It looks like the original kdump patch set has basically now been
-> rewritten. Perhaps the best thing to do is for Zhenhua to resubmit an
-> updated and clean version rather than preserving that
-> churn?
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Here is a cleaned up version:
+Add code to detect whether translation is already enabled in
+the IOMMU. Save this state in a flags field added to
+struct intel_iommu.
 
-	git://git.kernel.org/pub/scm/linux/kernel/git/joro/linux.git vt-d-kdump
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c | 19 +++++++++++++++++++
+ include/linux/intel-iommu.h |  4 ++++
+ 2 files changed, 23 insertions(+)
 
-It is based on v4.1-rc7 and in my testing it works as before. I also
-implemented support for copying over extended root-entrys and context
-tables.
-
-Baoquan, Zhen-Hua, can you please give it a test too? I plan to rebuild
-the current x86/vt-d branch with this cleaned up version.
-
-
-	Joerg
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index f82918e..467414b 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -435,6 +435,20 @@ static LIST_HEAD(device_domain_list);
+ 
+ static const struct iommu_ops intel_iommu_ops;
+ 
++static bool translation_pre_enabled(struct intel_iommu *iommu)
++{
++	return (iommu->flags & VTD_FLAG_TRANS_PRE_ENABLED);
++}
++
++static void init_translation_status(struct intel_iommu *iommu)
++{
++	u32 gsts;
++
++	gsts = readl(iommu->reg + DMAR_GSTS_REG);
++	if (gsts & DMA_GSTS_TES)
++		iommu->flags |= VTD_FLAG_TRANS_PRE_ENABLED;
++}
++
+ /* Convert generic 'struct iommu_domain to private struct dmar_domain */
+ static struct dmar_domain *to_dmar_domain(struct iommu_domain *dom)
+ {
+@@ -2789,6 +2803,11 @@ static int __init init_dmars(void)
+ 		if (ret)
+ 			goto free_iommu;
+ 
++		init_translation_status(iommu);
++
++		if (translation_pre_enabled(iommu))
++			pr_info("Translation already enabled - trying to copy translation structures\n");
++
+ 		/*
+ 		 * TBD:
+ 		 * we could share the same root & context tables
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 796ef96..fff87f1 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -319,6 +319,9 @@ enum {
+ 	MAX_SR_DMAR_REGS
+ };
+ 
++#define VTD_FLAG_TRANS_PRE_ENABLED	(1 << 0)
++#define VTD_FLAG_IRQ_REMAP_PRE_ENABLED	(1 << 1)
++
+ struct intel_iommu {
+ 	void __iomem	*reg; /* Pointer to hardware regs, virtual addr */
+ 	u64 		reg_phys; /* physical address of hw register set */
+@@ -350,6 +353,7 @@ struct intel_iommu {
+ #endif
+ 	struct device	*iommu_dev; /* IOMMU-sysfs device */
+ 	int		node;
++	u32		flags;      /* Software defined flags */
+ };
+ 
+ static inline void __iommu_flush_cache(
+-- 
+1.9.1
