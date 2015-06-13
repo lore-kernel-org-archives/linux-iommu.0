@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 17/19] iommu/vt-d: Copy IR table from old kernel when in kdump
-	mode
-Date: Sat, 13 Jun 2015 08:47:25 +0200
-Message-ID: <1434178047-17809-18-git-send-email-joro@8bytes.org>
+Subject: [PATCH 16/19] iommu/vt-d: Set IRTA in intel_setup_irq_remapping
+Date: Sat, 13 Jun 2015 08:47:24 +0200
+Message-ID: <1434178047-17809-17-git-send-email-joro@8bytes.org>
 References: <1434178047-17809-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,131 +23,82 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-When we are booting into a kdump kernel and find IR enabled,
-copy over the contents of the previous IR table so that
-spurious interrupts will not be target aborted.
+This way we can give the hardware the new IR table right
+after it has been allocated and initialized.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c | 70 +++++++++++++++++++++++++++++++++++++
- include/linux/intel-iommu.h         |  1 +
- 2 files changed, 71 insertions(+)
+ drivers/iommu/intel_irq_remapping.c | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 8497028..2a90121 100644
+index f1711836..8497028 100644
 --- a/drivers/iommu/intel_irq_remapping.c
 +++ b/drivers/iommu/intel_irq_remapping.c
-@@ -11,6 +11,7 @@
- #include <linux/irq.h>
- #include <linux/intel-iommu.h>
- #include <linux/acpi.h>
-+#include <linux/crash_dump.h>
- #include <asm/io_apic.h>
- #include <asm/smp.h>
- #include <asm/cpu.h>
-@@ -54,8 +55,28 @@ static struct hpet_scope ir_hpet[MAX_HPET_TBS];
-  */
- static DEFINE_RAW_SPINLOCK(irq_2_ir_lock);
+@@ -428,9 +428,9 @@ static int set_msi_sid(struct irte *irte, struct pci_dev *dev)
  
-+static void iommu_disable_irq_remapping(struct intel_iommu *iommu);
- static int __init parse_ioapics_under_ir(void);
- 
-+static bool ir_pre_enabled(struct intel_iommu *iommu)
-+{
-+	return (iommu->flags & VTD_FLAG_IRQ_REMAP_PRE_ENABLED);
-+}
-+
-+static void clear_ir_pre_enabled(struct intel_iommu *iommu)
-+{
-+	iommu->flags &= ~VTD_FLAG_IRQ_REMAP_PRE_ENABLED;
-+}
-+
-+static void init_ir_status(struct intel_iommu *iommu)
-+{
-+	u32 gsts;
-+
-+	gsts = readl(iommu->reg + DMAR_GSTS_REG);
-+	if (gsts & DMA_GSTS_IRES)
-+		iommu->flags |= VTD_FLAG_IRQ_REMAP_PRE_ENABLED;
-+}
-+
- static struct irq_2_iommu *irq_2_iommu(unsigned int irq)
- {
- 	struct irq_cfg *cfg = irq_cfg(irq);
-@@ -426,6 +447,44 @@ static int set_msi_sid(struct irte *irte, struct pci_dev *dev)
- 	return 0;
- }
- 
-+static int iommu_load_old_irte(struct intel_iommu *iommu)
-+{
-+	struct irte *old_ir_table;
-+	phys_addr_t irt_phys;
-+	size_t size;
-+	u64 irta;
-+
-+	if (!is_kdump_kernel()) {
-+		pr_warn("IRQ remapping was enabled on %s but we are not in kdump mode\n",
-+			iommu->name);
-+		clear_ir_pre_enabled(iommu);
-+		iommu_disable_irq_remapping(iommu);
-+		return -EINVAL;
-+	}
-+
-+	/* Check whether the old ir-table has the same size as ours */
-+	irta = dmar_readq(iommu->reg + DMAR_IRTA_REG);
-+	if ((irta & INTR_REMAP_TABLE_REG_SIZE_MASK)
-+	     != INTR_REMAP_TABLE_REG_SIZE)
-+		return -EINVAL;
-+
-+	irt_phys = irta & VTD_PAGE_MASK;
-+	size     = INTR_REMAP_TABLE_ENTRIES*sizeof(struct irte);
-+
-+	/* Map the old IR table */
-+	old_ir_table = ioremap_cache(irt_phys, size);
-+	if (!old_ir_table)
-+		return -ENOMEM;
-+
-+	/* Copy data over */
-+	memcpy(iommu->ir_table->base, old_ir_table, size);
-+
-+	__iommu_flush_cache(iommu, iommu->ir_table->base, size);
-+
-+	return 0;
-+}
-+
-+
  static void iommu_set_irq_remapping(struct intel_iommu *iommu, int mode)
  {
- 	unsigned long flags;
-@@ -531,6 +590,17 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu)
++	unsigned long flags;
+ 	u64 addr;
+ 	u32 sts;
+-	unsigned long flags;
+ 
+ 	addr = virt_to_phys((void *)iommu->ir_table->base);
+ 
+@@ -447,10 +447,16 @@ static void iommu_set_irq_remapping(struct intel_iommu *iommu, int mode)
+ 	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
+ 
+ 	/*
+-	 * global invalidation of interrupt entry cache before enabling
+-	 * interrupt-remapping.
++	 * Global invalidation of interrupt entry cache to make sure the
++	 * hardware uses the new irq remapping table.
+ 	 */
+ 	qi_global_iec(iommu);
++}
++
++static void iommu_enable_irq_remapping(struct intel_iommu *iommu)
++{
++	unsigned long flags;
++	u32 sts;
+ 
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flags);
+ 
+@@ -525,6 +531,8 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu)
  		}
  	}
  
-+	init_ir_status(iommu);
++	iommu_set_irq_remapping(iommu, eim_mode);
 +
-+	if (ir_pre_enabled(iommu)) {
-+		if (iommu_load_old_irte(iommu))
-+			pr_err("Failed to copy IR table for %s from previous kernel\n",
-+			       iommu->name);
-+		else
-+			pr_info("Copied IR table for %s from previous kernel\n",
-+				iommu->name);
-+	}
-+
- 	iommu_set_irq_remapping(iommu, eim_mode);
- 
  	return 0;
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index fff87f1..9aedf21 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -295,6 +295,7 @@ struct q_inval {
- /* 1MB - maximum possible interrupt remapping table size */
- #define INTR_REMAP_PAGE_ORDER	8
- #define INTR_REMAP_TABLE_REG_SIZE	0xf
-+#define INTR_REMAP_TABLE_REG_SIZE_MASK  0xf
  
- #define INTR_REMAP_TABLE_ENTRIES	65536
+ out_free_bitmap:
+@@ -689,7 +697,7 @@ static int __init intel_enable_irq_remapping(void)
+ 	 * Setup Interrupt-remapping for all the DRHD's now.
+ 	 */
+ 	for_each_iommu(iommu, drhd) {
+-		iommu_set_irq_remapping(iommu, eim_mode);
++		iommu_enable_irq_remapping(iommu);
+ 		setup = true;
+ 	}
  
+@@ -926,6 +934,7 @@ static int reenable_irq_remapping(int eim)
+ 
+ 		/* Set up interrupt remapping for iommu.*/
+ 		iommu_set_irq_remapping(iommu, eim);
++		iommu_enable_irq_remapping(iommu);
+ 		setup = true;
+ 	}
+ 
+@@ -1241,7 +1250,7 @@ static int dmar_ir_add(struct dmar_drhd_unit *dmaru, struct intel_iommu *iommu)
+ 		intel_teardown_irq_remapping(iommu);
+ 		ir_remove_ioapic_hpet_scope(iommu);
+ 	} else {
+-		iommu_set_irq_remapping(iommu, eim);
++		iommu_enable_irq_remapping(iommu);
+ 	}
+ 
+ 	return ret;
 -- 
 1.9.1
