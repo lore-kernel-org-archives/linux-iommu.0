@@ -1,8 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 15/19] iommu/vt-d: Disable IRQ remapping in
-	intel_prepare_irq_remapping
-Date: Sat, 13 Jun 2015 08:47:23 +0200
-Message-ID: <1434178047-17809-16-git-send-email-joro@8bytes.org>
+Subject: [PATCH 19/19] iommu/vt-d: Don't disable IR when it was previously
+	enabled
+Date: Sat, 13 Jun 2015 08:47:27 +0200
+Message-ID: <1434178047-17809-20-git-send-email-joro@8bytes.org>
 References: <1434178047-17809-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,37 +24,37 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Move it to this function for now, so that the copy routines
-for irq remapping take no effect yet.
+Keep it enabled in kdump kernel to guarantee interrupt
+delivery.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iommu/intel_irq_remapping.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 46d17e1..f1711836 100644
+index 14e10de..47fcebf 100644
 --- a/drivers/iommu/intel_irq_remapping.c
 +++ b/drivers/iommu/intel_irq_remapping.c
-@@ -654,6 +654,9 @@ static int __init intel_prepare_irq_remapping(void)
+@@ -742,9 +742,6 @@ static int __init intel_prepare_irq_remapping(void)
  			pr_info("%s does not support EIM\n", iommu->name);
  			eim = 0;
  		}
-+
-+		/* Disable IRQ remapping if it is already enabled */
-+		iommu_disable_irq_remapping(iommu);
+-
+-		/* Disable IRQ remapping if it is already enabled */
+-		iommu_disable_irq_remapping(iommu);
  	}
  
  	eim_mode = eim;
-@@ -682,9 +685,6 @@ static int __init intel_enable_irq_remapping(void)
- 	struct intel_iommu *iommu;
- 	bool setup = false;
- 
--	for_each_iommu(iommu, drhd)
--		iommu_disable_irq_remapping(iommu);
--
- 	/*
+@@ -777,7 +774,8 @@ static int __init intel_enable_irq_remapping(void)
  	 * Setup Interrupt-remapping for all the DRHD's now.
  	 */
+ 	for_each_iommu(iommu, drhd) {
+-		iommu_enable_irq_remapping(iommu);
++		if (!ir_pre_enabled(iommu))
++			iommu_enable_irq_remapping(iommu);
+ 		setup = true;
+ 	}
+ 
 -- 
 1.9.1
