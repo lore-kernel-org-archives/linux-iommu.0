@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 06/19] iommu/vt-d: Do not re-use domain-ids from the old kernel
-Date: Sat, 13 Jun 2015 08:47:14 +0200
-Message-ID: <1434178047-17809-7-git-send-email-joro@8bytes.org>
+Subject: [PATCH 13/19] iommu/vt-d: Move EIM detection to
+	intel_prepare_irq_remapping
+Date: Sat, 13 Jun 2015 08:47:21 +0200
+Message-ID: <1434178047-17809-14-git-send-email-joro@8bytes.org>
 References: <1434178047-17809-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,50 +24,107 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Mark all domain-ids we find as reserved, so that there could
-be no collision between domains from the previous kernel and
-our domains in the IOMMU TLB.
+We need this to be detected already when we program the irq
+remapping table pointer to hardware.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/iommu/intel_irq_remapping.c | 47 +++++++++++++++++++------------------
+ 1 file changed, 24 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index a755f94..1d56696 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -273,6 +273,11 @@ static inline void context_set_domain_id(struct context_entry *context,
- 	context->hi |= (value & ((1 << 16) - 1)) << 8;
- }
- 
-+static inline int context_domain_id(struct context_entry *c)
-+{
-+	return((c->hi >> 8) & 0xffff);
-+}
-+
- static inline void context_clear_entry(struct context_entry *context)
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 3fe3fc7..12250f7 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -589,6 +589,7 @@ static int __init intel_prepare_irq_remapping(void)
  {
- 	context->lo = 0;
-@@ -2782,7 +2787,7 @@ static int copy_context_table(struct intel_iommu *iommu,
- 			      int bus, bool ext)
- {
- 	struct context_entry *old_ce = NULL, *new_ce = NULL, ce;
--	int tbl_idx, pos = 0, idx, devfn, ret = 0;
-+	int tbl_idx, pos = 0, idx, devfn, ret = 0, did;
- 	phys_addr_t old_ce_phys;
+ 	struct dmar_drhd_unit *drhd;
+ 	struct intel_iommu *iommu;
++	int eim = 0;
  
- 	tbl_idx = ext ? bus * 2 : bus;
-@@ -2837,6 +2842,10 @@ static int copy_context_table(struct intel_iommu *iommu,
- 		if (!context_present(&ce))
- 			continue;
+ 	if (irq_remap_broken) {
+ 		pr_warn("This system BIOS has enabled interrupt remapping\n"
+@@ -616,6 +617,26 @@ static int __init intel_prepare_irq_remapping(void)
+ 		if (!ecap_ir_support(iommu->ecap))
+ 			goto error;
  
-+		did = context_domain_id(&ce);
-+		if (did >= 0 && did < cap_ndoms(iommu->cap))
-+			set_bit(did, iommu->domain_ids);
++	/* Detect remapping mode: lapic or x2apic */
++	if (x2apic_supported()) {
++		eim = !dmar_x2apic_optout();
++		if (!eim) {
++			pr_info("x2apic is disabled because BIOS sets x2apic opt out bit.");
++			pr_info("Use 'intremap=no_x2apic_optout' to override the BIOS setting.\n");
++		}
++	}
 +
- 		new_ce[idx] = ce;
++	for_each_iommu(iommu, drhd) {
++		if (eim && !ecap_eim_support(iommu->ecap)) {
++			pr_info("%s does not support EIM\n", iommu->name);
++			eim = 0;
++		}
++	}
++
++	eim_mode = eim;
++	if (eim)
++		pr_info("Queued invalidation will be enabled to support x2apic and Intr-remapping.\n");
++
+ 	/* Do the allocations early */
+ 	for_each_iommu(iommu, drhd)
+ 		if (intel_setup_irq_remapping(iommu))
+@@ -633,13 +654,6 @@ static int __init intel_enable_irq_remapping(void)
+ 	struct dmar_drhd_unit *drhd;
+ 	struct intel_iommu *iommu;
+ 	bool setup = false;
+-	int eim = 0;
+-
+-	if (x2apic_supported()) {
+-		eim = !dmar_x2apic_optout();
+-		if (!eim)
+-			pr_info("x2apic is disabled because BIOS sets x2apic opt out bit. You can use 'intremap=no_x2apic_optout' to override the BIOS setting.\n");
+-	}
+ 
+ 	for_each_iommu(iommu, drhd) {
+ 		/*
+@@ -664,19 +678,6 @@ static int __init intel_enable_irq_remapping(void)
  	}
  
+ 	/*
+-	 * check for the Interrupt-remapping support
+-	 */
+-	for_each_iommu(iommu, drhd)
+-		if (eim && !ecap_eim_support(iommu->ecap)) {
+-			pr_info("DRHD %Lx: EIM not supported by DRHD, "
+-				" ecap %Lx\n", drhd->reg_base_addr, iommu->ecap);
+-			eim = 0;
+-		}
+-	eim_mode = eim;
+-	if (eim)
+-		pr_info("Queued invalidation will be enabled to support x2apic and Intr-remapping.\n");
+-
+-	/*
+ 	 * Enable queued invalidation for all the DRHD's.
+ 	 */
+ 	for_each_iommu(iommu, drhd) {
+@@ -694,7 +695,7 @@ static int __init intel_enable_irq_remapping(void)
+ 	 * Setup Interrupt-remapping for all the DRHD's now.
+ 	 */
+ 	for_each_iommu(iommu, drhd) {
+-		iommu_set_irq_remapping(iommu, eim);
++		iommu_set_irq_remapping(iommu, eim_mode);
+ 		setup = true;
+ 	}
+ 
+@@ -710,9 +711,9 @@ static int __init intel_enable_irq_remapping(void)
+ 	 */
+ 	x86_io_apic_ops.print_entries = intel_ir_io_apic_print_entries;
+ 
+-	pr_info("Enabled IRQ remapping in %s mode\n", eim ? "x2apic" : "xapic");
++	pr_info("Enabled IRQ remapping in %s mode\n", eim_mode ? "x2apic" : "xapic");
+ 
+-	return eim ? IRQ_REMAP_X2APIC_MODE : IRQ_REMAP_XAPIC_MODE;
++	return eim_mode ? IRQ_REMAP_X2APIC_MODE : IRQ_REMAP_XAPIC_MODE;
+ 
+ error:
+ 	intel_cleanup_irq_remapping();
 -- 
 1.9.1
