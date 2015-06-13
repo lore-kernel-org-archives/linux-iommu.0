@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 18/19] iommu/vt-d: Make sure copied over IR entries are not
-	reused
-Date: Sat, 13 Jun 2015 08:47:26 +0200
-Message-ID: <1434178047-17809-19-git-send-email-joro@8bytes.org>
+Subject: [PATCH 08/19] iommu/vt-d: Allocate si_domain in init_dmars()
+Date: Sat, 13 Jun 2015 08:47:16 +0200
+Message-ID: <1434178047-17809-9-git-send-email-joro@8bytes.org>
 References: <1434178047-17809-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,41 +23,53 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Walk over the copied entries and mark the present ones as
-allocated.
+This seperates the allocation of the si_domain from its
+assignment to devices. It makes sure that the iommu=pt case
+still works in the kdump kernel, when we have to defer the
+assignment of devices to domains to device driver
+initialization time.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/iommu/intel-iommu.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 2a90121..14e10de 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -451,6 +451,7 @@ static int iommu_load_old_irte(struct intel_iommu *iommu)
- {
- 	struct irte *old_ir_table;
- 	phys_addr_t irt_phys;
-+	unsigned int i;
- 	size_t size;
- 	u64 irta;
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 1fdff58..bf87236 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -2743,10 +2743,6 @@ static int __init iommu_prepare_static_identity_mapping(int hw)
+ 	int i;
+ 	int ret = 0;
  
-@@ -481,6 +482,15 @@ static int iommu_load_old_irte(struct intel_iommu *iommu)
+-	ret = si_domain_init(hw);
+-	if (ret)
+-		return -EFAULT;
+-
+ 	for_each_pci_dev(pdev) {
+ 		ret = dev_prepare_static_identity_mapping(&pdev->dev, hw);
+ 		if (ret)
+@@ -2760,7 +2756,7 @@ static int __init iommu_prepare_static_identity_mapping(int hw)
  
- 	__iommu_flush_cache(iommu, iommu->ir_table->base, size);
+ 			if (dev->bus != &acpi_bus_type)
+ 				continue;
+-				
++
+ 			adev= to_acpi_device(dev);
+ 			mutex_lock(&adev->physical_node_lock);
+ 			list_for_each_entry(pn, &adev->physical_node_list, node) {
+@@ -3094,6 +3090,12 @@ static int __init init_dmars(void)
+ 	iommu_identity_mapping |= IDENTMAP_GFX;
+ #endif
  
-+	/*
-+	 * Now check the table for used entries and mark those as
-+	 * allocated in the bitmap
-+	 */
-+	for (i = 0; i < INTR_REMAP_TABLE_ENTRIES; i++) {
-+		if (iommu->ir_table->base[i].present)
-+			bitmap_set(iommu->ir_table->bitmap, i, 1);
++	if (iommu_identity_mapping) {
++		ret = si_domain_init(hw_pass_through);
++		if (ret)
++			goto free_iommu;
 +	}
 +
- 	return 0;
- }
+ 	check_tylersburg_isoch();
  
+ 	/*
 -- 
 1.9.1
