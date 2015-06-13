@@ -1,43 +1,51 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 11/19] iommu/vt-d: Don't disable translation prior to OS handover
-Date: Sat, 13 Jun 2015 08:47:19 +0200
-Message-ID: <1434178047-17809-12-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 12/19] iommu/vt-d: Enable Translation only if it was
+	previously disabled
+Date: Sat, 13 Jun 2015 08:47:20 +0200
+Message-ID: <1434178047-17809-13-git-send-email-joro@8bytes.org>
 References: <1434178047-17809-1-git-send-email-joro@8bytes.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1434178047-17809-1-git-send-email-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: David Woodhouse <dwmw2@infradead.org>, zhen-hual@hp.com, bhe@redhat.com, ddutile@redhat.com, alex.williamson@redhat.com, dyoung@redhat.com, linux-kernel@vger.kernel.org, jroedel@8bytes.org, joro@8bytes.org, Joerg Roedel <jroedel@suse.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1434178047-17809-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, jroedel-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, zhen-hual-VXdhtT5mjnY@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-For all the copy-translation code to run, we have to keep
-translation enabled in intel_iommu_init(). So remove the
-code disabling it.
+Do not touch the TE bit unless we know translation is
+disabled.
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 7 -------
- 1 file changed, 7 deletions(-)
+ drivers/iommu/intel-iommu.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index e23d5b4..b47def6 100644
+index b47def6..ad72c6d 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -4469,13 +4469,6 @@ int __init intel_iommu_init(void)
- 		goto out_free_dmar;
+@@ -3184,7 +3184,9 @@ domains_done:
+ 		if (ret)
+ 			goto free_iommu;
+ 
+-		iommu_enable_translation(iommu);
++		if (!translation_pre_enabled(iommu))
++			iommu_enable_translation(iommu);
++
+ 		iommu_disable_protect_mem_regions(iommu);
  	}
  
--	/*
--	 * Disable translation if already enabled prior to OS handover.
--	 */
--	for_each_active_iommu(iommu, drhd)
--		if (iommu->gcmd & DMA_GCMD_TE)
--			iommu_disable_translation(iommu);
--
- 	if (dmar_dev_scope_init() < 0) {
- 		if (force_on)
- 			panic("tboot: Failed to initialize DMAR device scope\n");
 -- 
 1.9.1
