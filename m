@@ -1,8 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 19/19] iommu/vt-d: Don't disable IR when it was previously
-	enabled
-Date: Sat, 13 Jun 2015 08:47:27 +0200
-Message-ID: <1434178047-17809-20-git-send-email-joro@8bytes.org>
+Subject: [PATCH 18/19] iommu/vt-d: Make sure copied over IR entries are not
+	reused
+Date: Sat, 13 Jun 2015 08:47:26 +0200
+Message-ID: <1434178047-17809-19-git-send-email-joro@8bytes.org>
 References: <1434178047-17809-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,37 +24,41 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Keep it enabled in kdump kernel to guarantee interrupt
-delivery.
+Walk over the copied entries and mark the present ones as
+allocated.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel_irq_remapping.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/iommu/intel_irq_remapping.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 14e10de..47fcebf 100644
+index 2a90121..14e10de 100644
 --- a/drivers/iommu/intel_irq_remapping.c
 +++ b/drivers/iommu/intel_irq_remapping.c
-@@ -742,9 +742,6 @@ static int __init intel_prepare_irq_remapping(void)
- 			pr_info("%s does not support EIM\n", iommu->name);
- 			eim = 0;
- 		}
--
--		/* Disable IRQ remapping if it is already enabled */
--		iommu_disable_irq_remapping(iommu);
- 	}
+@@ -451,6 +451,7 @@ static int iommu_load_old_irte(struct intel_iommu *iommu)
+ {
+ 	struct irte *old_ir_table;
+ 	phys_addr_t irt_phys;
++	unsigned int i;
+ 	size_t size;
+ 	u64 irta;
  
- 	eim_mode = eim;
-@@ -777,7 +774,8 @@ static int __init intel_enable_irq_remapping(void)
- 	 * Setup Interrupt-remapping for all the DRHD's now.
- 	 */
- 	for_each_iommu(iommu, drhd) {
--		iommu_enable_irq_remapping(iommu);
-+		if (!ir_pre_enabled(iommu))
-+			iommu_enable_irq_remapping(iommu);
- 		setup = true;
- 	}
+@@ -481,6 +482,15 @@ static int iommu_load_old_irte(struct intel_iommu *iommu)
+ 
+ 	__iommu_flush_cache(iommu, iommu->ir_table->base, size);
+ 
++	/*
++	 * Now check the table for used entries and mark those as
++	 * allocated in the bitmap
++	 */
++	for (i = 0; i < INTR_REMAP_TABLE_ENTRIES; i++) {
++		if (iommu->ir_table->base[i].present)
++			bitmap_set(iommu->ir_table->bitmap, i, 1);
++	}
++
+ 	return 0;
+ }
  
 -- 
 1.9.1
