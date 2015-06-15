@@ -1,211 +1,76 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v4] drm/exynos: fimd: ensure proper hw state in
- fimd_clear_channel()
-Date: Mon, 15 Jun 2015 15:36:42 +0200
-Message-ID: <1434375402-12849-1-git-send-email-m.szyprowski@samsung.com>
-References: <557E7C5A.4020300@samsung.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <557E7C5A.4020300@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Inki Dae <inki.dae@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Andrzej Hajda <a.hajda@samsung.com>
+From: William Davis <wdavis@nvidia.com>
+Subject: RE: [PATCH v3 0/7] IOMMU/DMA map_resource support for peer-to-peer
+Date: Mon, 15 Jun 2015 15:49:32 +0000
+Message-ID: <236342dcc57b448b98c3a2b61a8ab23a@DRHQMAIL106.nvidia.com>
+References: <1432919686-32306-1-git-send-email-wdavis@nvidia.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1432919686-32306-1-git-send-email-wdavis@nvidia.com>
+Content-Language: en-US
+Sender: linux-pci-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>, "David S. Miller" <davem@davemloft.net>
+Cc: Terence Ripperda <TRipperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>, Mark Hounschell <markh@compro.net>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jonathan Corbet <corbet@lwn.net>, Yijing Wang <wangyijing@huawei.com>, Alex Williamson <alex.williamson@redhat.com>, Dave Jiang <dave.jiang@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-One should not do any assumptions on the stare of the fimd hardware
-during driver initialization, so to properly reset fimd before enabling
-IOMMU, one should ensure that all power domains and clocks are really
-enabled. This patch adds pm_runtime and clocks management in the
-fimd_clear_channel() function to ensure that any access to fimd
-registers will be performed with clocks and power domains enabled.
 
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Tested-by: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
----
-Changelog:
-v4:
-- added temporary changing of ctx->pipe to -1 to avoid propagating vblank
-  to drm core
+> From: Will Davis <wdavis@nvidia.com>
+> 
+> Hi,
+> 
+> This is the third version of a patchset to add the DMA APIs necessary to
+> map and unmap a struct resource to and from a PCI device's IOVA domain.
+> This allows a PCI device to access a peer device's BAR resource when a
+> hardware IOMMU is enabled.
+> 
 
-v3 (alternative):
-- araranged code by moving fimd_{enable,disable}_vblank functions before
-  fimd_clear_channel to avoid forward declaration usage
+Bjorn, Dave, do you have any remaining concerns with this patch series?
 
-v2:
-- rebased onto latest exynos-drm-next branch with atomic mode setting
-  patches applied.
----
- drivers/gpu/drm/exynos/exynos_drm_fimd.c | 135 ++++++++++++++++++-------------
- 1 file changed, 77 insertions(+), 58 deletions(-)
+> Thanks,
+> Will
+> 
+> Changelog:
+> 
+> v3:
+> - changed dma_map_resource() to BUG() if the map_resource DMA op is not
+>   provided, instead of returning 0
+> - updated documentation to remove requirement to check for 0 return value
+>   as an error
+> - remove const keyword from struct dma_map_ops in new DMA APIs for
+>   consistency with other APIs
+> 
+> v2: http://www.spinics.net/lists/linux-pci/msg41192.html
+> - added documentation for the new DMA APIs
+> - fixed physical-to-bus address conversion in the nommu implementation
+> 
+> v1: http://www.spinics.net/lists/linux-pci/msg40747.html
+> 
+> Will Davis (7):
+>   dma-debug: add checking for map/unmap_resource
+>   DMA-API: Introduce dma_(un)map_resource
+>   dma-mapping: pci: add pci_(un)map_resource
+>   DMA-API: Add dma_(un)map_resource() documentation
+>   iommu/amd: Implement (un)map_resource
+>   iommu/vt-d: implement (un)map_resource
+>   x86: add pci-nommu implementation of map_resource
+> 
+>  Documentation/DMA-API-HOWTO.txt          | 36 ++++++++++++++-
+>  Documentation/DMA-API.txt                | 31 ++++++++++---
+>  arch/x86/kernel/pci-nommu.c              | 32 ++++++++++++++
+>  drivers/iommu/amd_iommu.c                | 76 ++++++++++++++++++++++++++--
+> ----
+>  drivers/iommu/intel-iommu.c              | 18 ++++++++
+>  include/asm-generic/dma-mapping-broken.h |  9 ++++  include/asm-
+> generic/dma-mapping-common.h | 34 ++++++++++++++
+>  include/asm-generic/pci-dma-compat.h     | 14 ++++++
+>  include/linux/dma-debug.h                | 20 +++++++++
+>  include/linux/dma-mapping.h              |  7 +++
+>  lib/dma-debug.c                          | 47 ++++++++++++++++++++
+>  11 files changed, 304 insertions(+), 20 deletions(-)
+> 
+> --
+> 2.4.0
 
-diff --git a/drivers/gpu/drm/exynos/exynos_drm_fimd.c b/drivers/gpu/drm/exynos/exynos_drm_fimd.c
-index 96618534358e..f35a6f197f58 100644
---- a/drivers/gpu/drm/exynos/exynos_drm_fimd.c
-+++ b/drivers/gpu/drm/exynos/exynos_drm_fimd.c
-@@ -196,6 +196,62 @@ static inline struct fimd_driver_data *drm_fimd_get_driver_data(
- 	return (struct fimd_driver_data *)of_id->data;
- }
- 
-+static int fimd_enable_vblank(struct exynos_drm_crtc *crtc)
-+{
-+	struct fimd_context *ctx = crtc->ctx;
-+	u32 val;
-+
-+	if (ctx->suspended)
-+		return -EPERM;
-+
-+	if (!test_and_set_bit(0, &ctx->irq_flags)) {
-+		val = readl(ctx->regs + VIDINTCON0);
-+
-+		val |= VIDINTCON0_INT_ENABLE;
-+
-+		if (ctx->i80_if) {
-+			val |= VIDINTCON0_INT_I80IFDONE;
-+			val |= VIDINTCON0_INT_SYSMAINCON;
-+			val &= ~VIDINTCON0_INT_SYSSUBCON;
-+		} else {
-+			val |= VIDINTCON0_INT_FRAME;
-+
-+			val &= ~VIDINTCON0_FRAMESEL0_MASK;
-+			val |= VIDINTCON0_FRAMESEL0_VSYNC;
-+			val &= ~VIDINTCON0_FRAMESEL1_MASK;
-+			val |= VIDINTCON0_FRAMESEL1_NONE;
-+		}
-+
-+		writel(val, ctx->regs + VIDINTCON0);
-+	}
-+
-+	return 0;
-+}
-+
-+static void fimd_disable_vblank(struct exynos_drm_crtc *crtc)
-+{
-+	struct fimd_context *ctx = crtc->ctx;
-+	u32 val;
-+
-+	if (ctx->suspended)
-+		return;
-+
-+	if (test_and_clear_bit(0, &ctx->irq_flags)) {
-+		val = readl(ctx->regs + VIDINTCON0);
-+
-+		val &= ~VIDINTCON0_INT_ENABLE;
-+
-+		if (ctx->i80_if) {
-+			val &= ~VIDINTCON0_INT_I80IFDONE;
-+			val &= ~VIDINTCON0_INT_SYSMAINCON;
-+			val &= ~VIDINTCON0_INT_SYSSUBCON;
-+		} else
-+			val &= ~VIDINTCON0_INT_FRAME;
-+
-+		writel(val, ctx->regs + VIDINTCON0);
-+	}
-+}
-+
- static void fimd_wait_for_vblank(struct exynos_drm_crtc *crtc)
- {
- 	struct fimd_context *ctx = crtc->ctx;
-@@ -248,6 +304,12 @@ static void fimd_clear_channel(struct fimd_context *ctx)
- 
- 	DRM_DEBUG_KMS("%s\n", __FILE__);
- 
-+	/* Hardware is in unknown state, so ensure it gets enabled properly */
-+	pm_runtime_get_sync(ctx->dev);
-+
-+	clk_prepare_enable(ctx->bus_clk);
-+	clk_prepare_enable(ctx->lcd_clk);
-+
- 	/* Check if any channel is enabled. */
- 	for (win = 0; win < WINDOWS_NR; win++) {
- 		u32 val = readl(ctx->regs + WINCON(win));
-@@ -265,12 +327,24 @@ static void fimd_clear_channel(struct fimd_context *ctx)
- 
- 	/* Wait for vsync, as disable channel takes effect at next vsync */
- 	if (ch_enabled) {
--		unsigned int state = ctx->suspended;
-+		int pipe = ctx->pipe;
-+
-+		/* ensure that vblank interrupt won't be reported to core */
-+		ctx->suspended = false;
-+		ctx->pipe = -1;
- 
--		ctx->suspended = 0;
-+		fimd_enable_vblank(ctx->crtc);
- 		fimd_wait_for_vblank(ctx->crtc);
--		ctx->suspended = state;
-+		fimd_disable_vblank(ctx->crtc);
-+
-+		ctx->suspended = true;
-+		ctx->pipe = pipe;
- 	}
-+
-+	clk_disable_unprepare(ctx->lcd_clk);
-+	clk_disable_unprepare(ctx->bus_clk);
-+
-+	pm_runtime_put(ctx->dev);
- }
- 
- static int fimd_iommu_attach_devices(struct fimd_context *ctx,
-@@ -434,61 +508,6 @@ static void fimd_commit(struct exynos_drm_crtc *crtc)
- 	writel(val, ctx->regs + VIDCON0);
- }
- 
--static int fimd_enable_vblank(struct exynos_drm_crtc *crtc)
--{
--	struct fimd_context *ctx = crtc->ctx;
--	u32 val;
--
--	if (ctx->suspended)
--		return -EPERM;
--
--	if (!test_and_set_bit(0, &ctx->irq_flags)) {
--		val = readl(ctx->regs + VIDINTCON0);
--
--		val |= VIDINTCON0_INT_ENABLE;
--
--		if (ctx->i80_if) {
--			val |= VIDINTCON0_INT_I80IFDONE;
--			val |= VIDINTCON0_INT_SYSMAINCON;
--			val &= ~VIDINTCON0_INT_SYSSUBCON;
--		} else {
--			val |= VIDINTCON0_INT_FRAME;
--
--			val &= ~VIDINTCON0_FRAMESEL0_MASK;
--			val |= VIDINTCON0_FRAMESEL0_VSYNC;
--			val &= ~VIDINTCON0_FRAMESEL1_MASK;
--			val |= VIDINTCON0_FRAMESEL1_NONE;
--		}
--
--		writel(val, ctx->regs + VIDINTCON0);
--	}
--
--	return 0;
--}
--
--static void fimd_disable_vblank(struct exynos_drm_crtc *crtc)
--{
--	struct fimd_context *ctx = crtc->ctx;
--	u32 val;
--
--	if (ctx->suspended)
--		return;
--
--	if (test_and_clear_bit(0, &ctx->irq_flags)) {
--		val = readl(ctx->regs + VIDINTCON0);
--
--		val &= ~VIDINTCON0_INT_ENABLE;
--
--		if (ctx->i80_if) {
--			val &= ~VIDINTCON0_INT_I80IFDONE;
--			val &= ~VIDINTCON0_INT_SYSMAINCON;
--			val &= ~VIDINTCON0_INT_SYSSUBCON;
--		} else
--			val &= ~VIDINTCON0_INT_FRAME;
--
--		writel(val, ctx->regs + VIDINTCON0);
--	}
--}
- 
- static void fimd_win_set_pixfmt(struct fimd_context *ctx, unsigned int win)
- {
--- 
-1.9.2
+--
+nvpublic
