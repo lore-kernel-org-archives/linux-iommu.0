@@ -1,26 +1,27 @@
-From: Inki Dae <inki.dae@samsung.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
 Subject: Re: [PATCH v3 (alternative) 1/3] drm/exynos: fimd: ensure proper hw
  state in fimd_clear_channel()
-Date: Mon, 15 Jun 2015 16:18:50 +0900
-Message-ID: <557E7C5A.4020300@samsung.com>
+Date: Mon, 15 Jun 2015 15:35:21 +0200
+Message-ID: <557ED499.9080605@samsung.com>
 References: <557AA0D3.8010808@samsung.com>
  <1434100037-12304-1-git-send-email-m.szyprowski@samsung.com>
  <1434100037-12304-2-git-send-email-m.szyprowski@samsung.com>
- <557ACC51.9090109@samsung.com> <557AD805.2050902@samsung.com>
+ <557ACC51.9090109@samsung.com> <557AE3C7.7090804@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8;
+	format=flowed
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <557AD805.2050902@samsung.com>
+In-reply-to: <557AE3C7.7090804@samsung.com>
 Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>
+To: Inki Dae <inki.dae@samsung.com>
 Cc: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Andrzej Hajda <a.hajda@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2015=EB=85=84 06=EC=9B=94 12=EC=9D=BC 22:00, Marek Szyprowski wrote:
-> Hello,
->=20
-> On 2015-06-12 14:10, Inki Dae wrote:
+Hello,
+
+On 2015-06-12 15:51, Inki Dae wrote:
+> On 2015=EB=85=84 06=EC=9B=94 12=EC=9D=BC 21:10, Inki Dae wrote:
 >> On 2015=EB=85=84 06=EC=9B=94 12=EC=9D=BC 18:07, Marek Szyprowski wro=
 te:
 >>> One should not do any assumptions on the stare of the fimd hardware
@@ -70,8 +71,8 @@ efore
 >> fimd_component_ops)
 >> [    1.288883] exynos-drm exynos-drm: bound 11c80000.dsi (ops
 >> exynos_dsi_component_ops)
->> [    1.288888] [drm] Supports vblank timestamp caching Rev 2
->> (21.10.2013).
+>> [    1.288888] [drm] Supports vblank timestamp caching Rev 2 (21.10.=
+2013).
 >> [    1.288891] [drm] No driver support for vblank timestamp query.
 >> [    1.288932] [drm] Initialized exynos 1.0.0 20110530 on minor 0
 >> [    1.324248] [<c00123c0>] (show_stack) from [<c0528f74>]
@@ -224,34 +225,30 @@ Page
 >>
 >> Could you check the iommu with atomic feature? I tested these featur=
 es
->> on trats2 board, and enabled one more crtc drivers - HDMI, VIDI, and
->> FIMD.
->=20
-> I've tested it on Trats2 with FIMD and Odroid U3 with HDMI and I didn=
-'t
-> manage to
-> trigger page fault issue.
->=20
-> I've pushed the branch I've used for testing here:
-> https://git.linaro.org/people/marek.szyprowski/linux-srpol.git
-> v4.1-exynos-drm-iommu
-
-Hm.. I've also tested it on Trarts2 and above your git tree but I still
-see the page fault issue. Please run modetest app and terminate it
-repeatedly.
-
-Thanks,
-Inki Dae
-
->=20
+>> on trats2 board, and enabled one more crtc drivers - HDMI, VIDI, and=
+ FIMD.
+>>
 >> To other Exynos guys,
 >> could you guys check the same issues also? If you give some helps to=
  us,
 >> we'd be glad.
->>
->> Thanks,
->> Inki Dae
->=20
->> > (...)
->=20
-> Best regards
+> I resolved above page fault issue with below patch:
+> 	[PATCH] drm/exynos: fimd: fix page fault issue with iommu
+>
+> However, I still see above warning log. The problem is because
+> dev->num_crtcs is 0 when drm_handle_vblank function is called by fimd
+> irq handler.
+
+Okay, I've managed to reproduce this issue. I will post v4 patch soon.=20
+Setting
+ctx->pipe to -1 temporarily for vblank enable/wait/disable sequence=20
+solves this
+issue.
+
+ > (...)
+
+
+Best regards
+--=20
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
