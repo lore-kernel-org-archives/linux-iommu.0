@@ -1,16 +1,11 @@
-From: fandongdong <fandd-6gUaA8visnnQT0dZR+AlfA@public.gmane.org>
-Subject: Re: Panic when cpu hot-remove
-Date: Thu, 18 Jun 2015 15:54:15 +0800
-Message-ID: <55827927.4080504@inspur.com>
-References: <42BB8332972FC149B81C55A0D41E3A79C07469@jtjnmailbox06.home.langchao.com>
-	<20150617115238.GC27750@8bytes.org>
-	<1434551800.5628.5.camel@redhat.com>
-	<558259BD.7080402@linux.intel.com> <558272E3.4000504@inspur.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH] iommu/amd: Handle large pages correctly in free_pagetable
+Date: Thu, 18 Jun 2015 10:48:34 +0200
+Message-ID: <1434617314-18087-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <558272E3.4000504-6gUaA8visnnQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,52 +15,41 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedeljoro <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Roland Dreier <roland-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, =?UTF-8?B?6Zer5pmT5bOw?= <yanxiaofeng-6gUaA8visnnQT0dZR+AlfA@public.gmane.org>, "jiang.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <jiang.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, =?UTF-8?B?5YiY6ZW/55Sf?= <liuchangsheng-6gUaA8visnnQT0dZR+AlfA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-CgrlnKggMjAxNS82LzE4IDE1OjI3LCBmYW5kb25nZG9uZyDlhpnpgZM6Cj4KPgo+IOWcqCAyMDE1
-LzYvMTggMTM6NDAsIEppYW5nIExpdSDlhpnpgZM6Cj4+IE9uIDIwMTUvNi8xNyAyMjozNiwgQWxl
-eCBXaWxsaWFtc29uIHdyb3RlOgo+Pj4gT24gV2VkLCAyMDE1LTA2LTE3IGF0IDEzOjUyICswMjAw
-LCBKb2VyZyBSb2VkZWxqb3JvIHdyb3RlOgo+Pj4+IE9uIFdlZCwgSnVuIDE3LCAyMDE1IGF0IDEw
-OjQyOjQ5QU0gKzAwMDAsIOiMg+WGrOWGrCB3cm90ZToKPj4+Pj4gSGkgbWFpbnRhaW5lciwKPj4+
-Pj4KPj4+Pj4gV2UgZm91bmQgYSBwcm9ibGVtIHRoYXQgYSBwYW5pYyBoYXBwZW4gd2hlbiBjcHUg
-d2FzIGhvdC1yZW1vdmVkLiAKPj4+Pj4gV2UgYWxzbyB0cmFjZSB0aGUgcHJvYmxlbSBhY2NvcmRp
-bmcgdG8gdGhlIGNhbGx0cmFjZSBpbmZvcm1hdGlvbi4KPj4+Pj4gQW4gZW5kbGVzcyBsb29wIGhh
-cHBlbiBiZWNhdXNlIHZhbHVlIGhlYWQgaXMgbm90IGVxdWFsIHRvIHZhbHVlIAo+Pj4+PiB0YWls
-IGZvcmV2ZXIgaW4gdGhlIGZ1bmN0aW9uIHFpX2NoZWNrX2ZhdWx0KCApLgo+Pj4+PiBUaGUgbG9j
-YXRpb24gY29kZSBpcyBhcyBmb2xsb3dzOgo+Pj4+Pgo+Pj4+Pgo+Pj4+PiBkbyB7Cj4+Pj4+ICAg
-ICAgICAgIGlmIChxaS0+ZGVzY19zdGF0dXNbaGVhZF0gPT0gUUlfSU5fVVNFKQo+Pj4+PiAgICAg
-ICAgICBxaS0+ZGVzY19zdGF0dXNbaGVhZF0gPSBRSV9BQk9SVDsKPj4+Pj4gICAgICAgICAgaGVh
-ZCA9IChoZWFkIC0gMiArIFFJX0xFTkdUSCkgJSBRSV9MRU5HVEg7Cj4+Pj4+ICAgICAgfSB3aGls
-ZSAoaGVhZCAhPSB0YWlsKTsKPj4+PiBIbW0sIHRoaXMgY29kZSBpbnRlcmF0ZXMgb25seSBvdmVy
-IGV2ZXJ5IHNlY29uZCBRSSBkZXNjcmlwdG9yLCBhbmQgCj4+Pj4gdGFpbAo+Pj4+IHByb2JhYmx5
-IHBvaW50cyB0byBhIGRlc2NyaXB0b3IgdGhhdCBpcyBub3QgaXRlcmF0ZWQgb3Zlci4KPj4+Pgo+
-Pj4+IEppYW5nLCBjYW4geW91IHBsZWFzZSBoYXZlIGEgbG9vaz8KPj4+IEkgdGhpbmsgdGhhdCBw
-YXJ0IGlzIG5vcm1hbCwgdGhlIHdheSB3ZSB1c2UgdGhlIHF1ZXVlIGlzIHRvIGFsd2F5cwo+Pj4g
-c3VibWl0IGEgd29yayBvcGVyYXRpb24gZm9sbG93ZWQgYnkgYSB3YWl0IG9wZXJhdGlvbiBzbyB0
-aGF0IHdlIGNhbgo+Pj4gZGV0ZXJtaW5lIHRoZSB3b3JrIG9wZXJhdGlvbiBpcyBjb21wbGV0ZS4g
-IFRoYXQncyBkb25lIHZpYQo+Pj4gcWlfc3VibWl0X3N5bmMoKS4gIFdlIGhhdmUgaGFkIHNwdXJp
-b3VzIHJlcG9ydHMgb2YgdGhlIHF1ZXVlIGdldHRpbmcKPj4+IGltcG9zc2libHkgb3V0IG9mIHN5
-bmMgdGhvdWdoLiAgSSBzYXcgb25lIHRoYXQgd2FzIHNvbWVob3cgbGlua2VkIHRvIAo+Pj4gdGhl
-Cj4+PiBJL08gQVQgRE1BIGVuZ2luZS4gIFJvbGFuZCBEcmVpZXIgc2F3IHNvbWV0aGluZyBzaW1p
-bGFyWzFdLiBJJ20gbm90Cj4+PiBzdXJlIGlmIHRoZXkncmUgcmVsYXRlZCB0byB0aGlzLCBidXQg
-bWF5YmUgd29ydGggY29tcGFyaW5nLiBUaGFua3MsCj4+IFRoYW5rcywgQWxleCBhbmQgSm9lcmch
-Cj4+Cj4+IEhpIERvbmdkb25nLAo+PiAgICAgQ291bGQgeW91IHBsZWFzZSBoZWxwIHRvIGdpdmUg
-c29tZSBpbnN0cnVjdGlvbnMgYWJvdXQgaG93IHRvCj4+IHJlcHJvZHVjZSB0aGlzIGlzc3VlPyBJ
-IHdpbGwgdHJ5IHRvIHJlcHJvZHVjZSBpdCBpZiBwb3NzaWJsZS4KPj4gVGhhbmtzIQo+PiBHZXJy
-eQo+IEhpIEdlcnJ5LAo+Cj4gV2UncmUgcnVubmluZyBrZXJuZWwgNC4xLjAgb24gYSA0LXNvY2tl
-dCBzeXN0ZW0gYW5kICB3ZSB3YW50IHRvIAo+IG9mZmxpbmUgc29ja2V0IDEuCj4gU3RlcHMgYXMg
-Zm9sbG93czoKPgo+IGVjaG8gMSA+IC9zeXMvZmlybXdhcmUvYWNwaS9ob3RwbHVnL2ZvcmNlX3Jl
-bW92ZQo+IGVjaG8gMSA+IC9zeXMvZGV2aWNlcy9MTlhTWVNUTTowMC9MTlhTWUJVUzowMC9BQ1BJ
-MDAwNDowMS9lamVjdAo+Cj4gVGhhbmtzIQo+IERvbmdkb25nCj4+PiBBbGV4Cj4+Pgo+Pj4gWzFd
-IAo+Pj4gaHR0cDovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvcGlwZXJtYWlsL2lvbW11LzIw
-MTUtSmFudWFyeS8wMTE1MDIuaHRtbAo+Pj4KPj4+IC0tIAo+Pj4gVG8gdW5zdWJzY3JpYmUgZnJv
-bSB0aGlzIGxpc3Q6IHNlbmQgdGhlIGxpbmUgInVuc3Vic2NyaWJlIAo+Pj4gbGludXgta2VybmVs
-IiBpbgo+Pj4gdGhlIGJvZHkgb2YgYSBtZXNzYWdlIHRvIG1ham9yZG9tb0B2Z2VyLmtlcm5lbC5v
-cmcKPj4+IE1vcmUgbWFqb3Jkb21vIGluZm8gYXQgaHR0cDovL3ZnZXIua2VybmVsLm9yZy9tYWpv
-cmRvbW8taW5mby5odG1sCj4+PiBQbGVhc2UgcmVhZCB0aGUgRkFRIGF0ICBodHRwOi8vd3d3LnR1
-eC5vcmcvbGttbC8KPj4+Cj4+IC4KPj4KPgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZv
-dW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xp
-c3RpbmZvL2lvbW11
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+
+Make sure that we are skipping over large PTEs while walking
+the page-table tree.
+
+Cc: stable-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Fixes: 5c34c403b723 ("iommu/amd: Fix memory leak in free_pagetable")
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 79892d2..45532ff 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1749,9 +1749,15 @@ static void free_pt_##LVL (unsigned long __pt)			\
+ 	pt = (u64 *)__pt;					\
+ 								\
+ 	for (i = 0; i < 512; ++i) {				\
++		/* PTE present? */				\
+ 		if (!IOMMU_PTE_PRESENT(pt[i]))			\
+ 			continue;				\
+ 								\
++		/* Large PTE? */				\
++		if (IOMMU_PTE_MODE(pt[i]) == 0 ||		\
++		    IOMMU_PTE_MODE(pt[i]) == 7)			\
++			continue;				\
++								\
+ 		p = (unsigned long)IOMMU_PTE_PAGE(pt[i]);	\
+ 		FN(p);						\
+ 	}							\
+-- 
+1.9.1
