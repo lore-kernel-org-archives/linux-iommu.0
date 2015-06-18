@@ -1,11 +1,14 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH] PCI: Don't use SR-IOV lock for ATS
-Date: Thu, 18 Jun 2015 10:50:20 +0200
-Message-ID: <1434617420-18313-1-git-send-email-joro@8bytes.org>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v2 2/4] iommu: Implement common IOMMU ops for DMA mapping
+Date: Thu, 18 Jun 2015 23:00:25 +0800
+Message-ID: <1434639625.26953.12.camel@mhfsdcap03>
+References: <cover.1434036796.git.robin.murphy@arm.com>
+	<bf63d80c36533aa4dcc401b5a4b312ba00237e1c.1434036796.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <bf63d80c36533aa4dcc401b5a4b312ba00237e1c.1434036796.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,77 +18,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Gregor Dick <gdick-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, stable-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Hi Robin,
+    while our drm test, we meet a problem while dma-mmap.
 
-The use of the SR-IOV lock for ATS causes a dead-lock in the
-AMD-IOMMU driver when virtual functions are added that have
-an ATS capability.
+ On Thu, 2015-06-11 at 16:54 +0100, Robin Murphy wrote:
+> Taking inspiration from the existing arch/arm code, break out some
+> generic functions to interface the DMA-API to the IOMMU-API. This will
+> do the bulk of the heavy lifting for IOMMU-backed dma-mapping.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/iommu/Kconfig     |   7 +
+>  drivers/iommu/Makefile    |   1 +
+>  drivers/iommu/dma-iommu.c | 560 ++++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/dma-iommu.h |  94 ++++++++
+>  4 files changed, 662 insertions(+)
+>  create mode 100644 drivers/iommu/dma-iommu.c
+>  create mode 100644 include/linux/dma-iommu.h
+> 
+[snip]
+> +/**
+> + * iommu_dma_mmap - Map a buffer into provided user VMA
+> + * @pages: Array representing buffer from iommu_dma_alloc()
+> + * @size: Size of buffer in bytes
+> + * @vma: VMA describing requested userspace mapping
+> + *
+> + * Maps the pages of the buffer in @pages into @vma. The caller is responsible
+> + * for verifying the correct size and protection of @vma beforehand.
+> + */
+> +
+> +int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma)
+> +{
+> +	unsigned long uaddr = vma->vm_start;
+> +	unsigned int i, count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> +	int ret = -ENXIO;
+> +
+> +	for (i = vma->vm_pgoff; i < count && uaddr < vma->vm_end; i++) {
+Is it :  for (i = 0; i < count && uaddr < vma->vm_end; i++)
 
-The problem is that the VFs will be added to the bus with
-the SR-IOV lock held. While added to the bus the
-device-notifiers will run and invoke AMD IOMMU code, which
-itself will assign the device to a domain try to enable ATS.
-When it calls pci_enable_ats() this will dead-lock.
-
-Fix this by introducing a global ats_lock. ATS enablement
-and disablement isn't in any fast-path, so a global lock
-shouldn't hurt here.
-
-Cc: stable-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Reported-by: Gregor Dick <gdick-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/pci/ats.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-index a8099d4..f0c3c6f 100644
---- a/drivers/pci/ats.c
-+++ b/drivers/pci/ats.c
-@@ -17,6 +17,8 @@
- 
- #include "pci.h"
- 
-+static DEFINE_MUTEX(ats_lock);
-+
- static int ats_alloc_one(struct pci_dev *dev, int ps)
- {
- 	int pos;
-@@ -67,7 +69,7 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
- 	if (dev->is_physfn || dev->is_virtfn) {
- 		struct pci_dev *pdev = dev->is_physfn ? dev : dev->physfn;
- 
--		mutex_lock(&pdev->sriov->lock);
-+		mutex_lock(&ats_lock);
- 		if (pdev->ats)
- 			rc = pdev->ats->stu == ps ? 0 : -EINVAL;
- 		else
-@@ -75,7 +77,7 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
- 
- 		if (!rc)
- 			pdev->ats->ref_cnt++;
--		mutex_unlock(&pdev->sriov->lock);
-+		mutex_unlock(&ats_lock);
- 		if (rc)
- 			return rc;
- 	}
-@@ -116,11 +118,11 @@ void pci_disable_ats(struct pci_dev *dev)
- 	if (dev->is_physfn || dev->is_virtfn) {
- 		struct pci_dev *pdev = dev->is_physfn ? dev : dev->physfn;
- 
--		mutex_lock(&pdev->sriov->lock);
-+		mutex_lock(&ats_lock);
- 		pdev->ats->ref_cnt--;
- 		if (!pdev->ats->ref_cnt)
- 			ats_free_one(pdev);
--		mutex_unlock(&pdev->sriov->lock);
-+		mutex_unlock(&ats_lock);
- 	}
- 
- 	if (!dev->is_physfn)
--- 
-1.9.1
+> +		ret = vm_insert_page(vma, uaddr, pages[i]);
+> +		if (ret)
+> +			break;
+> +		uaddr += PAGE_SIZE;
+> +	}
+> +	return ret;
+> +}
+> +
