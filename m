@@ -1,82 +1,43 @@
-From: fandongdong <fandd-6gUaA8visnnQT0dZR+AlfA@public.gmane.org>
-Subject: Re: Panic when cpu hot-remove
-Date: Thu, 25 Jun 2015 18:46:37 +0800
-Message-ID: <558BDC0D.2000206@inspur.com>
-References: <42BB8332972FC149B81C55A0D41E3A79C07469@jtjnmailbox06.home.langchao.com>
-	<20150617115238.GC27750@8bytes.org>
-	<1434551800.5628.5.camel@redhat.com>
-	<558259BD.7080402@linux.intel.com> <558272E3.4000504@inspur.com>
-	<55827927.4080504@inspur.com> <558BB7B8.7000402@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <558BB7B8.7000402-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedeljoro <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Roland Dreier <roland-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, =?UTF-8?B?6Zer5pmT5bOw?= <yanxiaofeng-6gUaA8visnnQT0dZR+AlfA@public.gmane.org>, "jiang.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <jiang.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, =?UTF-8?B?5YiY6ZW/55Sf?= <liuchangsheng-6gUaA8visnnQT0dZR+AlfA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCH] iommu/exynos: Skip unsupported devices instead of returning
+ -ENODEV
+Date: Thu, 25 Jun 2015 15:10:44 +0200
+Message-ID: <1435237844-25004-1-git-send-email-m.szyprowski@samsung.com>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Inki Dae <inki.dae@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-CgrlnKggMjAxNS82LzI1IDE2OjExLCBKaWFuZyBMaXUg5YaZ6YGTOgo+IE9uIDIwMTUvNi8xOCAx
-NTo1NCwgZmFuZG9uZ2Rvbmcgd3JvdGU6Cj4+Cj4+IOWcqCAyMDE1LzYvMTggMTU6MjcsIGZhbmRv
-bmdkb25nIOWGmemBkzoKPj4+Cj4+PiDlnKggMjAxNS82LzE4IDEzOjQwLCBKaWFuZyBMaXUg5YaZ
-6YGTOgo+Pj4+IE9uIDIwMTUvNi8xNyAyMjozNiwgQWxleCBXaWxsaWFtc29uIHdyb3RlOgo+Pj4+
-PiBPbiBXZWQsIDIwMTUtMDYtMTcgYXQgMTM6NTIgKzAyMDAsIEpvZXJnIFJvZWRlbGpvcm8gd3Jv
-dGU6Cj4+Pj4+PiBPbiBXZWQsIEp1biAxNywgMjAxNSBhdCAxMDo0Mjo0OUFNICswMDAwLCDojIPl
-hqzlhqwgd3JvdGU6Cj4+Pj4+Pj4gSGkgbWFpbnRhaW5lciwKPj4+Pj4+Pgo+Pj4+Pj4+IFdlIGZv
-dW5kIGEgcHJvYmxlbSB0aGF0IGEgcGFuaWMgaGFwcGVuIHdoZW4gY3B1IHdhcyBob3QtcmVtb3Zl
-ZC4KPj4+Pj4+PiBXZSBhbHNvIHRyYWNlIHRoZSBwcm9ibGVtIGFjY29yZGluZyB0byB0aGUgY2Fs
-bHRyYWNlIGluZm9ybWF0aW9uLgo+Pj4+Pj4+IEFuIGVuZGxlc3MgbG9vcCBoYXBwZW4gYmVjYXVz
-ZSB2YWx1ZSBoZWFkIGlzIG5vdCBlcXVhbCB0byB2YWx1ZQo+Pj4+Pj4+IHRhaWwgZm9yZXZlciBp
-biB0aGUgZnVuY3Rpb24gcWlfY2hlY2tfZmF1bHQoICkuCj4+Pj4+Pj4gVGhlIGxvY2F0aW9uIGNv
-ZGUgaXMgYXMgZm9sbG93czoKPj4+Pj4+Pgo+Pj4+Pj4+Cj4+Pj4+Pj4gZG8gewo+Pj4+Pj4+ICAg
-ICAgICAgICBpZiAocWktPmRlc2Nfc3RhdHVzW2hlYWRdID09IFFJX0lOX1VTRSkKPj4+Pj4+PiAg
-ICAgICAgICAgcWktPmRlc2Nfc3RhdHVzW2hlYWRdID0gUUlfQUJPUlQ7Cj4+Pj4+Pj4gICAgICAg
-ICAgIGhlYWQgPSAoaGVhZCAtIDIgKyBRSV9MRU5HVEgpICUgUUlfTEVOR1RIOwo+Pj4+Pj4+ICAg
-ICAgIH0gd2hpbGUgKGhlYWQgIT0gdGFpbCk7Cj4+Pj4+PiBIbW0sIHRoaXMgY29kZSBpbnRlcmF0
-ZXMgb25seSBvdmVyIGV2ZXJ5IHNlY29uZCBRSSBkZXNjcmlwdG9yLCBhbmQKPj4+Pj4+IHRhaWwK
-Pj4+Pj4+IHByb2JhYmx5IHBvaW50cyB0byBhIGRlc2NyaXB0b3IgdGhhdCBpcyBub3QgaXRlcmF0
-ZWQgb3Zlci4KPj4+Pj4+Cj4+Pj4+PiBKaWFuZywgY2FuIHlvdSBwbGVhc2UgaGF2ZSBhIGxvb2s/
-Cj4+Pj4+IEkgdGhpbmsgdGhhdCBwYXJ0IGlzIG5vcm1hbCwgdGhlIHdheSB3ZSB1c2UgdGhlIHF1
-ZXVlIGlzIHRvIGFsd2F5cwo+Pj4+PiBzdWJtaXQgYSB3b3JrIG9wZXJhdGlvbiBmb2xsb3dlZCBi
-eSBhIHdhaXQgb3BlcmF0aW9uIHNvIHRoYXQgd2UgY2FuCj4+Pj4+IGRldGVybWluZSB0aGUgd29y
-ayBvcGVyYXRpb24gaXMgY29tcGxldGUuICBUaGF0J3MgZG9uZSB2aWEKPj4+Pj4gcWlfc3VibWl0
-X3N5bmMoKS4gIFdlIGhhdmUgaGFkIHNwdXJpb3VzIHJlcG9ydHMgb2YgdGhlIHF1ZXVlIGdldHRp
-bmcKPj4+Pj4gaW1wb3NzaWJseSBvdXQgb2Ygc3luYyB0aG91Z2guICBJIHNhdyBvbmUgdGhhdCB3
-YXMgc29tZWhvdyBsaW5rZWQgdG8KPj4+Pj4gdGhlCj4+Pj4+IEkvTyBBVCBETUEgZW5naW5lLiAg
-Um9sYW5kIERyZWllciBzYXcgc29tZXRoaW5nIHNpbWlsYXJbMV0uIEknbSBub3QKPj4+Pj4gc3Vy
-ZSBpZiB0aGV5J3JlIHJlbGF0ZWQgdG8gdGhpcywgYnV0IG1heWJlIHdvcnRoIGNvbXBhcmluZy4g
-VGhhbmtzLAo+Pj4+IFRoYW5rcywgQWxleCBhbmQgSm9lcmchCj4+Pj4KPj4+PiBIaSBEb25nZG9u
-ZywKPj4+PiAgICAgIENvdWxkIHlvdSBwbGVhc2UgaGVscCB0byBnaXZlIHNvbWUgaW5zdHJ1Y3Rp
-b25zIGFib3V0IGhvdyB0bwo+Pj4+IHJlcHJvZHVjZSB0aGlzIGlzc3VlPyBJIHdpbGwgdHJ5IHRv
-IHJlcHJvZHVjZSBpdCBpZiBwb3NzaWJsZS4KPj4+PiBUaGFua3MhCj4+Pj4gR2VycnkKPj4+IEhp
-IEdlcnJ5LAo+Pj4KPj4+IFdlJ3JlIHJ1bm5pbmcga2VybmVsIDQuMS4wIG9uIGEgNC1zb2NrZXQg
-c3lzdGVtIGFuZCAgd2Ugd2FudCB0bwo+Pj4gb2ZmbGluZSBzb2NrZXQgMS4KPj4+IFN0ZXBzIGFz
-IGZvbGxvd3M6Cj4+Pgo+Pj4gZWNobyAxID4gL3N5cy9maXJtd2FyZS9hY3BpL2hvdHBsdWcvZm9y
-Y2VfcmVtb3ZlCj4+PiBlY2hvIDEgPiAvc3lzL2RldmljZXMvTE5YU1lTVE06MDAvTE5YU1lCVVM6
-MDAvQUNQSTAwMDQ6MDEvZWplY3QKPiBIaSBEb25nZG9uZywKPiAJSSBmYWlsZWQgdG8gcmVwcm9k
-dWNlIHRoaXMgaXNzdWUgb24gbXkgc2lkZS4gU29tZSBwbGVhc2UgaGVscAo+IHRvIGNvbmZpcm0/
-Cj4gMSkgSXMgdGhpcyBpc3N1ZSByZXByb2R1Y2libGUgb24geW91ciBzaWRlPwpZZXMuCj4gMikg
-RG9lcyB0aGlzIGlzc3VlIGhhcHBlbiBpZiB5b3UgZGlzYWJsZSBpcnFiYWxhbmNlIHNlcnZpY2Ug
-b24geW91Cj4gICAgIHN5c3RlbT8KWWVzLgo+IDMpIEhhcyB0aGUgY29ycmVzcG9uZGluZyBQQ0kg
-aG9zdCBicmlkZ2UgYmVlbiByZW1vdmVkIGJlZm9yZSByZW1vdmluZwo+ICAgICB0aGUgc29ja2V0
-PwpObywgd2Ugd2lsbCB0cnkgdG8gcmVtb3ZlIGl0IGJlZm9yZSByZW1vdmluZyB0aGUgc29ja2V0
-IGxhdGVyLgpUaGFua3MgZm9yIHlvdXIgaGVscCwgR2VycnkuCj4KPiA+RnJvbSB0aGUgbG9nIG1l
-c3NhZ2UsIHdlIG9ubHkgbm90aWNlZCBsb2cgbWVzc2FnZXMgZm9yIENQVSBhbmQgbWVtb3J5LAo+
-IGJ1dCBub3QgbWVzc2FnZXMgZm9yIFBDSSAoSU9NTVUpIGRldmljZXMuIEFuZCB0aGlzIGxvZyBt
-ZXNzYWdlCj4gCSJbIDE0OS45NzY0OTNdIGFjcGkgQUNQSTAwMDQ6MDE6IFN0aWxsIG5vdCBwcmVz
-ZW50Igo+IGltcGxpZXMgdGhhdCB0aGUgc29ja2V0IGhhcyBiZWVuIHBvd2VyZWQgb2ZmIGR1cmlu
-ZyB0aGUgZWplY3Rpb24uCj4gU28gdGhlIHN0b3J5IG1heSBiZSB0aGF0IHlvdSBwb3dlcmVkIG9m
-ZiB0aGUgc29ja2V0IHdoaWxlIHRoZSBob3N0Cj4gYnJpZGdlIG9uIHRoZSBzb2NrZXQgaXMgc3Rp
-bGwgaW4gdXNlLgo+IFRoYW5rcyEKPiBHZXJyeQo+Cj4gLgo+CgpfX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlz
-dHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3Jn
-L21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+IOMMU core calls add_device() for every device on the given bus and
+since commit 19762d7095e6392b6ec56c363a6f29b2119488c2 ("iommu: Propagate
+error in add_iommu_group") all error from it are propagated to the iommu
+core. In case of platform bus there are many devices without sysmmu
+controller, so skip them gently instead of returning error, which would
+be propagated up to bus_set_iommu() and cause initialization failure.
+
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+---
+Please queue this patch to v4.2-rcX line. It fixes regression introduced
+by a commit merged in parallel to the exynos iommu patches.
+---
+ drivers/iommu/exynos-iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 97c41b8ab5d9..e7f873253a6b 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1119,8 +1119,9 @@ static int exynos_iommu_add_device(struct device *dev)
+ 	struct iommu_group *group;
+ 	int ret;
+ 
++	/* skip devices which doesn't have sysmmu controller */
+ 	if (!has_sysmmu(dev))
+-		return -ENODEV;
++		return 0;
+ 
+ 	group = iommu_group_get(dev);
+ 
+-- 
+1.9.2
