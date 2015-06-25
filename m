@@ -1,13 +1,16 @@
-From: "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>
-Subject: Re: [PATCH 00/19] Fix Intel IOMMU breakage in kdump kernel
-Date: Thu, 25 Jun 2015 14:40:20 +0800
-Message-ID: <558BA254.7010505@hp.com>
-References: <1434178047-17809-1-git-send-email-joro@8bytes.org>
+From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: RE: [PATCH] iommu/arm-smmu: Fix bug in ARM_SMMU_FEAT_TRANS_OPS
+	condition check
+Date: Thu, 25 Jun 2015 12:29:18 +0530
+Message-ID: <000601d0af14$78105f50$68311df0$@codeaurora.org>
+References: <1435061246-14690-1-git-send-email-sricharan@codeaurora.org>
+	<CAN9JPjGw+abvTX9mCb0M1K5AaxCHzVNx+ccf+iyDo34EL8KzRA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1434178047-17809-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <CAN9JPjGw+abvTX9mCb0M1K5AaxCHzVNx+ccf+iyDo34EL8KzRA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Language: en-us
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,64 +20,26 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, jroedel-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Li, ZhenHua" <zhen-hual-VXdhtT5mjnY@public.gmane.org>, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: 'Baptiste Reynal' <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, 'Linux IOMMU' <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Will Deacon' <will.deacon-5wv7dgnIgG8@public.gmane.org>, 'open list' <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "'moderated list:ARM SMMU DRIVER'" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi all,
-I see Joerg has backported it to sles12 in the commoent of novel
-bugzilla 856382, so I will only backport it to redhat el.
+Hi,
 
-Thanks
-Zhenhua
+> -----Original Message-----
+> From: linux-arm-kernel [mailto:linux-arm-kernel-
+> bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org] On Behalf Of Baptiste Reynal
+> Sent: Tuesday, June 23, 2015 5:43 PM
+> To: Sricharan R
+> Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Linux IOMMU; Will Deacon; open list;
+> moderated list:ARM SMMU DRIVER
+> Subject: Re: [PATCH] iommu/arm-smmu: Fix bug in
+> ARM_SMMU_FEAT_TRANS_OPS condition check
+> 
+> This issue has already been fixed here :
+> http://www.spinics.net/lists/arm-kernel/msg424824.html
+> 
+ Ok, thanks for pointing.
 
-On 06/13/2015 02:47 PM, Joerg Roedel wrote:
-> Hi,
->
-> as David Woodhouse pointed out, my fixes and cleanups for
-> the original patch-set turned out to be a complete rewrite.
-> So to have a cleaner history of the feature and to make
-> backporting easier, here is a rewrite of my changes based on
-> v4.1-rc7.
->
-> Some additional issues have been fixed by this rewrite, like
-> a kdump-kernel boot panic with 'iommu=pt' and support for
-> copying the extended root-entry and context table formats
-> has been added.
->
-> I plan to rebuild the x86/vt-d branch of the iommu tree with
-> these patches.
->
-> Regards,
->
-> 	Joerg
->
-> Joerg Roedel (19):
->    iommu/vt-d: Cleanup log messages
->    iommu/vt-d: Init QI before root entry is allocated
->    iommu/vt-d: Make root entry visible for hardware right after
->      allocation
->    iommu/vt-d: Detect pre enabled translation
->    iommu/vt-d: Copy translation tables from old kernel
->    iommu/vt-d: Do not re-use domain-ids from the old kernel
->    iommu/vt-d: Mark copied context entries
->    iommu/vt-d: Allocate si_domain in init_dmars()
->    iommu/vt-d: Don't do early domain assignment if kdump kernel
->    iommu/vt-d: Don't copy translation tables if RTT bit needs to be
->      changed
->    iommu/vt-d: Don't disable translation prior to OS handover
->    iommu/vt-d: Enable Translation only if it was previously disabled
->    iommu/vt-d: Move EIM detection to intel_prepare_irq_remapping
->    iommu/vt-d: Move QI initializationt to intel_setup_irq_remapping
->    iommu/vt-d: Disable IRQ remapping in intel_prepare_irq_remapping
->    iommu/vt-d: Set IRTA in intel_setup_irq_remapping
->    iommu/vt-d: Copy IR table from old kernel when in kdump mode
->    iommu/vt-d: Make sure copied over IR entries are not reused
->    iommu/vt-d: Don't disable IR when it was previously enabled
->
->   drivers/iommu/dmar.c                |  28 +-
->   drivers/iommu/intel-iommu.c         | 495 ++++++++++++++++++++++++++++--------
->   drivers/iommu/intel_irq_remapping.c | 255 ++++++++++++-------
->   include/linux/intel-iommu.h         |   5 +
->   4 files changed, 573 insertions(+), 210 deletions(-)
->
+Regards,
+ Sricharan
