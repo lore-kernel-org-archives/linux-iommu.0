@@ -1,43 +1,94 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH] iommu/exynos: Skip unsupported devices instead of returning
- -ENODEV
-Date: Thu, 25 Jun 2015 15:10:44 +0200
-Message-ID: <1435237844-25004-1-git-send-email-m.szyprowski@samsung.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Joerg Roedel <joro@8bytes.org>, Inki Dae <inki.dae@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 2/2] arm/smmu: Make use of of_parse_phandle_with_var_args
+Date: Thu, 25 Jun 2015 17:52:28 +0200
+Message-ID: <1435247548-32201-2-git-send-email-joro@8bytes.org>
+References: <1435247548-32201-1-git-send-email-joro@8bytes.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1435247548-32201-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-IOMMU core calls add_device() for every device on the given bus and
-since commit 19762d7095e6392b6ec56c363a6f29b2119488c2 ("iommu: Propagate
-error in add_iommu_group") all error from it are propagated to the iommu
-core. In case of platform bus there are many devices without sysmmu
-controller, so skip them gently instead of returning error, which would
-be propagated up to bus_set_iommu() and cause initialization failure.
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
-Please queue this patch to v4.2-rcX line. It fixes regression introduced
-by a commit merged in parallel to the exynos iommu patches.
----
- drivers/iommu/exynos-iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+The function of_parse_phandle_with_args() can only handle 16
+args, but there are systems that require more (25 in my
+case). So use the newly introduced function
+of_parse_phandle_with_var_args() instead.
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 97c41b8ab5d9..e7f873253a6b 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -1119,8 +1119,9 @@ static int exynos_iommu_add_device(struct device *dev)
- 	struct iommu_group *group;
- 	int ret;
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 66a803b..da4d7ac 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -47,7 +47,7 @@
+ #include "io-pgtable.h"
  
-+	/* skip devices which doesn't have sysmmu controller */
- 	if (!has_sysmmu(dev))
--		return -ENODEV;
-+		return 0;
+ /* Maximum number of stream IDs assigned to a single device */
+-#define MAX_MASTER_STREAMIDS		MAX_PHANDLE_ARGS
++#define MAX_MASTER_STREAMIDS		128
  
- 	group = iommu_group_get(dev);
+ /* Maximum number of context banks per SMMU */
+ #define ARM_SMMU_MAX_CBS		128
+@@ -1699,7 +1699,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 	struct arm_smmu_device *smmu;
+ 	struct device *dev = &pdev->dev;
+ 	struct rb_node *node;
+-	struct of_phandle_args masterspec;
++	struct of_phandle_args *masterspec;
+ 	int num_irqs, i, err;
  
+ 	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
+@@ -1758,15 +1758,19 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 	if (err)
+ 		return err;
+ 
++	masterspec = of_alloc_phandle_args(MAX_MASTER_STREAMIDS);
++	if (!masterspec)
++		return -ENOMEM;
++
+ 	i = 0;
+ 	smmu->masters = RB_ROOT;
+-	while (!of_parse_phandle_with_args(dev->of_node, "mmu-masters",
+-					   "#stream-id-cells", i,
+-					   &masterspec)) {
+-		err = register_smmu_master(smmu, dev, &masterspec);
++	while (!of_parse_phandle_with_var_args(dev->of_node, "mmu-masters",
++					   "#stream-id-cells", i, masterspec,
++					   MAX_MASTER_STREAMIDS)) {
++		err = register_smmu_master(smmu, dev, masterspec);
+ 		if (err) {
+ 			dev_err(dev, "failed to add master %s\n",
+-				masterspec.np->name);
++				masterspec->np->name);
+ 			goto out_put_masters;
+ 		}
+ 
+@@ -1811,6 +1815,9 @@ out_free_irqs:
+ 		free_irq(smmu->irqs[i], smmu);
+ 
+ out_put_masters:
++
++	of_free_phandle_args(masterspec);
++
+ 	for (node = rb_first(&smmu->masters); node; node = rb_next(node)) {
+ 		struct arm_smmu_master *master
+ 			= container_of(node, struct arm_smmu_master, node);
 -- 
-1.9.2
+1.9.1
