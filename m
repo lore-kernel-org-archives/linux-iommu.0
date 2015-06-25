@@ -1,37 +1,78 @@
-From: David Woodhouse <dwmw2@infradead.org>
-Subject: Re: [PATCH 00/19] Fix Intel IOMMU breakage in kdump kernel
-Date: Thu, 25 Jun 2015 09:06:40 +0100
-Message-ID: <1435219600.8688.7.camel@infradead.org>
-References: <1434178047-17809-1-git-send-email-joro@8bytes.org>
-	  <1435066290.12045.2.camel@infradead.org> <20150623140631.GB2724@suse.de>
-	 <1435070334.12045.24.camel@infradead.org> <558BA149.5060603@hp.com>
+From: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: Panic when cpu hot-remove
+Date: Thu, 25 Jun 2015 16:11:36 +0800
+Message-ID: <558BB7B8.7000402@linux.intel.com>
+References: <42BB8332972FC149B81C55A0D41E3A79C07469@jtjnmailbox06.home.langchao.com>
+	<20150617115238.GC27750@8bytes.org>
+	<1434551800.5628.5.camel@redhat.com>
+	<558259BD.7080402@linux.intel.com>
+	<558272E3.4000504@inspur.com> <55827927.4080504@inspur.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <558BA149.5060603@hp.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Li, ZhenHua" <zhen-hual@hp.com>
-Cc: Joerg Roedel <jroedel@suse.de>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, bhe@redhat.com, ddutile@redhat.com, alex.williamson@redhat.com, dyoung@redhat.com, linux-kernel@vger.kernel.org, jroedel@8bytes.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <55827927.4080504-6gUaA8visnnQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: fandongdong <fandd-6gUaA8visnnQT0dZR+AlfA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedeljoro <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Roland Dreier <roland-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, =?UTF-8?B?6Zer5pmT5bOw?= <yanxiaofeng-6gUaA8visnnQT0dZR+AlfA@public.gmane.org>, "jiang.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <jiang.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, =?UTF-8?B?5YiY6ZW/55Sf?= <liuchangsheng-6gUaA8visnnQT0dZR+AlfA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2015-06-25 at 14:35 +0800, Li, ZhenHua wrote:
-> Hi David,
-> It is a bad idea to check the DMI match on "HP". Though I have not se=
-e
-> any similar problems on other systems, I believe there are. Also not
-> all HP systems have such problem.
-
-Yeah, the HP suggestion was a little tongue-in-cheek. Although it does
-seem to be HP who is the main offender in this area =E2=80=94 both the =
-BIOS
-"value subtract" and the habit of doing utterly insane things with the
-IOMMU.
-
-> I agree with a blacklist for devices.
-
-Do you have a list of the problematic ones? I think a blacklist *and*
-an option to enable it for all devices might be the best solution.
-
---=20
-dwmw2
+T24gMjAxNS82LzE4IDE1OjU0LCBmYW5kb25nZG9uZyB3cm90ZToKPiAKPiAKPiDlnKggMjAxNS82
+LzE4IDE1OjI3LCBmYW5kb25nZG9uZyDlhpnpgZM6Cj4+Cj4+Cj4+IOWcqCAyMDE1LzYvMTggMTM6
+NDAsIEppYW5nIExpdSDlhpnpgZM6Cj4+PiBPbiAyMDE1LzYvMTcgMjI6MzYsIEFsZXggV2lsbGlh
+bXNvbiB3cm90ZToKPj4+PiBPbiBXZWQsIDIwMTUtMDYtMTcgYXQgMTM6NTIgKzAyMDAsIEpvZXJn
+IFJvZWRlbGpvcm8gd3JvdGU6Cj4+Pj4+IE9uIFdlZCwgSnVuIDE3LCAyMDE1IGF0IDEwOjQyOjQ5
+QU0gKzAwMDAsIOiMg+WGrOWGrCB3cm90ZToKPj4+Pj4+IEhpIG1haW50YWluZXIsCj4+Pj4+Pgo+
+Pj4+Pj4gV2UgZm91bmQgYSBwcm9ibGVtIHRoYXQgYSBwYW5pYyBoYXBwZW4gd2hlbiBjcHUgd2Fz
+IGhvdC1yZW1vdmVkLgo+Pj4+Pj4gV2UgYWxzbyB0cmFjZSB0aGUgcHJvYmxlbSBhY2NvcmRpbmcg
+dG8gdGhlIGNhbGx0cmFjZSBpbmZvcm1hdGlvbi4KPj4+Pj4+IEFuIGVuZGxlc3MgbG9vcCBoYXBw
+ZW4gYmVjYXVzZSB2YWx1ZSBoZWFkIGlzIG5vdCBlcXVhbCB0byB2YWx1ZQo+Pj4+Pj4gdGFpbCBm
+b3JldmVyIGluIHRoZSBmdW5jdGlvbiBxaV9jaGVja19mYXVsdCggKS4KPj4+Pj4+IFRoZSBsb2Nh
+dGlvbiBjb2RlIGlzIGFzIGZvbGxvd3M6Cj4+Pj4+Pgo+Pj4+Pj4KPj4+Pj4+IGRvIHsKPj4+Pj4+
+ICAgICAgICAgIGlmIChxaS0+ZGVzY19zdGF0dXNbaGVhZF0gPT0gUUlfSU5fVVNFKQo+Pj4+Pj4g
+ICAgICAgICAgcWktPmRlc2Nfc3RhdHVzW2hlYWRdID0gUUlfQUJPUlQ7Cj4+Pj4+PiAgICAgICAg
+ICBoZWFkID0gKGhlYWQgLSAyICsgUUlfTEVOR1RIKSAlIFFJX0xFTkdUSDsKPj4+Pj4+ICAgICAg
+fSB3aGlsZSAoaGVhZCAhPSB0YWlsKTsKPj4+Pj4gSG1tLCB0aGlzIGNvZGUgaW50ZXJhdGVzIG9u
+bHkgb3ZlciBldmVyeSBzZWNvbmQgUUkgZGVzY3JpcHRvciwgYW5kCj4+Pj4+IHRhaWwKPj4+Pj4g
+cHJvYmFibHkgcG9pbnRzIHRvIGEgZGVzY3JpcHRvciB0aGF0IGlzIG5vdCBpdGVyYXRlZCBvdmVy
+Lgo+Pj4+Pgo+Pj4+PiBKaWFuZywgY2FuIHlvdSBwbGVhc2UgaGF2ZSBhIGxvb2s/Cj4+Pj4gSSB0
+aGluayB0aGF0IHBhcnQgaXMgbm9ybWFsLCB0aGUgd2F5IHdlIHVzZSB0aGUgcXVldWUgaXMgdG8g
+YWx3YXlzCj4+Pj4gc3VibWl0IGEgd29yayBvcGVyYXRpb24gZm9sbG93ZWQgYnkgYSB3YWl0IG9w
+ZXJhdGlvbiBzbyB0aGF0IHdlIGNhbgo+Pj4+IGRldGVybWluZSB0aGUgd29yayBvcGVyYXRpb24g
+aXMgY29tcGxldGUuICBUaGF0J3MgZG9uZSB2aWEKPj4+PiBxaV9zdWJtaXRfc3luYygpLiAgV2Ug
+aGF2ZSBoYWQgc3B1cmlvdXMgcmVwb3J0cyBvZiB0aGUgcXVldWUgZ2V0dGluZwo+Pj4+IGltcG9z
+c2libHkgb3V0IG9mIHN5bmMgdGhvdWdoLiAgSSBzYXcgb25lIHRoYXQgd2FzIHNvbWVob3cgbGlu
+a2VkIHRvCj4+Pj4gdGhlCj4+Pj4gSS9PIEFUIERNQSBlbmdpbmUuICBSb2xhbmQgRHJlaWVyIHNh
+dyBzb21ldGhpbmcgc2ltaWxhclsxXS4gSSdtIG5vdAo+Pj4+IHN1cmUgaWYgdGhleSdyZSByZWxh
+dGVkIHRvIHRoaXMsIGJ1dCBtYXliZSB3b3J0aCBjb21wYXJpbmcuIFRoYW5rcywKPj4+IFRoYW5r
+cywgQWxleCBhbmQgSm9lcmchCj4+Pgo+Pj4gSGkgRG9uZ2RvbmcsCj4+PiAgICAgQ291bGQgeW91
+IHBsZWFzZSBoZWxwIHRvIGdpdmUgc29tZSBpbnN0cnVjdGlvbnMgYWJvdXQgaG93IHRvCj4+PiBy
+ZXByb2R1Y2UgdGhpcyBpc3N1ZT8gSSB3aWxsIHRyeSB0byByZXByb2R1Y2UgaXQgaWYgcG9zc2li
+bGUuCj4+PiBUaGFua3MhCj4+PiBHZXJyeQo+PiBIaSBHZXJyeSwKPj4KPj4gV2UncmUgcnVubmlu
+ZyBrZXJuZWwgNC4xLjAgb24gYSA0LXNvY2tldCBzeXN0ZW0gYW5kICB3ZSB3YW50IHRvCj4+IG9m
+ZmxpbmUgc29ja2V0IDEuCj4+IFN0ZXBzIGFzIGZvbGxvd3M6Cj4+Cj4+IGVjaG8gMSA+IC9zeXMv
+ZmlybXdhcmUvYWNwaS9ob3RwbHVnL2ZvcmNlX3JlbW92ZQo+PiBlY2hvIDEgPiAvc3lzL2Rldmlj
+ZXMvTE5YU1lTVE06MDAvTE5YU1lCVVM6MDAvQUNQSTAwMDQ6MDEvZWplY3QKSGkgRG9uZ2Rvbmcs
+CglJIGZhaWxlZCB0byByZXByb2R1Y2UgdGhpcyBpc3N1ZSBvbiBteSBzaWRlLiBTb21lIHBsZWFz
+ZSBoZWxwCnRvIGNvbmZpcm0/CjEpIElzIHRoaXMgaXNzdWUgcmVwcm9kdWNpYmxlIG9uIHlvdXIg
+c2lkZT8KMikgRG9lcyB0aGlzIGlzc3VlIGhhcHBlbiBpZiB5b3UgZGlzYWJsZSBpcnFiYWxhbmNl
+IHNlcnZpY2Ugb24geW91CiAgIHN5c3RlbT8KMykgSGFzIHRoZSBjb3JyZXNwb25kaW5nIFBDSSBo
+b3N0IGJyaWRnZSBiZWVuIHJlbW92ZWQgYmVmb3JlIHJlbW92aW5nCiAgIHRoZSBzb2NrZXQ/CgpG
+cm9tIHRoZSBsb2cgbWVzc2FnZSwgd2Ugb25seSBub3RpY2VkIGxvZyBtZXNzYWdlcyBmb3IgQ1BV
+IGFuZCBtZW1vcnksCmJ1dCBub3QgbWVzc2FnZXMgZm9yIFBDSSAoSU9NTVUpIGRldmljZXMuIEFu
+ZCB0aGlzIGxvZyBtZXNzYWdlCgkiWyAxNDkuOTc2NDkzXSBhY3BpIEFDUEkwMDA0OjAxOiBTdGls
+bCBub3QgcHJlc2VudCIKaW1wbGllcyB0aGF0IHRoZSBzb2NrZXQgaGFzIGJlZW4gcG93ZXJlZCBv
+ZmYgZHVyaW5nIHRoZSBlamVjdGlvbi4KU28gdGhlIHN0b3J5IG1heSBiZSB0aGF0IHlvdSBwb3dl
+cmVkIG9mZiB0aGUgc29ja2V0IHdoaWxlIHRoZSBob3N0CmJyaWRnZSBvbiB0aGUgc29ja2V0IGlz
+IHN0aWxsIGluIHVzZS4KVGhhbmtzIQpHZXJyeQoKX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4
+LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFu
+L2xpc3RpbmZvL2lvbW11
