@@ -1,7 +1,8 @@
 From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 1/8] iommu/arm-smmu: fix the assignment of log2size field
-Date: Fri, 26 Jun 2015 16:32:57 +0800
-Message-ID: <1435307584-9812-2-git-send-email-thunder.leizhen@huawei.com>
+Subject: [PATCH 4/8] iommu/arm-smmu: set EPD1 to disable TT1 translation table
+	walk
+Date: Fri, 26 Jun 2015 16:33:00 +0800
+Message-ID: <1435307584-9812-5-git-send-email-thunder.leizhen@huawei.com>
 References: <1435307584-9812-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,52 +22,33 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-z
 Cc: Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Add a new local variable to store the value of log2size, so that it will
-not be overridden by L1 table size.
+Now we only use TT0 translation, disable TT1 translation will safer.
 
 Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index f141301..ba7fe2d 100644
+index 43120ad..6d6712e 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2021,19 +2021,19 @@ static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
- {
- 	void *strtab;
- 	u64 reg;
--	u32 size;
-+	u32 size, log2size;
- 	int ret;
- 	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+@@ -285,6 +285,7 @@
+ #define ARM64_TCR_EPD1_MASK		0x1UL
 
- 	/* Calculate the L1 size, capped to the SIDSIZE */
--	size = STRTAB_L1_SZ_SHIFT - (ilog2(STRTAB_L1_DESC_DWORDS) + 3);
--	size = min(size, smmu->sid_bits - STRTAB_SPLIT);
--	if (size + STRTAB_SPLIT < smmu->sid_bits)
-+	log2size = STRTAB_L1_SZ_SHIFT - (ilog2(STRTAB_L1_DESC_DWORDS) + 3);
-+	log2size = min(log2size, smmu->sid_bits - STRTAB_SPLIT);
-+	if (log2size + STRTAB_SPLIT < smmu->sid_bits)
- 		dev_warn(smmu->dev,
- 			 "2-level strtab only covers %u/%u bits of SID\n",
--			 size + STRTAB_SPLIT, smmu->sid_bits);
-+			 log2size + STRTAB_SPLIT, smmu->sid_bits);
+ #define CTXDESC_CD_0_ENDI		(1UL << 15)
++#define CTXDESC_CD_0_EPD1		(1UL << 30)
+ #define CTXDESC_CD_0_V			(1UL << 31)
 
--	cfg->num_l1_ents = 1 << size;
-+	cfg->num_l1_ents = 1 << log2size;
- 	size = cfg->num_l1_ents * (STRTAB_L1_DESC_DWORDS << 3);
- 	strtab = dma_zalloc_coherent(smmu->dev, size, &cfg->strtab_dma,
- 				     GFP_KERNEL);
-@@ -2047,7 +2047,7 @@ static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
+ #define CTXDESC_CD_0_TCR_IPS_SHIFT	32
+@@ -893,7 +894,7 @@ static void arm_smmu_write_ctx_desc(struct arm_smmu_device *smmu,
+ #endif
+ 	      CTXDESC_CD_0_R | CTXDESC_CD_0_A | CTXDESC_CD_0_ASET_PRIVATE |
+ 	      CTXDESC_CD_0_AA64 | (u64)cfg->cd.asid << CTXDESC_CD_0_ASID_SHIFT |
+-	      CTXDESC_CD_0_V;
++	      CTXDESC_CD_0_EPD1 | CTXDESC_CD_0_V;
+ 	cfg->cdptr[0] = cpu_to_le64(val);
 
- 	/* Configure strtab_base_cfg for 2 levels */
- 	reg  = STRTAB_BASE_CFG_FMT_2LVL;
--	reg |= (size & STRTAB_BASE_CFG_LOG2SIZE_MASK)
-+	reg |= (log2size & STRTAB_BASE_CFG_LOG2SIZE_MASK)
- 		<< STRTAB_BASE_CFG_LOG2SIZE_SHIFT;
- 	reg |= (STRTAB_SPLIT & STRTAB_BASE_CFG_SPLIT_MASK)
- 		<< STRTAB_BASE_CFG_SPLIT_SHIFT;
+ 	val = cfg->cd.ttbr & CTXDESC_CD_1_TTB0_MASK << CTXDESC_CD_1_TTB0_SHIFT;
 --
 1.8.0
