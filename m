@@ -1,14 +1,12 @@
 From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 7/8] iommu/arm-smmu: enlarge STRTAB_L1_SZ_SHIFT to support
-	larger sidsize
-Date: Fri, 26 Jun 2015 16:33:03 +0800
-Message-ID: <1435307584-9812-8-git-send-email-thunder.leizhen@huawei.com>
-References: <1435307584-9812-1-git-send-email-thunder.leizhen@huawei.com>
+Subject: [PATCH 0/8] iommu/arm-smmu: bugfixs and add support for non-pci
+	devices
+Date: Fri, 26 Jun 2015 16:32:56 +0800
+Message-ID: <1435307584-9812-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1435307584-9812-1-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,27 +20,29 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-z
 Cc: Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Because we will choose the minimum value between STRTAB_L1_SZ_SHIFT and
-IDR1.SIDSIZE, so enlarge STRTAB_L1_SZ_SHIFT will not impact the platforms
-whose IDR1.SIDSIZE is smaller than old STRTAB_L1_SZ_SHIFT value.
+As Documentation\devicetree\bindings\iommu\iommu.txt mentioned, a master may
+belongs to many SMMUs or have more than one device-id(stream id). But on current
+arm/arm64 platforms, a master with only one stream id. So I directly add two
+members(of_smmu and device-id) in struct dev_archdata, and only support a master
+with only one stream id. If some platforms that a master belongs to more than one
+SMMUs or have more than one device-id, we should dynamic memory allocation to record
+all information.
 
-Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Zhen Lei (8):
+  iommu/arm-smmu: fix the assignment of log2size field
+  iommu/arm-smmu: fix the index calculation of strtab
+  iommu/arm-smmu: fix the values of ARM64_TCR_IRGN0_SHIFT and
+    ARM64_TCR_ORGN0_SHIFT
+  iommu/arm-smmu: set EPD1 to disable TT1 translation table walk
+  iommu/arm-smmu: rename __arm_smmu_get_pci_sid
+  iommu/arm-smmu: add support for non-pci devices
+  iommu/arm-smmu: enlarge STRTAB_L1_SZ_SHIFT to support larger sidsize
+  iommu/arm-smmu: suppress fault information about CMD_PREFETCH_CONFIG
+    execution
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 87c3d9b..d799feb 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -206,7 +206,7 @@
-  * Linear: Enough to cover 1 << IDR1.SIDSIZE entries
-  * 2lvl: 8k L1 entries, 256 lazy entries per table (each table covers a PCI bus)
-  */
--#define STRTAB_L1_SZ_SHIFT		16
-+#define STRTAB_L1_SZ_SHIFT		20
- #define STRTAB_SPLIT			8
+ arch/arm64/include/asm/device.h |   2 +
+ drivers/iommu/arm-smmu-v3.c     | 135 +++++++++++++++++++++++++++++++++-------
+ 2 files changed, 116 insertions(+), 21 deletions(-)
 
- #define STRTAB_L1_DESC_DWORDS		1
 --
 1.8.0
