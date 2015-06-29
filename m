@@ -1,16 +1,16 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 7/8] iommu/arm-smmu: enlarge STRTAB_L1_SZ_SHIFT to
-	support larger sidsize
-Date: Mon, 29 Jun 2015 18:35:39 +0100
-Message-ID: <20150629173539.GM17474@arm.com>
+Subject: Re: [PATCH 8/8] iommu/arm-smmu: suppress fault information about
+	CMD_PREFETCH_CONFIG execution
+Date: Mon, 29 Jun 2015 18:49:09 +0100
+Message-ID: <20150629174909.GN17474@arm.com>
 References: <1435307584-9812-1-git-send-email-thunder.leizhen@huawei.com>
-	<1435307584-9812-8-git-send-email-thunder.leizhen@huawei.com>
+	<1435307584-9812-9-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1435307584-9812-8-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1435307584-9812-9-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,31 +24,73 @@ To: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 Cc: "huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 26, 2015 at 09:33:03AM +0100, Zhen Lei wrote:
-> Because we will choose the minimum value between STRTAB_L1_SZ_SHIFT and
-> IDR1.SIDSIZE, so enlarge STRTAB_L1_SZ_SHIFT will not impact the platforms
-> whose IDR1.SIDSIZE is smaller than old STRTAB_L1_SZ_SHIFT value.
+On Fri, Jun 26, 2015 at 09:33:04AM +0100, Zhen Lei wrote:
+> Some broken SMMUv3 devices treat CMD_PREFETCH_CONFIG as illegal command,
+> it's ugly to print error information. CMD_PREFETCH_CONFIG is just used to
+> prefetch the configuration for a specified StreamID, without this command
+> will not impact SMMUv3 function.
 > 
 > Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 > ---
->  drivers/iommu/arm-smmu-v3.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/iommu/arm-smmu-v3.c | 18 ++++++++++++++----
+>  1 file changed, 14 insertions(+), 4 deletions(-)
 > 
 > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 87c3d9b..d799feb 100644
+> index d799feb..3971aef 100644
 > --- a/drivers/iommu/arm-smmu-v3.c
 > +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -206,7 +206,7 @@
->   * Linear: Enough to cover 1 << IDR1.SIDSIZE entries
->   * 2lvl: 8k L1 entries, 256 lazy entries per table (each table covers a PCI bus)
->   */
-> -#define STRTAB_L1_SZ_SHIFT		16
-> +#define STRTAB_L1_SZ_SHIFT		20
->  #define STRTAB_SPLIT			8
+> @@ -813,6 +813,7 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
+>  	};
 > 
->  #define STRTAB_L1_DESC_DWORDS		1
+>  	int i;
+> +	u32 opcode;
+>  	u64 cmd[CMDQ_ENT_DWORDS];
+>  	struct arm_smmu_queue *q = &smmu->cmdq.q;
+>  	u32 cons = readl_relaxed(q->cons_reg);
+> @@ -821,15 +822,14 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
+>  		.opcode = CMDQ_OP_CMD_SYNC,
+>  	};
+> 
+> -	dev_err(smmu->dev, "CMDQ error (cons 0x%08x): %s\n", cons,
+> -		cerror_str[idx]);
+> -
+>  	switch (idx) {
+>  	case CMDQ_ERR_CERROR_ILL_IDX:
+>  		break;
+>  	case CMDQ_ERR_CERROR_ABT_IDX:
+> -		dev_err(smmu->dev, "retrying command fetch\n");
+>  	case CMDQ_ERR_CERROR_NONE_IDX:
+> +		dev_err(smmu->dev, "CMDQ error (cons 0x%08x): %s\n", cons,
+> +			cerror_str[idx]);
+> +		dev_err(smmu->dev, "retrying command execution\n");
 
-Can you update the comment too, please, to say that we now have 128k entries
-at level 1?
+Why are you making this (unrelated) change?
+
+Out of interest, did the gerror code manage to turn the prefetch into
+a SYNC, as intended?
+
+>  		return;
+>  	}
+> 
+> @@ -838,10 +838,20 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
+>  	 * not to touch any of the shadow cmdq state.
+>  	 */
+>  	queue_read(cmd, Q_ENT(q, idx), q->ent_dwords);
+> +
+> +	/*
+> +	 * Some broken SMMUv3 devices treat CMD_PREFETCH_CONFIG as illegal
+> +	 * command, it's ugly to print error information.
+> +	 */
+> +	opcode = (cmd[0] >> CMDQ_0_OP_SHIFT) & CMDQ_0_OP_MASK;
+> +	if (opcode == CMDQ_OP_PREFETCH_CFG)
+> +		goto skip_error_command;
+> +
+
+I think a better way to fix this would be to add a quick to the device-tree
+along the lines of "hisilicon,broken-prefetch-cmd" which we could check
+before issuing the prefetch command in arm_smmu_write_strtab_ent.
+
+Something along the lines of the arm_smmu_options in arm-smmu.c would be
+a good basis for quirks.
 
 Will
