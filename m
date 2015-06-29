@@ -1,16 +1,14 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 8/8] iommu/arm-smmu: suppress fault information about
-	CMD_PREFETCH_CONFIG execution
-Date: Mon, 29 Jun 2015 18:49:09 +0100
-Message-ID: <20150629174909.GN17474@arm.com>
-References: <1435307584-9812-1-git-send-email-thunder.leizhen@huawei.com>
-	<1435307584-9812-9-git-send-email-thunder.leizhen@huawei.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: dma_ops_domain_alloc causes kernel 4.1.0-next-20150626+ panic
+Date: Mon, 29 Jun 2015 21:34:02 +0200
+Message-ID: <20150629193402.GM18569@8bytes.org>
+References: <CAPBX1x+zagVVYebbXU0M7VkEaDkzvqBGnkt6PW_N42fRQRQ9Gg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1435307584-9812-9-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <CAPBX1x+zagVVYebbXU0M7VkEaDkzvqBGnkt6PW_N42fRQRQ9Gg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,77 +18,25 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: "huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: George Wang <xuw2015-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 26, 2015 at 09:33:04AM +0100, Zhen Lei wrote:
-> Some broken SMMUv3 devices treat CMD_PREFETCH_CONFIG as illegal command,
-> it's ugly to print error information. CMD_PREFETCH_CONFIG is just used to
-> prefetch the configuration for a specified StreamID, without this command
-> will not impact SMMUv3 function.
+On Tue, Jun 30, 2015 at 01:44:34AM +0800, George Wang wrote:
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> index d3e5e9a..4f6da17 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -1882,6 +1882,7 @@ static struct dma_ops_domain *dma_ops_domain_alloc(void)
+>                 return NULL;
 > 
-> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu-v3.c | 18 ++++++++++++++----
->  1 file changed, 14 insertions(+), 4 deletions(-)
+>         spin_lock_init(&dma_dom->domain.lock);
+> +       mutex_init(&dma_dom->domain.api_lock);
 > 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index d799feb..3971aef 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -813,6 +813,7 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
->  	};
-> 
->  	int i;
-> +	u32 opcode;
->  	u64 cmd[CMDQ_ENT_DWORDS];
->  	struct arm_smmu_queue *q = &smmu->cmdq.q;
->  	u32 cons = readl_relaxed(q->cons_reg);
-> @@ -821,15 +822,14 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
->  		.opcode = CMDQ_OP_CMD_SYNC,
->  	};
-> 
-> -	dev_err(smmu->dev, "CMDQ error (cons 0x%08x): %s\n", cons,
-> -		cerror_str[idx]);
-> -
->  	switch (idx) {
->  	case CMDQ_ERR_CERROR_ILL_IDX:
->  		break;
->  	case CMDQ_ERR_CERROR_ABT_IDX:
-> -		dev_err(smmu->dev, "retrying command fetch\n");
->  	case CMDQ_ERR_CERROR_NONE_IDX:
-> +		dev_err(smmu->dev, "CMDQ error (cons 0x%08x): %s\n", cons,
-> +			cerror_str[idx]);
-> +		dev_err(smmu->dev, "retrying command execution\n");
+> When I initialize the api_lock, then I can go forward with another problem.
 
-Why are you making this (unrelated) change?
+How do you trigger this? The DMA-API domains are not used via the
+IOMMU-API yet, so the initializing the api-lock for it shouldn't matter.
 
-Out of interest, did the gerror code manage to turn the prefetch into
-a SYNC, as intended?
 
->  		return;
->  	}
-> 
-> @@ -838,10 +838,20 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
->  	 * not to touch any of the shadow cmdq state.
->  	 */
->  	queue_read(cmd, Q_ENT(q, idx), q->ent_dwords);
-> +
-> +	/*
-> +	 * Some broken SMMUv3 devices treat CMD_PREFETCH_CONFIG as illegal
-> +	 * command, it's ugly to print error information.
-> +	 */
-> +	opcode = (cmd[0] >> CMDQ_0_OP_SHIFT) & CMDQ_0_OP_MASK;
-> +	if (opcode == CMDQ_OP_PREFETCH_CFG)
-> +		goto skip_error_command;
-> +
-
-I think a better way to fix this would be to add a quick to the device-tree
-along the lines of "hisilicon,broken-prefetch-cmd" which we could check
-before issuing the prefetch command in arm_smmu_write_strtab_ent.
-
-Something along the lines of the arm_smmu_options in arm-smmu.c would be
-a good basis for quirks.
-
-Will
+	Joerg
