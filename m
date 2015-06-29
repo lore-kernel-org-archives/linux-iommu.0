@@ -1,15 +1,14 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH] iommu: Ignore -ENODEV errors from add_device call-back
-	returning -ENODEV
-Date: Mon, 29 Jun 2015 10:53:43 +0200
-Message-ID: <55910797.7090709@samsung.com>
-References: <1435237844-25004-1-git-send-email-m.szyprowski@samsung.com>
-	<20150629083534.GG18569@8bytes.org>
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [PATCH 03/22] iommu: Propagate error in add_iommu_group
+Date: Mon, 29 Jun 2015 11:28:40 +0200
+Message-ID: <7180470.n5cCZefX9d@diego>
+References: <1432831305-11126-1-git-send-email-joro@8bytes.org>
+	<1432831305-11126-4-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <20150629083534.GG18569-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1432831305-11126-4-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,82 +18,97 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shaik Ameer Basha <shaik.ameer-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Javier Martinez Canillas <javier-0uQlZySMnqxg9hUCZPvPmw@public.gmane.org>, Cho KyongHo <pullip.cho-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+Hi Joerg,
 
-On 2015-06-29 10:35, Joerg Roedel wrote:
-> Hi Marek,
->
-> On Thu, Jun 25, 2015 at 03:10:44PM +0200, Marek Szyprowski wrote:
->> +	/* skip devices which doesn't have sysmmu controller */
->>   	if (!has_sysmmu(dev))
->> -		return -ENODEV;
->> +		return 0;
-> Thanks for reporting this! But I think that the -ENODEV return value
-> could be of use for the iommu core in the future. Can you please try the
-> attached patch, which just ignores -ENODEV as a return value from
-> add_device?
->
-> >From 3c9e7507e93ff6c6e05e6ee2cb123b5d35d8c412 Mon Sep 17 00:00:00 2001
+
+Am Donnerstag, 28. Mai 2015, 18:41:26 schrieb Joerg Roedel:
 > From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> Date: Mon, 29 Jun 2015 10:16:08 +0200
-> Subject: [PATCH] iommu: Ignore -ENODEV errors from add_device call-back
->
-> The -ENODEV error just means that the device is not
-> translated by an IOMMU. We shouldn't bail out of iommu
-> driver initialization when that happens, as this is a common
-> scenario on ARM.
->
-> No returning -ENODEV in the drivers would be a bad idea, as
-> the IOMMU core would have no indication whether a device is
-> translated or not. This information is not used at the
-> moment, but will probably be in the future.
->
+> 
+> Make sure any errors reported from the IOMMU drivers get
+> progapated back to the IOMMU core.
+> 
 > Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Works fine!
-
-Tested-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+sorry that this series slipped through my inbox without testing somehow. 
+Anyway, it seems to have now made its way in the merge-window and everything 
+on the Rockchip side still works - except this patch.
 
 > ---
->   drivers/iommu/iommu.c | 13 ++++++++++++-
->   1 file changed, 12 insertions(+), 1 deletion(-)
->
+>  drivers/iommu/iommu.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+> 
 > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 49e7542..f286090 100644
+> index 755e488..9c9336a 100644
 > --- a/drivers/iommu/iommu.c
 > +++ b/drivers/iommu/iommu.c
-> @@ -847,13 +847,24 @@ static int add_iommu_group(struct device *dev, void *data)
->   {
->   	struct iommu_callback_data *cb = data;
->   	const struct iommu_ops *ops = cb->ops;
-> +	int ret;
->   
->   	if (!ops->add_device)
->   		return 0;
->   
->   	WARN_ON(dev->iommu_group);
->   
-> -	return ops->add_device(dev);
-> +	ret = ops->add_device(dev);
-> +
-> +	/*
-> +	 * We ignore -ENODEV errors for now, as they just mean that the
-> +	 * device is not translated by an IOMMU. We still care about
-> +	 * other errors and fail to initialize when they happen.
-> +	 */
-> +	if (ret == -ENODEV)
-> +		ret = 0;
-> +
-> +	return ret;
->   }
->   
->   static int remove_iommu_group(struct device *dev, void *data)
+> @@ -750,9 +750,7 @@ static int add_iommu_group(struct device *dev, void
+> *data)
+> 
+>  	WARN_ON(dev->iommu_group);
+> 
+> -	ops->add_device(dev);
+> -
+> -	return 0;
+> +	return ops->add_device(dev);
+>  }
+> 
+>  static int iommu_bus_notifier(struct notifier_block *nb,
 
-Best regards
+The Rockchip iommu uses bus_set_ops to set its iommu-ops for the platform
+bus and currently returns -ENODEV if it encounters a platform_devices that
+does not have an iommu. As add_iommu_group ignored these returns
+till now this worked, but of course starts to fail now.
+
+All two invocations of the add_device callback ignored (or still ignore) the
+return value so I've come with the following small patch to fix the breakage
+that now exists in the 4.2 tree.
+
+There is probably a better solution possible in the longer term, likely
+similar to what Samsung does, but I'm not sure yet how this would work
+with our drm device that needs an iommu mapping without having an
+iommu (the iommus being attached to the crtc-components).
+
+
+Heiko
+
+
+------------- 8< ------------------
+From: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Date: Sun, 28 Jun 2015 12:50:01 +0200
+Subject: [PATCH] iommu/rockchip: ignore non-master devices in rk_iommu_add_device
+
+During init we set the rockchip iommu ops as bus_ops for the platform bus.
+While all Rockchip devices implementing an iommu use these same ops, there
+are also platform devices without iommu. Until recently bus_set_iommu
+ignored errors from the add_device callback and we simply returned -ENODEV
+for devices without iommu. But we can also simply ignore devices without
+iommu which simply ends up doing the same as before the iommu change that
+began checking add_device return values.
+
+Signed-off-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Fixes: 19762d7095e6 ("iommu: Propagate error in add_iommu_group")
+---
+ drivers/iommu/rockchip-iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index ebf0adb..63bcf48 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -931,8 +931,9 @@ static int rk_iommu_add_device(struct device *dev)
+ 	struct iommu_group *group;
+ 	int ret;
+ 
++	/* nothing to do if device does not have an iommu */
+ 	if (!rk_iommu_is_dev_iommu_master(dev))
+-		return -ENODEV;
++		return 0;
+ 
+ 	group = iommu_group_get(dev);
+ 	if (!group) {
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+2.1.4
