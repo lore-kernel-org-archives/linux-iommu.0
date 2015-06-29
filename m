@@ -1,47 +1,81 @@
-From: SF Markus Elfring <elfring@users.sourceforge.net>
-Subject: [PATCH] iommu/arm-smmu: Delete an unnecessary check before the function
- call "free_io_pgtable_ops"
-Date: Sun, 28 Jun 2015 16:05:13 +0200
-Message-ID: <558FFF19.1060402@users.sourceforge.net>
-References: <5307CAA2.8060406@users.sourceforge.net> <alpine.DEB.2.02.1402212321410.2043@localhost6.localdomain6> <530A086E.8010901@users.sourceforge.net> <alpine.DEB.2.02.1402231635510.1985@localhost6.localdomain6> <530A72AA.3000601@users.sourceforge.net> <alpine.DEB.2.02.1402240658210.2090@localhost6.localdomain6> <530B5FB6.6010207@users.sourceforge.net> <alpine.DEB.2.10.1402241710370.2074@hadrien> <530C5E18.1020800@users.sourceforge.net> <alpine.DEB.2.10.1402251014170.2080@hadrien> <530CD2C4.4050903@users.sourceforge.net> <alpine.DEB.2.10.1402251840450.7035@hadrien> <530CF8FF.8080600@users.sourceforge.net> <alpine.DEB.2.02.1402252117150.2047@localhost6.localdomain6> <530DD06F.4090703@users.sourceforge.net> <alpine.DEB.2.02.1402262129250.2221@localhost6.localdomain6> <5317A59D.4@users.so
- urceforge.net>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH] iommu: Ignore -ENODEV errors from add_device call-back
+ returning -ENODEV
+Date: Mon, 29 Jun 2015 10:35:34 +0200
+Message-ID: <20150629083534.GG18569@8bytes.org>
+References: <1435237844-25004-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <kernel-janitors-owner@vger.kernel.org>
-In-Reply-To: <5317A59D.4@users.sourceforge.net>
-Sender: kernel-janitors-owner@vger.kernel.org
-To: =?windows-1252?Q?J=F6rg_R=F6del?= <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org
-Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org, Julia Lawall <julia.lawall@lip6.fr>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1435237844-25004-1-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, Shaik Ameer Basha <shaik.ameer@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Inki Dae <inki.dae@samsung.com>, Javier Martinez Canillas <javier@dowhile0.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Sun, 28 Jun 2015 15:55:11 +0200
+Hi Marek,
 
-The free_io_pgtable_ops() function tests whether its argument is NULL
-and then returns immediately. Thus the test around the call is not needed.
+On Thu, Jun 25, 2015 at 03:10:44PM +0200, Marek Szyprowski wrote:
+> +	/* skip devices which doesn't have sysmmu controller */
+>  	if (!has_sysmmu(dev))
+> -		return -ENODEV;
+> +		return 0;
 
-This issue was detected by using the Coccinelle software.
+Thanks for reporting this! But I think that the -ENODEV return value
+could be of use for the iommu core in the future. Can you please try the
+attached patch, which just ignores -ENODEV as a return value from
+add_device?
 
-Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+>From 3c9e7507e93ff6c6e05e6ee2cb123b5d35d8c412 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Mon, 29 Jun 2015 10:16:08 +0200
+Subject: [PATCH] iommu: Ignore -ENODEV errors from add_device call-back
+
+The -ENODEV error just means that the device is not
+translated by an IOMMU. We shouldn't bail out of iommu
+driver initialization when that happens, as this is a common
+scenario on ARM.
+
+No returning -ENODEV in the drivers would be a bad idea, as
+the IOMMU core would have no indication whether a device is
+translated or not. This information is not used at the
+moment, but will probably be in the future.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/arm-smmu-v3.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/iommu/iommu.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index f141301..8e9ec81 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1389,8 +1389,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 49e7542..f286090 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -847,13 +847,24 @@ static int add_iommu_group(struct device *dev, void *data)
+ {
+ 	struct iommu_callback_data *cb = data;
+ 	const struct iommu_ops *ops = cb->ops;
++	int ret;
  
--	if (smmu_domain->pgtbl_ops)
--		free_io_pgtable_ops(smmu_domain->pgtbl_ops);
-+	free_io_pgtable_ops(smmu_domain->pgtbl_ops);
+ 	if (!ops->add_device)
+ 		return 0;
  
- 	/* Free the CD and ASID, if we allocated them */
- 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
+ 	WARN_ON(dev->iommu_group);
+ 
+-	return ops->add_device(dev);
++	ret = ops->add_device(dev);
++
++	/*
++	 * We ignore -ENODEV errors for now, as they just mean that the
++	 * device is not translated by an IOMMU. We still care about
++	 * other errors and fail to initialize when they happen.
++	 */
++	if (ret == -ENODEV)
++		ret = 0;
++
++	return ret;
+ }
+ 
+ static int remove_iommu_group(struct device *dev, void *data)
 -- 
-2.4.4
-
+1.8.4.5
