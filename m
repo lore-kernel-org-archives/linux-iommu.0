@@ -1,14 +1,15 @@
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH 03/22] iommu: Propagate error in add_iommu_group
-Date: Mon, 29 Jun 2015 21:55:28 +0200
-Message-ID: <119636597.cTShkBsF28@diego>
-References: <1432831305-11126-1-git-send-email-joro@8bytes.org>
-	<7180470.n5cCZefX9d@diego> <20150629140637.GK18569@8bytes.org>
+From: leizhen <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/8] iommu/arm-smmu: fix the assignment of log2size field
+Date: Tue, 30 Jun 2015 11:47:38 +0800
+Message-ID: <5592115A.8000502@huawei.com>
+References: <1435307584-9812-1-git-send-email-thunder.leizhen@huawei.com>
+	<1435307584-9812-2-git-send-email-thunder.leizhen@huawei.com>
+	<20150629170517.GH17474@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150629140637.GK18569-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20150629170517.GH17474-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,41 +19,101 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+On 2015/6/30 1:05, Will Deacon wrote:
+> Hi Zhen Lei,
+> 
+> On Fri, Jun 26, 2015 at 09:32:57AM +0100, Zhen Lei wrote:
+>> Add a new local variable to store the value of log2size, so that it will
+>> not be overridden by L1 table size.
+>>
+>> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+>> ---
+>>  drivers/iommu/arm-smmu-v3.c | 14 +++++++-------
+>>  1 file changed, 7 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>> index f141301..ba7fe2d 100644
+>> --- a/drivers/iommu/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm-smmu-v3.c
+>> @@ -2021,19 +2021,19 @@ static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
+>>  {
+>>  	void *strtab;
+>>  	u64 reg;
+>> -	u32 size;
+>> +	u32 size, log2size;
+>>  	int ret;
+>>  	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+>>
+>>  	/* Calculate the L1 size, capped to the SIDSIZE */
+>> -	size = STRTAB_L1_SZ_SHIFT - (ilog2(STRTAB_L1_DESC_DWORDS) + 3);
+>> -	size = min(size, smmu->sid_bits - STRTAB_SPLIT);
+>> -	if (size + STRTAB_SPLIT < smmu->sid_bits)
+>> +	log2size = STRTAB_L1_SZ_SHIFT - (ilog2(STRTAB_L1_DESC_DWORDS) + 3);
+>> +	log2size = min(log2size, smmu->sid_bits - STRTAB_SPLIT);
+>> +	if (log2size + STRTAB_SPLIT < smmu->sid_bits)
+> 
+> I still think this is wrong. LOG2SIZE should correspond to the whole
+> stream-table, not just the first level. How about the (totally untested)
+> patch below, instead?
 
-Am Montag, 29. Juni 2015, 16:06:37 schrieb Joerg Roedel:
-> On Mon, Jun 29, 2015 at 11:28:40AM +0200, Heiko St=FCbner wrote:
-> > The Rockchip iommu uses bus_set_ops to set its iommu-ops for the platfo=
-rm
-> > bus and currently returns -ENODEV if it encounters a platform_devices t=
-hat
-> > does not have an iommu. As add_iommu_group ignored these returns
-> > till now this worked, but of course starts to fail now.
-> > =
+I tested the patch below, It's passed.
 
-> > All two invocations of the add_device callback ignored (or still ignore)
-> > the return value so I've come with the following small patch to fix the
-> > breakage that now exists in the 4.2 tree.
-> > =
+I use log2size, because this is the field name in SMMU_STRTAB_BASE_CFG. In fact,
+it means log2(entries). Yes, I also think log2size is confused. So, I prefer yours.
 
-> > There is probably a better solution possible in the longer term, likely
-> > similar to what Samsung does, but I'm not sure yet how this would work
-> > with our drm device that needs an iommu mapping without having an
-> > iommu (the iommus being attached to the crtc-components).
-> =
-
-> Btw, if you want to test the fix too, here is the link:
-> =
-
-> 	http://lists.linuxfoundation.org/pipermail/iommu/2015-June/013508.html
-
-yep, works like a charm and fixes the issue. So if helpful:
-Tested-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-
-
-Thanks
-Heiko
+> 
+> Will
+> 
+> --->8
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 8e9ec81ce4bb..1942a45f68b2 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -2020,21 +2020,23 @@ static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
+>  {
+>  	void *strtab;
+>  	u64 reg;
+> -	u32 size;
+> +	u32 size, l1size;
+>  	int ret;
+>  	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+>  
+>  	/* Calculate the L1 size, capped to the SIDSIZE */
+>  	size = STRTAB_L1_SZ_SHIFT - (ilog2(STRTAB_L1_DESC_DWORDS) + 3);
+>  	size = min(size, smmu->sid_bits - STRTAB_SPLIT);
+> -	if (size + STRTAB_SPLIT < smmu->sid_bits)
+> +	cfg->num_l1_ents = 1 << size;
+> +
+> +	size += STRTAB_SPLIT;
+> +	if (size < smmu->sid_bits)
+>  		dev_warn(smmu->dev,
+>  			 "2-level strtab only covers %u/%u bits of SID\n",
+> -			 size + STRTAB_SPLIT, smmu->sid_bits);
+> +			 size, smmu->sid_bits);
+>  
+> -	cfg->num_l1_ents = 1 << size;
+> -	size = cfg->num_l1_ents * (STRTAB_L1_DESC_DWORDS << 3);
+> -	strtab = dma_zalloc_coherent(smmu->dev, size, &cfg->strtab_dma,
+> +	l1size = cfg->num_l1_ents * (STRTAB_L1_DESC_DWORDS << 3);
+> +	strtab = dma_zalloc_coherent(smmu->dev, l1size, &cfg->strtab_dma,
+>  				     GFP_KERNEL);
+>  	if (!strtab) {
+>  		dev_err(smmu->dev,
+> @@ -2055,8 +2057,7 @@ static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
+>  	ret = arm_smmu_init_l1_strtab(smmu);
+>  	if (ret)
+>  		dma_free_coherent(smmu->dev,
+> -				  cfg->num_l1_ents *
+> -				  (STRTAB_L1_DESC_DWORDS << 3),
+> +				  l1size,
+>  				  strtab,
+>  				  cfg->strtab_dma);
+>  	return ret;
+> 
+> .
+> 
