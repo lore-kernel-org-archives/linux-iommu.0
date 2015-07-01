@@ -1,40 +1,84 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 0/2] iommu/arm-smmu: fixes for 4.2
-Date: Wed, 1 Jul 2015 10:12:50 +0100
-Message-ID: <20150701091250.GA27223@arm.com>
-References: <1435596463-19247-1-git-send-email-will.deacon@arm.com>
-	<20150701070902.GQ18569@8bytes.org>
+From: William Davis <wdavis@nvidia.com>
+Subject: RE: [PATCH v3 0/7] IOMMU/DMA map_resource support for peer-to-peer
+Date: Wed, 1 Jul 2015 15:11:23 +0000
+Message-ID: <38cdc550f01d4bc38ebf0201e42d45f2@HQMAIL106.nvidia.com>
+References: <1432919686-32306-1-git-send-email-wdavis@nvidia.com>
+ <236342dcc57b448b98c3a2b61a8ab23a@DRHQMAIL106.nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20150701070902.GQ18569-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <236342dcc57b448b98c3a2b61a8ab23a@DRHQMAIL106.nvidia.com>
+Content-Language: en-US
+Sender: linux-pci-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>, "David S. Miller" <davem@davemloft.net>
+Cc: Terence Ripperda <TRipperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>, Mark Hounschell <markh@compro.net>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jonathan Corbet <corbet@lwn.net>, Yijing Wang <wangyijing@huawei.com>, Alex Williamson <alex.williamson@redhat.com>, Dave Jiang <dave.jiang@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 01, 2015 at 08:09:02AM +0100, Joerg Roedel wrote:
-> On Mon, Jun 29, 2015 at 05:47:41PM +0100, Will Deacon wrote:
-> > Since you're sending a batch of IOMMU fixes tomorrow, could you include
-> > these two ARM SMMU fixes as well please?
+> From: Will Davis <wdavis@nvidia.com>
+>
+> > From: Will Davis <wdavis@nvidia.com>
+> >
+> > Hi,
+> >
+> > This is the third version of a patchset to add the DMA APIs necessary to
+> > map and unmap a struct resource to and from a PCI device's IOVA domain.
+> > This allows a PCI device to access a peer device's BAR resource when a
+> > hardware IOMMU is enabled.
+> >
 > 
-> Sorry, this got delayed because I was waiting for a testing result of
-> another fix. But this one is pushed out too now and I am going to send
-> the fixes this evening.
+> Bjorn, Dave, do you have any remaining concerns with this patch series?
+> 
 
-No problem, thanks Joerg,
+Bjorn and/or Dave, do you have any more comments or concerns about these patches, or are they Ack-worthy as is?
 
-I'll probably have a second round of fixes later on, once I've run some
-more SMMUv3 testing.
-
+Thanks,
 Will
+
+> > Thanks,
+> > Will
+> >
+> > Changelog:
+> >
+> > v3:
+> > - changed dma_map_resource() to BUG() if the map_resource DMA op is not
+> >   provided, instead of returning 0
+> > - updated documentation to remove requirement to check for 0 return value
+> >   as an error
+> > - remove const keyword from struct dma_map_ops in new DMA APIs for
+> >   consistency with other APIs
+> >
+> > v2: http://www.spinics.net/lists/linux-pci/msg41192.html
+> > - added documentation for the new DMA APIs
+> > - fixed physical-to-bus address conversion in the nommu implementation
+> >
+> > v1: http://www.spinics.net/lists/linux-pci/msg40747.html
+> >
+> > Will Davis (7):
+> >   dma-debug: add checking for map/unmap_resource
+> >   DMA-API: Introduce dma_(un)map_resource
+> >   dma-mapping: pci: add pci_(un)map_resource
+> >   DMA-API: Add dma_(un)map_resource() documentation
+> >   iommu/amd: Implement (un)map_resource
+> >   iommu/vt-d: implement (un)map_resource
+> >   x86: add pci-nommu implementation of map_resource
+> >
+> >  Documentation/DMA-API-HOWTO.txt          | 36 ++++++++++++++-
+> >  Documentation/DMA-API.txt                | 31 ++++++++++---
+> >  arch/x86/kernel/pci-nommu.c              | 32 ++++++++++++++
+> >  drivers/iommu/amd_iommu.c                | 76 ++++++++++++++++++++++++++--
+> > ----
+> >  drivers/iommu/intel-iommu.c              | 18 ++++++++
+> >  include/asm-generic/dma-mapping-broken.h |  9 ++++  include/asm-
+> > generic/dma-mapping-common.h | 34 ++++++++++++++
+> >  include/asm-generic/pci-dma-compat.h     | 14 ++++++
+> >  include/linux/dma-debug.h                | 20 +++++++++
+> >  include/linux/dma-mapping.h              |  7 +++
+> >  lib/dma-debug.c                          | 47 ++++++++++++++++++++
+> >  11 files changed, 304 insertions(+), 20 deletions(-)
+> >
+> > --
+> > 2.4.0
+> 
+--
+nvpublic
