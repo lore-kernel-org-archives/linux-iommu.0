@@ -1,125 +1,84 @@
-From: Will Davis <wdavis@nvidia.com>
-Subject: Re: [PATCH v3 7/7] x86: add pci-nommu implementation of map_resource
-Date: Wed, 1 Jul 2015 13:14:30 -0500
-Message-ID: <1435774470-2917-1-git-send-email-wdavis@nvidia.com>
-References: <20150701164520.GC13409@google.com>
+From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v3 3/7] dma-mapping: pci: add pci_(un)map_resource
+Date: Wed, 1 Jul 2015 13:31:27 -0500
+Message-ID: <20150701183127.GD13409@google.com>
+References: <1432919686-32306-1-git-send-email-wdavis@nvidia.com>
+	<1432919686-32306-4-git-send-email-wdavis@nvidia.com>
+	<20150701160606.GA13409@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20150701164520.GC13409@google.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Dave Jiang <dave.jiang@intel.com>, John Hubbard <jhubbard@nvidia.com>, Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux-foundation.org, Jerome Glisse <jglisse@redhat.com>, linux-pci@vger.kernel.org, Terence Ripperda <tripperda@nvidia.com>, "David S. Miller" <davem@davemloft.net>, Will Davis <wdavis@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20150701160606.GA13409-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
+Cc: Dave Jiang <dave.jiang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, John Hubbard <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Terence Ripperda <tripperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Bjorn Helgaas <bhelgaas@google.com>
-> On Fri, May 29, 2015 at 12:14:46PM -0500, wdavis@nvidia.com wrote:
-> > From: Will Davis <wdavis@nvidia.com>
+On Wed, Jul 01, 2015 at 11:06:06AM -0500, Bjorn Helgaas wrote:
+> On Fri, May 29, 2015 at 12:14:42PM -0500, wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org wrote:
+> > From: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 > > 
-> > Lookup the bus address of the resource by finding the parent host bridge,
-> > which may be different than the parent host bridge of the target device.
+> > Simply route these through to the new dma_(un)map_resource APIs.
 > > 
-> > Signed-off-by: Will Davis <wdavis@nvidia.com>
+> > Signed-off-by: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> > Reviewed-by: Terence Ripperda <tripperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> > Reviewed-by: John Hubbard <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 > > ---
-> >  arch/x86/kernel/pci-nommu.c | 32 ++++++++++++++++++++++++++++++++
-> >  1 file changed, 32 insertions(+)
+> >  include/asm-generic/pci-dma-compat.h | 14 ++++++++++++++
+> >  1 file changed, 14 insertions(+)
 > > 
-> > diff --git a/arch/x86/kernel/pci-nommu.c b/arch/x86/kernel/pci-nommu.c
-> > index da15918..6384482 100644
-> > --- a/arch/x86/kernel/pci-nommu.c
-> > +++ b/arch/x86/kernel/pci-nommu.c
-> > @@ -38,6 +38,37 @@ static dma_addr_t nommu_map_page(struct device *dev, struct page *page,
-> >  	return bus;
+> > diff --git a/include/asm-generic/pci-dma-compat.h b/include/asm-generic/pci-dma-compat.h
+> > index c110843..ac4a4ad 100644
+> > --- a/include/asm-generic/pci-dma-compat.h
+> > +++ b/include/asm-generic/pci-dma-compat.h
+> > @@ -61,6 +61,20 @@ pci_unmap_page(struct pci_dev *hwdev, dma_addr_t dma_address,
+> >  	dma_unmap_page(hwdev == NULL ? NULL : &hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
 > >  }
 > >  
-> > +static dma_addr_t nommu_map_resource(struct device *dev, struct resource *res,
-> > +				     unsigned long offset, size_t size,
-> > +				     enum dma_data_direction dir,
-> > +				     struct dma_attrs *attrs)
+> > +static inline dma_addr_t
+> > +pci_map_resource(struct pci_dev *hwdev, struct resource *resource,
+> > +		 unsigned long offset, size_t size, int direction)
+> 
+> After 3a9ad0b4fdcd ("PCI: Add pci_bus_addr_t"), which will appear in
+> v4.2-rc1, there is a pci_bus_addr_t, and I think you need that instead
+> of dma_addr_t.
+> 
+> http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=3a9ad0b4fdcd
+
+This wasn't a very good response, sorry.  I don't think just
+changing dma_addr_t to pci_bus_addr_t is a good resolution.
+
+Isn't there an implicit assumption here that either you're using an IOMMU
+driver that always returns bus addresses that fit in a dma_addr_t, or
+you're not using an IOMMU and dma_addr_t is big enough for any bus address?
+
+What happens on a system with 64-bit PCI bus addresses, 32-bit dma_addr_t,
+and no IOMMU?  Would this return failure somehow?
+
 > > +{
-> > +	struct pci_bus *bus;
-> > +	struct pci_host_bridge *bridge;
-> > +	struct resource_entry *window;
-> > +	resource_size_t bus_offset = 0;
-> > +	dma_addr_t dma_address;
-> > +
-> > +	/* Find the parent host bridge of the resource, and determine the
-> > +	 * relative offset.
-> > +	 */
-> > +	list_for_each_entry(bus, &pci_root_buses, node) {
-> > +		bridge = to_pci_host_bridge(bus->bridge);
-> > +		resource_list_for_each_entry(window, &bridge->windows) {
-> > +			if (resource_contains(window->res, res))
-> > +				bus_offset = window->offset;
-> > +		}
-> > +	}
-> 
-> I don't think this is safe.  Assume we have the following topology, and
-> we want to set it up so 0000:00:00.0 can perform peer-to-peer DMA to
-> 0001:00:01.0:
-> 
->   pci_bus 0000:00: root bus resource [mem 0x80000000-0xffffffff] (bus address [0x80000000-0xffffffff])
->   pci 0000:00:00.0: ...
->   pci_bus 0001:00: root bus resource [mem 0x180000000-0x1ffffffff] (bus address [0x80000000-0xffffffff])
->   pci 0001:00:01.0: reg 0x10: [mem 0x180000000-0x1803fffff 64bit]
-> 
-> I assume the way this works is that the driver for 0000:00:00.0 would call
-> this function with 0001:00:01.0 and [mem 0x180000000-0x1803fffff 64bit].
-> 
-
-The intention is that pci_map_resource() would be called with the device to
-map the region to, and the resource to map. So in this example, we would
-call pci_map_resource(0000:00:00.0, [mem 0x180000000-0x1803fffff 64bit]).
-The driver for 0000:00:00.0 needs to pass some information to
-pci_map_resource() indicating that the mapping is for device 0000:00:00.0.
-
-> We'll figure out that the resource belongs to 0001:00, so we return a
-> dma_addr of 0x80000000, which is the bus address as seen by 0001:00:01.0.
-> But if 0000:00:00.0 uses that address, it refers to something in the
-> 0000:00 hierarchy, not the 0001:00 hierarchy.
-> 
-
-If the bus addresses are organized as described, is peer-to-peer DMA even
-possible with this nommu topology? Is there any way in which device
-0000:00:00.0 can address resources under the 0001:00: root bus, since the
-bus address range is identical?
-
-> We talked about pci_bus_address() and pcibios_resource_to_bus() earlier.
-> What's the subtlety that makes them unusable here?  I'd rather not add more
-> uses of the pci_root_buses list if we can avoid it.
-> 
-
-I ran into the challenge I mentioned above, where the only struct pci_dev*
-we have is for the target device, and not that of the device that owns the
-resource.
-
-> > +	dma_address = (res->start - bus_offset) + offset;
-> > +	WARN_ON(size == 0);
-> > +	if (!check_addr("map_resource", dev, dma_address, size))
-> > +		return DMA_ERROR_CODE;
-> > +	flush_write_buffers();
-> > +	return dma_address;
+> > +	return dma_map_resource(hwdev == NULL ? NULL : &hwdev->dev, resource, offset, size, (enum dma_data_direction)direction);
 > > +}
 > > +
+> > +static inline void
+> > +pci_unmap_resource(struct pci_dev *hwdev, dma_addr_t dma_address, size_t size,
+> > +		   int direction)
+> > +{
+> > +	dma_unmap_resource(hwdev == NULL ? NULL : &hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
+> > +}
 > > +
-> 
-> You added an extra blank line here (there was already an extra one before
-> nommu_sync_sg_for_device(), which is probably what you copied).
-> 
-
-Thanks, I'll remove the extra line.
-
-> >  /* Map a set of buffers described by scatterlist in streaming
-> >   * mode for DMA.  This is the scatter-gather version of the
-> >   * above pci_map_single interface.  Here the scatter gather list
-> > @@ -93,6 +124,7 @@ struct dma_map_ops nommu_dma_ops = {
-> >  	.free			= dma_generic_free_coherent,
-> >  	.map_sg			= nommu_map_sg,
-> >  	.map_page		= nommu_map_page,
-> > +	.map_resource		= nommu_map_resource,
-> >  	.sync_single_for_device = nommu_sync_single_for_device,
-> >  	.sync_sg_for_device	= nommu_sync_sg_for_device,
-> >  	.is_phys		= 1,
+> >  static inline int
+> >  pci_map_sg(struct pci_dev *hwdev, struct scatterlist *sg,
+> >  	   int nents, int direction)
 > > -- 
 > > 2.4.0
 > > 
