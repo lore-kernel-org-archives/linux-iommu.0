@@ -1,63 +1,24 @@
 From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v3 3/7] dma-mapping: pci: add pci_(un)map_resource
-Date: Wed, 1 Jul 2015 11:06:06 -0500
-Message-ID: <20150701160606.GA13409@google.com>
+Subject: Re: [PATCH v3 5/7] iommu/amd: Implement (un)map_resource
+Date: Wed, 1 Jul 2015 11:13:06 -0500
+Message-ID: <20150701161306.GB13409@google.com>
 References: <1432919686-32306-1-git-send-email-wdavis@nvidia.com>
- <1432919686-32306-4-git-send-email-wdavis@nvidia.com>
+ <1432919686-32306-6-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pci-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1432919686-32306-4-git-send-email-wdavis@nvidia.com>
+In-Reply-To: <1432919686-32306-6-git-send-email-wdavis@nvidia.com>
 Sender: linux-pci-owner@vger.kernel.org
 To: wdavis@nvidia.com
 Cc: Joerg Roedel <joro@8bytes.org>, Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>, Mark Hounschell <markh@compro.net>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jonathan Corbet <corbet@lwn.net>, "David S. Miller" <davem@davemloft.net>, Yijing Wang <wangyijing@huawei.com>, Alex Williamson <alex.williamson@redhat.com>, Dave Jiang <dave.jiang@intel.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 29, 2015 at 12:14:42PM -0500, wdavis@nvidia.com wrote:
+On Fri, May 29, 2015 at 12:14:44PM -0500, wdavis@nvidia.com wrote:
 > From: Will Davis <wdavis@nvidia.com>
 > 
-> Simply route these through to the new dma_(un)map_resource APIs.
-> 
-> Signed-off-by: Will Davis <wdavis@nvidia.com>
-> Reviewed-by: Terence Ripperda <tripperda@nvidia.com>
-> Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-> ---
->  include/asm-generic/pci-dma-compat.h | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
-> 
-> diff --git a/include/asm-generic/pci-dma-compat.h b/include/asm-generic/pci-dma-compat.h
-> index c110843..ac4a4ad 100644
-> --- a/include/asm-generic/pci-dma-compat.h
-> +++ b/include/asm-generic/pci-dma-compat.h
-> @@ -61,6 +61,20 @@ pci_unmap_page(struct pci_dev *hwdev, dma_addr_t dma_address,
->  	dma_unmap_page(hwdev == NULL ? NULL : &hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
->  }
->  
-> +static inline dma_addr_t
-> +pci_map_resource(struct pci_dev *hwdev, struct resource *resource,
-> +		 unsigned long offset, size_t size, int direction)
+> Implement 'map_resource' for the AMD IOMMU driver. Generalize the existing
+> map_page implementation to operate on a physical address, and make both
+> map_page and map_resource wrappers around that helper (and similiarly, for
 
-After 3a9ad0b4fdcd ("PCI: Add pci_bus_addr_t"), which will appear in
-v4.2-rc1, there is a pci_bus_addr_t, and I think you need that instead
-of dma_addr_t.
-
-http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=3a9ad0b4fdcd
-
-> +{
-> +	return dma_map_resource(hwdev == NULL ? NULL : &hwdev->dev, resource, offset, size, (enum dma_data_direction)direction);
-> +}
-> +
-> +static inline void
-> +pci_unmap_resource(struct pci_dev *hwdev, dma_addr_t dma_address, size_t size,
-> +		   int direction)
-> +{
-> +	dma_unmap_resource(hwdev == NULL ? NULL : &hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
-> +}
-> +
->  static inline int
->  pci_map_sg(struct pci_dev *hwdev, struct scatterlist *sg,
->  	   int nents, int direction)
-> -- 
-> 2.4.0
-> 
+s/similiarly/similarly/
