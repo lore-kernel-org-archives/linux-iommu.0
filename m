@@ -1,20 +1,14 @@
-From: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: Re: Master-aware devices and sideband ID data
-Date: Thu, 2 Jul 2015 20:26:55 +0000
-Message-ID: <91AAB3D7-8650-42FE-B0C1-48A5A1C73194@caviumnetworks.com>
-References: <20150324155007.GC23005@leverpostej>
-	<26BE36EF-2C5B-4DA6-8950-8FEBB031ED1B@caviumnetworks.com>
-	<20150527173953.GC23176@leverpostej>
-	<E342D737-5DD5-48C7-BB01-B83C29CB6E31@caviumnetworks.com>
-	<20150601102208.GD22406@leverpostej>
-	<158EFC9F-FCAF-44D3-AD40-804EDFE0CE25@caviumnetworks.com>
-	<20150605090534.GC1198@arm.com> <20150609101515.GA28474@leverpostej>
-	<20150610081120.GA22973@arm.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v2 2/4] iommu: Implement common IOMMU ops for DMA mapping
+Date: Fri, 3 Jul 2015 17:27:29 +0800
+Message-ID: <1435915649.21346.11.camel@mhfsdcap03>
+References: <cover.1434036796.git.robin.murphy@arm.com>
+	<bf63d80c36533aa4dcc401b5a4b312ba00237e1c.1434036796.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============3803630334647653476=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150610081120.GA22973-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <bf63d80c36533aa4dcc401b5a4b312ba00237e1c.1434036796.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,263 +18,143 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, tiffany.lin-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
---===============3803630334647653476==
-Content-Language: en-US
-Content-Type: multipart/alternative;
-	boundary="_000_91AAB3D7865042FEB0C148A5A1C73194caviumnetworkscom_"
+On Thu, 2015-06-11 at 16:54 +0100, Robin Murphy wrote:
+> Taking inspiration from the existing arch/arm code, break out some
+> generic functions to interface the DMA-API to the IOMMU-API. This will
+> do the bulk of the heavy lifting for IOMMU-backed dma-mapping.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/iommu/Kconfig     |   7 +
+>  drivers/iommu/Makefile    |   1 +
+>  drivers/iommu/dma-iommu.c | 560 ++++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/dma-iommu.h |  94 ++++++++
+>  4 files changed, 662 insertions(+)
+>  create mode 100644 drivers/iommu/dma-iommu.c
+>  create mode 100644 include/linux/dma-iommu.h
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 1ae4e54..9107b6e 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -48,6 +48,13 @@ config OF_IOMMU
+>         def_bool y
+>         depends on OF && IOMMU_API
+>  
+> +# IOMMU-agnostic DMA-mapping layer
+> +config IOMMU_DMA
+> +	bool
+> +	depends on NEED_SG_DMA_LENGTH
+> +	select IOMMU_API
+> +	select IOMMU_IOVA
+> +
+>  config FSL_PAMU
+>  	bool "Freescale IOMMU support"
+>  	depends on PPC32
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index 080ffab..574b241 100644
+> --- a/drivers/iommu/Makefile
+> +++ b/drivers/iommu/Makefile
+> @@ -1,6 +1,7 @@
+>  obj-$(CONFIG_IOMMU_API) += iommu.o
+>  obj-$(CONFIG_IOMMU_API) += iommu-traces.o
+>  obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
+> +obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
+>  obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
+>  obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
+>  obj-$(CONFIG_IOMMU_IOVA) += iova.o
+[snip]
+> +
+> +/**
+> + * iommu_dma_alloc - Allocate and map a buffer contiguous in IOVA space
+> + * @dev: Device to allocate memory for. Must be a real device
+> + *	 attached to an iommu_dma_domain
+> + * @size: Size of buffer in bytes
+> + * @gfp: Allocation flags
+> + * @prot: IOMMU mapping flags
+> + * @coherent: Which dma_mask to base IOVA allocation on
+> + * @handle: Out argument for allocated DMA handle
+> + * @flush_page: Arch callback to flush a single page from caches as
+> + *		necessary. May be NULL for coherent allocations
+> + *
+> + * If @size is less than PAGE_SIZE, then a full CPU page will be allocated,
+> + * but an IOMMU which supports smaller pages might not map the whole thing.
+> + * For now, the buffer is unconditionally zeroed for compatibility
+> + *
+> + * Return: Array of struct page pointers describing the buffer,
+> + *	   or NULL on failure.
+> + */
+> +struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
+> +		int prot, bool coherent, dma_addr_t *handle,
+> +		void (*flush_page)(const void *, phys_addr_t))
+> +{
+> +	struct iommu_dma_domain *dom = arch_get_dma_domain(dev);
+> +	struct iova_domain *iovad = dom->iovad;
+> +	struct iova *iova;
+> +	struct page **pages;
+> +	struct sg_table sgt;
+> +	struct sg_mapping_iter miter;
+> +	dma_addr_t dma_addr;
+> +	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> +
+> +	*handle = DMA_ERROR_CODE;
 
---_000_91AAB3D7865042FEB0C148A5A1C73194caviumnetworkscom_
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Hi Robin,
 
-any update on this?
-On Jun 10, 2015, at 1:11 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org<mailto:will.d=
-eacon-5wv7dgnIgG8@public.gmane.org>> wrote:
+  Compare with the dma before, You delete this line here.
+    
+          size = PAGE_ALIGN(size);
 
-On Tue, Jun 09, 2015 at 11:17:54AM +0100, Mark Rutland wrote:
-On Fri, Jun 05, 2015 at 10:05:34AM +0100, Will Deacon wrote:
-On Thu, Jun 04, 2015 at 11:19:30PM +0100, Chalamarla, Tirumalesh wrote:
-On Jun 1, 2015, at 3:22 AM, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org<mailto:mark.=
-rutland-5wv7dgnIgG8@public.gmane.org>> wrote:
-It's possible to specify that the paths exist. I expect that software
-would select which to use at runtime.
+  Do you expect the user should make sure the size must be aligned?
 
-My worry is how to define any priorities/preferences between masters.
-in general the proposal looks reasonable.
+  so do __iommu_free_attrs.
 
-I agree that the proposal looks reasonable (in terms of the ability to
-describe the sort of topologies that we will face) but I still don't
-understand what I need to do in e.g. my IOMMU driver to support this
-binding whilst continuing to support the existing iommus binding, which
-is relied upon to configure dma-mapping.
-
-Mark: how do you see this co-existing/merging with the current bindings?
-
-As I mentioned in my initial mail, it's not clear to me how this can be
-reconciled with the current bindings. Everything I've been able to come
-up with so far at best ends up describing the same thing repeatedly.
-
-I'll see what I can come up with. Any sugestions are welcome!
-
-Well, I'd start with the current iommu binding and see if you can figure
-out which properties need adding to it in order to describe the sort of
-topologies you can describe with your original proposal.
-
-I don't think it's practical to throw away what we have and move over to
-something totally different all in one go, but there clearly *is* benefit
-in your proposal over the existing scheme.
-
-I can see that's probably not practical. :(
-
-Do we know what we're going to do w.r.t. IORT? That's going to require
-the kernel to be able to handle a similar description to this proposal.
-
-IORT is part of ACPI, so it doesn't care about the existing DT binding
-and doesn't need to co-exist at runtime.
-
-Will
-
-
---_000_91AAB3D7865042FEB0C148A5A1C73194caviumnetworkscom_
-Content-Type: text/html; charset="us-ascii"
-Content-ID: <CDD63933095B3D4A8BA56E499C4B37B1-Tk6F3M/euE6cE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
-Content-Transfer-Encoding: quoted-printable
-
-<html>
-<head>
-<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii"=
->
-</head>
-<body style=3D"word-wrap: break-word; -webkit-nbsp-mode: space; -webkit-lin=
-e-break: after-white-space;" class=3D"">
-any update on this?&nbsp;<br class=3D"">
-<div style=3D"">
-<blockquote type=3D"cite" class=3D"">
-<div class=3D"">On Jun 10, 2015, at 1:11 AM, Will Deacon &lt;<a href=3D"mai=
-lto:will.deacon-5wv7dgnIgG8@public.gmane.org" class=3D"">will.deacon-5wv7dgnIgG8@public.gmane.org</a>&gt; wrote:</div=
->
-<br class=3D"Apple-interchange-newline">
-<div class=3D""><span style=3D"font-family: Helvetica; font-size: 12px; fon=
-t-style: normal; font-variant: normal; font-weight: normal; letter-spacing:=
- normal; line-height: normal; orphans: auto; text-align: start; text-indent=
-: 0px; text-transform: none; white-space: normal; widows: auto; word-spacin=
-g: 0px; -webkit-text-stroke-width: 0px; float: none; display: inline !impor=
-tant;" class=3D"">On
- Tue, Jun 09, 2015 at 11:17:54AM &#43;0100, Mark Rutland wrote:</span><br s=
-tyle=3D"font-family: Helvetica; font-size: 12px; font-style: normal; font-v=
-ariant: normal; font-weight: normal; letter-spacing: normal; line-height: n=
-ormal; orphans: auto; text-align: start; text-indent: 0px; text-transform: =
-none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-text-st=
-roke-width: 0px;" class=3D"">
-<blockquote type=3D"cite" style=3D"font-family: Helvetica; font-size: 12px;=
- font-style: normal; font-variant: normal; font-weight: normal; letter-spac=
-ing: normal; line-height: normal; orphans: auto; text-align: start; text-in=
-dent: 0px; text-transform: none; white-space: normal; widows: auto; word-sp=
-acing: 0px; -webkit-text-stroke-width: 0px;" class=3D"">
-On Fri, Jun 05, 2015 at 10:05:34AM &#43;0100, Will Deacon wrote:<br class=
-=3D"">
-<blockquote type=3D"cite" class=3D"">On Thu, Jun 04, 2015 at 11:19:30PM &#4=
-3;0100, Chalamarla, Tirumalesh wrote:<br class=3D"">
-<blockquote type=3D"cite" class=3D"">
-<blockquote type=3D"cite" class=3D"">On Jun 1, 2015, at 3:22 AM, Mark Rutla=
-nd &lt;<a href=3D"mailto:mark.rutland-5wv7dgnIgG8@public.gmane.org" class=3D"">mark.rutland@arm.=
-com</a>&gt; wrote:<br class=3D"">
-It's possible to specify that the paths exist. I expect that software<br cl=
-ass=3D"">
-would select which to use at runtime.<br class=3D"">
-<br class=3D"">
-</blockquote>
-My worry is how to define any priorities/preferences between masters.<span =
-class=3D"Apple-converted-space">&nbsp;</span><br class=3D"">
-in general the proposal looks reasonable.<br class=3D"">
-</blockquote>
-<br class=3D"">
-I agree that the proposal looks reasonable (in terms of the ability to<br c=
-lass=3D"">
-describe the sort of topologies that we will face) but I still don't<br cla=
-ss=3D"">
-understand what I need to do in e.g. my IOMMU driver to support this<br cla=
-ss=3D"">
-binding whilst continuing to support the existing iommus binding, which<br =
-class=3D"">
-is relied upon to configure dma-mapping.<br class=3D"">
-<br class=3D"">
-Mark: how do you see this co-existing/merging with the current bindings?<br=
- class=3D"">
-</blockquote>
-<br class=3D"">
-As I mentioned in my initial mail, it's not clear to me how this can be<br =
-class=3D"">
-reconciled with the current bindings. Everything I've been able to come<br =
-class=3D"">
-up with so far at best ends up describing the same thing repeatedly.<br cla=
-ss=3D"">
-<br class=3D"">
-I'll see what I can come up with. Any sugestions are welcome!<br class=3D""=
->
-</blockquote>
-<br style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; f=
-ont-variant: normal; font-weight: normal; letter-spacing: normal; line-heig=
-ht: normal; orphans: auto; text-align: start; text-indent: 0px; text-transf=
-orm: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-te=
-xt-stroke-width: 0px;" class=3D"">
-<span style=3D"font-family: Helvetica; font-size: 12px; font-style: normal;=
- font-variant: normal; font-weight: normal; letter-spacing: normal; line-he=
-ight: normal; orphans: auto; text-align: start; text-indent: 0px; text-tran=
-sform: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-=
-text-stroke-width: 0px; float: none; display: inline !important;" class=3D"=
-">Well,
- I'd start with the current iommu binding and see if you can figure</span><=
-br style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; fo=
-nt-variant: normal; font-weight: normal; letter-spacing: normal; line-heigh=
-t: normal; orphans: auto; text-align: start; text-indent: 0px; text-transfo=
-rm: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-tex=
-t-stroke-width: 0px;" class=3D"">
-<span style=3D"font-family: Helvetica; font-size: 12px; font-style: normal;=
- font-variant: normal; font-weight: normal; letter-spacing: normal; line-he=
-ight: normal; orphans: auto; text-align: start; text-indent: 0px; text-tran=
-sform: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-=
-text-stroke-width: 0px; float: none; display: inline !important;" class=3D"=
-">out
- which properties need adding to it in order to describe the sort of</span>=
-<br style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; f=
-ont-variant: normal; font-weight: normal; letter-spacing: normal; line-heig=
-ht: normal; orphans: auto; text-align: start; text-indent: 0px; text-transf=
-orm: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-te=
-xt-stroke-width: 0px;" class=3D"">
-<span style=3D"font-family: Helvetica; font-size: 12px; font-style: normal;=
- font-variant: normal; font-weight: normal; letter-spacing: normal; line-he=
-ight: normal; orphans: auto; text-align: start; text-indent: 0px; text-tran=
-sform: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-=
-text-stroke-width: 0px; float: none; display: inline !important;" class=3D"=
-">topologies
- you can describe with your original proposal.</span><br style=3D"font-fami=
-ly: Helvetica; font-size: 12px; font-style: normal; font-variant: normal; f=
-ont-weight: normal; letter-spacing: normal; line-height: normal; orphans: a=
-uto; text-align: start; text-indent: 0px; text-transform: none; white-space=
-: normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px;"=
- class=3D"">
-<br style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; f=
-ont-variant: normal; font-weight: normal; letter-spacing: normal; line-heig=
-ht: normal; orphans: auto; text-align: start; text-indent: 0px; text-transf=
-orm: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-te=
-xt-stroke-width: 0px;" class=3D"">
-<blockquote type=3D"cite" style=3D"font-family: Helvetica; font-size: 12px;=
- font-style: normal; font-variant: normal; font-weight: normal; letter-spac=
-ing: normal; line-height: normal; orphans: auto; text-align: start; text-in=
-dent: 0px; text-transform: none; white-space: normal; widows: auto; word-sp=
-acing: 0px; -webkit-text-stroke-width: 0px;" class=3D"">
-<blockquote type=3D"cite" class=3D"">I don't think it's practical to throw =
-away what we have and move over to<br class=3D"">
-something totally different all in one go, but there clearly *is* benefit<b=
-r class=3D"">
-in your proposal over the existing scheme.<br class=3D"">
-</blockquote>
-<br class=3D"">
-I can see that's probably not practical. :(<br class=3D"">
-<br class=3D"">
-Do we know what we're going to do w.r.t. IORT? That's going to require<br c=
-lass=3D"">
-the kernel to be able to handle a similar description to this proposal.<br =
-class=3D"">
-</blockquote>
-<br style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; f=
-ont-variant: normal; font-weight: normal; letter-spacing: normal; line-heig=
-ht: normal; orphans: auto; text-align: start; text-indent: 0px; text-transf=
-orm: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-te=
-xt-stroke-width: 0px;" class=3D"">
-<span style=3D"font-family: Helvetica; font-size: 12px; font-style: normal;=
- font-variant: normal; font-weight: normal; letter-spacing: normal; line-he=
-ight: normal; orphans: auto; text-align: start; text-indent: 0px; text-tran=
-sform: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-=
-text-stroke-width: 0px; float: none; display: inline !important;" class=3D"=
-">IORT
- is part of ACPI, so it doesn't care about the existing DT binding</span><b=
-r style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; fon=
-t-variant: normal; font-weight: normal; letter-spacing: normal; line-height=
-: normal; orphans: auto; text-align: start; text-indent: 0px; text-transfor=
-m: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-text=
--stroke-width: 0px;" class=3D"">
-<span style=3D"font-family: Helvetica; font-size: 12px; font-style: normal;=
- font-variant: normal; font-weight: normal; letter-spacing: normal; line-he=
-ight: normal; orphans: auto; text-align: start; text-indent: 0px; text-tran=
-sform: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-=
-text-stroke-width: 0px; float: none; display: inline !important;" class=3D"=
-">and
- doesn't need to co-exist at runtime.</span><br style=3D"font-family: Helve=
-tica; font-size: 12px; font-style: normal; font-variant: normal; font-weigh=
-t: normal; letter-spacing: normal; line-height: normal; orphans: auto; text=
--align: start; text-indent: 0px; text-transform: none; white-space: normal;=
- widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px;" class=3D=
-"">
-<br style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; f=
-ont-variant: normal; font-weight: normal; letter-spacing: normal; line-heig=
-ht: normal; orphans: auto; text-align: start; text-indent: 0px; text-transf=
-orm: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-te=
-xt-stroke-width: 0px;" class=3D"">
-<span style=3D"font-family: Helvetica; font-size: 12px; font-style: normal;=
- font-variant: normal; font-weight: normal; letter-spacing: normal; line-he=
-ight: normal; orphans: auto; text-align: start; text-indent: 0px; text-tran=
-sform: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-=
-text-stroke-width: 0px; float: none; display: inline !important;" class=3D"=
-">Will</span></div>
-</blockquote>
-</div>
-<br class=3D"">
-</body>
-</html>
-
---_000_91AAB3D7865042FEB0C148A5A1C73194caviumnetworkscom_--
-
---===============3803630334647653476==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============3803630334647653476==--
+> +
+> +	/* IOMMU can map any pages, so himem can also be used here */
+> +	gfp |= __GFP_NOWARN | __GFP_HIGHMEM;
+> +	pages = __iommu_dma_alloc_pages(count, gfp);
+> +	if (!pages)
+> +		return NULL;
+> +
+> +	iova = __alloc_iova(dev, size, coherent);
+> +	if (!iova)
+> +		goto out_free_pages;
+> +
+> +	if (sg_alloc_table_from_pages(&sgt, pages, count, 0, size, GFP_KERNEL))
+> +		goto out_free_iova;
+> +
+> +	dma_addr = iova_dma_addr(iovad, iova);
+> +	if (iommu_map_sg(dom->domain, dma_addr, sgt.sgl, sgt.orig_nents, prot)
+> +			< size)
+> +		goto out_free_sg;
+> +
+> +	/* Using the non-flushing flag since we're doing our own */
+> +	sg_miter_start(&miter, sgt.sgl, sgt.orig_nents, SG_MITER_FROM_SG);
+> +	while (sg_miter_next(&miter)) {
+> +		memset(miter.addr, 0, PAGE_SIZE);
+> +		if (flush_page)
+> +			flush_page(miter.addr, page_to_phys(miter.page));
+> +	}
+> +	sg_miter_stop(&miter);
+> +	sg_free_table(&sgt);
+> +
+> +	*handle = dma_addr;
+> +	return pages;
+> +
+> +out_free_sg:
+> +	sg_free_table(&sgt);
+> +out_free_iova:
+> +	__free_iova(iovad, iova);
+> +out_free_pages:
+> +	__iommu_dma_free_pages(pages, count);
+> +	return NULL;
+> +}
+> +
+[...]
+> +
+> +#endif	/* __KERNEL__ */
+> +#endif	/* __DMA_IOMMU_H */
