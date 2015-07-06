@@ -1,132 +1,89 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 2/4] iommu: Implement common IOMMU ops for DMA mapping
-Date: Fri, 03 Jul 2015 17:44:03 +0100
-Message-ID: <5596BBD3.1040708@arm.com>
-References: <cover.1434036796.git.robin.murphy@arm.com>	
-	<bf63d80c36533aa4dcc401b5a4b312ba00237e1c.1434036796.git.robin.murphy@arm.com>
-	<1435915649.21346.11.camel@mhfsdcap03>
+From: Will Davis <wdavis@nvidia.com>
+Subject: Re: [PATCH v3 3/7] dma-mapping: pci: add pci_(un)map_resource
+Date: Mon, 6 Jul 2015 10:16:11 -0500
+Message-ID: <1436195771-11816-1-git-send-email-wdavis@nvidia.com>
+References: <20150701183127.GD13409@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1435915649.21346.11.camel@mhfsdcap03>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: "laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "tiffany.lin-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <tiffany.lin-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20150701183127.GD13409@google.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>
+Cc: Will Davis <wdavis@nvidia.com>, Dave Jiang <dave.jiang@intel.com>, John Hubbard <jhubbard@nvidia.com>, Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux-foundation.org, Jerome Glisse <jglisse@redhat.com>, linux-pci@vger.kernel.org, Terence Ripperda <tripperda@nvidia.com>, "David S. Miller" <davem@davemloft.net>
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/07/15 10:27, Yong Wu wrote:
-[...]
->> +/**
->> + * iommu_dma_alloc - Allocate and map a buffer contiguous in IOVA space
->> + * @dev: Device to allocate memory for. Must be a real device
->> + *	 attached to an iommu_dma_domain
->> + * @size: Size of buffer in bytes
->> + * @gfp: Allocation flags
->> + * @prot: IOMMU mapping flags
->> + * @coherent: Which dma_mask to base IOVA allocation on
->> + * @handle: Out argument for allocated DMA handle
->> + * @flush_page: Arch callback to flush a single page from caches as
->> + *		necessary. May be NULL for coherent allocations
->> + *
->> + * If @size is less than PAGE_SIZE, then a full CPU page will be allocated,
->> + * but an IOMMU which supports smaller pages might not map the whole thing.
->> + * For now, the buffer is unconditionally zeroed for compatibility
->> + *
->> + * Return: Array of struct page pointers describing the buffer,
->> + *	   or NULL on failure.
->> + */
->> +struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
->> +		int prot, bool coherent, dma_addr_t *handle,
->> +		void (*flush_page)(const void *, phys_addr_t))
->> +{
->> +	struct iommu_dma_domain *dom = arch_get_dma_domain(dev);
->> +	struct iova_domain *iovad = dom->iovad;
->> +	struct iova *iova;
->> +	struct page **pages;
->> +	struct sg_table sgt;
->> +	struct sg_mapping_iter miter;
->> +	dma_addr_t dma_addr;
->> +	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
->> +
->> +	*handle = DMA_ERROR_CODE;
->
-> Hi Robin,
->
->    Compare with the dma before, You delete this line here.
->
->            size = PAGE_ALIGN(size);
->
->    Do you expect the user should make sure the size must be aligned?
->
->    so do __iommu_free_attrs.
 
-Yeah, there is an oversight here due to some back-and-forth refactoring 
-- both the page allocation and the IOVA allocation do get suitably 
-aligned as they should, but the segments of the temporary scatterlist 
-don't. Somehow I managed not to hit an iommu_map_sg failure due to that 
-until some time after this posting (it seems most of the drivers I test 
-with only make page-sized allocations...)
+> On Wed, Jul 01, 2015 at 11:06:06AM -0500, Bjorn Helgaas wrote:
+> > On Fri, May 29, 2015 at 12:14:42PM -0500, wdavis@... wrote:
+> > > From: Will Davis <wdavis@...>
+> > > 
+> > > Simply route these through to the new dma_(un)map_resource APIs.
+> > > 
+> > > Signed-off-by: Will Davis <wdavis@...>
+> > > Reviewed-by: Terence Ripperda <tripperda@...>
+> > > Reviewed-by: John Hubbard <jhubbard@...>
+> > > ---
+> > >  include/asm-generic/pci-dma-compat.h | 14 ++++++++++++++
+> > >  1 file changed, 14 insertions(+)
+> > > 
+> > > diff --git a/include/asm-generic/pci-dma-compat.h b/include/asm-generic/pci-dma-compat.h
+> > > index c110843..ac4a4ad 100644
+> > > --- a/include/asm-generic/pci-dma-compat.h
+> > > +++ b/include/asm-generic/pci-dma-compat.h
+> > >  <at>  <at>  -61,6 +61,20  <at>  <at>  pci_unmap_page(struct pci_dev *hwdev, dma_addr_t dma_address,
+> > >  	dma_unmap_page(hwdev == NULL ? NULL : &hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
+> > >  }
+> > >  
+> > > +static inline dma_addr_t
+> > > +pci_map_resource(struct pci_dev *hwdev, struct resource *resource,
+> > > +		 unsigned long offset, size_t size, int direction)
+> > 
+> > After 3a9ad0b4fdcd ("PCI: Add pci_bus_addr_t"), which will appear in
+> > v4.2-rc1, there is a pci_bus_addr_t, and I think you need that instead
+> > of dma_addr_t.
+> > 
+> > http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=3a9ad0b4fdcd
+> 
+> This wasn't a very good response, sorry.  I don't think just
+> changing dma_addr_t to pci_bus_addr_t is a good resolution.
+> 
+> Isn't there an implicit assumption here that either you're using an IOMMU
+> driver that always returns bus addresses that fit in a dma_addr_t, or
+> you're not using an IOMMU and dma_addr_t is big enough for any bus address?
+> 
+> What happens on a system with 64-bit PCI bus addresses, 32-bit dma_addr_t,
+> and no IOMMU?  Would this return failure somehow?
+> 
 
-I've currently got the fixup below waiting for the next posting.
+I think I see your point. Even if pci_map_resource() were changed to return
+a pci_bus_addr_t, we would have the same problem again where the dma_addr_t
+would either need to expand (a non-starter as already discussed) or replace
+the return type of dma_map_resource() with something wider to accommodate,
+or prevent such platforms from attempting to return a valid address that
+will be truncated.
 
-Robin.
+PCI devices on the platform in question (64-bit PCI bus addresses, 32-bit
+dma_addr_t, and no IOMMU) should theoretically still be capable of PCI
+peer-to-peer traffic, but would only be limited by the API, which we do not
+want.
 
->> +
->> +	/* IOMMU can map any pages, so himem can also be used here */
->> +	gfp |= __GFP_NOWARN | __GFP_HIGHMEM;
->> +	pages = __iommu_dma_alloc_pages(count, gfp);
->> +	if (!pages)
->> +		return NULL;
->> +
->> +	iova = __alloc_iova(dev, size, coherent);
->> +	if (!iova)
->> +		goto out_free_pages;
->> +
+What about introducing another always-64-bit type, like peer_dma_addr_t,
+for use with the new DMA APIs?
 
-+	size = iova_align(iovad, size);
-
->> +	if (sg_alloc_table_from_pages(&sgt, pages, count, 0, size, GFP_KERNEL))
->> +		goto out_free_iova;
->> +
->> +	dma_addr = iova_dma_addr(iovad, iova);
->> +	if (iommu_map_sg(dom->domain, dma_addr, sgt.sgl, sgt.orig_nents, prot)
->> +			< size)
->> +		goto out_free_sg;
->> +
->> +	/* Using the non-flushing flag since we're doing our own */
->> +	sg_miter_start(&miter, sgt.sgl, sgt.orig_nents, SG_MITER_FROM_SG);
->> +	while (sg_miter_next(&miter)) {
->> +		memset(miter.addr, 0, PAGE_SIZE);
->> +		if (flush_page)
->> +			flush_page(miter.addr, page_to_phys(miter.page));
->> +	}
->> +	sg_miter_stop(&miter);
->> +	sg_free_table(&sgt);
->> +
->> +	*handle = dma_addr;
->> +	return pages;
->> +
->> +out_free_sg:
->> +	sg_free_table(&sgt);
->> +out_free_iova:
->> +	__free_iova(iovad, iova);
->> +out_free_pages:
->> +	__iommu_dma_free_pages(pages, count);
->> +	return NULL;
->> +}
->> +
-> [...]
->> +
->> +#endif	/* __KERNEL__ */
->> +#endif	/* __DMA_IOMMU_H */
->
->
+> > > +{
+> > > +	return dma_map_resource(hwdev == NULL ? NULL : &hwdev->dev, resource, offset, size, (enum dma_data_direction)direction);
+> > > +}
+> > > +
+> > > +static inline void
+> > > +pci_unmap_resource(struct pci_dev *hwdev, dma_addr_t dma_address, size_t size,
+> > > +		   int direction)
+> > > +{
+> > > +	dma_unmap_resource(hwdev == NULL ? NULL : &hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
+> > > +}
+> > > +
+> > >  static inline int
+> > >  pci_map_sg(struct pci_dev *hwdev, struct scatterlist *sg,
+> > >  	   int nents, int direction)
+> > > -- 
+> > > 2.4.0
+> > >
