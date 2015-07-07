@@ -1,14 +1,16 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 0/9] bugfixs and add support for non-pci devices
-Date: Tue, 7 Jul 2015 10:22:53 +0100
-Message-ID: <20150707092253.GB23879@arm.com>
-References: <1436239822-14132-1-git-send-email-thunder.leizhen@huawei.com>
+From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2 4/7] DMA-API: Add dma_(un)map_resource() documentation
+Date: Tue, 7 Jul 2015 10:15:17 -0500
+Message-ID: <20150707151517.GA14215@google.com>
+References: <1431973504-5903-1-git-send-email-wdavis@nvidia.com>
+	<1431973504-5903-5-git-send-email-wdavis@nvidia.com>
+	<20150519234300.GA31666@google.com> <555C79E5.9040507@compro.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1436239822-14132-1-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <555C79E5.9040507-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,34 +20,59 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: "huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Mark Hounschell <markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
+Cc: jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, tripperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Zhen Lei,
+[+cc Alex]
 
-On Tue, Jul 07, 2015 at 04:30:13AM +0100, Zhen Lei wrote:
-> Changelog:
-> v1 -> v2:
-> update the implementation of patch 1/9 according to Will Deacon's suggestion.
-> update the comment of patch 3/9 and 4/9.
-> use arm_smmu_options to skip the execution of command CMD_PREFETCH_CONFIG, see patch 5/9.
-> patch 6/9 is base on Laurent's series, to support probe deferral.
-> patch 7/9 according to Robin Murphy's suggestion, remove global variable arm_smmu_devices, thanks.
-> patch 9/9 add support for a master with multiple stream IDs.
+Hi Mark,
 
-FYI, I already picked some of your previous series on my iommu/devel branch:
+On Wed, May 20, 2015 at 08:11:17AM -0400, Mark Hounschell wrote:
+> Most currently available hardware doesn't allow reads but will allow
+> writes on PCIe peer-to-peer transfers. All current AMD chipsets are
+> this way. I'm pretty sure all Intel chipsets are this way also. What
+> happens with reads is they are just dropped with no indication of
+> error other than the data will not be as expected. Supposedly the
+> PCIe spec does not even require any peer-to-peer support. Regular
+> PCI there is no problem and this API could be useful. However I
+> doubt seriously you will find a pure PCI motherboard that has an
+> IOMMU.
+> 
+> I don't understand the chipset manufactures reasoning for disabling
+> PCIe peer-to-peer reads. We would like to make PCIe versions of our
+> cards but their application requires  peer-to-peer reads and writes.
+> So we cannot develop PCIe versions of the cards.
 
-  https://git.kernel.org/cgit/linux/kernel/git/will/linux.git/log/?h=iommu/devel
+I'd like to understand this better.  Peer-to-peer between two devices
+below the same Root Port should work as long as ACS doesn't prevent
+it.  If we find an Intel or AMD IOMMU, I think we configure ACS to
+prevent direct peer-to-peer (see "pci_acs_enable"), but maybe it could
+still be done with the appropriate IOMMU support.  And if you boot
+with "iommu=off", we don't do that ACS configuration, so peer-to-peer
+should work.
 
-I'll go over your v2 today, but I'm mainly interested in getting fixes
-queued for 4.2 atm.
+I suppose the problem is that peer-to-peer doesn't work between
+devices under different Root Ports or even devices under different
+Root Complexes?
 
-> Addition:
-> scripts/checkpatch 6/9 reports a warning, this is temporary. I don't want
-> patch 9/9 to display too many differences just because of add tabs.
+PCIe r3.0, sec 6.12.1.1, says Root Ports that support peer-to-peer
+traffic are required to implement ACS P2P Request Redirect, so if a
+Root Port doesn't implement RR, we can assume it doesn't support
+peer-to-peer.  But unfortunately the converse is not true: if a Root
+Port implements RR, that does *not* imply that it supports
+peer-to-peer traffic.  
 
-That's fine. Whilst checkpatch can occassionally be a useful tool, it's
-usually far too noisy imo.
+So I don't know how to discover whether peer-to-peer between Root
+Ports or Root Complexes is supported.  Maybe there's some clue in the
+IOMMU?  The Intel VT-d spec mentions it, but "peer" doesn't even
+appear in the AMD spec.
 
-Will
+And I'm curious about why writes sometimes work when reads do not.
+That sounds like maybe the hardware support is there, but we don't
+understand how to configure everything correctly.
+
+Can you give us the specifics of the topology you'd like to use, e.g.,
+lspci -vv of the path between the two devices?
+
+Bjorn
