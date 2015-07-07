@@ -1,89 +1,52 @@
-From: Will Davis <wdavis@nvidia.com>
-Subject: Re: [PATCH v3 3/7] dma-mapping: pci: add pci_(un)map_resource
-Date: Mon, 6 Jul 2015 10:16:11 -0500
-Message-ID: <1436195771-11816-1-git-send-email-wdavis@nvidia.com>
-References: <20150701183127.GD13409@google.com>
+From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v2 4/9] iommu/arm-smmu: enlarge STRTAB_L1_SZ_SHIFT to support
+	larger sidsize
+Date: Tue, 7 Jul 2015 11:30:17 +0800
+Message-ID: <1436239822-14132-5-git-send-email-thunder.leizhen@huawei.com>
+References: <1436239822-14132-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20150701183127.GD13409@google.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>
-Cc: Will Davis <wdavis@nvidia.com>, Dave Jiang <dave.jiang@intel.com>, John Hubbard <jhubbard@nvidia.com>, Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux-foundation.org, Jerome Glisse <jglisse@redhat.com>, linux-pci@vger.kernel.org, Terence Ripperda <tripperda@nvidia.com>, "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1436239822-14132-1-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Because we will choose the minimum value between STRTAB_L1_SZ_SHIFT and
+IDR1.SIDSIZE, so enlarge STRTAB_L1_SZ_SHIFT will not impact the platforms
+whose IDR1.SIDSIZE is smaller than old STRTAB_L1_SZ_SHIFT value.
 
-> On Wed, Jul 01, 2015 at 11:06:06AM -0500, Bjorn Helgaas wrote:
-> > On Fri, May 29, 2015 at 12:14:42PM -0500, wdavis@... wrote:
-> > > From: Will Davis <wdavis@...>
-> > > 
-> > > Simply route these through to the new dma_(un)map_resource APIs.
-> > > 
-> > > Signed-off-by: Will Davis <wdavis@...>
-> > > Reviewed-by: Terence Ripperda <tripperda@...>
-> > > Reviewed-by: John Hubbard <jhubbard@...>
-> > > ---
-> > >  include/asm-generic/pci-dma-compat.h | 14 ++++++++++++++
-> > >  1 file changed, 14 insertions(+)
-> > > 
-> > > diff --git a/include/asm-generic/pci-dma-compat.h b/include/asm-generic/pci-dma-compat.h
-> > > index c110843..ac4a4ad 100644
-> > > --- a/include/asm-generic/pci-dma-compat.h
-> > > +++ b/include/asm-generic/pci-dma-compat.h
-> > >  <at>  <at>  -61,6 +61,20  <at>  <at>  pci_unmap_page(struct pci_dev *hwdev, dma_addr_t dma_address,
-> > >  	dma_unmap_page(hwdev == NULL ? NULL : &hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
-> > >  }
-> > >  
-> > > +static inline dma_addr_t
-> > > +pci_map_resource(struct pci_dev *hwdev, struct resource *resource,
-> > > +		 unsigned long offset, size_t size, int direction)
-> > 
-> > After 3a9ad0b4fdcd ("PCI: Add pci_bus_addr_t"), which will appear in
-> > v4.2-rc1, there is a pci_bus_addr_t, and I think you need that instead
-> > of dma_addr_t.
-> > 
-> > http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=3a9ad0b4fdcd
-> 
-> This wasn't a very good response, sorry.  I don't think just
-> changing dma_addr_t to pci_bus_addr_t is a good resolution.
-> 
-> Isn't there an implicit assumption here that either you're using an IOMMU
-> driver that always returns bus addresses that fit in a dma_addr_t, or
-> you're not using an IOMMU and dma_addr_t is big enough for any bus address?
-> 
-> What happens on a system with 64-bit PCI bus addresses, 32-bit dma_addr_t,
-> and no IOMMU?  Would this return failure somehow?
-> 
+Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/arm-smmu-v3.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-I think I see your point. Even if pci_map_resource() were changed to return
-a pci_bus_addr_t, we would have the same problem again where the dma_addr_t
-would either need to expand (a non-starter as already discussed) or replace
-the return type of dma_map_resource() with something wider to accommodate,
-or prevent such platforms from attempting to return a valid address that
-will be truncated.
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 0723034..4e7fd4e 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -199,9 +199,10 @@
+  * Stream table.
+  *
+  * Linear: Enough to cover 1 << IDR1.SIDSIZE entries
+- * 2lvl: 8k L1 entries, 256 lazy entries per table (each table covers a PCI bus)
++ * 2lvl: 128k L1 entries,
++ *       256 lazy entries per table (each table covers a PCI bus)
+  */
+-#define STRTAB_L1_SZ_SHIFT		16
++#define STRTAB_L1_SZ_SHIFT		20
+ #define STRTAB_SPLIT			8
 
-PCI devices on the platform in question (64-bit PCI bus addresses, 32-bit
-dma_addr_t, and no IOMMU) should theoretically still be capable of PCI
-peer-to-peer traffic, but would only be limited by the API, which we do not
-want.
-
-What about introducing another always-64-bit type, like peer_dma_addr_t,
-for use with the new DMA APIs?
-
-> > > +{
-> > > +	return dma_map_resource(hwdev == NULL ? NULL : &hwdev->dev, resource, offset, size, (enum dma_data_direction)direction);
-> > > +}
-> > > +
-> > > +static inline void
-> > > +pci_unmap_resource(struct pci_dev *hwdev, dma_addr_t dma_address, size_t size,
-> > > +		   int direction)
-> > > +{
-> > > +	dma_unmap_resource(hwdev == NULL ? NULL : &hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
-> > > +}
-> > > +
-> > >  static inline int
-> > >  pci_map_sg(struct pci_dev *hwdev, struct scatterlist *sg,
-> > >  	   int nents, int direction)
-> > > -- 
-> > > 2.4.0
-> > >
+ #define STRTAB_L1_DESC_DWORDS		1
+--
+1.8.0
