@@ -1,78 +1,123 @@
-From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 4/7] DMA-API: Add dma_(un)map_resource() documentation
-Date: Tue, 7 Jul 2015 10:15:17 -0500
-Message-ID: <20150707151517.GA14215@google.com>
-References: <1431973504-5903-1-git-send-email-wdavis@nvidia.com>
-	<1431973504-5903-5-git-send-email-wdavis@nvidia.com>
-	<20150519234300.GA31666@google.com> <555C79E5.9040507@compro.net>
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH v3 7/7] x86: add pci-nommu implementation of map_resource
+Date: Tue, 7 Jul 2015 10:34:28 -0500
+Message-ID: <20150707153428.GA14784@google.com>
+References: <20150701164520.GC13409@google.com>
+ <1435774470-2917-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <555C79E5.9040507-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mark Hounschell <markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
-Cc: jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, tripperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+In-Reply-To: <1435774470-2917-1-git-send-email-wdavis@nvidia.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Will Davis <wdavis@nvidia.com>
+Cc: Dave Jiang <dave.jiang@intel.com>, John Hubbard <jhubbard@nvidia.com>, Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux-foundation.org, Jerome Glisse <jglisse@redhat.com>, linux-pci@vger.kernel.org, Terence Ripperda <tripperda@nvidia.com>, "David S. Miller" <davem@davemloft.net>, Mark Hounschell <markh@compro.net>, "joro@8bytes.org" <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Alex Williamson <alex.williamson@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-[+cc Alex]
+[+cc Mark, Joerg, Konrad, Alex]
 
-Hi Mark,
+Hi Will,
 
-On Wed, May 20, 2015 at 08:11:17AM -0400, Mark Hounschell wrote:
-> Most currently available hardware doesn't allow reads but will allow
-> writes on PCIe peer-to-peer transfers. All current AMD chipsets are
-> this way. I'm pretty sure all Intel chipsets are this way also. What
-> happens with reads is they are just dropped with no indication of
-> error other than the data will not be as expected. Supposedly the
-> PCIe spec does not even require any peer-to-peer support. Regular
-> PCI there is no problem and this API could be useful. However I
-> doubt seriously you will find a pure PCI motherboard that has an
-> IOMMU.
+On Wed, Jul 01, 2015 at 01:14:30PM -0500, Will Davis wrote:
+> > From: Bjorn Helgaas <bhelgaas@google.com>
+> > On Fri, May 29, 2015 at 12:14:46PM -0500, wdavis@nvidia.com wrote:
+> > > From: Will Davis <wdavis@nvidia.com>
+> > > 
+> > > Lookup the bus address of the resource by finding the parent host bridge,
+> > > which may be different than the parent host bridge of the target device.
+> > > 
+> > > Signed-off-by: Will Davis <wdavis@nvidia.com>
+> > > ---
+> > >  arch/x86/kernel/pci-nommu.c | 32 ++++++++++++++++++++++++++++++++
+> > >  1 file changed, 32 insertions(+)
+> > > 
+> > > diff --git a/arch/x86/kernel/pci-nommu.c b/arch/x86/kernel/pci-nommu.c
+> > > index da15918..6384482 100644
+> > > --- a/arch/x86/kernel/pci-nommu.c
+> > > +++ b/arch/x86/kernel/pci-nommu.c
+> > > @@ -38,6 +38,37 @@ static dma_addr_t nommu_map_page(struct device *dev, struct page *page,
+> > >  	return bus;
+> > >  }
+> > >  
+> > > +static dma_addr_t nommu_map_resource(struct device *dev, struct resource *res,
+> > > +				     unsigned long offset, size_t size,
+> > > +				     enum dma_data_direction dir,
+> > > +				     struct dma_attrs *attrs)
+> > > +{
+> > > +	struct pci_bus *bus;
+> > > +	struct pci_host_bridge *bridge;
+> > > +	struct resource_entry *window;
+> > > +	resource_size_t bus_offset = 0;
+> > > +	dma_addr_t dma_address;
+> > > +
+> > > +	/* Find the parent host bridge of the resource, and determine the
+> > > +	 * relative offset.
+> > > +	 */
+> > > +	list_for_each_entry(bus, &pci_root_buses, node) {
+> > > +		bridge = to_pci_host_bridge(bus->bridge);
+> > > +		resource_list_for_each_entry(window, &bridge->windows) {
+> > > +			if (resource_contains(window->res, res))
+> > > +				bus_offset = window->offset;
+> > > +		}
+> > > +	}
+> > 
+> > I don't think this is safe.  Assume we have the following topology, and
+> > we want to set it up so 0000:00:00.0 can perform peer-to-peer DMA to
+> > 0001:00:01.0:
+> > 
+> >   pci_bus 0000:00: root bus resource [mem 0x80000000-0xffffffff] (bus address [0x80000000-0xffffffff])
+> >   pci 0000:00:00.0: ...
+> >   pci_bus 0001:00: root bus resource [mem 0x180000000-0x1ffffffff] (bus address [0x80000000-0xffffffff])
+> >   pci 0001:00:01.0: reg 0x10: [mem 0x180000000-0x1803fffff 64bit]
+> > 
+> > I assume the way this works is that the driver for 0000:00:00.0 would call
+> > this function with 0001:00:01.0 and [mem 0x180000000-0x1803fffff 64bit].
+> > 
 > 
-> I don't understand the chipset manufactures reasoning for disabling
-> PCIe peer-to-peer reads. We would like to make PCIe versions of our
-> cards but their application requires  peer-to-peer reads and writes.
-> So we cannot develop PCIe versions of the cards.
+> The intention is that pci_map_resource() would be called with the device to
+> map the region to, and the resource to map. So in this example, we would
+> call pci_map_resource(0000:00:00.0, [mem 0x180000000-0x1803fffff 64bit]).
+> The driver for 0000:00:00.0 needs to pass some information to
+> pci_map_resource() indicating that the mapping is for device 0000:00:00.0.
 
-I'd like to understand this better.  Peer-to-peer between two devices
-below the same Root Port should work as long as ACS doesn't prevent
-it.  If we find an Intel or AMD IOMMU, I think we configure ACS to
-prevent direct peer-to-peer (see "pci_acs_enable"), but maybe it could
-still be done with the appropriate IOMMU support.  And if you boot
-with "iommu=off", we don't do that ACS configuration, so peer-to-peer
-should work.
+Oh, of course; that's sort of analogous to the way the other DMA
+mapping interfaces work.
 
-I suppose the problem is that peer-to-peer doesn't work between
-devices under different Root Ports or even devices under different
-Root Complexes?
+> > We'll figure out that the resource belongs to 0001:00, so we return a
+> > dma_addr of 0x80000000, which is the bus address as seen by 0001:00:01.0.
+> > But if 0000:00:00.0 uses that address, it refers to something in the
+> > 0000:00 hierarchy, not the 0001:00 hierarchy.
+> 
+> If the bus addresses are organized as described, is peer-to-peer DMA even
+> possible with this nommu topology? Is there any way in which device
+> 0000:00:00.0 can address resources under the 0001:00: root bus, since the
+> bus address range is identical?
 
-PCIe r3.0, sec 6.12.1.1, says Root Ports that support peer-to-peer
-traffic are required to implement ACS P2P Request Redirect, so if a
-Root Port doesn't implement RR, we can assume it doesn't support
-peer-to-peer.  But unfortunately the converse is not true: if a Root
-Port implements RR, that does *not* imply that it supports
-peer-to-peer traffic.  
+It doesn't seem possible on conventional PCI, because the host bridge
+to 0000:00 believes the transaction is intended for a device under it,
+not for a device under 0001:00.
 
-So I don't know how to discover whether peer-to-peer between Root
-Ports or Root Complexes is supported.  Maybe there's some clue in the
-IOMMU?  The Intel VT-d spec mentions it, but "peer" doesn't even
-appear in the AMD spec.
+On PCIe, I think it would depend on ACS configuration and the IOMMU
+and whether there's anything that can route transactions between host
+bridges.
 
-And I'm curious about why writes sometimes work when reads do not.
-That sounds like maybe the hardware support is there, but we don't
-understand how to configure everything correctly.
+Is it important to support peer-to-peer between host bridges?  If it's
+not important, you could probably simplify things by disallowing that
+case.
 
-Can you give us the specifics of the topology you'd like to use, e.g.,
-lspci -vv of the path between the two devices?
+The pci_map_resource(struct pci_dev *, struct resource *, offset, ...)
+interface is analogous to dma_map_single() and similar interfaces.
+But we're essentially using the resource as a proxy to identify the
+other device: we use the resource, i.e., the CPU physical address of
+one of the BARs, to search for the host bridge.
+
+What would you think about explicitly passing both devices, e.g.,
+replacing the "struct resource *" with a "struct pci_dev *, int bar"
+pair?  It seems like then we'd be better prepared to figure out
+whether it's even possible to do peer-to-peer between the two devices.
+
+I don't know how to discover that today, but I assume that's just
+because I'm ignorant or there's a hole in the system description that
+might be filled eventually.
 
 Bjorn
