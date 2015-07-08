@@ -1,148 +1,94 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v2 4/7] DMA-API: Add dma_(un)map_resource() documentation
-Date: Wed, 8 Jul 2015 10:11:32 -0500
-Message-ID: <20150708151132.GB14784@google.com>
-References: <1431973504-5903-1-git-send-email-wdavis@nvidia.com>
- <1431973504-5903-5-git-send-email-wdavis@nvidia.com>
- <20150519234300.GA31666@google.com>
- <555C79E5.9040507@compro.net>
- <20150707151517.GA14215@google.com>
- <559C08F3.7010103@compro.net>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: Master-aware devices and sideband ID data
+Date: Wed, 8 Jul 2015 17:02:28 +0100
+Message-ID: <20150708160227.GJ9283@arm.com>
+References: <20150324155007.GC23005@leverpostej>
+ <26BE36EF-2C5B-4DA6-8950-8FEBB031ED1B@caviumnetworks.com>
+ <20150527173953.GC23176@leverpostej>
+ <E342D737-5DD5-48C7-BB01-B83C29CB6E31@caviumnetworks.com>
+ <20150601102208.GD22406@leverpostej>
+ <158EFC9F-FCAF-44D3-AD40-804EDFE0CE25@caviumnetworks.com>
+ <20150605090534.GC1198@arm.com>
+ <20150609101515.GA28474@leverpostej>
+ <20150708133049.GD7025@leverpostej>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <559C08F3.7010103@compro.net>
-Sender: linux-pci-owner@vger.kernel.org
-To: Mark Hounschell <markh@compro.net>
-Cc: wdavis@nvidia.com, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, tripperda@nvidia.com, jhubbard@nvidia.com, jglisse@redhat.com, konrad.wilk@oracle.com, Jonathan Corbet <corbet@lwn.net>, "David S. Miller" <davem@davemloft.net>, Alex Williamson <alex.williamson@redhat.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+In-Reply-To: <20150708133049.GD7025@leverpostej>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org" <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-[+cc Rafael]
-
-On Tue, Jul 07, 2015 at 01:14:27PM -0400, Mark Hounschell wrote:
-> On 07/07/2015 11:15 AM, Bjorn Helgaas wrote:
-> >On Wed, May 20, 2015 at 08:11:17AM -0400, Mark Hounschell wrote:
-> >>Most currently available hardware doesn't allow reads but will allow
-> >>writes on PCIe peer-to-peer transfers. All current AMD chipsets are
-> >>this way. I'm pretty sure all Intel chipsets are this way also. What
-> >>happens with reads is they are just dropped with no indication of
-> >>error other than the data will not be as expected. Supposedly the
-> >>PCIe spec does not even require any peer-to-peer support. Regular
-> >>PCI there is no problem and this API could be useful. However I
-> >>doubt seriously you will find a pure PCI motherboard that has an
-> >>IOMMU.
-> >>
-> >>I don't understand the chipset manufactures reasoning for disabling
-> >>PCIe peer-to-peer reads. We would like to make PCIe versions of our
-> >>cards but their application requires  peer-to-peer reads and writes.
-> >>So we cannot develop PCIe versions of the cards.
-> >
-> >I'd like to understand this better.  Peer-to-peer between two devices
-> >below the same Root Port should work as long as ACS doesn't prevent
-> >it.  If we find an Intel or AMD IOMMU, I think we configure ACS to
-> >prevent direct peer-to-peer (see "pci_acs_enable"), but maybe it could
-> >still be done with the appropriate IOMMU support.  And if you boot
-> >with "iommu=off", we don't do that ACS configuration, so peer-to-peer
-> >should work.
-> >
-> >I suppose the problem is that peer-to-peer doesn't work between
-> >devices under different Root Ports or even devices under different
-> >Root Complexes?
-> >
-> >PCIe r3.0, sec 6.12.1.1, says Root Ports that support peer-to-peer
-> >traffic are required to implement ACS P2P Request Redirect, so if a
-> >Root Port doesn't implement RR, we can assume it doesn't support
-> >peer-to-peer.  But unfortunately the converse is not true: if a Root
-> >Port implements RR, that does *not* imply that it supports
-> >peer-to-peer traffic.
-> >
-> >So I don't know how to discover whether peer-to-peer between Root
-> >Ports or Root Complexes is supported.  Maybe there's some clue in the
-> >IOMMU?  The Intel VT-d spec mentions it, but "peer" doesn't even
-> >appear in the AMD spec.
-> >
-> >And I'm curious about why writes sometimes work when reads do not.
-> >That sounds like maybe the hardware support is there, but we don't
-> >understand how to configure everything correctly.
-> >
-> >Can you give us the specifics of the topology you'd like to use, e.g.,
-> >lspci -vv of the path between the two devices?
+On Wed, Jul 08, 2015 at 02:30:50PM +0100, Mark Rutland wrote:
+> On Tue, Jun 09, 2015 at 11:17:54AM +0100, Mark Rutland wrote:
+> > On Fri, Jun 05, 2015 at 10:05:34AM +0100, Will Deacon wrote:
+> > > Mark: how do you see this co-existing/merging with the current bindings?
+> > 
+> > As I mentioned in my initial mail, it's not clear to me how this can be
+> > reconciled with the current bindings. Everything I've been able to come
+> > up with so far at best ends up describing the same thing repeatedly.
+> > 
+> > I'll see what I can come up with. Any sugestions are welcome!
 > 
-> First off, writes always work for me. Not just sometimes. Only reads
-> NEVER do.
+> I can't see a way of keeping the ID transformations explicit with the
+> existing bindings, but I think we can simply fold these down into
+> properties in the master nodes, given we expect each ID to be derived
+> from some initial master ID anyway.
 > 
-> Reading the AMD-990FX-990X-970-Register-Programming-Requirements-48693.pdf
-> in section 2.5 "Enabling/Disabling Peer-to-Peer Traffic Access", it
-> states specifically that
-> only P2P memory writes are supported. This has been the case with
-> older AMD chipset also. In one of the older chipset documents I read
-> (I think the 770 series) , it said this was a security feature.
-> Makes no sense to me.
+> So, to cater for the ITS we would need to pass master IDs along with the
+> MSI parent information, which we could do by extending msi-parent or by
+> introducing a new msis property which behaves similarly to the iommus
+> property, describing the MSI controllers the device can address (via any
+> IOMMUs), along with any controller-specific identification data.
 > 
-> As for the topology I'd like to be able to use. This particular
-> configuration (MB) has a single regular pci slot and the rest are
-> pci-e. In two of those pci-e slots is a pci-e to pci expansion
-> chassis interface card connected to a regular pci expansion rack. I
-> am trying to to peer to peer between a regular pci card in one of
-> those chassis to another regular pci card in the other chassis. In
-> turn through the pci-e subsystem. Attached is the lcpci -vv output
-> from this particular box. The cards that initiate the P2P are these:
+> Which means we'd have DT fragments like the following for an arbitrary
+> platform device:
 > 
-> 04:04.0 Intelligent controller [0e80]: PLX Technology, Inc. Device
-> 0480 (rev 55)
-> 04:05.0 Intelligent controller [0e80]: PLX Technology, Inc. Device
-> 0480 (rev 55)
-> 04:06.0 Intelligent controller [0e80]: PLX Technology, Inc. Device
-> 0480 (rev 55)
-> 04:07.0 Intelligent controller [0e80]: PLX Technology, Inc. Device
-> 0480 (rev 55)
+> its0: its {
+> 	...
+> 	msi-controller;
+> 	#msi-cells = <1>; // DeviceId
+> };
 > 
-> The card they need to P2P to and from is this one.
+> its1: its {
+> 	...
+> 	msi-controller;
+> 	#msi-cells = <1>; // DeviceId
+> };
 > 
-> 0a:05.0 Network controller: VMIC GE-IP PCI5565,PMC5565 Reflective
-> Memory Node (rev 01)
+> smmu: smmu {
+> 	...
+> 	iommu-cells = <1>; // StreamId
+> };
+> 
+> device {
+> 	...
+> 	iommus = <&its 0>;
+> 	/* Can use either ITS, but has a different ID at each */
+> 	msis = <&its0 0x0>, <&its1 0x400>;
+> };
+> 
+> That doesn't allow you to describe a device with multiple mater ports
+> where each master port might want to generate MSIs, but I'm not sure if
+> that's a real case.
 
-Peer-to-peer traffic initiated by 04:04.0 and targeted at 0a:05.0 has
-to be routed up to Root Port 00:04.0, over to Root Port 00:0b.0, and
-back down to 0a:05.0:
+In this case, I think we'd need something extra to define precisely how
+those master ports relate to the rest of the system anyway. That would
+likely be a device-specific property, I reckon.
 
-  00:04.0: Root Port to [bus 02-05] Slot #4 ACS ReqRedir+
-  02:00.0: PCIe-to-PCI bridge to [bus 03-05]
-  03:04.0: PCI-to-PCI bridge to [bus 04-05]
-  04:04.0: PLX intelligent controller
+> For PCIe root complexes, we'd need to describe the BDF -> iommu-cells
+> and BDF -> msi-cells translations separately with new properties on the
+> node for the root complex itself.
+> 
+> Is there anything obviously broken with the above approach?
 
-  00:0b.0: Root Port to [bus 08-0e] Slot #11 ACS ReqRedir+
-  00:0b.0:   bridge window [mem 0xd0000000-0xd84fffff]
-  08:00.0: PCIe-to-PCI bridge to [bus 09-0e]
-  08:00.0:   bridge window [mem 0xd0000000-0xd84fffff]
-  09:04.0: PCI-to-PCI bridge to [bus 0a-0e]
-  09:04.0:   bridge window [mem 0xd0000000-0xd84fffff]
-  0a:05.0: VMIC GE-IP reflective memory node
-  0a:05.0: BAR 3 [mem 0xd0000000-0xd7ffffff]
+Works for me. Can you write this up as a binding extension to msi-parent,
+please?
 
-Both Root Ports do support ACS, including P2P RR, but that doesn't
-tell us anything about whether the Root Complex actually supports
-peer-to-peer traffic between the Root Ports.  Per the AMD
-990FX/990X/970 spec, your hardware supports it for writes but not
-reads.
-
-So your hardware is what it is, and a general-purpose interface should 
-probably not allow peer-to-peer at all unless we wanted to complicate
-it by adding a read vs. write distinction.
-
-My question is how we can figure that out without having to add a
-blacklist or whitelist of specific platforms.  We haven't found
-anything in the PCIe specs that tells us whether peer-to-peer is
-supported between Root Ports.
-
-The ACPI _DMA method does mention peer-to-peer, and I don't think
-Linux looks at _DMA at all.  But you should have a single PNP0A08
-bridge that leads to bus 0000:00, with a _CRS that includes the
-windows of all the Root Ports, and I don't see how a _DMA method would
-help carve that up into separate bus address regions.
-
-Rafael, do you have any idea how we can discover peer-to-peer
-capabilities of a platform?
-
-Bjorn
+Will
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
