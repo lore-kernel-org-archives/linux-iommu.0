@@ -1,14 +1,22 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 9/9] iommu/arm-smmu: add support for non-pci devices
-Date: Wed, 08 Jul 2015 14:22:23 +0100
-Message-ID: <559D240F.2090002@arm.com>
-References: <1436239822-14132-1-git-send-email-thunder.leizhen@huawei.com>
-	<1436239822-14132-10-git-send-email-thunder.leizhen@huawei.com>
+From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: Master-aware devices and sideband ID data
+Date: Wed, 8 Jul 2015 14:30:50 +0100
+Message-ID: <20150708133049.GD7025@leverpostej>
+References: <20150324155007.GC23005@leverpostej>
+	<26BE36EF-2C5B-4DA6-8950-8FEBB031ED1B@caviumnetworks.com>
+	<20150527173953.GC23176@leverpostej>
+	<E342D737-5DD5-48C7-BB01-B83C29CB6E31@caviumnetworks.com>
+	<20150601102208.GD22406@leverpostej>
+	<158EFC9F-FCAF-44D3-AD40-804EDFE0CE25@caviumnetworks.com>
+	<20150605090534.GC1198@arm.com>
+	<20150609101515.GA28474@leverpostej>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1436239822-14132-10-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20150609101515.GA28474@leverpostej>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,106 +26,81 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: "huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+To: Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 07/07/15 04:30, Zhen Lei wrote:
-> This patch support a master with multiple stream IDs, but doesn't support a
-> master behinds more than one SMMUs.
+On Tue, Jun 09, 2015 at 11:17:54AM +0100, Mark Rutland wrote:
+> On Fri, Jun 05, 2015 at 10:05:34AM +0100, Will Deacon wrote:
+> > On Thu, Jun 04, 2015 at 11:19:30PM +0100, Chalamarla, Tirumalesh wrote:
+> > > > On Jun 1, 2015, at 3:22 AM, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org> wrote:
+> > > > It's possible to specify that the paths exist. I expect that software
+> > > > would select which to use at runtime.
+> > > > 
+> > > My worry is how to define any priorities/preferences between masters. 
+> > > in general the proposal looks reasonable.
+> > 
+> > I agree that the proposal looks reasonable (in terms of the ability to
+> > describe the sort of topologies that we will face) but I still don't
+> > understand what I need to do in e.g. my IOMMU driver to support this
+> > binding whilst continuing to support the existing iommus binding, which
+> > is relied upon to configure dma-mapping.
+> > 
+> > Mark: how do you see this co-existing/merging with the current bindings?
+> 
+> As I mentioned in my initial mail, it's not clear to me how this can be
+> reconciled with the current bindings. Everything I've been able to come
+> up with so far at best ends up describing the same thing repeatedly.
+> 
+> I'll see what I can come up with. Any sugestions are welcome!
 
-This should probably include a binding documentation update to make it 
-clear what values of #iommu-cells the driver supports in what 
-circumstances, and that the cells themselves should contain raw stream IDs.
+I can't see a way of keeping the ID transformations explicit with the
+existing bindings, but I think we can simply fold these down into
+properties in the master nodes, given we expect each ID to be derived
+from some initial master ID anyway.
 
-> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> ---
->   drivers/iommu/arm-smmu-v3.c | 39 +++++++++++++++++++++++++++++++++++++--
->   1 file changed, 37 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 274d059..582cd1e 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -30,6 +30,7 @@
->   #include <linux/of_address.h>
->   #include <linux/pci.h>
->   #include <linux/platform_device.h>
-> +#include <linux/amba/bus.h>
->   #include <linux/of_iommu.h>
->   #include <linux/of_platform.h>
->
-> @@ -1928,9 +1929,35 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
->   		return -EINVAL;
->   	}
->
-> -	/* We only support PCI, for now */
->   	if (!dev_is_pci(dev)) {
-> -		return -ENODEV;
-> +		int i;
-> +		struct iommu_group *group;
-> +
-> +		group = iommu_group_get(dev);
-> +		if (!group) {
-> +			group = iommu_group_alloc();
-> +			if (IS_ERR(group)) {
-> +				dev_err(dev, "failed to allocate IOMMU group\n");
-> +				return PTR_ERR(group);
-> +			}
-> +
-> +			ret = iommu_group_add_device(group, dev);
-> +			if (ret) {
-> +				dev_err(dev, "failed to add device into IOMMU group\n");
-> +				return PTR_ERR(group);
+So, to cater for the ITS we would need to pass master IDs along with the
+MSI parent information, which we could do by extending msi-parent or by
+introducing a new msis property which behaves similarly to the iommus
+property, describing the MSI controllers the device can address (via any
+IOMMUs), along with any controller-specific identification data.
 
-This leaks the group.
+Which means we'd have DT fragments like the following for an arbitrary
+platform device:
 
-> +			}
-> +		}
-> +		iommu_group_put(group);
-> +
-> +		for (i = 0; i < args->args_count; i++) {
+its0: its {
+	...
+	msi-controller;
+	#msi-cells = <1>; // DeviceId
+};
 
-I'm dubious of the value of looping here - having n>1 #iommu-cells per 
-phandle means that every platform device behind one SMMU must have the 
-same number of stream IDs, or you still have to have repeated phandles 
-for every device with some greater multiple of n stream IDs each, but 
-ruling out any device with <n. I'm not sure how realistic that is, and 
-whether there's any real benefit beyond saving a handful of bytes in the 
-DTB.
+its1: its {
+	...
+	msi-controller;
+	#msi-cells = <1>; // DeviceId
+};
 
-> +			ret = arm_smmu_add_device(dev, args->args[i]);
-> +			if (ret) {
-> +				dev_err(dev,
-> +					"failed to add sid=%d into SMMU\n",
-> +					args->args[i]);
-> +				return ret;
-> +			}
-> +		}
->   	} else {
->   		u32 sid;
->   		struct device_node *of_root;
-> @@ -2725,6 +2752,14 @@ static int __init arm_smmu_init(void)
->   	if (ret)
->   		return ret;
->
-> +	if (!iommu_present(&platform_bus_type))
-> +		bus_set_iommu(&platform_bus_type, &arm_smmu_ops);
-> +
-> +#ifdef CONFIG_ARM_AMBA
-> +	if (!iommu_present(&amba_bustype))
-> +		bus_set_iommu(&amba_bustype, &arm_smmu_ops);
-> +#endif
-> +
->   	return bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
->   }
->
-> --
-> 1.8.0
->
->
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->
+smmu: smmu {
+	...
+	iommu-cells = <1>; // StreamId
+};
+
+device {
+	...
+	iommus = <&its 0>;
+	/* Can use either ITS, but has a different ID at each */
+	msis = <&its0 0x0>, <&its1 0x400>;
+};
+
+That doesn't allow you to describe a device with multiple mater ports
+where each master port might want to generate MSIs, but I'm not sure if
+that's a real case.
+
+For PCIe root complexes, we'd need to describe the BDF -> iommu-cells
+and BDF -> msi-cells translations separately with new properties on the
+node for the root complex itself.
+
+Is there anything obviously broken with the above approach?
+
+Thanks,
+Mark.
