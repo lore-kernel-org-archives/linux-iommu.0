@@ -1,84 +1,143 @@
-From: leizhen <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 5/9] iommu/arm-smmu: skip the execution of
-	CMD_PREFETCH_CONFIG
-Date: Thu, 9 Jul 2015 09:30:44 +0800
-Message-ID: <559DCEC4.7030104@huawei.com>
+From: leizhen <thunder.leizhen@huawei.com>
+Subject: Re: [PATCH v2 9/9] iommu/arm-smmu: add support for non-pci devices
+Date: Thu, 9 Jul 2015 09:56:06 +0800
+Message-ID: <559DD4B6.9000403@huawei.com>
 References: <1436239822-14132-1-git-send-email-thunder.leizhen@huawei.com>
-	<1436239822-14132-6-git-send-email-thunder.leizhen@huawei.com>
-	<559D1F91.6000508@arm.com> <20150708171107.GC6348@arm.com>
+ <1436239822-14132-10-git-send-email-thunder.leizhen@huawei.com>
+ <559D240F.2090002@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150708171107.GC6348-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <559D240F.2090002@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <Will.Deacon@arm.com>, "huxinwei@huawei.com" <huxinwei@huawei.com>, iommu <iommu@lists.linux-foundation.org>, Zefan Li <lizefan@huawei.com>, Tianhong Ding <dingtianhong@huawei.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2015/7/9 1:11, Will Deacon wrote:
-> Hi Robin,
+On 2015/7/8 21:22, Robin Murphy wrote:
+> On 07/07/15 04:30, Zhen Lei wrote:
+>> This patch support a master with multiple stream IDs, but doesn't support a
+>> master behinds more than one SMMUs.
 > 
-> FWIW, I already queued this ;)
-> 
-> On Wed, Jul 08, 2015 at 02:03:13PM +0100, Robin Murphy wrote:
->> On 07/07/15 04:30, Zhen Lei wrote:
->>> Hisilicon SMMUv3 devices treat CMD_PREFETCH_CONFIG as a illegal command,
->>> execute it will trigger GERROR interrupt. Although the gerror code manage
->>> to turn the prefetch into a SYNC, and the system can continue to run
->>> normally, but it's ugly to print error information.
->>
->> No mention of the DT binding change, and no corresponding documentation 
->> update either.
-> 
-> I've added that.
+> This should probably include a binding documentation update to make it clear what values of #iommu-cells the driver supports in what circumstances, and that the cells themselves should contain raw
+> stream IDs.
 
-Thank you very much. You are a real gentleman.
+OK.
 
 > 
->>> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->>> ---
->> [...]
->>> +static struct arm_smmu_option_prop arm_smmu_options[] = {
->>> +	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
->>> +	{ 0, NULL},
->>> +};
->> [...]
->>> +static void parse_driver_options(struct arm_smmu_device *smmu)
->>> +{
->>> +	int i = 0;
->>> +
->>> +	do {
->>> +		if (of_property_read_bool(smmu->dev->of_node,
->>> +						arm_smmu_options[i].prop)) {
->>> +			smmu->options |= arm_smmu_options[i].opt;
->>> +			dev_notice(smmu->dev, "option %s\n",
->>> +				arm_smmu_options[i].prop);
->>> +		}
->>> +	} while (arm_smmu_options[++i].opt);
->>> +}
->>> +
+>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+>> ---
+>>   drivers/iommu/arm-smmu-v3.c | 39 +++++++++++++++++++++++++++++++++++++--
+>>   1 file changed, 37 insertions(+), 2 deletions(-)
 >>
->> Nitpicking for sure, but I'm still waiting for a good excuse to rewrite 
->> this overcomplicated loop logic in the SMMUv2 driver - can't we just 
->> treat a static array as a static array and iterate over the thing in the 
->> obvious way?
+>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>> index 274d059..582cd1e 100644
+>> --- a/drivers/iommu/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm-smmu-v3.c
+>> @@ -30,6 +30,7 @@
+>>   #include <linux/of_address.h>
+>>   #include <linux/pci.h>
+>>   #include <linux/platform_device.h>
+>> +#include <linux/amba/bus.h>
+>>   #include <linux/of_iommu.h>
+>>   #include <linux/of_platform.h>
 >>
->> 	for (i = 0; i < ARRAY_SIZE(arm_smmu_options); i++)
+>> @@ -1928,9 +1929,35 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
+>>           return -EINVAL;
+>>       }
+>>
+>> -    /* We only support PCI, for now */
+>>       if (!dev_is_pci(dev)) {
+>> -        return -ENODEV;
+>> +        int i;
+>> +        struct iommu_group *group;
+>> +
+>> +        group = iommu_group_get(dev);
+>> +        if (!group) {
+>> +            group = iommu_group_alloc();
+>> +            if (IS_ERR(group)) {
+>> +                dev_err(dev, "failed to allocate IOMMU group\n");
+>> +                return PTR_ERR(group);
+>> +            }
+>> +
+>> +            ret = iommu_group_add_device(group, dev);
+>> +            if (ret) {
+>> +                dev_err(dev, "failed to add device into IOMMU group\n");
+>> +                return PTR_ERR(group);
 > 
-> I'd rather have consistency with the other driver and I really have no
-> personal preference about how we iterate over an array. If you have a
-> technical reason to change both the drivers, please send a patch.
+> This leaks the group.
+
+OK, I got it. Thanks.
+
 > 
-> Will
+>> +            }
+>> +        }
+>> +        iommu_group_put(group);
+>> +
+>> +        for (i = 0; i < args->args_count; i++) {
+> 
+> I'm dubious of the value of looping here - having n>1 #iommu-cells per phandle means that every platform device behind one SMMU must have the same number of stream IDs, or you still have to have
+> repeated phandles for every device with some greater multiple of n stream IDs each, but ruling out any device with <n. I'm not sure how realistic that is, and whether there's any real benefit beyond
+> saving a handful of bytes in the DTB.
+
+As you mentioned before, a master with two streamIDs can be written as below(This is also mentioned in Documentation\devicetree\bindings\iommu\iommu.txt):
+#iommu-cells = <1>;
+iommus = <&{/iommu} 23>, <&{/iommu} 24>;
+
+On my hardware platform, a master only have one streamID. But I tested two cases:
+#iommu-cells = <1>;
+1. iommus = <&smmu0 good-sid>, <&smmu0 bad-sid>;
+2. iommus = <&smmu0 bad-sid>, <&smmu0 good-sid>;
+All of these two cases worked well.
+
+Well, if each master contains two streamIDs(or more but equal), this for loop is needed.
+
+> 
+>> +            ret = arm_smmu_add_device(dev, args->args[i]);
+>> +            if (ret) {
+>> +                dev_err(dev,
+>> +                    "failed to add sid=%d into SMMU\n",
+>> +                    args->args[i]);
+>> +                return ret;
+>> +            }
+>> +        }
+>>       } else {
+>>           u32 sid;
+>>           struct device_node *of_root;
+>> @@ -2725,6 +2752,14 @@ static int __init arm_smmu_init(void)
+>>       if (ret)
+>>           return ret;
+>>
+>> +    if (!iommu_present(&platform_bus_type))
+>> +        bus_set_iommu(&platform_bus_type, &arm_smmu_ops);
+>> +
+>> +#ifdef CONFIG_ARM_AMBA
+>> +    if (!iommu_present(&amba_bustype))
+>> +        bus_set_iommu(&amba_bustype, &arm_smmu_ops);
+>> +#endif
+>> +
+>>       return bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
+>>   }
+>>
+>> -- 
+>> 1.8.0
+>>
+>>
+>> _______________________________________________
+>> iommu mailing list
+>> iommu@lists.linux-foundation.org
+>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>>
+> 
 > 
 > .
 > 
