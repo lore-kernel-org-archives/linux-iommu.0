@@ -1,11 +1,13 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v3 0/4] arm64: IOMMU-backed DMA mapping
-Date: Fri, 10 Jul 2015 20:19:31 +0100
-Message-ID: <cover.1436552949.git.robin.murphy@arm.com>
+Subject: [PATCH v3 1/4] iommu/iova: Avoid over-allocating when size-aligned
+Date: Fri, 10 Jul 2015 20:19:32 +0100
+Message-ID: <35cb877828b570db84e89684ef76308cd1857f0c.1436552949.git.robin.murphy@arm.com>
+References: <cover.1436552949.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <cover.1436552949.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,54 +18,83 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi all,
+Currently, allocating a size-aligned IOVA region quietly adjusts the
+actual allocation size in the process, returning a rounded-up
+power-of-two-sized allocation. This results in mismatched behaviour in
+the IOMMU driver if the original size was not a power of two, where the
+original size is mapped, but the rounded-up IOVA size is unmapped.
 
-Here we are again, and I really hope this is good to merge this time.
+Whilst some IOMMUs will happily unmap already-unmapped pages, others
+consider this an error, so fix it by computing the necessary alignment
+padding without altering the actual allocation size. Also clean up by
+making pad_size unsigned, since its callers always pass unsigned values
+and negative padding makes little sense here anyway.
 
-Changes since v2[1]:
-- Rework to use default domains. Of course, we don't have the requisite
-  default domain support in arm/arm64 IOMMU drivers yet, but the grotty
-  workarounds now end up corralled into one place outside the base code.
-- Fixed the logic around atomic allocation where coherent devices would
-  have ended up with non-cacheable buffers.
-- Fixed a missing size-alignment which made only whole-page allocations
-  succeed.
-- Added more documentation, especially around the really confusing bit.
+CC: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c |  2 ++
+ drivers/iommu/iova.c        | 23 ++++++-----------------
+ 2 files changed, 8 insertions(+), 17 deletions(-)
 
-Once again, branch available at [2].
-
-Looking ahead, I have some half-worked-out prototypes for DT-based
-IOMMU group allocation - with that and Laurent's probe deferral series,
-we should hopefully be able to implement the rest of default domain
-support in the IOMMU drivers, and get rid of the hacks. 
-
-Robin.
-
-[1]:http://thread.gmane.org/gmane.linux.kernel.iommu/9946
-[2]:git://linux-arm.org/linux-rm iommu/dma
-
-Robin Murphy (4):
-  iommu/iova: Avoid over-allocating when size-aligned
-  iommu: Implement common IOMMU ops for DMA mapping
-  arm64: Add IOMMU dma_ops
-  arm64: Hook up IOMMU dma_ops
-
- arch/arm64/Kconfig                   |   1 +
- arch/arm64/include/asm/dma-mapping.h |  15 +-
- arch/arm64/mm/dma-mapping.c          | 447 +++++++++++++++++++++++++++++
- drivers/iommu/Kconfig                |   7 +
- drivers/iommu/Makefile               |   1 +
- drivers/iommu/dma-iommu.c            | 536 +++++++++++++++++++++++++++++++++++
- drivers/iommu/intel-iommu.c          |   2 +
- drivers/iommu/iova.c                 |  23 +-
- include/linux/dma-iommu.h            |  84 ++++++
- include/linux/iommu.h                |   1 +
- 10 files changed, 1092 insertions(+), 25 deletions(-)
- create mode 100644 drivers/iommu/dma-iommu.c
- create mode 100644 include/linux/dma-iommu.h
-
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index a98a7b2..9210159 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3233,6 +3233,8 @@ static struct iova *intel_alloc_iova(struct device *dev,
+ 
+ 	/* Restrict dma_mask to the width that the iommu can handle */
+ 	dma_mask = min_t(uint64_t, DOMAIN_MAX_ADDR(domain->gaw), dma_mask);
++	/* Ensure we reserve the whole size-aligned region */
++	nrpages = __roundup_pow_of_two(nrpages);
+ 
+ 	if (!dmar_forcedac && dma_mask > DMA_BIT_MASK(32)) {
+ 		/*
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index b7c3d92..29f2efc 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -120,19 +120,14 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
+ 	}
+ }
+ 
+-/* Computes the padding size required, to make the
+- * the start address naturally aligned on its size
++/*
++ * Computes the padding size required, to make the start address
++ * naturally aligned on the power-of-two order of its size
+  */
+-static int
+-iova_get_pad_size(int size, unsigned int limit_pfn)
++static unsigned int
++iova_get_pad_size(unsigned int size, unsigned int limit_pfn)
+ {
+-	unsigned int pad_size = 0;
+-	unsigned int order = ilog2(size);
+-
+-	if (order)
+-		pad_size = (limit_pfn + 1) % (1 << order);
+-
+-	return pad_size;
++	return (limit_pfn + 1 - size) & (__roundup_pow_of_two(size) - 1);
+ }
+ 
+ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+@@ -265,12 +260,6 @@ alloc_iova(struct iova_domain *iovad, unsigned long size,
+ 	if (!new_iova)
+ 		return NULL;
+ 
+-	/* If size aligned is set then round the size to
+-	 * to next power of two.
+-	 */
+-	if (size_aligned)
+-		size = __roundup_pow_of_two(size);
+-
+ 	ret = __alloc_and_insert_iova_range(iovad, size, limit_pfn,
+ 			new_iova, size_aligned);
+ 
 -- 
 1.9.1
