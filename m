@@ -1,13 +1,13 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v3 4/4] arm64: Hook up IOMMU dma_ops
-Date: Fri, 10 Jul 2015 20:19:35 +0100
-Message-ID: <4ff852dce576fe3ad536165bfa8fe70aef346460.1436552949.git.robin.murphy@arm.com>
-References: <cover.1436552949.git.robin.murphy@arm.com>
+From: Sakari Ailus <sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH 2/4] iommu: iova: Export symbols
+Date: Mon, 13 Jul 2015 14:31:29 +0300
+Message-ID: <1436787091-11943-3-git-send-email-sakari.ailus@linux.intel.com>
+References: <1436787091-11943-1-git-send-email-sakari.ailus@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1436552949.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1436787091-11943-1-git-send-email-sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,98 +17,113 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, jian.xu.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-With iommu_dma_ops in place, hook them up to the configuration code, so
-IOMMU-fronted devices will get them automatically.
+Use EXPORT_SYMBOL_GPL() to export the iova library symbols. The symbols
+include:
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+	init_iova_domain();
+	iova_cache_get();
+	iova_cache_put();
+	iova_cache_init();
+	alloc_iova();
+	find_iova();
+	__free_iova();
+	free_iova();
+	put_iova_domain();
+	reserve_iova();
+	copy_reserved_iova();
+
+Signed-off-by: Sakari Ailus <sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- arch/arm64/Kconfig                   |  1 +
- arch/arm64/include/asm/dma-mapping.h | 15 +++++++--------
- arch/arm64/mm/dma-mapping.c          | 24 ++++++++++++++++++++++++
- 3 files changed, 32 insertions(+), 8 deletions(-)
+ drivers/iommu/iova.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 0f6edb1..3509621 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -72,6 +72,7 @@ config ARM64
- 	select HAVE_PERF_USER_STACK_DUMP
- 	select HAVE_RCU_TABLE_FREE
- 	select HAVE_SYSCALL_TRACEPOINTS
-+	select IOMMU_DMA if IOMMU_SUPPORT
- 	select IRQ_DOMAIN
- 	select IRQ_FORCED_THREADING
- 	select MODULES_USE_ELF_RELA
-diff --git a/arch/arm64/include/asm/dma-mapping.h b/arch/arm64/include/asm/dma-mapping.h
-index f0d6d0b..7f9edcb 100644
---- a/arch/arm64/include/asm/dma-mapping.h
-+++ b/arch/arm64/include/asm/dma-mapping.h
-@@ -56,16 +56,15 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
- 		return __generic_dma_ops(dev);
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 400f4d1..dd87123 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -38,6 +38,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+ 	iovad->start_pfn = start_pfn;
+ 	iovad->dma_32bit_pfn = pfn_32bit;
  }
++EXPORT_SYMBOL_GPL(init_iova_domain);
  
--static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
--				      struct iommu_ops *iommu, bool coherent)
--{
--	if (!acpi_disabled && !dev->archdata.dma_ops)
--		dev->archdata.dma_ops = dma_ops;
--
--	dev->archdata.dma_coherent = coherent;
--}
-+void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-+			struct iommu_ops *iommu, bool coherent);
- #define arch_setup_dma_ops	arch_setup_dma_ops
+ static struct rb_node *
+ __get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
+@@ -243,6 +244,7 @@ int iova_cache_get(void)
  
-+#ifdef CONFIG_IOMMU_DMA
-+void arch_teardown_dma_ops(struct device *dev);
-+#define arch_teardown_dma_ops	arch_teardown_dma_ops
-+#endif
-+
- /* do not use this function in a driver */
- static inline bool is_device_dma_coherent(struct device *dev)
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(iova_cache_get);
+ 
+ void iova_cache_put(void)
  {
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index ccadfd4..1e6085a 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -942,6 +942,20 @@ out_no_domain:
- 	pr_warn("Failed to set up IOMMU domain for device %s\n", dev_name(dev));
+@@ -256,6 +258,7 @@ void iova_cache_put(void)
+ 		kmem_cache_destroy(iova_cache);
+ 	mutex_unlock(&iova_cache_mutex);
  }
++EXPORT_SYMBOL_GPL(iova_cache_put);
  
-+void arch_teardown_dma_ops(struct device *dev)
-+{
-+	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-+
-+	if (domain) {
-+		iommu_detach_device(domain, dev);
-+		if (domain->type & __IOMMU_DOMAIN_ARM64_IOVA)
-+			iommu_put_dma_cookie(domain);
-+		if (domain->type & __IOMMU_DOMAIN_ARM64)
-+			iommu_domain_free(domain);
-+		dev->archdata.dma_ops = NULL;
-+	}
-+}
-+
- #else
+ /**
+  * alloc_iova - allocates an iova
+@@ -296,6 +299,7 @@ alloc_iova(struct iova_domain *iovad, unsigned long size,
  
- static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-@@ -949,3 +963,13 @@ static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
- { }
+ 	return new_iova;
+ }
++EXPORT_SYMBOL_GPL(alloc_iova);
  
- #endif  /* CONFIG_IOMMU_DMA */
-+
-+void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-+			struct iommu_ops *iommu, bool coherent)
-+{
-+	if (!acpi_disabled && !dev->archdata.dma_ops)
-+		dev->archdata.dma_ops = dma_ops;
-+
-+	dev->archdata.dma_coherent = coherent;
-+	__iommu_setup_dma_ops(dev, dma_base, size, iommu);
-+}
+ /**
+  * find_iova - find's an iova for a given pfn
+@@ -336,6 +340,7 @@ struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn)
+ 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ 	return NULL;
+ }
++EXPORT_SYMBOL_GPL(find_iova);
+ 
+ /**
+  * __free_iova - frees the given iova
+@@ -354,6 +359,7 @@ __free_iova(struct iova_domain *iovad, struct iova *iova)
+ 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ 	free_iova_mem(iova);
+ }
++EXPORT_SYMBOL_GPL(__free_iova);
+ 
+ /**
+  * free_iova - finds and frees the iova for a given pfn
+@@ -371,6 +377,7 @@ free_iova(struct iova_domain *iovad, unsigned long pfn)
+ 		__free_iova(iovad, iova);
+ 
+ }
++EXPORT_SYMBOL_GPL(free_iova);
+ 
+ /**
+  * put_iova_domain - destroys the iova doamin
+@@ -393,6 +400,7 @@ void put_iova_domain(struct iova_domain *iovad)
+ 	}
+ 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ }
++EXPORT_SYMBOL_GPL(put_iova_domain);
+ 
+ static int
+ __is_range_overlap(struct rb_node *node,
+@@ -482,6 +490,7 @@ finish:
+ 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ 	return iova;
+ }
++EXPORT_SYMBOL_GPL(reserve_iova);
+ 
+ /**
+  * copy_reserved_iova - copies the reserved between domains
+@@ -508,6 +517,7 @@ copy_reserved_iova(struct iova_domain *from, struct iova_domain *to)
+ 	}
+ 	spin_unlock_irqrestore(&from->iova_rbtree_lock, flags);
+ }
++EXPORT_SYMBOL_GPL(copy_reserved_iova);
+ 
+ struct iova *
+ split_and_remove_iova(struct iova_domain *iovad, struct iova *iova,
 -- 
-1.9.1
+2.1.0.231.g7484e3b
