@@ -1,15 +1,11 @@
-From: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v3 2/4] iommu: Implement common IOMMU ops for DMA mapping
-Date: Tue, 14 Jul 2015 18:16:41 +0100
-Message-ID: <20150714171640.GJ13555@e104818-lin.cambridge.arm.com>
-References: <cover.1436552949.git.robin.murphy@arm.com>
-	<d1a97aaee42f30370b58b3f7ed6a3559633010ad.1436552949.git.robin.murphy@arm.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] iommu/vt-d: Fix VM domain ID leak
+Date: Tue, 14 Jul 2015 14:48:53 -0600
+Message-ID: <20150714204731.10189.28556.stgit@gimli.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <d1a97aaee42f30370b58b3f7ed6a3559633010ad.1436552949.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,172 +15,75 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 10, 2015 at 08:19:33PM +0100, Robin Murphy wrote:
-> +/*
-> + * IOVAs are IOMMU _input_ addresses, so there still exists the possibility
-> + * for static bus translation between device output and IOMMU input (yuck).
-> + */
-> +static inline dma_addr_t dev_dma_addr(struct device *dev, dma_addr_t addr)
-> +{
-> +	dma_addr_t offset = (dma_addr_t)dev->dma_pfn_offset << PAGE_SHIFT;
-> +
-> +	BUG_ON(addr < offset);
-> +	return addr - offset;
-> +}
+This continues the attempt to fix commit fb170fb4c548 ("iommu/vt-d:
+Introduce helper functions to make code symmetric for readability").
+The previous attempt in commit 71684406905f ("iommu/vt-d: Detach
+domain *only* from attached iommus") overlooked the fact that
+dmar_domain.iommu_bmp gets cleared for VM domains when devices are
+detached:
 
-Are these just theoretical or you expect to see some at some point? I
-think the dma_limit in __alloc_iova() may also need to take the offset
-into account (or just ignore them altogether for now).
+intel_iommu_detach_device
+  domain_remove_one_dev_info
+    domain_detach_iommu
 
-> +
-> +/**
-> + * dma_direction_to_prot - Translate DMA API directions to IOMMU API page flags
-> + * @dir: Direction of DMA transfer
-> + * @coherent: Is the DMA master cache-coherent?
-> + *
-> + * Return: corresponding IOMMU API page protection flags
-> + */
-> +int dma_direction_to_prot(enum dma_data_direction dir, bool coherent)
-> +{
-> +	int prot = coherent ? IOMMU_CACHE : 0;
-> +
-> +	switch (dir) {
-> +	case DMA_BIDIRECTIONAL:
-> +		return prot | IOMMU_READ | IOMMU_WRITE;
-> +	case DMA_TO_DEVICE:
-> +		return prot | IOMMU_READ;
-> +	case DMA_FROM_DEVICE:
-> +		return prot | IOMMU_WRITE;
-> +	default:
-> +		return 0;
-> +	}
-> +}
-> +
-> +static struct iova *__alloc_iova(struct device *dev, size_t size, bool coherent)
-> +{
-> +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> +	struct iova_domain *iovad = domain->dma_api_cookie;
-> +	unsigned long shift = iova_shift(iovad);
-> +	unsigned long length = iova_align(iovad, size) >> shift;
-> +	u64 dma_limit = coherent ? dev->coherent_dma_mask : dma_get_mask(dev);
+The domain is detached from the iommu, but the iommu is still attached
+to the domain, for whatever reason.  Thus when we get to domain_exit(),
+we can't rely on iommu_bmp for VM domains to find the active iommus,
+we must check them all.  Without that, the corresponding bit in
+intel_iommu.domain_ids doesn't get cleared and repeated VM domain
+creation and destruction will run out of domain IDs.  Meanwhile we
+still can't call iommu_detach_domain() on arbitrary non-VM domains or
+we risk clearing in-use domain IDs, as 71684406905f attempted to
+address.
 
-"coherent" and "coherent_dma_mask" have related meanings here. As I can
-see in patch 3, the coherent information passed all the way to this
-function states whether the device is cache coherent or not (and whether
-cache maintenance is needed). The coherent_dma_mask refers to an
-allocation mask for the dma_alloc_coherent() API but that doesn't
-necessarily mean that the device is cache coherent. Similarly, dma_mask
-is used for streaming DMA.
+It's tempting to modify iommu_detach_domain() to test the domain
+iommu_bmp, but the call ordering from domain_remove_one_dev_info()
+prevents it being able to work as fb170fb4c548 seems to have intended.
+Caching of unused VM domains on the iommu object seems to be the root
+of the problem, but this code is far too fragile for that kind of
+rework to be proposed for stable, so we simply revert this chunk to
+its state prior to fb170fb4c548.
 
-You can rename it to coherent_api or simply pass a u64 dma_mask
-directly.
+Fixes: fb170fb4c548 ("iommu/vt-d: Introduce helper functions to make
+                      code symmetric for readability")
+Fixes: 71684406905f ("iommu/vt-d: Detach domain *only* from attached
+                      iommus")
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org # v3.17+
+---
+ drivers/iommu/intel-iommu.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-[...]
-> +/**
-> + * iommu_dma_alloc - Allocate and map a buffer contiguous in IOVA space
-> + * @dev: Device to allocate memory for. Must be a real device
-> + *	 attached to an iommu_dma_domain
-> + * @size: Size of buffer in bytes
-> + * @gfp: Allocation flags
-> + * @prot: IOMMU mapping flags
-> + * @coherent: Which dma_mask to base IOVA allocation on
-> + * @handle: Out argument for allocated DMA handle
-> + * @flush_page: Arch callback to flush a single page from caches as
-> + *		necessary. May be NULL for coherent allocations
-> + *
-> + * If @size is less than PAGE_SIZE, then a full CPU page will be allocated,
-> + * but an IOMMU which supports smaller pages might not map the whole thing.
-> + * For now, the buffer is unconditionally zeroed for compatibility
-> + *
-> + * Return: Array of struct page pointers describing the buffer,
-> + *	   or NULL on failure.
-> + */
-> +struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
-> +		int prot, bool coherent, dma_addr_t *handle,
-> +		void (*flush_page)(const void *, phys_addr_t))
-
-So for this function, coherent should always be true since this is only
-used with the coherent DMA API AFAICT.
-
-> +{
-> +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> +	struct iova_domain *iovad = domain->dma_api_cookie;
-> +	struct iova *iova;
-> +	struct page **pages;
-> +	struct sg_table sgt;
-> +	struct sg_mapping_iter miter;
-> +	dma_addr_t dma_addr;
-> +	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> +
-> +	*handle = DMA_ERROR_CODE;
-> +
-> +	pages = __iommu_dma_alloc_pages(count, gfp);
-> +	if (!pages)
-> +		return NULL;
-> +
-> +	iova = __alloc_iova(dev, size, coherent);
-
-And here just __alloc_iova(dev, size, true);
-
-[...]
-> +dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
-> +		unsigned long offset, size_t size, int prot, bool coherent)
-> +{
-> +	dma_addr_t dma_addr;
-> +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> +	struct iova_domain *iovad = domain->dma_api_cookie;
-> +	phys_addr_t phys = page_to_phys(page) + offset;
-> +	size_t iova_off = iova_offset(iovad, phys);
-> +	size_t len = iova_align(iovad, size + iova_off);
-> +	struct iova *iova = __alloc_iova(dev, len, coherent);
-
-Here __alloc_iova(dev, len, false);
-
-[...]
-> +/*
-> + * The DMA API client is passing in a scatterlist which could describe
-> + * any old buffer layout, but the IOMMU API requires everything to be
-> + * aligned to IOMMU pages. Hence the need for this complicated bit of
-> + * impedance-matching, to be able to hand off a suitably-aligned list,
-> + * but still preserve the original offsets and sizes for the caller.
-> + */
-> +int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
-> +		int nents, int prot, bool coherent)
-> +{
-> +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> +	struct iova_domain *iovad = domain->dma_api_cookie;
-> +	struct iova *iova;
-> +	struct scatterlist *s;
-> +	dma_addr_t dma_addr;
-> +	size_t iova_len = 0;
-> +	int i;
-> +
-> +	/*
-> +	 * Work out how much IOVA space we need, and align the segments to
-> +	 * IOVA granules for the IOMMU driver to handle. With some clever
-> +	 * trickery we can modify the list in-place, but reversibly, by
-> +	 * hiding the original data in the as-yet-unused DMA fields.
-> +	 */
-> +	for_each_sg(sg, s, nents, i) {
-> +		size_t s_offset = iova_offset(iovad, s->offset);
-> +		size_t s_length = s->length;
-> +
-> +		sg_dma_address(s) = s->offset;
-> +		sg_dma_len(s) = s_length;
-> +		s->offset -= s_offset;
-> +		s_length = iova_align(iovad, s_length + s_offset);
-> +		s->length = s_length;
-> +
-> +		iova_len += s_length;
-> +	}
-> +
-> +	iova = __alloc_iova(dev, iova_len, coherent);
-
-__alloc_iova(dev, iova_len, false);
-
--- 
-Catalin
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index a98a7b2..0649b94 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1830,8 +1830,9 @@ static int domain_init(struct dmar_domain *domain, int guest_width)
+ 
+ static void domain_exit(struct dmar_domain *domain)
+ {
++	struct dmar_drhd_unit *drhd;
++	struct intel_iommu *iommu;
+ 	struct page *freelist = NULL;
+-	int i;
+ 
+ 	/* Domain 0 is reserved, so dont process it */
+ 	if (!domain)
+@@ -1851,8 +1852,10 @@ static void domain_exit(struct dmar_domain *domain)
+ 
+ 	/* clear attached or cached domains */
+ 	rcu_read_lock();
+-	for_each_set_bit(i, domain->iommu_bmp, g_num_of_iommus)
+-		iommu_detach_domain(domain, g_iommus[i]);
++	for_each_active_iommu(iommu, drhd)
++		if (domain_type_is_vm(domain) ||
++		    test_bit(iommu->seq_id, domain->iommu_bmp))
++			iommu_detach_domain(domain, iommu);
+ 	rcu_read_unlock();
+ 
+ 	dma_free_pagelist(freelist);
