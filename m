@@ -1,18 +1,17 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [RFC 0/6] vSMMU initialization
-Date: Wed, 15 Jul 2015 16:41:12 +0000
-Message-ID: <BN1PR0301MB0627E6F4CC8C2742227A4901EA9A0@BN1PR0301MB0627.namprd03.prod.outlook.com>
-References: <1434118810-28219-1-git-send-email-b.reynal@virtualopensystems.com>
-	<20150612142328.GF12174@arm.com>
-	<BN1PR0301MB06274ACB3A193799F40BE9F4EA9B0@BN1PR0301MB0627.namprd03.prod.outlook.com>
-	<20150714110416.GD16213@arm.com>
-	<CAN9JPjF1E0Dg_KAQcc4C+jKDuOHEATVhN+1NPa66jLrP8RieKA@mail.gmail.com>
+From: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v3 3/4] arm64: Add IOMMU dma_ops
+Date: Wed, 15 Jul 2015 17:53:16 +0100
+Message-ID: <20150715165316.GG20186@e104818-lin.cambridge.arm.com>
+References: <cover.1436552949.git.robin.murphy@arm.com>
+	<a074dfeffc8c8168bef2668de2499f072fdcfac7.1436552949.git.robin.murphy@arm.com>
+	<20150715093128.GA20186@e104818-lin.cambridge.arm.com>
+	<55A689EA.8030306@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAN9JPjF1E0Dg_KAQcc4C+jKDuOHEATVhN+1NPa66jLrP8RieKA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <55A689EA.8030306-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,58 +21,34 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org" <qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: "laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Baptiste,
+On Wed, Jul 15, 2015 at 05:27:22PM +0100, Robin Murphy wrote:
+> On 15/07/15 10:31, Catalin Marinas wrote:
+> >On Fri, Jul 10, 2015 at 08:19:34PM +0100, Robin Murphy wrote:
+> >>+			if (iommu_dma_mapping_error(dev, *handle)) {
+> >>+				if (coherent)
+> >>+					__free_pages(page, get_order(size));
+> >>+				else
+> >>+					__free_from_pool(addr, size);
+> >>+				addr = NULL;
+> >>+			}
+> >>+		}
+> >>+	}
+> >>+	return addr;
+> >>+}
+> >
+> >In the second case here (!__GFP_WAIT), do we do any cache maintenance? I
+> >can't see it and it's needed for the !coherent case.
+> 
+> In the atomic non-coherent case, we're stealing from the atomic pool, so
+> addr is already a non-cacheable alias (and alloc_from_pool does memset(0)
+> through that). That shouldn't need anything extra, right?
 
-> -----Original Message-----
-> From: Baptiste Reynal [mailto:b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org]
-> Sent: Wednesday, July 15, 2015 7:08 PM
-> To: Will Deacon
-> Cc: Sethi Varun-B16395; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org; qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org
-> Subject: Re: [RFC 0/6] vSMMU initialization
-> 
-> On Tue, Jul 14, 2015 at 1:04 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> > On Tue, Jul 14, 2015 at 03:21:03AM +0100, Varun Sethi wrote:
-> >> Hi Will,
-> >
-> > Hi Varun,
-> >
-> >> > On Fri, Jun 12, 2015 at 03:20:04PM +0100, Baptiste Reynal wrote:
-> >> > > The ARM SMMU has support for 2-stages address translations,
-> >> > > allowing a virtual address to be translated at two levels:
-> >> > > - Stage 1 translates a virtual address (VA) into an intermediate
-> >> > > physical address (IPA)
-> >> > > - Stage 2 translates an IPA into a physical address (PA)
-> >> > >
-> >> > > Will Deacon introduced a virtual SMMU interface for KVM, which
-> >> > > gives a virtual machine the possibility to use an IOMMU with native
-> drivers.
-> >> > > While the VM will program the first stage of translation (stage
-> >> > > 1), the interface will program the second (stage 2) on the physical
-> SMMU.
-> >> >
-> >> > Please note that I have no plans to merge the kernel-side of this
-> >> > at the moment. It was merely an exploratory tool to see what a
-> >> > non-PV vSMMU implementation might look like and certainly not
-> >> > intended to be used in anger.
-> >> How do you see the context fault reporting work for the PV interface?
-> >
-> > We could have an interrupt, for the PV IOMMU and have the hypervisor
-> > inject that, no?
-> >
-> >> Currently the vSMMU interface does seem quiet restrictive and it may
-> >> simplify things by having PV iommu interface. But, do you see this
-> >> even true in case of SMMUv3?
-> 
-> Varun, may I know what do you mean by "more restrictive" ? Do you have in
-> mind any use case which should apply to the PV interface and not the
-> vSMMU ?
-> 
-[varun] What I meant was that vSMMU allows for setting up of the stage 1 translation, but doesn't specifically allow access to other SMMU hardware functionality. We can certainly extend the vSMMU interface for providing additional functionality to the guest VM. I do agree with Will, that for extending the vSMMU interface prototyping is necessary. We need to come up with specific use cases for that.
-For controlling stage 1 translation PV interface may be a bit simpler, but then we would need a generic interface to bind to most IOMMUs in the host.
+You are right, we already flushed the cache for the atomic pool when we
+allocated it in atomic_pool_init().
 
--Varun
+-- 
+Catalin
