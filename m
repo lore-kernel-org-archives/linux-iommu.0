@@ -1,103 +1,110 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 2/2] arm/smmu: Make use of of_parse_phandle_with_var_args
-Date: Thu, 16 Jul 2015 10:30:44 +0200
-Message-ID: <1437035444-13867-3-git-send-email-joro@8bytes.org>
-References: <1437035444-13867-1-git-send-email-joro@8bytes.org>
+From: Yong Wu <yong.wu@mediatek.com>
+Subject: [PATCH v3 0/6] MT8173 IOMMU SUPPORT
+Date: Thu, 16 Jul 2015 17:04:29 +0800
+Message-ID: <1437037475-9065-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1437035444-13867-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Lucas Stach <l.stach@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org, Sasha Hauer <kernel@pengutronix.de>, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, pebolle@tiscali.nl, arnd@arndb.de, mitchelh@codeaurora.org, cloud.chou@mediatek.com, frederic.chen@mediatek.com, yong.wu@mediatek.com
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+This patch adds support for m4u(Multimedia Memory Management Unit),
+Currently it only support the m4u with 2 levels of pagetable on mt8173.
 
-The function of_parse_phandle_with_args() can only handle 16
-args, but there are systems that require more (25 in my
-case). So use the newly introduced function
-of_parse_phandle_with_var_args() instead.
+  It is based on Robin Murphy's arm64 DMA v3: IOMMU-backed DMA mapping[1]. 
+ 
+  Please check the hardware block diagram of Mediatek IOMMU.
+ 
+              EMI (External Memory Interface)
+               |
+              m4u (Multimedia Memory Management Unit)
+               |
+              smi (Smart Multimedia Interface)
+               |
+        +---------------+-------
+        |               |
+        |               |
+    vdec larb       disp larb      ... SoCs have different local arbiter(larb).
+        |               |
+        |               |
+   +----+----+    +-----+-----+
+   |    |    |    |     |     |    ...
+   |    |    |    |     |     |    ...
+   |    |    |    |     |     |    ...
+  MC   PP   VLD  OVL0 RDMA0 WDMA0  ... There are different ports in each larb.
+  
+  Normally we specify a local arbiter(larb) for each multimedia hardware like
+display, video decode, video encode and camera. And there are different ports in
+each larb. Take a example, there are some ports like MC, PP, UFO, VLD, AVC_MV,
+PRED_RD in video larb, all the ports are according to the video hardware.
+ 
+  From the diagram, all the multimedia module connect with m4u via smi.
+SMI is responsible to enable/disable iommu and control the clocks for each local
+arbiter. If we should enable the iommu of video decode, it should config the
+video's ports. And if the video hardware work whether enable/disable iommu, 
+it should enable the clock of its larb's clock. And smi also help bandwidth
+control for each local arbiter. So we add a special driver for smi and locate
+it drivers/memory.
+ 
+[1] http://lists.linuxfoundation.org/pipermail/iommu/2015-July/013597.html
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/arm-smmu.c | 23 ++++++++++++++++-------
- 1 file changed, 16 insertions(+), 7 deletions(-)
+v3:
+-rebased onto v4.2-rc1
+-improve iommu flow based on the Robin's DMA v3.
+-change mtk iommu-cells from 1 to 2.
+-about Short-Descriptor: add split function; add self-test; add some other bits like nG,
+ XN according to the spec; add SUPERSECTION and MTK quirk; move io_pgtable_ops_to_pgtable
+ out from LPAE to the header file.
+-about SMI: move from driver/soc/mediatek to driver/memory; change the clocks from
+ clk[2] to clk_apb and clk_smi; add pm.
+-add iommu suspend/resume to backup/restore register.
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 4cd0c29..1fe7f35 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -47,7 +47,7 @@
- #include "io-pgtable.h"
- 
- /* Maximum number of stream IDs assigned to a single device */
--#define MAX_MASTER_STREAMIDS		MAX_PHANDLE_ARGS
-+#define MAX_MASTER_STREAMIDS		128
- 
- /* Maximum number of context banks per SMMU */
- #define ARM_SMMU_MAX_CBS		128
-@@ -1698,7 +1698,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 	struct arm_smmu_device *smmu;
- 	struct device *dev = &pdev->dev;
- 	struct rb_node *node;
--	struct of_phandle_args masterspec;
-+	struct of_phandle_args *masterspec;
- 	int num_irqs, i, err;
- 
- 	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
-@@ -1757,15 +1757,19 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 	if (err)
- 		return err;
- 
-+	masterspec = of_alloc_phandle_args(MAX_MASTER_STREAMIDS);
-+	if (!masterspec)
-+		return -ENOMEM;
-+
- 	i = 0;
- 	smmu->masters = RB_ROOT;
--	while (!of_parse_phandle_with_args(dev->of_node, "mmu-masters",
--					   "#stream-id-cells", i,
--					   &masterspec)) {
--		err = register_smmu_master(smmu, dev, &masterspec);
-+	while (!of_parse_phandle_with_var_args(dev->of_node, "mmu-masters",
-+					   "#stream-id-cells", i, masterspec,
-+					   MAX_MASTER_STREAMIDS)) {
-+		err = register_smmu_master(smmu, dev, masterspec);
- 		if (err) {
- 			dev_err(dev, "failed to add master %s\n",
--				masterspec.np->name);
-+				masterspec->np->name);
- 			goto out_put_masters;
- 		}
- 
-@@ -1797,6 +1801,8 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 		}
- 	}
- 
-+	of_free_phandle_args(masterspec);
-+
- 	INIT_LIST_HEAD(&smmu->list);
- 	spin_lock(&arm_smmu_devices_lock);
- 	list_add(&smmu->list, &arm_smmu_devices);
-@@ -1810,6 +1816,9 @@ out_free_irqs:
- 		free_irq(smmu->irqs[i], smmu);
- 
- out_put_masters:
-+
-+	of_free_phandle_args(masterspec);
-+
- 	for (node = rb_first(&smmu->masters); node; node = rb_next(node)) {
- 		struct arm_smmu_master *master
- 			= container_of(node, struct arm_smmu_master, node);
+v2: http://lists.linuxfoundation.org/pipermail/iommu/2015-May/013028.html
+-add arm short descriptor support.
+-seperate smi common from smi and change the clock-names according
+ to smi HW.
+-delete the hardcode of the port-names in mt8173.
+ replace this with larb-portes-nr in dtsi.
+-fix some coding style issues.
+
+v1: http://lists.infradead.org/pipermail/linux-mediatek/2015-March/000058.html
+-initial version.
+
+Yong Wu (6):
+  dt-bindings: iommu: Add binding for mediatek IOMMU
+  dt-bindings: mediatek: Add smi dts binding
+  iommu: add ARM short descriptor page table allocator.
+  memory: mediatek: Add SMI driver
+  iommu/mediatek: Add mt8173 IOMMU driver
+  dts: mt8173: Add iommu/smi nodes for mt8173
+
+ .../devicetree/bindings/iommu/mediatek,iommu.txt   |   61 ++
+ .../memory-controllers/mediatek,smi-larb.txt       |   25 +
+ .../bindings/memory-controllers/mediatek,smi.txt   |   24 +
+ arch/arm64/boot/dts/mediatek/mt8173.dtsi           |   81 +++
+ drivers/iommu/Kconfig                              |   31 +
+ drivers/iommu/Makefile                             |    2 +
+ drivers/iommu/io-pgtable-arm-short.c               |  742 ++++++++++++++++++++
+ drivers/iommu/io-pgtable-arm.c                     |    3 -
+ drivers/iommu/io-pgtable.c                         |    4 +
+ drivers/iommu/io-pgtable.h                         |   13 +
+ drivers/iommu/mtk_iommu.c                          |  725 +++++++++++++++++++
+ drivers/memory/Kconfig                             |    8 +
+ drivers/memory/Makefile                            |    1 +
+ drivers/memory/mtk-smi.c                           |  285 ++++++++
+ include/dt-bindings/memory/mt8173-larb-port.h      |  105 +++
+ include/soc/mediatek/smi.h                         |   60 ++
+ 16 files changed, 2167 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
+ create mode 100644 Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
+ create mode 100644 Documentation/devicetree/bindings/memory-controllers/mediatek,smi.txt
+ create mode 100644 drivers/iommu/io-pgtable-arm-short.c
+ create mode 100644 drivers/iommu/mtk_iommu.c
+ create mode 100644 drivers/memory/mtk-smi.c
+ create mode 100644 include/dt-bindings/memory/mt8173-larb-port.h
+ create mode 100644 include/soc/mediatek/smi.h
+
 -- 
-1.9.1
+1.7.9.5
