@@ -1,14 +1,13 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v4 0/4] arm64: IOMMU-backed DMA mapping
-Date: Mon, 20 Jul 2015 17:26:37 +0200
-Message-ID: <20150720152637.GD10969@8bytes.org>
-References: <cover.1437070995.git.robin.murphy@arm.com>
+From: Ting-Wei Lan <lantw44-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: Kernel panic on Linux 4.1 with intel_iommu=on
+Date: Thu, 16 Jul 2015 22:57:13 +0800
+Message-ID: <1437058633.9049.5.camel@gmail.com>
+References: <1435692753.7564.17.camel@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <cover.1437070995.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1435692753.7564.17.camel-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,17 +17,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jul 16, 2015 at 07:40:11PM +0100, Robin Murphy wrote:
->  arch/arm64/Kconfig                   |   1 +
->  arch/arm64/include/asm/dma-mapping.h |  15 +-
->  arch/arm64/mm/dma-mapping.c          | 452 +++++++++++++++++++++++++++++
-
-What happened to the plan to merge this with the existing iommu-based
-dma-api implementation for 32 bit ARM?
-
-
-	Joerg
+5pa8IOS4ie+8jDIwMTUtMDctMDEg5pa8IDAzOjMyICswODAw77yMVGluZy1XZWkgTGFuIOaPkOWI
+sO+8mgo+IEhhcmR3YXJlOgo+IEludGVsIENvcmUgaTUgQ1BVIDY1MCBAIDMuMjBHSHoKPiBJbnRl
+bCBJcm9ubGFrZSBEZXNrdG9wCj4gCj4gSW4gb3JkZXIgdG8gdXNlIFZULWQgb24gdGhpcyBjb21w
+dXRlciwgSSBoYXZlIHRvIHVzZSAnaW50ZWxfaW9tbXU9b24KPiBpbnRlbF9pb21tdT1pZ2Z4X29m
+ZicgdG8gcHJldmVudCBncmFwaGljcyBwcm9ibGVtcyBhbmQgc3lzdGVtIGNyYXNoLgo+IFRoaXMg
+cHJvYmxlbSBoYXBwZW5zIG9uIExpbnV4IDMuNyBhbmQgbGF0ZXIgdmVyc2lvbnMsIGluY2x1ZGlu
+ZyB0aGUKPiBsYXRlc3QgcmVsZWFzZSwgTGludXggNC4xLgo+IAo+IEkgZm91bmQgSW50ZWwtSU9N
+TVUudHh0IHNheXMgSSBzaG91bGQgZmlsZSBhIGJ1ZyBpZgo+IGludGVsX2lvbW11PWlnZnhfb2Zm
+IGZpeGVzIGFueXRoaW5nLiBJIGZpbGVkIHRoZSBidWcgb24gZnJlZWRlc2t0b3AgCj4gLT4KPiBE
+UkkgLT4gRFJNL0ludGVsLgo+IGh0dHBzOi8vYnVncy5mcmVlZGVza3RvcC5vcmcvc2hvd19idWcu
+Y2dpP2lkPTkxMTI3Cj4gCj4gQWZ0ZXIgSSBhcHBsaWVkIHRoaXMgcGF0Y2gsIEkgbm8gbG9uZ2Vy
+IHNhdyBncmFwaGljcyBwcm9ibGVtcywgYW5kIAo+IFhvcmcKPiBhbmQgV2F5bGFuZCBjYW4gYmUg
+c3VjY2Vzc2Z1bGx5IHN0YXJ0ZWQgd2l0aG91dCBpbnRlbF9pb21tdT1pZ2Z4X29mZi4KPiBodHRw
+czovL2J1Z3MuZnJlZWRlc2t0b3Aub3JnL3Nob3dfYnVnLmNnaT9pZD05MTEyNyNjNgoKVGhlIHBh
+dGNoIHdhcyBtZXJnZWQgaW4gTGludXggNC4yLXJjMi4KaHR0cHM6Ly9naXQua2VybmVsLm9yZy9j
+Z2l0L2xpbnV4L2tlcm5lbC9naXQvdG9ydmFsZHMvbGludXguZ2l0L2NvbW1pdC8KP2lkPThiNTcy
+YTQKCj4gCj4gSG93ZXZlciwgYWZ0ZXIgdXNpbmcgdGhlIHN5c3RlbSBmb3IgYWJvdXQgb25lIGhv
+dXIsIHRoZSBzeXN0ZW0gCj4gY3Jhc2hlZAo+IGFuZCBwcmludGVkIHNvbWUgbWVzc2FnZXMgb24g
+dGhlIHNlcmlhbCBjb25zb2xlLiBJIGhhdmUgdG8gcHJlc3MgdGhlCj4gcmVzZXQgYnV0dG9uIHRv
+IHJlYm9vdCB0aGUgbWFjaGluZS4KPiBodHRwczovL2J1Z3MuZnJlZWRlc2t0b3Aub3JnL3Nob3df
+YnVnLmNnaT9pZD05MTEyNyNjOAoKSSBoYXZlIHVwZ3JhZGVkIG15IHN5c3RlbSB0byBMaW51eCA0
+LjItcmMyLCBhbmQgSSBjYW4gcmVwcm9kdWNlIHRoZQpwcm9ibGVtIG9uIGl0LiBIZXJlIGlzIHRo
+ZSBmdWxsIGRtZXNnIGxvZzoKaHR0cHM6Ly9idWdzLmZyZWVkZXNrdG9wLm9yZy9hdHRhY2htZW50
+LmNnaT9pZD0xMTcxNzAKCkNhbiBhbnlvbmUgaGVyZSBoZWxwIHVzIHJlc29sdmUgdGhpcyBwcm9i
+bGVtPwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21t
+dSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9s
+aXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
