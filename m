@@ -1,18 +1,11 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC 0/6] vSMMU initialization
-Date: Wed, 15 Jul 2015 18:37:58 +0100
-Message-ID: <20150715173757.GF17107@arm.com>
-References: <1434118810-28219-1-git-send-email-b.reynal@virtualopensystems.com>
-	<20150612142328.GF12174@arm.com>
-	<BN1PR0301MB06274ACB3A193799F40BE9F4EA9B0@BN1PR0301MB0627.namprd03.prod.outlook.com>
-	<20150714110416.GD16213@arm.com>
-	<BN1PR0301MB0627944BCFB295564CA1F7AAEA9A0@BN1PR0301MB0627.namprd03.prod.outlook.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 0/2 v2] Fix MAX_PHANDLE_ARGS limitations
+Date: Thu, 16 Jul 2015 10:30:42 +0200
+Message-ID: <1437035444-13867-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <BN1PR0301MB0627944BCFB295564CA1F7AAEA9A0-RQSpjbwlmjSD1ymB6+i1+JwN6zqB+hSMnBOFsp37pqbUKgpGm//BTAC/G2K4zDHf@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,42 +15,52 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org" <tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, "qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org" <qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 15, 2015 at 06:28:54PM +0100, Varun Sethi wrote:
-> > > > On Fri, Jun 12, 2015 at 03:20:04PM +0100, Baptiste Reynal wrote:
-> > > > > The ARM SMMU has support for 2-stages address translations,
-> > > > > allowing a virtual address to be translated at two levels:
-> > > > > - Stage 1 translates a virtual address (VA) into an intermediate
-> > > > > physical address (IPA)
-> > > > > - Stage 2 translates an IPA into a physical address (PA)
-> > > > >
-> > > > > Will Deacon introduced a virtual SMMU interface for KVM, which
-> > > > > gives a virtual machine the possibility to use an IOMMU with native
-> > drivers.
-> > > > > While the VM will program the first stage of translation (stage
-> > > > > 1), the interface will program the second (stage 2) on the physical
-> > SMMU.
-> > > >
-> > > > Please note that I have no plans to merge the kernel-side of this at
-> > > > the moment. It was merely an exploratory tool to see what a non-PV
-> > > > vSMMU implementation might look like and certainly not intended to
-> > > > be used in anger.
-> > > How do you see the context fault reporting work for the PV interface?
-> > 
-> > We could have an interrupt, for the PV IOMMU and have the hypervisor
-> > inject that, no?
-> > 
-> Can you please elaborate on the PV IOMMU interface. I want to understand
-> how context fault information would be communicated to the guest.
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-I replied to this the other day!
+Hi,
 
-My assumption is that we'd have an irq and some memory region to describe
-the fault in as general a way as possible. Whether that memory region
-looks like MMIO registers or something like a virtio ring buffer is an
-implementation detail to be resolved by prototyping.
+here is the second version of my patches to fix the
+MAX_PHANDLE_ARGS limitation for the arm-smmu driver. On my
+AMD Seattle system the max value of 16 is not enough to
+initialize the SMMU, as the device tree node has an entry
+with 25 phandle args (possible are up to 128). The result is
+a WARNING and incorrect SMMU initialization.
 
-Will
+On the other side MAX_PHANDLE_ARGS can't grow indefinitly,
+as it causes 'struct of_phandle_args' to get bigger. This
+struct is often allocated on-stack and should be small by
+default.
+
+So these patches introduce a way to make 'struct
+of_phandle_args' bigger only when needed and change the
+ARM-SMMU driver to make use of it.
+
+The patches have been tested on my AMD Seattle system.
+
+Please review.
+
+Thanks,
+
+	Joerg
+
+Changes to v1:
+
+	* Rebased to v4.2-rc2
+	* Fixed leak in patch 2, as pointed out by Will
+	  Deacon
+
+Joerg Roedel (2):
+  of: base: Allow more args than MAX_PHANDLE_ARGS if required
+  arm/smmu: Make use of of_parse_phandle_with_var_args
+
+ drivers/iommu/arm-smmu.c | 23 ++++++++++++++++-------
+ drivers/of/base.c        | 43 ++++++++++++++++++++++++++++++++++++-------
+ include/linux/of.h       |  7 +++++++
+ 3 files changed, 59 insertions(+), 14 deletions(-)
+
+-- 
+1.8.4.5
