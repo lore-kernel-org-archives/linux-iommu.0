@@ -1,210 +1,68 @@
-From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: Master-aware devices and sideband ID data
-Date: Thu, 16 Jul 2015 14:34:41 +0100
-Message-ID: <20150716133441.GC28631@leverpostej>
-References: <20150324155007.GC23005@leverpostej>
- <26BE36EF-2C5B-4DA6-8950-8FEBB031ED1B@caviumnetworks.com>
- <20150527173953.GC23176@leverpostej>
- <E342D737-5DD5-48C7-BB01-B83C29CB6E31@caviumnetworks.com>
- <20150601102208.GD22406@leverpostej>
- <158EFC9F-FCAF-44D3-AD40-804EDFE0CE25@caviumnetworks.com>
- <20150605090534.GC1198@arm.com>
- <20150609101515.GA28474@leverpostej>
- <20150708133049.GD7025@leverpostej>
- <20150708160227.GJ9283@arm.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: Fix VM domain ID leak
+Date: Thu, 16 Jul 2015 17:20:30 +0200
+Message-ID: <20150716152030.GB10969@8bytes.org>
+References: <20150714204731.10189.28556.stgit@gimli.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20150708160227.GJ9283-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org" <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20150714204731.10189.28556.stgit-GCcqpEzw8uZBDLzU/O5InQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+On Tue, Jul 14, 2015 at 02:48:53PM -0600, Alex Williamson wrote:
+> This continues the attempt to fix commit fb170fb4c548 ("iommu/vt-d:
+> Introduce helper functions to make code symmetric for readability").
+> The previous attempt in commit 71684406905f ("iommu/vt-d: Detach
+> domain *only* from attached iommus") overlooked the fact that
+> dmar_domain.iommu_bmp gets cleared for VM domains when devices are
+> detached:
+> 
+> intel_iommu_detach_device
+>   domain_remove_one_dev_info
+>     domain_detach_iommu
+> 
+> The domain is detached from the iommu, but the iommu is still attached
+> to the domain, for whatever reason.
 
-The below is an attempt at an MSI binding, derived from my original
-example. It extends msi-parent inoto a phandle+(optional args) style
-property.
+Gaah, this whole vm_or_si special handling is a complete and fragile
+mess.
 
-I haven't yet managed to come up with a sane way of describing
-the Bus-ID/BDF -> {iommu,msi}-cells translation, but this should
-hopefully cover the platform device case.
+The only reason for keeping the domain-id allocated in the iommu
+seems to be that it can be re-used later, when another device behind
+this iommu is attached to the domain. But this is hardly a justification
+for the complexity and special case handling here, so how about this
+diff instead:
 
-For the Bus-ID translation case I'm not sure it's sane to attempt to use
-msi-parent, given that the transformation description will necessarily
-have to describe the parents anyway.
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index a98a7b2..c8fc8c8 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4618,8 +4618,7 @@ static void domain_remove_one_dev_info(struct dmar_domain *domain,
+ 
+ 	if (found == 0) {
+ 		domain_detach_iommu(domain, iommu);
+-		if (!domain_type_is_vm_or_si(domain))
+-			iommu_detach_domain(domain, iommu);
++		iommu_detach_domain(domain, iommu);
+ 	}
+ }
+ 
+This removes the caching of domain-ids, and iommu_detach_domain
+correctly handles all types of domains (dma-api, vm and si). It should
+be safe, but can you please double-check?
 
-Thanks,
-Mark.
 
----->8----
->From 429dca4bba98732c492e95bdf395aa2ccc634e69 Mon Sep 17 00:00:00 2001
-From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Date: Thu, 9 Jul 2015 17:53:00 +0100
-Subject: [PATCH] Documentation: dt: add generic MSI bindings
-
-Currently msi-parent is in use in a couple of drviers despite being
-fairly underspecified. This patch adds a generic binding for MSIs
-(including the existing msi-parent property) enabling the description of
-platform devices capable of using MSIs.
-
-This binding does not yet cover the general case. Currently the binding
-does not cover the relationship between bus IDs (e.g. PCIe BDF) and
-sideband data.
-
-Signed-off-by: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
----
- .../bindings/interrupt-controller/msi.txt          | 135 +++++++++++++++++++++
- 1 file changed, 135 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/interrupt-controller/msi.txt
-
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/msi.txt b/Documentation/devicetree/bindings/interrupt-controller/msi.txt
-new file mode 100644
-index 0000000..c60c034
---- /dev/null
-+++ b/Documentation/devicetree/bindings/interrupt-controller/msi.txt
-@@ -0,0 +1,135 @@
-+This document describes the generic device tree binding for MSI controllers and
-+their master(s).
-+
-+Message Signaled Interrupts (MSIs) are a class of interrupts generated by a
-+write to an MMIO address.
-+
-+MSIs were originally specified by PCI (and are used with PCIe), but may also be
-+used with other busses, and hence a mechanism is required to relate devices on
-+those busses to the MSI controllers which they are capable of using,
-+potentially including additional information.
-+
-+MSIs are distinguished by some combination of:
-+
-+- The doorbell (the MMIO address written to).
-+  
-+  Devices may be configured by software to write to arbitrary doorbells which
-+  they can address. An MSI controller may feature a number of doorbells.
-+
-+- The payload (the value written to the doorbell).
-+  
-+  Devices may be configured to write an arbitrary payload chosen by software.
-+  MSI controllers may have restrictions on permitted payloads.
-+
-+- Sideband information accompanying the write.
-+  
-+  Typically this is neither configurable nor probeable, and depends on the path
-+  taken through the memory system (i.e. it is a property of the combination of
-+  MSI controller and device rather than a property of either in isolation).
-+
-+
-+MSI controllers:
-+================
-+
-+An MSI controller signals interrupts to a CPU when a write is made to an MMIO
-+address by some master. An MSI controller may feature a number of doorbells.
-+
-+Required properties:
-+--------------------
-+
-+- msi-controller: Identifies the node as an MSI controller.
-+
-+Optional properties:
-+--------------------
-+
-+- #msi-cells: The number of cells in an msi-specifier, required if not zero.
-+
-+  Typically this will encode information related to sideband data, and will
-+  not encode doorbells or payloads as these can be configured dynamically.
-+
-+  The meaning of the msi-specifier is defined by the device tree binding of
-+  the specific MSI controller. 
-+
-+
-+MSI clients
-+===========
-+
-+MSI clients are devices which generate MSIs. For each MSI they wish to
-+generate, the doorbell and payload may be configured, though sideband
-+information may not be configurable.
-+
-+Required properties:
-+--------------------
-+
-+- msi-parent: A list of phandle + msi-specifier pairs, one for each MSI
-+  controller which the device is capable of using.
-+
-+  This property is unordered, and MSIs may be allocated from any combination of
-+  MSI controllers listed in the msi-parent property.
-+
-+  If a device has restrictions on the allocation of MSIs, these restrictions
-+  must be described with additional properties.
-+
-+  When #msi-cells is non-zero, busses with an msi-parent will require
-+  additional properties to describe the relationship between devices on the bus
-+  and the set of MSIs they can potentially generate.
-+
-+
-+Example
-+=======
-+
-+/ {
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+
-+	msi_a: msi-controller@a {
-+		reg = <0xa 0xf00>;
-+		compatible = "vendor-a,some-controller";
-+		msi-controller;
-+		/* No sideband data, so #msi-cells omitted */
-+	};
-+
-+	msi_b: msi-controller@b {
-+		reg = <0xb 0xf00>;
-+		compatible = "vendor-b,another-controller";
-+		msi-controller;
-+		/* Each device has some unique ID */
-+		#msi-cells = <1>;
-+	};
-+
-+	msi_c: msi-controller@c {
-+		reg = <0xb 0xf00>;
-+		compatible = "vendor-b,another-controller";
-+		msi-controller;
-+		/* Each device has some unique ID */
-+		#msi-cells = <1>;
-+	};
-+
-+	dev@0 {
-+		reg = <0x0 0xf00>;
-+		compatible = "vendor-c,some-device";
-+
-+		/* Can only generate MSIs to msi_a */
-+		msi-parent = <&msi_a>;
-+	};
-+
-+	dev@1 {
-+		reg = <0x1 0xf00>;
-+		compatible = "vendor-c,some-device";
-+
-+		/* 
-+		 * Can generate MSIs to either A or B.
-+		 */
-+		msi-parent = <&msi_a>, <&msi_b 0x17>;
-+	};
-+
-+	dev@2 {
-+		reg = <0x2 0xf00>;
-+		compatible = "vendor-c,some-device";
-+		/*
-+		 * Has different IDs at each MSI controller.
-+		 * Can generate MSIs to all of the MSI controllers.
-+		 */
-+		msi-parent = <&msi_a>, <&msi_b 0x17>, <&msi_c 0x53>;
-+	};
-+};
--- 
-1.9.1
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+	Joerg
