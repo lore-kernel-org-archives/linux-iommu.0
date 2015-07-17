@@ -1,75 +1,223 @@
-From: Joerg Roedel <jroedel@suse.de>
-Subject: Re: [PATCH] PCI: Don't use SR-IOV lock for ATS
-Date: Fri, 17 Jul 2015 09:51:15 +0200
-Message-ID: <20150717075114.GA12578@suse.de>
-References: <1434617420-18313-1-git-send-email-joro@8bytes.org>
- <20150716230831.GF25591@google.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: Master-aware devices and sideband ID data
+Date: Fri, 17 Jul 2015 11:36:09 +0100
+Message-ID: <20150717103609.GJ18994@arm.com>
+References: <26BE36EF-2C5B-4DA6-8950-8FEBB031ED1B@caviumnetworks.com>
+ <20150527173953.GC23176@leverpostej>
+ <E342D737-5DD5-48C7-BB01-B83C29CB6E31@caviumnetworks.com>
+ <20150601102208.GD22406@leverpostej>
+ <158EFC9F-FCAF-44D3-AD40-804EDFE0CE25@caviumnetworks.com>
+ <20150605090534.GC1198@arm.com>
+ <20150609101515.GA28474@leverpostej>
+ <20150708133049.GD7025@leverpostej>
+ <20150708160227.GJ9283@arm.com>
+ <20150716133441.GC28631@leverpostej>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20150716230831.GF25591@google.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Gregor Dick <gdick@solarflare.com>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, stable@kernel.org
+In-Reply-To: <20150716133441.GC28631@leverpostej>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org" <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Bjorn,
+On Thu, Jul 16, 2015 at 02:34:41PM +0100, Mark Rutland wrote:
+> Hi Will,
 
-On Thu, Jul 16, 2015 at 06:08:31PM -0500, Bjorn Helgaas wrote:
-> On Thu, Jun 18, 2015 at 10:50:20AM +0200, Joerg Roedel wrote:
-> > The problem is that the VFs will be added to the bus with
-> > the SR-IOV lock held. While added to the bus the
-> > device-notifiers will run and invoke AMD IOMMU code, which
-> > itself will assign the device to a domain try to enable ATS.
-> > When it calls pci_enable_ats() this will dead-lock.
+Hi Mark,
+
+[adding David, since he's working on PCI/ITS stuff atm]
+
+> The below is an attempt at an MSI binding, derived from my original
+> example. It extends msi-parent inoto a phandle+(optional args) style
+> property.
 > 
-> I'm trying to connect the dots here.  What's the notifier that invokes the
-> AMD IOMMU code?  I thought it would be a BUS_NOTIFY_ADD_DEVICE notifier,
-> but I haven't found it yet.
-
-Yes, it is the BUS_NOTIFY_ADD_DEVICE notifier. In the case of the AMD
-IOMMU driver the call-chain is:
-
-	   pci_enable_sriov()
-	-> sriov_enable()
-	-> virtfn_add()
-	-> pci_device_add()		<-- Called with phys_dev->sriov->lock held
-	-> device_add()
-	-> BUS_NOTIFY_ADD_DEVICE notifier-chain
-	-> iommu_bus_notifier()
-	-> amd_iommu_add_device()	[through iommu_ops->add_device]
-	-> init_iommu_group()
-	-> iommu_group_get_for_dev()
-	-> iommu_group_add_device()
-	-> __iommu_attach_device()
-	-> amd_iommu_attach_device()	[through iommu_ops->attach_device]
-	-> attach_device()
-	-> pci_enable_ats()		<-- tries to take phys_dev->sriov->lock,
-					    if virtfn has ATS capability,
-					    and deadlocks
-
-In virtfn_add the sriov->lock is dropped right after pci_device_add
-returned. But I don't know why it needs to be protected by this lock,
-maybe it can be called without it?
-
-The problem in the end is that the ATS code uses the same lock as the
-IOV code, so another solution would be to use another lock for ATS.
-
-> The mutex was originally added by e277d2fc79d6 ("PCI: handle Virtual
-> Function ATS enabling").  I assume the purpose is to protect the
-> ats_alloc_one().
+> I haven't yet managed to come up with a sane way of describing
+> the Bus-ID/BDF -> {iommu,msi}-cells translation, but this should
+> hopefully cover the platform device case.
 > 
-> This seems overly complicated.  I think we can simplify this by doing some
-> of this work earlier, in pci_init_capabilities().  I'll work this up and
-> you can see what you think.
+> For the Bus-ID translation case I'm not sure it's sane to attempt to use
+> msi-parent, given that the transformation description will necessarily
+> have to describe the parents anyway.
 
-Hmm, the purpose of the lock is to prevent a race when pci_enable_ats is
-called concurrently for the virtual functions and it tries to allocate
-an ATS structure for the physical function too.
+We probably want a separate property on the RC node describing the
+transformation (i.e. offsetting) in a similar way to ranges or
+interrupt-map (potentially replacing msi-parent altogether). Maybe you
+could propose something so that David could have a crack at describing
+his RequesterID -> DeviceID mapping, which seems to map nicely onto a
+per-RC offset IIUC.
 
-Allocating the ats structure for the physical function earlier sounds
-like a good solution too.
+David -- does that sound ok to you?
 
+Will
 
-	Joerg
+> ---->8----
+> From 429dca4bba98732c492e95bdf395aa2ccc634e69 Mon Sep 17 00:00:00 2001
+> From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+> Date: Thu, 9 Jul 2015 17:53:00 +0100
+> Subject: [PATCH] Documentation: dt: add generic MSI bindings
+> 
+> Currently msi-parent is in use in a couple of drviers despite being
+> fairly underspecified. This patch adds a generic binding for MSIs
+> (including the existing msi-parent property) enabling the description of
+> platform devices capable of using MSIs.
+> 
+> This binding does not yet cover the general case. Currently the binding
+> does not cover the relationship between bus IDs (e.g. PCIe BDF) and
+> sideband data.
+> 
+> Signed-off-by: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  .../bindings/interrupt-controller/msi.txt          | 135 +++++++++++++++++++++
+>  1 file changed, 135 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/interrupt-controller/msi.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/interrupt-controller/msi.txt b/Documentation/devicetree/bindings/interrupt-controller/msi.txt
+> new file mode 100644
+> index 0000000..c60c034
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/interrupt-controller/msi.txt
+> @@ -0,0 +1,135 @@
+> +This document describes the generic device tree binding for MSI controllers and
+> +their master(s).
+> +
+> +Message Signaled Interrupts (MSIs) are a class of interrupts generated by a
+> +write to an MMIO address.
+> +
+> +MSIs were originally specified by PCI (and are used with PCIe), but may also be
+> +used with other busses, and hence a mechanism is required to relate devices on
+> +those busses to the MSI controllers which they are capable of using,
+> +potentially including additional information.
+> +
+> +MSIs are distinguished by some combination of:
+> +
+> +- The doorbell (the MMIO address written to).
+> +  
+> +  Devices may be configured by software to write to arbitrary doorbells which
+> +  they can address. An MSI controller may feature a number of doorbells.
+> +
+> +- The payload (the value written to the doorbell).
+> +  
+> +  Devices may be configured to write an arbitrary payload chosen by software.
+> +  MSI controllers may have restrictions on permitted payloads.
+> +
+> +- Sideband information accompanying the write.
+> +  
+> +  Typically this is neither configurable nor probeable, and depends on the path
+> +  taken through the memory system (i.e. it is a property of the combination of
+> +  MSI controller and device rather than a property of either in isolation).
+> +
+> +
+> +MSI controllers:
+> +================
+> +
+> +An MSI controller signals interrupts to a CPU when a write is made to an MMIO
+> +address by some master. An MSI controller may feature a number of doorbells.
+> +
+> +Required properties:
+> +--------------------
+> +
+> +- msi-controller: Identifies the node as an MSI controller.
+> +
+> +Optional properties:
+> +--------------------
+> +
+> +- #msi-cells: The number of cells in an msi-specifier, required if not zero.
+> +
+> +  Typically this will encode information related to sideband data, and will
+> +  not encode doorbells or payloads as these can be configured dynamically.
+> +
+> +  The meaning of the msi-specifier is defined by the device tree binding of
+> +  the specific MSI controller. 
+> +
+> +
+> +MSI clients
+> +===========
+> +
+> +MSI clients are devices which generate MSIs. For each MSI they wish to
+> +generate, the doorbell and payload may be configured, though sideband
+> +information may not be configurable.
+> +
+> +Required properties:
+> +--------------------
+> +
+> +- msi-parent: A list of phandle + msi-specifier pairs, one for each MSI
+> +  controller which the device is capable of using.
+> +
+> +  This property is unordered, and MSIs may be allocated from any combination of
+> +  MSI controllers listed in the msi-parent property.
+> +
+> +  If a device has restrictions on the allocation of MSIs, these restrictions
+> +  must be described with additional properties.
+> +
+> +  When #msi-cells is non-zero, busses with an msi-parent will require
+> +  additional properties to describe the relationship between devices on the bus
+> +  and the set of MSIs they can potentially generate.
+> +
+> +
+> +Example
+> +=======
+> +
+> +/ {
+> +	#address-cells = <1>;
+> +	#size-cells = <1>;
+> +
+> +	msi_a: msi-controller@a {
+> +		reg = <0xa 0xf00>;
+> +		compatible = "vendor-a,some-controller";
+> +		msi-controller;
+> +		/* No sideband data, so #msi-cells omitted */
+> +	};
+> +
+> +	msi_b: msi-controller@b {
+> +		reg = <0xb 0xf00>;
+> +		compatible = "vendor-b,another-controller";
+> +		msi-controller;
+> +		/* Each device has some unique ID */
+> +		#msi-cells = <1>;
+> +	};
+> +
+> +	msi_c: msi-controller@c {
+> +		reg = <0xb 0xf00>;
+> +		compatible = "vendor-b,another-controller";
+> +		msi-controller;
+> +		/* Each device has some unique ID */
+> +		#msi-cells = <1>;
+> +	};
+> +
+> +	dev@0 {
+> +		reg = <0x0 0xf00>;
+> +		compatible = "vendor-c,some-device";
+> +
+> +		/* Can only generate MSIs to msi_a */
+> +		msi-parent = <&msi_a>;
+> +	};
+> +
+> +	dev@1 {
+> +		reg = <0x1 0xf00>;
+> +		compatible = "vendor-c,some-device";
+> +
+> +		/* 
+> +		 * Can generate MSIs to either A or B.
+> +		 */
+> +		msi-parent = <&msi_a>, <&msi_b 0x17>;
+> +	};
+> +
+> +	dev@2 {
+> +		reg = <0x2 0xf00>;
+> +		compatible = "vendor-c,some-device";
+> +		/*
+> +		 * Has different IDs at each MSI controller.
+> +		 * Can generate MSIs to all of the MSI controllers.
+> +		 */
+> +		msi-parent = <&msi_a>, <&msi_b 0x17>, <&msi_c 0x53>;
+> +	};
+> +};
+> -- 
+> 1.9.1
+> 
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
