@@ -1,104 +1,75 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
+From: Joerg Roedel <jroedel@suse.de>
 Subject: Re: [PATCH] PCI: Don't use SR-IOV lock for ATS
-Date: Thu, 16 Jul 2015 18:08:31 -0500
-Message-ID: <20150716230831.GF25591@google.com>
+Date: Fri, 17 Jul 2015 09:51:15 +0200
+Message-ID: <20150717075114.GA12578@suse.de>
 References: <1434617420-18313-1-git-send-email-joro@8bytes.org>
+ <20150716230831.GF25591@google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pci-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1434617420-18313-1-git-send-email-joro@8bytes.org>
+In-Reply-To: <20150716230831.GF25591@google.com>
 Sender: linux-pci-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Gregor Dick <gdick@solarflare.com>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, stable@kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Gregor Dick <gdick@solarflare.com>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, stable@kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+Hi Bjorn,
 
-On Thu, Jun 18, 2015 at 10:50:20AM +0200, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel@suse.de>
+On Thu, Jul 16, 2015 at 06:08:31PM -0500, Bjorn Helgaas wrote:
+> On Thu, Jun 18, 2015 at 10:50:20AM +0200, Joerg Roedel wrote:
+> > The problem is that the VFs will be added to the bus with
+> > the SR-IOV lock held. While added to the bus the
+> > device-notifiers will run and invoke AMD IOMMU code, which
+> > itself will assign the device to a domain try to enable ATS.
+> > When it calls pci_enable_ats() this will dead-lock.
 > 
-> The use of the SR-IOV lock for ATS causes a dead-lock in the
-> AMD-IOMMU driver when virtual functions are added that have
-> an ATS capability.
+> I'm trying to connect the dots here.  What's the notifier that invokes the
+> AMD IOMMU code?  I thought it would be a BUS_NOTIFY_ADD_DEVICE notifier,
+> but I haven't found it yet.
+
+Yes, it is the BUS_NOTIFY_ADD_DEVICE notifier. In the case of the AMD
+IOMMU driver the call-chain is:
+
+	   pci_enable_sriov()
+	-> sriov_enable()
+	-> virtfn_add()
+	-> pci_device_add()		<-- Called with phys_dev->sriov->lock held
+	-> device_add()
+	-> BUS_NOTIFY_ADD_DEVICE notifier-chain
+	-> iommu_bus_notifier()
+	-> amd_iommu_add_device()	[through iommu_ops->add_device]
+	-> init_iommu_group()
+	-> iommu_group_get_for_dev()
+	-> iommu_group_add_device()
+	-> __iommu_attach_device()
+	-> amd_iommu_attach_device()	[through iommu_ops->attach_device]
+	-> attach_device()
+	-> pci_enable_ats()		<-- tries to take phys_dev->sriov->lock,
+					    if virtfn has ATS capability,
+					    and deadlocks
+
+In virtfn_add the sriov->lock is dropped right after pci_device_add
+returned. But I don't know why it needs to be protected by this lock,
+maybe it can be called without it?
+
+The problem in the end is that the ATS code uses the same lock as the
+IOV code, so another solution would be to use another lock for ATS.
+
+> The mutex was originally added by e277d2fc79d6 ("PCI: handle Virtual
+> Function ATS enabling").  I assume the purpose is to protect the
+> ats_alloc_one().
 > 
-> The problem is that the VFs will be added to the bus with
-> the SR-IOV lock held. While added to the bus the
-> device-notifiers will run and invoke AMD IOMMU code, which
-> itself will assign the device to a domain try to enable ATS.
-> When it calls pci_enable_ats() this will dead-lock.
+> This seems overly complicated.  I think we can simplify this by doing some
+> of this work earlier, in pci_init_capabilities().  I'll work this up and
+> you can see what you think.
 
-I'm trying to connect the dots here.  What's the notifier that invokes the
-AMD IOMMU code?  I thought it would be a BUS_NOTIFY_ADD_DEVICE notifier,
-but I haven't found it yet.
+Hmm, the purpose of the lock is to prevent a race when pci_enable_ats is
+called concurrently for the virtual functions and it tries to allocate
+an ATS structure for the physical function too.
 
-> Fix this by introducing a global ats_lock. ATS enablement
-> and disablement isn't in any fast-path, so a global lock
-> shouldn't hurt here.
-> 
-> Cc: stable@kernel.org
-> Reported-by: Gregor Dick <gdick@solarflare.com>
-> Signed-off-by: Joerg Roedel <jroedel@suse.de>
-> ---
->  drivers/pci/ats.c | 10 ++++++----
->  1 file changed, 6 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-> index a8099d4..f0c3c6f 100644
-> --- a/drivers/pci/ats.c
-> +++ b/drivers/pci/ats.c
-> @@ -17,6 +17,8 @@
->  
->  #include "pci.h"
->  
-> +static DEFINE_MUTEX(ats_lock);
-> +
->  static int ats_alloc_one(struct pci_dev *dev, int ps)
->  {
->  	int pos;
-> @@ -67,7 +69,7 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
->  	if (dev->is_physfn || dev->is_virtfn) {
->  		struct pci_dev *pdev = dev->is_physfn ? dev : dev->physfn;
->  
-> -		mutex_lock(&pdev->sriov->lock);
-> +		mutex_lock(&ats_lock);
->  		if (pdev->ats)
->  			rc = pdev->ats->stu == ps ? 0 : -EINVAL;
->  		else
-> @@ -75,7 +77,7 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
->  
->  		if (!rc)
->  			pdev->ats->ref_cnt++;
-> -		mutex_unlock(&pdev->sriov->lock);
-> +		mutex_unlock(&ats_lock);
+Allocating the ats structure for the physical function earlier sounds
+like a good solution too.
 
-The mutex was originally added by e277d2fc79d6 ("PCI: handle Virtual
-Function ATS enabling").  I assume the purpose is to protect the
-ats_alloc_one().
 
-This seems overly complicated.  I think we can simplify this by doing some
-of this work earlier, in pci_init_capabilities().  I'll work this up and
-you can see what you think.
-
-Bjorn
-
->  		if (rc)
->  			return rc;
->  	}
-> @@ -116,11 +118,11 @@ void pci_disable_ats(struct pci_dev *dev)
->  	if (dev->is_physfn || dev->is_virtfn) {
->  		struct pci_dev *pdev = dev->is_physfn ? dev : dev->physfn;
->  
-> -		mutex_lock(&pdev->sriov->lock);
-> +		mutex_lock(&ats_lock);
->  		pdev->ats->ref_cnt--;
->  		if (!pdev->ats->ref_cnt)
->  			ats_free_one(pdev);
-> -		mutex_unlock(&pdev->sriov->lock);
-> +		mutex_unlock(&ats_lock);
->  	}
->  
->  	if (!dev->is_physfn)
-> -- 
-> 1.9.1
-> 
+	Joerg
