@@ -1,222 +1,95 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: Master-aware devices and sideband ID data
-Date: Fri, 17 Jul 2015 11:36:09 +0100
-Message-ID: <20150717103609.GJ18994@arm.com>
-References: <26BE36EF-2C5B-4DA6-8950-8FEBB031ED1B@caviumnetworks.com>
- <20150527173953.GC23176@leverpostej>
- <E342D737-5DD5-48C7-BB01-B83C29CB6E31@caviumnetworks.com>
- <20150601102208.GD22406@leverpostej>
- <158EFC9F-FCAF-44D3-AD40-804EDFE0CE25@caviumnetworks.com>
- <20150605090534.GC1198@arm.com>
- <20150609101515.GA28474@leverpostej>
- <20150708133049.GD7025@leverpostej>
- <20150708160227.GJ9283@arm.com>
- <20150716133441.GC28631@leverpostej>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [RFC PATCH 2/4] iommu/arm-smmu: Add xlate callback for initializing master devices from dt
+Date: Fri, 17 Jul 2015 22:23:23 +0530
+Message-ID: <1437152005-25092-3-git-send-email-sricharan@codeaurora.org>
+References: <1437152005-25092-1-git-send-email-sricharan@codeaurora.org>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20150716133441.GC28631@leverpostej>
+In-Reply-To: <1437152005-25092-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Cc: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org" <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+Cc: sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jul 16, 2015 at 02:34:41PM +0100, Mark Rutland wrote:
-> Hi Will,
+This adds of_xlate callback to arm-smmu driver. xlate callback
+is called during device registration from DT for those master
+devices attached to iommus using generic iommu bindings.
 
-Hi Mark,
+Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
 
-[adding David, since he's working on PCI/ITS stuff atm]
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 8c4eb43..2cf65ab 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -321,6 +321,7 @@ struct arm_smmu_device {
+ 	unsigned int			*irqs;
+ 
+ 	struct list_head		list;
++	struct device_node		*node;
+ 	struct rb_root			masters;
+ };
+ 
+@@ -1434,6 +1435,38 @@ out_unlock:
+ 	return ret;
+ }
+ 
++static int arm_smmu_of_xlate(struct device *dev,
++			     struct of_phandle_args *spec)
++{
++	struct arm_smmu_device *smmu;
++	struct arm_smmu_master *master;
++	int streamid;
++
++	spin_lock(&arm_smmu_devices_lock);
++	list_for_each_entry(smmu, &arm_smmu_devices, list) {
++		if (smmu->node == spec->np)
++			break;
++	}
++	spin_unlock(&arm_smmu_devices_lock);
++
++	if (!smmu || (smmu->node != spec->np))
++		return -ENODEV;
++
++	spec->np = dev->of_node;
++
++	master = find_smmu_master(smmu, spec->np);
++	if (!master) {
++		if (register_smmu_master(smmu, smmu->dev, spec))
++			return -ENODEV;
++	} else {
++		streamid = master->cfg.num_streamids;
++		master->cfg.streamids[streamid] = spec->args[0];
++		master->cfg.num_streamids++;
++	}
++
++	return 0;
++}
++
+ static struct iommu_ops arm_smmu_ops = {
+ 	.capable		= arm_smmu_capable,
+ 	.domain_init		= arm_smmu_domain_init,
+@@ -1449,6 +1482,7 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.domain_get_attr	= arm_smmu_domain_get_attr,
+ 	.domain_set_attr	= arm_smmu_domain_set_attr,
+ 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
++	.of_xlate		= arm_smmu_of_xlate,
+ };
+ 
+ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+@@ -1782,6 +1816,8 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
++	smmu->node = dev->of_node;
++
+ 	INIT_LIST_HEAD(&smmu->list);
+ 	spin_lock(&arm_smmu_devices_lock);
+ 	list_add(&smmu->list, &arm_smmu_devices);
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
 
-> The below is an attempt at an MSI binding, derived from my original
-> example. It extends msi-parent inoto a phandle+(optional args) style
-> property.
-> 
-> I haven't yet managed to come up with a sane way of describing
-> the Bus-ID/BDF -> {iommu,msi}-cells translation, but this should
-> hopefully cover the platform device case.
-> 
-> For the Bus-ID translation case I'm not sure it's sane to attempt to use
-> msi-parent, given that the transformation description will necessarily
-> have to describe the parents anyway.
-
-We probably want a separate property on the RC node describing the
-transformation (i.e. offsetting) in a similar way to ranges or
-interrupt-map (potentially replacing msi-parent altogether). Maybe you
-could propose something so that David could have a crack at describing
-his RequesterID -> DeviceID mapping, which seems to map nicely onto a
-per-RC offset IIUC.
-
-David -- does that sound ok to you?
-
-Will
-
-> ---->8----
-> From 429dca4bba98732c492e95bdf395aa2ccc634e69 Mon Sep 17 00:00:00 2001
-> From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-> Date: Thu, 9 Jul 2015 17:53:00 +0100
-> Subject: [PATCH] Documentation: dt: add generic MSI bindings
-> 
-> Currently msi-parent is in use in a couple of drviers despite being
-> fairly underspecified. This patch adds a generic binding for MSIs
-> (including the existing msi-parent property) enabling the description of
-> platform devices capable of using MSIs.
-> 
-> This binding does not yet cover the general case. Currently the binding
-> does not cover the relationship between bus IDs (e.g. PCIe BDF) and
-> sideband data.
-> 
-> Signed-off-by: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-> ---
->  .../bindings/interrupt-controller/msi.txt          | 135 +++++++++++++++++++++
->  1 file changed, 135 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/interrupt-controller/msi.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/interrupt-controller/msi.txt b/Documentation/devicetree/bindings/interrupt-controller/msi.txt
-> new file mode 100644
-> index 0000000..c60c034
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/interrupt-controller/msi.txt
-> @@ -0,0 +1,135 @@
-> +This document describes the generic device tree binding for MSI controllers and
-> +their master(s).
-> +
-> +Message Signaled Interrupts (MSIs) are a class of interrupts generated by a
-> +write to an MMIO address.
-> +
-> +MSIs were originally specified by PCI (and are used with PCIe), but may also be
-> +used with other busses, and hence a mechanism is required to relate devices on
-> +those busses to the MSI controllers which they are capable of using,
-> +potentially including additional information.
-> +
-> +MSIs are distinguished by some combination of:
-> +
-> +- The doorbell (the MMIO address written to).
-> +  
-> +  Devices may be configured by software to write to arbitrary doorbells which
-> +  they can address. An MSI controller may feature a number of doorbells.
-> +
-> +- The payload (the value written to the doorbell).
-> +  
-> +  Devices may be configured to write an arbitrary payload chosen by software.
-> +  MSI controllers may have restrictions on permitted payloads.
-> +
-> +- Sideband information accompanying the write.
-> +  
-> +  Typically this is neither configurable nor probeable, and depends on the path
-> +  taken through the memory system (i.e. it is a property of the combination of
-> +  MSI controller and device rather than a property of either in isolation).
-> +
-> +
-> +MSI controllers:
-> +================
-> +
-> +An MSI controller signals interrupts to a CPU when a write is made to an MMIO
-> +address by some master. An MSI controller may feature a number of doorbells.
-> +
-> +Required properties:
-> +--------------------
-> +
-> +- msi-controller: Identifies the node as an MSI controller.
-> +
-> +Optional properties:
-> +--------------------
-> +
-> +- #msi-cells: The number of cells in an msi-specifier, required if not zero.
-> +
-> +  Typically this will encode information related to sideband data, and will
-> +  not encode doorbells or payloads as these can be configured dynamically.
-> +
-> +  The meaning of the msi-specifier is defined by the device tree binding of
-> +  the specific MSI controller. 
-> +
-> +
-> +MSI clients
-> +===========
-> +
-> +MSI clients are devices which generate MSIs. For each MSI they wish to
-> +generate, the doorbell and payload may be configured, though sideband
-> +information may not be configurable.
-> +
-> +Required properties:
-> +--------------------
-> +
-> +- msi-parent: A list of phandle + msi-specifier pairs, one for each MSI
-> +  controller which the device is capable of using.
-> +
-> +  This property is unordered, and MSIs may be allocated from any combination of
-> +  MSI controllers listed in the msi-parent property.
-> +
-> +  If a device has restrictions on the allocation of MSIs, these restrictions
-> +  must be described with additional properties.
-> +
-> +  When #msi-cells is non-zero, busses with an msi-parent will require
-> +  additional properties to describe the relationship between devices on the bus
-> +  and the set of MSIs they can potentially generate.
-> +
-> +
-> +Example
-> +=======
-> +
-> +/ {
-> +	#address-cells = <1>;
-> +	#size-cells = <1>;
-> +
-> +	msi_a: msi-controller@a {
-> +		reg = <0xa 0xf00>;
-> +		compatible = "vendor-a,some-controller";
-> +		msi-controller;
-> +		/* No sideband data, so #msi-cells omitted */
-> +	};
-> +
-> +	msi_b: msi-controller@b {
-> +		reg = <0xb 0xf00>;
-> +		compatible = "vendor-b,another-controller";
-> +		msi-controller;
-> +		/* Each device has some unique ID */
-> +		#msi-cells = <1>;
-> +	};
-> +
-> +	msi_c: msi-controller@c {
-> +		reg = <0xb 0xf00>;
-> +		compatible = "vendor-b,another-controller";
-> +		msi-controller;
-> +		/* Each device has some unique ID */
-> +		#msi-cells = <1>;
-> +	};
-> +
-> +	dev@0 {
-> +		reg = <0x0 0xf00>;
-> +		compatible = "vendor-c,some-device";
-> +
-> +		/* Can only generate MSIs to msi_a */
-> +		msi-parent = <&msi_a>;
-> +	};
-> +
-> +	dev@1 {
-> +		reg = <0x1 0xf00>;
-> +		compatible = "vendor-c,some-device";
-> +
-> +		/* 
-> +		 * Can generate MSIs to either A or B.
-> +		 */
-> +		msi-parent = <&msi_a>, <&msi_b 0x17>;
-> +	};
-> +
-> +	dev@2 {
-> +		reg = <0x2 0xf00>;
-> +		compatible = "vendor-c,some-device";
-> +		/*
-> +		 * Has different IDs at each MSI controller.
-> +		 * Can generate MSIs to all of the MSI controllers.
-> +		 */
-> +		msi-parent = <&msi_a>, <&msi_b 0x17>, <&msi_c 0x53>;
-> +	};
-> +};
-> -- 
-> 1.9.1
-> 
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
