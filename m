@@ -1,138 +1,34 @@
-From: Sricharan R <sricharan@codeaurora.org>
-Subject: [RFC PATCH 4/4] iommu/arm-smmu: Add support for specifying regulators
-Date: Fri, 17 Jul 2015 22:23:25 +0530
-Message-ID: <1437152005-25092-5-git-send-email-sricharan@codeaurora.org>
-References: <1437152005-25092-1-git-send-email-sricharan@codeaurora.org>
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <1437152005-25092-1-git-send-email-sricharan@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, will.deacon@arm.com, devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, mitchelh@codeaurora.org
-Cc: sricharan@codeaurora.org
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v4 0/4] arm64: IOMMU-backed DMA mapping
+Date: Mon, 20 Jul 2015 17:26:37 +0200
+Message-ID: <20150720152637.GD10969@8bytes.org>
+References: <cover.1437070995.git.robin.murphy@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <cover.1437070995.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Mitchel Humpherys <mitchelh@codeaurora.org>
+On Thu, Jul 16, 2015 at 07:40:11PM +0100, Robin Murphy wrote:
+>  arch/arm64/Kconfig                   |   1 +
+>  arch/arm64/include/asm/dma-mapping.h |  15 +-
+>  arch/arm64/mm/dma-mapping.c          | 452 +++++++++++++++++++++++++++++
 
-This adds the support to turn on the regulators required
-for SMMUs. It is turned on during the SMMU probe and remains
-'on' till the device exists.
+What happened to the plan to merge this with the existing iommu-based
+dma-api implementation for 32 bit ARM?
 
-Signed-off-by: Sricharan R <sricharan@codeaurora.org>
----
- .../devicetree/bindings/iommu/arm,smmu.txt         |  3 ++
- drivers/iommu/arm-smmu.c                           | 48 +++++++++++++++++++++-
- 2 files changed, 50 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-index c2cf4fe..433d778 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-@@ -60,6 +60,9 @@ conditions.
- 		  Documentation/devicetree/bindings/clock/clock-bindings.txt
- 		  for more info.
- 
-+- vdd-supply    : Phandle of the regulator that should be powered on during
-+                  SMMU register access.
-+
- Example:
- 
-         smmu {
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 80d56f0a..c92de50 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -326,6 +326,8 @@ struct arm_smmu_device {
- 
- 	int				num_clocks;
- 	struct clk			**clocks;
-+
-+	struct regulator		*regulator;
- };
- 
- struct arm_smmu_cfg {
-@@ -559,6 +561,22 @@ static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
- 	clear_bit(idx, map);
- }
- 
-+static int arm_smmu_enable_regulators(struct arm_smmu_device *smmu)
-+{
-+	if (!smmu->regulator)
-+		return 0;
-+
-+	return regulator_enable(smmu->regulator);
-+}
-+
-+static int arm_smmu_disable_regulators(struct arm_smmu_device *smmu)
-+{
-+	if (!smmu->regulator)
-+		return 0;
-+
-+	return regulator_disable(smmu->regulator);
-+}
-+
- /* Wait for any pending TLB invalidations to complete */
- static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
- {
-@@ -1583,6 +1601,20 @@ static int arm_smmu_id_size_to_bits(int size)
- 	}
- }
- 
-+static int arm_smmu_init_regulators(struct arm_smmu_device *smmu)
-+{
-+	struct device *dev = smmu->dev;
-+
-+	if (!of_get_property(dev->of_node, "vdd-supply", NULL))
-+		return 0;
-+
-+	smmu->regulator = devm_regulator_get(dev, "vdd");
-+	if (IS_ERR(smmu->regulator))
-+		return PTR_ERR(smmu->regulator);
-+
-+	return 0;
-+}
-+
- static int arm_smmu_init_clocks(struct arm_smmu_device *smmu)
- {
- 	const char *cname;
-@@ -1841,11 +1873,21 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 		smmu->irqs[i] = irq;
- 	}
- 
-+	err = arm_smmu_init_regulators(smmu);
-+	if (err)
-+		goto out_put_masters;
-+
- 	err = arm_smmu_init_clocks(smmu);
- 	if (err)
- 		goto out_put_masters;
- 
--	arm_smmu_enable_clocks(smmu);
-+	err = arm_smmu_enable_regulators(smmu);
-+	if (err)
-+		goto out_put_masters;
-+
-+	err = arm_smmu_enable_clocks(smmu);
-+	if (err)
-+		goto out_disable_regulators;
- 
- 	err = arm_smmu_device_cfg_probe(smmu);
- 	if (err)
-@@ -1908,6 +1950,9 @@ out_free_irqs:
- out_disable_clocks:
- 	arm_smmu_disable_clocks(smmu);
- 
-+out_disable_regulators:
-+	arm_smmu_disable_regulators(smmu);
-+
- out_put_masters:
- 	for (node = rb_first(&smmu->masters); node; node = rb_next(node)) {
- 		struct arm_smmu_master *master
-@@ -1953,6 +1998,7 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
- 	/* Turn the thing off */
- 	writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
- 	arm_smmu_disable_clocks(smmu);
-+	arm_smmu_disable_regulators(smmu);
- 
- 	return 0;
- }
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+	Joerg
