@@ -1,48 +1,43 @@
-From: Andreas Hartmann <andihartmann@freenet.de>
-Subject: Re: Since Linux 4.1: A lot of AMD-Vi IO_PAGE_FAULTs
-Date: Tue, 21 Jul 2015 19:47:30 +0200
-Message-ID: <55AE85B2.2000004@maya.org>
-References: <55AE5F84.5020204@01019freenet.de>
- <1437492886.1391.847.camel@redhat.com> <20150721155635.GE10969@8bytes.org>
- <55AE7147.7070902@maya.org> <20150721163517.GG10969@8bytes.org>
+From: Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [RFC PATCH 4/4] iommu/arm-smmu: Add support for specifying
+	regulators
+Date: Tue, 21 Jul 2015 11:17:30 -0700
+Message-ID: <55AE8CBA.90805@codeaurora.org>
+References: <1437152005-25092-1-git-send-email-sricharan@codeaurora.org>
+	<1437152005-25092-5-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20150721163517.GG10969@8bytes.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Andreas Hartmann <andihartmann@freenet.de>
-Cc: Alex Williamson <alex.williamson@redhat.com>, linux-pci <linux-pci@vger.kernel.org>, iommu <iommu@lists.linux-foundation.org>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1437152005-25092-5-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Am 21.07.2015 um 18:35 schrieb Joerg Roedel:
-> On Tue, Jul 21, 2015 at 06:20:23PM +0200, Andreas Hartmann wrote:
->> [   48.193901] <6>[fglrx] Firegl kernel thread PID: 1840
->> [   48.193985] <6>[fglrx] Firegl kernel thread PID: 1841
->> [   48.194063] <6>[fglrx] Firegl kernel thread PID: 1842
->> [   48.194172] <6>[fglrx] IRQ 28 Enabled
->> [   48.261580] <6>[fglrx] Reserved FB block: Shared offset:0, size:1000000 
->> [   48.261586] <6>[fglrx] Reserved FB block: Unshared offset:f7b4000, size:4000 
->> [   48.261587] <6>[fglrx] Reserved FB block: Unshared offset:f7b8000, size:548000 
->> [   48.261588] <6>[fglrx] Reserved FB block: Unshared offset:3fff3000, size:d000
-> 
-> From a first glance it doesn't look like an IOMMU driver issue, because
-> the addresses where the faults happen are not from the AMD IOMMU driver.
-> 
-> And you have proprietary closed-source drivers loaded, can you reproduce
-> the issue without fglrx?
+On 07/17/2015 09:53 AM, Sricharan R wrote:
+> From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>
+> This adds the support to turn on the regulators required
+> for SMMUs. It is turned on during the SMMU probe and remains
+> 'on' till the device exists.
 
-The problem is, that the errors can't be seen always - only sometimes. I
-could see them before w/ or w/o fglrx. There have been situations where
-the machine didn't boot at all because of ata errors. But I never had
-any problem w/ Linux 3.18.x or less.
+The device always exists. Until the driver is removed perhaps?
 
-Most probably you're right and it is not an IOMMU driver issue but maybe
-a problem w/ the ahci driver. I have to keep track of it.
+>
+> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 
+We won't be using regulators. We'll be using power domains instead so 
+please rewrite this patch accordingly.
 
-Thanks for your estimation.
-
-
-Regards,
-Andreas
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
