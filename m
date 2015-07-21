@@ -1,39 +1,80 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH 1/4] iommu/arm-smmu: Init driver using IOMMU_OF_DECLARE
-Date: Tue, 21 Jul 2015 16:03:06 +0100
-Message-ID: <20150721150306.GI31095@arm.com>
-References: <1437152005-25092-1-git-send-email-sricharan@codeaurora.org>
-	<1437152005-25092-2-git-send-email-sricharan@codeaurora.org>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: Since Linux 4.1: A lot of AMD-Vi IO_PAGE_FAULTs
+Date: Tue, 21 Jul 2015 09:34:46 -0600
+Message-ID: <1437492886.1391.847.camel@redhat.com>
+References: <55AE5F84.5020204@01019freenet.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1437152005-25092-2-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <55AE5F84.5020204@01019freenet.de>
+Sender: linux-pci-owner@vger.kernel.org
+To: Andreas Hartmann <andihartmann@01019freenet.de>
+Cc: linux-pci <linux-pci@vger.kernel.org>, iommu <iommu@lists.linux-foundation.org>, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-[adding Robin]
+[cc +iommu, +joerg]
 
-On Fri, Jul 17, 2015 at 05:53:22PM +0100, Sricharan R wrote:
-> This patch uses IOMMU_OF_DECLARE to register the driver
-> and the iommu_ops. So when master devices of the iommu are
-> registered, of_xlate callback can be used to add the master
-> configurations to the smmu driver.
-
-I'd really prefer to do this on top of Laurent's series reworking some of
-the of_xlate code and I think Robin [CC'd] is working on that. That will
-also pave the way for specifying per-master SMR configuration in the
-device-tree.
-
-Will
+On Tue, 2015-07-21 at 17:04 +0200, Andreas Hartmann wrote:
+> Hello!
+> 
+> Since Linux 4.1, I'm getting a lot of IO_PAGE_FAULT like this one
+> 
+> [   17.048609] AMD-Vi: Event logged [IO_PAGE_FAULT device=00:11.0
+> domain=0x0008 address=0x40ebaaab00618000 flags=0x0010]
+> 
+> with different addresses:
+> 
+> 0x40ebaaab00618000
+> 0x40ebaaab00618040
+> 0x0000000000000000
+> 0x0000000000000180
+> 0x00000000000000c0
+> 0x0000000000000080
+> 0x0000000000000100
+> 0x0000000000000040
+> 0x0000000000000140
+> 0x00000000000001c0
+> 0x0000000000000200
+> 0x0000000000000240
+> 0x0000000000000280
+> 
+> ...
+> 
+> device=00:11.0 is:
+> 
+> # lspci -vvs 00:11.0
+> 00:11.0 SATA controller: Advanced Micro Devices, Inc. [AMD/ATI]
+> SB7x0/SB8x0/SB9x0 SATA Controller [AHCI mode] (rev 40) (prog-if 01 [AHCI
+> 1.0])
+>         Subsystem: Gigabyte Technology Co., Ltd Device b002
+>         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop-
+> ParErr- Stepping- SERR- FastB2B- DisINTx-
+>         Status: Cap+ 66MHz+ UDF- FastB2B- ParErr- DEVSEL=medium >TAbort-
+> <TAbort- <MAbort- >SERR- <PERR- INTx-
+>         Latency: 32, Cache Line Size: 64 bytes
+>         Interrupt: pin A routed to IRQ 19
+>         Region 0: I/O ports at ff00 [size=8]
+>         Region 1: I/O ports at fe00 [size=4]
+>         Region 2: I/O ports at fd00 [size=8]
+>         Region 3: I/O ports at fc00 [size=4]
+>         Region 4: I/O ports at fb00 [size=16]
+>         Region 5: Memory at fdfff000 (32-bit, non-prefetchable) [size=1K]
+>         Capabilities: [70] SATA HBA v1.0 InCfgSpace
+>         Capabilities: [a4] PCI Advanced Features
+>                 AFCap: TP+ FLR+
+>                 AFCtrl: FLR-
+>                 AFStatus: TP-
+>         Kernel driver in use: ahci
+> 
+> 
+> Any idea what could be wrong?
+> 
+> 
+> Thanks,
+> kind regards,
+> Andreas Hartmann
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-pci" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
