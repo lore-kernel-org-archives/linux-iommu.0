@@ -1,8 +1,7 @@
 From: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2 07/11] PCI: Use pci_physfn() rather than looking up
-	physfn by hand
-Date: Mon, 20 Jul 2015 19:14:46 -0500
-Message-ID: <20150721001446.28145.65839.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+Subject: [PATCH v2 08/11] PCI: Clean up ATS error handling
+Date: Mon, 20 Jul 2015 19:14:54 -0500
+Message-ID: <20150721001454.28145.35617.stgit@bhelgaas-glaptop2.roam.corp.google.com>
 References: <20150721001243.28145.81610.stgit@bhelgaas-glaptop2.roam.corp.google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,52 +21,53 @@ To: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <jroedel-l3A
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Gregor Dick <gdick-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Use the pci_physfn() helper rather than looking up physfn by hand.
-No functional change.
+There's no need to BUG() if we enable ATS when it's already enabled.  We
+don't need to BUG() when disabling ATS on a device that doesn't support ATS
+or if it's already disabled.  If ATS is enabled, certainly we found an ATS
+capability in the past, so it should still be there now.
+
+Clean up these error paths.
 
 Signed-off-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Reviewed-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/pci/ats.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/pci/ats.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-index 95905f3..0b5b0ed 100644
+index 0b5b0ed..67524a7 100644
 --- a/drivers/pci/ats.c
 +++ b/drivers/pci/ats.c
-@@ -42,6 +42,7 @@ void pci_ats_init(struct pci_dev *dev)
- int pci_enable_ats(struct pci_dev *dev, int ps)
- {
+@@ -44,11 +44,12 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
  	u16 ctrl;
-+	struct pci_dev *pdev;
+ 	struct pci_dev *pdev;
  
- 	BUG_ON(dev->ats_cap && dev->ats_enabled);
- 
-@@ -57,8 +58,7 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
- 	 */
- 	ctrl = PCI_ATS_CTRL_ENABLE;
- 	if (dev->is_virtfn) {
--		struct pci_dev *pdev = dev->physfn;
+-	BUG_ON(dev->ats_cap && dev->ats_enabled);
 -
-+		pdev = pci_physfn(dev);
- 		if (pdev->ats_stu != ps)
- 			return -EINVAL;
+ 	if (!dev->ats_cap)
+ 		return -EINVAL;
  
-@@ -80,6 +80,7 @@ EXPORT_SYMBOL_GPL(pci_enable_ats);
-  */
- void pci_disable_ats(struct pci_dev *dev)
- {
-+	struct pci_dev *pdev;
++	if (pci_ats_enabled(dev))
++		return -EINVAL;
++
+ 	if (ps < PCI_ATS_MIN_STU)
+ 		return -EINVAL;
+ 
+@@ -83,7 +84,8 @@ void pci_disable_ats(struct pci_dev *dev)
+ 	struct pci_dev *pdev;
  	u16 ctrl;
  
- 	BUG_ON(!dev->ats_cap || !dev->ats_enabled);
-@@ -88,8 +89,7 @@ void pci_disable_ats(struct pci_dev *dev)
+-	BUG_ON(!dev->ats_cap || !dev->ats_enabled);
++	if (!pci_ats_enabled(dev))
++		return;
+ 
+ 	if (atomic_read(&dev->ats_ref_cnt))
  		return;		/* VFs still enabled */
+@@ -107,8 +109,6 @@ void pci_restore_ats_state(struct pci_dev *dev)
  
- 	if (dev->is_virtfn) {
--		struct pci_dev *pdev = dev->physfn;
--
-+		pdev = pci_physfn(dev);
- 		atomic_dec(&pdev->ats_ref_cnt);
- 	}
+ 	if (!pci_ats_enabled(dev))
+ 		return;
+-	if (!pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ATS))
+-		BUG();
  
+ 	ctrl = PCI_ATS_CTRL_ENABLE;
+ 	if (!dev->is_virtfn)
