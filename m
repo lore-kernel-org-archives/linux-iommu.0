@@ -1,13 +1,11 @@
 From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v3 3/5] iommu/arm-smmu: rename __arm_smmu_get_pci_sid
-Date: Tue, 21 Jul 2015 15:30:31 +0800
-Message-ID: <1437463833-16112-4-git-send-email-thunder.leizhen@huawei.com>
-References: <1437463833-16112-1-git-send-email-thunder.leizhen@huawei.com>
+Subject: [PATCH v3 0/5] iommu/arm-smmu: add support for non-pci devices
+Date: Tue, 21 Jul 2015 15:30:28 +0800
+Message-ID: <1437463833-16112-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1437463833-16112-1-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,35 +19,34 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-z
 Cc: Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Remove the words "pci", to make this function can also be used by
-non-pci devices.
+Changelog:
+v2 -> v3:
+1. add support for pci device hotplug, which missed in patch v2.
+2. only support #iommu-cells = <1>, add corresponding description in arm,smmu-v3.txt.
+3. add function find_smmu_by_device which extracted from find_smmu_by_node, to resolve
+   the problem mentioned by Robin Murphy in [PATCH v2 7/9].
+   Additionally:
+   +    platform_set_drvdata(pdev, smmu);       //Patch v2
+   +	dev->archdata.iommu = smmu;             //Patch v3, dev = &pdev->dev
 
-Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+v1 -> v2:
+update the implementation of patch 1/9 according to Will Deacon's suggestion.
+update the comment of patch 3/9 and 4/9.
+use arm_smmu_options to skip the execution of command CMD_PREFETCH_CONFIG, see patch 5/9.
+patch 6/9 is base on Laurent's series, to support probe deferral.
+patch 7/9 according to Robin Murphy's suggestion, remove global variable arm_smmu_devices, thanks.
+patch 9/9 add support for a master with multiple stream IDs.
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 9daf4cc..216c9d4 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1734,7 +1734,7 @@ static int __arm_smmu_get_pci_sid(struct pci_dev *pdev, u16 alias, void *sidp)
- 	return 0; /* Continue walking */
- }
+Zhen Lei (5):
+  iommu/arm-smmu: to support probe deferral
+  iommu/arm-smmu: remove arm_smmu_devices
+  iommu/arm-smmu: rename __arm_smmu_get_pci_sid
+  iommu/arm-smmu: add support for non-pci devices
+  iommu/arm-smmu: describe the limitation of #iommu-cells
 
--static void __arm_smmu_release_pci_iommudata(void *data)
-+static void __arm_smmu_release_iommudata(void *data)
- {
- 	kfree(data);
- }
-@@ -1811,7 +1811,7 @@ static int __arm_smmu_add_device(struct device *dev, u32 sid)
- 		smmu_group->ste.valid	= true;
- 		smmu_group->smmu	= smmu;
- 		iommu_group_set_iommudata(group, smmu_group,
--					  __arm_smmu_release_pci_iommudata);
-+					  __arm_smmu_release_iommudata);
- 	} else {
- 		smmu = smmu_group->smmu;
- 	}
+ .../devicetree/bindings/iommu/arm,smmu-v3.txt      |   6 +
+ drivers/iommu/arm-smmu-v3.c                        | 209 ++++++++++++++++-----
+ 2 files changed, 163 insertions(+), 52 deletions(-)
+
 --
 1.8.0
