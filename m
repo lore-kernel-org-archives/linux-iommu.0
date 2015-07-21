@@ -1,8 +1,7 @@
 From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH v2 09/11] PCI: Move ATS declarations to linux/pci.h so
- they're all together
-Date: Mon, 20 Jul 2015 19:15:03 -0500
-Message-ID: <20150721001503.28145.54521.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+Subject: [PATCH v2 10/11] PCI: Stop caching ATS Invalidate Queue Depth
+Date: Mon, 20 Jul 2015 19:15:11 -0500
+Message-ID: <20150721001511.28145.29144.stgit@bhelgaas-glaptop2.roam.corp.google.com>
 References: <20150721001243.28145.81610.stgit@bhelgaas-glaptop2.roam.corp.google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -14,86 +13,65 @@ To: linux-pci@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, David Woodhouse <
 Cc: iommu@lists.linux-foundation.org, Gregor Dick <gdick@solarflare.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Move ATS declarations to linux/pci.h so they're all in one place.
+Stop caching the Invalidate Queue Depth in struct pci_dev.
+pci_ats_queue_depth() is typically called only once per device, and it
+returns a fixed value per-device, so callers who need the value frequently
+can cache it themselves.
 
 Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Joerg Roedel <jroedel@suse.de>
 ---
- include/linux/pci-ats.h |   41 -----------------------------------------
- include/linux/pci.h     |   10 +++++++++-
- 2 files changed, 9 insertions(+), 42 deletions(-)
+ drivers/pci/ats.c   |    9 ++++-----
+ include/linux/pci.h |    1 -
+ 2 files changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
-index 5d81d47..57e0b82 100644
---- a/include/linux/pci-ats.h
-+++ b/include/linux/pci-ats.h
-@@ -3,47 +3,6 @@
+diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+index 67524a7..bdb1383 100644
+--- a/drivers/pci/ats.c
++++ b/drivers/pci/ats.c
+@@ -20,16 +20,12 @@
+ void pci_ats_init(struct pci_dev *dev)
+ {
+ 	int pos;
+-	u16 cap;
  
- #include <linux/pci.h>
+ 	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ATS);
+ 	if (!pos)
+ 		return;
  
--/* Address Translation Service */
--#ifdef CONFIG_PCI_ATS
--
--int pci_enable_ats(struct pci_dev *dev, int ps);
--void pci_disable_ats(struct pci_dev *dev);
--int pci_ats_queue_depth(struct pci_dev *dev);
--
--/**
-- * pci_ats_enabled - query the ATS status
-- * @dev: the PCI device
-- *
-- * Returns 1 if ATS capability is enabled, or 0 if not.
-- */
--static inline int pci_ats_enabled(struct pci_dev *dev)
--{
--	return dev->ats_cap && dev->ats_enabled;
--}
--
--#else /* CONFIG_PCI_ATS */
--
--static inline int pci_enable_ats(struct pci_dev *dev, int ps)
--{
--	return -ENODEV;
--}
--
--static inline void pci_disable_ats(struct pci_dev *dev)
--{
--}
--
--static inline int pci_ats_queue_depth(struct pci_dev *dev)
--{
--	return -ENODEV;
--}
--
--static inline int pci_ats_enabled(struct pci_dev *dev)
--{
--	return 0;
--}
--
--#endif /* CONFIG_PCI_ATS */
--
- #ifdef CONFIG_PCI_PRI
+ 	dev->ats_cap = pos;
+-	pci_read_config_word(dev, dev->ats_cap + PCI_ATS_CAP, &cap);
+-	dev->ats_qdep = PCI_ATS_CAP_QDEP(cap) ? PCI_ATS_CAP_QDEP(cap) :
+-					    PCI_ATS_MAX_QDEP;
+ }
  
- int pci_enable_pri(struct pci_dev *pdev, u32 reqs);
+ /**
+@@ -131,13 +127,16 @@ EXPORT_SYMBOL_GPL(pci_restore_ats_state);
+  */
+ int pci_ats_queue_depth(struct pci_dev *dev)
+ {
++	u16 cap;
++
+ 	if (!dev->ats_cap)
+ 		return -EINVAL;
+ 
+ 	if (dev->is_virtfn)
+ 		return 0;
+ 
+-	return dev->ats_qdep;
++	pci_read_config_word(dev, dev->ats_cap + PCI_ATS_CAP, &cap);
++	return PCI_ATS_CAP_QDEP(cap) ? PCI_ATS_CAP_QDEP(cap) : PCI_ATS_MAX_QDEP;
+ }
+ EXPORT_SYMBOL_GPL(pci_ats_queue_depth);
+ 
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 238b77e..307f96a 100644
+index 307f96a..4b484fd 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1301,8 +1301,16 @@ void ht_destroy_irq(unsigned int irq);
- #ifdef CONFIG_PCI_ATS
- /* Address Translation Service */
- void pci_ats_init(struct pci_dev *dev);
-+int pci_enable_ats(struct pci_dev *dev, int ps);
-+void pci_disable_ats(struct pci_dev *dev);
-+int pci_ats_queue_depth(struct pci_dev *dev);
-+static inline int pci_ats_enabled(struct pci_dev *dev) { return dev->ats_cap && dev->ats_enabled; }
- #else
--static inline void pci_ats_init(struct pci_dev *dev) { }
-+static inline void pci_ats_init(struct pci_dev *d) { }
-+static inline int pci_enable_ats(struct pci_dev *d, int ps) { return -ENODEV; }
-+static inline void pci_disable_ats(struct pci_dev *d) { }
-+static inline int pci_ats_queue_depth(struct pci_dev *d) { return -ENODEV; }
-+static inline int pci_ats_enabled(struct pci_dev *d) { return 0; }
+@@ -378,7 +378,6 @@ struct pci_dev {
+ 	};
+ 	u16		ats_cap;	/* ATS Capability offset */
+ 	u8		ats_stu;	/* ATS Smallest Translation Unit */
+-	u8		ats_qdep;	/* ATS Invalidate Queue Depth */
+ 	atomic_t	ats_ref_cnt;	/* number of VFs with ATS enabled */
  #endif
- 
- void pci_cfg_access_lock(struct pci_dev *dev);
+ 	phys_addr_t rom; /* Physical address of ROM if it's not from the BAR */
