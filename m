@@ -1,7 +1,7 @@
 From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v3 2/5] iommu/arm-smmu: remove arm_smmu_devices
-Date: Tue, 21 Jul 2015 15:30:30 +0800
-Message-ID: <1437463833-16112-3-git-send-email-thunder.leizhen@huawei.com>
+Subject: [PATCH v3 4/5] iommu/arm-smmu: add support for non-pci devices
+Date: Tue, 21 Jul 2015 15:30:32 +0800
+Message-ID: <1437463833-16112-5-git-send-email-thunder.leizhen@huawei.com>
 References: <1437463833-16112-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,62 +21,80 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-z
 Cc: Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-It can be replaced by of_iommu_list(in of_iommu.c).
+This patch support a master with multiple stream IDs, but doesn't support a
+master behinds more than one SMMUs.
 
 Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 22 ++--------------------
- 1 file changed, 2 insertions(+), 20 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 40 ++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 38 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 474eca4..9daf4cc 100644
+index 216c9d4..129ff36 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -605,10 +605,6 @@ struct arm_smmu_domain {
- 	struct iommu_domain		domain;
- };
+@@ -30,6 +30,7 @@
+ #include <linux/of_address.h>
+ #include <linux/pci.h>
+ #include <linux/platform_device.h>
++#include <linux/amba/bus.h>
+ #include <linux/of_iommu.h>
+ #include <linux/of_platform.h>
 
--/* Our list of SMMU instances */
--static DEFINE_SPINLOCK(arm_smmu_devices_lock);
--static LIST_HEAD(arm_smmu_devices);
--
- struct arm_smmu_option_prop {
- 	u32 opt;
- 	const char *prop;
-@@ -2712,11 +2708,6 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+@@ -1965,9 +1966,36 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
+ 		return -EINVAL;
+ 	}
+
+-	/* We only support PCI, for now */
+ 	if (!dev_is_pci(dev)) {
+-		return -ENODEV;
++		struct iommu_group *group;
++
++		if (args->args_count != 1) {
++			dev_err(dev,
++				"only support #iommu-cells = <1>, please check node: %s\n",
++				dev_name(smmu->dev));
++			return -ENODEV;
++		}
++
++		group = iommu_group_get(dev);
++		if (!group) {
++			group = iommu_group_alloc();
++			if (IS_ERR(group)) {
++				dev_err(dev, "failed to allocate IOMMU group\n");
++				return PTR_ERR(group);
++			}
++
++			ret = iommu_group_add_device(group, dev);
++			if (ret) {
++				iommu_group_put(group);
++				dev_err(dev, "failed to add device into IOMMU group\n");
++				return ret;
++			}
++		}
++		iommu_group_put(group);
++
++		ret = __arm_smmu_add_device(dev, args->args[0]);
++		if (ret)
++			return ret;
+ 	} else {
+ 		struct device *root;
+ 		struct pci_dev *pdev = NULL;
+@@ -2762,6 +2790,14 @@ static int __init arm_smmu_init(void)
  	if (ret)
- 		goto out_free_structures;
+ 		return ret;
 
--	/* Record our private device structure */
--	INIT_LIST_HEAD(&smmu->list);
--	spin_lock(&arm_smmu_devices_lock);
--	list_add(&smmu->list, &arm_smmu_devices);
--	spin_unlock(&arm_smmu_devices_lock);
- 	dev->archdata.iommu = smmu;
- 	of_iommu_set_ops(smmu->dev->of_node, &arm_smmu_ops);
-
-@@ -2729,19 +2720,10 @@ out_free_structures:
-
- static int arm_smmu_device_remove(struct platform_device *pdev)
- {
--	struct arm_smmu_device *curr, *smmu = NULL;
-+	struct arm_smmu_device *smmu;
- 	struct device *dev = &pdev->dev;
-
--	spin_lock(&arm_smmu_devices_lock);
--	list_for_each_entry(curr, &arm_smmu_devices, list) {
--		if (curr->dev == dev) {
--			smmu = curr;
--			list_del(&smmu->list);
--			break;
--		}
--	}
--	spin_unlock(&arm_smmu_devices_lock);
--
-+	smmu = find_smmu_by_device(dev);
- 	if (!smmu)
- 		return -ENODEV;
++	if (!iommu_present(&platform_bus_type))
++		bus_set_iommu(&platform_bus_type, &arm_smmu_ops);
++
++#ifdef CONFIG_ARM_AMBA
++	if (!iommu_present(&amba_bustype))
++		bus_set_iommu(&amba_bustype, &arm_smmu_ops);
++#endif
++
+ 	return bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
+ }
 
 --
 1.8.0
