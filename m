@@ -1,73 +1,43 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH 07/11] iommu/omap: Remove unnecessary error traces on
-	alloc failures
-Date: Tue, 21 Jul 2015 19:03:18 +0300
-Message-ID: <110578668.3031HDm9MJ@avalon>
-References: <1437431613-55656-1-git-send-email-s-anna@ti.com>
-	<1437431613-55656-8-git-send-email-s-anna@ti.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: Since Linux 4.1: A lot of AMD-Vi IO_PAGE_FAULTs
+Date: Tue, 21 Jul 2015 18:30:58 +0200
+Message-ID: <20150721163058.GF10969@8bytes.org>
+References: <55AE5F84.5020204@01019freenet.de>
+ <1437492886.1391.847.camel@redhat.com>
+ <20150721155635.GE10969@8bytes.org>
+ <55AE7147.7070902@maya.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1437431613-55656-8-git-send-email-s-anna-l0cyMroinI0@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
-Cc: linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <55AE7147.7070902@maya.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Andreas Hartmann <andihartmann@freenet.de>
+Cc: Alex Williamson <alex.williamson@redhat.com>, linux-pci <linux-pci@vger.kernel.org>, iommu <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Suman,
+On Tue, Jul 21, 2015 at 06:20:23PM +0200, Andreas Hartmann wrote:
+> Hi J=F6rg,
+>=20
+> I attached the dmesg output of the boot seuqence. This time after
+> reboot, the amount of IO_PAGE_FAULTs is not that much, but now, I got=
+ a
+> few ata3.00 errors.
+>=20
+>=20
+> Am 21.07.2015 um 17:56 schrieb Joerg Roedel:
+> > Hi Andreas,
+> >=20
+> > On Tue, Jul 21, 2015 at 09:34:46AM -0600, Alex Williamson wrote:
+> >>> Since Linux 4.1, I'm getting a lot of IO_PAGE_FAULT like this one
+>=20
+> To be more precise: The last kernel w/o this problem is 3.18.x - I ne=
+ver
+> used 3.19 or 4.0.
 
-Thank you for the patch.
+Hmm, so you don't know whether 3.19 and 4.0 show the same problems? Can
+you find that out eventually? I look into your dmesg in the meantime.
 
-On Monday 20 July 2015 17:33:29 Suman Anna wrote:
-> Fix couple of checkpatch warnings of the type,
->     "WARNING: Possible unnecessary 'out of memory' message"
-> 
-> Signed-off-by: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
 
-The commit message could also mention that the reason to remove the error 
-messages is that memory allocation failures will already be reported in the 
-kernel log by the memory management code. No big deal though,
-
-Reviewed-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-
-> ---
->  drivers/iommu/omap-iommu.c | 8 ++------
->  1 file changed, 2 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index 0fc00f31c39d..4328d9855edb 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -1093,16 +1093,12 @@ static struct iommu_domain
-> *omap_iommu_domain_alloc(unsigned type) return NULL;
-> 
->  	omap_domain = kzalloc(sizeof(*omap_domain), GFP_KERNEL);
-> -	if (!omap_domain) {
-> -		pr_err("kzalloc failed\n");
-> +	if (!omap_domain)
->  		goto out;
-> -	}
-> 
->  	omap_domain->pgtable = kzalloc(IOPGD_TABLE_SIZE, GFP_KERNEL);
-> -	if (!omap_domain->pgtable) {
-> -		pr_err("kzalloc failed\n");
-> +	if (!omap_domain->pgtable)
->  		goto fail_nomem;
-> -	}
-> 
->  	/*
->  	 * should never fail, but please keep this around to ensure
-
--- 
-Regards,
-
-Laurent Pinchart
+	Joerg
