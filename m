@@ -1,13 +1,15 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v3 0/5] iommu/arm-smmu: add support for non-pci devices
-Date: Tue, 21 Jul 2015 11:30:07 +0100
-Message-ID: <55AE1F2F.3090106@arm.com>
-References: <1437463833-16112-1-git-send-email-thunder.leizhen@huawei.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v3 5/6] iommu/mediatek: Add mt8173 IOMMU driver
+Date: Tue, 21 Jul 2015 15:59:10 +0100
+Message-ID: <20150721145910.GG31095@arm.com>
+References: <1437037475-9065-1-git-send-email-yong.wu@mediatek.com>
+	<1437037475-9065-6-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1437463833-16112-1-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1437037475-9065-6-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,49 +19,46 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: "huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "cloud.chou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <cloud.chou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "frederic.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <frederic.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org" <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel@pen>
 List-Id: iommu@lists.linux-foundation.org
 
-On 21/07/15 08:30, Zhen Lei wrote:
-> Changelog:
-> v2 -> v3:
-> 1. add support for pci device hotplug, which missed in patch v2.
-> 2. only support #iommu-cells = <1>, add corresponding description in arm,smmu-v3.txt.
-> 3. add function find_smmu_by_device which extracted from find_smmu_by_node, to resolve
->     the problem mentioned by Robin Murphy in [PATCH v2 7/9].
->     Additionally:
->     +    platform_set_drvdata(pdev, smmu);       //Patch v2
->     +	dev->archdata.iommu = smmu;             //Patch v3, dev = &pdev->dev
+Hi Yong Wu,
 
+On Thu, Jul 16, 2015 at 10:04:34AM +0100, Yong Wu wrote:
+> This patch adds support for mediatek m4u (MultiMedia Memory Management
+> Unit).
 
-I didn't give any Reviewed-by tags, much less to revised patches that 
-I've not even looked at yet; please see section 13 of 
-Documentation/SubmittingPatches for what the Reviewed-by tag means.
+[...]
 
-Robin.
+> +static void mtk_iommu_tlb_flush_all(void *cookie)
+> +{
+> +       struct mtk_iommu_domain *domain = cookie;
+> +       void __iomem *base;
+> +
+> +       base = domain->data->base;
+> +       writel(F_INVLD_EN1 | F_INVLD_EN0, base + REG_MMU_INV_SEL);
+> +       writel(F_ALL_INVLD, base + REG_MMU_INVALIDATE);
 
->
-> v1 -> v2:
-> update the implementation of patch 1/9 according to Will Deacon's suggestion.
-> update the comment of patch 3/9 and 4/9.
-> use arm_smmu_options to skip the execution of command CMD_PREFETCH_CONFIG, see patch 5/9.
-> patch 6/9 is base on Laurent's series, to support probe deferral.
-> patch 7/9 according to Robin Murphy's suggestion, remove global variable arm_smmu_devices, thanks.
-> patch 9/9 add support for a master with multiple stream IDs.
->
-> Zhen Lei (5):
->    iommu/arm-smmu: to support probe deferral
->    iommu/arm-smmu: remove arm_smmu_devices
->    iommu/arm-smmu: rename __arm_smmu_get_pci_sid
->    iommu/arm-smmu: add support for non-pci devices
->    iommu/arm-smmu: describe the limitation of #iommu-cells
->
->   .../devicetree/bindings/iommu/arm,smmu-v3.txt      |   6 +
->   drivers/iommu/arm-smmu-v3.c                        | 209 ++++++++++++++++-----
->   2 files changed, 163 insertions(+), 52 deletions(-)
->
-> --
-> 1.8.0
->
->
+This needs to be synchronous, so you probably want to call
+mtk_iommu_tlb_sync at the end.
+
+> +}
+> +
+> +static void mtk_iommu_tlb_add_flush(unsigned long iova, size_t size,
+> +                                   bool leaf, void *cookie)
+> +{
+> +       struct mtk_iommu_domain *domain = cookie;
+> +       void __iomem *base = domain->data->base;
+> +       unsigned int iova_start = iova, iova_end = iova + size - 1;
+> +
+> +       writel(F_INVLD_EN1 | F_INVLD_EN0, base + REG_MMU_INV_SEL);
+> +
+> +       writel(iova_start, base + REG_MMU_INVLD_START_A);
+> +       writel(iova_end, base + REG_MMU_INVLD_END_A);
+> +       writel(F_MMU_INV_RANGE, base + REG_MMU_INVALIDATE);
+
+Why are you using writel instead of writel_relaxed? I asked this before
+but I don't think you replied.
+
+Will
