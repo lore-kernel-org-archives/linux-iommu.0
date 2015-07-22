@@ -1,7 +1,7 @@
 From: Will Davis <wdavis@nvidia.com>
-Subject: [PATCH v4 12/12] x86: declare support for DMA P2P
-Date: Wed, 22 Jul 2015 16:39:57 -0500
-Message-ID: <1437601197-6481-13-git-send-email-wdavis@nvidia.com>
+Subject: [PATCH v4 10/12] pci: add pci_find_common_upstream_dev()
+Date: Wed, 22 Jul 2015 16:39:55 -0500
+Message-ID: <1437601197-6481-11-git-send-email-wdavis@nvidia.com>
 References: <1437601197-6481-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,64 +12,60 @@ To: Bjorn Helgaas <bhelgaas@google.com>, Alex Williamson <alex.williamson@redhat
 Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Konrad Wilk <konrad.wilk@oracle.com>, Mark Hounschell <markh@compro.net>, "David S. Miller" <davem@davemloft.net>, Jonathan Corbet <corbet@lwn.net>, Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Use CONFIG_HAS_DMA_P2P to declare that we want the DMA peer resource APIs
-enabled on x86, and provide the requisite dma_peer_mapping_error()
-implementation.
+Adds an interface to find the first device which is upstream of both
+devices.
 
 Signed-off-by: Will Davis <wdavis@nvidia.com>
 ---
- arch/x86/Kconfig                   |  1 +
- arch/x86/include/asm/dma-mapping.h | 18 ++++++++++++++++--
- 2 files changed, 17 insertions(+), 2 deletions(-)
+ drivers/pci/search.c | 25 +++++++++++++++++++++++++
+ include/linux/pci.h  |  2 ++
+ 2 files changed, 27 insertions(+)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 3dbb7e7..581d1ad 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -149,6 +149,7 @@ config X86
- 	select VIRT_TO_BUS
- 	select X86_DEV_DMA_OPS			if X86_64
- 	select X86_FEATURE_NAMES		if PROC_FS
-+	select HAS_DMA_P2P
- 
- config INSTRUCTION_DECODER
- 	def_bool y
-diff --git a/arch/x86/include/asm/dma-mapping.h b/arch/x86/include/asm/dma-mapping.h
-index 1f5b728..64472d8 100644
---- a/arch/x86/include/asm/dma-mapping.h
-+++ b/arch/x86/include/asm/dma-mapping.h
-@@ -44,16 +44,30 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
- #include <asm-generic/dma-mapping-common.h>
- 
- /* Make sure we keep the same behaviour */
--static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
-+static inline int dma_mapping_error_common(struct device *dev, u64 dma_addr)
- {
- 	struct dma_map_ops *ops = get_dma_ops(dev);
--	debug_dma_mapping_error(dev, dma_addr);
- 	if (ops->mapping_error)
- 		return ops->mapping_error(dev, dma_addr);
- 
- 	return (dma_addr == DMA_ERROR_CODE);
+diff --git a/drivers/pci/search.c b/drivers/pci/search.c
+index a20ce7d..cbd8163 100644
+--- a/drivers/pci/search.c
++++ b/drivers/pci/search.c
+@@ -384,3 +384,28 @@ int pci_dev_present(const struct pci_device_id *ids)
+ 	return 0;
  }
- 
-+static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
-+{
-+	debug_dma_mapping_error(dev, dma_addr);
-+	return dma_mapping_error_common(dev, (u64)dma_addr);
-+}
+ EXPORT_SYMBOL(pci_dev_present);
 +
-+#ifdef CONFIG_HAS_DMA_P2P
-+static inline int dma_peer_mapping_error(struct device *dev,
-+					 dma_peer_addr_t dma_addr)
++/**
++ * pci_find_common_upstream_dev - Returns the first common upstream device
++ * @from: the PCI device to search for a common upstream device from
++ * @to: the PCI device to search for a common upstream device to
++ *
++ * Walks up the bus hierarchy from the @from device, looking for the first bus
++ * which the @to device is downstream of. Returns %NULL if the devices do not
++ * share any upstream devices.
++ */
++struct pci_dev *pci_find_common_upstream_dev(struct pci_dev *from,
++					     struct pci_dev *to)
 +{
-+	debug_dma_peer_mapping_error(dev, dma_addr);
-+	return dma_mapping_error_common(dev, (u64)dma_addr);
-+}
-+#endif
++	struct pci_dev *pdev = from;
 +
- #define dma_alloc_noncoherent(d, s, h, f) dma_alloc_coherent(d, s, h, f)
- #define dma_free_noncoherent(d, s, v, h) dma_free_coherent(d, s, v, h)
++	while (pdev != NULL) {
++		if ((to->bus->number >= pdev->bus->busn_res.start) &&
++		    (to->bus->number <= pdev->bus->busn_res.end))
++			return pdev;
++		pdev = pdev->bus->self;
++	}
++
++	return NULL;
++}
++EXPORT_SYMBOL(pci_find_common_upstream_dev);
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index d58063e..8262b9e 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -860,6 +860,8 @@ static inline struct pci_dev *pci_get_bus_and_slot(unsigned int bus,
+ }
+ struct pci_dev *pci_get_class(unsigned int class, struct pci_dev *from);
+ int pci_dev_present(const struct pci_device_id *ids);
++struct pci_dev *pci_find_common_upstream_dev(struct pci_dev *from,
++					     struct pci_dev *to);
  
+ int pci_bus_read_config_byte(struct pci_bus *bus, unsigned int devfn,
+ 			     int where, u8 *val);
 -- 
 2.4.6
