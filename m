@@ -1,122 +1,228 @@
-From: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v4 04/12] DMA-API: Introduce dma_(un)map_peer_resource
-Date: Wed, 22 Jul 2015 16:39:49 -0500
-Message-ID: <1437601197-6481-5-git-send-email-wdavis@nvidia.com>
+From: Will Davis <wdavis@nvidia.com>
+Subject: [PATCH v4 03/12] dma-debug: add checking for map/unmap_peer_resource
+Date: Wed, 22 Jul 2015 16:39:48 -0500
+Message-ID: <1437601197-6481-4-git-send-email-wdavis@nvidia.com>
 References: <1437601197-6481-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1437601197-6481-1-git-send-email-wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, John Hubbard <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Terence Ripperda <tripperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "David S.
-	Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1437601197-6481-1-git-send-email-wdavis@nvidia.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>, Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Konrad Wilk <konrad.wilk@oracle.com>, Mark Hounschell <markh@compro.net>, "David S. Miller" <davem@davemloft.net>, Jonathan Corbet <corbet@lwn.net>, Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Add functions to DMA-map and -unmap a peer device's resource for a given
-device. This will allow devices to DMA-map, for example, another device's
-BAR region on PCI to enable peer-to-peer transactions.
+Add debug callbacks for the new dma_map_peer_resource and
+dma_unmap_peer_resource functions.
 
-Guard these new functions behind CONFIG_HAS_DMA_P2P.
+Also add a callback for dma_peer_mapping_error. Most of the time this will
+be identical to dma_mapping_error, except where the dma_addr_t is not as
+wide as dma_peer_addr_t.
 
-Signed-off-by: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Guard these new callbacks behind a CONFIG_HAS_DMA_P2P check.
+
+Signed-off-by: Will Davis <wdavis@nvidia.com>
+Reviewed-by: Terence Ripperda <tripperda@nvidia.com>
+Reviewed-by: John Hubbard <jhubbard@nvidia.com>
 ---
- include/asm-generic/dma-mapping-common.h | 43 ++++++++++++++++++++++++++++++++
- include/linux/dma-mapping.h              | 12 +++++++++
- 2 files changed, 55 insertions(+)
+ include/linux/dma-debug.h | 39 ++++++++++++++++++++-
+ lib/dma-debug.c           | 86 +++++++++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 122 insertions(+), 3 deletions(-)
 
-diff --git a/include/asm-generic/dma-mapping-common.h b/include/asm-generic/dma-mapping-common.h
-index 940d5ec..45eec17 100644
---- a/include/asm-generic/dma-mapping-common.h
-+++ b/include/asm-generic/dma-mapping-common.h
-@@ -73,6 +73,42 @@ static inline void dma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg
- 		ops->unmap_sg(dev, sg, nents, dir, attrs);
+diff --git a/include/linux/dma-debug.h b/include/linux/dma-debug.h
+index fe8cb61..4ff8364 100644
+--- a/include/linux/dma-debug.h
++++ b/include/linux/dma-debug.h
+@@ -43,7 +43,21 @@ extern void debug_dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
+ 
+ extern void debug_dma_unmap_page(struct device *dev, dma_addr_t addr,
+ 				 size_t size, int direction, bool map_single);
+-
++#ifdef CONFIG_HAS_DMA_P2P
++extern void debug_dma_map_peer_resource(struct device *dev,
++					struct device *peer,
++					struct resource *resource,
++					size_t offset, size_t size,
++					int direction,
++					dma_peer_addr_t dma_addr);
++
++extern void debug_dma_peer_mapping_error(struct device *dev,
++					 dma_peer_addr_t dma_addr);
++
++extern void debug_dma_unmap_peer_resource(struct device *dev,
++					  dma_peer_addr_t addr,
++					  size_t size, int direction);
++#endif
+ extern void debug_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 			     int nents, int mapped_ents, int direction);
+ 
+@@ -120,6 +134,29 @@ static inline void debug_dma_unmap_page(struct device *dev, dma_addr_t addr,
+ {
  }
  
 +#ifdef CONFIG_HAS_DMA_P2P
-+static inline dma_peer_addr_t dma_map_peer_resource_attrs(struct device *dev,
-+							  struct device *peer,
-+							  struct resource *res,
-+							  size_t offset,
-+							  size_t size,
-+							  enum dma_data_direction dir,
-+							  struct dma_attrs *attrs)
++static inline void debug_dma_map_peer_resource(struct device *dev,
++					       struct device *peer,
++					       struct resource *resource,
++					       size_t offset, size_t size,
++					       int direction,
++					       dma_peer_addr_t dma_addr)
 +{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+	dma_peer_addr_t addr;
-+
-+	BUG_ON(!valid_dma_direction(dir));
-+	BUG_ON(ops->map_peer_resource == NULL);
-+	addr = ops->map_peer_resource(dev, peer, res, offset, size, dir,
-+				      attrs);
-+	debug_dma_map_peer_resource(dev, peer, res, offset, size, dir, addr);
-+
-+	return addr;
 +}
 +
-+static inline void dma_unmap_peer_resource_attrs(struct device *dev,
++static inline void debug_dma_peer_mapping_error(struct device *dev,
++						dma_peer_addr_t dma_addr)
++{
++}
++
++static inline void debug_dma_unmap_peer_resource(struct device *dev,
 +						 dma_peer_addr_t addr,
 +						 size_t size,
-+						 enum dma_data_direction dir,
-+						 struct dma_attrs *attrs)
++						 int direction)
 +{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	BUG_ON(!valid_dma_direction(dir));
-+	if (ops->unmap_peer_resource)
-+		ops->unmap_peer_resource(dev, addr, size, dir, attrs);
-+	debug_dma_unmap_peer_resource(dev, addr, size, dir);
 +}
 +#endif
 +
- static inline dma_addr_t dma_map_page(struct device *dev, struct page *page,
- 				      size_t offset, size_t size,
- 				      enum dma_data_direction dir)
-@@ -181,6 +217,13 @@ dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
- #define dma_map_sg(d, s, n, r) dma_map_sg_attrs(d, s, n, r, NULL)
- #define dma_unmap_sg(d, s, n, r) dma_unmap_sg_attrs(d, s, n, r, NULL)
+ static inline void debug_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 				    int nents, int mapped_ents, int direction)
+ {
+diff --git a/lib/dma-debug.c b/lib/dma-debug.c
+index ae4b65e..622f569 100644
+--- a/lib/dma-debug.c
++++ b/lib/dma-debug.c
+@@ -43,6 +43,7 @@ enum {
+ 	dma_debug_page,
+ 	dma_debug_sg,
+ 	dma_debug_coherent,
++	dma_debug_peer_resource,
+ };
+ 
+ enum map_err_types {
+@@ -64,7 +65,8 @@ enum map_err_types {
+  * @direction: enum dma_data_direction
+  * @sg_call_ents: 'nents' from dma_map_sg
+  * @sg_mapped_ents: 'mapped_ents' from dma_map_sg
+- * @map_err_type: track whether dma_mapping_error() was checked
++ * @map_err_type: track whether dma_mapping_error() or dma_peer_mapping_error()
++ *		  was called
+  * @stacktrace: support backtraces when a violation is detected
+  */
+ struct dma_debug_entry {
+@@ -1250,6 +1252,23 @@ out:
+ 	put_hash_bucket(bucket, &flags);
+ }
+ 
++static void check_mapping_error(struct dma_debug_entry *entry, bool peer)
++{
++	if (peer && !(entry->type == dma_debug_peer_resource))
++		err_printk(entry->dev, entry, "DMA-API: device driver calls "
++				"dma_peer_mapping_error() on dma_addr_t "
++				"[device address=0x%016llx] [size=%llu bytes]\n",
++				(unsigned long long)entry->dev_addr,
++				entry->size);
++
++	if (!peer && (entry->type == dma_debug_peer_resource))
++		err_printk(entry->dev, entry, "DMA-API: device driver calls "
++				"dma_mapping_error() on dma_peer_addr_t "
++				"[device address=0x%016llx] [size=%llu bytes]\n",
++				(unsigned long long)entry->dev_addr,
++				entry->size);
++}
++
+ void debug_dma_map_page(struct device *dev, struct page *page, size_t offset,
+ 			size_t size, int direction, dma_addr_t dma_addr,
+ 			bool map_single)
+@@ -1289,7 +1308,9 @@ void debug_dma_map_page(struct device *dev, struct page *page, size_t offset,
+ }
+ EXPORT_SYMBOL(debug_dma_map_page);
+ 
+-void debug_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
++static void debug_dma_mapping_error_common(struct device *dev,
++					   u64 dma_addr,
++					   bool peer)
+ {
+ 	struct dma_debug_entry ref;
+ 	struct dma_debug_entry *entry;
+@@ -1319,12 +1340,18 @@ void debug_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
+ 		 */
+ 		if (entry->map_err_type == MAP_ERR_NOT_CHECKED) {
+ 			entry->map_err_type = MAP_ERR_CHECKED;
++			check_mapping_error(entry, peer);
+ 			break;
+ 		}
+ 	}
+ 
+ 	put_hash_bucket(bucket, &flags);
+ }
++
++void debug_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
++{
++	debug_dma_mapping_error_common(dev, (u64)dma_addr, false);
++}
+ EXPORT_SYMBOL(debug_dma_mapping_error);
+ 
+ void debug_dma_unmap_page(struct device *dev, dma_addr_t addr,
+@@ -1348,6 +1375,61 @@ void debug_dma_unmap_page(struct device *dev, dma_addr_t addr,
+ }
+ EXPORT_SYMBOL(debug_dma_unmap_page);
  
 +#ifdef CONFIG_HAS_DMA_P2P
-+#define dma_map_peer_resource(d, p, e, o, s, r) \
-+	dma_map_peer_resource_attrs(d, p, e, o, s, r, NULL)
-+#define dma_unmap_peer_resource(d, a, s, r) \
-+	dma_unmap_peer_resource_attrs(d, a, s, r, NULL)
++void debug_dma_map_peer_resource(struct device *dev, struct device *peer,
++				 struct resource *resource, size_t offset,
++				 size_t size, int direction,
++				 dma_peer_addr_t dma_addr)
++{
++	struct dma_debug_entry *entry;
++
++	if (unlikely(dma_debug_disabled()))
++		return;
++
++	if (dma_mapping_error(dev, dma_addr))
++		return;
++
++	entry = dma_entry_alloc();
++	if (!entry)
++		return;
++
++	entry->dev       = dev;
++	entry->type      = dma_debug_peer_resource;
++	entry->pfn       = resource->start >> PAGE_SHIFT;
++	entry->offset    = offset,
++	entry->dev_addr  = dma_addr;
++	entry->size      = size;
++	entry->direction = direction;
++
++	add_dma_entry(entry);
++}
++EXPORT_SYMBOL(debug_dma_map_peer_resource);
++
++void debug_dma_peer_mapping_error(struct device *dev, dma_peer_addr_t dma_addr)
++{
++	debug_dma_mapping_error_common(dev, (u64)dma_addr, true);
++}
++EXPORT_SYMBOL(debug_dma_peer_mapping_error);
++
++void debug_dma_unmap_peer_resource(struct device *dev, dma_peer_addr_t addr,
++				   size_t size, int direction)
++{
++	struct dma_debug_entry ref = {
++		.type           = dma_debug_peer_resource,
++		.dev            = dev,
++		.dev_addr       = addr,
++		.size           = size,
++		.direction      = direction,
++	};
++
++	if (unlikely(dma_debug_disabled()))
++		return;
++
++	check_unmap(&ref);
++}
++EXPORT_SYMBOL(debug_dma_unmap_peer_resource);
 +#endif
 +
- extern int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
- 			   void *cpu_addr, dma_addr_t dma_addr, size_t size);
- 
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index ac07ff0..7b8fddc 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -34,6 +34,18 @@ struct dma_map_ops {
- 	void (*unmap_page)(struct device *dev, dma_addr_t dma_handle,
- 			   size_t size, enum dma_data_direction dir,
- 			   struct dma_attrs *attrs);
-+#ifdef CONFIG_HAS_DMA_P2P
-+	dma_peer_addr_t (*map_peer_resource)(struct device *dev,
-+					     struct device *peer,
-+					     struct resource *res,
-+					     unsigned long offset, size_t size,
-+					     enum dma_data_direction dir,
-+					     struct dma_attrs *attrs);
-+	void (*unmap_peer_resource)(struct device *dev,
-+				    dma_peer_addr_t dma_handle,
-+				    size_t size, enum dma_data_direction dir,
-+				    struct dma_attrs *attrs);
-+#endif
- 	/*
- 	 * map_sg returns 0 on error and a value > 0 on success.
- 	 * It should never return a value < 0.
+ void debug_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 		      int nents, int mapped_ents, int direction)
+ {
 -- 
 2.4.6
