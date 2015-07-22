@@ -1,7 +1,7 @@
 From: Will Davis <wdavis@nvidia.com>
-Subject: [PATCH v4 10/12] pci: add pci_find_common_upstream_dev()
-Date: Wed, 22 Jul 2015 16:39:55 -0500
-Message-ID: <1437601197-6481-11-git-send-email-wdavis@nvidia.com>
+Subject: [PATCH v4 07/12] pci: expose pci_find_host_bridge()
+Date: Wed, 22 Jul 2015 16:39:52 -0500
+Message-ID: <1437601197-6481-8-git-send-email-wdavis@nvidia.com>
 References: <1437601197-6481-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,60 +12,64 @@ To: Bjorn Helgaas <bhelgaas@google.com>, Alex Williamson <alex.williamson@redhat
 Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Konrad Wilk <konrad.wilk@oracle.com>, Mark Hounschell <markh@compro.net>, "David S. Miller" <davem@davemloft.net>, Jonathan Corbet <corbet@lwn.net>, Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Adds an interface to find the first device which is upstream of both
-devices.
+This function takes a struct pci_bus * and returns the associated struct
+pci_host_bridge * upstream.
 
 Signed-off-by: Will Davis <wdavis@nvidia.com>
 ---
- drivers/pci/search.c | 25 +++++++++++++++++++++++++
- include/linux/pci.h  |  2 ++
- 2 files changed, 27 insertions(+)
+ drivers/pci/host-bridge.c | 19 ++-----------------
+ include/linux/pci.h       |  7 +++++++
+ 2 files changed, 9 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/pci/search.c b/drivers/pci/search.c
-index a20ce7d..cbd8163 100644
---- a/drivers/pci/search.c
-+++ b/drivers/pci/search.c
-@@ -384,3 +384,28 @@ int pci_dev_present(const struct pci_device_id *ids)
- 	return 0;
- }
- EXPORT_SYMBOL(pci_dev_present);
-+
-+/**
-+ * pci_find_common_upstream_dev - Returns the first common upstream device
-+ * @from: the PCI device to search for a common upstream device from
-+ * @to: the PCI device to search for a common upstream device to
-+ *
-+ * Walks up the bus hierarchy from the @from device, looking for the first bus
-+ * which the @to device is downstream of. Returns %NULL if the devices do not
-+ * share any upstream devices.
-+ */
-+struct pci_dev *pci_find_common_upstream_dev(struct pci_dev *from,
-+					     struct pci_dev *to)
-+{
-+	struct pci_dev *pdev = from;
-+
-+	while (pdev != NULL) {
-+		if ((to->bus->number >= pdev->bus->busn_res.start) &&
-+		    (to->bus->number <= pdev->bus->busn_res.end))
-+			return pdev;
-+		pdev = pdev->bus->self;
-+	}
-+
-+	return NULL;
-+}
-+EXPORT_SYMBOL(pci_find_common_upstream_dev);
+diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
+index 5f4a2e0..6c2c82a 100644
+--- a/drivers/pci/host-bridge.c
++++ b/drivers/pci/host-bridge.c
+@@ -8,25 +8,10 @@
+ 
+ #include "pci.h"
+ 
+-static struct pci_bus *find_pci_root_bus(struct pci_bus *bus)
+-{
+-	while (bus->parent)
+-		bus = bus->parent;
+-
+-	return bus;
+-}
+-
+-struct pci_host_bridge *pci_find_host_bridge(struct pci_bus *bus)
+-{
+-	struct pci_bus *root_bus = find_pci_root_bus(bus);
+-
+-	return to_pci_host_bridge(root_bus->bridge);
+-}
+-
+ struct device *pci_get_host_bridge_device(struct pci_dev *dev)
+ {
+-	struct pci_bus *root_bus = find_pci_root_bus(dev->bus);
+-	struct device *bridge = root_bus->bridge;
++	struct pci_host_bridge *host_bridge = pci_find_host_bridge(dev->bus);
++	struct device *bridge = &host_bridge->dev;
+ 
+ 	kobject_get(&bridge->kobj);
+ 	return bridge;
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index d58063e..8262b9e 100644
+index 8a0321a..d58063e 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -860,6 +860,8 @@ static inline struct pci_dev *pci_get_bus_and_slot(unsigned int bus,
+@@ -512,6 +512,13 @@ static inline struct pci_dev *pci_upstream_bridge(struct pci_dev *dev)
+ 	return dev->bus->self;
  }
- struct pci_dev *pci_get_class(unsigned int class, struct pci_dev *from);
- int pci_dev_present(const struct pci_device_id *ids);
-+struct pci_dev *pci_find_common_upstream_dev(struct pci_dev *from,
-+					     struct pci_dev *to);
  
- int pci_bus_read_config_byte(struct pci_bus *bus, unsigned int devfn,
- 			     int where, u8 *val);
++static inline struct pci_host_bridge *pci_find_host_bridge(struct pci_bus *bus)
++{
++	while (bus->parent)
++		bus = bus->parent;
++	return to_pci_host_bridge(bus->bridge);
++}
++
+ struct device *pci_get_host_bridge_device(struct pci_dev *dev);
+ void pci_put_host_bridge_device(struct device *dev);
+ 
 -- 
 2.4.6
