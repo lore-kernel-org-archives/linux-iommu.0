@@ -1,7 +1,7 @@
 From: Will Davis <wdavis@nvidia.com>
-Subject: [PATCH v4 11/12] x86: add pci-nommu implementation of map_peer_resource
-Date: Wed, 22 Jul 2015 16:39:56 -0500
-Message-ID: <1437601197-6481-12-git-send-email-wdavis@nvidia.com>
+Subject: [PATCH v4 12/12] x86: declare support for DMA P2P
+Date: Wed, 22 Jul 2015 16:39:57 -0500
+Message-ID: <1437601197-6481-13-git-send-email-wdavis@nvidia.com>
 References: <1437601197-6481-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,128 +12,64 @@ To: Bjorn Helgaas <bhelgaas@google.com>, Alex Williamson <alex.williamson@redhat
 Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Konrad Wilk <konrad.wilk@oracle.com>, Mark Hounschell <markh@compro.net>, "David S. Miller" <davem@davemloft.net>, Jonathan Corbet <corbet@lwn.net>, Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Perform various checks on whether the mapping should be allowed, based on
-PCIe ACS (Access Control Services) settings and the topology between the
-two peers.
+Use CONFIG_HAS_DMA_P2P to declare that we want the DMA peer resource APIs
+enabled on x86, and provide the requisite dma_peer_mapping_error()
+implementation.
 
 Signed-off-by: Will Davis <wdavis@nvidia.com>
 ---
- arch/x86/kernel/pci-nommu.c | 96 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 96 insertions(+)
+ arch/x86/Kconfig                   |  1 +
+ arch/x86/include/asm/dma-mapping.h | 18 ++++++++++++++++--
+ 2 files changed, 17 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kernel/pci-nommu.c b/arch/x86/kernel/pci-nommu.c
-index da15918..58f5296 100644
---- a/arch/x86/kernel/pci-nommu.c
-+++ b/arch/x86/kernel/pci-nommu.c
-@@ -38,6 +38,101 @@ static dma_addr_t nommu_map_page(struct device *dev, struct page *page,
- 	return bus;
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 3dbb7e7..581d1ad 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -149,6 +149,7 @@ config X86
+ 	select VIRT_TO_BUS
+ 	select X86_DEV_DMA_OPS			if X86_64
+ 	select X86_FEATURE_NAMES		if PROC_FS
++	select HAS_DMA_P2P
+ 
+ config INSTRUCTION_DECODER
+ 	def_bool y
+diff --git a/arch/x86/include/asm/dma-mapping.h b/arch/x86/include/asm/dma-mapping.h
+index 1f5b728..64472d8 100644
+--- a/arch/x86/include/asm/dma-mapping.h
++++ b/arch/x86/include/asm/dma-mapping.h
+@@ -44,16 +44,30 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+ #include <asm-generic/dma-mapping-common.h>
+ 
+ /* Make sure we keep the same behaviour */
+-static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
++static inline int dma_mapping_error_common(struct device *dev, u64 dma_addr)
+ {
+ 	struct dma_map_ops *ops = get_dma_ops(dev);
+-	debug_dma_mapping_error(dev, dma_addr);
+ 	if (ops->mapping_error)
+ 		return ops->mapping_error(dev, dma_addr);
+ 
+ 	return (dma_addr == DMA_ERROR_CODE);
  }
  
-+static dma_peer_addr_t nommu_map_peer_resource(struct device *dev,
-+					       struct device *peer,
-+					       struct resource *res,
-+					       unsigned long offset,
-+					       size_t size,
-+					       enum dma_data_direction dir,
-+					       struct dma_attrs *attrs)
++static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
 +{
-+	struct pci_dev *pdev = to_pci_dev(dev);
-+	struct pci_dev *ppeer = to_pci_dev(peer);
-+	struct pci_dev *rpdev, *rppeer, *common_upstream;
-+	struct pci_host_bridge *dev_host_bridge;
-+	struct pci_host_bridge *peer_host_bridge;
-+	struct pci_bus_region region;
-+	dma_peer_addr_t dma_address;
-+	int pos;
-+	u16 cap;
-+
-+	/*
-+	 * Disallow the peer-to-peer mapping if the devices do not share a host
-+	 * bridge.
-+	 */
-+	dev_host_bridge = pci_find_host_bridge(pdev->bus);
-+	peer_host_bridge = pci_find_host_bridge(ppeer->bus);
-+	if (dev_host_bridge != peer_host_bridge)
-+		return DMA_ERROR_CODE;
-+
-+	if (!pci_is_pcie(pdev))
-+		goto out;
-+
-+	/*
-+	 * Access Control Services (ACS) Checks
-+	 *
-+	 * ACS has a capability bit for P2P Request Redirects, but
-+	 * unfortunately it doesn't tell us much about the real capabilities of
-+	 * the hardware.
-+	 */
-+	rpdev = pdev->bus->self;
-+	rppeer = ppeer->bus->self;
-+
-+	while ((rpdev) && (pci_is_pcie(rpdev)) &&
-+	       (pci_pcie_type(rpdev) != PCI_EXP_TYPE_ROOT_PORT))
-+		rpdev = rpdev->bus->self;
-+
-+	while ((rppeer) && (pci_is_pcie(rppeer)) &&
-+	       (pci_pcie_type(rppeer) != PCI_EXP_TYPE_ROOT_PORT))
-+		rppeer = rppeer->bus->self;
-+
-+	common_upstream = pci_find_common_upstream_dev(pdev, ppeer);
-+
-+	/* If ACS is not implemented, we have no idea about P2P support. */
-+	pos = pci_find_ext_capability(rpdev, PCI_EXT_CAP_ID_ACS);
-+	if (!pos)
-+		goto out;
-+
-+	/*
-+	 * If the devices are under the same root port and have a common
-+	 * upstream device, allow if the root port is further upstream from the
-+	 * common upstream device and the common upstream device has Upstream
-+	 * Forwarding disabled, or if the root port is the common upstream
-+	 * device and ACS is not implemented.
-+	 */
-+	pci_read_config_word(rpdev, pos + PCI_ACS_CAP, &cap);
-+	if ((rpdev == rppeer && common_upstream) &&
-+	    (((common_upstream != rpdev) &&
-+	      !pci_acs_enabled(common_upstream, PCI_ACS_UF)) ||
-+	     ((common_upstream == rpdev) && ((cap & PCI_ACS_RR) == 0))))
-+		goto out;
-+
-+	if (cap & PCI_ACS_RR) {
-+		/* If ACS RR is implemented and enabled, allow the mapping */
-+		if (pci_acs_enabled(rpdev, PCI_ACS_RR))
-+			goto out;
-+
-+		/*
-+		 * If ACS RR is implemented and disabled, allow if the devices
-+		 * are under the same root port.
-+		 */
-+		if (!pci_acs_enabled(rpdev, PCI_ACS_RR) && rpdev == rppeer)
-+			goto out;
-+	}
-+
-+	return DMA_ERROR_CODE;
-+
-+out:
-+	pcibios_resource_to_bus(pdev->bus, &region, res);
-+	dma_address = region.start + offset;
-+	WARN_ON(size == 0);
-+	if (!check_addr("map_peer_resource", dev, dma_address, size))
-+		return DMA_ERROR_CODE;
-+	flush_write_buffers();
-+	return dma_address;
++	debug_dma_mapping_error(dev, dma_addr);
++	return dma_mapping_error_common(dev, (u64)dma_addr);
 +}
 +
++#ifdef CONFIG_HAS_DMA_P2P
++static inline int dma_peer_mapping_error(struct device *dev,
++					 dma_peer_addr_t dma_addr)
++{
++	debug_dma_peer_mapping_error(dev, dma_addr);
++	return dma_mapping_error_common(dev, (u64)dma_addr);
++}
++#endif
 +
- /* Map a set of buffers described by scatterlist in streaming
-  * mode for DMA.  This is the scatter-gather version of the
-  * above pci_map_single interface.  Here the scatter gather list
-@@ -93,6 +188,7 @@ struct dma_map_ops nommu_dma_ops = {
- 	.free			= dma_generic_free_coherent,
- 	.map_sg			= nommu_map_sg,
- 	.map_page		= nommu_map_page,
-+	.map_peer_resource	= nommu_map_peer_resource,
- 	.sync_single_for_device = nommu_sync_single_for_device,
- 	.sync_sg_for_device	= nommu_sync_sg_for_device,
- 	.is_phys		= 1,
+ #define dma_alloc_noncoherent(d, s, h, f) dma_alloc_coherent(d, s, h, f)
+ #define dma_free_noncoherent(d, s, v, h) dma_free_coherent(d, s, v, h)
+ 
 -- 
 2.4.6
