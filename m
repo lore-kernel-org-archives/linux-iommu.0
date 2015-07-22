@@ -1,7 +1,7 @@
 From: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v4 01/12] lib/Kconfig: add HAS_DMA_P2P for peer-to-peer support
-Date: Wed, 22 Jul 2015 16:39:46 -0500
-Message-ID: <1437601197-6481-2-git-send-email-wdavis@nvidia.com>
+Subject: [PATCH v4 02/12] linux/types.h: Add dma_peer_addr_t type
+Date: Wed, 22 Jul 2015 16:39:47 -0500
+Message-ID: <1437601197-6481-3-git-send-email-wdavis@nvidia.com>
 References: <1437601197-6481-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,29 +22,54 @@ Cc: Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-pci-u79uwXL29TY
 	Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This option is dependent on HAS_DMA, and indicates whether or not the DMA
-API should include the peer resource (P2P) interfaces.
+On some platforms, a dma_addr_t is only 32 bits wide, but the bus addresses
+can be 64 bits wide. For peer-to-peer DMA, a device needs to use the full
+64-bit address. Therefore, introduce a DMA address type that is not
+constrained by the CPU DMA address size.
+
+This is only needed for peer-to-peer DMA, so guard this definition with a
+CONFIG_HAS_DMA_P2P check.
 
 Signed-off-by: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- lib/Kconfig | 5 +++++
- 1 file changed, 5 insertions(+)
+ include/linux/types.h | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/lib/Kconfig b/lib/Kconfig
-index 3a2ef67..0b670ab 100644
---- a/lib/Kconfig
-+++ b/lib/Kconfig
-@@ -392,6 +392,11 @@ config HAS_DMA
- 	depends on !NO_DMA
- 	default y
+diff --git a/include/linux/types.h b/include/linux/types.h
+index 8715287..dd85173 100644
+--- a/include/linux/types.h
++++ b/include/linux/types.h
+@@ -140,13 +140,13 @@ typedef unsigned long blkcnt_t;
+ #define pgoff_t unsigned long
  
-+config HAS_DMA_P2P
-+	bool
-+	depends on HAS_DMA
-+	default n
+ /*
+- * A dma_addr_t can hold any valid DMA address, i.e., any address returned
++ * A dma_addr_t can hold any valid DMA address, i.e., most addresses returned
+  * by the DMA API.
+  *
+  * If the DMA API only uses 32-bit addresses, dma_addr_t need only be 32
+  * bits wide.  Bus addresses, e.g., PCI BARs, may be wider than 32 bits,
+  * but drivers do memory-mapped I/O to ioremapped kernel virtual addresses,
+- * so they don't care about the size of the actual bus addresses.
++ * so they don't care about the size of the actual bus addresses in most cases.
+  */
+ #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+ typedef u64 dma_addr_t;
+@@ -154,6 +154,15 @@ typedef u64 dma_addr_t;
+ typedef u32 dma_addr_t;
+ #endif
+ 
++/*
++ * Unlike dma_addr_t, a dma_peer_addr_t can hold any bus address for the
++ * platform. Drivers should only need this for peer-to-peer use cases, where
++ * the DMA target is also on the bus.
++ */
++#ifdef CONFIG_HAS_DMA_P2P
++typedef u64 dma_peer_addr_t;
++#endif
 +
- config CHECK_SIGNATURE
- 	bool
- 
+ typedef unsigned __bitwise__ gfp_t;
+ typedef unsigned __bitwise__ fmode_t;
+ typedef unsigned __bitwise__ oom_flags_t;
 -- 
 2.4.6
