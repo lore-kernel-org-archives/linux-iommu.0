@@ -1,91 +1,51 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [git pull] IOMMU Fixes for Linux v4.2-rc3
-Date: Thu, 23 Jul 2015 18:50:52 +0200
-Message-ID: <20150723165052.GA20881@8bytes.org>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="45Z9DzgjV8m4Oswq"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH 0/3] Generic PCI MSI + IOMMU topology bindings
+Date: Thu, 23 Jul 2015 17:52:42 +0100
+Message-ID: <1437670365-20704-1-git-send-email-mark.rutland@arm.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, majun258-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, tirumalesh.chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi all,
 
---45Z9DzgjV8m4Oswq
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Currently we have no generic/standard mechanisms for describing the
+relationship between PCI root complexes and other components which may be
+required to make them usable, specifically IOMMUs and MSI controllers.
 
-Hi Linus,
+There is an existing binding for IOMMUs, and there is a de-facto standard for
+referring to MSI controllers, but the generic portion of these can only
+describe a relationship with a root complex as opposed to a device under a root
+complex. This falls apart where IOMMUs and MSI controllers may distinguish
+individual devices based on non-probeable information.
 
-The following changes since commit d770e558e21961ad6cfdf0ff7df0eb5d7d4f0754:
-
-  Linux 4.2-rc1 (2015-07-05 11:01:52 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.2-rc3
-
-for you to fetch changes up to 46ebb7af7b93792de65e124e1ab8b89a108a41f2:
-
-  iommu/vt-d: Fix VM domain ID leak (2015-07-23 14:17:39 +0200)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v4.2-rc3
-
-The fixes include:
-
-	* A couple of fixes for the new ARM-SMMUv3 driver to fix issues found
-	  on the first real implementation of that hardware.
-
-	* A patch for the Intel VT-d driver to fix a domain-id leak.
-
-----------------------------------------------------------------
-Alex Williamson (1):
-      iommu/vt-d: Fix VM domain ID leak
-
-Will Deacon (1):
-      iommu/arm-smmu: Fix LOG2SIZE setting for 2-level stream tables
-
-Zhen Lei (4):
-      iommu/arm-smmu: Fix the index calculation of strtab
-      iommu/arm-smmu: Fix the values of ARM64_TCR_{I,O}RGN0_SHIFT
-      iommu/arm-smmu: Enlarge STRTAB_L1_SZ_SHIFT to support larger sidsize
-      iommu/arm-smmu: Skip the execution of CMD_PREFETCH_CONFIG
-
- .../devicetree/bindings/iommu/arm,smmu-v3.txt      |  3 ++
- drivers/iommu/arm-smmu-v3.c                        | 60 +++++++++++++++++-----
- drivers/iommu/intel-iommu.c                        |  9 ++--
- 3 files changed, 55 insertions(+), 17 deletions(-)
-
-Please pull.
+This series adds a generic "glue" bindings for describing the relationship
+between root complexes, IOMMUs, and MSI controllers. The existing de-facto
+binding for MSI controllers is formalised, along with a (backwards compatible)
+extension necessary for describing contemporary MSI controllers which make use
+of (non-probeable) sideband data.
 
 Thanks,
+Mark.
 
-	Joerg
+Mark Rutland (3):
+  Docs: dt: add generic MSI bindings
+  Docs: dt: Add PCI MSI map bindings
+  Docs: dt: add PCI IOMMU map bindings
 
+ .../bindings/interrupt-controller/msi.txt          | 135 +++++++++++++
+ .../devicetree/bindings/pci/pci-iommu.txt          | 171 ++++++++++++++++
+ Documentation/devicetree/bindings/pci/pci-msi.txt  | 220 +++++++++++++++++++++
+ 3 files changed, 526 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/interrupt-controller/msi.txt
+ create mode 100644 Documentation/devicetree/bindings/pci/pci-iommu.txt
+ create mode 100644 Documentation/devicetree/bindings/pci/pci-msi.txt
 
---45Z9DzgjV8m4Oswq
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+-- 
+1.9.1
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJVsRtsAAoJECvwRC2XARrj10UQAOGoyTfhlK3FjKallTjCVgLu
-yuVSQf59ONVXzr4e7czlw3T69hl/2dWqQsnQ7S+OK1ZxEQZzki9U54OTsuSl0lzz
-DeBRm0xFN7cAM4siTOTduPkbeiL52XkYLwcNejQmAT1qdTs/Fp6I1/8AWzP9GrSd
-QxVU61DJz1JrXd61ulbcq5/UTYnIEV7FW+aNmSug87zYXpaXbK5tJosGt5pELX5f
-yqynL1swIk5FXdIq8tBNDeySpLxc05lWHu4/CD/Aw1L+SZiPp1SXCL0/zv/uZaeq
-4rBaK6yC/6MbmuPGCUP8cL7rrP0dKkmCHknrbKAQlIXICbdbTFNlKd68eENeUZm8
-HHzfvInFAEz2kGqsTD6K/MEroMiUStmEoMricP6QgJkESlwJiQFc9zJ1Fzw8COrv
-Bkm6ZkLAzv/23uIPG6hCtz7Kze1fJHZ4e7WgvqIEtzerVJtUoVszk22vpWeJ6xvq
-aBvInQjuiggzH6bTDcgA/xeyqUdd/3WGiknceBXkqrQPJEgG8W22U5YyFogQiv2G
-fO7Kndmn9OWTpAlrNVqv9aZtJHnjjmXx4MnS6YJy3OWiQ2EHOFxpHXKnd/6Bd3fx
-4tBdJoOHXgl5bKEWdaQOdOACLtwiQbSidmVTovq7dgGYp9iZa71UvIww9Uf83ewe
-xNoABzM1D5oH7jU5z5tJ
-=xnRW
------END PGP SIGNATURE-----
-
---45Z9DzgjV8m4Oswq--
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
