@@ -1,173 +1,110 @@
-From: =?UTF-8?q?Salva=20Peir=C3=B3?= <speirofr@gmail.com>
-Subject: [PATCH] iommu/omap: Fix debug_read_tlb() to use seq_printf()
-Date: Thu, 23 Jul 2015 14:26:19 +0200
-Message-ID: <1437654379-13356-1-git-send-email-speirofr@gmail.com>
+From: Gerald Schaefer <gerald.schaefer@de.ibm.com>
+Subject: Re: [RFC PATCH 1/1] vfio-pci/iommu: Detach iommu group on remove
+ path
+Date: Thu, 23 Jul 2015 15:03:05 +0200
+Message-ID: <20150723150305.1b12865e@thinkpad>
+References: <1437500646-18031-1-git-send-email-gerald.schaefer@de.ibm.com>
+	<1437500646-18031-2-git-send-email-gerald.schaefer@de.ibm.com>
+	<1437584075.5211.34.camel@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: =?UTF-8?q?Salva=20Peir=C3=B3?= <speirofr@gmail.com>, linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <1437584075.5211.34.camel@redhat.com>
+Sender: kvm-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>
+Cc: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Martin Schwidefsky <schwidefsky@de.ibm.com>, Sebastian Ott <sebott@linux.vnet.ibm.com>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-The debug_read_tlb() uses the sprintf() functions directly on the buffe=
-r
-allocated by buf =3D kmalloc(count), without taking into account the si=
-ze
-of the buffer, with the consequence corrupting the heap, depending on
-the count requested by the user.
+On Wed, 22 Jul 2015 10:54:35 -0600
+Alex Williamson <alex.williamson@redhat.com> wrote:
 
-The patch fixes the issue replacing sprintf() by seq_printf().
+> On Tue, 2015-07-21 at 19:44 +0200, Gerald Schaefer wrote:
+> > When a user completes the VFIO_SET_IOMMU ioctl and the vfio-pci
+> > device is removed thereafter (before any other ioctl like
+> > VFIO_GROUP_GET_DEVICE_FD), then the detach_dev callback of the
+> > underlying IOMMU API is never called.
+> > 
+> > This patch adds a call to vfio_group_try_dissolve_container() to
+> > the remove path, which will trigger the missing detach_dev callback
+> > in this scenario.
+> > 
+> > Signed-off-by: Gerald Schaefer <gerald.schaefer@de.ibm.com>
+> > ---
+> >  drivers/vfio/vfio.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+> > index 2fb29df..9c5c784 100644
+> > --- a/drivers/vfio/vfio.c
+> > +++ b/drivers/vfio/vfio.c
+> > @@ -711,6 +711,8 @@ static bool vfio_dev_present(struct vfio_group
+> > *group, struct device *dev) return true;
+> >  }
+> >  
+> > +static void vfio_group_try_dissolve_container(struct vfio_group
+> > *group); +
+> >  /*
+> >   * Decrement the device reference count and wait for the device to
+> > be
+> >   * removed.  Open file descriptors for the device... */
+> > @@ -785,6 +787,7 @@ void *vfio_del_group_dev(struct device *dev)
+> >  		}
+> >  	} while (ret <= 0);
+> >  
+> > +	vfio_group_try_dissolve_container(group);
+> >  	vfio_group_put(group);
+> >  
+> >  	return device_data;
+> 
+> 
+> This won't work, vfio_group_try_dissolve_container() decrements
+> container_users, which an unused device is not.  Imagine if we had
+> more than one device in the iommu group, one device is removed and the
+> container is dissolved despite the user holding a reference and other
+> viable devices remaining.  Additionally, from an isolation
+> perspective, an unbind from vfio-pci should not pull the device out
+> of the iommu domain, it's part of the domain because it's not
+> isolated and that continues even after unbind.
+> 
+> I think what you want to do is detach a device from the iommu domain
+> only when it's being removed from iommu group, such as through
+> iommu_group_remove_device().  We already have a bit of an asymmetry
+> there as iommu_group_add_device() will add devices to the currently
+> active iommu domain for the group, but iommu_group_remove_device()
+> does not appear to do the reverse.  Thanks,
 
-Signed-off-by: Salva Peir=C3=B3 <speirofr@gmail.com>
----
- drivers/iommu/omap-iommu-debug.c | 26 +++++++-------------------
- drivers/iommu/omap-iommu.c       | 28 +++++++++++-----------------
- drivers/iommu/omap-iommu.h       |  3 +--
- 3 files changed, 19 insertions(+), 38 deletions(-)
+Interesting, I haven't noticed this asymmetry so far, do you mean
+something like this:
 
-diff --git a/drivers/iommu/omap-iommu-debug.c b/drivers/iommu/omap-iomm=
-u-debug.c
-index f3d20a2..5dcb85e 100644
---- a/drivers/iommu/omap-iommu-debug.c
-+++ b/drivers/iommu/omap-iommu-debug.c
-@@ -55,34 +55,22 @@ static ssize_t debug_read_regs(struct file *file, c=
-har __user *userbuf,
- 	return bytes;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index f286090..82ac8b3 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -447,6 +447,9 @@ rename:
  }
-=20
--static ssize_t debug_read_tlb(struct file *file, char __user *userbuf,
--			      size_t count, loff_t *ppos)
-+static int debug_read_tlb(struct seq_file *s, void *data)
- {
--	struct omap_iommu *obj =3D file->private_data;
--	char *p, *buf;
--	ssize_t bytes, rest;
-+	struct omap_iommu *obj =3D s->private;
-=20
- 	if (is_omap_iommu_detached(obj))
- 		return -EPERM;
-=20
--	buf =3D kmalloc(count, GFP_KERNEL);
--	if (!buf)
--		return -ENOMEM;
--	p =3D buf;
--
- 	mutex_lock(&iommu_debug_lock);
-=20
--	p +=3D sprintf(p, "%8s %8s\n", "cam:", "ram:");
--	p +=3D sprintf(p, "-----------------------------------------\n");
--	rest =3D count - (p - buf);
--	p +=3D omap_dump_tlb_entries(obj, p, rest);
--
--	bytes =3D simple_read_from_buffer(userbuf, count, ppos, buf, p - buf)=
-;
-+	seq_printf(s, "%8s %8s\n", "cam:", "ram:");
-+	seq_puts(s, "-----------------------------------------\n");
-+	omap_dump_tlb_entries(obj, s);
-=20
- 	mutex_unlock(&iommu_debug_lock);
--	kfree(buf);
-=20
--	return bytes;
-+	return 0;
- }
-=20
- static void dump_ioptable(struct seq_file *s)
-@@ -157,7 +145,7 @@ static int debug_read_pagetable(struct seq_file *s,=
- void *data)
- 	};
-=20
- DEBUG_FOPS_RO(regs);
--DEBUG_FOPS_RO(tlb);
-+DEBUG_SEQ_FOPS_RO(tlb);
- DEBUG_SEQ_FOPS_RO(pagetable);
-=20
- #define __DEBUG_ADD_FILE(attr, mode)					\
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index a22c33d..2247075e2 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -546,36 +546,30 @@ __dump_tlb_entries(struct omap_iommu *obj, struct=
- cr_regs *crs, int num)
- }
-=20
+ EXPORT_SYMBOL_GPL(iommu_group_add_device);
+ 
++static void __iommu_detach_device(struct iommu_domain *domain,
++				  struct device *dev);
++
  /**
-- * iotlb_dump_cr - Dump an iommu tlb entry into buf
-+ * iotlb_dump_cr - Dump an iommu tlb entry into seq_file
-  * @obj:	target iommu
-  * @cr:		contents of cam and ram register
-- * @buf:	output buffer
-+ * @s:	    output seq_file
-  **/
- static ssize_t iotlb_dump_cr(struct omap_iommu *obj, struct cr_regs *c=
-r,
--			     char *buf)
-+		struct seq_file *s)
- {
--	char *p =3D buf;
--
- 	/* FIXME: Need more detail analysis of cam/ram */
--	p +=3D sprintf(p, "%08x %08x %01x\n", cr->cam, cr->ram,
--					(cr->cam & MMU_CAM_P) ? 1 : 0);
--
--	return p - buf;
-+	return seq_printf(s, "%08x %08x %01x\n", cr->cam, cr->ram,
-+			(cr->cam & MMU_CAM_P) ? 1 : 0);
- }
-=20
- /**
-- * omap_dump_tlb_entries - dump cr arrays to given buffer
-+ * omap_dump_tlb_entries - dump cr arrays to given seq_file
-  * @obj:	target iommu
-- * @buf:	output buffer
-+ * @s:	    output seq_file
-  **/
--size_t omap_dump_tlb_entries(struct omap_iommu *obj, char *buf, ssize_=
-t bytes)
-+size_t omap_dump_tlb_entries(struct omap_iommu *obj, struct seq_file *=
-s)
- {
- 	int i, num;
- 	struct cr_regs *cr;
--	char *p =3D buf;
-=20
--	num =3D bytes / sizeof(*cr);
--	num =3D min(obj->nr_tlb_entries, num);
-+	num =3D obj->nr_tlb_entries;
-=20
- 	cr =3D kcalloc(num, sizeof(*cr), GFP_KERNEL);
- 	if (!cr)
-@@ -583,10 +577,10 @@ size_t omap_dump_tlb_entries(struct omap_iommu *o=
-bj, char *buf, ssize_t bytes)
-=20
- 	num =3D __dump_tlb_entries(obj, cr, num);
- 	for (i =3D 0; i < num; i++)
--		p +=3D iotlb_dump_cr(obj, cr + i, p);
-+		iotlb_dump_cr(obj, cr + i, s);
- 	kfree(cr);
-=20
--	return p - buf;
-+	return 0;
- }
-=20
- #endif /* CONFIG_OMAP_IOMMU_DEBUG */
-diff --git a/drivers/iommu/omap-iommu.h b/drivers/iommu/omap-iommu.h
-index d736630..5df9755 100644
---- a/drivers/iommu/omap-iommu.h
-+++ b/drivers/iommu/omap-iommu.h
-@@ -193,8 +193,7 @@ static inline struct omap_iommu *dev_to_omap_iommu(=
-struct device *dev)
- #ifdef CONFIG_OMAP_IOMMU_DEBUG
- extern ssize_t
- omap_iommu_dump_ctx(struct omap_iommu *obj, char *buf, ssize_t len);
--extern size_t
--omap_dump_tlb_entries(struct omap_iommu *obj, char *buf, ssize_t len);
-+extern size_t omap_dump_tlb_entries(struct omap_iommu *obj, struct seq=
-_file *s);
-=20
- void omap_iommu_debugfs_init(void);
- void omap_iommu_debugfs_exit(void);
---=20
-2.1.4
+  * iommu_group_remove_device - remove a device from it's current group
+  * @dev: device to be removed
+@@ -466,6 +469,8 @@ void iommu_group_remove_device(struct device *dev)
+ 				     IOMMU_GROUP_NOTIFY_DEL_DEVICE,
+dev); 
+ 	mutex_lock(&group->mutex);
++	if (group->domain)
++		__iommu_detach_device(group->domain, dev);
+ 	list_for_each_entry(tmp_device, &group->devices, list) {
+ 		if (tmp_device->dev == dev) {
+ 			device = tmp_device;
+
+This would also fix the issue in my scenario, but like before that
+doesn't need to mean it is the correct fix. Adding the iommu list and
+maintainer to cc.
+
+Joerg, what do you think? (see https://lkml.org/lkml/2015/7/21/635 for
+the problem description)
+
