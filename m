@@ -1,74 +1,113 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v3 5/6] iommu/mediatek: Add mt8173 IOMMU driver
-Date: Fri, 24 Jul 2015 13:43:13 +0800
-Message-ID: <1437716593.23932.73.camel@mhfsdcap03>
-References: <1437037475-9065-1-git-send-email-yong.wu@mediatek.com>
-	<1437037475-9065-6-git-send-email-yong.wu@mediatek.com>
-	<20150721145910.GG31095@arm.com>
+From: Marc Zyngier <marc.zyngier@arm.com>
+Subject: Re: [PATCH 1/3] Docs: dt: add generic MSI bindings
+Date: Fri, 24 Jul 2015 08:04:22 +0100
+Message-ID: <20150724080422.48cb64e2@why.wild-wind.fr.eu.org>
+References: <1437670365-20704-1-git-send-email-mark.rutland@arm.com>
+	<1437670365-20704-2-git-send-email-mark.rutland@arm.com>
+	<55B131C3.8050009@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150721145910.GG31095-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "cloud.chou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <cloud.chou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "frederic.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <frederic.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org" <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel@pen>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <55B131C3.8050009@caviumnetworks.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: David Daney <ddaney@caviumnetworks.com>
+Cc: Mark Rutland <Mark.Rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Will Deacon <Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "arnd@arndb.de" <arnd@arndb.de>, "treding@nvidia.com" <treding@nvidia.com>, "majun258@huawei.com" <majun258@huawei.com>, "thunder.leizhen@huawei.com" <thunder.leizhen@huawei.com>, "tirumalesh.chalamarla@caviumnetworks.com" <tirumalesh.chalamarla@caviumnetworks.com>, "laurent.pinchart@ideasonboard.com" <laurent.pinchart@ideasonboard.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2015-07-21 at 15:59 +0100, Will Deacon wrote:
-> Hi Yong Wu,
-> 
-> On Thu, Jul 16, 2015 at 10:04:34AM +0100, Yong Wu wrote:
-> > This patch adds support for mediatek m4u (MultiMedia Memory Management
-> > Unit).
-> 
+On Thu, 23 Jul 2015 19:26:11 +0100
+David Daney <ddaney@caviumnetworks.com> wrote:
+
+> On 07/23/2015 09:52 AM, Mark Rutland wrote:
 > [...]
-> 
-> > +static void mtk_iommu_tlb_flush_all(void *cookie)
-> > +{
-> > +       struct mtk_iommu_domain *domain = cookie;
-> > +       void __iomem *base;
+> > +MSI clients
+> > +===========
 > > +
-> > +       base = domain->data->base;
-> > +       writel(F_INVLD_EN1 | F_INVLD_EN0, base + REG_MMU_INV_SEL);
-> > +       writel(F_ALL_INVLD, base + REG_MMU_INVALIDATE);
-> 
-> This needs to be synchronous, so you probably want to call
-> mtk_iommu_tlb_sync at the end.
-
->From our spec, we have to wait until HW done after tlb flush range.
-But it don't need wait after tlb flush all.
-so It isn't necessary to add mtk_iommu_tlb_sync in tlb_flush_all here.
-
-> 
-> > +}
+> > +MSI clients are devices which generate MSIs. For each MSI they wish to
+> > +generate, the doorbell and payload may be configured, though sideband
+> > +information may not be configurable.
 > > +
-> > +static void mtk_iommu_tlb_add_flush(unsigned long iova, size_t size,
-> > +                                   bool leaf, void *cookie)
-> > +{
-> > +       struct mtk_iommu_domain *domain = cookie;
-> > +       void __iomem *base = domain->data->base;
-> > +       unsigned int iova_start = iova, iova_end = iova + size - 1;
+> > +Required properties:
+> > +--------------------
 > > +
-> > +       writel(F_INVLD_EN1 | F_INVLD_EN0, base + REG_MMU_INV_SEL);
+> > +- msi-parent: A list of phandle + msi-specifier pairs, one for each MSI
+> > +  controller which the device is capable of using.
 > > +
-> > +       writel(iova_start, base + REG_MMU_INVLD_START_A);
-> > +       writel(iova_end, base + REG_MMU_INVLD_END_A);
-> > +       writel(F_MMU_INV_RANGE, base + REG_MMU_INVALIDATE);
 > 
-> Why are you using writel instead of writel_relaxed? I asked this before
-> but I don't think you replied.
-
-Sorry, I didn't notice _relax last time. I will improve in next version.
-Thanks very much.
-
+> We say here that "msi-parent" consists of pairs ...
 > 
-> Will
+> > +  This property is unordered, and MSIs may be allocated from any combination of
+> > +  MSI controllers listed in the msi-parent property.
+> > +
+> > +  If a device has restrictions on the allocation of MSIs, these restrictions
+> > +  must be described with additional properties.
+> > +
+> > +  When #msi-cells is non-zero, busses with an msi-parent will require
+> > +  additional properties to describe the relationship between devices on the bus
+> > +  and the set of MSIs they can potentially generate.
+> > +
+> > +
+> > +Example
+> > +=======
+> > +
+> > +/ {
+> > +	#address-cells = <1>;
+> > +	#size-cells = <1>;
+> > +
+> > +	msi_a: msi-controller@a {
+> > +		reg = <0xa 0xf00>;
+> > +		compatible = "vendor-a,some-controller";
+> > +		msi-controller;
+> > +		/* No sideband data, so #msi-cells omitted */
+> > +	};
+> > +
+> > +	msi_b: msi-controller@b {
+> > +		reg = <0xb 0xf00>;
+> > +		compatible = "vendor-b,another-controller";
+> > +		msi-controller;
+> > +		/* Each device has some unique ID */
+> > +		#msi-cells = <1>;
+> > +	};
+> > +
+> > +	msi_c: msi-controller@c {
+> > +		reg = <0xb 0xf00>;
+> > +		compatible = "vendor-b,another-controller";
+> > +		msi-controller;
+> > +		/* Each device has some unique ID */
+> > +		#msi-cells = <1>;
+> > +	};
+> > +
+> > +	dev@0 {
+> > +		reg = <0x0 0xf00>;
+> > +		compatible = "vendor-c,some-device";
+> > +
+> > +		/* Can only generate MSIs to msi_a */
+> > +		msi-parent = <&msi_a>;
+> 
+> 
+> My device-tree syntax foo is a little rusty, but doesn't "msi-parent" 
+> need a pair of elements?  This has only the phandle.
+
+This is a pair in the sense of (phandle, msi-specifier).
+
+msi_a doesn't have a #msi-cells, so its msi-specifier is of size 0. In
+that case, the pair is (phandle, empty-set).
+
+You could also have something like:
+
+	msi_d: msi-controller@d {
+		#msi-cells = <2>;
+	};
+
+	dev@f {
+		msi-parent = <&msi_d 0x1 0x2>;
+	};
+
+and msi-parent in this case would still be a pair, with an
+msi-specifier of size 2.
+
+Hope this helps,
+
+	M.
+-- 
+Without deviation from the norm, progress is not possible.
