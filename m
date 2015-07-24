@@ -1,106 +1,622 @@
-From: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu/omap: Add support for configuring dsp iommus
- on DRA7xx
-Date: Thu, 23 Jul 2015 21:30:56 -0700
-Message-ID: <20150724043056.GG16878@atomide.com>
-References: <1437522936-19758-1-git-send-email-s-anna@ti.com>
- <1437522936-19758-3-git-send-email-s-anna@ti.com>
- <20150722052600.GF17550@atomide.com>
- <55AFC34E.4000603@ti.com>
- <20150723072455.GC16878@atomide.com>
- <55B114DF.8070800@ti.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v3 3/6] iommu: add ARM short descriptor page table
+ allocator.
+Date: Fri, 24 Jul 2015 13:24:26 +0800
+Message-ID: <1437715466.23932.68.camel@mhfsdcap03>
+References: <1437037475-9065-1-git-send-email-yong.wu@mediatek.com>
+	 <1437037475-9065-4-git-send-email-yong.wu@mediatek.com>
+	 <20150721171101.GN31095@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <55B114DF.8070800-l0cyMroinI0@public.gmane.org>
+In-Reply-To: <20150721171101.GN31095-5wv7dgnIgG8@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org" <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>"arnd-r2nGTMty4D4@public.gmane.org" <a>
 List-Id: iommu@lists.linux-foundation.org
 
-* Suman Anna <s-anna-l0cyMroinI0@public.gmane.org> [150723 09:25]:
-> Hi Tony,
+Hi Will,
+    Thanks for your review so detail.
+    When you are free, please help me check whether it's ok if it's
+changed like below.
+    Thanks very much.
+
+On Tue, 2015-07-21 at 18:11 +0100, Will Deacon wrote:
+> Hello,
 > 
-> On 07/23/2015 02:24 AM, Tony Lindgren wrote:
-> > * Suman Anna <s-anna-l0cyMroinI0@public.gmane.org> [150722 09:25]:
-> >> On 07/22/2015 12:26 AM, Tony Lindgren wrote:
-> >>>
-> >>> I don't like using syscon for tinkering directly with SoC registers.
-> >>
-> >> This is not a SoC-level register, but a register within a sub-module of
-> >> the DSP processor sub-system. The DSP_SYSTEM sub-module in general is
-> >> described in Section 5.3.3 of the TRM [1], and it implements different
-> >> functionalities like the PRCM handshaking, wakeup logic and DSP
-> >> subsystem top-level configuration. It is a module present within the DSP
-> >> processor sub-system, so can only be accessed when the sub-system is
-> >> clocked and the appropriate reset is released.
+> This is looking better, but I still have some concerns.
+> 
+> On Thu, Jul 16, 2015 at 10:04:32AM +0100, Yong Wu wrote:
+> > This patch is for ARM Short Descriptor Format.
 > > 
-> > OK so if it's specific to the DSP driver along the lines of sysc and
-> > syss registers.
+> > Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> > ---
+> >  drivers/iommu/Kconfig                |   18 +
+> >  drivers/iommu/Makefile               |    1 +
+> >  drivers/iommu/io-pgtable-arm-short.c |  742 ++++++++++++++++++++++++++++++++++
+> >  drivers/iommu/io-pgtable-arm.c       |    3 -
+> >  drivers/iommu/io-pgtable.c           |    4 +
+> >  drivers/iommu/io-pgtable.h           |   13 +
+> >  6 files changed, 778 insertions(+), 3 deletions(-)
+> >  create mode 100644 drivers/iommu/io-pgtable-arm-short.c
 > 
-> There will be those registers too within the MMU config register space,
-> even for DRA7xx MMUs. This is different, think of it like a register in
-> the Control module except that it is present within the DSP sub-system
-> instead of at the SoC level.
-
-And what is taking care of pm_runtime_get here to ensure the module
-is powered and clocked?
-
-I think you are missing a layer here and it's the Linux kernel side
-device driver for DSP that initializes things.
- 
-> > Typically we handle these registers by mapping them to the PM runtime
-> > functions for the interconnect so we can reset and idle the hardware
-> > modules even if there is no driver, see for example
-> > omap54xx_mmu_dsp_hwmod.
+> [...]
 > 
-> I haven't yet submitted the DRA7xx hwmods, but they will look almost
-> exactly like the OMAP5 ones. The reset and idle on these are in general
-> not effective at boot time since these are also controlled by a
-> hard-reset line, so that's left to the drivers to deal with it through
-> the omap_device_deassert_hardreset API.
-
-If the MMU configuration is one time init, it may make sense to add
-it to the hwmod reset function. However, if the Linux kernel side
-driver needs to configure things depending on the DSP firmware, it
-should be done in the kernel side device driver. 
- 
-> >>> We should use some Linux generic framework for configuring these
-> >>> bits to avoid nasty dependencies between various hardware modules
-> >>> on the SoC.
-> >>>
-> >>> What does DSP_SYS_MMU_CONFIG register do? It seems it's probably
-> >>> a regulator or a gate clock? If so, it should be set up as a
-> >>> regulator or a clock and then the omap-iommu driver can just
-> >>> use regulator or clcok framework to request the resource.
-> >>
-> >> No, its neither. It is a control bit that dictates whether the
-> >> processor/EDMA addresses go through the respective MMU or not. The
-> >> register currently has 4 bits (bit 0 in each nibble), one each for
-> >> enabling each MMU and requesting an MMU abort on each. The MMU
-> >> integration and enablement notes are detailed in Section 5.3.6 of the
-> >> TRM [1], and the DSP_SYS_MMU_CONFIG register layout is in Table 5-28
-> >> (Page 1641).
-> > 
-> > OK yeah seems like it should be handled by the DSP driver during
-> > probe after doing pm_runtime_get. Then the driver can configure
-> > things like IOMMU and load firmware. Or am I missing something here?
+> > +#define ARM_SHORT_PGDIR_SHIFT                  20
+> > +#define ARM_SHORT_PAGE_SHIFT                   12
+> > +#define ARM_SHORT_PTRS_PER_PTE                 \
+> > +       (1 << (ARM_SHORT_PGDIR_SHIFT - ARM_SHORT_PAGE_SHIFT))
+> > +#define ARM_SHORT_BYTES_PER_PTE                        \
+> > +       (ARM_SHORT_PTRS_PER_PTE * sizeof(arm_short_iopte))
+> > +
+> > +/* level 1 pagetable */
+> > +#define ARM_SHORT_PGD_TYPE_PGTABLE             BIT(0)
+> > +#define ARM_SHORT_PGD_SECTION_XN               (BIT(0) | BIT(4))
+> > +#define ARM_SHORT_PGD_TYPE_SECTION             BIT(1)
+> > +#define ARM_SHORT_PGD_PGTABLE_XN               BIT(2)
 > 
-> The DSP (remoteproc) driver uses the generic IOMMU API, and all the
-> IOMMU enabling sequence is transparent to the DSP driver. So, any
-> configuration/enabling sequence specific to the IOMMU has to be handled
-> within the respective IOMMU platform driver that gets integrated into
-> the IOMMU API.
+> This should be PXN, but I'm not even sure why we care for a table at
+> level 1.
 
-To me it seems you still need a DSP kernel driver to manage the
-DSP hardware for PM runtime. I don't see how iommu and remoteproc
-alone would be sufficient here. You end up sprinkling DSP driver
-specific code to the iommu and remoteproc layers.
+I will delete it.
 
-Regards,
+> 
+> > +#define ARM_SHORT_PGD_B                                BIT(2)
+> > +#define ARM_SHORT_PGD_C                                BIT(3)
+> > +#define ARM_SHORT_PGD_PGTABLE_NS               BIT(3)
+> > +#define ARM_SHORT_PGD_IMPLE                    BIT(9)
+> > +#define ARM_SHORT_PGD_TEX0                     BIT(12)
+> > +#define ARM_SHORT_PGD_S                                BIT(16)
+> > +#define ARM_SHORT_PGD_nG                       BIT(17)
+> > +#define ARM_SHORT_PGD_SUPERSECTION             BIT(18)
+> > +#define ARM_SHORT_PGD_SECTION_NS               BIT(19)
+> > +
+> > +#define ARM_SHORT_PGD_TYPE_SUPERSECTION                \
+> > +       (ARM_SHORT_PGD_TYPE_SECTION | ARM_SHORT_PGD_SUPERSECTION)
+> > +#define ARM_SHORT_PGD_SECTION_TYPE_MSK         \
+> > +       (ARM_SHORT_PGD_TYPE_SECTION | ARM_SHORT_PGD_SUPERSECTION)
+> > +#define ARM_SHORT_PGD_PGTABLE_TYPE_MSK         \
+> > +       (ARM_SHORT_PGD_TYPE_SECTION | ARM_SHORT_PGD_TYPE_PGTABLE)
+> > +#define ARM_SHORT_PGD_TYPE_IS_PGTABLE(pgd)     \
+> > +       (((pgd) & ARM_SHORT_PGD_PGTABLE_TYPE_MSK) == ARM_SHORT_PGD_TYPE_PGTABLE)
+> > +#define ARM_SHORT_PGD_TYPE_IS_SECTION(pgd)     \
+> > +       (((pgd) & ARM_SHORT_PGD_SECTION_TYPE_MSK) == ARM_SHORT_PGD_TYPE_SECTION)
+> > +#define ARM_SHORT_PGD_TYPE_IS_SUPERSECTION(pgd)        \
+> > +       (((pgd) & ARM_SHORT_PGD_SECTION_TYPE_MSK) == \
+> > +       ARM_SHORT_PGD_TYPE_SUPERSECTION)
+> > +#define ARM_SHORT_PGD_PGTABLE_MSK              0xfffffc00
+> > +#define ARM_SHORT_PGD_SECTION_MSK              (~(SZ_1M - 1))
+> > +#define ARM_SHORT_PGD_SUPERSECTION_MSK         (~(SZ_16M - 1))
+> > +
+> > +/* level 2 pagetable */
+> > +#define ARM_SHORT_PTE_TYPE_LARGE               BIT(0)
+> > +#define ARM_SHORT_PTE_SMALL_XN                 BIT(0)
+> > +#define ARM_SHORT_PTE_TYPE_SMALL               BIT(1)
+> > +#define ARM_SHORT_PTE_B                                BIT(2)
+> > +#define ARM_SHORT_PTE_C                                BIT(3)
+> > +#define ARM_SHORT_PTE_SMALL_TEX0               BIT(6)
+> > +#define ARM_SHORT_PTE_IMPLE                    BIT(9)
+> 
+> This is AP[2] for small pages.
 
-Tony
+Sorry, In our pagetable bit9 in PGD and PTE is PA[32] that is for  the
+dram size over 4G. I didn't care it is different in PTE of the standard
+spec.
+And I don't use the AP[2] currently, so I only delete this line in next
+time.
+
+> 
+> > +#define ARM_SHORT_PTE_S                                BIT(10)
+> > +#define ARM_SHORT_PTE_nG                       BIT(11)
+> > +#define ARM_SHORT_PTE_LARGE_TEX0               BIT(12)
+> > +#define ARM_SHORT_PTE_LARGE_XN                 BIT(15)
+> > +#define ARM_SHORT_PTE_LARGE_MSK                        (~(SZ_64K - 1))
+> > +#define ARM_SHORT_PTE_SMALL_MSK                        (~(SZ_4K - 1))
+> > +#define ARM_SHORT_PTE_TYPE_MSK                 \
+> > +       (ARM_SHORT_PTE_TYPE_LARGE | ARM_SHORT_PTE_TYPE_SMALL)
+> > +#define ARM_SHORT_PTE_TYPE_IS_SMALLPAGE(pte)   \
+> > +       (((((pte) & ARM_SHORT_PTE_TYPE_MSK) >> 1) << 1)\
+> > +       == ARM_SHORT_PTE_TYPE_SMALL)
+> 
+> I see what you're trying to do here, but the shifting is confusing. I
+> think it's better doing something like:
+> 
+> 	((pte) & ARM_SHORT_PTE_TYPE_SMALL) == ARM_SHORT_PTE_TYPE_SMALL
+> 
+> or even just:
+> 
+> 	(pte) & ARM_SHORT_PTE_TYPE_SMALL
+
+Thanks. I will use this:
+((pte) & ARM_SHORT_PTE_TYPE_SMALL) == ARM_SHORT_PTE_TYPE_SMALL
+
+This line may be close to the ARM_SHORT_PTE_TYPE_IS_LARGEPAGE below.
+> 
+> > +#define ARM_SHORT_PTE_TYPE_IS_LARGEPAGE(pte)   \
+> > +       (((pte) & ARM_SHORT_PTE_TYPE_MSK) == ARM_SHORT_PTE_TYPE_LARGE)
+> > +
+> > +#define ARM_SHORT_PGD_IDX(a)                   ((a) >> ARM_SHORT_PGDIR_SHIFT)
+> > +#define ARM_SHORT_PTE_IDX(a)                   \
+> > +       (((a) >> ARM_SHORT_PAGE_SHIFT) & (ARM_SHORT_PTRS_PER_PTE - 1))
+> > +
+> > +#define ARM_SHORT_GET_PTE_VA(pgd)              \
+> > +       (phys_to_virt((unsigned long)pgd & ARM_SHORT_PGD_PGTABLE_MSK))
+> 
+> Maybe better named as ARM_SHORT_GET_PGTABLE_VA ?
+
+Thanks.
+
+> 
+> > +
+> > +#define ARM_SHORT_PTE_LARGE_GET_PROT(pte)      \
+> > +       (((pte) & (~ARM_SHORT_PTE_LARGE_MSK)) & ~ARM_SHORT_PTE_TYPE_MSK)
+> > +
+> > +#define ARM_SHORT_PGD_GET_PROT(pgd)            \
+> > +       (((pgd) & (~ARM_SHORT_PGD_SECTION_MSK)) & ~ARM_SHORT_PGD_SUPERSECTION)
+> > +
+> > +static bool selftest_running;
+> > +
+> > +static arm_short_iopte *
+> > +arm_short_get_pte_in_pgd(arm_short_iopte pgd, unsigned int iova)
+> > +{
+> > +       arm_short_iopte *pte;
+> > +
+> > +       pte = ARM_SHORT_GET_PTE_VA(pgd);
+> > +       pte += ARM_SHORT_PTE_IDX(iova);
+> > +       return pte;
+> > +}
+> > +
+> > +static void _arm_short_free_pgtable(struct arm_short_io_pgtable *data,
+> > +                                   arm_short_iopte *pgd)
+> > +{
+> > +       const struct iommu_gather_ops *tlb = data->iop.cfg.tlb;
+> > +       arm_short_iopte *pte;
+> > +       int i;
+> > +
+> > +       pte = ARM_SHORT_GET_PTE_VA(*pgd);
+> > +       for (i = 0; i < ARM_SHORT_PTRS_PER_PTE; i++) {
+> > +               if (pte[i] != 0)
+> > +                       return;
+> > +       }
+> 
+> Do you actually need this loop if you're not warning or returning an error?
+
+I can't return an error here.
+
+Here I only walk all the pte items in the pgd, 
+If there is some pte item exist, we do nothing, It is a ok case too.
+If all the pte items are unmapped, We have to free the memory of
+pgtable(kmem).
+
+> 
+> > +
+> > +       /* Free whole pte and set pgd to zero while all pte is unmap */
+> > +       kmem_cache_free(data->ptekmem, pte);
+> > +       *pgd = 0;
+> 
+> I still don't think this is safe. What stops the page table walker from
+> speculatively walking freed memory?
+
+      Sorry. I didn't care the free flow this time. 
+
+      I will change like below:    
+static bool _arm_short_free_pgtable(struct arm_short_io_pgtable *data,
+arm_short_iopte *pgd)
+{
+ /* if whole the pte items of this pgd are unmapped, return true.
+  * if others return fail.
+  */
+  for(*****)
+}
+   In arm_short_unmap, I will compare the return value and following the
+free 5 steps as you suggestion below.
+
+> 
+> > +       tlb->flush_pgtable(pgd, sizeof(*pgd), data->iop.cookie);
+> > +}
+> > +
+> > +static arm_short_iopte
+> > +__arm_short_pte_prot(struct arm_short_io_pgtable *data, int prot, bool large)
+> > +{
+> > +       arm_short_iopte pteprot;
+> > +
+> > +       pteprot = ARM_SHORT_PTE_S | ARM_SHORT_PTE_nG;
+> > +       pteprot |= large ? ARM_SHORT_PTE_TYPE_LARGE :
+> > +                               ARM_SHORT_PTE_TYPE_SMALL;
+> > +       if (prot & IOMMU_CACHE)
+> > +               pteprot |=  ARM_SHORT_PTE_B | ARM_SHORT_PTE_C;
+> > +       if (prot & IOMMU_WRITE)
+> > +               pteprot |= large ? ARM_SHORT_PTE_LARGE_TEX0 :
+> > +                               ARM_SHORT_PTE_SMALL_TEX0;
+> 
+> This doesn't make any sense. TEX[2:0] is all about memory attributes, not
+> permissions, so you're making the mapping write-back, write-allocate but
+> that's not what the IOMMU_* values are about.
+
+     I will delete it.
+
+> 
+> > +       if (prot & IOMMU_NOEXEC)
+> > +               pteprot |= large ? ARM_SHORT_PTE_LARGE_XN :
+> > +                       ARM_SHORT_PTE_SMALL_XN;
+> > +       return pteprot;
+> > +}
+> > +
+> > +static arm_short_iopte
+> > +__arm_short_pgd_prot(struct arm_short_io_pgtable *data, int prot, bool super)
+> > +{
+> > +       arm_short_iopte pgdprot;
+> > +
+> > +       pgdprot = ARM_SHORT_PGD_S | ARM_SHORT_PGD_nG;
+> > +       pgdprot |= super ? ARM_SHORT_PGD_TYPE_SUPERSECTION :
+> > +                               ARM_SHORT_PGD_TYPE_SECTION;
+> > +       if (prot & IOMMU_CACHE)
+> > +               pgdprot |= ARM_SHORT_PGD_C | ARM_SHORT_PGD_B;
+> > +       if (prot & IOMMU_WRITE)
+> > +               pgdprot |= ARM_SHORT_PGD_TEX0;
+> 
+> Likewise.
+
+I will delete it.
+
+> 
+> > +       if (prot & IOMMU_NOEXEC)
+> > +               pgdprot |= ARM_SHORT_PGD_SECTION_XN;
+> > +       if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_ARM_NS)
+> > +               pgdprot |= ARM_SHORT_PGD_SECTION_NS;
+> > +       return pgdprot;
+> > +}
+> > +
+> > +static arm_short_iopte
+> > +__arm_short_pte_prot_split(struct arm_short_io_pgtable *data,
+> > +                          arm_short_iopte pgdprot,
+> > +                          arm_short_iopte pteprot_large,
+> > +                          bool large)
+> > +{
+> > +       arm_short_iopte pteprot = 0;
+> > +
+> > +       pteprot = ARM_SHORT_PTE_S | ARM_SHORT_PTE_nG;
+> > +       pteprot |= large ? ARM_SHORT_PTE_TYPE_LARGE :
+> > +                               ARM_SHORT_PTE_TYPE_SMALL;
+> > +       /* section to pte prot */
+> > +       if (pgdprot & ARM_SHORT_PGD_C)
+> > +               pteprot |= ARM_SHORT_PTE_C;
+> > +       if (pgdprot & ARM_SHORT_PGD_B)
+> > +               pteprot |= ARM_SHORT_PTE_B;
+> > +       if (pgdprot & ARM_SHORT_PGD_TEX0)
+> > +               pteprot |= large ? ARM_SHORT_PTE_LARGE_TEX0 :
+> > +                               ARM_SHORT_PTE_SMALL_TEX0;
+
+Here I also delete it.
+
+> > +       if (pgdprot & ARM_SHORT_PGD_nG)
+> > +               pteprot |= ARM_SHORT_PTE_nG;
+> > +       if (pgdprot & ARM_SHORT_PGD_SECTION_XN)
+> > +               pteprot |= large ? ARM_SHORT_PTE_LARGE_XN :
+> > +                               ARM_SHORT_PTE_SMALL_XN;
+> > +
+> > +       /* large page to small page pte prot. Only large page may split */
+> > +       if (pteprot_large && !large) {
+> > +               if (pteprot_large & ARM_SHORT_PTE_LARGE_TEX0)
+> > +                       pteprot |= ARM_SHORT_PTE_SMALL_TEX0;
+
+Delete this too.
+
+> > +               if (pteprot_large & ARM_SHORT_PTE_LARGE_XN)
+> > +                       pteprot |= ARM_SHORT_PTE_SMALL_XN;
+> > +       }
+> > +       return pteprot;
+> > +}
+> > +
+> > +static arm_short_iopte
+> > +__arm_short_pgtable_prot(struct arm_short_io_pgtable *data, bool noexec)
+> > +{
+> > +       arm_short_iopte pgdprot = 0;
+> > +
+> > +       pgdprot = ARM_SHORT_PGD_TYPE_PGTABLE;
+> > +       if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_ARM_NS)
+> > +               pgdprot |= ARM_SHORT_PGD_PGTABLE_NS;
+> > +       if (noexec)
+> > +               pgdprot |= ARM_SHORT_PGD_PGTABLE_XN;
+> 
+> I don't think you need to worry about XN bits for PGTABLEs.
+
+I will delete it. 
+MTK don't have XN bit in PGTABLEs,
+I prepared to add all the bits according to the standard spec, and add
+MTK quirk to disable this bit for our special bit.
+
+> 
+> > +       return pgdprot;
+> > +}
+> > +
+> > +static int
+> > +_arm_short_map(struct arm_short_io_pgtable *data,
+> > +              unsigned int iova, phys_addr_t paddr,
+> > +              arm_short_iopte pgdprot, arm_short_iopte pteprot,
+> > +              bool large)
+> > +{
+> > +       const struct iommu_gather_ops *tlb = data->iop.cfg.tlb;
+> > +       arm_short_iopte *pgd = data->pgd, *pte;
+> > +       void *cookie = data->iop.cookie, *pte_va;
+> > +       unsigned int ptenr = large ? 16 : 1;
+> > +       int i, quirk = data->iop.cfg.quirks;
+> > +       bool ptenew = false;
+> > +
+> > +       pgd += ARM_SHORT_PGD_IDX(iova);
+> > +
+> > +       if (!pteprot) { /* section or supersection */
+> > +               if (quirk & IO_PGTABLE_QUIRK_SHORT_MTK)
+> > +                       pgdprot &= ~ARM_SHORT_PGD_SECTION_XN;
+> > +               pte = pgd;
+> > +               pteprot = pgdprot;
+> > +       } else {        /* page or largepage */
+> > +               if (quirk & IO_PGTABLE_QUIRK_SHORT_MTK) {
+> > +                       if (large) { /* special Bit */
+> 
+> This definitely needs a better comment! What exactly are you doing here
+> and what is that quirk all about?
+
+I use this quirk is for MTK Special Bit as we don't have the XN bit in
+pagetable.
+
+And the TEX0 will be deleted. Then it will like this:
+
+//==========
+    if (quirk & IO_PGTABLE_QUIRK_SHORT_MTK) {
+            if (large)  
+                  pteprot &= ~ARM_SHORT_PTE_LARGE_XN;
+            else
+                  pteprot &= ~ARM_SHORT_PTE_SMALL_XN;
+//=========
+And move the comment close to the definition of the quirk.
+
+like this:
+#define IO_PGTABLE_QUIRK_SHORT_MTK   BIT(2)/* MTK Speical Bit
+*/         			
+> 
+> > +                               if (pteprot & ARM_SHORT_PTE_LARGE_TEX0) {
+> > +                                       pteprot &= ~ARM_SHORT_PTE_LARGE_TEX0;
+> > +                                       pteprot |= ARM_SHORT_PTE_SMALL_TEX0;
+> > +                               }
+> > +                               pteprot &= ~ARM_SHORT_PTE_LARGE_XN;
+> > +                       } else {
+> > +                               pteprot &= ~ARM_SHORT_PTE_SMALL_XN;
+> > +                       }
+> > +               }
+> > +
+> > +               if (!(*pgd)) {
+> > +                       pte_va = kmem_cache_zalloc(data->ptekmem, GFP_ATOMIC);
+> > +                       if (unlikely(!pte_va))
+> > +                               return -ENOMEM;
+> > +                       ptenew = true;
+> > +                       *pgd = virt_to_phys(pte_va) | pgdprot;
+> > +                       kmemleak_ignore(pte_va);
+> > +                       tlb->flush_pgtable(pgd, sizeof(*pgd), cookie);
+> 
+> I think you need to flush this before it becomes visible to the walker.
+
+I have flushed pgtable here, Do you meaning flush tlb here?
+
+>From the comment below, you don't think tlb-flush is necessary while the
+new pte item is from invalid -> valid,
+
+> 
+> > +               }
+> > +               pte = arm_short_get_pte_in_pgd(*pgd, iova);
+> > +       }
+> > +
+> > +       pteprot |= (arm_short_iopte)paddr;
+> > +       for (i = 0; i < ptenr; i++) {
+> > +               if (pte[i]) {/* Someone else may have allocated for this pte */
+> > +                       WARN_ON(!selftest_running);
+> > +                       goto err_exist_pte;
+> > +               }
+> > +               pte[i] = pteprot;
+> > +       }
+> > +       tlb->flush_pgtable(pte, ptenr * sizeof(*pte), cookie);
+> > +
+> > +       return 0;
+> > +
+> > +err_exist_pte:
+> > +       while (i--)
+> > +               pte[i] = 0;
+> > +       if (ptenew)
+> > +               kmem_cache_free(data->ptekmem, pte_va);
+> > +       return -EEXIST;
+> > +}
+> > +
+> > +static int arm_short_map(struct io_pgtable_ops *ops, unsigned long iova,
+> > +                        phys_addr_t paddr, size_t size, int prot)
+> > +{
+> > +       struct arm_short_io_pgtable *data = io_pgtable_ops_to_data(ops);
+> > +       const struct iommu_gather_ops *tlb = data->iop.cfg.tlb;
+> > +       int ret;
+> > +       arm_short_iopte pgdprot = 0, pteprot = 0;
+> > +       bool large;
+> > +
+> > +       /* If no access, then nothing to do */
+> > +       if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
+> > +               return 0;
+> > +
+> > +       switch (size) {
+> > +       case SZ_4K:
+> > +       case SZ_64K:
+> > +               large = (size == SZ_64K) ? true : false;
+> > +               pteprot = __arm_short_pte_prot(data, prot, large);
+> > +               pgdprot = __arm_short_pgtable_prot(data, prot & IOMMU_NOEXEC);
+> > +               break;
+> > +
+> > +       case SZ_1M:
+> > +       case SZ_16M:
+> > +               large = (size == SZ_16M) ? true : false;
+> > +               pgdprot = __arm_short_pgd_prot(data, prot, large);
+> > +               break;
+> > +       default:
+> > +               return -EINVAL;
+> > +       }
+> > +
+> > +       if (WARN_ON((iova | paddr) & (size - 1)))
+> > +               return -EINVAL;
+> > +
+> > +       ret = _arm_short_map(data, iova, paddr, pgdprot, pteprot, large);
+> > +
+> > +       tlb->tlb_add_flush(iova, size, true, data->iop.cookie);
+> > +       tlb->tlb_sync(data->iop.cookie);
+> 
+> In _arm_short_map, it looks like you can only go from invalid -> valid,
+> so why do you need to flush the TLB here?
+
+I will delete tlb flush here. 
+Then the tlb flush is only called after unmap and split.
+
+> 
+> > +       return ret;
+> > +}
+> > +
+> > +static phys_addr_t arm_short_iova_to_phys(struct io_pgtable_ops *ops,
+> > +                                         unsigned long iova)
+> > +{
+> > +       struct arm_short_io_pgtable *data = io_pgtable_ops_to_data(ops);
+> > +       arm_short_iopte *pte, *pgd = data->pgd;
+> > +       phys_addr_t pa = 0;
+> > +
+> > +       pgd += ARM_SHORT_PGD_IDX(iova);
+> > +
+> > +       if (ARM_SHORT_PGD_TYPE_IS_PGTABLE(*pgd)) {
+> > +               pte = arm_short_get_pte_in_pgd(*pgd, iova);
+> > +
+> > +               if (ARM_SHORT_PTE_TYPE_IS_LARGEPAGE(*pte)) {
+> > +                       pa = (*pte) & ARM_SHORT_PTE_LARGE_MSK;
+> > +                       pa |= iova & ~ARM_SHORT_PTE_LARGE_MSK;
+> > +               } else if (ARM_SHORT_PTE_TYPE_IS_SMALLPAGE(*pte)) {
+> > +                       pa = (*pte) & ARM_SHORT_PTE_SMALL_MSK;
+> > +                       pa |= iova & ~ARM_SHORT_PTE_SMALL_MSK;
+> > +               }
+> > +       } else if (ARM_SHORT_PGD_TYPE_IS_SECTION(*pgd)) {
+> > +               pa = (*pgd) & ARM_SHORT_PGD_SECTION_MSK;
+> > +               pa |= iova & ~ARM_SHORT_PGD_SECTION_MSK;
+> > +       } else if (ARM_SHORT_PGD_TYPE_IS_SUPERSECTION(*pgd)) {
+> > +               pa = (*pgd) & ARM_SHORT_PGD_SUPERSECTION_MSK;
+> > +               pa |= iova & ~ARM_SHORT_PGD_SUPERSECTION_MSK;
+> > +       }
+> > +
+> > +       return pa;
+> > +}
+> > +
+> > +static int
+> > +arm_short_split_blk_unmap(struct io_pgtable_ops *ops, unsigned int iova,
+> > +                         phys_addr_t paddr, size_t size,
+> > +                         arm_short_iopte pgdprotup, arm_short_iopte pteprotup,
+> > +                         size_t blk_size)
+> > +{
+> > +       struct arm_short_io_pgtable *data = io_pgtable_ops_to_data(ops);
+> > +       const struct iommu_gather_ops *tlb = data->iop.cfg.tlb;
+> > +       struct io_pgtable_cfg *cfg = &data->iop.cfg;
+> > +       unsigned long *pgbitmap = &cfg->pgsize_bitmap;
+> > +       unsigned int blk_base, blk_start, blk_end;
+> > +       arm_short_iopte pgdprot, pteprot;
+> > +       size_t mapsize = 0, nextmapsize;
+> > +       phys_addr_t blk_paddr;
+> > +       int ret;
+> > +       unsigned int i;
+> > +
+> > +       /* find the nearest mapsize */
+> > +       for (i = find_first_bit(pgbitmap, BITS_PER_LONG);
+> > +            i < BITS_PER_LONG && ((1 << i) < blk_size) &&
+> > +            IS_ALIGNED(size, 1 << i);
+> > +            i = find_next_bit(pgbitmap, BITS_PER_LONG, i + 1))
+> > +               mapsize = 1 << i;
+> > +
+> > +       if (WARN_ON(!mapsize))
+> > +               return 0; /* Bytes unmapped */
+> > +       nextmapsize = 1 << i;
+> > +
+> > +       blk_base = iova & ~(blk_size - 1);
+> > +       blk_start = blk_base;
+> > +       blk_end = blk_start + blk_size;
+> > +       blk_paddr = paddr;
+> > +
+> > +       for (; blk_start < blk_end;
+> > +            blk_start += mapsize, blk_paddr += mapsize) {
+> > +               /* Unmap! */
+> > +               if (blk_start == iova)
+> > +                       continue;
+> > +
+> > +               /* Try to upper map */
+> > +               if (blk_base != blk_start &&
+> > +                   IS_ALIGNED(blk_start | blk_paddr, nextmapsize) &&
+> > +                   mapsize != nextmapsize) {
+> > +                       mapsize = nextmapsize;
+> > +                       i = find_next_bit(pgbitmap, BITS_PER_LONG, i + 1);
+> > +                       if (i < BITS_PER_LONG)
+> > +                               nextmapsize = 1 << i;
+> > +               }
+> > +
+> > +               if (mapsize == SZ_1M) {
+> > +                       pgdprot = pgdprotup;
+> > +                       pgdprot |= __arm_short_pgd_prot(data, 0, false);
+> > +                       pteprot = 0;
+> > +               } else { /* small or large page */
+> > +                       bool noexec = (blk_size == SZ_64K) ?
+> > +                               (pteprotup & ARM_SHORT_PTE_LARGE_XN) :
+> > +                               (pgdprotup & ARM_SHORT_PGD_SECTION_XN);
+> > +
+> > +                       pteprot = __arm_short_pte_prot_split(
+> > +                                               data, pgdprotup, pteprotup,
+> > +                                               mapsize == SZ_64K);
+> > +                       pgdprot = __arm_short_pgtable_prot(data, noexec);
+> > +               }
+> > +
+> > +               ret = _arm_short_map(data, blk_start, blk_paddr, pgdprot,
+> > +                                    pteprot, mapsize == SZ_64K);
+> > +               if (ret < 0) {
+> > +                       /* Free the table we allocated */
+> > +                       arm_short_iopte *pgd = data->pgd, *pte;
+> > +
+> > +                       pgd += ARM_SHORT_PGD_IDX(blk_base);
+> > +                       if (*pgd) {
+> > +                               pte = ARM_SHORT_GET_PTE_VA(*pgd);
+> > +                               kmem_cache_free(data->ptekmem, pte);
+> > +                               *pgd = 0;
+> > +                               tlb->flush_pgtable(pgd, sizeof(*pgd),
+> > +                                                  data->iop.cookie);
+> 
+> Again, the ordering looks totally wrong here. You need to:
+> 
+>   (1) Zero the pgd pointer
+>   (2) Flush the pointer, so the walker can no longer follow the page table
+>   (3) Invalidate the TLB, so we don't have any cached intermediate walks
+>   (4) Sync the TLB
+>   (5) Free the memory
+> 
+> That said, I don't fully follow the logic here.
+
+Sorry. I didn't care the free flow specially. I will change it like
+below:
+//=======
+       *pgd = 0;
+       tlb->flush_pgtable(pgd, sizeof(*pgd), data->iop.cookie);
+       tlb->tlb_add_flush(blk_base, blk_size, true, data->iop.cookie);
+       tlb->tlb_sync(data->iop.cookie);
+       kmem_cache_free(data->ptekmem, pte);
+//============
+
+> 
+> > +                       }
+> > +                       return 0;/* Bytes unmapped */
+> > +               }
+> > +               tlb->tlb_add_flush(blk_start, mapsize, true, data->iop.cookie);
+> > +               tlb->tlb_sync(data->iop.cookie);
+> 
+> Why are you doing this here for every iteration?
+
+I will move it out from the loop.
+
+> Will
+
+
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
