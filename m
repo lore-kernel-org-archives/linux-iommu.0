@@ -1,113 +1,152 @@
-From: Marc Zyngier <marc.zyngier@arm.com>
-Subject: Re: [PATCH 1/3] Docs: dt: add generic MSI bindings
-Date: Fri, 24 Jul 2015 08:04:22 +0100
-Message-ID: <20150724080422.48cb64e2@why.wild-wind.fr.eu.org>
-References: <1437670365-20704-1-git-send-email-mark.rutland@arm.com>
-	<1437670365-20704-2-git-send-email-mark.rutland@arm.com>
-	<55B131C3.8050009@caviumnetworks.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 3/3] Docs: dt: add PCI IOMMU map bindings
+Date: Fri, 24 Jul 2015 13:23:55 +0100
+Message-ID: <55B22E5B.7080208@arm.com>
+References: <1437670365-20704-1-git-send-email-mark.rutland@arm.com> <1437670365-20704-4-git-send-email-mark.rutland@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <55B131C3.8050009@caviumnetworks.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: David Daney <ddaney@caviumnetworks.com>
-Cc: Mark Rutland <Mark.Rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Will Deacon <Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "arnd@arndb.de" <arnd@arndb.de>, "treding@nvidia.com" <treding@nvidia.com>, "majun258@huawei.com" <majun258@huawei.com>, "thunder.leizhen@huawei.com" <thunder.leizhen@huawei.com>, "tirumalesh.chalamarla@caviumnetworks.com" <tirumalesh.chalamarla@caviumnetworks.com>, "laurent.pinchart@ideasonboard.com" <laurent.pinchart@ideasonboard.com>
+Content-Type: text/plain; charset=WINDOWS-1252; format=flowed
+Content-Transfer-Encoding: 8BIT
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1437670365-20704-4-git-send-email-mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Lorenzo Pieralisi <Lorenzo.Pieralisi-5wv7dgnIgG8@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "tirumalesh.chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <tirumalesh.chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "majun258-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <majun258-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 23 Jul 2015 19:26:11 +0100
-David Daney <ddaney@caviumnetworks.com> wrote:
+Hi Mark,
 
-> On 07/23/2015 09:52 AM, Mark Rutland wrote:
-> [...]
-> > +MSI clients
-> > +===========
-> > +
-> > +MSI clients are devices which generate MSIs. For each MSI they wish to
-> > +generate, the doorbell and payload may be configured, though sideband
-> > +information may not be configurable.
-> > +
-> > +Required properties:
-> > +--------------------
-> > +
-> > +- msi-parent: A list of phandle + msi-specifier pairs, one for each MSI
-> > +  controller which the device is capable of using.
-> > +
-> 
-> We say here that "msi-parent" consists of pairs ...
-> 
-> > +  This property is unordered, and MSIs may be allocated from any combination of
-> > +  MSI controllers listed in the msi-parent property.
-> > +
-> > +  If a device has restrictions on the allocation of MSIs, these restrictions
-> > +  must be described with additional properties.
-> > +
-> > +  When #msi-cells is non-zero, busses with an msi-parent will require
-> > +  additional properties to describe the relationship between devices on the bus
-> > +  and the set of MSIs they can potentially generate.
-> > +
-> > +
-> > +Example
-> > +=======
-> > +
-> > +/ {
-> > +	#address-cells = <1>;
-> > +	#size-cells = <1>;
-> > +
-> > +	msi_a: msi-controller@a {
-> > +		reg = <0xa 0xf00>;
-> > +		compatible = "vendor-a,some-controller";
-> > +		msi-controller;
-> > +		/* No sideband data, so #msi-cells omitted */
-> > +	};
-> > +
-> > +	msi_b: msi-controller@b {
-> > +		reg = <0xb 0xf00>;
-> > +		compatible = "vendor-b,another-controller";
-> > +		msi-controller;
-> > +		/* Each device has some unique ID */
-> > +		#msi-cells = <1>;
-> > +	};
-> > +
-> > +	msi_c: msi-controller@c {
-> > +		reg = <0xb 0xf00>;
-> > +		compatible = "vendor-b,another-controller";
-> > +		msi-controller;
-> > +		/* Each device has some unique ID */
-> > +		#msi-cells = <1>;
-> > +	};
-> > +
-> > +	dev@0 {
-> > +		reg = <0x0 0xf00>;
-> > +		compatible = "vendor-c,some-device";
-> > +
-> > +		/* Can only generate MSIs to msi_a */
-> > +		msi-parent = <&msi_a>;
-> 
-> 
-> My device-tree syntax foo is a little rusty, but doesn't "msi-parent" 
-> need a pair of elements?  This has only the phandle.
+This looks sane, and lets me describe the thing I have on my desk, so 
+I'm happy. I have a couple of general thoughts below, but I don't intend 
+that they should stand in the way of this proposal as-is.
 
-This is a pair in the sense of (phandle, msi-specifier).
+On 23/07/15 17:52, Mark Rutland wrote:
+> The existing IOMMU bindings are able to specify the relationship between
+> masters and IOMMUs, but they are insufficient for describing the general
+> case of hotpluggable busses such as PCI where the set of masters is not
+> known until runtime, and the relationship between masters and IOMMUs is
+> a property of the integration of the system.
+>
+> This patch adds a generic binding for mapping PCI devices to IOMMUs,
+> using a new iommu-map property (specific to PCI*) which may be used to
+> map devices (identified by their Requester ID) to sideband data for the
+> IOMMU which they master through.
+>
+> Signed-off-by: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+> ---
+>   .../devicetree/bindings/pci/pci-iommu.txt          | 171 +++++++++++++++++++++
+>   1 file changed, 171 insertions(+)
+>   create mode 100644 Documentation/devicetree/bindings/pci/pci-iommu.txt
+>
+> diff --git a/Documentation/devicetree/bindings/pci/pci-iommu.txt b/Documentation/devicetree/bindings/pci/pci-iommu.txt
+> new file mode 100644
+> index 0000000..56c8296
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pci/pci-iommu.txt
+> @@ -0,0 +1,171 @@
+> +This document describes the generic device tree binding for describing the
+> +relationship between PCI(e) devices and IOMMU(s).
+> +
+> +Each PCI(e) device under a root complex is uniquely identified by its Requester
+> +ID (AKA RID). A Requester ID is a triplet of a Bus number, Device number, and
+> +Function number.
+> +
+> +For the purpose of this document, when treated as a numeric value, a RID is
+> +formatted such that:
+> +
+> +* Bits [15:8] are the Bus number.
+> +* Bits [7:3] are the Device number.
+> +* Bits [2:0] are the Function number.
+> +* Any other bits required for padding must be zero.
+> +
+> +IOMMUs may distinguish PCI devices through sideband data derived from the
+> +Requester ID. While a given PCI device can only master through one IOMMU, a
+> +root complex may split masters across a set of IOMMUs (e.g. with one IOMMU per
+> +bus).
+> +
+> +The generic 'iommus' property is insufficient to describe this relationship,
+> +and a mechanism is required to map from a PCI device to its IOMMU and sideband
+> +data.
+> +
+> +For generic IOMMU bindings, see
+> +Documentation/devicetree/bindings/iommu/iommu.txt.
+> +
+> +
+> +PCI root complex
+> +================
+> +
+> +Optional properties
+> +-------------------
+> +
+> +- iommu-map: Maps a Requester ID to an IOMMU and associated iommu-specifier
+> +  data.
+> +
+> +  The property is an arbitrary number of tuples of
+> +  (rid-base,iommu,iommu-base,length).
+> +
+> +  Any RID r in the interval [rid-base, rid-base + length) is associated with
+> +  the listed IOMMU, with the iommu-specifier (r - rid-base + iommu-base).
 
-msi_a doesn't have a #msi-cells, so its msi-specifier is of size 0. In
-that case, the pair is (phandle, empty-set).
+Can we take as a guarantee that the system cannot present any ID at a 
+given IOMMU that is not represented in an appropriate output range (in 
+the sense that we may do things that could blow up horribly if spurious 
+IDs appeared)?
 
-You could also have something like:
+Furthermore, would representing one-to-many mappings by having multiple 
+matches for a given RID be legal? In the general case it's certainly 
+feasible for the IOMMU to see different IDs for e.g. reads vs. writes, 
+where the system munges extra bus lines into the sideband signals - 
+whether anyone would actually integrate a PCI host controller that way 
+is another matter, so I don't think it's something worth really worrying 
+about without a definite need.
 
-	msi_d: msi-controller@d {
-		#msi-cells = <2>;
-	};
+> +
+> +- iommu-map-mask: A mask to be applied to each Requester ID prior to being
+> +  mapped to an iommu-specifier per the iommu-map property.
 
-	dev@f {
-		msi-parent = <&msi_d 0x1 0x2>;
-	};
+Am I right to assume a mask of 0 would be a valid way to represent 
+"everything" (and if so, should rid-base and length just be ignored, or 
+mandated to be 0 and 1 respectively)? It looks a bit off at first 
+glance, but it does neatly address a genuine use-case.
 
-and msi-parent in this case would still be a pair, with an
-msi-specifier of size 2.
+> +
+> +
+> +Example (1)
+> +===========
+> +
+> +/ {
+> +	#address-cells = <1>;
+> +	#size-cells = <1>;
+> +
+> +	iommu: iommu@a {
+> +		reg = <0xa 0x1>;
+> +		compatible = "vendor,some-iommu";
+> +		#iommu-cells = <1>;
 
-Hope this helps,
+Troll question; what do we do when #iommu-cells > 1, where the IOMMU is 
+expecting some extra data associated with each ID (say, memory attributes)?
 
-	M.
--- 
-Without deviation from the norm, progress is not possible.
+[ I'm pretty sure the answer here should be "define some additional 
+binding if and when anyone actually cares" ;) ]
+
+
+Robin.
+
+> +	};
+> +
+> +	pci: pci@f {
+> +		reg = <0xf 0x1>;
+> +		compatible = "vendor,pcie-root-complex";
+> +		device_type = "pci";
+> +
+> +		/*
+> +		 * The sideband data provided to the IOMMU is the RID,
+> +		 * identity-mapped.
+> +		 */
+> +		iommu-map = <0x0 &iommu 0x0 0x10000>;
+> +	};
+> +};
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
