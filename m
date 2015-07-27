@@ -1,7 +1,8 @@
 From: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-Subject: [PATCH 04/18] iommu: tegra-smmu: fix unmap() method
-Date: Mon, 27 Jul 2015 13:29:05 +0100
-Message-ID: <E1ZJhWj-000477-OT@rmk-PC.arm.linux.org.uk>
+Subject: [PATCH 09/18] iommu: tegra-smmu: use kcalloc() to allocate counter
+ array
+Date: Mon, 27 Jul 2015 13:29:31 +0100
+Message-ID: <E1ZJhX9-00047r-Dq@rmk-PC.arm.linux.org.uk>
 References: <20150727122824.GH7557@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -14,98 +15,97 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-ar
 Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The Tegra SMMU unmap path has several problems:
-1. as_pte_put() can perform a write-after-free
-2. tegra_smmu_unmap() can perform cache maintanence on a page we have
-   just freed.
-3. when a page table is unmapped, there is no CPU cache maintanence of
-   the write clearing the page directory entry, nor is there any
-   maintanence of the IOMMU to ensure that it sees the page table has
-   gone.
-
-Fix this by getting rid of as_pte_put(), and instead coding the PTE
-unmap separately from the PDE unmap, placing the PDE unmap after the
-PTE unmap has been completed.
+Use kcalloc() to allocate the use-counter array for the page directory
+entries/page tables.  Using kcalloc() allows us to be provided with
+zero-initialised memory from the allocators, rather than initialising
+it ourselves.
 
 Signed-off-by: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
 ---
- drivers/iommu/tegra-smmu.c | 37 +++++++++++++++++++++++--------------
- 1 file changed, 23 insertions(+), 14 deletions(-)
+ drivers/iommu/tegra-smmu.c | 21 ++++++---------------
+ 1 file changed, 6 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 083354903a1a..a7a7645fb268 100644
+index 8ec5ac45caab..d649b06cc4ca 100644
 --- a/drivers/iommu/tegra-smmu.c
 +++ b/drivers/iommu/tegra-smmu.c
-@@ -509,29 +509,35 @@ static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
- 	return &pt[pte];
- }
+@@ -40,7 +40,7 @@ struct tegra_smmu_as {
+ 	struct iommu_domain domain;
+ 	struct tegra_smmu *smmu;
+ 	unsigned int use_count;
+-	struct page *count;
++	u32 *count;
+ 	struct page **pts;
+ 	struct page *pd;
+ 	unsigned id;
+@@ -265,7 +265,7 @@ static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
+ 		return NULL;
+ 	}
  
--static void as_put_pte(struct tegra_smmu_as *as, dma_addr_t iova)
-+static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
+-	as->count = alloc_page(GFP_KERNEL);
++	as->count = kcalloc(SMMU_NUM_PDE, sizeof(u32), GFP_KERNEL);
+ 	if (!as->count) {
+ 		__free_page(as->pd);
+ 		kfree(as);
+@@ -274,7 +274,7 @@ static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
+ 
+ 	as->pts = kcalloc(SMMU_NUM_PDE, sizeof(*as->pts), GFP_KERNEL);
+ 	if (!as->pts) {
+-		__free_page(as->count);
++		kfree(as->count);
+ 		__free_page(as->pd);
+ 		kfree(as);
+ 		return NULL;
+@@ -287,13 +287,6 @@ static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
+ 	for (i = 0; i < SMMU_NUM_PDE; i++)
+ 		pd[i] = 0;
+ 
+-	/* clear PDE usage counters */
+-	pd = page_address(as->count);
+-	SetPageReserved(as->count);
+-
+-	for (i = 0; i < SMMU_NUM_PDE; i++)
+-		pd[i] = 0;
+-
+ 	/* setup aperture */
+ 	as->domain.geometry.aperture_start = 0;
+ 	as->domain.geometry.aperture_end = 0xffffffff;
+@@ -509,7 +502,7 @@ static u32 *tegra_smmu_pte_lookup(struct tegra_smmu_as *as, unsigned long iova,
+ static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
+ 		       struct page **pagep)
  {
-+	struct tegra_smmu *smmu = as->smmu;
- 	u32 pde = (iova >> SMMU_PDE_SHIFT) & 0x3ff;
--	u32 pte = (iova >> SMMU_PTE_SHIFT) & 0x3ff;
- 	u32 *count = page_address(as->count);
--	u32 *pd = page_address(as->pd), *pt;
-+	u32 *pd = page_address(as->pd);
+-	u32 *pd = page_address(as->pd), *pt, *count;
++	u32 *pd = page_address(as->pd), *pt;
+ 	unsigned int pde = iova_pd_index(iova);
+ 	struct tegra_smmu *smmu = as->smmu;
  	struct page *page;
+@@ -545,9 +538,8 @@ static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
+ 	pt = page_address(page);
  
--	page = pfn_to_page(pd[pde] & as->smmu->pfn_mask);
--	pt = page_address(page);
-+	page = pfn_to_page(pd[pde] & smmu->pfn_mask);
+ 	/* Keep track of entries in this page table. */
+-	count = page_address(as->count);
+ 	if (pt[iova_pt_index(iova)] == 0)
+-		count[pde]++;
++		as->count[pde]++;
  
- 	/*
+ 	return tegra_smmu_pte_offset(page, iova);
+ }
+@@ -556,7 +548,6 @@ static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
+ {
+ 	struct tegra_smmu *smmu = as->smmu;
+ 	unsigned int pde = iova_pd_index(iova);
+-	u32 *count = page_address(as->count);
+ 	u32 *pd = page_address(as->pd);
+ 	struct page *page = as->pts[pde];
+ 
+@@ -564,7 +555,7 @@ static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
  	 * When no entries in this page table are used anymore, return the
  	 * memory page to the system.
  	 */
--	if (pt[pte] != 0) {
--		if (--count[pde] == 0) {
--			ClearPageReserved(page);
--			__free_page(page);
--			pd[pde] = 0;
--		}
-+	if (--count[pde] == 0) {
-+		unsigned int offset = pde * sizeof(*pd);
+-	if (--count[pde] == 0) {
++	if (--as->count[pde] == 0) {
+ 		unsigned int offset = pde * sizeof(*pd);
  
--		pt[pte] = 0;
-+		/* Clear the page directory entry first */
-+		pd[pde] = 0;
-+
-+		/* Flush the page directory entry */
-+		smmu->soc->ops->flush_dcache(as->pd, offset, sizeof(*pd));
-+		smmu_flush_ptc(smmu, as->pd, offset);
-+		smmu_flush_tlb_section(smmu, as->id, iova);
-+		smmu_flush(smmu);
-+
-+		/* Finally, free the page */
-+		ClearPageReserved(page);
-+		__free_page(page);
- 	}
- }
- 
-@@ -569,17 +575,20 @@ static size_t tegra_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
- 	u32 *pte;
- 
- 	pte = as_get_pte(as, iova, &page);
--	if (!pte)
-+	if (!pte || !*pte)
- 		return 0;
- 
-+	*pte = 0;
-+
- 	offset = offset_in_page(pte);
--	as_put_pte(as, iova);
- 
- 	smmu->soc->ops->flush_dcache(page, offset, 4);
- 	smmu_flush_ptc(smmu, page, offset);
- 	smmu_flush_tlb_group(smmu, as->id, iova);
- 	smmu_flush(smmu);
- 
-+	tegra_smmu_pte_put_use(as, iova);
-+
- 	return size;
- }
- 
+ 		/* Clear the page directory entry first */
 -- 
 2.1.0
