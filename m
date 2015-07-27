@@ -1,80 +1,83 @@
-From: Russell King <rmk+kernel@arm.linux.org.uk>
-Subject: [PATCH 02/18] firmware: qcom_scm-32: replace open-coded call to
- __cpuc_flush_dcache_area()
-Date: Mon, 27 Jul 2015 13:28:55 +0100
-Message-ID: <E1ZJhWZ-00043Z-Ft@rmk-PC.arm.linux.org.uk>
+From: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+Subject: [PATCH 11/18] iommu: tegra-smmu: split smmu_flush_ptc()
+Date: Mon, 27 Jul 2015 13:29:41 +0100
+Message-ID: <E1ZJhXJ-000483-Mk@rmk-PC.arm.linux.org.uk>
 References: <20150727122824.GH7557@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20150727122824.GH7557@n2100.arm.linux.org.uk>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20150727122824.GH7557-l+eeeJia6m9vn6HldHNs0ANdhmdF6hFW@public.gmane.org>
 Content-Disposition: inline
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Signed-off-by: Russell King <rmk+kernel@arm.linux.org.uk>
----
- arch/arm/include/asm/cacheflush.h | 17 +++++++++++++++++
- drivers/firmware/qcom_scm-32.c    |  4 +---
- 2 files changed, 18 insertions(+), 3 deletions(-)
+smmu_flush_ptc() is used in two modes: one is to flush an individual
+entry, the other is to flush all entries.  We know at the call site
+which we require.  Split the function into smmu_flush_ptc_all() and
+smmu_flush_ptc().
 
-diff --git a/arch/arm/include/asm/cacheflush.h b/arch/arm/include/asm/cacheflush.h
-index c5230a44eeca..d5525bfc7e3e 100644
---- a/arch/arm/include/asm/cacheflush.h
-+++ b/arch/arm/include/asm/cacheflush.h
-@@ -502,4 +502,21 @@ static inline void set_kernel_text_ro(void) { }
- void flush_uprobe_xol_access(struct page *page, unsigned long uaddr,
- 			     void *kaddr, unsigned long len);
+Signed-off-by: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+---
+ drivers/iommu/tegra-smmu.c | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index fa26b76017cf..89e7961f4848 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -159,29 +159,29 @@ static void smmu_flush_dcache(struct page *page, unsigned long offset,
+ #endif
+ }
  
-+/**
-+ * secure_flush_area - ensure coherency across the secure boundary
-+ * @addr: virtual address
-+ * @size: size of region
-+ *
-+ * Ensure that the specified area of memory is coherent across the secure
-+ * boundary from the non-secure side.  This is used when calling secure
-+ * firmware where the secure firmware does not ensure coherency.
-+ */
-+static inline void secure_flush_area(const void *addr, size_t size)
++static void smmu_flush_ptc_all(struct tegra_smmu *smmu)
 +{
-+	phys_addr_t phys = __pa(addr);
-+
-+	__cpuc_flush_dcache_area((void *)addr, size);
-+	outer_flush_range(phys, phys + size);
++	smmu_writel(smmu, SMMU_PTC_FLUSH_TYPE_ALL, SMMU_PTC_FLUSH);
 +}
 +
+ static inline void smmu_flush_ptc(struct tegra_smmu *smmu, struct page *page,
+ 				  unsigned long offset)
+ {
+-	phys_addr_t phys = page ? page_to_phys(page) : 0;
++	phys_addr_t phys = page_to_phys(page);
+ 	u32 value;
+ 
+-	if (page) {
+-		offset &= ~(smmu->mc->soc->atom_size - 1);
++	offset &= ~(smmu->mc->soc->atom_size - 1);
+ 
+-		if (smmu->mc->soc->num_address_bits > 32) {
++	if (smmu->mc->soc->num_address_bits > 32) {
+ #ifdef CONFIG_PHYS_ADDR_T_64BIT
+-			value = (phys >> 32) & SMMU_PTC_FLUSH_HI_MASK;
++		value = (phys >> 32) & SMMU_PTC_FLUSH_HI_MASK;
+ #else
+-			value = 0;
++		value = 0;
  #endif
-diff --git a/drivers/firmware/qcom_scm-32.c b/drivers/firmware/qcom_scm-32.c
-index 1bd6f9c34331..29e6850665eb 100644
---- a/drivers/firmware/qcom_scm-32.c
-+++ b/drivers/firmware/qcom_scm-32.c
-@@ -24,7 +24,6 @@
- #include <linux/err.h>
- #include <linux/qcom_scm.h>
+-			smmu_writel(smmu, value, SMMU_PTC_FLUSH_HI);
+-		}
+-
+-		value = (phys + offset) | SMMU_PTC_FLUSH_TYPE_ADR;
+-	} else {
+-		value = SMMU_PTC_FLUSH_TYPE_ALL;
++		smmu_writel(smmu, value, SMMU_PTC_FLUSH_HI);
+ 	}
  
--#include <asm/outercache.h>
- #include <asm/cacheflush.h>
++	value = (phys + offset) | SMMU_PTC_FLUSH_TYPE_ADR;
+ 	smmu_writel(smmu, value, SMMU_PTC_FLUSH);
+ }
  
- #include "qcom_scm.h"
-@@ -219,8 +218,7 @@ static int __qcom_scm_call(const struct qcom_scm_command *cmd)
- 	 * Flush the command buffer so that the secure world sees
- 	 * the correct data.
- 	 */
--	__cpuc_flush_dcache_area((void *)cmd, cmd->len);
--	outer_flush_range(cmd_addr, cmd_addr + cmd->len);
-+	secure_flush_area(cmd, cmd->len);
+@@ -888,7 +888,7 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
  
- 	ret = smc(cmd_addr);
- 	if (ret < 0)
+ 	smmu_writel(smmu, value, SMMU_TLB_CONFIG);
+ 
+-	smmu_flush_ptc(smmu, NULL, 0);
++	smmu_flush_ptc_all(smmu);
+ 	smmu_flush_tlb(smmu);
+ 	smmu_writel(smmu, SMMU_CONFIG_ENABLE, SMMU_CONFIG);
+ 	smmu_flush(smmu);
 -- 
 2.1.0
