@@ -1,119 +1,55 @@
-From: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-Subject: [PATCH 08/18] iommu: tegra-smmu: store struct page pointer for page
- tables
-Date: Mon, 27 Jul 2015 13:29:26 +0100
-Message-ID: <E1ZJhX4-00047l-98@rmk-PC.arm.linux.org.uk>
+From: Russell King <rmk+kernel@arm.linux.org.uk>
+Subject: [PATCH 03/18] iommu: tegra-smmu: fix iova_to_phys() method
+Date: Mon, 27 Jul 2015 13:29:00 +0100
+Message-ID: <E1ZJhWe-00043f-KS@rmk-PC.arm.linux.org.uk>
 References: <20150727122824.GH7557@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20150727122824.GH7557-l+eeeJia6m9vn6HldHNs0ANdhmdF6hFW@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20150727122824.GH7557@n2100.arm.linux.org.uk>
 Content-Disposition: inline
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org
+Cc: Alexandre Courbot <gnurou@gmail.com>, Joerg Roedel <joro@8bytes.org>, Stephen Warren <swarren@wwwdotorg.org>, Thierry Reding <thierry.reding@gmail.com>, Hiroshi Doyu <hdoyu@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Store the struct page pointer for the second level page tables, rather
-than working back from the page directory entry.  This is necessary as
-we want to eliminate the use of physical addresses used with
-arch-private functions, switching instead to use the streaming DMA API.
+iova_to_phys() has several problems:
+(a) iova_to_phys() is supposed to return 0 if there is no entry present
+    for the iova.
+(b) if as_get_pte() fails, we oops the kernel by dereferencing a NULL
+    pointer.  Really, we should not even be trying to allocate a page
+    table at all, but should only be returning the presence of the 2nd
+    level page table.  This will be fixed in a subsequent patch.
 
-Signed-off-by: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+Treat both of these conditions as "no mapping" conditions.
+
+Signed-off-by: Russell King <rmk+kernel@arm.linux.org.uk>
 ---
- drivers/iommu/tegra-smmu.c | 27 +++++++++++++++++----------
- 1 file changed, 17 insertions(+), 10 deletions(-)
+ drivers/iommu/tegra-smmu.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index bbff5b647183..8ec5ac45caab 100644
+index c1f2e521dc52..083354903a1a 100644
 --- a/drivers/iommu/tegra-smmu.c
 +++ b/drivers/iommu/tegra-smmu.c
-@@ -41,6 +41,7 @@ struct tegra_smmu_as {
- 	struct tegra_smmu *smmu;
- 	unsigned int use_count;
- 	struct page *count;
-+	struct page **pts;
- 	struct page *pd;
- 	unsigned id;
- 	u32 attr;
-@@ -271,6 +272,14 @@ static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
- 		return NULL;
- 	}
+@@ -592,6 +592,9 @@ static phys_addr_t tegra_smmu_iova_to_phys(struct iommu_domain *domain,
+ 	u32 *pte;
  
-+	as->pts = kcalloc(SMMU_NUM_PDE, sizeof(*as->pts), GFP_KERNEL);
-+	if (!as->pts) {
-+		__free_page(as->count);
-+		__free_page(as->pd);
-+		kfree(as);
-+		return NULL;
-+	}
+ 	pte = as_get_pte(as, iova, &page);
++	if (!pte || !*pte)
++		return 0;
 +
- 	/* clear PDEs */
- 	pd = page_address(as->pd);
- 	SetPageReserved(as->pd);
-@@ -487,14 +496,11 @@ static u32 *tegra_smmu_pte_lookup(struct tegra_smmu_as *as, unsigned long iova,
- {
- 	unsigned int pd_index = iova_pd_index(iova);
- 	struct page *pt_page;
--	u32 *pd;
+ 	pfn = *pte & as->smmu->pfn_mask;
  
--	pd = page_address(as->pd);
--
--	if (!pd[pd_index])
-+	pt_page = as->pts[pd_index];
-+	if (!pt_page)
- 		return NULL;
- 
--	pt_page = pfn_to_page(pd[pd_index] & as->smmu->pfn_mask);
- 	*pagep = pt_page;
- 
- 	return tegra_smmu_pte_offset(pt_page, iova);
-@@ -509,7 +515,7 @@ static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
- 	struct page *page;
- 	unsigned int i;
- 
--	if (pd[pde] == 0) {
-+	if (!as->pts[pde]) {
- 		page = alloc_page(GFP_KERNEL | __GFP_DMA);
- 		if (!page)
- 			return NULL;
-@@ -520,6 +526,8 @@ static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
- 		for (i = 0; i < SMMU_NUM_PTE; i++)
- 			pt[i] = 0;
- 
-+		as->pts[pde] = page;
-+
- 		smmu->soc->ops->flush_dcache(page, 0, SMMU_SIZE_PT);
- 
- 		pd[pde] = SMMU_MK_PDE(page, SMMU_PDE_ATTR | SMMU_PDE_NEXT);
-@@ -529,7 +537,7 @@ static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
- 		smmu_flush_tlb_section(smmu, as->id, iova);
- 		smmu_flush(smmu);
- 	} else {
--		page = pfn_to_page(pd[pde] & smmu->pfn_mask);
-+		page = as->pts[pde];
- 	}
- 
- 	*pagep = page;
-@@ -550,9 +558,7 @@ static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
- 	unsigned int pde = iova_pd_index(iova);
- 	u32 *count = page_address(as->count);
- 	u32 *pd = page_address(as->pd);
--	struct page *page;
--
--	page = pfn_to_page(pd[pde] & smmu->pfn_mask);
-+	struct page *page = as->pts[pde];
- 
- 	/*
- 	 * When no entries in this page table are used anymore, return the
-@@ -573,6 +579,7 @@ static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
- 		/* Finally, free the page */
- 		ClearPageReserved(page);
- 		__free_page(page);
-+		as->pts[pde] = NULL;
- 	}
- }
- 
+ 	return PFN_PHYS(pfn);
 -- 
 2.1.0
