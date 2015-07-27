@@ -1,7 +1,7 @@
 From: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-Subject: [PATCH 16/18] iommu: tegra-smmu: get_use
-Date: Mon, 27 Jul 2015 13:30:07 +0100
-Message-ID: <E1ZJhXj-0004CY-DQ@rmk-PC.arm.linux.org.uk>
+Subject: [PATCH 14/18] iommu: tegra-smmu: remove PageReserved manipulation
+Date: Mon, 27 Jul 2015 13:29:57 +0100
+Message-ID: <E1ZJhXZ-00048L-5P@rmk-PC.arm.linux.org.uk>
 References: <20150727122824.GH7557@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -14,54 +14,51 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-ar
 Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Remove the unnecessary manipulation of the PageReserved flags in the
+Tegra SMMU driver.  None of this is required as the page(s) remain
+private to the SMMU driver.
+
 Signed-off-by: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
 ---
- drivers/iommu/tegra-smmu.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+ drivers/iommu/tegra-smmu.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
 diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index bc179c759805..8bf38b95cdd5 100644
+index d4264e2bdd69..b826362ce96b 100644
 --- a/drivers/iommu/tegra-smmu.c
 +++ b/drivers/iommu/tegra-smmu.c
-@@ -524,7 +524,7 @@ static u32 *tegra_smmu_pte_lookup(struct tegra_smmu_as *as, unsigned long iova,
- static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
- 		       dma_addr_t *dmap)
- {
--	u32 *pd = page_address(as->pd), *pt;
-+	u32 *pd = page_address(as->pd);
- 	unsigned int pde = iova_pd_index(iova);
- 	struct tegra_smmu *smmu = as->smmu;
+@@ -295,7 +295,6 @@ static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
  
-@@ -565,13 +565,14 @@ static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
- 		*dmap = smmu_pde_to_dma(pd[pde]);
- 	}
+ 	/* clear PDEs */
+ 	pd = page_address(as->pd);
+-	SetPageReserved(as->pd);
  
--	pt = page_address(as->pts[pde]);
-+	return tegra_smmu_pte_offset(as->pts[pde], iova);
-+}
+ 	for (i = 0; i < SMMU_NUM_PDE; i++)
+ 		pd[i] = 0;
+@@ -313,7 +312,6 @@ static void tegra_smmu_domain_free(struct iommu_domain *domain)
+ 	struct tegra_smmu_as *as = to_smmu_as(domain);
  
--	/* Keep track of entries in this page table. */
--	if (pt[iova_pt_index(iova)] == 0)
--		as->count[pde]++;
-+static void tegra_smmu_pte_get_use(struct tegra_smmu_as *as, unsigned long iova)
-+{
-+	unsigned int pd_index = iova_pd_index(iova);
+ 	/* TODO: free page directory and page tables */
+-	ClearPageReserved(as->pd);
  
--	return tegra_smmu_pte_offset(as->pts[pde], iova);
-+	as->count[pd_index]++;
+ 	kfree(as);
  }
+@@ -568,8 +566,6 @@ static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
  
- static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
-@@ -632,6 +633,10 @@ static int tegra_smmu_map(struct iommu_domain *domain, unsigned long iova,
- 	if (!pte)
- 		return -ENOMEM;
+ 		as->pts[pde] = page;
  
-+	/* If we aren't overwriting a pre-existing entry, increment use */
-+	if (!*pte)
-+		tegra_smmu_pte_get_use(as, iova);
-+
- 	tegra_smmu_set_pte(as, iova, pte, pte_dma,
- 			   __phys_to_pfn(paddr) | SMMU_PTE_ATTR);
+-		SetPageReserved(page);
+-
+ 		pd[pde] = SMMU_MK_PDE(dma, SMMU_PDE_ATTR | SMMU_PDE_NEXT);
  
+ 		dma_sync_single_range_for_device(smmu->dev, as->pd_dma,
+@@ -619,7 +615,6 @@ static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
+ 
+ 		/* Finally, free the page */
+ 		dma_unmap_page(smmu->dev, pte_dma, SMMU_SIZE_PT, DMA_TO_DEVICE);
+-		ClearPageReserved(page);
+ 		__free_page(page);
+ 		as->pts[pde] = NULL;
+ 	}
 -- 
 2.1.0
