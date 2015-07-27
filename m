@@ -1,81 +1,65 @@
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [PATCH v2 01/11] iommu/vt-d: Cache PCI ATS state and Invalidate
-	Queue Depth
-Date: Mon, 27 Jul 2015 15:08:10 +0200
-Message-ID: <20150727130810.GG27614@suse.de>
-References: <20150721001243.28145.81610.stgit@bhelgaas-glaptop2.roam.corp.google.com>
-	<20150721001357.28145.83631.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 00/18] Clean up exposure of arch-internal code
+Date: Mon, 27 Jul 2015 15:13:13 +0200
+Message-ID: <20150727131313.GM10969@8bytes.org>
+References: <20150727122824.GH7557@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20150721001357.28145.83631.stgit-1RhO1Y9PlrlHTL0Zs8A6p/gx64E7kk8eUsxypvmhUTTZJqsBc5GL+g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gregor Dick <gdick-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
+In-Reply-To: <20150727122824.GH7557-l+eeeJia6m9vn6HldHNs0ANdhmdF6hFW@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Heiko =?iso-8859-1?Q?St=FCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jul 20, 2015 at 07:13:57PM -0500, Bjorn Helgaas wrote:
-> We check the ATS state (enabled/disabled) and fetch the PCI ATS Invalidate
-> Queue Depth in performance-sensitive paths.  It's easy to cache these,
-> which removes dependencies on PCI.
-> 
-> Remember the ATS enabled state.  When enabling, read the queue depth once
-> and cache it in the device_domain_info struct.  This is similar to what
-> amd_iommu.c does.
-> 
-> Signed-off-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/iommu/intel-iommu.c |   26 ++++++++++++++++----------
->  1 file changed, 16 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index a98a7b2..50832f1 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -408,6 +408,10 @@ struct device_domain_info {
->  	struct list_head global; /* link to global list */
->  	u8 bus;			/* PCI bus number */
->  	u8 devfn;		/* PCI devfn number */
-> +	struct {
-> +		int enabled:1;
-> +		u8 qdep;
-> +	} ats;			/* ATS state */
->  	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
->  	struct intel_iommu *iommu; /* IOMMU used by this device */
->  	struct dmar_domain *domain; /* pointer to domain */
-> @@ -1391,19 +1395,26 @@ iommu_support_dev_iotlb (struct dmar_domain *domain, struct intel_iommu *iommu,
->  
->  static void iommu_enable_dev_iotlb(struct device_domain_info *info)
->  {
-> +	struct pci_dev *pdev;
-> +
->  	if (!info || !dev_is_pci(info->dev))
->  		return;
->  
-> -	pci_enable_ats(to_pci_dev(info->dev), VTD_PAGE_SHIFT);
-> +	pdev = to_pci_dev(info->dev);
-> +	if (pci_enable_ats(pdev, VTD_PAGE_SHIFT))
-> +		return;
-> +
-> +	info->ats.enabled = 1;
-> +	info->ats.qdep = pci_ats_queue_depth(pdev);
+[+ Heiko for comment on Rockchip IOMMU]
 
-Hmm, this is a place where the relaxed error handling in
-pci_enable_ats() can get problematic. If ATS is (by accident or a bug
-elsewhere) already enabled an the function returns -EINVAL, the IOMMU
-driver considers ATS disabled and doesn't flush the IO/TLBs of the
-device. This can cause data corruption later on, so we should make sure
-that info->ats.enabled is consistent with pdev->ats_enabled.
-
-
-	Joerg
+On Mon, Jul 27, 2015 at 01:28:24PM +0100, Russell King - ARM Linux wrote:
+> This series of patches attempts to clean up the use of architecture
+> internal functions in drivers, and removes some functions from view
+> in the asm/ headers.  I'm also considering whether we need to add
+> some linker magic to hide symbols when building the built-in.o files.
+> 
+> This was triggered by 3rd party drivers "going under the covers" of
+> the DMA API and calling the dmac_*() functions directly, a practice
+> which I have always refused to allow.  This also breaks module
+> building (which is the big hint that they're doing something wrong.)
+> 
+> However, it also came to light that various drivers are using
+> __cpuc_* functions directly, which are non-portable, and is another
+> instance of "going under the covers" and tinkering with what should
+> be kept as architecture implementation details.
+> 
+> This series addresses some of these points.  It:
+> 
+> (a) moves dmac_map_area() and dmac_unmap_area() prototypes out of
+>     asm/cacheflush.h and into arch/arm/mm.
+> (b) provide a secure_flush() call for the Qualcomm secure monitor
+>     code.
+> (c) stop tegra smmu driver(s) from using __cpuc_flush_dcache_area,
+>     something which necessitates additional complexity to deal with
+>     the ARM vs ARM64 differences.  It should be using the DMA API.
+>     However, the Tegra SMMU driver is in really bad shape, and this
+>     isn't a simple conversion - it requires a lot of additional
+>     fixes to bring the code up to scratch.
+> 
+> It leaves the Rockchip IOMMU driver for the time being, but that is also
+> something which needs cleaning up in the same way as the Tegra SMMU
+> driver.
+> 
+>  arch/arm/include/asm/cacheflush.h |  21 ++-
+>  arch/arm/include/asm/glue-cache.h |   2 -
+>  arch/arm/mm/dma-mapping.c         |   1 +
+>  arch/arm/mm/dma.h                 |  32 ++++
+>  drivers/firmware/qcom_scm-32.c    |   4 +-
+>  drivers/iommu/tegra-smmu.c        | 297 ++++++++++++++++++++++++--------------
+>  drivers/memory/tegra/tegra114.c   |  17 ---
+>  drivers/memory/tegra/tegra124.c   |  30 ----
+>  drivers/memory/tegra/tegra30.c    |  17 ---
+>  include/soc/tegra/mc.h            |   7 -
+>  10 files changed, 242 insertions(+), 186 deletions(-)
+> 
+> -- 
+> FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
+> according to speedtest.net.
