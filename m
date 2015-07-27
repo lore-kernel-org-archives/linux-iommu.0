@@ -1,7 +1,7 @@
 From: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-Subject: [PATCH 11/18] iommu: tegra-smmu: split smmu_flush_ptc()
-Date: Mon, 27 Jul 2015 13:29:41 +0100
-Message-ID: <E1ZJhXJ-000483-Mk@rmk-PC.arm.linux.org.uk>
+Subject: [PATCH 17/18] iommu: tegra-smmu: more cleanups
+Date: Mon, 27 Jul 2015 13:30:12 +0100
+Message-ID: <E1ZJhXo-0004Ce-Hq@rmk-PC.arm.linux.org.uk>
 References: <20150727122824.GH7557@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -14,70 +14,105 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-ar
 Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-smmu_flush_ptc() is used in two modes: one is to flush an individual
-entry, the other is to flush all entries.  We know at the call site
-which we require.  Split the function into smmu_flush_ptc_all() and
-smmu_flush_ptc().
-
 Signed-off-by: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
 ---
- drivers/iommu/tegra-smmu.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ drivers/iommu/tegra-smmu.c | 49 ++++++++++++++++++++++++++--------------------
+ 1 file changed, 28 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index fa26b76017cf..89e7961f4848 100644
+index 8bf38b95cdd5..e5d6bc45c58f 100644
 --- a/drivers/iommu/tegra-smmu.c
 +++ b/drivers/iommu/tegra-smmu.c
-@@ -159,29 +159,29 @@ static void smmu_flush_dcache(struct page *page, unsigned long offset,
- #endif
+@@ -497,6 +497,27 @@ static void tegra_smmu_detach_dev(struct iommu_domain *domain, struct device *de
+ 	}
  }
  
-+static void smmu_flush_ptc_all(struct tegra_smmu *smmu)
++static void tegra_smmu_set_pge(struct tegra_smmu_as *as, unsigned long iova,
++			       u32 val)
 +{
-+	smmu_writel(smmu, SMMU_PTC_FLUSH_TYPE_ALL, SMMU_PTC_FLUSH);
++	struct tegra_smmu *smmu = as->smmu;
++	unsigned int pd_index = iova_pd_index(iova);
++	u32 *pd = page_address(as->pd);
++	unsigned long offset = pd_index * sizeof(*pd);
++
++	/* Set the page directory entry first */
++	pd[pd_index] = val;
++
++	/* The flush the page directory entry from caches */
++	dma_sync_single_range_for_device(smmu->dev, as->pd_dma, offset,
++					 sizeof(*pd), DMA_TO_DEVICE);
++
++	/* And flush the iommu */
++	smmu_flush_ptc(smmu, as->pd_dma, offset);
++	smmu_flush_tlb_section(smmu, as->id, iova);
++	smmu_flush(smmu);
 +}
 +
- static inline void smmu_flush_ptc(struct tegra_smmu *smmu, struct page *page,
- 				  unsigned long offset)
+ static u32 *tegra_smmu_pte_offset(struct page *pt_page, unsigned long iova)
  {
--	phys_addr_t phys = page ? page_to_phys(page) : 0;
-+	phys_addr_t phys = page_to_phys(page);
- 	u32 value;
+ 	u32 *pt = page_address(pt_page);
+@@ -524,7 +545,6 @@ static u32 *tegra_smmu_pte_lookup(struct tegra_smmu_as *as, unsigned long iova,
+ static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
+ 		       dma_addr_t *dmap)
+ {
+-	u32 *pd = page_address(as->pd);
+ 	unsigned int pde = iova_pd_index(iova);
+ 	struct tegra_smmu *smmu = as->smmu;
  
--	if (page) {
--		offset &= ~(smmu->mc->soc->atom_size - 1);
-+	offset &= ~(smmu->mc->soc->atom_size - 1);
+@@ -552,16 +572,13 @@ static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
  
--		if (smmu->mc->soc->num_address_bits > 32) {
-+	if (smmu->mc->soc->num_address_bits > 32) {
- #ifdef CONFIG_PHYS_ADDR_T_64BIT
--			value = (phys >> 32) & SMMU_PTC_FLUSH_HI_MASK;
-+		value = (phys >> 32) & SMMU_PTC_FLUSH_HI_MASK;
- #else
--			value = 0;
-+		value = 0;
- #endif
--			smmu_writel(smmu, value, SMMU_PTC_FLUSH_HI);
--		}
+ 		as->pts[pde] = page;
+ 
+-		pd[pde] = SMMU_MK_PDE(dma, SMMU_PDE_ATTR | SMMU_PDE_NEXT);
 -
--		value = (phys + offset) | SMMU_PTC_FLUSH_TYPE_ADR;
--	} else {
--		value = SMMU_PTC_FLUSH_TYPE_ALL;
-+		smmu_writel(smmu, value, SMMU_PTC_FLUSH_HI);
+-		dma_sync_single_range_for_device(smmu->dev, as->pd_dma,
+-						 pde << 2, 4, DMA_TO_DEVICE);
+-		smmu_flush_ptc(smmu, as->pd_dma, pde << 2);
+-		smmu_flush_tlb_section(smmu, as->id, iova);
+-		smmu_flush(smmu);
++		tegra_smmu_set_pge(as, iova, SMMU_MK_PDE(dma, SMMU_PDE_ATTR |
++							      SMMU_PDE_NEXT));
+ 
+ 		*dmap = dma;
+ 	} else {
++		u32 *pd = page_address(as->pd);
++
+ 		*dmap = smmu_pde_to_dma(pd[pde]);
  	}
  
-+	value = (phys + offset) | SMMU_PTC_FLUSH_TYPE_ADR;
- 	smmu_writel(smmu, value, SMMU_PTC_FLUSH);
- }
+@@ -577,9 +594,7 @@ static void tegra_smmu_pte_get_use(struct tegra_smmu_as *as, unsigned long iova)
  
-@@ -888,7 +888,7 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
+ static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
+ {
+-	struct tegra_smmu *smmu = as->smmu;
+ 	unsigned int pde = iova_pd_index(iova);
+-	u32 *pd = page_address(as->pd);
+ 	struct page *page = as->pts[pde];
  
- 	smmu_writel(smmu, value, SMMU_TLB_CONFIG);
+ 	/*
+@@ -587,20 +602,12 @@ static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
+ 	 * memory page to the system.
+ 	 */
+ 	if (--as->count[pde] == 0) {
+-		unsigned int offset = pde * sizeof(*pd);
++		struct tegra_smmu *smmu = as->smmu;
++		u32 *pd = page_address(as->pd);
+ 		dma_addr_t pte_dma = smmu_pde_to_dma(pd[pde]);
  
--	smmu_flush_ptc(smmu, NULL, 0);
-+	smmu_flush_ptc_all(smmu);
- 	smmu_flush_tlb(smmu);
- 	smmu_writel(smmu, SMMU_CONFIG_ENABLE, SMMU_CONFIG);
- 	smmu_flush(smmu);
+-		/* Clear the page directory entry first */
+-		pd[pde] = 0;
+-
+-		/* Flush the page directory entry */
+-		dma_sync_single_range_for_device(smmu->dev, as->pd_dma, offset,
+-						 sizeof(*pd), DMA_TO_DEVICE);
+-		smmu_flush_ptc(smmu, as->pd_dma, offset);
+-		smmu_flush_tlb_section(smmu, as->id, iova);
+-		smmu_flush(smmu);
++		tegra_smmu_set_pge(as, iova, 0);
+ 
+-		/* Finally, free the page */
+ 		dma_unmap_page(smmu->dev, pte_dma, SMMU_SIZE_PT, DMA_TO_DEVICE);
+ 		__free_page(page);
+ 		as->pts[pde] = NULL;
 -- 
 2.1.0
