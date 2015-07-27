@@ -1,8 +1,7 @@
 From: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-Subject: [PATCH 09/18] iommu: tegra-smmu: use kcalloc() to allocate counter
- array
-Date: Mon, 27 Jul 2015 13:29:31 +0100
-Message-ID: <E1ZJhX9-00047r-Dq@rmk-PC.arm.linux.org.uk>
+Subject: [PATCH 10/18] iommu: tegra-smmu: move flush_dcache to tegra-smmu.c
+Date: Mon, 27 Jul 2015 13:29:36 +0100
+Message-ID: <E1ZJhXE-00047x-IV@rmk-PC.arm.linux.org.uk>
 References: <20150727122824.GH7557@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -15,97 +14,274 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-ar
 Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Use kcalloc() to allocate the use-counter array for the page directory
-entries/page tables.  Using kcalloc() allows us to be provided with
-zero-initialised memory from the allocators, rather than initialising
-it ourselves.
+Drivers should not be using __cpuc_* functions nor outer_cache_flush()
+directly.  This change partly cleans up tegra-smmu.c.
+
+The only difference between cache handling of the tegra variants is
+Denver, which omits the call to outer_cache_flush().  This is due to
+Denver being an ARM64 CPU, and the ARM64 architecture does not provide
+this function.  (This, in itself, is a good reason why these should not
+be used.)
 
 Signed-off-by: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
 ---
- drivers/iommu/tegra-smmu.c | 21 ++++++---------------
- 1 file changed, 6 insertions(+), 15 deletions(-)
+ drivers/iommu/tegra-smmu.c      | 24 +++++++++++++++++++-----
+ drivers/memory/tegra/tegra114.c | 17 -----------------
+ drivers/memory/tegra/tegra124.c | 30 ------------------------------
+ drivers/memory/tegra/tegra30.c  | 17 -----------------
+ include/soc/tegra/mc.h          |  7 -------
+ 5 files changed, 19 insertions(+), 76 deletions(-)
 
 diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 8ec5ac45caab..d649b06cc4ca 100644
+index d649b06cc4ca..fa26b76017cf 100644
 --- a/drivers/iommu/tegra-smmu.c
 +++ b/drivers/iommu/tegra-smmu.c
-@@ -40,7 +40,7 @@ struct tegra_smmu_as {
- 	struct iommu_domain domain;
- 	struct tegra_smmu *smmu;
- 	unsigned int use_count;
--	struct page *count;
-+	u32 *count;
- 	struct page **pts;
- 	struct page *pd;
- 	unsigned id;
-@@ -265,7 +265,7 @@ static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
- 		return NULL;
- 	}
+@@ -16,6 +16,8 @@
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
  
--	as->count = alloc_page(GFP_KERNEL);
-+	as->count = kcalloc(SMMU_NUM_PDE, sizeof(u32), GFP_KERNEL);
- 	if (!as->count) {
- 		__free_page(as->pd);
- 		kfree(as);
-@@ -274,7 +274,7 @@ static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
++#include <asm/cacheflush.h>
++
+ #include <soc/tegra/ahb.h>
+ #include <soc/tegra/mc.h>
  
- 	as->pts = kcalloc(SMMU_NUM_PDE, sizeof(*as->pts), GFP_KERNEL);
- 	if (!as->pts) {
--		__free_page(as->count);
-+		kfree(as->count);
- 		__free_page(as->pd);
- 		kfree(as);
- 		return NULL;
-@@ -287,13 +287,6 @@ static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
- 	for (i = 0; i < SMMU_NUM_PDE; i++)
- 		pd[i] = 0;
- 
--	/* clear PDE usage counters */
--	pd = page_address(as->count);
--	SetPageReserved(as->count);
--
--	for (i = 0; i < SMMU_NUM_PDE; i++)
--		pd[i] = 0;
--
- 	/* setup aperture */
- 	as->domain.geometry.aperture_start = 0;
- 	as->domain.geometry.aperture_end = 0xffffffff;
-@@ -509,7 +502,7 @@ static u32 *tegra_smmu_pte_lookup(struct tegra_smmu_as *as, unsigned long iova,
- static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
- 		       struct page **pagep)
- {
--	u32 *pd = page_address(as->pd), *pt, *count;
-+	u32 *pd = page_address(as->pd), *pt;
- 	unsigned int pde = iova_pd_index(iova);
- 	struct tegra_smmu *smmu = as->smmu;
- 	struct page *page;
-@@ -545,9 +538,8 @@ static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
- 	pt = page_address(page);
- 
- 	/* Keep track of entries in this page table. */
--	count = page_address(as->count);
- 	if (pt[iova_pt_index(iova)] == 0)
--		count[pde]++;
-+		as->count[pde]++;
- 
- 	return tegra_smmu_pte_offset(page, iova);
+@@ -145,6 +147,18 @@ static unsigned int iova_pt_index(unsigned long iova)
+ 	return (iova >> SMMU_PTE_SHIFT) & (SMMU_NUM_PTE - 1);
  }
-@@ -556,7 +548,6 @@ static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
+ 
++static void smmu_flush_dcache(struct page *page, unsigned long offset,
++			      size_t size)
++{
++	phys_addr_t phys = page_to_phys(page) + offset;
++	void *virt = page_address(page) + offset;
++
++	__cpuc_flush_dcache_area(virt, size);
++#ifdef CONFIG_ARM
++	outer_flush_range(phys, phys + size);
++#endif
++}
++
+ static inline void smmu_flush_ptc(struct tegra_smmu *smmu, struct page *page,
+ 				  unsigned long offset)
  {
- 	struct tegra_smmu *smmu = as->smmu;
- 	unsigned int pde = iova_pd_index(iova);
--	u32 *count = page_address(as->count);
- 	u32 *pd = page_address(as->pd);
- 	struct page *page = as->pts[pde];
+@@ -392,7 +406,7 @@ static int tegra_smmu_as_prepare(struct tegra_smmu *smmu,
+ 	if (err < 0)
+ 		return err;
  
-@@ -564,7 +555,7 @@ static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
- 	 * When no entries in this page table are used anymore, return the
- 	 * memory page to the system.
- 	 */
--	if (--count[pde] == 0) {
-+	if (--as->count[pde] == 0) {
- 		unsigned int offset = pde * sizeof(*pd);
+-	smmu->soc->ops->flush_dcache(as->pd, 0, SMMU_SIZE_PD);
++	smmu_flush_dcache(as->pd, 0, SMMU_SIZE_PD);
+ 	smmu_flush_ptc(smmu, as->pd, 0);
+ 	smmu_flush_tlb_asid(smmu, as->id);
  
- 		/* Clear the page directory entry first */
+@@ -521,11 +535,11 @@ static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
+ 
+ 		as->pts[pde] = page;
+ 
+-		smmu->soc->ops->flush_dcache(page, 0, SMMU_SIZE_PT);
++		smmu_flush_dcache(page, 0, SMMU_SIZE_PT);
+ 
+ 		pd[pde] = SMMU_MK_PDE(page, SMMU_PDE_ATTR | SMMU_PDE_NEXT);
+ 
+-		smmu->soc->ops->flush_dcache(as->pd, pde << 2, 4);
++		smmu_flush_dcache(as->pd, pde << 2, 4);
+ 		smmu_flush_ptc(smmu, as->pd, pde << 2);
+ 		smmu_flush_tlb_section(smmu, as->id, iova);
+ 		smmu_flush(smmu);
+@@ -562,7 +576,7 @@ static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
+ 		pd[pde] = 0;
+ 
+ 		/* Flush the page directory entry */
+-		smmu->soc->ops->flush_dcache(as->pd, offset, sizeof(*pd));
++		smmu_flush_dcache(as->pd, offset, sizeof(*pd));
+ 		smmu_flush_ptc(smmu, as->pd, offset);
+ 		smmu_flush_tlb_section(smmu, as->id, iova);
+ 		smmu_flush(smmu);
+@@ -582,7 +596,7 @@ static void tegra_smmu_set_pte(struct tegra_smmu_as *as, unsigned long iova,
+ 
+ 	*pte = val;
+ 
+-	smmu->soc->ops->flush_dcache(pte_page, offset, 4);
++	smmu_flush_dcache(pte_page, offset, 4);
+ 	smmu_flush_ptc(smmu, pte_page, offset);
+ 	smmu_flush_tlb_group(smmu, as->id, iova);
+ 	smmu_flush(smmu);
+diff --git a/drivers/memory/tegra/tegra114.c b/drivers/memory/tegra/tegra114.c
+index 9f579589e800..7122f39be9cc 100644
+--- a/drivers/memory/tegra/tegra114.c
++++ b/drivers/memory/tegra/tegra114.c
+@@ -9,8 +9,6 @@
+ #include <linux/of.h>
+ #include <linux/mm.h>
+ 
+-#include <asm/cacheflush.h>
+-
+ #include <dt-bindings/memory/tegra114-mc.h>
+ 
+ #include "mc.h"
+@@ -914,20 +912,6 @@ static const struct tegra_smmu_swgroup tegra114_swgroups[] = {
+ 	{ .name = "tsec",      .swgroup = TEGRA_SWGROUP_TSEC,      .reg = 0x294 },
+ };
+ 
+-static void tegra114_flush_dcache(struct page *page, unsigned long offset,
+-				  size_t size)
+-{
+-	phys_addr_t phys = page_to_phys(page) + offset;
+-	void *virt = page_address(page) + offset;
+-
+-	__cpuc_flush_dcache_area(virt, size);
+-	outer_flush_range(phys, phys + size);
+-}
+-
+-static const struct tegra_smmu_ops tegra114_smmu_ops = {
+-	.flush_dcache = tegra114_flush_dcache,
+-};
+-
+ static const struct tegra_smmu_soc tegra114_smmu_soc = {
+ 	.clients = tegra114_mc_clients,
+ 	.num_clients = ARRAY_SIZE(tegra114_mc_clients),
+@@ -936,7 +920,6 @@ static const struct tegra_smmu_soc tegra114_smmu_soc = {
+ 	.supports_round_robin_arbitration = false,
+ 	.supports_request_limit = false,
+ 	.num_asids = 4,
+-	.ops = &tegra114_smmu_ops,
+ };
+ 
+ const struct tegra_mc_soc tegra114_mc_soc = {
+diff --git a/drivers/memory/tegra/tegra124.c b/drivers/memory/tegra/tegra124.c
+index 966e1557e6f4..ebda63283853 100644
+--- a/drivers/memory/tegra/tegra124.c
++++ b/drivers/memory/tegra/tegra124.c
+@@ -9,8 +9,6 @@
+ #include <linux/of.h>
+ #include <linux/mm.h>
+ 
+-#include <asm/cacheflush.h>
+-
+ #include <dt-bindings/memory/tegra124-mc.h>
+ 
+ #include "mc.h"
+@@ -1002,20 +1000,6 @@ static const struct tegra_smmu_swgroup tegra124_swgroups[] = {
+ };
+ 
+ #ifdef CONFIG_ARCH_TEGRA_124_SOC
+-static void tegra124_flush_dcache(struct page *page, unsigned long offset,
+-				  size_t size)
+-{
+-	phys_addr_t phys = page_to_phys(page) + offset;
+-	void *virt = page_address(page) + offset;
+-
+-	__cpuc_flush_dcache_area(virt, size);
+-	outer_flush_range(phys, phys + size);
+-}
+-
+-static const struct tegra_smmu_ops tegra124_smmu_ops = {
+-	.flush_dcache = tegra124_flush_dcache,
+-};
+-
+ static const struct tegra_smmu_soc tegra124_smmu_soc = {
+ 	.clients = tegra124_mc_clients,
+ 	.num_clients = ARRAY_SIZE(tegra124_mc_clients),
+@@ -1024,7 +1008,6 @@ static const struct tegra_smmu_soc tegra124_smmu_soc = {
+ 	.supports_round_robin_arbitration = true,
+ 	.supports_request_limit = true,
+ 	.num_asids = 128,
+-	.ops = &tegra124_smmu_ops,
+ };
+ 
+ const struct tegra_mc_soc tegra124_mc_soc = {
+@@ -1039,18 +1022,6 @@ const struct tegra_mc_soc tegra124_mc_soc = {
+ #endif /* CONFIG_ARCH_TEGRA_124_SOC */
+ 
+ #ifdef CONFIG_ARCH_TEGRA_132_SOC
+-static void tegra132_flush_dcache(struct page *page, unsigned long offset,
+-				  size_t size)
+-{
+-	void *virt = page_address(page) + offset;
+-
+-	__flush_dcache_area(virt, size);
+-}
+-
+-static const struct tegra_smmu_ops tegra132_smmu_ops = {
+-	.flush_dcache = tegra132_flush_dcache,
+-};
+-
+ static const struct tegra_smmu_soc tegra132_smmu_soc = {
+ 	.clients = tegra124_mc_clients,
+ 	.num_clients = ARRAY_SIZE(tegra124_mc_clients),
+@@ -1059,7 +1030,6 @@ static const struct tegra_smmu_soc tegra132_smmu_soc = {
+ 	.supports_round_robin_arbitration = true,
+ 	.supports_request_limit = true,
+ 	.num_asids = 128,
+-	.ops = &tegra132_smmu_ops,
+ };
+ 
+ const struct tegra_mc_soc tegra132_mc_soc = {
+diff --git a/drivers/memory/tegra/tegra30.c b/drivers/memory/tegra/tegra30.c
+index 1abcd8f6f3ba..3cb30b69d95b 100644
+--- a/drivers/memory/tegra/tegra30.c
++++ b/drivers/memory/tegra/tegra30.c
+@@ -9,8 +9,6 @@
+ #include <linux/of.h>
+ #include <linux/mm.h>
+ 
+-#include <asm/cacheflush.h>
+-
+ #include <dt-bindings/memory/tegra30-mc.h>
+ 
+ #include "mc.h"
+@@ -936,20 +934,6 @@ static const struct tegra_smmu_swgroup tegra30_swgroups[] = {
+ 	{ .name = "isp",  .swgroup = TEGRA_SWGROUP_ISP,  .reg = 0x258 },
+ };
+ 
+-static void tegra30_flush_dcache(struct page *page, unsigned long offset,
+-				 size_t size)
+-{
+-	phys_addr_t phys = page_to_phys(page) + offset;
+-	void *virt = page_address(page) + offset;
+-
+-	__cpuc_flush_dcache_area(virt, size);
+-	outer_flush_range(phys, phys + size);
+-}
+-
+-static const struct tegra_smmu_ops tegra30_smmu_ops = {
+-	.flush_dcache = tegra30_flush_dcache,
+-};
+-
+ static const struct tegra_smmu_soc tegra30_smmu_soc = {
+ 	.clients = tegra30_mc_clients,
+ 	.num_clients = ARRAY_SIZE(tegra30_mc_clients),
+@@ -958,7 +942,6 @@ static const struct tegra_smmu_soc tegra30_smmu_soc = {
+ 	.supports_round_robin_arbitration = false,
+ 	.supports_request_limit = false,
+ 	.num_asids = 4,
+-	.ops = &tegra30_smmu_ops,
+ };
+ 
+ const struct tegra_mc_soc tegra30_mc_soc = {
+diff --git a/include/soc/tegra/mc.h b/include/soc/tegra/mc.h
+index 1ab2813273cd..d6c3190ec852 100644
+--- a/include/soc/tegra/mc.h
++++ b/include/soc/tegra/mc.h
+@@ -51,11 +51,6 @@ struct tegra_smmu_swgroup {
+ 	unsigned int reg;
+ };
+ 
+-struct tegra_smmu_ops {
+-	void (*flush_dcache)(struct page *page, unsigned long offset,
+-			     size_t size);
+-};
+-
+ struct tegra_smmu_soc {
+ 	const struct tegra_mc_client *clients;
+ 	unsigned int num_clients;
+@@ -67,8 +62,6 @@ struct tegra_smmu_soc {
+ 	bool supports_request_limit;
+ 
+ 	unsigned int num_asids;
+-
+-	const struct tegra_smmu_ops *ops;
+ };
+ 
+ struct tegra_mc;
 -- 
 2.1.0
