@@ -1,13 +1,13 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 17/18] iommu: tegra-smmu: more cleanups
-Date: Mon, 27 Jul 2015 16:12:07 +0200
-Message-ID: <20150727141206.GC16858@ulmo.nvidia.com>
+Subject: Re: [PATCH 18/18] iommu: tegra-smmu: remove cacheflush.h
+Date: Mon, 27 Jul 2015 16:13:33 +0200
+Message-ID: <20150727141331.GD16858@ulmo.nvidia.com>
 References: <20150727122824.GH7557@n2100.arm.linux.org.uk>
-	<E1ZJhXo-0004Ce-Hq@rmk-PC.arm.linux.org.uk>
+	<E1ZJhXt-0004Ck-LR@rmk-PC.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============2029029019791857532=="
+Content-Type: multipart/mixed; boundary="===============1750416314326871453=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <E1ZJhXo-0004Ce-Hq-eh5Bv4kxaXIANfyc6IWni62ZND6+EDdj@public.gmane.org>
+In-Reply-To: <E1ZJhXt-0004Ck-LR-eh5Bv4kxaXIANfyc6IWni62ZND6+EDdj@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,54 +22,70 @@ Cc: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Stephen 
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============2029029019791857532==
+--===============1750416314326871453==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="Qbvjkv9qwOGw/5Fx"
+	protocol="application/pgp-signature"; boundary="P+33d92oIH25kiaB"
 Content-Disposition: inline
 
 
---Qbvjkv9qwOGw/5Fx
+--P+33d92oIH25kiaB
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jul 27, 2015 at 01:30:12PM +0100, Russell King wrote:
+On Mon, Jul 27, 2015 at 01:30:17PM +0100, Russell King wrote:
 > Signed-off-by: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
 > ---
->  drivers/iommu/tegra-smmu.c | 49 ++++++++++++++++++++++++++--------------------
->  1 file changed, 28 insertions(+), 21 deletions(-)
+>  drivers/iommu/tegra-smmu.c | 2 --
+>  1 file changed, 2 deletions(-)
+>=20
+> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+> index e5d6bc45c58f..4a8b66f05d8f 100644
+> --- a/drivers/iommu/tegra-smmu.c
+> +++ b/drivers/iommu/tegra-smmu.c
+> @@ -16,8 +16,6 @@
+>  #include <linux/platform_device.h>
+>  #include <linux/slab.h>
+> =20
+> -#include <asm/cacheflush.h>
+> -
 
-Same here.
+Doesn't this logically belong in patch 13/18, along with the DMA API
+conversion that drops the last reference to these functions?
+
+Again, I can take care of squashing this into 13/18 if you don't have
+any objections and send a pull request to Joerg.
 
 Thierry
 
---Qbvjkv9qwOGw/5Fx
+--P+33d92oIH25kiaB
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJVtjw2AAoJEN0jrNd/PrOhA+EQAKRqq1f6372jDIz4o/Gv9OEg
-o/02gCgF8XpG8lU0Uf4HTDTlwhUXiJJ5L/TJD1cgFzbt8/qx28Fk2gmzmvxg+NHy
-WllvgQ22eyCUO4vyxiljfljLQtxXiK89TuTBkBsFmMc56TR+M4Pv4p7cbW9JgVZH
-bZxq3ckidG+O7pCljvUGR9TDJr5dBKss99QKK00rPJ8IehpwYgy9Z/DPTimJo7hy
-2s430MgK3Y/OYbPLqly6rcYk2cu120OBZeEcAj70pzT2fYVZiyIyYiOP25SMdTsJ
-PS0L32u3FDcf8EeveGsGxGPBdRgcFekUHtMM0l1AZ0TUkw3K5cpzf79rA/It3hJu
-tlGMWJeJPisCEAiyXkX8xk3xi/xoEJRLhlepjvZ1vS4ywdAIFljyppg1jgIGqq8L
-zYWS3pc136j0j8UPsgQQhAu91mbRVnOuLMC5BCvK7RddtjAodorAzFLosz9wv2NB
-35ddjR3u56S9g9VF1zG3CtYfp9LuCFHhLsFdlf+Cf2etEfy3EVY58kx/YUkR9o1R
-IzC28hP1h6Gvfc/jf+sfuTC/3HVORnlNKTH38FQPYRDzAD94yrnqmhfR+r3AqC54
-Eespg9Id/l+M8q4ZtkiP0IZbxu30RJMevuOezjWkfRWPDHeAvrtYbkqmc5Mwbs5y
-i7cEdazDwjm+eS0q41Jy
-=4R70
+iQIcBAABCAAGBQJVtjyLAAoJEN0jrNd/PrOhGlIQAMENAPRx/dcXvKUcQhOzYXuj
+NjzqrARJ2JbNqnd1g1A2juRuXtvz0KQ2Cgn48D5wHvvlvG7vAbuYK0eW/9Gu9qSZ
+xmIoj/McAM9Z7xzSeZM37Xyawm8dUeD0OHSAN5Qd+gMC187m4kqGH72eJ9vYj6HF
+F/8hCZo4YIuZSza96jeycqZurmg6R5Paj9LMHR8elXnAE0wFTn8F+Ncmyfc+MZMe
+qweyx5vP4CLLyRvC5MfCHjFKwR63pmJHYBbNHQKYW5zfqrwdycQpdJfzPQqpCWc4
+foknXakqU2SSzYCa9FgcZfctF3s/HaIdgFZ5vv75zW1cstk1Cu++nDZWlGOkmkDT
+XKmInXJWk4EjBVg8fcr3xA/QDd+/V76+1hfhdMU5X3KNXIKLZAUtY5HR2uWKjiAx
+8pxpMiVwDTuaI2aeUp4Ylf9v0SDgBN9qIT1dU1aQkSGNtbI8uL7YGVu/HVGo+575
+FyZ8EF4PoRcKc8qL/kM8oRtd9xLtTkxztXpnCZrDaZ3Sq1LrgwVFVlglZsobx+VL
+LLfFT+NJmbnhl5HbRu40Y982VjH7DkUYdUVrbIxqb9r9jz3f7KX6G8ufRtbHrEe9
+ALd5BWM2qL9j5s/8EMyoP4o1lQwCtZN2oHER5C52mtbDqg1BFL14M3ocQC9exsoT
+bW4t7fY9On/bCGsL53WD
+=Fo3g
 -----END PGP SIGNATURE-----
 
---Qbvjkv9qwOGw/5Fx--
+--P+33d92oIH25kiaB--
 
---===============2029029019791857532==
+--===============1750416314326871453==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============2029029019791857532==--
+--===============1750416314326871453==--
