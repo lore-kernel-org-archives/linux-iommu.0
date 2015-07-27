@@ -1,69 +1,40 @@
-From: Joerg Roedel <jroedel@suse.de>
-Subject: Re: [PATCH v2 02/11] PCI: Allocate ATS struct during enumeration
-Date: Mon, 27 Jul 2015 14:40:24 +0200
-Message-ID: <20150727124024.GB27614@suse.de>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: [PATCH v2 03/11] PCI: Embed ATS info directly into struct pci_dev
+Date: Mon, 27 Jul 2015 14:45:34 +0200
+Message-ID: <20150727124534.GC27614@suse.de>
 References: <20150721001243.28145.81610.stgit@bhelgaas-glaptop2.roam.corp.google.com>
- <20150721001405.28145.43004.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+	<20150721001413.28145.38246.stgit@bhelgaas-glaptop2.roam.corp.google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20150721001405.28145.43004.stgit@bhelgaas-glaptop2.roam.corp.google.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-pci@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, Gregor Dick <gdick@solarflare.com>
+In-Reply-To: <20150721001413.28145.38246.stgit-1RhO1Y9PlrlHTL0Zs8A6p/gx64E7kk8eUsxypvmhUTTZJqsBc5GL+g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gregor Dick <gdick-s/n/eUQHGBpZroRs9YW3xA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jul 20, 2015 at 07:14:05PM -0500, Bjorn Helgaas wrote:
-> Previously, we allocated pci_ats structures when an IOMMU driver called
-> pci_enable_ats().  An SR-IOV VF shares the STU setting with its PF, so when
-> enabling ATS on the VF, we allocated a pci_ats struct for the PF if it
-> didn't already have one.  We held the sriov->lock to serialize threads
-> concurrently enabling ATS on several VFS so only one would allocate the PF
-> pci_ats.
+On Mon, Jul 20, 2015 at 07:14:13PM -0500, Bjorn Helgaas wrote:
+> The pci_ats struct is small and will get smaller, so I don't think it's
+> worth allocating it separately from the pci_dev struct.
 > 
-> Gregor reported a deadlock here:
+> Embed the ATS fields directly into struct pci_dev.
 > 
->   pci_enable_sriov
->     sriov_enable
->       virtfn_add
->         mutex_lock(dev->sriov->lock)      # acquire sriov->lock
->         pci_device_add
->           device_add
->             BUS_NOTIFY_ADD_DEVICE notifier chain
->             iommu_bus_notifier
->               amd_iommu_add_device        # iommu_ops.add_device
->                 init_iommu_group
->                   iommu_group_get_for_dev
->                     iommu_group_add_device
->                       __iommu_attach_device
->                         amd_iommu_attach_device  # iommu_ops.attach_device
->                           attach_device
->                             pci_enable_ats
->                               mutex_lock(dev->sriov->lock) # deadlock
-> 
-> There's no reason to delay allocating the pci_ats struct, and if we
-> allocate it for each device at enumeration-time, there's no need for
-> locking in pci_enable_ats().
-> 
-> Allocate pci_ats struct during enumeration, when we initialize other
-> capabilities.
-> 
-> Note that this implementation requires ATS to be enabled on the PF first,
-> before on any of the VFs because the PF controls the STU for all the VFs.
-> 
-> Link: http://permalink.gmane.org/gmane.linux.kernel.iommu/9433
-> Reported-by: Gregor Dick <gdick@solarflare.com>
-> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> Signed-off-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 > ---
->  drivers/pci/ats.c       |   98 ++++++++++++++++++++---------------------------
->  drivers/pci/probe.c     |    3 +
->  drivers/pci/remove.c    |    1 
->  include/linux/pci-ats.h |    2 -
->  include/linux/pci.h     |    9 ++++
->  5 files changed, 56 insertions(+), 57 deletions(-)
+>  drivers/pci/ats.c       |   61 ++++++++++++++++-------------------------------
+>  drivers/pci/remove.c    |    1 -
+>  include/linux/pci-ats.h |   10 +-------
+>  include/linux/pci.h     |    8 ++++--
+>  4 files changed, 27 insertions(+), 53 deletions(-)
 
-Looks good to me now.
-
-
-Reviewed-by: Joerg Roedel <jroedel@suse.de>
+Reviewed-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
