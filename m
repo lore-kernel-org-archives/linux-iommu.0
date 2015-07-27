@@ -1,58 +1,55 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v3 3/6] iommu: add ARM short descriptor page table
- allocator.
-Date: Mon, 27 Jul 2015 15:11:02 +0100
-Message-ID: <20150727141102.GJ3358@arm.com>
-References: <1437037475-9065-1-git-send-email-yong.wu@mediatek.com>
- <1437037475-9065-4-git-send-email-yong.wu@mediatek.com>
- <20150721171101.GN31095@arm.com>
- <1437715466.23932.68.camel@mhfsdcap03>
- <20150724165325.GC21177@arm.com>
- <1437970868.25925.20.camel@mhfsdcap03>
- <55B63AB2.4050006@arm.com>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 16/18] iommu: tegra-smmu: get_use
+Date: Mon, 27 Jul 2015 16:11:37 +0200
+Message-ID: <20150727141136.GB16858@ulmo.nvidia.com>
+References: <20150727122824.GH7557@n2100.arm.linux.org.uk>
+ <E1ZJhXj-0004CY-DQ@rmk-PC.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="4bRzO86E/ozDv8r1"
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <55B63AB2.4050006@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <Robin.Murphy@arm.com>
-Cc: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Mark Rutland <Mark.Rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Lucas Stach <l.stach@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Catalin Marinas <Catalin.Marinas@arm.com>, "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>, Sasha Hauer <kernel@pengutronix.de>, "srv_heupstream@mediatek.com" <srv_heupstream@mediatek.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "pebolle@tiscali.nl" <pebolle@tiscali.nl>, "arnd@arndb.de" <arnd@ar>
+In-Reply-To: <E1ZJhXj-0004CY-DQ-eh5Bv4kxaXIANfyc6IWni62ZND6+EDdj@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jul 27, 2015 at 03:05:38PM +0100, Robin Murphy wrote:
-> On 27/07/15 05:21, Yong Wu wrote:
-> >>>>> +       } else {        /* page or largepage */
-> >>>>> +               if (quirk & IO_PGTABLE_QUIRK_SHORT_MTK) {
-> >>>>> +                       if (large) { /* special Bit */
-> >>>>
-> >>>> This definitely needs a better comment! What exactly are you doing here
-> >>>> and what is that quirk all about?
-> >>>
-> >>> I use this quirk is for MTK Special Bit as we don't have the XN bit in
-> >>> pagetable.
-> >>
-> >> I'm still not really clear about what this is.
-> >
-> > There is some difference between the standard spec and MTK HW,
-> > Our hw don't implement some bits, like XN and AP.
-> > So I add a quirk for MTK special.
-> 
-> When you say it doesn't implement these bits, do you mean that having 
-> them set will lead to Bad Things happening in the hardware, or that it 
-> will simply ignore them and not enforce any of the protections they 
-> imply? The former case would definitely want clearly documenting 
-> somewhere, whereas for the latter case I'm not sure it's even worth the 
-> complication of having a quirk - if the value doesn't matter there seems 
-> little point in doing a special dance just for the sake of semantic 
-> correctness of the in-memory PTEs, in my opinion.
 
-Agreed. We should only use quirks if the current (architecturally
-compliant) code causes real issues with the hardware. Then the quirk can
-be used to either avoid the problematic routines or to take extra steps
-to make things work as the architecture intended.
+--4bRzO86E/ozDv8r1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-I've asked how this IOMMU differs from the architecture on a number of
-occasions, but I'm still yet to receive a response other than "it's special".
+On Mon, Jul 27, 2015 at 01:30:07PM +0100, Russell King wrote:
+> Signed-off-by: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+> ---
+>  drivers/iommu/tegra-smmu.c | 17 +++++++++++------
+>  1 file changed, 11 insertions(+), 6 deletions(-)
 
-Will
+Joerg may want to have a proper commit message here. If you're too busy
+I can probably come up with something.
+
+Thierry
+
+--4bRzO86E/ozDv8r1
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJVtjwXAAoJEN0jrNd/PrOh30QQAJDNfmEKLqx0X0hbTi3YiIav
+DmMcozbvujI1syebgp1l1o84zFPRa9podm0HXmA2opiEfu1lzMAY7DQbAC5hoCyN
+m+xdIi7jFfHJjPQF8HCPKrRWATVo1ZV0iDoxdmkS+4cvlax7qqPFquo2TKL7G0Ou
+7j7TEv61WOcCFTYFLpNekAvKdk578g6fkDKiuEGIvBupnBxP0TiKRvSQVK43sp47
+4O+QWhsYfX62dfM9zNG9+ZIWGWdiE0kg52IpGNniyWiMPQF9blDjfR23EL5XY01R
+N06gQI6T/ZXlAtLBVH/wzisJtig+yPJWz9oPrZfh8zniTRD5VCON4eqV4Lsna2AF
+JS9fmCBbUkMs0LJVUIwmg5+vuQzaGfObCK1gsb3AfPBXFets88JnT0JMJdlxhhe6
+5RLh0ZTpVbx46Hbk38SKt2a0B0ya8N5rvVfGeECMz6I7VVwQQg/EDSyGkEKDc58B
+DfMx2x+FQ4Il7KKzQeP2FcEwVpSeQW2AwlYzEd7M4W51mZLnBl+GLsV/MsWWeiuS
+4jCFKeQp/qhCpLnfYkM51wgXiQIkffyVd+JoDefMlt0LOkJgQM6+ynPz5QnJ3JJB
+V6unbWeKVygZDOyOQ56n8fP16jVv1MnErDkJFKZkCZt2/HuZKAK0RCvqJyuZpgMU
+AI6RnkGxqheDfnuiyv5l
+=MOa/
+-----END PGP SIGNATURE-----
+
+--4bRzO86E/ozDv8r1--
