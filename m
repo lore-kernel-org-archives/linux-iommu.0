@@ -1,7 +1,7 @@
 From: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-Subject: [PATCH 17/18] iommu: tegra-smmu: more cleanups
-Date: Mon, 27 Jul 2015 13:30:12 +0100
-Message-ID: <E1ZJhXo-0004Ce-Hq@rmk-PC.arm.linux.org.uk>
+Subject: [PATCH 01/18] ARM: reduce visibility of dmac_* functions
+Date: Mon, 27 Jul 2015 13:28:50 +0100
+Message-ID: <E1ZJhWU-00043T-AR@rmk-PC.arm.linux.org.uk>
 References: <20150727122824.GH7557@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -11,108 +11,108 @@ In-Reply-To: <20150727122824.GH7557-l+eeeJia6m9vn6HldHNs0ANdhmdF6hFW@public.gman
 Content-Disposition: inline
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
+
+The dmac_* functions are private to the ARM DMA API implementation, and
+should not be used by drivers.  In order to discourage their use, remove
+their prototypes and macros from asm/*.h.
+
+We have to leave dmac_flush_range() behind as Exynos and MSM IOMMU code
+use these; once these sites are fixed, this can be moved also.
 
 Signed-off-by: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
 ---
- drivers/iommu/tegra-smmu.c | 49 ++++++++++++++++++++++++++--------------------
- 1 file changed, 28 insertions(+), 21 deletions(-)
+ arch/arm/include/asm/cacheflush.h |  4 ----
+ arch/arm/include/asm/glue-cache.h |  2 --
+ arch/arm/mm/dma-mapping.c         |  1 +
+ arch/arm/mm/dma.h                 | 32 ++++++++++++++++++++++++++++++++
+ 4 files changed, 33 insertions(+), 6 deletions(-)
+ create mode 100644 arch/arm/mm/dma.h
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 8bf38b95cdd5..e5d6bc45c58f 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -497,6 +497,27 @@ static void tegra_smmu_detach_dev(struct iommu_domain *domain, struct device *de
- 	}
- }
+diff --git a/arch/arm/include/asm/cacheflush.h b/arch/arm/include/asm/cacheflush.h
+index 4812cda8fd17..c5230a44eeca 100644
+--- a/arch/arm/include/asm/cacheflush.h
++++ b/arch/arm/include/asm/cacheflush.h
+@@ -140,8 +140,6 @@ extern struct cpu_cache_fns cpu_cache;
+  * is visible to DMA, or data written by DMA to system memory is
+  * visible to the CPU.
+  */
+-#define dmac_map_area			cpu_cache.dma_map_area
+-#define dmac_unmap_area			cpu_cache.dma_unmap_area
+ #define dmac_flush_range		cpu_cache.dma_flush_range
  
-+static void tegra_smmu_set_pge(struct tegra_smmu_as *as, unsigned long iova,
-+			       u32 val)
-+{
-+	struct tegra_smmu *smmu = as->smmu;
-+	unsigned int pd_index = iova_pd_index(iova);
-+	u32 *pd = page_address(as->pd);
-+	unsigned long offset = pd_index * sizeof(*pd);
+ #else
+@@ -161,8 +159,6 @@ extern void __cpuc_flush_dcache_area(void *, size_t);
+  * is visible to DMA, or data written by DMA to system memory is
+  * visible to the CPU.
+  */
+-extern void dmac_map_area(const void *, size_t, int);
+-extern void dmac_unmap_area(const void *, size_t, int);
+ extern void dmac_flush_range(const void *, const void *);
+ 
+ #endif
+diff --git a/arch/arm/include/asm/glue-cache.h b/arch/arm/include/asm/glue-cache.h
+index a3c24cd5b7c8..cab07f69382d 100644
+--- a/arch/arm/include/asm/glue-cache.h
++++ b/arch/arm/include/asm/glue-cache.h
+@@ -158,8 +158,6 @@ static inline void nop_dma_unmap_area(const void *s, size_t l, int f) { }
+ #define __cpuc_coherent_user_range	__glue(_CACHE,_coherent_user_range)
+ #define __cpuc_flush_dcache_area	__glue(_CACHE,_flush_kern_dcache_area)
+ 
+-#define dmac_map_area			__glue(_CACHE,_dma_map_area)
+-#define dmac_unmap_area			__glue(_CACHE,_dma_unmap_area)
+ #define dmac_flush_range		__glue(_CACHE,_dma_flush_range)
+ #endif
+ 
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index cba12f34ff77..b7998df043ef 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -39,6 +39,7 @@
+ #include <asm/system_info.h>
+ #include <asm/dma-contiguous.h>
+ 
++#include "dma.h"
+ #include "mm.h"
+ 
+ /*
+diff --git a/arch/arm/mm/dma.h b/arch/arm/mm/dma.h
+new file mode 100644
+index 000000000000..70ea6852f94e
+--- /dev/null
++++ b/arch/arm/mm/dma.h
+@@ -0,0 +1,32 @@
++#ifndef DMA_H
++#define DMA_H
 +
-+	/* Set the page directory entry first */
-+	pd[pd_index] = val;
++#include <asm/glue-cache.h>
 +
-+	/* The flush the page directory entry from caches */
-+	dma_sync_single_range_for_device(smmu->dev, as->pd_dma, offset,
-+					 sizeof(*pd), DMA_TO_DEVICE);
++#ifndef MULTI_CACHE
++#define dmac_map_area			__glue(_CACHE,_dma_map_area)
++#define dmac_unmap_area 		__glue(_CACHE,_dma_unmap_area)
 +
-+	/* And flush the iommu */
-+	smmu_flush_ptc(smmu, as->pd_dma, offset);
-+	smmu_flush_tlb_section(smmu, as->id, iova);
-+	smmu_flush(smmu);
-+}
++/*
++ * These are private to the dma-mapping API.  Do not use directly.
++ * Their sole purpose is to ensure that data held in the cache
++ * is visible to DMA, or data written by DMA to system memory is
++ * visible to the CPU.
++ */
++extern void dmac_map_area(const void *, size_t, int);
++extern void dmac_unmap_area(const void *, size_t, int);
 +
- static u32 *tegra_smmu_pte_offset(struct page *pt_page, unsigned long iova)
- {
- 	u32 *pt = page_address(pt_page);
-@@ -524,7 +545,6 @@ static u32 *tegra_smmu_pte_lookup(struct tegra_smmu_as *as, unsigned long iova,
- static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
- 		       dma_addr_t *dmap)
- {
--	u32 *pd = page_address(as->pd);
- 	unsigned int pde = iova_pd_index(iova);
- 	struct tegra_smmu *smmu = as->smmu;
- 
-@@ -552,16 +572,13 @@ static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
- 
- 		as->pts[pde] = page;
- 
--		pd[pde] = SMMU_MK_PDE(dma, SMMU_PDE_ATTR | SMMU_PDE_NEXT);
--
--		dma_sync_single_range_for_device(smmu->dev, as->pd_dma,
--						 pde << 2, 4, DMA_TO_DEVICE);
--		smmu_flush_ptc(smmu, as->pd_dma, pde << 2);
--		smmu_flush_tlb_section(smmu, as->id, iova);
--		smmu_flush(smmu);
-+		tegra_smmu_set_pge(as, iova, SMMU_MK_PDE(dma, SMMU_PDE_ATTR |
-+							      SMMU_PDE_NEXT));
- 
- 		*dmap = dma;
- 	} else {
-+		u32 *pd = page_address(as->pd);
++#else
 +
- 		*dmap = smmu_pde_to_dma(pd[pde]);
- 	}
- 
-@@ -577,9 +594,7 @@ static void tegra_smmu_pte_get_use(struct tegra_smmu_as *as, unsigned long iova)
- 
- static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
- {
--	struct tegra_smmu *smmu = as->smmu;
- 	unsigned int pde = iova_pd_index(iova);
--	u32 *pd = page_address(as->pd);
- 	struct page *page = as->pts[pde];
- 
- 	/*
-@@ -587,20 +602,12 @@ static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
- 	 * memory page to the system.
- 	 */
- 	if (--as->count[pde] == 0) {
--		unsigned int offset = pde * sizeof(*pd);
-+		struct tegra_smmu *smmu = as->smmu;
-+		u32 *pd = page_address(as->pd);
- 		dma_addr_t pte_dma = smmu_pde_to_dma(pd[pde]);
- 
--		/* Clear the page directory entry first */
--		pd[pde] = 0;
--
--		/* Flush the page directory entry */
--		dma_sync_single_range_for_device(smmu->dev, as->pd_dma, offset,
--						 sizeof(*pd), DMA_TO_DEVICE);
--		smmu_flush_ptc(smmu, as->pd_dma, offset);
--		smmu_flush_tlb_section(smmu, as->id, iova);
--		smmu_flush(smmu);
-+		tegra_smmu_set_pge(as, iova, 0);
- 
--		/* Finally, free the page */
- 		dma_unmap_page(smmu->dev, pte_dma, SMMU_SIZE_PT, DMA_TO_DEVICE);
- 		__free_page(page);
- 		as->pts[pde] = NULL;
++/*
++ * These are private to the dma-mapping API.  Do not use directly.
++ * Their sole purpose is to ensure that data held in the cache
++ * is visible to DMA, or data written by DMA to system memory is
++ * visible to the CPU.
++ */
++#define dmac_map_area			cpu_cache.dma_map_area
++#define dmac_unmap_area 		cpu_cache.dma_unmap_area
++
++#endif
++
++#endif
 -- 
 2.1.0
