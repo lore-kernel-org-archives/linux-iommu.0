@@ -1,60 +1,98 @@
-From: Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-Subject: [PATCH 00/18] Clean up exposure of arch-internal code
-Date: Mon, 27 Jul 2015 13:28:24 +0100
-Message-ID: <20150727122824.GH7557@n2100.arm.linux.org.uk>
+From: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+Subject: [PATCH 05/18] iommu: tegra-smmu: factor out common pte setting
+Date: Mon, 27 Jul 2015 13:29:10 +0100
+Message-ID: <E1ZJhWo-00047R-SM@rmk-PC.arm.linux.org.uk>
+References: <20150727122824.GH7557@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20150727122824.GH7557-l+eeeJia6m9vn6HldHNs0ANdhmdF6hFW@public.gmane.org>
 Content-Disposition: inline
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This series of patches attempts to clean up the use of architecture
-internal functions in drivers, and removes some functions from view
-in the asm/ headers.  I'm also considering whether we need to add
-some linker magic to hide symbols when building the built-in.o files.
+Factor out the common pte setting code into a separate function.
 
-This was triggered by 3rd party drivers "going under the covers" of
-the DMA API and calling the dmac_*() functions directly, a practice
-which I have always refused to allow.  This also breaks module
-building (which is the big hint that they're doing something wrong.)
+Signed-off-by: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+---
+ drivers/iommu/tegra-smmu.c | 37 +++++++++++++++++--------------------
+ 1 file changed, 17 insertions(+), 20 deletions(-)
 
-However, it also came to light that various drivers are using
-__cpuc_* functions directly, which are non-portable, and is another
-instance of "going under the covers" and tinkering with what should
-be kept as architecture implementation details.
-
-This series addresses some of these points.  It:
-
-(a) moves dmac_map_area() and dmac_unmap_area() prototypes out of
-    asm/cacheflush.h and into arch/arm/mm.
-(b) provide a secure_flush() call for the Qualcomm secure monitor
-    code.
-(c) stop tegra smmu driver(s) from using __cpuc_flush_dcache_area,
-    something which necessitates additional complexity to deal with
-    the ARM vs ARM64 differences.  It should be using the DMA API.
-    However, the Tegra SMMU driver is in really bad shape, and this
-    isn't a simple conversion - it requires a lot of additional
-    fixes to bring the code up to scratch.
-
-It leaves the Rockchip IOMMU driver for the time being, but that is also
-something which needs cleaning up in the same way as the Tegra SMMU
-driver.
-
- arch/arm/include/asm/cacheflush.h |  21 ++-
- arch/arm/include/asm/glue-cache.h |   2 -
- arch/arm/mm/dma-mapping.c         |   1 +
- arch/arm/mm/dma.h                 |  32 ++++
- drivers/firmware/qcom_scm-32.c    |   4 +-
- drivers/iommu/tegra-smmu.c        | 297 ++++++++++++++++++++++++--------------
- drivers/memory/tegra/tegra114.c   |  17 ---
- drivers/memory/tegra/tegra124.c   |  30 ----
- drivers/memory/tegra/tegra30.c    |  17 ---
- include/soc/tegra/mc.h            |   7 -
- 10 files changed, 242 insertions(+), 186 deletions(-)
-
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index a7a7645fb268..53d0f15dac6f 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -541,12 +541,24 @@ static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
+ 	}
+ }
+ 
++static void tegra_smmu_set_pte(struct tegra_smmu_as *as, unsigned long iova,
++			       u32 *pte, struct page *pte_page, u32 val)
++{
++	struct tegra_smmu *smmu = as->smmu;
++	unsigned long offset = offset_in_page(pte);
++
++	*pte = val;
++
++	smmu->soc->ops->flush_dcache(pte_page, offset, 4);
++	smmu_flush_ptc(smmu, pte_page, offset);
++	smmu_flush_tlb_group(smmu, as->id, iova);
++	smmu_flush(smmu);
++}
++
+ static int tegra_smmu_map(struct iommu_domain *domain, unsigned long iova,
+ 			  phys_addr_t paddr, size_t size, int prot)
+ {
+ 	struct tegra_smmu_as *as = to_smmu_as(domain);
+-	struct tegra_smmu *smmu = as->smmu;
+-	unsigned long offset;
+ 	struct page *page;
+ 	u32 *pte;
+ 
+@@ -554,13 +566,8 @@ static int tegra_smmu_map(struct iommu_domain *domain, unsigned long iova,
+ 	if (!pte)
+ 		return -ENOMEM;
+ 
+-	*pte = __phys_to_pfn(paddr) | SMMU_PTE_ATTR;
+-	offset = offset_in_page(pte);
+-
+-	smmu->soc->ops->flush_dcache(page, offset, 4);
+-	smmu_flush_ptc(smmu, page, offset);
+-	smmu_flush_tlb_group(smmu, as->id, iova);
+-	smmu_flush(smmu);
++	tegra_smmu_set_pte(as, iova, pte, page,
++			   __phys_to_pfn(paddr) | SMMU_PTE_ATTR);
+ 
+ 	return 0;
+ }
+@@ -569,8 +576,6 @@ static size_t tegra_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 			       size_t size)
+ {
+ 	struct tegra_smmu_as *as = to_smmu_as(domain);
+-	struct tegra_smmu *smmu = as->smmu;
+-	unsigned long offset;
+ 	struct page *page;
+ 	u32 *pte;
+ 
+@@ -578,15 +583,7 @@ static size_t tegra_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 	if (!pte || !*pte)
+ 		return 0;
+ 
+-	*pte = 0;
+-
+-	offset = offset_in_page(pte);
+-
+-	smmu->soc->ops->flush_dcache(page, offset, 4);
+-	smmu_flush_ptc(smmu, page, offset);
+-	smmu_flush_tlb_group(smmu, as->id, iova);
+-	smmu_flush(smmu);
+-
++	tegra_smmu_set_pte(as, iova, pte, page, 0);
+ 	tegra_smmu_pte_put_use(as, iova);
+ 
+ 	return size;
 -- 
-FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
-according to speedtest.net.
+2.1.0
