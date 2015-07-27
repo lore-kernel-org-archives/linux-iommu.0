@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 5/5] iommu/ipmmu-vmsa: Clean up DMA API usage
-Date: Mon, 27 Jul 2015 19:18:12 +0100
-Message-ID: <fe15498f3ccce80773935256b9b1a0a87f148f8e.1438019069.git.robin.murphy@arm.com>
+Subject: [PATCH 4/5] iommu/arm-smmu-v3: Clean up DMA API usage
+Date: Mon, 27 Jul 2015 19:18:11 +0100
+Message-ID: <832ec87069a516232cb39e039b2abdcacc2a8406.1438019069.git.robin.murphy@arm.com>
 References: <c8cc82fea26044e393ff857014d4146faac5ec1e.1438019069.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -26,49 +26,47 @@ let that handle the flushing of non-coherent page table updates.
 
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/ipmmu-vmsa.c | 19 +++++--------------
- 1 file changed, 5 insertions(+), 14 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 19 ++++---------------
+ 1 file changed, 4 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 1a67c53..8cf605f 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -283,24 +283,10 @@ static void ipmmu_tlb_add_flush(unsigned long iova, size_t size, bool leaf,
- 	/* The hardware doesn't support selective TLB flush. */
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 8e9ec81..caa01a6 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1304,23 +1304,10 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ static void arm_smmu_flush_pgtable(void *addr, size_t size, void *cookie)
+ {
+ 	struct arm_smmu_domain *smmu_domain = cookie;
+-	struct arm_smmu_device *smmu = smmu_domain->smmu;
+-	unsigned long offset = (unsigned long)addr & ~PAGE_MASK;
+ 
+-	if (smmu->features & ARM_SMMU_FEAT_COHERENCY) {
++	/* The page table code handles flushing in the non-coherent case */
++	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_COHERENCY)
+ 		dsb(ishst);
+-	} else {
+-		dma_addr_t dma_addr;
+-		struct device *dev = smmu->dev;
+-
+-		dma_addr = dma_map_page(dev, virt_to_page(addr), offset, size,
+-					DMA_TO_DEVICE);
+-
+-		if (dma_mapping_error(dev, dma_addr))
+-			dev_err(dev, "failed to flush pgtable at %p\n", addr);
+-		else
+-			dma_unmap_page(dev, dma_addr, size, DMA_TO_DEVICE);
+-	}
  }
  
--static void ipmmu_flush_pgtable(void *ptr, size_t size, void *cookie)
--{
--	unsigned long offset = (unsigned long)ptr & ~PAGE_MASK;
--	struct ipmmu_vmsa_domain *domain = cookie;
--
--	/*
--	 * TODO: Add support for coherent walk through CCI with DVM and remove
--	 * cache handling.
--	 */
--	dma_map_page(domain->mmu->dev, virt_to_page(ptr), offset, size,
--		     DMA_TO_DEVICE);
--}
--
- static struct iommu_gather_ops ipmmu_gather_ops = {
- 	.tlb_flush_all = ipmmu_tlb_flush_all,
- 	.tlb_add_flush = ipmmu_tlb_add_flush,
- 	.tlb_sync = ipmmu_tlb_flush_all,
--	.flush_pgtable = ipmmu_flush_pgtable,
- };
+ static struct iommu_gather_ops arm_smmu_gather_ops = {
+@@ -1503,6 +1490,8 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+ 		.oas		= oas,
+ 		.tlb		= &arm_smmu_gather_ops,
+ 	};
++	if (!(smmu->features & ARM_SMMU_FEAT_COHERENCY))
++		pgtbl_cfg.iommu_dev = smmu->dev;
  
- /* -----------------------------------------------------------------------------
-@@ -327,6 +313,11 @@ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
- 	domain->cfg.ias = 32;
- 	domain->cfg.oas = 40;
- 	domain->cfg.tlb = &ipmmu_gather_ops;
-+	/*
-+	 * TODO: Add support for coherent walk through CCI with DVM and remove
-+	 * cache handling. For now, delegate it to the io-pgtable code.
-+	 */
-+	domain->cfg.iommu_dev = domain->mmu->dev;
- 
- 	domain->iop = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &domain->cfg,
- 					   domain);
+ 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
+ 	if (!pgtbl_ops)
 -- 
 1.9.1
