@@ -1,121 +1,172 @@
-From: Don Dutile <ddutile@redhat.com>
-Subject: Re: [PATCH v2 10/11] PCI: Stop caching ATS Invalidate Queue Depth
-Date: Mon, 27 Jul 2015 19:13:14 -0400
-Message-ID: <55B6BB0A.80904@redhat.com>
-References: <20150721001243.28145.81610.stgit@bhelgaas-glaptop2.roam.corp.google.com> <20150721001511.28145.29144.stgit@bhelgaas-glaptop2.roam.corp.google.com> <55B63995.8000808@redhat.com> <20150727222726.GA24401@google.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20150727222726.GA24401@google.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-pci@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, Gregor Dick <gdick@solarflare.com>
+From: Ashutosh Dixit <ashutosh.dixit@intel.com>
+Subject: [PATCH char-misc-next 10/19] lib: convert iova.c into a library
+Date: Mon, 27 Jul 2015 16:57:32 -0700
+Message-ID: <8131ebc8ecb5ef13ef0aa4c49dabe9694f0e410f.1438040669.git.ashutosh.dixit@intel.com>
+References: <cover.1438040669.git.ashutosh.dixit@intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1438040669.git.ashutosh.dixit@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Robin Murphy <robin.murphy@arm.com>, Ashutosh Dixit <ashutosh.dixit@intel.com>, Sudeep Dutt <sudeep.dutt@intel.com>, Nikhil Rao <nikhil.rao@intel.com>, Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>, Harish Chegondi <harish.chegondi@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 07/27/2015 06:27 PM, Bjorn Helgaas wrote:
-> Hi Don,
->
-> On Mon, Jul 27, 2015 at 10:00:53AM -0400, Don Dutile wrote:
->> On 07/20/2015 08:15 PM, Bjorn Helgaas wrote:
->>> Stop caching the Invalidate Queue Depth in struct pci_dev.
->>> pci_ats_queue_depth() is typically called only once per device, and it
->>> returns a fixed value per-device, so callers who need the value frequently
->>> can cache it themselves.
->>>
->>> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
->>> ---
->>>   drivers/pci/ats.c   |    9 ++++-----
->>>   include/linux/pci.h |    1 -
->>>   2 files changed, 4 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
->>> index 67524a7..bdb1383 100644
->>> --- a/drivers/pci/ats.c
->>> +++ b/drivers/pci/ats.c
->>> @@ -20,16 +20,12 @@
->>>   void pci_ats_init(struct pci_dev *dev)
->>>   {
->>>   	int pos;
->>> -	u16 cap;
->>>
->>>   	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ATS);
->>>   	if (!pos)
->>>   		return;
->>>
->>>   	dev->ats_cap = pos;
->>> -	pci_read_config_word(dev, dev->ats_cap + PCI_ATS_CAP, &cap);
->>> -	dev->ats_qdep = PCI_ATS_CAP_QDEP(cap) ? PCI_ATS_CAP_QDEP(cap) :
->>> -					    PCI_ATS_MAX_QDEP;
->>>   }
->>>
->>>   /**
->>> @@ -131,13 +127,16 @@ EXPORT_SYMBOL_GPL(pci_restore_ats_state);
->>>    */
->>>   int pci_ats_queue_depth(struct pci_dev *dev)
->>>   {
->>> +	u16 cap;
->>> +
->>>   	if (!dev->ats_cap)
->>>   		return -EINVAL;
->>>
->>>   	if (dev->is_virtfn)
->>>   		return 0;
->>>
->> hmmm, isn't one of the fixes in this patch set to
->> change the caching of ats queue depth ?  won't above
->> make it 0 for all VF's ?  is that correct, or desired (virtual) value?
->
-> Per spec (SR-IOV r1.1., sec 3.7.4), the ATS queue depth register on a VF
-> always contains zero.
->
-> Here's the v4.1 code:
->
->      int pci_ats_queue_depth(struct pci_dev *dev)
->      {
->          if (dev->is_virtfn)
->                  return 0;
->
->          if (dev->ats)
->                  return dev->ats->qdep;
->
-> 	...
->
->
-> In v4.1, pci_ats_queue_depth() always returned 0 for a VF.  For VFs, we
-> didn't look at the dev->ats->qdep cache.  So I don't think this changes
-> anything for the caller.
->
-> A previous patch changed this path so we return -EINVAL instead of 0 for
-> VFs that don't support ATS.  I think the previous behavior there was wrong,
-> but I doubt anybody noticed.
->
-> Bjorn
->
-ok. thanks for the sanity check.
+From: Harish Chegondi <harish.chegondi@intel.com>
 
->>> -	return dev->ats_qdep;
->>> +	pci_read_config_word(dev, dev->ats_cap + PCI_ATS_CAP, &cap);
->>> +	return PCI_ATS_CAP_QDEP(cap) ? PCI_ATS_CAP_QDEP(cap) : PCI_ATS_MAX_QDEP;
->>>   }
->>>   EXPORT_SYMBOL_GPL(pci_ats_queue_depth);
->>>
->>> diff --git a/include/linux/pci.h b/include/linux/pci.h
->>> index 307f96a..4b484fd 100644
->>> --- a/include/linux/pci.h
->>> +++ b/include/linux/pci.h
->>> @@ -378,7 +378,6 @@ struct pci_dev {
->>>   	};
->>>   	u16		ats_cap;	/* ATS Capability offset */
->>>   	u8		ats_stu;	/* ATS Smallest Translation Unit */
->>> -	u8		ats_qdep;	/* ATS Invalidate Queue Depth */
->>>   	atomic_t	ats_ref_cnt;	/* number of VFs with ATS enabled */
->>>   #endif
->>>   	phys_addr_t rom; /* Physical address of ROM if it's not from the BAR */
->>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-pci" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>
->>
+This patch converts iova.c into a library, moving it from
+drivers/iommu/ to lib/, and exports its virtual address allocation and
+management functions so that other modules can reuse them.
+
+Cc: Joerg Roedel <joro@8bytes.org>
+Reviewed-by: Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>
+Reviewed-by: Sudeep Dutt <sudeep.dutt@intel.com>
+Signed-off-by: Harish Chegondi <harish.chegondi@intel.com>
+---
+ drivers/iommu/Kconfig         | 5 +----
+ drivers/iommu/Makefile        | 1 -
+ lib/Kconfig                   | 6 ++++++
+ lib/Makefile                  | 2 ++
+ {drivers/iommu => lib}/iova.c | 9 +++++++++
+ 5 files changed, 18 insertions(+), 5 deletions(-)
+ rename {drivers/iommu => lib}/iova.c (97%)
+
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index f1fb1d3..c711889 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -41,9 +41,6 @@ config IOMMU_IO_PGTABLE_LPAE_SELFTEST
+ 
+ endmenu
+ 
+-config IOMMU_IOVA
+-	bool
+-
+ config OF_IOMMU
+        def_bool y
+        depends on OF && IOMMU_API
+@@ -125,8 +122,8 @@ config INTEL_IOMMU
+ 	bool "Support for Intel IOMMU using DMA Remapping Devices"
+ 	depends on PCI_MSI && ACPI && (X86 || IA64_GENERIC)
+ 	select IOMMU_API
+-	select IOMMU_IOVA
+ 	select DMAR_TABLE
++	select IOVA
+ 	help
+ 	  DMA remapping (DMAR) devices support enables independent address
+ 	  translations for Direct Memory Access (DMA) from devices.
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index c6dcc51..fbb1372 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -3,7 +3,6 @@ obj-$(CONFIG_IOMMU_API) += iommu-traces.o
+ obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
+ obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
+ obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
+-obj-$(CONFIG_IOMMU_IOVA) += iova.o
+ obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
+ obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o msm_iommu_dev.o
+ obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o
+diff --git a/lib/Kconfig b/lib/Kconfig
+index 3a2ef67..62ba145 100644
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -62,6 +62,12 @@ config ARCH_USE_CMPXCHG_LOCKREF
+ config ARCH_HAS_FAST_MULTIPLIER
+ 	bool
+ 
++config IOVA
++	bool
++	help
++	  This option enables a 64 bit virtual address allocation and management
++	  library.
++
+ config CRC_CCITT
+ 	tristate "CRC-CCITT functions"
+ 	help
+diff --git a/lib/Makefile b/lib/Makefile
+index 6897b52..058722d 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -205,3 +205,5 @@ quiet_cmd_build_OID_registry = GEN     $@
+ clean-files	+= oid_registry_data.c
+ 
+ obj-$(CONFIG_UCS2_STRING) += ucs2_string.o
++
++obj-$(CONFIG_IOVA) += iova.o
+diff --git a/drivers/iommu/iova.c b/lib/iova.c
+similarity index 97%
+rename from drivers/iommu/iova.c
+rename to lib/iova.c
+index b7c3d92..7753006 100644
+--- a/drivers/iommu/iova.c
++++ b/lib/iova.c
+@@ -72,6 +72,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+ 	iovad->start_pfn = start_pfn;
+ 	iovad->dma_32bit_pfn = pfn_32bit;
+ }
++EXPORT_SYMBOL_GPL(init_iova_domain);
+ 
+ static struct rb_node *
+ __get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
+@@ -281,6 +282,7 @@ alloc_iova(struct iova_domain *iovad, unsigned long size,
+ 
+ 	return new_iova;
+ }
++EXPORT_SYMBOL_GPL(alloc_iova);
+ 
+ /**
+  * find_iova - find's an iova for a given pfn
+@@ -321,6 +323,7 @@ struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn)
+ 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ 	return NULL;
+ }
++EXPORT_SYMBOL_GPL(find_iova);
+ 
+ /**
+  * __free_iova - frees the given iova
+@@ -339,6 +342,7 @@ __free_iova(struct iova_domain *iovad, struct iova *iova)
+ 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ 	free_iova_mem(iova);
+ }
++EXPORT_SYMBOL_GPL(__free_iova);
+ 
+ /**
+  * free_iova - finds and frees the iova for a given pfn
+@@ -356,6 +360,7 @@ free_iova(struct iova_domain *iovad, unsigned long pfn)
+ 		__free_iova(iovad, iova);
+ 
+ }
++EXPORT_SYMBOL_GPL(free_iova);
+ 
+ /**
+  * put_iova_domain - destroys the iova doamin
+@@ -378,6 +383,7 @@ void put_iova_domain(struct iova_domain *iovad)
+ 	}
+ 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ }
++EXPORT_SYMBOL_GPL(put_iova_domain);
+ 
+ static int
+ __is_range_overlap(struct rb_node *node,
+@@ -467,6 +473,7 @@ finish:
+ 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ 	return iova;
+ }
++EXPORT_SYMBOL_GPL(reserve_iova);
+ 
+ /**
+  * copy_reserved_iova - copies the reserved between domains
+@@ -493,6 +500,7 @@ copy_reserved_iova(struct iova_domain *from, struct iova_domain *to)
+ 	}
+ 	spin_unlock_irqrestore(&from->iova_rbtree_lock, flags);
+ }
++EXPORT_SYMBOL_GPL(copy_reserved_iova);
+ 
+ struct iova *
+ split_and_remove_iova(struct iova_domain *iovad, struct iova *iova,
+@@ -534,3 +542,4 @@ error:
+ 		free_iova_mem(prev);
+ 	return NULL;
+ }
++EXPORT_SYMBOL_GPL(split_and_remove_iova);
+-- 
+2.0.0.rc3.2.g998f840
