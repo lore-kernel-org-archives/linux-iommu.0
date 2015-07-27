@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 3/5] iommu/arm-smmu: Clean up DMA API usage
-Date: Mon, 27 Jul 2015 19:18:10 +0100
-Message-ID: <921980a38ec7d35610c68e8e94235c55318ba80c.1438019069.git.robin.murphy@arm.com>
+Subject: [PATCH 5/5] iommu/ipmmu-vmsa: Clean up DMA API usage
+Date: Mon, 27 Jul 2015 19:18:12 +0100
+Message-ID: <fe15498f3ccce80773935256b9b1a0a87f148f8e.1438019069.git.robin.murphy@arm.com>
 References: <c8cc82fea26044e393ff857014d4146faac5ec1e.1438019069.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -26,51 +26,49 @@ let that handle the flushing of non-coherent page table updates.
 
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 23 +++++++----------------
- 1 file changed, 7 insertions(+), 16 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c | 19 +++++--------------
+ 1 file changed, 5 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 9a59bef..9501668 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -610,24 +610,13 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
- static void arm_smmu_flush_pgtable(void *addr, size_t size, void *cookie)
- {
- 	struct arm_smmu_domain *smmu_domain = cookie;
--	struct arm_smmu_device *smmu = smmu_domain->smmu;
--	unsigned long offset = (unsigned long)addr & ~PAGE_MASK;
- 
--
--	/* Ensure new page tables are visible to the hardware walker */
--	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK) {
-+	/*
-+	 * Ensure new page tables are visible to a coherent hardware walker.
-+	 * The page table code deals with flushing for the non-coherent case.
-+	 */
-+	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
- 		dsb(ishst);
--	} else {
--		/*
--		 * If the SMMU can't walk tables in the CPU caches, treat them
--		 * like non-coherent DMA since we need to flush the new entries
--		 * all the way out to memory. There's no possibility of
--		 * recursion here as the SMMU table walker will not be wired
--		 * through another SMMU.
--		 */
--		dma_map_page(smmu->dev, virt_to_page(addr), offset, size,
--			     DMA_TO_DEVICE);
--	}
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 1a67c53..8cf605f 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -283,24 +283,10 @@ static void ipmmu_tlb_add_flush(unsigned long iova, size_t size, bool leaf,
+ 	/* The hardware doesn't support selective TLB flush. */
  }
  
- static struct iommu_gather_ops arm_smmu_gather_ops = {
-@@ -899,6 +888,8 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 		.oas		= oas,
- 		.tlb		= &arm_smmu_gather_ops,
- 	};
-+	if (!(smmu->features & ARM_SMMU_FEAT_COHERENT_WALK))
-+		pgtbl_cfg.iommu_dev = smmu->dev;
+-static void ipmmu_flush_pgtable(void *ptr, size_t size, void *cookie)
+-{
+-	unsigned long offset = (unsigned long)ptr & ~PAGE_MASK;
+-	struct ipmmu_vmsa_domain *domain = cookie;
+-
+-	/*
+-	 * TODO: Add support for coherent walk through CCI with DVM and remove
+-	 * cache handling.
+-	 */
+-	dma_map_page(domain->mmu->dev, virt_to_page(ptr), offset, size,
+-		     DMA_TO_DEVICE);
+-}
+-
+ static struct iommu_gather_ops ipmmu_gather_ops = {
+ 	.tlb_flush_all = ipmmu_tlb_flush_all,
+ 	.tlb_add_flush = ipmmu_tlb_add_flush,
+ 	.tlb_sync = ipmmu_tlb_flush_all,
+-	.flush_pgtable = ipmmu_flush_pgtable,
+ };
  
- 	smmu_domain->smmu = smmu;
- 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
+ /* -----------------------------------------------------------------------------
+@@ -327,6 +313,11 @@ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
+ 	domain->cfg.ias = 32;
+ 	domain->cfg.oas = 40;
+ 	domain->cfg.tlb = &ipmmu_gather_ops;
++	/*
++	 * TODO: Add support for coherent walk through CCI with DVM and remove
++	 * cache handling. For now, delegate it to the io-pgtable code.
++	 */
++	domain->cfg.iommu_dev = domain->mmu->dev;
+ 
+ 	domain->iop = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &domain->cfg,
+ 					   domain);
 -- 
 1.9.1
