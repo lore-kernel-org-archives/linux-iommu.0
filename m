@@ -1,71 +1,79 @@
-From: Sudeep Dutt <sudeep.dutt@intel.com>
-Subject: Re: [PATCH char-misc-next 10/19] lib: convert iova.c into a library
-Date: Tue, 28 Jul 2015 10:01:00 -0700
-Message-ID: <1438102860.6314.49.camel@localhost>
-References: <cover.1438040669.git.ashutosh.dixit@intel.com>
-	 <8131ebc8ecb5ef13ef0aa4c49dabe9694f0e410f.1438040669.git.ashutosh.dixit@intel.com>
-	 <20150728100340.GR10969@8bytes.org> <55B75C69.30200@arm.com>
-	 <1438094293.26913.177.camel@infradead.org>
+From: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v4 3/4] arm64: Add IOMMU dma_ops
+Date: Tue, 28 Jul 2015 18:27:11 +0100
+Message-ID: <20150728172710.GB536@e104818-lin.cambridge.arm.com>
+References: <cover.1437070995.git.robin.murphy@arm.com>
+	<f51a6dfad1367107b07ca43624a990a62f3d4f3c.1437070995.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1438094293.26913.177.camel@infradead.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: David Woodhouse <dwmw2@infradead.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, Ashutosh Dixit <ashutosh.dixit@intel.com>, Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Nikhil Rao <nikhil.rao@intel.com>, Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>, Harish Chegondi <harish.chegondi@intel.com>, "sakari.ailus@linux.intel.com" <sakari.ailus@linux.intel.com>, "Dutt, Sudeep" <sudeep.dutt@intel.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <f51a6dfad1367107b07ca43624a990a62f3d4f3c.1437070995.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2015-07-28 at 15:38 +0100, David Woodhouse wrote:
-> On Tue, 2015-07-28 at 11:41 +0100, Robin Murphy wrote:
-> > On 28/07/15 11:03, Joerg Roedel wrote:
-> > > On Mon, Jul 27, 2015 at 04:57:32PM -0700, Ashutosh Dixit wrote:
-> > > > From: Harish Chegondi <harish.chegondi@intel.com>
-> > > > 
-> > > > This patch converts iova.c into a library, moving it from
-> > > > drivers/iommu/ to lib/, and exports its virtual address 
-> > > > allocation and
-> > > > management functions so that other modules can reuse them.
-> > > > 
-> > > > Cc: Joerg Roedel <joro@8bytes.org>
-> > > > Reviewed-by: Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com
-> > > > >
-> > > > Reviewed-by: Sudeep Dutt <sudeep.dutt@intel.com>
-> > > > Signed-off-by: Harish Chegondi <harish.chegondi@intel.com>
-> > > 
-> > > Where is this going to be used outside of the IOMMU world?
-> > > 
+On Thu, Jul 16, 2015 at 07:40:14PM +0100, Robin Murphy wrote:
+> +static void *__iommu_alloc_attrs(struct device *dev, size_t size,
+> +				 dma_addr_t *handle, gfp_t gfp,
+> +				 struct dma_attrs *attrs)
+> +{
+> +	bool coherent = is_device_dma_coherent(dev);
+> +	int ioprot = dma_direction_to_prot(DMA_BIDIRECTIONAL, coherent);
+> +	void *addr;
+> +
+> +	if (WARN(!dev, "cannot create IOMMU mapping for unknown device\n"))
+> +		return NULL;
+> +
+> +	/*
+> +	 * Some drivers rely on this, and we may not want to potentially
+> +	 * expose stale kernel data to devices anyway.
+> +	 */
+> +	gfp |= __GFP_ZERO;
+> +
+> +	if (gfp & __GFP_WAIT) {
+> +		struct page **pages;
+> +		pgprot_t pgprot = coherent ? __pgprot(PROT_NORMAL) :
+> +					     __pgprot(PROT_NORMAL_NC);
+> +
+> +		pgprot = __get_dma_pgprot(attrs, pgprot, coherent);
 
-We are using the IOVA generator in the SCIF driver posted @
-http://thread.gmane.org/gmane.linux.kernel/2005895 under
-drivers/misc/mic/scif
+I think you can simplify this:
 
-> > 
-> > ...and how does it relate to the patches from Sakari (+CC) doing much 
-> > the same thing[1]?
-> 
+		pgprot_t pgprot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
 
-The patch series from Sakari does the right thing by moving the IOVA
-cache management to the IOVA library. We will simply drop this current
-patch as it is incorrect.
+(and we could do the same in __dma_alloc)
 
-> I merged Sakari's patches into the intel-iommu git tree today, FWIW.
-> 
-> If there's really a need to move it from drivers/iommu/ to lib/ then we
-> could feasibly do that too.
-> 
+> +		pages = iommu_dma_alloc(dev, size, gfp, ioprot,	handle,
+> +					coherent ? NULL : flush_page);
 
-The patch series from Sakari should work perfectly for us. We will post
-a v2 of the current SCIF patch series without this IOVA patch and modify
-the SCIF driver to use the newly added iova_cache_get(..) and
-iova_cache_put(..) APIs once it is available in Linus's tree. It would
-make it easier for us to integrate if Sakari's patches reach mainline
-soon.
+I commented on patch 2/4. If we checked for IOMMU_CACHE in
+iommu_dma_alloc(), we could always pass flush_page here without the
+NULL.
 
-It might be cleaner to move IOVA to lib/ in the longer term since we
-will have multiple driver subsystems using it, but it should work just
-fine for now.
+> +		if (!pages)
+> +			return NULL;
+> +
+> +		addr = dma_common_pages_remap(pages, size, VM_USERMAP, pgprot,
+> +					      __builtin_return_address(0));
+> +		if (!addr)
+> +			iommu_dma_free(dev, pages, size, handle);
 
-Thanks for the review!
+For arm64, it would have been easier to simply flush the caches here and
+avoid the flush_page argument. However, I reread your earlier reply, so
+if we ever honour the ATTR_NO_KERNEL_MAPPING, then we would have to
+iterate over the individual pages in the arch code. Let's leave it as
+per your patch 2/4 (with a flush_page argument).
 
-Sudeep Dutt
+-- 
+Catalin
