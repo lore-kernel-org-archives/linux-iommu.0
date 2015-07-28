@@ -1,12 +1,13 @@
 From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [PATCH 0/4] Separate the IOVA library from the intel-iommu driver
-Date: Tue, 28 Jul 2015 14:25:47 +0100
-Message-ID: <1438089947.26913.155.camel@infradead.org>
-References: <1436787091-11943-1-git-send-email-sakari.ailus@linux.intel.com>
+Subject: Re: [PATCH v4 1/4] iommu/iova: Avoid over-allocating when size-aligned
+Date: Tue, 28 Jul 2015 14:31:50 +0100
+Message-ID: <1438090310.26913.158.camel@infradead.org>
+References: <cover.1437070995.git.robin.murphy@arm.com>
+	<35cb877828b570db84e89684ef76308cd1857f0c.1437070995.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============4661813908961335390=="
+Content-Type: multipart/mixed; boundary="===============0479280343569126205=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1436787091-11943-1-git-send-email-sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <35cb877828b570db84e89684ef76308cd1857f0c.1437070995.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,35 +17,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sakari Ailus <sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, jian.xu.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============4661813908961335390==
+--===============0479280343569126205==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-obRkqgxAplOZ6+q8rELA"
+	boundary="=-m9TVXN2+xVMfug4MouSd"
 
 
---=-obRkqgxAplOZ6+q8rELA
+--=-m9TVXN2+xVMfug4MouSd
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 2015-07-13 at 14:31 +0300, Sakari Ailus wrote:
-> Hi folks,
+On Thu, 2015-07-16 at 19:40 +0100, Robin Murphy wrote:
+> Currently, allocating a size-aligned IOVA region quietly adjusts the
+> actual allocation size in the process, returning a rounded-up
+> power-of-two-sized allocation. This results in mismatched behaviour in
+> the IOMMU driver if the original size was not a power of two, where the
+> original size is mapped, but the rounded-up IOVA size is unmapped.
 >=20
-> This set separates the IOVA library from the intel-iommu driver, and make=
-s
-> it usable for other implementations (such as DMA mapping) as well.
+> Whilst some IOMMUs will happily unmap already-unmapped pages, others
+> consider this an error, so fix it by computing the necessary alignment
+> padding without altering the actual allocation size. Also clean up by
+> making pad_size unsigned, since its callers always pass unsigned values
+> and negative padding makes little sense here anyway.
 
-Thanks. I've applied patches ##1-3 to my tree. The fourth patch ideally
-wants to go elsewhere.
+Applied; thanks.
+
+I'm not 100% sure we *need* the hunk in intel-iommu.c, we can probably
+live without rounding the size up. It means we'll use huge pages less
+often, but it's not clear that using them when we didn't *mean* to map
+the full size of them was the right thing to do in the first place.
+
+But it makes sense to apply the patch as-is, without changing the
+effective behaviour, and ponder that more deeply later.
+
+Thanks.
 
 --=20
 David Woodhouse                            Open Source Technology Centre
 David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
 
---=-obRkqgxAplOZ6+q8rELA
+--=-m9TVXN2+xVMfug4MouSd
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -137,28 +153,28 @@ Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
 ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
 AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUwNzI4MTMyNTQ3WjAjBgkqhkiG9w0BCQQxFgQUEjIy5U8qyq6nKb5GRMpcLkL/MzYw
+CQUxDxcNMTUwNzI4MTMzMTUwWjAjBgkqhkiG9w0BCQQxFgQU9ViRaUufmi1Wl8zG3SgmPmWb0NAw
 gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
 ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
 L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
 CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
 LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
 U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQB19efp6nI3PCACRZw63AK7TvQovDlo/HF5AJG0hvFkxmlwgk93XxE91Uht
-Ypd8aFQyxkEBHr08ie4cmWinM1mo39LBac9JfSPBdzKA8UwPlbLDhVSlplp7Esacjrv6pTUL2+Rl
-v+n49vKH6Dijo1K7wRhqE7pbjacIsvUqNu9Qa4AM+36J1NDMFFpFTHnM9kP2BBvmyQDOXRXT7/V+
-lvpFErrPqDMjqrmKBLFHt4bYKjkMd+fLPFFBvdFnrvlWyf1gaA58OejQOwqzC2ptEuday3CbRAoo
-dvh5SHEyl1gq+0wmMx9F2/78i4bbuQmfJ1THKkWny0BJESFJiwKmnNRmAAAAAAAA
+hkiG9w0BAQEFAASCAQBJ/fpmocUsVIS70ioqjQ5A85TKNfXlBcg36uJELrHmEwpNfPHIAiO4O2bq
+Z0MDGD1TOi3Pz+oq6vDNm3s10BatbO6gOoCy3KV70oSIcNH+CuIwaHPueu1e/gjTmpAss2UQ2IIh
+2P/C1807K8NjTcIXch6cwp3c0nGLGVto1IALKh+WtvNKOWprpPtE4sYu7FztR9665cq5qXcEqlgv
+9MrkUbxUx7Q67tyRq4ulMF/7ao4e5nPauiq2PJeH+lD8DEZLunsOskWDO3uhLBVi2TKIP5ycv8dJ
+Slf5cL1WZsqy9ct8Tk/mmMGZrI+82T71zPC6CyMtl2yrPOQYzSBjGK1nAAAAAAAA
 
 
---=-obRkqgxAplOZ6+q8rELA--
+--=-m9TVXN2+xVMfug4MouSd--
 
 
---===============4661813908961335390==
+--===============0479280343569126205==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============4661813908961335390==--
+--===============0479280343569126205==--
