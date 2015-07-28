@@ -1,43 +1,133 @@
-From: Joerg Roedel <jroedel@suse.de>
-Subject: Re: [PATCH v2 00/11] PCI: Fix ATS deadlock
-Date: Tue, 28 Jul 2015 17:16:02 +0200
-Message-ID: <20150728151602.GL27614@suse.de>
-References: <20150721001243.28145.81610.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 2/5] iommu/arm-smmu: Sort out coherency
+Date: Tue, 28 Jul 2015 16:17:48 +0100
+Message-ID: <55B79D1C.7030507@arm.com>
+References: <c8cc82fea26044e393ff857014d4146faac5ec1e.1438019069.git.robin.murphy@arm.com>
+	<4d5880f2131854bc59107ccc917993136e511341.1438019069.git.robin.murphy@arm.com>
+	<20150728094349.GE29209@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150721001243.28145.81610.stgit@bhelgaas-glaptop2.roam.corp.google.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-pci@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, Gregor Dick <gdick@solarflare.com>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150728094349.GE29209-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org" <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Bjorn,
+Hi Will,
 
-On Mon, Jul 20, 2015 at 07:13:49PM -0500, Bjorn Helgaas wrote:
-> Bjorn Helgaas (11):
->       iommu/vt-d: Cache PCI ATS state and Invalidate Queue Depth
->       PCI: Allocate ATS struct during enumeration
->       PCI: Embed ATS info directly into struct pci_dev
->       PCI: Reduce size of ATS structure elements
->       PCI: Rationalize pci_ats_queue_depth() error checking
->       PCI: Inline the ATS setup code into pci_ats_init()
->       PCI: Use pci_physfn() rather than looking up physfn by hand
->       PCI: Clean up ATS error handling
->       PCI: Move ATS declarations to linux/pci.h so they're all together
->       PCI: Stop caching ATS Invalidate Queue Depth
->       PCI: Remove pci_ats_enabled()
+On 28/07/15 10:43, Will Deacon wrote:
+> Hi Robin,
+>
+> Cheers for doing this. Just a few comments (mainly in relation to being
+> consistent with SMMUv3).
 
-So while you are at working on ATS, could we probably also introduce a
-way to globally disable ATS on a box from the kernel command line
-(pci=noats?)? ATS is basically a way for a device to tunnel through the
-IOMMU without access checking (because pre-translated requests are not
-checked again).
+Thanks!
 
-For security reasons it would be good to have a way to disable ATS
-completly if desired.
+> On Mon, Jul 27, 2015 at 07:18:09PM +0100, Robin Murphy wrote:
+>> Currently we detect the whether the SMMU has coherent page table walk
+>
+> "we detect the whether"?
 
+Er, yeah, looks like rain tomorrow afternoon :P
 
+>> capability from the IDR0.CTTW field, and base our cache maintenance
+>> decisions on that. In preparation for fixing the bogus DMA API usage,
+>> however, we need to ensure that the DMA API agrees about this, which
+>> necessitates deferring to the dma-coherent property in the device tree
+>> for the final say.
+>>
+>> As an added bonus, since systems exist where an external CTTW signal
+>> has been tied off incorrectly at integration, allowing DT to override
+>> it offers a neat workaround for coherency issues with such SMMUs.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> ---
+>>   Documentation/devicetree/bindings/iommu/arm,smmu.txt |  4 ++++
+>>   drivers/iommu/arm-smmu.c                             | 17 ++++++++++++++---
+>>   2 files changed, 18 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>> index 0676050..04724fc 100644
+>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>> @@ -43,6 +43,10 @@ conditions.
+>>
+>>   ** System MMU optional properties:
+>>
+>> +- dma-coherent  : Presence or absence should correctly reflect whether
+>> +                  the SMMU translation table walk interface is
+>> +                  cache-coherent with the CPU.
+>> +
+>
+> Please copy the text from:
+> Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt#
+> and remove the bit about stream table accesses.
 
-	Joerg
+Done, although since the resulting "...DMA operations made by the SMMU 
+(page table walks)..." is both redundant and horribly clunky it gets 
+rewritten as "...page table walks made by the SMMU..."
+
+>>   - calxeda,smmu-secure-config-access : Enable proper handling of buggy
+>>                     implementations that always use secure access to
+>>                     SMMU configuration registers. In this case non-secure
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index 4cd0c29..9a59bef 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -1532,6 +1532,7 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>>   	unsigned long size;
+>>   	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
+>>   	u32 id;
+>> +	bool cttw_dt, cttw_reg;
+>>
+>>   	dev_notice(smmu->dev, "probing hardware configuration...\n");
+>>   	dev_notice(smmu->dev, "SMMUv%d with:\n", smmu->version);
+>> @@ -1571,10 +1572,20 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>>   		dev_notice(smmu->dev, "\taddress translation ops\n");
+>>   	}
+>>
+>> -	if (id & ID0_CTTW) {
+>> +	/*
+>> +	 * In order for DMA API calls to work properly, we must defer to what
+>> +	 * the DT says about coherency, regardless of what the hardware claims.
+>> +	 * Fortunately, this also opens up a workaround for systems where the
+>> +	 * ID register value has ended up configured incorrectly.
+>> +	 */
+>> +	cttw_dt = of_property_read_bool(smmu->dev->of_node, "dma-coherent");
+>
+> Use of_dma_is_coherent(smmu->dev->of_node)
+
+*facepalm*
+
+>> +	if (cttw_dt)
+>>   		smmu->features |= ARM_SMMU_FEAT_COHERENT_WALK;
+>> -		dev_notice(smmu->dev, "\tcoherent table walk\n");
+>> -	}
+>> +	cttw_reg = !!(id & ID0_CTTW);
+>> +	if (cttw_dt || cttw_reg)
+>> +		dev_notice(smmu->dev, "\t%scoherent table walk%s\n",
+>> +			   cttw_dt ? "" : "no ",
+>> +			   (cttw_dt == cttw_reg) ? "" : " (overridden by DT)");
+>
+> Similarly here; I think we should just follow the message printed by the
+> SMMUv3 driver but s/IDR0.COHACC/ID0.CTTW/.
+
+I note that the v3 driver stays silent as long as the DT and hardware 
+agree - I'm reticent to entirely remove the original message here as 
+it's proved rather useful (especially in debugging-over-email exchanges) 
+to see at a glance from a boot log whether the driver thinks a 
+particular SMMU is coherent or not (particularly with my SMMUv1 
+many-instances-in-the-same-system hat on). I can certainly make the 
+override message more consistent, though.
+
+Robin
