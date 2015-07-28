@@ -1,98 +1,169 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v3 3/6] iommu: add ARM short descriptor page table
-	allocator.
-Date: Tue, 28 Jul 2015 13:08:14 +0800
-Message-ID: <1438060094.25925.69.camel@mhfsdcap03>
-References: <1437037475-9065-1-git-send-email-yong.wu@mediatek.com>
-	<1437037475-9065-4-git-send-email-yong.wu@mediatek.com>
-	<20150721171101.GN31095@arm.com> <1437715466.23932.68.camel@mhfsdcap03>
-	<20150724165325.GC21177@arm.com> <1437970868.25925.20.camel@mhfsdcap03>
-	<55B63AB2.4050006@arm.com> <20150727141102.GJ3358@arm.com>
+From: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 2/2] iommu/omap: Add support for configuring dsp iommus
+ on DRA7xx
+Date: Mon, 27 Jul 2015 23:14:26 -0700
+Message-ID: <20150728061426.GL16878@atomide.com>
+References: <1437522936-19758-1-git-send-email-s-anna@ti.com>
+ <1437522936-19758-3-git-send-email-s-anna@ti.com>
+ <20150722052600.GF17550@atomide.com>
+ <55AFC34E.4000603@ti.com>
+ <20150723072455.GC16878@atomide.com>
+ <55B114DF.8070800@ti.com>
+ <20150724043056.GG16878@atomide.com>
+ <55B266CE.9070202@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150727141102.GJ3358-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org" <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, "frederic.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <frederic.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "cloud.chou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <cloud.chou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <55B266CE.9070202-l0cyMroinI0@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2015-07-27 at 15:11 +0100, Will Deacon wrote:
-> On Mon, Jul 27, 2015 at 03:05:38PM +0100, Robin Murphy wrote:
-> > On 27/07/15 05:21, Yong Wu wrote:
-> > >>>>> +       } else {        /* page or largepage */
-> > >>>>> +               if (quirk & IO_PGTABLE_QUIRK_SHORT_MTK) {
-> > >>>>> +                       if (large) { /* special Bit */
-> > >>>>
-> > >>>> This definitely needs a better comment! What exactly are you doing here
-> > >>>> and what is that quirk all about?
-> > >>>
-> > >>> I use this quirk is for MTK Special Bit as we don't have the XN bit in
-> > >>> pagetable.
-> > >>
-> > >> I'm still not really clear about what this is.
-> > >
-> > > There is some difference between the standard spec and MTK HW,
-> > > Our hw don't implement some bits, like XN and AP.
-> > > So I add a quirk for MTK special.
+* Suman Anna <s-anna-l0cyMroinI0@public.gmane.org> [150724 09:27]:
+> Hi Tony,
+> 
+> On 07/23/2015 11:30 PM, Tony Lindgren wrote:
+> > * Suman Anna <s-anna-l0cyMroinI0@public.gmane.org> [150723 09:25]:
+> >> Hi Tony,
+> >>
+> >> On 07/23/2015 02:24 AM, Tony Lindgren wrote:
+> >>> * Suman Anna <s-anna-l0cyMroinI0@public.gmane.org> [150722 09:25]:
+> >>>> On 07/22/2015 12:26 AM, Tony Lindgren wrote:
+> >>>>>
+> >>>>> I don't like using syscon for tinkering directly with SoC registers.
+> >>>>
+> >>>> This is not a SoC-level register, but a register within a sub-module of
+> >>>> the DSP processor sub-system. The DSP_SYSTEM sub-module in general is
+> >>>> described in Section 5.3.3 of the TRM [1], and it implements different
+> >>>> functionalities like the PRCM handshaking, wakeup logic and DSP
+> >>>> subsystem top-level configuration. It is a module present within the DSP
+> >>>> processor sub-system, so can only be accessed when the sub-system is
+> >>>> clocked and the appropriate reset is released.
+> >>>
+> >>> OK so if it's specific to the DSP driver along the lines of sysc and
+> >>> syss registers.
+> >>
+> >> There will be those registers too within the MMU config register space,
+> >> even for DRA7xx MMUs. This is different, think of it like a register in
+> >> the Control module except that it is present within the DSP sub-system
+> >> instead of at the SoC level.
 > > 
-> > When you say it doesn't implement these bits, do you mean that having 
-> > them set will lead to Bad Things happening in the hardware, or that it 
-> > will simply ignore them and not enforce any of the protections they 
-> > imply? The former case would definitely want clearly documenting 
-> > somewhere, whereas for the latter case I'm not sure it's even worth the 
-> > complication of having a quirk - if the value doesn't matter there seems 
-> > little point in doing a special dance just for the sake of semantic 
-> > correctness of the in-memory PTEs, in my opinion.
+> > And what is taking care of pm_runtime_get here to ensure the module
+> > is powered and clocked?
 > 
-> Agreed. We should only use quirks if the current (architecturally
-> compliant) code causes real issues with the hardware. Then the quirk can
-> be used to either avoid the problematic routines or to take extra steps
-> to make things work as the architecture intended.
+> pm_runtime_get_sync is indeed getting invoked, its just the current
+> patch doesn't include the code block that invokes it. The function that
+> invokes omap2_iommu_enable does so after a call to the
+> pm_runtime_get_sync() call.
+
+OK 
+
+> > I think you are missing a layer here and it's the Linux kernel side
+> > device driver for DSP that initializes things.
 > 
-> I've asked how this IOMMU differs from the architecture on a number of
-> occasions, but I'm still yet to receive a response other than "it's special".
+> We already have separate drivers for MMUs (omap-iommu) and the processor
+> management (omap-rproc). The former manages all the low-level
+> programming sequences for the MMUs, while the latter manages the
+> low-level reset etc, and is a client user of the respective IOMMU
+> device. Both integrate into the respective frameworks. The IOMMU API
+> invocations are handled in the remoteproc core, with the OMAP remoteproc
+> driver publishing itself as having an MMU with the remoteproc core. The
+> IOMMU API invoke the appropriate iommu_ops.
 > 
+> You can lookup the functions rproc_enable_iommu()/rproc_disable_iommu()
+> in the remoteproc core. The IOMMU enabling sequences happen within the
+> iommu_attach_device() API. The call flow is
+> iommu_attach_device()->omap_iommu_attach_dev()->omap_iommu_attach()->
+> iommu_enable()->
+>    omap_device_deassert_hardreset, pm_runtime_get_sync, omap2_iommu_enable.
 
-After check further with DE, Our pagetable is refer to ARM-v7's
-short-descriptor which is a little different from ARM-v8. like bit0(PXN)
-in section and supersection, I didn't read ARM-v7 spec before, so I add
-a MTK quirk to disable PXN bit in section and supersection.(if the PXN
-bit is wrote in ARM-v7 spec, HW will page fault.)
+OK. The thing to check here is that you have a separate device driver
+for each sysc/syss device registers. This is because each hardware module
+can be independently clocked and idled. Otherwise things will break at
+some point. And no "things are configured for autoidle" or "we're not
+doing PM is not a good excuse here" :)
 
-Then I write this code according to ARM-v8 spec defaultly, and add a
-ARM-v7 quirk?
+Can you please check that? If the remoteproc driver and iommu driver
+are tinkering with registers in separate hardware modules, we have
+a layering violation. My guess is that we have at least two hardware
+modules involved here, one for the iommu and one for the DSP device.
+ 
+> >>> Typically we handle these registers by mapping them to the PM runtime
+> >>> functions for the interconnect so we can reset and idle the hardware
+> >>> modules even if there is no driver, see for example
+> >>> omap54xx_mmu_dsp_hwmod.
+> >>
+> >> I haven't yet submitted the DRA7xx hwmods, but they will look almost
+> >> exactly like the OMAP5 ones. The reset and idle on these are in general
+> >> not effective at boot time since these are also controlled by a
+> >> hard-reset line, so that's left to the drivers to deal with it through
+> >> the omap_device_deassert_hardreset API.
+> > 
+> > If the MMU configuration is one time init, it may make sense to add
+> > it to the hwmod reset function. However, if the Linux kernel side
+> > driver needs to configure things depending on the DSP firmware, it
+> > should be done in the kernel side device driver.
+> 
+> The MMU configuration comes into picture whenever the remoteproc driver
+> is being booted and shut down, and also during suspend (no support for
+> this yet in mainline on OMAP rproc). Today, the hwmod
+> _enable/_idle/reset functions alone are not enough to power on the OMAP
+> remoteproc/iommus. We need sequencing calls to both
+> omap_device_assert/_deassert_hardreset (done through pdata-quirks) and
+> pm_runtime API to achieve this.
 
-And there is a little different between ARM-v7 spec and MTK pagetable.
-It's the XN(bit0) in small page. MTK don't implement XN bit. 
-The bit[1:0] in MTK's small page should be 2'b10, if it's 2'b11, HW will
-page fault.
-(MTK don't implement AP bits too, but HW don't use them, it is ok even
-though AP bits is wrote)
+Right and that's why I'm worried that we have multiple hardware modules
+involved :)  
+ 
+> >>>>> We should use some Linux generic framework for configuring these
+> >>>>> bits to avoid nasty dependencies between various hardware modules
+> >>>>> on the SoC.
+> >>>>>
+> >>>>> What does DSP_SYS_MMU_CONFIG register do? It seems it's probably
+> >>>>> a regulator or a gate clock? If so, it should be set up as a
+> >>>>> regulator or a clock and then the omap-iommu driver can just
+> >>>>> use regulator or clcok framework to request the resource.
+> >>>>
+> >>>> No, its neither. It is a control bit that dictates whether the
+> >>>> processor/EDMA addresses go through the respective MMU or not. The
+> >>>> register currently has 4 bits (bit 0 in each nibble), one each for
+> >>>> enabling each MMU and requesting an MMU abort on each. The MMU
+> >>>> integration and enablement notes are detailed in Section 5.3.6 of the
+> >>>> TRM [1], and the DSP_SYS_MMU_CONFIG register layout is in Table 5-28
+> >>>> (Page 1641).
+> >>>
+> >>> OK yeah seems like it should be handled by the DSP driver during
+> >>> probe after doing pm_runtime_get. Then the driver can configure
+> >>> things like IOMMU and load firmware. Or am I missing something here?
+> >>
+> >> The DSP (remoteproc) driver uses the generic IOMMU API, and all the
+> >> IOMMU enabling sequence is transparent to the DSP driver. So, any
+> >> configuration/enabling sequence specific to the IOMMU has to be handled
+> >> within the respective IOMMU platform driver that gets integrated into
+> >> the IOMMU API.
+> > 
+> > To me it seems you still need a DSP kernel driver to manage the
+> > DSP hardware for PM runtime. I don't see how iommu and remoteproc
+> > alone would be sufficient here. You end up sprinkling DSP driver
+> > specific code to the iommu and remoteproc layers.
+> 
+> I am not sure what you envision to be in this DSP kernel driver, because
+> all the needed functionality is already handled by existing drivers. The
+> OMAP remoteproc driver is the kernel driver to deal with the device
+> management for both IPUs and DSPs on OMAP4, OMAP5 and DRA7 (DT support
+> to be added).
 
-In the end, I will add two quirk like this, is it OK?
+OK maybe check the syss/sysc registers involved here for each hardware
+module here and which driver tinkers with which registers? This will
+make things a lot easier in the long run for sure.
 
-//===========
-#define ARM_PGTABLE_QUIRK_SHORT_ARM_V7   BIT(2)  /* for ARM-v7 while
-default is the ARM-v8 spec */
-#define ARM_PGTABLE_QUIRK_SHORT_MTK  BIT(3)      /* MTK special */
-//===========
+Regrads,
 
-In the ARM_V7 quirk, I only disable PXN bit in section and supersection,
-In the MTK quirk, I only disbable XN in small page.
+Tony
 
-The other bits seems the same. I'm not sure I write clearly and It seems
-we could not copy a image of mtk pagetable here..If any question, please
-help tell me.
-Thanks very much.
-
-> Will
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
