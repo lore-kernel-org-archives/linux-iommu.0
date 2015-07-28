@@ -1,102 +1,71 @@
-From: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4 2/4] iommu: Implement common IOMMU ops for DMA mapping
-Date: Tue, 28 Jul 2015 17:45:27 +0100
-Message-ID: <20150728164526.GA536@e104818-lin.cambridge.arm.com>
-References: <cover.1437070995.git.robin.murphy@arm.com>
-	<00fb13713dc8a69dc32b859f9311e70d78fb0c7a.1437070995.git.robin.murphy@arm.com>
+From: Sudeep Dutt <sudeep.dutt@intel.com>
+Subject: Re: [PATCH char-misc-next 10/19] lib: convert iova.c into a library
+Date: Tue, 28 Jul 2015 10:01:00 -0700
+Message-ID: <1438102860.6314.49.camel@localhost>
+References: <cover.1438040669.git.ashutosh.dixit@intel.com>
+	 <8131ebc8ecb5ef13ef0aa4c49dabe9694f0e410f.1438040669.git.ashutosh.dixit@intel.com>
+	 <20150728100340.GR10969@8bytes.org> <55B75C69.30200@arm.com>
+	 <1438094293.26913.177.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <00fb13713dc8a69dc32b859f9311e70d78fb0c7a.1437070995.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1438094293.26913.177.camel@infradead.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: David Woodhouse <dwmw2@infradead.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Ashutosh Dixit <ashutosh.dixit@intel.com>, Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Nikhil Rao <nikhil.rao@intel.com>, Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>, Harish Chegondi <harish.chegondi@intel.com>, "sakari.ailus@linux.intel.com" <sakari.ailus@linux.intel.com>, "Dutt, Sudeep" <sudeep.dutt@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jul 16, 2015 at 07:40:13PM +0100, Robin Murphy wrote:
-> +/**
-> + * iommu_dma_alloc - Allocate and map a buffer contiguous in IOVA space
-> + * @dev: Device to allocate memory for. Must be a real device
-> + *	 attached to an iommu_dma_domain
-> + * @size: Size of buffer in bytes
-> + * @gfp: Allocation flags
-> + * @prot: IOMMU mapping flags
-> + * @handle: Out argument for allocated DMA handle
-> + * @flush_page: Arch callback to flush a single page from all caches to
-> + *		ensure DMA visibility of __GFP_ZERO. May be NULL if not
-> + *		required.
-> + *
-> + * If @size is less than PAGE_SIZE, then a full CPU page will be allocated,
-> + * but an IOMMU which supports smaller pages might not map the whole thing.
-> + *
-> + * Return: Array of struct page pointers describing the buffer,
-> + *	   or NULL on failure.
-> + */
-> +struct page **iommu_dma_alloc(struct device *dev, size_t size,
-> +		gfp_t gfp, int prot, dma_addr_t *handle,
-> +		void (*flush_page)(const void *, phys_addr_t))
-> +{
-> +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> +	struct iova_domain *iovad = domain->dma_api_cookie;
-> +	struct iova *iova;
-> +	struct page **pages;
-> +	struct sg_table sgt;
-> +	dma_addr_t dma_addr;
-> +	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> +
-> +	*handle = DMA_ERROR_CODE;
-> +
-> +	pages = __iommu_dma_alloc_pages(count, gfp);
-> +	if (!pages)
-> +		return NULL;
-> +
-> +	iova = __alloc_iova(iovad, size, dev->coherent_dma_mask);
-> +	if (!iova)
-> +		goto out_free_pages;
-> +
-> +	size = iova_align(iovad, size);
-> +	if (sg_alloc_table_from_pages(&sgt, pages, count, 0, size, GFP_KERNEL))
-> +		goto out_free_iova;
-> +
-> +	if (gfp & __GFP_ZERO) {
-> +		struct sg_mapping_iter miter;
-> +		/*
-> +		 * The flushing provided by the SG_MITER_TO_SG flag only
-> +		 * applies to highmem pages, so it won't do the job here.
-> +		 */
+On Tue, 2015-07-28 at 15:38 +0100, David Woodhouse wrote:
+> On Tue, 2015-07-28 at 11:41 +0100, Robin Murphy wrote:
+> > On 28/07/15 11:03, Joerg Roedel wrote:
+> > > On Mon, Jul 27, 2015 at 04:57:32PM -0700, Ashutosh Dixit wrote:
+> > > > From: Harish Chegondi <harish.chegondi@intel.com>
+> > > > 
+> > > > This patch converts iova.c into a library, moving it from
+> > > > drivers/iommu/ to lib/, and exports its virtual address 
+> > > > allocation and
+> > > > management functions so that other modules can reuse them.
+> > > > 
+> > > > Cc: Joerg Roedel <joro@8bytes.org>
+> > > > Reviewed-by: Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com
+> > > > >
+> > > > Reviewed-by: Sudeep Dutt <sudeep.dutt@intel.com>
+> > > > Signed-off-by: Harish Chegondi <harish.chegondi@intel.com>
+> > > 
+> > > Where is this going to be used outside of the IOMMU world?
+> > > 
 
-The comment here is slightly wrong. The SG_MITER_FROM_SG flushing is
-done by calling flush_kernel_dcache_page(). This function can be no-op
-even on architectures implementing highmem. For example, on arm32 it
-only does some flushing if there is a potential D-cache alias with user
-space. The flush that you call below is for DMA operations, something
-entirely different.
+We are using the IOVA generator in the SCIF driver posted @
+http://thread.gmane.org/gmane.linux.kernel/2005895 under
+drivers/misc/mic/scif
 
-> +		sg_miter_start(&miter, sgt.sgl, sgt.orig_nents, SG_MITER_FROM_SG);
-> +		while (sg_miter_next(&miter)) {
-> +			memset(miter.addr, 0, PAGE_SIZE);
+> > 
+> > ...and how does it relate to the patches from Sakari (+CC) doing much 
+> > the same thing[1]?
+> 
 
-Isn't __GFP_ZERO already honoured by alloc_pages in
-__iommu_dma_alloc_pages?
+The patch series from Sakari does the right thing by moving the IOVA
+cache management to the IOVA library. We will simply drop this current
+patch as it is incorrect.
 
-> +			if (flush_page)
-> +				flush_page(miter.addr, page_to_phys(miter.page));
+> I merged Sakari's patches into the intel-iommu git tree today, FWIW.
+> 
+> If there's really a need to move it from drivers/iommu/ to lib/ then we
+> could feasibly do that too.
+> 
 
-Could you instead do the check as !(prot & IOMEM_CACHE) so that it saves
-architecture code from passing NULL when coherent?
+The patch series from Sakari should work perfectly for us. We will post
+a v2 of the current SCIF patch series without this IOVA patch and modify
+the SCIF driver to use the newly added iova_cache_get(..) and
+iova_cache_put(..) APIs once it is available in Linus's tree. It would
+make it easier for us to integrate if Sakari's patches reach mainline
+soon.
 
-I'm still not convinced we need this flushing here but I'll follow up in
-patch 3/4.
+It might be cleaner to move IOVA to lib/ in the longer term since we
+will have multiple driver subsystems using it, but it should work just
+fine for now.
 
--- 
-Catalin
+Thanks for the review!
+
+Sudeep Dutt
