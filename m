@@ -1,15 +1,15 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4 0/4] arm64: IOMMU-backed DMA mapping
-Date: Tue, 28 Jul 2015 13:46:57 +0100
-Message-ID: <20150728124657.GK29209@arm.com>
-References: <cover.1437070995.git.robin.murphy@arm.com>
-	<20150720152637.GD10969@8bytes.org> <55AD2E97.1040901@arm.com>
+Subject: Re: [PATCH v3 0/5] iommu/arm-smmu: add support for non-pci devices
+Date: Tue, 28 Jul 2015 13:48:47 +0100
+Message-ID: <20150728124847.GL29209@arm.com>
+References: <1437463833-16112-1-git-send-email-thunder.leizhen@huawei.com>
+	<55AE1F2F.3090106@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <55AD2E97.1040901-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <55AE1F2F.3090106-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,38 +20,32 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: "laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg, Robin,
-
-On Mon, Jul 20, 2015 at 06:23:35PM +0100, Robin Murphy wrote:
-> On 20/07/15 16:26, Joerg Roedel wrote:
-> > On Thu, Jul 16, 2015 at 07:40:11PM +0100, Robin Murphy wrote:
-> >>   arch/arm64/Kconfig                   |   1 +
-> >>   arch/arm64/include/asm/dma-mapping.h |  15 +-
-> >>   arch/arm64/mm/dma-mapping.c          | 452 +++++++++++++++++++++++++++++
-> >
-> > What happened to the plan to merge this with the existing iommu-based
-> > dma-api implementation for 32 bit ARM?
+On Tue, Jul 21, 2015 at 11:30:07AM +0100, Robin Murphy wrote:
+> On 21/07/15 08:30, Zhen Lei wrote:
+> > Changelog:
+> > v2 -> v3:
+> > 1. add support for pci device hotplug, which missed in patch v2.
+> > 2. only support #iommu-cells = <1>, add corresponding description in arm,smmu-v3.txt.
+> > 3. add function find_smmu_by_device which extracted from find_smmu_by_node, to resolve
+> >     the problem mentioned by Robin Murphy in [PATCH v2 7/9].
+> >     Additionally:
+> >     +    platform_set_drvdata(pdev, smmu);       //Patch v2
+> >     +	dev->archdata.iommu = smmu;             //Patch v3, dev = &pdev->dev
 > 
-> The issue currently is that there are a bunch of drivers using the 
-> exported arm_iommu_* functions directly. From what I can tell, they seem 
-> like they could probably all be converted to using default domains 
-> and/or the new domain type abstractions via the core IOMMU API, which 
-> would then allow killing off dma_iommu_mapping and rewriting the 
-> arch/arm implementation to use the new shared code. I don't currently 
-> have any 32-bit platform to test with, so I'm a little dubious of taking 
-> that all on myself right now.
 > 
-> In the meantime on arm64, DMA mapping ops are needed for SMMUv3 platform 
-> device support, the Mediatek M4U patches and my own SMMUv2 work, so it 
-> would be very useful to get the arm64 and common code in as a first 
-> step, then look at cleaning up arch/arm for 4.4 without dangling 
-> dependencies.
+> I didn't give any Reviewed-by tags, much less to revised patches that 
+> I've not even looked at yet; please see section 13 of 
+> Documentation/SubmittingPatches for what the Reviewed-by tag means.
 
-What's the plan with this? Do we need to port 32-bit ARM before it's a
-candidate for merging, or can we push ahead with getting this up and
-running for arm64 (which currently can't use an IOMMU for DMA)?
+That said, it would be great if you could review the patches anyway ;)
+
+Also, it looks like this is all based on Laurent's IOMMU probe deferral
+series which hasn't seen any movement for a while.
+
+Laurent: are you planning to repost that, or is it worth us picking up
+the original version and bashing it into shape ourselves?
 
 Will
