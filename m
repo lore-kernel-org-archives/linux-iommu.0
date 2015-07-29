@@ -1,208 +1,93 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v3 6/6] dts: mt8173: Add iommu/smi nodes for mt8173
-Date: Wed, 29 Jul 2015 15:29:16 +0800
-Message-ID: <1438154956.25925.132.camel@mhfsdcap03>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v3 5/6] iommu/mediatek: Add mt8173 IOMMU driver
+Date: Wed, 29 Jul 2015 11:31:50 +0100
+Message-ID: <20150729103150.GB4797@arm.com>
 References: <1437037475-9065-1-git-send-email-yong.wu@mediatek.com>
-	 <1437037475-9065-7-git-send-email-yong.wu@mediatek.com>
-	 <CAGS+omB5xS8LoQR9-S8iqhdsRb4OWQ_B656dJSincLZ9nby1ZA@mail.gmail.com>
+	<1437037475-9065-6-git-send-email-yong.wu@mediatek.com>
+	<55B630CE.4050803@arm.com>
+	<20150727153148.GJ7557@n2100.arm.linux.org.uk>
+	<55B6530A.9050903@arm.com> <1438148491.25925.89.camel@mhfsdcap03>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAGS+omB5xS8LoQR9-S8iqhdsRb4OWQ_B656dJSincLZ9nby1ZA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, srv_heupstream <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "open list:OPEN FIRMWARE AND..." <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, cloud.chou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1438148491.25925.89.camel@mhfsdcap03>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "cloud.chou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <cloud.chou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "frederic.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <frederic.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org" <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm77oxUfYCNXn@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2015-07-23 at 22:40 +0800, Daniel Kurtz wrote:
-> Hi Yong,
+On Wed, Jul 29, 2015 at 06:41:31AM +0100, Yong Wu wrote:
+> On Mon, 2015-07-27 at 16:49 +0100, Robin Murphy wrote:
+> > On 27/07/15 16:31, Russell King - ARM Linux wrote:
+> > > On Mon, Jul 27, 2015 at 02:23:26PM +0100, Robin Murphy wrote:
+> > >> On 16/07/15 10:04, Yong Wu wrote:
+> > >>> This patch adds support for mediatek m4u (MultiMedia Memory Management
+> > >>> Unit).
+> > >>>
+> > >>> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> > >> [...]
+> > >>> +static void mtk_iommu_flush_pgtable(void *ptr, size_t size, void *cookie)
+> > >>> +{
+> > >>> +       struct mtk_iommu_domain *domain = cookie;
+> > >>> +       unsigned long offset = (unsigned long)ptr & ~PAGE_MASK;
+> > >>> +
+> > >>> +       dma_map_page(domain->data->dev, virt_to_page(ptr), offset,
+> > >>> +                    size, DMA_TO_DEVICE);
+> > >>
+> > >> Nit: this looks like it may as well be dma_map_single.
+> > >>
+> > >> It would probably be worth following it with a matching unmap too, just to
+> > >> avoid any possible leakage bugs (especially if this M4U ever appears in a
+> > >> SoC supporting RAM above the 32-bit boundary).
+> > >
+> > > Why not do the job properly?  Take a look at how I implemented the
+> > > streaming DMA API on Tegra SMMU (patch set recently sent out earlier
+> > > today).
+> > >
+> > > There's no need for hacks like dma_map_page() (and discarding it's
+> > > return value) or dma_map_page() followed by dma_unmap_page().
+> > 
+> > Indeed, as it happens I do have a branch where I prototyped that for the 
+> > long-descriptor io-pgtable-arm code a while ago; this discussion has 
+> > prompted me to dig it up again. Stay tuned, folks...
 > 
-> On Thu, Jul 16, 2015 at 5:04 PM, Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
-> >
-> > This patch add the iommu/larbs nodes for mt8173
+> Hi Russell, Robin,
 > 
-> To what tree does this apply?
-> Please rebase these patches (especially this one) on an Matthias'
-> current v4.2-next/for-next.
+>      From I see in arm-smmu-v3.c in v4.2-rc1, 
+>      
+>      The flush_pgtable seems like this:
+> //==========
+> 	dma_addr_t dma_addr;
+> 
+> 	dma_addr = dma_map_page(dev, ptr, size, DMA_TO_DEVICE);
+> 
+> 	if (dma_mapping_error(dev, dma_addr))
+> 		dev_err(dev, "failed to flush pgtable at %p\n", ptr);
+> 	else
+> 		dma_unmap_page(dev, dma_addr, size, DMA_TO_DEVICE);
+> //==========
+>        I will change map like this and use dma_map_single instead.
+> 
+>        Is this also seems to be not proper?
+> 
+>        Then how to do it?  add this before unmap? :
+>        dma_sync_single_for_device(dev, dma_addr, size, DMA_TO_DEVICE);
 
-Hi Daniel,
-    Sorry for reply so late. I will rebase these patch next time.
-    And the m4u/smi dsti is based on clocks, So I have to add the
-patches of the latest MTK clocks[1] locally, then prepare this iommu
-dtsi patch.
+Robin's proposed a series fixing this in the io-pgtable code:
 
-[1]:http://lists.infradead.org/pipermail/linux-mediatek/2015-July/001800.html
+  http://lists.linuxfoundation.org/pipermail/iommu/2015-July/013821.html
 
-> 
-> 
-> >
-> > Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> > ---
-> >  arch/arm64/boot/dts/mediatek/mt8173.dtsi |   81 ++++++++++++++++++++++++++++++
-> >  1 file changed, 81 insertions(+)
-> >
-> > diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-> > index e81ac1f..7b8e73c 100644
-> > --- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-> > +++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-> > @@ -14,6 +14,7 @@
-> >  #include <dt-bindings/clock/mt8173-clk.h>
-> >  #include <dt-bindings/interrupt-controller/irq.h>
-> >  #include <dt-bindings/interrupt-controller/arm-gic.h>
-> > +#include <dt-bindings/memory/mt8173-larb-port.h>
-> >  #include <dt-bindings/power/mt8173-power.h>
-> >  #include <dt-bindings/reset-controller/mt8173-resets.h>
-> >  #include "mt8173-pinfunc.h"
-> > @@ -240,6 +241,17 @@
-> >                         reg = <0 0x10200620 0 0x20>;
-> >                 };
-> >
-> > +               iommu: mmsys_iommu@10205000 {
-> 
-> This name should be generic, like this (this comment really applies to
-> the binding patch):
-> 
->    iommu: iommu@10205000
+which is currently under review. Please take a look and give comments!
+Once merged, the code you cite above will be removed.
 
-Thanks.
-
-> 
-> > +                       compatible = "mediatek,mt8173-m4u";
-> > +                       reg = <0 0x10205000 0 0x1000>;
-> > +                       interrupts = <GIC_SPI 139 IRQ_TYPE_LEVEL_LOW>;
-> > +                       clocks = <&infracfg CLK_INFRA_M4U>;
-> > +                       clock-names = "bclk";
-> > +                       mediatek,larb = <&larb0 &larb1 &larb2
-> > +                                       &larb3 &larb4 &larb5>;
-> 
-> Tiny nit... please align the "&".
-> 
-> Otherwise, this one is:
-> 
-> Reviewed-by: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-
-Thanks very much. I will improve them next version.
-Look forward to that line:)
-
-> 
-> Thanks!
-> -Dan
-> 
-> > +                       #iommu-cells = <2>;
-> > +               };
-> > +
-> >                 apmixedsys: clock-controller@10209000 {
-> >                         compatible = "mediatek,mt8173-apmixedsys";
-> >                         reg = <0 0x10209000 0 0x1000>;
-> > @@ -401,29 +413,98 @@
-> >                         #clock-cells = <1>;
-> >                 };
-> >
-> > +               larb0: larb@14021000 {
-> > +                       compatible = "mediatek,mt8173-smi-larb";
-> > +                       reg = <0 0x14021000 0 0x1000>;
-> > +                       mediatek,smi = <&smi_common>;
-> > +                       power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
-> > +                       clocks = <&mmsys CLK_MM_SMI_LARB0>,
-> > +                                <&mmsys CLK_MM_SMI_LARB0>;
-> > +                       clock-names = "apb", "smi";
-> > +               };
-> > +
-> > +               smi_common: smi@14022000 {
-> > +                       compatible = "mediatek,mt8173-smi";
-> > +                       reg = <0 0x14022000 0 0x1000>;
-> > +                       power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
-> > +                       clocks = <&mmsys CLK_MM_SMI_COMMON>,
-> > +                                <&mmsys CLK_MM_SMI_COMMON>;
-> > +                       clock-names = "apb", "smi";
-> > +               };
-> > +
-> > +               larb4: larb@14027000 {
-> > +                       compatible = "mediatek,mt8173-smi-larb";
-> > +                       reg = <0 0x14027000 0 0x1000>;
-> > +                       mediatek,smi = <&smi_common>;
-> > +                       power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
-> > +                       clocks = <&mmsys CLK_MM_SMI_LARB4>,
-> > +                                <&mmsys CLK_MM_SMI_LARB4>;
-> > +                       clock-names = "apb", "smi";
-> > +               };
-> > +
-> >                 imgsys: imgsys@15000000 {
-> >                         compatible = "mediatek,mt8173-imgsys", "syscon";
-> >                         reg = <0 0x15000000 0 0x1000>;
-> >                         #clock-cells = <1>;
-> >                 };
-> >
-> > +               larb2: larb@15001000 {
-> > +                       compatible = "mediatek,mt8173-smi-larb";
-> > +                       reg = <0 0x15001000 0 0x1000>;
-> > +                       mediatek,smi = <&smi_common>;
-> > +                       power-domains = <&scpsys MT8173_POWER_DOMAIN_ISP>;
-> > +                       clocks = <&imgsys CLK_IMG_LARB2_SMI>,
-> > +                                <&imgsys CLK_IMG_LARB2_SMI>;
-> > +                       clock-names = "apb", "smi";
-> > +               };
-> > +
-> >                 vdecsys: vdecsys@16000000 {
-> >                         compatible = "mediatek,mt8173-vdecsys", "syscon";
-> >                         reg = <0 0x16000000 0 0x1000>;
-> >                         #clock-cells = <1>;
-> >                 };
-> >
-> > +               larb1: larb@16010000 {
-> > +                       compatible = "mediatek,mt8173-smi-larb";
-> > +                       reg = <0 0x16010000 0 0x1000>;
-> > +                       mediatek,smi = <&smi_common>;
-> > +                       power-domains = <&scpsys MT8173_POWER_DOMAIN_VDEC>;
-> > +                       clocks = <&vdecsys CLK_VDEC_CKEN>,
-> > +                                <&vdecsys CLK_VDEC_LARB_CKEN>;
-> > +                       clock-names = "apb", "smi";
-> > +               };
-> > +
-> >                 vencsys: vencsys@18000000 {
-> >                         compatible = "mediatek,mt8173-vencsys", "syscon";
-> >                         reg = <0 0x18000000 0 0x1000>;
-> >                         #clock-cells = <1>;
-> >                 };
-> >
-> > +               larb3: larb@18001000 {
-> > +                       compatible = "mediatek,mt8173-smi-larb";
-> > +                       reg = <0 0x18001000 0 0x1000>;
-> > +                       mediatek,smi = <&smi_common>;
-> > +                       power-domains = <&scpsys MT8173_POWER_DOMAIN_VENC>;
-> > +                       clocks = <&vencsys CLK_VENC_CKE1>,
-> > +                                <&vencsys CLK_VENC_CKE0>;
-> > +                       clock-names = "apb", "smi";
-> > +               };
-> > +
-> >                 vencltsys: vencltsys@19000000 {
-> >                         compatible = "mediatek,mt8173-vencltsys", "syscon";
-> >                         reg = <0 0x19000000 0 0x1000>;
-> >                         #clock-cells = <1>;
-> >                 };
-> > +
-> > +               larb5: larb@19001000 {
-> > +                       compatible = "mediatek,mt8173-smi-larb";
-> > +                       reg = <0 0x19001000 0 0x1000>;
-> > +                       mediatek,smi = <&smi_common>;
-> > +                       power-domains = <&scpsys MT8173_POWER_DOMAIN_VENC_LT>;
-> > +                       clocks = <&vencltsys CLK_VENCLT_CKE1>,
-> > +                                <&vencltsys CLK_VENCLT_CKE0>;
-> > +                       clock-names = "apb", "smi";
-> > +               };
-> >         };
-> >  };
-> >
-> > --
-> > 1.7.9.5
-> >
-> 
-> 
-> 
-
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Will
