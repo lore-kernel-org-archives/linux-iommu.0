@@ -1,43 +1,62 @@
-From: Andreas Hartmann <andihartmann@freenet.de>
-Subject: Re: Since Linux 4.1: A lot of AMD-Vi IO_PAGE_FAULTs
-Date: Wed, 29 Jul 2015 18:31:07 +0200
-Message-ID: <55B8FFCB.30602@maya.org>
-References: <55AE5F84.5020204@01019freenet.de>
- <1437492886.1391.847.camel@redhat.com> <20150721155635.GE10969@8bytes.org>
- <55AE7147.7070902@maya.org> <20150721163517.GG10969@8bytes.org>
- <55B1BDA3.3030507@maya.org>
- <CAErSpo666MBxpDe+uPvfVc7LPJsJQsVTusBhHygtwbou5GGj1w@mail.gmail.com>
- <55B27CEB.6010007@maya.org> <20150729152208.GS10969@8bytes.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v2 7/9] iommu/arm-smmu: Remove arm_smmu_flush_pgtable()
+Date: Wed, 29 Jul 2015 19:46:10 +0100
+Message-ID: <e0e55f7aae299088f90472feb4b54c8601ff3b81.1438195011.git.robin.murphy@arm.com>
+References: <6999933bfa9b3d50853fd023d455c837a0d7ff23.1438195011.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-ide-owner@vger.kernel.org>
-In-Reply-To: <20150729152208.GS10969@8bytes.org>
-Sender: linux-ide-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Andreas Hartmann <andihartmann@freenet.de>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Alex Williamson <alex.williamson@redhat.com>, linux-pci <linux-pci@vger.kernel.org>, iommu <iommu@lists.linux-foundation.org>, Tejun Heo <tj@kernel.org>, "linux-ide@vger.kernel.org" <linux-ide@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <6999933bfa9b3d50853fd023d455c837a0d7ff23.1438195011.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org
+Cc: linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi J=F6rg,
+With the io-pgtable code now enforcing its own appropriate sync points,
+the vestigial flush_pgtable callback becomes entirely redundant, so
+remove it altogether.
 
-On 07/29/2015 at 05:22 PM, Joerg Roedel wrote:
-> Hi Andreas,
->=20
-> On Fri, Jul 24, 2015 at 07:59:07PM +0200, Andreas Hartmann wrote:
->> New information: During testing, I now realized that Linux 4.0.9 sho=
-ws
->> the same problem ... . I'm now testing 3.19.4.
->=20
-> Have you seen the issue on 3.19 too or hasn't it happened there at al=
-l
-> yet? The question is where to look for a commit that breaks it on  yo=
-ur
-> machine.
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 13 -------------
+ 1 file changed, 13 deletions(-)
 
-3.19 works perfectly. It's an issue with new dm crypt:
-http://www.spinics.net/lists/dm-devel/msg24019.html
-
-
-Thanks for asking!
-Regards,
-Andreas
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 5770ab9..48a39df 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -608,23 +608,10 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 	}
+ }
+ 
+-static void arm_smmu_flush_pgtable(void *addr, size_t size, void *cookie)
+-{
+-	struct arm_smmu_domain *smmu_domain = cookie;
+-
+-	/*
+-	 * Ensure new page tables are visible to a coherent hardware walker.
+-	 * The page table code deals with flushing for the non-coherent case.
+-	 */
+-	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
+-		dsb(ishst);
+-}
+-
+ static struct iommu_gather_ops arm_smmu_gather_ops = {
+ 	.tlb_flush_all	= arm_smmu_tlb_inv_context,
+ 	.tlb_add_flush	= arm_smmu_tlb_inv_range_nosync,
+ 	.tlb_sync	= arm_smmu_tlb_sync,
+-	.flush_pgtable	= arm_smmu_flush_pgtable,
+ };
+ 
+ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+-- 
+1.9.1
