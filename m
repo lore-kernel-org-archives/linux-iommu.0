@@ -1,7 +1,7 @@
 From: Oded Gabbay <oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Subject: Re: [PATCH] iommu/amd: Allow non-ATS devices in IOMMUv2 domains
-Date: Thu, 30 Jul 2015 13:08:46 +0300
-Message-ID: <CAFCwf12=3VrHX2M4n8TeV=gkD+-V=_2x4muiozdb39S0A6BmRg@mail.gmail.com>
+Date: Thu, 30 Jul 2015 13:11:50 +0300
+Message-ID: <CAFCwf13HspGJVb2E9spLRhdsCnp5P-h08q+9v1MmWcuiio0g1A@mail.gmail.com>
 References: <1438250724-4443-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,12 +20,6 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, "Linux-Kernel@Vger. Kernel. Org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
-
-Joerg,
-Why amdkfd's devices are considered a non-IOMMUv2 capable devices ?
-After all, they contain the IOMMUv2 H/W and use it constantly for HSA.
-
-ODed
 
 On Thu, Jul 30, 2015 at 1:05 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
 > From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
@@ -62,3 +56,5 @@ On Thu, Jul 30, 2015 at 1:05 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@publi
 > --
 > 1.9.1
 >
+This series, with the additional patch is:
+Tested-by: "Oded Gabbay <oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>"
