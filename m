@@ -1,13 +1,13 @@
 From: Oded Gabbay <oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] iommu/amd: Allow non-ATS devices in IOMMUv2 domains
-Date: Thu, 30 Jul 2015 13:11:50 +0300
-Message-ID: <CAFCwf13HspGJVb2E9spLRhdsCnp5P-h08q+9v1MmWcuiio0g1A@mail.gmail.com>
-References: <1438250724-4443-1-git-send-email-joro@8bytes.org>
+Subject: Re: [PATCH 0/5] AMD IOMMU Fixes for v4.2-rc4
+Date: Thu, 30 Jul 2015 13:12:29 +0300
+Message-ID: <CAFCwf11rB_VsmXQmJDumUNf_1y=i5KsMM6dPBSrk3BV=Enna7w@mail.gmail.com>
+References: <1438095531-26777-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1438250724-4443-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1438095531-26777-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,43 +18,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, "Linux-Kernel@Vger. Kernel. Org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Linux-Kernel@Vger. Kernel. Org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jul 30, 2015 at 1:05 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
-> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+On Tue, Jul 28, 2015 at 5:58 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> Hi,
 >
-> With the grouping of multi-function devices a non-ATS
-> capable device might also end up in the same domain as an
-> IOMMUv2 capable device.
-> So handle this situation gracefully and don't consider it a
-> bug anymore.
+> here are a couple of fixes for the AMD IOMMU driver for
+> issues found recently. The issues were introduced by the
+> default-domain conversion in this development cycle. I plan
+> to send these fixes upstream by the end of the week.
 >
-> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> ---
->  drivers/iommu/amd_iommu.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
+> Please review!
 >
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index fa9508b..658ee39 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -3318,7 +3318,12 @@ static int __flush_pasid(struct protection_domain *domain, int pasid,
->                 struct amd_iommu *iommu;
->                 int qdep;
+> Thanks,
 >
-> -               BUG_ON(!dev_data->ats.enabled);
-> +               /*
-> +                  There might be non-IOMMUv2 capable devices in an IOMMUv2
-> +                * domain.
-> +                */
-> +               if (!dev_data->ats.enabled)
-> +                       continue;
+>         Joerg
 >
->                 qdep  = dev_data->ats.qdep;
->                 iommu = amd_iommu_rlookup_table[dev_data->devid];
+> Joerg Roedel (5):
+>   iommu/amd: Use iommu_attach_group()
+>   iommu/amd: Use iommu core for passthrough mode
+>   iommu/amd: Allow non-IOMMUv2 devices in IOMMUv2 domains
+>   iommu/amd: Use swiotlb in passthrough mode
+>   iommu/amd: Set global dma_ops if swiotlb is disabled
+>
+>  drivers/iommu/amd_iommu.c      | 91 +++++++++++-------------------------------
+>  drivers/iommu/amd_iommu_init.c | 10 +----
+>  drivers/iommu/amd_iommu_v2.c   | 24 +++++++++--
+>  3 files changed, 45 insertions(+), 80 deletions(-)
+>
 > --
 > 1.9.1
 >
-This series, with the additional patch is:
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
+This series, with the additional patch, is:
 Tested-by: "Oded Gabbay <oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>"
