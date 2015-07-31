@@ -1,10 +1,13 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [git pull] IOMMU Fixes for Linux v4.2-rc4
-Date: Fri, 31 Jul 2015 18:58:24 +0200
-Message-ID: <20150731165824.GA26903@8bytes.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v5 3/3] arm64: Hook up IOMMU dma_ops
+Date: Fri, 31 Jul 2015 18:18:29 +0100
+Message-ID: <caecbce93dd4870995a000bebc8f58d1ca7e551e.1438362603.git.robin.murphy@arm.com>
+References: <cover.1438362603.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============4344521275210196451=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <cover.1438362603.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -14,103 +17,99 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+With iommu_dma_ops in place, hook them up to the configuration code, so
+IOMMU-fronted devices will get them automatically.
 
---===============4344521275210196451==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="lrZ03NoBR/3+SXJZ"
-Content-Disposition: inline
+Acked-by: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+ arch/arm64/Kconfig                   |  1 +
+ arch/arm64/include/asm/dma-mapping.h | 15 +++++++--------
+ arch/arm64/mm/dma-mapping.c          | 24 ++++++++++++++++++++++++
+ 3 files changed, 32 insertions(+), 8 deletions(-)
 
-
---lrZ03NoBR/3+SXJZ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hi Linus,
-
-The following changes since commit cbfe8fa6cd672011c755c3cd85c9ffd4e2d10a6f:
-
-  Linux 4.2-rc4 (2015-07-26 12:26:21 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.2-rc4
-
-for you to fetch changes up to 1c1cc454aa694a89572689515fdaaf27b8c9f42a:
-
-  iommu/amd: Allow non-ATS devices in IOMMUv2 domains (2015-07-31 15:15:41 +0200)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v4.2-rc4
-
-These fixes are all for the AMD IOMMU driver:
-
-	* A regression with HSA caused by the conversion of the driver to
-	  default domains. The fixes make sure that an HSA device can
-	  still be attached to an IOMMUv2 domain and that these domains
-	  also allow non-IOMMUv2 capable devices.
-
-	* Fix iommu=pt mode which did not work because the dma_ops where
-	  set to nommu_ops, which breaks devices that can only do 32bit
-	  DMA.
-
-	* Fix an issue with non-PCI devices not working, because there
-	  are no dma_ops for them. This issue was discovered recently as
-	  new AMD x86 platforms have non-PCI devices too.
-
-----------------------------------------------------------------
-Joerg Roedel (6):
-      iommu/amd: Use iommu_attach_group()
-      iommu/amd: Use iommu core for passthrough mode
-      iommu/amd: Allow non-IOMMUv2 devices in IOMMUv2 domains
-      iommu/amd: Use swiotlb in passthrough mode
-      iommu/amd: Set global dma_ops if swiotlb is disabled
-      iommu/amd: Allow non-ATS devices in IOMMUv2 domains
-
- drivers/iommu/amd_iommu.c      | 98 +++++++++++++-----------------------------
- drivers/iommu/amd_iommu_init.c | 10 +----
- drivers/iommu/amd_iommu_v2.c   | 24 +++++++++--
- 3 files changed, 51 insertions(+), 81 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
-
---lrZ03NoBR/3+SXJZ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJVu6kwAAoJECvwRC2XARrj+6EP/0KhMJAIS9pbq/6BsXAqQyFb
-xOtCc5nyILxfO9ahU4Z2vHrOeh1RWGrjRx0SEprre/xBzLJDbbRWSTSYOZaELbGs
-NLlOB5LEK5H4OqxY7fNpExYo60GsKLc7kATTQw6tIAV5WlzJcI2CQz3+OfP3PC0r
-N6yIMPyIb51uNEqJQPJgoU+Tqd6A+FIVNiWuBE/uDcNuEN5ozuK4BlSnARnFdB1l
-RNCiEHk78FTpnqGFsX3G/mGiWbpcUjNqwvdkscoYXbq5GR2MAsmR/oAM6xbOX9CJ
-sWHvzhk7JGTYxVtrC8j2N/gUbLEDZjyX9DtP1zNEXKBHqihOVHUKv+1uIICIsEL7
-Vw+3VkXUiD4QaudaQcVAKhZg+o9i/jDJWL+Y1P/vvTtMDl6wdoZR0+7f/kfbgTVk
-VnFFzmJcUzN+JULpyjV7GzUgcWKxwTQkdVBZQg0GMmkvKp/Zy5oGoRyudki6ykIr
-Yg92gTVQRK0GxZXdx/fRGs4clzzQt3heDnH7KGAUTSVah5KqU0Q4OzQisE8E2a+z
-7MODEFANOkMB2dr3MOZRNLmvP/Ru2v1muFv2VywjlODO2LPnxg90swvjvzJ5BBsE
-hrq0dVUpbjXK1p4KS2gi49e1RK1KV2fJS7FIvEX2Ya+tkxc3x9Z+jMa6wZAnFMvD
-/O8PSGXTH8+6ep2iH3nY
-=jam2
------END PGP SIGNATURE-----
-
---lrZ03NoBR/3+SXJZ--
-
---===============4344521275210196451==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============4344521275210196451==--
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index c8933dc..81584ef 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -73,6 +73,7 @@ config ARM64
+ 	select HAVE_PERF_USER_STACK_DUMP
+ 	select HAVE_RCU_TABLE_FREE
+ 	select HAVE_SYSCALL_TRACEPOINTS
++	select IOMMU_DMA if IOMMU_SUPPORT
+ 	select IRQ_DOMAIN
+ 	select IRQ_FORCED_THREADING
+ 	select MODULES_USE_ELF_RELA
+diff --git a/arch/arm64/include/asm/dma-mapping.h b/arch/arm64/include/asm/dma-mapping.h
+index f0d6d0b..7f9edcb 100644
+--- a/arch/arm64/include/asm/dma-mapping.h
++++ b/arch/arm64/include/asm/dma-mapping.h
+@@ -56,16 +56,15 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+ 		return __generic_dma_ops(dev);
+ }
+ 
+-static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+-				      struct iommu_ops *iommu, bool coherent)
+-{
+-	if (!acpi_disabled && !dev->archdata.dma_ops)
+-		dev->archdata.dma_ops = dma_ops;
+-
+-	dev->archdata.dma_coherent = coherent;
+-}
++void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
++			struct iommu_ops *iommu, bool coherent);
+ #define arch_setup_dma_ops	arch_setup_dma_ops
+ 
++#ifdef CONFIG_IOMMU_DMA
++void arch_teardown_dma_ops(struct device *dev);
++#define arch_teardown_dma_ops	arch_teardown_dma_ops
++#endif
++
+ /* do not use this function in a driver */
+ static inline bool is_device_dma_coherent(struct device *dev)
+ {
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index c735f45..175dcb2 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -952,6 +952,20 @@ out_no_domain:
+ 	pr_warn("Failed to set up IOMMU domain for device %s\n", dev_name(dev));
+ }
+ 
++void arch_teardown_dma_ops(struct device *dev)
++{
++	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++
++	if (domain) {
++		iommu_detach_device(domain, dev);
++		if (domain->type & __IOMMU_DOMAIN_ARM64_IOVA)
++			iommu_put_dma_cookie(domain);
++		if (domain->type & __IOMMU_DOMAIN_ARM64)
++			iommu_domain_free(domain);
++		dev->archdata.dma_ops = NULL;
++	}
++}
++
+ #else
+ 
+ static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+@@ -959,3 +973,13 @@ static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+ { }
+ 
+ #endif  /* CONFIG_IOMMU_DMA */
++
++void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
++			struct iommu_ops *iommu, bool coherent)
++{
++	if (!acpi_disabled && !dev->archdata.dma_ops)
++		dev->archdata.dma_ops = dma_ops;
++
++	dev->archdata.dma_coherent = coherent;
++	__iommu_setup_dma_ops(dev, dma_base, size, iommu);
++}
+-- 
+1.9.1
