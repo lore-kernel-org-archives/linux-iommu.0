@@ -1,21 +1,18 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v3 3/6] iommu: add ARM short descriptor page table
-	allocator.
-Date: Fri, 31 Jul 2015 12:32:17 +0100
-Message-ID: <20150731113217.GE29497@arm.com>
-References: <1437037475-9065-1-git-send-email-yong.wu@mediatek.com>
-	<1437037475-9065-4-git-send-email-yong.wu@mediatek.com>
-	<20150721171101.GN31095@arm.com>
-	<1437715466.23932.68.camel@mhfsdcap03>
-	<20150724165325.GC21177@arm.com>
-	<1437970868.25925.20.camel@mhfsdcap03>
-	<1438329337.25925.147.camel@mhfsdcap03>
+From: Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu-v2: ThunderX(errata-23399) mis-extends
+	64bit registers
+Date: Fri, 31 Jul 2015 12:48:00 +0100
+Message-ID: <20150731114800.GA28948@n2100.arm.linux.org.uk>
+References: <1438278906-29627-1-git-send-email-tchalamarla@caviumnetworks.com>
+	<20150730184523.GC16663@arm.com>
+	<96AD8EF9-D416-43AB-BA6F-2C25098BB8BB@caviumnetworks.com>
+	<91236962-23EF-4306-B0FA-0F7DAE4F06CD@caviumnetworks.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1438329337.25925.147.camel@mhfsdcap03>
+In-Reply-To: <91236962-23EF-4306-B0FA-0F7DAE4F06CD-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,38 +22,39 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "cloud.chou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <cloud.chou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "th.yang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <th.yang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org" <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, "frederic.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <frederic.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEmxxBWXNxL4zz@public.gmane.org
+To: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Richter, Robert" <Robert.Richter-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 31, 2015 at 08:55:37AM +0100, Yong Wu wrote:
->     About the AP bits, I may have to add a new quirk for it...
+On Thu, Jul 30, 2015 at 08:54:04PM +0000, Chalamarla, Tirumalesh wrote:
+> is some thing like this looks good
 > 
->   Current I add AP in pte like this:
-> #define ARM_SHORT_PTE_RD_WR        (3 << 4)
-> #define ARM_SHORT_PTE_RDONLY       BIT(9)
-> 
-> pteprot |=  ARM_SHORT_PTE_RD_WR;
-> 
-> 
->  If(!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
-> 
-> 
->       pteprot |= ARM_SHORT_PTE_RDONLY;
-> 
-> The problem is that the BIT(9) in the level1 and level2 pagetable of our
-> HW has been used for PA[32] that is for the dram size over 4G.
+> +#ifdef CONFIG_64BIT
+> +#define smmu_writeq(reg64, addr)       writeq_relaxed((reg64), (addr))
+> +#else
+> +#define smmu_writeq(reg64, addr)                       \
+> +               writel_relaxed(((reg64) >> 32), ((addr) + 4));  \
+> +               writel_relaxed((reg64), (addr))
 
-Aha, now *thats* a case of page-table abuse!
+It's missing a #endif.
 
-> so I had to add a quirk to disable bit9 while RDONLY case.
-> (If BIT9 isn't disabled, the HW treat it as the PA[32] case then it will
-> translation fault..)
-> 
-> like: IO_PGTABLE_QUIRK_SHORT_MTK ?
+This also suffers from multiple argument evaluation, and it hides that
+there's two expressions here - which makes future maintanence harder.
 
-Given that you don't have XN either, maybe IO_PGTABLE_QUIRK_NO_PERMS?
-When set, IOMMU_READ/WRITE/EXEC are ignored and the mapping will never
-generate a permission fault.
+#define smmu_writeq(reg64, addr)					\
+	do {								\
+		u64 __val = (reg64);					\
+		volatile void __iomem *__addr = (addr);			\
+		writel_relaxed(__val >> 32, __addr + 4);		\
+		writel_relaxed(__val, __addr);				\
+	} while (0)
 
-Will
+is longer but is much preferred as it won't suffer side effects from
+stuff like:
+
+	if (...)
+		smmu_writeq(val++, addr);
+
+-- 
+FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
+according to speedtest.net.
