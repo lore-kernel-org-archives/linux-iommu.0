@@ -1,8 +1,7 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 02/13] iommu/arm-smmu: Fix MSI memory attributes to match
-	specification
-Date: Mon,  3 Aug 2015 14:25:44 +0100
-Message-ID: <1438608355-7335-3-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 12/13] iommu/io-pgtable: Remove flush_pgtable callback
+Date: Mon,  3 Aug 2015 14:25:54 +0100
+Message-ID: <1438608355-7335-13-git-send-email-will.deacon@arm.com>
 References: <1438608355-7335-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,43 +21,57 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: jroedel-l3A5Bk7waGM@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+From: Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
 
-The MSI memory attributes in the SMMUv3 driver are from an older
-revision of the spec, which doesn't match the current implementations.
+With the users fully converted to DMA API operations, it's dead, Jim.
 
-Out with the old, in with the new.
-
-Signed-off-by: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/iommu/io-pgtable-arm.c | 6 ------
+ drivers/iommu/io-pgtable.h     | 2 --
+ 2 files changed, 8 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 5d2cbdab5afa..c2c1ad8915d9 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -174,14 +174,14 @@
- #define ARM_SMMU_PRIQ_IRQ_CFG2		0xdc
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 06176872fb78..e4bc2b23ab96 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -884,16 +884,10 @@ static void dummy_tlb_sync(void *cookie)
+ 	WARN_ON(cookie != cfg_cookie);
+ }
  
- /* Common MSI config fields */
--#define MSI_CFG0_SH_SHIFT		60
--#define MSI_CFG0_SH_NSH			(0UL << MSI_CFG0_SH_SHIFT)
--#define MSI_CFG0_SH_OSH			(2UL << MSI_CFG0_SH_SHIFT)
--#define MSI_CFG0_SH_ISH			(3UL << MSI_CFG0_SH_SHIFT)
--#define MSI_CFG0_MEMATTR_SHIFT		56
--#define MSI_CFG0_MEMATTR_DEVICE_nGnRE	(0x1 << MSI_CFG0_MEMATTR_SHIFT)
- #define MSI_CFG0_ADDR_SHIFT		2
- #define MSI_CFG0_ADDR_MASK		0x3fffffffffffUL
-+#define MSI_CFG2_SH_SHIFT		4
-+#define MSI_CFG2_SH_NSH			(0UL << MSI_CFG2_SH_SHIFT)
-+#define MSI_CFG2_SH_OSH			(2UL << MSI_CFG2_SH_SHIFT)
-+#define MSI_CFG2_SH_ISH			(3UL << MSI_CFG2_SH_SHIFT)
-+#define MSI_CFG2_MEMATTR_SHIFT		0
-+#define MSI_CFG2_MEMATTR_DEVICE_nGnRE	(0x1 << MSI_CFG2_MEMATTR_SHIFT)
+-static void dummy_flush_pgtable(void *ptr, size_t size, void *cookie)
+-{
+-	WARN_ON(cookie != cfg_cookie);
+-}
+-
+ static struct iommu_gather_ops dummy_tlb_ops __initdata = {
+ 	.tlb_flush_all	= dummy_tlb_flush_all,
+ 	.tlb_add_flush	= dummy_tlb_add_flush,
+ 	.tlb_sync	= dummy_tlb_sync,
+-	.flush_pgtable	= dummy_flush_pgtable,
+ };
  
- #define Q_IDX(q, p)			((p) & ((1 << (q)->max_n_shift) - 1))
- #define Q_WRP(q, p)			((p) & (1 << (q)->max_n_shift))
+ static void __init arm_lpae_dump_ops(struct io_pgtable_ops *ops)
+diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+index e8fadb012ed2..48538a35d078 100644
+--- a/drivers/iommu/io-pgtable.h
++++ b/drivers/iommu/io-pgtable.h
+@@ -20,7 +20,6 @@ enum io_pgtable_fmt {
+  * @tlb_sync:      Ensure any queued TLB invalidation has taken effect, and
+  *                 any corresponding page table updates are visible to the
+  *                 IOMMU.
+- * @flush_pgtable: Ensure page table updates are visible to the IOMMU.
+  *
+  * Note that these can all be called in atomic context and must therefore
+  * not block.
+@@ -30,7 +29,6 @@ struct iommu_gather_ops {
+ 	void (*tlb_add_flush)(unsigned long iova, size_t size, bool leaf,
+ 			      void *cookie);
+ 	void (*tlb_sync)(void *cookie);
+-	void (*flush_pgtable)(void *ptr, size_t size, void *cookie);
+ };
+ 
+ /**
 -- 
 2.1.4
