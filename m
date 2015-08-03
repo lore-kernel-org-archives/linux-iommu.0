@@ -1,7 +1,7 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 10/13] iommu/arm-smmu: Remove arm_smmu_flush_pgtable()
-Date: Mon,  3 Aug 2015 14:25:52 +0100
-Message-ID: <1438608355-7335-11-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 08/13] iommu/ipmmu-vmsa: Clean up DMA API usage
+Date: Mon,  3 Aug 2015 14:25:50 +0100
+Message-ID: <1438608355-7335-9-git-send-email-will.deacon@arm.com>
 References: <1438608355-7335-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,43 +23,55 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
 
-With the io-pgtable code now enforcing its own appropriate sync points,
-the vestigial flush_pgtable callback becomes entirely redundant, so
-remove it altogether.
+With the correct DMA API calls now integrated into the io-pgtable code,
+let that handle the flushing of non-coherent page table updates.
 
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 13 -------------
- 1 file changed, 13 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c | 19 +++++--------------
+ 1 file changed, 5 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 5770ab98fa38..48a39dfa9777 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -608,23 +608,10 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
- 	}
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 1a67c531a07e..8cf605fa9946 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -283,24 +283,10 @@ static void ipmmu_tlb_add_flush(unsigned long iova, size_t size, bool leaf,
+ 	/* The hardware doesn't support selective TLB flush. */
  }
  
--static void arm_smmu_flush_pgtable(void *addr, size_t size, void *cookie)
+-static void ipmmu_flush_pgtable(void *ptr, size_t size, void *cookie)
 -{
--	struct arm_smmu_domain *smmu_domain = cookie;
+-	unsigned long offset = (unsigned long)ptr & ~PAGE_MASK;
+-	struct ipmmu_vmsa_domain *domain = cookie;
 -
 -	/*
--	 * Ensure new page tables are visible to a coherent hardware walker.
--	 * The page table code deals with flushing for the non-coherent case.
+-	 * TODO: Add support for coherent walk through CCI with DVM and remove
+-	 * cache handling.
 -	 */
--	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
--		dsb(ishst);
+-	dma_map_page(domain->mmu->dev, virt_to_page(ptr), offset, size,
+-		     DMA_TO_DEVICE);
 -}
 -
- static struct iommu_gather_ops arm_smmu_gather_ops = {
- 	.tlb_flush_all	= arm_smmu_tlb_inv_context,
- 	.tlb_add_flush	= arm_smmu_tlb_inv_range_nosync,
- 	.tlb_sync	= arm_smmu_tlb_sync,
--	.flush_pgtable	= arm_smmu_flush_pgtable,
+ static struct iommu_gather_ops ipmmu_gather_ops = {
+ 	.tlb_flush_all = ipmmu_tlb_flush_all,
+ 	.tlb_add_flush = ipmmu_tlb_add_flush,
+ 	.tlb_sync = ipmmu_tlb_flush_all,
+-	.flush_pgtable = ipmmu_flush_pgtable,
  };
  
- static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+ /* -----------------------------------------------------------------------------
+@@ -327,6 +313,11 @@ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
+ 	domain->cfg.ias = 32;
+ 	domain->cfg.oas = 40;
+ 	domain->cfg.tlb = &ipmmu_gather_ops;
++	/*
++	 * TODO: Add support for coherent walk through CCI with DVM and remove
++	 * cache handling. For now, delegate it to the io-pgtable code.
++	 */
++	domain->cfg.iommu_dev = domain->mmu->dev;
+ 
+ 	domain->iop = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &domain->cfg,
+ 					   domain);
 -- 
 2.1.4
