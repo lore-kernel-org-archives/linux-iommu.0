@@ -1,15 +1,14 @@
-From: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v5 1/3] iommu: Implement common IOMMU ops for DMA mapping
-Date: Mon, 3 Aug 2015 18:40:10 +0100
-Message-ID: <20150803174010.GE11772@e104818-lin.cambridge.arm.com>
-References: <cover.1438362603.git.robin.murphy@arm.com>
-	<6ce6b501501f611297ae0eae31e07b0d2060eaae.1438362603.git.robin.murphy@arm.com>
+From: Sergei Shtylyov <sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH 13/13] iommu/arm-smmu: Treat unknown OAS as 48-bit
+Date: Mon, 3 Aug 2015 21:23:14 +0300
+Message-ID: <55BFB192.1040505@cogentembedded.com>
+References: <1438608355-7335-1-git-send-email-will.deacon@arm.com>
+	<1438608355-7335-14-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <6ce6b501501f611297ae0eae31e07b0d2060eaae.1438362603.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1438608355-7335-14-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,15 +18,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 31, 2015 at 06:18:27PM +0100, Robin Murphy wrote:
-> Taking inspiration from the existing arch/arm code, break out some
-> generic functions to interface the DMA-API to the IOMMU-API. This will
-> do the bulk of the heavy lifting for IOMMU-backed dma-mapping.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Hello.
 
-Acked-by: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+On 08/03/2015 04:25 PM, Will Deacon wrote:
+
+> A late change to the SMMUv3 architecture ensures that the OAS field
+> will be monotonically increasing, so we can assume that an unknown OAS
+> is at least 48-bit and use that, rather than fail the device probe.
+
+> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> ---
+>   drivers/iommu/arm-smmu-v3.c | 7 +++----
+>   1 file changed, 3 insertions(+), 4 deletions(-)
+
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 15fb669282b4..a435e706226a 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -2528,12 +2528,11 @@ static int arm_smmu_device_probe(struct arm_smmu_device *smmu)
+>   	case IDR5_OAS_44_BIT:
+>   		smmu->oas = 44;
+>   		break;
+> +	default:
+> +		dev_info(smmu->dev,
+> +			"unknown output address size. Truncating to 48-bit\n");
+
+    Please add a comment like /* FALLTHRU */ here.
+
+>   	case IDR5_OAS_48_BIT:
+>   		smmu->oas = 48;
+> -		break;
+> -	default:
+> -		dev_err(smmu->dev, "unknown output address size!\n");
+> -		return -ENXIO;
+>   	}
+>
+>   	/* Set the DMA mask for our table walker */
+
+MBR, Sergei
