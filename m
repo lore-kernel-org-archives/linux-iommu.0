@@ -1,14 +1,13 @@
-From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Subject: RE: [PATCH v2] iommu/fsl: Really fix init section(s) content
-Date: Mon, 3 Aug 2015 12:29:08 +0000
-Message-ID: <BN1PR0301MB0627C7EA14ADDAEE45591EABEA770@BN1PR0301MB0627.namprd03.prod.outlook.com>
-References: <1427261328-23798-1-git-send-email-Emilian.Medve@Freescale.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH 09/13] iommu/io-pgtable-arm: Centralise sync points
+Date: Mon,  3 Aug 2015 14:25:51 +0100
+Message-ID: <1438608355-7335-10-git-send-email-will.deacon@arm.com>
+References: <1438608355-7335-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1427261328-23798-1-git-send-email-Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1438608355-7335-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,174 +17,198 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Medve Emilian-EMMEDVE1 <Emilian.Medve-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Madalin-Cristian Bucur <madalin.bucur-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-This patch doesn't seem to be applied to the PAMU driver.
+From: Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
 
-Regards
-Varun
+With all current users now opted in to DMA API operations, make the
+iommu_dev pointer mandatory, rendering the flush_pgtable callback
+redundant for cache maintenance. However, since the DMA calls could be
+nops in the case of a coherent IOMMU, we still need to ensure the page
+table updates are fully synchronised against a subsequent page table
+walk. In the unmap path, the TLB sync will usually need to do this
+anyway, so just cement that requirement; in the map path which may
+consist solely of cacheable memory writes (in the coherent case),
+insert an appropriate barrier at the end of the operation, and obviate
+the need to call flush_pgtable on every individual update for
+synchronisation.
 
-> -----Original Message-----
-> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
-> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Emil Medve
-> Sent: Wednesday, March 25, 2015 10:59 AM
-> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-> Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Medve Emilian-EMMEDVE1
-> Subject: [PATCH v2] iommu/fsl: Really fix init section(s) content
-> 
-> '0f1fb99 iommu/fsl: Fix section mismatch' was intended to address the
-> modpost warning and the potential crash. Crash which is actually easy to
-> trigger with a 'unbind' followed by a 'bind' sequence. The fix is wrong as
-> fsl_of_pamu_driver.driver gets added by bus_add_driver() to a couple of
-> klist(s) which become invalid/corrupted as soon as the init sections are freed.
-> Depending on when/how the init sections storage is reused various/random
-> errors and crashes will happen
-> 
-> 'cd70d46 iommu/fsl: Various cleanups' contains annotations that go further
-> down the wrong path laid by '0f1fb99 iommu/fsl: Fix section mismatch'
-> 
-> Now remove all the incorrect annotations from the above mentioned
-> patches (not exactly a revert) and those previously existing in the code, This
-> fixes the modpost warning(s), the unbind/bind sequence crashes and the
-> random errors/crashes
-> 
-> Fixes: 0f1fb99b62ce ("iommu/fsl: Fix section mismatch")
-> Fixes: cd70d4659ff3 ("iommu/fsl: Various cleanups")
-> Signed-off-by: Emil Medve <Emilian.Medve-eDlz3WWmN0ll57MIdRCFDg@public.gmane.org>
-> Acked-by: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-> Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> ---
->  drivers/iommu/fsl_pamu.c | 26 +++++++++++++-------------
->  1 file changed, 13 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c index
-> abeedc9..2570f2a 100644
-> --- a/drivers/iommu/fsl_pamu.c
-> +++ b/drivers/iommu/fsl_pamu.c
-> @@ -41,7 +41,6 @@ struct pamu_isr_data {
-> 
->  static struct paace *ppaact;
->  static struct paace *spaact;
-> -static struct ome *omt __initdata;
-> 
->  /*
->   * Table for matching compatible strings, for device tree @@ -50,7 +49,7 @@
-> static struct ome *omt __initdata;
->   * SOCs. For the older SOCs "fsl,qoriq-device-config-1.0"
->   * string would be used.
->   */
-> -static const struct of_device_id guts_device_ids[] __initconst = {
-> +static const struct of_device_id guts_device_ids[] = {
->  	{ .compatible = "fsl,qoriq-device-config-1.0", },
->  	{ .compatible = "fsl,qoriq-device-config-2.0", },
->  	{}
-> @@ -599,7 +598,7 @@ found_cpu_node:
->   * Memory accesses to QMAN and BMAN private memory need not be
-> coherent, so
->   * clear the PAACE entry coherency attribute for them.
->   */
-> -static void __init setup_qbman_paace(struct paace *ppaace, int
-> paace_type)
-> +static void setup_qbman_paace(struct paace *ppaace, int  paace_type)
->  {
->  	switch (paace_type) {
->  	case QMAN_PAACE:
-> @@ -629,7 +628,7 @@ static void __init setup_qbman_paace(struct paace
-> *ppaace, int  paace_type)
->   * this table to translate device transaction to appropriate corenet
->   * transaction.
->   */
-> -static void __init setup_omt(struct ome *omt)
-> +static void setup_omt(struct ome *omt)
->  {
->  	struct ome *ome;
-> 
-> @@ -666,7 +665,7 @@ static void __init setup_omt(struct ome *omt)
->   * Get the maximum number of PAACT table entries
->   * and subwindows supported by PAMU
->   */
-> -static void __init get_pamu_cap_values(unsigned long pamu_reg_base)
-> +static void get_pamu_cap_values(unsigned long pamu_reg_base)
->  {
->  	u32 pc_val;
-> 
-> @@ -676,9 +675,9 @@ static void __init get_pamu_cap_values(unsigned
-> long pamu_reg_base)  }
-> 
->  /* Setup PAMU registers pointing to PAACT, SPAACT and OMT */ -static int
-> __init setup_one_pamu(unsigned long pamu_reg_base, unsigned long
-> pamu_reg_size,
-> -				 phys_addr_t ppaact_phys, phys_addr_t
-> spaact_phys,
-> -				 phys_addr_t omt_phys)
-> +static int setup_one_pamu(unsigned long pamu_reg_base, unsigned long
-> pamu_reg_size,
-> +			  phys_addr_t ppaact_phys, phys_addr_t
-> spaact_phys,
-> +			  phys_addr_t omt_phys)
->  {
->  	u32 *pc;
->  	struct pamu_mmap_regs *pamu_regs;
-> @@ -720,7 +719,7 @@ static int __init setup_one_pamu(unsigned long
-> pamu_reg_base, unsigned long pamu  }
-> 
->  /* Enable all device LIODNS */
-> -static void __init setup_liodns(void)
-> +static void setup_liodns(void)
->  {
->  	int i, len;
->  	struct paace *ppaace;
-> @@ -846,7 +845,7 @@ struct ccsr_law {
->  /*
->   * Create a coherence subdomain for a given memory block.
->   */
-> -static int __init create_csd(phys_addr_t phys, size_t size, u32 csd_port_id)
-> +static int create_csd(phys_addr_t phys, size_t size, u32 csd_port_id)
->  {
->  	struct device_node *np;
->  	const __be32 *iprop;
-> @@ -988,7 +987,7 @@ error:
->  static const struct {
->  	u32 svr;
->  	u32 port_id;
-> -} port_id_map[] __initconst = {
-> +} port_id_map[] = {
->  	{(SVR_P2040 << 8) | 0x10, 0xFF000000},	/* P2040 1.0 */
->  	{(SVR_P2040 << 8) | 0x11, 0xFF000000},	/* P2040 1.1 */
->  	{(SVR_P2041 << 8) | 0x10, 0xFF000000},	/* P2041 1.0 */
-> @@ -1006,7 +1005,7 @@ static const struct {
-> 
->  #define SVR_SECURITY	0x80000	/* The Security (E) bit */
-> 
-> -static int __init fsl_pamu_probe(struct platform_device *pdev)
-> +static int fsl_pamu_probe(struct platform_device *pdev)
->  {
->  	struct device *dev = &pdev->dev;
->  	void __iomem *pamu_regs = NULL;
-> @@ -1022,6 +1021,7 @@ static int __init fsl_pamu_probe(struct
-> platform_device *pdev)
->  	int irq;
->  	phys_addr_t ppaact_phys;
->  	phys_addr_t spaact_phys;
-> +	struct ome *omt;
->  	phys_addr_t omt_phys;
->  	size_t mem_size = 0;
->  	unsigned int order = 0;
-> @@ -1200,7 +1200,7 @@ error:
->  	return ret;
->  }
-> 
-> -static struct platform_driver fsl_of_pamu_driver __initdata = {
-> +static struct platform_driver fsl_of_pamu_driver = {
->  	.driver = {
->  		.name = "fsl-of-pamu",
->  	},
-> --
-> 2.3.3
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+[will: slight clarification to tlb_sync comment]
+Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/io-pgtable-arm.c | 43 +++++++++++++++++++++++-------------------
+ drivers/iommu/io-pgtable.h     |  4 +++-
+ 2 files changed, 27 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 28cca8a652f9..06176872fb78 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -26,6 +26,8 @@
+ #include <linux/slab.h>
+ #include <linux/types.h>
+ 
++#include <asm/barrier.h>
++
+ #include "io-pgtable.h"
+ 
+ #define ARM_LPAE_MAX_ADDR_BITS		48
+@@ -215,7 +217,7 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
+ 	if (!pages)
+ 		return NULL;
+ 
+-	if (dev) {
++	if (!selftest_running) {
+ 		dma = dma_map_single(dev, pages, size, DMA_TO_DEVICE);
+ 		if (dma_mapping_error(dev, dma))
+ 			goto out_free;
+@@ -243,24 +245,22 @@ static void __arm_lpae_free_pages(void *pages, size_t size,
+ {
+ 	struct device *dev = cfg->iommu_dev;
+ 
+-	if (dev)
++	if (!selftest_running)
+ 		dma_unmap_single(dev, __arm_lpae_dma_addr(dev, pages),
+ 				 size, DMA_TO_DEVICE);
+ 	free_pages_exact(pages, size);
+ }
+ 
+ static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
+-			       struct io_pgtable_cfg *cfg, void *cookie)
++			       struct io_pgtable_cfg *cfg)
+ {
+ 	struct device *dev = cfg->iommu_dev;
+ 
+ 	*ptep = pte;
+ 
+-	if (dev)
++	if (!selftest_running)
+ 		dma_sync_single_for_device(dev, __arm_lpae_dma_addr(dev, ptep),
+ 					   sizeof(pte), DMA_TO_DEVICE);
+-	else if (cfg->tlb->flush_pgtable)
+-		cfg->tlb->flush_pgtable(ptep, sizeof(pte), cookie);
+ }
+ 
+ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+@@ -288,7 +288,7 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ 	pte |= ARM_LPAE_PTE_AF | ARM_LPAE_PTE_SH_IS;
+ 	pte |= pfn_to_iopte(paddr >> data->pg_shift, data);
+ 
+-	__arm_lpae_set_pte(ptep, pte, cfg, data->iop.cookie);
++	__arm_lpae_set_pte(ptep, pte, cfg);
+ 	return 0;
+ }
+ 
+@@ -297,7 +297,6 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
+ 			  int lvl, arm_lpae_iopte *ptep)
+ {
+ 	arm_lpae_iopte *cptep, pte;
+-	void *cookie = data->iop.cookie;
+ 	size_t block_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
+ 	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+ 
+@@ -323,7 +322,7 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
+ 		pte = __pa(cptep) | ARM_LPAE_PTE_TYPE_TABLE;
+ 		if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
+ 			pte |= ARM_LPAE_PTE_NSTABLE;
+-		__arm_lpae_set_pte(ptep, pte, cfg, cookie);
++		__arm_lpae_set_pte(ptep, pte, cfg);
+ 	} else {
+ 		cptep = iopte_deref(pte, data);
+ 	}
+@@ -370,7 +369,7 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
+ {
+ 	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+ 	arm_lpae_iopte *ptep = data->pgd;
+-	int lvl = ARM_LPAE_START_LVL(data);
++	int ret, lvl = ARM_LPAE_START_LVL(data);
+ 	arm_lpae_iopte prot;
+ 
+ 	/* If no access, then nothing to do */
+@@ -378,7 +377,14 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
+ 		return 0;
+ 
+ 	prot = arm_lpae_prot_to_pte(data, iommu_prot);
+-	return __arm_lpae_map(data, iova, paddr, size, prot, lvl, ptep);
++	ret = __arm_lpae_map(data, iova, paddr, size, prot, lvl, ptep);
++	/*
++	 * Synchronise all PTE updates for the new mapping before there's
++	 * a chance for anything to kick off a table walk for the new iova.
++	 */
++	wmb();
++
++	return ret;
+ }
+ 
+ static void __arm_lpae_free_pgtable(struct arm_lpae_io_pgtable *data, int lvl,
+@@ -428,7 +434,6 @@ static int arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+ 	phys_addr_t blk_paddr;
+ 	arm_lpae_iopte table = 0;
+ 	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+-	void *cookie = data->iop.cookie;
+ 
+ 	blk_start = iova & ~(blk_size - 1);
+ 	blk_end = blk_start + blk_size;
+@@ -454,9 +459,9 @@ static int arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+ 		}
+ 	}
+ 
+-	__arm_lpae_set_pte(ptep, table, cfg, cookie);
++	__arm_lpae_set_pte(ptep, table, cfg);
+ 	iova &= ~(blk_size - 1);
+-	cfg->tlb->tlb_add_flush(iova, blk_size, true, cookie);
++	cfg->tlb->tlb_add_flush(iova, blk_size, true, data->iop.cookie);
+ 	return size;
+ }
+ 
+@@ -478,7 +483,7 @@ static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 
+ 	/* If the size matches this level, we're in the right place */
+ 	if (size == blk_size) {
+-		__arm_lpae_set_pte(ptep, 0, &data->iop.cfg, cookie);
++		__arm_lpae_set_pte(ptep, 0, &data->iop.cfg);
+ 
+ 		if (!iopte_leaf(pte, lvl)) {
+ 			/* Also flush any partial walks */
+@@ -703,8 +708,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+ 	if (!data->pgd)
+ 		goto out_free_data;
+ 
+-	if (cfg->tlb->flush_pgtable)
+-		cfg->tlb->flush_pgtable(data->pgd, data->pgd_size, cookie);
++	/* Ensure the empty pgd is visible before any actual TTBR write */
++	wmb();
+ 
+ 	/* TTBRs */
+ 	cfg->arm_lpae_s1_cfg.ttbr[0] = virt_to_phys(data->pgd);
+@@ -792,8 +797,8 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
+ 	if (!data->pgd)
+ 		goto out_free_data;
+ 
+-	if (cfg->tlb->flush_pgtable)
+-		cfg->tlb->flush_pgtable(data->pgd, data->pgd_size, cookie);
++	/* Ensure the empty pgd is visible before any actual TTBR write */
++	wmb();
+ 
+ 	/* VTTBR */
+ 	cfg->arm_lpae_s2_cfg.vttbr = virt_to_phys(data->pgd);
+diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+index c69529c78914..e8fadb012ed2 100644
+--- a/drivers/iommu/io-pgtable.h
++++ b/drivers/iommu/io-pgtable.h
+@@ -17,7 +17,9 @@ enum io_pgtable_fmt {
+  *
+  * @tlb_flush_all: Synchronously invalidate the entire TLB context.
+  * @tlb_add_flush: Queue up a TLB invalidation for a virtual address range.
+- * @tlb_sync:      Ensure any queue TLB invalidation has taken effect.
++ * @tlb_sync:      Ensure any queued TLB invalidation has taken effect, and
++ *                 any corresponding page table updates are visible to the
++ *                 IOMMU.
+  * @flush_pgtable: Ensure page table updates are visible to the IOMMU.
+  *
+  * Note that these can all be called in atomic context and must therefore
+-- 
+2.1.4
