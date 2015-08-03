@@ -1,29 +1,113 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 00/18] Clean up exposure of arch-internal code
-Date: Mon, 3 Aug 2015 13:33:31 +0200
-Message-ID: <20150803113331.GG14980@8bytes.org>
-References: <20150727122824.GH7557@n2100.arm.linux.org.uk>
- <20150727140905.GA16858@ulmo.nvidia.com>
+From: Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC PATCH 0/1] iommu: Detach device from domain when removed
+	from group
+Date: Mon, 3 Aug 2015 14:25:35 +0200
+Message-ID: <20150803142535.583677b7@thinkpad>
+References: <1438106156-51847-1-git-send-email-gerald.schaefer@de.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20150727140905.GA16858-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1438106156-51847-1-git-send-email-gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Martin Schwidefsky <schwidefsky-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hey Thierry,
+On Tue, 28 Jul 2015 19:55:55 +0200
+Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org> wrote:
 
-On Mon, Jul 27, 2015 at 04:09:06PM +0200, Thierry Reding wrote:
-> What's the plan for merging this? Should it all go in through Joerg's
-> tree so that potentially other driver conversions can go in on top of
-> this, or would you prefer to take it through the ARM tree?
+> Hi,
+> 
+> during IOMMU API function testing on s390 I hit the following scenario:
+> 
+> After binding a device to vfio-pci, the user completes the VFIO_SET_IOMMU
+> ioctl and stops, see the sample C program below. Now the device is manually
+> removed via "echo 1 > /sys/bus/pci/devices/.../remove".
+> 
+> Although the SET_IOMMU ioctl triggered the attach_dev callback in the
+> underlying IOMMU API, removing the device in this way won't trigger the
+> detach_dev callback, neither during remove nor when the user program
+> continues with closing group/container.
+> 
+> On s390, this eventually leads to a kernel panic when binding the device
+> again to its non-vfio PCI driver, because of the missing arch-specific
+> cleanup in detach_dev. On x86, the detach_dev callback will also not be
+> called directly, but there is a notifier that will catch
+> BUS_NOTIFY_REMOVED_DEVICE and eventually do the cleanup. Other
+> architectures w/o the notifier probably have at least some kind of memory
+> leak in this scenario, so a general fix would be nice.
+> 
+> My first approach was to try and fix this in VFIO code, but Alex Williamson
+> pointed me to some asymmetry in the IOMMU code: iommu_group_add_device()
+> will invoke the attach_dev callback, but iommu_group_remove_device() won't
+> trigger detach_dev. Fixing this asymmetry would fix the issue for me, but
+> is this the correct fix? Any thoughts?
 
-So it would be great if you can work in your review comments and send me
-a pull request with the result. I'll put it into the iommu-tree for v4.3
-then.
+Ping.
+
+The suggested fix may be completely wrong, but not having detach_dev called
+seems like like a serious issue, any feedback would be greatly appreciated.
 
 
-	Joerg
+> 
+> Regards,
+> Gerald
+> 
+> 
+> Here is the sample C program to trigger the ioctl:
+> 
+> #include <stdio.h>
+> #include <fcntl.h>
+> #include <linux/vfio.h>
+> 
+> int main(void)
+> {
+>         int container, group, rc;
+> 
+>         container = open("/dev/vfio/vfio", O_RDWR);
+>         if (container < 0) {
+>                 perror("open /dev/vfio/vfio\n");
+>                 return -1;
+>         }
+> 
+>         group = open("/dev/vfio/0", O_RDWR);
+>         if (group < 0) {
+>                 perror("open /dev/vfio/0\n");
+>                 return -1;
+>         }
+> 
+>         rc = ioctl(group, VFIO_GROUP_SET_CONTAINER, &container);
+>         if (rc) {
+>                 perror("ioctl VFIO_GROUP_SET_CONTAINER\n");
+>                 return -1;
+>         }
+> 
+>         rc = ioctl(container, VFIO_SET_IOMMU, VFIO_TYPE1_IOMMU);
+>         if (rc) {
+>                 perror("ioctl VFIO_SET_IOMMU\n");
+>                 return -1;
+>         }
+> 
+>         printf("Try device remove...\n");
+>         getchar();
+> 
+>         close(group);
+>         close(container);
+>         return 0;
+> }
+> 
+> Gerald Schaefer (1):
+>   iommu: Detach device from domain when removed from group
+> 
+>  drivers/iommu/iommu.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
