@@ -1,35 +1,30 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu/omap: Fix debug_read_tlb() to use seq_printf()
-Date: Mon, 3 Aug 2015 17:25:58 +0200
-Message-ID: <20150803152557.GF20968@8bytes.org>
-References: <1437654379-13356-1-git-send-email-speirofr@gmail.com>
+Subject: Re: [RFC PATCH 0/1] iommu: Detach device from domain when removed
+ from group
+Date: Mon, 3 Aug 2015 17:48:55 +0200
+Message-ID: <20150803154855.GI14980@8bytes.org>
+References: <1438106156-51847-1-git-send-email-gerald.schaefer@de.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1437654379-13356-1-git-send-email-speirofr@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Salva =?iso-8859-1?Q?Peir=F3?= <speirofr@gmail.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+In-Reply-To: <1438106156-51847-1-git-send-email-gerald.schaefer@de.ibm.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Gerald Schaefer <gerald.schaefer@de.ibm.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, linux-pci@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Martin Schwidefsky <schwidefsky@de.ibm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jul 23, 2015 at 02:26:19PM +0200, Salva Peir=F3 wrote:
-> The debug_read_tlb() uses the sprintf() functions directly on the buf=
-fer
-> allocated by buf =3D kmalloc(count), without taking into account the =
-size
-> of the buffer, with the consequence corrupting the heap, depending on
-> the count requested by the user.
->=20
-> The patch fixes the issue replacing sprintf() by seq_printf().
->=20
-> Signed-off-by: Salva Peir=F3 <speirofr@gmail.com>
-> ---
->  drivers/iommu/omap-iommu-debug.c | 26 +++++++-------------------
->  drivers/iommu/omap-iommu.c       | 28 +++++++++++-----------------
->  drivers/iommu/omap-iommu.h       |  3 +--
->  3 files changed, 19 insertions(+), 38 deletions(-)
+On Tue, Jul 28, 2015 at 07:55:55PM +0200, Gerald Schaefer wrote:
+> On s390, this eventually leads to a kernel panic when binding the device
+> again to its non-vfio PCI driver, because of the missing arch-specific
+> cleanup in detach_dev. On x86, the detach_dev callback will also not be
+> called directly, but there is a notifier that will catch
+> BUS_NOTIFY_REMOVED_DEVICE and eventually do the cleanup. Other
+> architectures w/o the notifier probably have at least some kind of memory
+> leak in this scenario, so a general fix would be nice.
 
-Applied, thanks. I had to rebase it on top of Suman's changes, but that
-wasn't too hard.
+This notifier is not arch-specific, but registered against the bus the
+iommu-ops are set for. Why does it not run on s390?
+
+
+	Joerg
