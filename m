@@ -1,16 +1,12 @@
-From: Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-Subject: Re: [PATCH 05/13] iommu/io-pgtable-arm: Allow appropriate DMA API use
-Date: Tue, 4 Aug 2015 15:56:42 +0100
-Message-ID: <20150804145642.GQ7557@n2100.arm.linux.org.uk>
-References: <1438608355-7335-1-git-send-email-will.deacon@arm.com>
-	<1438608355-7335-6-git-send-email-will.deacon@arm.com>
-	<1652248.uq2uhTW4Yd@avalon> <55C0D071.1040104@arm.com>
+From: David Kiarie <davidkiarie4-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: IVDB DTE_ALL Settings
+Date: Tue, 4 Aug 2015 05:57:45 +0300
+Message-ID: <20150804025745.GA4128@debian.debian>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <55C0D071.1040104-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,33 +16,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: valentine.sinitsyn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jankiskza-S0/GAf8tV78@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Aug 04, 2015 at 03:47:13PM +0100, Robin Murphy wrote:
-> Hi Laurent,
-> 
-> [ +RMK, as his patch is indirectly involved here ]
-> 
-> On 04/08/15 14:16, Laurent Pinchart wrote:
-> >This is what I believe to be an API abuse. The dma_sync_single_for_device()
-> >API is meant to pass ownership of a buffer to the device. Unless I'm mistaken,
-> >once that's done the CPU isn't allowed to touch the buffer anymore until
-> >dma_sync_single_for_cpu() is called to get ownership of the buffer back.
+I hope am not messing something up,...
 
-That's what I thought up until recently, but it's not strictly true - see
-Documentation/DMA-API.txt which Robin quoted.
+The Linux AMD IOMMU driver does not seem to be applying DTE settings listed in the ALL field correctly.
 
-> [3]:Yes, there may generally be exceptions to that, but not in the context
-> of this code. Unless the Renesas IPMMU does something I don't know about?
+The relevant code:
 
-If an IOMMU does write to its page tables, then the only way to handle
-those is using DMA-coherent memory, either via a coherent mapping or
-allocated via dma_alloc_coherent().  The streaming DMA API is wholely
-unsuitable for any mapping where both the CPU and DMA device both want
-to simultaneously alter the contained data.
+  switch (e->type) {
 
--- 
-FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
-according to speedtest.net.
+  case IVHD_DEV_ALL:
+
+    DUMP_printk("  DEV_ALL\t\t\t first devid: %02x:%02x.%x"
+                " last device %02x:%02x.%x flags: %02x\n",
+                PCI_BUS_NUM(iommu->first_device),
+                PCI_SLOT(iommu->first_device),
+                PCI_FUNC(iommu->first_device),
+                PCI_BUS_NUM(iommu->last_device),
+                PCI_SLOT(iommu->last_device),
+                PCI_FUNC(iommu->last_device),
+                         e->flags);
+
+               for (dev_i = iommu->first_device;
+                    dev_i <= iommu->last_device; ++dev_i)
+                    set_dev_entry_from_acpi(iommu, dev_i,
+                                    e->flags, 0);
+                    break;
+
+  case IVHD_DEV_SELECT:
+
+Basically, the iommu->last/first_device fields are initialized in another state of the driver much later in the code(during PCI initialization); the values 
+iommu->first/last_device are used before initialization which breaks the logic of this code.
+
+On the other hand, this might be a lame bug as I have not seen any IOMMU using the ALL settings but I haven't seen many.
+
+Cheers,
+David.
