@@ -1,80 +1,48 @@
-From: Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH 02/18] firmware: qcom_scm-32: replace open-coded call
- to __cpuc_flush_dcache_area()
-Date: Tue, 04 Aug 2015 11:50:56 -0700
-Message-ID: <55C10990.3090707@codeaurora.org>
-References: <20150727122824.GH7557@n2100.arm.linux.org.uk> <E1ZJhWZ-00043Z-Ft@rmk-PC.arm.linux.org.uk>
+From: Valentine Sinitsyn <valentine.sinitsyn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: IVDB DTE_ALL Settings
+Date: Tue, 4 Aug 2015 22:05:45 +0500
+Message-ID: <55C0F0E9.6030902@gmail.com>
+References: <20150804025745.GA4128@debian.debian>
+	<20150804165619.GP14980@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <E1ZJhWZ-00043Z-Ft-eh5Bv4kxaXIANfyc6IWni62ZND6+EDdj@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150804165619.GP14980-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Kiarie <davidkiarie4-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jankiskza-S0/GAf8tV78@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 07/27/2015 05:28 AM, Russell King wrote:
-> Signed-off-by: Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-> ---
+Hi Joerg,
 
-Thanks!
-
-Reviewed-by: Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-
->   arch/arm/include/asm/cacheflush.h | 17 +++++++++++++++++
->   drivers/firmware/qcom_scm-32.c    |  4 +---
->   2 files changed, 18 insertions(+), 3 deletions(-)
+On 04.08.2015 21:56, Joerg Roedel wrote:
+> Hi David,
 >
-> diff --git a/arch/arm/include/asm/cacheflush.h b/arch/arm/include/asm/cacheflush.h
-> index c5230a44eeca..d5525bfc7e3e 100644
-> --- a/arch/arm/include/asm/cacheflush.h
-> +++ b/arch/arm/include/asm/cacheflush.h
-> @@ -502,4 +502,21 @@ static inline void set_kernel_text_ro(void) { }
->   void flush_uprobe_xol_access(struct page *page, unsigned long uaddr,
->   			     void *kaddr, unsigned long len);
->   
-> +/**
-> + * secure_flush_area - ensure coherency across the secure boundary
-> + * @addr: virtual address
-> + * @size: size of region
-> + *
-> + * Ensure that the specified area of memory is coherent across the secure
-> + * boundary from the non-secure side.  This is used when calling secure
-> + * firmware where the secure firmware does not ensure coherency.
-> + */
-> +static inline void secure_flush_area(const void *addr, size_t size)
-> +{
-> +	phys_addr_t phys = __pa(addr);
-> +
-> +	__cpuc_flush_dcache_area((void *)addr, size);
-> +	outer_flush_range(phys, phys + size);
-> +}
-> +
->   #endif
-> diff --git a/drivers/firmware/qcom_scm-32.c b/drivers/firmware/qcom_scm-32.c
-> index 1bd6f9c34331..29e6850665eb 100644
-> --- a/drivers/firmware/qcom_scm-32.c
-> +++ b/drivers/firmware/qcom_scm-32.c
-> @@ -24,7 +24,6 @@
->   #include <linux/err.h>
->   #include <linux/qcom_scm.h>
->   
-> -#include <asm/outercache.h>
->   #include <asm/cacheflush.h>
->   
->   #include "qcom_scm.h"
-> @@ -219,8 +218,7 @@ static int __qcom_scm_call(const struct qcom_scm_command *cmd)
->   	 * Flush the command buffer so that the secure world sees
->   	 * the correct data.
->   	 */
-> -	__cpuc_flush_dcache_area((void *)cmd, cmd->len);
-> -	outer_flush_range(cmd_addr, cmd_addr + cmd->len);
-> +	secure_flush_area(cmd, cmd->len);
->   
->   	ret = smc(cmd_addr);
->   	if (ret < 0)
+> On Tue, Aug 04, 2015 at 05:57:45AM +0300, David Kiarie wrote:
+>> Basically, the iommu->last/first_device fields are initialized in
+>> another state of the driver much later in the code(during PCI
+>> initialization); the values iommu->first/last_device are used before
+>> initialization which breaks the logic of this code.
+>
+> You are right, this is probably broken for some time, on the other side
+> it doesn't matter for now as I've never seen an IVRS table with an
+> IVHD_ALL field. I'll do a patch to fix this, thanks for the report.
+Not directly related to the issue David discovered, but as we discuss 
+IVRS handling: the specification says that ACPI tables data overrides 
+what's in hardware registers (Sect. 5). To the best of my understanding, 
+this means e.g. I should take HATS value not from EFR but from IVHD Type 
+10 block. However, amd_iommu driver code checks for features directly - 
+for what reason? I'm not suggesting this is a bug, but rather asking 
+your opinion here.
 
--- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Thanks,
+Valentine
