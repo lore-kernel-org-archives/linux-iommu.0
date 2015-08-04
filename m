@@ -1,55 +1,39 @@
-From: Jeff Moyer <jmoyer@redhat.com>
-Subject: Re: AMD-Vi IO_PAGE_FAULTs and ata3.00: failed command: READ FPDMA QUEUED errors since Linux 4.0
-Date: Tue, 04 Aug 2015 12:10:51 -0400
-Message-ID: <x4937zzm3uc.fsf@segfault.boston.devel.redhat.com>
-References: <55B7BEA2.30205@01019freenet.de>
-	<20150728175054.GB24782@redhat.com> <55B7D054.4070308@maya.org>
-	<20150728192908.GA25264@redhat.com> <55BCD5A7.2080708@maya.org>
-	<55BE1D5E.6020709@maya.org>
-	<alpine.LRH.2.02.1508021347480.17729@file01.intranet.prod.int.rdu2.redhat.com>
-	<55BE65E6.7060901@maya.org> <20150803081249.GF14980@8bytes.org>
-	<20150804144711.GB24716@redhat.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: IVDB DTE_ALL Settings
+Date: Tue, 4 Aug 2015 18:56:19 +0200
+Message-ID: <20150804165619.GP14980@8bytes.org>
+References: <20150804025745.GA4128@debian.debian>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20150804144711.GB24716@redhat.com> (Mike Snitzer's message of
-	"Tue, 4 Aug 2015 10:47:11 -0400")
-Sender: linux-pci-owner@vger.kernel.org
-To: Mike Snitzer <snitzer@redhat.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Andreas Hartmann <andihartmann@freenet.de>, linux-pci <linux-pci@vger.kernel.org>, device-mapper development <dm-devel@redhat.com>, Jens Axboe <axboe@fb.com>, iommu@lists.linux-foundation.org, Leo Duran <leo.duran@amd.com>, Mikulas Patocka <mpatocka@redhat.com>, Christoph Hellwig <hch@lst.de>, Milan Broz <mbroz@redhat.com>, linux-ide@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20150804025745.GA4128-FBVcP3zgNXf1IFe7KZLm3A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: David Kiarie <davidkiarie4-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: valentine.sinitsyn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jankiskza-S0/GAf8tV78@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Mike Snitzer <snitzer@redhat.com> writes:
+Hi David,
 
-> On Mon, Aug 03 2015 at  4:12am -0400,
-> Joerg Roedel <joro@8bytes.org> wrote:
->
->> On Sun, Aug 02, 2015 at 08:48:06PM +0200, Andreas Hartmann wrote:
->> > >>https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=34b48db66e08ca1c1bc07cf305d672ac940268dc
->> > >>
->> > >>block: remove artifical max_hw_sectors cap
->> 
->> Looking at the patch, it seems to me that it just uncovered a bug
->> elsewhere. It looks like an underlying driver doesn't expect the
->> big io-requests that the patch enables and does not dma-map the whole
->> target buffer, causing the IO_PAGE_FAULTs later.
->
-> That patch has caused issues elsewhere too, see this 'Revert "block:
-> remove artifical max_hw_sectors cap"' thread (if/when lkml.org
-> cooperates): https://lkml.org/lkml/2015/7/20/572
->
-> But it could be that there is a need for a horkage fix for this specific
-> hardware? something comparable to this?:
-> http://git.kernel.org/linus/af34d637637eabaf49406eb35c948cd51ba262a6
->
-> We are running out of time to fix these whack-a-mole issues in 4.2
-> though.
+On Tue, Aug 04, 2015 at 05:57:45AM +0300, David Kiarie wrote:
+> Basically, the iommu->last/first_device fields are initialized in
+> another state of the driver much later in the code(during PCI
+> initialization); the values iommu->first/last_device are used before
+> initialization which breaks the logic of this code.
 
-CC-ing linux-ide.  Original dm-devel posting:
-  https://www.redhat.com/archives/dm-devel/2015-July/msg00178.html
+You are right, this is probably broken for some time, on the other side
+it doesn't matter for now as I've never seen an IVRS table with an
+IVHD_ALL field. I'll do a patch to fix this, thanks for the report.
 
-Andreas, I would be curious to know what the value of
-/sys/block/sdX/queue/max_hw_sectors_kb is for the affected disks.
 
-Cheers,
-Jeff
+
+	Joerg
