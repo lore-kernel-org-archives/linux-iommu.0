@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 01/26] iommu/vt-d: Keep track of per-iommu domain ids
-Date: Wed,  5 Aug 2015 17:18:32 +0200
-Message-ID: <1438787937-7340-2-git-send-email-joro@8bytes.org>
+Subject: [PATCH 02/26] iommu/vt-d: Add access functions for iommu->domains
+Date: Wed,  5 Aug 2015 17:18:33 +0200
+Message-ID: <1438787937-7340-3-git-send-email-joro@8bytes.org>
 References: <1438787937-7340-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,122 +23,81 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Instead of searching in the domain array for already
-allocated domain ids, keep track of them explicitly.
+This makes it easier to change the layout of the data
+structure later.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 51 +++++++++++++++++++++++----------------------
- 1 file changed, 26 insertions(+), 25 deletions(-)
+ drivers/iommu/intel-iommu.c | 22 +++++++++++++++++-----
+ 1 file changed, 17 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 0649b94..c3c5167 100644
+index c3c5167..e6a5966 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -378,6 +378,9 @@ struct dmar_domain {
- 	DECLARE_BITMAP(iommu_bmp, DMAR_UNITS_SUPPORTED);
- 					/* bitmap of iommus this domain uses*/
+@@ -567,6 +567,17 @@ __setup("intel_iommu=", intel_iommu_setup);
+ static struct kmem_cache *iommu_domain_cache;
+ static struct kmem_cache *iommu_devinfo_cache;
  
-+	u16	iommu_did[DMAR_UNITS_SUPPORTED];
-+					/* Domain ids per IOMMU */
++static struct dmar_domain* get_iommu_domain(struct intel_iommu *iommu, u16 did)
++{
++	return iommu->domains[did];
++}
 +
- 	struct list_head devices;	/* all devices' list */
- 	struct iova_domain iovad;	/* iova's that belong to this domain */
- 
-@@ -1543,11 +1546,13 @@ static int iommu_init_domains(struct intel_iommu *iommu)
- 	}
- 
- 	/*
--	 * if Caching mode is set, then invalid translations are tagged
--	 * with domainid 0. Hence we need to pre-allocate it.
-+	 * If Caching mode is set, then invalid translations are tagged
-+	 * with domain-id 0, hence we need to pre-allocate it. We also
-+	 * use domain-id 0 as a marker for non-allocated domain-id, so
-+	 * make sure it is not used for a real domain.
++static void set_iommu_domain(struct intel_iommu *iommu, u16 did,
++			     struct dmar_domain *domain)
++{
++	iommu->domains[did] = domain;
++}
++
+ static inline void *alloc_pgtable_page(int node)
+ {
+ 	struct page *page;
+@@ -1461,7 +1472,8 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu, u16 did,
+ 	 * flush. However, device IOTLB doesn't need to be flushed in this case.
  	 */
--	if (cap_caching_mode(iommu->cap))
--		set_bit(0, iommu->domain_ids);
-+	set_bit(0, iommu->domain_ids);
-+
- 	return 0;
+ 	if (!cap_caching_mode(iommu->cap) || !map)
+-		iommu_flush_dev_iotlb(iommu->domains[did], addr, mask);
++		iommu_flush_dev_iotlb(get_iommu_domain(iommu, did),
++				      addr, mask);
  }
  
-@@ -1560,9 +1565,10 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
- 		for_each_set_bit(i, iommu->domain_ids, cap_ndoms(iommu->cap)) {
- 			/*
- 			 * Domain id 0 is reserved for invalid translation
--			 * if hardware supports caching mode.
-+			 * if hardware supports caching mode and used as
-+			 * a non-allocated marker.
- 			 */
--			if (cap_caching_mode(iommu->cap) && i == 0)
-+			if (i == 0)
+ static void iommu_disable_protect_mem_regions(struct intel_iommu *iommu)
+@@ -1571,7 +1583,7 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
+ 			if (i == 0)
  				continue;
  
- 			domain = iommu->domains[i];
-@@ -1624,6 +1630,7 @@ static int __iommu_attach_domain(struct dmar_domain *domain,
+-			domain = iommu->domains[i];
++			domain = get_iommu_domain(iommu, i);
+ 			clear_bit(i, iommu->domain_ids);
+ 			if (domain_detach_iommu(domain, iommu) == 0 &&
+ 			    !domain_type_is_vm(domain))
+@@ -1629,7 +1641,7 @@ static int __iommu_attach_domain(struct dmar_domain *domain,
+ 	num = find_first_zero_bit(iommu->domain_ids, ndomains);
  	if (num < ndomains) {
  		set_bit(num, iommu->domain_ids);
- 		iommu->domains[num] = domain;
-+		domain->iommu_did[iommu->seq_id] = num;
+-		iommu->domains[num] = domain;
++		set_iommu_domain(iommu, num, domain);
+ 		domain->iommu_did[iommu->seq_id] = num;
  	} else {
  		num = -ENOSPC;
- 	}
-@@ -1650,12 +1657,10 @@ static int iommu_attach_vm_domain(struct dmar_domain *domain,
- 				  struct intel_iommu *iommu)
- {
- 	int num;
--	unsigned long ndomains;
+@@ -1678,7 +1690,7 @@ static void iommu_detach_domain(struct dmar_domain *domain,
+ 	WARN_ON(num == 0);
  
--	ndomains = cap_ndoms(iommu->cap);
--	for_each_set_bit(num, iommu->domain_ids, ndomains)
--		if (iommu->domains[num] == domain)
--			return num;
-+	num = domain->iommu_did[iommu->seq_id];
-+	if (num)
-+		return num;
+ 	clear_bit(num, iommu->domain_ids);
+-	iommu->domains[num]		 = NULL;
++	set_iommu_domain(iommu, num, NULL);
  
- 	return __iommu_attach_domain(domain, iommu);
- }
-@@ -1664,22 +1669,17 @@ static void iommu_detach_domain(struct dmar_domain *domain,
- 				struct intel_iommu *iommu)
- {
- 	unsigned long flags;
--	int num, ndomains;
-+	int num;
- 
- 	spin_lock_irqsave(&iommu->lock, flags);
--	if (domain_type_is_vm_or_si(domain)) {
--		ndomains = cap_ndoms(iommu->cap);
--		for_each_set_bit(num, iommu->domain_ids, ndomains) {
--			if (iommu->domains[num] == domain) {
--				clear_bit(num, iommu->domain_ids);
--				iommu->domains[num] = NULL;
--				break;
--			}
--		}
--	} else {
--		clear_bit(domain->id, iommu->domain_ids);
--		iommu->domains[domain->id] = NULL;
--	}
-+
-+	num = domain->iommu_did[iommu->seq_id];
-+
-+	WARN_ON(num == 0);
-+
-+	clear_bit(num, iommu->domain_ids);
-+	iommu->domains[num]		 = NULL;
-+
  	spin_unlock_irqrestore(&iommu->lock, flags);
  }
- 
-@@ -1708,6 +1708,7 @@ static int domain_detach_iommu(struct dmar_domain *domain,
- 	if (test_and_clear_bit(iommu->seq_id, domain->iommu_bmp)) {
- 		count = --domain->iommu_count;
- 		domain_update_iommu_cap(domain);
-+		domain->iommu_did[iommu->seq_id] = 0;
- 	}
- 	spin_unlock_irqrestore(&domain->iommu_lock, flags);
- 
+@@ -4828,7 +4840,7 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
+                 */
+                ndomains = cap_ndoms(iommu->cap);
+                for_each_set_bit(num, iommu->domain_ids, ndomains) {
+-                       if (iommu->domains[num] == dmar_domain)
++                       if (get_iommu_domain(iommu, num) == dmar_domain)
+                                iommu_flush_iotlb_psi(iommu, num, start_pfn,
+ 						     npages, !freelist, 0);
+ 	       }
 -- 
 1.9.1
