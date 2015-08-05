@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 17/26] iommu/vt-d: Rename iommu_detach_dependent_devices()
-Date: Wed,  5 Aug 2015 17:18:48 +0200
-Message-ID: <1438787937-7340-18-git-send-email-joro@8bytes.org>
+Subject: [PATCH 13/26] iommu/vt-d: Simplify domain_remove_dev_info()
+Date: Wed,  5 Aug 2015 17:18:44 +0200
+Message-ID: <1438787937-7340-14-git-send-email-joro@8bytes.org>
 References: <1438787937-7340-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,85 +23,45 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Rename this function and the ones further down its
-call-chain to domain_context_clear_*. In particular this
-means:
-
-	iommu_detach_dependent_devices -> domain_context_clear
-		   iommu_detach_dev_cb -> domain_context_clear_one_cb
-		      iommu_detach_dev -> domain_context_clear_one
-
-These names match a lot better with its
-domain_context_mapping counterparts.
+Just call domain_remove_one_dev_info() for all devices in
+the domain instead of reimplementing the functionality.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 18 ++++++++----------
- 1 file changed, 8 insertions(+), 10 deletions(-)
+ drivers/iommu/intel-iommu.c | 20 ++------------------
+ 1 file changed, 2 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index e033bb0..08391a6 100644
+index f59b4ef..265b02e 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -472,8 +472,8 @@ static void domain_exit(struct dmar_domain *domain);
- static void domain_remove_dev_info(struct dmar_domain *domain);
- static void dmar_remove_one_dev_info(struct dmar_domain *domain,
- 				     struct device *dev);
--static void iommu_detach_dependent_devices(struct intel_iommu *iommu,
--					   struct device *dev);
-+static void domain_context_clear(struct intel_iommu *iommu,
-+				 struct device *dev);
- static int domain_detach_iommu(struct dmar_domain *domain,
- 			       struct intel_iommu *iommu);
- 
-@@ -2228,7 +2228,7 @@ static inline int domain_pfn_mapping(struct dmar_domain *domain, unsigned long i
- 	return __domain_mapping(domain, iov_pfn, NULL, phys_pfn, nr_pages, prot);
- }
- 
--static void iommu_detach_dev(struct intel_iommu *iommu, u8 bus, u8 devfn)
-+static void domain_context_clear_one(struct intel_iommu *iommu, u8 bus, u8 devfn)
+@@ -2251,25 +2251,9 @@ static inline void unlink_domain_info(struct device_domain_info *info)
+ static void domain_remove_dev_info(struct dmar_domain *domain)
  {
- 	if (!iommu)
- 		return;
-@@ -4528,11 +4528,11 @@ out_free_dmar:
- 	return ret;
+ 	struct device_domain_info *info, *tmp;
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&device_domain_lock, flags);
+-	list_for_each_entry_safe(info, tmp, &domain->devices, link) {
+-		unlink_domain_info(info);
+-		spin_unlock_irqrestore(&device_domain_lock, flags);
+-
+-		iommu_disable_dev_iotlb(info);
+-		iommu_detach_dev(info->iommu, info->bus, info->devfn);
+-
+-		if (domain_type_is_vm(domain)) {
+-			iommu_detach_dependent_devices(info->iommu, info->dev);
+-			domain_detach_iommu(domain, info->iommu);
+-		}
+ 
+-		free_devinfo_mem(info);
+-		spin_lock_irqsave(&device_domain_lock, flags);
+-	}
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
++	list_for_each_entry_safe(info, tmp, &domain->devices, link)
++		domain_remove_one_dev_info(domain, info->dev);
  }
  
--static int iommu_detach_dev_cb(struct pci_dev *pdev, u16 alias, void *opaque)
-+static int domain_context_clear_one_cb(struct pci_dev *pdev, u16 alias, void *opaque)
- {
- 	struct intel_iommu *iommu = opaque;
- 
--	iommu_detach_dev(iommu, PCI_BUS_NUM(alias), alias & 0xff);
-+	domain_context_clear_one(iommu, PCI_BUS_NUM(alias), alias & 0xff);
- 	return 0;
- }
- 
-@@ -4542,13 +4542,12 @@ static int iommu_detach_dev_cb(struct pci_dev *pdev, u16 alias, void *opaque)
-  * devices, unbinding the driver from any one of them will possibly leave
-  * the others unable to operate.
-  */
--static void iommu_detach_dependent_devices(struct intel_iommu *iommu,
--					   struct device *dev)
-+static void domain_context_clear(struct intel_iommu *iommu, struct device *dev)
- {
- 	if (!iommu || !dev || !dev_is_pci(dev))
- 		return;
- 
--	pci_for_each_dma_alias(to_pci_dev(dev), &iommu_detach_dev_cb, iommu);
-+	pci_for_each_dma_alias(to_pci_dev(dev), &domain_context_clear_one_cb, iommu);
- }
- 
- static void dmar_remove_one_dev_info(struct dmar_domain *domain,
-@@ -4573,8 +4572,7 @@ static void dmar_remove_one_dev_info(struct dmar_domain *domain,
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
- 
- 	iommu_disable_dev_iotlb(info);
--	iommu_detach_dev(iommu, info->bus, info->devfn);
--	iommu_detach_dependent_devices(iommu, dev);
-+	domain_context_clear(iommu, dev);
- 	free_devinfo_mem(info);
- 	domain_detach_iommu(domain, iommu);
- 
+ /*
 -- 
 1.9.1
