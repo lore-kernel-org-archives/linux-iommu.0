@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 16/26] iommu/vt-d: Rename domain_remove_one_dev_info()
-Date: Wed,  5 Aug 2015 17:18:47 +0200
-Message-ID: <1438787937-7340-17-git-send-email-joro@8bytes.org>
+Subject: [PATCH 15/26] iommu/vt-d: Rename dmar_insert_dev_info()
+Date: Wed,  5 Aug 2015 17:18:46 +0200
+Message-ID: <1438787937-7340-16-git-send-email-joro@8bytes.org>
 References: <1438787937-7340-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,102 +23,62 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Rename the function to dmar_remove_one_dev_info to match is
-name better with its dmar_insert_one_dev_info counterpart.
+Rename this function to dmar_insert_one_dev_info() to match
+the name better with its counter part function
+domain_remove_one_dev_info().
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ drivers/iommu/intel-iommu.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 8e87208..e033bb0 100644
+index 0d4b700..8e87208 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -470,8 +470,8 @@ static long list_size;
- 
- static void domain_exit(struct dmar_domain *domain);
- static void domain_remove_dev_info(struct dmar_domain *domain);
--static void domain_remove_one_dev_info(struct dmar_domain *domain,
--				       struct device *dev);
-+static void dmar_remove_one_dev_info(struct dmar_domain *domain,
-+				     struct device *dev);
- static void iommu_detach_dependent_devices(struct intel_iommu *iommu,
- 					   struct device *dev);
- static int domain_detach_iommu(struct dmar_domain *domain,
-@@ -1629,7 +1629,7 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
- 
- 		domain = info->domain;
- 
--		domain_remove_one_dev_info(domain, info->dev);
-+		dmar_remove_one_dev_info(domain, info->dev);
- 
- 		if (!domain_type_is_vm_or_si(domain))
- 			domain_exit(domain);
-@@ -2253,7 +2253,7 @@ static void domain_remove_dev_info(struct dmar_domain *domain)
- 	struct device_domain_info *info, *tmp;
- 
- 	list_for_each_entry_safe(info, tmp, &domain->devices, link)
--		domain_remove_one_dev_info(domain, info->dev);
-+		dmar_remove_one_dev_info(domain, info->dev);
+@@ -2284,10 +2284,10 @@ dmar_search_domain_by_dev_info(int segment, int bus, int devfn)
+ 	return NULL;
  }
  
- /*
-@@ -2327,7 +2327,7 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+-static struct dmar_domain *dmar_insert_dev_info(struct intel_iommu *iommu,
+-						int bus, int devfn,
+-						struct device *dev,
+-						struct dmar_domain *domain)
++static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
++						    int bus, int devfn,
++						    struct device *dev,
++						    struct dmar_domain *domain)
+ {
+ 	struct dmar_domain *found = NULL;
+ 	struct device_domain_info *info;
+@@ -2394,8 +2394,8 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
  
- 	if (dev && domain_context_mapping(domain, dev)) {
- 		pr_err("Domain context map for %s failed\n", dev_name(dev));
--		domain_remove_one_dev_info(domain, dev);
-+		dmar_remove_one_dev_info(domain, dev);
- 		return NULL;
+ 	/* register PCI DMA alias device */
+ 	if (dev_is_pci(dev)) {
+-		tmp = dmar_insert_dev_info(iommu, PCI_BUS_NUM(dma_alias),
+-					   dma_alias & 0xff, NULL, domain);
++		tmp = dmar_insert_one_dev_info(iommu, PCI_BUS_NUM(dma_alias),
++					       dma_alias & 0xff, NULL, domain);
+ 
+ 		if (!tmp || tmp != domain) {
+ 			domain_exit(domain);
+@@ -2407,7 +2407,7 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
  	}
  
-@@ -3298,7 +3298,7 @@ static int iommu_no_mapping(struct device *dev)
- 			 * 32 bit DMA is removed from si_domain and fall back
- 			 * to non-identity mapping.
- 			 */
--			domain_remove_one_dev_info(si_domain, dev);
-+			dmar_remove_one_dev_info(si_domain, dev);
- 			pr_info("32bit %s uses non-identity mapping\n",
- 				dev_name(dev));
- 			return 0;
-@@ -4305,7 +4305,7 @@ static int device_notifier(struct notifier_block *nb,
- 		return 0;
+ found_domain:
+-	tmp = dmar_insert_dev_info(iommu, bus, devfn, dev, domain);
++	tmp = dmar_insert_one_dev_info(iommu, bus, devfn, dev, domain);
  
- 	down_read(&dmar_global_lock);
--	domain_remove_one_dev_info(domain, dev);
-+	dmar_remove_one_dev_info(domain, dev);
- 	if (!domain_type_is_vm_or_si(domain) && list_empty(&domain->devices))
+ 	if (!tmp || tmp != domain) {
  		domain_exit(domain);
- 	up_read(&dmar_global_lock);
-@@ -4551,8 +4551,8 @@ static void iommu_detach_dependent_devices(struct intel_iommu *iommu,
- 	pci_for_each_dma_alias(to_pci_dev(dev), &iommu_detach_dev_cb, iommu);
- }
+@@ -2596,7 +2596,7 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
+ 	if (!iommu)
+ 		return -ENODEV;
  
--static void domain_remove_one_dev_info(struct dmar_domain *domain,
--				       struct device *dev)
-+static void dmar_remove_one_dev_info(struct dmar_domain *domain,
-+				     struct device *dev)
- {
- 	struct device_domain_info *info;
- 	struct intel_iommu *iommu;
-@@ -4663,7 +4663,7 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
- 		old_domain = find_domain(dev);
- 		if (old_domain) {
- 			if (domain_type_is_vm_or_si(dmar_domain))
--				domain_remove_one_dev_info(old_domain, dev);
-+				dmar_remove_one_dev_info(old_domain, dev);
- 			else
- 				domain_remove_dev_info(old_domain);
+-	ndomain = dmar_insert_dev_info(iommu, bus, devfn, dev, domain);
++	ndomain = dmar_insert_one_dev_info(iommu, bus, devfn, dev, domain);
+ 	if (ndomain != domain)
+ 		return -EBUSY;
  
-@@ -4711,7 +4711,7 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
- static void intel_iommu_detach_device(struct iommu_domain *domain,
- 				      struct device *dev)
- {
--	domain_remove_one_dev_info(to_dmar_domain(domain), dev);
-+	dmar_remove_one_dev_info(to_dmar_domain(domain), dev);
- }
- 
- static int intel_iommu_map(struct iommu_domain *domain,
 -- 
 1.9.1
