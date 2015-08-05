@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 18/26] iommu/vt-d: Pass an iommu pointer to domain_init()
-Date: Wed,  5 Aug 2015 17:18:49 +0200
-Message-ID: <1438787937-7340-19-git-send-email-joro@8bytes.org>
+Subject: [PATCH 11/26] iommu/vt-d: Simplify io/tlb flushing in
+	intel_iommu_unmap
+Date: Wed,  5 Aug 2015 17:18:42 +0200
+Message-ID: <1438787937-7340-12-git-send-email-joro@8bytes.org>
 References: <1438787937-7340-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,46 +24,46 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-This allows to do domain->iommu attachment after domain_init
-has run.
+We don't need to do an expensive search for domain-ids
+anymore, as we keep track of per-iommu domain-ids.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/iommu/intel-iommu.c | 15 +++------------
+ 1 file changed, 3 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 08391a6..90c3fa5 100644
+index c46afb6..ae2343c 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1829,9 +1829,9 @@ static inline int guestwidth_to_adjustwidth(int gaw)
- 	return agaw;
- }
+@@ -4811,7 +4811,7 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
+ 	struct intel_iommu *iommu;
+ 	unsigned long start_pfn, last_pfn;
+ 	unsigned int npages;
+-	int iommu_id, num, ndomains, level = 0;
++	int iommu_id, level = 0;
  
--static int domain_init(struct dmar_domain *domain, int guest_width)
-+static int domain_init(struct dmar_domain *domain, struct intel_iommu *iommu,
-+		       int guest_width)
- {
--	struct intel_iommu *iommu;
- 	int adjust_width, agaw;
- 	unsigned long sagaw;
+ 	/* Cope with horrid API which requires us to unmap more than the
+ 	   size argument if it happens to be a large-page mapping. */
+@@ -4831,17 +4831,8 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
+ 	for_each_domain_iommu(iommu_id, dmar_domain) {
+ 		iommu = g_iommus[iommu_id];
  
-@@ -1840,7 +1840,6 @@ static int domain_init(struct dmar_domain *domain, int guest_width)
- 	domain_reserve_special_ranges(domain);
- 
- 	/* calculate AGAW */
--	iommu = domain_get_iommu(domain);
- 	if (guest_width > cap_mgaw(iommu->cap))
- 		guest_width = cap_mgaw(iommu->cap);
- 	domain->gaw = guest_width;
-@@ -2387,7 +2386,7 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
- 		return NULL;
+-		/*
+-		 * find bit position of dmar_domain
+-		 */
+-		ndomains = cap_ndoms(iommu->cap);
+-		for_each_set_bit(num, iommu->domain_ids, ndomains) {
+-			if (get_iommu_domain(iommu, num) == dmar_domain)
+-				iommu_flush_iotlb_psi(iommu, dmar_domain,
+-						      start_pfn, npages,
+-						      !freelist, 0);
+-		}
+-
++		iommu_flush_iotlb_psi(g_iommus[iommu_id], dmar_domain,
++				      start_pfn, npages, !freelist, 0);
  	}
- 	domain_attach_iommu(domain, iommu);
--	if (domain_init(domain, gaw)) {
-+	if (domain_init(domain, iommu, gaw)) {
- 		domain_exit(domain);
- 		return NULL;
- 	}
+ 
+ 	dma_free_pagelist(freelist);
 -- 
 1.9.1
