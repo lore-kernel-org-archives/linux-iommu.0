@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 23/26] iommu/vt-d: Remove dmar_global_lock from device_notifier
-Date: Wed,  5 Aug 2015 17:18:54 +0200
-Message-ID: <1438787937-7340-24-git-send-email-joro@8bytes.org>
+Subject: [PATCH 17/26] iommu/vt-d: Rename iommu_detach_dependent_devices()
+Date: Wed,  5 Aug 2015 17:18:48 +0200
+Message-ID: <1438787937-7340-18-git-send-email-joro@8bytes.org>
 References: <1438787937-7340-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,29 +23,85 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-The code in the locked section does not touch anything
-protected by the dmar_global_lock. Remove it from there.
+Rename this function and the ones further down its
+call-chain to domain_context_clear_*. In particular this
+means:
+
+	iommu_detach_dependent_devices -> domain_context_clear
+		   iommu_detach_dev_cb -> domain_context_clear_one_cb
+		      iommu_detach_dev -> domain_context_clear_one
+
+These names match a lot better with its
+domain_context_mapping counterparts.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/iommu/intel-iommu.c | 18 ++++++++----------
+ 1 file changed, 8 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 1a9ecfe..624e0a2 100644
+index e033bb0..08391a6 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -4272,11 +4272,9 @@ static int device_notifier(struct notifier_block *nb,
- 	if (!domain)
- 		return 0;
+@@ -472,8 +472,8 @@ static void domain_exit(struct dmar_domain *domain);
+ static void domain_remove_dev_info(struct dmar_domain *domain);
+ static void dmar_remove_one_dev_info(struct dmar_domain *domain,
+ 				     struct device *dev);
+-static void iommu_detach_dependent_devices(struct intel_iommu *iommu,
+-					   struct device *dev);
++static void domain_context_clear(struct intel_iommu *iommu,
++				 struct device *dev);
+ static int domain_detach_iommu(struct dmar_domain *domain,
+ 			       struct intel_iommu *iommu);
  
--	down_read(&dmar_global_lock);
- 	dmar_remove_one_dev_info(domain, dev);
- 	if (!domain_type_is_vm_or_si(domain) && list_empty(&domain->devices))
- 		domain_exit(domain);
--	up_read(&dmar_global_lock);
+@@ -2228,7 +2228,7 @@ static inline int domain_pfn_mapping(struct dmar_domain *domain, unsigned long i
+ 	return __domain_mapping(domain, iov_pfn, NULL, phys_pfn, nr_pages, prot);
+ }
  
+-static void iommu_detach_dev(struct intel_iommu *iommu, u8 bus, u8 devfn)
++static void domain_context_clear_one(struct intel_iommu *iommu, u8 bus, u8 devfn)
+ {
+ 	if (!iommu)
+ 		return;
+@@ -4528,11 +4528,11 @@ out_free_dmar:
+ 	return ret;
+ }
+ 
+-static int iommu_detach_dev_cb(struct pci_dev *pdev, u16 alias, void *opaque)
++static int domain_context_clear_one_cb(struct pci_dev *pdev, u16 alias, void *opaque)
+ {
+ 	struct intel_iommu *iommu = opaque;
+ 
+-	iommu_detach_dev(iommu, PCI_BUS_NUM(alias), alias & 0xff);
++	domain_context_clear_one(iommu, PCI_BUS_NUM(alias), alias & 0xff);
  	return 0;
  }
+ 
+@@ -4542,13 +4542,12 @@ static int iommu_detach_dev_cb(struct pci_dev *pdev, u16 alias, void *opaque)
+  * devices, unbinding the driver from any one of them will possibly leave
+  * the others unable to operate.
+  */
+-static void iommu_detach_dependent_devices(struct intel_iommu *iommu,
+-					   struct device *dev)
++static void domain_context_clear(struct intel_iommu *iommu, struct device *dev)
+ {
+ 	if (!iommu || !dev || !dev_is_pci(dev))
+ 		return;
+ 
+-	pci_for_each_dma_alias(to_pci_dev(dev), &iommu_detach_dev_cb, iommu);
++	pci_for_each_dma_alias(to_pci_dev(dev), &domain_context_clear_one_cb, iommu);
+ }
+ 
+ static void dmar_remove_one_dev_info(struct dmar_domain *domain,
+@@ -4573,8 +4572,7 @@ static void dmar_remove_one_dev_info(struct dmar_domain *domain,
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+ 
+ 	iommu_disable_dev_iotlb(info);
+-	iommu_detach_dev(iommu, info->bus, info->devfn);
+-	iommu_detach_dependent_devices(iommu, dev);
++	domain_context_clear(iommu, dev);
+ 	free_devinfo_mem(info);
+ 	domain_detach_iommu(domain, iommu);
+ 
 -- 
 1.9.1
