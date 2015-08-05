@@ -1,8 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 11/26] iommu/vt-d: Simplify io/tlb flushing in
-	intel_iommu_unmap
-Date: Wed,  5 Aug 2015 17:18:42 +0200
-Message-ID: <1438787937-7340-12-git-send-email-joro@8bytes.org>
+Subject: [PATCH 14/26] iommu/vt-d: Move context-mapping into
+	dmar_insert_dev_info
+Date: Wed,  5 Aug 2015 17:18:45 +0200
+Message-ID: <1438787937-7340-15-git-send-email-joro@8bytes.org>
 References: <1438787937-7340-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,46 +24,102 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-We don't need to do an expensive search for domain-ids
-anymore, as we keep track of per-iommu domain-ids.
+Do the context-mapping of devices from a single place in the
+call-path and clean up the other call-sites.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 15 +++------------
- 1 file changed, 3 insertions(+), 12 deletions(-)
+ drivers/iommu/intel-iommu.c | 33 ++++++++-------------------------
+ 1 file changed, 8 insertions(+), 25 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index c46afb6..ae2343c 100644
+index 265b02e..0d4b700 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -4811,7 +4811,7 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
+@@ -2325,6 +2325,12 @@ static struct dmar_domain *dmar_insert_dev_info(struct intel_iommu *iommu,
+ 		dev->archdata.iommu = info;
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+ 
++	if (dev && domain_context_mapping(domain, dev)) {
++		pr_err("Domain context map for %s failed\n", dev_name(dev));
++		domain_remove_one_dev_info(domain, dev);
++		return NULL;
++	}
++
+ 	return domain;
+ }
+ 
+@@ -2337,11 +2343,11 @@ static int get_last_alias(struct pci_dev *pdev, u16 alias, void *opaque)
+ /* domain is initialized */
+ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
+ {
++	struct device_domain_info *info = NULL;
+ 	struct dmar_domain *domain, *tmp;
  	struct intel_iommu *iommu;
- 	unsigned long start_pfn, last_pfn;
- 	unsigned int npages;
--	int iommu_id, num, ndomains, level = 0;
-+	int iommu_id, level = 0;
+-	struct device_domain_info *info;
+-	u16 dma_alias;
+ 	unsigned long flags;
++	u16 dma_alias;
+ 	u8 bus, devfn;
  
- 	/* Cope with horrid API which requires us to unmap more than the
- 	   size argument if it happens to be a large-page mapping. */
-@@ -4831,17 +4831,8 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
- 	for_each_domain_iommu(iommu_id, dmar_domain) {
- 		iommu = g_iommus[iommu_id];
+ 	domain = find_domain(dev);
+@@ -2490,11 +2496,6 @@ static int iommu_prepare_identity_map(struct device *dev,
+ 	if (ret)
+ 		goto error;
  
--		/*
--		 * find bit position of dmar_domain
--		 */
--		ndomains = cap_ndoms(iommu->cap);
--		for_each_set_bit(num, iommu->domain_ids, ndomains) {
--			if (get_iommu_domain(iommu, num) == dmar_domain)
--				iommu_flush_iotlb_psi(iommu, dmar_domain,
--						      start_pfn, npages,
--						      !freelist, 0);
--		}
+-	/* context entry init */
+-	ret = domain_context_mapping(domain, dev);
+-	if (ret)
+-		goto error;
 -
-+		iommu_flush_iotlb_psi(g_iommus[iommu_id], dmar_domain,
-+				      start_pfn, npages, !freelist, 0);
+ 	return 0;
+ 
+  error:
+@@ -2590,7 +2591,6 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
+ 	struct dmar_domain *ndomain;
+ 	struct intel_iommu *iommu;
+ 	u8 bus, devfn;
+-	int ret;
+ 
+ 	iommu = device_to_iommu(dev, &bus, &devfn);
+ 	if (!iommu)
+@@ -2600,12 +2600,6 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
+ 	if (ndomain != domain)
+ 		return -EBUSY;
+ 
+-	ret = domain_context_mapping(domain, dev);
+-	if (ret) {
+-		domain_remove_one_dev_info(domain, dev);
+-		return ret;
+-	}
+-
+ 	return 0;
+ }
+ 
+@@ -3261,7 +3255,6 @@ static struct iova *intel_alloc_iova(struct device *dev,
+ static struct dmar_domain *__get_valid_domain_for_dev(struct device *dev)
+ {
+ 	struct dmar_domain *domain;
+-	int ret;
+ 
+ 	domain = get_domain_for_dev(dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
+ 	if (!domain) {
+@@ -3270,16 +3263,6 @@ static struct dmar_domain *__get_valid_domain_for_dev(struct device *dev)
+ 		return NULL;
  	}
  
- 	dma_free_pagelist(freelist);
+-	/* make sure context mapping is ok */
+-	if (unlikely(!domain_context_mapped(dev))) {
+-		ret = domain_context_mapping(domain, dev);
+-		if (ret) {
+-			pr_err("Domain context map for %s failed\n",
+-			       dev_name(dev));
+-			return NULL;
+-		}
+-	}
+-
+ 	return domain;
+ }
+ 
 -- 
 1.9.1
