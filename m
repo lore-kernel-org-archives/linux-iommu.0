@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 12/26] iommu/vt-d: Simplify domain_remove_one_dev_info()
-Date: Wed,  5 Aug 2015 17:18:43 +0200
-Message-ID: <1438787937-7340-13-git-send-email-joro@8bytes.org>
+Subject: [PATCH 06/26] iommu/vt-d: Simplify domain_context_mapping_one
+Date: Wed,  5 Aug 2015 17:18:37 +0200
+Message-ID: <1438787937-7340-7-git-send-email-joro@8bytes.org>
 References: <1438787937-7340-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,86 +23,97 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Simplify this function as much as possible with the new
-iommu_refcnt field.
+Get rid of the special cases for VM domains vs. non-VM
+domains and simplify the code further to just handle the
+hardware passthrough vs. page-table case.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 50 +++++++++++++++------------------------------
- 1 file changed, 16 insertions(+), 34 deletions(-)
+ drivers/iommu/intel-iommu.c | 60 ++++++++++++++++++++-------------------------
+ 1 file changed, 26 insertions(+), 34 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index ae2343c..f59b4ef 100644
+index 1a934f8..fdb51ec 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -4587,52 +4587,34 @@ static void iommu_detach_dependent_devices(struct intel_iommu *iommu,
- static void domain_remove_one_dev_info(struct dmar_domain *domain,
- 				       struct device *dev)
- {
--	struct device_domain_info *info, *tmp;
-+	struct device_domain_info *info;
- 	struct intel_iommu *iommu;
- 	unsigned long flags;
--	bool found = false;
- 	u8 bus, devfn;
+@@ -1940,52 +1940,44 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+ 		return 0;
+ 	}
  
- 	iommu = device_to_iommu(dev, &bus, &devfn);
- 	if (!iommu)
- 		return;
+-	context_clear_entry(context);
+-
+-	id = domain->id;
+ 	pgd = domain->pgd;
  
--	spin_lock_irqsave(&device_domain_lock, flags);
--	list_for_each_entry_safe(info, tmp, &domain->devices, link) {
--		if (info->iommu == iommu && info->bus == bus &&
--		    info->devfn == devfn) {
--			unlink_domain_info(info);
--			spin_unlock_irqrestore(&device_domain_lock, flags);
--
--			iommu_disable_dev_iotlb(info);
--			iommu_detach_dev(iommu, info->bus, info->devfn);
--			iommu_detach_dependent_devices(iommu, dev);
--			free_devinfo_mem(info);
--
--			spin_lock_irqsave(&device_domain_lock, flags);
--
--			if (found)
--				break;
--			else
--				continue;
+-	if (domain_type_is_vm_or_si(domain)) {
+-		if (domain_type_is_vm(domain)) {
+-			id = __iommu_attach_domain(domain, iommu);
+-			if (id < 0) {
+-				spin_unlock_irqrestore(&iommu->lock, flags);
+-				pr_err("%s: No free domain ids\n", iommu->name);
+-				return -EFAULT;
+-			}
 -		}
-+	info = dev->archdata.iommu;
- 
--		/*
--		 * If there is no other devices under the same iommu owned by
--		 * this domain, clear this iommu in iommu_refcnt update iommu
--		 * count and coherency.
+-
+-		/* Skip top levels of page tables for
+-		 * iommu which has less agaw than default.
+-		 * Unnecessary for PT mode.
 -		 */
--		if (info->iommu == iommu)
--			found = true;
--	}
-+	if (WARN_ON(!info))
-+		return;
+-		if (translation != CONTEXT_TT_PASS_THROUGH) {
+-			for (agaw = domain->agaw; agaw != iommu->agaw; agaw--) {
+-				pgd = phys_to_virt(dma_pte_addr(pgd));
+-				if (!dma_pte_present(pgd)) {
+-					spin_unlock_irqrestore(&iommu->lock, flags);
+-					return -ENOMEM;
+-				}
+-			}
+-		}
++	id = __iommu_attach_domain(domain, iommu);
++	if (id < 0) {
++		spin_unlock_irqrestore(&iommu->lock, flags);
++		pr_err("%s: No free domain ids\n", iommu->name);
++		return -EFAULT;
+ 	}
  
-+	spin_lock_irqsave(&device_domain_lock, flags);
-+	unlink_domain_info(info);
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
++	context_clear_entry(context);
+ 	context_set_domain_id(context, id);
  
--	if (found == 0) {
--		domain_detach_iommu(domain, iommu);
--		if (!domain_type_is_vm_or_si(domain))
--			iommu_detach_domain(domain, iommu);
--	}
-+	iommu_disable_dev_iotlb(info);
-+	iommu_detach_dev(iommu, info->bus, info->devfn);
-+	iommu_detach_dependent_devices(iommu, dev);
-+	free_devinfo_mem(info);
-+	domain_detach_iommu(domain, iommu);
++	/*
++	 * Skip top levels of page tables for iommu which has less agaw
++	 * than default.  Unnecessary for PT mode.
++	 */
+ 	if (translation != CONTEXT_TT_PASS_THROUGH) {
++		for (agaw = domain->agaw; agaw != iommu->agaw; agaw--) {
++			pgd = phys_to_virt(dma_pte_addr(pgd));
++			if (!dma_pte_present(pgd)) {
++				spin_unlock_irqrestore(&iommu->lock, flags);
++				return -ENOMEM;
++			}
++		}
 +
-+	spin_lock_irqsave(&domain->iommu_lock, flags);
-+	if (!domain->iommu_refcnt[iommu->seq_id])
-+		iommu_detach_domain(domain, iommu);
-+	spin_unlock_irqrestore(&domain->iommu_lock, flags);
- }
+ 		info = iommu_support_dev_iotlb(domain, iommu, bus, devfn);
+ 		translation = info ? CONTEXT_TT_DEV_IOTLB :
+ 				     CONTEXT_TT_MULTI_LEVEL;
+-	}
+-	/*
+-	 * In pass through mode, AW must be programmed to indicate the largest
+-	 * AGAW value supported by hardware. And ASR is ignored by hardware.
+-	 */
+-	if (unlikely(translation == CONTEXT_TT_PASS_THROUGH))
+-		context_set_address_width(context, iommu->msagaw);
+-	else {
++
+ 		context_set_address_root(context, virt_to_phys(pgd));
+ 		context_set_address_width(context, iommu->agaw);
++	} else {
++		/*
++		 * In pass through mode, AW must be programmed to
++		 * indicate the largest AGAW value supported by
++		 * hardware. And ASR is ignored by hardware.
++		 */
++		context_set_address_width(context, iommu->msagaw);
+ 	}
  
- static int md_domain_init(struct dmar_domain *domain, int guest_width)
+ 	context_set_translation_type(context, translation);
 -- 
 1.9.1
