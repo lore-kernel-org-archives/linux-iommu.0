@@ -1,75 +1,108 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 09/26] iommu/vt-d: Kill dmar_domain->id
-Date: Wed,  5 Aug 2015 17:18:40 +0200
-Message-ID: <1438787937-7340-10-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 12/26] iommu/vt-d: Simplify domain_remove_one_dev_info()
+Date: Wed,  5 Aug 2015 17:18:43 +0200
+Message-ID: <1438787937-7340-13-git-send-email-joro@8bytes.org>
 References: <1438787937-7340-1-git-send-email-joro@8bytes.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1438787937-7340-1-git-send-email-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, jroedel@suse.de
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1438787937-7340-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-This field is now obsolete because all places use the
-per-iommu domain-ids. Kill the remaining uses of this field
-and remove it.
+Simplify this function as much as possible with the new
+iommu_refcnt field.
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 11 ++---------
- 1 file changed, 2 insertions(+), 9 deletions(-)
+ drivers/iommu/intel-iommu.c | 50 +++++++++++++++------------------------------
+ 1 file changed, 16 insertions(+), 34 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 35a918e..25b2ba7 100644
+index ae2343c..f59b4ef 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -374,7 +374,6 @@ static int hw_pass_through = 1;
- #define DOMAIN_FLAG_STATIC_IDENTITY	(1 << 1)
- 
- struct dmar_domain {
--	int	id;			/* domain id */
- 	int	nid;			/* node id */
- 	DECLARE_BITMAP(iommu_bmp, DMAR_UNITS_SUPPORTED);
- 					/* bitmap of iommus this domain uses*/
-@@ -1653,8 +1652,6 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
- 
- static struct dmar_domain *alloc_domain(int flags)
+@@ -4587,52 +4587,34 @@ static void iommu_detach_dependent_devices(struct intel_iommu *iommu,
+ static void domain_remove_one_dev_info(struct dmar_domain *domain,
+ 				       struct device *dev)
  {
--	/* domain id for virtual machine, it won't be set in context */
--	static atomic_t vm_domid = ATOMIC_INIT(0);
- 	struct dmar_domain *domain;
+-	struct device_domain_info *info, *tmp;
++	struct device_domain_info *info;
+ 	struct intel_iommu *iommu;
+ 	unsigned long flags;
+-	bool found = false;
+ 	u8 bus, devfn;
  
- 	domain = alloc_domain_mem();
-@@ -1666,8 +1663,6 @@ static struct dmar_domain *alloc_domain(int flags)
- 	domain->flags = flags;
- 	spin_lock_init(&domain->iommu_lock);
- 	INIT_LIST_HEAD(&domain->devices);
--	if (flags & DOMAIN_FLAG_VIRTUAL_MACHINE)
--		domain->id = atomic_inc_return(&vm_domid);
+ 	iommu = device_to_iommu(dev, &bus, &devfn);
+ 	if (!iommu)
+ 		return;
  
- 	return domain;
+-	spin_lock_irqsave(&device_domain_lock, flags);
+-	list_for_each_entry_safe(info, tmp, &domain->devices, link) {
+-		if (info->iommu == iommu && info->bus == bus &&
+-		    info->devfn == devfn) {
+-			unlink_domain_info(info);
+-			spin_unlock_irqrestore(&device_domain_lock, flags);
+-
+-			iommu_disable_dev_iotlb(info);
+-			iommu_detach_dev(iommu, info->bus, info->devfn);
+-			iommu_detach_dependent_devices(iommu, dev);
+-			free_devinfo_mem(info);
+-
+-			spin_lock_irqsave(&device_domain_lock, flags);
+-
+-			if (found)
+-				break;
+-			else
+-				continue;
+-		}
++	info = dev->archdata.iommu;
+ 
+-		/*
+-		 * If there is no other devices under the same iommu owned by
+-		 * this domain, clear this iommu in iommu_refcnt update iommu
+-		 * count and coherency.
+-		 */
+-		if (info->iommu == iommu)
+-			found = true;
+-	}
++	if (WARN_ON(!info))
++		return;
+ 
++	spin_lock_irqsave(&device_domain_lock, flags);
++	unlink_domain_info(info);
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+ 
+-	if (found == 0) {
+-		domain_detach_iommu(domain, iommu);
+-		if (!domain_type_is_vm_or_si(domain))
+-			iommu_detach_domain(domain, iommu);
+-	}
++	iommu_disable_dev_iotlb(info);
++	iommu_detach_dev(iommu, info->bus, info->devfn);
++	iommu_detach_dependent_devices(iommu, dev);
++	free_devinfo_mem(info);
++	domain_detach_iommu(domain, iommu);
++
++	spin_lock_irqsave(&domain->iommu_lock, flags);
++	if (!domain->iommu_refcnt[iommu->seq_id])
++		iommu_detach_domain(domain, iommu);
++	spin_unlock_irqrestore(&domain->iommu_lock, flags);
  }
-@@ -2390,8 +2385,7 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
- 	domain = alloc_domain(0);
- 	if (!domain)
- 		return NULL;
--	domain->id = iommu_attach_domain(domain, iommu);
--	if (domain->id < 0) {
-+	if (iommu_attach_domain(domain, iommu) < 0) {
- 		free_domain_mem(domain);
- 		return NULL;
- 	}
-@@ -2444,8 +2438,7 @@ static int iommu_domain_identity_map(struct dmar_domain *domain,
- 		return -ENOMEM;
- 	}
  
--	pr_debug("Mapping reserved region %llx-%llx for domain %d\n",
--		 start, end, domain->id);
-+	pr_debug("Mapping reserved region %llx-%llx\n", start, end);
- 	/*
- 	 * RMRR range might have overlap with physical memory range,
- 	 * clear it first
+ static int md_domain_init(struct dmar_domain *domain, int guest_width)
 -- 
 1.9.1
