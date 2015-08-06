@@ -1,54 +1,59 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v5 1/3] iommu: Implement common IOMMU ops for DMA mapping
-Date: Thu, 6 Aug 2015 16:23:27 +0100
-Message-ID: <20150806152327.GH25483@arm.com>
-References: <cover.1438362603.git.robin.murphy@arm.com>
-	<6ce6b501501f611297ae0eae31e07b0d2060eaae.1438362603.git.robin.murphy@arm.com>
+From: Yinghai Lu <yinghai@kernel.org>
+Subject: Re: [PATCH v2 00/11] PCI: Fix ATS deadlock
+Date: Thu, 6 Aug 2015 09:03:11 -0700
+Message-ID: <CAE9FiQWBuTq2gH_-UjrCrOgtgFw05=RLXXAqkWFz4cTxHPCcdA@mail.gmail.com>
+References: <20150721001243.28145.81610.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+	<20150729160701.GC31170@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <6ce6b501501f611297ae0eae31e07b0d2060eaae.1438362603.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: "laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20150729160701.GC31170@google.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Joerg Roedel <jroedel@suse.de>, David Woodhouse <dwmw2@infradead.org>, iommu <iommu@lists.linux-foundation.org>, Gregor Dick <gdick@solarflare.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Joerg,
+On Wed, Jul 29, 2015 at 9:07 AM, Bjorn Helgaas <bhelgaas@google.com> wrote:
+> On Mon, Jul 20, 2015 at 07:13:49PM -0500, Bjorn Helgaas wrote:
+>> Gregor reported a deadlock [1] when enabling a VF that supports ATS.
+>> This series is intended to fix that.  The second patch should be enough to
+>> fix the deadlock; the rest are simplification and cleanup.
+>>
+>> These are based on v4.2-rc2.
+>>
+>> [1] http://permalink.gmane.org/gmane.linux.kernel.iommu/9433
+>>
+>> Changes between v1 and v2:
+>>   - Remove use of pci_ats_enabled() (intel-iommu.c)
+>>   - Call pci_ats_queue_depth() only once per device and cache result
+>>     (intel-iommu.c)
+>>   - Remove pci_ats_enabled() interface
+>>   - Stop caching queue depth in pci_dev to save space
+>>   - Add PF refcount of how many associated VFs have ATS enabled
+>>   - Add comment that ATS must be enabled on PF before on VFs
+>>   - Require ATS to be disabled on all VFs and PF before changing STU
+>>
+>>
+>> ---
+>>
+>> Bjorn Helgaas (11):
+>>       iommu/vt-d: Cache PCI ATS state and Invalidate Queue Depth
+>>       PCI: Allocate ATS struct during enumeration
+>>       PCI: Embed ATS info directly into struct pci_dev
+>>       PCI: Reduce size of ATS structure elements
+>>       PCI: Rationalize pci_ats_queue_depth() error checking
+>>       PCI: Inline the ATS setup code into pci_ats_init()
+>>       PCI: Use pci_physfn() rather than looking up physfn by hand
+>>       PCI: Clean up ATS error handling
+>>       PCI: Move ATS declarations to linux/pci.h so they're all together
+>>       PCI: Stop caching ATS Invalidate Queue Depth
+>>       PCI: Remove pci_ats_enabled()
+>
+> I applied these to a pci/iommu branch for v4.3.  Let me know if you see any
+> issues.
 
-On Fri, Jul 31, 2015 at 06:18:27PM +0100, Robin Murphy wrote:
-> Taking inspiration from the existing arch/arm code, break out some
-> generic functions to interface the DMA-API to the IOMMU-API. This will
-> do the bulk of the heavy lifting for IOMMU-backed dma-mapping.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/iommu/Kconfig     |   7 +
->  drivers/iommu/Makefile    |   1 +
->  drivers/iommu/dma-iommu.c | 534 ++++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/dma-iommu.h |  84 ++++++++
->  include/linux/iommu.h     |   1 +
->  5 files changed, 627 insertions(+)
->  create mode 100644 drivers/iommu/dma-iommu.c
->  create mode 100644 include/linux/dma-iommu.h
+looks like this branch causes hang on system with qlogic/emulex cards.
 
-We're quite keen to get this in for arm64, since we're without IOMMU DMA
-ops and need to get something upstream. Do you think this is likely to
-be merged for 4.3/4.4 or would we be better off doing our own
-arch-private implementation instead?
+exclude the branch, will make kernel work again.
 
-Sorry to pester, but we've got people basing their patches and products
-on this and I don't want to end up having to support out-of-tree code.
-
-Cheers,
-
-Will
+Yinghai
