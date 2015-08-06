@@ -1,14 +1,14 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH 05/13] iommu/io-pgtable-arm: Allow appropriate DMA API use
-Date: Thu, 06 Aug 2015 22:10:35 +0300
-Message-ID: <3382846.ggsOMiDf7e@avalon>
-References: <1438608355-7335-1-git-send-email-will.deacon@arm.com>
-	<1987558.GfG8OCqzMM@avalon> <20150805162452.GH6092@arm.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 01/26] iommu/vt-d: Keep track of per-iommu domain ids
+Date: Thu, 06 Aug 2015 13:19:52 -0600
+Message-ID: <1438888792.4023.118.camel@redhat.com>
+References: <1438787937-7340-1-git-send-email-joro@8bytes.org>
+	<1438787937-7340-2-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150805162452.GH6092-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1438787937-7340-2-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,57 +18,135 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
-
-On Wednesday 05 August 2015 17:24:52 Will Deacon wrote:
-> On Tue, Aug 04, 2015 at 09:54:27PM +0100, Laurent Pinchart wrote:
-> > On Tuesday 04 August 2015 15:56:42 Russell King - ARM Linux wrote:
-> > > On Tue, Aug 04, 2015 at 03:47:13PM +0100, Robin Murphy wrote:
-> > > > On 04/08/15 14:16, Laurent Pinchart wrote:
-> > > >> This is what I believe to be an API abuse. The
-> > > >> dma_sync_single_for_device()
-> > > >> API is meant to pass ownership of a buffer to the device. Unless I'm
-> > > >> mistaken, once that's done the CPU isn't allowed to touch the buffer
-> > > >> anymore until dma_sync_single_for_cpu() is called to get ownership of
-> > > >> the buffer back.
-> > > 
-> > > That's what I thought up until recently, but it's not strictly true -
-> > > see Documentation/DMA-API.txt which Robin quoted.
-> > 
-> > I find the documentation slightly unclear on this topic. I have nothing
-> > against updating it to state that the sync functions ensure visibility of
-> > the data to the device or CPU instead of transferring ownership if that's
-> > the general understanding of how the API work (or should work). This
-> > would of course need to be carefully reviewed to ensure that the current
-> > implementation really works that way across all architectures, or at
-> > least that it can be made to work that way.
+On Wed, 2015-08-05 at 17:18 +0200, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 > 
-> I was hoping to send this lot off to Joerg tomorrow morning, since it's
-> removing a hack from the io-pgtable users before it has chance to spread
-> further. This use of the API is certainly ok on arm and arm64 (where
-> these drivers currently run) and I don't see why it wouldn't work for
-> any IOMMU that treats the page tables as read-only. Once we start getting
-> into hardware access/dirty bits, then the streaming-DMA API is a lost
-> cause but I would expect those systems to be using SVM with the CPU page
-> tables anyway and therefore be cache-coherent.
+> Instead of searching in the domain array for already
+> allocated domain ids, keep track of them explicitly.
 > 
-> I agree that the Documentation isn't brilliant, but that could be addressed
-> in a separate patch (especially since I don't think it would be merged
-> via the iommu tree).
+> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> ---
+>  drivers/iommu/intel-iommu.c | 51 +++++++++++++++++++++++----------------------
+>  1 file changed, 26 insertions(+), 25 deletions(-)
 > 
-> Is that alright?
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 0649b94..c3c5167 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -378,6 +378,9 @@ struct dmar_domain {
+>  	DECLARE_BITMAP(iommu_bmp, DMAR_UNITS_SUPPORTED);
+>  					/* bitmap of iommus this domain uses*/
+>  
+> +	u16	iommu_did[DMAR_UNITS_SUPPORTED];
+> +					/* Domain ids per IOMMU */
 
-Yes, that's fine with me. The patch set moves usage of the DMA mapping API 
-from drivers to a single place in the core, so no problem is introduced. If we 
-later consider this to be an API abuse we'll only need to fix it in a single 
-place. And if it's a valid use of the API then the documentation 
-fix/improvement doesn't need to be synchronous with this patch set.
+Maybe a spec reference here to justify u16 that the 2.3 vt-d spec only
+supports up to 16bit domain IDs.
 
--- 
-Regards,
+> +
+>  	struct list_head devices;	/* all devices' list */
+>  	struct iova_domain iovad;	/* iova's that belong to this domain */
+>  
+> @@ -1543,11 +1546,13 @@ static int iommu_init_domains(struct intel_iommu *iommu)
+>  	}
+>  
+>  	/*
+> -	 * if Caching mode is set, then invalid translations are tagged
+> -	 * with domainid 0. Hence we need to pre-allocate it.
+> +	 * If Caching mode is set, then invalid translations are tagged
+> +	 * with domain-id 0, hence we need to pre-allocate it. We also
+> +	 * use domain-id 0 as a marker for non-allocated domain-id, so
+> +	 * make sure it is not used for a real domain.
+>  	 */
+> -	if (cap_caching_mode(iommu->cap))
+> -		set_bit(0, iommu->domain_ids);
+> +	set_bit(0, iommu->domain_ids);
+> +
+>  	return 0;
+>  }
+>  
+> @@ -1560,9 +1565,10 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
+>  		for_each_set_bit(i, iommu->domain_ids, cap_ndoms(iommu->cap)) {
+>  			/*
+>  			 * Domain id 0 is reserved for invalid translation
+> -			 * if hardware supports caching mode.
+> +			 * if hardware supports caching mode and used as
+> +			 * a non-allocated marker.
+>  			 */
+> -			if (cap_caching_mode(iommu->cap) && i == 0)
+> +			if (i == 0)
+>  				continue;
+>  
+>  			domain = iommu->domains[i];
+> @@ -1624,6 +1630,7 @@ static int __iommu_attach_domain(struct dmar_domain *domain,
+>  	if (num < ndomains) {
+>  		set_bit(num, iommu->domain_ids);
+>  		iommu->domains[num] = domain;
+> +		domain->iommu_did[iommu->seq_id] = num;
+>  	} else {
+>  		num = -ENOSPC;
+>  	}
+> @@ -1650,12 +1657,10 @@ static int iommu_attach_vm_domain(struct dmar_domain *domain,
+>  				  struct intel_iommu *iommu)
+>  {
+>  	int num;
+> -	unsigned long ndomains;
+>  
+> -	ndomains = cap_ndoms(iommu->cap);
+> -	for_each_set_bit(num, iommu->domain_ids, ndomains)
+> -		if (iommu->domains[num] == domain)
+> -			return num;
+> +	num = domain->iommu_did[iommu->seq_id];
+> +	if (num)
+> +		return num;
+>  
+>  	return __iommu_attach_domain(domain, iommu);
+>  }
+> @@ -1664,22 +1669,17 @@ static void iommu_detach_domain(struct dmar_domain *domain,
+>  				struct intel_iommu *iommu)
+>  {
+>  	unsigned long flags;
+> -	int num, ndomains;
+> +	int num;
+>  
+>  	spin_lock_irqsave(&iommu->lock, flags);
+> -	if (domain_type_is_vm_or_si(domain)) {
+> -		ndomains = cap_ndoms(iommu->cap);
+> -		for_each_set_bit(num, iommu->domain_ids, ndomains) {
+> -			if (iommu->domains[num] == domain) {
+> -				clear_bit(num, iommu->domain_ids);
+> -				iommu->domains[num] = NULL;
+> -				break;
+> -			}
+> -		}
+> -	} else {
+> -		clear_bit(domain->id, iommu->domain_ids);
+> -		iommu->domains[domain->id] = NULL;
+> -	}
+> +
+> +	num = domain->iommu_did[iommu->seq_id];
+> +
+> +	WARN_ON(num == 0);
 
-Laurent Pinchart
+Return -ENODEV and let the caller decide if that's an error?  Then we
+could safely call this over all all iommus.
+
+> +
+> +	clear_bit(num, iommu->domain_ids);
+> +	iommu->domains[num]		 = NULL;
+> +
+>  	spin_unlock_irqrestore(&iommu->lock, flags);
+>  }
+>  
+> @@ -1708,6 +1708,7 @@ static int domain_detach_iommu(struct dmar_domain *domain,
+>  	if (test_and_clear_bit(iommu->seq_id, domain->iommu_bmp)) {
+>  		count = --domain->iommu_count;
+>  		domain_update_iommu_cap(domain);
+> +		domain->iommu_did[iommu->seq_id] = 0;
+>  	}
+>  	spin_unlock_irqrestore(&domain->iommu_lock, flags);
+>  
