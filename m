@@ -1,13 +1,14 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 00/26] iommu/vt-d: Clean up device<->domain  attachment
-Date: Thu, 06 Aug 2015 13:19:47 -0600
-Message-ID: <1438888787.4023.116.camel@redhat.com>
+Subject: Re: [PATCH 03/26] iommu/vt-d: Split up iommu->domains array
+Date: Thu, 06 Aug 2015 13:20:09 -0600
+Message-ID: <1438888809.4023.121.camel@redhat.com>
 References: <1438787937-7340-1-git-send-email-joro@8bytes.org>
+	<1438787937-7340-4-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1438787937-7340-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1438787937-7340-4-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,44 +23,143 @@ Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-
 List-Id: iommu@lists.linux-foundation.org
 
 On Wed, 2015-08-05 at 17:18 +0200, Joerg Roedel wrote:
-> Hi,
+> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 > 
-> here is a (bigger than I expected) patch-set which cleans up
-> the code to attach and detach domains to iommus in the Intel
-> VT-d driver.
+> This array is indexed by the domain-id and contains the
+> pointers to the domains attached to this iommu. Modern
+> systems support 65536 domain ids, so that this array has a
+> size of 512kb, per iommu.
 > 
-> In particular, the patch-set does:
+> This is a huge waste of space, as the array is usually
+> sparsely populated. This patch makes the array
+> two-dimensional and allocates the memory for the domain
+> pointers on-demand.
 > 
-> 	* Remove special cases around the handling of
-> 	  various domain types and align their handling
-> 	  where possible
+> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> ---
+>  drivers/iommu/intel-iommu.c | 54 ++++++++++++++++++++++++++++++++++++---------
+>  include/linux/intel-iommu.h |  2 +-
+>  2 files changed, 44 insertions(+), 12 deletions(-)
 > 
-> 	* Rework the data structures for the domain<->iommu
-> 	  relation to better match with its usage. This
-> 	  allowed to get rid of a couple of search loops.
-> 
-> 	* Make the domain attachment and detachment path
-> 	  to/from an iommu more symmetric. This makes the
-> 	  code easier to understand and maintain.
-> 
-> 	* Rework and simplify the locking around the
-> 	  domain<->iommu attachment/detachment path.
-> 
-> A few rough edges and special cases are still left, but I
-> expect that these will be removed with the conversion to
-> default domains.
-> 
-> I tested the code with some additional debug code to make
-> sure that domain and domain-id allocation/deallocation works
-> as expected.
-> 
-> As test I booted a kernel with the patches (with and
-> without iommu=pt) and ran a KVM guest with devices assigned.
-> No lockdep warning popped up and the debug output was also
-> fine. But of course this is no guarantee that there are no
-> issues left, so I am happy about feedback. Please review!
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index e6a5966..7f2e6c8 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -569,13 +569,32 @@ static struct kmem_cache *iommu_devinfo_cache;
+>  
+>  static struct dmar_domain* get_iommu_domain(struct intel_iommu *iommu, u16 did)
+>  {
+> -	return iommu->domains[did];
+> +	struct dmar_domain **domains;
+> +	int idx = did >> 8;
+> +
+> +	domains = iommu->domains[idx];
+> +	if (!domains)
+> +		return NULL;
+> +
+> +	return domains[did & 0xff];
+>  }
+>  
+>  static void set_iommu_domain(struct intel_iommu *iommu, u16 did,
+>  			     struct dmar_domain *domain)
+>  {
+> -	iommu->domains[did] = domain;
+> +	struct dmar_domain **domains;
+> +	int idx = did >> 8;
+> +
+> +	if (!iommu->domains[idx]) {
+> +		size_t size = 256 * sizeof(struct dmar_domain *);
+> +		iommu->domains[idx] = kzalloc(size, GFP_ATOMIC);
+> +	}
+> +
+> +	domains = iommu->domains[idx];
+> +	if (WARN_ON(!domains))
+> +		return;
+> +	else
+> +		domains[did & 0xff] = domain;
+>  }
 
-Nice cleanup, Joerg!  A few minor comments in follow-up to the
-individual patches.  Thanks,
+I'm tempted to suggest using pages here since we're dealing with 2k
+second level arrays, but maybe caring about pointers per page just makes
+that ugly.
 
-Alex
+>  
+>  static inline void *alloc_pgtable_page(int node)
+> @@ -1528,35 +1547,43 @@ static void iommu_disable_translation(struct intel_iommu *iommu)
+>  
+>  static int iommu_init_domains(struct intel_iommu *iommu)
+>  {
+> -	unsigned long ndomains;
+> -	unsigned long nlongs;
+> +	u32 ndomains, nlongs;
+> +	size_t size;
+>  
+>  	ndomains = cap_ndoms(iommu->cap);
+> -	pr_debug("%s: Number of Domains supported <%ld>\n",
+> +	pr_debug("%s: Number of Domains supported <%d>\n",
+>  		 iommu->name, ndomains);
+>  	nlongs = BITS_TO_LONGS(ndomains);
+>  
+>  	spin_lock_init(&iommu->lock);
+>  
+> -	/* TBD: there might be 64K domains,
+> -	 * consider other allocation for future chip
+> -	 */
+>  	iommu->domain_ids = kcalloc(nlongs, sizeof(unsigned long), GFP_KERNEL);
+>  	if (!iommu->domain_ids) {
+>  		pr_err("%s: Allocating domain id array failed\n",
+>  		       iommu->name);
+>  		return -ENOMEM;
+>  	}
+> -	iommu->domains = kcalloc(ndomains, sizeof(struct dmar_domain *),
+> -			GFP_KERNEL);
+> -	if (!iommu->domains) {
+> +
+> +	size = ((ndomains >> 8) + 1) * sizeof(struct dmar_domain **);
+> +	iommu->domains = kzalloc(size, GFP_KERNEL);
+> +
+> +	if (iommu->domains) {
+> +		size = 256 * sizeof(struct dmar_domain *);
+> +		iommu->domains[0] = kzalloc(size, GFP_KERNEL);
+> +	}
+> +
+> +	if (!iommu->domains || !iommu->domains[0]) {
+>  		pr_err("%s: Allocating domain array failed\n",
+>  		       iommu->name);
+>  		kfree(iommu->domain_ids);
+> +		kfree(iommu->domains);
+>  		iommu->domain_ids = NULL;
+> +		iommu->domains    = NULL;
+>  		return -ENOMEM;
+>  	}
+>  
+> +
+> +
+>  	/*
+>  	 * If Caching mode is set, then invalid translations are tagged
+>  	 * with domain-id 0, hence we need to pre-allocate it. We also
+> @@ -1598,6 +1625,11 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
+>  static void free_dmar_iommu(struct intel_iommu *iommu)
+>  {
+>  	if ((iommu->domains) && (iommu->domain_ids)) {
+> +		int elems = (cap_ndoms(iommu->cap) >> 8) + 1;
+> +		int i;
+> +
+> +		for (i = 0; i < elems; i++)
+> +			kfree(iommu->domains[i]);
+>  		kfree(iommu->domains);
+>  		kfree(iommu->domain_ids);
+>  		iommu->domains = NULL;
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index d9a366d..6240063 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -344,7 +344,7 @@ struct intel_iommu {
+>  
+>  #ifdef CONFIG_INTEL_IOMMU
+>  	unsigned long 	*domain_ids; /* bitmap of domains */
+> -	struct dmar_domain **domains; /* ptr to domains */
+> +	struct dmar_domain ***domains; /* ptr to domains */
+>  	spinlock_t	lock; /* protect context, domain ids */
+>  	struct root_entry *root_entry; /* virtual address */
+>  
