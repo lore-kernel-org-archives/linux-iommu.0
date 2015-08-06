@@ -1,15 +1,18 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 05/26] iommu/vt-d: Calculate translation in
-	domain_context_mapping_one
-Date: Thu, 06 Aug 2015 13:20:01 -0600
-Message-ID: <1438888801.4023.120.camel@redhat.com>
-References: <1438787937-7340-1-git-send-email-joro@8bytes.org>
-	<1438787937-7340-6-git-send-email-joro@8bytes.org>
+From: Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 2/3] Docs: dt: Add PCI MSI map bindings
+Date: Thu, 6 Aug 2015 19:46:49 +0000
+Message-ID: <CY1PR0301MB07483BBD1B779122D58D2E0887740@CY1PR0301MB0748.namprd03.prod.outlook.com>
+References: <1437670365-20704-1-git-send-email-mark.rutland@arm.com>
+	<1437670365-20704-3-git-send-email-mark.rutland@arm.com>
+	<CALRxmdA32xiSX7DDKAJPLR8=bh_9j-6MN124u4KjYGRT8bAKNg@mail.gmail.com>
+	<CY1PR0301MB07486794749E499F71BDFCD287750@CY1PR0301MB0748.namprd03.prod.outlook.com>
+	<20150806181453.GD6437@leverpostej>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1438787937-7340-6-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20150806181453.GD6437@leverpostej>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,186 +22,109 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Lorenzo Pieralisi <Lorenzo.Pieralisi-5wv7dgnIgG8@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "tirumalesh.chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <tirumalesh.chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "majun258-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <majun258-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2015-08-05 at 17:18 +0200, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> 
-> There is no reason to pass the translation type through
-> multiple layers. It can also be determined in the
-> domain_context_mapping_one function directly.
-> 
-> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> ---
->  drivers/iommu/intel-iommu.c | 50 ++++++++++++++++++++++-----------------------
->  1 file changed, 24 insertions(+), 26 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 58fc4bb..1a934f8 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -364,7 +364,8 @@ static inline int first_pte_in_page(struct dma_pte *pte)
->  static struct dmar_domain *si_domain;
->  static int hw_pass_through = 1;
->  
-> -/* domain represents a virtual machine, more than one devices
-> +/*
-> + * Domain represents a virtual machine, more than one devices
->   * across iommus may be owned in one domain, e.g. kvm guest.
->   */
->  #define DOMAIN_FLAG_VIRTUAL_MACHINE	(1 << 0)
-> @@ -638,6 +639,11 @@ static inline int domain_type_is_vm(struct dmar_domain *domain)
->  	return domain->flags & DOMAIN_FLAG_VIRTUAL_MACHINE;
->  }
->  
-> +static inline int domain_type_is_si(struct dmar_domain *domain)
-> +{
-> +	return domain->flags & DOMAIN_FLAG_STATIC_IDENTITY;
-> +}
-> +
->  static inline int domain_type_is_vm_or_si(struct dmar_domain *domain)
->  {
->  	return domain->flags & (DOMAIN_FLAG_VIRTUAL_MACHINE |
-> @@ -1904,21 +1910,24 @@ static void domain_exit(struct dmar_domain *domain)
->  
->  static int domain_context_mapping_one(struct dmar_domain *domain,
->  				      struct intel_iommu *iommu,
-> -				      u8 bus, u8 devfn, int translation)
-> +				      u8 bus, u8 devfn)
->  {
-> +	int translation = CONTEXT_TT_MULTI_LEVEL;
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-> +	struct device_domain_info *info = NULL;
->  	struct context_entry *context;
->  	unsigned long flags;
->  	struct dma_pte *pgd;
->  	int id;
->  	int agaw;
-> -	struct device_domain_info *info = NULL;
-> +
-> +	translation = CONTEXT_TT_MULTI_LEVEL;
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-I'm sure this is already part of your cleanup.
 
-> +	if (hw_pass_through && domain_type_is_si(domain))
-> +		translation = CONTEXT_TT_PASS_THROUGH;
->  
->  	pr_debug("Set context mapping for %02x:%02x.%d\n",
->  		bus, PCI_SLOT(devfn), PCI_FUNC(devfn));
->  
->  	BUG_ON(!domain->pgd);
-> -	BUG_ON(translation != CONTEXT_TT_PASS_THROUGH &&
-> -	       translation != CONTEXT_TT_MULTI_LEVEL);
->  
->  	spin_lock_irqsave(&iommu->lock, flags);
->  	context = iommu_context_addr(iommu, bus, devfn, 1);
-> @@ -2010,7 +2019,6 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
->  struct domain_context_mapping_data {
->  	struct dmar_domain *domain;
->  	struct intel_iommu *iommu;
-> -	int translation;
->  };
->  
->  static int domain_context_mapping_cb(struct pci_dev *pdev,
-> @@ -2019,13 +2027,11 @@ static int domain_context_mapping_cb(struct pci_dev *pdev,
->  	struct domain_context_mapping_data *data = opaque;
->  
->  	return domain_context_mapping_one(data->domain, data->iommu,
-> -					  PCI_BUS_NUM(alias), alias & 0xff,
-> -					  data->translation);
-> +					  PCI_BUS_NUM(alias), alias & 0xff);
->  }
->  
->  static int
-> -domain_context_mapping(struct dmar_domain *domain, struct device *dev,
-> -		       int translation)
-> +domain_context_mapping(struct dmar_domain *domain, struct device *dev)
->  {
->  	struct intel_iommu *iommu;
->  	u8 bus, devfn;
-> @@ -2036,12 +2042,10 @@ domain_context_mapping(struct dmar_domain *domain, struct device *dev,
->  		return -ENODEV;
->  
->  	if (!dev_is_pci(dev))
-> -		return domain_context_mapping_one(domain, iommu, bus, devfn,
-> -						  translation);
-> +		return domain_context_mapping_one(domain, iommu, bus, devfn);
->  
->  	data.domain = domain;
->  	data.iommu = iommu;
-> -	data.translation = translation;
->  
->  	return pci_for_each_dma_alias(to_pci_dev(dev),
->  				      &domain_context_mapping_cb, &data);
-> @@ -2508,7 +2512,7 @@ static int iommu_prepare_identity_map(struct device *dev,
->  		goto error;
->  
->  	/* context entry init */
-> -	ret = domain_context_mapping(domain, dev, CONTEXT_TT_MULTI_LEVEL);
-> +	ret = domain_context_mapping(domain, dev);
->  	if (ret)
->  		goto error;
->  
-> @@ -2621,8 +2625,7 @@ static int identity_mapping(struct device *dev)
->  	return 0;
->  }
->  
-> -static int domain_add_dev_info(struct dmar_domain *domain,
-> -			       struct device *dev, int translation)
-> +static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
->  {
->  	struct dmar_domain *ndomain;
->  	struct intel_iommu *iommu;
-> @@ -2637,7 +2640,7 @@ static int domain_add_dev_info(struct dmar_domain *domain,
->  	if (ndomain != domain)
->  		return -EBUSY;
->  
-> -	ret = domain_context_mapping(domain, dev, translation);
-> +	ret = domain_context_mapping(domain, dev);
->  	if (ret) {
->  		domain_remove_one_dev_info(domain, dev);
->  		return ret;
-> @@ -2782,9 +2785,7 @@ static int __init dev_prepare_static_identity_mapping(struct device *dev, int hw
->  	if (!iommu_should_identity_map(dev, 1))
->  		return 0;
->  
-> -	ret = domain_add_dev_info(si_domain, dev,
-> -				  hw ? CONTEXT_TT_PASS_THROUGH :
-> -				       CONTEXT_TT_MULTI_LEVEL);
-> +	ret = domain_add_dev_info(si_domain, dev);
->  	if (!ret)
->  		pr_info("%s identity mapping for device %s\n",
->  			hw ? "Hardware" : "Software", dev_name(dev));
-> @@ -3311,7 +3312,7 @@ static struct dmar_domain *__get_valid_domain_for_dev(struct device *dev)
->  
->  	/* make sure context mapping is ok */
->  	if (unlikely(!domain_context_mapped(dev))) {
-> -		ret = domain_context_mapping(domain, dev, CONTEXT_TT_MULTI_LEVEL);
-> +		ret = domain_context_mapping(domain, dev);
->  		if (ret) {
->  			pr_err("Domain context map for %s failed\n",
->  			       dev_name(dev));
-> @@ -3366,10 +3367,7 @@ static int iommu_no_mapping(struct device *dev)
->  		 */
->  		if (iommu_should_identity_map(dev, 0)) {
->  			int ret;
-> -			ret = domain_add_dev_info(si_domain, dev,
-> -						  hw_pass_through ?
-> -						  CONTEXT_TT_PASS_THROUGH :
-> -						  CONTEXT_TT_MULTI_LEVEL);
-> +			ret = domain_add_dev_info(si_domain, dev);
->  			if (!ret) {
->  				pr_info("64bit %s uses identity mapping\n",
->  					dev_name(dev));
-> @@ -4786,7 +4784,7 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
->  		dmar_domain->agaw--;
->  	}
->  
-> -	return domain_add_dev_info(dmar_domain, dev, CONTEXT_TT_MULTI_LEVEL);
-> +	return domain_add_dev_info(dmar_domain, dev);
->  }
->  
->  static void intel_iommu_detach_device(struct iommu_domain *domain,
+> -----Original Message-----
+> From: Mark Rutland [mailto:mark.rutland-5wv7dgnIgG8@public.gmane.org]
+> Sent: Thursday, August 06, 2015 1:15 PM
+> To: Yoder Stuart-B08248; Marc Zyngier; Will Deacon
+> Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Lorenzo Pieralisi; arnd-r2nGTMty4D4@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; tirumalesh.chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org;
+> laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org; thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org; treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org; linux-arm-
+> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; majun258-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+> Subject: Re: [PATCH 2/3] Docs: dt: Add PCI MSI map bindings
+> 
+> [...]
+> 
+> > > +PCI root complex
+> > > +================
+> > > +
+> > > +Optional properties
+> > > +-------------------
+> > > +
+> > > +- msi-map: Maps a Requester ID to an MSI controller and associated
+> > > +  msi-specifier data. The property is an arbitrary number of tuples of
+> > > +  (rid-base,msi-controller,msi-base,length), where:
+> > > +
+> > > +  * rid-base is a single cell describing the first RID matched by the entry.
+> > > +
+> > > +  * msi-controller is a single phandle to an MSI controller
+> > > +
+> > > +  * msi-base is an msi-specifier describing the msi-specifier produced for the
+> > > +    first RID matched by the entry.
+> > > +
+> > > +  * length is a single cell describing how many consecutive RIDs are matched
+> > > +    following the rid-base.
+> > > +
+> > > +  Any RID r in the interval [rid-base, rid-base + length) is associated with
+> > > +  the listed msi-controller, with the msi-specifier (r - rid-base + msi-base).
+> > > +
+> > > +- msi-map-mask: A mask to be applied to each Requester ID prior to being mapped
+> > > +  to an msi-specifier per the msi-map property.
+> >
+> > Can we extend the msi-map-mask definition to say:  "A mask value of 0x0 is valid
+> > and indicates that no RIDs are _currently_ mapped to any msi-specifier."
+> 
+> That would break a valid case of the mask being all zeroes.
+> 
+> Consider the case that all RIDs get mapped to a single msi-specifier;
+> the obvious way to write that is:
+> 
+> msi-map-mask = <0x0000>;
+> msi-map = <0x0000 &msi (msi-specifier) 1>;
+> 
+> In this case all RIDS are always mapped to the single msi-specifier.
+
+Does it really break that case?
+
+We could have this (your example):
+
+  msi-map-mask = <0x0000>;
+  msi-map = <0x0000 &msi 7 1>;  // map all RIDs to msi-spec 7
+
+Or, my example:
+
+  msi-map-mask = <0x0000>;
+  msi-map = <0x0000 &msi 7 4>;  // all RIDs map to any of msi-spec 7,8,9,10
+
+> > We have an SoC with a programmable hardware table in the PCI controller that maps
+> > requester ID to stream ID, so the overall msi-map (and iommu-map) definition fit
+> > into that scheme.  But, we would like to be able make the RID->stream-ID mapping
+> > decision _lazily_, in Linux, based on actual usage of PCI devices.
+> 
+> Dynamically programming the mapping is at odds to this binding. I don't
+> see how that can fit.
+
+My example above obviously doesn't make sense for a static
+binding, but can't we allow both a mask value of 0x0 and
+a length > 1 at the same time.
+ 
+> Why can the RID->SID mapping not be statically configured prior to
+> entering the OS?
+
+The problem for us is the limited number of SIDs available on our SoC.  We
+have an SMMU-500 with 128 SIDs / 64-contexts total.  An SR-IOV card could
+enable VFs dynamically and suddenly there are 64 new RIDs on a PCI
+bus.  There are 4 PCI controllers and firmware doesn't know what
+might be enabled on which bus.  We run out of available SIDs.
+
+In that example we want all RIDs mapped to one SID by default, but want
+the option of setting our dynamic RID->SID table for a situation where
+say someone assigns a VF to a KVM VM and thus needs an SID to use
+for SMMU mappings.
+
+I think the binding can work for the dynamic case as long as we allow
+the example I showed above.  So, I would propose changing
+my proposed text to:
+
+   "A mask value of 0x0 is valid and indicates that all RIDS map to
+    the specified msi-specifier(s).  If the mask is 0x0 and length > 1
+    it indicates that all RIDs map to any of the msi-specifiers with
+    the actual mapping left unspecified by the msi-map property."
+
+Thanks,
+Stuart
