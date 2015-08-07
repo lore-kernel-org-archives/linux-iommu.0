@@ -1,15 +1,15 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v5 1/3] iommu: Implement common IOMMU ops for DMA mapping
-Date: Fri, 07 Aug 2015 14:38:39 +0100
-Message-ID: <55C4B4DF.4040608@arm.com>
+Subject: Re: [PATCH v5 2/3] arm64: Add IOMMU dma_ops
+Date: Fri, 07 Aug 2015 16:27:56 +0100
+Message-ID: <55C4CE7C.7050205@arm.com>
 References: <cover.1438362603.git.robin.murphy@arm.com>
-	<6ce6b501501f611297ae0eae31e07b0d2060eaae.1438362603.git.robin.murphy@arm.com>
-	<20150807084228.GU14980@8bytes.org>
+	<8a5abd0a9929aae160ccb74d7a8d9c3698f61910.1438362603.git.robin.murphy@arm.com>
+	<20150807085233.GV14980@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150807084228.GU14980-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20150807085233.GV14980-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,134 +23,101 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: "laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-
-Thanks for taking a look,
-
-On 07/08/15 09:42, Joerg Roedel wrote:
-> On Fri, Jul 31, 2015 at 06:18:27PM +0100, Robin Murphy wrote:
->> +int iommu_get_dma_cookie(struct iommu_domain *domain)
->> +{
->> +	struct iova_domain *iovad;
->> +
->> +	if (domain->dma_api_cookie)
->> +		return -EEXIST;
+On 07/08/15 09:52, Joerg Roedel wrote:
+> On Fri, Jul 31, 2015 at 06:18:28PM +0100, Robin Murphy wrote:
+>> +/*
+>> + * TODO: Right now __iommu_setup_dma_ops() gets called too early to do
+>> + * everything it needs to - the device isn't yet fully created, and the
+>> + * IOMMU driver hasn't seen it yet, so we need this delayed attachment
+>> + * dance. Once IOMMU probe ordering is sorted to move the
+>> + * arch_setup_dma_ops() call later, all the notifier bits below become
+>> + * unnecessary, and will go away.
+>> + */
+>> +struct iommu_dma_notifier_data {
+>> +	struct list_head list;
+>> +	struct device *dev;
+>> +	struct iommu_domain *dma_domain;
+>> +};
+>> +static LIST_HEAD(iommu_dma_masters);
+>> +static DEFINE_MUTEX(iommu_dma_notifier_lock);
 >
-> Why do you call that dma_api_cookie? It is just a pointer to an iova
-> allocator, you can just name it as such, like domain->iova.
+> Ugh, thats incredibly ugly. Why can't you do the setup work then the
+> iommu driver sees the device? Just call the dma-api setup functions
+> there (like the x86 iommu drivers do it too) and be done without any
+> notifiers.
 
-Sure, it was more the case that since it had to be in the top-level 
-generic domain structure, I didn't want it to be too 
-implementation-specific. I figured this was a reasonable compromise that 
-wouldn't be a waste of space for implementations with different 
-per-domain DMA API data - e.g. the AMD IOMMU driver could then make use 
-of protection_domain->domain->dma_api_cookie instead of having 
-protection_domain->priv, but that's a patch that wouldn't belong in this 
-series anyway.
+As per the comments, the issue here lies in the order in which the 
+OF/driver core code currently calls things for platform devices: as it 
+stands we can't attach the device to a domain in arch_setup_dma_ops() 
+because it doesn't have a group, and we can't even add it to a group 
+ourselves because it isn't fully created and doesn't exist in sysfs yet. 
+The only reason arch/arm is currently getting away without this 
+workaround is that the few IOMMU drivers there hooked up to the generic 
+infrastructure don't actually mind that they get an attach_device from 
+arch_setup_dma_ops() before they've even seen an add_device (largely 
+because they don't care about groups).
 
-If you really hate that idea, then yeah, let's just call it iova and 
-consider if factoring out redundancy is still applicable later.
+Laurent's probe-deferral series largely solves these problems in the 
+right place - adding identical boilerplate code to every IOMMU driver to 
+do something they shouldn't have to know about (and don't necessarily 
+have all the right information for) is exactly what we don't want to do. 
+As discussed over on another thread, I'm planning to pick that series up 
+and polish it off after this, but my top priority is getting the basic 
+dma_ops functionality into arm64 that people need right now. I will be 
+only too happy when I can submit the patch removing this notifier 
+workaround ;)
 
->> +static struct iova *__alloc_iova(struct iova_domain *iovad, size_t size,
->> +		dma_addr_t dma_limit)
->
-> I think you also need a struct device here to take segment boundary and
-> dma_mask into account.
-
-To the best of my understanding, those limits are only relevant when 
-actually handing off a scatterlist to a client device doing hardware 
-scatter-gather operations, so it's not so much the IOVA allocation that 
-matters, but where the segments lie within it when handling dma_map_sg.
-
-However, you do raise a good point - in the current "map everything 
-consecutively" approach, if there is a non-power-of-2-sized segment in 
-the middle of a scatterlist, then subsequent segments could possibly end 
-up inadvertently straddling a boundary. That needs handling in 
-iommu_dma_map_sg; I'll fix it appropriately.
-
->> +/* The IOVA allocator knows what we mapped, so just unmap whatever that was */
->> +static void __iommu_dma_unmap(struct iommu_domain *domain, dma_addr_t dma_addr)
+>> +static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+>> +				  const struct iommu_ops *ops)
 >> +{
->> +	struct iova_domain *iovad = domain->dma_api_cookie;
->> +	unsigned long shift = iova_shift(iovad);
->> +	unsigned long pfn = dma_addr >> shift;
->> +	struct iova *iova = find_iova(iovad, pfn);
->> +	size_t size = iova_size(iova) << shift;
+>> +	struct iommu_domain *domain;
+>> +	int err;
 >> +
->> +	/* ...and if we can't, then something is horribly, horribly wrong */
->> +	BUG_ON(iommu_unmap(domain, pfn << shift, size) < size);
->
-> This is a WARN_ON at most, not a BUG_ON condition, especially since this
-> type of bug is also catched with the dma-api debugging code.
-
-Indeed, DMA_DEBUG will check that a driver is making DMA API calls to 
-the arch code in the right way; this is a different check, to catch 
-things like the arch code passing the wrong domain into this layer, or 
-someone else having messed directly with the domain via the IOMMU API. 
-If the iommu_unmap doesn't match the IOVA region we looked up, that 
-means the IOMMU page tables have somehow become inconsistent with the 
-IOVA allocator, so we are in an unrecoverable situation where we can no 
-longer be sure what devices have access to. That's bad.
-
->> +static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
->> +{
->> +	struct page **pages;
->> +	unsigned int i = 0, array_size = count * sizeof(*pages);
->> +
->> +	if (array_size <= PAGE_SIZE)
->> +		pages = kzalloc(array_size, GFP_KERNEL);
->> +	else
->> +		pages = vzalloc(array_size);
->> +	if (!pages)
->> +		return NULL;
->> +
->> +	/* IOMMU can map any pages, so himem can also be used here */
->> +	gfp |= __GFP_NOWARN | __GFP_HIGHMEM;
->> +
->> +	while (count) {
->> +		struct page *page = NULL;
->> +		int j, order = __fls(count);
->> +
+>> +	if (!ops)
+>> +		return;
+>> +	/*
+>> +	 * In a perfect world, everything happened in the right order up to
+>> +	 * here, and the IOMMU core has already attached the device to an
+>> +	 * appropriate default domain for us to set up...
+>> +	 */
+>> +	domain = iommu_get_domain_for_dev(dev);
+>> +	if (!domain) {
 >> +		/*
->> +		 * Higher-order allocations are a convenience rather
->> +		 * than a necessity, hence using __GFP_NORETRY until
->> +		 * falling back to single-page allocations.
+>> +		 * Urgh. Reliable default domains for platform devices can't
+>> +		 * happen anyway without some sensible way of handling
+>> +		 * non-trivial groups. So until then, HORRIBLE HACKS!
 >> +		 */
->> +		for (order = min(order, MAX_ORDER); order > 0; order--) {
->> +			page = alloc_pages(gfp | __GFP_NORETRY, order);
->> +			if (!page)
->> +				continue;
->> +			if (PageCompound(page)) {
->> +				if (!split_huge_page(page))
->> +					break;
->> +				__free_pages(page, order);
->> +			} else {
->> +				split_page(page, order);
->> +				break;
->> +			}
->> +		}
->> +		if (!page)
->> +			page = alloc_page(gfp);
->> +		if (!page) {
->> +			__iommu_dma_free_pages(pages, i);
->> +			return NULL;
->> +		}
->> +		j = 1 << order;
->> +		count -= j;
->> +		while (j--)
->> +			pages[i++] = page++;
->> +	}
->> +	return pages;
->> +}
 >
-> Hmm, most dma-api implementation just try to allocate a big enough
-> region from the page-alloctor. Is it implemented different here to avoid
-> the use of CMA?
+> I don't get this, what is preventing to rely on default domains here?
 
-AFAIK, yes (this is just a slight tidyup of the existing code that 
-32-bit Exynos/Tegra/Rockchip/etc. devices are already using) - the 
-display guys want increasingly massive contiguous allocations for 
-framebuffers, layers, etc., so having IOMMU magic deal with that saves 
-CMA for non-IOMMU devices that really need it.
+No driver other than the AMD IOMMU has any support yet. Support for 
+IOMMU_DOMAIN_DMA can easily be added to existing drivers based on patch 
+1 of this series, but more generally it's not entirely clear how default 
+domains are going to work beyond x86. On systems like Juno or Seattle 
+with different sets of masters behind different IOMMU instances (with 
+limited domain contexts each), the most sensible approach would be to 
+have a single default domain per IOMMU (spanning domains across 
+instances would need some hideous synchronisation logic for some 
+implementations), but the current domain_alloc interface gives us no way 
+to do that. On something like RK3288 with two different types of IOMMU 
+on the platform "bus", it breaks down even further as there's no way to 
+guarantee that iommu_domain_alloc() even gives you a domain from the 
+right *driver* (hence bypassing it by going through ops directly here).
+
+>
+>> +		domain = ops->domain_alloc(IOMMU_DOMAIN_DMA);
+>
+> The IOMMU core should already tried to allocate an IOMMU_DOMAIN_DMA type
+> domain. No need to try this again here.
+
+Only for PCI devices, via iommu_group_get_for_pci_dev(). The code here, 
+however, only runs for platform devices - ops will be always null for a 
+PCI device since of_iommu_configure() will have bailed out (see the 
+silly warning removed by my patch you picked up the other day). Once 
+iommu_group_get_for_dev() supports platform devices, this too can go 
+away. In the meantime if someone adds PCI support to 
+of_iommu_configure() and IOMMU_DOMAIN_DMA support to their IOMMU driver, 
+then we'll get a domain back from iommu_get_domain_for_dev() and just 
+use that.
 
 Robin.
