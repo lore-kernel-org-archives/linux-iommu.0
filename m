@@ -1,11 +1,15 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH] iommu/tegra-smmu: Parameterize number of TLB lines
-Date: Fri,  7 Aug 2015 14:58:26 +0200
-Message-ID: <1438952306-27483-1-git-send-email-thierry.reding@gmail.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v5 1/3] iommu: Implement common IOMMU ops for DMA mapping
+Date: Fri, 07 Aug 2015 14:38:39 +0100
+Message-ID: <55C4B4DF.4040608@arm.com>
+References: <cover.1438362603.git.robin.murphy@arm.com>
+	<6ce6b501501f611297ae0eae31e07b0d2060eaae.1438362603.git.robin.murphy@arm.com>
+	<20150807084228.GU14980@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150807084228.GU14980-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,123 +19,138 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Hi Joerg,
 
-The number of TLB lines was increased from 16 on Tegra30 to 32 on
-Tegra114 and later. Parameterize the value so that the initial default
-can be set accordingly.
+Thanks for taking a look,
 
-On Tegra30, initializing the value to 32 would effectively disable the
-TLB and hence cause massive latencies for memory accesses translated
-through the SMMU. This is especially noticeable for isochronuous clients
-such as display, whose FIFOs would continuously underrun.
+On 07/08/15 09:42, Joerg Roedel wrote:
+> On Fri, Jul 31, 2015 at 06:18:27PM +0100, Robin Murphy wrote:
+>> +int iommu_get_dma_cookie(struct iommu_domain *domain)
+>> +{
+>> +	struct iova_domain *iovad;
+>> +
+>> +	if (domain->dma_api_cookie)
+>> +		return -EEXIST;
+>
+> Why do you call that dma_api_cookie? It is just a pointer to an iova
+> allocator, you can just name it as such, like domain->iova.
 
-Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
-Joerg, it's probably easiest if I include this in my pull request that
-will include Russell's massive rework of the driver, hence why I didn't
-send this To: you. But I still wanted to get it out in case anybody had
-comments on it.
+Sure, it was more the case that since it had to be in the top-level 
+generic domain structure, I didn't want it to be too 
+implementation-specific. I figured this was a reasonable compromise that 
+wouldn't be a waste of space for implementations with different 
+per-domain DMA API data - e.g. the AMD IOMMU driver could then make use 
+of protection_domain->domain->dma_api_cookie instead of having 
+protection_domain->priv, but that's a patch that wouldn't belong in this 
+series anyway.
 
- drivers/iommu/tegra-smmu.c      | 9 +++++++--
- drivers/memory/tegra/tegra114.c | 1 +
- drivers/memory/tegra/tegra124.c | 1 +
- drivers/memory/tegra/tegra30.c  | 1 +
- include/soc/tegra/mc.h          | 1 +
- 5 files changed, 11 insertions(+), 2 deletions(-)
+If you really hate that idea, then yeah, let's just call it iova and 
+consider if factoring out redundancy is still applicable later.
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 2f1481ad4aa5..9305964250ac 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -27,6 +27,7 @@ struct tegra_smmu {
- 	const struct tegra_smmu_soc *soc;
- 
- 	unsigned long pfn_mask;
-+	unsigned long tlb_mask;
- 
- 	unsigned long *asids;
- 	struct mutex lock;
-@@ -70,7 +71,8 @@ static inline u32 smmu_readl(struct tegra_smmu *smmu, unsigned long offset)
- #define SMMU_TLB_CONFIG 0x14
- #define  SMMU_TLB_CONFIG_HIT_UNDER_MISS (1 << 29)
- #define  SMMU_TLB_CONFIG_ROUND_ROBIN_ARBITRATION (1 << 28)
--#define  SMMU_TLB_CONFIG_ACTIVE_LINES(x) ((x) & 0x3f)
-+#define  SMMU_TLB_CONFIG_ACTIVE_LINES(smmu) \
-+	((smmu)->soc->num_tlb_lines & (smmu)->tlb_mask)
- 
- #define SMMU_PTC_CONFIG 0x18
- #define  SMMU_PTC_CONFIG_ENABLE (1 << 29)
-@@ -901,6 +903,9 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
- 	smmu->pfn_mask = BIT_MASK(mc->soc->num_address_bits - PAGE_SHIFT) - 1;
- 	dev_dbg(dev, "address bits: %u, PFN mask: %#lx\n",
- 		mc->soc->num_address_bits, smmu->pfn_mask);
-+	smmu->tlb_mask = (smmu->soc->num_tlb_lines << 1) - 1;
-+	dev_dbg(dev, "TLB lines: %u, mask: %#lx\n", smmu->soc->num_tlb_lines,
-+		smmu->tlb_mask);
- 
- 	value = SMMU_PTC_CONFIG_ENABLE | SMMU_PTC_CONFIG_INDEX_MAP(0x3f);
- 
-@@ -910,7 +915,7 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
- 	smmu_writel(smmu, value, SMMU_PTC_CONFIG);
- 
- 	value = SMMU_TLB_CONFIG_HIT_UNDER_MISS |
--		SMMU_TLB_CONFIG_ACTIVE_LINES(0x20);
-+		SMMU_TLB_CONFIG_ACTIVE_LINES(smmu);
- 
- 	if (soc->supports_round_robin_arbitration)
- 		value |= SMMU_TLB_CONFIG_ROUND_ROBIN_ARBITRATION;
-diff --git a/drivers/memory/tegra/tegra114.c b/drivers/memory/tegra/tegra114.c
-index 7122f39be9cc..8053f70dbfd1 100644
---- a/drivers/memory/tegra/tegra114.c
-+++ b/drivers/memory/tegra/tegra114.c
-@@ -919,6 +919,7 @@ static const struct tegra_smmu_soc tegra114_smmu_soc = {
- 	.num_swgroups = ARRAY_SIZE(tegra114_swgroups),
- 	.supports_round_robin_arbitration = false,
- 	.supports_request_limit = false,
-+	.num_tlb_lines = 32,
- 	.num_asids = 4,
- };
- 
-diff --git a/drivers/memory/tegra/tegra124.c b/drivers/memory/tegra/tegra124.c
-index ebda63283853..7d734befe0ed 100644
---- a/drivers/memory/tegra/tegra124.c
-+++ b/drivers/memory/tegra/tegra124.c
-@@ -1029,6 +1029,7 @@ static const struct tegra_smmu_soc tegra132_smmu_soc = {
- 	.num_swgroups = ARRAY_SIZE(tegra124_swgroups),
- 	.supports_round_robin_arbitration = true,
- 	.supports_request_limit = true,
-+	.num_tlb_lines = 32,
- 	.num_asids = 128,
- };
- 
-diff --git a/drivers/memory/tegra/tegra30.c b/drivers/memory/tegra/tegra30.c
-index 3cb30b69d95b..7e0694d80edb 100644
---- a/drivers/memory/tegra/tegra30.c
-+++ b/drivers/memory/tegra/tegra30.c
-@@ -941,6 +941,7 @@ static const struct tegra_smmu_soc tegra30_smmu_soc = {
- 	.num_swgroups = ARRAY_SIZE(tegra30_swgroups),
- 	.supports_round_robin_arbitration = false,
- 	.supports_request_limit = false,
-+	.num_tlb_lines = 16,
- 	.num_asids = 4,
- };
- 
-diff --git a/include/soc/tegra/mc.h b/include/soc/tegra/mc.h
-index d6c3190ec852..8cb3a7ecd6f8 100644
---- a/include/soc/tegra/mc.h
-+++ b/include/soc/tegra/mc.h
-@@ -61,6 +61,7 @@ struct tegra_smmu_soc {
- 	bool supports_round_robin_arbitration;
- 	bool supports_request_limit;
- 
-+	unsigned int num_tlb_lines;
- 	unsigned int num_asids;
- };
- 
--- 
-2.4.5
+>> +static struct iova *__alloc_iova(struct iova_domain *iovad, size_t size,
+>> +		dma_addr_t dma_limit)
+>
+> I think you also need a struct device here to take segment boundary and
+> dma_mask into account.
+
+To the best of my understanding, those limits are only relevant when 
+actually handing off a scatterlist to a client device doing hardware 
+scatter-gather operations, so it's not so much the IOVA allocation that 
+matters, but where the segments lie within it when handling dma_map_sg.
+
+However, you do raise a good point - in the current "map everything 
+consecutively" approach, if there is a non-power-of-2-sized segment in 
+the middle of a scatterlist, then subsequent segments could possibly end 
+up inadvertently straddling a boundary. That needs handling in 
+iommu_dma_map_sg; I'll fix it appropriately.
+
+>> +/* The IOVA allocator knows what we mapped, so just unmap whatever that was */
+>> +static void __iommu_dma_unmap(struct iommu_domain *domain, dma_addr_t dma_addr)
+>> +{
+>> +	struct iova_domain *iovad = domain->dma_api_cookie;
+>> +	unsigned long shift = iova_shift(iovad);
+>> +	unsigned long pfn = dma_addr >> shift;
+>> +	struct iova *iova = find_iova(iovad, pfn);
+>> +	size_t size = iova_size(iova) << shift;
+>> +
+>> +	/* ...and if we can't, then something is horribly, horribly wrong */
+>> +	BUG_ON(iommu_unmap(domain, pfn << shift, size) < size);
+>
+> This is a WARN_ON at most, not a BUG_ON condition, especially since this
+> type of bug is also catched with the dma-api debugging code.
+
+Indeed, DMA_DEBUG will check that a driver is making DMA API calls to 
+the arch code in the right way; this is a different check, to catch 
+things like the arch code passing the wrong domain into this layer, or 
+someone else having messed directly with the domain via the IOMMU API. 
+If the iommu_unmap doesn't match the IOVA region we looked up, that 
+means the IOMMU page tables have somehow become inconsistent with the 
+IOVA allocator, so we are in an unrecoverable situation where we can no 
+longer be sure what devices have access to. That's bad.
+
+>> +static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
+>> +{
+>> +	struct page **pages;
+>> +	unsigned int i = 0, array_size = count * sizeof(*pages);
+>> +
+>> +	if (array_size <= PAGE_SIZE)
+>> +		pages = kzalloc(array_size, GFP_KERNEL);
+>> +	else
+>> +		pages = vzalloc(array_size);
+>> +	if (!pages)
+>> +		return NULL;
+>> +
+>> +	/* IOMMU can map any pages, so himem can also be used here */
+>> +	gfp |= __GFP_NOWARN | __GFP_HIGHMEM;
+>> +
+>> +	while (count) {
+>> +		struct page *page = NULL;
+>> +		int j, order = __fls(count);
+>> +
+>> +		/*
+>> +		 * Higher-order allocations are a convenience rather
+>> +		 * than a necessity, hence using __GFP_NORETRY until
+>> +		 * falling back to single-page allocations.
+>> +		 */
+>> +		for (order = min(order, MAX_ORDER); order > 0; order--) {
+>> +			page = alloc_pages(gfp | __GFP_NORETRY, order);
+>> +			if (!page)
+>> +				continue;
+>> +			if (PageCompound(page)) {
+>> +				if (!split_huge_page(page))
+>> +					break;
+>> +				__free_pages(page, order);
+>> +			} else {
+>> +				split_page(page, order);
+>> +				break;
+>> +			}
+>> +		}
+>> +		if (!page)
+>> +			page = alloc_page(gfp);
+>> +		if (!page) {
+>> +			__iommu_dma_free_pages(pages, i);
+>> +			return NULL;
+>> +		}
+>> +		j = 1 << order;
+>> +		count -= j;
+>> +		while (j--)
+>> +			pages[i++] = page++;
+>> +	}
+>> +	return pages;
+>> +}
+>
+> Hmm, most dma-api implementation just try to allocate a big enough
+> region from the page-alloctor. Is it implemented different here to avoid
+> the use of CMA?
+
+AFAIK, yes (this is just a slight tidyup of the existing code that 
+32-bit Exynos/Tegra/Rockchip/etc. devices are already using) - the 
+display guys want increasingly massive contiguous allocations for 
+framebuffers, layers, etc., so having IOMMU magic deal with that saves 
+CMA for non-IOMMU devices that really need it.
+
+Robin.
