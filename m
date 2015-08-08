@@ -1,15 +1,17 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v5 2/3] arm64: Add IOMMU dma_ops
-Date: Fri, 07 Aug 2015 16:27:56 +0100
-Message-ID: <55C4CE7C.7050205@arm.com>
-References: <cover.1438362603.git.robin.murphy@arm.com>
-	<8a5abd0a9929aae160ccb74d7a8d9c3698f61910.1438362603.git.robin.murphy@arm.com>
-	<20150807085233.GV14980@8bytes.org>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [PATCH 2/3] Docs: dt: Add PCI MSI map bindings
+Date: Sat, 8 Aug 2015 15:06:12 +0000
+Message-ID: <BN1PR0301MB0627EEEEBB0D30C391B421B0EA720@BN1PR0301MB0627.namprd03.prod.outlook.com>
+References: <1437670365-20704-1-git-send-email-mark.rutland@arm.com>
+	<1437670365-20704-3-git-send-email-mark.rutland@arm.com>
+	<BN1PR0301MB06277FDA6EB34E77B557CA75EA750@BN1PR0301MB0627.namprd03.prod.outlook.com>
+	<20150806173839.GC6437@leverpostej>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150807085233.GV14980-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20150806173839.GC6437@leverpostej>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,105 +21,147 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Lorenzo Pieralisi <Lorenzo.Pieralisi-5wv7dgnIgG8@public.gmane.org>, Stuart Yoder <stuart.yoder-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "tirumalesh.chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <tirumalesh.chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "majun258-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <majun258-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 07/08/15 09:52, Joerg Roedel wrote:
-> On Fri, Jul 31, 2015 at 06:18:28PM +0100, Robin Murphy wrote:
->> +/*
->> + * TODO: Right now __iommu_setup_dma_ops() gets called too early to do
->> + * everything it needs to - the device isn't yet fully created, and the
->> + * IOMMU driver hasn't seen it yet, so we need this delayed attachment
->> + * dance. Once IOMMU probe ordering is sorted to move the
->> + * arch_setup_dma_ops() call later, all the notifier bits below become
->> + * unnecessary, and will go away.
->> + */
->> +struct iommu_dma_notifier_data {
->> +	struct list_head list;
->> +	struct device *dev;
->> +	struct iommu_domain *dma_domain;
->> +};
->> +static LIST_HEAD(iommu_dma_masters);
->> +static DEFINE_MUTEX(iommu_dma_notifier_lock);
->
-> Ugh, thats incredibly ugly. Why can't you do the setup work then the
-> iommu driver sees the device? Just call the dma-api setup functions
-> there (like the x86 iommu drivers do it too) and be done without any
-> notifiers.
+Hi Mark,
+Thanks for the response. Please find my comments inline.
 
-As per the comments, the issue here lies in the order in which the 
-OF/driver core code currently calls things for platform devices: as it 
-stands we can't attach the device to a domain in arch_setup_dma_ops() 
-because it doesn't have a group, and we can't even add it to a group 
-ourselves because it isn't fully created and doesn't exist in sysfs yet. 
-The only reason arch/arm is currently getting away without this 
-workaround is that the few IOMMU drivers there hooked up to the generic 
-infrastructure don't actually mind that they get an attach_device from 
-arch_setup_dma_ops() before they've even seen an add_device (largely 
-because they don't care about groups).
+Regards
+Varun
 
-Laurent's probe-deferral series largely solves these problems in the 
-right place - adding identical boilerplate code to every IOMMU driver to 
-do something they shouldn't have to know about (and don't necessarily 
-have all the right information for) is exactly what we don't want to do. 
-As discussed over on another thread, I'm planning to pick that series up 
-and polish it off after this, but my top priority is getting the basic 
-dma_ops functionality into arm64 that people need right now. I will be 
-only too happy when I can submit the patch removing this notifier 
-workaround ;)
+> -----Original Message-----
+> From: Mark Rutland [mailto:mark.rutland-5wv7dgnIgG8@public.gmane.org]
+> Sent: Thursday, August 06, 2015 11:09 PM
+> To: Sethi Varun-B16395
+> Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Lorenzo Pieralisi; arnd-r2nGTMty4D4@public.gmane.org; Marc
+> Zyngier; Will Deacon; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> tirumalesh.chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org;
+> laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org; thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org;
+> treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org;
+> majun258-hv44wF8Li93QT0dZR+AlfA@public.gmane.org; Yoder Stuart-B08248
+> Subject: Re: [PATCH 2/3] Docs: dt: Add PCI MSI map bindings
+> 
+> On Wed, Aug 05, 2015 at 05:39:33PM +0100, Varun Sethi wrote:
+> > Hi Mark
+> > Thanks for the patch. Please find my comment inline.
+> >
+> > Regards
+> > Varun
+> >
+> > > -----Original Message-----
+> > > From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+> > > bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Mark Rutland
+> > > Sent: Thursday, July 23, 2015 10:23 PM
+> > > To: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > > Cc: Mark Rutland; lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org; arnd-r2nGTMty4D4@public.gmane.org;
+> > > marc.zyngier-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org; linux-
+> > > kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org;
+> > > iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org foundation.org;
+> > > tirumalesh.chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org;
+> > > laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org; thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org;
+> > > treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org;
+> > > majun258-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+> > > Subject: [PATCH 2/3] Docs: dt: Add PCI MSI map bindings
+> > >
+> > > Currently msi-parent is used by a few bindings to describe the
+> > > relationship between a PCI root complex and a single MSI controller,
+> > > but this property does not have a generic binding document.
+> > >
+> > > Additionally, msi-parent is insufficient to describe more complex
+> > > relationships between MSI controllers and devices under a root
+> > > complex, where devices may be able to target multiple MSI
+> > > controllers, or where MSI controllers use (non-probeable) sideband
+> information to distinguish devices.
+> > >
+> > > This patch adds a generic binding for mapping PCI devices to MSI
+> controllers.
+> > > This document covers msi-parent, and a new msi-map property
+> > > (specific to
+> > > PCI*) which may be used to map devices (identified by their
+> > > Requester ID) to sideband data for each MSI controller that they may
+> target.
+> > >
+> > > Signed-off-by: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+> > > ---
+> > >  Documentation/devicetree/bindings/pci/pci-msi.txt | 220
+> > > ++++++++++++++++++++++
+> > >  1 file changed, 220 insertions(+)
+> > >  create mode 100644
+> > > Documentation/devicetree/bindings/pci/pci-msi.txt
+> > >
+> > > diff --git a/Documentation/devicetree/bindings/pci/pci-msi.txt
+> > > b/Documentation/devicetree/bindings/pci/pci-msi.txt
+> > > new file mode 100644
+> > > index 0000000..9b3cc81
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/pci/pci-msi.txt
+> > > @@ -0,0 +1,220 @@
+> > > +This document describes the generic device tree binding for
+> > > +describing the relationship between PCI devices and MSI controllers.
+> > > +
+> > > +Each PCI device under a root complex is uniquely identified by its
+> > > +Requester ID (AKA RID). A Requester ID is a triplet of a Bus
+> > > +number, Device number, and Function number.
+> > > +
+> > > +For the purpose of this document, when treated as a numeric value,
+> > > +a RID is formatted such that:
+> > > +
+> > > +* Bits [15:8] are the Bus number.
+> > > +* Bits [7:3] are the Device number.
+> > > +* Bits [2:0] are the Function number.
+> > > +* Any other bits required for padding must be zero.
+> > > +
+> > > +MSIs may be distinguished in part through the use of sideband data
+> > > +accompanying writes. In the case of PCI devices, this sideband data
+> > > +may be derived from the Requester ID. A mechanism is required to
+> > > +associate a device with both the MSI controllers it can address,
+> > > +and the sideband data that will be associated with its writes to those
+> controllers.
+> > > +
+> > > +For generic MSI bindings, see
+> > > +Documentation/devicetree/bindings/interrupt-controller/msi.txt.
+> > > +
+> > > +
+> > > +PCI root complex
+> > > +================
+> > > +
+> > > +Optional properties
+> > > +-------------------
+> > > +
+> > > +- msi-map: Maps a Requester ID to an MSI controller and associated
+> > > +  msi-specifier data. The property is an arbitrary number of tuples
+> > > +of
+> > > +  (rid-base,msi-controller,msi-base,length), where:
+> > [varun] How would we account for hot plug PCI devices and SR-IOV use
+> cases, with the rid base and length?
+> 
+> For hotplug, you simply need the mapping from RID to msi-specifier to be
+> defined in advance in the DT, for the set of RIDs that could possibly occur.
+> 
+> For SR-IOV, are you asking about ARI? I should update the description of the
+> RID to describe that for ARI it has the format:
+> 
+> * Bits [15:8] are the Bus number
+> * Bits [7:0] are the Identifier
+> 
+> Other than that, the handling would be identical to the non-ARI case.
+> 
+> What else am I missing?
+> 
+> > How do we take in to account for a PCIe bridge, while setting up the
+> requestor ID base and length?
+> 
+> I'm not sure I follow the question. I don't see why this is any different to any
+> other requester ID.
+> 
+> What do you see as being the problem for this case?
 
->> +static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
->> +				  const struct iommu_ops *ops)
->> +{
->> +	struct iommu_domain *domain;
->> +	int err;
->> +
->> +	if (!ops)
->> +		return;
->> +	/*
->> +	 * In a perfect world, everything happened in the right order up to
->> +	 * here, and the IOMMU core has already attached the device to an
->> +	 * appropriate default domain for us to set up...
->> +	 */
->> +	domain = iommu_get_domain_for_dev(dev);
->> +	if (!domain) {
->> +		/*
->> +		 * Urgh. Reliable default domains for platform devices can't
->> +		 * happen anyway without some sensible way of handling
->> +		 * non-trivial groups. So until then, HORRIBLE HACKS!
->> +		 */
->
-> I don't get this, what is preventing to rely on default domains here?
 
-No driver other than the AMD IOMMU has any support yet. Support for 
-IOMMU_DOMAIN_DMA can easily be added to existing drivers based on patch 
-1 of this series, but more generally it's not entirely clear how default 
-domains are going to work beyond x86. On systems like Juno or Seattle 
-with different sets of masters behind different IOMMU instances (with 
-limited domain contexts each), the most sensible approach would be to 
-have a single default domain per IOMMU (spanning domains across 
-instances would need some hideous synchronisation logic for some 
-implementations), but the current domain_alloc interface gives us no way 
-to do that. On something like RK3288 with two different types of IOMMU 
-on the platform "bus", it breaks down even further as there's no way to 
-guarantee that iommu_domain_alloc() even gives you a domain from the 
-right *driver* (hence bypassing it by going through ops directly here).
+[varun]  Would the boot loader be responsible for the  PCI bus probe and setting up of the requestor id information in the device tree. Also, during bus probe the boot loader would understand the topology, and handle cases like non transparent host bridge and non standard devices (e.g. require special handling based on quirks). 
 
->
->> +		domain = ops->domain_alloc(IOMMU_DOMAIN_DMA);
->
-> The IOMMU core should already tried to allocate an IOMMU_DOMAIN_DMA type
-> domain. No need to try this again here.
+Also, the msi identifier would typically be the stream ID provided by the device.  So, this would be limited by the number of SMRs, right? Considering that the each device can have its specific IOMMU domain, which would also require mapping for MSI access, we may also be restricted by the number of context banks. So, we may be able to support a restricted number of msi identifiers.
 
-Only for PCI devices, via iommu_group_get_for_pci_dev(). The code here, 
-however, only runs for platform devices - ops will be always null for a 
-PCI device since of_iommu_configure() will have bailed out (see the 
-silly warning removed by my patch you picked up the other day). Once 
-iommu_group_get_for_dev() supports platform devices, this too can go 
-away. In the meantime if someone adds PCI support to 
-of_iommu_configure() and IOMMU_DOMAIN_DMA support to their IOMMU driver, 
-then we'll get a domain back from iommu_get_domain_for_dev() and just 
-use that.
-
-Robin.
+We already have the PCI bus probe in Linux. If my assumption about the boot loader doing the probe is correct, why do we want to duplicate the work. Also, can we just provide a list of possible MSI identifiers to Linux for each PCIe controller. The IOMMU driver in the Linux kernel can interface with PCIe controller for setting up "requestor id"->"msi identifier" translation.
