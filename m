@@ -1,132 +1,69 @@
-From: William Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: RE: [PATCH v4 09/12] iommu/vt-d: implement (un)map_peer_resource
-Date: Mon, 10 Aug 2015 18:29:35 +0000
-Message-ID: <350bf3a78cf840bd8d45d1ca7df07271@HQMAIL106.nvidia.com>
-References: <1437601197-6481-1-git-send-email-wdavis@nvidia.com>
-	<1437601197-6481-10-git-send-email-wdavis@nvidia.com>
-	<20150810170217.GB32452@google.com>
+From: Yinghai Lu <yinghai@kernel.org>
+Subject: Re: [PATCH v2 00/11] PCI: Fix ATS deadlock
+Date: Mon, 10 Aug 2015 15:54:55 -0700
+Message-ID: <CAE9FiQW7+Tt7N9Ktg25+fhW7Hk3XjaE=MCYv7Y+vVeR0jjESNw@mail.gmail.com>
+References: <20150721001243.28145.81610.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+	<20150729160701.GC31170@google.com>
+	<CAE9FiQWBuTq2gH_-UjrCrOgtgFw05=RLXXAqkWFz4cTxHPCcdA@mail.gmail.com>
+	<CAE9FiQXcj7Y+tqXPoFmYAuw-cTdpg1rzVzbkuGd-hA9O=QveXw@mail.gmail.com>
+	<20150810173322.GD32452@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150810170217.GB32452-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, John Hubbard <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Terence Ripperda <TRipperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20150810173322.GD32452@google.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Joerg Roedel <jroedel@suse.de>, David Woodhouse <dwmw2@infradead.org>, iommu <iommu@lists.linux-foundation.org>, Gregor Dick <gdick@solarflare.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Monday, August 10, 2015 12:02 PM, Bjorn Helgaas wrote:
-> On Wed, Jul 22, 2015 at 04:39:54PM -0500, Will Davis wrote:
-> > Implement 'map_peer_resource' for the Intel IOMMU driver. Simply translate
-> > the resource to a physical address and route it to the same handlers used
-> > by the 'map_page' API.
-> >
-> > This allows a device to map another's resource, to enable peer-to-peer
-> > transactions.
-> >
-> > These functions are guarded behind CONFIG_HAS_DMA_P2P, since the
-> > dma_map_ops members are as well.
-> >
-> > Signed-off-by: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> > Reviewed-by: Terence Ripperda <tripperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> > Reviewed-by: John Hubbard <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> > ---
-> >  drivers/iommu/intel-iommu.c | 38 ++++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 38 insertions(+)
-> >
-> > diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> > index a98a7b2..66b371c 100644
-> > --- a/drivers/iommu/intel-iommu.c
-> > +++ b/drivers/iommu/intel-iommu.c
-> > @@ -3544,6 +3544,40 @@ static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
-> >  	intel_unmap(dev, dev_addr);
-> >  }
-> >
-> > +#ifdef CONFIG_HAS_DMA_P2P
-> > +static dma_peer_addr_t intel_map_peer_resource(struct device *dev,
-> > +					       struct device *peer,
-> > +					       struct resource *res,
-> > +					       unsigned long offset,
-> > +					       size_t size,
-> > +					       enum dma_data_direction dir,
-> > +					       struct dma_attrs *attrs)
-> > +{
-> > +	struct pci_dev *pdev = to_pci_dev(dev);
-> > +	struct pci_dev *ppeer = to_pci_dev(peer);
-> 
-> You got "struct device" pointers, so they might not be PCI devices.  You
-> should probably return an error if one is not PCI.
-> 
-> > +	struct pci_host_bridge *hbdev = pci_find_host_bridge(pdev->bus);
-> > +	struct pci_host_bridge *hbpeer = pci_find_host_bridge(ppeer->bus);
-> > +
-> > +	/*
-> > +	 * Disallow the peer-to-peer mapping if the devices do not share a host
-> > +	 * bridge.
-> > +	 */
-> > +	if (hbdev != hbpeer)
-> > +		return 0;
-> 
-> I think the only thing guaranteed by the spec is peer-to-peer between
-> devices in the same hierarchy, where the hierarchy is rooted at a PCIe Root
-> Port or a conventional PCI host bridge.  I don't remember anything about
-> transactions between Root Ports or conventional PCI host bridges.
-> 
-> If there is some language in the spec about those transactions, a citation
-> here would be nice.
-> 
+On Mon, Aug 10, 2015 at 10:33 AM, Bjorn Helgaas <bhelgaas@google.com> wrote:
+...
+> Huh, I don't see anything obvious there.  Where does it hang?  Boot?
+> Driver attach?  Can you give me any hints, or maybe try the attached patch?
+> Is there anything funny about those particular devices?  Maybe some
+> "lspci -vv" output?
 
-The only thing I could find in the conventional PCI spec was in section
-3.10.7 (PCI Local Bus Specification Revision 3.0):
+with debug patch:
 
-"7.  Peer-to-peer transactions crossing multiple host bridges
-     PCI host bridges may, but are not required to, support PCI peer-to-peer
-     transactions that traverse multiple PCI host bridges."
+[   79.691788] calling  qla2x00_module_init+0x0/0x21c @ 1
+[   79.711206] qla2xxx [0000:00:00.0]-0005: : QLogic Fibre Channel HBA
+Driver: 8.07.00.18-k.
+[   79.731379] qla2xxx [0000:45:00.0]-001d: : Found an ISP2532 irq 30
+iobase 0xffffc900311ae000.
+[   79.733945] qla2xxx 0000:45:00.0: enabling Mem-Wr-Inval
+[   82.381363] qla2xxx 0000:45:00.0: flush; cached ena 0 qdep 0,
+current ena 0 qdep -19
+[   82.397008] qla2xxx 0000:45:00.0: flush; cached ena 0 qdep 0,
+current ena 0 qdep -19
+[   82.621261] qla2xxx 0000:45:00.0: flush; cached ena 0 qdep 0,
+current ena 0 qdep -19
+[   82.625717] scsi host0: qla2xxx
+[   87.646633] qla2xxx [0000:45:00.0]-00fb:0: QLogic QEM3572 -
+SG-XPCIEFCGBE-Q8-Z Sun StorageTek Dual 8Gb FC Dual GbE HBA.
+[   87.647145] qla2xxx [0000:45:00.0]-00fc:0: ISP2532: PCIe (5.0GT/s
+x8) @ 0000:45:00.0 hdma+ host#=0 fw=5.10.00 (90d5).
+[   87.663408] qla2xxx [0000:45:00.1]-001d: : Found an ISP2532 irq 31
+iobase 0xffffc9003120e000.
+[   87.684329] qla2xxx 0000:45:00.1: enabling Mem-Wr-Inval
+[   90.331021] qla2xxx 0000:45:00.1: flush; cached ena 1 qdep 121,
+current ena 0 qdep -19
+...
 
-In the PCIe spec (PCI Express Base Specification Revision 3.0), section 1.3.1:
-"The capability to route peer-to-peer transactions between hierarchy domains
- through a Root Complex is optional and implementation dependent. For example,
- an implementation may incorporate a real or virtual Switch internally within
- the Root Complex to enable full peer-to-peer support in a software transparent
- way."
 
-And then as noted in a previous thread, the ACS part of the spec does not
-make it possible to know for sure (section 6.12.1.1 and footnote 80):
+Looks like ats in the device_domain_info is not initialized to 0.
+after set it 0, it will work.
 
-"ACS P2P Request Redirect: must be implemented by Root Ports that support
- peer-to-peer traffic with other Root Ports;80 must be implemented by Switch
- Downstream Ports.
- ...
- 80 Root Port indication of ACS P2P Request Redirect or ACS P2P Completion
- Redirect support does not imply any particular level of peer-to-peer support
- by the Root Complex, or that peer-to-peer traffic is supported at all"
 
-I could add these citations to the comment, noting that we disable this case
-because we don't have any way to know for sure (short of a chipset whitelist).
+Index: linux-2.6/drivers/iommu/intel-iommu.c
+===================================================================
+--- linux-2.6.orig/drivers/iommu/intel-iommu.c
++++ linux-2.6/drivers/iommu/intel-iommu.c
+@@ -2281,6 +2292,8 @@ static struct dmar_domain *dmar_insert_d
+        info->dev = dev;
+        info->domain = domain;
+        info->iommu = iommu;
++       info->ats.enabled = 0;
++       info->ats.qdep = 0;
 
-> This decision might be better made by a PCI interface.  This same basic
-> logic is repeated here, in the AMD equivalent, and in the x86 code, and I
-> suspect it will end up being a little more complicated for the reasons
-> above.
->
-
-Agreed, I will move this to a separate interface (something like
-pci_is_p2p_possible(dev, peer)).
-
-Thanks,
-Will
------------------------------------------------------------------------------------
-This email message is for the sole use of the intended recipient(s) and may contain
-confidential information.  Any unauthorized review, use, disclosure or distribution
-is prohibited.  If you are not the intended recipient, please contact the sender by
-reply email and destroy all copies of the original message.
------------------------------------------------------------------------------------
+        spin_lock_irqsave(&device_domain_lock, flags);
+        if (dev)
