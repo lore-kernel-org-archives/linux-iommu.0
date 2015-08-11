@@ -1,16 +1,15 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v5 1/3] iommu: Implement common IOMMU ops for DMA mapping
-Date: Tue, 11 Aug 2015 14:31:34 +0100
-Message-ID: <55C9F936.8080201@arm.com>
-References: <cover.1438362603.git.robin.murphy@arm.com>
-	<6ce6b501501f611297ae0eae31e07b0d2060eaae.1438362603.git.robin.murphy@arm.com>
-	<20150807084228.GU14980@8bytes.org> <55C4B4DF.4040608@arm.com>
-	<20150811093742.GC14980@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v4 4/6] memory: mediatek: Add SMI driver
+Date: Tue, 11 Aug 2015 16:56:33 +0200
+Message-ID: <20150811145633.GE14980@8bytes.org>
+References: <1438597279-2937-1-git-send-email-yong.wu@mediatek.com>
+	<1438597279-2937-5-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150811093742.GC14980-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1438597279-2937-5-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,53 +19,69 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, frederic.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+On Mon, Aug 03, 2015 at 06:21:17PM +0800, Yong Wu wrote:
+> +static int mtk_smi_common_get(struct device *smidev)
+> +{
+> +	struct mtk_smi_common *smipriv = dev_get_drvdata(smidev);
+> +	int ret;
+> +
+> +	ret = pm_runtime_get_sync(smidev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = clk_prepare_enable(smipriv->clk_apb);
+> +	if (ret) {
+> +		dev_err(smidev, "Failed to enable the apb clock\n");
+> +		goto err_put_pm;
+> +	}
+> +	ret = clk_prepare_enable(smipriv->clk_smi);
+> +	if (ret) {
+> +		dev_err(smidev, "Failed to enable the smi clock\n");
+> +		goto err_disable_apb;
+> +	}
+> +	return ret;
+> +
+> +err_disable_apb:
+> +	clk_disable_unprepare(smipriv->clk_apb);
+> +err_put_pm:
+> +	pm_runtime_put(smidev);
+> +	return ret;
+> +}
 
-On 11/08/15 10:37, Joerg Roedel wrote:
-> On Fri, Aug 07, 2015 at 02:38:39PM +0100, Robin Murphy wrote:
->> Indeed, DMA_DEBUG will check that a driver is making DMA API calls
->> to the arch code in the right way; this is a different check, to
->> catch things like the arch code passing the wrong domain into this
->> layer, or someone else having messed directly with the domain via
->> the IOMMU API. If the iommu_unmap doesn't match the IOVA region we
->> looked up, that means the IOMMU page tables have somehow become
->> inconsistent with the IOVA allocator, so we are in an unrecoverable
->> situation where we can no longer be sure what devices have access
->> to. That's bad.
->
-> Sure, but the BUG_ON would also trigger on things like a double-free,
-> which is bad to handle as a BUG_ON. A WARN_ON for this is sufficient.
+[...]
 
-Oh dear, it gets even better than that; in the case of a simple 
-double-unmap where the IOVA is already free, we wouldn't even get as far 
-as that check because we'd die calling iova_size(NULL). How on Earth did 
-I get to v5 without spotting that? :(
+> +int mtk_smi_larb_get(struct device *larbdev)
+> +{
+> +	struct mtk_smi_larb *larbpriv = dev_get_drvdata(larbdev);
+> +	struct mtk_larb_mmu *mmucfg = larbdev->archdata.iommu;
+> +	int ret;
+> +
+> +	ret = mtk_smi_common_get(larbpriv->smi);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = pm_runtime_get_sync(larbdev);
+> +	if (ret < 0)
+> +		goto err_put_smicommon;
+> +
+> +	ret = clk_prepare_enable(larbpriv->clk_apb);
+> +	if (ret) {
+> +		dev_err(larbdev, "Failed to enable the apb clock\n");
+> +		goto err_put_pm;
+> +	}
+> +
+> +	ret = clk_prepare_enable(larbpriv->clk_smi);
+> +	if (ret) {
+> +		dev_err(larbdev, "Failed to enable the smi clock\n");
+> +		goto err_disable_apb;
+> +	}
 
-Anyway, on reflection I think you're probably right; I've clearly been 
-working on this for long enough to start falling into the "my thing is 
-obviously more important than all the other things" trap.
+The clock enablement looks similar to the function above, maybe move it
+to a helper function?
 
->> AFAIK, yes (this is just a slight tidyup of the existing code that
->> 32-bit Exynos/Tegra/Rockchip/etc. devices are already using) - the
->> display guys want increasingly massive contiguous allocations for
->> framebuffers, layers, etc., so having IOMMU magic deal with that
->> saves CMA for non-IOMMU devices that really need it.
->
-> Makes sense, I thougt about something similar for x86 too to avoid the
-> high-order allocations we currently do. I guess the buffer will later be
-> mapped into the vmalloc space for the CPU?
 
-Indeed - for non-coherent devices we have to remap all allocations 
-(IOMMU or not) anyway in order to get a non-cacheable CPU mapping of the 
-buffer, so having non-contiguous pages is no bother; for coherent 
-devices we can just do the same thing but keep the vmalloc mapping 
-cacheable. There's also the DMA_ATTR_NO_KERNEL_MAPPING case (e.g. GPU 
-just wants a big buffer to render into and read back out again) where we 
-wouldn't need a CPU address at all, although on arm64 vmalloc space is 
-cheap enough that we've no plans to implement that at the moment.
-
-Robin.
+	Joerg
