@@ -1,8 +1,8 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v6 15/16] KVM: Warn if 'SN' is set during posting interrupts
-	by software
-Date: Tue, 11 Aug 2015 14:03:57 +0800
-Message-ID: <1439273038-59463-16-git-send-email-feng.wu@intel.com>
+Subject: [PATCH v6 13/16] KVM: Update Posted-Interrupts Descriptor when vCPU
+	is preempted
+Date: Tue, 11 Aug 2015 14:03:55 +0800
+Message-ID: <1439273038-59463-14-git-send-email-feng.wu@intel.com>
 References: <1439273038-59463-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,45 +22,78 @@ To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7a
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Currently, we don't support urgent interrupt, all interrupts
-are recognized as non-urgent interrupt, so we cannot post
-interrupts when 'SN' is set.
+This patch updates the Posted-Interrupts Descriptor when vCPU
+is preempted.
 
-If the vcpu is in guest mode, it cannot have been scheduled out,
-and that's the only case when SN is set currently, warning if
-SN is set.
+sched out:
+- Set 'SN' to suppress furture non-urgent interrupts posted for
+the vCPU.
+
+sched in:
+- Clear 'SN'
+- Change NDST if vCPU is scheduled to a different CPU
+- Set 'NV' to POSTED_INTR_VECTOR
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/kvm/vmx.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ arch/x86/kvm/vmx.c | 34 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
 
 diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-index 6b50eba..b4f5600 100644
+index 234f720..20472ad 100644
 --- a/arch/x86/kvm/vmx.c
 +++ b/arch/x86/kvm/vmx.c
-@@ -4477,6 +4477,22 @@ static inline bool kvm_vcpu_trigger_posted_interrupt(struct kvm_vcpu *vcpu)
+@@ -45,6 +45,7 @@
+ #include <asm/debugreg.h>
+ #include <asm/kexec.h>
+ #include <asm/apic.h>
++#include <asm/irq_remapping.h>
+ 
+ #include "trace.h"
+ #include "pmu.h"
+@@ -2001,10 +2002,43 @@ static void vmx_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
+ 		vmcs_writel(HOST_IA32_SYSENTER_ESP, sysenter_esp); /* 22.2.3 */
+ 		vmx->loaded_vmcs->cpu = cpu;
+ 	}
++
++	if (irq_remapping_cap(IRQ_POSTING_CAP)) {
++		struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
++		struct pi_desc old, new;
++		unsigned int dest;
++
++		do {
++			old.control = new.control = pi_desc->control;
++			if (vcpu->cpu != cpu) {
++				dest = cpu_physical_id(cpu);
++
++				if (x2apic_enabled())
++					new.ndst = dest;
++				else
++					new.ndst = (dest << 8) & 0xFF00;
++			}
++
++			/* Allow posting non-urgent interrupts */
++			new.sn = 0;
++
++			/* set 'NV' to 'notification vector' */
++			new.nv = POSTED_INTR_VECTOR;
++		} while (cmpxchg(&pi_desc->control, old.control,
++				new.control) != old.control);
++	}
+ }
+ 
+ static void vmx_vcpu_put(struct kvm_vcpu *vcpu)
  {
- #ifdef CONFIG_SMP
- 	if (vcpu->mode == IN_GUEST_MODE) {
-+		struct vcpu_vmx *vmx = to_vmx(vcpu);
++	if (irq_remapping_cap(IRQ_POSTING_CAP)) {
++		struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
 +
-+		/*
-+		 * Currently, we don't support urgent interrupt,
-+		 * all interrupts are recognized as non-urgent
-+		 * interrupt, so we cannot post interrupts when
-+		 * 'SN' is set.
-+		 *
-+		 * If the vcpu is in guest mode, it means it is
-+		 * running instead of being scheduled out and
-+		 * waiting in the run queue, and that's the only
-+		 * case when 'SN' is set currently, warning if
-+		 * 'SN' is set.
-+		 */
-+		WARN_ON_ONCE(pi_test_sn(&vmx->pi_desc));
++		/* Set SN when the vCPU is preempted */
++		if (vcpu->preempted)
++			pi_set_sn(pi_desc);
++	}
 +
- 		apic->send_IPI_mask(get_cpu_mask(vcpu->cpu),
- 				POSTED_INTR_VECTOR);
- 		return true;
+ 	__vmx_load_host_state(to_vmx(vcpu));
+ 	if (!vmm_exclusive) {
+ 		__loaded_vmcs_clear(to_vmx(vcpu)->loaded_vmcs);
 -- 
 2.1.0
