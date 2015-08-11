@@ -1,8 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v6 12/16] KVM: Add an arch specific hooks in 'struct
-	kvm_kernel_irqfd'
-Date: Tue, 11 Aug 2015 14:03:54 +0800
-Message-ID: <1439273038-59463-13-git-send-email-feng.wu@intel.com>
+Subject: [PATCH v6 11/16] KVM: Implement IRQ bypass consumer callbacks for x86
+Date: Tue, 11 Aug 2015 14:03:53 +0800
+Message-ID: <1439273038-59463-12-git-send-email-feng.wu@intel.com>
 References: <1439273038-59463-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,125 +21,102 @@ To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7a
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds an arch specific hooks 'arch_update' in
-'struct kvm_kernel_irqfd'. On Intel side, it is used to
-update the IRTE when VT-d posted-interrupts is used.
+Implement the following callbacks for x86:
+
+- kvm_arch_irq_bypass_add_producer
+- kvm_arch_irq_bypass_del_producer
+- kvm_arch_irq_bypass_stop: dummy callback
+- kvm_arch_irq_bypass_resume: dummy callback
+
+and set CONFIG_HAVE_KVM_IRQ_BYPASS for x86.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/include/asm/kvm_host.h |  2 ++
- arch/x86/kvm/x86.c              |  5 +++++
- include/linux/kvm_host.h        | 11 +++++++++++
- include/linux/kvm_irqfd.h       |  2 ++
- virt/kvm/eventfd.c              | 12 +++++++++++-
- 5 files changed, 31 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/kvm_host.h |  1 +
+ arch/x86/kvm/Kconfig            |  1 +
+ arch/x86/kvm/x86.c              | 39 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 41 insertions(+)
 
 diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 3038c1b..22269b4 100644
+index 82d0709..3038c1b 100644
 --- a/arch/x86/include/asm/kvm_host.h
 +++ b/arch/x86/include/asm/kvm_host.h
-@@ -176,6 +176,8 @@ enum {
-  */
- #define KVM_APIC_PV_EOI_PENDING	1
+@@ -24,6 +24,7 @@
+ #include <linux/perf_event.h>
+ #include <linux/pvclock_gtod.h>
+ #include <linux/clocksource.h>
++#include <linux/irqbypass.h>
  
-+#define __KVM_HAVE_ARCH_IRQFD_INIT 1
-+
- struct kvm_kernel_irq_routing_entry;
- 
- /*
+ #include <asm/pvclock-abi.h>
+ #include <asm/desc.h>
+diff --git a/arch/x86/kvm/Kconfig b/arch/x86/kvm/Kconfig
+index c951d44..b90776f 100644
+--- a/arch/x86/kvm/Kconfig
++++ b/arch/x86/kvm/Kconfig
+@@ -30,6 +30,7 @@ config KVM
+ 	select HAVE_KVM_IRQCHIP
+ 	select HAVE_KVM_IRQFD
+ 	select IRQ_BYPASS_MANAGER
++	select HAVE_KVM_IRQ_BYPASS
+ 	select HAVE_KVM_IRQ_ROUTING
+ 	select HAVE_KVM_EVENTFD
+ 	select KVM_APIC_ARCHITECTURE
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 8df7b0d..74a1d83 100644
+index 8f09a76..8df7b0d 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -8360,6 +8360,11 @@ void kvm_arch_irq_bypass_start(struct irq_bypass_consumer *cons)
- {
+@@ -50,6 +50,8 @@
+ #include <linux/pci.h>
+ #include <linux/timekeeper_internal.h>
+ #include <linux/pvclock_gtod.h>
++#include <linux/kvm_irqfd.h>
++#include <linux/irqbypass.h>
+ #include <trace/events/kvm.h>
+ 
+ #define CREATE_TRACE_POINTS
+@@ -8321,6 +8323,43 @@ out:
+ 	return ret;
  }
  
-+void kvm_arch_irqfd_init(struct kvm_kernel_irqfd *irqfd)
++int kvm_arch_irq_bypass_add_producer(struct irq_bypass_consumer *cons,
++				      struct irq_bypass_producer *prod)
 +{
-+	irqfd->arch_update = kvm_arch_update_pi_irte;
++	struct kvm_kernel_irqfd *irqfd =
++		container_of(cons, struct kvm_kernel_irqfd, consumer);
++
++	irqfd->producer = prod;
++
++	return kvm_arch_update_pi_irte(irqfd->kvm, prod->irq, irqfd->gsi, 1);
++}
++
++void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *cons,
++				      struct irq_bypass_producer *prod)
++{
++	int ret;
++	struct kvm_kernel_irqfd *irqfd =
++		container_of(cons, struct kvm_kernel_irqfd, consumer);
++
++	irqfd->producer = NULL;
++
++	/*
++	 * When producer of consumer is unregistered, we change back to
++	 * remapped mode, so we can re-use the current implementation
++	 * when the irq is masked/disabed or the consumer side (KVM
++	 * int this case doesn't want to receive the interrupts.
++	*/
++	ret = kvm_arch_update_pi_irte(irqfd->kvm, prod->irq, irqfd->gsi, 0);
++	WARN_ON(ret);
++}
++
++void kvm_arch_irq_bypass_stop(struct irq_bypass_consumer *cons)
++{
++}
++void kvm_arch_irq_bypass_start(struct irq_bypass_consumer *cons)
++{
 +}
 +
  EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_exit);
  EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_inj_virq);
  EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_page_fault);
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index 5f183fb..f4005dc 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -34,6 +34,8 @@
- 
- #include <asm/kvm_host.h>
- 
-+struct kvm_kernel_irqfd;
-+
- /*
-  * The bit 16 ~ bit 31 of kvm_memory_region::flags are internally used
-  * in kvm, other bits are visible for userspace which are defined in
-@@ -1145,6 +1147,15 @@ extern struct kvm_device_ops kvm_xics_ops;
- extern struct kvm_device_ops kvm_arm_vgic_v2_ops;
- extern struct kvm_device_ops kvm_arm_vgic_v3_ops;
- 
-+#ifdef __KVM_HAVE_ARCH_IRQFD_INIT
-+void kvm_arch_irqfd_init(struct kvm_kernel_irqfd *irqfd);
-+#else
-+static inline void kvm_arch_irqfd_init(struct kvm_kernel_irqfd *irqfd)
-+{
-+	irqfd->arch_update = NULL;
-+}
-+#endif
-+
- #ifdef CONFIG_HAVE_KVM_CPU_RELAX_INTERCEPT
- 
- static inline void kvm_vcpu_set_in_spin_loop(struct kvm_vcpu *vcpu, bool val)
-diff --git a/include/linux/kvm_irqfd.h b/include/linux/kvm_irqfd.h
-index 0c1de05..b7aab52 100644
---- a/include/linux/kvm_irqfd.h
-+++ b/include/linux/kvm_irqfd.h
-@@ -66,6 +66,8 @@ struct kvm_kernel_irqfd {
- 	struct work_struct shutdown;
- 	struct irq_bypass_consumer consumer;
- 	struct irq_bypass_producer *producer;
-+	int (*arch_update)(struct kvm *kvm, unsigned int host_irq,
-+			   uint32_t guest_irq, bool set);
- };
- 
- #endif /* __LINUX_KVM_IRQFD_H */
-diff --git a/virt/kvm/eventfd.c b/virt/kvm/eventfd.c
-index d7a230f..3204283 100644
---- a/virt/kvm/eventfd.c
-+++ b/virt/kvm/eventfd.c
-@@ -278,6 +278,7 @@ kvm_irqfd_assign(struct kvm *kvm, struct kvm_irqfd *args)
- 	INIT_LIST_HEAD(&irqfd->list);
- 	INIT_WORK(&irqfd->inject, irqfd_inject);
- 	INIT_WORK(&irqfd->shutdown, irqfd_shutdown);
-+	kvm_arch_irqfd_init(irqfd);
- 	seqcount_init(&irqfd->irq_entry_sc);
- 
- 	f = fdget(args->fd);
-@@ -570,13 +571,22 @@ kvm_irqfd_release(struct kvm *kvm)
-  */
- void kvm_irq_routing_update(struct kvm *kvm)
- {
-+	int ret;
- 	struct kvm_kernel_irqfd *irqfd;
- 
- 	spin_lock_irq(&kvm->irqfds.lock);
- 
--	list_for_each_entry(irqfd, &kvm->irqfds.items, list)
-+	list_for_each_entry(irqfd, &kvm->irqfds.items, list) {
- 		irqfd_update(kvm, irqfd);
- 
-+		if (irqfd->arch_update && irqfd->producer) {
-+			ret = irqfd->arch_update(
-+					irqfd->kvm, irqfd->producer->irq,
-+					irqfd->gsi, 1);
-+			WARN_ON(ret);
-+		}
-+	}
-+
- 	spin_unlock_irq(&kvm->irqfds.lock);
- }
- 
 -- 
 2.1.0
