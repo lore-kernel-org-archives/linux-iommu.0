@@ -1,7 +1,8 @@
 From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH v3 08/11] PCI: Clean up ATS error handling
-Date: Tue, 11 Aug 2015 10:52:02 -0500
-Message-ID: <20150811155202.21078.33427.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+Subject: [PATCH v3 09/11] PCI: Move ATS declarations to linux/pci.h so
+ they're all together
+Date: Tue, 11 Aug 2015 10:52:10 -0500
+Message-ID: <20150811155210.21078.52193.stgit@bhelgaas-glaptop2.roam.corp.google.com>
 References: <20150811154525.21078.85310.stgit@bhelgaas-glaptop2.roam.corp.google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -13,54 +14,86 @@ To: linux-pci@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, David Woodhouse <
 Cc: Gregor Dick <gdick@solarflare.com>, iommu@lists.linux-foundation.org, Yinghai Lu <yinghai@kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-There's no need to BUG() if we enable ATS when it's already enabled.  We
-don't need to BUG() when disabling ATS on a device that doesn't support ATS
-or if it's already disabled.  If ATS is enabled, certainly we found an ATS
-capability in the past, so it should still be there now.
-
-Clean up these error paths.
+Move ATS declarations to linux/pci.h so they're all in one place.
 
 Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/pci/ats.c |   11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ include/linux/pci-ats.h |   41 -----------------------------------------
+ include/linux/pci.h     |   10 +++++++++-
+ 2 files changed, 9 insertions(+), 42 deletions(-)
 
-diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-index 0b5b0ed..0f05274 100644
---- a/drivers/pci/ats.c
-+++ b/drivers/pci/ats.c
-@@ -44,11 +44,13 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
- 	u16 ctrl;
- 	struct pci_dev *pdev;
+diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+index 5d81d47..57e0b82 100644
+--- a/include/linux/pci-ats.h
++++ b/include/linux/pci-ats.h
+@@ -3,47 +3,6 @@
  
--	BUG_ON(dev->ats_cap && dev->ats_enabled);
+ #include <linux/pci.h>
+ 
+-/* Address Translation Service */
+-#ifdef CONFIG_PCI_ATS
 -
- 	if (!dev->ats_cap)
- 		return -EINVAL;
+-int pci_enable_ats(struct pci_dev *dev, int ps);
+-void pci_disable_ats(struct pci_dev *dev);
+-int pci_ats_queue_depth(struct pci_dev *dev);
+-
+-/**
+- * pci_ats_enabled - query the ATS status
+- * @dev: the PCI device
+- *
+- * Returns 1 if ATS capability is enabled, or 0 if not.
+- */
+-static inline int pci_ats_enabled(struct pci_dev *dev)
+-{
+-	return dev->ats_cap && dev->ats_enabled;
+-}
+-
+-#else /* CONFIG_PCI_ATS */
+-
+-static inline int pci_enable_ats(struct pci_dev *dev, int ps)
+-{
+-	return -ENODEV;
+-}
+-
+-static inline void pci_disable_ats(struct pci_dev *dev)
+-{
+-}
+-
+-static inline int pci_ats_queue_depth(struct pci_dev *dev)
+-{
+-	return -ENODEV;
+-}
+-
+-static inline int pci_ats_enabled(struct pci_dev *dev)
+-{
+-	return 0;
+-}
+-
+-#endif /* CONFIG_PCI_ATS */
+-
+ #ifdef CONFIG_PCI_PRI
  
-+	WARN_ON(pci_ats_enabled(dev));
-+	if (pci_ats_enabled(dev))
-+		return -EBUSY;
-+
- 	if (ps < PCI_ATS_MIN_STU)
- 		return -EINVAL;
+ int pci_enable_pri(struct pci_dev *pdev, u32 reqs);
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 238b77e..307f96a 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1301,8 +1301,16 @@ void ht_destroy_irq(unsigned int irq);
+ #ifdef CONFIG_PCI_ATS
+ /* Address Translation Service */
+ void pci_ats_init(struct pci_dev *dev);
++int pci_enable_ats(struct pci_dev *dev, int ps);
++void pci_disable_ats(struct pci_dev *dev);
++int pci_ats_queue_depth(struct pci_dev *dev);
++static inline int pci_ats_enabled(struct pci_dev *dev) { return dev->ats_cap && dev->ats_enabled; }
+ #else
+-static inline void pci_ats_init(struct pci_dev *dev) { }
++static inline void pci_ats_init(struct pci_dev *d) { }
++static inline int pci_enable_ats(struct pci_dev *d, int ps) { return -ENODEV; }
++static inline void pci_disable_ats(struct pci_dev *d) { }
++static inline int pci_ats_queue_depth(struct pci_dev *d) { return -ENODEV; }
++static inline int pci_ats_enabled(struct pci_dev *d) { return 0; }
+ #endif
  
-@@ -83,7 +85,8 @@ void pci_disable_ats(struct pci_dev *dev)
- 	struct pci_dev *pdev;
- 	u16 ctrl;
- 
--	BUG_ON(!dev->ats_cap || !dev->ats_enabled);
-+	if (!pci_ats_enabled(dev))
-+		return;
- 
- 	if (atomic_read(&dev->ats_ref_cnt))
- 		return;		/* VFs still enabled */
-@@ -107,8 +110,6 @@ void pci_restore_ats_state(struct pci_dev *dev)
- 
- 	if (!pci_ats_enabled(dev))
- 		return;
--	if (!pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ATS))
--		BUG();
- 
- 	ctrl = PCI_ATS_CTRL_ENABLE;
- 	if (!dev->is_virtfn)
+ void pci_cfg_access_lock(struct pci_dev *dev);
