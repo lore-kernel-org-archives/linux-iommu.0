@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v6 03/16] KVM: Define a new interface kvm_intr_is_single_vcpu()
-Date: Tue, 11 Aug 2015 14:03:45 +0800
-Message-ID: <1439273038-59463-4-git-send-email-feng.wu@intel.com>
+Subject: [PATCH v6 06/16] KVM: Make struct kvm_irq_routing_table accessible
+Date: Tue, 11 Aug 2015 14:03:48 +0800
+Message-ID: <1439273038-59463-7-git-send-email-feng.wu@intel.com>
 References: <1439273038-59463-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,67 +21,60 @@ To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7a
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch defines a new interface kvm_intr_is_single_vcpu(),
-which can returns whether the interrupt is for single-CPU or not.
-
-It is used by VT-d PI, since now we only support single-CPU
-interrupts, For lowest-priority interrupts, if user configures
-it via /proc/irq or uses irqbalance to make it single-CPU, we
-can use PI to deliver the interrupts to it. Full functionality
-of lowest-priority support will be added later.
+Move struct kvm_irq_routing_table from irqchip.c to kvm_host.h,
+so we can use it outside of irqchip.c.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/include/asm/kvm_host.h |  3 +++
- arch/x86/kvm/irq_comm.c         | 24 ++++++++++++++++++++++++
- 2 files changed, 27 insertions(+)
+ include/linux/kvm_host.h | 14 ++++++++++++++
+ virt/kvm/irqchip.c       | 10 ----------
+ 2 files changed, 14 insertions(+), 10 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 49ec903..af11bca 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1204,4 +1204,7 @@ int __x86_set_memory_region(struct kvm *kvm,
- int x86_set_memory_region(struct kvm *kvm,
- 			  const struct kvm_userspace_memory_region *mem);
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index 5ac8d21..5f183fb 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -328,6 +328,20 @@ struct kvm_kernel_irq_routing_entry {
+ 	struct hlist_node link;
+ };
  
-+bool kvm_intr_is_single_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
-+			     struct kvm_vcpu **dest_vcpu);
++#ifdef CONFIG_HAVE_KVM_IRQ_ROUTING
 +
- #endif /* _ASM_X86_KVM_HOST_H */
-diff --git a/arch/x86/kvm/irq_comm.c b/arch/x86/kvm/irq_comm.c
-index 9efff9e..a9572a13 100644
---- a/arch/x86/kvm/irq_comm.c
-+++ b/arch/x86/kvm/irq_comm.c
-@@ -297,6 +297,30 @@ out:
- 	return r;
- }
++struct kvm_irq_routing_table {
++	int chip[KVM_NR_IRQCHIPS][KVM_IRQCHIP_NUM_PINS];
++	u32 nr_rt_entries;
++	/*
++	 * Array indexed by gsi. Each entry contains list of irq chips
++	 * the gsi is connected to.
++	 */
++	struct hlist_head map[0];
++};
++
++#endif
++
+ #ifndef KVM_PRIVATE_MEM_SLOTS
+ #define KVM_PRIVATE_MEM_SLOTS 0
+ #endif
+diff --git a/virt/kvm/irqchip.c b/virt/kvm/irqchip.c
+index 21c1424..2cf45d3 100644
+--- a/virt/kvm/irqchip.c
++++ b/virt/kvm/irqchip.c
+@@ -31,16 +31,6 @@
+ #include <trace/events/kvm.h>
+ #include "irq.h"
  
-+bool kvm_intr_is_single_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
-+			     struct kvm_vcpu **dest_vcpu)
-+{
-+	int i, r = 0;
-+	struct kvm_vcpu *vcpu;
-+
-+	kvm_for_each_vcpu(i, vcpu, kvm) {
-+		if (!kvm_apic_present(vcpu))
-+			continue;
-+
-+		if (!kvm_apic_match_dest(vcpu, NULL, irq->shorthand,
-+					irq->dest_id, irq->dest_mode))
-+			continue;
-+
-+		r++;
-+		*dest_vcpu = vcpu;
-+	}
-+
-+	if (r == 1)
-+		return true;
-+	else
-+		return false;
-+}
-+
- #define IOAPIC_ROUTING_ENTRY(irq) \
- 	{ .gsi = irq, .type = KVM_IRQ_ROUTING_IRQCHIP,	\
- 	  .u.irqchip = { .irqchip = KVM_IRQCHIP_IOAPIC, .pin = (irq) } }
+-struct kvm_irq_routing_table {
+-	int chip[KVM_NR_IRQCHIPS][KVM_IRQCHIP_NUM_PINS];
+-	u32 nr_rt_entries;
+-	/*
+-	 * Array indexed by gsi. Each entry contains list of irq chips
+-	 * the gsi is connected to.
+-	 */
+-	struct hlist_head map[0];
+-};
+-
+ int kvm_irq_map_gsi(struct kvm *kvm,
+ 		    struct kvm_kernel_irq_routing_entry *entries, int gsi)
+ {
 -- 
 2.1.0
