@@ -1,7 +1,8 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v6 10/16] KVM: x86: Update IRTE for posted-interrupts
-Date: Tue, 11 Aug 2015 14:03:52 +0800
-Message-ID: <1439273038-59463-11-git-send-email-feng.wu@intel.com>
+Subject: [PATCH v6 12/16] KVM: Add an arch specific hooks in 'struct
+	kvm_kernel_irqfd'
+Date: Tue, 11 Aug 2015 14:03:54 +0800
+Message-ID: <1439273038-59463-13-git-send-email-feng.wu@intel.com>
 References: <1439273038-59463-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,104 +22,125 @@ To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7a
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds the routine to update IRTE for posted-interrupts
-when guest changes the interrupt configuration.
+This patch adds an arch specific hooks 'arch_update' in
+'struct kvm_kernel_irqfd'. On Intel side, it is used to
+update the IRTE when VT-d posted-interrupts is used.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/kvm/x86.c | 73 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 73 insertions(+)
+ arch/x86/include/asm/kvm_host.h |  2 ++
+ arch/x86/kvm/x86.c              |  5 +++++
+ include/linux/kvm_host.h        | 11 +++++++++++
+ include/linux/kvm_irqfd.h       |  2 ++
+ virt/kvm/eventfd.c              | 12 +++++++++++-
+ 5 files changed, 31 insertions(+), 1 deletion(-)
 
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 3038c1b..22269b4 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -176,6 +176,8 @@ enum {
+  */
+ #define KVM_APIC_PV_EOI_PENDING	1
+ 
++#define __KVM_HAVE_ARCH_IRQFD_INIT 1
++
+ struct kvm_kernel_irq_routing_entry;
+ 
+ /*
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 5ef2560..8f09a76 100644
+index 8df7b0d..74a1d83 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -63,6 +63,7 @@
- #include <asm/fpu/internal.h> /* Ugh! */
- #include <asm/pvclock.h>
- #include <asm/div64.h>
-+#include <asm/irq_remapping.h>
- 
- #define MAX_IO_MSRS 256
- #define KVM_MAX_MCE_BANKS 32
-@@ -8248,6 +8249,78 @@ bool kvm_arch_has_noncoherent_dma(struct kvm *kvm)
+@@ -8360,6 +8360,11 @@ void kvm_arch_irq_bypass_start(struct irq_bypass_consumer *cons)
+ {
  }
- EXPORT_SYMBOL_GPL(kvm_arch_has_noncoherent_dma);
  
-+/*
-+ * kvm_arch_update_pi_irte - set IRTE for Posted-Interrupts
-+ *
-+ * @kvm: kvm
-+ * @host_irq: host irq of the interrupt
-+ * @guest_irq: gsi of the interrupt
-+ * @set: set or unset PI
-+ * returns 0 on success, < 0 on failure
-+ */
-+int kvm_arch_update_pi_irte(struct kvm *kvm, unsigned int host_irq,
-+			    uint32_t guest_irq, bool set)
++void kvm_arch_irqfd_init(struct kvm_kernel_irqfd *irqfd)
 +{
-+	struct kvm_kernel_irq_routing_entry *e;
-+	struct kvm_irq_routing_table *irq_rt;
-+	struct kvm_lapic_irq irq;
-+	struct kvm_vcpu *vcpu;
-+	struct vcpu_data vcpu_info;
-+	int idx, ret = -EINVAL;
-+
-+	if (!irq_remapping_cap(IRQ_POSTING_CAP))
-+		return 0;
-+
-+	idx = srcu_read_lock(&kvm->irq_srcu);
-+	irq_rt = srcu_dereference(kvm->irq_routing, &kvm->irq_srcu);
-+	BUG_ON(guest_irq >= irq_rt->nr_rt_entries);
-+
-+	hlist_for_each_entry(e, &irq_rt->map[guest_irq], link) {
-+		if (e->type != KVM_IRQ_ROUTING_MSI)
-+			continue;
-+		/*
-+		 * VT-d PI cannot support posting multicast/broadcast
-+		 * interrupts to a VCPU, we still use interrupt remapping
-+		 * for these kind of interrupts.
-+		 *
-+		 * For lowest-priority interrupts, we only support
-+		 * those with single CPU as the destination, e.g. user
-+		 * configures the interrupts via /proc/irq or uses
-+		 * irqbalance to make the interrupts single-CPU.
-+		 *
-+		 * We will support full lowest-priority interrupt later.
-+		 *
-+		 */
-+
-+		kvm_set_msi_irq(e, &irq);
-+		if (!kvm_intr_is_single_vcpu(kvm, &irq, &vcpu))
-+			continue;
-+
-+		vcpu_info.pi_desc_addr = kvm_x86_ops->get_pi_desc_addr(vcpu);
-+		vcpu_info.vector = irq.vector;
-+
-+		if (set)
-+			ret = irq_set_vcpu_affinity(host_irq, &vcpu_info);
-+		else {
-+			/* suppress notification event before unposting */
-+			kvm_x86_ops->pi_set_sn(vcpu);
-+			ret = irq_set_vcpu_affinity(host_irq, NULL);
-+			kvm_x86_ops->pi_clear_sn(vcpu);
-+		}
-+
-+		if (ret < 0) {
-+			printk(KERN_INFO "%s: failed to update PI IRTE\n",
-+					__func__);
-+			goto out;
-+		}
-+	}
-+
-+	ret = 0;
-+out:
-+	srcu_read_unlock(&kvm->irq_srcu, idx);
-+	return ret;
++	irqfd->arch_update = kvm_arch_update_pi_irte;
 +}
 +
  EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_exit);
  EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_inj_virq);
  EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_page_fault);
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index 5f183fb..f4005dc 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -34,6 +34,8 @@
+ 
+ #include <asm/kvm_host.h>
+ 
++struct kvm_kernel_irqfd;
++
+ /*
+  * The bit 16 ~ bit 31 of kvm_memory_region::flags are internally used
+  * in kvm, other bits are visible for userspace which are defined in
+@@ -1145,6 +1147,15 @@ extern struct kvm_device_ops kvm_xics_ops;
+ extern struct kvm_device_ops kvm_arm_vgic_v2_ops;
+ extern struct kvm_device_ops kvm_arm_vgic_v3_ops;
+ 
++#ifdef __KVM_HAVE_ARCH_IRQFD_INIT
++void kvm_arch_irqfd_init(struct kvm_kernel_irqfd *irqfd);
++#else
++static inline void kvm_arch_irqfd_init(struct kvm_kernel_irqfd *irqfd)
++{
++	irqfd->arch_update = NULL;
++}
++#endif
++
+ #ifdef CONFIG_HAVE_KVM_CPU_RELAX_INTERCEPT
+ 
+ static inline void kvm_vcpu_set_in_spin_loop(struct kvm_vcpu *vcpu, bool val)
+diff --git a/include/linux/kvm_irqfd.h b/include/linux/kvm_irqfd.h
+index 0c1de05..b7aab52 100644
+--- a/include/linux/kvm_irqfd.h
++++ b/include/linux/kvm_irqfd.h
+@@ -66,6 +66,8 @@ struct kvm_kernel_irqfd {
+ 	struct work_struct shutdown;
+ 	struct irq_bypass_consumer consumer;
+ 	struct irq_bypass_producer *producer;
++	int (*arch_update)(struct kvm *kvm, unsigned int host_irq,
++			   uint32_t guest_irq, bool set);
+ };
+ 
+ #endif /* __LINUX_KVM_IRQFD_H */
+diff --git a/virt/kvm/eventfd.c b/virt/kvm/eventfd.c
+index d7a230f..3204283 100644
+--- a/virt/kvm/eventfd.c
++++ b/virt/kvm/eventfd.c
+@@ -278,6 +278,7 @@ kvm_irqfd_assign(struct kvm *kvm, struct kvm_irqfd *args)
+ 	INIT_LIST_HEAD(&irqfd->list);
+ 	INIT_WORK(&irqfd->inject, irqfd_inject);
+ 	INIT_WORK(&irqfd->shutdown, irqfd_shutdown);
++	kvm_arch_irqfd_init(irqfd);
+ 	seqcount_init(&irqfd->irq_entry_sc);
+ 
+ 	f = fdget(args->fd);
+@@ -570,13 +571,22 @@ kvm_irqfd_release(struct kvm *kvm)
+  */
+ void kvm_irq_routing_update(struct kvm *kvm)
+ {
++	int ret;
+ 	struct kvm_kernel_irqfd *irqfd;
+ 
+ 	spin_lock_irq(&kvm->irqfds.lock);
+ 
+-	list_for_each_entry(irqfd, &kvm->irqfds.items, list)
++	list_for_each_entry(irqfd, &kvm->irqfds.items, list) {
+ 		irqfd_update(kvm, irqfd);
+ 
++		if (irqfd->arch_update && irqfd->producer) {
++			ret = irqfd->arch_update(
++					irqfd->kvm, irqfd->producer->irq,
++					irqfd->gsi, 1);
++			WARN_ON(ret);
++		}
++	}
++
+ 	spin_unlock_irq(&kvm->irqfds.lock);
+ }
+ 
 -- 
 2.1.0
