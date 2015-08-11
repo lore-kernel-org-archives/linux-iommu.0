@@ -1,14 +1,16 @@
-From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v6 16/16] iommu/vt-d: Add a command line parameter for VT-d
-	posted-interrupts
-Date: Tue, 11 Aug 2015 14:03:58 +0800
-Message-ID: <1439273038-59463-17-git-send-email-feng.wu@intel.com>
-References: <1439273038-59463-1-git-send-email-feng.wu@intel.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v5 1/3] iommu: Implement common IOMMU ops for DMA mapping
+Date: Tue, 11 Aug 2015 11:37:42 +0200
+Message-ID: <20150811093742.GC14980@8bytes.org>
+References: <cover.1438362603.git.robin.murphy@arm.com>
+	<6ce6b501501f611297ae0eae31e07b0d2060eaae.1438362603.git.robin.murphy@arm.com>
+	<20150807084228.GU14980@8bytes.org> <55C4B4DF.4040608@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1439273038-59463-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <55C4B4DF.4040608-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,65 +20,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: "laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Enable VT-d Posted-Interrtups and add a command line
-parameter for it.
+On Fri, Aug 07, 2015 at 02:38:39PM +0100, Robin Murphy wrote:
+> Indeed, DMA_DEBUG will check that a driver is making DMA API calls
+> to the arch code in the right way; this is a different check, to
+> catch things like the arch code passing the wrong domain into this
+> layer, or someone else having messed directly with the domain via
+> the IOMMU API. If the iommu_unmap doesn't match the IOVA region we
+> looked up, that means the IOMMU page tables have somehow become
+> inconsistent with the IOVA allocator, so we are in an unrecoverable
+> situation where we can no longer be sure what devices have access
+> to. That's bad.
 
-Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
----
- Documentation/kernel-parameters.txt |  1 +
- drivers/iommu/irq_remapping.c       | 12 ++++++++----
- 2 files changed, 9 insertions(+), 4 deletions(-)
+Sure, but the BUG_ON would also trigger on things like a double-free,
+which is bad to handle as a BUG_ON. A WARN_ON for this is sufficient.
 
-diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-index 1d6f045..52aca36 100644
---- a/Documentation/kernel-parameters.txt
-+++ b/Documentation/kernel-parameters.txt
-@@ -1547,6 +1547,7 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
- 			nosid	disable Source ID checking
- 			no_x2apic_optout
- 				BIOS x2APIC opt-out request will be ignored
-+			nopost	disable Interrupt Posting
- 
- 	iomem=		Disable strict checking of access to MMIO memory
- 		strict	regions from userspace.
-diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index 2d99930..d8c3997 100644
---- a/drivers/iommu/irq_remapping.c
-+++ b/drivers/iommu/irq_remapping.c
-@@ -22,7 +22,7 @@ int irq_remap_broken;
- int disable_sourceid_checking;
- int no_x2apic_optout;
- 
--int disable_irq_post = 1;
-+int disable_irq_post = 0;
- 
- static int disable_irq_remap;
- static struct irq_remap_ops *remap_ops;
-@@ -58,14 +58,18 @@ static __init int setup_irqremap(char *str)
- 		return -EINVAL;
- 
- 	while (*str) {
--		if (!strncmp(str, "on", 2))
-+		if (!strncmp(str, "on", 2)) {
- 			disable_irq_remap = 0;
--		else if (!strncmp(str, "off", 3))
-+			disable_irq_post = 0;
-+		} else if (!strncmp(str, "off", 3)) {
- 			disable_irq_remap = 1;
--		else if (!strncmp(str, "nosid", 5))
-+			disable_irq_post = 1;
-+		} else if (!strncmp(str, "nosid", 5))
- 			disable_sourceid_checking = 1;
- 		else if (!strncmp(str, "no_x2apic_optout", 16))
- 			no_x2apic_optout = 1;
-+		else if (!strncmp(str, "nopost", 6))
-+			disable_irq_post = 1;
- 
- 		str += strcspn(str, ",");
- 		while (*str == ',')
--- 
-2.1.0
+> AFAIK, yes (this is just a slight tidyup of the existing code that
+> 32-bit Exynos/Tegra/Rockchip/etc. devices are already using) - the
+> display guys want increasingly massive contiguous allocations for
+> framebuffers, layers, etc., so having IOMMU magic deal with that
+> saves CMA for non-IOMMU devices that really need it.
+
+Makes sense, I thougt about something similar for x86 too to avoid the
+high-order allocations we currently do. I guess the buffer will later be
+mapped into the vmalloc space for the CPU?
+
+
+	Joerg
