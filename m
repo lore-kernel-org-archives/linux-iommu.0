@@ -1,7 +1,8 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v6 02/16] KVM: Add some helper functions for Posted-Interrupts
-Date: Tue, 11 Aug 2015 14:03:44 +0800
-Message-ID: <1439273038-59463-3-git-send-email-feng.wu@intel.com>
+Subject: [PATCH v6 04/16] KVM: Get Posted-Interrupts descriptor address from
+	'struct kvm_vcpu'
+Date: Tue, 11 Aug 2015 14:03:46 +0800
+Message-ID: <1439273038-59463-5-git-send-email-feng.wu@intel.com>
 References: <1439273038-59463-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,57 +22,62 @@ To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7a
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds some helper functions to manipulate the
-Posted-Interrupts Descriptor.
+Define an interface to get PI descriptor address from the vCPU structure.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/kvm/vmx.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ arch/x86/include/asm/kvm_host.h |  2 ++
+ arch/x86/kvm/vmx.c              | 11 +++++++++++
+ 2 files changed, 13 insertions(+)
 
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index af11bca..d50c1d3 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -858,6 +858,8 @@ struct kvm_x86_ops {
+ 	void (*enable_log_dirty_pt_masked)(struct kvm *kvm,
+ 					   struct kvm_memory_slot *slot,
+ 					   gfn_t offset, unsigned long mask);
++
++	u64 (*get_pi_desc_addr)(struct kvm_vcpu *vcpu);
+ 	/* pmu operations of sub-arch */
+ 	const struct kvm_pmu_ops *pmu_ops;
+ };
 diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-index 271dd70..316f9bf 100644
+index 316f9bf..81a995c 100644
 --- a/arch/x86/kvm/vmx.c
 +++ b/arch/x86/kvm/vmx.c
-@@ -443,6 +443,8 @@ struct nested_vmx {
- };
+@@ -610,6 +610,10 @@ static inline struct vcpu_vmx *to_vmx(struct kvm_vcpu *vcpu)
+ #define FIELD64(number, name)	[number] = VMCS12_OFFSET(name), \
+ 				[number##_HIGH] = VMCS12_OFFSET(name)+4
  
- #define POSTED_INTR_ON  0
-+#define POSTED_INTR_SN  1
-+
- /* Posted-Interrupt Descriptor */
- struct pi_desc {
- 	u32 pir[8];     /* Posted interrupt requested */
-@@ -483,6 +485,30 @@ static int pi_test_and_set_pir(int vector, struct pi_desc *pi_desc)
- 	return test_and_set_bit(vector, (unsigned long *)pi_desc->pir);
++struct pi_desc *vcpu_to_pi_desc(struct kvm_vcpu *vcpu)
++{
++	return &(to_vmx(vcpu)->pi_desc);
++}
+ 
+ static unsigned long shadow_read_only_fields[] = {
+ 	/*
+@@ -4487,6 +4491,11 @@ static void vmx_sync_pir_to_irr_dummy(struct kvm_vcpu *vcpu)
+ 	return;
  }
  
-+static void pi_clear_sn(struct pi_desc *pi_desc)
++static u64 vmx_get_pi_desc_addr(struct kvm_vcpu *vcpu)
 +{
-+	return clear_bit(POSTED_INTR_SN,
-+			(unsigned long *)&pi_desc->control);
++	return __pa((u64)vcpu_to_pi_desc(vcpu));
 +}
 +
-+static void pi_set_sn(struct pi_desc *pi_desc)
-+{
-+	return set_bit(POSTED_INTR_SN,
-+			(unsigned long *)&pi_desc->control);
-+}
+ /*
+  * Set up the vmcs's constant host-state fields, i.e., host-state fields that
+  * will not change in the lifetime of the guest.
+@@ -10460,6 +10469,8 @@ static struct kvm_x86_ops vmx_x86_ops = {
+ 	.flush_log_dirty = vmx_flush_log_dirty,
+ 	.enable_log_dirty_pt_masked = vmx_enable_log_dirty_pt_masked,
+ 
++	.get_pi_desc_addr = vmx_get_pi_desc_addr,
 +
-+static int pi_test_on(struct pi_desc *pi_desc)
-+{
-+	return test_bit(POSTED_INTR_ON,
-+			(unsigned long *)&pi_desc->control);
-+}
-+
-+static int pi_test_sn(struct pi_desc *pi_desc)
-+{
-+	return test_bit(POSTED_INTR_SN,
-+			(unsigned long *)&pi_desc->control);
-+}
-+
- struct vcpu_vmx {
- 	struct kvm_vcpu       vcpu;
- 	unsigned long         host_rsp;
+ 	.pmu_ops = &intel_pmu_ops,
+ };
+ 
 -- 
 2.1.0
