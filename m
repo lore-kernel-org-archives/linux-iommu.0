@@ -1,60 +1,102 @@
 From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH v3 00/11] PCI: Fix ATS deadlock
-Date: Tue, 11 Aug 2015 10:50:59 -0500
-Message-ID: <20150811154525.21078.85310.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+Subject: [PATCH v3 01/11] iommu/vt-d: Cache PCI ATS state and Invalidate
+ Queue Depth
+Date: Tue, 11 Aug 2015 10:51:07 -0500
+Message-ID: <20150811155107.21078.24884.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+References: <20150811154525.21078.85310.stgit@bhelgaas-glaptop2.roam.corp.google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20150811154525.21078.85310.stgit@bhelgaas-glaptop2.roam.corp.google.com>
 Sender: linux-pci-owner@vger.kernel.org
 To: linux-pci@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, David Woodhouse <dwmw2@infradead.org>
 Cc: Gregor Dick <gdick@solarflare.com>, iommu@lists.linux-foundation.org, Yinghai Lu <yinghai@kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Gregor reported a deadlock [1] when enabling a VF that supports ATS.
-This series is intended to fix that.  The second patch should be enough to
-fix the deadlock; the rest are simplification and cleanup.
+We check the ATS state (enabled/disabled) and fetch the PCI ATS Invalidate
+Queue Depth in performance-sensitive paths.  It's easy to cache these,
+which removes dependencies on PCI.
 
-These are based on v4.2-rc2.
+Remember the ATS enabled state.  When enabling, read the queue depth once
+and cache it in the device_domain_info struct.  This is similar to what
+amd_iommu.c does.
 
-[1] http://permalink.gmane.org/gmane.linux.kernel.iommu/9433
-
-Changes between v2 and v3:
-  - Initialize info->ats.enabled, qdep in intel-iommu.c (Yinghai)
-  - Use "u8 enabled:1", not "int enabled:1" in intel-iommu.c state
-  - WARN_ON() if enabling ATS when already enabled (Joerg)
-  - Return -EBUSY, not -EINVAL if enabling ATS when already enabled
-  - Added Reviewed-by from Joerg
-
-Changes between v1 and v2:
-  - Remove use of pci_ats_enabled() (intel-iommu.c)
-  - Call pci_ats_queue_depth() only once per device and cache result
-    (intel-iommu.c)
-  - Remove pci_ats_enabled() interface
-  - Stop caching queue depth in pci_dev to save space
-  - Add PF refcount of how many associated VFs have ATS enabled
-  - Add comment that ATS must be enabled on PF before on VFs
-  - Require ATS to be disabled on all VFs and PF before changing STU
-
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 ---
+ drivers/iommu/intel-iommu.c |   28 ++++++++++++++++++----------
+ 1 file changed, 18 insertions(+), 10 deletions(-)
 
-Bjorn Helgaas (11):
-      iommu/vt-d: Cache PCI ATS state and Invalidate Queue Depth
-      PCI: Allocate ATS struct during enumeration
-      PCI: Embed ATS info directly into struct pci_dev
-      PCI: Reduce size of ATS structure elements
-      PCI: Rationalize pci_ats_queue_depth() error checking
-      PCI: Inline the ATS setup code into pci_ats_init()
-      PCI: Use pci_physfn() rather than looking up physfn by hand
-      PCI: Clean up ATS error handling
-      PCI: Move ATS declarations to linux/pci.h so they're all together
-      PCI: Stop caching ATS Invalidate Queue Depth
-      PCI: Remove pci_ats_enabled()
-
-
- drivers/iommu/intel-iommu.c |   28 ++++++---
- drivers/pci/ats.c           |  132 +++++++++++++++----------------------------
- drivers/pci/probe.c         |    3 +
- include/linux/pci-ats.h     |   49 ----------------
- include/linux/pci.h         |   18 ++++++
- 5 files changed, 85 insertions(+), 145 deletions(-)
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index a98a7b2..c22a549 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -408,6 +408,10 @@ struct device_domain_info {
+ 	struct list_head global; /* link to global list */
+ 	u8 bus;			/* PCI bus number */
+ 	u8 devfn;		/* PCI devfn number */
++	struct {
++		u8 enabled:1;
++		u8 qdep;
++	} ats;			/* ATS state */
+ 	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
+ 	struct intel_iommu *iommu; /* IOMMU used by this device */
+ 	struct dmar_domain *domain; /* pointer to domain */
+@@ -1391,19 +1395,26 @@ iommu_support_dev_iotlb (struct dmar_domain *domain, struct intel_iommu *iommu,
+ 
+ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
+ {
++	struct pci_dev *pdev;
++
+ 	if (!info || !dev_is_pci(info->dev))
+ 		return;
+ 
+-	pci_enable_ats(to_pci_dev(info->dev), VTD_PAGE_SHIFT);
++	pdev = to_pci_dev(info->dev);
++	if (pci_enable_ats(pdev, VTD_PAGE_SHIFT))
++		return;
++
++	info->ats.enabled = 1;
++	info->ats.qdep = pci_ats_queue_depth(pdev);
+ }
+ 
+ static void iommu_disable_dev_iotlb(struct device_domain_info *info)
+ {
+-	if (!info->dev || !dev_is_pci(info->dev) ||
+-	    !pci_ats_enabled(to_pci_dev(info->dev)))
++	if (!info->ats.enabled)
+ 		return;
+ 
+ 	pci_disable_ats(to_pci_dev(info->dev));
++	info->ats.enabled = 0;
+ }
+ 
+ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
+@@ -1415,16 +1426,11 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
+ 
+ 	spin_lock_irqsave(&device_domain_lock, flags);
+ 	list_for_each_entry(info, &domain->devices, link) {
+-		struct pci_dev *pdev;
+-		if (!info->dev || !dev_is_pci(info->dev))
+-			continue;
+-
+-		pdev = to_pci_dev(info->dev);
+-		if (!pci_ats_enabled(pdev))
++		if (!info->ats.enabled)
+ 			continue;
+ 
+ 		sid = info->bus << 8 | info->devfn;
+-		qdep = pci_ats_queue_depth(pdev);
++		qdep = info->ats.qdep;
+ 		qi_flush_dev_iotlb(info->iommu, sid, qdep, addr, mask);
+ 	}
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+@@ -2272,6 +2278,8 @@ static struct dmar_domain *dmar_insert_dev_info(struct intel_iommu *iommu,
+ 
+ 	info->bus = bus;
+ 	info->devfn = devfn;
++	info->ats.enabled = 0;
++	info->ats.qdep = 0;
+ 	info->dev = dev;
+ 	info->domain = domain;
+ 	info->iommu = iommu;
