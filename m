@@ -1,8 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v6 04/16] KVM: Get Posted-Interrupts descriptor address from
-	'struct kvm_vcpu'
-Date: Tue, 11 Aug 2015 14:03:46 +0800
-Message-ID: <1439273038-59463-5-git-send-email-feng.wu@intel.com>
+Subject: [PATCH v6 03/16] KVM: Define a new interface kvm_intr_is_single_vcpu()
+Date: Tue, 11 Aug 2015 14:03:45 +0800
+Message-ID: <1439273038-59463-4-git-send-email-feng.wu@intel.com>
 References: <1439273038-59463-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,62 +21,67 @@ To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7a
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Define an interface to get PI descriptor address from the vCPU structure.
+This patch defines a new interface kvm_intr_is_single_vcpu(),
+which can returns whether the interrupt is for single-CPU or not.
+
+It is used by VT-d PI, since now we only support single-CPU
+interrupts, For lowest-priority interrupts, if user configures
+it via /proc/irq or uses irqbalance to make it single-CPU, we
+can use PI to deliver the interrupts to it. Full functionality
+of lowest-priority support will be added later.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/include/asm/kvm_host.h |  2 ++
- arch/x86/kvm/vmx.c              | 11 +++++++++++
- 2 files changed, 13 insertions(+)
+ arch/x86/include/asm/kvm_host.h |  3 +++
+ arch/x86/kvm/irq_comm.c         | 24 ++++++++++++++++++++++++
+ 2 files changed, 27 insertions(+)
 
 diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index af11bca..d50c1d3 100644
+index 49ec903..af11bca 100644
 --- a/arch/x86/include/asm/kvm_host.h
 +++ b/arch/x86/include/asm/kvm_host.h
-@@ -858,6 +858,8 @@ struct kvm_x86_ops {
- 	void (*enable_log_dirty_pt_masked)(struct kvm *kvm,
- 					   struct kvm_memory_slot *slot,
- 					   gfn_t offset, unsigned long mask);
+@@ -1204,4 +1204,7 @@ int __x86_set_memory_region(struct kvm *kvm,
+ int x86_set_memory_region(struct kvm *kvm,
+ 			  const struct kvm_userspace_memory_region *mem);
+ 
++bool kvm_intr_is_single_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
++			     struct kvm_vcpu **dest_vcpu);
 +
-+	u64 (*get_pi_desc_addr)(struct kvm_vcpu *vcpu);
- 	/* pmu operations of sub-arch */
- 	const struct kvm_pmu_ops *pmu_ops;
- };
-diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-index 316f9bf..81a995c 100644
---- a/arch/x86/kvm/vmx.c
-+++ b/arch/x86/kvm/vmx.c
-@@ -610,6 +610,10 @@ static inline struct vcpu_vmx *to_vmx(struct kvm_vcpu *vcpu)
- #define FIELD64(number, name)	[number] = VMCS12_OFFSET(name), \
- 				[number##_HIGH] = VMCS12_OFFSET(name)+4
- 
-+struct pi_desc *vcpu_to_pi_desc(struct kvm_vcpu *vcpu)
-+{
-+	return &(to_vmx(vcpu)->pi_desc);
-+}
- 
- static unsigned long shadow_read_only_fields[] = {
- 	/*
-@@ -4487,6 +4491,11 @@ static void vmx_sync_pir_to_irr_dummy(struct kvm_vcpu *vcpu)
- 	return;
+ #endif /* _ASM_X86_KVM_HOST_H */
+diff --git a/arch/x86/kvm/irq_comm.c b/arch/x86/kvm/irq_comm.c
+index 9efff9e..a9572a13 100644
+--- a/arch/x86/kvm/irq_comm.c
++++ b/arch/x86/kvm/irq_comm.c
+@@ -297,6 +297,30 @@ out:
+ 	return r;
  }
  
-+static u64 vmx_get_pi_desc_addr(struct kvm_vcpu *vcpu)
++bool kvm_intr_is_single_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
++			     struct kvm_vcpu **dest_vcpu)
 +{
-+	return __pa((u64)vcpu_to_pi_desc(vcpu));
++	int i, r = 0;
++	struct kvm_vcpu *vcpu;
++
++	kvm_for_each_vcpu(i, vcpu, kvm) {
++		if (!kvm_apic_present(vcpu))
++			continue;
++
++		if (!kvm_apic_match_dest(vcpu, NULL, irq->shorthand,
++					irq->dest_id, irq->dest_mode))
++			continue;
++
++		r++;
++		*dest_vcpu = vcpu;
++	}
++
++	if (r == 1)
++		return true;
++	else
++		return false;
 +}
 +
- /*
-  * Set up the vmcs's constant host-state fields, i.e., host-state fields that
-  * will not change in the lifetime of the guest.
-@@ -10460,6 +10469,8 @@ static struct kvm_x86_ops vmx_x86_ops = {
- 	.flush_log_dirty = vmx_flush_log_dirty,
- 	.enable_log_dirty_pt_masked = vmx_enable_log_dirty_pt_masked,
- 
-+	.get_pi_desc_addr = vmx_get_pi_desc_addr,
-+
- 	.pmu_ops = &intel_pmu_ops,
- };
- 
+ #define IOAPIC_ROUTING_ENTRY(irq) \
+ 	{ .gsi = irq, .type = KVM_IRQ_ROUTING_IRQCHIP,	\
+ 	  .u.irqchip = { .irqchip = KVM_IRQCHIP_IOAPIC, .pin = (irq) } }
 -- 
 2.1.0
