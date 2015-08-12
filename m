@@ -1,84 +1,62 @@
-From: Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH v4 4/6] memory: mediatek: Add SMI driver
-Date: Wed, 12 Aug 2015 20:39:34 +0800
-Message-ID: <1439383174.7382.24.camel@mhfsdcap03>
-References: <1438597279-2937-1-git-send-email-yong.wu@mediatek.com>
-	 <1438597279-2937-5-git-send-email-yong.wu@mediatek.com>
-	 <20150811145633.GE14980@8bytes.org>
+From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH 0/5] iommu/msm: Add DT adaptation and generic bindings support
+Date: Wed, 12 Aug 2015 20:17:44 +0530
+Message-ID: <1439390869-6347-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150811145633.GE14980@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Thierry Reding <treding@nvidia.com>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Lucas Stach <l.stach@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org, Sasha Hauer <kernel@pengutronix.de>, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, pebolle@tiscali.nl, arnd@arndb.de, mitchelh@codeaurora.org, youhua.li@mediatek.com, k.zhang@mediatek.com, frederic.chen@mediatek.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Will.Deacon-5wv7dgnIgG8@public.gmane.org, stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
+Cc: sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2015-08-11 at 16:56 +0200, Joerg Roedel wrote:
-> On Mon, Aug 03, 2015 at 06:21:17PM +0800, Yong Wu wrote:
-> > +static int mtk_smi_common_get(struct device *smidev)
-> > +{
-> > +	struct mtk_smi_common *smipriv = dev_get_drvdata(smidev);
-> > +	int ret;
-> > +
-> > +	ret = pm_runtime_get_sync(smidev);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	ret = clk_prepare_enable(smipriv->clk_apb);
-> > +	if (ret) {
-> > +		dev_err(smidev, "Failed to enable the apb clock\n");
-> > +		goto err_put_pm;
-> > +	}
-> > +	ret = clk_prepare_enable(smipriv->clk_smi);
-> > +	if (ret) {
-> > +		dev_err(smidev, "Failed to enable the smi clock\n");
-> > +		goto err_disable_apb;
-> > +	}
-> > +	return ret;
-> > +
-> > +err_disable_apb:
-> > +	clk_disable_unprepare(smipriv->clk_apb);
-> > +err_put_pm:
-> > +	pm_runtime_put(smidev);
-> > +	return ret;
-> > +}
-> 
-> [...]
-> 
-> > +int mtk_smi_larb_get(struct device *larbdev)
-> > +{
-> > +	struct mtk_smi_larb *larbpriv = dev_get_drvdata(larbdev);
-> > +	struct mtk_larb_mmu *mmucfg = larbdev->archdata.iommu;
-> > +	int ret;
-> > +
-> > +	ret = mtk_smi_common_get(larbpriv->smi);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	ret = pm_runtime_get_sync(larbdev);
-> > +	if (ret < 0)
-> > +		goto err_put_smicommon;
-> > +
-> > +	ret = clk_prepare_enable(larbpriv->clk_apb);
-> > +	if (ret) {
-> > +		dev_err(larbdev, "Failed to enable the apb clock\n");
-> > +		goto err_put_pm;
-> > +	}
-> > +
-> > +	ret = clk_prepare_enable(larbpriv->clk_smi);
-> > +	if (ret) {
-> > +		dev_err(larbdev, "Failed to enable the smi clock\n");
-> > +		goto err_disable_apb;
-> > +	}
-> 
-> The clock enablement looks similar to the function above, maybe move it
-> to a helper function?
+The msm_iommu.c driver currently works based on platform data. A single master
+device can be connected to more than one iommu and multiple contexts in each
+of the iommu. This association between master and iommus was represented
+from platform data using parent/child devices. The master drivers were
+responsible for attaching all of the iommus/context to a domain. Now the
+platform data support is removed and DT support is added. The master/iommus
+are added through generic iommu bindings.
 
-Thanks. I will improve it in next version.
+This is essentially rework of the patch posted earlier by
+Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>. This series folds the changes
+in to the existing driver with the addition of generic bindings.
 
-> 
-> 
-> 	Joerg
-> 
+        http://www.spinics.net/lists/linux-arm-msm/msg10077.html
+
+This series is based on the IOMMU probe deferral series from
+Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+
+        https://lkml.org/lkml/2015/5/14/786
+
+Tested this series on ifc6410 board.
+
+Sricharan R (5):
+  iommu/msm: Add DT adaptation
+  iommu/msm: Move the contents from msm_iommu_dev.c to msm_iommu.c
+  iommu/msm: Add support for generic master bindings
+  iommu/msm: Set cacheability attributes without tex remap
+  iommu/msm: Remove driver BROKEN
+
+ .../devicetree/bindings/iommu/msm,iommu-v0.txt     |  59 +++
+ drivers/iommu/Kconfig                              |   1 -
+ drivers/iommu/Makefile                             |   2 +-
+ drivers/iommu/msm_iommu.c                          | 508 ++++++++++++++-------
+ drivers/iommu/msm_iommu.h                          |  73 ++-
+ drivers/iommu/msm_iommu_dev.c                      | 392 ----------------
+ drivers/iommu/msm_iommu_hw-8xxx.h                  |  10 +-
+ 7 files changed, 432 insertions(+), 613 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
+ delete mode 100644 drivers/iommu/msm_iommu_dev.c
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
