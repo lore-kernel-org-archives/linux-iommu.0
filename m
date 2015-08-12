@@ -1,40 +1,33 @@
-From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH 5/5] iommu/msm: Remove driver BROKEN
-Date: Wed, 12 Aug 2015 20:17:49 +0530
-Message-ID: <1439390869-6347-6-git-send-email-sricharan@codeaurora.org>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH 4/5] iommu/msm: Set cacheability attributes without tex
+ remap
+Date: Wed, 12 Aug 2015 15:53:46 +0100
+Message-ID: <20150812145346.GH23540@arm.com>
 References: <1439390869-6347-1-git-send-email-sricharan@codeaurora.org>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1439390869-6347-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Will.Deacon-5wv7dgnIgG8@public.gmane.org, stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
-Cc: sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+ <1439390869-6347-5-git-send-email-sricharan@codeaurora.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1439390869-6347-5-git-send-email-sricharan@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Sricharan R <sricharan@codeaurora.org>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, Robin Murphy <Robin.Murphy@arm.com>, "robdclark@gmail.com" <robdclark@gmail.com>, "joro@8bytes.org" <joro@8bytes.org>, "srinivas.kandagatla@linaro.org" <srinivas.kandagatla@linaro.org>, "laurent.pinchart@ideasonboard.com" <laurent.pinchart@ideasonboard.com>, "stepanm@codeaurora.org" <stepanm@codeaurora.org>, "treding@nvidia.com" <treding@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Now that the driver is DT adapted, bus_set_iommu gets called
-only when on compatible matching. So the driver should not
-break multiplatform  builds now. So remove the BROKEN config.
+On Wed, Aug 12, 2015 at 03:47:48PM +0100, Sricharan R wrote:
+> The cacheablity attributes are set when IOMMU_CACHE property
+> is true. So cachebility is set as either noncached (normal)
+> or cached (normal WBWA) directly and avoid setting using
+> tex remap.
 
-Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
- drivers/iommu/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+Does this IOMMU support the ARMv7 short descriptor format? If so, would
+it work with Yong's patch here:
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index f1fb1d3..147de52 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -64,7 +64,6 @@ config MSM_IOMMU
- 	bool "MSM IOMMU Support"
- 	depends on ARM
- 	depends on ARCH_MSM8X60 || ARCH_MSM8960 || COMPILE_TEST
--	depends on BROKEN
- 	select IOMMU_API
- 	help
- 	  Support for the IOMMUs found on certain Qualcomm SOCs.
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+  http://lists.infradead.org/pipermail/linux-arm-kernel/2015-August/361615.html
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I've not gotten around to reviewing the latest version yet, but having
+other IOMMUs consolidate on one set of page table code would be a good
+thing.
+
+Will
