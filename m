@@ -1,436 +1,131 @@
-From: Sricharan R <sricharan@codeaurora.org>
-Subject: [PATCH 2/5] iommu/msm: Move the contents from msm_iommu_dev.c to msm_iommu.c
-Date: Wed, 12 Aug 2015 20:17:46 +0530
-Message-ID: <1439390869-6347-3-git-send-email-sricharan@codeaurora.org>
+From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH 3/5] iommu/msm: Add support for generic master bindings
+Date: Wed, 12 Aug 2015 20:17:47 +0530
+Message-ID: <1439390869-6347-4-git-send-email-sricharan@codeaurora.org>
 References: <1439390869-6347-1-git-send-email-sricharan@codeaurora.org>
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <1439390869-6347-1-git-send-email-sricharan@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, robin.murphy@arm.com, robdclark@gmail.com, joro@8bytes.org, srinivas.kandagatla@linaro.org, laurent.pinchart@ideasonboard.com, Will.Deacon@arm.com, stepanm@codeaurora.org, treding@nvidia.com
-Cc: sricharan@codeaurora.org
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1439390869-6347-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Will.Deacon-5wv7dgnIgG8@public.gmane.org, stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
+Cc: sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-There are only two functions left in msm_iommu_dev.c. Move it to
-msm_iommu.c and delete the file.
+This adds the xlate callback which gets invoked during
+device registration from DT. The master devices gets added
+through this. Also adding the iommu_of_setup callback here.
 
-Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 ---
- drivers/iommu/Makefile        |   2 +-
- drivers/iommu/msm_iommu.c     | 163 +++++++++++++++++++++++++++++++++
- drivers/iommu/msm_iommu_dev.c | 204 ------------------------------------------
- 3 files changed, 164 insertions(+), 205 deletions(-)
- delete mode 100644 drivers/iommu/msm_iommu_dev.c
+ drivers/iommu/msm_iommu.c | 51 +++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 49 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index c6dcc51..83ee0bf 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -5,7 +5,7 @@ obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
- obj-$(CONFIG_IOMMU_IOVA) += iova.o
- obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
--obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o msm_iommu_dev.o
-+obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
- obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o
- obj-$(CONFIG_AMD_IOMMU_V2) += amd_iommu_v2.o
- obj-$(CONFIG_ARM_SMMU) += arm-smmu.o
 diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index 6024d71..1210152 100644
+index 1210152..1d95d7c 100644
 --- a/drivers/iommu/msm_iommu.c
 +++ b/drivers/iommu/msm_iommu.c
-@@ -27,6 +27,7 @@
- #include <linux/slab.h>
+@@ -28,6 +28,7 @@
  #include <linux/iommu.h>
  #include <linux/clk.h>
-+#include <linux/err.h>
+ #include <linux/err.h>
++#include <linux/of_iommu.h>
  
  #include <asm/cacheflush.h>
  #include <asm/sizes.h>
-@@ -85,6 +86,47 @@ static void __disable_clocks(struct msm_iommu_dev *iommu)
- 	clk_disable_unprepare(iommu->pclk);
+@@ -702,6 +703,44 @@ static void print_ctx_regs(void __iomem *base, int ctx)
+ 	       GET_PRRR(base, ctx), GET_NMRR(base, ctx));
  }
  
-+static void msm_iommu_reset(void __iomem *base, int ncb)
++static void insert_iommu_master(struct device *dev,
++				struct msm_iommu_dev *iommu,
++				struct of_phandle_args *spec)
 +{
-+	int ctx;
++	struct msm_iommu_ctx_dev *master;
++	int sid;
 +
-+	SET_RPUE(base, 0);
-+	SET_RPUEIE(base, 0);
-+	SET_ESRRESTORE(base, 0);
-+	SET_TBE(base, 0);
-+	SET_CR(base, 0);
-+	SET_SPDMBE(base, 0);
-+	SET_TESTBUSCR(base, 0);
-+	SET_TLBRSW(base, 0);
-+	SET_GLOBAL_TLBIALL(base, 0);
-+	SET_RPU_ACR(base, 0);
-+	SET_TLBLKCRWE(base, 1);
++	master = kzalloc(sizeof(*master), GFP_KERNEL);
++	master->of_node = dev->of_node;
++	list_add(&master->list, &iommu->ctx_list);
 +
-+	for (ctx = 0; ctx < ncb; ctx++) {
-+		SET_BPRCOSH(base, ctx, 0);
-+		SET_BPRCISH(base, ctx, 0);
-+		SET_BPRCNSH(base, ctx, 0);
-+		SET_BPSHCFG(base, ctx, 0);
-+		SET_BPMTCFG(base, ctx, 0);
-+		SET_ACTLR(base, ctx, 0);
-+		SET_SCTLR(base, ctx, 0);
-+		SET_FSRRESTORE(base, ctx, 0);
-+		SET_TTBR0(base, ctx, 0);
-+		SET_TTBR1(base, ctx, 0);
-+		SET_TTBCR(base, ctx, 0);
-+		SET_BFBCR(base, ctx, 0);
-+		SET_PAR(base, ctx, 0);
-+		SET_FAR(base, ctx, 0);
-+		SET_CTX_TLBIALL(base, ctx, 0);
-+		SET_TLBFLPTER(base, ctx, 0);
-+		SET_TLBSLPTER(base, ctx, 0);
-+		SET_TLBLKCR(base, ctx, 0);
-+		SET_PRRR(base, ctx, 0);
-+		SET_NMRR(base, ctx, 0);
-+		SET_CONTEXTIDR(base, ctx, 0);
-+	}
++	for (sid = 0; sid < spec->args_count; sid++)
++		master->mids[sid] = spec->args[sid];
++
++	master->num_mids = spec->args_count;
 +}
 +
- static int __flush_iotlb(struct iommu_domain *domain)
++static int qcom_iommu_of_xlate(struct device *dev,
++			       struct of_phandle_args *spec)
++{
++	struct msm_iommu_dev *iommu;
++	unsigned long flags;
++
++	spin_lock_irqsave(&msm_iommu_lock, flags);
++	list_for_each_entry(iommu, &qcom_iommu_devices, dev_node) {
++		if (iommu->dev->of_node == spec->np)
++			break;
++	}
++
++	if (!iommu || (iommu->dev->of_node != spec->np))
++		return -ENODEV;
++
++	insert_iommu_master(dev, iommu, spec);
++	spin_unlock_irqrestore(&msm_iommu_lock, flags);
++
++	return 0;
++}
++
+ irqreturn_t msm_iommu_fault_handler(int irq, void *dev_id)
  {
- 	struct msm_priv *priv = to_msm_priv(domain);
-@@ -708,6 +750,127 @@ static const struct iommu_ops msm_iommu_ops = {
+ 	struct msm_iommu_dev *iommu = dev_id;
+@@ -737,7 +776,7 @@ fail:
+ 	return 0;
+ }
+ 
+-static const struct iommu_ops msm_iommu_ops = {
++static struct iommu_ops msm_iommu_ops = {
+ 	.capable = msm_iommu_capable,
+ 	.domain_alloc = msm_iommu_domain_alloc,
+ 	.domain_free = msm_iommu_domain_free,
+@@ -748,6 +787,7 @@ static const struct iommu_ops msm_iommu_ops = {
+ 	.map_sg = default_iommu_map_sg,
+ 	.iova_to_phys = msm_iommu_iova_to_phys,
  	.pgsize_bitmap = MSM_IOMMU_PGSIZES,
++	.of_xlate = qcom_iommu_of_xlate,
  };
  
-+static int msm_iommu_probe(struct platform_device *pdev)
+ static int msm_iommu_probe(struct platform_device *pdev)
+@@ -832,6 +872,7 @@ static int msm_iommu_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	list_add(&iommu->dev_node, &qcom_iommu_devices);
++	of_iommu_set_ops(pdev->dev.of_node, &msm_iommu_ops);
+ 
+ 	pr_info("device mapped at %p, irq %d with %d ctx banks\n",
+ 		iommu->base, iommu->irq, iommu->ncb);
+@@ -916,7 +957,13 @@ static int __init msm_iommu_init(void)
+ 	return 0;
+ }
+ 
+-subsys_initcall(msm_iommu_init);
++static int __init msm_iommu_of_setup(struct device_node *np)
 +{
-+	struct resource *r;
-+	struct msm_iommu_dev *iommu;
-+	int ret, par, val;
-+
-+	iommu = devm_kzalloc(&pdev->dev, sizeof(*iommu), GFP_KERNEL);
-+	if (!iommu) {
-+		ret = -ENODEV;
-+		goto fail;
-+	}
-+
-+	iommu->dev = &pdev->dev;
-+	INIT_LIST_HEAD(&iommu->ctx_list);
-+
-+	iommu->pclk = devm_clk_get(iommu->dev, "smmu_pclk");
-+	if (IS_ERR(iommu->pclk)) {
-+		dev_err(iommu->dev, "could not get smmu_pclk\n");
-+		ret = PTR_ERR(iommu->pclk);
-+		goto fail;
-+	}
-+
-+	iommu->clk = devm_clk_get(iommu->dev, "iommu_clk");
-+	if (IS_ERR(iommu->clk)) {
-+		dev_err(iommu->dev, "could not get iommu_clk\n");
-+		ret = PTR_ERR(iommu->clk);
-+		iommu->pclk = NULL;
-+		goto fail;
-+	}
-+
-+	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	iommu->base = devm_ioremap_resource(iommu->dev, r);
-+	if (IS_ERR(iommu->base)) {
-+		dev_err(iommu->dev, "could not get iommu base\n");
-+		ret = PTR_ERR(iommu->base);
-+		goto fail;
-+	}
-+
-+	iommu->irq = platform_get_irq(pdev, 0);
-+	if (iommu->irq < 0) {
-+		dev_err(iommu->dev, "could not get iommu irq\n");
-+		ret = -ENODEV;
-+		goto fail;
-+	}
-+
-+	ret = of_property_read_u32(iommu->dev->of_node, "ncb", &val);
-+	if (ret) {
-+		dev_err(iommu->dev, "could not get ncb\n");
-+		goto fail;
-+	}
-+	iommu->ncb = val;
-+
-+	__enable_clocks(iommu);
-+
-+	msm_iommu_reset(iommu->base, iommu->ncb);
-+	SET_M(iommu->base, 0, 1);
-+	SET_PAR(iommu->base, 0, 0);
-+	SET_V2PCFG(iommu->base, 0, 1);
-+	SET_V2PPR(iommu->base, 0, 0);
-+	par = GET_PAR(iommu->base, 0);
-+	SET_V2PCFG(iommu->base, 0, 0);
-+	SET_M(iommu->base, 0, 0);
-+
-+	__disable_clocks(iommu);
-+
-+	if (!par) {
-+		pr_err("Invalid PAR value detected\n");
-+		ret = -ENODEV;
-+		goto fail;
-+	}
-+
-+	ret = devm_request_threaded_irq(iommu->dev, iommu->irq, NULL,
-+					msm_iommu_fault_handler,
-+					IRQF_ONESHOT | IRQF_SHARED,
-+					"msm_iommu_secure_irpt_handler",
-+					iommu);
-+	if (ret) {
-+		pr_err("Request IRQ %d failed with ret=%d\n", iommu->irq, ret);
-+		goto fail;
-+	}
-+
-+	list_add(&iommu->dev_node, &qcom_iommu_devices);
-+
-+	pr_info("device mapped at %p, irq %d with %d ctx banks\n",
-+		iommu->base, iommu->irq, iommu->ncb);
-+fail:
-+	return ret;
++	msm_iommu_init();
++	return 0;
 +}
 +
-+static const struct of_device_id msm_iommu_dt_match[] = {
-+	{ .compatible = "qcom,iommu-v0"},
-+	{}
-+};
-+
-+static struct platform_driver msm_iommu_driver = {
-+	.driver = {
-+		.name	= "msm_iommu",
-+		.of_match_table = msm_iommu_dt_match,
-+	},
-+	.probe		= msm_iommu_probe,
-+};
-+
-+static int __init msm_iommu_driver_init(void)
-+{
-+	int ret;
-+
-+	ret = platform_driver_register(&msm_iommu_driver);
-+	if (ret != 0)
-+		pr_err("Failed to register IOMMU driver\n");
-+
-+	return ret;
-+}
-+
-+static void __exit msm_iommu_driver_exit(void)
-+{
-+	platform_driver_unregister(&msm_iommu_driver);
-+}
-+
-+subsys_initcall(msm_iommu_driver_init);
-+module_exit(msm_iommu_driver_exit);
-+
- static int __init get_tex_class(int icp, int ocp, int mt, int nos)
- {
- 	int i = 0;
-diff --git a/drivers/iommu/msm_iommu_dev.c b/drivers/iommu/msm_iommu_dev.c
-deleted file mode 100644
-index 68bb453..0000000
---- a/drivers/iommu/msm_iommu_dev.c
-+++ /dev/null
-@@ -1,204 +0,0 @@
--/* Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License version 2 and
-- * only version 2 as published by the Free Software Foundation.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program; if not, write to the Free Software
-- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-- * 02110-1301, USA.
-- */
--
--#define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
--
--#include <linux/kernel.h>
--#include <linux/module.h>
--#include <linux/platform_device.h>
--#include <linux/io.h>
--#include <linux/clk.h>
--#include <linux/iommu.h>
--#include <linux/interrupt.h>
--#include <linux/err.h>
--#include <linux/slab.h>
--
--#include "msm_iommu_hw-8xxx.h"
--#include "msm_iommu.h"
--
--static void msm_iommu_reset(void __iomem *base, int ncb)
--{
--	int ctx;
--
--	SET_RPUE(base, 0);
--	SET_RPUEIE(base, 0);
--	SET_ESRRESTORE(base, 0);
--	SET_TBE(base, 0);
--	SET_CR(base, 0);
--	SET_SPDMBE(base, 0);
--	SET_TESTBUSCR(base, 0);
--	SET_TLBRSW(base, 0);
--	SET_GLOBAL_TLBIALL(base, 0);
--	SET_RPU_ACR(base, 0);
--	SET_TLBLKCRWE(base, 1);
--
--	for (ctx = 0; ctx < ncb; ctx++) {
--		SET_BPRCOSH(base, ctx, 0);
--		SET_BPRCISH(base, ctx, 0);
--		SET_BPRCNSH(base, ctx, 0);
--		SET_BPSHCFG(base, ctx, 0);
--		SET_BPMTCFG(base, ctx, 0);
--		SET_ACTLR(base, ctx, 0);
--		SET_SCTLR(base, ctx, 0);
--		SET_FSRRESTORE(base, ctx, 0);
--		SET_TTBR0(base, ctx, 0);
--		SET_TTBR1(base, ctx, 0);
--		SET_TTBCR(base, ctx, 0);
--		SET_BFBCR(base, ctx, 0);
--		SET_PAR(base, ctx, 0);
--		SET_FAR(base, ctx, 0);
--		SET_CTX_TLBIALL(base, ctx, 0);
--		SET_TLBFLPTER(base, ctx, 0);
--		SET_TLBSLPTER(base, ctx, 0);
--		SET_TLBLKCR(base, ctx, 0);
--		SET_PRRR(base, ctx, 0);
--		SET_NMRR(base, ctx, 0);
--		SET_CONTEXTIDR(base, ctx, 0);
--	}
--}
--
--static int msm_iommu_probe(struct platform_device *pdev)
--{
--	struct resource *r;
--	struct msm_iommu_dev *iommu;
--	int ret, par, val;
--
--	iommu = devm_kzalloc(&pdev->dev, sizeof(*iommu), GFP_KERNEL);
--	if (!iommu) {
--		ret = -ENODEV;
--		goto fail;
--	}
--
--	iommu->dev = &pdev->dev;
--	INIT_LIST_HEAD(&iommu->ctx_list);
--
--	iommu->pclk = devm_clk_get(iommu->dev, "smmu_pclk");
--	if (IS_ERR(iommu->pclk)) {
--		dev_err(iommu->dev, "could not get smmu_pclk\n");
--		ret = PTR_ERR(iommu->pclk);
--		goto fail;
--	}
--
--	iommu->clk = devm_clk_get(iommu->dev, "iommu_clk");
--	if (IS_ERR(iommu->clk)) {
--		dev_err(iommu->dev, "could not get iommu_clk\n");
--		ret = PTR_ERR(iommu->clk);
--		iommu->pclk = NULL;
--		goto fail;
--	}
--
--	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	iommu->base = devm_ioremap_resource(iommu->dev, r);
--	if (IS_ERR(iommu->base)) {
--		dev_err(iommu->dev, "could not get iommu base\n");
--		ret = PTR_ERR(iommu->base);
--		goto fail;
--	}
--
--	iommu->irq = platform_get_irq(pdev, 0);
--	if (iommu->irq < 0) {
--		dev_err(iommu->dev, "could not get iommu irq\n");
--		ret = -ENODEV;
--		goto fail;
--	}
--
--	ret = clk_prepare_enable(iommu->pclk);
--	if (ret)
--		goto fail;
--
--	ret = clk_prepare_enable(iommu->clk);
--	if (ret) {
--		clk_disable_unprepare(iommu->pclk);
--		goto fail;
--	}
--
--	ret = of_property_read_u32(iommu->dev->of_node, "ncb", &val);
--	if (ret) {
--		dev_err(iommu->dev, "could not get ncb\n");
--		goto fail;
--	}
--	iommu->ncb = val;
--
--	msm_iommu_reset(iommu->base, iommu->ncb);
--	SET_M(iommu->base, 0, 1);
--	SET_PAR(iommu->base, 0, 0);
--	SET_V2PCFG(iommu->base, 0, 1);
--	SET_V2PPR(iommu->base, 0, 0);
--	par = GET_PAR(iommu->base, 0);
--	SET_V2PCFG(iommu->base, 0, 0);
--	SET_M(iommu->base, 0, 0);
--
--	clk_disable_unprepare(iommu->clk);
--	clk_disable_unprepare(iommu->pclk);
--
--	if (!par) {
--		pr_err("Invalid PAR value detected\n");
--		ret = -ENODEV;
--		goto fail;
--	}
--
--	ret = devm_request_threaded_irq(iommu->dev, iommu->irq, NULL,
--					msm_iommu_fault_handler,
--					IRQF_ONESHOT | IRQF_SHARED,
--					"msm_iommu_secure_irpt_handler",
--					iommu);
--	if (ret) {
--		pr_err("Request IRQ %d failed with ret=%d\n", iommu->irq, ret);
--		goto fail;
--	}
--
--	list_add(&iommu->dev_node, &qcom_iommu_devices);
--
--	pr_info("device mapped at %p, irq %d with %d ctx banks\n",
--		iommu->base, iommu->irq, iommu->ncb);
--fail:
--	return ret;
--}
--
--static const struct of_device_id msm_iommu_dt_match[] = {
--	{ .compatible = "qcom,iommu-v0" },
--	{}
--};
--
--static struct platform_driver msm_iommu_driver = {
--	.driver = {
--		.name	= "msm_iommu",
--		.of_match_table = msm_iommu_dt_match,
--	},
--	.probe		= msm_iommu_probe,
--};
--
--static int __init msm_iommu_driver_init(void)
--{
--	int ret;
--	ret = platform_driver_register(&msm_iommu_driver);
--	if (ret != 0)
--		pr_err("Failed to register IOMMU driver\n");
--
--	return ret;
--}
--
--static void __exit msm_iommu_driver_exit(void)
--{
--	platform_driver_unregister(&msm_iommu_driver);
--}
--
--subsys_initcall(msm_iommu_driver_init);
--module_exit(msm_iommu_driver_exit);
--
--MODULE_LICENSE("GPL v2");
--MODULE_AUTHOR("Stepan Moskovchenko <stepanm@codeaurora.org>");
++IOMMU_OF_DECLARE(msm_iommu_of, "qcom,iommu-v0", msm_iommu_of_setup);
+ 
+ MODULE_LICENSE("GPL v2");
+ MODULE_AUTHOR("Stepan Moskovchenko <stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>");
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
