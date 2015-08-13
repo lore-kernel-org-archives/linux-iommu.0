@@ -1,54 +1,33 @@
-From: "Sricharan" <sricharan@codeaurora.org>
-Subject: RE: [PATCH 4/5] iommu/msm: Set cacheability attributes without tex remap
-Date: Thu, 13 Aug 2015 12:07:59 +0530
-Message-ID: <000201d0d592$9ce1a740$d6a4f5c0$@codeaurora.org>
-References: <1439390869-6347-1-git-send-email-sricharan@codeaurora.org> <1439390869-6347-5-git-send-email-sricharan@codeaurora.org> <20150812145346.GH23540@arm.com>
+From: Joerg Roedel <jroedel@suse.de>
+Subject: Re: [PATCH v3 01/11] iommu/vt-d: Cache PCI ATS state and Invalidate
+ Queue Depth
+Date: Thu, 13 Aug 2015 09:53:33 +0200
+Message-ID: <20150813075333.GF12342@suse.de>
+References: <20150811154525.21078.85310.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+ <20150811155107.21078.24884.stgit@bhelgaas-glaptop2.roam.corp.google.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <20150812145346.GH23540@arm.com>
-Content-Language: en-us
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: 'Will Deacon' <will.deacon@arm.com>
-Cc: devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, joro@8bytes.org, robdclark@gmail.com, iommu@lists.linux-foundation.org, srinivas.kandagatla@linaro.org, laurent.pinchart@ideasonboard.com, treding@nvidia.com, 'Robin Murphy' <Robin.Murphy@arm.com>, linux-arm-kernel@lists.infradead.org, stepanm@codeaurora.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20150811155107.21078.24884.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: linux-pci@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, Gregor Dick <gdick@solarflare.com>, iommu@lists.linux-foundation.org, Yinghai Lu <yinghai@kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+On Tue, Aug 11, 2015 at 10:51:07AM -0500, Bjorn Helgaas wrote:
+> We check the ATS state (enabled/disabled) and fetch the PCI ATS Invalidate
+> Queue Depth in performance-sensitive paths.  It's easy to cache these,
+> which removes dependencies on PCI.
+> 
+> Remember the ATS enabled state.  When enabling, read the queue depth once
+> and cache it in the device_domain_info struct.  This is similar to what
+> amd_iommu.c does.
+> 
+> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> ---
+>  drivers/iommu/intel-iommu.c |   28 ++++++++++++++++++----------
+>  1 file changed, 18 insertions(+), 10 deletions(-)
 
-> -----Original Message-----
-> From: linux-arm-kernel [mailto:linux-arm-kernel-
-> bounces@lists.infradead.org] On Behalf Of Will Deacon
-> Sent: Wednesday, August 12, 2015 8:24 PM
-> To: Sricharan R
-> Cc: devicetree@vger.kernel.org; linux-arm-msm@vger.kernel.org;
-> joro@8bytes.org; robdclark@gmail.com; iommu@lists.linux-foundation.org;
-> srinivas.kandagatla@linaro.org; laurent.pinchart@ideasonboard.com;
-> treding@nvidia.com; Robin Murphy; linux-arm-kernel@lists.infradead.org;
-> stepanm@codeaurora.org
-> Subject: Re: [PATCH 4/5] iommu/msm: Set cacheability attributes without
-tex
-> remap
-> 
-> On Wed, Aug 12, 2015 at 03:47:48PM +0100, Sricharan R wrote:
-> > The cacheablity attributes are set when IOMMU_CACHE property is true.
-> > So cachebility is set as either noncached (normal) or cached (normal
-> > WBWA) directly and avoid setting using tex remap.
-> 
-> Does this IOMMU support the ARMv7 short descriptor format? If so, would it
-> work with Yong's patch here:
-> 
->   http://lists.infradead.org/pipermail/linux-arm-kernel/2015-
-> August/361615.html
-> 
-> I've not gotten around to reviewing the latest version yet, but having
-other
-> IOMMUs consolidate on one set of page table code would be a good thing.
-
-     Yes, this is ARMv7 short descriptor complaint. I will rebase the next
-one the
-     above. That should reduce more code in this driver. Thanks.
-
-Regards,
-  Sricharan
+Reviewed-by: Joerg Roedel <jroedel@suse.de>
+Acked-by: Joerg Roedel <jroedel@suse.de>
