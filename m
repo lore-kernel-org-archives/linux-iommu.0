@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 8/9] iommu/msm: Use BUG_ON instead of if () BUG()
-Date: Thu, 13 Aug 2015 19:33:55 +0200
-Message-ID: <1439487236-14098-9-git-send-email-joro@8bytes.org>
+Subject: [PATCH 6/9] iommu/vt-d: Make two functions static
+Date: Thu, 13 Aug 2015 19:33:53 +0200
+Message-ID: <1439487236-14098-7-git-send-email-joro@8bytes.org>
 References: <1439487236-14098-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,27 +23,39 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Found by a coccicheck script.
+These functions are only used in that file and can be
+static.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/msm_iommu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/intel-iommu.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index 15a2063..e321fa5 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -106,8 +106,8 @@ static int __flush_iotlb(struct iommu_domain *domain)
- #endif
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 2a7e017..93f16aa 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1210,9 +1210,9 @@ next:
+ /* We can't just free the pages because the IOMMU may still be walking
+    the page tables, and may have cached the intermediate levels. The
+    pages can only be freed after the IOTLB flush has been done. */
+-struct page *domain_unmap(struct dmar_domain *domain,
+-			  unsigned long start_pfn,
+-			  unsigned long last_pfn)
++static struct page *domain_unmap(struct dmar_domain *domain,
++				 unsigned long start_pfn,
++				 unsigned long last_pfn)
+ {
+ 	struct page *freelist = NULL;
  
- 	list_for_each_entry(ctx_drvdata, &priv->list_attached, attached_elm) {
--		if (!ctx_drvdata->pdev || !ctx_drvdata->pdev->dev.parent)
--			BUG();
-+
-+		BUG_ON(!ctx_drvdata->pdev || !ctx_drvdata->pdev->dev.parent);
+@@ -1236,7 +1236,7 @@ struct page *domain_unmap(struct dmar_domain *domain,
+ 	return freelist;
+ }
  
- 		iommu_drvdata = dev_get_drvdata(ctx_drvdata->pdev->dev.parent);
- 		BUG_ON(!iommu_drvdata);
+-void dma_free_pagelist(struct page *freelist)
++static void dma_free_pagelist(struct page *freelist)
+ {
+ 	struct page *pg;
+ 
 -- 
 1.9.1
