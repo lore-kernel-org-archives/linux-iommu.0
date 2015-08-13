@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 1/9] iommu/amd: Simplify allocation in irq_remapping_alloc()
-Date: Thu, 13 Aug 2015 19:33:48 +0200
-Message-ID: <1439487236-14098-2-git-send-email-joro@8bytes.org>
+Subject: [PATCH 5/9] iommu/vt-d: Use BUG_ON instead of if () BUG()
+Date: Thu, 13 Aug 2015 19:33:52 +0200
+Message-ID: <1439487236-14098-6-git-send-email-joro@8bytes.org>
 References: <1439487236-14098-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,60 +23,26 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Allocate the irq data only in the loop.
+Found by a coccicheck script.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 17 ++++++-----------
- 1 file changed, 6 insertions(+), 11 deletions(-)
+ drivers/iommu/intel-iommu.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 658ee39..a158579 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3947,11 +3947,6 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
- 	if (ret < 0)
- 		return ret;
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 8834765..2a7e017 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4760,8 +4760,7 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
  
--	ret = -ENOMEM;
--	data = kzalloc(sizeof(*data), GFP_KERNEL);
--	if (!data)
--		goto out_free_parent;
--
- 	if (info->type == X86_IRQ_ALLOC_TYPE_IOAPIC) {
- 		if (get_irq_table(devid, true))
- 			index = info->ioapic_pin;
-@@ -3962,7 +3957,6 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
- 	}
- 	if (index < 0) {
- 		pr_warn("Failed to allocate IRTE\n");
--		kfree(data);
- 		goto out_free_parent;
- 	}
+ 	/* Cope with horrid API which requires us to unmap more than the
+ 	   size argument if it happens to be a large-page mapping. */
+-	if (!pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT, &level))
+-		BUG();
++	BUG_ON(!pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT, &level));
  
-@@ -3974,17 +3968,18 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
- 			goto out_free_data;
- 		}
- 
--		if (i > 0) {
--			data = kzalloc(sizeof(*data), GFP_KERNEL);
--			if (!data)
--				goto out_free_data;
--		}
-+		ret = -ENOMEM;
-+		data = kzalloc(sizeof(*data), GFP_KERNEL);
-+		if (!data)
-+			goto out_free_data;
-+
- 		irq_data->hwirq = (devid << 16) + i;
- 		irq_data->chip_data = data;
- 		irq_data->chip = &amd_ir_chip;
- 		irq_remapping_prepare_irte(data, cfg, info, devid, index, i);
- 		irq_set_status_flags(virq + i, IRQ_MOVE_PCNTXT);
- 	}
-+
- 	return 0;
- 
- out_free_data:
+ 	if (size < VTD_PAGE_SIZE << level_to_offset_bits(level))
+ 		size = VTD_PAGE_SIZE << level_to_offset_bits(level);
 -- 
 1.9.1
