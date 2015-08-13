@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 9/9] iommu/io-pgtable-arm: Move init-fn declarations to
-	io-pgtable.h
-Date: Thu, 13 Aug 2015 19:33:56 +0200
-Message-ID: <1439487236-14098-10-git-send-email-joro@8bytes.org>
+Subject: [PATCH 8/9] iommu/msm: Use BUG_ON instead of if () BUG()
+Date: Thu, 13 Aug 2015 19:33:55 +0200
+Message-ID: <1439487236-14098-9-git-send-email-joro@8bytes.org>
 References: <1439487236-14098-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,43 +23,27 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Avoid extern declarations in c files.
+Found by a coccicheck script.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/io-pgtable.c | 5 -----
- drivers/iommu/io-pgtable.h | 5 +++++
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/iommu/msm_iommu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
-index 6436fe2..6f2e319 100644
---- a/drivers/iommu/io-pgtable.c
-+++ b/drivers/iommu/io-pgtable.c
-@@ -24,11 +24,6 @@
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index 15a2063..e321fa5 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -106,8 +106,8 @@ static int __flush_iotlb(struct iommu_domain *domain)
+ #endif
  
- #include "io-pgtable.h"
- 
--extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s1_init_fns;
--extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s2_init_fns;
--extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns;
--extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns;
--
- static const struct io_pgtable_init_fns *
- io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] =
- {
-diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-index 48538a3..ac9e234 100644
---- a/drivers/iommu/io-pgtable.h
-+++ b/drivers/iommu/io-pgtable.h
-@@ -143,4 +143,9 @@ struct io_pgtable_init_fns {
- 	void (*free)(struct io_pgtable *iop);
- };
- 
-+extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s1_init_fns;
-+extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s2_init_fns;
-+extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns;
-+extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns;
+ 	list_for_each_entry(ctx_drvdata, &priv->list_attached, attached_elm) {
+-		if (!ctx_drvdata->pdev || !ctx_drvdata->pdev->dev.parent)
+-			BUG();
 +
- #endif /* __IO_PGTABLE_H */
++		BUG_ON(!ctx_drvdata->pdev || !ctx_drvdata->pdev->dev.parent);
+ 
+ 		iommu_drvdata = dev_get_drvdata(ctx_drvdata->pdev->dev.parent);
+ 		BUG_ON(!iommu_drvdata);
 -- 
 1.9.1
