@@ -1,14 +1,11 @@
-From: William Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: RE: [PATCH v5 04/13] DMA-API: Introduce dma_(un)map_peer_resource
-Date: Wed, 19 Aug 2015 14:32:28 +0000
-Message-ID: <6dc99896b40345cfbc35b4da9b370bbd@HQMAIL106.nvidia.com>
-References: <2dd0ce48-fb6e-4003-90ee-33827ebfc7c1@default>
+From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v1 1/1] iommu/vt-d: use lo_hi_readq() / lo_hi_writeq()
+Date: Mon, 17 Aug 2015 17:04:12 +0300
+Message-ID: <1439820252-109537-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <2dd0ce48-fb6e-4003-90ee-33827ebfc7c1@default>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,45 +15,60 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Konrad Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: "corbet-T1hC0tSOHrs@public.gmane.org" <corbet-T1hC0tSOHrs@public.gmane.org>, John Hubbard <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Terence Ripperda <TRipperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-> > +#ifdef CONFIG_HAS_DMA_P2P
-> > +static inline dma_peer_addr_t dma_map_peer_resource_attrs(struct
-> > device *dev,
-> > +							  struct device *peer,
-> > +							  struct resource *res,
-> > +							  size_t offset,
-> > +							  size_t size,
-> > +							  enum dma_data_direction dir,
-> > +							  struct dma_attrs *attrs)
-> > +{
-> > +	struct dma_map_ops *ops = get_dma_ops(dev);
-> > +	dma_peer_addr_t addr;
-> > +
-> > +	BUG_ON(!valid_dma_direction(dir));
-> > +	BUG_ON(ops->map_peer_resource == NULL);
-> > +	addr = ops->map_peer_resource(dev, peer, res, offset, size, dir,
-> > +				      attrs);
-> > +	debug_dma_map_peer_resource(dev, peer, res, offset, size, dir,
-> > addr);
-> > +
-> > +	return addr;
-> > +
-> 
-> With those 'BUG_ON' you need to make sure that every dma_map_ops has
-> this implemented. That means the calgary_dma_ops, gart_dma_ops, swiotlb_dma_ops,
-> and xen_swiotlb_dma_ops MUST have something implemented.
-> 
-> Please keep in mind that on one can do 'iommu=soft swiotbl=force' on the
-> command line which will force the IOMMUs to be ignored and only the
-> SWIOTLB code will be used.
+There is already helper functions to do 64-bit I/O on 32-bit machines or buses,
+thus we don't need to reinvent the wheel.
 
-Thanks for the feedback, Konrad. I will add implementations for those
-dma_map_ops in v6.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+---
+ include/linux/intel-iommu.h | 19 +++++--------------
+ 1 file changed, 5 insertions(+), 14 deletions(-)
 
-Will
-
---
-nvpublic
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index a868a0f..5439ea4 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -26,6 +26,8 @@
+ #include <linux/iova.h>
+ #include <linux/io.h>
+ #include <linux/dma_remapping.h>
++
++#include <asm-generic/io-64-nonatomic-lo-hi.h>
+ #include <asm/cacheflush.h>
+ #include <asm/iommu.h>
+ 
+@@ -59,26 +61,15 @@
+ #define DMAR_IRTA_REG	0xb8    /* Interrupt remapping table addr register */
+ 
+ #define OFFSET_STRIDE		(9)
+-/*
+-#define dmar_readl(dmar, reg) readl(dmar + reg)
+-#define dmar_readq(dmar, reg) ({ \
+-		u32 lo, hi; \
+-		lo = readl(dmar + reg); \
+-		hi = readl(dmar + reg + 4); \
+-		(((u64) hi) << 32) + lo; })
+-*/
++
+ static inline u64 dmar_readq(void __iomem *addr)
+ {
+-	u32 lo, hi;
+-	lo = readl(addr);
+-	hi = readl(addr + 4);
+-	return (((u64) hi) << 32) + lo;
++	return lo_hi_readq(addr);
+ }
+ 
+ static inline void dmar_writeq(void __iomem *addr, u64 val)
+ {
+-	writel((u32)val, addr);
+-	writel((u32)(val >> 32), addr + 4);
++	lo_hi_writeq(val, addr);
+ }
+ 
+ #define DMAR_VER_MAJOR(v)		(((v) & 0xf0) >> 4)
+-- 
+2.5.0
