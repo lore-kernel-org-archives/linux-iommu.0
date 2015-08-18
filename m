@@ -1,55 +1,65 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH V3] iommu/arm-smmu-v2: ThunderX mis-extends 64bit registers
-Date: Tue, 18 Aug 2015 13:44:48 +0100
-Message-ID: <20150818124448.GA13507@arm.com>
-References: <1439853235-12162-1-git-send-email-tchalamarla@caviumnetworks.com>
+From: Will Davis <wdavis@nvidia.com>
+Subject: [PATCH v5 02/13] linux/types.h: Add dma_peer_addr_t type
+Date: Tue, 18 Aug 2015 14:03:58 -0500
+Message-ID: <1439924649-29698-3-git-send-email-wdavis@nvidia.com>
+References: <1439924649-29698-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1439853235-12162-1-git-send-email-tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Cc: "linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org" <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, "ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "robert.richter-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <robert.richter-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1439924649-29698-1-git-send-email-wdavis@nvidia.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Konrad Wilk <konrad.wilk@oracle.com>, Mark Hounschell <markh@compro.net>, "David S. Miller" <davem@davemloft.net>, Jonathan Corbet <corbet@lwn.net>, Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>, Will Davis <wdavis@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Tirumalesh,
+On some platforms, a dma_addr_t is only 32 bits wide, but the bus addresses
+can be 64 bits wide. For peer-to-peer DMA, a device needs to use the full
+64-bit address. Therefore, introduce a DMA address type that is not
+constrained by the CPU DMA address size.
 
-On Tue, Aug 18, 2015 at 12:13:55AM +0100, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org wrote:
-> From: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> 
-> The SMMU architecture defines two different behaviors when 64-bit
-> registers are written with 32-bit writes.  The first behavior causes
-> zero extension into the upper 32-bits.  The second behavior splits a
-> 64-bit register into "normal" 32-bit register pairs.
-> 
-> On some buggy implementations, registers incorrectly zero extended
-> when they should instead behave as normal 32-bit register pairs.
-> 
-> Signed-off-by: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> 
-> Changes from V2:
-> 	- removed unused definitions
-> 
-> Changes from V1:
-> 	- Introduced smmu_writeq
-> ---
->  drivers/iommu/arm-smmu.c | 57 +++++++++++++++++++++++++-----------------------
->  1 file changed, 30 insertions(+), 27 deletions(-)
+This is only needed for peer-to-peer DMA, so guard this definition with a
+CONFIG_HAS_DMA_P2P check.
 
-I'm happy with this, but it doesn't apply against mainline or my tree.
-Please can you rebase it onto something more recent, preferably my
-iommu/devel branch?
+Signed-off-by: Will Davis <wdavis@nvidia.com>
+---
+ include/linux/types.h | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-Thanks,
-
-Will
+diff --git a/include/linux/types.h b/include/linux/types.h
+index 8715287..dd85173 100644
+--- a/include/linux/types.h
++++ b/include/linux/types.h
+@@ -140,13 +140,13 @@ typedef unsigned long blkcnt_t;
+ #define pgoff_t unsigned long
+ 
+ /*
+- * A dma_addr_t can hold any valid DMA address, i.e., any address returned
++ * A dma_addr_t can hold any valid DMA address, i.e., most addresses returned
+  * by the DMA API.
+  *
+  * If the DMA API only uses 32-bit addresses, dma_addr_t need only be 32
+  * bits wide.  Bus addresses, e.g., PCI BARs, may be wider than 32 bits,
+  * but drivers do memory-mapped I/O to ioremapped kernel virtual addresses,
+- * so they don't care about the size of the actual bus addresses.
++ * so they don't care about the size of the actual bus addresses in most cases.
+  */
+ #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+ typedef u64 dma_addr_t;
+@@ -154,6 +154,15 @@ typedef u64 dma_addr_t;
+ typedef u32 dma_addr_t;
+ #endif
+ 
++/*
++ * Unlike dma_addr_t, a dma_peer_addr_t can hold any bus address for the
++ * platform. Drivers should only need this for peer-to-peer use cases, where
++ * the DMA target is also on the bus.
++ */
++#ifdef CONFIG_HAS_DMA_P2P
++typedef u64 dma_peer_addr_t;
++#endif
++
+ typedef unsigned __bitwise__ gfp_t;
+ typedef unsigned __bitwise__ fmode_t;
+ typedef unsigned __bitwise__ oom_flags_t;
+-- 
+2.5.0
