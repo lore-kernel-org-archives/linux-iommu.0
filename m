@@ -1,75 +1,199 @@
-From: Will Davis <wdavis@nvidia.com>
-Subject: [PATCH v5 13/13] x86: declare support for DMA P2P
-Date: Tue, 18 Aug 2015 14:04:09 -0500
-Message-ID: <1439924649-29698-14-git-send-email-wdavis@nvidia.com>
+From: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v5 10/13] iommu/amd: Implement (un)map_peer_resource
+Date: Tue, 18 Aug 2015 14:04:06 -0500
+Message-ID: <1439924649-29698-11-git-send-email-wdavis@nvidia.com>
 References: <1439924649-29698-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1439924649-29698-1-git-send-email-wdavis@nvidia.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Konrad Wilk <konrad.wilk@oracle.com>, Mark Hounschell <markh@compro.net>, "David S. Miller" <davem@davemloft.net>, Jonathan Corbet <corbet@lwn.net>, Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>, Will Davis <wdavis@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1439924649-29698-1-git-send-email-wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, John Hubbard <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Terence Ripperda <tripperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Use CONFIG_HAS_DMA_P2P to declare that we want the DMA peer resource APIs
-enabled on x86, and provide the requisite dma_peer_mapping_error()
-implementation.
+Implement 'map_peer_resource' for the AMD IOMMU driver. Generalize the
+existing map_page implementation to operate on a physical address, and
+make both map_page and map_resource wrappers around that helper (and
+similarly, for unmap_page and unmap_resource).
 
-Signed-off-by: Will Davis <wdavis@nvidia.com>
+This allows a device to map another's resource, to enable peer-to-peer
+transactions.
+
+Add behind CONFIG_HAS_DMA_P2P guards, since the dma_map_ops members are
+behind them as well.
+
+Signed-off-by: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Reviewed-by: Terence Ripperda <tripperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Reviewed-by: John Hubbard <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- arch/x86/Kconfig                   |  1 +
- arch/x86/include/asm/dma-mapping.h | 18 ++++++++++++++++--
- 2 files changed, 17 insertions(+), 2 deletions(-)
+ drivers/iommu/amd_iommu.c | 99 ++++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 86 insertions(+), 13 deletions(-)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 3dbb7e7..581d1ad 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -149,6 +149,7 @@ config X86
- 	select VIRT_TO_BUS
- 	select X86_DEV_DMA_OPS			if X86_64
- 	select X86_FEATURE_NAMES		if PROC_FS
-+	select HAS_DMA_P2P
- 
- config INSTRUCTION_DECODER
- 	def_bool y
-diff --git a/arch/x86/include/asm/dma-mapping.h b/arch/x86/include/asm/dma-mapping.h
-index 1f5b728..64472d8 100644
---- a/arch/x86/include/asm/dma-mapping.h
-+++ b/arch/x86/include/asm/dma-mapping.h
-@@ -44,16 +44,30 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
- #include <asm-generic/dma-mapping-common.h>
- 
- /* Make sure we keep the same behaviour */
--static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
-+static inline int dma_mapping_error_common(struct device *dev, u64 dma_addr)
- {
- 	struct dma_map_ops *ops = get_dma_ops(dev);
--	debug_dma_mapping_error(dev, dma_addr);
- 	if (ops->mapping_error)
- 		return ops->mapping_error(dev, dma_addr);
- 
- 	return (dma_addr == DMA_ERROR_CODE);
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index a57e9b7..13a47f283 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -471,6 +471,10 @@ DECLARE_STATS_COUNTER(cnt_map_single);
+ DECLARE_STATS_COUNTER(cnt_unmap_single);
+ DECLARE_STATS_COUNTER(cnt_map_sg);
+ DECLARE_STATS_COUNTER(cnt_unmap_sg);
++#ifdef CONFIG_HAS_DMA_P2P
++DECLARE_STATS_COUNTER(cnt_map_peer_resource);
++DECLARE_STATS_COUNTER(cnt_unmap_peer_resource);
++#endif
+ DECLARE_STATS_COUNTER(cnt_alloc_coherent);
+ DECLARE_STATS_COUNTER(cnt_free_coherent);
+ DECLARE_STATS_COUNTER(cross_page);
+@@ -509,6 +513,10 @@ static void amd_iommu_stats_init(void)
+ 	amd_iommu_stats_add(&cnt_unmap_single);
+ 	amd_iommu_stats_add(&cnt_map_sg);
+ 	amd_iommu_stats_add(&cnt_unmap_sg);
++#ifdef CONFIG_HAS_DMA_P2P
++	amd_iommu_stats_add(&cnt_map_peer_resource);
++	amd_iommu_stats_add(&cnt_unmap_peer_resource);
++#endif
+ 	amd_iommu_stats_add(&cnt_alloc_coherent);
+ 	amd_iommu_stats_add(&cnt_free_coherent);
+ 	amd_iommu_stats_add(&cross_page);
+@@ -2585,20 +2593,16 @@ static void __unmap_single(struct dma_ops_domain *dma_dom,
  }
  
-+static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
+ /*
+- * The exported map_single function for dma_ops.
++ * Wrapper function that contains code common to mapping a physical address
++ * range from a page or a resource.
+  */
+-static dma_addr_t map_page(struct device *dev, struct page *page,
+-			   unsigned long offset, size_t size,
+-			   enum dma_data_direction dir,
+-			   struct dma_attrs *attrs)
++static dma_addr_t __map_phys(struct device *dev, phys_addr_t paddr,
++			     size_t size, enum dma_data_direction dir)
+ {
+ 	unsigned long flags;
+ 	struct protection_domain *domain;
+ 	dma_addr_t addr;
+ 	u64 dma_mask;
+-	phys_addr_t paddr = page_to_phys(page) + offset;
+-
+-	INC_STATS_COUNTER(cnt_map_single);
+ 
+ 	domain = get_domain(dev);
+ 	if (PTR_ERR(domain) == -EINVAL)
+@@ -2624,16 +2628,15 @@ out:
+ }
+ 
+ /*
+- * The exported unmap_single function for dma_ops.
++ * Wrapper function that contains code common to unmapping a physical address
++ * range from a page or a resource.
+  */
+-static void unmap_page(struct device *dev, dma_addr_t dma_addr, size_t size,
+-		       enum dma_data_direction dir, struct dma_attrs *attrs)
++static void __unmap_phys(struct device *dev, dma_addr_t dma_addr, size_t size,
++			 enum dma_data_direction dir)
+ {
+ 	unsigned long flags;
+ 	struct protection_domain *domain;
+ 
+-	INC_STATS_COUNTER(cnt_unmap_single);
+-
+ 	domain = get_domain(dev);
+ 	if (IS_ERR(domain))
+ 		return;
+@@ -2707,6 +2710,72 @@ unmap:
+ }
+ 
+ /*
++ * The exported map_single function for dma_ops.
++ */
++static dma_addr_t map_page(struct device *dev, struct page *page,
++			   unsigned long offset, size_t size,
++			   enum dma_data_direction dir,
++			   struct dma_attrs *attrs)
 +{
-+	debug_dma_mapping_error(dev, dma_addr);
-+	return dma_mapping_error_common(dev, (u64)dma_addr);
++	INC_STATS_COUNTER(cnt_map_single);
++
++	return __map_phys(dev, page_to_phys(page) + offset, size, dir);
++}
++
++/*
++ * The exported unmap_single function for dma_ops.
++ */
++static void unmap_page(struct device *dev, dma_addr_t dma_addr, size_t size,
++		       enum dma_data_direction dir, struct dma_attrs *attrs)
++{
++	INC_STATS_COUNTER(cnt_unmap_single);
++
++	__unmap_phys(dev, dma_addr, size, dir);
 +}
 +
 +#ifdef CONFIG_HAS_DMA_P2P
-+static inline int dma_peer_mapping_error(struct device *dev,
-+					 dma_peer_addr_t dma_addr)
++/*
++ * The exported map_peer_resource function for dma_ops.
++ */
++static dma_peer_addr_t map_peer_resource(struct device *dev,
++					 struct device *peer,
++					 struct resource *res,
++					 unsigned long offset,
++					 size_t size,
++					 enum dma_data_direction dir,
++					 struct dma_attrs *attrs)
 +{
-+	debug_dma_peer_mapping_error(dev, dma_addr);
-+	return dma_mapping_error_common(dev, (u64)dma_addr);
++	struct pci_dev *pdev;
++	struct pci_dev *ppeer;
++
++	INC_STATS_COUNTER(cnt_map_peer_resource);
++
++	if (!dev_is_pci(dev) || !dev_is_pci(peer))
++		return DMA_ERROR_CODE;
++
++	pdev = to_pci_dev(dev);
++	ppeer = to_pci_dev(peer);
++
++	if (!pci_peer_traffic_supported(pdev, ppeer))
++		return DMA_ERROR_CODE;
++
++	return __map_phys(dev, res->start + offset, size, dir);
++}
++
++/*
++ * The exported unmap_peer_resource function for dma_ops.
++ */
++static void unmap_peer_resource(struct device *dev, dma_peer_addr_t dma_addr,
++				size_t size, enum dma_data_direction dir,
++				struct dma_attrs *attrs)
++{
++	INC_STATS_COUNTER(cnt_unmap_peer_resource);
++
++	__unmap_phys(dev, dma_addr, size, dir);
 +}
 +#endif
 +
- #define dma_alloc_noncoherent(d, s, h, f) dma_alloc_coherent(d, s, h, f)
- #define dma_free_noncoherent(d, s, v, h) dma_free_coherent(d, s, v, h)
++/*
+  * The exported map_sg function for dma_ops (handles scatter-gather
+  * lists).
+  */
+@@ -2852,6 +2921,10 @@ static struct dma_map_ops amd_iommu_dma_ops = {
+ 	.unmap_page = unmap_page,
+ 	.map_sg = map_sg,
+ 	.unmap_sg = unmap_sg,
++#ifdef CONFIG_HAS_DMA_P2P
++	.map_peer_resource = map_peer_resource,
++	.unmap_peer_resource = unmap_peer_resource,
++#endif
+ 	.dma_supported = amd_iommu_dma_supported,
+ };
  
 -- 
 2.5.0
