@@ -1,112 +1,117 @@
-From: Will Davis <wdavis@nvidia.com>
-Subject: [PATCH v5 04/13] DMA-API: Introduce dma_(un)map_peer_resource
-Date: Tue, 18 Aug 2015 14:04:00 -0500
-Message-ID: <1439924649-29698-5-git-send-email-wdavis@nvidia.com>
-References: <1439924649-29698-1-git-send-email-wdavis@nvidia.com>
+From: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v5 00/13] DMA-API/PCI map_peer_resource support for
+	peer-to-peer
+Date: Tue, 18 Aug 2015 14:03:56 -0500
+Message-ID: <1439924649-29698-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1439924649-29698-1-git-send-email-wdavis@nvidia.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Konrad Wilk <konrad.wilk@oracle.com>, Mark Hounschell <markh@compro.net>, "David S. Miller" <davem@davemloft.net>, Jonathan Corbet <corbet@lwn.net>, Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>, Will Davis <wdavis@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, John Hubbard <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Terence Ripperda <tripperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Add functions to DMA-map and -unmap a peer device's resource for a given
-device. This will allow devices to DMA-map, for example, another device's
-BAR region on PCI to enable peer-to-peer transactions.
+Hi,
 
-Guard these new functions behind CONFIG_HAS_DMA_P2P.
+This is the fifth version of a patchset to add the DMA APIs necessary to
+map and unmap a PCI device's BAR to and from another PCI device's IOVA
+domain. This enables PCI peer-to-peer traffic on x86 platforms where an
+IOMMU is enabled (this requires that peer-to-peer traffic be supported by
+the underlying chipset as well, of course).
 
-Signed-off-by: Will Davis <wdavis@nvidia.com>
----
- include/asm-generic/dma-mapping-common.h | 43 ++++++++++++++++++++++++++++++++
- include/linux/dma-mapping.h              | 12 +++++++++
- 2 files changed, 55 insertions(+)
+Thanks,
+Will
 
-diff --git a/include/asm-generic/dma-mapping-common.h b/include/asm-generic/dma-mapping-common.h
-index 940d5ec..45eec17 100644
---- a/include/asm-generic/dma-mapping-common.h
-+++ b/include/asm-generic/dma-mapping-common.h
-@@ -73,6 +73,42 @@ static inline void dma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg
- 		ops->unmap_sg(dev, sg, nents, dir, attrs);
- }
- 
-+#ifdef CONFIG_HAS_DMA_P2P
-+static inline dma_peer_addr_t dma_map_peer_resource_attrs(struct device *dev,
-+							  struct device *peer,
-+							  struct resource *res,
-+							  size_t offset,
-+							  size_t size,
-+							  enum dma_data_direction dir,
-+							  struct dma_attrs *attrs)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+	dma_peer_addr_t addr;
-+
-+	BUG_ON(!valid_dma_direction(dir));
-+	BUG_ON(ops->map_peer_resource == NULL);
-+	addr = ops->map_peer_resource(dev, peer, res, offset, size, dir,
-+				      attrs);
-+	debug_dma_map_peer_resource(dev, peer, res, offset, size, dir, addr);
-+
-+	return addr;
-+}
-+
-+static inline void dma_unmap_peer_resource_attrs(struct device *dev,
-+						 dma_peer_addr_t addr,
-+						 size_t size,
-+						 enum dma_data_direction dir,
-+						 struct dma_attrs *attrs)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	BUG_ON(!valid_dma_direction(dir));
-+	if (ops->unmap_peer_resource)
-+		ops->unmap_peer_resource(dev, addr, size, dir, attrs);
-+	debug_dma_unmap_peer_resource(dev, addr, size, dir);
-+}
-+#endif
-+
- static inline dma_addr_t dma_map_page(struct device *dev, struct page *page,
- 				      size_t offset, size_t size,
- 				      enum dma_data_direction dir)
-@@ -181,6 +217,13 @@ dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
- #define dma_map_sg(d, s, n, r) dma_map_sg_attrs(d, s, n, r, NULL)
- #define dma_unmap_sg(d, s, n, r) dma_unmap_sg_attrs(d, s, n, r, NULL)
- 
-+#ifdef CONFIG_HAS_DMA_P2P
-+#define dma_map_peer_resource(d, p, e, o, s, r) \
-+	dma_map_peer_resource_attrs(d, p, e, o, s, r, NULL)
-+#define dma_unmap_peer_resource(d, a, s, r) \
-+	dma_unmap_peer_resource_attrs(d, a, s, r, NULL)
-+#endif
-+
- extern int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
- 			   void *cpu_addr, dma_addr_t dma_addr, size_t size);
- 
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index ac07ff0..7b8fddc 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -34,6 +34,18 @@ struct dma_map_ops {
- 	void (*unmap_page)(struct device *dev, dma_addr_t dma_handle,
- 			   size_t size, enum dma_data_direction dir,
- 			   struct dma_attrs *attrs);
-+#ifdef CONFIG_HAS_DMA_P2P
-+	dma_peer_addr_t (*map_peer_resource)(struct device *dev,
-+					     struct device *peer,
-+					     struct resource *res,
-+					     unsigned long offset, size_t size,
-+					     enum dma_data_direction dir,
-+					     struct dma_attrs *attrs);
-+	void (*unmap_peer_resource)(struct device *dev,
-+				    dma_peer_addr_t dma_handle,
-+				    size_t size, enum dma_data_direction dir,
-+				    struct dma_attrs *attrs);
-+#endif
- 	/*
- 	 * map_sg returns 0 on error and a value > 0 on success.
- 	 * It should never return a value < 0.
+v5:
+- moved topology and ACS checks into a separate
+  pci_peer_traffic_supported() API, which determines whether PCI peer-
+  to-peer traffic may work based on language in the PCI and PCI Express
+  specifications (excerpts included in comments)
+- added CONFIG_HAS_DMA_P2P guards to x86 PCI no-mmu implementation of
+  map_peer_resource
+- modified a few patch descriptions for style
+
+v4: http://www.spinics.net/lists/linux-pci/msg43136.html
+- added HAS_DMA_P2P Kconfig option to guard new APIs, which are only
+  supported on x86 with this patch series
+- added a new dma_peer_addr_t type to handle future platform support
+  where the dma_peer_addr_t needs to have the same width as the bus
+  address, which can be wider than the dma_addr_t returned by other
+  DMA APIs
+- added a new dma_peer_mapping_error() and associated PCI wrapper to
+  detect errors returned via dma_map_peer_resource() API and its
+  PCI wrapper
+- modified the interface of the new API to explicitly take the peer
+  device as an argument
+- renamed the (un)map_resource APIs to (un)map_peer_resource, since
+  they directly receive a 'peer' argument now
+- modified the new PCI interface to take the BAR index instead of the
+  actual struct resource
+- modified the pci-nommu implementation to perform topology and ACS
+  checks before allowing
+- modified both the AMD and Intel IOMMU implementations to require
+  that both devices be behind the same host bridge
+- exposed a couple of preexisting PCI utility functions to aid in the
+  topology checks for all of the x86 implementations
+
+v3: http://www.spinics.net/lists/linux-pci/msg41703.html
+- changed dma_map_resource() to BUG() if the map_resource DMA op is not
+  provided, instead of returning 0
+- updated documentation to remove requirement to check for 0 return value
+  as an error
+- remove const keyword from struct dma_map_ops in new DMA APIs for
+  consistency with other APIs
+
+v2: http://www.spinics.net/lists/linux-pci/msg41192.html
+- added documentation for the new DMA APIs
+- fixed physical-to-bus address conversion in the nommu implementation
+
+v1: http://www.spinics.net/lists/linux-pci/msg40747.html
+
+
+Will Davis (13):
+  lib/Kconfig: add HAS_DMA_P2P for peer-to-peer support
+  linux/types.h: Add dma_peer_addr_t type
+  dma-debug: add checking for map/unmap_peer_resource
+  DMA-API: Introduce dma_(un)map_peer_resource
+  dma-mapping: pci: add pci_(un)map_peer_resource
+  DMA-API: Add peer resource mapping documentation
+  PCI: Export pci_find_host_bridge()
+  PCI: Add pci_find_common_upstream_dev()
+  PCI: Add pci_peer_traffic_supported()
+  iommu/amd: Implement (un)map_peer_resource
+  iommu/vt-d: implement (un)map_peer_resource
+  x86: add pci-nommu implementation of map_peer_resource
+  x86: declare support for DMA P2P
+
+ Documentation/DMA-API-HOWTO.txt          | 69 ++++++++++++++++++++++
+ Documentation/DMA-API.txt                | 38 ++++++++++--
+ arch/x86/Kconfig                         |  1 +
+ arch/x86/include/asm/dma-mapping.h       | 18 +++++-
+ arch/x86/kernel/pci-nommu.c              | 36 ++++++++++++
+ drivers/iommu/amd_iommu.c                | 99 +++++++++++++++++++++++++++-----
+ drivers/iommu/intel-iommu.c              | 38 ++++++++++++
+ drivers/pci/host-bridge.c                | 19 +-----
+ drivers/pci/pci.c                        | 99 ++++++++++++++++++++++++++++++++
+ drivers/pci/search.c                     | 25 ++++++++
+ include/asm-generic/dma-mapping-common.h | 43 ++++++++++++++
+ include/asm-generic/pci-dma-compat.h     | 23 ++++++++
+ include/linux/dma-debug.h                | 39 ++++++++++++-
+ include/linux/dma-mapping.h              | 12 ++++
+ include/linux/pci.h                      | 12 ++++
+ include/linux/types.h                    | 13 ++++-
+ lib/Kconfig                              |  5 ++
+ lib/dma-debug.c                          | 86 ++++++++++++++++++++++++++-
+ 18 files changed, 633 insertions(+), 42 deletions(-)
+
 -- 
 2.5.0
