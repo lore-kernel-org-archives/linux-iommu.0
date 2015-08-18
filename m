@@ -1,7 +1,7 @@
 From: Will Davis <wdavis@nvidia.com>
-Subject: [PATCH v5 02/13] linux/types.h: Add dma_peer_addr_t type
-Date: Tue, 18 Aug 2015 14:03:58 -0500
-Message-ID: <1439924649-29698-3-git-send-email-wdavis@nvidia.com>
+Subject: [PATCH v5 04/13] DMA-API: Introduce dma_(un)map_peer_resource
+Date: Tue, 18 Aug 2015 14:04:00 -0500
+Message-ID: <1439924649-29698-5-git-send-email-wdavis@nvidia.com>
 References: <1439924649-29698-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,54 +12,101 @@ To: Bjorn Helgaas <bhelgaas@google.com>
 Cc: Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Konrad Wilk <konrad.wilk@oracle.com>, Mark Hounschell <markh@compro.net>, "David S. Miller" <davem@davemloft.net>, Jonathan Corbet <corbet@lwn.net>, Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>, Will Davis <wdavis@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On some platforms, a dma_addr_t is only 32 bits wide, but the bus addresses
-can be 64 bits wide. For peer-to-peer DMA, a device needs to use the full
-64-bit address. Therefore, introduce a DMA address type that is not
-constrained by the CPU DMA address size.
+Add functions to DMA-map and -unmap a peer device's resource for a given
+device. This will allow devices to DMA-map, for example, another device's
+BAR region on PCI to enable peer-to-peer transactions.
 
-This is only needed for peer-to-peer DMA, so guard this definition with a
-CONFIG_HAS_DMA_P2P check.
+Guard these new functions behind CONFIG_HAS_DMA_P2P.
 
 Signed-off-by: Will Davis <wdavis@nvidia.com>
 ---
- include/linux/types.h | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ include/asm-generic/dma-mapping-common.h | 43 ++++++++++++++++++++++++++++++++
+ include/linux/dma-mapping.h              | 12 +++++++++
+ 2 files changed, 55 insertions(+)
 
-diff --git a/include/linux/types.h b/include/linux/types.h
-index 8715287..dd85173 100644
---- a/include/linux/types.h
-+++ b/include/linux/types.h
-@@ -140,13 +140,13 @@ typedef unsigned long blkcnt_t;
- #define pgoff_t unsigned long
+diff --git a/include/asm-generic/dma-mapping-common.h b/include/asm-generic/dma-mapping-common.h
+index 940d5ec..45eec17 100644
+--- a/include/asm-generic/dma-mapping-common.h
++++ b/include/asm-generic/dma-mapping-common.h
+@@ -73,6 +73,42 @@ static inline void dma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg
+ 		ops->unmap_sg(dev, sg, nents, dir, attrs);
+ }
  
- /*
-- * A dma_addr_t can hold any valid DMA address, i.e., any address returned
-+ * A dma_addr_t can hold any valid DMA address, i.e., most addresses returned
-  * by the DMA API.
-  *
-  * If the DMA API only uses 32-bit addresses, dma_addr_t need only be 32
-  * bits wide.  Bus addresses, e.g., PCI BARs, may be wider than 32 bits,
-  * but drivers do memory-mapped I/O to ioremapped kernel virtual addresses,
-- * so they don't care about the size of the actual bus addresses.
-+ * so they don't care about the size of the actual bus addresses in most cases.
-  */
- #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
- typedef u64 dma_addr_t;
-@@ -154,6 +154,15 @@ typedef u64 dma_addr_t;
- typedef u32 dma_addr_t;
- #endif
- 
-+/*
-+ * Unlike dma_addr_t, a dma_peer_addr_t can hold any bus address for the
-+ * platform. Drivers should only need this for peer-to-peer use cases, where
-+ * the DMA target is also on the bus.
-+ */
 +#ifdef CONFIG_HAS_DMA_P2P
-+typedef u64 dma_peer_addr_t;
++static inline dma_peer_addr_t dma_map_peer_resource_attrs(struct device *dev,
++							  struct device *peer,
++							  struct resource *res,
++							  size_t offset,
++							  size_t size,
++							  enum dma_data_direction dir,
++							  struct dma_attrs *attrs)
++{
++	struct dma_map_ops *ops = get_dma_ops(dev);
++	dma_peer_addr_t addr;
++
++	BUG_ON(!valid_dma_direction(dir));
++	BUG_ON(ops->map_peer_resource == NULL);
++	addr = ops->map_peer_resource(dev, peer, res, offset, size, dir,
++				      attrs);
++	debug_dma_map_peer_resource(dev, peer, res, offset, size, dir, addr);
++
++	return addr;
++}
++
++static inline void dma_unmap_peer_resource_attrs(struct device *dev,
++						 dma_peer_addr_t addr,
++						 size_t size,
++						 enum dma_data_direction dir,
++						 struct dma_attrs *attrs)
++{
++	struct dma_map_ops *ops = get_dma_ops(dev);
++
++	BUG_ON(!valid_dma_direction(dir));
++	if (ops->unmap_peer_resource)
++		ops->unmap_peer_resource(dev, addr, size, dir, attrs);
++	debug_dma_unmap_peer_resource(dev, addr, size, dir);
++}
 +#endif
 +
- typedef unsigned __bitwise__ gfp_t;
- typedef unsigned __bitwise__ fmode_t;
- typedef unsigned __bitwise__ oom_flags_t;
+ static inline dma_addr_t dma_map_page(struct device *dev, struct page *page,
+ 				      size_t offset, size_t size,
+ 				      enum dma_data_direction dir)
+@@ -181,6 +217,13 @@ dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
+ #define dma_map_sg(d, s, n, r) dma_map_sg_attrs(d, s, n, r, NULL)
+ #define dma_unmap_sg(d, s, n, r) dma_unmap_sg_attrs(d, s, n, r, NULL)
+ 
++#ifdef CONFIG_HAS_DMA_P2P
++#define dma_map_peer_resource(d, p, e, o, s, r) \
++	dma_map_peer_resource_attrs(d, p, e, o, s, r, NULL)
++#define dma_unmap_peer_resource(d, a, s, r) \
++	dma_unmap_peer_resource_attrs(d, a, s, r, NULL)
++#endif
++
+ extern int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
+ 			   void *cpu_addr, dma_addr_t dma_addr, size_t size);
+ 
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index ac07ff0..7b8fddc 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -34,6 +34,18 @@ struct dma_map_ops {
+ 	void (*unmap_page)(struct device *dev, dma_addr_t dma_handle,
+ 			   size_t size, enum dma_data_direction dir,
+ 			   struct dma_attrs *attrs);
++#ifdef CONFIG_HAS_DMA_P2P
++	dma_peer_addr_t (*map_peer_resource)(struct device *dev,
++					     struct device *peer,
++					     struct resource *res,
++					     unsigned long offset, size_t size,
++					     enum dma_data_direction dir,
++					     struct dma_attrs *attrs);
++	void (*unmap_peer_resource)(struct device *dev,
++				    dma_peer_addr_t dma_handle,
++				    size_t size, enum dma_data_direction dir,
++				    struct dma_attrs *attrs);
++#endif
+ 	/*
+ 	 * map_sg returns 0 on error and a value > 0 on success.
+ 	 * It should never return a value < 0.
 -- 
 2.5.0
