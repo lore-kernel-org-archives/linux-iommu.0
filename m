@@ -1,82 +1,84 @@
-From: Will Davis <wdavis@nvidia.com>
-Subject: [PATCH v5 12/13] x86: add pci-nommu implementation of map_peer_resource
-Date: Tue, 18 Aug 2015 14:04:08 -0500
-Message-ID: <1439924649-29698-13-git-send-email-wdavis@nvidia.com>
+From: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v5 07/13] PCI: Export pci_find_host_bridge()
+Date: Tue, 18 Aug 2015 14:04:03 -0500
+Message-ID: <1439924649-29698-8-git-send-email-wdavis@nvidia.com>
 References: <1439924649-29698-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1439924649-29698-1-git-send-email-wdavis@nvidia.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Konrad Wilk <konrad.wilk@oracle.com>, Mark Hounschell <markh@compro.net>, "David S. Miller" <davem@davemloft.net>, Jonathan Corbet <corbet@lwn.net>, Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>, Will Davis <wdavis@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1439924649-29698-1-git-send-email-wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, John Hubbard <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Terence Ripperda <tripperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Add Intel nommu implementation of 'map_peer_resource', which simply checks
-whether peer traffic should be allowed and converts the resource to a bus
-address.
+Return the struct pci_host_bridge corresponding to the given
+struct pci_bus.
 
-Add behind CONFIG_HAS_DMA_P2P guards, since the dma_map_ops members are
-behind them as well.
-
-Signed-off-by: Will Davis <wdavis@nvidia.com>
+Signed-off-by: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- arch/x86/kernel/pci-nommu.c | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ drivers/pci/host-bridge.c | 19 ++-----------------
+ include/linux/pci.h       |  7 +++++++
+ 2 files changed, 9 insertions(+), 17 deletions(-)
 
-diff --git a/arch/x86/kernel/pci-nommu.c b/arch/x86/kernel/pci-nommu.c
-index da15918..4b45cc6 100644
---- a/arch/x86/kernel/pci-nommu.c
-+++ b/arch/x86/kernel/pci-nommu.c
-@@ -38,6 +38,39 @@ static dma_addr_t nommu_map_page(struct device *dev, struct page *page,
- 	return bus;
+diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
+index 5f4a2e0..6c2c82a 100644
+--- a/drivers/pci/host-bridge.c
++++ b/drivers/pci/host-bridge.c
+@@ -8,25 +8,10 @@
+ 
+ #include "pci.h"
+ 
+-static struct pci_bus *find_pci_root_bus(struct pci_bus *bus)
+-{
+-	while (bus->parent)
+-		bus = bus->parent;
+-
+-	return bus;
+-}
+-
+-struct pci_host_bridge *pci_find_host_bridge(struct pci_bus *bus)
+-{
+-	struct pci_bus *root_bus = find_pci_root_bus(bus);
+-
+-	return to_pci_host_bridge(root_bus->bridge);
+-}
+-
+ struct device *pci_get_host_bridge_device(struct pci_dev *dev)
+ {
+-	struct pci_bus *root_bus = find_pci_root_bus(dev->bus);
+-	struct device *bridge = root_bus->bridge;
++	struct pci_host_bridge *host_bridge = pci_find_host_bridge(dev->bus);
++	struct device *bridge = &host_bridge->dev;
+ 
+ 	kobject_get(&bridge->kobj);
+ 	return bridge;
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 8a0321a..d58063e 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -512,6 +512,13 @@ static inline struct pci_dev *pci_upstream_bridge(struct pci_dev *dev)
+ 	return dev->bus->self;
  }
  
-+#ifdef CONFIG_HAS_DMA_P2P
-+static dma_peer_addr_t nommu_map_peer_resource(struct device *dev,
-+					       struct device *peer,
-+					       struct resource *res,
-+					       unsigned long offset,
-+					       size_t size,
-+					       enum dma_data_direction dir,
-+					       struct dma_attrs *attrs)
++static inline struct pci_host_bridge *pci_find_host_bridge(struct pci_bus *bus)
 +{
-+	struct pci_dev *pdev;
-+	struct pci_dev *ppeer;
-+	struct pci_bus_region region;
-+	dma_peer_addr_t dma_address;
-+
-+	if (!dev_is_pci(dev) || !dev_is_pci(peer))
-+		return DMA_ERROR_CODE;
-+
-+	pdev = to_pci_dev(dev);
-+	ppeer = to_pci_dev(peer);
-+
-+	if (!pci_peer_traffic_supported(pdev, ppeer))
-+		return DMA_ERROR_CODE;
-+
-+	pcibios_resource_to_bus(pdev->bus, &region, res);
-+	dma_address = region.start + offset;
-+	WARN_ON(size == 0);
-+	if (!check_addr("map_peer_resource", dev, dma_address, size))
-+		return DMA_ERROR_CODE;
-+	flush_write_buffers();
-+	return dma_address;
++	while (bus->parent)
++		bus = bus->parent;
++	return to_pci_host_bridge(bus->bridge);
 +}
-+#endif
 +
- /* Map a set of buffers described by scatterlist in streaming
-  * mode for DMA.  This is the scatter-gather version of the
-  * above pci_map_single interface.  Here the scatter gather list
-@@ -93,6 +126,9 @@ struct dma_map_ops nommu_dma_ops = {
- 	.free			= dma_generic_free_coherent,
- 	.map_sg			= nommu_map_sg,
- 	.map_page		= nommu_map_page,
-+#ifdef CONFIG_HAS_DMA_P2P
-+	.map_peer_resource	= nommu_map_peer_resource,
-+#endif
- 	.sync_single_for_device = nommu_sync_single_for_device,
- 	.sync_sg_for_device	= nommu_sync_sg_for_device,
- 	.is_phys		= 1,
+ struct device *pci_get_host_bridge_device(struct pci_dev *dev);
+ void pci_put_host_bridge_device(struct device *dev);
+ 
 -- 
 2.5.0
