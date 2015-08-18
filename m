@@ -1,7 +1,7 @@
 From: Will Davis <wdavis@nvidia.com>
-Subject: [PATCH v5 05/13] dma-mapping: pci: add pci_(un)map_peer_resource
-Date: Tue, 18 Aug 2015 14:04:01 -0500
-Message-ID: <1439924649-29698-6-git-send-email-wdavis@nvidia.com>
+Subject: [PATCH v5 08/13] PCI: Add pci_find_common_upstream_dev()
+Date: Tue, 18 Aug 2015 14:04:04 -0500
+Message-ID: <1439924649-29698-9-git-send-email-wdavis@nvidia.com>
 References: <1439924649-29698-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,53 +12,60 @@ To: Bjorn Helgaas <bhelgaas@google.com>
 Cc: Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Konrad Wilk <konrad.wilk@oracle.com>, Mark Hounschell <markh@compro.net>, "David S. Miller" <davem@davemloft.net>, Jonathan Corbet <corbet@lwn.net>, Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>, Will Davis <wdavis@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Simply route these through to the new dma_(un)map_peer_resource APIs.
-
-Also route pci_peer_mapping_error through to the new dma_peer_mapping_error
-API.
-
-Guard these new functions behind CONFIG_HAS_DMA_P2P.
+Add an interface to find the first device which is upstream of both
+devices.
 
 Signed-off-by: Will Davis <wdavis@nvidia.com>
-Reviewed-by: Terence Ripperda <tripperda@nvidia.com>
-Reviewed-by: John Hubbard <jhubbard@nvidia.com>
 ---
- include/asm-generic/pci-dma-compat.h | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ drivers/pci/search.c | 25 +++++++++++++++++++++++++
+ include/linux/pci.h  |  2 ++
+ 2 files changed, 27 insertions(+)
 
-diff --git a/include/asm-generic/pci-dma-compat.h b/include/asm-generic/pci-dma-compat.h
-index c110843..7baf09e 100644
---- a/include/asm-generic/pci-dma-compat.h
-+++ b/include/asm-generic/pci-dma-compat.h
-@@ -61,6 +61,29 @@ pci_unmap_page(struct pci_dev *hwdev, dma_addr_t dma_address,
- 	dma_unmap_page(hwdev == NULL ? NULL : &hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
+diff --git a/drivers/pci/search.c b/drivers/pci/search.c
+index a20ce7d..b6ed554 100644
+--- a/drivers/pci/search.c
++++ b/drivers/pci/search.c
+@@ -384,3 +384,28 @@ int pci_dev_present(const struct pci_device_id *ids)
+ 	return 0;
  }
+ EXPORT_SYMBOL(pci_dev_present);
++
++/**
++ * pci_find_common_upstream_dev - Returns the first common upstream device
++ * @dev: the PCI device from which the bus hierarchy walk will start
++ * @other: the PCI device whose bus number will be used for the search
++ *
++ * Walks up the bus hierarchy from the @dev device, looking for the first bus
++ * which the @other device is downstream of. Returns %NULL if the devices do
++ * not share any upstream devices.
++ */
++struct pci_dev *pci_find_common_upstream_dev(struct pci_dev *dev,
++					     struct pci_dev *other)
++{
++	struct pci_dev *pdev = dev;
++
++	while (pdev != NULL) {
++		if ((other->bus->number >= pdev->bus->busn_res.start) &&
++		    (other->bus->number <= pdev->bus->busn_res.end))
++			return pdev;
++		pdev = pci_upstream_bridge(pdev);
++	}
++
++	return NULL;
++}
++EXPORT_SYMBOL(pci_find_common_upstream_dev);
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index d58063e..8262b9e 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -860,6 +860,8 @@ static inline struct pci_dev *pci_get_bus_and_slot(unsigned int bus,
+ }
+ struct pci_dev *pci_get_class(unsigned int class, struct pci_dev *from);
+ int pci_dev_present(const struct pci_device_id *ids);
++struct pci_dev *pci_find_common_upstream_dev(struct pci_dev *from,
++					     struct pci_dev *to);
  
-+#ifdef CONFIG_HAS_DMA_P2P
-+static inline dma_peer_addr_t
-+pci_map_peer_resource(struct pci_dev *hwdev, struct pci_dev *peer,
-+		      int res, unsigned long offset, size_t size,
-+		      int direction)
-+{
-+	return dma_map_peer_resource(hwdev == NULL ? NULL : &hwdev->dev, peer == NULL ? NULL : &peer->dev, peer == NULL ? NULL : &peer->resource[res], offset, size, (enum dma_data_direction)direction);
-+}
-+
-+static inline int
-+pci_dma_peer_mapping_error(struct pci_dev *pdev, dma_peer_addr_t dma_addr)
-+{
-+	return dma_peer_mapping_error(&pdev->dev, dma_addr);
-+}
-+
-+static inline void
-+pci_unmap_peer_resource(struct pci_dev *hwdev, dma_peer_addr_t dma_address,
-+			size_t size, int direction)
-+{
-+	dma_unmap_peer_resource(hwdev == NULL ? NULL : &hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
-+}
-+#endif
-+
- static inline int
- pci_map_sg(struct pci_dev *hwdev, struct scatterlist *sg,
- 	   int nents, int direction)
+ int pci_bus_read_config_byte(struct pci_bus *bus, unsigned int devfn,
+ 			     int where, u8 *val);
 -- 
 2.5.0
