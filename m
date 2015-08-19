@@ -1,146 +1,62 @@
-From: <tchalamarla@caviumnetworks.com>
-Subject: [PATCH V4] iommu/arm-smmu-v2: ThunderX mis-extends 64bit registers
-Date: Tue, 18 Aug 2015 16:40:30 -0700
-Message-ID: <1439941230-27183-1-git-send-email-tchalamarla@caviumnetworks.com>
+From: William Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: RE: [PATCH v5 04/13] DMA-API: Introduce dma_(un)map_peer_resource
+Date: Wed, 19 Aug 2015 14:32:28 +0000
+Message-ID: <6dc99896b40345cfbc35b4da9b370bbd@HQMAIL106.nvidia.com>
+References: <2dd0ce48-fb6e-4003-90ee-33827ebfc7c1@default>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: will.deacon@arm.com
-Cc: linux@arm.linux.org.uk, ddaney@caviumnetworks.com, iommu@lists.linux-foundation.org, robert.richter@caviumnetworks.com, tchalamarla@caviumnetworks.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <2dd0ce48-fb6e-4003-90ee-33827ebfc7c1@default>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Konrad Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Cc: "corbet-T1hC0tSOHrs@public.gmane.org" <corbet-T1hC0tSOHrs@public.gmane.org>, John Hubbard <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Terence Ripperda <TRipperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Tirumalesh Chalamarla <tchalamarla@caviumnetworks.com>
+> > +#ifdef CONFIG_HAS_DMA_P2P
+> > +static inline dma_peer_addr_t dma_map_peer_resource_attrs(struct
+> > device *dev,
+> > +							  struct device *peer,
+> > +							  struct resource *res,
+> > +							  size_t offset,
+> > +							  size_t size,
+> > +							  enum dma_data_direction dir,
+> > +							  struct dma_attrs *attrs)
+> > +{
+> > +	struct dma_map_ops *ops = get_dma_ops(dev);
+> > +	dma_peer_addr_t addr;
+> > +
+> > +	BUG_ON(!valid_dma_direction(dir));
+> > +	BUG_ON(ops->map_peer_resource == NULL);
+> > +	addr = ops->map_peer_resource(dev, peer, res, offset, size, dir,
+> > +				      attrs);
+> > +	debug_dma_map_peer_resource(dev, peer, res, offset, size, dir,
+> > addr);
+> > +
+> > +	return addr;
+> > +
+> 
+> With those 'BUG_ON' you need to make sure that every dma_map_ops has
+> this implemented. That means the calgary_dma_ops, gart_dma_ops, swiotlb_dma_ops,
+> and xen_swiotlb_dma_ops MUST have something implemented.
+> 
+> Please keep in mind that on one can do 'iommu=soft swiotbl=force' on the
+> command line which will force the IOMMUs to be ignored and only the
+> SWIOTLB code will be used.
 
-The SMMU architecture defines two different behaviors when 64-bit
-registers are written with 32-bit writes.  The first behavior causes
-zero extension into the upper 32-bits.  The second behavior splits a
-64-bit register into "normal" 32-bit register pairs.
+Thanks for the feedback, Konrad. I will add implementations for those
+dma_map_ops in v6.
 
-On some buggy implementations, registers incorrectly zero extended
-when they should instead behave as normal 32-bit register pairs.
+Will
 
-Signed-off-by: Tirumalesh Chalamarla <tchalamarla@caviumnetworks.com>
-
-Changes from V3:
-        - rebased on iommu/devel
-
-Changes from V2:
-        - removed unused definitions
-
-Changes from V1:
-        - Introduced smmu_writeq
----
- drivers/iommu/arm-smmu.c | 50 ++++++++++++++++++++++++++----------------------
- 1 file changed, 27 insertions(+), 23 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 48a39df..b58bfa4 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -70,6 +70,18 @@
- 		((smmu->options & ARM_SMMU_OPT_SECURE_CFG_ACCESS)	\
- 			? 0x400 : 0))
- 
-+#ifdef CONFIG_64BIT
-+#define smmu_writeq(reg64, addr)	writeq_relaxed((reg64), (addr))
-+#else
-+#define smmu_writeq(reg64, addr)				\
-+	do {							\
-+		u64 __val = (reg64);				\
-+		void __iomem *__addr = (addr);			\
-+		writel_relaxed(__val >> 32, __addr + 4);	\
-+		writel_relaxed(__val, __addr);			\
-+	} while (0)
-+#endif
-+
- /* Configuration registers */
- #define ARM_SMMU_GR0_sCR0		0x0
- #define sCR0_CLIENTPD			(1 << 0)
-@@ -185,10 +197,8 @@
- #define ARM_SMMU_CB_SCTLR		0x0
- #define ARM_SMMU_CB_RESUME		0x8
- #define ARM_SMMU_CB_TTBCR2		0x10
--#define ARM_SMMU_CB_TTBR0_LO		0x20
--#define ARM_SMMU_CB_TTBR0_HI		0x24
--#define ARM_SMMU_CB_TTBR1_LO		0x28
--#define ARM_SMMU_CB_TTBR1_HI		0x2c
-+#define ARM_SMMU_CB_TTBR0		0x20
-+#define ARM_SMMU_CB_TTBR1		0x28
- #define ARM_SMMU_CB_TTBCR		0x30
- #define ARM_SMMU_CB_S1_MAIR0		0x38
- #define ARM_SMMU_CB_S1_MAIR1		0x3c
-@@ -226,7 +236,7 @@
- #define TTBCR2_SEP_SHIFT		15
- #define TTBCR2_SEP_UPSTREAM		(0x7 << TTBCR2_SEP_SHIFT)
- 
--#define TTBRn_HI_ASID_SHIFT            16
-+#define TTBRn_ASID_SHIFT		48
- 
- #define FSR_MULTI			(1 << 31)
- #define FSR_SS				(1 << 30)
-@@ -695,6 +705,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 				       struct io_pgtable_cfg *pgtbl_cfg)
- {
- 	u32 reg;
-+	u64 reg64;
- 	bool stage1;
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
-@@ -738,22 +749,17 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 
- 	/* TTBRs */
- 	if (stage1) {
--		reg = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
--		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0_LO);
--		reg = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0] >> 32;
--		reg |= ARM_SMMU_CB_ASID(cfg) << TTBRn_HI_ASID_SHIFT;
--		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0_HI);
--
--		reg = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
--		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR1_LO);
--		reg = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1] >> 32;
--		reg |= ARM_SMMU_CB_ASID(cfg) << TTBRn_HI_ASID_SHIFT;
--		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR1_HI);
-+		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
-+
-+		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
-+		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR0);
-+
-+		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
-+		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
-+		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR1);
- 	} else {
--		reg = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
--		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0_LO);
--		reg = pgtbl_cfg->arm_lpae_s2_cfg.vttbr >> 32;
--		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0_HI);
-+		reg64 = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
-+		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR0);
- 	}
- 
- 	/* TTBCR */
-@@ -1212,11 +1218,9 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
- 
- 	/* ATS1 registers can only be written atomically */
- 	va = iova & ~0xfffUL;
--#ifdef CONFIG_64BIT
- 	if (smmu->version == ARM_SMMU_V2)
--		writeq_relaxed(va, cb_base + ARM_SMMU_CB_ATS1PR);
-+		smmu_writeq(va, cb_base + ARM_SMMU_CB_ATS1PR);
- 	else
--#endif
- 		writel_relaxed(va, cb_base + ARM_SMMU_CB_ATS1PR);
- 
- 	if (readl_poll_timeout_atomic(cb_base + ARM_SMMU_CB_ATSR, tmp,
--- 
-2.1.0
+--
+nvpublic
