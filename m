@@ -1,17 +1,13 @@
-From: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] Fix bug in iommu_context_addr: Always get pointer to
-	lower extended-context-table
-Date: Tue, 25 Aug 2015 10:59:37 +0200
-Message-ID: <20150825085937.GD32055@8bytes.org>
-References: <F9D82F0D71C0024FA18FE771EDDAF149081FAC8F@G4W3303.americas.hpqcorp.net>
-	<20150825084208.GB32055@8bytes.org>
-	<F9D82F0D71C0024FA18FE771EDDAF149082020ED@G4W3298.americas.hpqcorp.net>
+From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v7 01/17] KVM: Extend struct pi_desc for VT-d Posted-Interrupts
+Date: Tue, 25 Aug 2015 16:50:04 +0800
+Message-ID: <1440492620-15934-2-git-send-email-feng.wu@intel.com>
+References: <1440492620-15934-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <F9D82F0D71C0024FA18FE771EDDAF149082020ED-aJCdeS5/g6oSZAcGdq5asR6epYMZPwEe5NbjCUgZEJk@public.gmane.org>
+In-Reply-To: <1440492620-15934-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,50 +17,47 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Xiao, Nan (Nan@HPservers-Core-OE-PSC)" <nan.xiao-VXdhtT5mjnY@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Aug 25, 2015 at 08:46:27AM +0000, Xiao, Nan (Nan@HPservers-Core-OE-PSC) wrote:
-> Yes, your patch is simple and better!
+Extend struct pi_desc for VT-d Posted-Interrupts.
 
-Okay, I queued this patch to my x86/vt-d branch:
-
->From 03932776424a799c3f065a69e98076a78530288b Mon Sep 17 00:00:00 2001
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Date: Tue, 25 Aug 2015 10:54:28 +0200
-Subject: [PATCH] iommu/vt-d: Really use upper context table when necessary
-
-There is a bug in iommu_context_addr() which will always use
-the lower context table, event when the upper context table
-needs to be used. Fix this issue.
-
-Fixes: 03ecc32c5274 ("iommu/vt-d: support extended root and context entries")
-Reported-by: Xiao, Nan <nan.xiao-VXdhtT5mjnY@public.gmane.org>
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/vmx.c | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index a85077d..63daf1b 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -803,6 +803,7 @@ static inline struct context_entry *iommu_context_addr(struct intel_iommu *iommu
- 	struct context_entry *context;
- 	u64 *entry;
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index 83b7b5c..271dd70 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -446,8 +446,24 @@ struct nested_vmx {
+ /* Posted-Interrupt Descriptor */
+ struct pi_desc {
+ 	u32 pir[8];     /* Posted interrupt requested */
+-	u32 control;	/* bit 0 of control is outstanding notification bit */
+-	u32 rsvd[7];
++	union {
++		struct {
++				/* bit 256 - Outstanding Notification */
++			u16	on	: 1,
++				/* bit 257 - Suppress Notification */
++				sn	: 1,
++				/* bit 271:258 - Reserved */
++				rsvd_1	: 14;
++				/* bit 279:272 - Notification Vector */
++			u8	nv;
++				/* bit 287:280 - Reserved */
++			u8	rsvd_2;
++				/* bit 319:288 - Notification Destination */
++			u32	ndst;
++		};
++		u64 control;
++	};
++	u32 rsvd[6];
+ } __aligned(64);
  
-+	entry = &root->lo;
- 	if (ecs_enabled(iommu)) {
- 		if (devfn >= 0x80) {
- 			devfn -= 0x80;
-@@ -810,7 +811,6 @@ static inline struct context_entry *iommu_context_addr(struct intel_iommu *iommu
- 		}
- 		devfn *= 2;
- 	}
--	entry = &root->lo;
- 	if (*entry & 1)
- 		context = phys_to_virt(*entry & VTD_PAGE_MASK);
- 	else {
+ static bool pi_test_and_set_on(struct pi_desc *pi_desc)
 -- 
-1.8.4.5
+2.1.0
