@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v7 05/17] KVM: Add interfaces to control PI outside vmx
-Date: Tue, 25 Aug 2015 16:50:08 +0800
-Message-ID: <1440492620-15934-6-git-send-email-feng.wu@intel.com>
+Subject: [PATCH v7 06/17] KVM: Make struct kvm_irq_routing_table accessible
+Date: Tue, 25 Aug 2015 16:50:09 +0800
+Message-ID: <1440492620-15934-7-git-send-email-feng.wu@intel.com>
 References: <1440492620-15934-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,59 +21,60 @@ To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7a
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds pi_clear_sn and pi_set_sn to struct kvm_x86_ops,
-so we can set/clear SN outside vmx.
+Move struct kvm_irq_routing_table from irqchip.c to kvm_host.h,
+so we can use it outside of irqchip.c.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/include/asm/kvm_host.h |  3 +++
- arch/x86/kvm/vmx.c              | 13 +++++++++++++
- 2 files changed, 16 insertions(+)
+ include/linux/kvm_host.h | 14 ++++++++++++++
+ virt/kvm/irqchip.c       | 10 ----------
+ 2 files changed, 14 insertions(+), 10 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index d50c1d3..c4f99f1 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -860,6 +860,9 @@ struct kvm_x86_ops {
- 					   gfn_t offset, unsigned long mask);
- 
- 	u64 (*get_pi_desc_addr)(struct kvm_vcpu *vcpu);
-+
-+	void (*pi_clear_sn)(struct kvm_vcpu *vcpu);
-+	void (*pi_set_sn)(struct kvm_vcpu *vcpu);
- 	/* pmu operations of sub-arch */
- 	const struct kvm_pmu_ops *pmu_ops;
- };
-diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-index 81a995c..234f720 100644
---- a/arch/x86/kvm/vmx.c
-+++ b/arch/x86/kvm/vmx.c
-@@ -615,6 +615,16 @@ struct pi_desc *vcpu_to_pi_desc(struct kvm_vcpu *vcpu)
- 	return &(to_vmx(vcpu)->pi_desc);
- }
- 
-+static void vmx_pi_clear_sn(struct kvm_vcpu *vcpu)
-+{
-+	pi_clear_sn(vcpu_to_pi_desc(vcpu));
-+}
-+
-+static void vmx_pi_set_sn(struct kvm_vcpu *vcpu)
-+{
-+	pi_set_sn(vcpu_to_pi_desc(vcpu));
-+}
-+
- static unsigned long shadow_read_only_fields[] = {
- 	/*
- 	 * We do NOT shadow fields that are modified when L0
-@@ -10471,6 +10481,9 @@ static struct kvm_x86_ops vmx_x86_ops = {
- 
- 	.get_pi_desc_addr = vmx_get_pi_desc_addr,
- 
-+	.pi_clear_sn = vmx_pi_clear_sn,
-+	.pi_set_sn = vmx_pi_set_sn,
-+
- 	.pmu_ops = &intel_pmu_ops,
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index 5ac8d21..5f183fb 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -328,6 +328,20 @@ struct kvm_kernel_irq_routing_entry {
+ 	struct hlist_node link;
  };
  
++#ifdef CONFIG_HAVE_KVM_IRQ_ROUTING
++
++struct kvm_irq_routing_table {
++	int chip[KVM_NR_IRQCHIPS][KVM_IRQCHIP_NUM_PINS];
++	u32 nr_rt_entries;
++	/*
++	 * Array indexed by gsi. Each entry contains list of irq chips
++	 * the gsi is connected to.
++	 */
++	struct hlist_head map[0];
++};
++
++#endif
++
+ #ifndef KVM_PRIVATE_MEM_SLOTS
+ #define KVM_PRIVATE_MEM_SLOTS 0
+ #endif
+diff --git a/virt/kvm/irqchip.c b/virt/kvm/irqchip.c
+index 21c1424..2cf45d3 100644
+--- a/virt/kvm/irqchip.c
++++ b/virt/kvm/irqchip.c
+@@ -31,16 +31,6 @@
+ #include <trace/events/kvm.h>
+ #include "irq.h"
+ 
+-struct kvm_irq_routing_table {
+-	int chip[KVM_NR_IRQCHIPS][KVM_IRQCHIP_NUM_PINS];
+-	u32 nr_rt_entries;
+-	/*
+-	 * Array indexed by gsi. Each entry contains list of irq chips
+-	 * the gsi is connected to.
+-	 */
+-	struct hlist_head map[0];
+-};
+-
+ int kvm_irq_map_gsi(struct kvm *kvm,
+ 		    struct kvm_kernel_irq_routing_entry *entries, int gsi)
+ {
 -- 
 2.1.0
