@@ -1,8 +1,8 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v7 16/17] KVM: Warn if 'SN' is set during posting interrupts
-	by software
-Date: Tue, 25 Aug 2015 16:50:19 +0800
-Message-ID: <1440492620-15934-17-git-send-email-feng.wu@intel.com>
+Subject: [PATCH v7 14/17] KVM: Update Posted-Interrupts Descriptor when vCPU
+	is preempted
+Date: Tue, 25 Aug 2015 16:50:17 +0800
+Message-ID: <1440492620-15934-15-git-send-email-feng.wu@intel.com>
 References: <1440492620-15934-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,45 +22,95 @@ To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7a
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Currently, we don't support urgent interrupt, all interrupts
-are recognized as non-urgent interrupt, so we cannot post
-interrupts when 'SN' is set.
+This patch updates the Posted-Interrupts Descriptor when vCPU
+is preempted.
 
-If the vcpu is in guest mode, it cannot have been scheduled out,
-and that's the only case when SN is set currently, warning if
-SN is set.
+sched out:
+- Set 'SN' to suppress furture non-urgent interrupts posted for
+the vCPU.
+
+sched in:
+- Clear 'SN'
+- Change NDST if vCPU is scheduled to a different CPU
+- Set 'NV' to POSTED_INTR_VECTOR
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/kvm/vmx.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ arch/x86/kvm/vmx.c | 51 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
 
 diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-index 64e35ea..eb640a1 100644
+index 234f720..9c87064 100644
 --- a/arch/x86/kvm/vmx.c
 +++ b/arch/x86/kvm/vmx.c
-@@ -4494,6 +4494,22 @@ static inline bool kvm_vcpu_trigger_posted_interrupt(struct kvm_vcpu *vcpu)
+@@ -45,6 +45,7 @@
+ #include <asm/debugreg.h>
+ #include <asm/kexec.h>
+ #include <asm/apic.h>
++#include <asm/irq_remapping.h>
+ 
+ #include "trace.h"
+ #include "pmu.h"
+@@ -2001,10 +2002,60 @@ static void vmx_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
+ 		vmcs_writel(HOST_IA32_SYSENTER_ESP, sysenter_esp); /* 22.2.3 */
+ 		vmx->loaded_vmcs->cpu = cpu;
+ 	}
++
++	if (irq_remapping_cap(IRQ_POSTING_CAP)) {
++		struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
++		struct pi_desc old, new;
++		unsigned int dest;
++
++		do {
++			old.control = new.control = pi_desc->control;
++
++			/*
++			 * If 'nv' field is POSTED_INTR_WAKEUP_VECTOR, there
++			 * are two possible cases:
++			 * 1. After running 'pi_pre_block', context switch
++			 *    happened. For this case, 'sn' was set in
++			 *    vmx_vcpu_put(), so we need to clear it here.
++			 * 2. After running 'pi_pre_block', we were blocked,
++			 *    and woken up by some other guy. For this case,
++			 *    we don't need to do anything, 'pi_post_block'
++			 *    will do everything for us. However, we cannot
++			 *    check whether it is case #1 or case #2 here
++			 *    (maybe, not needed), so we also clear sn here,
++			 *    I think it is not a big deal.
++			 */
++			if (pi_desc->nv != POSTED_INTR_WAKEUP_VECTOR) {
++				if (vcpu->cpu != cpu) {
++					dest = cpu_physical_id(cpu);
++
++					if (x2apic_enabled())
++						new.ndst = dest;
++					else
++						new.ndst = (dest << 8) & 0xFF00;
++				}
++
++				/* set 'NV' to 'notification vector' */
++				new.nv = POSTED_INTR_VECTOR;
++			}
++
++			/* Allow posting non-urgent interrupts */
++			new.sn = 0;
++		} while (cmpxchg(&pi_desc->control, old.control,
++				new.control) != old.control);
++	}
+ }
+ 
+ static void vmx_vcpu_put(struct kvm_vcpu *vcpu)
  {
- #ifdef CONFIG_SMP
- 	if (vcpu->mode == IN_GUEST_MODE) {
-+		struct vcpu_vmx *vmx = to_vmx(vcpu);
++	if (irq_remapping_cap(IRQ_POSTING_CAP)) {
++		struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
 +
-+		/*
-+		 * Currently, we don't support urgent interrupt,
-+		 * all interrupts are recognized as non-urgent
-+		 * interrupt, so we cannot post interrupts when
-+		 * 'SN' is set.
-+		 *
-+		 * If the vcpu is in guest mode, it means it is
-+		 * running instead of being scheduled out and
-+		 * waiting in the run queue, and that's the only
-+		 * case when 'SN' is set currently, warning if
-+		 * 'SN' is set.
-+		 */
-+		WARN_ON_ONCE(pi_test_sn(&vmx->pi_desc));
++		/* Set SN when the vCPU is preempted */
++		if (vcpu->preempted)
++			pi_set_sn(pi_desc);
++	}
 +
- 		apic->send_IPI_mask(get_cpu_mask(vcpu->cpu),
- 				POSTED_INTR_VECTOR);
- 		return true;
+ 	__vmx_load_host_state(to_vmx(vcpu));
+ 	if (!vmm_exclusive) {
+ 		__loaded_vmcs_clear(to_vmx(vcpu)->loaded_vmcs);
 -- 
 2.1.0
