@@ -1,11 +1,13 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v7 00/17] Add VT-d Posted-Interrupts support
-Date: Tue, 25 Aug 2015 16:50:03 +0800
-Message-ID: <1440492620-15934-1-git-send-email-feng.wu@intel.com>
+Subject: [PATCH v7 05/17] KVM: Add interfaces to control PI outside vmx
+Date: Tue, 25 Aug 2015 16:50:08 +0800
+Message-ID: <1440492620-15934-6-git-send-email-feng.wu@intel.com>
+References: <1440492620-15934-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1440492620-15934-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,90 +21,59 @@ To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7a
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-VT-d Posted-Interrupts is an enhancement to CPU side Posted-Interrupt.
-With VT-d Posted-Interrupts enabled, external interrupts from
-direct-assigned devices can be delivered to guests without VMM
-intervention when guest is running in non-root mode.
+This patch adds pi_clear_sn and pi_set_sn to struct kvm_x86_ops,
+so we can set/clear SN outside vmx.
 
-You can find the VT-d Posted-Interrtups Spec. in the following URL:
-http://www.intel.com/content/www/us/en/intelligent-systems/intel-technology/vt-directed-io-spec.html
+Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+---
+ arch/x86/include/asm/kvm_host.h |  3 +++
+ arch/x86/kvm/vmx.c              | 13 +++++++++++++
+ 2 files changed, 16 insertions(+)
 
-v7:
-* Define two weak irq bypass callbacks:
-  - kvm_arch_irq_bypass_start()
-  - kvm_arch_irq_bypass_stop()
-* Remove the x86 dummy implementation of the above two functions.
-* Print some useful information instead of WARN_ON() when the
-  irq bypass consumer unregistration fails.
-* Fix an issue when calling pi_pre_block and pi_post_block.
-
-v6:
-* Rebase on 4.2.0-rc6
-* Rebase on https://lkml.org/lkml/2015/8/6/526 and http://www.gossamer-threads.com/lists/linux/kernel/2235623
-* Make the add_consumer and del_consumer callbacks static
-* Remove pointless INIT_LIST_HEAD to 'vdev->ctx[vector].producer.node)'
-* Use dev_info instead of WARN_ON() when irq_bypass_register_producer fails
-* Remove optional dummy callbacks for irq producer
-
-v4:
-* For lowest-priority interrupt, only support single-CPU destination
-interrupts at the current stage, more common lowest priority support
-will be added later.
-* Accoring to Marcelo's suggestion, when vCPU is blocked, we handle
-the posted-interrupts in the HLT emulation path.
-* Some small changes (coding style, typo, add some code comments)
-
-v3:
-* Adjust the Posted-interrupts Descriptor updating logic when vCPU is
-  preempted or blocked.
-* KVM_DEV_VFIO_DEVICE_POSTING_IRQ --> KVM_DEV_VFIO_DEVICE_POST_IRQ
-* __KVM_HAVE_ARCH_KVM_VFIO_POSTING --> __KVM_HAVE_ARCH_KVM_VFIO_POST
-* Add KVM_DEV_VFIO_DEVICE_UNPOST_IRQ attribute for VFIO irq, which
-  can be used to change back to remapping mode.
-* Fix typo
-
-v2:
-* Use VFIO framework to enable this feature, the VFIO part of this series is
-  base on Eric's patch "[PATCH v3 0/8] KVM-VFIO IRQ forward control"
-* Rebase this patchset on git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git,
-  then revise some irq logic based on the new hierarchy irqdomain patches provided
-  by Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-
-Feng Wu (17):
-  KVM: Extend struct pi_desc for VT-d Posted-Interrupts
-  KVM: Add some helper functions for Posted-Interrupts
-  KVM: Define a new interface kvm_intr_is_single_vcpu()
-  KVM: Get Posted-Interrupts descriptor address from 'struct kvm_vcpu'
-  KVM: Add interfaces to control PI outside vmx
-  KVM: Make struct kvm_irq_routing_table accessible
-  KVM: make kvm_set_msi_irq() public
-  vfio: Select IRQ_BYPASS_MANAGER for vfio PCI devices
-  vfio: Register/unregister irq_bypass_producer
-  KVM: x86: Update IRTE for posted-interrupts
-  KVM: Define two weak arch callbacks for irq bypass manager
-  KVM: Implement IRQ bypass consumer callbacks for x86
-  KVM: Add an arch specific hooks in 'struct kvm_kernel_irqfd'
-  KVM: Update Posted-Interrupts Descriptor when vCPU is preempted
-  KVM: Update Posted-Interrupts Descriptor when vCPU is blocked
-  KVM: Warn if 'SN' is set during posting interrupts by software
-  iommu/vt-d: Add a command line parameter for VT-d posted-interrupts
-
- Documentation/kernel-parameters.txt |   1 +
- arch/x86/include/asm/kvm_host.h     |  20 +++
- arch/x86/kvm/Kconfig                |   1 +
- arch/x86/kvm/irq_comm.c             |  28 +++-
- arch/x86/kvm/vmx.c                  | 288 +++++++++++++++++++++++++++++++++++-
- arch/x86/kvm/x86.c                  | 167 +++++++++++++++++++--
- drivers/iommu/irq_remapping.c       |  12 +-
- drivers/vfio/pci/Kconfig            |   1 +
- drivers/vfio/pci/vfio_pci_intrs.c   |   9 ++
- drivers/vfio/pci/vfio_pci_private.h |   2 +
- include/linux/kvm_host.h            |  28 ++++
- include/linux/kvm_irqfd.h           |   2 +
- virt/kvm/eventfd.c                  |  22 ++-
- virt/kvm/irqchip.c                  |  10 --
- virt/kvm/kvm_main.c                 |   3 +
- 15 files changed, 565 insertions(+), 29 deletions(-)
-
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index d50c1d3..c4f99f1 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -860,6 +860,9 @@ struct kvm_x86_ops {
+ 					   gfn_t offset, unsigned long mask);
+ 
+ 	u64 (*get_pi_desc_addr)(struct kvm_vcpu *vcpu);
++
++	void (*pi_clear_sn)(struct kvm_vcpu *vcpu);
++	void (*pi_set_sn)(struct kvm_vcpu *vcpu);
+ 	/* pmu operations of sub-arch */
+ 	const struct kvm_pmu_ops *pmu_ops;
+ };
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index 81a995c..234f720 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -615,6 +615,16 @@ struct pi_desc *vcpu_to_pi_desc(struct kvm_vcpu *vcpu)
+ 	return &(to_vmx(vcpu)->pi_desc);
+ }
+ 
++static void vmx_pi_clear_sn(struct kvm_vcpu *vcpu)
++{
++	pi_clear_sn(vcpu_to_pi_desc(vcpu));
++}
++
++static void vmx_pi_set_sn(struct kvm_vcpu *vcpu)
++{
++	pi_set_sn(vcpu_to_pi_desc(vcpu));
++}
++
+ static unsigned long shadow_read_only_fields[] = {
+ 	/*
+ 	 * We do NOT shadow fields that are modified when L0
+@@ -10471,6 +10481,9 @@ static struct kvm_x86_ops vmx_x86_ops = {
+ 
+ 	.get_pi_desc_addr = vmx_get_pi_desc_addr,
+ 
++	.pi_clear_sn = vmx_pi_clear_sn,
++	.pi_set_sn = vmx_pi_set_sn,
++
+ 	.pmu_ops = &intel_pmu_ops,
+ };
+ 
 -- 
 2.1.0
