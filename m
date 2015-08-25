@@ -1,55 +1,70 @@
-From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v7 11/17] KVM: Define two weak arch callbacks for irq bypass
-	manager
-Date: Tue, 25 Aug 2015 16:50:14 +0800
-Message-ID: <1440492620-15934-12-git-send-email-feng.wu@intel.com>
+From: Feng Wu <feng.wu@intel.com>
+Subject: [PATCH v7 17/17] iommu/vt-d: Add a command line parameter for VT-d posted-interrupts
+Date: Tue, 25 Aug 2015 16:50:20 +0800
+Message-ID: <1440492620-15934-18-git-send-email-feng.wu@intel.com>
 References: <1440492620-15934-1-git-send-email-feng.wu@intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1440492620-15934-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1440492620-15934-1-git-send-email-feng.wu@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: pbonzini@redhat.com, alex.williamson@redhat.com, joro@8bytes.org, mtosatti@redhat.com
+Cc: eric.auger@linaro.org, kvm@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Feng Wu <feng.wu@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Define two weak arch callbacks so that archs that don't need
-them don't need define them.
+Enable VT-d Posted-Interrtups and add a command line
+parameter for it.
 
-Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Feng Wu <feng.wu@intel.com>
 ---
- virt/kvm/eventfd.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ Documentation/kernel-parameters.txt |  1 +
+ drivers/iommu/irq_remapping.c       | 12 ++++++++----
+ 2 files changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/virt/kvm/eventfd.c b/virt/kvm/eventfd.c
-index d7a230f..f3050b9 100644
---- a/virt/kvm/eventfd.c
-+++ b/virt/kvm/eventfd.c
-@@ -256,6 +256,16 @@ static void irqfd_update(struct kvm *kvm, struct kvm_kernel_irqfd *irqfd)
- 	write_seqcount_end(&irqfd->irq_entry_sc);
- }
+diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+index 1d6f045..52aca36 100644
+--- a/Documentation/kernel-parameters.txt
++++ b/Documentation/kernel-parameters.txt
+@@ -1547,6 +1547,7 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+ 			nosid	disable Source ID checking
+ 			no_x2apic_optout
+ 				BIOS x2APIC opt-out request will be ignored
++			nopost	disable Interrupt Posting
  
-+void __attribute__((weak)) kvm_arch_irq_bypass_stop(
-+				struct irq_bypass_consumer *cons)
-+{
-+}
-+
-+void __attribute__((weak)) kvm_arch_irq_bypass_start(
-+				struct irq_bypass_consumer *cons)
-+{
-+}
-+
- static int
- kvm_irqfd_assign(struct kvm *kvm, struct kvm_irqfd *args)
- {
+ 	iomem=		Disable strict checking of access to MMIO memory
+ 		strict	regions from userspace.
+diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+index 2d99930..d8c3997 100644
+--- a/drivers/iommu/irq_remapping.c
++++ b/drivers/iommu/irq_remapping.c
+@@ -22,7 +22,7 @@ int irq_remap_broken;
+ int disable_sourceid_checking;
+ int no_x2apic_optout;
+ 
+-int disable_irq_post = 1;
++int disable_irq_post = 0;
+ 
+ static int disable_irq_remap;
+ static struct irq_remap_ops *remap_ops;
+@@ -58,14 +58,18 @@ static __init int setup_irqremap(char *str)
+ 		return -EINVAL;
+ 
+ 	while (*str) {
+-		if (!strncmp(str, "on", 2))
++		if (!strncmp(str, "on", 2)) {
+ 			disable_irq_remap = 0;
+-		else if (!strncmp(str, "off", 3))
++			disable_irq_post = 0;
++		} else if (!strncmp(str, "off", 3)) {
+ 			disable_irq_remap = 1;
+-		else if (!strncmp(str, "nosid", 5))
++			disable_irq_post = 1;
++		} else if (!strncmp(str, "nosid", 5))
+ 			disable_sourceid_checking = 1;
+ 		else if (!strncmp(str, "no_x2apic_optout", 16))
+ 			no_x2apic_optout = 1;
++		else if (!strncmp(str, "nopost", 6))
++			disable_irq_post = 1;
+ 
+ 		str += strcspn(str, ",");
+ 		while (*str == ',')
 -- 
 2.1.0
