@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v7 01/17] KVM: Extend struct pi_desc for VT-d Posted-Interrupts
-Date: Tue, 25 Aug 2015 16:50:04 +0800
-Message-ID: <1440492620-15934-2-git-send-email-feng.wu@intel.com>
+Subject: [PATCH v7 02/17] KVM: Add some helper functions for Posted-Interrupts
+Date: Tue, 25 Aug 2015 16:50:05 +0800
+Message-ID: <1440492620-15934-3-git-send-email-feng.wu@intel.com>
 References: <1440492620-15934-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,43 +21,57 @@ To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7a
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Extend struct pi_desc for VT-d Posted-Interrupts.
+This patch adds some helper functions to manipulate the
+Posted-Interrupts Descriptor.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/kvm/vmx.c | 20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
+ arch/x86/kvm/vmx.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
 diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-index 83b7b5c..271dd70 100644
+index 271dd70..316f9bf 100644
 --- a/arch/x86/kvm/vmx.c
 +++ b/arch/x86/kvm/vmx.c
-@@ -446,8 +446,24 @@ struct nested_vmx {
+@@ -443,6 +443,8 @@ struct nested_vmx {
+ };
+ 
+ #define POSTED_INTR_ON  0
++#define POSTED_INTR_SN  1
++
  /* Posted-Interrupt Descriptor */
  struct pi_desc {
  	u32 pir[8];     /* Posted interrupt requested */
--	u32 control;	/* bit 0 of control is outstanding notification bit */
--	u32 rsvd[7];
-+	union {
-+		struct {
-+				/* bit 256 - Outstanding Notification */
-+			u16	on	: 1,
-+				/* bit 257 - Suppress Notification */
-+				sn	: 1,
-+				/* bit 271:258 - Reserved */
-+				rsvd_1	: 14;
-+				/* bit 279:272 - Notification Vector */
-+			u8	nv;
-+				/* bit 287:280 - Reserved */
-+			u8	rsvd_2;
-+				/* bit 319:288 - Notification Destination */
-+			u32	ndst;
-+		};
-+		u64 control;
-+	};
-+	u32 rsvd[6];
- } __aligned(64);
+@@ -483,6 +485,30 @@ static int pi_test_and_set_pir(int vector, struct pi_desc *pi_desc)
+ 	return test_and_set_bit(vector, (unsigned long *)pi_desc->pir);
+ }
  
- static bool pi_test_and_set_on(struct pi_desc *pi_desc)
++static void pi_clear_sn(struct pi_desc *pi_desc)
++{
++	return clear_bit(POSTED_INTR_SN,
++			(unsigned long *)&pi_desc->control);
++}
++
++static void pi_set_sn(struct pi_desc *pi_desc)
++{
++	return set_bit(POSTED_INTR_SN,
++			(unsigned long *)&pi_desc->control);
++}
++
++static int pi_test_on(struct pi_desc *pi_desc)
++{
++	return test_bit(POSTED_INTR_ON,
++			(unsigned long *)&pi_desc->control);
++}
++
++static int pi_test_sn(struct pi_desc *pi_desc)
++{
++	return test_bit(POSTED_INTR_SN,
++			(unsigned long *)&pi_desc->control);
++}
++
+ struct vcpu_vmx {
+ 	struct kvm_vcpu       vcpu;
+ 	unsigned long         host_rsp;
 -- 
 2.1.0
