@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v7 07/17] KVM: make kvm_set_msi_irq() public
-Date: Tue, 25 Aug 2015 16:50:10 +0800
-Message-ID: <1440492620-15934-8-git-send-email-feng.wu@intel.com>
+Subject: [PATCH v7 10/17] KVM: x86: Update IRTE for posted-interrupts
+Date: Tue, 25 Aug 2015 16:50:13 +0800
+Message-ID: <1440492620-15934-11-git-send-email-feng.wu@intel.com>
 References: <1440492620-15934-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,48 +21,104 @@ To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7a
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Make kvm_set_msi_irq() public, we can use this function outside.
+This patch adds the routine to update IRTE for posted-interrupts
+when guest changes the interrupt configuration.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/include/asm/kvm_host.h | 4 ++++
- arch/x86/kvm/irq_comm.c         | 4 ++--
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ arch/x86/kvm/x86.c | 73 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 73 insertions(+)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index c4f99f1..82d0709 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -175,6 +175,8 @@ enum {
-  */
- #define KVM_APIC_PV_EOI_PENDING	1
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 5ef2560..8f09a76 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -63,6 +63,7 @@
+ #include <asm/fpu/internal.h> /* Ugh! */
+ #include <asm/pvclock.h>
+ #include <asm/div64.h>
++#include <asm/irq_remapping.h>
  
-+struct kvm_kernel_irq_routing_entry;
-+
- /*
-  * We don't want allocation failures within the mmu code, so we preallocate
-  * enough memory for a single page fault in a cache.
-@@ -1212,4 +1214,6 @@ int x86_set_memory_region(struct kvm *kvm,
- bool kvm_intr_is_single_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
- 			     struct kvm_vcpu **dest_vcpu);
- 
-+void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
-+		     struct kvm_lapic_irq *irq);
- #endif /* _ASM_X86_KVM_HOST_H */
-diff --git a/arch/x86/kvm/irq_comm.c b/arch/x86/kvm/irq_comm.c
-index a9572a13..1319c60 100644
---- a/arch/x86/kvm/irq_comm.c
-+++ b/arch/x86/kvm/irq_comm.c
-@@ -91,8 +91,8 @@ int kvm_irq_delivery_to_apic(struct kvm *kvm, struct kvm_lapic *src,
- 	return r;
+ #define MAX_IO_MSRS 256
+ #define KVM_MAX_MCE_BANKS 32
+@@ -8248,6 +8249,78 @@ bool kvm_arch_has_noncoherent_dma(struct kvm *kvm)
  }
+ EXPORT_SYMBOL_GPL(kvm_arch_has_noncoherent_dma);
  
--static inline void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
--				   struct kvm_lapic_irq *irq)
-+void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
-+		     struct kvm_lapic_irq *irq)
- {
- 	trace_kvm_msi_set_irq(e->msi.address_lo, e->msi.data);
- 
++/*
++ * kvm_arch_update_pi_irte - set IRTE for Posted-Interrupts
++ *
++ * @kvm: kvm
++ * @host_irq: host irq of the interrupt
++ * @guest_irq: gsi of the interrupt
++ * @set: set or unset PI
++ * returns 0 on success, < 0 on failure
++ */
++int kvm_arch_update_pi_irte(struct kvm *kvm, unsigned int host_irq,
++			    uint32_t guest_irq, bool set)
++{
++	struct kvm_kernel_irq_routing_entry *e;
++	struct kvm_irq_routing_table *irq_rt;
++	struct kvm_lapic_irq irq;
++	struct kvm_vcpu *vcpu;
++	struct vcpu_data vcpu_info;
++	int idx, ret = -EINVAL;
++
++	if (!irq_remapping_cap(IRQ_POSTING_CAP))
++		return 0;
++
++	idx = srcu_read_lock(&kvm->irq_srcu);
++	irq_rt = srcu_dereference(kvm->irq_routing, &kvm->irq_srcu);
++	BUG_ON(guest_irq >= irq_rt->nr_rt_entries);
++
++	hlist_for_each_entry(e, &irq_rt->map[guest_irq], link) {
++		if (e->type != KVM_IRQ_ROUTING_MSI)
++			continue;
++		/*
++		 * VT-d PI cannot support posting multicast/broadcast
++		 * interrupts to a VCPU, we still use interrupt remapping
++		 * for these kind of interrupts.
++		 *
++		 * For lowest-priority interrupts, we only support
++		 * those with single CPU as the destination, e.g. user
++		 * configures the interrupts via /proc/irq or uses
++		 * irqbalance to make the interrupts single-CPU.
++		 *
++		 * We will support full lowest-priority interrupt later.
++		 *
++		 */
++
++		kvm_set_msi_irq(e, &irq);
++		if (!kvm_intr_is_single_vcpu(kvm, &irq, &vcpu))
++			continue;
++
++		vcpu_info.pi_desc_addr = kvm_x86_ops->get_pi_desc_addr(vcpu);
++		vcpu_info.vector = irq.vector;
++
++		if (set)
++			ret = irq_set_vcpu_affinity(host_irq, &vcpu_info);
++		else {
++			/* suppress notification event before unposting */
++			kvm_x86_ops->pi_set_sn(vcpu);
++			ret = irq_set_vcpu_affinity(host_irq, NULL);
++			kvm_x86_ops->pi_clear_sn(vcpu);
++		}
++
++		if (ret < 0) {
++			printk(KERN_INFO "%s: failed to update PI IRTE\n",
++					__func__);
++			goto out;
++		}
++	}
++
++	ret = 0;
++out:
++	srcu_read_unlock(&kvm->irq_srcu, idx);
++	return ret;
++}
++
+ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_exit);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_inj_virq);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_page_fault);
 -- 
 2.1.0
