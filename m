@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v7 02/17] KVM: Add some helper functions for Posted-Interrupts
-Date: Tue, 25 Aug 2015 16:50:05 +0800
-Message-ID: <1440492620-15934-3-git-send-email-feng.wu@intel.com>
+Subject: [PATCH v7 03/17] KVM: Define a new interface kvm_intr_is_single_vcpu()
+Date: Tue, 25 Aug 2015 16:50:06 +0800
+Message-ID: <1440492620-15934-4-git-send-email-feng.wu@intel.com>
 References: <1440492620-15934-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,57 +21,67 @@ To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7a
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds some helper functions to manipulate the
-Posted-Interrupts Descriptor.
+This patch defines a new interface kvm_intr_is_single_vcpu(),
+which can returns whether the interrupt is for single-CPU or not.
+
+It is used by VT-d PI, since now we only support single-CPU
+interrupts, For lowest-priority interrupts, if user configures
+it via /proc/irq or uses irqbalance to make it single-CPU, we
+can use PI to deliver the interrupts to it. Full functionality
+of lowest-priority support will be added later.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/kvm/vmx.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ arch/x86/include/asm/kvm_host.h |  3 +++
+ arch/x86/kvm/irq_comm.c         | 24 ++++++++++++++++++++++++
+ 2 files changed, 27 insertions(+)
 
-diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-index 271dd70..316f9bf 100644
---- a/arch/x86/kvm/vmx.c
-+++ b/arch/x86/kvm/vmx.c
-@@ -443,6 +443,8 @@ struct nested_vmx {
- };
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 49ec903..af11bca 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1204,4 +1204,7 @@ int __x86_set_memory_region(struct kvm *kvm,
+ int x86_set_memory_region(struct kvm *kvm,
+ 			  const struct kvm_userspace_memory_region *mem);
  
- #define POSTED_INTR_ON  0
-+#define POSTED_INTR_SN  1
++bool kvm_intr_is_single_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
++			     struct kvm_vcpu **dest_vcpu);
 +
- /* Posted-Interrupt Descriptor */
- struct pi_desc {
- 	u32 pir[8];     /* Posted interrupt requested */
-@@ -483,6 +485,30 @@ static int pi_test_and_set_pir(int vector, struct pi_desc *pi_desc)
- 	return test_and_set_bit(vector, (unsigned long *)pi_desc->pir);
+ #endif /* _ASM_X86_KVM_HOST_H */
+diff --git a/arch/x86/kvm/irq_comm.c b/arch/x86/kvm/irq_comm.c
+index 9efff9e..a9572a13 100644
+--- a/arch/x86/kvm/irq_comm.c
++++ b/arch/x86/kvm/irq_comm.c
+@@ -297,6 +297,30 @@ out:
+ 	return r;
  }
  
-+static void pi_clear_sn(struct pi_desc *pi_desc)
++bool kvm_intr_is_single_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
++			     struct kvm_vcpu **dest_vcpu)
 +{
-+	return clear_bit(POSTED_INTR_SN,
-+			(unsigned long *)&pi_desc->control);
++	int i, r = 0;
++	struct kvm_vcpu *vcpu;
++
++	kvm_for_each_vcpu(i, vcpu, kvm) {
++		if (!kvm_apic_present(vcpu))
++			continue;
++
++		if (!kvm_apic_match_dest(vcpu, NULL, irq->shorthand,
++					irq->dest_id, irq->dest_mode))
++			continue;
++
++		r++;
++		*dest_vcpu = vcpu;
++	}
++
++	if (r == 1)
++		return true;
++	else
++		return false;
 +}
 +
-+static void pi_set_sn(struct pi_desc *pi_desc)
-+{
-+	return set_bit(POSTED_INTR_SN,
-+			(unsigned long *)&pi_desc->control);
-+}
-+
-+static int pi_test_on(struct pi_desc *pi_desc)
-+{
-+	return test_bit(POSTED_INTR_ON,
-+			(unsigned long *)&pi_desc->control);
-+}
-+
-+static int pi_test_sn(struct pi_desc *pi_desc)
-+{
-+	return test_bit(POSTED_INTR_SN,
-+			(unsigned long *)&pi_desc->control);
-+}
-+
- struct vcpu_vmx {
- 	struct kvm_vcpu       vcpu;
- 	unsigned long         host_rsp;
+ #define IOAPIC_ROUTING_ENTRY(irq) \
+ 	{ .gsi = irq, .type = KVM_IRQ_ROUTING_IRQCHIP,	\
+ 	  .u.irqchip = { .irqchip = KVM_IRQCHIP_IOAPIC, .pin = (irq) } }
 -- 
 2.1.0
