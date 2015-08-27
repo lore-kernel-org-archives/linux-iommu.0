@@ -1,13 +1,14 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v5 0/3] arm64: IOMMU-backed DMA mapping
-Date: Wed, 26 Aug 2015 14:19:26 +0800
-Message-ID: <1440569966.25782.3.camel@mhfsdcap03>
-References: <cover.1438362603.git.robin.murphy@arm.com>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC PATCH v3 0/3] vfio: platform: return device properties for
+	a platform device
+Date: Thu, 27 Aug 2015 14:52:00 +0200
+Message-ID: <55DF07F0.3070405@linaro.org>
+References: <1419024032-1269-1-git-send-email-a.motakis@virtualopensystems.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1438362603.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1419024032-1269-1-git-send-email-a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,57 +18,83 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: antonios.motakis-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+Cc: tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 2015-07-31 at 18:18 +0100, Robin Murphy wrote:
-> Hi all,
-> 
-> Here's an update following Catalin's feedback on v4[1].
-> 
-> Changes this round:
-> - Rebased onto linux-next
->   - IOVA alignment fix applied already
->   - iommu_iova_cache_init() is now iova_cache_get()
-> - Tidied up iommu_dma_alloc()
->   - Simplified pgprot handling
->   - Removed redundant memset
->   - Skip coherent page-flushing in a simpler way
-> - Spotted a bug in iommu_dma_init_domain() where the checks for
->   reinitialising an existing domain were backwards.
-> 
-> If it is going to be down to me to tackle all the driver fixes and
-> conversion of arch/arm dma_ops, I'd still much rather have this
-> code merged first as a stable base to work with (and un-block arm64
-> in the meantime). Have we decided yet whether this should go via the
-> IOMMU tree or the arm64 tree?
+Hi Baptiste, Antonios,
 
-Hi Robin,
-   Sorry to disturb you. Is there any plan for the next version of arm64
-DMA. If it's yes, when could we get it?
-   Thanks very much.
+What are the plans wrt this series? I am currently integrating another
+QEMU VFIO platform devices where this series could be useful I think
+(Feb 2015). Do you intend to follow up and bring it upstream?
 
+Alex, do you see some show-stoppers in this series or do you advise to
+simply follow-up?
+
+Thank you in advance
+
+Best Regards
+
+Eric
+
+
+On 12/19/2014 10:20 PM, Antonios Motakis wrote:
+> This RFC's intention is to show what an interface to access device
+> properties for the VFIO platform driver can look like. These properties
+> can be from the device tree node describing the device, or ACPI properties
+> in the future.
 > 
-> Thanks,
-> Robin.
+> If a device property corresponding to a platform device bound by VFIO PLATFORM
+> or VFIO AMBA is available, this patch series will allow the user to query
+> for this information. This can be useful for userspace drivers to automatically
+> query parameters related to the device.
 > 
-> [1]:http://thread.gmane.org/gmane.linux.kernel.iommu/10181
+> Specifically for QEMU, reading the "compatible" property of the device tree
+> node could be of use to find out what device is being assigned to the guest and
+> handle appropriately a wider range of devices in the future, and to generate an
+> appropriate device tree for the guest.
 > 
-> Robin Murphy (3):
->   iommu: Implement common IOMMU ops for DMA mapping
->   arm64: Add IOMMU dma_ops
->   arm64: Hook up IOMMU dma_ops
+> Older versions of this series where specifically targeted at device tree
+> properties. This version has been reworked on top of Rafael J. Wysocki's
+> uniform device properties API for device tree and ACPI devices. This will allow
+> us to use the API in the future with devices described via ACPI.
 > 
->  arch/arm64/Kconfig                   |   1 +
->  arch/arm64/include/asm/dma-mapping.h |  15 +-
->  arch/arm64/mm/dma-mapping.c          | 449 +++++++++++++++++++++++++++++
->  drivers/iommu/Kconfig                |   7 +
->  drivers/iommu/Makefile               |   1 +
->  drivers/iommu/dma-iommu.c            | 534 +++++++++++++++++++++++++++++++++++
->  include/linux/dma-iommu.h            |  84 ++++++
->  include/linux/iommu.h                |   1 +
->  8 files changed, 1084 insertions(+), 8 deletions(-)
->  create mode 100644 drivers/iommu/dma-iommu.c
->  create mode 100644 include/linux/dma-iommu.h
+> This also means a kernel including the uniform device properties API is needed
+> to apply these patches, in additon to the VFIO patches, e.g. branch pm+acpi-3.19-rc1
+> from https://git.kernel.org/cgit/linux/kernel/git/rafael/linux-pm.git/
+> 
+> The API to get the list of available properties and the device tree full_name
+> have been removed. These probably don't serve an useful purpose, as the user
+> of this API need to know anyway what properties are specific to the device he
+> wants to access with VFIO. If we decide to reintroduce the list of properties
+> in the future, the generic device properties API in the kernel will have to
+> be extended accordingly.
+> 
+> A kernel with this series and all the dependencies applied can be pulled from
+> branch vfio-device-properties-v3 from the repository:
+> https://github.com/virtualopensystems/linux-kvm-arm.git
+> 
+> Changes since v2:
+>  - Reworked on top of Rafael J. Wysocki's uniform device properties API for
+>    device tree and ACPI
+>  - Support for u64 array properties
+>  - Removed API to get list of available properties and device tree full_name
+> Changes since v1:
+>  - Updated for VFIO platform patch series v8:
+>    VFIO AMBA devices now supported in addition to VFIO PLATFORM devices
+>  - Refactored and cleaned up the code
+> 
+> Antonios Motakis (3):
+>   vfio: platform: add device properties skeleton and user API
+>   vfio: platform: access device property as a list of strings
+>   vfio: platform: return device properties as arrays of unsigned
+>     integers
+> 
+>  drivers/vfio/platform/Makefile                |   3 +-
+>  drivers/vfio/platform/properties.c            | 162 ++++++++++++++++++++++++++
+>  drivers/vfio/platform/vfio_platform_common.c  |  35 ++++++
+>  drivers/vfio/platform/vfio_platform_private.h |   7 ++
+>  include/uapi/linux/vfio.h                     |  26 +++++
+>  5 files changed, 232 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/vfio/platform/properties.c
 > 
