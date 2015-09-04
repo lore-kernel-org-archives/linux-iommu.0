@@ -1,19 +1,15 @@
-From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu/omap: Add support for configuring dsp iommus on
-	DRA7xx
-Date: Thu, 3 Sep 2015 17:57:59 -0500
-Message-ID: <55E8D077.3050108@ti.com>
-References: <1437522936-19758-1-git-send-email-s-anna@ti.com>
-	<1437522936-19758-3-git-send-email-s-anna@ti.com>
-	<20150722052600.GF17550@atomide.com> <55AFC34E.4000603@ti.com>
-	<20150723072455.GC16878@atomide.com> <55B114DF.8070800@ti.com>
-	<20150724043056.GG16878@atomide.com> <55B266CE.9070202@ti.com>
-	<20150728061426.GL16878@atomide.com>
+From: David Daney <ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH 2/3] Docs: dt: Add PCI MSI map bindings
+Date: Fri, 4 Sep 2015 15:33:35 -0700
+Message-ID: <55EA1C3F.1030300@caviumnetworks.com>
+References: <1437670365-20704-1-git-send-email-mark.rutland@arm.com>
+	<1437670365-20704-3-git-send-email-mark.rutland@arm.com>
+	<55B5E8C1.4030707@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150728061426.GL16878-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <55B5E8C1.4030707-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,169 +19,124 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
-Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "tirumalesh.chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <tirumalesh.chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "Richter, Robert" <Robert.Richter-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "Chintakuntla, Radha" <Radha.Chintakuntla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Lorenzo Pieralisi <Lorenzo.Pieralisi-5wv7dgnIgG8@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "majun258-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <majun258-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Tony,
+Hi Mark,
 
-Sorry for the long delay in getting back on this. I will repost the
-series once 4.3-rc1 is out, but at the moment I do not think any changes
-are required. Let me know if you still need any additional details.
+First of all:  Thanks for working on this.
 
->>>> On 07/23/2015 02:24 AM, Tony Lindgren wrote:
->>>>> * Suman Anna <s-anna-l0cyMroinI0@public.gmane.org> [150722 09:25]:
->>>>>> On 07/22/2015 12:26 AM, Tony Lindgren wrote:
->>>>>>>
->>>>>>> I don't like using syscon for tinkering directly with SoC registers.
->>>>>>
->>>>>> This is not a SoC-level register, but a register within a sub-module of
->>>>>> the DSP processor sub-system. The DSP_SYSTEM sub-module in general is
->>>>>> described in Section 5.3.3 of the TRM [1], and it implements different
->>>>>> functionalities like the PRCM handshaking, wakeup logic and DSP
->>>>>> subsystem top-level configuration. It is a module present within the DSP
->>>>>> processor sub-system, so can only be accessed when the sub-system is
->>>>>> clocked and the appropriate reset is released.
->>>>>
->>>>> OK so if it's specific to the DSP driver along the lines of sysc and
->>>>> syss registers.
->>>>
->>>> There will be those registers too within the MMU config register space,
->>>> even for DRA7xx MMUs. This is different, think of it like a register in
->>>> the Control module except that it is present within the DSP sub-system
->>>> instead of at the SoC level.
->>>
->>> And what is taking care of pm_runtime_get here to ensure the module
->>> is powered and clocked?
+I now have a prototype implementation for irq-gic-v3-its.c that is using 
+this binding on Cavium's ThunderX platform.
+
+Q: Have you guys had any more thoughts on this that might require 
+changing the binding?
+
+If not, I will be sending out my patches for your consideration.
+
+Thanks,
+David Daney
+
+On 07/27/2015 01:16 AM, Marc Zyngier wrote:
+> On 23/07/15 17:52, Mark Rutland wrote:
+>> Currently msi-parent is used by a few bindings to describe the
+>> relationship between a PCI root complex and a single MSI controller, but
+>> this property does not have a generic binding document.
 >>
->> pm_runtime_get_sync is indeed getting invoked, its just the current
->> patch doesn't include the code block that invokes it. The function that
->> invokes omap2_iommu_enable does so after a call to the
->> pm_runtime_get_sync() call.
-> 
-> OK 
-> 
->>> I think you are missing a layer here and it's the Linux kernel side
->>> device driver for DSP that initializes things.
+>> Additionally, msi-parent is insufficient to describe more complex
+>> relationships between MSI controllers and devices under a root complex,
+>> where devices may be able to target multiple MSI controllers, or where
+>> MSI controllers use (non-probeable) sideband information to distinguish
+>> devices.
 >>
->> We already have separate drivers for MMUs (omap-iommu) and the processor
->> management (omap-rproc). The former manages all the low-level
->> programming sequences for the MMUs, while the latter manages the
->> low-level reset etc, and is a client user of the respective IOMMU
->> device. Both integrate into the respective frameworks. The IOMMU API
->> invocations are handled in the remoteproc core, with the OMAP remoteproc
->> driver publishing itself as having an MMU with the remoteproc core. The
->> IOMMU API invoke the appropriate iommu_ops.
+>> This patch adds a generic binding for mapping PCI devices to MSI
+>> controllers. This document covers msi-parent, and a new msi-map property
+>> (specific to PCI*) which may be used to map devices (identified by their
+>> Requester ID) to sideband data for each MSI controller that they may
+>> target.
 >>
->> You can lookup the functions rproc_enable_iommu()/rproc_disable_iommu()
->> in the remoteproc core. The IOMMU enabling sequences happen within the
->> iommu_attach_device() API. The call flow is
->> iommu_attach_device()->omap_iommu_attach_dev()->omap_iommu_attach()->
->> iommu_enable()->
->>    omap_device_deassert_hardreset, pm_runtime_get_sync, omap2_iommu_enable.
-> 
-> OK. The thing to check here is that you have a separate device driver
-> for each sysc/syss device registers. This is because each hardware module
-> can be independently clocked and idled. Otherwise things will break at
-> some point. And no "things are configured for autoidle" or "we're not
-> doing PM is not a good excuse here" :)
-> 
-> Can you please check that? If the remoteproc driver and iommu driver
-> are tinkering with registers in separate hardware modules, we have
-> a layering violation. My guess is that we have at least two hardware
-> modules involved here, one for the iommu and one for the DSP device.
+>> Signed-off-by: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
 
-Only the IOMMU has a SYSC/SYSS device register. It has both a soft-reset
-as well as a hard-reset line. The IOMMU stays in reset, and its state
-machine/programming is controlled through the remoteproc driver. The
-clock source is also single clock going into the remote processor
-subsystem, and split up internally to feed the memories and the
-processors. For the PRCM to auto-gate the clocks, we also need the
-processor to be executing a IDLE (DSPs) or WFI/WFE (Cortex M3/M4s). Just
-the IOMMU will allow the OCP idle because of the associated sysc/syss
-registers. Depending on the remote processor, there might be a separate
-internal module (like the DSPs usually have a separate SYSC module), but
-that programming is left to the software running on the DSP.
+Acked-by: David Daney <david.daney-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 
->  
->>>>> Typically we handle these registers by mapping them to the PM runtime
->>>>> functions for the interconnect so we can reset and idle the hardware
->>>>> modules even if there is no driver, see for example
->>>>> omap54xx_mmu_dsp_hwmod.
->>>>
->>>> I haven't yet submitted the DRA7xx hwmods, but they will look almost
->>>> exactly like the OMAP5 ones. The reset and idle on these are in general
->>>> not effective at boot time since these are also controlled by a
->>>> hard-reset line, so that's left to the drivers to deal with it through
->>>> the omap_device_deassert_hardreset API.
->>>
->>> If the MMU configuration is one time init, it may make sense to add
->>> it to the hwmod reset function. However, if the Linux kernel side
->>> driver needs to configure things depending on the DSP firmware, it
->>> should be done in the kernel side device driver.
+
+>> ---
+>>   Documentation/devicetree/bindings/pci/pci-msi.txt | 220 ++++++++++++++++++++++
+>>   1 file changed, 220 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/pci/pci-msi.txt
 >>
->> The MMU configuration comes into picture whenever the remoteproc driver
->> is being booted and shut down, and also during suspend (no support for
->> this yet in mainline on OMAP rproc). Today, the hwmod
->> _enable/_idle/reset functions alone are not enough to power on the OMAP
->> remoteproc/iommus. We need sequencing calls to both
->> omap_device_assert/_deassert_hardreset (done through pdata-quirks) and
->> pm_runtime API to achieve this.
-> 
-> Right and that's why I'm worried that we have multiple hardware modules
-> involved :)  
->  
->>>>>>> We should use some Linux generic framework for configuring these
->>>>>>> bits to avoid nasty dependencies between various hardware modules
->>>>>>> on the SoC.
->>>>>>>
->>>>>>> What does DSP_SYS_MMU_CONFIG register do? It seems it's probably
->>>>>>> a regulator or a gate clock? If so, it should be set up as a
->>>>>>> regulator or a clock and then the omap-iommu driver can just
->>>>>>> use regulator or clcok framework to request the resource.
->>>>>>
->>>>>> No, its neither. It is a control bit that dictates whether the
->>>>>> processor/EDMA addresses go through the respective MMU or not. The
->>>>>> register currently has 4 bits (bit 0 in each nibble), one each for
->>>>>> enabling each MMU and requesting an MMU abort on each. The MMU
->>>>>> integration and enablement notes are detailed in Section 5.3.6 of the
->>>>>> TRM [1], and the DSP_SYS_MMU_CONFIG register layout is in Table 5-28
->>>>>> (Page 1641).
->>>>>
->>>>> OK yeah seems like it should be handled by the DSP driver during
->>>>> probe after doing pm_runtime_get. Then the driver can configure
->>>>> things like IOMMU and load firmware. Or am I missing something here?
->>>>
->>>> The DSP (remoteproc) driver uses the generic IOMMU API, and all the
->>>> IOMMU enabling sequence is transparent to the DSP driver. So, any
->>>> configuration/enabling sequence specific to the IOMMU has to be handled
->>>> within the respective IOMMU platform driver that gets integrated into
->>>> the IOMMU API.
->>>
->>> To me it seems you still need a DSP kernel driver to manage the
->>> DSP hardware for PM runtime. I don't see how iommu and remoteproc
->>> alone would be sufficient here. You end up sprinkling DSP driver
->>> specific code to the iommu and remoteproc layers.
->>
->> I am not sure what you envision to be in this DSP kernel driver, because
->> all the needed functionality is already handled by existing drivers. The
->> OMAP remoteproc driver is the kernel driver to deal with the device
->> management for both IPUs and DSPs on OMAP4, OMAP5 and DRA7 (DT support
->> to be added).
-> 
-> OK maybe check the syss/sysc registers involved here for each hardware
-> module here and which driver tinkers with which registers? This will
-> make things a lot easier in the long run for sure.
-
-The OMAP remoteproc driver typically deals with only the reset registers
-and another register in the Control module for programming the boot
-address for the DSPs. You can look up the OMAP4 hwmod data for
-reference. There is currently a .prcm.omap4.modulemode set for these,
-and I have a patch to remove those. I haven't yet posted it yet [1],
-because OMAP remoteprocs are still not bootable on mainline.
-
-regards
-Suman
-
-[1]
-http://git.ti.com/gitweb/?p=rpmsg/remoteproc.git;a=commit;h=0dd2a6a2d8869ee6cec92f75d70663259a41c11f
+>> diff --git a/Documentation/devicetree/bindings/pci/pci-msi.txt b/Documentation/devicetree/bindings/pci/pci-msi.txt
+>> new file mode 100644
+>> index 0000000..9b3cc81
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/pci/pci-msi.txt
+>> @@ -0,0 +1,220 @@
+>> +This document describes the generic device tree binding for describing the
+>> +relationship between PCI devices and MSI controllers.
+>> +
+>> +Each PCI device under a root complex is uniquely identified by its Requester ID
+>> +(AKA RID). A Requester ID is a triplet of a Bus number, Device number, and
+>> +Function number.
+>> +
+>> +For the purpose of this document, when treated as a numeric value, a RID is
+>> +formatted such that:
+>> +
+>> +* Bits [15:8] are the Bus number.
+>> +* Bits [7:3] are the Device number.
+>> +* Bits [2:0] are the Function number.
+>> +* Any other bits required for padding must be zero.
+>> +
+>> +MSIs may be distinguished in part through the use of sideband data accompanying
+>> +writes. In the case of PCI devices, this sideband data may be derived from the
+>> +Requester ID. A mechanism is required to associate a device with both the MSI
+>> +controllers it can address, and the sideband data that will be associated with
+>> +its writes to those controllers.
+>> +
+>> +For generic MSI bindings, see
+>> +Documentation/devicetree/bindings/interrupt-controller/msi.txt.
+>> +
+>> +
+>> +PCI root complex
+>> +================
+>> +
+>> +Optional properties
+>> +-------------------
+>> +
+>> +- msi-map: Maps a Requester ID to an MSI controller and associated
+>> +  msi-specifier data. The property is an arbitrary number of tuples of
+>> +  (rid-base,msi-controller,msi-base,length), where:
+>> +
+>> +  * rid-base is a single cell describing the first RID matched by the entry.
+>> +
+>> +  * msi-controller is a single phandle to an MSI controller
+>> +
+>> +  * msi-base is an msi-specifier describing the msi-specifier produced for the
+>> +    first RID matched by the entry.
+>> +
+>> +  * length is a single cell describing how many consecutive RIDs are matched
+>> +    following the rid-base.
+>> +
+>> +  Any RID r in the interval [rid-base, rid-base + length) is associated with
+>> +  the listed msi-controller, with the msi-specifier (r - rid-base + msi-base).
+>> +
+>> +- msi-map-mask: A mask to be applied to each Requester ID prior to being mapped
+>> +  to an msi-specifier per the msi-map property.
+>> +
+>> +- msi-parent: Describes the MSI parent of the root complex itself. Where
+>> +  the root complex and MSI controller do not pass sideband data with MSI
+>> +  writes, this property may be used to describe the MSI controller(s)
+>> +  used by PCI devices under the root complex, if defined as such in the
+>> +  binding for the root complex.
+>
+> Right, this is where I'd expect some details about #msi-cells. Is it
+> meant to be ignored? The lack of symmetry between the PCI and non-PCI
+> use cases feels a bit inelegant (not to mention that it precludes having
+> an unified parser for both cases).
+>
+> This otherwise looks good to me.
+>
+> Thanks,
+>
+> 	M.
+>
