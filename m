@@ -1,78 +1,73 @@
-From: Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [PATCH v7 06/17] KVM: Make struct kvm_irq_routing_table
- accessible
-Date: Fri, 11 Sep 2015 12:50:55 +0200
-Message-ID: <55F2B20F.3020805@redhat.com>
+From: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v7 07/17] KVM: make kvm_set_msi_irq() public
+Date: Fri, 11 Sep 2015 12:53:46 +0200
+Message-ID: <55F2B2BA.8000805@redhat.com>
 References: <1440492620-15934-1-git-send-email-feng.wu@intel.com>
- <1440492620-15934-7-git-send-email-feng.wu@intel.com>
+	<1440492620-15934-8-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1440492620-15934-7-git-send-email-feng.wu@intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Feng Wu <feng.wu@intel.com>, alex.williamson@redhat.com, joro@8bytes.org, mtosatti@redhat.com
-Cc: eric.auger@linaro.org, kvm@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1440492620-15934-8-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 
 
 On 25/08/2015 10:50, Feng Wu wrote:
-> Move struct kvm_irq_routing_table from irqchip.c to kvm_host.h,
-> so we can use it outside of irqchip.c.
+> Make kvm_set_msi_irq() public, we can use this function outside.
 > 
-> Signed-off-by: Feng Wu <feng.wu@intel.com>
+> Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 > ---
->  include/linux/kvm_host.h | 14 ++++++++++++++
->  virt/kvm/irqchip.c       | 10 ----------
->  2 files changed, 14 insertions(+), 10 deletions(-)
+>  arch/x86/include/asm/kvm_host.h | 4 ++++
+>  arch/x86/kvm/irq_comm.c         | 4 ++--
+>  2 files changed, 6 insertions(+), 2 deletions(-)
 > 
-> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-> index 5ac8d21..5f183fb 100644
-> --- a/include/linux/kvm_host.h
-> +++ b/include/linux/kvm_host.h
-> @@ -328,6 +328,20 @@ struct kvm_kernel_irq_routing_entry {
->  	struct hlist_node link;
->  };
+> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> index c4f99f1..82d0709 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -175,6 +175,8 @@ enum {
+>   */
+>  #define KVM_APIC_PV_EOI_PENDING	1
 >  
-> +#ifdef CONFIG_HAVE_KVM_IRQ_ROUTING
+> +struct kvm_kernel_irq_routing_entry;
 > +
-> +struct kvm_irq_routing_table {
-> +	int chip[KVM_NR_IRQCHIPS][KVM_IRQCHIP_NUM_PINS];
-> +	u32 nr_rt_entries;
-> +	/*
-> +	 * Array indexed by gsi. Each entry contains list of irq chips
-> +	 * the gsi is connected to.
-> +	 */
-> +	struct hlist_head map[0];
-> +};
-> +
-> +#endif
-> +
->  #ifndef KVM_PRIVATE_MEM_SLOTS
->  #define KVM_PRIVATE_MEM_SLOTS 0
->  #endif
-> diff --git a/virt/kvm/irqchip.c b/virt/kvm/irqchip.c
-> index 21c1424..2cf45d3 100644
-> --- a/virt/kvm/irqchip.c
-> +++ b/virt/kvm/irqchip.c
-> @@ -31,16 +31,6 @@
->  #include <trace/events/kvm.h>
->  #include "irq.h"
+>  /*
+>   * We don't want allocation failures within the mmu code, so we preallocate
+>   * enough memory for a single page fault in a cache.
+> @@ -1212,4 +1214,6 @@ int x86_set_memory_region(struct kvm *kvm,
+>  bool kvm_intr_is_single_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
+>  			     struct kvm_vcpu **dest_vcpu);
 >  
-> -struct kvm_irq_routing_table {
-> -	int chip[KVM_NR_IRQCHIPS][KVM_IRQCHIP_NUM_PINS];
-> -	u32 nr_rt_entries;
-> -	/*
-> -	 * Array indexed by gsi. Each entry contains list of irq chips
-> -	 * the gsi is connected to.
-> -	 */
-> -	struct hlist_head map[0];
-> -};
-> -
->  int kvm_irq_map_gsi(struct kvm *kvm,
->  		    struct kvm_kernel_irq_routing_entry *entries, int gsi)
+> +void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
+> +		     struct kvm_lapic_irq *irq);
+>  #endif /* _ASM_X86_KVM_HOST_H */
+> diff --git a/arch/x86/kvm/irq_comm.c b/arch/x86/kvm/irq_comm.c
+> index a9572a13..1319c60 100644
+> --- a/arch/x86/kvm/irq_comm.c
+> +++ b/arch/x86/kvm/irq_comm.c
+> @@ -91,8 +91,8 @@ int kvm_irq_delivery_to_apic(struct kvm *kvm, struct kvm_lapic *src,
+>  	return r;
+>  }
+>  
+> -static inline void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
+> -				   struct kvm_lapic_irq *irq)
+> +void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
+> +		     struct kvm_lapic_irq *irq)
 >  {
+>  	trace_kvm_msi_set_irq(e->msi.address_lo, e->msi.data);
+>  
 > 
 
-Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
+Reviewed-by: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
