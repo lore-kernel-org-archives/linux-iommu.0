@@ -1,16 +1,16 @@
 From: Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [PATCH v7 17/17] iommu/vt-d: Add a command line parameter for
- VT-d posted-interrupts
-Date: Fri, 11 Sep 2015 13:05:35 +0200
-Message-ID: <55F2B57F.8030205@redhat.com>
+Subject: Re: [PATCH v7 15/17] KVM: Update Posted-Interrupts Descriptor when
+ vCPU is blocked
+Date: Fri, 11 Sep 2015 13:21:22 +0200
+Message-ID: <55F2B932.4030707@redhat.com>
 References: <1440492620-15934-1-git-send-email-feng.wu@intel.com>
- <1440492620-15934-18-git-send-email-feng.wu@intel.com>
+ <1440492620-15934-16-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1440492620-15934-18-git-send-email-feng.wu@intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <1440492620-15934-16-git-send-email-feng.wu@intel.com>
+Sender: kvm-owner@vger.kernel.org
 To: Feng Wu <feng.wu@intel.com>, alex.williamson@redhat.com, joro@8bytes.org, mtosatti@redhat.com
 Cc: eric.auger@linaro.org, kvm@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
@@ -18,62 +18,178 @@ List-Id: iommu@lists.linux-foundation.org
 
 
 On 25/08/2015 10:50, Feng Wu wrote:
-> Enable VT-d Posted-Interrtups and add a command line
-> parameter for it.
+> This patch updates the Posted-Interrupts Descriptor when vCPU
+> is blocked.
+> 
+> pre-block:
+> - Add the vCPU to the blocked per-CPU list
+> - Set 'NV' to POSTED_INTR_WAKEUP_VECTOR
+> 
+> post-block:
+> - Remove the vCPU from the per-CPU list
 > 
 > Signed-off-by: Feng Wu <feng.wu@intel.com>
 > ---
->  Documentation/kernel-parameters.txt |  1 +
->  drivers/iommu/irq_remapping.c       | 12 ++++++++----
->  2 files changed, 9 insertions(+), 4 deletions(-)
+>  arch/x86/include/asm/kvm_host.h |   5 ++
+>  arch/x86/kvm/vmx.c              | 151 ++++++++++++++++++++++++++++++++++++++++
+>  arch/x86/kvm/x86.c              |  55 ++++++++++++---
+>  include/linux/kvm_host.h        |   3 +
+>  virt/kvm/kvm_main.c             |   3 +
+>  5 files changed, 207 insertions(+), 10 deletions(-)
 > 
-> diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-> index 1d6f045..52aca36 100644
-> --- a/Documentation/kernel-parameters.txt
-> +++ b/Documentation/kernel-parameters.txt
-> @@ -1547,6 +1547,7 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
->  			nosid	disable Source ID checking
->  			no_x2apic_optout
->  				BIOS x2APIC opt-out request will be ignored
-> +			nopost	disable Interrupt Posting
+> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> index 22269b4..32af275 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -554,6 +554,8 @@ struct kvm_vcpu_arch {
+>  	 */
+>  	bool write_fault_to_shadow_pgtable;
 >  
->  	iomem=		Disable strict checking of access to MMIO memory
->  		strict	regions from userspace.
-> diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-> index 2d99930..d8c3997 100644
-> --- a/drivers/iommu/irq_remapping.c
-> +++ b/drivers/iommu/irq_remapping.c
-> @@ -22,7 +22,7 @@ int irq_remap_broken;
->  int disable_sourceid_checking;
->  int no_x2apic_optout;
+> +	bool halted;
+> +
+>  	/* set at EPT violation at this point */
+>  	unsigned long exit_qualification;
 >  
-> -int disable_irq_post = 1;
-> +int disable_irq_post = 0;
+> @@ -868,6 +870,9 @@ struct kvm_x86_ops {
 >  
->  static int disable_irq_remap;
->  static struct irq_remap_ops *remap_ops;
-> @@ -58,14 +58,18 @@ static __init int setup_irqremap(char *str)
->  		return -EINVAL;
->  
->  	while (*str) {
-> -		if (!strncmp(str, "on", 2))
-> +		if (!strncmp(str, "on", 2)) {
->  			disable_irq_remap = 0;
-> -		else if (!strncmp(str, "off", 3))
-> +			disable_irq_post = 0;
-> +		} else if (!strncmp(str, "off", 3)) {
->  			disable_irq_remap = 1;
-> -		else if (!strncmp(str, "nosid", 5))
-> +			disable_irq_post = 1;
-> +		} else if (!strncmp(str, "nosid", 5))
->  			disable_sourceid_checking = 1;
->  		else if (!strncmp(str, "no_x2apic_optout", 16))
->  			no_x2apic_optout = 1;
-> +		else if (!strncmp(str, "nopost", 6))
-> +			disable_irq_post = 1;
->  
->  		str += strcspn(str, ",");
->  		while (*str == ',')
-> 
+>  	void (*pi_clear_sn)(struct kvm_vcpu *vcpu);
+>  	void (*pi_set_sn)(struct kvm_vcpu *vcpu);
+> +
+> +	int (*pi_pre_block)(struct kvm_vcpu *vcpu);
+> +	void (*pi_post_block)(struct kvm_vcpu *vcpu);
 
-Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
+Just pre_block/post_block please.  Also, please document the return
+value of pre_block.
+
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index ef93fdc..fc7f222 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -5869,7 +5869,13 @@ int kvm_vcpu_halt(struct kvm_vcpu *vcpu)
+>  {
+>  	++vcpu->stat.halt_exits;
+>  	if (irqchip_in_kernel(vcpu->kvm)) {
+> -		vcpu->arch.mp_state = KVM_MP_STATE_HALTED;
+> +		/* Handle posted-interrupt when vCPU is to be halted */
+> +		if (!kvm_x86_ops->pi_pre_block ||
+> +		    (kvm_x86_ops->pi_pre_block &&
+
+No need to test kvm_x86_ops->pi_pre_block again.
+
+> +		    kvm_x86_ops->pi_pre_block(vcpu) == 0)) {
+> +			vcpu->arch.halted = true;
+> +			vcpu->arch.mp_state = KVM_MP_STATE_HALTED;
+> +		}
+>  		return 1;
+>  	} else {
+>  		vcpu->run->exit_reason = KVM_EXIT_HLT;
+> @@ -6518,6 +6524,21 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+>  			kvm_vcpu_reload_apic_access_page(vcpu);
+>  	}
+>  
+> +	/*
+> +	 * Since posted-interrupts can be set by VT-d HW now, in this
+> +	 * case, KVM_REQ_EVENT is not set. We move the following
+> +	 * operations out of the if statement.
+> +	 */
+
+Just "KVM_REQ_EVENT is not set when posted interrupts are set by VT-d
+hardware, so we have to update RVI unconditionally", please.
+
+Could we skip this (in a future patch) if PI.ON=0?
+
+> +	if (kvm_lapic_enabled(vcpu)) {
+> +		/*
+> +		 * Update architecture specific hints for APIC
+> +		 * virtual interrupt delivery.
+> +		 */
+> +		if (kvm_x86_ops->hwapic_irr_update)
+> +			kvm_x86_ops->hwapic_irr_update(vcpu,
+> +				kvm_lapic_find_highest_irr(vcpu));
+> +	}
+> +
+>  	if (kvm_check_request(KVM_REQ_EVENT, vcpu) || req_int_win) {
+>  		kvm_apic_accept_events(vcpu);
+>  		if (vcpu->arch.mp_state == KVM_MP_STATE_INIT_RECEIVED) {
+> @@ -6534,13 +6555,6 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+>  			kvm_x86_ops->enable_irq_window(vcpu);
+>  
+>  		if (kvm_lapic_enabled(vcpu)) {
+> -			/*
+> -			 * Update architecture specific hints for APIC
+> -			 * virtual interrupt delivery.
+> -			 */
+> -			if (kvm_x86_ops->hwapic_irr_update)
+> -				kvm_x86_ops->hwapic_irr_update(vcpu,
+> -					kvm_lapic_find_highest_irr(vcpu));
+>  			update_cr8_intercept(vcpu);
+>  			kvm_lapic_sync_to_vapic(vcpu);
+>  		}
+> @@ -6711,10 +6725,31 @@ static int vcpu_run(struct kvm_vcpu *vcpu)
+>  
+>  	for (;;) {
+>  		if (vcpu->arch.mp_state == KVM_MP_STATE_RUNNABLE &&
+> -		    !vcpu->arch.apf.halted)
+> +		    !vcpu->arch.apf.halted) {
+> +			/*
+> +			 * For some cases, we can get here with
+> +			 * vcpu->arch.halted being true.
+> +			 */
+
+Which cases?
+
+Paolo
+
+> +			if (kvm_x86_ops->pi_post_block && vcpu->arch.halted) {
+> +				kvm_x86_ops->pi_post_block(vcpu);
+> +				vcpu->arch.halted = false;
+> +			}
+> +
+>  			r = vcpu_enter_guest(vcpu);
+> -		else
+> +		} else {
+>  			r = vcpu_block(kvm, vcpu);
+> +
+> +			/*
+> +			 * pi_post_block() must be called after
+> +			 * pi_pre_block() which is called in
+> +			 * kvm_vcpu_halt().
+> +			 */
+> +			if (kvm_x86_ops->pi_post_block && vcpu->arch.halted) {
+> +				kvm_x86_ops->pi_post_block(vcpu);
+> +				vcpu->arch.halted = false;
+> +			}
+> +		}
+> +
+>  		if (r <= 0)
+>  			break;
+>  
+> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+> index f4005dc..6aa69f4 100644
+> --- a/include/linux/kvm_host.h
+> +++ b/include/linux/kvm_host.h
+> @@ -233,6 +233,9 @@ struct kvm_vcpu {
+>  	unsigned long requests;
+>  	unsigned long guest_debug;
+>  
+> +	int pre_pcpu;
+> +	struct list_head blocked_vcpu_list;
+> +
+>  	struct mutex mutex;
+>  	struct kvm_run *run;
+>  
+> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> index 8b8a444..191c7eb 100644
+> --- a/virt/kvm/kvm_main.c
+> +++ b/virt/kvm/kvm_main.c
+> @@ -220,6 +220,9 @@ int kvm_vcpu_init(struct kvm_vcpu *vcpu, struct kvm *kvm, unsigned id)
+>  	init_waitqueue_head(&vcpu->wq);
+>  	kvm_async_pf_vcpu_init(vcpu);
+>  
+> +	vcpu->pre_pcpu = -1;
+> +	INIT_LIST_HEAD(&vcpu->blocked_vcpu_list);
+> +
+>  	page = alloc_page(GFP_KERNEL | __GFP_ZERO);
+>  	if (!page) {
+>  		r = -ENOMEM;
+> 
