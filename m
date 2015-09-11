@@ -1,14 +1,15 @@
 From: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v7 07/17] KVM: make kvm_set_msi_irq() public
-Date: Fri, 11 Sep 2015 12:53:46 +0200
-Message-ID: <55F2B2BA.8000805@redhat.com>
+Subject: Re: [PATCH v7 08/17] vfio: Select IRQ_BYPASS_MANAGER for vfio PCI
+	devices
+Date: Fri, 11 Sep 2015 12:54:12 +0200
+Message-ID: <55F2B2D4.3040904@redhat.com>
 References: <1440492620-15934-1-git-send-email-feng.wu@intel.com>
-	<1440492620-15934-8-git-send-email-feng.wu@intel.com>
+	<1440492620-15934-9-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1440492620-15934-8-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1440492620-15934-9-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,49 +26,27 @@ List-Id: iommu@lists.linux-foundation.org
 
 
 On 25/08/2015 10:50, Feng Wu wrote:
-> Make kvm_set_msi_irq() public, we can use this function outside.
+> Enable irq bypass manager for vfio PCI devices.
 > 
 > Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 > ---
->  arch/x86/include/asm/kvm_host.h | 4 ++++
->  arch/x86/kvm/irq_comm.c         | 4 ++--
->  2 files changed, 6 insertions(+), 2 deletions(-)
+>  drivers/vfio/pci/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> index c4f99f1..82d0709 100644
-> --- a/arch/x86/include/asm/kvm_host.h
-> +++ b/arch/x86/include/asm/kvm_host.h
-> @@ -175,6 +175,8 @@ enum {
->   */
->  #define KVM_APIC_PV_EOI_PENDING	1
->  
-> +struct kvm_kernel_irq_routing_entry;
-> +
->  /*
->   * We don't want allocation failures within the mmu code, so we preallocate
->   * enough memory for a single page fault in a cache.
-> @@ -1212,4 +1214,6 @@ int x86_set_memory_region(struct kvm *kvm,
->  bool kvm_intr_is_single_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
->  			     struct kvm_vcpu **dest_vcpu);
->  
-> +void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
-> +		     struct kvm_lapic_irq *irq);
->  #endif /* _ASM_X86_KVM_HOST_H */
-> diff --git a/arch/x86/kvm/irq_comm.c b/arch/x86/kvm/irq_comm.c
-> index a9572a13..1319c60 100644
-> --- a/arch/x86/kvm/irq_comm.c
-> +++ b/arch/x86/kvm/irq_comm.c
-> @@ -91,8 +91,8 @@ int kvm_irq_delivery_to_apic(struct kvm *kvm, struct kvm_lapic *src,
->  	return r;
->  }
->  
-> -static inline void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
-> -				   struct kvm_lapic_irq *irq)
-> +void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
-> +		     struct kvm_lapic_irq *irq)
->  {
->  	trace_kvm_msi_set_irq(e->msi.address_lo, e->msi.data);
->  
+> diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
+> index 579d83b..02912f1 100644
+> --- a/drivers/vfio/pci/Kconfig
+> +++ b/drivers/vfio/pci/Kconfig
+> @@ -2,6 +2,7 @@ config VFIO_PCI
+>  	tristate "VFIO support for PCI devices"
+>  	depends on VFIO && PCI && EVENTFD
+>  	select VFIO_VIRQFD
+> +	select IRQ_BYPASS_MANAGER
+>  	help
+>  	  Support for the PCI VFIO bus driver.  This is required to make
+>  	  use of PCI drivers using the VFIO framework.
 > 
 
-Reviewed-by: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Might as well squash it into patch 9.
+
+Paolo
