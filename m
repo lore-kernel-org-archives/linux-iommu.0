@@ -1,195 +1,164 @@
-From: Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [PATCH v7 15/17] KVM: Update Posted-Interrupts Descriptor when
- vCPU is blocked
-Date: Fri, 11 Sep 2015 13:21:22 +0200
-Message-ID: <55F2B932.4030707@redhat.com>
-References: <1440492620-15934-1-git-send-email-feng.wu@intel.com>
- <1440492620-15934-16-git-send-email-feng.wu@intel.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v4 5/6] iommu/mediatek: Add mt8173 IOMMU driver
+Date: Fri, 11 Sep 2015 16:33:36 +0100
+Message-ID: <55F2F450.5090809@arm.com>
+References: <1438597279-2937-1-git-send-email-yong.wu@mediatek.com>
+	<1438597279-2937-6-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <1440492620-15934-16-git-send-email-feng.wu@intel.com>
-Sender: kvm-owner@vger.kernel.org
-To: Feng Wu <feng.wu@intel.com>, alex.williamson@redhat.com, joro@8bytes.org, mtosatti@redhat.com
-Cc: eric.auger@linaro.org, kvm@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1438597279-2937-6-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org" <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, "frederic.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <frederic.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Lucas Stach <l.stach@p>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 25/08/2015 10:50, Feng Wu wrote:
-> This patch updates the Posted-Interrupts Descriptor when vCPU
-> is blocked.
-> 
-> pre-block:
-> - Add the vCPU to the blocked per-CPU list
-> - Set 'NV' to POSTED_INTR_WAKEUP_VECTOR
-> 
-> post-block:
-> - Remove the vCPU from the per-CPU list
-> 
-> Signed-off-by: Feng Wu <feng.wu@intel.com>
+On 03/08/15 11:21, Yong Wu wrote:
+> This patch adds support for mediatek m4u (MultiMedia Memory Management
+> Unit).
+>
+> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 > ---
->  arch/x86/include/asm/kvm_host.h |   5 ++
->  arch/x86/kvm/vmx.c              | 151 ++++++++++++++++++++++++++++++++++++++++
->  arch/x86/kvm/x86.c              |  55 ++++++++++++---
->  include/linux/kvm_host.h        |   3 +
->  virt/kvm/kvm_main.c             |   3 +
->  5 files changed, 207 insertions(+), 10 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> index 22269b4..32af275 100644
-> --- a/arch/x86/include/asm/kvm_host.h
-> +++ b/arch/x86/include/asm/kvm_host.h
-> @@ -554,6 +554,8 @@ struct kvm_vcpu_arch {
->  	 */
->  	bool write_fault_to_shadow_pgtable;
->  
-> +	bool halted;
+[...]
+> +/*
+> + * There is only one iommu domain called the m4u domain that
+> + * all Multimedia modules share.
+> + */
+> +static struct mtk_iommu_domain *m4udom;
+
+It's a shame this can't be part of the m4u device's mtk_iommu_data, but 
+since the way iommu_domain_alloc works makes that impossible, I think we 
+have little choice but to use the global and hope your guys never build 
+a system with two of these things in ;)
+
+[...]
+> +static struct iommu_domain *mtk_iommu_domain_alloc(unsigned type)
+> +{
+> +       struct mtk_iommu_domain *priv;
 > +
->  	/* set at EPT violation at this point */
->  	unsigned long exit_qualification;
->  
-> @@ -868,6 +870,9 @@ struct kvm_x86_ops {
->  
->  	void (*pi_clear_sn)(struct kvm_vcpu *vcpu);
->  	void (*pi_set_sn)(struct kvm_vcpu *vcpu);
+> +       if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
+> +               return NULL;
 > +
-> +	int (*pi_pre_block)(struct kvm_vcpu *vcpu);
-> +	void (*pi_post_block)(struct kvm_vcpu *vcpu);
-
-Just pre_block/post_block please.  Also, please document the return
-value of pre_block.
-
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index ef93fdc..fc7f222 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -5869,7 +5869,13 @@ int kvm_vcpu_halt(struct kvm_vcpu *vcpu)
->  {
->  	++vcpu->stat.halt_exits;
->  	if (irqchip_in_kernel(vcpu->kvm)) {
-> -		vcpu->arch.mp_state = KVM_MP_STATE_HALTED;
-> +		/* Handle posted-interrupt when vCPU is to be halted */
-> +		if (!kvm_x86_ops->pi_pre_block ||
-> +		    (kvm_x86_ops->pi_pre_block &&
-
-No need to test kvm_x86_ops->pi_pre_block again.
-
-> +		    kvm_x86_ops->pi_pre_block(vcpu) == 0)) {
-> +			vcpu->arch.halted = true;
-> +			vcpu->arch.mp_state = KVM_MP_STATE_HALTED;
-> +		}
->  		return 1;
->  	} else {
->  		vcpu->run->exit_reason = KVM_EXIT_HLT;
-> @@ -6518,6 +6524,21 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
->  			kvm_vcpu_reload_apic_access_page(vcpu);
->  	}
->  
-> +	/*
-> +	 * Since posted-interrupts can be set by VT-d HW now, in this
-> +	 * case, KVM_REQ_EVENT is not set. We move the following
-> +	 * operations out of the if statement.
-> +	 */
-
-Just "KVM_REQ_EVENT is not set when posted interrupts are set by VT-d
-hardware, so we have to update RVI unconditionally", please.
-
-Could we skip this (in a future patch) if PI.ON=0?
-
-> +	if (kvm_lapic_enabled(vcpu)) {
-> +		/*
-> +		 * Update architecture specific hints for APIC
-> +		 * virtual interrupt delivery.
-> +		 */
-> +		if (kvm_x86_ops->hwapic_irr_update)
-> +			kvm_x86_ops->hwapic_irr_update(vcpu,
-> +				kvm_lapic_find_highest_irr(vcpu));
-> +	}
+> +       if (m4udom)/* The m4u domain exist. */
+> +               return &m4udom->domain;
 > +
->  	if (kvm_check_request(KVM_REQ_EVENT, vcpu) || req_int_win) {
->  		kvm_apic_accept_events(vcpu);
->  		if (vcpu->arch.mp_state == KVM_MP_STATE_INIT_RECEIVED) {
-> @@ -6534,13 +6555,6 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
->  			kvm_x86_ops->enable_irq_window(vcpu);
->  
->  		if (kvm_lapic_enabled(vcpu)) {
-> -			/*
-> -			 * Update architecture specific hints for APIC
-> -			 * virtual interrupt delivery.
-> -			 */
-> -			if (kvm_x86_ops->hwapic_irr_update)
-> -				kvm_x86_ops->hwapic_irr_update(vcpu,
-> -					kvm_lapic_find_highest_irr(vcpu));
->  			update_cr8_intercept(vcpu);
->  			kvm_lapic_sync_to_vapic(vcpu);
->  		}
-> @@ -6711,10 +6725,31 @@ static int vcpu_run(struct kvm_vcpu *vcpu)
->  
->  	for (;;) {
->  		if (vcpu->arch.mp_state == KVM_MP_STATE_RUNNABLE &&
-> -		    !vcpu->arch.apf.halted)
-> +		    !vcpu->arch.apf.halted) {
-> +			/*
-> +			 * For some cases, we can get here with
-> +			 * vcpu->arch.halted being true.
-> +			 */
+> +       priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+> +       if (!priv)
+> +               return NULL;
+> +
+> +       priv->domain.geometry.aperture_start = 0;
+> +       priv->domain.geometry.aperture_end = DMA_BIT_MASK(32);
+> +       priv->domain.geometry.force_aperture = true;
 
-Which cases?
+My intention is that in the IOMMU_DOMAIN_DMA case you'd call 
+iommu_get_dma_cookie(&priv->domain) here as well, that way I can get rid 
+of some of the dodgy workarounds in arch_setup_dma_ops which try to 
+cover all possible cases (and which I'm now not 100% confident in). I'm 
+just about to start trying to fix that up (expect a repost of my series 
+in a week or two once -rc1 has landed).
 
-Paolo
+> +
+> +       m4udom = priv;
+> +
+> +       return &priv->domain;
+> +}
+[...]
+> +static int mtk_iommu_add_device(struct device *dev)
+> +{
+> +       struct iommu_group *group;
+> +       int ret;
+> +
+> +       if (!dev->archdata.iommu) /* Not a iommu client device */
+> +               return -ENODEV;
+> +
+> +       group = iommu_group_get(dev);
+> +       if (!group) {
+> +               group = iommu_group_alloc();
+> +               if (IS_ERR(group)) {
+> +                       dev_err(dev, "Failed to allocate IOMMU group\n");
+> +                       return PTR_ERR(group);
+> +               }
+> +       }
+> +
+ > +       ret = iommu_group_add_device(group, dev);
+> +       if (ret) {
+> +               dev_err(dev, "Failed to add IOMMU group\n");
+> +               goto err_group_put;
+> +       }
 
-> +			if (kvm_x86_ops->pi_post_block && vcpu->arch.halted) {
-> +				kvm_x86_ops->pi_post_block(vcpu);
-> +				vcpu->arch.halted = false;
-> +			}
+I know the rest of the code means that you can't hit it in practice, but 
+if you ever did have two client devices in the same group then the 
+iommu_group_get() could legitimately succeed for the second device, then 
+you'd blow up creating a duplicate sysfs entry by adding the device to 
+its own group again. Probably not what you want.
+
 > +
->  			r = vcpu_enter_guest(vcpu);
-> -		else
-> +		} else {
->  			r = vcpu_block(kvm, vcpu);
+> +       ret = iommu_attach_group(&m4udom->domain, group);
+> +       if (ret)
+> +               dev_err(dev, "Failed to attach IOMMU group\n");
+
+Similarly here, if two devices did share a group then the group could 
+legitimately already be attached to a domain here (by the first device), 
+so attaching it again would be wrong. I think it would be nicer to check 
+with iommu_get_domain_for_dev() first to see if you need to do anything 
+at all (a valid domain from that implies a valid group).
+
 > +
-> +			/*
-> +			 * pi_post_block() must be called after
-> +			 * pi_pre_block() which is called in
-> +			 * kvm_vcpu_halt().
-> +			 */
-> +			if (kvm_x86_ops->pi_post_block && vcpu->arch.halted) {
-> +				kvm_x86_ops->pi_post_block(vcpu);
-> +				vcpu->arch.halted = false;
-> +			}
-> +		}
+> +err_group_put:
+> +       iommu_group_put(group);
+> +       return ret;
+> +}
+[...]
+> +static int mtk_iommu_probe(struct platform_device *pdev)
+> +{
+> +       struct mtk_iommu_data   *data;
+> +       struct device           *dev = &pdev->dev;
+> +       void __iomem            *protect;
+> +       int                     ret;
 > +
->  		if (r <= 0)
->  			break;
->  
-> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-> index f4005dc..6aa69f4 100644
-> --- a/include/linux/kvm_host.h
-> +++ b/include/linux/kvm_host.h
-> @@ -233,6 +233,9 @@ struct kvm_vcpu {
->  	unsigned long requests;
->  	unsigned long guest_debug;
->  
-> +	int pre_pcpu;
-> +	struct list_head blocked_vcpu_list;
+> +       data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+> +       if (!data)
+> +               return -ENOMEM;
 > +
->  	struct mutex mutex;
->  	struct kvm_run *run;
->  
-> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-> index 8b8a444..191c7eb 100644
-> --- a/virt/kvm/kvm_main.c
-> +++ b/virt/kvm/kvm_main.c
-> @@ -220,6 +220,9 @@ int kvm_vcpu_init(struct kvm_vcpu *vcpu, struct kvm *kvm, unsigned id)
->  	init_waitqueue_head(&vcpu->wq);
->  	kvm_async_pf_vcpu_init(vcpu);
->  
-> +	vcpu->pre_pcpu = -1;
-> +	INIT_LIST_HEAD(&vcpu->blocked_vcpu_list);
+> +       /* Protect memory. HW will access here while translation fault.*/
+> +       protect = devm_kzalloc(dev, MTK_PROTECT_PA_ALIGN * 2, GFP_KERNEL);
+> +       if (!protect)
+> +               return -ENOMEM;
+> +       data->protect_base = virt_to_phys(protect);
 > +
->  	page = alloc_page(GFP_KERNEL | __GFP_ZERO);
->  	if (!page) {
->  		r = -ENOMEM;
-> 
+> +       ret = mtk_iommu_parse_dt(pdev, data);
+> +       if (ret)
+> +               return ret;
+> +
+> +       if (!m4udom)/* There is no iommu client */
+> +               return 0;
+
+I don't quite follow this: m4udom is apparently only created by someone 
+calling domain_alloc() - how can you guarantee that happens before this 
+driver is probed? - but if they then go and try to attach the device to 
+their new domain, it's going to end up in mtk_hw_init() poking the 
+hardware of the m4u device that can't have even probed yet.
+
+I can only imagine it currently works by sheer chance due to the 
+horrible arch_setup_dma_ops delayed attachment workaround, so even if I 
+can't remove that completely when I look at it next week I'm liable to 
+change it in a way that breaks this badly ;)
+
+Robin.
+
+> +
+> +       data->dev = dev;
+> +       m4udom->data = data;
+> +       dev_set_drvdata(dev, m4udom);
+> +
+> +       return 0;
+> +}
