@@ -1,43 +1,39 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 0/4] Separate the IOVA library from the intel-iommu driver
-Date: Mon, 14 Sep 2015 19:17:57 +0100
-Message-ID: <55F70F55.80402@arm.com>
-References: <1436787091-11943-1-git-send-email-sakari.ailus@linux.intel.com>
-	<1438089947.26913.155.camel@infradead.org>
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Subject: Re: [PATCH V2] debugfs: don't assume sizeof(bool) to be 4 bytes
+Date: Tue, 15 Sep 2015 07:34:38 +0530
+Message-ID: <20150915020438.GG32551@linux>
+References: <81516fb9c662cc338b5af5b63fbbcde5374e0893.1442202447.git.viresh.kumar@linaro.org>
+ <1708603.aKpYchk1pa@wuerfel>
+ <20150914154708.GF32551@linux>
+ <20150914160348.GA7290@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1438089947.26913.155.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Sakari Ailus <sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "jian.xu.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <jian.xu.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <owner-linux-mm@kvack.org>
+Content-Disposition: inline
+In-Reply-To: <20150914160348.GA7290@kroah.com>
+Sender: owner-linux-mm@kvack.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, linaro-kernel@lists.linaro.org, "open list:NETWORKING DRIVERS WIRELESS" <linux-wireless@vger.kernel.org>, "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." <alsa-devel@alsa-project.org>, Avri Altman <avri.altman@intel.com>, Stanislaw Gruszka <sgruszka@redhat.com>, Jiri Slaby <jirislaby@gmail.com>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, Peter Zijlstra <peterz@infradead.org>, Catalin Marinas <catalin.marinas@arm.com>, Mark Brown <broonie@kernel.org>, Jaroslav Kysela <perex@perex.cz>, "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>, Kalle Valo <kvalo@qca.qualcomm.com>, Emmanuel Grumbach <emmanuel.grumbach@intel.com>, Wang Long <long.wanglong@huawei.com>, Richard Fitzgerald <rf@opensource.wolfsonmicro.com>, Ingo Molnar <mingo@kernel.org>, Johan Hedberg <johan.hedberg@gmail.com>, Davidlohr Bueso <dave@stg>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi David,
+On 14-09-15, 09:03, Greg KH wrote:
+> What ever ones you think it is relevant for :)
 
-On 28/07/15 14:25, David Woodhouse wrote:
-> On Mon, 2015-07-13 at 14:31 +0300, Sakari Ailus wrote:
->> Hi folks,
->>
->> This set separates the IOVA library from the intel-iommu driver, and makes
->> it usable for other implementations (such as DMA mapping) as well.
->
-> Thanks. I've applied patches ##1-3 to my tree. The fourth patch ideally
-> wants to go elsewhere.
->
+"Relevant" is a relevant term :)
 
-This doesn't seem to have made 4.3-rc1, despite having been in -next for 
-a while. Were you planning to push it for 4.3, or is it waiting on 
-further development?
+So, the patch which defined the type bool as _Bool was added in v2.6.19 :)
 
-Thanks,
-Robin.
+6e2182874324 ("[PATCH] Generic boolean")
+
+So, I will try at least for v3.10+ as they are used by a lot of
+people, as they are LTS kernels. But wasn't sure if I should do it
+right from 2.6.19.
+
+-- 
+viresh
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
