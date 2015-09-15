@@ -1,15 +1,14 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v4 5/6] iommu/mediatek: Add mt8173 IOMMU driver
-Date: Tue, 15 Sep 2015 13:53:11 +0800
-Message-ID: <1442296391.26206.72.camel@mhfsdcap03>
-References: <1438597279-2937-1-git-send-email-yong.wu@mediatek.com>
-	<1438597279-2937-6-git-send-email-yong.wu@mediatek.com>
-	<55F2F450.5090809@arm.com>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH V2] debugfs: don't assume sizeof(bool) to be 4 bytes
+Date: Tue, 15 Sep 2015 08:30:55 +0200
+Message-ID: <11729827.zzMdq0fFyE@wuerfel>
+References: <81516fb9c662cc338b5af5b63fbbcde5374e0893.1442202447.git.viresh.kumar@linaro.org>
+	<20150914160348.GA7290@kroah.com> <20150915020438.GG32551@linux>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <55F2F450.5090809-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20150915020438.GG32551@linux>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,219 +18,31 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org" <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, "frederic.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <frederic.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu@lists.>
+To: Viresh Kumar <viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." <alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org>, Avri Altman <avri.altman-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Stanislaw Gruszka <sgruszka-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jiri Slaby <jirislaby-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "open list:DOCUMENTATION" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Joerg Roedel <joro-RCxXqF11Dk4CgAX/W8SZqEqCLAeBNdoH@public.gmane.org>, Jaroslav Kysela <perex-/Fr2/VpizcU@public.gmane.org>, "open list:MEMORY MANAGEMENT" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, Kalle Valo <kvalo-A+ZNKFmMK5xy9aJCnZT0Uw@public.gmane.org>, Emmanuel Grumbach <emmanuel.grumbach-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Luciano Coelho <luciano.coelho-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Richard Fitzgerald <rf-yzvPICuk2AATkU/dhu1WVueM+bqZidxxQQ4Iyu8u01E@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Hariprasad S <hariprasad-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Davidlohr Bueso <dave-h16yJtLeMjHk1uMJSBkQmQ@public.gmane.org>, Eliad Peller <eli>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 2015-09-11 at 16:33 +0100, Robin Murphy wrote:
-> On 03/08/15 11:21, Yong Wu wrote:
-> > This patch adds support for mediatek m4u (MultiMedia Memory Management
-> > Unit).
-> >
-> > Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> > ---
-> [...]
-> > +/*
-> > + * There is only one iommu domain called the m4u domain that
-> > + * all Multimedia modules share.
-> > + */
-> > +static struct mtk_iommu_domain *m4udom;
+On Tuesday 15 September 2015 07:34:38 Viresh Kumar wrote:
+> On 14-09-15, 09:03, Greg KH wrote:
+> > What ever ones you think it is relevant for :)
 > 
-> It's a shame this can't be part of the m4u device's mtk_iommu_data, but 
-> since the way iommu_domain_alloc works makes that impossible, I think we 
-> have little choice but to use the global and hope your guys never build 
-> a system with two of these things in ;)
-
-Hi Robin,
-   Thanks very much for your review. This gobal variable trouble me very
-much. please also help check below.
-
+> "Relevant" is a relevant term :)
 > 
-> [...]
-> > +static struct iommu_domain *mtk_iommu_domain_alloc(unsigned type)
-> > +{
-> > +       struct mtk_iommu_domain *priv;
-> > +
-> > +       if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
-> > +               return NULL;
-> > +
-> > +       if (m4udom)/* The m4u domain exist. */
-> > +               return &m4udom->domain;
-
-     From Joerg's comment[0]: "This is not going to work. If you always
-return the same domain the iommu core might re-initialize domain state
-(and overwrite changed state)."
-
-     It seems that I have to delete this here. then alloc iommu-domain
-every time. and add some workaround code in mtk_iommu_attach_device like
-our v3[1](reserve one as the m4u domain and delete the others).
-Then the code maybe not very concise, but it could also work in the
-future, Is it OK?
-
-[0]:http://lists.linuxfoundation.org/pipermail/iommu/2015-August/014057.html
-[1]:http://lists.linuxfoundation.org/pipermail/iommu/2015-July/013631.html
-
-> > +
-> > +       priv = kzalloc(sizeof(*priv), GFP_KERNEL);
-> > +       if (!priv)
-> > +               return NULL;
-> > +
-> > +       priv->domain.geometry.aperture_start = 0;
-> > +       priv->domain.geometry.aperture_end = DMA_BIT_MASK(32);
-> > +       priv->domain.geometry.force_aperture = true;
+> So, the patch which defined the type bool as _Bool was added in v2.6.19 :)
 > 
-> My intention is that in the IOMMU_DOMAIN_DMA case you'd call 
-> iommu_get_dma_cookie(&priv->domain) here as well, that way I can get rid 
-> of some of the dodgy workarounds in arch_setup_dma_ops which try to 
-> cover all possible cases (and which I'm now not 100% confident in). I'm 
-> just about to start trying to fix that up (expect a repost of my series 
-> in a week or two once -rc1 has landed).
-
-  I will add like this:
-  if (type == IOMMU_DOMAIN_DMA && iommu_get_dma_cookie(&priv->domain)) {
-       kfree(priv);
-       return NULL;
-  }
-
+> 6e2182874324 ("[PATCH] Generic boolean")
 > 
-> > +
-> > +       m4udom = priv;
-> > +
-> > +       return &priv->domain;
-> > +}
-> [...]
-> > +static int mtk_iommu_add_device(struct device *dev)
-> > +{
-> > +       struct iommu_group *group;
-> > +       int ret;
-> > +
-> > +       if (!dev->archdata.iommu) /* Not a iommu client device */
-> > +               return -ENODEV;
-> > +
-> > +       group = iommu_group_get(dev);
-> > +       if (!group) {
-> > +               group = iommu_group_alloc();
-> > +               if (IS_ERR(group)) {
-> > +                       dev_err(dev, "Failed to allocate IOMMU group\n");
-> > +                       return PTR_ERR(group);
-> > +               }
-> > +       }
-> > +
->  > +       ret = iommu_group_add_device(group, dev);
-> > +       if (ret) {
-> > +               dev_err(dev, "Failed to add IOMMU group\n");
-> > +               goto err_group_put;
-> > +       }
-> 
-> I know the rest of the code means that you can't hit it in practice, but 
-> if you ever did have two client devices in the same group then the 
-> iommu_group_get() could legitimately succeed for the second device, then 
-> you'd blow up creating a duplicate sysfs entry by adding the device to 
-> its own group again. Probably not what you want.
+> So, I will try at least for v3.10+ as they are used by a lot of
+> people, as they are LTS kernels. But wasn't sure if I should do it
+> right from 2.6.19.
 
-   the "dev" is different while enter this function, That is to say
-every client device have its own iommu-group. is it right?
+I don't think there is any use in backporting the global type change,
+that is too invasive and does not change much. The specific bug
+in the acpi code dates back to when acpi_ec_add_debugfs() was
+added in 2.6.36, so that is the earliest point it could be backported
+to. Then again, as I said it is only a problem on big-endian 64-bit
+architectures, and on ACPI that would specifically mean arm64, which
+only very recently gained ACPI support, so backporting to 4.1 is probably
+enough.
 
-> 
-> > +
-> > +       ret = iommu_attach_group(&m4udom->domain, group);
-> > +       if (ret)
-> > +               dev_err(dev, "Failed to attach IOMMU group\n");
-> 
-> Similarly here, if two devices did share a group then the group could 
-> legitimately already be attached to a domain here (by the first device), 
-> so attaching it again would be wrong. I think it would be nicer to check 
-> with iommu_get_domain_for_dev() first to see if you need to do anything 
-> at all (a valid domain from that implies a valid group).
-
-   Here all the devices has their own iommu-group, I only attach the
-same iommu-domain for them due to our m4u HW. All the clients are in
-M4U-HW's domain and there is only one pagetable here.
-
-> 
-> > +
-> > +err_group_put:
-> > +       iommu_group_put(group);
-> > +       return ret;
-> > +}
-> [...]
-> > +static int mtk_iommu_probe(struct platform_device *pdev)
-> > +{
-> > +       struct mtk_iommu_data   *data;
-> > +       struct device           *dev = &pdev->dev;
-> > +       void __iomem            *protect;
-> > +       int                     ret;
-> > +
-> > +       data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
-> > +       if (!data)
-> > +               return -ENOMEM;
-> > +
-> > +       /* Protect memory. HW will access here while translation fault.*/
-> > +       protect = devm_kzalloc(dev, MTK_PROTECT_PA_ALIGN * 2, GFP_KERNEL);
-> > +       if (!protect)
-> > +               return -ENOMEM;
-> > +       data->protect_base = virt_to_phys(protect);
-> > +
-> > +       ret = mtk_iommu_parse_dt(pdev, data);
-> > +       if (ret)
-> > +               return ret;
-> > +
-> > +       if (!m4udom)/* There is no iommu client */
-> > +               return 0;
-> 
-> I don't quite follow this: m4udom is apparently only created by someone 
-> calling domain_alloc() - how can you guarantee that happens before this 
-> driver is probed? - but if they then go and try to attach the device to 
-> their new domain, it's going to end up in mtk_hw_init() poking the 
-> hardware of the m4u device that can't have even probed yet.
-
-    I think the probe will run always earlier than mtk_hw_init.
-    In the mtk_iommu_attach_device below, I add iommu_group_get to
-guarantee the sequence.
-//==================
-static int mtk_iommu_attach_device(struct iommu_domain *domain,
-				   struct device *dev)
-{
-	struct mtk_iommu_domain *priv = to_mtk_domain(domain);
-	struct iommu_group *group;
-	int ret;
-
-	group = iommu_group_get(dev);
-	if (!group)
-		return 0;
-	iommu_group_put(group);
-
-	ret = mtk_iommu_init_domain_context(priv);
-	if (ret)
-		return ret;
-
-	return mtk_iommu_config(priv, dev, true);
-}
-//======================
-   After the probe done, It will enter bus_set_iommu->
-mtk_iommu_add_device where will create iommu group for it.
-then enter iommu_attach_group->mtk_iommu_attach_device again.
-is this ok here?
-
-About "how can you guarantee that happens before this 
-driver is probed?"
-->Sorry, I can't guarantee this. The domain_alloc is called by
-arch_setup_dma_ops in the DMA core, I will change this depend on the
-next DMA.
-
-> 
-> I can only imagine it currently works by sheer chance due to the 
-> horrible arch_setup_dma_ops delayed attachment workaround, so even if I 
-> can't remove that completely when I look at it next week I'm liable to 
-> change it in a way that breaks this badly ;)
-> 
-> Robin.
-> 
-> > +
-> > +       data->dev = dev;
-> > +       m4udom->data = data;
-> > +       dev_set_drvdata(dev, m4udom);
-> > +
-> > +       return 0;
-> > +}
-> 
+	Arnd
