@@ -1,8 +1,7 @@
 From: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 15/22] pci-swiotlb-xen: add xen_swiotlb_map_peer_resource to
-	xen_swiotlb_dma_ops
-Date: Tue, 15 Sep 2015 12:11:00 -0500
-Message-ID: <1442337067-22964-16-git-send-email-wdavis@nvidia.com>
+Subject: [PATCH 14/22] swiotlb-xen: add map_peer_resource stub
+Date: Tue, 15 Sep 2015 12:10:59 -0500
+Message-ID: <1442337067-22964-15-git-send-email-wdavis@nvidia.com>
 References: <1442337067-22964-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,26 +21,67 @@ To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 Cc: Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, John Hubbard <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Terence Ripperda <tripperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Only available if CONFIG_HAS_DMA_P2P is set.
+Add Xen stub of the map_peer_resource DMA API. Return an error to
+indicate no bounce-buffer implementation is available yet.
 
 Signed-off-by: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- arch/x86/xen/pci-swiotlb-xen.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/xen/swiotlb-xen.c | 20 ++++++++++++++++++++
+ include/xen/swiotlb-xen.h | 11 +++++++++++
+ 2 files changed, 31 insertions(+)
 
-diff --git a/arch/x86/xen/pci-swiotlb-xen.c b/arch/x86/xen/pci-swiotlb-xen.c
-index 0e98e5d..84a9285 100644
---- a/arch/x86/xen/pci-swiotlb-xen.c
-+++ b/arch/x86/xen/pci-swiotlb-xen.c
-@@ -30,6 +30,9 @@ static struct dma_map_ops xen_swiotlb_dma_ops = {
- 	.unmap_sg = xen_swiotlb_unmap_sg_attrs,
- 	.map_page = xen_swiotlb_map_page,
- 	.unmap_page = xen_swiotlb_unmap_page,
-+#ifdef CONFIG_HAS_DMA_P2P
-+	.map_peer_resource = xen_swiotlb_map_peer_resource,
-+#endif
- 	.dma_supported = xen_swiotlb_dma_supported,
- };
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index 4c54932..b9879dc 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -475,6 +475,26 @@ void xen_swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
+ }
+ EXPORT_SYMBOL_GPL(xen_swiotlb_unmap_page);
  
++#ifdef CONFIG_HAS_DMA_P2P
++/*
++ * Maps a single region from a peer device's resource for DMA streaming. This is
++ * currently unimplemented for Xen because the only peer DMA mappings we're
++ * capable of creating are direct mappings with no explicit synchronization,
++ * e.g., there's no bounce buffer abstraction for peer mappings.
++ */
++dma_peer_addr_t xen_swiotlb_map_peer_resource(struct device *hwdev,
++					      struct device *hwpeer,
++					      struct resource *res,
++					      unsigned long offset,
++					      size_t size,
++					      enum dma_data_direction dir,
++					      struct dma_attrs *attrs)
++{
++	return DMA_ERROR_CODE;
++}
++EXPORT_SYMBOL_GPL(xen_swiotlb_map_peer_resource);
++#endif
++
+ /*
+  * Make physical memory consistent for a single streaming mode DMA translation
+  * after a transfer.
+diff --git a/include/xen/swiotlb-xen.h b/include/xen/swiotlb-xen.h
+index 8b2eb93..dc08a4f 100644
+--- a/include/xen/swiotlb-xen.h
++++ b/include/xen/swiotlb-xen.h
+@@ -24,6 +24,17 @@ extern dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
+ extern void xen_swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
+ 				   size_t size, enum dma_data_direction dir,
+ 				   struct dma_attrs *attrs);
++
++#ifdef CONFIG_HAS_DMA_P2P
++extern dma_peer_addr_t xen_swiotlb_map_peer(struct device *hwdev,
++					    struct device *hwpeer,
++					    struct resource *res,
++					    unsigned long offset,
++					    size_t size,
++					    enum dma_data_direction dir,
++					    struct dma_attrs *attrs);
++#endif
++
+ extern int
+ xen_swiotlb_map_sg_attrs(struct device *hwdev, struct scatterlist *sgl,
+ 			 int nelems, enum dma_data_direction dir,
 -- 
 2.5.1
