@@ -1,7 +1,7 @@
 From: Will Davis <wdavis@nvidia.com>
-Subject: [PATCH 12/22] x86, swiotlb: Add swiotlb_map_peer_resource() to swiotlb_dma_ops
-Date: Tue, 15 Sep 2015 12:10:57 -0500
-Message-ID: <1442337067-22964-13-git-send-email-wdavis@nvidia.com>
+Subject: [PATCH 08/22] PCI: Add pci_find_common_upstream_dev()
+Date: Tue, 15 Sep 2015 12:10:53 -0500
+Message-ID: <1442337067-22964-9-git-send-email-wdavis@nvidia.com>
 References: <1442337067-22964-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,24 +12,60 @@ To: Bjorn Helgaas <bhelgaas@google.com>
 Cc: Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Konrad Wilk <konrad.wilk@oracle.com>, Mark Hounschell <markh@compro.net>, "David S. Miller" <davem@davemloft.net>, Jonathan Corbet <corbet@lwn.net>, Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>, Will Davis <wdavis@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
+Add an interface to find the first device which is upstream of both
+devices.
+
 Signed-off-by: Will Davis <wdavis@nvidia.com>
 ---
- arch/x86/kernel/pci-swiotlb.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/pci/search.c | 25 +++++++++++++++++++++++++
+ include/linux/pci.h  |  2 ++
+ 2 files changed, 27 insertions(+)
 
-diff --git a/arch/x86/kernel/pci-swiotlb.c b/arch/x86/kernel/pci-swiotlb.c
-index adf0392..844b89b 100644
---- a/arch/x86/kernel/pci-swiotlb.c
-+++ b/arch/x86/kernel/pci-swiotlb.c
-@@ -57,6 +57,9 @@ static struct dma_map_ops swiotlb_dma_ops = {
- 	.unmap_sg = swiotlb_unmap_sg_attrs,
- 	.map_page = swiotlb_map_page,
- 	.unmap_page = swiotlb_unmap_page,
-+#ifdef CONFIG_HAS_DMA_P2P
-+	.map_peer_resource = swiotlb_map_peer_resource,
-+#endif
- 	.dma_supported = NULL,
- };
+diff --git a/drivers/pci/search.c b/drivers/pci/search.c
+index a20ce7d..b6ed554 100644
+--- a/drivers/pci/search.c
++++ b/drivers/pci/search.c
+@@ -384,3 +384,28 @@ int pci_dev_present(const struct pci_device_id *ids)
+ 	return 0;
+ }
+ EXPORT_SYMBOL(pci_dev_present);
++
++/**
++ * pci_find_common_upstream_dev - Returns the first common upstream device
++ * @dev: the PCI device from which the bus hierarchy walk will start
++ * @other: the PCI device whose bus number will be used for the search
++ *
++ * Walks up the bus hierarchy from the @dev device, looking for the first bus
++ * which the @other device is downstream of. Returns %NULL if the devices do
++ * not share any upstream devices.
++ */
++struct pci_dev *pci_find_common_upstream_dev(struct pci_dev *dev,
++					     struct pci_dev *other)
++{
++	struct pci_dev *pdev = dev;
++
++	while (pdev != NULL) {
++		if ((other->bus->number >= pdev->bus->busn_res.start) &&
++		    (other->bus->number <= pdev->bus->busn_res.end))
++			return pdev;
++		pdev = pci_upstream_bridge(pdev);
++	}
++
++	return NULL;
++}
++EXPORT_SYMBOL(pci_find_common_upstream_dev);
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index d58063e..8262b9e 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -860,6 +860,8 @@ static inline struct pci_dev *pci_get_bus_and_slot(unsigned int bus,
+ }
+ struct pci_dev *pci_get_class(unsigned int class, struct pci_dev *from);
+ int pci_dev_present(const struct pci_device_id *ids);
++struct pci_dev *pci_find_common_upstream_dev(struct pci_dev *from,
++					     struct pci_dev *to);
  
+ int pci_bus_read_config_byte(struct pci_bus *bus, unsigned int devfn,
+ 			     int where, u8 *val);
 -- 
 2.5.1
