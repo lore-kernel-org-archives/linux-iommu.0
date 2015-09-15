@@ -1,7 +1,7 @@
 From: Will Davis <wdavis@nvidia.com>
-Subject: [PATCH 19/22] x86: Calgary: Add map_peer_resource stub
-Date: Tue, 15 Sep 2015 12:11:04 -0500
-Message-ID: <1442337067-22964-20-git-send-email-wdavis@nvidia.com>
+Subject: [PATCH 21/22] x86: add dma_peer_mapping_error()
+Date: Tue, 15 Sep 2015 12:11:06 -0500
+Message-ID: <1442337067-22964-22-git-send-email-wdavis@nvidia.com>
 References: <1442337067-22964-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,46 +12,50 @@ To: Bjorn Helgaas <bhelgaas@google.com>
 Cc: Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Konrad Wilk <konrad.wilk@oracle.com>, Mark Hounschell <markh@compro.net>, "David S. Miller" <davem@davemloft.net>, Jonathan Corbet <corbet@lwn.net>, Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>, Will Davis <wdavis@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Return DMA_ERROR_CODE to indicate no support.
+Identical implementation to dma_mapping_error(), but accepts values
+returned from the new dma_map_peer_resource() API.
 
 Signed-off-by: Will Davis <wdavis@nvidia.com>
 ---
- arch/x86/kernel/pci-calgary_64.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ arch/x86/include/asm/dma-mapping.h | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kernel/pci-calgary_64.c b/arch/x86/kernel/pci-calgary_64.c
-index 0497f71..ec3d998 100644
---- a/arch/x86/kernel/pci-calgary_64.c
-+++ b/arch/x86/kernel/pci-calgary_64.c
-@@ -431,6 +431,19 @@ static void calgary_unmap_page(struct device *dev, dma_addr_t dma_addr,
- 	iommu_free(tbl, dma_addr, npages);
+diff --git a/arch/x86/include/asm/dma-mapping.h b/arch/x86/include/asm/dma-mapping.h
+index 1f5b728..64472d8 100644
+--- a/arch/x86/include/asm/dma-mapping.h
++++ b/arch/x86/include/asm/dma-mapping.h
+@@ -44,16 +44,30 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+ #include <asm-generic/dma-mapping-common.h>
+ 
+ /* Make sure we keep the same behaviour */
+-static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
++static inline int dma_mapping_error_common(struct device *dev, u64 dma_addr)
+ {
+ 	struct dma_map_ops *ops = get_dma_ops(dev);
+-	debug_dma_mapping_error(dev, dma_addr);
+ 	if (ops->mapping_error)
+ 		return ops->mapping_error(dev, dma_addr);
+ 
+ 	return (dma_addr == DMA_ERROR_CODE);
  }
  
-+#ifdef CONFIG_HAS_DMA_P2P
-+static dma_peer_addr_t calgary_map_peer_resource(struct device *dev,
-+						 struct device *peer,
-+						 struct resource *res,
-+						 unsigned long offset,
-+						 size_t size,
-+						 enum dma_data_direction dir,
-+						 struct dma_attrs *attrs)
++static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
 +{
-+	return DMA_ERROR_CODE;
++	debug_dma_mapping_error(dev, dma_addr);
++	return dma_mapping_error_common(dev, (u64)dma_addr);
++}
++
++#ifdef CONFIG_HAS_DMA_P2P
++static inline int dma_peer_mapping_error(struct device *dev,
++					 dma_peer_addr_t dma_addr)
++{
++	debug_dma_peer_mapping_error(dev, dma_addr);
++	return dma_mapping_error_common(dev, (u64)dma_addr);
 +}
 +#endif
 +
- static void* calgary_alloc_coherent(struct device *dev, size_t size,
- 	dma_addr_t *dma_handle, gfp_t flag, struct dma_attrs *attrs)
- {
-@@ -485,6 +498,9 @@ static struct dma_map_ops calgary_dma_ops = {
- 	.unmap_sg = calgary_unmap_sg,
- 	.map_page = calgary_map_page,
- 	.unmap_page = calgary_unmap_page,
-+#ifdef CONFIG_HAS_DMA_P2P
-+	.map_peer_resource = calgary_map_peer_resource,
-+#endif
- };
+ #define dma_alloc_noncoherent(d, s, h, f) dma_alloc_coherent(d, s, h, f)
+ #define dma_free_noncoherent(d, s, v, h) dma_free_coherent(d, s, v, h)
  
- static inline void __iomem * busno_to_bbar(unsigned char num)
 -- 
 2.5.1
