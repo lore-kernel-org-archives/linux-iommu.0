@@ -1,74 +1,62 @@
-From: Will Davis <wdavis@nvidia.com>
-Subject: [PATCH 18/22] x86: add pci-nommu implementation of map_peer_resource
-Date: Tue, 15 Sep 2015 12:11:03 -0500
-Message-ID: <1442337067-22964-19-git-send-email-wdavis@nvidia.com>
-References: <1442337067-22964-1-git-send-email-wdavis@nvidia.com>
+From: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Subject: Re: [PATCH V3 2/2] debugfs: don't assume sizeof(bool) to be 4 bytes
+Date: Tue, 15 Sep 2015 10:38:32 -0700
+Message-ID: <CA+55aFxVQ9jD=jUqPZt76EMe_Tb-_SA8v=rOHeR9Ljdsc6=xGQ@mail.gmail.com>
+References: <9b705747a138c96c26faee5218f7b47403195b28.1442305897.git.viresh.kumar@linaro.org>
+	<27d37898b4be6b9b9f31b90135f8206ca079a868.1442305897.git.viresh.kumar@linaro.org>
+	<1442313464.1914.21.camel@sipsolutions.net>
+	<20150915110447.GI6350@linux>
+	<20150915094509.46cca84d@gandalf.local.home>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1442337067-22964-1-git-send-email-wdavis@nvidia.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Konrad Wilk <konrad.wilk@oracle.com>, Mark Hounschell <markh@compro.net>, "David S. Miller" <davem@davemloft.net>, Jonathan Corbet <corbet@lwn.net>, Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>, Will Davis <wdavis@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150915094509.46cca84d-f9ZlEuEWxVcJvu8Pb33WZ0EMvNT87kid@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Steven Rostedt <rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org>
+Cc: "open list:NETWORKING DRIVERS (WIRELESS)" <linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." <alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org>, "Altman, Avri" <avri.altman-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Stanislaw Gruszka <sgruszka-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jiri Slaby <jirislaby-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "open list:DOCUMENTATION" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Jaroslav Kysela <perex-/Fr2/VpizcU@public.gmane.org>, "open list:MEMORY MANAGEMENT" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, Kalle Valo <kvalo-A+ZNKFmMK5xy9aJCnZT0Uw@public.gmane.org>, "Grumbach,
+	Emmanuel" <emmanuel.grumbach-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Coelho,
+	Luciano" <luciano.coelho-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Wang Long <long.wanglong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Richard Fitzgerald <rf-yzvPICuk2AATkU/dhu1WVueM+bqZidxxQQ4Iyu8u01E@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, open list <linux-kerne>
 List-Id: iommu@lists.linux-foundation.org
 
-Add Intel nommu implementation of 'map_peer_resource'.
+On Tue, Sep 15, 2015 at 6:45 AM, Steven Rostedt <rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org> wrote:
+>
+> Linus, This patch changes a lot of u32s into bools in structures.
+> What's your take on that?
 
-Add behind CONFIG_HAS_DMA_P2P guards, since the dma_map_ops members are
-behind them as well.
+So in general, I'd tend to prefer "bool" to be used primarily as a
+return value for functions, but I have to say, in the case of
+something that is explicitly called "debugfs_create_bool()" it kind of
+makes sense to actually take a bool pointer.
 
-Signed-off-by: Will Davis <wdavis@nvidia.com>
----
- arch/x86/kernel/pci-nommu.c | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+In structures, it depends a bit on usage. If the intent is to pack
+things better, I tend to prefer using "char" etc that is explicitly a
+byte. Or just use explicit bits in an "unsigned int flags" or
+something. Because while "bool" is _typically_ one byte, but it's very
+very explicitly documented to not be guaranteed that way, and there
+are legacy models where "bool" ends up being "int".
 
-diff --git a/arch/x86/kernel/pci-nommu.c b/arch/x86/kernel/pci-nommu.c
-index da15918..135ed1b 100644
---- a/arch/x86/kernel/pci-nommu.c
-+++ b/arch/x86/kernel/pci-nommu.c
-@@ -38,6 +38,33 @@ static dma_addr_t nommu_map_page(struct device *dev, struct page *page,
- 	return bus;
- }
- 
-+#ifdef CONFIG_HAS_DMA_P2P
-+static dma_peer_addr_t nommu_map_peer_resource(struct device *dev,
-+					       struct device *peer,
-+					       struct resource *res,
-+					       unsigned long offset,
-+					       size_t size,
-+					       enum dma_data_direction dir,
-+					       struct dma_attrs *attrs)
-+{
-+	dma_peer_addr_t dma_address;
-+
-+	if (!dev_is_pci(dev) || !dev_is_pci(peer))
-+		return DMA_ERROR_CODE;
-+
-+	if (!pci_resource_to_peer(to_pci_dev(dev), to_pci_dev(peer), res,
-+				  &dma_address))
-+		return DMA_ERROR_CODE;
-+
-+	dma_address += offset;
-+	WARN_ON(size == 0);
-+	if (!check_addr("map_peer_resource", dev, dma_address, size))
-+		return DMA_ERROR_CODE;
-+	flush_write_buffers();
-+	return dma_address;
-+}
-+#endif
-+
- /* Map a set of buffers described by scatterlist in streaming
-  * mode for DMA.  This is the scatter-gather version of the
-  * above pci_map_single interface.  Here the scatter gather list
-@@ -93,6 +120,9 @@ struct dma_map_ops nommu_dma_ops = {
- 	.free			= dma_generic_free_coherent,
- 	.map_sg			= nommu_map_sg,
- 	.map_page		= nommu_map_page,
-+#ifdef CONFIG_HAS_DMA_P2P
-+	.map_peer_resource = nommu_map_peer_resource,
-+#endif
- 	.sync_single_for_device = nommu_sync_single_for_device,
- 	.sync_sg_for_device	= nommu_sync_sg_for_device,
- 	.is_phys		= 1,
--- 
-2.5.1
+But in this case, the use of "bool" is not about packing or anything
+like that, it is more about the logical data type for
+"debugfs_create_bool()", and so I don't mind "bool" in this context
+even in structures.
+
+But exactly because of the whole ambiguoity about "bool", what I do
+*not* want to see in any way is "bool" in structures that are exported
+to user space. That's when we want primarily those explicitly sized
+types like "u32" etc. We should generally try to avoid even things
+like "int" in those kinds of structures, and bool is even _less_ well
+defined than "int" is.
+
+But that user interface issue doesn't seem to be the case here, an I
+can't say that I mind the patch. It looks fairly sane.
+
+                    Linus
