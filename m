@@ -1,87 +1,89 @@
-From: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 14/22] swiotlb-xen: add map_peer_resource stub
-Date: Tue, 15 Sep 2015 12:10:59 -0500
-Message-ID: <1442337067-22964-15-git-send-email-wdavis@nvidia.com>
+From: Will Davis <wdavis@nvidia.com>
+Subject: [PATCH 17/22] iommu/vt-d: implement (un)map_peer_resource
+Date: Tue, 15 Sep 2015 12:11:02 -0500
+Message-ID: <1442337067-22964-18-git-send-email-wdavis@nvidia.com>
 References: <1442337067-22964-1-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1442337067-22964-1-git-send-email-wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, John Hubbard <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Terence Ripperda <tripperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1442337067-22964-1-git-send-email-wdavis@nvidia.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Konrad Wilk <konrad.wilk@oracle.com>, Mark Hounschell <markh@compro.net>, "David S. Miller" <davem@davemloft.net>, Jonathan Corbet <corbet@lwn.net>, Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>, Will Davis <wdavis@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Add Xen stub of the map_peer_resource DMA API. Return an error to
-indicate no bounce-buffer implementation is available yet.
+Implement 'map_peer_resource' for the Intel IOMMU driver. Simply translate
+the resource to a physical address and route it to the same handlers used
+by the 'map_page' API.
 
-Signed-off-by: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+This allows a device to map another's resource, to enable peer-to-peer
+transactions.
+
+Add behind CONFIG_HAS_DMA_P2P guards, since the dma_map_ops members are
+behind them as well.
+
+Signed-off-by: Will Davis <wdavis@nvidia.com>
+Reviewed-by: Terence Ripperda <tripperda@nvidia.com>
+Reviewed-by: John Hubbard <jhubbard@nvidia.com>
 ---
- drivers/xen/swiotlb-xen.c | 20 ++++++++++++++++++++
- include/xen/swiotlb-xen.h | 11 +++++++++++
- 2 files changed, 31 insertions(+)
+ drivers/iommu/intel-iommu.c | 38 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-index 4c54932..b9879dc 100644
---- a/drivers/xen/swiotlb-xen.c
-+++ b/drivers/xen/swiotlb-xen.c
-@@ -475,6 +475,26 @@ void xen_swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index a98a7b2..0d3746f 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3544,6 +3544,40 @@ static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
+ 	intel_unmap(dev, dev_addr);
  }
- EXPORT_SYMBOL_GPL(xen_swiotlb_unmap_page);
  
 +#ifdef CONFIG_HAS_DMA_P2P
-+/*
-+ * Maps a single region from a peer device's resource for DMA streaming. This is
-+ * currently unimplemented for Xen because the only peer DMA mappings we're
-+ * capable of creating are direct mappings with no explicit synchronization,
-+ * e.g., there's no bounce buffer abstraction for peer mappings.
-+ */
-+dma_peer_addr_t xen_swiotlb_map_peer_resource(struct device *hwdev,
-+					      struct device *hwpeer,
-+					      struct resource *res,
-+					      unsigned long offset,
-+					      size_t size,
-+					      enum dma_data_direction dir,
-+					      struct dma_attrs *attrs)
++static dma_peer_addr_t intel_map_peer_resource(struct device *dev,
++					       struct device *peer,
++					       struct resource *res,
++					       unsigned long offset,
++					       size_t size,
++					       enum dma_data_direction dir,
++					       struct dma_attrs *attrs)
 +{
-+	return DMA_ERROR_CODE;
++	struct pci_dev *pdev;
++	struct pci_dev *ppeer;
++
++	if (!dev_is_pci(dev) || !dev_is_pci(peer))
++		return 0;
++
++	pdev = to_pci_dev(dev);
++	ppeer = to_pci_dev(peer);
++
++	if (!pci_peer_traffic_supported(pdev, ppeer))
++		return 0;
++
++	return __intel_map_single(dev, res->start + offset, size,
++				  dir, *dev->dma_mask);
 +}
-+EXPORT_SYMBOL_GPL(xen_swiotlb_map_peer_resource);
++
++static void intel_unmap_peer_resource(struct device *dev,
++				      dma_peer_addr_t dev_addr,
++				      size_t size, enum dma_data_direction dir,
++				      struct dma_attrs *attrs)
++{
++	intel_unmap(dev, dev_addr);
++}
 +#endif
 +
- /*
-  * Make physical memory consistent for a single streaming mode DMA translation
-  * after a transfer.
-diff --git a/include/xen/swiotlb-xen.h b/include/xen/swiotlb-xen.h
-index 8b2eb93..dc08a4f 100644
---- a/include/xen/swiotlb-xen.h
-+++ b/include/xen/swiotlb-xen.h
-@@ -24,6 +24,17 @@ extern dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
- extern void xen_swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
- 				   size_t size, enum dma_data_direction dir,
- 				   struct dma_attrs *attrs);
-+
+ static void *intel_alloc_coherent(struct device *dev, size_t size,
+ 				  dma_addr_t *dma_handle, gfp_t flags,
+ 				  struct dma_attrs *attrs)
+@@ -3700,6 +3734,10 @@ struct dma_map_ops intel_dma_ops = {
+ 	.unmap_sg = intel_unmap_sg,
+ 	.map_page = intel_map_page,
+ 	.unmap_page = intel_unmap_page,
 +#ifdef CONFIG_HAS_DMA_P2P
-+extern dma_peer_addr_t xen_swiotlb_map_peer(struct device *hwdev,
-+					    struct device *hwpeer,
-+					    struct resource *res,
-+					    unsigned long offset,
-+					    size_t size,
-+					    enum dma_data_direction dir,
-+					    struct dma_attrs *attrs);
++	.map_peer_resource = intel_map_peer_resource,
++	.unmap_peer_resource = intel_unmap_peer_resource,
 +#endif
-+
- extern int
- xen_swiotlb_map_sg_attrs(struct device *hwdev, struct scatterlist *sgl,
- 			 int nelems, enum dma_data_direction dir,
+ 	.mapping_error = intel_mapping_error,
+ };
+ 
 -- 
 2.5.1
