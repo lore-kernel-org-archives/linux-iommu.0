@@ -1,45 +1,79 @@
-From: Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCH V3 2/2] debugfs: don't assume sizeof(bool) to be 4 bytes
-Date: Tue, 15 Sep 2015 13:47:32 -0400
-Message-ID: <20150915134732.7ff50d03@gandalf.local.home>
-References: <9b705747a138c96c26faee5218f7b47403195b28.1442305897.git.viresh.kumar@linaro.org>
-	<27d37898b4be6b9b9f31b90135f8206ca079a868.1442305897.git.viresh.kumar@linaro.org>
-	<1442313464.1914.21.camel@sipsolutions.net>
-	<20150915110447.GI6350@linux>
-	<20150915094509.46cca84d@gandalf.local.home>
-	<CA+55aFxVQ9jD=jUqPZt76EMe_Tb-_SA8v=rOHeR9Ljdsc6=xGQ@mail.gmail.com>
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Subject: Re: [PATCH 11/22] swiotlb: Add map_peer_resource stub
+Date: Tue, 15 Sep 2015 15:40:28 -0400
+Message-ID: <20150915194028.GA23813@l.oracle.com>
+References: <1442337067-22964-1-git-send-email-wdavis@nvidia.com>
+ <1442337067-22964-12-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <CA+55aFxVQ9jD=jUqPZt76EMe_Tb-_SA8v=rOHeR9Ljdsc6=xGQ@mail.gmail.com>
-Sender: owner-linux-mm@kvack.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Viresh Kumar <viresh.kumar@linaro.org>, Johannes Berg <johannes@sipsolutions.net>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linaro-kernel@lists.linaro.org" <linaro-kernel@lists.linaro.org>, Rafael Wysocki <rjw@rjwysocki.net>, "sboyd@codeaurora.org" <sboyd@codeaurora.org>, "arnd@arndb.de" <arnd@arndb.de>, Mark Brown <broonie@kernel.org>, Akinobu Mita <akinobu.mita@gmail.com>, Alexander Duyck <alexander.h.duyck@redhat.com>, "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." <alsa-devel@alsa-project.org>, Andrew Morton <akpm@linux-foundation.org>, Andy Lutomirski <luto@amacapital.net>, Arik Nemtsov <arik@wizery.com>, "open list:QUALCOMM ATHEROS ATH10K WIRELESS DRIVER" <ath10k@lists.infradead.org>, "open list:QUALCOMM ATHEROS ATH9K WIRELESS
- DRIVER" <ath9k-devel@lists.ath9k.org>, "Altman, Avri" <avri.altman@intel.com>, open list:B43 WIRELE
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1442337067-22964-12-git-send-email-wdavis@nvidia.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Will Davis <wdavis@nvidia.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Mark Hounschell <markh@compro.net>, "David S. Miller" <davem@davemloft.net>, Jonathan Corbet <corbet@lwn.net>, Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 15 Sep 2015 10:38:32 -0700
-Linus Torvalds <torvalds@linux-foundation.org> wrote:
+On Tue, Sep 15, 2015 at 12:10:56PM -0500, Will Davis wrote:
+> Add swiotlb stub of the 'map_peer_resource' DMA operation.
+> 
+> Signed-off-by: Will Davis <wdavis@nvidia.com>
+> ---
+>  include/linux/swiotlb.h |  8 ++++++++
+>  lib/swiotlb.c           | 17 +++++++++++++++++
+>  2 files changed, 25 insertions(+)
+> 
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index e7a018e..872463a 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -87,6 +87,14 @@ swiotlb_unmap_sg_attrs(struct device *hwdev, struct scatterlist *sgl,
+>  		       int nelems, enum dma_data_direction dir,
+>  		       struct dma_attrs *attrs);
+>  
+> +#ifdef CONFIG_HAS_DMA_P2P
+> +extern dma_peer_addr_t
+> +swiotlb_map_peer_resource(struct device *hwdev, struct device *hwpeer,
+> +			  struct resource *res, unsigned long offset,
+> +			  size_t size, enum dma_data_direction dir,
+> +			  struct dma_attrs *attrs);
+> +#endif
+> +
+>  extern void
+>  swiotlb_sync_single_for_cpu(struct device *hwdev, dma_addr_t dev_addr,
+>  			    size_t size, enum dma_data_direction dir);
+> diff --git a/lib/swiotlb.c b/lib/swiotlb.c
+> index 76f29ec..61522a7 100644
+> --- a/lib/swiotlb.c
+> +++ b/lib/swiotlb.c
+> @@ -945,6 +945,23 @@ swiotlb_unmap_sg(struct device *hwdev, struct scatterlist *sgl, int nelems,
+>  }
+>  EXPORT_SYMBOL(swiotlb_unmap_sg);
+>  
+> +#ifdef CONFIG_HAS_DMA_P2P
+> +/*
+> + * Maps a single region from a peer device's resource for DMA streaming. This
+> + * is currently unimplemented because there's no bounce buffer abstraction for
+> + * peer mappings.
+> + */
+> +dma_peer_addr_t
+> +swiotlb_map_peer_resource(struct device *hwdev, struct device *hwpeer,
+> +			  struct resource *res, unsigned long offset,
+> +			  size_t size, enum dma_data_direction dir,
+> +			  struct dma_attrs *attrs)
+> +{
+> +	return phys_to_dma(hwdev, io_tlb_overflow_buffer);
 
+That seems to be implemented :-)
 
-> But that user interface issue doesn't seem to be the case here, an I
-> can't say that I mind the patch. It looks fairly sane.
-
-If Linus is fine with it, I'm fine with it too.
-
-But please, next time, go easy on the Cc list. Maybe just use bcc for
-those not on the list, stating that you BCC'd a lot of people to make
-sure this is sane, but didn't want to spam everyone with every reply.
-
-What do others think when there's a change that goes across the board
-this much? BCC OK with you, as just an FYI, I'm doing this? Or should
-just the lists be enough and if you don't see it, too bad?
-
--- Steve
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Did you mean to return DMA_ERROR_CODE instead?
+> +}
+> +EXPORT_SYMBOL(swiotlb_map_peer_resource);
+> +#endif
+> +
+>  /*
+>   * Make physical memory consistent for a set of streaming mode DMA translations
+>   * after a transfer.
+> -- 
+> 2.5.1
+> 
