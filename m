@@ -1,41 +1,63 @@
-From: Ingo Molnar <mingo@kernel.org>
-Subject: Re: [PATCH V3 2/2] debugfs: don't assume sizeof(bool) to be 4 bytes
-Date: Wed, 16 Sep 2015 10:02:18 +0200
-Message-ID: <20150916080218.GA8155@gmail.com>
-References: <9b705747a138c96c26faee5218f7b47403195b28.1442305897.git.viresh.kumar@linaro.org>
- <27d37898b4be6b9b9f31b90135f8206ca079a868.1442305897.git.viresh.kumar@linaro.org>
- <1442313464.1914.21.camel@sipsolutions.net>
- <20150915110447.GI6350@linux>
- <20150915094509.46cca84d@gandalf.local.home>
- <CA+55aFxVQ9jD=jUqPZt76EMe_Tb-_SA8v=rOHeR9Ljdsc6=xGQ@mail.gmail.com>
- <20150915134732.7ff50d03@gandalf.local.home>
+From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v8 01/13] KVM: Extend struct pi_desc for VT-d Posted-Interrupts
+Date: Wed, 16 Sep 2015 16:49:57 +0800
+Message-ID: <1442393409-2623-2-git-send-email-feng.wu@intel.com>
+References: <1442393409-2623-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <20150915134732.7ff50d03@gandalf.local.home>
-Sender: owner-linux-mm@kvack.org
-To: Steven Rostedt <rostedt@goodmis.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Viresh Kumar <viresh.kumar@linaro.org>, Johannes Berg <johannes@sipsolutions.net>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linaro-kernel@lists.linaro.org" <linaro-kernel@lists.linaro.org>, Rafael Wysocki <rjw@rjwysocki.net>, "sboyd@codeaurora.org" <sboyd@codeaurora.org>, "arnd@arndb.de" <arnd@arndb.de>, Mark Brown <broonie@kernel.org>, Akinobu Mita <akinobu.mita@gmail.com>, Alexander Duyck <alexander.h.duyck@redhat.com>, "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." <alsa-devel@alsa-project.org>, Andrew Morton <akpm@linux-foundation.org>, Andy Lutomirski <luto@amacapital.net>, Arik Nemtsov <arik@wizery.com>, "open list:QUALCOMM ATHEROS ATH10K WIRELESS DRIVER" <ath10k@lists.infradead.org>, "open list:QUALCOMM ATHEROS ATH9K WIRELESS DRIVER" <ath9k-devel@lists.ath9k.org>, Altman, A
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1442393409-2623-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+Extend struct pi_desc for VT-d Posted-Interrupts.
 
-* Steven Rostedt <rostedt@goodmis.org> wrote:
+Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+---
+ arch/x86/kvm/vmx.c | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
 
-> But please, next time, go easy on the Cc list. Maybe just use bcc for those not 
-> on the list, stating that you BCC'd a lot of people to make sure this is sane, 
-> but didn't want to spam everyone with every reply.
-
-Not just that, such a long Cc: list is a semi-guarantee that various list engines 
-(vger included I think) would drop the mail as spam and nobody else would get the 
-mail...
-
-Thanks,
-
-	Ingo
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index 83b7b5c..271dd70 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -446,8 +446,24 @@ struct nested_vmx {
+ /* Posted-Interrupt Descriptor */
+ struct pi_desc {
+ 	u32 pir[8];     /* Posted interrupt requested */
+-	u32 control;	/* bit 0 of control is outstanding notification bit */
+-	u32 rsvd[7];
++	union {
++		struct {
++				/* bit 256 - Outstanding Notification */
++			u16	on	: 1,
++				/* bit 257 - Suppress Notification */
++				sn	: 1,
++				/* bit 271:258 - Reserved */
++				rsvd_1	: 14;
++				/* bit 279:272 - Notification Vector */
++			u8	nv;
++				/* bit 287:280 - Reserved */
++			u8	rsvd_2;
++				/* bit 319:288 - Notification Destination */
++			u32	ndst;
++		};
++		u64 control;
++	};
++	u32 rsvd[6];
+ } __aligned(64);
+ 
+ static bool pi_test_and_set_on(struct pi_desc *pi_desc)
+-- 
+2.1.0
