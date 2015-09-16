@@ -1,17 +1,11 @@
-From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH v8 09/13] KVM: Add an arch specific hooks in 'struct
-	kvm_kernel_irqfd'
-Date: Thu, 17 Sep 2015 01:51:01 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F002716E32@SHSMSX104.ccr.corp.intel.com>
-References: <1442393409-2623-1-git-send-email-feng.wu@intel.com>
-	<1442393409-2623-10-git-send-email-feng.wu@intel.com>
-	<55F935E9.6070707@redhat.com>
+From: Jay Cornwall <jay-gJmSnxjMpeIFV7jr3Ov9Ew@public.gmane.org>
+Subject: [PATCH] iommu/amd: Fix BUG when faulting a PROT_NONE VMA
+Date: Wed, 16 Sep 2015 14:10:03 -0500
+Message-ID: <1442430603-1962-1-git-send-email-jay@jcornwall.me>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <55F935E9.6070707-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,47 +15,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+handle_mm_fault indirectly triggers a BUG in do_numa_page when given
+a VMA without read/write/execute access. Check this condition in do_fault.
 
+do_fault -> handle_mm_fault -> handle_pte_fault -> do_numa_page
 
-> -----Original Message-----
-> From: Paolo Bonzini [mailto:pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Wednesday, September 16, 2015 5:27 PM
-> To: Wu, Feng; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org;
-> mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-> Cc: eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [PATCH v8 09/13] KVM: Add an arch specific hooks in 'struct
-> kvm_kernel_irqfd'
-> 
-> 
-> 
-> On 16/09/2015 10:50, Feng Wu wrote:
-> > +int kvm_arch_update_irqfd_routing(struct kvm *kvm, unsigned int host_irq,
-> > +				   uint32_t guest_irq, bool set)
-> > +{
-> > +	return !kvm_x86_ops->update_pi_irte ? -EINVAL :
-> > +		kvm_x86_ops->update_pi_irte(kvm, host_irq, guest_irq, set);
-> > +}
-> > +
-> 
-> Just use "if" here.  No need to resend if this is the only comment.
+  mm/memory.c
+  3147  static int do_numa_page(struct mm_struct *mm, struct vm_area_struct *vma,
+  ....
+  3159  /* A PROT_NONE fault should not end up here */
+  3160  BUG_ON(!(vma->vm_flags & (VM_READ | VM_EXEC | VM_WRITE)));
 
-I am sorry, I don't quite understand. Do you mean I don't need to include
-this patch in v9? If so, what about other patches with your Reviewed-by?
+Signed-off-by: Jay Cornwall <jay-gJmSnxjMpeIFV7jr3Ov9Ew@public.gmane.org>
+---
+ drivers/iommu/amd_iommu_v2.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Thanks,
-Feng
-
-> 
-> >
-> >  }
-> > +int  __attribute__((weak)) kvm_arch_update_irqfd_routing(
-> > +				struct kvm *kvm, unsigned
-> 
-> Empty line after "}".
-> 
-> Paolo
+diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
+index 1131664..d21d4ed 100644
+--- a/drivers/iommu/amd_iommu_v2.c
++++ b/drivers/iommu/amd_iommu_v2.c
+@@ -516,6 +516,13 @@ static void do_fault(struct work_struct *work)
+ 		goto out;
+ 	}
+ 
++	if (!(vma->vm_flags & (VM_READ | VM_EXEC | VM_WRITE))) {
++		/* handle_mm_fault would BUG_ON() */
++		up_read(&mm->mmap_sem);
++		handle_fault_error(fault);
++		goto out;
++	}
++
+ 	ret = handle_mm_fault(mm, vma, address, write);
+ 	if (ret & VM_FAULT_ERROR) {
+ 		/* failed to service fault */
+-- 
+1.9.1
