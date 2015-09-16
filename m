@@ -1,15 +1,13 @@
 From: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v8 12/13] KVM: Warn if 'SN' is set during posting
-	interrupts by software
-Date: Wed, 16 Sep 2015 11:32:35 +0200
-Message-ID: <55F93733.2010403@redhat.com>
+Subject: Re: [PATCH v8 00/13] Add VT-d Posted-Interrupts support
+Date: Wed, 16 Sep 2015 11:34:09 +0200
+Message-ID: <55F93791.3020806@redhat.com>
 References: <1442393409-2623-1-git-send-email-feng.wu@intel.com>
-	<1442393409-2623-13-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1442393409-2623-13-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1442393409-2623-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,51 +23,21 @@ List-Id: iommu@lists.linux-foundation.org
 
 
 
-On 16/09/2015 10:50, Feng Wu wrote:
-> Currently, we don't support urgent interrupt, all interrupts
-> are recognized as non-urgent interrupt, so we cannot post
-> interrupts when 'SN' is set.
+On 16/09/2015 10:49, Feng Wu wrote:
+> VT-d Posted-Interrupts is an enhancement to CPU side Posted-Interrupt.
+> With VT-d Posted-Interrupts enabled, external interrupts from
+> direct-assigned devices can be delivered to guests without VMM
+> intervention when guest is running in non-root mode.
 > 
-> If the vcpu is in guest mode, it cannot have been scheduled out,
-> and that's the only case when SN is set currently, warning if
-> SN is set.
+> You can find the VT-d Posted-Interrtups Spec. in the following URL:
+> http://www.intel.com/content/www/us/en/intelligent-systems/intel-technology/vt-directed-io-spec.html
 > 
-> Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Reviewed-by: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> v8:
+> refer to the changelog in each patch
 
-Please fold this into patch 10.
+Thanks, it mostly looks good.
+
+Since we've more or less converged, could you post the whole series for
+v9, including the other prerequisite series?
 
 Paolo
-
-> ---
->  arch/x86/kvm/vmx.c | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
-> 
-> diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-> index 9888c43..58fbbc6 100644
-> --- a/arch/x86/kvm/vmx.c
-> +++ b/arch/x86/kvm/vmx.c
-> @@ -4498,6 +4498,22 @@ static inline bool kvm_vcpu_trigger_posted_interrupt(struct kvm_vcpu *vcpu)
->  {
->  #ifdef CONFIG_SMP
->  	if (vcpu->mode == IN_GUEST_MODE) {
-> +		struct vcpu_vmx *vmx = to_vmx(vcpu);
-> +
-> +		/*
-> +		 * Currently, we don't support urgent interrupt,
-> +		 * all interrupts are recognized as non-urgent
-> +		 * interrupt, so we cannot post interrupts when
-> +		 * 'SN' is set.
-> +		 *
-> +		 * If the vcpu is in guest mode, it means it is
-> +		 * running instead of being scheduled out and
-> +		 * waiting in the run queue, and that's the only
-> +		 * case when 'SN' is set currently, warning if
-> +		 * 'SN' is set.
-> +		 */
-> +		WARN_ON_ONCE(pi_test_sn(&vmx->pi_desc));
-> +
->  		apic->send_IPI_mask(get_cpu_mask(vcpu->cpu),
->  				POSTED_INTR_VECTOR);
->  		return true;
-> 
