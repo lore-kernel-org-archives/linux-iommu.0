@@ -1,8 +1,8 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v8 13/13] iommu/vt-d: Add a command line parameter for VT-d
-	posted-interrupts
-Date: Wed, 16 Sep 2015 16:50:09 +0800
-Message-ID: <1442393409-2623-14-git-send-email-feng.wu@intel.com>
+Subject: [PATCH v8 12/13] KVM: Warn if 'SN' is set during posting interrupts
+	by software
+Date: Wed, 16 Sep 2015 16:50:08 +0800
+Message-ID: <1442393409-2623-13-git-send-email-feng.wu@intel.com>
 References: <1442393409-2623-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,62 +22,46 @@ To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7a
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Enable VT-d Posted-Interrtups and add a command line
-parameter for it.
+Currently, we don't support urgent interrupt, all interrupts
+are recognized as non-urgent interrupt, so we cannot post
+interrupts when 'SN' is set.
+
+If the vcpu is in guest mode, it cannot have been scheduled out,
+and that's the only case when SN is set currently, warning if
+SN is set.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Reviewed-by: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- Documentation/kernel-parameters.txt |  1 +
- drivers/iommu/irq_remapping.c       | 12 ++++++++----
- 2 files changed, 9 insertions(+), 4 deletions(-)
+ arch/x86/kvm/vmx.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-index 1d6f045..52aca36 100644
---- a/Documentation/kernel-parameters.txt
-+++ b/Documentation/kernel-parameters.txt
-@@ -1547,6 +1547,7 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
- 			nosid	disable Source ID checking
- 			no_x2apic_optout
- 				BIOS x2APIC opt-out request will be ignored
-+			nopost	disable Interrupt Posting
- 
- 	iomem=		Disable strict checking of access to MMIO memory
- 		strict	regions from userspace.
-diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index 2d99930..d8c3997 100644
---- a/drivers/iommu/irq_remapping.c
-+++ b/drivers/iommu/irq_remapping.c
-@@ -22,7 +22,7 @@ int irq_remap_broken;
- int disable_sourceid_checking;
- int no_x2apic_optout;
- 
--int disable_irq_post = 1;
-+int disable_irq_post = 0;
- 
- static int disable_irq_remap;
- static struct irq_remap_ops *remap_ops;
-@@ -58,14 +58,18 @@ static __init int setup_irqremap(char *str)
- 		return -EINVAL;
- 
- 	while (*str) {
--		if (!strncmp(str, "on", 2))
-+		if (!strncmp(str, "on", 2)) {
- 			disable_irq_remap = 0;
--		else if (!strncmp(str, "off", 3))
-+			disable_irq_post = 0;
-+		} else if (!strncmp(str, "off", 3)) {
- 			disable_irq_remap = 1;
--		else if (!strncmp(str, "nosid", 5))
-+			disable_irq_post = 1;
-+		} else if (!strncmp(str, "nosid", 5))
- 			disable_sourceid_checking = 1;
- 		else if (!strncmp(str, "no_x2apic_optout", 16))
- 			no_x2apic_optout = 1;
-+		else if (!strncmp(str, "nopost", 6))
-+			disable_irq_post = 1;
- 
- 		str += strcspn(str, ",");
- 		while (*str == ',')
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index 9888c43..58fbbc6 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -4498,6 +4498,22 @@ static inline bool kvm_vcpu_trigger_posted_interrupt(struct kvm_vcpu *vcpu)
+ {
+ #ifdef CONFIG_SMP
+ 	if (vcpu->mode == IN_GUEST_MODE) {
++		struct vcpu_vmx *vmx = to_vmx(vcpu);
++
++		/*
++		 * Currently, we don't support urgent interrupt,
++		 * all interrupts are recognized as non-urgent
++		 * interrupt, so we cannot post interrupts when
++		 * 'SN' is set.
++		 *
++		 * If the vcpu is in guest mode, it means it is
++		 * running instead of being scheduled out and
++		 * waiting in the run queue, and that's the only
++		 * case when 'SN' is set currently, warning if
++		 * 'SN' is set.
++		 */
++		WARN_ON_ONCE(pi_test_sn(&vmx->pi_desc));
++
+ 		apic->send_IPI_mask(get_cpu_mask(vcpu->cpu),
+ 				POSTED_INTR_VECTOR);
+ 		return true;
 -- 
 2.1.0
