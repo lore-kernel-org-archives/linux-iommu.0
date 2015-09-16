@@ -1,15 +1,15 @@
 From: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v8 09/13] KVM: Add an arch specific hooks in 'struct
-	kvm_kernel_irqfd'
-Date: Wed, 16 Sep 2015 11:27:05 +0200
-Message-ID: <55F935E9.6070707@redhat.com>
+Subject: Re: [PATCH v8 10/13] KVM: Update Posted-Interrupts Descriptor when
+	vCPU is preempted
+Date: Wed, 16 Sep 2015 11:29:04 +0200
+Message-ID: <55F93660.9070803@redhat.com>
 References: <1442393409-2623-1-git-send-email-feng.wu@intel.com>
-	<1442393409-2623-10-git-send-email-feng.wu@intel.com>
+	<1442393409-2623-11-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1442393409-2623-10-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1442393409-2623-11-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,21 +26,18 @@ List-Id: iommu@lists.linux-foundation.org
 
 
 On 16/09/2015 10:50, Feng Wu wrote:
-> +int kvm_arch_update_irqfd_routing(struct kvm *kvm, unsigned int host_irq,
-> +				   uint32_t guest_irq, bool set)
-> +{
-> +	return !kvm_x86_ops->update_pi_irte ? -EINVAL :
-> +		kvm_x86_ops->update_pi_irte(kvm, host_irq, guest_irq, set);
-> +}
+> +
+> +	if (!irq_remapping_cap(IRQ_POSTING_CAP) ||
+> +		(!kvm_arch_has_assigned_device(vcpu->kvm)))
+> +		return;
 > +
 
-Just use "if" here.  No need to resend if this is the only comment.
+Better:
 
-> 
->  }
-> +int  __attribute__((weak)) kvm_arch_update_irqfd_routing(
-> +				struct kvm *kvm, unsigned
+	if (!arch_has_assigned_device(vcpu->kvm)) ||
+	    !irq_remapping_cap(IRQ_POSTING_CAP))
+		return;
 
-Empty line after "}".
+(In the future we might add a static_key here).
 
 Paolo
