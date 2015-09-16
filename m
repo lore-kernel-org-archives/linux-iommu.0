@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v8 06/13] vfio: Register/unregister irq_bypass_producer
-Date: Wed, 16 Sep 2015 16:50:02 +0800
-Message-ID: <1442393409-2623-7-git-send-email-feng.wu@intel.com>
+Subject: [PATCH v8 05/13] KVM: make kvm_set_msi_irq() public
+Date: Wed, 16 Sep 2015 16:50:01 +0800
+Message-ID: <1442393409-2623-6-git-send-email-feng.wu@intel.com>
 References: <1442393409-2623-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,84 +21,60 @@ To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7a
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds the registration/unregistration of an
-irq_bypass_producer for MSI/MSIx on vfio pci devices.
+Make kvm_set_msi_irq() public, we can use this function outside.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Reviewed-by: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
 v8:
-- Merge "[PATCH v7 08/17] vfio: Select IRQ_BYPASS_MANAGER for vfio PCI devices"
-  into this patch.
+- Export kvm_set_msi_irq() so we can use it in vmx code
 
-v6:
-- Make the add_consumer and del_consumer callbacks static
-- Remove pointless INIT_LIST_HEAD to 'vdev->ctx[vector].producer.node)'
-- Use dev_info instead of WARN_ON() when irq_bypass_register_producer fails
-- Remove optional dummy callbacks for irq producer
+ arch/x86/include/asm/kvm_host.h | 4 ++++
+ arch/x86/kvm/irq_comm.c         | 5 +++--
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
- drivers/vfio/pci/Kconfig            | 1 +
- drivers/vfio/pci/vfio_pci_intrs.c   | 9 +++++++++
- drivers/vfio/pci/vfio_pci_private.h | 2 ++
- 3 files changed, 12 insertions(+)
-
-diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
-index 579d83b..02912f1 100644
---- a/drivers/vfio/pci/Kconfig
-+++ b/drivers/vfio/pci/Kconfig
-@@ -2,6 +2,7 @@ config VFIO_PCI
- 	tristate "VFIO support for PCI devices"
- 	depends on VFIO && PCI && EVENTFD
- 	select VFIO_VIRQFD
-+	select IRQ_BYPASS_MANAGER
- 	help
- 	  Support for the PCI VFIO bus driver.  This is required to make
- 	  use of PCI drivers using the VFIO framework.
-diff --git a/drivers/vfio/pci/vfio_pci_intrs.c b/drivers/vfio/pci/vfio_pci_intrs.c
-index 1f577b4..c65299d 100644
---- a/drivers/vfio/pci/vfio_pci_intrs.c
-+++ b/drivers/vfio/pci/vfio_pci_intrs.c
-@@ -319,6 +319,7 @@ static int vfio_msi_set_vector_signal(struct vfio_pci_device *vdev,
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index af11bca..daa6126 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -175,6 +175,8 @@ enum {
+  */
+ #define KVM_APIC_PV_EOI_PENDING	1
  
- 	if (vdev->ctx[vector].trigger) {
- 		free_irq(irq, vdev->ctx[vector].trigger);
-+		irq_bypass_unregister_producer(&vdev->ctx[vector].producer);
- 		kfree(vdev->ctx[vector].name);
- 		eventfd_ctx_put(vdev->ctx[vector].trigger);
- 		vdev->ctx[vector].trigger = NULL;
-@@ -360,6 +361,14 @@ static int vfio_msi_set_vector_signal(struct vfio_pci_device *vdev,
- 		return ret;
- 	}
- 
-+	vdev->ctx[vector].producer.token = trigger;
-+	vdev->ctx[vector].producer.irq = irq;
-+	ret = irq_bypass_register_producer(&vdev->ctx[vector].producer);
-+	if (unlikely(ret))
-+		dev_info(&pdev->dev,
-+		"irq bypass producer (token %p) registeration fails: %d\n",
-+		vdev->ctx[vector].producer.token, ret);
++struct kvm_kernel_irq_routing_entry;
 +
- 	vdev->ctx[vector].trigger = trigger;
+ /*
+  * We don't want allocation failures within the mmu code, so we preallocate
+  * enough memory for a single page fault in a cache.
+@@ -1207,4 +1209,6 @@ int x86_set_memory_region(struct kvm *kvm,
+ bool kvm_intr_is_single_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
+ 			     struct kvm_vcpu **dest_vcpu);
  
- 	return 0;
-diff --git a/drivers/vfio/pci/vfio_pci_private.h b/drivers/vfio/pci/vfio_pci_private.h
-index ae0e1b4..0e7394f 100644
---- a/drivers/vfio/pci/vfio_pci_private.h
-+++ b/drivers/vfio/pci/vfio_pci_private.h
-@@ -13,6 +13,7 @@
++void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
++		     struct kvm_lapic_irq *irq);
+ #endif /* _ASM_X86_KVM_HOST_H */
+diff --git a/arch/x86/kvm/irq_comm.c b/arch/x86/kvm/irq_comm.c
+index 97ba1d6..add52d8 100644
+--- a/arch/x86/kvm/irq_comm.c
++++ b/arch/x86/kvm/irq_comm.c
+@@ -91,8 +91,8 @@ int kvm_irq_delivery_to_apic(struct kvm *kvm, struct kvm_lapic *src,
+ 	return r;
+ }
  
- #include <linux/mutex.h>
- #include <linux/pci.h>
-+#include <linux/irqbypass.h>
+-static inline void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
+-				   struct kvm_lapic_irq *irq)
++void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
++		     struct kvm_lapic_irq *irq)
+ {
+ 	trace_kvm_msi_set_irq(e->msi.address_lo, e->msi.data);
  
- #ifndef VFIO_PCI_PRIVATE_H
- #define VFIO_PCI_PRIVATE_H
-@@ -29,6 +30,7 @@ struct vfio_pci_irq_ctx {
- 	struct virqfd		*mask;
- 	char			*name;
- 	bool			masked;
-+	struct irq_bypass_producer	producer;
- };
+@@ -108,6 +108,7 @@ static inline void kvm_set_msi_irq(struct kvm_kernel_irq_routing_entry *e,
+ 	irq->level = 1;
+ 	irq->shorthand = 0;
+ }
++EXPORT_SYMBOL_GPL(kvm_set_msi_irq);
  
- struct vfio_pci_device {
+ int kvm_set_msi(struct kvm_kernel_irq_routing_entry *e,
+ 		struct kvm *kvm, int irq_source_id, int level, bool line_status)
 -- 
 2.1.0
