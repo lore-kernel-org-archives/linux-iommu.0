@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v8 03/13] KVM: Define a new interface kvm_intr_is_single_vcpu()
-Date: Wed, 16 Sep 2015 16:49:59 +0800
-Message-ID: <1442393409-2623-4-git-send-email-feng.wu@intel.com>
+Subject: [PATCH v8 07/13] KVM: x86: Update IRTE for posted-interrupts
+Date: Wed, 16 Sep 2015 16:50:03 +0800
+Message-ID: <1442393409-2623-8-git-send-email-feng.wu@intel.com>
 References: <1442393409-2623-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,176 +21,212 @@ To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7a
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch defines a new interface kvm_intr_is_single_vcpu(),
-which can returns whether the interrupt is for single-CPU or not.
-
-It is used by VT-d PI, since now we only support single-CPU
-interrupts, For lowest-priority interrupts, if user configures
-it via /proc/irq or uses irqbalance to make it single-CPU, we
-can use PI to deliver the interrupts to it. Full functionality
-of lowest-priority support will be added later.
+This patch adds the routine to update IRTE for posted-interrupts
+when guest changes the interrupt configuration.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
 v8:
-- Some optimizations in kvm_intr_is_single_vcpu().
-- Expose kvm_intr_is_single_vcpu() so we can use it in vmx code.
-- Add kvm_intr_is_single_vcpu_fast() as the fast path to find
-  the target vCPU for the single-destination interrupt
+- Move 'kvm_arch_update_pi_irte' to vmx.c as a callback
+- Only update the PI irte when VM has assigned devices
+- Add a trace point for VT-d posted-interrupts when we update
+  or disable it for a specific irq.
 
  arch/x86/include/asm/kvm_host.h |  3 ++
- arch/x86/kvm/irq_comm.c         | 94 +++++++++++++++++++++++++++++++++++++++++
- arch/x86/kvm/lapic.c            |  5 +--
- arch/x86/kvm/lapic.h            |  2 +
- 4 files changed, 101 insertions(+), 3 deletions(-)
+ arch/x86/kvm/trace.h            | 33 ++++++++++++++++
+ arch/x86/kvm/vmx.c              | 83 +++++++++++++++++++++++++++++++++++++++++
+ arch/x86/kvm/x86.c              |  2 +
+ 4 files changed, 121 insertions(+)
 
 diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 49ec903..af11bca 100644
+index daa6126..8c44286 100644
 --- a/arch/x86/include/asm/kvm_host.h
 +++ b/arch/x86/include/asm/kvm_host.h
-@@ -1204,4 +1204,7 @@ int __x86_set_memory_region(struct kvm *kvm,
- int x86_set_memory_region(struct kvm *kvm,
- 			  const struct kvm_userspace_memory_region *mem);
- 
-+bool kvm_intr_is_single_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
-+			     struct kvm_vcpu **dest_vcpu);
+@@ -862,6 +862,9 @@ struct kvm_x86_ops {
+ 					   gfn_t offset, unsigned long mask);
+ 	/* pmu operations of sub-arch */
+ 	const struct kvm_pmu_ops *pmu_ops;
 +
- #endif /* _ASM_X86_KVM_HOST_H */
-diff --git a/arch/x86/kvm/irq_comm.c b/arch/x86/kvm/irq_comm.c
-index 9efff9e..97ba1d6 100644
---- a/arch/x86/kvm/irq_comm.c
-+++ b/arch/x86/kvm/irq_comm.c
-@@ -297,6 +297,100 @@ out:
- 	return r;
++	int (*update_pi_irte)(struct kvm *kvm, unsigned int host_irq,
++			      uint32_t guest_irq, bool set);
+ };
+ 
+ struct kvm_arch_async_pf {
+diff --git a/arch/x86/kvm/trace.h b/arch/x86/kvm/trace.h
+index 4eae7c3..539a9e4 100644
+--- a/arch/x86/kvm/trace.h
++++ b/arch/x86/kvm/trace.h
+@@ -974,6 +974,39 @@ TRACE_EVENT(kvm_enter_smm,
+ 		  __entry->smbase)
+ );
+ 
++/*
++ * Tracepoint for VT-d posted-interrupts.
++ */
++TRACE_EVENT(kvm_pi_irte_update,
++	TP_PROTO(unsigned int vcpu_id, unsigned int gsi,
++		 unsigned int gvec, u64 pi_desc_addr, bool set),
++	TP_ARGS(vcpu_id, gsi, gvec, pi_desc_addr, set),
++
++	TP_STRUCT__entry(
++		__field(	unsigned int,	vcpu_id		)
++		__field(	unsigned int,	gsi		)
++		__field(	unsigned int,	gvec		)
++		__field(	u64,		pi_desc_addr	)
++		__field(	bool,		set		)
++	),
++
++	TP_fast_assign(
++		__entry->vcpu_id	= vcpu_id;
++		__entry->gsi		= gsi;
++		__entry->gvec		= gvec;
++		__entry->pi_desc_addr	= pi_desc_addr;
++		__entry->set		= set;
++	),
++
++	TP_printk("VT-d PI is %s for this irq, vcpu %u, gsi: 0x%x, "
++		  "gvec: 0x%x, pi_desc_addr: 0x%llx",
++		  __entry->set ? "enabled and being updated" : "disabled",
++		  __entry->vcpu_id,
++		  __entry->gsi,
++		  __entry->gvec,
++		  __entry->pi_desc_addr)
++);
++
+ #endif /* _TRACE_KVM_H */
+ 
+ #undef TRACE_INCLUDE_PATH
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index 316f9bf..5a25651 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -45,6 +45,7 @@
+ #include <asm/debugreg.h>
+ #include <asm/kexec.h>
+ #include <asm/apic.h>
++#include <asm/irq_remapping.h>
+ 
+ #include "trace.h"
+ #include "pmu.h"
+@@ -605,6 +606,11 @@ static inline struct vcpu_vmx *to_vmx(struct kvm_vcpu *vcpu)
+ 	return container_of(vcpu, struct vcpu_vmx, vcpu);
  }
  
-+static bool kvm_intr_is_single_vcpu_fast(struct kvm *kvm,
-+					 struct kvm_lapic_irq *irq,
-+					 struct kvm_vcpu **dest_vcpu)
++struct pi_desc *vcpu_to_pi_desc(struct kvm_vcpu *vcpu)
 +{
-+	struct kvm_apic_map *map;
-+	bool ret = false;
-+	struct kvm_lapic *dst = NULL;
++	return &(to_vmx(vcpu)->pi_desc);
++}
 +
-+	if (irq->shorthand)
-+		return false;
+ #define VMCS12_OFFSET(x) offsetof(struct vmcs12, x)
+ #define FIELD(number, name)	[number] = VMCS12_OFFSET(name)
+ #define FIELD64(number, name)	[number] = VMCS12_OFFSET(name), \
+@@ -10344,6 +10350,81 @@ static void vmx_enable_log_dirty_pt_masked(struct kvm *kvm,
+ 	kvm_mmu_clear_dirty_pt_masked(kvm, memslot, offset, mask);
+ }
+ 
++/*
++ * vmx_update_pi_irte - set IRTE for Posted-Interrupts
++ *
++ * @kvm: kvm
++ * @host_irq: host irq of the interrupt
++ * @guest_irq: gsi of the interrupt
++ * @set: set or unset PI
++ * returns 0 on success, < 0 on failure
++ */
++int vmx_update_pi_irte(struct kvm *kvm, unsigned int host_irq,
++		       uint32_t guest_irq, bool set)
++{
++	struct kvm_kernel_irq_routing_entry *e;
++	struct kvm_irq_routing_table *irq_rt;
++	struct kvm_lapic_irq irq;
++	struct kvm_vcpu *vcpu;
++	struct vcpu_data vcpu_info;
++	int idx, ret = -EINVAL;
 +
-+	rcu_read_lock();
-+	map = rcu_dereference(kvm->arch.apic_map);
++	if (!irq_remapping_cap(IRQ_POSTING_CAP) ||
++		(!kvm_arch_has_assigned_device(kvm)))
++		return 0;
 +
-+	if (!map)
-+		goto out;
++	idx = srcu_read_lock(&kvm->irq_srcu);
++	irq_rt = srcu_dereference(kvm->irq_routing, &kvm->irq_srcu);
++	BUG_ON(guest_irq >= irq_rt->nr_rt_entries);
 +
-+	if (irq->dest_mode == APIC_DEST_PHYSICAL) {
-+		if (irq->dest_id == 0xFF)
-+			goto out;
++	hlist_for_each_entry(e, &irq_rt->map[guest_irq], link) {
++		if (e->type != KVM_IRQ_ROUTING_MSI)
++			continue;
++		/*
++		 * VT-d PI cannot support posting multicast/broadcast
++		 * interrupts to a vCPU, we still use interrupt remapping
++		 * for these kind of interrupts.
++		 *
++		 * For lowest-priority interrupts, we only support
++		 * those with single CPU as the destination, e.g. user
++		 * configures the interrupts via /proc/irq or uses
++		 * irqbalance to make the interrupts single-CPU.
++		 *
++		 * We will support full lowest-priority interrupt later.
++		 */
 +
-+		if (irq->dest_id >= ARRAY_SIZE(map->phys_map)) {
-+			WARN_ON_ONCE(1);
-+			goto out;
++		kvm_set_msi_irq(e, &irq);
++		if (!kvm_intr_is_single_vcpu(kvm, &irq, &vcpu))
++			continue;
++
++		vcpu_info.pi_desc_addr = __pa(vcpu_to_pi_desc(vcpu));
++		vcpu_info.vector = irq.vector;
++
++		trace_kvm_pi_irte_update(vcpu->vcpu_id, e->gsi,
++				vcpu_info.vector, vcpu_info.pi_desc_addr, set);
++
++		if (set)
++			ret = irq_set_vcpu_affinity(host_irq, &vcpu_info);
++		else {
++			/* suppress notification event before unposting */
++			pi_set_sn(vcpu_to_pi_desc(vcpu));
++			ret = irq_set_vcpu_affinity(host_irq, NULL);
++			pi_clear_sn(vcpu_to_pi_desc(vcpu));
 +		}
 +
-+		dst = map->phys_map[irq->dest_id];
-+		if (dst && kvm_apic_present(dst->vcpu))
-+			*dest_vcpu = dst->vcpu;
-+		else
-+			goto out;
-+	} else {
-+		u16 cid;
-+		unsigned long bitmap = 1;
-+		int i, r = 0;
-+
-+		if (!kvm_apic_logical_map_valid(map)) {
-+			WARN_ON_ONCE(1);
++		if (ret < 0) {
++			printk(KERN_INFO "%s: failed to update PI IRTE\n",
++					__func__);
 +			goto out;
 +		}
-+
-+		apic_logical_id(map, irq->dest_id, &cid, (u16 *)&bitmap);
-+
-+		if (cid >= ARRAY_SIZE(map->logical_map)) {
-+			WARN_ON_ONCE(1);
-+			goto out;
-+		}
-+
-+		for_each_set_bit(i, &bitmap, 16) {
-+			dst = map->logical_map[cid][i];
-+			if (++r == 2)
-+				goto out;
-+		}
-+
-+		if (dst && kvm_apic_present(dst->vcpu))
-+			*dest_vcpu = dst->vcpu;
-+		else
-+			goto out;
 +	}
 +
-+	ret = true;
++	ret = 0;
 +out:
-+	rcu_read_unlock();
++	srcu_read_unlock(&kvm->irq_srcu, idx);
 +	return ret;
 +}
 +
-+
-+bool kvm_intr_is_single_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
-+			     struct kvm_vcpu **dest_vcpu)
-+{
-+	int i, r = 0;
-+	struct kvm_vcpu *vcpu;
-+
-+	if (kvm_intr_is_single_vcpu_fast(kvm, irq, dest_vcpu))
-+		return true;
-+
-+	kvm_for_each_vcpu(i, vcpu, kvm) {
-+		if (!kvm_apic_present(vcpu))
-+			continue;
-+
-+		if (!kvm_apic_match_dest(vcpu, NULL, irq->shorthand,
-+					irq->dest_id, irq->dest_mode))
-+			continue;
-+
-+		if (++r == 2)
-+			return false;
-+
-+		*dest_vcpu = vcpu;
-+	}
-+
-+	return r == 1;
-+}
-+EXPORT_SYMBOL_GPL(kvm_intr_is_single_vcpu);
-+
- #define IOAPIC_ROUTING_ENTRY(irq) \
- 	{ .gsi = irq, .type = KVM_IRQ_ROUTING_IRQCHIP,	\
- 	  .u.irqchip = { .irqchip = KVM_IRQCHIP_IOAPIC, .pin = (irq) } }
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index 2a5ca97..9848cd50 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -136,13 +136,12 @@ static inline int kvm_apic_id(struct kvm_lapic *apic)
- /* The logical map is definitely wrong if we have multiple
-  * modes at the same time.  (Physical map is always right.)
-  */
--static inline bool kvm_apic_logical_map_valid(struct kvm_apic_map *map)
-+bool kvm_apic_logical_map_valid(struct kvm_apic_map *map)
- {
- 	return !(map->mode & (map->mode - 1));
- }
+ static struct kvm_x86_ops vmx_x86_ops = {
+ 	.cpu_has_kvm_support = cpu_has_kvm_support,
+ 	.disabled_by_bios = vmx_disabled_by_bios,
+@@ -10461,6 +10542,8 @@ static struct kvm_x86_ops vmx_x86_ops = {
+ 	.enable_log_dirty_pt_masked = vmx_enable_log_dirty_pt_masked,
  
--static inline void
--apic_logical_id(struct kvm_apic_map *map, u32 dest_id, u16 *cid, u16 *lid)
-+void apic_logical_id(struct kvm_apic_map *map, u32 dest_id, u16 *cid, u16 *lid)
- {
- 	unsigned lid_bits;
+ 	.pmu_ops = &intel_pmu_ops,
++
++	.update_pi_irte = vmx_update_pi_irte,
+ };
  
-diff --git a/arch/x86/kvm/lapic.h b/arch/x86/kvm/lapic.h
-index 7195274..6798b87 100644
---- a/arch/x86/kvm/lapic.h
-+++ b/arch/x86/kvm/lapic.h
-@@ -169,4 +169,6 @@ bool kvm_apic_pending_eoi(struct kvm_vcpu *vcpu, int vector);
+ static int __init vmx_init(void)
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 5ef2560..9dcd501 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -63,6 +63,7 @@
+ #include <asm/fpu/internal.h> /* Ugh! */
+ #include <asm/pvclock.h>
+ #include <asm/div64.h>
++#include <asm/irq_remapping.h>
  
- void wait_lapic_expire(struct kvm_vcpu *vcpu);
- 
-+void apic_logical_id(struct kvm_apic_map *map, u32 dest_id, u16 *cid, u16 *lid);
-+bool kvm_apic_logical_map_valid(struct kvm_apic_map *map);
- #endif
+ #define MAX_IO_MSRS 256
+ #define KVM_MAX_MCE_BANKS 32
+@@ -8263,3 +8264,4 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_nested_intercepts);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_write_tsc_offset);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_ple_window);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_pml_full);
++EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_pi_irte_update);
 -- 
 2.1.0
