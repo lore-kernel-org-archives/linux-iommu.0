@@ -1,809 +1,565 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4 3/6] iommu: add ARM short descriptor page table
- allocator.
-Date: Wed, 16 Sep 2015 16:58:24 +0100
-Message-ID: <20150916155824.GM28771@arm.com>
-References: <1438597279-2937-1-git-send-email-yong.wu@mediatek.com>
- <1438597279-2937-4-git-send-email-yong.wu@mediatek.com>
+From: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v5 52/53] PCI: Introduce resource_disabled()
+Date: Wed, 16 Sep 2015 14:57:50 -0700
+Message-ID: <1442440671-5361-53-git-send-email-yinghai@kernel.org>
+References: <1442440671-5361-1-git-send-email-yinghai@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1438597279-2937-4-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org" <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>"arnd-r2nGTMty4D4@public.gmane.org" <a>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1442440671-5361-1-git-send-email-yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Wei Yang <weiyang-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, TJ <linux-7m3hRoVZU5A@public.gmane.org>, Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-am33-list-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Aug 03, 2015 at 11:21:16AM +0100, Yong Wu wrote:
-> This patch is for ARM Short Descriptor Format.
-> 
-> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> ---
->  drivers/iommu/Kconfig                |  18 +
->  drivers/iommu/Makefile               |   1 +
->  drivers/iommu/io-pgtable-arm-short.c | 813 +++++++++++++++++++++++++++++++++++
->  drivers/iommu/io-pgtable-arm.c       |   3 -
->  drivers/iommu/io-pgtable.c           |   4 +
->  drivers/iommu/io-pgtable.h           |  14 +
->  6 files changed, 850 insertions(+), 3 deletions(-)
->  create mode 100644 drivers/iommu/io-pgtable-arm-short.c
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index f1fb1d3..3abd066 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -39,6 +39,24 @@ config IOMMU_IO_PGTABLE_LPAE_SELFTEST
-> 
->           If unsure, say N here.
-> 
-> +config IOMMU_IO_PGTABLE_SHORT
-> +       bool "ARMv7/v8 Short Descriptor Format"
-> +       select IOMMU_IO_PGTABLE
-> +       depends on ARM || ARM64 || COMPILE_TEST
-> +       help
-> +         Enable support for the ARM Short-descriptor pagetable format.
-> +         This allocator supports 2 levels translation tables which supports
+Current is using !flags, and we are going to use
+IORESOURCE_DISABLED instead of clearing resource flags.
 
-Some minor rewording here:
+Let's convert all !flags to helper function resource_disabled().
+resource_disabled will check !flags and IORESOURCE_DISABLED both.
 
-"...2 levels of translation tables, which enables a 32-bit memory map based
- on..."
+Cc: linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-am33-list-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Cc: linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Signed-off-by: Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+---
+ arch/alpha/kernel/pci.c                   |  2 +-
+ arch/ia64/pci/pci.c                       |  4 ++--
+ arch/microblaze/pci/pci-common.c          | 15 ++++++++-------
+ arch/mn10300/unit-asb2305/pci-asb2305.c   |  4 ++--
+ arch/mn10300/unit-asb2305/pci.c           |  4 ++--
+ arch/powerpc/kernel/pci-common.c          | 16 +++++++++-------
+ arch/powerpc/platforms/powernv/pci-ioda.c | 12 ++++++------
+ arch/s390/pci/pci.c                       |  2 +-
+ arch/sparc/kernel/pci.c                   |  2 +-
+ arch/x86/pci/i386.c                       |  4 ++--
+ arch/xtensa/kernel/pci.c                  |  4 ++--
+ drivers/iommu/intel-iommu.c               |  3 ++-
+ drivers/pci/host/pcie-rcar.c              |  2 +-
+ drivers/pci/iov.c                         |  2 +-
+ drivers/pci/probe.c                       |  2 +-
+ drivers/pci/quirks.c                      |  4 ++--
+ drivers/pci/rom.c                         |  2 +-
+ drivers/pci/setup-bus.c                   |  8 ++++----
+ drivers/pci/setup-res.c                   |  2 +-
+ include/linux/ioport.h                    |  4 ++++
+ 20 files changed, 53 insertions(+), 45 deletions(-)
 
-> +         a memory map based on memory sections or pages.
-> +
-> +config IOMMU_IO_PGTABLE_SHORT_SELFTEST
-> +       bool "Short Descriptor selftests"
-> +       depends on IOMMU_IO_PGTABLE_SHORT
-> +       help
-> +         Enable self-tests for Short-descriptor page table allocator.
-> +         This performs a series of page-table consistency checks during boot.
-> +
-> +         If unsure, say N here.
-> +
->  endmenu
-> 
->  config IOMMU_IOVA
-
-[...]
-
-> +#define ARM_SHORT_PGDIR_SHIFT                  20
-> +#define ARM_SHORT_PAGE_SHIFT                   12
-> +#define ARM_SHORT_PTRS_PER_PTE                 \
-> +       (1 << (ARM_SHORT_PGDIR_SHIFT - ARM_SHORT_PAGE_SHIFT))
-> +#define ARM_SHORT_BYTES_PER_PTE                        \
-> +       (ARM_SHORT_PTRS_PER_PTE * sizeof(arm_short_iopte))
-> +
-> +/* level 1 pagetable */
-> +#define ARM_SHORT_PGD_TYPE_PGTABLE             BIT(0)
-> +#define ARM_SHORT_PGD_TYPE_SECTION             BIT(1)
-> +#define ARM_SHORT_PGD_B                                BIT(2)
-> +#define ARM_SHORT_PGD_C                                BIT(3)
-> +#define ARM_SHORT_PGD_PGTABLE_NS               BIT(3)
-> +#define ARM_SHORT_PGD_SECTION_XN               BIT(4)
-> +#define ARM_SHORT_PGD_IMPLE                    BIT(9)
-> +#define ARM_SHORT_PGD_RD_WR                    (3 << 10)
-> +#define ARM_SHORT_PGD_RDONLY                   BIT(15)
-> +#define ARM_SHORT_PGD_S                                BIT(16)
-> +#define ARM_SHORT_PGD_nG                       BIT(17)
-> +#define ARM_SHORT_PGD_SUPERSECTION             BIT(18)
-> +#define ARM_SHORT_PGD_SECTION_NS               BIT(19)
-> +
-> +#define ARM_SHORT_PGD_TYPE_SUPERSECTION                \
-> +       (ARM_SHORT_PGD_TYPE_SECTION | ARM_SHORT_PGD_SUPERSECTION)
-> +#define ARM_SHORT_PGD_SECTION_TYPE_MSK         \
-> +       (ARM_SHORT_PGD_TYPE_SECTION | ARM_SHORT_PGD_SUPERSECTION)
-> +#define ARM_SHORT_PGD_PGTABLE_TYPE_MSK         \
-> +       (ARM_SHORT_PGD_TYPE_SECTION | ARM_SHORT_PGD_TYPE_PGTABLE)
-> +#define ARM_SHORT_PGD_TYPE_IS_PGTABLE(pgd)     \
-> +       (((pgd) & ARM_SHORT_PGD_PGTABLE_TYPE_MSK) == ARM_SHORT_PGD_TYPE_PGTABLE)
-> +#define ARM_SHORT_PGD_TYPE_IS_SECTION(pgd)     \
-> +       (((pgd) & ARM_SHORT_PGD_SECTION_TYPE_MSK) == ARM_SHORT_PGD_TYPE_SECTION)
-> +#define ARM_SHORT_PGD_TYPE_IS_SUPERSECTION(pgd)        \
-> +       (((pgd) & ARM_SHORT_PGD_SECTION_TYPE_MSK) == \
-> +       ARM_SHORT_PGD_TYPE_SUPERSECTION)
-> +#define ARM_SHORT_PGD_PGTABLE_MSK              0xfffffc00
-
-You could use (~(ARM_SHORT_BYTES_PER_PTE - 1)), I think.
-
-> +#define ARM_SHORT_PGD_SECTION_MSK              (~(SZ_1M - 1))
-> +#define ARM_SHORT_PGD_SUPERSECTION_MSK         (~(SZ_16M - 1))
-> +
-> +/* level 2 pagetable */
-> +#define ARM_SHORT_PTE_TYPE_LARGE               BIT(0)
-> +#define ARM_SHORT_PTE_SMALL_XN                 BIT(0)
-> +#define ARM_SHORT_PTE_TYPE_SMALL               BIT(1)
-> +#define ARM_SHORT_PTE_B                                BIT(2)
-> +#define ARM_SHORT_PTE_C                                BIT(3)
-> +#define ARM_SHORT_PTE_RD_WR                    (3 << 4)
-> +#define ARM_SHORT_PTE_RDONLY                   BIT(9)
-> +#define ARM_SHORT_PTE_S                                BIT(10)
-> +#define ARM_SHORT_PTE_nG                       BIT(11)
-> +#define ARM_SHORT_PTE_LARGE_XN                 BIT(15)
-> +#define ARM_SHORT_PTE_LARGE_MSK                        (~(SZ_64K - 1))
-> +#define ARM_SHORT_PTE_SMALL_MSK                        (~(SZ_4K - 1))
-> +#define ARM_SHORT_PTE_TYPE_MSK                 \
-> +       (ARM_SHORT_PTE_TYPE_LARGE | ARM_SHORT_PTE_TYPE_SMALL)
-> +#define ARM_SHORT_PTE_TYPE_IS_SMALLPAGE(pte)   \
-> +       (((pte) & ARM_SHORT_PTE_TYPE_SMALL) == ARM_SHORT_PTE_TYPE_SMALL)
-
-Maybe a comment here, because it's confusing that you don't and with the
-mask due to XN.
-
-> +#define ARM_SHORT_PTE_TYPE_IS_LARGEPAGE(pte)   \
-> +       (((pte) & ARM_SHORT_PTE_TYPE_MSK) == ARM_SHORT_PTE_TYPE_LARGE)
-> +
-> +#define ARM_SHORT_PGD_IDX(a)                   ((a) >> ARM_SHORT_PGDIR_SHIFT)
-> +#define ARM_SHORT_PTE_IDX(a)                   \
-> +       (((a) >> ARM_SHORT_PAGE_SHIFT) & (ARM_SHORT_PTRS_PER_PTE - 1))
-> +
-> +#define ARM_SHORT_GET_PGTABLE_VA(pgd)          \
-> +       (phys_to_virt((unsigned long)pgd & ARM_SHORT_PGD_PGTABLE_MSK))
-> +
-> +#define ARM_SHORT_PTE_LARGE_GET_PROT(pte)      \
-> +       (((pte) & (~ARM_SHORT_PTE_LARGE_MSK)) & ~ARM_SHORT_PTE_TYPE_MSK)
-
-AFAICT, the only user of this also does an '& ~ARM_SHORT_PTE_SMALL_MSK'.
-Wouldn't it be better to define ARM_SHORT_PTE_GET_PROT, which just returns
-the AP bits? That said, what are you going to do about XN? I know you
-don't support it in your hardware, but this could code should still do
-the right thing.
-
-> +static int
-> +__arm_short_set_pte(arm_short_iopte *ptep, arm_short_iopte pte,
-> +                   unsigned int ptenr, struct io_pgtable_cfg *cfg)
-> +{
-> +       struct device *dev = cfg->iommu_dev;
-> +       int i;
-> +
-> +       for (i = 0; i < ptenr; i++) {
-> +               if (ptep[i] && pte) {
-> +                       /* Someone else may have allocated for this pte */
-> +                       WARN_ON(!selftest_running);
-> +                       goto err_exist_pte;
-> +               }
-> +               ptep[i] = pte;
-> +       }
-> +
-> +       if (selftest_running)
-> +               return 0;
-> +
-> +       dma_sync_single_for_device(dev, __arm_short_dma_addr(dev, ptep),
-> +                                  sizeof(*ptep) * ptenr, DMA_TO_DEVICE);
-> +       return 0;
-> +
-> +err_exist_pte:
-> +       while (i--)
-> +               ptep[i] = 0;
-
-What about a dma_sync for the failure case?
-
-> +       return -EEXIST;
-> +}
-> +
-> +static void *
-> +__arm_short_alloc_pgtable(size_t size, gfp_t gfp, bool pgd,
-> +                         struct io_pgtable_cfg *cfg)
-> +{
-> +       struct arm_short_io_pgtable *data;
-> +       struct device *dev = cfg->iommu_dev;
-> +       dma_addr_t dma;
-> +       void *va;
-> +
-> +       if (pgd) {/* lvl1 pagetable */
-> +               va = alloc_pages_exact(size, gfp);
-> +       } else {  /* lvl2 pagetable */
-> +               data = io_pgtable_cfg_to_data(cfg);
-> +               va = kmem_cache_zalloc(data->pgtable_cached, gfp);
-> +       }
-> +
-> +       if (!va)
-> +               return NULL;
-> +
-> +       if (selftest_running)
-> +               return va;
-> +
-> +       dma = dma_map_single(dev, va, size, DMA_TO_DEVICE);
-> +       if (dma_mapping_error(dev, dma))
-> +               goto out_free;
-> +
-> +       if (dma != __arm_short_dma_addr(dev, va))
-> +               goto out_unmap;
-> +
-> +       if (!pgd) {
-> +               kmemleak_ignore(va);
-> +               dma_sync_single_for_device(dev, __arm_short_dma_addr(dev, va),
-> +                                          size, DMA_TO_DEVICE);
-
-Why do you need to do this as well as the dma_map_single above?
-
-> +       }
-> +
-> +       return va;
-> +
-> +out_unmap:
-> +       dev_err_ratelimited(dev, "Cannot accommodate DMA translation for IOMMU page tables\n");
-> +       dma_unmap_single(dev, dma, size, DMA_TO_DEVICE);
-> +out_free:
-> +       if (pgd)
-> +               free_pages_exact(va, size);
-> +       else
-> +               kmem_cache_free(data->pgtable_cached, va);
-> +       return NULL;
-> +}
-> +
-> +static void
-> +__arm_short_free_pgtable(void *va, size_t size, bool pgd,
-> +                        struct io_pgtable_cfg *cfg)
-> +{
-> +       struct arm_short_io_pgtable *data = io_pgtable_cfg_to_data(cfg);
-> +       struct device *dev = cfg->iommu_dev;
-> +
-> +       if (!selftest_running)
-> +               dma_unmap_single(dev, __arm_short_dma_addr(dev, va),
-> +                                size, DMA_TO_DEVICE);
-> +
-> +       if (pgd)
-> +               free_pages_exact(va, size);
-> +       else
-> +               kmem_cache_free(data->pgtable_cached, va);
-> +}
-> +
-> +static arm_short_iopte
-> +__arm_short_pte_prot(struct arm_short_io_pgtable *data, int prot, bool large)
-> +{
-> +       arm_short_iopte pteprot;
-> +       int quirk = data->iop.cfg.quirks;
-> +
-> +       pteprot = ARM_SHORT_PTE_S | ARM_SHORT_PTE_nG;
-> +       pteprot |= large ? ARM_SHORT_PTE_TYPE_LARGE :
-> +                               ARM_SHORT_PTE_TYPE_SMALL;
-> +       if (prot & IOMMU_CACHE)
-> +               pteprot |=  ARM_SHORT_PTE_B | ARM_SHORT_PTE_C;
-> +       if (!(quirk & IO_PGTABLE_QUIRK_SHORT_NO_XN) && (prot & IOMMU_NOEXEC)) {
-> +                       pteprot |= large ? ARM_SHORT_PTE_LARGE_XN :
-> +                               ARM_SHORT_PTE_SMALL_XN;
-
-Weird indentation, man. Also, see my later comment about combining NO_XN
-with NO_PERMS (the latter subsumes the first)
-
-> +       }
-> +       if (!(quirk & IO_PGTABLE_QUIRK_SHORT_NO_PERMS)) {
-> +               pteprot |= ARM_SHORT_PTE_RD_WR;
-> +               if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
-> +                       pteprot |= ARM_SHORT_PTE_RDONLY;
-> +       }
-> +       return pteprot;
-> +}
-> +
-> +static arm_short_iopte
-> +__arm_short_pgd_prot(struct arm_short_io_pgtable *data, int prot, bool super)
-> +{
-> +       arm_short_iopte pgdprot;
-> +       int quirk = data->iop.cfg.quirks;
-> +
-> +       pgdprot = ARM_SHORT_PGD_S | ARM_SHORT_PGD_nG;
-> +       pgdprot |= super ? ARM_SHORT_PGD_TYPE_SUPERSECTION :
-> +                               ARM_SHORT_PGD_TYPE_SECTION;
-> +       if (prot & IOMMU_CACHE)
-> +               pgdprot |= ARM_SHORT_PGD_C | ARM_SHORT_PGD_B;
-> +       if (quirk & IO_PGTABLE_QUIRK_ARM_NS)
-> +               pgdprot |= ARM_SHORT_PGD_SECTION_NS;
-> +
-> +       if (!(quirk & IO_PGTABLE_QUIRK_SHORT_NO_XN) && (prot & IOMMU_NOEXEC))
-> +                       pgdprot |= ARM_SHORT_PGD_SECTION_XN;
-> +
-> +       if (!(quirk & IO_PGTABLE_QUIRK_SHORT_NO_PERMS)) {
-
-Same comments here.
-
-> +               pgdprot |= ARM_SHORT_PGD_RD_WR;
-> +               if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
-> +                       pgdprot |= ARM_SHORT_PGD_RDONLY;
-> +       }
-> +       return pgdprot;
-> +}
-> +
-> +static arm_short_iopte
-> +__arm_short_pte_prot_split(struct arm_short_io_pgtable *data,
-> +                          arm_short_iopte pgdprot,
-> +                          arm_short_iopte pteprot_large,
-> +                          bool large)
-> +{
-> +       arm_short_iopte pteprot = 0;
-> +
-> +       pteprot = ARM_SHORT_PTE_S | ARM_SHORT_PTE_nG | ARM_SHORT_PTE_RD_WR;
-> +       pteprot |= large ? ARM_SHORT_PTE_TYPE_LARGE :
-> +                               ARM_SHORT_PTE_TYPE_SMALL;
-> +
-> +       /* large page to small page pte prot. Only large page may split */
-> +       if (!pgdprot && !large) {
-
-It's slightly complicated having these two variables controlling the
-behaviour of the split. In reality, we're either splitting a section or
-a large page, so there are three valid combinations.
-
-It might be simpler to operate on IOMMU_{READ,WRITE,NOEXEC,CACHE} as
-much as possible, and then have some simple functions to encode/decode
-these into section/large/small page prot bits. We could then just pass
-the IOMMU_* prot around along with the map size. What do you think?
-
-> +               pteprot |= pteprot_large & ~ARM_SHORT_PTE_SMALL_MSK;
-> +               if (pteprot_large & ARM_SHORT_PTE_LARGE_XN)
-> +                       pteprot |= ARM_SHORT_PTE_SMALL_XN;
-> +       }
-> +
-> +       /* section to pte prot */
-> +       if (pgdprot & ARM_SHORT_PGD_C)
-> +               pteprot |= ARM_SHORT_PTE_C;
-> +       if (pgdprot & ARM_SHORT_PGD_B)
-> +               pteprot |= ARM_SHORT_PTE_B;
-> +       if (pgdprot & ARM_SHORT_PGD_nG)
-> +               pteprot |= ARM_SHORT_PTE_nG;
-> +       if (pgdprot & ARM_SHORT_PGD_SECTION_XN)
-> +               pteprot |= large ? ARM_SHORT_PTE_LARGE_XN :
-> +                               ARM_SHORT_PTE_SMALL_XN;
-> +       if (pgdprot & ARM_SHORT_PGD_RD_WR)
-> +               pteprot |= ARM_SHORT_PTE_RD_WR;
-> +       if (pgdprot & ARM_SHORT_PGD_RDONLY)
-> +               pteprot |= ARM_SHORT_PTE_RDONLY;
-> +
-> +       return pteprot;
-> +}
-> +
-> +static arm_short_iopte
-> +__arm_short_pgtable_prot(struct arm_short_io_pgtable *data)
-> +{
-> +       arm_short_iopte pgdprot = 0;
-> +
-> +       pgdprot = ARM_SHORT_PGD_TYPE_PGTABLE;
-> +       if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_ARM_NS)
-> +               pgdprot |= ARM_SHORT_PGD_PGTABLE_NS;
-> +       return pgdprot;
-> +}
-> +
-> +static int
-> +_arm_short_map(struct arm_short_io_pgtable *data,
-> +              unsigned int iova, phys_addr_t paddr,
-> +              arm_short_iopte pgdprot, arm_short_iopte pteprot,
-> +              bool large)
-> +{
-> +       struct io_pgtable_cfg *cfg = &data->iop.cfg;
-> +       arm_short_iopte *pgd = data->pgd, *pte;
-> +       void *pte_new = NULL;
-> +       int ret;
-> +
-> +       pgd += ARM_SHORT_PGD_IDX(iova);
-> +
-> +       if (!pteprot) { /* section or supersection */
-> +               pte = pgd;
-> +               pteprot = pgdprot;
-> +       } else {        /* page or largepage */
-> +               if (!(*pgd)) {
-> +                       pte_new = __arm_short_alloc_pgtable(
-> +                                       ARM_SHORT_BYTES_PER_PTE,
-> +                                       GFP_ATOMIC, false, cfg);
-> +                       if (unlikely(!pte_new))
-> +                               return -ENOMEM;
-> +
-> +                       pgdprot |= virt_to_phys(pte_new);
-> +                       __arm_short_set_pte(pgd, pgdprot, 1, cfg);
-> +               }
-> +               pte = arm_short_get_pte_in_pgd(*pgd, iova);
-> +       }
-> +
-> +       pteprot |= (arm_short_iopte)paddr;
-> +       ret = __arm_short_set_pte(pte, pteprot, large ? 16 : 1, cfg);
-> +       if (ret && pte_new)
-> +               __arm_short_free_pgtable(pte_new, ARM_SHORT_BYTES_PER_PTE,
-> +                                        false, cfg);
-
-Don't you need to kill the pgd entry before freeing this? Please see my
-previous comments about safely freeing page tables:
-
-  http://lists.infradead.org/pipermail/linux-arm-kernel/2015-July/358268.html
-
-(at the end of the post)
-
-> +       return ret;
-> +}
-> +
-> +static int arm_short_map(struct io_pgtable_ops *ops, unsigned long iova,
-> +                        phys_addr_t paddr, size_t size, int prot)
-> +{
-> +       struct arm_short_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> +       arm_short_iopte pgdprot = 0, pteprot = 0;
-> +       bool large;
-> +
-> +       /* If no access, then nothing to do */
-> +       if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
-> +               return 0;
-> +
-> +       if (WARN_ON((iova | paddr) & (size - 1)))
-> +               return -EINVAL;
-> +
-> +       switch (size) {
-> +       case SZ_4K:
-> +       case SZ_64K:
-> +               large = (size == SZ_64K) ? true : false;
-> +               pteprot = __arm_short_pte_prot(data, prot, large);
-> +               pgdprot = __arm_short_pgtable_prot(data);
-> +               break;
-> +
-> +       case SZ_1M:
-> +       case SZ_16M:
-> +               large = (size == SZ_16M) ? true : false;
-> +               pgdprot = __arm_short_pgd_prot(data, prot, large);
-> +               break;
-> +       default:
-> +               return -EINVAL;
-> +       }
-> +
-> +       return _arm_short_map(data, iova, paddr, pgdprot, pteprot, large);
-> +}
-> +
-> +static phys_addr_t arm_short_iova_to_phys(struct io_pgtable_ops *ops,
-> +                                         unsigned long iova)
-> +{
-> +       struct arm_short_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> +       arm_short_iopte *pte, *pgd = data->pgd;
-> +       phys_addr_t pa = 0;
-> +
-> +       pgd += ARM_SHORT_PGD_IDX(iova);
-> +
-> +       if (ARM_SHORT_PGD_TYPE_IS_PGTABLE(*pgd)) {
-> +               pte = arm_short_get_pte_in_pgd(*pgd, iova);
-> +
-> +               if (ARM_SHORT_PTE_TYPE_IS_LARGEPAGE(*pte)) {
-> +                       pa = (*pte) & ARM_SHORT_PTE_LARGE_MSK;
-> +                       pa |= iova & ~ARM_SHORT_PTE_LARGE_MSK;
-> +               } else if (ARM_SHORT_PTE_TYPE_IS_SMALLPAGE(*pte)) {
-> +                       pa = (*pte) & ARM_SHORT_PTE_SMALL_MSK;
-> +                       pa |= iova & ~ARM_SHORT_PTE_SMALL_MSK;
-> +               }
-> +       } else if (ARM_SHORT_PGD_TYPE_IS_SECTION(*pgd)) {
-> +               pa = (*pgd) & ARM_SHORT_PGD_SECTION_MSK;
-> +               pa |= iova & ~ARM_SHORT_PGD_SECTION_MSK;
-> +       } else if (ARM_SHORT_PGD_TYPE_IS_SUPERSECTION(*pgd)) {
-> +               pa = (*pgd) & ARM_SHORT_PGD_SUPERSECTION_MSK;
-> +               pa |= iova & ~ARM_SHORT_PGD_SUPERSECTION_MSK;
-> +       }
-> +
-> +       return pa;
-> +}
-> +
-> +static bool _arm_short_whether_free_pgtable(arm_short_iopte *pgd)
-> +{
-
-_arm_short_pgtable_empty might be a better name.
-
-> +       arm_short_iopte *pte;
-> +       int i;
-> +
-> +       pte = ARM_SHORT_GET_PGTABLE_VA(*pgd);
-> +       for (i = 0; i < ARM_SHORT_PTRS_PER_PTE; i++) {
-> +               if (pte[i] != 0)
-> +                       return false;
-> +       }
-> +
-> +       return true;
-> +}
-> +
-> +static int
-> +arm_short_split_blk_unmap(struct io_pgtable_ops *ops, unsigned int iova,
-> +                         phys_addr_t paddr, size_t size,
-> +                         arm_short_iopte pgdprotup, arm_short_iopte pteprotup,
-> +                         size_t blk_size)
-> +{
-> +       struct arm_short_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> +       const struct iommu_gather_ops *tlb = data->iop.cfg.tlb;
-> +       struct io_pgtable_cfg *cfg = &data->iop.cfg;
-> +       unsigned long *pgbitmap = &cfg->pgsize_bitmap;
-> +       unsigned int blk_base, blk_start, blk_end, i;
-> +       arm_short_iopte pgdprot, pteprot;
-> +       phys_addr_t blk_paddr;
-> +       size_t mapsize = 0, nextmapsize;
-> +       int ret;
-> +
-> +       /* find the nearest mapsize */
-> +       for (i = find_first_bit(pgbitmap, BITS_PER_LONG);
-> +            i < BITS_PER_LONG && ((1 << i) < blk_size) &&
-> +            IS_ALIGNED(size, 1 << i);
-> +            i = find_next_bit(pgbitmap, BITS_PER_LONG, i + 1))
-> +               mapsize = 1 << i;
-> +
-> +       if (WARN_ON(!mapsize))
-> +               return 0; /* Bytes unmapped */
-> +       nextmapsize = 1 << i;
-> +
-> +       blk_base = iova & ~(blk_size - 1);
-> +       blk_start = blk_base;
-> +       blk_end = blk_start + blk_size;
-> +       blk_paddr = paddr;
-> +
-> +       for (; blk_start < blk_end;
-> +            blk_start += mapsize, blk_paddr += mapsize) {
-> +               /* Unmap! */
-> +               if (blk_start == iova)
-> +                       continue;
-> +
-> +               /* Try to upper map */
-> +               if (blk_base != blk_start &&
-> +                   IS_ALIGNED(blk_start | blk_paddr, nextmapsize) &&
-> +                   mapsize != nextmapsize) {
-> +                       mapsize = nextmapsize;
-> +                       i = find_next_bit(pgbitmap, BITS_PER_LONG, i + 1);
-> +                       if (i < BITS_PER_LONG)
-> +                               nextmapsize = 1 << i;
-> +               }
-> +
-> +               if (mapsize == SZ_1M) {
-
-How do we get here with a mapsize of 1M?
-
-> +                       pgdprot = pgdprotup;
-> +                       pgdprot |= __arm_short_pgd_prot(data, 0, false);
-> +                       pteprot = 0;
-> +               } else { /* small or large page */
-> +                       pgdprot = (blk_size == SZ_64K) ? 0 : pgdprotup;
-> +                       pteprot = __arm_short_pte_prot_split(
-> +                                       data, pgdprot, pteprotup,
-> +                                       mapsize == SZ_64K);
-> +                       pgdprot = __arm_short_pgtable_prot(data);
-> +               }
-> +
-> +               ret = _arm_short_map(data, blk_start, blk_paddr, pgdprot,
-> +                                    pteprot, mapsize == SZ_64K);
-> +               if (ret < 0) {
-> +                       /* Free the table we allocated */
-> +                       arm_short_iopte *pgd = data->pgd, *pte;
-> +
-> +                       pgd += ARM_SHORT_PGD_IDX(blk_base);
-> +                       if (*pgd) {
-> +                               pte = ARM_SHORT_GET_PGTABLE_VA(*pgd);
-> +                               __arm_short_set_pte(pgd, 0, 1, cfg);
-> +                               tlb->tlb_add_flush(blk_base, blk_size, true,
-> +                                                  data->iop.cookie);
-> +                               tlb->tlb_sync(data->iop.cookie);
-> +                               __arm_short_free_pgtable(
-> +                                       pte, ARM_SHORT_BYTES_PER_PTE,
-> +                                       false, cfg);
-
-This looks wrong. _arm_short_map cleans up if it returns non-zero already.
-
-> +                       }
-> +                       return 0;/* Bytes unmapped */
-> +               }
-> +       }
-> +
-> +       tlb->tlb_add_flush(blk_base, blk_size, true, data->iop.cookie);
-> +       tlb->tlb_sync(data->iop.cookie);
-
-Why are you syncing here? You can postpone this to the caller, if it turns
-out the unmap was a success.
-
-> +       return size;
-> +}
-> +
-> +static int arm_short_unmap(struct io_pgtable_ops *ops,
-> +                          unsigned long iova,
-> +                          size_t size)
-> +{
-> +       struct arm_short_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> +       struct io_pgtable_cfg *cfg = &data->iop.cfg;
-> +       arm_short_iopte *pgd, *pte = NULL;
-> +       arm_short_iopte curpgd, curpte = 0;
-> +       phys_addr_t paddr;
-> +       unsigned int iova_base, blk_size = 0;
-> +       void *cookie = data->iop.cookie;
-> +       bool pgtablefree = false;
-> +
-> +       pgd = (arm_short_iopte *)data->pgd + ARM_SHORT_PGD_IDX(iova);
-> +
-> +       /* Get block size */
-> +       if (ARM_SHORT_PGD_TYPE_IS_PGTABLE(*pgd)) {
-> +               pte = arm_short_get_pte_in_pgd(*pgd, iova);
-> +
-> +               if (ARM_SHORT_PTE_TYPE_IS_SMALLPAGE(*pte))
-> +                       blk_size = SZ_4K;
-> +               else if (ARM_SHORT_PTE_TYPE_IS_LARGEPAGE(*pte))
-> +                       blk_size = SZ_64K;
-> +               else
-> +                       WARN_ON(1);
-> +       } else if (ARM_SHORT_PGD_TYPE_IS_SECTION(*pgd)) {
-> +               blk_size = SZ_1M;
-> +       } else if (ARM_SHORT_PGD_TYPE_IS_SUPERSECTION(*pgd)) {
-> +               blk_size = SZ_16M;
-> +       } else {
-> +               WARN_ON(1);
-
-Maybe return 0 or something instead of falling through with blk_size == 0?
-
-> +       }
-> +
-> +       iova_base = iova & ~(blk_size - 1);
-> +       pgd = (arm_short_iopte *)data->pgd + ARM_SHORT_PGD_IDX(iova_base);
-> +       paddr = arm_short_iova_to_phys(ops, iova_base);
-> +       curpgd = *pgd;
-> +
-> +       if (blk_size == SZ_4K || blk_size == SZ_64K) {
-> +               pte = arm_short_get_pte_in_pgd(*pgd, iova_base);
-> +               curpte = *pte;
-> +               __arm_short_set_pte(pte, 0, blk_size / SZ_4K, cfg);
-> +
-> +               pgtablefree = _arm_short_whether_free_pgtable(pgd);
-> +               if (pgtablefree)
-> +                       __arm_short_set_pte(pgd, 0, 1, cfg);
-> +       } else if (blk_size == SZ_1M || blk_size == SZ_16M) {
-> +               __arm_short_set_pte(pgd, 0, blk_size / SZ_1M, cfg);
-> +       }
-> +
-> +       cfg->tlb->tlb_add_flush(iova_base, blk_size, true, cookie);
-> +       cfg->tlb->tlb_sync(cookie);
-> +
-> +       if (pgtablefree)/* Free pgtable after tlb-flush */
-> +               __arm_short_free_pgtable(ARM_SHORT_GET_PGTABLE_VA(curpgd),
-> +                                        ARM_SHORT_BYTES_PER_PTE, false, cfg);
-
-Curious, but why do you care about freeing this on unmap? It will get
-freed when the page table itself is freed anyway (via the ->free callback).
-
-> +
-> +       if (blk_size > size) { /* Split the block */
-> +               return arm_short_split_blk_unmap(
-> +                               ops, iova, paddr, size,
-> +                               ARM_SHORT_PGD_GET_PROT(curpgd),
-> +                               ARM_SHORT_PTE_LARGE_GET_PROT(curpte),
-> +                               blk_size);
-> +       } else if (blk_size < size) {
-> +               /* Unmap the block while remap partial again after split */
-> +               return blk_size +
-> +                       arm_short_unmap(ops, iova + blk_size, size - blk_size);
-> +       }
-> +
-> +       return size;
-> +}
-> +
-> +static struct io_pgtable *
-> +arm_short_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
-> +{
-> +       struct arm_short_io_pgtable *data;
-> +
-> +       if (cfg->ias > 32 || cfg->oas > 32)
-> +               return NULL;
-> +
-> +       cfg->pgsize_bitmap &=
-> +               (cfg->quirks & IO_PGTABLE_QUIRK_SHORT_SUPERSECTION) ?
-> +               (SZ_4K | SZ_64K | SZ_1M | SZ_16M) : (SZ_4K | SZ_64K | SZ_1M);
-> +
-> +       data = kzalloc(sizeof(*data), GFP_KERNEL);
-> +       if (!data)
-> +               return NULL;
-> +
-> +       data->pgd_size = SZ_16K;
-> +       data->pgd = __arm_short_alloc_pgtable(
-> +                                       data->pgd_size,
-> +                                       GFP_KERNEL | __GFP_ZERO | __GFP_DMA,
-> +                                       true, cfg);
-> +       if (!data->pgd)
-> +               goto out_free_data;
-> +       wmb();/* Ensure the empty pgd is visible before any actual TTBR write */
-> +
-> +       data->pgtable_cached = kmem_cache_create(
-> +                                       "io-pgtable-arm-short",
-> +                                        ARM_SHORT_BYTES_PER_PTE,
-> +                                        ARM_SHORT_BYTES_PER_PTE,
-> +                                        0, NULL);
-> +       if (!data->pgtable_cached)
-> +               goto out_free_pgd;
-> +
-> +       /* TTBRs */
-> +       cfg->arm_short_cfg.ttbr[0] = virt_to_phys(data->pgd);
-> +       cfg->arm_short_cfg.ttbr[1] = 0;
-> +       cfg->arm_short_cfg.tcr = 0;
-> +       cfg->arm_short_cfg.nmrr = 0;
-> +       cfg->arm_short_cfg.prrr = 0;
-> +
-> +       data->iop.ops = (struct io_pgtable_ops) {
-> +               .map            = arm_short_map,
-> +               .unmap          = arm_short_unmap,
-> +               .iova_to_phys   = arm_short_iova_to_phys,
-> +       };
-> +
-> +       return &data->iop;
-> +
-> +out_free_pgd:
-> +       __arm_short_free_pgtable(data->pgd, data->pgd_size, true, cfg);
-> +out_free_data:
-> +       kfree(data);
-> +       return NULL;
-> +}
-> +
-> +static void arm_short_free_pgtable(struct io_pgtable *iop)
-> +{
-> +       struct arm_short_io_pgtable *data = io_pgtable_to_data(iop);
-> +
-> +       kmem_cache_destroy(data->pgtable_cached);
-> +       __arm_short_free_pgtable(data->pgd, data->pgd_size,
-> +                                true, &data->iop.cfg);
-> +       kfree(data);
-> +}
-> +
-> +struct io_pgtable_init_fns io_pgtable_arm_short_init_fns = {
-> +       .alloc  = arm_short_alloc_pgtable,
-> +       .free   = arm_short_free_pgtable,
-> +};
-> +
-
-[...]
-
-> diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
-> index 6436fe2..14a9b3a 100644
-> --- a/drivers/iommu/io-pgtable.c
-> +++ b/drivers/iommu/io-pgtable.c
-> @@ -28,6 +28,7 @@ extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s1_init_fns;
->  extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s2_init_fns;
->  extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns;
->  extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns;
-> +extern struct io_pgtable_init_fns io_pgtable_arm_short_init_fns;
-> 
->  static const struct io_pgtable_init_fns *
->  io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] =
-> @@ -38,6 +39,9 @@ io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] =
->         [ARM_64_LPAE_S1] = &io_pgtable_arm_64_lpae_s1_init_fns,
->         [ARM_64_LPAE_S2] = &io_pgtable_arm_64_lpae_s2_init_fns,
->  #endif
-> +#ifdef CONFIG_IOMMU_IO_PGTABLE_SHORT
-> +       [ARM_SHORT_DESC] = &io_pgtable_arm_short_init_fns,
-> +#endif
->  };
-> 
->  struct io_pgtable_ops *alloc_io_pgtable_ops(enum io_pgtable_fmt fmt,
-> diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-> index 68c63d9..0f45e60 100644
-> --- a/drivers/iommu/io-pgtable.h
-> +++ b/drivers/iommu/io-pgtable.h
-> @@ -9,6 +9,7 @@ enum io_pgtable_fmt {
->         ARM_32_LPAE_S2,
->         ARM_64_LPAE_S1,
->         ARM_64_LPAE_S2,
-> +       ARM_SHORT_DESC,
->         IO_PGTABLE_NUM_FMTS,
->  };
-> 
-> @@ -45,6 +46,9 @@ struct iommu_gather_ops {
->   */
->  struct io_pgtable_cfg {
->         #define IO_PGTABLE_QUIRK_ARM_NS (1 << 0)        /* Set NS bit in PTEs */
-> +       #define IO_PGTABLE_QUIRK_SHORT_SUPERSECTION     BIT(1)
-> +       #define IO_PGTABLE_QUIRK_SHORT_NO_XN            BIT(2) /* No XN bit */
-> +       #define IO_PGTABLE_QUIRK_SHORT_NO_PERMS         BIT(3) /* No AP bit */
-
-Why have two quirks for this? I suggested included NO_XN in NO_PERMS:
-
-  http://lists.infradead.org/pipermail/linux-arm-kernel/2015-July/361160.html
-
->         int                             quirks;
->         unsigned long                   pgsize_bitmap;
->         unsigned int                    ias;
-> @@ -64,6 +68,13 @@ struct io_pgtable_cfg {
->                         u64     vttbr;
->                         u64     vtcr;
->                 } arm_lpae_s2_cfg;
-> +
-> +               struct {
-> +                       u32     ttbr[2];
-> +                       u32     tcr;
-> +                       u32     nmrr;
-> +                       u32     prrr;
-> +               } arm_short_cfg;
-
-We don't return an SCTLR value here, so a comment somewhere saying that
-access flag is not supported would be helpful (so that drivers can ensure
-that they configure things for the AP[2:0] permission model).
-
-Will
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
+index 5f387ee..c89c8ef 100644
+--- a/arch/alpha/kernel/pci.c
++++ b/arch/alpha/kernel/pci.c
+@@ -282,7 +282,7 @@ pcibios_claim_one_bus(struct pci_bus *b)
+ 		for (i = 0; i < PCI_NUM_RESOURCES; i++) {
+ 			struct resource *r = &dev->resource[i];
+ 
+-			if (r->parent || !r->start || !r->flags)
++			if (r->parent || !r->start || resource_disabled(r))
+ 				continue;
+ 			if (pci_has_flag(PCI_PROBE_ONLY) ||
+ 			    (r->flags & IORESOURCE_PCI_FIXED)) {
+diff --git a/arch/ia64/pci/pci.c b/arch/ia64/pci/pci.c
+index 7cc3be9..cc293ea 100644
+--- a/arch/ia64/pci/pci.c
++++ b/arch/ia64/pci/pci.c
+@@ -501,7 +501,7 @@ void pcibios_fixup_device_resources(struct pci_dev *dev)
+ 	for (idx = 0; idx < PCI_BRIDGE_RESOURCES; idx++) {
+ 		struct resource *r = &dev->resource[idx];
+ 
+-		if (!r->flags || r->parent || !r->start)
++		if (resource_disabled(r) || r->parent || !r->start)
+ 			continue;
+ 
+ 		pci_claim_resource(dev, idx);
+@@ -519,7 +519,7 @@ static void pcibios_fixup_bridge_resources(struct pci_dev *dev)
+ 	for (idx = PCI_BRIDGE_RESOURCES; idx < PCI_NUM_RESOURCES; idx++) {
+ 		struct resource *r = &dev->resource[idx];
+ 
+-		if (!r->flags || r->parent || !r->start)
++		if (resource_disabled(r) || r->parent || !r->start)
+ 			continue;
+ 
+ 		pci_claim_bridge_resource(dev, idx);
+diff --git a/arch/microblaze/pci/pci-common.c b/arch/microblaze/pci/pci-common.c
+index 09b1af6..c123d3c 100644
+--- a/arch/microblaze/pci/pci-common.c
++++ b/arch/microblaze/pci/pci-common.c
+@@ -705,7 +705,7 @@ static void pcibios_fixup_resources(struct pci_dev *dev)
+ 	}
+ 	for (i = 0; i < DEVICE_COUNT_RESOURCE; i++) {
+ 		struct resource *res = dev->resource + i;
+-		if (!res->flags)
++		if (resource_disabled(res))
+ 			continue;
+ 		if (res->start == 0) {
+ 			pr_debug("PCI:%s Resource %d %016llx-%016llx [%x]",
+@@ -806,7 +806,7 @@ static void pcibios_fixup_bridge(struct pci_bus *bus)
+ 	pci_bus_for_each_resource(bus, res, i) {
+ 		if (!res)
+ 			continue;
+-		if (!res->flags)
++		if (resource_disabled(res))
+ 			continue;
+ 		if (i >= 3 && bus->self->transparent)
+ 			continue;
+@@ -985,7 +985,7 @@ static void pcibios_allocate_bus_resources(struct pci_bus *bus)
+ 		 pci_domain_nr(bus), bus->number);
+ 
+ 	pci_bus_for_each_resource(bus, res, i) {
+-		if (!res || !res->flags
++		if (!res || resource_disabled(res)
+ 		    || res->start > res->end || res->parent)
+ 			continue;
+ 		if (bus->parent == NULL)
+@@ -1087,7 +1087,8 @@ static void __init pcibios_allocate_resources(int pass)
+ 			r = &dev->resource[idx];
+ 			if (r->parent)		/* Already allocated */
+ 				continue;
+-			if (!r->flags || (r->flags & IORESOURCE_UNSET))
++			if (resource_disabled(r) ||
++			    (r->flags & IORESOURCE_UNSET))
+ 				continue;	/* Not assigned at all */
+ 			/* We only allocate ROMs on pass 1 just in case they
+ 			 * have been screwed up by firmware
+@@ -1218,7 +1219,7 @@ void pcibios_claim_one_bus(struct pci_bus *bus)
+ 		for (i = 0; i < PCI_NUM_RESOURCES; i++) {
+ 			struct resource *r = &dev->resource[i];
+ 
+-			if (r->parent || !r->start || !r->flags)
++			if (r->parent || !r->start || resource_disabled(r))
+ 				continue;
+ 
+ 			pr_debug("PCI: Claiming %s: ", pci_name(dev));
+@@ -1278,7 +1279,7 @@ static void pcibios_setup_phb_resources(struct pci_controller *hose,
+ 	res->start = (res->start + io_offset) & 0xffffffffu;
+ 	res->end = (res->end + io_offset) & 0xffffffffu;
+ 
+-	if (!res->flags) {
++	if (resource_disabled(res)) {
+ 		pr_warn("PCI: I/O resource not set for host ");
+ 		pr_cont("bridge %s (domain %d)\n",
+ 			hose->dn->full_name, hose->global_number);
+@@ -1298,7 +1299,7 @@ static void pcibios_setup_phb_resources(struct pci_controller *hose,
+ 	/* Hookup PHB Memory resources */
+ 	for (i = 0; i < 3; ++i) {
+ 		res = &hose->mem_resources[i];
+-		if (!res->flags) {
++		if (resource_disabled(res)) {
+ 			if (i > 0)
+ 				continue;
+ 			pr_err("PCI: Memory resource 0 not set for ");
+diff --git a/arch/mn10300/unit-asb2305/pci-asb2305.c b/arch/mn10300/unit-asb2305/pci-asb2305.c
+index b7ab837..7e70e51 100644
+--- a/arch/mn10300/unit-asb2305/pci-asb2305.c
++++ b/arch/mn10300/unit-asb2305/pci-asb2305.c
+@@ -103,7 +103,7 @@ static void __init pcibios_allocate_bus_resources(struct list_head *bus_list)
+ 			     idx < PCI_NUM_RESOURCES;
+ 			     idx++) {
+ 				r = &dev->resource[idx];
+-				if (!r->flags)
++				if (resource_disabled(r))
+ 					continue;
+ 				if (!r->start ||
+ 				    pci_claim_bridge_resource(dev, idx) < 0) {
+@@ -188,7 +188,7 @@ static int __init pcibios_assign_resources(void)
+ 	   addresses. */
+ 	for_each_pci_dev(dev) {
+ 		r = &dev->resource[PCI_ROM_RESOURCE];
+-		if (!r->flags || !r->start)
++		if (resource_disabled(r) || !r->start)
+ 			continue;
+ 		if (pci_claim_resource(dev, PCI_ROM_RESOURCE) < 0) {
+ 			r->end -= r->start;
+diff --git a/arch/mn10300/unit-asb2305/pci.c b/arch/mn10300/unit-asb2305/pci.c
+index 3dfe2d3..ad77b18 100644
+--- a/arch/mn10300/unit-asb2305/pci.c
++++ b/arch/mn10300/unit-asb2305/pci.c
+@@ -291,7 +291,7 @@ static void pcibios_fixup_device_resources(struct pci_dev *dev)
+ 	for (idx = 0; idx < PCI_BRIDGE_RESOURCES; idx++) {
+ 		struct resource *r = &dev->resource[idx];
+ 
+-		if (!r->flags || r->parent || !r->start)
++		if (resource_disabled(r) || r->parent || !r->start)
+ 			continue;
+ 
+ 		pci_claim_resource(dev, idx);
+@@ -308,7 +308,7 @@ static void pcibios_fixup_bridge_resources(struct pci_dev *dev)
+ 	for (idx = PCI_BRIDGE_RESOURCES; idx < PCI_NUM_RESOURCES; idx++) {
+ 		struct resource *r = &dev->resource[idx];
+ 
+-		if (!r->flags || r->parent || !r->start)
++		if (resource_disabled(r) || r->parent || !r->start)
+ 			continue;
+ 
+ 		pci_claim_bridge_resource(dev, idx);
+diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-common.c
+index 8853667..a830e0c 100644
+--- a/arch/powerpc/kernel/pci-common.c
++++ b/arch/powerpc/kernel/pci-common.c
+@@ -810,7 +810,7 @@ static void pcibios_fixup_resources(struct pci_dev *dev)
+ 	for (i = 0; i < DEVICE_COUNT_RESOURCE; i++) {
+ 		struct resource *res = dev->resource + i;
+ 		struct pci_bus_region reg;
+-		if (!res->flags)
++		if (resource_disabled(res))
+ 			continue;
+ 
+ 		/* If we're going to re-assign everything, we mark all resources
+@@ -919,7 +919,7 @@ static void pcibios_fixup_bridge(struct pci_bus *bus)
+ 	struct pci_dev *dev = bus->self;
+ 
+ 	pci_bus_for_each_resource(bus, res, i) {
+-		if (!res || !res->flags)
++		if (!res || resource_disabled(res))
+ 			continue;
+ 		if (i >= 3 && bus->self->transparent)
+ 			continue;
+@@ -1160,7 +1160,8 @@ static void pcibios_allocate_bus_resources(struct pci_bus *bus)
+ 		 pci_domain_nr(bus), bus->number);
+ 
+ 	pci_bus_for_each_resource(bus, res, i) {
+-		if (!res || !res->flags || res->start > res->end || res->parent)
++		if (!res || resource_disabled(res) ||
++		    res->start > res->end || res->parent)
+ 			continue;
+ 
+ 		/* If the resource was left unset at this point, we clear it */
+@@ -1255,7 +1256,8 @@ static void __init pcibios_allocate_resources(int pass)
+ 			r = &dev->resource[idx];
+ 			if (r->parent)		/* Already allocated */
+ 				continue;
+-			if (!r->flags || (r->flags & IORESOURCE_UNSET))
++			if (resource_disabled(r) ||
++			    (r->flags & IORESOURCE_UNSET))
+ 				continue;	/* Not assigned at all */
+ 			/* We only allocate ROMs on pass 1 just in case they
+ 			 * have been screwed up by firmware
+@@ -1393,7 +1395,7 @@ void pcibios_claim_one_bus(struct pci_bus *bus)
+ 		for (i = 0; i < PCI_NUM_RESOURCES; i++) {
+ 			struct resource *r = &dev->resource[i];
+ 
+-			if (r->parent || !r->start || !r->flags)
++			if (r->parent || !r->start || resource_disabled(r))
+ 				continue;
+ 
+ 			pr_debug("PCI: Claiming %s: Resource %d: %pR\n",
+@@ -1474,7 +1476,7 @@ static void pcibios_setup_phb_resources(struct pci_controller *hose,
+ 	/* Hookup PHB IO resource */
+ 	res = &hose->io_resource;
+ 
+-	if (!res->flags) {
++	if (resource_disabled(res)) {
+ 		pr_info("PCI: I/O resource not set for host"
+ 		       " bridge %s (domain %d)\n",
+ 		       hose->dn->full_name, hose->global_number);
+@@ -1489,7 +1491,7 @@ static void pcibios_setup_phb_resources(struct pci_controller *hose,
+ 	/* Hookup PHB Memory resources */
+ 	for (i = 0; i < 3; ++i) {
+ 		res = &hose->mem_resources[i];
+-		if (!res->flags) {
++		if (resource_disabled(res)) {
+ 			if (i == 0)
+ 				printk(KERN_ERR "PCI: Memory resource 0 not set for "
+ 				       "host bridge %s (domain %d)\n",
+diff --git a/arch/powerpc/platforms/powernv/pci-ioda.c b/arch/powerpc/platforms/powernv/pci-ioda.c
+index 2927cd5..4daf0bd 100644
+--- a/arch/powerpc/platforms/powernv/pci-ioda.c
++++ b/arch/powerpc/platforms/powernv/pci-ioda.c
+@@ -874,7 +874,7 @@ static int pnv_pci_vf_resource_shift(struct pci_dev *dev, int offset)
+ 	num_vfs = pdn->num_vfs;
+ 	for (i = 0; i < PCI_SRIOV_NUM_BARS; i++) {
+ 		res = &dev->resource[i + PCI_IOV_RESOURCES];
+-		if (!res->flags || !res->parent)
++		if (resource_disabled(res) || !res->parent)
+ 			continue;
+ 
+ 		if (!pnv_pci_is_mem_pref_64(res->flags))
+@@ -905,7 +905,7 @@ static int pnv_pci_vf_resource_shift(struct pci_dev *dev, int offset)
+ 	 */
+ 	for (i = 0; i < PCI_SRIOV_NUM_BARS; i++) {
+ 		res = &dev->resource[i + PCI_IOV_RESOURCES];
+-		if (!res->flags || !res->parent)
++		if (resource_disabled(res) || !res->parent)
+ 			continue;
+ 
+ 		if (!pnv_pci_is_mem_pref_64(res->flags))
+@@ -1188,7 +1188,7 @@ static int pnv_pci_vf_assign_m64(struct pci_dev *pdev, u16 num_vfs)
+ 
+ 	for (i = 0; i < PCI_SRIOV_NUM_BARS; i++) {
+ 		res = &pdev->resource[i + PCI_IOV_RESOURCES];
+-		if (!res->flags || !res->parent)
++		if (resource_disabled(res) || !res->parent)
+ 			continue;
+ 
+ 		if (!pnv_pci_is_mem_pref_64(res->flags))
+@@ -2743,7 +2743,7 @@ static void pnv_pci_ioda_fixup_iov_resources(struct pci_dev *pdev)
+ 
+ 	for (i = 0; i < PCI_SRIOV_NUM_BARS; i++) {
+ 		res = &pdev->resource[i + PCI_IOV_RESOURCES];
+-		if (!res->flags || res->parent)
++		if (resource_disabled(res) || res->parent)
+ 			continue;
+ 		if (!pnv_pci_is_mem_pref_64(res->flags)) {
+ 			dev_warn(&pdev->dev, " non M64 VF BAR%d: %pR\n",
+@@ -2765,7 +2765,7 @@ static void pnv_pci_ioda_fixup_iov_resources(struct pci_dev *pdev)
+ 
+ 	for (i = 0; i < PCI_SRIOV_NUM_BARS; i++) {
+ 		res = &pdev->resource[i + PCI_IOV_RESOURCES];
+-		if (!res->flags || res->parent)
++		if (resource_disabled(res) || res->parent)
+ 			continue;
+ 		if (!pnv_pci_is_mem_pref_64(res->flags)) {
+ 			dev_warn(&pdev->dev, "Skipping expanding VF BAR%d: %pR\n",
+@@ -2806,7 +2806,7 @@ static void pnv_ioda_setup_pe_seg(struct pci_controller *hose,
+ 	BUG_ON(!(pe->flags & (PNV_IODA_PE_BUS | PNV_IODA_PE_BUS_ALL)));
+ 
+ 	pci_bus_for_each_resource(pe->pbus, res, i) {
+-		if (!res || !res->flags ||
++		if (!res || resource_disabled(res) ||
+ 		    res->start > res->end)
+ 			continue;
+ 
+diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
+index 7ef12a3..72c4676 100644
+--- a/arch/s390/pci/pci.c
++++ b/arch/s390/pci/pci.c
+@@ -653,7 +653,7 @@ int pcibios_add_device(struct pci_dev *pdev)
+ 
+ 	for (i = 0; i < PCI_BAR_COUNT; i++) {
+ 		res = &pdev->resource[i];
+-		if (res->parent || !res->flags)
++		if (res->parent || resource_disabled(res))
+ 			continue;
+ 		pci_claim_resource(pdev, i);
+ 	}
+diff --git a/arch/sparc/kernel/pci.c b/arch/sparc/kernel/pci.c
+index badf095..cd20fd0 100644
+--- a/arch/sparc/kernel/pci.c
++++ b/arch/sparc/kernel/pci.c
+@@ -625,7 +625,7 @@ static void pci_claim_bus_resources(struct pci_bus *bus)
+ 		for (i = 0; i < PCI_NUM_RESOURCES; i++) {
+ 			struct resource *r = &dev->resource[i];
+ 
+-			if (r->parent || !r->start || !r->flags)
++			if (r->parent || !r->start || resource_disabled(r))
+ 				continue;
+ 
+ 			if (ofpci_verbose)
+diff --git a/arch/x86/pci/i386.c b/arch/x86/pci/i386.c
+index 6f27780..48c367c 100644
+--- a/arch/x86/pci/i386.c
++++ b/arch/x86/pci/i386.c
+@@ -224,7 +224,7 @@ static void pcibios_allocate_bridge_resources(struct pci_dev *dev)
+ 
+ 	for (idx = PCI_BRIDGE_RESOURCES; idx < PCI_NUM_RESOURCES; idx++) {
+ 		r = &dev->resource[idx];
+-		if (!r->flags)
++		if (resource_disabled(r))
+ 			continue;
+ 		if (r->parent)	/* Already allocated */
+ 			continue;
+@@ -353,7 +353,7 @@ static void pcibios_allocate_dev_rom_resource(struct pci_dev *dev)
+ 	 * addresses.
+ 	 */
+ 	r = &dev->resource[PCI_ROM_RESOURCE];
+-	if (!r->flags || !r->start)
++	if (resource_disabled(r) || !r->start)
+ 		return;
+ 	if (r->parent) /* Already allocated */
+ 		return;
+diff --git a/arch/xtensa/kernel/pci.c b/arch/xtensa/kernel/pci.c
+index b848cc3..f34d061 100644
+--- a/arch/xtensa/kernel/pci.c
++++ b/arch/xtensa/kernel/pci.c
+@@ -142,7 +142,7 @@ static void __init pci_controller_apertures(struct pci_controller *pci_ctrl,
+ 
+ 	io_offset = (unsigned long)pci_ctrl->io_space.base;
+ 	res = &pci_ctrl->io_resource;
+-	if (!res->flags) {
++	if (resource_disabled(res)) {
+ 		if (io_offset)
+ 			printk (KERN_ERR "I/O resource not set for host"
+ 				" bridge %d\n", pci_ctrl->index);
+@@ -156,7 +156,7 @@ static void __init pci_controller_apertures(struct pci_controller *pci_ctrl,
+ 
+ 	for (i = 0; i < 3; i++) {
+ 		res = &pci_ctrl->mem_resources[i];
+-		if (!res->flags) {
++		if (resource_disabled(res)) {
+ 			if (i > 0)
+ 				continue;
+ 			printk(KERN_ERR "Memory resource not set for "
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 2d7349a..4d52fba 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1771,7 +1771,8 @@ static int dmar_init_reserved_ranges(void)
+ 
+ 		for (i = 0; i < PCI_NUM_RESOURCES; i++) {
+ 			r = &pdev->resource[i];
+-			if (!r->flags || !(r->flags & IORESOURCE_MEM))
++			if (resource_disabled(r) ||
++			    !(r->flags & IORESOURCE_MEM))
+ 				continue;
+ 			iova = reserve_iova(&reserved_iova_list,
+ 					    IOVA_PFN(r->start),
+diff --git a/drivers/pci/host/pcie-rcar.c b/drivers/pci/host/pcie-rcar.c
+index 7678fe0..3f307a3 100644
+--- a/drivers/pci/host/pcie-rcar.c
++++ b/drivers/pci/host/pcie-rcar.c
+@@ -365,7 +365,7 @@ static int rcar_pcie_setup(int nr, struct pci_sys_data *sys)
+ 	for (i = 0; i < RCAR_PCI_MAX_RESOURCES; i++) {
+ 
+ 		res = &pcie->res[i];
+-		if (!res->flags)
++		if (resource_disabled(res))
+ 			continue;
+ 
+ 		rcar_pcie_setup_window(i, pcie);
+diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
+index ee0ebff..808d08b 100644
+--- a/drivers/pci/iov.c
++++ b/drivers/pci/iov.c
+@@ -438,7 +438,7 @@ found:
+ 		res = &dev->resource[i + PCI_IOV_RESOURCES];
+ 		bar64 = __pci_read_base(dev, pci_bar_unknown, res,
+ 					pos + PCI_SRIOV_BAR + i * 4);
+-		if (!res->flags)
++		if (resource_disabled(res))
+ 			continue;
+ 		if (resource_size(res) & (PAGE_SIZE - 1)) {
+ 			rc = -EIO;
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 31998ea..293e652 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -2200,7 +2200,7 @@ void pci_bus_release_busn_res(struct pci_bus *b)
+ 	struct resource *res = &b->busn_res;
+ 	int ret;
+ 
+-	if (!res->flags || !res->parent)
++	if (resource_disabled(res) || !res->parent)
+ 		return;
+ 
+ 	ret = release_resource(res);
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index 00c0a3a..9d09f48 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -336,7 +336,7 @@ static void quirk_bar_fixed(struct pci_dev *dev)
+ 	for (i = 0; i < PCI_STD_RESOURCE_END; i++) {
+ 		struct resource *r = &dev->resource[i];
+ 
+-		if (!r->start || !r->flags)
++		if (!r->start || resource_disabled(r))
+ 			continue;
+ 		r->flags |= IORESOURCE_PCI_FIXED;
+ 	}
+@@ -350,7 +350,7 @@ static void quirk_allocate_fixed(struct pci_dev *dev)
+ 	for (i = 0; i < PCI_NUM_RESOURCES; i++) {
+ 		struct resource *r = &dev->resource[i];
+ 
+-		if (r->parent ||
++		if (r->parent || resource_disabled(r) ||
+ 		    !(r->flags & IORESOURCE_PCI_FIXED) ||
+ 		    !(r->flags & (IORESOURCE_IO | IORESOURCE_MEM)))
+ 			continue;
+diff --git a/drivers/pci/rom.c b/drivers/pci/rom.c
+index eb0ad53..585a9d3 100644
+--- a/drivers/pci/rom.c
++++ b/drivers/pci/rom.c
+@@ -28,7 +28,7 @@ int pci_enable_rom(struct pci_dev *pdev)
+ 	struct pci_bus_region region;
+ 	u32 rom_addr;
+ 
+-	if (!res->flags)
++	if (resource_disabled(res))
+ 		return -1;
+ 
+ 	pcibios_resource_to_bus(pdev->bus, &region, res);
+diff --git a/drivers/pci/setup-bus.c b/drivers/pci/setup-bus.c
+index e6c649a..fa15ee3 100644
+--- a/drivers/pci/setup-bus.c
++++ b/drivers/pci/setup-bus.c
+@@ -223,7 +223,7 @@ static void pdev_assign_resources_prepare(struct pci_dev *dev,
+ 		if (r->flags & IORESOURCE_PCI_FIXED)
+ 			continue;
+ 
+-		if (!(r->flags) || r->parent)
++		if (resource_disabled(r) || r->parent)
+ 			continue;
+ 
+ 		r_align = __pci_resource_alignment(dev, r, realloc_head);
+@@ -319,7 +319,7 @@ static void reassign_resources_sorted(struct list_head *realloc_head,
+ 	list_for_each_entry_safe(add_res, tmp, realloc_head, list) {
+ 		res = add_res->res;
+ 		/* skip resource that has been reset */
+-		if (!res->flags)
++		if (resource_disabled(res))
+ 			goto out;
+ 
+ 		/* skip this resource if not found in head list */
+@@ -2113,7 +2113,7 @@ static void pci_bus_dump_res(struct pci_bus *bus)
+ 	int i;
+ 
+ 	pci_bus_for_each_resource(bus, res, i) {
+-		if (!res || !res->end || !res->flags)
++		if (!res || !res->end || resource_disabled(res))
+ 			continue;
+ 
+ 		dev_printk(KERN_DEBUG, &bus->dev, "resource %d %pR\n", i, res);
+@@ -2196,7 +2196,7 @@ static int iov_resources_unassigned(struct pci_dev *dev, void *data)
+ 		struct pci_bus_region region;
+ 
+ 		/* Not assigned or rejected by kernel? */
+-		if (!r->flags)
++		if (resource_disabled(r))
+ 			continue;
+ 
+ 		pcibios_resource_to_bus(dev->bus, &region, r);
+diff --git a/drivers/pci/setup-res.c b/drivers/pci/setup-res.c
+index 26aedde..55caf7a 100644
+--- a/drivers/pci/setup-res.c
++++ b/drivers/pci/setup-res.c
+@@ -40,7 +40,7 @@ void pci_update_resource(struct pci_dev *dev, int resno)
+ 	 * Ignore resources for unimplemented BARs and unused resource slots
+ 	 * for 64 bit BARs.
+ 	 */
+-	if (!res->flags)
++	if (resource_disabled(res))
+ 		return;
+ 
+ 	if (res->flags & IORESOURCE_UNSET)
+diff --git a/include/linux/ioport.h b/include/linux/ioport.h
+index 27dbb18..fb21179 100644
+--- a/include/linux/ioport.h
++++ b/include/linux/ioport.h
+@@ -179,6 +179,10 @@ static inline bool resource_contains(struct resource *r1, struct resource *r2)
+ 	return r1->start <= r2->start && r1->end >= r2->end;
+ }
+ 
++static inline bool resource_disabled(struct resource *r)
++{
++	return !r->flags || (r->flags & IORESOURCE_DISABLED);
++}
+ 
+ /* Convenience shorthand with allocation */
+ #define request_region(start,n,name)		__request_region(&ioport_resource, (start), (n), (name), 0)
+-- 
+1.8.4.5
