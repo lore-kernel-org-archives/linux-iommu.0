@@ -1,15 +1,15 @@
 From: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v8 11/13] KVM: Update Posted-Interrupts Descriptor when
-	vCPU is blocked
-Date: Wed, 16 Sep 2015 11:32:14 +0200
-Message-ID: <55F9371E.8030701@redhat.com>
+Subject: Re: [PATCH v8 12/13] KVM: Warn if 'SN' is set during posting
+	interrupts by software
+Date: Wed, 16 Sep 2015 11:32:35 +0200
+Message-ID: <55F93733.2010403@redhat.com>
 References: <1442393409-2623-1-git-send-email-feng.wu@intel.com>
-	<1442393409-2623-12-git-send-email-feng.wu@intel.com>
+	<1442393409-2623-13-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1442393409-2623-12-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1442393409-2623-13-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,31 +26,50 @@ List-Id: iommu@lists.linux-foundation.org
 
 
 On 16/09/2015 10:50, Feng Wu wrote:
->  		 * are two possible cases:
-> -		 * 1. After running 'pi_pre_block', context switch
-> +		 * 1. After running 'pre_block', context switch
+> Currently, we don't support urgent interrupt, all interrupts
+> are recognized as non-urgent interrupt, so we cannot post
+> interrupts when 'SN' is set.
+> 
+> If the vcpu is in guest mode, it cannot have been scheduled out,
+> and that's the only case when SN is set currently, warning if
+> SN is set.
+> 
+> Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Reviewed-by: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
-Please fold this in the previous patch.
-
->  		 *    happened. For this case, 'sn' was set in
->  		 *    vmx_vcpu_put(), so we need to clear it here.
-> -		 * 2. After running 'pi_pre_block', we were blocked,
-> +		 * 2. After running 'pre_block', we were blocked,
->  		 *    and woken up by some other guy. For this case,
-
-(Same).
-
-> +	spin_lock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
-> +	list_for_each_entry(vcpu, &per_cpu(blocked_vcpu_on_cpu, cpu),
-> +			blocked_vcpu_list) {
-> +		struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
-> +
-> +		if (pi_test_on(pi_desc) == 1)
-> +			kvm_vcpu_kick(vcpu);
-> +	}
-> +	spin_unlock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
-> +}
-
-Please document the lock in Documentation/virtual/kvm/locking.txt.
+Please fold this into patch 10.
 
 Paolo
+
+> ---
+>  arch/x86/kvm/vmx.c | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
+> diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+> index 9888c43..58fbbc6 100644
+> --- a/arch/x86/kvm/vmx.c
+> +++ b/arch/x86/kvm/vmx.c
+> @@ -4498,6 +4498,22 @@ static inline bool kvm_vcpu_trigger_posted_interrupt(struct kvm_vcpu *vcpu)
+>  {
+>  #ifdef CONFIG_SMP
+>  	if (vcpu->mode == IN_GUEST_MODE) {
+> +		struct vcpu_vmx *vmx = to_vmx(vcpu);
+> +
+> +		/*
+> +		 * Currently, we don't support urgent interrupt,
+> +		 * all interrupts are recognized as non-urgent
+> +		 * interrupt, so we cannot post interrupts when
+> +		 * 'SN' is set.
+> +		 *
+> +		 * If the vcpu is in guest mode, it means it is
+> +		 * running instead of being scheduled out and
+> +		 * waiting in the run queue, and that's the only
+> +		 * case when 'SN' is set currently, warning if
+> +		 * 'SN' is set.
+> +		 */
+> +		WARN_ON_ONCE(pi_test_sn(&vmx->pi_desc));
+> +
+>  		apic->send_IPI_mask(get_cpu_mask(vcpu->cpu),
+>  				POSTED_INTR_VECTOR);
+>  		return true;
+> 
