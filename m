@@ -1,122 +1,136 @@
-From: Jerome Glisse <jglisse@redhat.com>
-Subject: Re: [RFC PATCH] dma/swiotlb: Add helper for device driver to opt-out
- from swiotlb.
-Date: Thu, 17 Sep 2015 15:40:41 -0400
-Message-ID: <20150917194040.GD6699@redhat.com>
-References: <1442514158-30281-1-git-send-email-jglisse@redhat.com>
- <20150917190251.GE20952@x230.dumpdata.com>
- <20150917190746.GA6699@redhat.com>
- <20150917193157.GC21496@x230.dumpdata.com>
+From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH v8 03/13] KVM: Define a new interface
+	kvm_intr_is_single_vcpu()
+Date: Thu, 17 Sep 2015 23:15:21 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F00271A67E@SHSMSX104.ccr.corp.intel.com>
+References: <1442393409-2623-1-git-send-email-feng.wu@intel.com>
+	<1442393409-2623-4-git-send-email-feng.wu@intel.com>
+	<55F934F5.7040605@redhat.com>
+	<E959C4978C3B6342920538CF579893F002716FFA@SHSMSX104.ccr.corp.intel.com>
+	<55FA8AED.6090700@redhat.com>
+	<E959C4978C3B6342920538CF579893F002718968@SHSMSX104.ccr.corp.intel.com>
+	<55FACD35.1030602@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150917193157.GC21496@x230.dumpdata.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>, Alex Deucher <alexander.deucher@amd.com>, Dave Airlie <airlied@redhat.com>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-2"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <55FACD35.1030602-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, =?iso-8859-2?Q?Radim_Kr=3Fm=E1=3F?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Sep 17, 2015 at 03:31:58PM -0400, Konrad Rzeszutek Wilk wrote:
-> On Thu, Sep 17, 2015 at 03:07:47PM -0400, Jerome Glisse wrote:
-> > On Thu, Sep 17, 2015 at 03:02:51PM -0400, Konrad Rzeszutek Wilk wro=
-te:
-> > > On Thu, Sep 17, 2015 at 02:22:38PM -0400, jglisse@redhat.com wrot=
-e:
-> > > > From: J=E9r=F4me Glisse <jglisse@redhat.com>
-> > > >=20
-> > > > The swiotlb dma backend is not appropriate for some devices lik=
-e
-> > > > GPU where bounce buffer or slow dma page allocations is just no=
-t
-> > > > acceptable. With that helper device drivers can opt-out from th=
-e
-> > > > swiotlb and just do sane things without wasting CPU cycles insi=
-de
-> > > > the swiotlb code.
-> > >=20
-> > > What if SWIOTLB is the only one available?
-> >=20
-> > On x86 no_mmu is always available and we assume that device driver
-> > that would use this knows that their device can access all memory
-> > with no restriction or at very least use DMA32 gfp flag.
->=20
-> That runs afoul of the purpose of the DMA API. On x86 you may have
-> an IOMMU - GART, AMD Vi, Intel VT-d, Calgary, etc which will provide
-> you with the proper dma address. As the physical to bus address
-> topology does not have to be 1:1.
 
-I am well aware of that but saddly IOMMU is not as widespread as you
-would think on x86, on many platform it is still disabled by default
-by BIOS and linux kernel endup binding the swiotlb as default dma ops
-and thus you have a 1:1 mapping btw bus and physical address. My patch
-does not impact the case where you have an IOMMU, it only caters to
-the case where the swiotlb is the DMA API backend.
 
-> >=20
-> >=20
-> > > And what can't the devices use the TTM DMA backend which sets up
-> > > buffers which don't need bounce buffer or slow dma page allocatio=
-ns?
-> >=20
-> > We want to get rid of this TTM code path for radeon and likely
-> > nouveau. This is the motivation for that patch. Benchmark shows
-> > that the TTM DMA backend is much much much slower (20% on some
-> > benchmark) that the regular page allocation and going through
-> > no_mmu.
->=20
-> You end up using the DMA API scatter gather API later on though.
+> -----Original Message-----
+> From: Paolo Bonzini [mailto:pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> Sent: Thursday, September 17, 2015 10:25 PM
+> To: Wu, Feng; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org;
+> mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+> Cc: eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Radim
+> Kr=E8m=E1=F8
+> Subject: Re: [PATCH v8 03/13] KVM: Define a new interface
+> kvm_intr_is_single_vcpu()
+> =
 
-The DMA API scatter gather is only use for DMA buffer object and
-this is a minority of the buffer object you have on today graphic
-stacks and it's not use to present contiguous address to the GPU
-(at least on GPU i care about). So most of the GPU object do not
-use the DMA API scatter gather but the GPU hardware mmu that does
-the scatter gather.
+> >> On 17/09/2015 05:17, Wu, Feng wrote:
+> >>>>>>> +	if (irq->dest_mode =3D=3D APIC_DEST_PHYSICAL) {
+> >>>>>>> +		if (irq->dest_id =3D=3D 0xFF)
+> >>>>>>> +			goto out;
+> >>>>>>> +
+> >>>>>>> +		if (irq->dest_id >=3D ARRAY_SIZE(map->phys_map)) {
+> >>>>>
+> >>>>> Warning here is wrong, the guest can trigger it.
+> >>> Could you please share more information about how the guest
+> >>> triggers these conditions (including the following two), Thanks
+> >>> a lot!
+> >>
+> >> irq->dest_id is a 16-bit value, so it can be > 255.
+> >
+> > Yes, irq->dest_id is defined as u32, but by looking the current KVM
+> > code, seems desst_id is used as an u8 variable, even in x2apic mode
+> > the dest_id will not beyond 255 (except for broadcast dest in in x2apic
+> > mode). Correct me if I am wrong. Thanks a lot!
+> =
 
->=20
-> I am also a bit confused on your use-case - when do you see this?
-> On regular desktop machines you will use the IOMMU API most of
-> the time because that hardware exists. The SWIOTLB should only
-> be used on hardware that is old, odd, or perhaps virtualized.
+> Actually you're right, the MSI destination is only 8 bits.  I was
+> confused because of
+> =
 
-Sadly it's not the case even recent x86 computer have the IOMMU
-disabled by BIOS by default. User need to go into the bios and
-enable virtualization option for the IOMMU to be enabled. I wish
-that IOMMU was the default for all recent computer but it is just
-not the case.
+> #define	 MSI_ADDR_DEST_ID_MASK		0x00ffff0
+> =
 
-> >=20
-> > So this is all about allowing to directly allocate page through
-> > regular kernel page alloc code and not through specialize dma
-> > allocator.
->=20
-> .. What you are saying is that the intent of this patch is
-> to not use TTM DMA.
->=20
-> Are you using the SWIOTLB 99% of the time? 1%? Or is this
-> related to the unfortunate patch that enabled SWIOTLB all the time?
-> (If so, please please mention that in the commit, it didn't
-> occur to me until just now).
+> in arch/x86/include/asm/msidef.h.  But there may be a bug, see below...
+> =
 
-Yes the patch that always enable the SWIOTLB is a pain point but
-this patch also had other purpose that are now escaping my mind.
-After discussion with other folks it seemed like the easiest
-solution would be to opt-out from the swiotlb if it is in use.
+> >>> +		if (cid >=3D ARRAY_SIZE(map->logical_map)) {
+> >>> +			WARN_ON_ONCE(1);
+> >>
+> >> In x2apic mode irq->dest_id could have bits 12..15 set.
+> >
+> > cid is gotten from bit 16 ..31 of the ldr (in apic_logical_id()), and
+> > in x2apic mode, ldr is constructed in kvm_apic_set_x2apic_id() as
+> > below:
+> >
+> > u32 ldr =3D ((id >> 4) << 16) | (1 << (id & 0xf));
+> >
+> > So in fact, cid is (id >> 4), I cannot think of why cid can beyond 15.
+> =
 
->=20
-> If that is the case we should attack the problem in a different
-> way - see if the IOMMU API is setup? Or is that set already
-> to some no_iommu option?
->=20
-> I think what you are looking for is a simple flag telling you
-> whether the IOMMU is there - in which case use the streaming
-> DMA API calls (dma_map_page, etc)?
+> I think kvm_apic_match_logical_addr for MSI and IOAPIC interrupts is
+> buggy in x2apic mode.
+> =
 
-Device driver would still use dma_map_page, but this would not be
-the swiotlb one but the no_mmu one which is pretty much a no op
-and thus fast.
+> It does:
+> =
 
-Cheers,
-J=E9r=F4me
+>         if (apic_x2apic_mode(apic))
+>                 return ((logical_id >> 16) =3D=3D (mda >> 16))
+>                        && (logical_id & mda & 0xffff) !=3D 0;
+> =
+
+> But mda is only 8-bits for MSI and IOAPIC interrupts.
+> =
+
+> Radim, should kvm_apic_mda also handle the !ipi && x2apic_mda && dest_id
+> !=3D APIC_BROADCAST case?  It never triggers with Linux because it uses
+> only the physical mode (that's not super-easy to see;
+> ioapic_set_affinity looks for the RTEs in irq_data->chip_data and that
+> is allocated with kzalloc).
+> =
+
+> > Do I miss something here? Thanks!
+> =
+
+> No, you were right.
+> =
+
+> But still I think the WARNs are unnecessary; it is conceivable that some
+> future chipset adds support for more than 8-bits in the dest_id.
+
+No problem, I agree with it. Here I just want clarify some questions, thanks
+for the elaboration!
+
+Thanks,
+Feng
+
+> =
+
+> Paolo
+> =
+
+> > Thanks,
+> > Feng
+> >
+> >>
+> >> Paolo
