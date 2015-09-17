@@ -1,19 +1,11 @@
-From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH v8 03/13] KVM: Define a new interface
-	kvm_intr_is_single_vcpu()
-Date: Thu, 17 Sep 2015 13:36:08 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F002718968@SHSMSX104.ccr.corp.intel.com>
-References: <1442393409-2623-1-git-send-email-feng.wu@intel.com>
-	<1442393409-2623-4-git-send-email-feng.wu@intel.com>
-	<55F934F5.7040605@redhat.com>
-	<E959C4978C3B6342920538CF579893F002716FFA@SHSMSX104.ccr.corp.intel.com>
-	<55FA8AED.6090700@redhat.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu/io-pgtable-arm: Don't use dma_to_phys()
+Date: Thu, 17 Sep 2015 15:22:20 +0100
+Message-ID: <1c591836f1ec6e676a8889cdccd042650eadb73b.1442499554.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <55FA8AED.6090700-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,70 +15,99 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+In checking whether DMA addresses differ from physical addresses, using
+dma_to_phys() is actually the wrong thing to do, since it may hide any
+DMA offset, which is precisely one of the things we are checking for.
+Simply casting between the two address types, whilst ugly, is in fact
+the appropriate course of action.
 
+We can also reject any device with a fixed DMA offset up-front at page
+table creation, leaving the allocation-time check for the more subtle
+cases like bounce buffering due to an incorrect DMA mask.
 
-> -----Original Message-----
-> From: Paolo Bonzini [mailto:pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Thursday, September 17, 2015 5:42 PM
-> To: Wu, Feng; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org;
-> mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-> Cc: eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [PATCH v8 03/13] KVM: Define a new interface
-> kvm_intr_is_single_vcpu()
-> 
-> 
-> 
-> On 17/09/2015 05:17, Wu, Feng wrote:
-> >>> > > +	if (irq->dest_mode == APIC_DEST_PHYSICAL) {
-> >>> > > +		if (irq->dest_id == 0xFF)
-> >>> > > +			goto out;
-> >>> > > +
-> >>> > > +		if (irq->dest_id >= ARRAY_SIZE(map->phys_map)) {
-> >> >
-> >> > Warning here is wrong, the guest can trigger it.
-> > Could you please share more information about how the guest
-> > triggers these conditions (including the following two), Thanks
-> > a lot!
-> 
-> irq->dest_id is a 16-bit value, so it can be > 255.
+Furthermore, we can then fix the hackish KConfig dependency so that
+architectures without a dma_to_phys() implementation may still
+COMPILE_TEST (or even use!) the code. The true dependency is on the
+DMA API, so use the appropriate symbol for that.
 
-Yes, irq->dest_id is defined as u32, but by looking the current KVM
-code, seems desst_id is used as an u8 variable, even in x2apic mode
-the dest_id will not beyond 255 (except for broadcast dest in in x2apic
-mode). Correct me if I am wrong. Thanks a lot!
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/Kconfig          |  3 +--
+ drivers/iommu/io-pgtable-arm.c | 16 ++++++++--------
+ 2 files changed, 9 insertions(+), 10 deletions(-)
 
-> 
-> > +		if (!kvm_apic_logical_map_valid(map)) {
-> > +			WARN_ON_ONCE(1);
-> 
-> Here, the guest can trigger it by setting a few APICs in flat mode and
-> others in cluster mode, for example.
-
-Oh, right, the logical map works only when the destination mode of all
-the vCPUs are the same.
-
-> 
-> > +		if (cid >= ARRAY_SIZE(map->logical_map)) {
-> > +			WARN_ON_ONCE(1);
-> 
-> In x2apic mode irq->dest_id could have bits 12..15 set.
-
-cid is gotten from bit 16 ..31 of the ldr (in apic_logical_id()), and
-in x2apic mode, ldr is constructed in kvm_apic_set_x2apic_id() as
-below:
-
-u32 ldr = ((id >> 4) << 16) | (1 << (id & 0xf));
-
-So in fact, cid is (id >> 4), I cannot think of why cid can beyond 15.
-Do I miss something here? Thanks!
-
-Thanks,
-Feng
-
-> 
-> Paolo
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 4664c2a..3dc1bcb 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -23,8 +23,7 @@ config IOMMU_IO_PGTABLE
+ config IOMMU_IO_PGTABLE_LPAE
+ 	bool "ARMv7/v8 Long Descriptor Format"
+ 	select IOMMU_IO_PGTABLE
+-	# SWIOTLB guarantees a dma_to_phys() implementation
+-	depends on ARM || ARM64 || (COMPILE_TEST && SWIOTLB)
++	depends on HAS_DMA && (ARM || ARM64 || COMPILE_TEST)
+ 	help
+ 	  Enable support for the ARM long descriptor pagetable format.
+ 	  This allocator supports 4K/2M/1G, 16K/32M and 64K/512M page
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 73c0748..e7f9ab9 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -202,11 +202,6 @@ typedef u64 arm_lpae_iopte;
+ 
+ static bool selftest_running = false;
+ 
+-static dma_addr_t __arm_lpae_dma_addr(struct device *dev, void *pages)
+-{
+-	return phys_to_dma(dev, virt_to_phys(pages));
+-}
+-
+ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
+ 				    struct io_pgtable_cfg *cfg)
+ {
+@@ -226,7 +221,7 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
+ 		 * address directly, so if the DMA layer suggests it can't by
+ 		 * giving us back some translation, that bodes very badly...
+ 		 */
+-		if (dma != __arm_lpae_dma_addr(dev, pages))
++		if ((u64)dma != (u64)virt_to_phys(pages))
+ 			goto out_unmap;
+ 	}
+ 
+@@ -246,7 +241,7 @@ static void __arm_lpae_free_pages(void *pages, size_t size,
+ 	struct device *dev = cfg->iommu_dev;
+ 
+ 	if (!selftest_running)
+-		dma_unmap_single(dev, __arm_lpae_dma_addr(dev, pages),
++		dma_unmap_single(dev, (dma_addr_t)virt_to_phys(pages),
+ 				 size, DMA_TO_DEVICE);
+ 	free_pages_exact(pages, size);
+ }
+@@ -259,7 +254,7 @@ static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
+ 	*ptep = pte;
+ 
+ 	if (!selftest_running)
+-		dma_sync_single_for_device(dev, __arm_lpae_dma_addr(dev, ptep),
++		dma_sync_single_for_device(dev, (dma_addr_t)virt_to_phys(ptep),
+ 					   sizeof(pte), DMA_TO_DEVICE);
+ }
+ 
+@@ -629,6 +624,11 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
+ 	if (cfg->oas > ARM_LPAE_MAX_ADDR_BITS)
+ 		return NULL;
+ 
++	if (cfg->iommu_dev->dma_pfn_offset) {
++		dev_err(cfg->iommu_dev, "Cannot accommodate DMA offset for IOMMU page tables\n");
++		return NULL;
++	}
++
+ 	data = kmalloc(sizeof(*data), GFP_KERNEL);
+ 	if (!data)
+ 		return NULL;
+-- 
+1.9.1
