@@ -1,13 +1,17 @@
-From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v1 1/1] iommu/vt-d: use lo_hi_readq() / lo_hi_writeq()
-Date: Thu, 17 Sep 2015 12:00:12 +0300
-Message-ID: <1442480412.8361.74.camel@linux.intel.com>
-References: <1439820252-109537-1-git-send-email-andriy.shevchenko@linux.intel.com>
+From: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v8 09/13] KVM: Add an arch specific hooks in 'struct
+	kvm_kernel_irqfd'
+Date: Thu, 17 Sep 2015 11:38:49 +0200
+Message-ID: <55FA8A29.7030905@redhat.com>
+References: <1442393409-2623-1-git-send-email-feng.wu@intel.com>
+	<1442393409-2623-10-git-send-email-feng.wu@intel.com>
+	<55F935E9.6070707@redhat.com>
+	<E959C4978C3B6342920538CF579893F002716E32@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1439820252-109537-1-git-send-email-andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <E959C4978C3B6342920538CF579893F002716E32-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,69 +21,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2015-08-17 at 17:04 +0300, Andy Shevchenko wrote:
-> There is already helper functions to do 64-bit I/O on 32-bit machines 
-> or buses,
-> thus we don't need to reinvent the wheel.
+
+
+On 17/09/2015 03:51, Wu, Feng wrote:
 > 
-
-Any comment on this one?
-
-
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> ---
->  include/linux/intel-iommu.h | 19 +++++--------------
->  1 file changed, 5 insertions(+), 14 deletions(-)
 > 
-> diff --git a/include/linux/intel-iommu.h b/include/linux/intel
-> -iommu.h
-> index a868a0f..5439ea4 100644
-> --- a/include/linux/intel-iommu.h
-> +++ b/include/linux/intel-iommu.h
-> @@ -26,6 +26,8 @@
->  #include <linux/iova.h>
->  #include <linux/io.h>
->  #include <linux/dma_remapping.h>
-> +
-> +#include <asm-generic/io-64-nonatomic-lo-hi.h>
->  #include <asm/cacheflush.h>
->  #include <asm/iommu.h>
->  
-> @@ -59,26 +61,15 @@
->  #define DMAR_IRTA_REG	0xb8    /* Interrupt remapping table addr 
-> register */
->  
->  #define OFFSET_STRIDE		(9)
-> -/*
-> -#define dmar_readl(dmar, reg) readl(dmar + reg)
-> -#define dmar_readq(dmar, reg) ({ \
-> -		u32 lo, hi; \
-> -		lo = readl(dmar + reg); \
-> -		hi = readl(dmar + reg + 4); \
-> -		(((u64) hi) << 32) + lo; })
-> -*/
-> +
->  static inline u64 dmar_readq(void __iomem *addr)
->  {
-> -	u32 lo, hi;
-> -	lo = readl(addr);
-> -	hi = readl(addr + 4);
-> -	return (((u64) hi) << 32) + lo;
-> +	return lo_hi_readq(addr);
->  }
->  
->  static inline void dmar_writeq(void __iomem *addr, u64 val)
->  {
-> -	writel((u32)val, addr);
-> -	writel((u32)(val >> 32), addr + 4);
-> +	lo_hi_writeq(val, addr);
->  }
->  
->  #define DMAR_VER_MAJOR(v)		(((v) & 0xf0) >> 4)
+>> -----Original Message-----
+>> From: Paolo Bonzini [mailto:pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+>> Sent: Wednesday, September 16, 2015 5:27 PM
+>> To: Wu, Feng; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org;
+>> mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+>> Cc: eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+>> Subject: Re: [PATCH v8 09/13] KVM: Add an arch specific hooks in 'struct
+>> kvm_kernel_irqfd'
+>>
+>>
+>>
+>> On 16/09/2015 10:50, Feng Wu wrote:
+>>> +int kvm_arch_update_irqfd_routing(struct kvm *kvm, unsigned int host_irq,
+>>> +				   uint32_t guest_irq, bool set)
+>>> +{
+>>> +	return !kvm_x86_ops->update_pi_irte ? -EINVAL :
+>>> +		kvm_x86_ops->update_pi_irte(kvm, host_irq, guest_irq, set);
+>>> +}
+>>> +
+>>
+>> Just use "if" here.  No need to resend if this is the only comment.
+> 
+> I am sorry, I don't quite understand. Do you mean I don't need to include
+> this patch in v9? If so, what about other patches with your Reviewed-by?
 
--- 
-Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Intel Finland Oy
+No, I just wrote this email first.  If this was the only comment, I
+could have fixed it up myself.  But since there were a few other
+comments, please send v9 with all the required changes.
+
+Thanks,
+
+Paolo
