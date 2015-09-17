@@ -1,65 +1,47 @@
-From: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v8 09/13] KVM: Add an arch specific hooks in 'struct
-	kvm_kernel_irqfd'
-Date: Thu, 17 Sep 2015 11:38:49 +0200
-Message-ID: <55FA8A29.7030905@redhat.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH v8 03/13] KVM: Define a new interface
+ kvm_intr_is_single_vcpu()
+Date: Thu, 17 Sep 2015 11:42:05 +0200
+Message-ID: <55FA8AED.6090700@redhat.com>
 References: <1442393409-2623-1-git-send-email-feng.wu@intel.com>
-	<1442393409-2623-10-git-send-email-feng.wu@intel.com>
-	<55F935E9.6070707@redhat.com>
-	<E959C4978C3B6342920538CF579893F002716E32@SHSMSX104.ccr.corp.intel.com>
+ <1442393409-2623-4-git-send-email-feng.wu@intel.com>
+ <55F934F5.7040605@redhat.com>
+ <E959C4978C3B6342920538CF579893F002716FFA@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <E959C4978C3B6342920538CF579893F002716E32-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <E959C4978C3B6342920538CF579893F002716FFA@SHSMSX104.ccr.corp.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Wu, Feng" <feng.wu@intel.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "joro@8bytes.org" <joro@8bytes.org>, "mtosatti@redhat.com" <mtosatti@redhat.com>
+Cc: "eric.auger@linaro.org" <eric.auger@linaro.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
 
-On 17/09/2015 03:51, Wu, Feng wrote:
-> 
-> 
->> -----Original Message-----
->> From: Paolo Bonzini [mailto:pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
->> Sent: Wednesday, September 16, 2015 5:27 PM
->> To: Wu, Feng; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org;
->> mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
->> Cc: eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
->> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
->> Subject: Re: [PATCH v8 09/13] KVM: Add an arch specific hooks in 'struct
->> kvm_kernel_irqfd'
->>
->>
->>
->> On 16/09/2015 10:50, Feng Wu wrote:
->>> +int kvm_arch_update_irqfd_routing(struct kvm *kvm, unsigned int host_irq,
->>> +				   uint32_t guest_irq, bool set)
->>> +{
->>> +	return !kvm_x86_ops->update_pi_irte ? -EINVAL :
->>> +		kvm_x86_ops->update_pi_irte(kvm, host_irq, guest_irq, set);
->>> +}
->>> +
->>
->> Just use "if" here.  No need to resend if this is the only comment.
-> 
-> I am sorry, I don't quite understand. Do you mean I don't need to include
-> this patch in v9? If so, what about other patches with your Reviewed-by?
+On 17/09/2015 05:17, Wu, Feng wrote:
+>>> > > +	if (irq->dest_mode == APIC_DEST_PHYSICAL) {
+>>> > > +		if (irq->dest_id == 0xFF)
+>>> > > +			goto out;
+>>> > > +
+>>> > > +		if (irq->dest_id >= ARRAY_SIZE(map->phys_map)) {
+>> > 
+>> > Warning here is wrong, the guest can trigger it.
+> Could you please share more information about how the guest
+> triggers these conditions (including the following two), Thanks
+> a lot!
 
-No, I just wrote this email first.  If this was the only comment, I
-could have fixed it up myself.  But since there were a few other
-comments, please send v9 with all the required changes.
+irq->dest_id is a 16-bit value, so it can be > 255.
 
-Thanks,
+> +		if (!kvm_apic_logical_map_valid(map)) {
+> +			WARN_ON_ONCE(1);
+
+Here, the guest can trigger it by setting a few APICs in flat mode and
+others in cluster mode, for example.
+
+> +		if (cid >= ARRAY_SIZE(map->logical_map)) {
+> +			WARN_ON_ONCE(1);
+
+In x2apic mode irq->dest_id could have bits 12..15 set.
 
 Paolo
