@@ -1,70 +1,59 @@
-From: Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>
+From: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Subject: Re: [PATCH v8 03/13] KVM: Define a new interface
- kvm_intr_is_single_vcpu()
-Date: Thu, 17 Sep 2015 17:58:21 +0200
-Message-ID: <20150917155821.GB2573@potion.brq.redhat.com>
+	kvm_intr_is_single_vcpu()
+Date: Thu, 17 Sep 2015 18:00:21 +0200
+Message-ID: <55FAE395.4000008@redhat.com>
 References: <1442393409-2623-1-git-send-email-feng.wu@intel.com>
- <1442393409-2623-4-git-send-email-feng.wu@intel.com>
- <55F934F5.7040605@redhat.com>
- <E959C4978C3B6342920538CF579893F002716FFA@SHSMSX104.ccr.corp.intel.com>
- <55FA8AED.6090700@redhat.com>
- <E959C4978C3B6342920538CF579893F002718968@SHSMSX104.ccr.corp.intel.com>
- <55FACD35.1030602@redhat.com>
+	<1442393409-2623-4-git-send-email-feng.wu@intel.com>
+	<55F934F5.7040605@redhat.com>
+	<E959C4978C3B6342920538CF579893F002716FFA@SHSMSX104.ccr.corp.intel.com>
+	<55FA8AED.6090700@redhat.com>
+	<E959C4978C3B6342920538CF579893F002718968@SHSMSX104.ccr.corp.intel.com>
+	<55FACD35.1030602@redhat.com>
+	<20150917155821.GB2573@potion.brq.redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <55FACD35.1030602@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Paolo Bonzini <pbonzini@redhat.com>
-Cc: "Wu, Feng" <feng.wu@intel.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "joro@8bytes.org" <joro@8bytes.org>, "mtosatti@redhat.com" <mtosatti@redhat.com>, "eric.auger@linaro.org" <eric.auger@linaro.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20150917155821.GB2573-KfRq7+sF/6zkZJWtSm8s3NvLeJWuRmrY@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-2015-09-17 16:24+0200, Paolo Bonzini:
-> I think kvm_apic_match_logical_addr for MSI and IOAPIC interrupts is
-> buggy in x2apic mode.
-> 
-> It does:
-> 
->         if (apic_x2apic_mode(apic))
->                 return ((logical_id >> 16) == (mda >> 16))
->                        && (logical_id & mda & 0xffff) != 0;
-> 
-> But mda is only 8-bits for MSI and IOAPIC interrupts.
-> 
-> Radim, should kvm_apic_mda also handle the !ipi && x2apic_mda && dest_id
-> != APIC_BROADCAST case?  It never triggers with Linux because it uses
-> only the physical mode (that's not super-easy to see;
-> ioapic_set_affinity looks for the RTEs in irq_data->chip_data and that
-> is allocated with kzalloc).
-
-KVM handles that case, it's just convoluted.
-(I wish we scrapped the IR-less x2APIC mode.)
-
-For interrupts from MSI and IOxAPIC:
-- Flat logical interrupts are delivered as if we had natural
-  (CPU0<->bit0, CPU1<->bit1, ...) flat logical xAPIC for first 8 VCPUs.
-- Cluster logical doesn't work much, it's interpreted like flat logical.
-  I didn't care about xAPIC cluster because Linux, the sole user of our
-  paravirtualized x2APIC, doesn't configure it.
-
-I'll paste kvm_apic_mda() source for better explanation:
-
-  static u32 kvm_apic_mda(unsigned int dest_id, struct kvm_lapic *source,
-                                                struct kvm_lapic *target)
-  {
-  	bool ipi = source != NULL;
-  	bool x2apic_mda = apic_x2apic_mode(ipi ? source : target);
-  
-  	if (!ipi && dest_id == APIC_BROADCAST && x2apic_mda)
-  		return X2APIC_BROADCAST;
-  
-  	return x2apic_mda ? dest_id : SET_APIC_DEST_FIELD(dest_id);
-  }
-
-MSI/IOxAPIC interrupt means that source is NULL and if the target is in
-x2APIC mode, the original 'dest_id' is returned as mda => a flat logical
-xAPIC to 0x0f will get interpreted as (cluster) logical x2APIC 0xf in
-kvm_apic_match_logical_addr().
-xAPIC address are only 8 bit long so they always get delivered to x2APIC
-cluster 0, where first 16 bits work like xAPIC flat logical mode.
+CgpPbiAxNy8wOS8yMDE1IDE3OjU4LCBSYWRpbSBLcsSNbcOhxZkgd3JvdGU6Cj4gRm9yIGludGVy
+cnVwdHMgZnJvbSBNU0kgYW5kIElPeEFQSUM6Cj4gLSBGbGF0IGxvZ2ljYWwgaW50ZXJydXB0cyBh
+cmUgZGVsaXZlcmVkIGFzIGlmIHdlIGhhZCBuYXR1cmFsCj4gICAoQ1BVMDwtPmJpdDAsIENQVTE8
+LT5iaXQxLCAuLi4pIGZsYXQgbG9naWNhbCB4QVBJQyBmb3IgZmlyc3QgOCBWQ1BVcy4KPiAtIENs
+dXN0ZXIgbG9naWNhbCBkb2Vzbid0IHdvcmsgbXVjaCwgaXQncyBpbnRlcnByZXRlZCBsaWtlIGZs
+YXQgbG9naWNhbC4KPiAgIEkgZGlkbid0IGNhcmUgYWJvdXQgeEFQSUMgY2x1c3RlciBiZWNhdXNl
+IExpbnV4LCB0aGUgc29sZSB1c2VyIG9mIG91cgo+ICAgcGFyYXZpcnR1YWxpemVkIHgyQVBJQywg
+ZG9lc24ndCBjb25maWd1cmUgaXQuCj4gCj4gSSdsbCBwYXN0ZSBrdm1fYXBpY19tZGEoKSBzb3Vy
+Y2UgZm9yIGJldHRlciBleHBsYW5hdGlvbjoKPiAKPiAgIHN0YXRpYyB1MzIga3ZtX2FwaWNfbWRh
+KHVuc2lnbmVkIGludCBkZXN0X2lkLCBzdHJ1Y3Qga3ZtX2xhcGljICpzb3VyY2UsCj4gICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3RydWN0IGt2bV9sYXBp
+YyAqdGFyZ2V0KQo+ICAgewo+ICAgCWJvb2wgaXBpID0gc291cmNlICE9IE5VTEw7Cj4gICAJYm9v
+bCB4MmFwaWNfbWRhID0gYXBpY194MmFwaWNfbW9kZShpcGkgPyBzb3VyY2UgOiB0YXJnZXQpOwo+
+ICAgCj4gICAJaWYgKCFpcGkgJiYgZGVzdF9pZCA9PSBBUElDX0JST0FEQ0FTVCAmJiB4MmFwaWNf
+bWRhKQo+ICAgCQlyZXR1cm4gWDJBUElDX0JST0FEQ0FTVDsKPiAgIAo+ICAgCXJldHVybiB4MmFw
+aWNfbWRhID8gZGVzdF9pZCA6IFNFVF9BUElDX0RFU1RfRklFTEQoZGVzdF9pZCk7Cj4gICB9Cj4g
+Cj4gTVNJL0lPeEFQSUMgaW50ZXJydXB0IG1lYW5zIHRoYXQgc291cmNlIGlzIE5VTEwgYW5kIGlm
+IHRoZSB0YXJnZXQgaXMgaW4KPiB4MkFQSUMgbW9kZSwgdGhlIG9yaWdpbmFsICdkZXN0X2lkJyBp
+cyByZXR1cm5lZCBhcyBtZGEgPT4gYSBmbGF0IGxvZ2ljYWwKPiB4QVBJQyB0byAweDBmIHdpbGwg
+Z2V0IGludGVycHJldGVkIGFzIChjbHVzdGVyKSBsb2dpY2FsIHgyQVBJQyAweGYgaW4KPiBrdm1f
+YXBpY19tYXRjaF9sb2dpY2FsX2FkZHIoKS4KPiB4QVBJQyBhZGRyZXNzIGFyZSBvbmx5IDggYml0
+IGxvbmcgc28gdGhleSBhbHdheXMgZ2V0IGRlbGl2ZXJlZCB0byB4MkFQSUMKPiBjbHVzdGVyIDAs
+IHdoZXJlIGZpcnN0IDE2IGJpdHMgd29yayBsaWtlIHhBUElDIGZsYXQgbG9naWNhbCBtb2RlLgoK
+T2ssIEkgd2FzIHdvbmRlcmluZyB3aGV0aGVyIHRoaXMgd2FzIHRoZSBjb3JyZWN0IGludGVycHJl
+dGF0aW9uLiAgVGhhbmtzIQoKUGFvbG8KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5k
+YXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3Rp
+bmZvL2lvbW11
