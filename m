@@ -1,46 +1,70 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Don't use dma_to_phys()
-Date: Thu, 17 Sep 2015 16:53:08 +0100
-Message-ID: <55FAE1E4.4060009@arm.com>
-References: <1c591836f1ec6e676a8889cdccd042650eadb73b.1442499554.git.robin.murphy@arm.com>
-	<20150917145216.GJ25634@arm.com>
+From: Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>
+Subject: Re: [PATCH v8 03/13] KVM: Define a new interface
+ kvm_intr_is_single_vcpu()
+Date: Thu, 17 Sep 2015 17:58:21 +0200
+Message-ID: <20150917155821.GB2573@potion.brq.redhat.com>
+References: <1442393409-2623-1-git-send-email-feng.wu@intel.com>
+ <1442393409-2623-4-git-send-email-feng.wu@intel.com>
+ <55F934F5.7040605@redhat.com>
+ <E959C4978C3B6342920538CF579893F002716FFA@SHSMSX104.ccr.corp.intel.com>
+ <55FA8AED.6090700@redhat.com>
+ <E959C4978C3B6342920538CF579893F002718968@SHSMSX104.ccr.corp.intel.com>
+ <55FACD35.1030602@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150917145216.GJ25634-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <55FACD35.1030602@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paolo Bonzini <pbonzini@redhat.com>
+Cc: "Wu, Feng" <feng.wu@intel.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "joro@8bytes.org" <joro@8bytes.org>, "mtosatti@redhat.com" <mtosatti@redhat.com>, "eric.auger@linaro.org" <eric.auger@linaro.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 17/09/15 15:52, Will Deacon wrote:
-[...]
->> -static dma_addr_t __arm_lpae_dma_addr(struct device *dev, void *pages)
->> -{
->> -	return phys_to_dma(dev, virt_to_phys(pages));
->> -}
->
-> Can we keep this helper kicking around, at least to contain the ugliness
-> of the virt_to_phys + cast?
+2015-09-17 16:24+0200, Paolo Bonzini:
+> I think kvm_apic_match_logical_addr for MSI and IOAPIC interrupts is
+> buggy in x2apic mode.
+> 
+> It does:
+> 
+>         if (apic_x2apic_mode(apic))
+>                 return ((logical_id >> 16) == (mda >> 16))
+>                        && (logical_id & mda & 0xffff) != 0;
+> 
+> But mda is only 8-bits for MSI and IOAPIC interrupts.
+> 
+> Radim, should kvm_apic_mda also handle the !ipi && x2apic_mda && dest_id
+> != APIC_BROADCAST case?  It never triggers with Linux because it uses
+> only the physical mode (that's not super-easy to see;
+> ioapic_set_affinity looks for the RTEs in irq_data->chip_data and that
+> is allocated with kzalloc).
 
-Can do for the sync and unmap cases - the alloc_pages one needs to avoid 
-truncation in the comparison if dma_addr_t and phys_addr_t are different 
-sizes, so can't safely cast one to the other either way. I can at least 
-get rid of the u64 casts there though, as they seem superfluous after a 
-bit of experimentation and another read of the good old "Usual 
-arithmetic conversions". I'll fix up and repost.
+KVM handles that case, it's just convoluted.
+(I wish we scrapped the IR-less x2APIC mode.)
 
-Robin.
+For interrupts from MSI and IOxAPIC:
+- Flat logical interrupts are delivered as if we had natural
+  (CPU0<->bit0, CPU1<->bit1, ...) flat logical xAPIC for first 8 VCPUs.
+- Cluster logical doesn't work much, it's interpreted like flat logical.
+  I didn't care about xAPIC cluster because Linux, the sole user of our
+  paravirtualized x2APIC, doesn't configure it.
 
->
-> Will
->
+I'll paste kvm_apic_mda() source for better explanation:
+
+  static u32 kvm_apic_mda(unsigned int dest_id, struct kvm_lapic *source,
+                                                struct kvm_lapic *target)
+  {
+  	bool ipi = source != NULL;
+  	bool x2apic_mda = apic_x2apic_mode(ipi ? source : target);
+  
+  	if (!ipi && dest_id == APIC_BROADCAST && x2apic_mda)
+  		return X2APIC_BROADCAST;
+  
+  	return x2apic_mda ? dest_id : SET_APIC_DEST_FIELD(dest_id);
+  }
+
+MSI/IOxAPIC interrupt means that source is NULL and if the target is in
+x2APIC mode, the original 'dest_id' is returned as mda => a flat logical
+xAPIC to 0x0f will get interpreted as (cluster) logical x2APIC 0xf in
+kvm_apic_match_logical_addr().
+xAPIC address are only 8 bit long so they always get delivered to x2APIC
+cluster 0, where first 16 bits work like xAPIC flat logical mode.
