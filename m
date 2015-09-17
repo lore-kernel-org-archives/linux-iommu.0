@@ -1,17 +1,17 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v3 3/6] iommu: add ARM short descriptor page table
-	allocator.
-Date: Thu, 17 Sep 2015 10:38:19 +0800
-Message-ID: <1442457499.8145.23.camel@mhfsdcap03>
-References: <1437037475-9065-1-git-send-email-yong.wu@mediatek.com>
-	<1437037475-9065-4-git-send-email-yong.wu@mediatek.com>
-	<20150721171101.GN31095@arm.com> <1442233500.19588.35.camel@mhfsdcap03>
-	<20150916125535.GI28771@arm.com>
+From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH v8 03/13] KVM: Define a new interface
+	kvm_intr_is_single_vcpu()
+Date: Thu, 17 Sep 2015 03:17:03 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F002716FFA@SHSMSX104.ccr.corp.intel.com>
+References: <1442393409-2623-1-git-send-email-feng.wu@intel.com>
+	<1442393409-2623-4-git-send-email-feng.wu@intel.com>
+	<55F934F5.7040605@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20150916125535.GI28771-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <55F934F5.7040605-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,68 +21,225 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "cloud.chou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <cloud.chou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "frederic.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <frederic.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org" <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel@pen>
+To: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2015-09-16 at 13:55 +0100, Will Deacon wrote:
-> Hello Yong,
-> 
-> On Mon, Sep 14, 2015 at 01:25:00PM +0100, Yong Wu wrote:
-> > On Tue, 2015-07-21 at 18:11 +0100, Will Deacon wrote:
-> > > > +       ret = _arm_short_map(data, iova, paddr, pgdprot, pteprot, large);
-> > > > +
-> > > > +       tlb->tlb_add_flush(iova, size, true, data->iop.cookie);
-> > > > +       tlb->tlb_sync(data->iop.cookie);
-> > > 
-> > > In _arm_short_map, it looks like you can only go from invalid -> valid,
-> > > so why do you need to flush the TLB here?
-> > 
-> > Hi Will,
-> >    Here is about flush-tlb after map iova, I have deleted it in v4
-> > following this suggestion. But We meet a problem about it.
-> 
-> Ok.
-> 
-> > Take a example with JPEG. the test steps is:
-> > a).JPEG HW decode a picture with the source iova,like 0xfd780000.
-> > b).JPEG HW decode done, It will unmap the iova(write 0 in pagetable and
-> > flush tlb).
-> > c).JPEG HW decode the second picture, whose source iova is also
-> > 0xfd780000.
-> >    Then our HW maybe fail due to it will auto prefetch, It may prefecth
-> > between the step b) and c). then the HW may fetch the pagetable content
-> > which has been unmapped in step b). then the HW will get the iova's
-> > physical address is 0, It will translation fault!
-> 
-> Oh no! So-called "negative caching" is certainly prohibited by the ARM
-> architecture, but if you've built it then we can probably work around it
-> as an additional quirk. I assume the prefetcher stops prefetching when
-> it sees an invalid descriptor?
 
-Yes, If it's a invalid descriptor, the HW will stop prefetch.
+
+> -----Original Message-----
+> From: Paolo Bonzini [mailto:pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> Sent: Wednesday, September 16, 2015 5:23 PM
+> To: Wu, Feng; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org;
+> mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+> Cc: eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Subject: Re: [PATCH v8 03/13] KVM: Define a new interface
+> kvm_intr_is_single_vcpu()
+> 
+> 
+> 
+> On 16/09/2015 10:49, Feng Wu wrote:
+> > This patch defines a new interface kvm_intr_is_single_vcpu(),
+> > which can returns whether the interrupt is for single-CPU or not.
+> >
+> > It is used by VT-d PI, since now we only support single-CPU
+> > interrupts, For lowest-priority interrupts, if user configures
+> > it via /proc/irq or uses irqbalance to make it single-CPU, we
+> > can use PI to deliver the interrupts to it. Full functionality
+> > of lowest-priority support will be added later.
+> >
+> > Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> > ---
+> > v8:
+> > - Some optimizations in kvm_intr_is_single_vcpu().
+> > - Expose kvm_intr_is_single_vcpu() so we can use it in vmx code.
+> > - Add kvm_intr_is_single_vcpu_fast() as the fast path to find
+> >   the target vCPU for the single-destination interrupt
+> >
+> >  arch/x86/include/asm/kvm_host.h |  3 ++
+> >  arch/x86/kvm/irq_comm.c         | 94
+> +++++++++++++++++++++++++++++++++++++++++
+> >  arch/x86/kvm/lapic.c            |  5 +--
+> >  arch/x86/kvm/lapic.h            |  2 +
+> >  4 files changed, 101 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/arch/x86/include/asm/kvm_host.h
+> b/arch/x86/include/asm/kvm_host.h
+> > index 49ec903..af11bca 100644
+> > --- a/arch/x86/include/asm/kvm_host.h
+> > +++ b/arch/x86/include/asm/kvm_host.h
+> > @@ -1204,4 +1204,7 @@ int __x86_set_memory_region(struct kvm *kvm,
+> >  int x86_set_memory_region(struct kvm *kvm,
+> >  			  const struct kvm_userspace_memory_region *mem);
+> >
+> > +bool kvm_intr_is_single_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
+> > +			     struct kvm_vcpu **dest_vcpu);
+> > +
+> >  #endif /* _ASM_X86_KVM_HOST_H */
+> > diff --git a/arch/x86/kvm/irq_comm.c b/arch/x86/kvm/irq_comm.c
+> > index 9efff9e..97ba1d6 100644
+> > --- a/arch/x86/kvm/irq_comm.c
+> > +++ b/arch/x86/kvm/irq_comm.c
+> > @@ -297,6 +297,100 @@ out:
+> >  	return r;
+> >  }
+> >
+> > +static bool kvm_intr_is_single_vcpu_fast(struct kvm *kvm,
+> > +					 struct kvm_lapic_irq *irq,
+> > +					 struct kvm_vcpu **dest_vcpu)
+> 
+> Please put this in lapic.c, similar to kvm_irq_delivery_to_apic_fast, so
+> that you do not have to export other functions.
+> 
+> > +{
+> > +	struct kvm_apic_map *map;
+> > +	bool ret = false;
+> > +	struct kvm_lapic *dst = NULL;
+> > +
+> > +	if (irq->shorthand)
+> > +		return false;
+> > +
+> > +	rcu_read_lock();
+> > +	map = rcu_dereference(kvm->arch.apic_map);
+> > +
+> > +	if (!map)
+> > +		goto out;
+> > +
+> > +	if (irq->dest_mode == APIC_DEST_PHYSICAL) {
+> > +		if (irq->dest_id == 0xFF)
+> > +			goto out;
+> > +
+> > +		if (irq->dest_id >= ARRAY_SIZE(map->phys_map)) {
+> 
+> Warning here is wrong, the guest can trigger it.
+
+Could you please share more information about how the guest
+triggers these conditions (including the following two), Thanks
+a lot!
+
+Thanks,
+Feng
 
 > 
-> >     So I think our HW need flush-tlb after map iova. Could we add a
-> > QUIRK like "IO_PGTABLE_QUIRK_AUTO_PREFETCH_ENABLE" for it?
-> > If it's not allowed, we will have to add this in our internal function
-> > mtk_iommu_map of mtk_iommu.c.
+> > +			WARN_ON_ONCE(1);
+> > +			goto out;
+> > +		}
+> > +
+> > +		dst = map->phys_map[irq->dest_id];
+> > +		if (dst && kvm_apic_present(dst->vcpu))
+> > +			*dest_vcpu = dst->vcpu;
+> > +		else
+> > +			goto out;
+> > +	} else {
+> > +		u16 cid;
+> > +		unsigned long bitmap = 1;
+> > +		int i, r = 0;
+> > +
+> > +		if (!kvm_apic_logical_map_valid(map)) {
+> > +			WARN_ON_ONCE(1);
 > 
-> Actually, this type of quirk is ringing bells with me (I think another
-> IOMMU needed something similar in the past), so maybe just add
-> IO_PGTABLE_QUIRK_TLBI_ON_MAP?
-
-Thanks. I will add it like:
-//=====================
-ret = _arm_short_map(data, iova, paddr, pgdprot, pteprot, large);
-
-if (data->iop.cfg.quirk & IO_PGTABLE_QUIRK_TLBI_ON_MAP) {
-	tlb->tlb_add_flush(iova, size, true, data->iop.cookie);
-	tlb->tlb_sync(data->iop.cookie);
-}
-//======================
-It will flush-tlb every time after map-iova. then the HW will fetch the
-new PA from the dram.
-
+> Same here.
 > 
-> Will
+> > +			goto out;
+> > +		}
+> > +
+> > +		apic_logical_id(map, irq->dest_id, &cid, (u16 *)&bitmap);
+> > +
+> > +		if (cid >= ARRAY_SIZE(map->logical_map)) {
+> > +			WARN_ON_ONCE(1);
+> 
+> Same here.
+> 
+> Otherwise looks good.
+> 
+> Paolo
+> 
+> > +			goto out;
+> > +		}
+> > +
+> > +		for_each_set_bit(i, &bitmap, 16) {
+> > +			dst = map->logical_map[cid][i];
+> > +			if (++r == 2)
+> > +				goto out;
+> > +		}
+> > +
+> > +		if (dst && kvm_apic_present(dst->vcpu))
+> > +			*dest_vcpu = dst->vcpu;
+> > +		else
+> > +			goto out;
+> > +	}
+> > +
+> > +	ret = true;
+> > +out:
+> > +	rcu_read_unlock();
+> > +	return ret;
+> > +}
+> > +
+> > +
+> > +bool kvm_intr_is_single_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
+> > +			     struct kvm_vcpu **dest_vcpu)
+> > +{
+> > +	int i, r = 0;
+> > +	struct kvm_vcpu *vcpu;
+> > +
+> > +	if (kvm_intr_is_single_vcpu_fast(kvm, irq, dest_vcpu))
+> > +		return true;
+> > +
+> > +	kvm_for_each_vcpu(i, vcpu, kvm) {
+> > +		if (!kvm_apic_present(vcpu))
+> > +			continue;
+> > +
+> > +		if (!kvm_apic_match_dest(vcpu, NULL, irq->shorthand,
+> > +					irq->dest_id, irq->dest_mode))
+> > +			continue;
+> > +
+> > +		if (++r == 2)
+> > +			return false;
+> > +
+> > +		*dest_vcpu = vcpu;
+> > +	}
+> > +
+> > +	return r == 1;
+> > +}
+> > +EXPORT_SYMBOL_GPL(kvm_intr_is_single_vcpu);
+> > +
+> >  #define IOAPIC_ROUTING_ENTRY(irq) \
+> >  	{ .gsi = irq, .type = KVM_IRQ_ROUTING_IRQCHIP,	\
+> >  	  .u.irqchip = { .irqchip = KVM_IRQCHIP_IOAPIC, .pin = (irq) } }
+> > diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+> > index 2a5ca97..9848cd50 100644
+> > --- a/arch/x86/kvm/lapic.c
+> > +++ b/arch/x86/kvm/lapic.c
+> > @@ -136,13 +136,12 @@ static inline int kvm_apic_id(struct kvm_lapic
+> *apic)
+> >  /* The logical map is definitely wrong if we have multiple
+> >   * modes at the same time.  (Physical map is always right.)
+> >   */
+> > -static inline bool kvm_apic_logical_map_valid(struct kvm_apic_map *map)
+> > +bool kvm_apic_logical_map_valid(struct kvm_apic_map *map)
+> >  {
+> >  	return !(map->mode & (map->mode - 1));
+> >  }
+> >
+> > -static inline void
+> > -apic_logical_id(struct kvm_apic_map *map, u32 dest_id, u16 *cid, u16 *lid)
+> > +void apic_logical_id(struct kvm_apic_map *map, u32 dest_id, u16 *cid, u16
+> *lid)
+> >  {
+> >  	unsigned lid_bits;
+> >
+> > diff --git a/arch/x86/kvm/lapic.h b/arch/x86/kvm/lapic.h
+> > index 7195274..6798b87 100644
+> > --- a/arch/x86/kvm/lapic.h
+> > +++ b/arch/x86/kvm/lapic.h
+> > @@ -169,4 +169,6 @@ bool kvm_apic_pending_eoi(struct kvm_vcpu *vcpu,
+> int vector);
+> >
+> >  void wait_lapic_expire(struct kvm_vcpu *vcpu);
+> >
+> > +void apic_logical_id(struct kvm_apic_map *map, u32 dest_id, u16 *cid, u16
+> *lid);
+> > +bool kvm_apic_logical_map_valid(struct kvm_apic_map *map);
+> >  #endif
+> >
