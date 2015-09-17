@@ -1,8 +1,8 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+From: Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Subject: Re: [RFC PATCH] dma/swiotlb: Add helper for device driver to opt-out
 	from swiotlb.
-Date: Thu, 17 Sep 2015 15:06:57 -0400
-Message-ID: <20150917190656.GF20952@x230.dumpdata.com>
+Date: Thu, 17 Sep 2015 15:07:47 -0400
+Message-ID: <20150917190746.GA6699@redhat.com>
 References: <1442514158-30281-1-git-send-email-jglisse@redhat.com>
 	<20150917190251.GE20952@x230.dumpdata.com>
 Mime-Version: 1.0
@@ -20,7 +20,7 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 Cc: Alex Deucher <alexander.deucher-5C7GfCeVMHo@public.gmane.org>, Dave Airlie <airlied-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
@@ -37,107 +37,24 @@ On Thu, Sep 17, 2015 at 03:02:51PM -0400, Konrad Rzeszutek Wilk wrote:
 > =
 
 > What if SWIOTLB is the only one available?
-> =
+
+On x86 no_mmu is always available and we assume that device driver
+that would use this knows that their device can access all memory
+with no restriction or at very least use DMA32 gfp flag.
+
 
 > And what can't the devices use the TTM DMA backend which sets up
 > buffers which don't need bounce buffer or slow dma page allocations?
 
-And then the followup question. If it opts out - how can it do
-sane things without an DMA API available? It would assume physical
-addresses match the bus addresses which is not always the sane
-thing.
-> =
+We want to get rid of this TTM code path for radeon and likely
+nouveau. This is the motivation for that patch. Benchmark shows
+that the TTM DMA backend is much much much slower (20% on some
+benchmark) that the regular page allocation and going through
+no_mmu.
 
-> > =
+So this is all about allowing to directly allocate page through
+regular kernel page alloc code and not through specialize dma
+allocator.
 
-> > Signed-off-by: J=E9r=F4me Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> > To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> > Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> > Cc: Konrad Rzeszutek Wilk <Konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-> > Cc: Alex Deucher <alexander.deucher-5C7GfCeVMHo@public.gmane.org>
-> > CC: Dave Airlie <airlied-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> > CC: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > ---
-> >  arch/x86/include/asm/dma-mapping.h       |  3 +++
-> >  arch/x86/kernel/pci-swiotlb.c            | 18 ++++++++++++++++++
-> >  include/asm-generic/dma-mapping-common.h |  7 +++++++
-> >  3 files changed, 28 insertions(+)
-> > =
-
-> > diff --git a/arch/x86/include/asm/dma-mapping.h b/arch/x86/include/asm/=
-dma-mapping.h
-> > index 953b726..b50745f 100644
-> > --- a/arch/x86/include/asm/dma-mapping.h
-> > +++ b/arch/x86/include/asm/dma-mapping.h
-> > @@ -46,6 +46,9 @@ bool arch_dma_alloc_attrs(struct device **dev, gfp_t =
-*gfp);
-> >  #define HAVE_ARCH_DMA_SUPPORTED 1
-> >  extern int dma_supported(struct device *hwdev, u64 mask);
-> >  =
-
-> > +#define HAVE_ARCH_DMA_OVERRIDE_SWIOTLB 1
-> > +int dma_override_swiotlb(struct device *dev);
-> > +
-> >  #include <asm-generic/dma-mapping-common.h>
-> >  =
-
-> >  extern void *dma_generic_alloc_coherent(struct device *dev, size_t siz=
-e,
-> > diff --git a/arch/x86/kernel/pci-swiotlb.c b/arch/x86/kernel/pci-swiotl=
-b.c
-> > index adf0392..6a9efab 100644
-> > --- a/arch/x86/kernel/pci-swiotlb.c
-> > +++ b/arch/x86/kernel/pci-swiotlb.c
-> > @@ -117,3 +117,21 @@ void __init pci_swiotlb_late_init(void)
-> >  		swiotlb_print_info();
-> >  	}
-> >  }
-> > +
-> > +/* dma_override_swiotlb() -  Override swiotlb with nommu.
-> > + *
-> > + * @device: Device for which to disable swiotlb.
-> > + *
-> > + * The swiotlb infrastructure just get in the way for some devices lik=
-e GPU,
-> > + * where things like bounce pages can not work properly or for which w=
-e do not
-> > + * want to take slow page allocation code path. This function allows d=
-evice
-> > + * driver opportunity to opt-out from swiotlb.
-> > + */
-> > +int dma_override_swiotlb(struct device *dev)
-> > +{
-> > +	if (dev->archdata.dma_ops !=3D &swiotlb_dma_ops)
-> > +		return 1;
-> > +	dev->archdata.dma_ops =3D &nommu_dma_ops;
-> > +	return 1;
-> > +}
-> > +EXPORT_SYMBOL(dma_override_swiotlb);
-> > diff --git a/include/asm-generic/dma-mapping-common.h b/include/asm-gen=
-eric/dma-mapping-common.h
-> > index b1bc954..452d947 100644
-> > --- a/include/asm-generic/dma-mapping-common.h
-> > +++ b/include/asm-generic/dma-mapping-common.h
-> > @@ -355,4 +355,11 @@ static inline int dma_set_mask(struct device *dev,=
- u64 mask)
-> >  }
-> >  #endif
-> >  =
-
-> > +#ifndef HAVE_ARCH_DMA_OVERRIDE_SWIOTLB
-> > +static inline int dma_override_swiotlb(struct device *dev)
-> > +{
-> > +	return 0;
-> > +}
-> > +#endif
-> > +
-> >  #endif
-> > -- =
-
-> > 2.1.0
-> > =
-
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Cheers,
+J=E9r=F4me
