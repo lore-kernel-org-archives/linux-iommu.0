@@ -1,7 +1,8 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v9 12/18] vfio: Register/unregister irq_bypass_producer
-Date: Fri, 18 Sep 2015 22:29:50 +0800
-Message-ID: <1442586596-5920-13-git-send-email-feng.wu@intel.com>
+Subject: [PATCH v9 15/18] KVM: Add an arch specific hooks in 'struct
+	kvm_kernel_irqfd'
+Date: Fri, 18 Sep 2015 22:29:53 +0800
+Message-ID: <1442586596-5920-16-git-send-email-feng.wu@intel.com>
 References: <1442586596-5920-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,84 +22,102 @@ To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7a
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds the registration/unregistration of an
-irq_bypass_producer for MSI/MSIx on vfio pci devices.
+This patch adds an arch specific hooks 'arch_update' in
+'struct kvm_kernel_irqfd'. On Intel side, it is used to
+update the IRTE when VT-d posted-interrupts is used.
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
+v9:
+- Use 'if' instead of "? :" in kvm_arch_update_irqfd_routing()
+- coding style
+
 v8:
-- Merge "[PATCH v7 08/17] vfio: Select IRQ_BYPASS_MANAGER for vfio PCI devices"
-  into this patch.
+- Remove callback .arch_update()
+- Remove kvm_arch_irqfd_init()
+- Call kvm_arch_update_irqfd_routing() instead.
 
-v6:
-- Make the add_consumer and del_consumer callbacks static
-- Remove pointless INIT_LIST_HEAD to 'vdev->ctx[vector].producer.node)'
-- Use dev_info instead of WARN_ON() when irq_bypass_register_producer fails
-- Remove optional dummy callbacks for irq producer
+ arch/x86/kvm/x86.c       |  9 +++++++++
+ include/linux/kvm_host.h |  2 ++
+ virt/kvm/eventfd.c       | 20 +++++++++++++++++++-
+ 3 files changed, 30 insertions(+), 1 deletion(-)
 
- drivers/vfio/pci/Kconfig            | 1 +
- drivers/vfio/pci/vfio_pci_intrs.c   | 9 +++++++++
- drivers/vfio/pci/vfio_pci_private.h | 2 ++
- 3 files changed, 12 insertions(+)
-
-diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
-index 579d83b..02912f1 100644
---- a/drivers/vfio/pci/Kconfig
-+++ b/drivers/vfio/pci/Kconfig
-@@ -2,6 +2,7 @@ config VFIO_PCI
- 	tristate "VFIO support for PCI devices"
- 	depends on VFIO && PCI && EVENTFD
- 	select VFIO_VIRQFD
-+	select IRQ_BYPASS_MANAGER
- 	help
- 	  Support for the PCI VFIO bus driver.  This is required to make
- 	  use of PCI drivers using the VFIO framework.
-diff --git a/drivers/vfio/pci/vfio_pci_intrs.c b/drivers/vfio/pci/vfio_pci_intrs.c
-index 1f577b4..c65299d 100644
---- a/drivers/vfio/pci/vfio_pci_intrs.c
-+++ b/drivers/vfio/pci/vfio_pci_intrs.c
-@@ -319,6 +319,7 @@ static int vfio_msi_set_vector_signal(struct vfio_pci_device *vdev,
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 79dac02..58688aa 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -8293,6 +8293,15 @@ void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *cons,
+ 		       " fails: %d\n", irqfd->consumer.token, ret);
+ }
  
- 	if (vdev->ctx[vector].trigger) {
- 		free_irq(irq, vdev->ctx[vector].trigger);
-+		irq_bypass_unregister_producer(&vdev->ctx[vector].producer);
- 		kfree(vdev->ctx[vector].name);
- 		eventfd_ctx_put(vdev->ctx[vector].trigger);
- 		vdev->ctx[vector].trigger = NULL;
-@@ -360,6 +361,14 @@ static int vfio_msi_set_vector_signal(struct vfio_pci_device *vdev,
- 		return ret;
- 	}
- 
-+	vdev->ctx[vector].producer.token = trigger;
-+	vdev->ctx[vector].producer.irq = irq;
-+	ret = irq_bypass_register_producer(&vdev->ctx[vector].producer);
-+	if (unlikely(ret))
-+		dev_info(&pdev->dev,
-+		"irq bypass producer (token %p) registeration fails: %d\n",
-+		vdev->ctx[vector].producer.token, ret);
++int kvm_arch_update_irqfd_routing(struct kvm *kvm, unsigned int host_irq,
++				   uint32_t guest_irq, bool set)
++{
++	if (!kvm_x86_ops->update_pi_irte)
++		return -EINVAL;
 +
- 	vdev->ctx[vector].trigger = trigger;
++	return kvm_x86_ops->update_pi_irte(kvm, host_irq, guest_irq, set);
++}
++
+ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_exit);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_inj_virq);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_page_fault);
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index 5f183fb..feba1fb 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -1174,6 +1174,8 @@ void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *,
+ 			   struct irq_bypass_producer *);
+ void kvm_arch_irq_bypass_stop(struct irq_bypass_consumer *);
+ void kvm_arch_irq_bypass_start(struct irq_bypass_consumer *);
++int kvm_arch_update_irqfd_routing(struct kvm *kvm, unsigned int host_irq,
++				  uint32_t guest_irq, bool set);
+ #endif /* CONFIG_HAVE_KVM_IRQ_BYPASS */
+ #endif
  
- 	return 0;
-diff --git a/drivers/vfio/pci/vfio_pci_private.h b/drivers/vfio/pci/vfio_pci_private.h
-index ae0e1b4..0e7394f 100644
---- a/drivers/vfio/pci/vfio_pci_private.h
-+++ b/drivers/vfio/pci/vfio_pci_private.h
-@@ -13,6 +13,7 @@
+diff --git a/virt/kvm/eventfd.c b/virt/kvm/eventfd.c
+index c0a56a1..94306a3 100644
+--- a/virt/kvm/eventfd.c
++++ b/virt/kvm/eventfd.c
+@@ -266,6 +266,13 @@ void __attribute__((weak)) kvm_arch_irq_bypass_start(
+ 				struct irq_bypass_consumer *cons)
+ {
+ }
++
++int  __attribute__((weak)) kvm_arch_update_irqfd_routing(
++				struct kvm *kvm, unsigned int host_irq,
++				uint32_t guest_irq, bool set)
++{
++	return 0;
++}
+ #endif
  
- #include <linux/mutex.h>
- #include <linux/pci.h>
-+#include <linux/irqbypass.h>
+ static int
+@@ -582,13 +589,24 @@ kvm_irqfd_release(struct kvm *kvm)
+  */
+ void kvm_irq_routing_update(struct kvm *kvm)
+ {
++	int ret;
+ 	struct kvm_kernel_irqfd *irqfd;
  
- #ifndef VFIO_PCI_PRIVATE_H
- #define VFIO_PCI_PRIVATE_H
-@@ -29,6 +30,7 @@ struct vfio_pci_irq_ctx {
- 	struct virqfd		*mask;
- 	char			*name;
- 	bool			masked;
-+	struct irq_bypass_producer	producer;
- };
+ 	spin_lock_irq(&kvm->irqfds.lock);
  
- struct vfio_pci_device {
+-	list_for_each_entry(irqfd, &kvm->irqfds.items, list)
++	list_for_each_entry(irqfd, &kvm->irqfds.items, list) {
+ 		irqfd_update(kvm, irqfd);
+ 
++#ifdef CONFIG_HAVE_KVM_IRQ_BYPASS
++		if (irqfd->producer) {
++			ret = kvm_arch_update_irqfd_routing(
++					irqfd->kvm, irqfd->producer->irq,
++					irqfd->gsi, 1);
++			WARN_ON(ret);
++		}
++#endif
++	}
++
+ 	spin_unlock_irq(&kvm->irqfds.lock);
+ }
+ 
 -- 
 2.1.0
