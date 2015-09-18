@@ -1,7 +1,7 @@
 From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v9 07/18] KVM: Extend struct pi_desc for VT-d Posted-Interrupts
-Date: Fri, 18 Sep 2015 22:29:45 +0800
-Message-ID: <1442586596-5920-8-git-send-email-feng.wu@intel.com>
+Subject: [PATCH v9 02/18] KVM: x86: select IRQ_BYPASS_MANAGER
+Date: Fri, 18 Sep 2015 22:29:40 +0800
+Message-ID: <1442586596-5920-3-git-send-email-feng.wu@intel.com>
 References: <1442586596-5920-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,43 +21,47 @@ To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7a
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Extend struct pi_desc for VT-d Posted-Interrupts.
+Select IRQ_BYPASS_MANAGER for x86 when CONFIG_KVM is set
 
 Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- arch/x86/kvm/vmx.c | 20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
+ arch/x86/kvm/Kconfig  | 2 ++
+ arch/x86/kvm/Makefile | 3 +++
+ 2 files changed, 5 insertions(+)
 
-diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-index 83b7b5c..271dd70 100644
---- a/arch/x86/kvm/vmx.c
-+++ b/arch/x86/kvm/vmx.c
-@@ -446,8 +446,24 @@ struct nested_vmx {
- /* Posted-Interrupt Descriptor */
- struct pi_desc {
- 	u32 pir[8];     /* Posted interrupt requested */
--	u32 control;	/* bit 0 of control is outstanding notification bit */
--	u32 rsvd[7];
-+	union {
-+		struct {
-+				/* bit 256 - Outstanding Notification */
-+			u16	on	: 1,
-+				/* bit 257 - Suppress Notification */
-+				sn	: 1,
-+				/* bit 271:258 - Reserved */
-+				rsvd_1	: 14;
-+				/* bit 279:272 - Notification Vector */
-+			u8	nv;
-+				/* bit 287:280 - Reserved */
-+			u8	rsvd_2;
-+				/* bit 319:288 - Notification Destination */
-+			u32	ndst;
-+		};
-+		u64 control;
-+	};
-+	u32 rsvd[6];
- } __aligned(64);
+diff --git a/arch/x86/kvm/Kconfig b/arch/x86/kvm/Kconfig
+index d8a1d56..c951d44 100644
+--- a/arch/x86/kvm/Kconfig
++++ b/arch/x86/kvm/Kconfig
+@@ -3,6 +3,7 @@
+ #
  
- static bool pi_test_and_set_on(struct pi_desc *pi_desc)
+ source "virt/kvm/Kconfig"
++source "virt/lib/Kconfig"
+ 
+ menuconfig VIRTUALIZATION
+ 	bool "Virtualization"
+@@ -28,6 +29,7 @@ config KVM
+ 	select ANON_INODES
+ 	select HAVE_KVM_IRQCHIP
+ 	select HAVE_KVM_IRQFD
++	select IRQ_BYPASS_MANAGER
+ 	select HAVE_KVM_IRQ_ROUTING
+ 	select HAVE_KVM_EVENTFD
+ 	select KVM_APIC_ARCHITECTURE
+diff --git a/arch/x86/kvm/Makefile b/arch/x86/kvm/Makefile
+index 67d215c..05cc2d7 100644
+--- a/arch/x86/kvm/Makefile
++++ b/arch/x86/kvm/Makefile
+@@ -6,6 +6,9 @@ CFLAGS_svm.o := -I.
+ CFLAGS_vmx.o := -I.
+ 
+ KVM := ../../../virt/kvm
++LIB := ../../../virt/lib
++
++obj-$(CONFIG_IRQ_BYPASS_MANAGER)	+= $(LIB)/
+ 
+ kvm-y			+= $(KVM)/kvm_main.o $(KVM)/coalesced_mmio.o \
+ 				$(KVM)/eventfd.o $(KVM)/irqchip.o $(KVM)/vfio.o
 -- 
 2.1.0
