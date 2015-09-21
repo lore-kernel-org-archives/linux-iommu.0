@@ -1,148 +1,506 @@
-From: Andreas Hartmann <andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org>
-Subject: Re: [dm-devel] AMD-Vi IO_PAGE_FAULTs and ata3.00: failed command:
-	READ FPDMA QUEUED errors since Linux 4.0
-Date: Sun, 20 Sep 2015 08:50:40 +0200
-Message-ID: <55FE5740.2060701@maya.org>
-References: <55B7BEA2.30205@01019freenet.de>
-	<20150728175054.GB24782@redhat.com> <55B7D054.4070308@maya.org>
-	<20150728192908.GA25264@redhat.com> <55BCD5A7.2080708@maya.org>
-	<55BE1D5E.6020709@maya.org>
-	<alpine.LRH.2.02.1508021347480.17729@file01.intranet.prod.int.rdu2.redhat.com>
+From: "Wu, Feng" <feng.wu@intel.com>
+Subject: RE: [PATCH v9 17/18] KVM: Update Posted-Interrupts Descriptor when
+ vCPU is blocked
+Date: Mon, 21 Sep 2015 02:16:18 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F0027228E2@SHSMSX104.ccr.corp.intel.com>
+References: <1442586596-5920-1-git-send-email-feng.wu@intel.com>
+ <1442586596-5920-18-git-send-email-feng.wu@intel.com>
+ <55FC3690.3050905@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <alpine.LRH.2.02.1508021347480.17729-Hpncn10jQN4oNljnaZt3ZvA+iT7yCHsGwRM8/txMwJMAicBL8TP8PQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mikulas Patocka <mpatocka-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andreas Hartmann <andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Leo Duran <leo.duran-5C7GfCeVMHo@public.gmane.org>
-Cc: linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jens Axboe <axboe-b10kYP2dOMg@public.gmane.org>, device-mapper development <dm-devel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Milan Broz <mbroz-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <55FC3690.3050905@redhat.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paolo Bonzini <pbonzini@redhat.com>, Alex Williamson <alex.williamson@redhat.com>, "joro@8bytes.org" <joro@8bytes.org>, Marcelo Tosatti <mtosatti@redhat.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, KVM list <kvm@vger.kernel.org>, Eric Auger <eric.auger@linaro.org>, "Wu, Feng" <feng.wu@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 08/02/2015 at 07:57 PM, Mikulas Patocka wrote:
+
+
+> -----Original Message-----
+> From: Paolo Bonzini [mailto:paolo.bonzini@gmail.com] On Behalf Of Paolo
+> Bonzini
+> Sent: Saturday, September 19, 2015 12:07 AM
+> To: Wu, Feng; Alex Williamson; joro@8bytes.org; Marcelo Tosatti
+> Cc: iommu@lists.linux-foundation.org; linux-kernel@vger.kernel.org; KVM list;
+> Eric Auger
+> Subject: Re: [PATCH v9 17/18] KVM: Update Posted-Interrupts Descriptor when
+> vCPU is blocked
 > 
 > 
-> On Sun, 2 Aug 2015, Andreas Hartmann wrote:
 > 
->> On 08/01/2015 at 04:20 PM Andreas Hartmann wrote:
->>> On 07/28/2015 at 09:29 PM, Mike Snitzer wrote:
->>> [...]
->>>> Mikulas was saying to biect what is causing ATA to fail.
->>>
->>> Some good news and some bad news. The good news first:
->>>
->>> Your patchset
->>>
->>> f3396c58fd8442850e759843457d78b6ec3a9589,
->>> cf2f1abfbd0dba701f7f16ef619e4d2485de3366,
->>> 7145c241a1bf2841952c3e297c4080b357b3e52d,
->>> 94f5e0243c48aa01441c987743dc468e2d6eaca2,
->>> dc2676210c425ee8e5cb1bec5bc84d004ddf4179,
->>> 0f5d8e6ee758f7023e4353cca75d785b2d4f6abe,
->>> b3c5fd3052492f1b8d060799d4f18be5a5438add
->>>
->>> seems to work fine w/ 3.18.19 !!
->>>
->>> Why did I test it with 3.18.x now? Because I suddenly got two ata errors
->>> (ata1 and ata2) with clean 3.19.8 (w/o the AMD-Vi IO_PAGE_FAULTs) during
->>> normal operation. This means: 3.19 must already be broken, too.
->>>
->>> Therefore, I applied your patchset to 3.18.x and it seems to work like a
->>> charme - I don't get any AMD-Vi IO_PAGE_FAULTs on boot and no ata errors
->>> (until now).
->>>
->>>
->>> Next I did: I tried to bisect between 3.18 and 3.19 with your patchset
->>> applied, because w/ this patchset applied, the problem can be seen
->>> easily and directly on boot. Unfortunately, this does work only a few
->>> git bisect rounds until I got stuck because of interferences with your
->>> extra patches applied:
->>
->> [Resolved the problems written at the last post.]
->>
->> Bisecting ended here:
->>
->> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=34b48db66e08ca1c1bc07cf305d672ac940268dc
->>
->> block: remove artifical max_hw_sectors cap
->>
->>
->> Removing this patch on 3.19 and 4.1 make things working again. Didn't
->> test 4.0, but I think it's the same. No more AMD-Vi IO_PAGE_FAULTS  with
->> that patch reverted.
-
-After long period of testing, I now can say, that max_sectors_kb can be
-set to 1024 - higher values produce AMD-Vi IO_PAGE_FAULTS and ata faults.
-
-
-This patch "sd: Fix maximum I/O size for BLOCK_PC requests"[1] as part
-of 4.1.7 produces ata / AMD-Vi IO_PAGE_FAULTS already during boot, too -
-no matter if "block: remove artifical max_hw_sectors cap"[2] has been
-applied or not.
-
-
-Next I tested was "dm crypt: constrain crypt device's max_segment_size
-to PAGE_SIZE" patch[3] applied to an unchanged 4.1.7 kernel w/o setting
-max_sectors_kb to 1024.
-
-Interesting effect was, that booting has been fine, but I could see lots
-of ata errors afterwards as soon as there is load on the md raid 1
-(during kernel compile e.g.), which is built on *rotational* disks:
-
-
-[  367.264873] ata2.00: exception Emask 0x0 SAct 0x7fbfffff SErr 0x0
-action 0x6 frozen
-[  367.264883] ata2.00: failed command: WRITE FPDMA QUEUED
-[  367.264893] ata2.00: cmd 61/40:00:b0:7b:d4/05:00:06:00:00/40 tag 0
-ncq 688128 out
-[  367.264893]          res 40/00:00:00:00:00/00:00:00:00:00/00 Emask
-0x4 (timeout)
-[  367.264899] ata2.00: status: { DRDY }
-...
-[  367.265332] ata2.00: failed command: WRITE FPDMA QUEUED
-[  367.265339] ata2.00: cmd 61/40:f0:30:71:d4/05:00:06:00:00/40 tag 30
-ncq 688128 out
-[  367.265339]          res 40/00:00:00:00:00/00:00:00:00:00/00 Emask
-0x4 (timeout)
-[  367.265343] ata2.00: status: { DRDY }
-[  367.265350] ata2: hard resetting link
-[  367.775330] ata2: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
-[  367.776970] ata2.00: configured for UDMA/133
-[  367.776997] ata2.00: device reported invalid CHS sector 0
-...
-[  367.777761] ata2: EH complete
-
-
-Iow: Using an unpatched kernel >= 3.19 means high risk to break
-filesystems if there are given some yet unknown conditions [4].
-
->>
->>
->> Please check why this patch triggers AMD-Vi IO_PAGE_FAULTS.
+> On 18/09/2015 16:29, Feng Wu wrote:
+> > This patch updates the Posted-Interrupts Descriptor when vCPU
+> > is blocked.
+> >
+> > pre-block:
+> > - Add the vCPU to the blocked per-CPU list
+> > - Set 'NV' to POSTED_INTR_WAKEUP_VECTOR
+> >
+> > post-block:
+> > - Remove the vCPU from the per-CPU list
+> >
+> > Signed-off-by: Feng Wu
+> <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> > ---
+> > v9:
+> > - Add description for blocked_vcpu_on_cpu_lock in
+> Documentation/virtual/kvm/locking.txt
+> > - Check !kvm_arch_has_assigned_device(vcpu->kvm) first, then
+> >   !irq_remapping_cap(IRQ_POSTING_CAP)
+> >
+> > v8:
+> > - Rename 'pi_pre_block' to 'pre_block'
+> > - Rename 'pi_post_block' to 'post_block'
+> > - Change some comments
+> > - Only add the vCPU to the blocking list when the VM has assigned devices.
+> >
+> >  Documentation/virtual/kvm/locking.txt |  12 +++
+> >  arch/x86/include/asm/kvm_host.h       |  13 +++
+> >  arch/x86/kvm/vmx.c                    | 153
+> ++++++++++++++++++++++++++++++++++
+> >  arch/x86/kvm/x86.c                    |  53 +++++++++---
+> >  include/linux/kvm_host.h              |   3 +
+> >  virt/kvm/kvm_main.c                   |   3 +
+> >  6 files changed, 227 insertions(+), 10 deletions(-)
+> >
+> > diff --git a/Documentation/virtual/kvm/locking.txt
+> b/Documentation/virtual/kvm/locking.txt
+> > index d68af4d..19f94a6 100644
+> > --- a/Documentation/virtual/kvm/locking.txt
+> > +++ b/Documentation/virtual/kvm/locking.txt
+> > @@ -166,3 +166,15 @@ Comment:	The srcu read lock must be held while
+> accessing memslots (e.g.
+> >  		MMIO/PIO address->device structure mapping (kvm->buses).
+> >  		The srcu index can be stored in kvm_vcpu->srcu_idx per vcpu
+> >  		if it is needed by multiple functions.
+> > +
+> > +Name:		blocked_vcpu_on_cpu_lock
+> > +Type:		spinlock_t
+> > +Arch:		x86
+> > +Protects:	blocked_vcpu_on_cpu
+> > +Comment:	This is a per-CPU lock and it is used for VT-d posted-interrupts.
+> > +		When VT-d posted-interrupts is supported and the VM has assigned
+> > +		devices, we put the blocked vCPU on the list blocked_vcpu_on_cpu
+> > +		protected by blocked_vcpu_on_cpu_lock, when VT-d hardware issues
+> > +		wakeup notification event since external interrupts from the
+> > +		assigned devices happens, we will find the vCPU on the list to
+> > +		wakeup.
+> > diff --git a/arch/x86/include/asm/kvm_host.h
+> b/arch/x86/include/asm/kvm_host.h
+> > index 0ddd353..304fbb5 100644
+> > --- a/arch/x86/include/asm/kvm_host.h
+> > +++ b/arch/x86/include/asm/kvm_host.h
+> > @@ -552,6 +552,8 @@ struct kvm_vcpu_arch {
+> >  	 */
+> >  	bool write_fault_to_shadow_pgtable;
+> >
+> > +	bool halted;
+> > +
+> >  	/* set at EPT violation at this point */
+> >  	unsigned long exit_qualification;
+> >
+> > @@ -864,6 +866,17 @@ struct kvm_x86_ops {
+> >  	/* pmu operations of sub-arch */
+> >  	const struct kvm_pmu_ops *pmu_ops;
+> >
+> > +	/*
+> > +	 * Architecture specific hooks for vCPU blocking due to
+> > +	 * HLT instruction.
+> > +	 * Returns for .pre_block():
+> > +	 *    - 0 means continue to block the vCPU.
+> > +	 *    - 1 means we cannot block the vCPU since some event
+> > +	 *        happens during this period, such as, 'ON' bit in
+> > +	 *        posted-interrupts descriptor is set.
+> > +	 */
+> > +	int (*pre_block)(struct kvm_vcpu *vcpu);
+> > +	void (*post_block)(struct kvm_vcpu *vcpu);
+> >  	int (*update_pi_irte)(struct kvm *kvm, unsigned int host_irq,
+> >  			      uint32_t guest_irq, bool set);
+> >  };
+> > diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+> > index 902a67d..9968896 100644
+> > --- a/arch/x86/kvm/vmx.c
+> > +++ b/arch/x86/kvm/vmx.c
+> > @@ -879,6 +879,13 @@ static DEFINE_PER_CPU(struct vmcs *,
+> current_vmcs);
+> >  static DEFINE_PER_CPU(struct list_head, loaded_vmcss_on_cpu);
+> >  static DEFINE_PER_CPU(struct desc_ptr, host_gdt);
+> >
+> > +/*
+> > + * We maintian a per-CPU linked-list of vCPU, so in wakeup_handler() we
+> > + * can find which vCPU should be waken up.
+> > + */
+> > +static DEFINE_PER_CPU(struct list_head, blocked_vcpu_on_cpu);
+> > +static DEFINE_PER_CPU(spinlock_t, blocked_vcpu_on_cpu_lock);
+> > +
+> >  static unsigned long *vmx_io_bitmap_a;
+> >  static unsigned long *vmx_io_bitmap_b;
+> >  static unsigned long *vmx_msr_bitmap_legacy;
+> > @@ -2985,6 +2992,8 @@ static int hardware_enable(void)
+> >  		return -EBUSY;
+> >
+> >  	INIT_LIST_HEAD(&per_cpu(loaded_vmcss_on_cpu, cpu));
+> > +	INIT_LIST_HEAD(&per_cpu(blocked_vcpu_on_cpu, cpu));
+> > +	spin_lock_init(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
+> >
+> >  	/*
+> >  	 * Now we can enable the vmclear operation in kdump
+> > @@ -6121,6 +6130,25 @@ static void
+> update_ple_window_actual_max(void)
+> >  			                    ple_window_grow, INT_MIN);
+> >  }
+> >
+> > +/*
+> > + * Handler for POSTED_INTERRUPT_WAKEUP_VECTOR.
+> > + */
+> > +static void wakeup_handler(void)
+> > +{
+> > +	struct kvm_vcpu *vcpu;
+> > +	int cpu = smp_processor_id();
+> > +
+> > +	spin_lock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
+> > +	list_for_each_entry(vcpu, &per_cpu(blocked_vcpu_on_cpu, cpu),
+> > +			blocked_vcpu_list) {
+> > +		struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
+> > +
+> > +		if (pi_test_on(pi_desc) == 1)
+> > +			kvm_vcpu_kick(vcpu);
+> > +	}
+> > +	spin_unlock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
+> > +}
+> > +
+> >  static __init int hardware_setup(void)
+> >  {
+> >  	int r = -ENOMEM, i, msr;
+> > @@ -6305,6 +6333,8 @@ static __init int hardware_setup(void)
+> >  		kvm_x86_ops->enable_log_dirty_pt_masked = NULL;
+> >  	}
+> >
+> > +	kvm_set_posted_intr_wakeup_handler(wakeup_handler);
+> > +
+> >  	return alloc_kvm_area();
+> >
+> >  out8:
+> > @@ -10430,6 +10460,126 @@ static void
+> vmx_enable_log_dirty_pt_masked(struct kvm *kvm,
+> >  }
+> >
+> >  /*
+> > + * This routine does the following things for vCPU which is going
+> > + * to be blocked if VT-d PI is enabled.
+> > + * - Store the vCPU to the wakeup list, so when interrupts happen
+> > + *   we can find the right vCPU to wake up.
+> > + * - Change the Posted-interrupt descriptor as below:
+> > + *      'NDST' <-- vcpu->pre_pcpu
+> > + *      'NV' <-- POSTED_INTR_WAKEUP_VECTOR
+> > + * - If 'ON' is set during this process, which means at least one
+> > + *   interrupt is posted for this vCPU, we cannot block it, in
+> > + *   this case, return 1, otherwise, return 0.
+> > + *
+> > + */
+> > +static int vmx_pre_block(struct kvm_vcpu *vcpu)
+> > +{
+> > +	unsigned long flags;
+> > +	unsigned int dest;
+> > +	struct pi_desc old, new;
+> > +	struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
+> > +
+> > +	if (!kvm_arch_has_assigned_device(vcpu->kvm) ||
+> > +		!irq_remapping_cap(IRQ_POSTING_CAP))
+> > +		return 0;
+> > +
+> > +	vcpu->pre_pcpu = vcpu->cpu;
+> > +	spin_lock_irqsave(&per_cpu(blocked_vcpu_on_cpu_lock,
+> > +			  vcpu->pre_pcpu), flags);
+> > +	list_add_tail(&vcpu->blocked_vcpu_list,
+> > +		      &per_cpu(blocked_vcpu_on_cpu,
+> > +		      vcpu->pre_pcpu));
+> > +	spin_unlock_irqrestore(&per_cpu(blocked_vcpu_on_cpu_lock,
+> > +			       vcpu->pre_pcpu), flags);
+> > +
+> > +	do {
+> > +		old.control = new.control = pi_desc->control;
+> > +
+> > +		/*
+> > +		 * We should not block the vCPU if
+> > +		 * an interrupt is posted for it.
+> > +		 */
+> > +		if (pi_test_on(pi_desc) == 1) {
+> > +			spin_lock_irqsave(&per_cpu(blocked_vcpu_on_cpu_lock,
+> > +					  vcpu->pre_pcpu), flags);
+> > +			list_del(&vcpu->blocked_vcpu_list);
+> > +			spin_unlock_irqrestore(
+> > +					&per_cpu(blocked_vcpu_on_cpu_lock,
+> > +					vcpu->pre_pcpu), flags);
+> > +			vcpu->pre_pcpu = -1;
+> > +
+> > +			return 1;
+> > +		}
+> > +
+> > +		WARN((pi_desc->sn == 1),
+> > +		     "Warning: SN field of posted-interrupts "
+> > +		     "is set before blocking\n");
+> > +
+> > +		/*
+> > +		 * Since vCPU can be preempted during this process,
+> > +		 * vcpu->cpu could be different with pre_pcpu, we
+> > +		 * need to set pre_pcpu as the destination of wakeup
+> > +		 * notification event, then we can find the right vCPU
+> > +		 * to wakeup in wakeup handler if interrupts happen
+> > +		 * when the vCPU is in blocked state.
+> > +		 */
+> > +		dest = cpu_physical_id(vcpu->pre_pcpu);
+> > +
+> > +		if (x2apic_enabled())
+> > +			new.ndst = dest;
+> > +		else
+> > +			new.ndst = (dest << 8) & 0xFF00;
+> > +
+> > +		/* set 'NV' to 'wakeup vector' */
+> > +		new.nv = POSTED_INTR_WAKEUP_VECTOR;
+> > +	} while (cmpxchg(&pi_desc->control, old.control,
+> > +			new.control) != old.control);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static void vmx_post_block(struct kvm_vcpu *vcpu)
+> > +{
+> > +	struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
+> > +	struct pi_desc old, new;
+> > +	unsigned int dest;
+> > +	unsigned long flags;
+> > +
+> > +	if (!kvm_arch_has_assigned_device(vcpu->kvm) ||
+> > +		!irq_remapping_cap(IRQ_POSTING_CAP))
+> > +		return;
+> > +
+> > +	do {
+> > +		old.control = new.control = pi_desc->control;
+> > +
+> > +		dest = cpu_physical_id(vcpu->cpu);
+> > +
+> > +		if (x2apic_enabled())
+> > +			new.ndst = dest;
+> > +		else
+> > +			new.ndst = (dest << 8) & 0xFF00;
+> > +
+> > +		/* Allow posting non-urgent interrupts */
+> > +		new.sn = 0;
+> > +
+> > +		/* set 'NV' to 'notification vector' */
+> > +		new.nv = POSTED_INTR_VECTOR;
+> > +	} while (cmpxchg(&pi_desc->control, old.control,
+> > +			new.control) != old.control);
+> > +
+> > +	if(vcpu->pre_pcpu != -1) {
+> > +		spin_lock_irqsave(
+> > +			&per_cpu(blocked_vcpu_on_cpu_lock,
+> > +			vcpu->pre_pcpu), flags);
+> > +		list_del(&vcpu->blocked_vcpu_list);
+> > +		spin_unlock_irqrestore(
+> > +			&per_cpu(blocked_vcpu_on_cpu_lock,
+> > +			vcpu->pre_pcpu), flags);
+> > +		vcpu->pre_pcpu = -1;
+> > +	}
+> > +}
+> > +
+> > +/*
+> >   * vmx_update_pi_irte - set IRTE for Posted-Interrupts
+> >   *
+> >   * @kvm: kvm
+> > @@ -10620,6 +10770,9 @@ static struct kvm_x86_ops vmx_x86_ops = {
+> >  	.flush_log_dirty = vmx_flush_log_dirty,
+> >  	.enable_log_dirty_pt_masked = vmx_enable_log_dirty_pt_masked,
+> >
+> > +	.pre_block = vmx_pre_block,
+> > +	.post_block = vmx_post_block,
+> > +
+> >  	.pmu_ops = &intel_pmu_ops,
+> >
+> >  	.update_pi_irte = vmx_update_pi_irte,
+> > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> > index 58688aa..46f55b2 100644
+> > --- a/arch/x86/kvm/x86.c
+> > +++ b/arch/x86/kvm/x86.c
+> > @@ -5869,7 +5869,12 @@ int kvm_vcpu_halt(struct kvm_vcpu *vcpu)
+> >  {
+> >  	++vcpu->stat.halt_exits;
+> >  	if (irqchip_in_kernel(vcpu->kvm)) {
+> > -		vcpu->arch.mp_state = KVM_MP_STATE_HALTED;
+> > +		/* Handle posted-interrupt when vCPU is to be halted */
+> > +		if (!kvm_x86_ops->pre_block ||
+> > +				kvm_x86_ops->pre_block(vcpu) == 0) {
+> > +			vcpu->arch.halted = true;
+> > +			vcpu->arch.mp_state = KVM_MP_STATE_HALTED;
+> > +		}
+> >  		return 1;
+> >  	} else {
+> >  		vcpu->run->exit_reason = KVM_EXIT_HLT;
+> > @@ -6518,6 +6523,20 @@ static int vcpu_enter_guest(struct kvm_vcpu
+> *vcpu)
+> >  			kvm_vcpu_reload_apic_access_page(vcpu);
+> >  	}
+> >
+> > +	/*
+> > +	 * KVM_REQ_EVENT is not set when posted interrupts are set by
+> > +	 * VT-d hardware, so we have to update RVI unconditionally.
+> > +	 */
+> > +	if (kvm_lapic_enabled(vcpu)) {
+> > +		/*
+> > +		 * Update architecture specific hints for APIC
+> > +		 * virtual interrupt delivery.
+> > +		 */
+> > +		if (kvm_x86_ops->hwapic_irr_update)
+> > +			kvm_x86_ops->hwapic_irr_update(vcpu,
+> > +				kvm_lapic_find_highest_irr(vcpu));
+> > +	}
+> > +
+> >  	if (kvm_check_request(KVM_REQ_EVENT, vcpu) || req_int_win) {
+> >  		kvm_apic_accept_events(vcpu);
+> >  		if (vcpu->arch.mp_state == KVM_MP_STATE_INIT_RECEIVED) {
+> > @@ -6534,13 +6553,6 @@ static int vcpu_enter_guest(struct kvm_vcpu
+> *vcpu)
+> >  			kvm_x86_ops->enable_irq_window(vcpu);
+> >
+> >  		if (kvm_lapic_enabled(vcpu)) {
+> > -			/*
+> > -			 * Update architecture specific hints for APIC
+> > -			 * virtual interrupt delivery.
+> > -			 */
+> > -			if (kvm_x86_ops->hwapic_irr_update)
+> > -				kvm_x86_ops->hwapic_irr_update(vcpu,
+> > -					kvm_lapic_find_highest_irr(vcpu));
+> >  			update_cr8_intercept(vcpu);
+> >  			kvm_lapic_sync_to_vapic(vcpu);
+> >  		}
+> > @@ -6711,10 +6723,31 @@ static int vcpu_run(struct kvm_vcpu *vcpu)
+> >
+> >  	for (;;) {
+> >  		if (vcpu->arch.mp_state == KVM_MP_STATE_RUNNABLE &&
+> > -		    !vcpu->arch.apf.halted)
+> > +		    !vcpu->arch.apf.halted) {
+> > +			/*
+> > +			 * For some cases, we can get here with
+> > +			 * vcpu->arch.halted being true.
+> > +			 */
 > 
-> I would submit this bug to maintainers of AMD-Vi. They understand the 
-> hardware, so they should tell why do large I/O requests result in 
-> IO_PAGE_FAULTs.
 > 
-> It is probably bug either in AMD-Vi driver or in hardware.
+> Feng,
+> 
+> can you explain what are the reasons for this?
+> 
+> Perhaps pre_block and post_block should be handled entirely in
+> vcpu_block, like this:
+> 
+>  static inline int vcpu_block(struct kvm *kvm, struct kvm_vcpu *vcpu)
+>  {
+> -	if (!kvm_arch_vcpu_runnable(vcpu)) {
+> +	if (!kvm_arch_vcpu_runnable(vcpu) &&
+> +	    (!kvm_x86_ops->pre_block || kvm_x86_ops->pre_block(vcpu) == 0)) {
+>  		srcu_read_unlock(&kvm->srcu, vcpu->srcu_idx);
+>  		kvm_vcpu_block(vcpu);
+>  		vcpu->srcu_idx = srcu_read_lock(&kvm->srcu);
+> +
+> +		if (kvm_x86_ops->post_block)
+> +			kvm_x86_ops->post_block(vcpu);
+> +
+>  		if (!kvm_check_request(KVM_REQ_UNHALT, vcpu))
+>  			return 1;
+>  	}
+> 
+> and removing all of your changes in kvm_vcpu_halt and vcpu_run?
+> (Full patch below my signature, only compile-tested).
+> 
+> It should not matter if mp_state goes briefly to KVM_MP_STATE_HALTED and
+> from there back to KVM_MP_STATE_RUNNABLE.
+> 
+> Paolo
+> 
+> diff --git a/arch/x86/include/asm/kvm_host.h
+> b/arch/x86/include/asm/kvm_host.h
+> index 4a0b1a800317..5265a5522458 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -568,8 +568,6 @@ struct kvm_vcpu_arch {
+>  	 */
+>  	bool write_fault_to_shadow_pgtable;
+> 
+> -	bool halted;
+> -
+>  	/* set at EPT violation at this point */
+>  	unsigned long exit_qualification;
+> 
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index a2a070541318..44092cfa1c0a 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -5674,12 +5674,7 @@ int kvm_vcpu_halt(struct kvm_vcpu *vcpu)
+>  {
+>  	++vcpu->stat.halt_exits;
+>  	if (irqchip_in_kernel(vcpu->kvm)) {
+> -		/* Handle posted-interrupt when vCPU is to be halted */
+> -		if (!kvm_x86_ops->pre_block ||
+> -				kvm_x86_ops->pre_block(vcpu) == 0) {
+> -			vcpu->arch.halted = true;
+> -			vcpu->arch.mp_state = KVM_MP_STATE_HALTED;
+> -		}
+> +		vcpu->arch.mp_state = KVM_MP_STATE_HALTED;
+>  		return 1;
+>  	} else {
+>  		vcpu->run->exit_reason = KVM_EXIT_HLT;
+> @@ -6446,10 +6441,15 @@ out:
+> 
+>  static inline int vcpu_block(struct kvm *kvm, struct kvm_vcpu *vcpu)
+>  {
+> -	if (!kvm_arch_vcpu_runnable(vcpu)) {
+> +	if (!kvm_arch_vcpu_runnable(vcpu) &&
+> +	    (!kvm_x86_ops->pre_block || kvm_x86_ops->pre_block(vcpu) == 0)) {
+>  		srcu_read_unlock(&kvm->srcu, vcpu->srcu_idx);
+>  		kvm_vcpu_block(vcpu);
+>  		vcpu->srcu_idx = srcu_read_lock(&kvm->srcu);
+> +
+> +		if (kvm_x86_ops->post_block)
+> +			kvm_x86_ops->post_block(vcpu);
+> +
+>  		if (!kvm_check_request(KVM_REQ_UNHALT, vcpu))
+>  			return 1;
+>  	}
+> @@ -6482,28 +6482,9 @@ static int vcpu_run(struct kvm_vcpu *vcpu)
+>  	for (;;) {
+>  		if (vcpu->arch.mp_state == KVM_MP_STATE_RUNNABLE &&
+>  		    !vcpu->arch.apf.halted) {
+> -			/*
+> -			 * For some cases, we can get here with
+> -			 * vcpu->arch.halted being true.
+> -			 */
+> -			if (kvm_x86_ops->post_block && vcpu->arch.halted) {
+> -				kvm_x86_ops->post_block(vcpu);
+> -				vcpu->arch.halted = false;
+> -			}
+> -
+>  			r = vcpu_enter_guest(vcpu);
+>  		} else {
+>  			r = vcpu_block(kvm, vcpu);
+> -
+> -			/*
+> -			 * post_block() must be called after
+> -			 * pre_block() which is called in
+> -			 * kvm_vcpu_halt().
+> -			 */
+> -			if (kvm_x86_ops->post_block && vcpu->arch.halted) {
+> -				kvm_x86_ops->post_block(vcpu);
+> -				vcpu->arch.halted = false;
+> -			}
+>  		}
+> 
+>  		if (r <= 0)
 
-Until now, I didn't hear anything from the maintainers of AMD-Vi.
+I tested the above patch you suggested, it works fine. Thank you! So
+do I need to resend a new version or you can handle it in your tree?
 
-
-Regards,
-Andreas Hartmann
-
-
-[1] http://thread.gmane.org/gmane.linux.kernel.commits.head/538464
-[2]
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=34b48db66e08ca1c1bc07cf305d672ac940268dc
-[3]
-http://news.gmane.org/find-root.php?group=gmane.linux.kernel&article=2036495
-[4] http://thread.gmane.org/gmane.linux.kernel.pci/43851/focus=44011
+Thanks,
+Feng
