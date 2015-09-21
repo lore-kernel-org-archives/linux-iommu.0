@@ -1,54 +1,110 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: About amd-iommu support for kdump kernel
-Date: Mon, 21 Sep 2015 15:54:30 +0200
-Message-ID: <20150921135430.GC2173@8bytes.org>
-References: <20150915120606.GD15856@dhcp-128-28.nay.redhat.com>
+From: Eric Auger <eric.auger@linaro.org>
+Subject: Re: [PATCH v9 03/18] KVM: arm/arm64: select IRQ_BYPASS_MANAGER
+Date: Mon, 21 Sep 2015 21:32:21 +0200
+Message-ID: <56005B45.3070003@linaro.org>
+References: <1442586596-5920-1-git-send-email-feng.wu@intel.com>
+ <1442586596-5920-4-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20150915120606.GD15856-0VdLhd/A9PlfpSRLqpFUpR/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1442586596-5920-4-git-send-email-feng.wu@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Feng Wu <feng.wu@intel.com>, pbonzini@redhat.com, alex.williamson@redhat.com, joro@8bytes.org, mtosatti@redhat.com
+Cc: kvm@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Baoquan,
+Hi Feng,
 
-On Tue, Sep 15, 2015 at 08:06:06PM +0800, Baoquan He wrote:
-> Recently I am free and can try to work out the amd-iommu support for
-> kdump kernel. Now I have some plans and draft them into codes and debugging.
-> And also there are prlblems. I brief them here, could you please have a
-> look and give some suggestions?
+There is a compilation issue for arm64 I need to fix here. Shall I
+resend the pre-requisite series or do you prefer to remove that patch
+file from this series. It would be included later when arm irq
+forwarding series get's ready.
+
+Best Regards
+
+Eric
+
+On 09/18/2015 04:29 PM, Feng Wu wrote:
+> From: Eric Auger <eric.auger@linaro.org>
 > 
-> Two parts:
+> Select IRQ_BYPASS_MANAGER when CONFIG_KVM is set
+> Also add compilation of virt/lib.
 > 
-> 1) IO page mapping
->  .> Checking if it's in kdump kernel and previously enabled
->  .> If yes do below operatons:
->  	.> Do not disable amd iommu
-> 	.> Copy dev table form old kernel and set the old domain id in amd_iommu_pd_alloc_bitmap
-> 	.> Don't call update_domain() to update device table until the first __map_single() is called by device driver init
-
-These operations look good so far, but a problem still remains: The AMD
-IOMMU driver uses default domains which get allocated and initialized at
-iommu driver initialization time. So there is no clean way yet to defer
-device domain initialization to device driver init time.
-
-This needs to be changed before the VT-d driver can be converted to
-default domains too.
-
-I'll also have a look into your patch. Maybe I see something that causes
-the interrupt to fail.
-
-
-	Joerg
+> Signed-off-by: Eric Auger <eric.auger@linaro.org>
+> Signed-off-by: Feng Wu <feng.wu@intel.com>
+> ---
+> v3 -> v4:
+> - add compilation of virt/lib in arm/arm64 KVM
+> 
+> v2 -> v3:
+> - [Feng Wu] Correct a typo in 'arch/arm64/kvm/Kconfig'
+> 
+> v1 -> v2:
+> - also set IRQ_BYPASS_MANAGER for arm64
+> 
+>  arch/arm/kvm/Kconfig    | 2 ++
+>  arch/arm/kvm/Makefile   | 1 +
+>  arch/arm64/kvm/Kconfig  | 2 ++
+>  arch/arm64/kvm/Makefile | 1 +
+>  4 files changed, 6 insertions(+)
+> 
+> diff --git a/arch/arm/kvm/Kconfig b/arch/arm/kvm/Kconfig
+> index bfb915d..3c565b9 100644
+> --- a/arch/arm/kvm/Kconfig
+> +++ b/arch/arm/kvm/Kconfig
+> @@ -3,6 +3,7 @@
+>  #
+>  
+>  source "virt/kvm/Kconfig"
+> +source "virt/lib/Kconfig"
+>  
+>  menuconfig VIRTUALIZATION
+>  	bool "Virtualization"
+> @@ -31,6 +32,7 @@ config KVM
+>  	select KVM_VFIO
+>  	select HAVE_KVM_EVENTFD
+>  	select HAVE_KVM_IRQFD
+> +	select IRQ_BYPASS_MANAGER
+>  	depends on ARM_VIRT_EXT && ARM_LPAE && ARM_ARCH_TIMER
+>  	---help---
+>  	  Support hosting virtualized guest machines.
+> diff --git a/arch/arm/kvm/Makefile b/arch/arm/kvm/Makefile
+> index c5eef02c..a6a41dd 100644
+> --- a/arch/arm/kvm/Makefile
+> +++ b/arch/arm/kvm/Makefile
+> @@ -24,3 +24,4 @@ obj-y += $(KVM)/arm/vgic.o
+>  obj-y += $(KVM)/arm/vgic-v2.o
+>  obj-y += $(KVM)/arm/vgic-v2-emul.o
+>  obj-y += $(KVM)/arm/arch_timer.o
+> +obj-y += ../../../virt/lib/
+> diff --git a/arch/arm64/kvm/Kconfig b/arch/arm64/kvm/Kconfig
+> index bfffe8f..2509539 100644
+> --- a/arch/arm64/kvm/Kconfig
+> +++ b/arch/arm64/kvm/Kconfig
+> @@ -3,6 +3,7 @@
+>  #
+>  
+>  source "virt/kvm/Kconfig"
+> +source "virt/lib/Kconfig"
+>  
+>  menuconfig VIRTUALIZATION
+>  	bool "Virtualization"
+> @@ -31,6 +32,7 @@ config KVM
+>  	select KVM_VFIO
+>  	select HAVE_KVM_EVENTFD
+>  	select HAVE_KVM_IRQFD
+> +	select IRQ_BYPASS_MANAGER
+>  	---help---
+>  	  Support hosting virtualized guest machines.
+>  
+> diff --git a/arch/arm64/kvm/Makefile b/arch/arm64/kvm/Makefile
+> index f90f4aa..55eec69 100644
+> --- a/arch/arm64/kvm/Makefile
+> +++ b/arch/arm64/kvm/Makefile
+> @@ -27,3 +27,4 @@ kvm-$(CONFIG_KVM_ARM_HOST) += $(KVM)/arm/vgic-v3.o
+>  kvm-$(CONFIG_KVM_ARM_HOST) += $(KVM)/arm/vgic-v3-emul.o
+>  kvm-$(CONFIG_KVM_ARM_HOST) += vgic-v3-switch.o
+>  kvm-$(CONFIG_KVM_ARM_HOST) += $(KVM)/arm/arch_timer.o
+> +kvm-$(CONFIG_KVM_ARM_HOST) += ../../../virt/lib/
+> 
