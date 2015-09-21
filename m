@@ -1,110 +1,53 @@
-From: Eric Auger <eric.auger@linaro.org>
-Subject: Re: [PATCH v9 03/18] KVM: arm/arm64: select IRQ_BYPASS_MANAGER
-Date: Mon, 21 Sep 2015 21:32:21 +0200
-Message-ID: <56005B45.3070003@linaro.org>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v9 12/18] vfio: Register/unregister irq_bypass_producer
+Date: Mon, 21 Sep 2015 21:46:23 +0200
+Message-ID: <56005E8F.5090308@linaro.org>
 References: <1442586596-5920-1-git-send-email-feng.wu@intel.com>
- <1442586596-5920-4-git-send-email-feng.wu@intel.com>
+	<1442586596-5920-13-git-send-email-feng.wu@intel.com>
+	<E959C4978C3B6342920538CF579893F00272346C@SHSMSX104.ccr.corp.intel.com>
+	<55FFCE9F.5090001@redhat.com>
+	<E959C4978C3B6342920538CF579893F002723F72@SHSMSX104.ccr.corp.intel.com>
+	<55FFFFEE.6090800@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1442586596-5920-4-git-send-email-feng.wu@intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Feng Wu <feng.wu@intel.com>, pbonzini@redhat.com, alex.williamson@redhat.com, joro@8bytes.org, mtosatti@redhat.com
-Cc: kvm@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <55FFFFEE.6090800-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Feng,
+Hi,
+On 09/21/2015 03:02 PM, Paolo Bonzini wrote:
+> 
+> 
+> On 21/09/2015 14:53, Wu, Feng wrote:
+>>>>>> I think the point is that we cannot trigger the build of irqbypass
+>>>>>> manager inside KVM or VFIO, we need trigger the build at a high
+>>>>>> level and it should be built before VFIO and KVM. Any ideas?
+>>>>
+>>>> We can add virt/Makefile and build virt/lib/ directly, not through
+>>>> arch/x86/kvm.
+>> Thinking about this more, does that mean we need to add the virt directory
+>> in the top Makefile in Linux tree?
+> 
+> Yes, it does.
+So I understand this will replace patches 2 & 3 then and will fix the
+arm64 issue then.
 
-There is a compilation issue for arm64 I need to fix here. Shall I
-resend the pre-requisite series or do you prefer to remove that patch
-file from this series. It would be included later when arm irq
-forwarding series get's ready.
-
-Best Regards
+Thanks
 
 Eric
 
-On 09/18/2015 04:29 PM, Feng Wu wrote:
-> From: Eric Auger <eric.auger@linaro.org>
 > 
-> Select IRQ_BYPASS_MANAGER when CONFIG_KVM is set
-> Also add compilation of virt/lib.
-> 
-> Signed-off-by: Eric Auger <eric.auger@linaro.org>
-> Signed-off-by: Feng Wu <feng.wu@intel.com>
-> ---
-> v3 -> v4:
-> - add compilation of virt/lib in arm/arm64 KVM
-> 
-> v2 -> v3:
-> - [Feng Wu] Correct a typo in 'arch/arm64/kvm/Kconfig'
-> 
-> v1 -> v2:
-> - also set IRQ_BYPASS_MANAGER for arm64
-> 
->  arch/arm/kvm/Kconfig    | 2 ++
->  arch/arm/kvm/Makefile   | 1 +
->  arch/arm64/kvm/Kconfig  | 2 ++
->  arch/arm64/kvm/Makefile | 1 +
->  4 files changed, 6 insertions(+)
-> 
-> diff --git a/arch/arm/kvm/Kconfig b/arch/arm/kvm/Kconfig
-> index bfb915d..3c565b9 100644
-> --- a/arch/arm/kvm/Kconfig
-> +++ b/arch/arm/kvm/Kconfig
-> @@ -3,6 +3,7 @@
->  #
->  
->  source "virt/kvm/Kconfig"
-> +source "virt/lib/Kconfig"
->  
->  menuconfig VIRTUALIZATION
->  	bool "Virtualization"
-> @@ -31,6 +32,7 @@ config KVM
->  	select KVM_VFIO
->  	select HAVE_KVM_EVENTFD
->  	select HAVE_KVM_IRQFD
-> +	select IRQ_BYPASS_MANAGER
->  	depends on ARM_VIRT_EXT && ARM_LPAE && ARM_ARCH_TIMER
->  	---help---
->  	  Support hosting virtualized guest machines.
-> diff --git a/arch/arm/kvm/Makefile b/arch/arm/kvm/Makefile
-> index c5eef02c..a6a41dd 100644
-> --- a/arch/arm/kvm/Makefile
-> +++ b/arch/arm/kvm/Makefile
-> @@ -24,3 +24,4 @@ obj-y += $(KVM)/arm/vgic.o
->  obj-y += $(KVM)/arm/vgic-v2.o
->  obj-y += $(KVM)/arm/vgic-v2-emul.o
->  obj-y += $(KVM)/arm/arch_timer.o
-> +obj-y += ../../../virt/lib/
-> diff --git a/arch/arm64/kvm/Kconfig b/arch/arm64/kvm/Kconfig
-> index bfffe8f..2509539 100644
-> --- a/arch/arm64/kvm/Kconfig
-> +++ b/arch/arm64/kvm/Kconfig
-> @@ -3,6 +3,7 @@
->  #
->  
->  source "virt/kvm/Kconfig"
-> +source "virt/lib/Kconfig"
->  
->  menuconfig VIRTUALIZATION
->  	bool "Virtualization"
-> @@ -31,6 +32,7 @@ config KVM
->  	select KVM_VFIO
->  	select HAVE_KVM_EVENTFD
->  	select HAVE_KVM_IRQFD
-> +	select IRQ_BYPASS_MANAGER
->  	---help---
->  	  Support hosting virtualized guest machines.
->  
-> diff --git a/arch/arm64/kvm/Makefile b/arch/arm64/kvm/Makefile
-> index f90f4aa..55eec69 100644
-> --- a/arch/arm64/kvm/Makefile
-> +++ b/arch/arm64/kvm/Makefile
-> @@ -27,3 +27,4 @@ kvm-$(CONFIG_KVM_ARM_HOST) += $(KVM)/arm/vgic-v3.o
->  kvm-$(CONFIG_KVM_ARM_HOST) += $(KVM)/arm/vgic-v3-emul.o
->  kvm-$(CONFIG_KVM_ARM_HOST) += vgic-v3-switch.o
->  kvm-$(CONFIG_KVM_ARM_HOST) += $(KVM)/arm/arch_timer.o
-> +kvm-$(CONFIG_KVM_ARM_HOST) += ../../../virt/lib/
+> Paolo
 > 
