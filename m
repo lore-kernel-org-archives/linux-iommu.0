@@ -1,18 +1,15 @@
-From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v9 12/18] vfio: Register/unregister irq_bypass_producer
-Date: Mon, 21 Sep 2015 21:46:23 +0200
-Message-ID: <56005E8F.5090308@linaro.org>
-References: <1442586596-5920-1-git-send-email-feng.wu@intel.com>
-	<1442586596-5920-13-git-send-email-feng.wu@intel.com>
-	<E959C4978C3B6342920538CF579893F00272346C@SHSMSX104.ccr.corp.intel.com>
-	<55FFCE9F.5090001@redhat.com>
-	<E959C4978C3B6342920538CF579893F002723F72@SHSMSX104.ccr.corp.intel.com>
-	<55FFFFEE.6090800@redhat.com>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: About amd-iommu support for kdump kernel
+Date: Tue, 22 Sep 2015 11:18:00 +0800
+Message-ID: <20150922031800.GA2569@dhcp-128-28.nay.redhat.com>
+References: <20150915120606.GD15856@dhcp-128-28.nay.redhat.com>
+	<20150921135430.GC2173@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <55FFFFEE.6090800-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20150921135430.GC2173-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,32 +19,62 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
-On 09/21/2015 03:02 PM, Paolo Bonzini wrote:
+On 09/21/15 at 03:54pm, Joerg Roedel wrote:
+> Hi Baoquan,
 > 
+> On Tue, Sep 15, 2015 at 08:06:06PM +0800, Baoquan He wrote:
+> > Recently I am free and can try to work out the amd-iommu support for
+> > kdump kernel. Now I have some plans and draft them into codes and debugging.
+> > And also there are prlblems. I brief them here, could you please have a
+> > look and give some suggestions?
+> > 
+> > Two parts:
+> > 
+> > 1) IO page mapping
+> >  .> Checking if it's in kdump kernel and previously enabled
+> >  .> If yes do below operatons:
+> >  	.> Do not disable amd iommu
+> > 	.> Copy dev table form old kernel and set the old domain id in amd_iommu_pd_alloc_bitmap
+> > 	.> Don't call update_domain() to update device table until the first __map_single() is called by device driver init
 > 
-> On 21/09/2015 14:53, Wu, Feng wrote:
->>>>>> I think the point is that we cannot trigger the build of irqbypass
->>>>>> manager inside KVM or VFIO, we need trigger the build at a high
->>>>>> level and it should be built before VFIO and KVM. Any ideas?
->>>>
->>>> We can add virt/Makefile and build virt/lib/ directly, not through
->>>> arch/x86/kvm.
->> Thinking about this more, does that mean we need to add the virt directory
->> in the top Makefile in Linux tree?
-> 
-> Yes, it does.
-So I understand this will replace patches 2 & 3 then and will fix the
-arm64 issue then.
+> These operations look good so far, but a problem still remains: The AMD
+> IOMMU driver uses default domains which get allocated and initialized at
+> iommu driver initialization time. So there is no clean way yet to defer
+> device domain initialization to device driver init time.
 
-Thanks
+It's so good to get your reply.
 
-Eric
+Check the code again, though default domains are allocated and
+initialized at iommu driver initialization time, it may newly build or
+change the io page tables, finally it need call update_domain() to
+set domain->pt_root to dte entry. If I changed update_domain() like
+below, then any change of io page mapping won't be installed into dte
+entry of device, then it doesn't have effect, I think this can defer the
+contents of io page tables installed to device driver init time when I
+reset the translation_pre_enabled state to make update_main() work.
+
+static void update_domain(struct protection_domain *domain)
+{
+	if (!domain->updated || translation_pre_enabled())
+		return;
+
+	update_device_table(domain);
+	...
+}
+
+Don't know if I understand it correctly.
 
 > 
-> Paolo
+> This needs to be changed before the VT-d driver can be converted to
+> default domains too.
+> 
+> I'll also have a look into your patch. Maybe I see something that causes
+> the interrupt to fail.
+> 
+> 
+> 	Joerg
 > 
