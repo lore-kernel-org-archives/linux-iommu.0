@@ -1,15 +1,14 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: About amd-iommu support for kdump kernel
-Date: Tue, 22 Sep 2015 20:14:42 +0800
-Message-ID: <20150922121442.GA1935@dhcp-128-28.nay.redhat.com>
-References: <20150915120606.GD15856@dhcp-128-28.nay.redhat.com>
-	<20150921135430.GC2173@8bytes.org>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v2] iommu/io-pgtable-arm: Don't use dma_to_phys()
+Date: Tue, 22 Sep 2015 21:25:08 +0800
+Message-ID: <1442928308.17514.3.camel@mhfsdcap03>
+References: <59f4ebbf06e75a6176a366495211afd16d0048a3.1442507940.git.robin.murphy@arm.com>
+	<1442566550.8145.156.camel@mhfsdcap03> <55FBEFBA.6000606@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20150921135430.GC2173-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <55FBEFBA.6000606-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,40 +18,65 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/21/15 at 03:54pm, Joerg Roedel wrote:
-> Hi Baoquan,
+On Fri, 2015-09-18 at 12:04 +0100, Robin Murphy wrote:
+> On 18/09/15 09:55, Yong Wu wrote:
+> > On Thu, 2015-09-17 at 17:42 +0100, Robin Murphy wrote:
+> [...]
+> >> the appropriate course of action. Further care (and ugliness) is also
+> >> necessary in the comparison to avoid truncation if phys_addr_t and
+> >> dma_addr_t differ in size.
+> [...]
+> >>   		/*
+> >>   		 * We depend on the IOMMU being able to work with any physical
+> >> -		 * address directly, so if the DMA layer suggests it can't by
+> >> -		 * giving us back some translation, that bodes very badly...
+> >> +		 * address directly, so if the DMA layer suggests otherwise by
+> >> +		 * translating or truncating them, that bodes very badly...
+> >>   		 */
+> >> -		if (dma != __arm_lpae_dma_addr(dev, pages))
+> >> +		if (dma != virt_to_phys(pages))
+> >
+> > Could I ask why not use __arm_lpae_dma_addr(pages) here?
+> > dma is dma_addr_t.
 > 
-> On Tue, Sep 15, 2015 at 08:06:06PM +0800, Baoquan He wrote:
-> > Recently I am free and can try to work out the amd-iommu support for
-> > kdump kernel. Now I have some plans and draft them into codes and debugging.
-> > And also there are prlblems. I brief them here, could you please have a
-> > look and give some suggestions?
-> > 
-> > Two parts:
-> > 
-> > 1) IO page mapping
-> >  .> Checking if it's in kdump kernel and previously enabled
-> >  .> If yes do below operatons:
-> >  	.> Do not disable amd iommu
-> > 	.> Copy dev table form old kernel and set the old domain id in amd_iommu_pd_alloc_bitmap
-> > 	.> Don't call update_domain() to update device table until the first __map_single() is called by device driver init
-> 
-> These operations look good so far, but a problem still remains: The AMD
-> IOMMU driver uses default domains which get allocated and initialized at
-> iommu driver initialization time. So there is no clean way yet to defer
-> device domain initialization to device driver init time.
-> 
-> This needs to be changed before the VT-d driver can be converted to
-> default domains too.
-> 
-> I'll also have a look into your patch. Maybe I see something that causes
-> the interrupt to fail.
+> Specifically, the problem case for that is when phys_addr_t is 64-bit 
+> but dma_addr_t is 32-bit. The cast in __arm_lpae_dma_addr is necessary 
+> to avoid a truncation warning when we make the DMA API calls, but we 
+> actually need the opposite in the comparison here - comparing the 
+> different types directly allows integer promotion to kick in 
+> appropriately so we don't lose the top half of the larger address. 
+> Otherwise, you'd never spot the difference between, say, your original 
+> page at 0x88c0000000 and a bounce-buffered copy that happened to end up 
+> mapped to 0xc0000000.
 
-The interrupt failure happened in check_timer may be similar with this
-one. I didn't flush the irt correctly. But I didn't get it yet.
+Thanks.
 
-http://lists.infradead.org/pipermail/kexec/2014-December/013137.html
+About here:
+> @@ -629,6 +626,11 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg
+*cfg)
+>       if (cfg->oas > ARM_LPAE_MAX_ADDR_BITS)
+>               return NULL;
+>  
+> +     if (cfg->iommu_dev->dma_pfn_offset) {
+
+Do we need change to :
+	if (!selftest_running && cfg->iommu_dev->dma_pfn_offset) {
+
+cfg->iommu_dev will be null while self test.
+
+> +             dev_err(cfg->iommu_dev, "Cannot accommodate DMA offset
+for IOMMU page tables\n");
+> +             return NULL;
+> +     }
+> +
+>       data = kmalloc(sizeof(*data), GFP_KERNEL);
+>       if (!data)
+>               return NULL;
+
+> 
+> Robin.
+> 
