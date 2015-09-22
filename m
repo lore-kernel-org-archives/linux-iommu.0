@@ -1,216 +1,94 @@
-From: Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH v4 3/6] iommu: add ARM short descriptor page table
- allocator.
-Date: Tue, 22 Sep 2015 22:12:47 +0800
-Message-ID: <1442931167.17514.39.camel@mhfsdcap03>
-References: <1438597279-2937-1-git-send-email-yong.wu@mediatek.com>
-	 <1438597279-2937-4-git-send-email-yong.wu@mediatek.com>
-	 <20150916155824.GM28771@arm.com> <1442501662.8145.151.camel@mhfsdcap03>
+From: Jerome Glisse <j.glisse@gmail.com>
+Subject: Re: [RFC PATCH] dma/swiotlb: Add helper for device driver to opt-out
+ from swiotlb.
+Date: Tue, 22 Sep 2015 11:43:19 -0400
+Message-ID: <20150922154317.GA3189@gmail.com>
+References: <1442514158-30281-1-git-send-email-jglisse@redhat.com>
+ <20150917190251.GE20952@x230.dumpdata.com>
+ <20150917190746.GA6699@redhat.com>
+ <20150917193157.GC21496@x230.dumpdata.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1442501662.8145.151.camel@mhfsdcap03>
+Content-Disposition: inline
+In-Reply-To: <20150917193157.GC21496@x230.dumpdata.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>
-Cc: Mark Rutland <Mark.Rutland@arm.com>, Catalin Marinas <Catalin.Marinas@arm.com>, "youhua.li@mediatek.com" <youhua.li@mediatek.com>, Thierry Reding <treding@nvidia.com>, "k.zhang@mediatek.com" <k.zhang@mediatek.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "arnd@arndb.de" <arnd@arndb.de>, Tomasz Figa <tfiga@google.com>, Rob Herring <robh+dt@kernel.org>, "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>, Matthias Brugger <matthias.bgg@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "pebolle@tiscali.nl" <pebolle@tiscali.nl>, "frederic.chen@mediatek.com" <frederic.chen@mediatek.com>, "srv_heupstream@mediatek.com" <srv_heupstream@mediatek.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Daniel
+To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Jerome Glisse <jglisse@redhat.com>, Alex Deucher <alexander.deucher@amd.com>, Dave Airlie <airlied@redhat.com>, iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-> > > +static int arm_short_unmap(struct io_pgtable_ops *ops,
-> > > +                          unsigned long iova,
-> > > +                          size_t size)
-> > > +{
-> > > +       struct arm_short_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> > > +       struct io_pgtable_cfg *cfg = &data->iop.cfg;
-> > > +       arm_short_iopte *pgd, *pte = NULL;
-> > > +       arm_short_iopte curpgd, curpte = 0;
-> > > +       phys_addr_t paddr;
-> > > +       unsigned int iova_base, blk_size = 0;
-> > > +       void *cookie = data->iop.cookie;
-> > > +       bool pgtablefree = false;
-> > > +
-> > > +       pgd = (arm_short_iopte *)data->pgd + ARM_SHORT_PGD_IDX(iova);
-> > > +
-> > > +       /* Get block size */
-> > > +       if (ARM_SHORT_PGD_TYPE_IS_PGTABLE(*pgd)) {
-> > > +               pte = arm_short_get_pte_in_pgd(*pgd, iova);
-> > > +
-> > > +               if (ARM_SHORT_PTE_TYPE_IS_SMALLPAGE(*pte))
-> > > +                       blk_size = SZ_4K;
-> > > +               else if (ARM_SHORT_PTE_TYPE_IS_LARGEPAGE(*pte))
-> > > +                       blk_size = SZ_64K;
-> > > +               else
-> > > +                       WARN_ON(1);
-> 
-> > > +       } else if (ARM_SHORT_PGD_TYPE_IS_SECTION(*pgd)) {
-> > > +               blk_size = SZ_1M;
-> > > +       } else if (ARM_SHORT_PGD_TYPE_IS_SUPERSECTION(*pgd)) {
-> > > +               blk_size = SZ_16M;
-> > > +       } else {
-> > > +               WARN_ON(1); 
-> > > +       }
-> > > +
-> > > +       iova_base = iova & ~(blk_size - 1);
-> > > +       pgd = (arm_short_iopte *)data->pgd + ARM_SHORT_PGD_IDX(iova_base);
-> > > +       paddr = arm_short_iova_to_phys(ops, iova_base);
-> > > +       curpgd = *pgd;
-> > > +
-> > > +       if (blk_size == SZ_4K || blk_size == SZ_64K) {
-> > > +               pte = arm_short_get_pte_in_pgd(*pgd, iova_base);
-> > > +               curpte = *pte;
-> > > +               __arm_short_set_pte(pte, 0, blk_size / SZ_4K, cfg);
-> > > +
-> > > +            pgtablefree = _arm_short_whether_free_pgtable(pgd);
-> > > +            if (pgtablefree)
-> > > +                 __arm_short_set_pte(pgd, 0, 1, cfg);
-> > > +       } else if (blk_size == SZ_1M || blk_size == SZ_16M) {
-> > > +               __arm_short_set_pte(pgd, 0, blk_size / SZ_1M, cfg);
-> > > +       }
-> > > +
-> > > +    cfg->tlb->tlb_add_flush(iova_base, blk_size, true, cookie);
-> > > +    cfg->tlb->tlb_sync(cookie);
-> > > +
-> > > +       if (pgtablefree)/* Free pgtable after tlb-flush */
-> > > +              __arm_short_free_pgtable(ARM_SHORT_GET_PGTABLE_VA(curpgd),
-> > > +                                        ARM_SHORT_BYTES_PER_PTE, false, cfg);
-> > > +
-> > > +       if (blk_size > size) { /* Split the block */
-> > > +               return arm_short_split_blk_unmap(
-> > > +                               ops, iova, paddr, size,
-> > > +                               ARM_SHORT_PGD_GET_PROT(curpgd),
-> > > +                               ARM_SHORT_PTE_LARGE_GET_PROT(curpte),
-> > > +                               blk_size);
-> > > +       } else if (blk_size < size) {
-> > > +               /* Unmap the block while remap partial again after split */
-> > > +               return blk_size +
-> > > +                       arm_short_unmap(ops, iova + blk_size, size - blk_size);
+On Thu, Sep 17, 2015 at 03:31:58PM -0400, Konrad Rzeszutek Wilk wrote:
+> On Thu, Sep 17, 2015 at 03:07:47PM -0400, Jerome Glisse wrote:
+> > On Thu, Sep 17, 2015 at 03:02:51PM -0400, Konrad Rzeszutek Wilk wro=
+te:
+> > > On Thu, Sep 17, 2015 at 02:22:38PM -0400, jglisse@redhat.com wrot=
+e:
+> > > > From: J=E9r=F4me Glisse <jglisse@redhat.com>
+> > > >=20
+> > > > The swiotlb dma backend is not appropriate for some devices lik=
+e
+> > > > GPU where bounce buffer or slow dma page allocations is just no=
+t
+> > > > acceptable. With that helper device drivers can opt-out from th=
+e
+> > > > swiotlb and just do sane things without wasting CPU cycles insi=
+de
+> > > > the swiotlb code.
+> > >=20
+> > > What if SWIOTLB is the only one available?
+> >=20
+> > On x86 no_mmu is always available and we assume that device driver
+> > that would use this knows that their device can access all memory
+> > with no restriction or at very least use DMA32 gfp flag.
+>=20
+> That runs afoul of the purpose of the DMA API. On x86 you may have
+> an IOMMU - GART, AMD Vi, Intel VT-d, Calgary, etc which will provide
+> you with the proper dma address. As the physical to bus address
+> topology does not have to be 1:1.
+> >=20
+> >=20
+> > > And what can't the devices use the TTM DMA backend which sets up
+> > > buffers which don't need bounce buffer or slow dma page allocatio=
+ns?
+> >=20
+> > We want to get rid of this TTM code path for radeon and likely
+> > nouveau. This is the motivation for that patch. Benchmark shows
+> > that the TTM DMA backend is much much much slower (20% on some
+> > benchmark) that the regular page allocation and going through
+> > no_mmu.
+>=20
+> You end up using the DMA API scatter gather API later on though.
+>=20
+> I am also a bit confused on your use-case - when do you see this?
+> On regular desktop machines you will use the IOMMU API most of
+> the time because that hardware exists. The SWIOTLB should only
+> be used on hardware that is old, odd, or perhaps virtualized.
+>=20
+> >=20
+> > So this is all about allowing to directly allocate page through
+> > regular kernel page alloc code and not through specialize dma
+> > allocator.
+>=20
+> .. What you are saying is that the intent of this patch is
+> to not use TTM DMA.
+>=20
+> Are you using the SWIOTLB 99% of the time? 1%? Or is this
+> related to the unfortunate patch that enabled SWIOTLB all the time?
+> (If so, please please mention that in the commit, it didn't
+> occur to me until just now).
+>=20
+> If that is the case we should attack the problem in a different
+> way - see if the IOMMU API is setup? Or is that set already
+> to some no_iommu option?
+>=20
+> I think what you are looking for is a simple flag telling you
+> whether the IOMMU is there - in which case use the streaming
+> DMA API calls (dma_map_page, etc)?
 
-Hi Will, Robin,
-     I would like to show you a problem I met, The recursion here may
-lead to stack overflow while we test FHD video decode.
+Konrad are you happy with all the explanation ? I am want to move
+that patch forward so we can fix performance and forget about swiotlb
+for GPU.
 
-    From the log, I get the internal variable in the error case: the
-"size" is 0x100000, the "iova" is 0xfea00000, but at that time the
-"blk_size" is 0x1000 as it was the map of small-page. so it enter the
-recursion here.
-    
-    After check the unmap flow, there is only a iommu_unmap in
-__iommu_dma_unmap, and it won't check the physical address align in
-iommu_unmap.
-so if the iova and size both are SZ_16M or SZ_1M align by chance, it
-also enter the arm_short_unmap even though it was the map of small-page.
-
-    So.
-    a) Do we need unmap each sg item while iommu_dma_unmap?, like below:
-
-//===============
-static void __iommu_dma_unmap(struct iommu_domain *domain, dma_addr_t
-dma_addr)
-{
-	/* ...and if we can't, then something is horribly, horribly wrong */
-+       for_each_sg(sg, s, nents, i)
-		BUG_ON(iommu_unmap(domain, pfn << shift, size) < size);
-	__free_iova(iovad, iova);
-}
-//===============
- 
-    b). I need to add do-while which was suggested to delete from [1] in
-arm_short_unmap for this case.
-
-     After I test locally, I prepare to add the do-while like below:
-     
-//==============================
-static int arm_short_unmap(struct io_pgtable_ops *ops,
-			   unsigned long iova,
-			   size_t size)
-{
-	struct arm_short_io_pgtable *data = io_pgtable_ops_to_data(ops);
-	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-	arm_short_iopte *pgd, *pte = NULL;
-	arm_short_iopte curpgd, curpte = 0;
-	unsigned int blk_base, blk_size;
-	int unmap_size = 0;
-	bool pgtempty;
-
-	do {
-		pgd = (arm_short_iopte *)data->pgd + ARM_SHORT_PGD_IDX(iova);
-		blk_size = 0;
-		pgtempty = false;
-
-		/* Get block size */
-		if (ARM_SHORT_PGD_TYPE_IS_PGTABLE(*pgd)) {
-			pte = arm_short_get_pte_in_pgd(*pgd, iova);
-
-			if (ARM_SHORT_PTE_TYPE_IS_SMALLPAGE(*pte))
-				blk_size = SZ_4K;
-			else if (ARM_SHORT_PTE_TYPE_IS_LARGEPAGE(*pte))
-				blk_size = SZ_64K;
-		} else if (ARM_SHORT_PGD_TYPE_IS_SECTION(*pgd)) {
-			blk_size = SZ_1M;
-		} else if (ARM_SHORT_PGD_TYPE_IS_SUPERSECTION(*pgd)) {
-			blk_size = SZ_16M;
-		}
-
-		if (WARN_ON(!blk_size))
-			return 0;
-
-		blk_base = iova & ~(blk_size - 1);
-		pgd = (arm_short_iopte *)data->pgd + ARM_SHORT_PGD_IDX(blk_base);
-		curpgd = *pgd;
-
-		if (blk_size == SZ_4K || blk_size == SZ_64K) {
-			pte = arm_short_get_pte_in_pgd(*pgd, blk_base);
-			curpte = *pte;
-			__arm_short_set_pte(pte, 0, blk_size / SZ_4K, cfg);
-
-			pgtempty = __arm_short_pgtable_empty(pgd);
-			if (pgtempty)
-				__arm_short_set_pte(pgd, 0, 1, cfg);
-		} else if (blk_size == SZ_1M || blk_size == SZ_16M) {
-			__arm_short_set_pte(pgd, 0, blk_size / SZ_1M, cfg);
-		}
-
-		cfg->tlb->tlb_add_flush(blk_base, blk_size, true, data->iop.cookie);
-		cfg->tlb->tlb_sync(data->iop.cookie);
-
-		if (pgtempty)/* Free lvl2 pgtable after tlb-flush */
-			__arm_short_free_pgtable(
-					ARM_SHORT_GET_PGTABLE_VA(curpgd),
-					ARM_SHORT_BYTES_PER_PTE, false, cfg);
-
-		/*
-		 * If the unmap size which is from the pgsize_bitmap is more
-		 * than the current blk_size, unmap it continuously.
-		 */
-		if (blk_size <= size) {
-			iova += blk_size;
-			size -= blk_size;
-			unmap_size += blk_size;
-			continue;
-		} else { /* Split this block */
-			return arm_short_split_blk_unmap(
-					ops, iova, size, blk_size,
-					ARM_SHORT_PGD_GET_PROT(curpgd),
-					ARM_SHORT_PTE_GET_PROT_LARGE(curpte));
-		}
-	}while (size);
-
-	return unmap_size;
-}
-//=============================
-
-    Is there any other suggestion?
-    Thanks very much.
-
-
-[1]:http://lists.linuxfoundation.org/pipermail/iommu/2015-June/013322.html
-
-> > > +       }
-> > > +
-> > > +       return size;
-> > > +}
-> > > +
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Cheers,
+J=E9r=F4me
