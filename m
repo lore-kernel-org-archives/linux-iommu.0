@@ -1,16 +1,15 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2] iommu/io-pgtable-arm: Don't use dma_to_phys()
-Date: Tue, 22 Sep 2015 17:26:34 +0100
-Message-ID: <20150922162633.GL7356@arm.com>
-References: <59f4ebbf06e75a6176a366495211afd16d0048a3.1442507940.git.robin.murphy@arm.com>
-	<1442566550.8145.156.camel@mhfsdcap03> <55FBEFBA.6000606@arm.com>
-	<1442928308.17514.3.camel@mhfsdcap03> <56018074.2010104@arm.com>
+From: Daniel Kurtz via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [PATCH v5 2/3] arm64: Add IOMMU dma_ops
+Date: Wed, 23 Sep 2015 01:12:13 +0800
+Message-ID: <CAGS+omCDYrjpr--+sUzaKCxo12Eff6TC04RgroDgKvxHwK3t2Q@mail.gmail.com>
+References: <cover.1438362603.git.robin.murphy@arm.com>
+	<8a5abd0a9929aae160ccb74d7a8d9c3698f61910.1438362603.git.robin.murphy@arm.com>
+Reply-To: Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <56018074.2010104-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <8a5abd0a9929aae160ccb74d7a8d9c3698f61910.1438362603.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,31 +19,68 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tiffany Lin <tiffany.lin-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, wuchengli-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Pawel Osciak <posciak-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Sep 22, 2015 at 05:23:16PM +0100, Robin Murphy wrote:
-> On 22/09/15 14:25, Yong Wu wrote:
-> [...]
-> > About here:
-> >> @@ -629,6 +626,11 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg
-> > *cfg)
-> >>        if (cfg->oas > ARM_LPAE_MAX_ADDR_BITS)
-> >>                return NULL;
-> >>   
-> >> +     if (cfg->iommu_dev->dma_pfn_offset) {
-> > 
-> > Do we need change to :
-> > 	if (!selftest_running && cfg->iommu_dev->dma_pfn_offset) {
-> > 
-> > cfg->iommu_dev will be null while self test.
-> 
-> Urgh, you're absolutely right. Must have been one of those days when I
-> had loads of noisy debug in there and turned the self-tests off :(
-> 
-> Will; since the branch hasn't gone anywhere yet, are you OK to take the below?
+Hi Robin,
 
-Yeah, no problem. I'll fold it in when I get a chance.
+On Sat, Aug 1, 2015 at 1:18 AM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+> Taking some inspiration from the arch/arm code, implement the
+> arch-specific side of the DMA mapping ops using the new IOMMU-DMA layer.
+>
+> Unfortunately the device setup code has to start out as a big ugly mess
+> in order to work usefully right now, as 'proper' operation depends on
+> changes to device probe and DMA configuration ordering, IOMMU groups for
+> platform devices, and default domain support in arm/arm64 IOMMU drivers.
+> The workarounds here need only exist until that work is finished.
+>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
 
-Will
+[snip]
+
+> +static void __iommu_sync_sg_for_cpu(struct device *dev,
+> +                                   struct scatterlist *sgl, int nelems,
+> +                                   enum dma_data_direction dir)
+> +{
+> +       struct scatterlist *sg;
+> +       int i;
+> +
+> +       if (is_device_dma_coherent(dev))
+> +               return;
+> +
+> +       for_each_sg(sgl, sg, nelems, i)
+> +               __dma_unmap_area(sg_virt(sg), sg->length, dir);
+> +}
+
+In an earlier review [0], Marek asked you to change the loop in
+__iommu_sync_sg_for_cpu loop() to loop over the virtual areas when
+invalidating/cleaning memory ranges.
+
+[0] http://lists.infradead.org/pipermail/linux-arm-kernel/2015-March/328232.html
+
+However, this changed the meaning of the 'nelems' argument from what
+was for arm_iommu_sync_sg_for_cpu() in arch/arm/mm/dma-mapping.c:
+ "number of buffers to sync (returned from dma_map_sg)"
+to:
+ "number of virtual areas to sync (same as was passed to dma_map_sg)"
+
+This has caused some confusion by callers of dma_sync_sg_for_device()
+that must work for both arm & arm64 as illustrated by [1].
+[1] https://lkml.org/lkml/2015/9/21/250
+
+Based on the implementation of debug_dma_sync_sg_for_cpu() in
+lib/dma-debug.c, I think the arm interpretation of nelems (returned
+from dma_map_sg) is correct.
+
+Therefore, I think we need an outer iteration over dma chunks, and an
+inner iteration that calls __dma_map_area() over the set virtual areas
+that correspond to that dma chunk, both here and for
+__iommu_sync_sg_for_device().  This will be complicated by the fact
+that iommu pages could actually be smaller than PAGE_SIZE, and offset
+within a single physical page.  Also, as an optimization, we would
+want to combine contiguous virtual areas into a single call to
+__dma_unmap_area().
+
+-Dan
