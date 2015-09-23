@@ -1,83 +1,35 @@
-From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v9 12/18] vfio: Register/unregister irq_bypass_producer
-Date: Wed, 23 Sep 2015 03:35:15 +0200
-Message-ID: <560201D3.9020502@linaro.org>
-References: <E959C4978C3B6342920538CF579893F002726FF2@SHSMSX104.ccr.corp.intel.com>
+From: chenfeng <puck.chen@hisilicon.com>
+Subject: How to ensure that different peripherals getting different IOVA
+ address in kernel?
+Date: Wed, 23 Sep 2015 09:55:58 +0800
+Message-ID: <560206AE.4020608@hisilicon.com>
+References: <5600AF72.2000106@hisilicon.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <E959C4978C3B6342920538CF579893F002726FF2-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5600AF72.2000106@hisilicon.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, rcallicotte@gmail.com, robin.murphy@arm.com, jiang.liu@linux.intel.com
+Cc: Dan zhao <dan.zhao@hisilicon.com>, qijiwen <qijiwen@hisilicon.com>, Peter Panshilin <peter.panshilin@hisilicon.com>, Suzhuangluan <suzhuangluan@hisilicon.com>, Yiping Xu <xuyiping@hisilicon.com>, "Wangfei (William, Euler)" <w.f@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Feng,
-On 09/22/2015 11:01 AM, Wu, Feng wrote:
-> 
-> 
->> -----Original Message-----
->> From: linux-kernel-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
->> [mailto:linux-kernel-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org] On Behalf Of Eric Auger
->> Sent: Tuesday, September 22, 2015 3:46 AM
->> To: Paolo Bonzini; Wu, Feng; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org;
->> mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
->> Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
->> linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
->> Subject: Re: [PATCH v9 12/18] vfio: Register/unregister irq_bypass_producer
->>
->> Hi,
->> On 09/21/2015 03:02 PM, Paolo Bonzini wrote:
->>>
->>>
->>> On 21/09/2015 14:53, Wu, Feng wrote:
->>>>>>>> I think the point is that we cannot trigger the build of irqbypass
->>>>>>>> manager inside KVM or VFIO, we need trigger the build at a high
->>>>>>>> level and it should be built before VFIO and KVM. Any ideas?
->>>>>>
->>>>>> We can add virt/Makefile and build virt/lib/ directly, not through
->>>>>> arch/x86/kvm.
->>>> Thinking about this more, does that mean we need to add the virt directory
->>>> in the top Makefile in Linux tree?
->>>
->>> Yes, it does.
->> So I understand this will replace patches 2 & 3 then and will fix the
->> arm64 issue then.
-> 
-> I just sent a patch to fix this build error. BTW, from the reply of Paolo, seems
-> he dropped patch 3 in this series, maybe he think it doesn't have much
-> relationship with other patches, so maybe you could include it in your series
-> when forwarded irq work gets ready.
-OK no problem. I moved that patch (modified according to the new
-compilation scheme) in the irq forwarding series.
+Hi all,
 
-Thanks
+In IOMMU architecture , how to make two different peripherals share the=
+ same page table ?
 
-Eric
-> 
-> Thanks,
-> Feng
-> 
->>
->> Thanks
->>
->> Eric
->>
->>>
->>> Paolo
->>>
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
->> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->> Please read the FAQ at  http://www.tux.org/lkml/
+In other words , is there a mechanism or structure to make two peripher=
+als get completely different address.
+
+eg:
+
+peri-A=E3=80=81peri-B and peri-C share the same iova address 0-1G for s=
+ome performance requests.
+
+So the A,B,C need to use the same IOVA generator to ensure this,but I d=
+on't find an architecture to make this.
+
+Any help will be appreciated.
+
+Puck
