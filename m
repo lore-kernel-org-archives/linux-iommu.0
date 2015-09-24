@@ -1,7 +1,8 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 01/10] iommu/amd: Use standard bitmap operation to set bitmap
-Date: Thu, 24 Sep 2015 14:37:27 +0800
-Message-ID: <1443076656-31776-2-git-send-email-bhe@redhat.com>
+Subject: [PATCH 02/10] iommu/amd: Adjust functons which get first/last devid
+	by reading pci config
+Date: Thu, 24 Sep 2015 14:37:28 +0800
+Message-ID: <1443076656-31776-3-git-send-email-bhe@redhat.com>
 References: <1443076656-31776-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,46 +22,76 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJ
 Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+The old functon find_last_devid_on_pci not only gets the last devid, but calls
+update_last_devid(). Now adjust the function definition to make it be consistent
+with its name. Meanwhile add a new function find_first_devid_on_pci for later use.
+
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c      | 2 +-
- drivers/iommu/amd_iommu_init.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/iommu/amd_iommu_init.c | 37 +++++++++++++++++++++++++++----------
+ 1 file changed, 27 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index f82060e7..0d59f79 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -1900,7 +1900,7 @@ static struct dma_ops_domain *dma_ops_domain_alloc(void)
- 	 * mark the first page as allocated so we never return 0 as
- 	 * a valid dma-address. So we can use 0 as error value
- 	 */
--	dma_dom->aperture[0]->bitmap[0] = 1;
-+	__set_bit(0, dma_dom->aperture[0]->bitmap);
- 	dma_dom->next_address = 0;
- 
- 
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 5ef347a..286da26 100644
+index 286da26..be20a56 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -20,6 +20,7 @@
- #include <linux/pci.h>
- #include <linux/acpi.h>
- #include <linux/list.h>
-+#include <linux/bitmap.h>
- #include <linux/slab.h>
- #include <linux/syscore_ops.h>
- #include <linux/interrupt.h>
-@@ -1938,8 +1939,7 @@ static int __init early_amd_iommu_init(void)
- 	 * never allocate domain 0 because its used as the non-allocated and
- 	 * error value placeholder
- 	 */
--	amd_iommu_pd_alloc_bitmap[0] = 1;
--
-+	 __set_bit(0, amd_iommu_pd_alloc_bitmap);
- 	spin_lock_init(&amd_iommu_pd_lock);
+@@ -412,14 +412,32 @@ static inline int ivhd_entry_length(u8 *ivhd)
+  * This function reads the last device id the IOMMU has to handle from the PCI
+  * capability header for this IOMMU
+  */
+-static int __init find_last_devid_on_pci(int bus, int dev, int fn, int cap_ptr)
++static int __init find_first_devid_on_pci(struct ivhd_header *h)
+ {
+-	u32 cap;
++	u32 range;
  
- 	/*
+-	cap = read_pci_config(bus, dev, fn, cap_ptr+MMIO_RANGE_OFFSET);
+-	update_last_devid(PCI_DEVID(MMIO_GET_BUS(cap), MMIO_GET_LD(cap)));
++	range = read_pci_config(PCI_BUS_NUM(h->devid),
++				PCI_SLOT(h->devid),
++				PCI_FUNC(h->devid),
++				h->cap_ptr+MMIO_RANGE_OFFSET);
+ 
+-	return 0;
++	return PCI_DEVID(MMIO_GET_BUS(range), MMIO_GET_FD(range));
++}
++
++/*
++ * This function reads the last device id the IOMMU has to handle from the PCI
++ * capability header for this IOMMU
++ */
++static int __init find_last_devid_on_pci(struct ivhd_header *h)
++{
++	u32 range;
++
++	range = read_pci_config(PCI_BUS_NUM(h->devid),
++				PCI_SLOT(h->devid),
++				PCI_FUNC(h->devid),
++				h->cap_ptr+MMIO_RANGE_OFFSET);
++
++	return PCI_DEVID(MMIO_GET_BUS(range), MMIO_GET_LD(range));
+ }
+ 
+ /*
+@@ -430,15 +448,14 @@ static int __init find_last_devid_from_ivhd(struct ivhd_header *h)
+ {
+ 	u8 *p = (void *)h, *end = (void *)h;
+ 	struct ivhd_entry *dev;
++	u16 devid;
++
++	devid = find_last_devid_on_pci(h);
++	update_last_devid(devid);
+ 
+ 	p += sizeof(*h);
+ 	end += h->length;
+ 
+-	find_last_devid_on_pci(PCI_BUS_NUM(h->devid),
+-			PCI_SLOT(h->devid),
+-			PCI_FUNC(h->devid),
+-			h->cap_ptr);
+-
+ 	while (p < end) {
+ 		dev = (struct ivhd_entry *)p;
+ 		switch (dev->type) {
 -- 
 2.4.0
