@@ -1,7 +1,7 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 04/10] iommu/amd: Detect pre enabled translation
-Date: Thu, 24 Sep 2015 14:37:30 +0800
-Message-ID: <1443076656-31776-5-git-send-email-bhe@redhat.com>
+Subject: [PATCH 05/10] iommu/amd: Add function copy_dev_tables
+Date: Thu, 24 Sep 2015 14:37:31 +0800
+Message-ID: <1443076656-31776-6-git-send-email-bhe@redhat.com>
 References: <1443076656-31776-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,72 +21,61 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJ
 Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add functions to check whether translation is already enabled in IOMMU.
-Maybe it need be checked per IOMMU. Currently for debugging I didn't do
-like that.
-
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
  drivers/iommu/amd_iommu_init.c  | 26 ++++++++++++++++++++++++++
- drivers/iommu/amd_iommu_proto.h |  4 ++++
- 2 files changed, 30 insertions(+)
+ drivers/iommu/amd_iommu_types.h |  2 ++
+ 2 files changed, 28 insertions(+)
 
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 5845918..1fc369e 100644
+index 1fc369e..913a718 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -229,6 +229,27 @@ static int amd_iommu_enable_interrupts(void);
- static int __init iommu_go_to_state(enum iommu_init_state state);
- static void init_device_table_dma(void);
- 
-+static u8 g_pre_enabled;
-+
-+bool translation_pre_enabled(void)
-+{
-+        return !!g_pre_enabled;
-+}
-+
-+void clear_translation_pre_enabled(void)
-+{
-+        g_pre_enabled = 0;
-+}
-+
-+static void init_translation_status(struct amd_iommu *iommu)
-+{
-+        u32 ctrl;
-+
-+        ctrl = readl(iommu->mmio_base + MMIO_CONTROL_OFFSET);
-+        if (ctrl & (1<<CONTROL_IOMMU_EN))
-+                g_pre_enabled = 1;
-+}
-+
- static inline void update_last_devid(u16 devid)
- {
- 	if (devid > amd_iommu_last_bdf)
-@@ -1142,6 +1163,11 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
- 
- 	iommu->int_enabled = false;
- 
-+	init_translation_status(iommu);
-+
-+	if (translation_pre_enabled())
-+		pr_warn("Translation is already enabled - trying to copy translation structures\n");
-+
- 	ret = init_iommu_from_acpi(iommu, h);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
-index 0bd9eb3..743e209 100644
---- a/drivers/iommu/amd_iommu_proto.h
-+++ b/drivers/iommu/amd_iommu_proto.h
-@@ -98,4 +98,8 @@ static inline bool iommu_feature(struct amd_iommu *iommu, u64 f)
- 	return !!(iommu->features & f);
+@@ -690,6 +690,32 @@ static void iommu_enable_gt(struct amd_iommu *iommu)
+ 	iommu_feature_enable(iommu, CONTROL_GT_EN);
  }
  
-+/* kdump checking  */
-+extern bool translation_pre_enabled(void);
-+extern void clear_translation_pre_enabled(void);
++static void copy_dev_tables(void)
++{
++        u64 entry;
++        u32 lo, hi;
++        phys_addr_t old_devtb_phys;
++        struct dev_table_entry *old_devtb;
++        struct amd_iommu *iommu;
++        u16 dom_id;
++        u32 devid;
 +
- #endif /* _ASM_X86_AMD_IOMMU_PROTO_H  */
++        for_each_iommu(iommu) {
++                lo = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET);
++                hi = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET + 4);
++                entry = (((u64) hi) << 32) + lo;
++                old_devtb_phys = entry & PAGE_MASK;
++                old_devtb = ioremap_cache(old_devtb_phys, dev_table_size);
++                for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
++                        amd_iommu_dev_table[devid] = old_devtb[devid];
++                        dom_id = amd_iommu_dev_table[devid].data[1] & DEV_DOMID_MASK;
++                        __set_bit(dom_id, amd_iommu_pd_alloc_bitmap);
++                }
++                iounmap(old_devtb);
++        }
++
++}
++
+ /* sets a specific bit in the device table entry. */
+ static void set_dev_entry_bit(u16 devid, u8 bit)
+ {
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index f659088..d0f0cfb 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -194,6 +194,8 @@
+ #define DEV_ENTRY_MODE_MASK	0x07
+ #define DEV_ENTRY_MODE_SHIFT	0x09
+ 
++#define DEV_DOMID_MASK        0xffff
++
+ #define MAX_DEV_TABLE_ENTRIES	0xffff
+ 
+ /* constants to configure the command buffer */
 -- 
 2.4.0
