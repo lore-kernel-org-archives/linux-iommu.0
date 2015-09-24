@@ -1,7 +1,7 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 05/10] iommu/amd: Add function copy_dev_tables
-Date: Thu, 24 Sep 2015 14:37:31 +0800
-Message-ID: <1443076656-31776-6-git-send-email-bhe@redhat.com>
+Subject: [PATCH 03/10] iommu/amd: Get the first/last device of iommu earlier
+Date: Thu, 24 Sep 2015 14:37:29 +0800
+Message-ID: <1443076656-31776-4-git-send-email-bhe@redhat.com>
 References: <1443076656-31776-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,61 +21,45 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJ
 Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+iommu->first_device/last_device are needed by function init_iommu_from_acpi()
+and init_iommu_devices(). So putting the assignment of them in iommu_init_pci()
+could be late. In this patch put them earlier.
+
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c  | 26 ++++++++++++++++++++++++++
- drivers/iommu/amd_iommu_types.h |  2 ++
- 2 files changed, 28 insertions(+)
+ drivers/iommu/amd_iommu_init.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 1fc369e..913a718 100644
+index be20a56..5845918 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -690,6 +690,32 @@ static void iommu_enable_gt(struct amd_iommu *iommu)
- 	iommu_feature_enable(iommu, CONTROL_GT_EN);
- }
+@@ -1115,6 +1115,9 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+ 	iommu->pci_seg = h->pci_seg;
+ 	iommu->mmio_phys = h->mmio_phys;
  
-+static void copy_dev_tables(void)
-+{
-+        u64 entry;
-+        u32 lo, hi;
-+        phys_addr_t old_devtb_phys;
-+        struct dev_table_entry *old_devtb;
-+        struct amd_iommu *iommu;
-+        u16 dom_id;
-+        u32 devid;
++	iommu->first_device = find_first_devid_on_pci(h);
++	iommu->last_device = find_last_devid_on_pci(h);
 +
-+        for_each_iommu(iommu) {
-+                lo = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET);
-+                hi = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET + 4);
-+                entry = (((u64) hi) << 32) + lo;
-+                old_devtb_phys = entry & PAGE_MASK;
-+                old_devtb = ioremap_cache(old_devtb_phys, dev_table_size);
-+                for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
-+                        amd_iommu_dev_table[devid] = old_devtb[devid];
-+                        dom_id = amd_iommu_dev_table[devid].data[1] & DEV_DOMID_MASK;
-+                        __set_bit(dom_id, amd_iommu_pd_alloc_bitmap);
-+                }
-+                iounmap(old_devtb);
-+        }
-+
-+}
-+
- /* sets a specific bit in the device table entry. */
- static void set_dev_entry_bit(u16 devid, u8 bit)
- {
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index f659088..d0f0cfb 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -194,6 +194,8 @@
- #define DEV_ENTRY_MODE_MASK	0x07
- #define DEV_ENTRY_MODE_SHIFT	0x09
+ 	/* Check if IVHD EFR contains proper max banks/counters */
+ 	if ((h->efr != 0) &&
+ 	    ((h->efr & (0xF << 13)) != 0) &&
+@@ -1276,16 +1279,9 @@ static int iommu_init_pci(struct amd_iommu *iommu)
  
-+#define DEV_DOMID_MASK        0xffff
-+
- #define MAX_DEV_TABLE_ENTRIES	0xffff
+ 	pci_read_config_dword(iommu->dev, cap_ptr + MMIO_CAP_HDR_OFFSET,
+ 			      &iommu->cap);
+-	pci_read_config_dword(iommu->dev, cap_ptr + MMIO_RANGE_OFFSET,
+-			      &range);
+ 	pci_read_config_dword(iommu->dev, cap_ptr + MMIO_MISC_OFFSET,
+ 			      &misc);
  
- /* constants to configure the command buffer */
+-	iommu->first_device = PCI_DEVID(MMIO_GET_BUS(range),
+-					 MMIO_GET_FD(range));
+-	iommu->last_device = PCI_DEVID(MMIO_GET_BUS(range),
+-					MMIO_GET_LD(range));
+-
+ 	if (!(iommu->cap & (1 << IOMMU_CAP_IOTLB)))
+ 		amd_iommu_iotlb_sup = false;
+ 
 -- 
 2.4.0
