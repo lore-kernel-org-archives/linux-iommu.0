@@ -1,159 +1,84 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH 00/22] DMA-API/PCI map_peer_resource support for
- peer-to-peer
-Date: Thu, 24 Sep 2015 16:28:19 -0500
-Message-ID: <20150924212819.GF10481@localhost>
+From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 10/22] PCI: Add pci_resource_to_peer()
+Date: Thu, 24 Sep 2015 16:36:43 -0500
+Message-ID: <20150924213643.GG10481@localhost>
 References: <1442337067-22964-1-git-send-email-wdavis@nvidia.com>
+	<1442337067-22964-11-git-send-email-wdavis@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1442337067-22964-1-git-send-email-wdavis@nvidia.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Will Davis <wdavis@nvidia.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Konrad Wilk <konrad.wilk@oracle.com>, Mark Hounschell <markh@compro.net>, "David S. Miller" <davem@davemloft.net>, Jonathan Corbet <corbet@lwn.net>, Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>
+In-Reply-To: <1442337067-22964-11-git-send-email-wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, John Hubbard <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Terence Ripperda <tripperda-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+On Tue, Sep 15, 2015 at 12:10:55PM -0500, Will Davis wrote:
+> Add helper to convert a struct resource to a peer DMA address.
+> 
+> Signed-off-by: Will Davis <wdavis-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+>  include/linux/pci.h | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index db0cb51..2a9deff 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -1508,6 +1508,22 @@ static inline void pci_resource_to_user(const struct pci_dev *dev, int bar,
+>  }
+>  #endif /* HAVE_ARCH_PCI_RESOURCE_TO_USER */
+>  
+> +#ifdef CONFIG_HAS_DMA_P2P
+> +static inline bool pci_resource_to_peer(struct pci_dev *dev,
 
-On Tue, Sep 15, 2015 at 12:10:45PM -0500, Will Davis wrote:
-> Hi,
-> 
-> This is the sixth version of a patchset to add the DMA APIs necessary to
-> map and unmap a PCI device's BAR to and from another PCI device's IOVA
-> domain. This enables PCI peer-to-peer traffic on x86 platforms where an
-> IOMMU is enabled (this requires that peer-to-peer traffic be supported by
-> the underlying chipset as well, of course).
+I'm not really a fan of functions that return bool unless the
+function name is obviously a predicate.  So in this case, I'd
+return 0 or a negative errno.
 
-It's not essential, but it makes my life a little easier if you
-include the version in the subject, e.g., "[PATCH v6 0/22]".  
+> +					struct pci_dev *peer,
+> +					struct resource *res,
+> +					dma_peer_addr_t *peer_addr) {
+> +	if (pci_peer_traffic_supported(dev, peer)) {
+> +		struct pci_bus_region region;
+> +
+> +		pcibios_resource_to_bus(dev->bus, &region, res);
+> +		*peer_addr = region.start;
+> +		return true;
+> +	}
+> +
+> +	return false;
 
-Checkpatch complains about a few things.  You should look at all of
-them, but I think you can ignore most of them.  There is at least one
-whitespace error (space before tab or similar) that should be fixed.
+It's trivial, but I'd structure it like this, which is sort of the
+typical "return errors early" pattern, and reduces indentation of the
+mainline path:
 
-Many of your changelogs don't make sense unless you include the
-subject line.  Can you update them so the body is self-contained?
-It's OK if that means you have to repeat the subject line.
+  if (!pci_peer_traffic_supported(dev, peer))
+    return -EINVAL;
 
-This doesn't include any actual users of pci_map_peer_resource(); do
-you plan to include one?  Usually we don't merge things with no
-in-tree users.
+  pcibios_resource_to_bus(dev->bus, &region, res);
+  *peer_addr = region.start;
+  return 0;
 
-Bjorn
-
-> v6:
-> - added stubs for remaining x86 dma_map_ops: calgary, gart, sta2x11,
->   swiotlb, xen-swiotlb
-> - factored part of x86 PCI nommu implementation into a generic PCI
->   helper, pci_resource_to_peer()
-> - split x86 dma_peer_mapping_error() implementation into a separate
->   patch
-> 
-> v5: http://www.spinics.net/lists/linux-pci/msg43975.html
-> - moved topology and ACS checks into a separate
->   pci_peer_traffic_supported() API, which determines whether PCI peer-
->   to-peer traffic may work based on language in the PCI and PCI Express
->   specifications (excerpts included in comments)
-> - added CONFIG_HAS_DMA_P2P guards to x86 PCI no-mmu implementation of
->   map_peer_resource
-> - modified a few patch descriptions for style
-> 
-> v4: http://www.spinics.net/lists/linux-pci/msg43136.html
-> - added HAS_DMA_P2P Kconfig option to guard new APIs, which are only
->   supported on x86 with this patch series
-> - added a new dma_peer_addr_t type to handle future platform support
->   where the dma_peer_addr_t needs to have the same width as the bus
->   address, which can be wider than the dma_addr_t returned by other
->   DMA APIs
-> - added a new dma_peer_mapping_error() and associated PCI wrapper to
->   detect errors returned via dma_map_peer_resource() API and its
->   PCI wrapper
-> - modified the interface of the new API to explicitly take the peer
->   device as an argument
-> - renamed the (un)map_resource APIs to (un)map_peer_resource, since
->   they directly receive a 'peer' argument now
-> - modified the new PCI interface to take the BAR index instead of the
->   actual struct resource
-> - modified the pci-nommu implementation to perform topology and ACS
->   checks before allowing
-> - modified both the AMD and Intel IOMMU implementations to require
->   that both devices be behind the same host bridge
-> - exposed a couple of preexisting PCI utility functions to aid in the
->   topology checks for all of the x86 implementations
-> 
-> v3: http://www.spinics.net/lists/linux-pci/msg41703.html
-> - changed dma_map_resource() to BUG() if the map_resource DMA op is not
->   provided, instead of returning 0
-> - updated documentation to remove requirement to check for 0 return value
->   as an error
-> - remove const keyword from struct dma_map_ops in new DMA APIs for
->   consistency with other APIs
-> 
-> v2: http://www.spinics.net/lists/linux-pci/msg41192.html
-> - added documentation for the new DMA APIs
-> - fixed physical-to-bus address conversion in the nommu implementation
-> 
-> v1: http://www.spinics.net/lists/linux-pci/msg40747.html
-> 
-> Will Davis (22):
->   lib/Kconfig: add HAS_DMA_P2P for peer-to-peer support
->   linux/types.h: Add dma_peer_addr_t type
->   dma-debug: add checking for map/unmap_peer_resource
->   DMA-API: Introduce dma_(un)map_peer_resource
->   dma-mapping: pci: add pci_(un)map_peer_resource
->   DMA-API: Add peer resource mapping documentation
->   PCI: Export pci_find_host_bridge()
->   PCI: Add pci_find_common_upstream_dev()
->   PCI: Add pci_peer_traffic_supported()
->   PCI: Add pci_resource_to_peer()
->   swiotlb: Add map_peer_resource stub
->   x86, swiotlb: Add swiotlb_map_peer_resource() to swiotlb_dma_ops
->   x86, platform: Add swiotlb_map_peer_resource() to sta2x11_dma_ops
->   swiotlb-xen: add map_peer_resource stub
->   pci-swiotlb-xen: add xen_swiotlb_map_peer_resource to
->     xen_swiotlb_dma_ops
->   iommu/amd: Implement (un)map_peer_resource
->   iommu/vt-d: implement (un)map_peer_resource
->   x86: add pci-nommu implementation of map_peer_resource
->   x86: Calgary: Add map_peer_resource stub
->   x86: gart: Add map_peer_resource stub
->   x86: add dma_peer_mapping_error()
->   x86: declare support for DMA P2P
-> 
->  Documentation/DMA-API-HOWTO.txt          | 69 ++++++++++++++++++++++
->  Documentation/DMA-API.txt                | 38 ++++++++++--
->  arch/x86/Kconfig                         |  1 +
->  arch/x86/include/asm/dma-mapping.h       | 18 +++++-
->  arch/x86/kernel/amd_gart_64.c            | 16 ++++++
->  arch/x86/kernel/pci-calgary_64.c         | 16 ++++++
->  arch/x86/kernel/pci-nommu.c              | 30 ++++++++++
->  arch/x86/kernel/pci-swiotlb.c            |  3 +
->  arch/x86/pci/sta2x11-fixup.c             |  3 +
->  arch/x86/xen/pci-swiotlb-xen.c           |  3 +
->  drivers/iommu/amd_iommu.c                | 99 +++++++++++++++++++++++++++-----
->  drivers/iommu/intel-iommu.c              | 38 ++++++++++++
->  drivers/pci/host-bridge.c                | 19 +-----
->  drivers/pci/pci.c                        | 99 ++++++++++++++++++++++++++++++++
->  drivers/pci/search.c                     | 25 ++++++++
->  drivers/xen/swiotlb-xen.c                | 20 +++++++
->  include/asm-generic/dma-mapping-common.h | 43 ++++++++++++++
->  include/asm-generic/pci-dma-compat.h     | 23 ++++++++
->  include/linux/dma-debug.h                | 39 ++++++++++++-
->  include/linux/dma-mapping.h              | 12 ++++
->  include/linux/pci.h                      | 28 +++++++++
->  include/linux/swiotlb.h                  |  8 +++
->  include/linux/types.h                    | 13 ++++-
->  include/xen/swiotlb-xen.h                | 11 ++++
->  lib/Kconfig                              |  5 ++
->  lib/dma-debug.c                          | 86 ++++++++++++++++++++++++++-
->  lib/swiotlb.c                            | 17 ++++++
->  27 files changed, 740 insertions(+), 42 deletions(-)
-> 
+> +}
+> +#endif /* CONFIG_HAS_DMA_P2P */
+>  
+>  /*
+>   *  The world is not perfect and supplies us with broken PCI devices.
 > -- 
 > 2.5.1
 > 
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-pci" in
-> the body of a message to majordomo@vger.kernel.org
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
