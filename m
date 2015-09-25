@@ -1,188 +1,176 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH 09/22] PCI: Add pci_peer_traffic_supported()
-Date: Thu, 24 Sep 2015 16:49:21 -0500
-Message-ID: <20150924214921.GH10481@localhost>
-References: <1442337067-22964-1-git-send-email-wdavis@nvidia.com>
- <1442337067-22964-10-git-send-email-wdavis@nvidia.com>
+From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH v9 00/18] Add VT-d Posted-Interrupts support - including
+	prerequisite series
+Date: Fri, 25 Sep 2015 01:49:22 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F009A46D3D@SHSMSX152.ccr.corp.intel.com>
+References: <1442586596-5920-1-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1442337067-22964-10-git-send-email-wdavis@nvidia.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Will Davis <wdavis@nvidia.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Konrad Wilk <konrad.wilk@oracle.com>, Mark Hounschell <markh@compro.net>, "David S. Miller" <davem@davemloft.net>, Jonathan Corbet <corbet@lwn.net>, Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1442586596-5920-1-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Sep 15, 2015 at 12:10:54PM -0500, Will Davis wrote:
-> Add checks for topology and ACS configuration to determine whether or not
-> peer traffic should be supported between two PCI devices.
+Hi Paolo,
+
+Thanks for your review on this series! I'd like to confirm this series (plus
+the patch fixing the compilation error) is okay to you and I don't need to
+do extra things for it, right?
+
+Thanks,
+Feng
+
+> -----Original Message-----
+> From: Wu, Feng
+> Sent: Friday, September 18, 2015 10:30 PM
+> To: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org;
+> mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+> Cc: eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Wu, Feng
+> Subject: [PATCH v9 00/18] Add VT-d Posted-Interrupts support - including
+> prerequisite series
 > 
-> Signed-off-by: Will Davis <wdavis@nvidia.com>
-> ---
->  drivers/pci/pci.c   | 99 +++++++++++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/pci.h |  3 ++
->  2 files changed, 102 insertions(+)
+> VT-d Posted-Interrupts is an enhancement to CPU side Posted-Interrupt.
+> With VT-d Posted-Interrupts enabled, external interrupts from
+> direct-assigned devices can be delivered to guests without VMM
+> intervention when guest is running in non-root mode.
 > 
-> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> index 0008c95..b8ba0f0 100644
-> --- a/drivers/pci/pci.c
-> +++ b/drivers/pci/pci.c
-> @@ -25,6 +25,7 @@
->  #include <linux/device.h>
->  #include <linux/pm_runtime.h>
->  #include <linux/pci_hotplug.h>
-> +#include <linux/iommu.h>
->  #include <asm-generic/pci-bridge.h>
->  #include <asm/setup.h>
->  #include "pci.h"
-> @@ -4302,6 +4303,104 @@ void pci_ignore_hotplug(struct pci_dev *dev)
->  }
->  EXPORT_SYMBOL_GPL(pci_ignore_hotplug);
->  
-> +bool pci_peer_traffic_supported(struct pci_dev *dev, struct pci_dev *peer)
-> +{
-> +	struct pci_host_bridge *dev_host_bridge;
-> +	struct pci_host_bridge *peer_host_bridge;
-> +
-> +	/*
-> +	 * Disallow the peer-to-peer traffic if the devices do not share a
-> +	 * host bridge. The PCI specifications does not make any guarantees
-> +	 * about P2P capabilities between devices under separate domains.
-> +	 *
-> +	 * PCI Local Bus Specification Revision 3.0, section 3.10:
-> +	 *    "Peer-to-peer transactions crossing multiple host bridges
-> +	 *     PCI host bridges may, but are not required to, support PCI
-> +	 *     peer-to-peer transactions that traverse multiple PCI host
-> +	 *     bridges."
-> +	 */
-> +	dev_host_bridge = pci_find_host_bridge(dev->bus);
-> +	peer_host_bridge = pci_find_host_bridge(peer->bus);
-> +	if (dev_host_bridge != peer_host_bridge)
-> +		return false;
-> +
-> +	if (pci_is_pcie(dev) && pci_is_pcie(peer)) {
-
-Can you use the same "return errors early" trick here to unindent
-everything below, e.g.,
-
-  if (!pci_is_pcie(dev) || !pci_is_pcie(peer))
-    return false;
-
-> +		/*
-> +		 * Access Control Services (ACS) Checks
-> +		 *
-> +		 * ACS has a capability bit for P2P Request Redirects (RR),
-> +		 * but unfortunately it doesn't tell us much about the real
-> +		 * capabilities of the hardware.
-> +		 *
-> +		 * PCI Express Base Specification Revision 3.0, section
-> +		 * 6.12.1.1:
-> +		 *    "ACS P2P Request Redirect: must be implemented by Root
-> +		 *     Ports that support peer-to-peer traffic with other
-> +		 *     Root Ports; [80]"
-> +		 * but
-> +		 *    "[80] Root Port indication of ACS P2P Request Redirect
-> +		 *     or ACS P2P Completion Redirect support does not imply
-> +		 *     any particular level of peer-to-peer support by the
-> +		 *     Root Complex, or that peer-to-peer traffic is
-> +		 *     supported at all"
-> +		 */
-> +		struct pci_dev *rpdev = dev->bus->self;
-> +		struct pci_dev *rppeer = peer->bus->self;
-
-This will oops if rpdev or rppeer is a VF on a "virtual" bus (bus->self
-is NULL in that case); see the comment near pci_is_root_bus().
-
-> +		struct pci_dev *common_upstream;
-> +		int pos;
-> +		u16 cap;
-> +
-> +		while ((rpdev) && (pci_is_pcie(rpdev)) &&
-> +		       (pci_pcie_type(rpdev) != PCI_EXP_TYPE_ROOT_PORT))
-> +			rpdev = rpdev->bus->self;
-
-I think we might need some sort of pcie_root_port() function.  We already
-have a static pcie_find_root_port() that is basically the same.  And
-dmar_find_matched_atsr_unit() does something very similar.  And
-ixgbe_io_error_detected().  And myri10ge_enable_ecrc().
-
-> +
-> +		while ((rppeer) && (pci_is_pcie(rppeer)) &&
-> +		       (pci_pcie_type(rppeer) != PCI_EXP_TYPE_ROOT_PORT))
-> +			rppeer = rppeer->bus->self;
-> +
-> +		common_upstream = pci_find_common_upstream_dev(dev, peer);
-
-This (and the ACS check) logically belongs above the rpdev/rppeer stuff.
-
-> +		/*
-> +		 * If ACS is not implemented, we have no idea about P2P
-> +		 * support. Optimistically allow this if there is a common
-> +		 * upstream device.
-> +		 */
-> +		pos = pci_find_ext_capability(rpdev, PCI_EXT_CAP_ID_ACS);
-> +		if (!pos)
-> +			return common_upstream != NULL;
-> +
-> +		/*
-> +		 * If the devices are under the same root port and have a common
-> +		 * upstream device, allow if the root port is further upstream
-> +		 * from the common upstream device and the common upstream
-> +		 * device has Upstream Forwarding disabled, or if the root port
-> +		 * is the common upstream device and ACS is not implemented.
-> +		 */
-> +		pci_read_config_word(rpdev, pos + PCI_ACS_CAP, &cap);
-> +		if ((rpdev == rppeer && common_upstream) &&
-> +		    (((common_upstream != rpdev) &&
-> +		      !pci_acs_enabled(common_upstream, PCI_ACS_UF)) ||
-> +		     ((common_upstream == rpdev) && ((cap & PCI_ACS_RR) == 0))))
-> +			return true;
-> +
-> +		/*
-> +		 * If ACS RR is implemented and disabled, allow only if the
-> +		 * devices are under the same root port.
-> +		 */
-> +		if (cap & PCI_ACS_RR && !pci_acs_enabled(rpdev, PCI_ACS_RR))
-> +			return rpdev == rppeer;
-> +
-> +		/*
-> +		 * If ACS RR is not implemented, or is implemented and enabled,
-> +		 * only allow if there's a translation agent enabled to do the
-> +		 * redirect.
-> +		 */
-> +		return iommu_present(&pci_bus_type);
-> +	}
-> +
-> +	return false;
-> +}
-> +
->  #define RESOURCE_ALIGNMENT_PARAM_SIZE COMMAND_LINE_SIZE
->  static char resource_alignment_param[RESOURCE_ALIGNMENT_PARAM_SIZE] = {0};
->  static DEFINE_SPINLOCK(resource_alignment_lock);
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index 8262b9e..db0cb51 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -824,6 +824,8 @@ void pci_stop_root_bus(struct pci_bus *bus);
->  void pci_remove_root_bus(struct pci_bus *bus);
->  void pci_setup_cardbus(struct pci_bus *bus);
->  void pci_sort_breadthfirst(void);
-> +bool pci_peer_traffic_supported(struct pci_dev *dev, struct pci_dev *peer);
-> +
->  #define dev_is_pci(d) ((d)->bus == &pci_bus_type)
->  #define dev_is_pf(d) ((dev_is_pci(d) ? to_pci_dev(d)->is_physfn : false))
->  #define dev_num_vf(d) ((dev_is_pci(d) ? pci_num_vf(to_pci_dev(d)) : 0))
-> @@ -1914,4 +1916,5 @@ static inline bool pci_ari_enabled(struct pci_bus *bus)
->  {
->  	return bus->self && bus->self->ari_enabled;
->  }
-> +
->  #endif /* LINUX_PCI_H */
-> -- 
-> 2.5.1
+> You can find the VT-d Posted-Interrtups Spec. in the following URL:
+> http://www.intel.com/content/www/us/en/intelligent-systems/intel-technolog
+> y/vt-directed-io-spec.html
+> 
+> v9:
+> - Include the whole series:
+> [01/18]: irq bypasser manager
+> [02/18] - [06/18]: Common non-architecture part for VT-d PI and ARM side
+> forwarded irq
+> [07/18] - [18/18]: VT-d PI part
+> 
+> v8:
+> refer to the changelog in each patch
+> 
+> v7:
+> * Define two weak irq bypass callbacks:
+>   - kvm_arch_irq_bypass_start()
+>   - kvm_arch_irq_bypass_stop()
+> * Remove the x86 dummy implementation of the above two functions.
+> * Print some useful information instead of WARN_ON() when the
+>   irq bypass consumer unregistration fails.
+> * Fix an issue when calling pi_pre_block and pi_post_block.
+> 
+> v6:
+> * Rebase on 4.2.0-rc6
+> * Rebase on https://lkml.org/lkml/2015/8/6/526 and
+> http://www.gossamer-threads.com/lists/linux/kernel/2235623
+> * Make the add_consumer and del_consumer callbacks static
+> * Remove pointless INIT_LIST_HEAD to 'vdev->ctx[vector].producer.node)'
+> * Use dev_info instead of WARN_ON() when irq_bypass_register_producer fails
+> * Remove optional dummy callbacks for irq producer
+> 
+> v4:
+> * For lowest-priority interrupt, only support single-CPU destination
+> interrupts at the current stage, more common lowest priority support
+> will be added later.
+> * Accoring to Marcelo's suggestion, when vCPU is blocked, we handle
+> the posted-interrupts in the HLT emulation path.
+> * Some small changes (coding style, typo, add some code comments)
+> 
+> v3:
+> * Adjust the Posted-interrupts Descriptor updating logic when vCPU is
+>   preempted or blocked.
+> * KVM_DEV_VFIO_DEVICE_POSTING_IRQ -->
+> KVM_DEV_VFIO_DEVICE_POST_IRQ
+> * __KVM_HAVE_ARCH_KVM_VFIO_POSTING -->
+> __KVM_HAVE_ARCH_KVM_VFIO_POST
+> * Add KVM_DEV_VFIO_DEVICE_UNPOST_IRQ attribute for VFIO irq, which
+>   can be used to change back to remapping mode.
+> * Fix typo
+> 
+> v2:
+> * Use VFIO framework to enable this feature, the VFIO part of this series is
+>   base on Eric's patch "[PATCH v3 0/8] KVM-VFIO IRQ forward control"
+> * Rebase this patchset on
+> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git,
+>   then revise some irq logic based on the new hierarchy irqdomain patches
+> provided
+>   by Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> 
+> 
+> *** BLURB HERE ***
+> 
+> Alex Williamson (1):
+>   virt: IRQ bypass manager
+> 
+> Eric Auger (4):
+>   KVM: arm/arm64: select IRQ_BYPASS_MANAGER
+>   KVM: create kvm_irqfd.h
+>   KVM: introduce kvm_arch functions for IRQ bypass
+>   KVM: eventfd: add irq bypass consumer management
+> 
+> Feng Wu (13):
+>   KVM: x86: select IRQ_BYPASS_MANAGER
+>   KVM: Extend struct pi_desc for VT-d Posted-Interrupts
+>   KVM: Add some helper functions for Posted-Interrupts
+>   KVM: Define a new interface kvm_intr_is_single_vcpu()
+>   KVM: Make struct kvm_irq_routing_table accessible
+>   KVM: make kvm_set_msi_irq() public
+>   vfio: Register/unregister irq_bypass_producer
+>   KVM: x86: Update IRTE for posted-interrupts
+>   KVM: Implement IRQ bypass consumer callbacks for x86
+>   KVM: Add an arch specific hooks in 'struct kvm_kernel_irqfd'
+>   KVM: Update Posted-Interrupts Descriptor when vCPU is preempted
+>   KVM: Update Posted-Interrupts Descriptor when vCPU is blocked
+>   iommu/vt-d: Add a command line parameter for VT-d posted-interrupts
+> 
+>  Documentation/kernel-parameters.txt   |   1 +
+>  Documentation/virtual/kvm/locking.txt |  12 ++
+>  MAINTAINERS                           |   7 +
+>  arch/arm/kvm/Kconfig                  |   2 +
+>  arch/arm/kvm/Makefile                 |   1 +
+>  arch/arm64/kvm/Kconfig                |   2 +
+>  arch/arm64/kvm/Makefile               |   1 +
+>  arch/x86/include/asm/kvm_host.h       |  24 +++
+>  arch/x86/kvm/Kconfig                  |   3 +
+>  arch/x86/kvm/Makefile                 |   3 +
+>  arch/x86/kvm/irq_comm.c               |  32 ++-
+>  arch/x86/kvm/lapic.c                  |  59 ++++++
+>  arch/x86/kvm/lapic.h                  |   2 +
+>  arch/x86/kvm/trace.h                  |  33 ++++
+>  arch/x86/kvm/vmx.c                    | 361
+> +++++++++++++++++++++++++++++++++-
+>  arch/x86/kvm/x86.c                    | 108 +++++++++-
+>  drivers/iommu/irq_remapping.c         |  12 +-
+>  drivers/vfio/pci/Kconfig              |   1 +
+>  drivers/vfio/pci/vfio_pci_intrs.c     |   9 +
+>  drivers/vfio/pci/vfio_pci_private.h   |   2 +
+>  include/linux/irqbypass.h             |  90 +++++++++
+>  include/linux/kvm_host.h              |  29 +++
+>  include/linux/kvm_irqfd.h             |  71 +++++++
+>  virt/kvm/Kconfig                      |   3 +
+>  virt/kvm/eventfd.c                    | 142 +++++++------
+>  virt/kvm/irqchip.c                    |  10 -
+>  virt/kvm/kvm_main.c                   |   3 +
+>  virt/lib/Kconfig                      |   2 +
+>  virt/lib/Makefile                     |   1 +
+>  virt/lib/irqbypass.c                  | 257 ++++++++++++++++++++++++
+>  30 files changed, 1182 insertions(+), 101 deletions(-)
+>  create mode 100644 include/linux/irqbypass.h
+>  create mode 100644 include/linux/kvm_irqfd.h
+>  create mode 100644 virt/lib/Kconfig
+>  create mode 100644 virt/lib/Makefile
+>  create mode 100644 virt/lib/irqbypass.c
 > 
 > --
-> To unsubscribe from this list: send the line "unsubscribe linux-pci" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 2.1.0
