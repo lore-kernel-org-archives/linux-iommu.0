@@ -1,169 +1,56 @@
-From: Jiri Slaby <jirislaby@gmail.com>
+From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
 Subject: Re: [PATCH V4 1/2] ACPI / EC: Fix broken 64bit big-endian users of 'global_lock'
-Date: Sun, 27 Sep 2015 07:31:53 +0200
-Message-ID: <CAJPN1uvPyZ+hZ64_0ZXU9wPLuAR-qm06GrRmHTjc9+rgiChYDQ@mail.gmail.com>
-References: <e28c4b4deaf766910c366ab87b64325da59c8ad6.1443198783.git.viresh.kumar@linaro.org>
+Date: Sun, 27 Sep 2015 16:09:25 +0200
+Message-ID: <3461169.v5xKdGLGjP@vostro.rjw.lan>
+References: <e28c4b4deaf766910c366ab87b64325da59c8ad6.1443198783.git.viresh.kumar@linaro.org> <2524822.pQu4UKMrlb@vostro.rjw.lan> <1443297128.2181.11.camel@HansenPartnership.com>
 Mime-Version: 1.0
-Content-Type: multipart/alternative; boundary=001a11402966fe4f180520b3e5c2
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <e28c4b4deaf766910c366ab87b64325da59c8ad6.1443198783.git.viresh.kumar@linaro.org>
-Sender: owner-linux-mm@kvack.org
-To: Viresh Kumar <viresh.kumar@linaro.org>
-Cc: iommu@lists.linux-foundation.org, linux-acpi@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-scsi@vger.kernel.org, Intel Linux Wireless <ilw@linux.intel.com>, alsa-devel@alsa-project.org, linux-usb@vger.kernel.org, linaro-kernel@lists.linaro.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org, QCA ath9k Development <ath9k-devel@qca.qualcomm.com>, linux-wireless@vger.kernel.org, linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1443297128.2181.11.camel@HansenPartnership.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: James Bottomley <James.Bottomley@hansenpartnership.com>
+Cc: Viresh Kumar <viresh.kumar@linaro.org>, Johannes Berg <johannes@sipsolutions.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>, QCA ath9k Development <ath9k-devel@qca.qualcomm.com>, Intel Linux Wireless <ilw@linux.intel.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linux ACPI <linux-acpi@vger.kernel.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "open list:NETWORKING DRIVERS (WIRELESS)" <linux-wireless@vger.kernel.org>, "open list:TARGET SUBSYSTEM" <linux-scsi@vger.kernel.org>, open list:ULTRA-WIDEBAND (UWB) S
 List-Id: iommu@lists.linux-foundation.org
 
---001a11402966fe4f180520b3e5c2
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+On Saturday, September 26, 2015 12:52:08 PM James Bottomley wrote:
+> On Fri, 2015-09-25 at 22:58 +0200, Rafael J. Wysocki wrote:
+> > On Friday, September 25, 2015 01:25:49 PM Viresh Kumar wrote:
+> > > On 25 September 2015 at 13:33, Rafael J. Wysocki <rjw@rjwysocki.net> wrote:
+> > > > You're going to change that into bool in the next patch, right?
+> > > 
+> > > Yeah.
+> > > 
+> > > > So what if bool is a byte and the field is not word-aligned
+> > > 
+> > > Its between two 'unsigned long' variables today, and the struct isn't packed.
+> > > So, it will be aligned, isn't it?
+> > > 
+> > > > and changing
+> > > > that byte requires a read-modify-write.  How do we ensure that things remain
+> > > > consistent in that case?
+> > > 
+> > > I didn't understood why a read-modify-write is special here? That's
+> > > what will happen
+> > > to most of the non-word-sized fields anyway?
+> > > 
+> > > Probably I didn't understood what you meant..
+> > 
+> > Say you have three adjacent fields in a structure, x, y, z, each one byte long.
+> > Initially, all of them are equal to 0.
+> > 
+> > CPU A writes 1 to x and CPU B writes 2 to y at the same time.
+> > 
+> > What's the result?
+> 
+> I think every CPU's  cache architecure guarantees adjacent store
+> integrity, even in the face of SMP, so it's x==1 and y==2.  If you're
+> thinking of old alpha SMP system where the lowest store width is 32 bits
+> and thus you have to do RMW to update a byte, this was usually fixed by
+> padding (assuming the structure is not packed).  However, it was such a
+> problem that even the later alpha chips had byte extensions.
 
-Dne 25. 9. 2015 18:42 napsal u=C5=BEivatel "Viresh Kumar" <
-viresh.kumar@linaro.org>:
->
-> global_lock is defined as an unsigned long and accessing only its lower
-> 32 bits from sysfs is incorrect, as we need to consider other 32 bits
-> for big endian 64 bit systems. There are no such platforms yet, but the
-> code needs to be robust for such a case.
->
-> Fix that by passing a local variable to debugfs_create_bool() and
-> assigning its value to global_lock later.
+OK, thanks!
 
-But this has to crash whenever the file is read as val's storage is gone at
-that moment already, right?
+Rafael
 
-> Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-> ---
-> V3->V4:
-> - Create a local variable instead of changing type of global_lock
->   (Rafael)
-> - Drop the stable tag
-> - BCC'd a lot of people (rather than cc'ing them) to make sure
->   - the series reaches them
->   - mailing lists do not block the patchset due to long cc list
->   - and we don't spam the BCC'd people for every reply
-> ---
->  drivers/acpi/ec_sys.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/acpi/ec_sys.c b/drivers/acpi/ec_sys.c
-> index b4c216bab22b..b44b91331a56 100644
-> --- a/drivers/acpi/ec_sys.c
-> +++ b/drivers/acpi/ec_sys.c
-> @@ -110,6 +110,7 @@ static int acpi_ec_add_debugfs(struct acpi_ec *ec,
-unsigned int ec_device_count)
->         struct dentry *dev_dir;
->         char name[64];
->         umode_t mode =3D 0400;
-> +       u32 val;
->
->         if (ec_device_count =3D=3D 0) {
->                 acpi_ec_debugfs_dir =3D debugfs_create_dir("ec", NULL);
-> @@ -127,10 +128,11 @@ static int acpi_ec_add_debugfs(struct acpi_ec *ec,
-unsigned int ec_device_count)
->
->         if (!debugfs_create_x32("gpe", 0444, dev_dir, (u32
-*)&first_ec->gpe))
->                 goto error;
-> -       if (!debugfs_create_bool("use_global_lock", 0444, dev_dir,
-> -                                (u32 *)&first_ec->global_lock))
-> +       if (!debugfs_create_bool("use_global_lock", 0444, dev_dir, &val))
->                 goto error;
->
-> +       first_ec->global_lock =3D val;
-> +
->         if (write_support)
->                 mode =3D 0600;
->         if (!debugfs_create_file("io", mode, dev_dir, ec,
-&acpi_ec_io_ops))
-> --
-> 2.4.0
->
-
---001a11402966fe4f180520b3e5c2
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<p dir=3D"ltr"><br>
-Dne 25. 9. 2015 18:42 napsal u=C5=BEivatel &quot;Viresh Kumar&quot; &lt;<a =
-href=3D"mailto:viresh.kumar@linaro.org">viresh.kumar@linaro.org</a>&gt;:<br=
->
-&gt;<br>
-&gt; global_lock is defined as an unsigned long and accessing only its lowe=
-r<br>
-&gt; 32 bits from sysfs is incorrect, as we need to consider other 32 bits<=
-br>
-&gt; for big endian 64 bit systems. There are no such platforms yet, but th=
-e<br>
-&gt; code needs to be robust for such a case.<br>
-&gt;<br>
-&gt; Fix that by passing a local variable to debugfs_create_bool() and<br>
-&gt; assigning its value to global_lock later.</p>
-<p dir=3D"ltr">But this has to crash whenever the file is read as val&#39;s=
- storage is gone at that moment already, right?</p>
-<p dir=3D"ltr">&gt; Signed-off-by: Viresh Kumar &lt;<a href=3D"mailto:vires=
-h.kumar@linaro.org">viresh.kumar@linaro.org</a>&gt;<br>
-&gt; ---<br>
-&gt; V3-&gt;V4:<br>
-&gt; - Create a local variable instead of changing type of global_lock<br>
-&gt; =C2=A0 (Rafael)<br>
-&gt; - Drop the stable tag<br>
-&gt; - BCC&#39;d a lot of people (rather than cc&#39;ing them) to make sure=
-<br>
-&gt; =C2=A0 - the series reaches them<br>
-&gt; =C2=A0 - mailing lists do not block the patchset due to long cc list<b=
-r>
-&gt; =C2=A0 - and we don&#39;t spam the BCC&#39;d people for every reply<br=
->
-&gt; ---<br>
-&gt; =C2=A0drivers/acpi/ec_sys.c | 6 ++++--<br>
-&gt; =C2=A01 file changed, 4 insertions(+), 2 deletions(-)<br>
-&gt;<br>
-&gt; diff --git a/drivers/acpi/ec_sys.c b/drivers/acpi/ec_sys.c<br>
-&gt; index b4c216bab22b..b44b91331a56 100644<br>
-&gt; --- a/drivers/acpi/ec_sys.c<br>
-&gt; +++ b/drivers/acpi/ec_sys.c<br>
-&gt; @@ -110,6 +110,7 @@ static int acpi_ec_add_debugfs(struct acpi_ec *ec,=
- unsigned int ec_device_count)<br>
-&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 struct dentry *dev_dir;<br>
-&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 char name[64];<br>
-&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 umode_t mode =3D 0400;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0u32 val;<br>
-&gt;<br>
-&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (ec_device_count =3D=3D 0) {<br>
-&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 acpi_ec_debugf=
-s_dir =3D debugfs_create_dir(&quot;ec&quot;, NULL);<br>
-&gt; @@ -127,10 +128,11 @@ static int acpi_ec_add_debugfs(struct acpi_ec *e=
-c, unsigned int ec_device_count)<br>
-&gt;<br>
-&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!debugfs_create_x32(&quot;gpe&quot;, 0=
-444, dev_dir, (u32 *)&amp;first_ec-&gt;gpe))<br>
-&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 goto error;<br=
->
-&gt; -=C2=A0 =C2=A0 =C2=A0 =C2=A0if (!debugfs_create_bool(&quot;use_global_=
-lock&quot;, 0444, dev_dir,<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 (u32 *)&amp;first_ec-&gt;global_=
-lock))<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0if (!debugfs_create_bool(&quot;use_global_=
-lock&quot;, 0444, dev_dir, &amp;val))<br>
-&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 goto error;<br=
->
-&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0first_ec-&gt;global_lock =3D val;<br>
-&gt; +<br>
-&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (write_support)<br>
-&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 mode =3D 0600;=
-<br>
-&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!debugfs_create_file(&quot;io&quot;, m=
-ode, dev_dir, ec, &amp;acpi_ec_io_ops))<br>
-&gt; --<br>
-&gt; 2.4.0<br>
-&gt;<br>
-</p>
-
---001a11402966fe4f180520b3e5c2--
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
