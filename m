@@ -1,39 +1,25 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu/s390: add iommu api for s390 pci devices
-Date: Tue, 29 Sep 2015 14:40:30 +0200
-Message-ID: <20150929124030.GI3036@8bytes.org>
-References: <1440682383-27688-1-git-send-email-gerald.schaefer@de.ibm.com>
+Subject: Re: [PATCH] iommu/vt-d: fix memory leak
+Date: Tue, 29 Sep 2015 15:40:46 +0200
+Message-ID: <20150929134046.GA7572@8bytes.org>
+References: <1442573827-28795-1-git-send-email-sudipm.mukherjee@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1440682383-27688-1-git-send-email-gerald.schaefer@de.ibm.com>
+In-Reply-To: <1442573827-28795-1-git-send-email-sudipm.mukherjee@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Gerald Schaefer <gerald.schaefer@de.ibm.com>
-Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Martin Schwidefsky <schwidefsky@de.ibm.com>
+To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Gerald,
+On Fri, Sep 18, 2015 at 04:27:07PM +0530, Sudip Mukherjee wrote:
+> We are returning NULL if we are not able to attach the iommu to the
+> domain but while returning we missed freeing info.
+> 
+> Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
+> ---
+>  drivers/iommu/intel-iommu.c | 1 +
+>  1 file changed, 1 insertion(+)
 
-thanks for your patch. It looks pretty good and addresses my previous
-review comments. I have a few questions, first one is how this
-operates with DMA-API on s390. Is there a seperate DMA-API
-implementation besides the IOMMU-API one for PCI devices?
-
-My other question is inline:
-
-On Thu, Aug 27, 2015 at 03:33:03PM +0200, Gerald Schaefer wrote:
-> +struct s390_domain_device {
-> +	struct list_head	list;
-> +	struct zpci_dev		*zdev;
-> +};
-
-Instead of using your own struct here, have you considered using the
-struct iommu_group instead? The struct devices contains a pointer to an
-iommu_group and the struct itself contains pointers to the domain it is
-currently bound to.
-
-
-Regards,
-
-	Joerg
+Applied, thanks.
