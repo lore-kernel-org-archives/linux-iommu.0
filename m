@@ -1,45 +1,48 @@
-From: Baoquan He <bhe@redhat.com>
-Subject: Re: [PATCH 1/2] iommu/vt-d: break the for loop if an empty ir_ioapic
- entry found
-Date: Tue, 29 Sep 2015 23:04:38 +0800
-Message-ID: <20150929150438.GA2011@dhcp-17-102.nay.redhat.com>
-References: <1443511569-9187-1-git-send-email-bhe@redhat.com>
- <20150929135033.GC7572@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [dm-devel] AMD-Vi IO_PAGE_FAULTs and ata3.00: failed command:
+	READ FPDMA QUEUED errors since Linux 4.0
+Date: Tue, 29 Sep 2015 17:21:01 +0200
+Message-ID: <20150929152100.GL3036@8bytes.org>
+References: <55B7BEA2.30205@01019freenet.de>
+	<20150728175054.GB24782@redhat.com> <55B7D054.4070308@maya.org>
+	<20150728192908.GA25264@redhat.com> <55BCD5A7.2080708@maya.org>
+	<55BE1D5E.6020709@maya.org>
+	<alpine.LRH.2.02.1508021347480.17729@file01.intranet.prod.int.rdu2.redhat.com>
+	<55FE5740.2060701@maya.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20150929135033.GC7572@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+In-Reply-To: <55FE5740.2060701-YKS6W9RDU/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Andreas Hartmann <andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org>
+Cc: linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, device-mapper development <dm-devel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jens Axboe <axboe-b10kYP2dOMg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mikulas Patocka <mpatocka-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Milan Broz <mbroz-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/29/15 at 03:50pm, Joerg Roedel wrote:
-> On Tue, Sep 29, 2015 at 03:26:08PM +0800, Baoquan He wrote:
-> > No need to continue the loop after it has been found.
+On Sun, Sep 20, 2015 at 08:50:40AM +0200, Andreas Hartmann wrote:
+> > I would submit this bug to maintainers of AMD-Vi. They understand the 
+> > hardware, so they should tell why do large I/O requests result in 
+> > IO_PAGE_FAULTs.
 > > 
-> > Signed-off-by: Baoquan He <bhe@redhat.com>
-> > ---
-> >  drivers/iommu/intel_irq_remapping.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-> > index 9ec4e0d..37b93f5 100644
-> > --- a/drivers/iommu/intel_irq_remapping.c
-> > +++ b/drivers/iommu/intel_irq_remapping.c
-> > @@ -841,8 +841,10 @@ static int ir_parse_one_ioapic_scope(struct acpi_dmar_device_scope *scope, > >  		if (ir_ioapic[count].iommu == iommu &&
-> >  		    ir_ioapic[count].id == scope->enumeration_id)
-> >  			return 0;
-> > -		else if (ir_ioapic[count].iommu == NULL && free == -1)
-> > +		else if (ir_ioapic[count].iommu == NULL && free == -1) {
-> >  			free = count;
-> > +			break;
-> > +		}
-> >  	}
+> > It is probably bug either in AMD-Vi driver or in hardware.
 > 
-> The purpose of the loop is also to avoid duplicate entries, so we need
-> to search it till the end, no?
+> Until now, I didn't hear anything from the maintainers of AMD-Vi.
 
-Ah, yes, you are right, it's on purpose. So I will drop this one
-and update the 2/2 only with your suggestion.
+What do you mean by this? I've been commenting on this issue in the
+past and I thought we agreed that this is no issue of the IOMMU driver.
+
+It it were, bisection should lead to a commit that breaks it, but there
+are no commits between v3.18 and v3.19 in the AMD IOMMU driver touching
+the DMA-API path.
+
+
+	Joerg
