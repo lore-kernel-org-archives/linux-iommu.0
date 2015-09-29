@@ -1,76 +1,107 @@
-From: David Laight <David.Laight@ACULAB.COM>
-Subject: RE: [PATCH V4 1/2] ACPI / EC: Fix broken 64bit big-endian users of
- 'global_lock'
-Date: Mon, 28 Sep 2015 15:31:17 +0000
-Message-ID: <063D6719AE5E284EB5DD2968C1650D6D1CBA42F5@AcuExch.aculab.com>
-References: <e28c4b4deaf766910c366ab87b64325da59c8ad6.1443198783.git.viresh.kumar@linaro.org>
-	 <2524822.pQu4UKMrlb@vostro.rjw.lan>
-	 <1443297128.2181.11.camel@HansenPartnership.com>
-	 <3461169.v5xKdGLGjP@vostro.rjw.lan>
-	 <063D6719AE5E284EB5DD2968C1650D6D1CBA3BF7@AcuExch.aculab.com>
-	 <1443450406.2168.3.camel@HansenPartnership.com>
-	 <063D6719AE5E284EB5DD2968C1650D6D1CBA4232@AcuExch.aculab.com>
- <1443453111.2168.9.camel@HansenPartnership.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <1443453111.2168.9.camel@HansenPartnership.com>
-Content-Language: en-US
-Sender: owner-linux-mm@kvack.org
-To: 'James Bottomley' <James.Bottomley@HansenPartnership.com>
-Cc: "'Rafael J. Wysocki'" <rjw@rjwysocki.net>, Viresh Kumar <viresh.kumar@linaro.org>, Johannes Berg <johannes@sipsolutions.net>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>, QCA ath9k Development <ath9k-devel@qca.qualcomm.com>, Intel Linux Wireless <ilw@linux.intel.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Linux Kernel
- Mailing List <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linux ACPI <linux-acpi@vger.kernel.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "open list:NETWORKING DRIVERS (WIRELESS)" <linux-wireless@vger.kernel.org>, "open list:TARGET SUBSYSTEM" <linux-scsi@vger.kern>
+From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: [RFC PATCH 0/3] iommu: Add range flush operation
+Date: Tue, 29 Sep 2015 14:25:23 +0900
+Message-ID: <1443504379-31841-1-git-send-email-tfiga@chromium.org>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Vince Hsu <vince.h-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Paul Walmsley <paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org>, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Mikko Perttunen <mperttunen-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Nicolas Iooss <nicolas.iooss_linux-oWGTIYur0i8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-RnJvbTogSmFtZXMgQm90dG9tbGV5IA0KPiBTZW50OiAyOCBTZXB0ZW1iZXIgMjAxNSAxNjoxMg0K
-PiA+ID4gPiBUaGUgeDg2IGNwdXMgd2lsbCBhbHNvIGRvIDMyYml0IHdpZGUgcm13IGN5Y2xlcyBm
-b3IgdGhlICdiaXQnIG9wZXJhdGlvbnMuDQo+ID4gPg0KPiA+ID4gVGhhdCdzIGRpZmZlcmVudDog
-aXQncyBhbiBhdG9taWMgUk1XIG9wZXJhdGlvbi4gIFRoZSBwcm9ibGVtIHdpdGggdGhlDQo+ID4g
-PiBhbHBoYSB3YXMgdGhhdCB0aGUgb3BlcmF0aW9uIHdhc24ndCBhdG9taWMgKG1lYW5pbmcgdGhh
-dCBpdCBjYW4ndCBiZQ0KPiA+ID4gaW50ZXJydXB0ZWQgYW5kIG5vIGludGVybWVkaWF0ZSBvdXRw
-dXQgc3RhdGVzIGFyZSB2aXNpYmxlKS4NCj4gPg0KPiA+IEl0IGlzIG9ubHkgYXRvbWljIGlmIHBy
-ZWZpeGVkIGJ5IHRoZSAnbG9jaycgcHJlZml4Lg0KPiA+IE5vcm1hbGx5IHRoZSByZWFkIGFuZCB3
-cml0ZSBhcmUgc2VwYXJhdGUgYnVzIGN5Y2xlcy4NCj4gDQo+IFRoZSBlc3NlbnRpYWwgcG9pbnQg
-aXMgdGhhdCB4ODYgaGFzIGF0b21pYyBiaXQgb3BzIGFuZCBieXRlIHdyaXRlcy4NCj4gRWFybHkg
-YWxwaGEgZGlkIG5vdC4NCg0KRWFybHkgYWxwaGEgZGlkbid0IGhhdmUgYW55IGJ5dGUgYWNjZXNz
-ZXMuDQoNCk9uIHg4NiBpZiB5b3UgaGF2ZSB0aGUgZm9sbG93aW5nOg0KCXN0cnVjdCB7DQoJCWNo
-YXIgIGE7DQoJCXZvbGF0aWxlIGNoYXIgYjsNCgl9ICpmb287DQoJZm9vLT5hIHw9IDQ7DQoNClRo
-ZSBjb21waWxlciBpcyBsaWtlbHkgdG8gZ2VuZXJhdGUgYSAnYmlzICM0LCAwKHJieCknIChvciBz
-aW1pbGFyKQ0KYW5kIHRoZSBjcHUgd2lsbCBkbyB0d28gMzJiaXQgbWVtb3J5IGN5Y2xlcyB0aGF0
-IHJlYWQgYW5kIHdyaXRlDQp0aGUgJ3ZvbGF0aWxlJyBmaWVsZCAnYicuDQooZ2NjIGRlZmluaXRl
-bHkgdXNlZCB0byBkbyB0aGlzLi4uKQ0KDQpBIGxvdCBvZiBmaWVsZHMgd2VyZSBtYWRlIDMyYml0
-IChhbmQgcHJvYmFibHkgbm90IGJpdGZpZWxkcykgaW4gdGhlIGxpbnV4DQprZXJuZWwgdHJlZSBh
-IHllYXIgb3IgdHdvIGFnbyB0byBhdm9pZCB0aGlzIHZlcnkgcHJvYmxlbS4NCg0KPiA+ID4gPiBZ
-b3Ugc3RpbGwgaGF2ZSB0byBlbnN1cmUgdGhlIGNvbXBpbGVyIGRvZXNuJ3QgZG8gd2lkZXIgcm13
-IGN5Y2xlcy4NCj4gPiA+ID4gSSBiZWxpZXZlIHRoZSByZWNlbnQgdmVyc2lvbnMgb2YgZ2NjIHdv
-bid0IGRvIHdpZGVyIGFjY2Vzc2VzIGZvciB2b2xhdGlsZSBkYXRhLg0KPiA+ID4NCj4gPiA+IEkg
-ZG9uJ3QgdW5kZXJzdGFuZCB0aGlzIGNvbW1lbnQuICBZb3Ugc2VlbSB0byBiZSBpbXBseWluZyBn
-Y2Mgd291bGQgZG8gYQ0KPiA+ID4gNjQgYml0IFJNVyBmb3IgYSAzMiBiaXQgc3RvcmUgLi4uIHRo
-YXQgd291bGQgYmUgZGFmdCB3aGVuIGEgc2luZ2xlDQo+ID4gPiBpbnN0cnVjdGlvbiBleGlzdHMg
-dG8gcGVyZm9ybSB0aGUgb3BlcmF0aW9uIG9uIGFsbCBhcmNoaXRlY3R1cmVzLg0KPiA+DQo+ID4g
-UmVhZCB0aGUgb2JqZWN0IGNvZGUgYW5kIHdlZXAuLi4NCj4gPiBJdCBpcyBtb3N0IGxpa2VseSB0
-byBoYXBwZW4gZm9yIG9wZXJhdGlvbnMgdGhhdCBhcmUgcm13IChlZyBiaXQgc2V0KS4NCj4gPiBG
-b3IgaW5zdGFuY2UgdGhlIGFybSBjcHUgaGFzIGxpbWl0ZWQgb2Zmc2V0cyBmb3IgMTZiaXQgYWNj
-ZXNzZXMsIGZvcg0KPiA+IG5vcm1hbCBzdHJ1Y3R1cmVzIHRoZSBjb21waWxlciBpcyBsaWtlbHkg
-dG8gdXNlIGEgMzJiaXQgcm13IHNlcXVlbmNlDQo+ID4gZm9yIGEgMTZiaXQgZmllbGQgdGhhdCBo
-YXMgYSBsYXJnZSBvZmZzZXQuDQo+ID4gVGhlIEMgbGFuZ3VhZ2UgYWxsb3dzIHRoZSBjb21waWxl
-ciB0byBkbyBpdCBmb3IgYW55IGFjY2VzcyAoSUlSQyBpbmNsdWRpbmcNCj4gPiB2b2xhdGlsZXMp
-Lg0KPiANCj4gSSB0aGluayB5b3UgbWlnaHQgYmUgY29uZnVzaW5nIGRpZmZlcmVudCB0aGluZ3Mu
-ICBNb3N0IFJJU0MgQ1BVcyBjYW4ndA0KPiBkbyAzMiBiaXQgc3RvcmUgaW1tZWRpYXRlcyBiZWNh
-dXNlIHRoZXJlIGFyZW4ndCBlbm91Z2ggYml0cyBpbiB0aGVpcg0KPiBhcnNlbmFsLCBzbyB0aGV5
-IHRlbmQgdG8gc3BsaXQgMzIgYml0IGxvYWRzIGludG8gYSBsZWZ0IGFuZCByaWdodCBwYXJ0DQo+
-IChmaXJzdCB0aGUgdG9wIHRoZW4gdGhlIG9mZnNldCkuICBUaGlzIChhbmQgb3RoZXIgdGhpbmdz
-KSBhcmUgbW9zdGx5DQo+IHdoYXQgeW91IHNlZSBpbiBjb2RlLiAgSG93ZXZlciwgMzIgYml0IHJl
-Z2lzdGVyIHN0b3JlcyBhcmUgc3RpbGwgYXRvbWljLA0KPiB3aGljaCBpcyBhbGwgd2UgcmVxdWly
-ZS4gIEl0J3Mgbm90IHJlYWxseSB0aGUgY29tcGlsZXIncyBmYXVsdCwgaXQncw0KPiBtb3N0bHkg
-YW4gYXJjaGl0ZWN0dXJhbCBsaW1pdGF0aW9uLg0KDQpObywgSSdtIG5vdCB0YWxraW5nIGFib3V0
-IGhvdyAzMmJpdCBjb25zdGFudHMgYXJlIGdlbmVyYXRlZC4NCkknbSB0YWxraW5nIGFib3V0IHN0
-cnVjdHVyZSBvZmZzZXRzLg0KDQoJRGF2aWQNCg0K
+Currently the IOMMU subsystem provides 3 basic operations: iommu_map(),
+iommu_map_sg() and iommu_unmap(). iommu_map() can be used to map memory
+page by page, however it involves flushing the caches (CPU and IOMMU) for
+every mapped page separately, which is unsuitable for use cases that
+require low mapping latency. Similarly iommu_unmap(), even though it
+takes a full IOVA range as its argument, performs unmapping in a page
+by page manner.
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+To make mapping operation more suitable for such use cases, iommu_map_sg()
+and .map_sg() callback in iommu_ops struct were introduced, which allowed
+particular IOMMU drivers to directly iterate over SG entries, create
+necessary mappings and flush everything in one go.
+
+This approach, however, has two drawbacks:
+ 1) it does not do anything about unmap performance,
+ 2) it requires each driver willing to have fast map to implement its
+    own SG iteration code, even though this is a mostly generic operation.
+
+This series tries to mitigate the two issues above, while acknowledging
+the fact that the .map_sg() callback might be still necessary for some
+specific platforms, which could have the need to iterate over SG elements
+inside driver code. Proposed solution introduces a new .flush() callback,
+which expects IOVA range as its argument and is expected to flush all
+respective caches (be it CPU, IOMMU TLB or whatever) to make the given
+IOVA area mapping change visible to IOMMU clients. Then all the 3 basic
+map/unmap operations are modified to call the .flush() callback at the end
+of the operation. 
+
+Advantages of proposed approach include:
+ 1) ability to use default_iommu_map_sg() helper if all the driver needs
+    for performance optimization is batching the flush,
+ 2) completely no effect on existing code - the .flush() callback is made
+    optional and if it isn't implemented drivers are expected to do
+    necessary flushes on a page by page basis in respective (un)mapping
+    callbakcs,
+ 3) possibility of exporting the iommu_flush() operation and providing
+    unsynchronized map/unmap operations for subsystems with even higher
+    requirements for performance (e.g. drivers/gpu/drm).
+
+The series includes a generic patch implementing necessary changes in
+IOMMU API and two Tegra-specific patches that demonstrate implementation
+on driver side and which can be used for further testing.
+
+Last, but not least, some performance numbers on Tegra210:
++-----------+--------------+-------------+------------+
+| Operation | Size [bytes] | Before [us] | After [us] |
++-----------+--------------+-------------+------------+
+| Map       | 128K         |         139 |         40 |
+|           |              |         136 |         34 |
+|           |              |         137 |         38 |
+|           |              |         136 |         36 |
+|           | 4M           |        3939 |       1163 |
+|           |              |        3730 |       2389 |
+|           |              |        3613 |        997 |
+|           |              |        3622 |       1620 |
+|           | ~18M         |       18635 |       4741 |
+|           |              |       19261 |       6550 |
+|           |              |       18473 |       9304 |
+|           |              |       18125 |       5120 |
+| Unmap     | 128K         |         128 |          7 |
+|           |              |         122 |          8 |
+|           |              |         119 |         10 |
+|           |              |         123 |         12 |
+|           | 4M           |        3829 |        151 |
+|           |              |        3964 |        150 |
+|           |              |        3908 |        145 |
+|           |              |        3875 |        155 |
+|           | ~18M         |       18570 |        683 |
+|           |              |       18473 |        806 |
+|           |              |       21020 |        643 |
+|           |              |       21764 |        652 |
++-----------+--------------+-------------+------------+
+The values are obtained by surrounding the calls to iommu_map_sg()
+(with default_iommu_map_sg() helper used as .map_sg() callback) and
+iommu_unmap() with ktime-based time measurement code. Taken 4 samples
+of every buffer size. ~18M means around 17-19M due do the variance
+in requested buffer sizes.
+
+Tomasz Figa (2):
+  iommu: Add support for out of band flushing
+  iommu/tegra-smmu: Make the driver use out of band flushing
+
+Vince Hsu (1):
+  memory: tegra: add TLB cache line size
+
+ drivers/iommu/iommu.c           | 33 +++++++++++++--
+ drivers/iommu/tegra-smmu.c      | 91 +++++++++++++++++++++++++++++++++++++----
+ drivers/memory/tegra/tegra114.c |  1 +
+ drivers/memory/tegra/tegra124.c |  3 ++
+ drivers/memory/tegra/tegra210.c |  1 +
+ drivers/memory/tegra/tegra30.c  |  1 +
+ include/linux/iommu.h           |  2 +
+ include/soc/tegra/mc.h          |  1 +
+ 8 files changed, 122 insertions(+), 11 deletions(-)
+
+-- 
+2.6.0.rc2.230.g3dd15c0
