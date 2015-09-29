@@ -1,107 +1,130 @@
 From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: [RFC PATCH 0/3] iommu: Add range flush operation
-Date: Tue, 29 Sep 2015 14:25:23 +0900
-Message-ID: <1443504379-31841-1-git-send-email-tfiga@chromium.org>
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Subject: [RFC PATCH 1/3] iommu: Add support for out of band flushing
+Date: Tue, 29 Sep 2015 14:25:24 +0900
+Message-ID: <1443504379-31841-2-git-send-email-tfiga@chromium.org>
+References: <1443504379-31841-1-git-send-email-tfiga@chromium.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1443504379-31841-1-git-send-email-tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Vince Hsu <vince.h-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Paul Walmsley <paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org>, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Mikko Perttunen <mperttunen-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Nicolas Iooss <nicolas.iooss_linux-oWGTIYur0i8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Paul Walmsley <paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Nicolas Iooss <nicolas.iooss_linux-oWGTIYur0i8@public.gmane.org>, Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Vince Hsu <vince.h-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mikko Perttunen <mperttunen-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Currently the IOMMU subsystem provides 3 basic operations: iommu_map(),
-iommu_map_sg() and iommu_unmap(). iommu_map() can be used to map memory
-page by page, however it involves flushing the caches (CPU and IOMMU) for
-every mapped page separately, which is unsuitable for use cases that
-require low mapping latency. Similarly iommu_unmap(), even though it
-takes a full IOVA range as its argument, performs unmapping in a page
-by page manner.
+This patch adds a new "flush" callback to iommu_ops, which is supposed
+to perform any necessary flushes within given IOMMU domain to make any
+changes to mappings of given area [iova; iova + size) be reflected to
+IOMMU clients.
 
-To make mapping operation more suitable for such use cases, iommu_map_sg()
-and .map_sg() callback in iommu_ops struct were introduced, which allowed
-particular IOMMU drivers to directly iterate over SG entries, create
-necessary mappings and flush everything in one go.
+The purpose is to let IOMMU drivers skip page-by-page flushes and
+replace it with one flush of full address range on devices which support
+it.
 
-This approach, however, has two drawbacks:
- 1) it does not do anything about unmap performance,
- 2) it requires each driver willing to have fast map to implement its
-    own SG iteration code, even though this is a mostly generic operation.
+Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+---
+ drivers/iommu/iommu.c | 33 ++++++++++++++++++++++++++++++---
+ include/linux/iommu.h |  2 ++
+ 2 files changed, 32 insertions(+), 3 deletions(-)
 
-This series tries to mitigate the two issues above, while acknowledging
-the fact that the .map_sg() callback might be still necessary for some
-specific platforms, which could have the need to iterate over SG elements
-inside driver code. Proposed solution introduces a new .flush() callback,
-which expects IOVA range as its argument and is expected to flush all
-respective caches (be it CPU, IOMMU TLB or whatever) to make the given
-IOVA area mapping change visible to IOMMU clients. Then all the 3 basic
-map/unmap operations are modified to call the .flush() callback at the end
-of the operation. 
-
-Advantages of proposed approach include:
- 1) ability to use default_iommu_map_sg() helper if all the driver needs
-    for performance optimization is batching the flush,
- 2) completely no effect on existing code - the .flush() callback is made
-    optional and if it isn't implemented drivers are expected to do
-    necessary flushes on a page by page basis in respective (un)mapping
-    callbakcs,
- 3) possibility of exporting the iommu_flush() operation and providing
-    unsynchronized map/unmap operations for subsystems with even higher
-    requirements for performance (e.g. drivers/gpu/drm).
-
-The series includes a generic patch implementing necessary changes in
-IOMMU API and two Tegra-specific patches that demonstrate implementation
-on driver side and which can be used for further testing.
-
-Last, but not least, some performance numbers on Tegra210:
-+-----------+--------------+-------------+------------+
-| Operation | Size [bytes] | Before [us] | After [us] |
-+-----------+--------------+-------------+------------+
-| Map       | 128K         |         139 |         40 |
-|           |              |         136 |         34 |
-|           |              |         137 |         38 |
-|           |              |         136 |         36 |
-|           | 4M           |        3939 |       1163 |
-|           |              |        3730 |       2389 |
-|           |              |        3613 |        997 |
-|           |              |        3622 |       1620 |
-|           | ~18M         |       18635 |       4741 |
-|           |              |       19261 |       6550 |
-|           |              |       18473 |       9304 |
-|           |              |       18125 |       5120 |
-| Unmap     | 128K         |         128 |          7 |
-|           |              |         122 |          8 |
-|           |              |         119 |         10 |
-|           |              |         123 |         12 |
-|           | 4M           |        3829 |        151 |
-|           |              |        3964 |        150 |
-|           |              |        3908 |        145 |
-|           |              |        3875 |        155 |
-|           | ~18M         |       18570 |        683 |
-|           |              |       18473 |        806 |
-|           |              |       21020 |        643 |
-|           |              |       21764 |        652 |
-+-----------+--------------+-------------+------------+
-The values are obtained by surrounding the calls to iommu_map_sg()
-(with default_iommu_map_sg() helper used as .map_sg() callback) and
-iommu_unmap() with ktime-based time measurement code. Taken 4 samples
-of every buffer size. ~18M means around 17-19M due do the variance
-in requested buffer sizes.
-
-Tomasz Figa (2):
-  iommu: Add support for out of band flushing
-  iommu/tegra-smmu: Make the driver use out of band flushing
-
-Vince Hsu (1):
-  memory: tegra: add TLB cache line size
-
- drivers/iommu/iommu.c           | 33 +++++++++++++--
- drivers/iommu/tegra-smmu.c      | 91 +++++++++++++++++++++++++++++++++++++----
- drivers/memory/tegra/tegra114.c |  1 +
- drivers/memory/tegra/tegra124.c |  3 ++
- drivers/memory/tegra/tegra210.c |  1 +
- drivers/memory/tegra/tegra30.c  |  1 +
- include/linux/iommu.h           |  2 +
- include/soc/tegra/mc.h          |  1 +
- 8 files changed, 122 insertions(+), 11 deletions(-)
-
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 049df49..d6bb8fe 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1286,8 +1286,15 @@ static size_t iommu_pgsize(struct iommu_domain *domain,
+ 	return pgsize;
+ }
+ 
+-int iommu_map(struct iommu_domain *domain, unsigned long iova,
+-	      phys_addr_t paddr, size_t size, int prot)
++static void iommu_flush(struct iommu_domain *domain, unsigned long iova,
++			size_t size)
++{
++	if (domain->ops->flush)
++		domain->ops->flush(domain, iova, size);
++}
++
++static int __iommu_map(struct iommu_domain *domain, unsigned long iova,
++		       phys_addr_t paddr, size_t size, int prot)
+ {
+ 	unsigned long orig_iova = iova;
+ 	unsigned int min_pagesz;
+@@ -1340,6 +1347,20 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 
+ 	return ret;
+ }
++
++int iommu_map(struct iommu_domain *domain, unsigned long iova,
++	      phys_addr_t paddr, size_t size, int prot)
++{
++	int ret;
++
++	ret = __iommu_map(domain, iova, paddr, size, prot);
++	if (ret)
++		return ret;
++
++	iommu_flush(domain, iova, size);
++
++	return 0;
++}
+ EXPORT_SYMBOL_GPL(iommu_map);
+ 
+ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
+@@ -1389,6 +1410,7 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
+ 		unmapped += unmapped_page;
+ 	}
+ 
++	iommu_flush(domain, orig_iova, unmapped);
+ 	trace_unmap(orig_iova, size, unmapped);
+ 	return unmapped;
+ }
+@@ -1419,19 +1441,24 @@ size_t default_iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+ 		if (!IS_ALIGNED(s->offset, min_pagesz))
+ 			goto out_err;
+ 
+-		ret = iommu_map(domain, iova + mapped, phys, s->length, prot);
++		ret = __iommu_map(domain, iova + mapped, phys, s->length, prot);
+ 		if (ret)
+ 			goto out_err;
+ 
+ 		mapped += s->length;
+ 	}
+ 
++	iommu_flush(domain, iova, mapped);
++
+ 	return mapped;
+ 
+ out_err:
+ 	/* undo mappings already done */
+ 	iommu_unmap(domain, iova, mapped);
+ 
++	/* flush in case part of our mapping already got cached */
++	iommu_flush(domain, iova, mapped);
++
+ 	return 0;
+ 
+ }
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index f9c1b6d..18e59a9 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -164,6 +164,8 @@ struct iommu_ops {
+ 		     size_t size);
+ 	size_t (*map_sg)(struct iommu_domain *domain, unsigned long iova,
+ 			 struct scatterlist *sg, unsigned int nents, int prot);
++	void (*flush)(struct iommu_domain *domain, unsigned long iova,
++		      size_t size);
+ 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
+ 	int (*add_device)(struct device *dev);
+ 	void (*remove_device)(struct device *dev);
 -- 
 2.6.0.rc2.230.g3dd15c0
