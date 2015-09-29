@@ -1,14 +1,12 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 2/2] iommu/vt-d: Adjsut the return value of the
-	parse_ioapics_under_ir
-Date: Tue, 29 Sep 2015 15:26:09 +0800
-Message-ID: <1443511569-9187-2-git-send-email-bhe@redhat.com>
-References: <1443511569-9187-1-git-send-email-bhe@redhat.com>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [RFC PATCH 0/3] iommu: Add range flush operation
+Date: Tue, 29 Sep 2015 11:27:14 +0200
+Message-ID: <20150929092714.GD9460@ulmo.nvidia.com>
+References: <1443504379-31841-1-git-send-email-tfiga@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============7020999691867273013=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1443511569-9187-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1443504379-31841-1-git-send-email-tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,50 +16,137 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: Olav Haugan <ohaugan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Paul Walmsley <paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Mikko Perttunen <mperttunen-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Nicolas Iooss <nicolas.iooss_linux-oWGTIYur0i8@public.gmane.org>, Russell King <rmk+kernel-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vince Hsu <vince.h-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Adjust the return value of parse_ioapics_under_ir as "-1" representing
-failure and "0" representing succcess. Just make it consistent with other
-function implementation, and we can judge if calling is successfull by
-if (!parse_ioapics_under_ir()) style.
 
-Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/intel_irq_remapping.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+--===============7020999691867273013==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="P+33d92oIH25kiaB"
+Content-Disposition: inline
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 37b93f5..0f441b7 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -672,7 +672,7 @@ static int __init intel_prepare_irq_remapping(void)
- 	if (!dmar_ir_support())
- 		return -ENODEV;
- 
--	if (parse_ioapics_under_ir() != 1) {
-+	if (!parse_ioapics_under_ir()) {
- 		pr_info("Not enabling interrupt remapping\n");
- 		goto error;
- 	}
-@@ -918,7 +918,7 @@ static int __init parse_ioapics_under_ir(void)
- 		}
- 
- 	if (!ir_supported)
--		return 0;
-+		return -1;
- 
- 	for (ioapic_idx = 0; ioapic_idx < nr_ioapics; ioapic_idx++) {
- 		int ioapic_id = mpc_ioapic_id(ioapic_idx);
-@@ -930,7 +930,7 @@ static int __init parse_ioapics_under_ir(void)
- 		}
- 	}
- 
--	return 1;
-+	return 0;
- }
- 
- static int __init ir_dev_scope_init(void)
--- 
-2.1.0
+
+--P+33d92oIH25kiaB
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, Sep 29, 2015 at 02:25:23PM +0900, Tomasz Figa wrote:
+> Currently the IOMMU subsystem provides 3 basic operations: iommu_map(),
+> iommu_map_sg() and iommu_unmap(). iommu_map() can be used to map memory
+> page by page, however it involves flushing the caches (CPU and IOMMU) for
+> every mapped page separately, which is unsuitable for use cases that
+> require low mapping latency. Similarly iommu_unmap(), even though it
+> takes a full IOVA range as its argument, performs unmapping in a page
+> by page manner.
+>=20
+> To make mapping operation more suitable for such use cases, iommu_map_sg()
+> and .map_sg() callback in iommu_ops struct were introduced, which allowed
+> particular IOMMU drivers to directly iterate over SG entries, create
+> necessary mappings and flush everything in one go.
+>=20
+> This approach, however, has two drawbacks:
+>  1) it does not do anything about unmap performance,
+>  2) it requires each driver willing to have fast map to implement its
+>     own SG iteration code, even though this is a mostly generic operation.
+>=20
+> This series tries to mitigate the two issues above, while acknowledging
+> the fact that the .map_sg() callback might be still necessary for some
+> specific platforms, which could have the need to iterate over SG elements
+> inside driver code. Proposed solution introduces a new .flush() callback,
+> which expects IOVA range as its argument and is expected to flush all
+> respective caches (be it CPU, IOMMU TLB or whatever) to make the given
+> IOVA area mapping change visible to IOMMU clients. Then all the 3 basic
+> map/unmap operations are modified to call the .flush() callback at the end
+> of the operation.=20
+>=20
+> Advantages of proposed approach include:
+>  1) ability to use default_iommu_map_sg() helper if all the driver needs
+>     for performance optimization is batching the flush,
+>  2) completely no effect on existing code - the .flush() callback is made
+>     optional and if it isn't implemented drivers are expected to do
+>     necessary flushes on a page by page basis in respective (un)mapping
+>     callbakcs,
+>  3) possibility of exporting the iommu_flush() operation and providing
+>     unsynchronized map/unmap operations for subsystems with even higher
+>     requirements for performance (e.g. drivers/gpu/drm).
+
+That would require passing in some sort of flag that the core shouldn't
+be flushing itself, right? Currently it would flush on every map/unmap.
+
+>=20
+> The series includes a generic patch implementing necessary changes in
+> IOMMU API and two Tegra-specific patches that demonstrate implementation
+> on driver side and which can be used for further testing.
+>=20
+> Last, but not least, some performance numbers on Tegra210:
+> +-----------+--------------+-------------+------------+
+> | Operation | Size [bytes] | Before [us] | After [us] |
+> +-----------+--------------+-------------+------------+
+> | Map       | 128K         |         139 |         40 |
+> |           |              |         136 |         34 |
+> |           |              |         137 |         38 |
+> |           |              |         136 |         36 |
+> |           | 4M           |        3939 |       1163 |
+> |           |              |        3730 |       2389 |
+> |           |              |        3613 |        997 |
+> |           |              |        3622 |       1620 |
+> |           | ~18M         |       18635 |       4741 |
+> |           |              |       19261 |       6550 |
+> |           |              |       18473 |       9304 |
+> |           |              |       18125 |       5120 |
+> | Unmap     | 128K         |         128 |          7 |
+> |           |              |         122 |          8 |
+> |           |              |         119 |         10 |
+> |           |              |         123 |         12 |
+> |           | 4M           |        3829 |        151 |
+> |           |              |        3964 |        150 |
+> |           |              |        3908 |        145 |
+> |           |              |        3875 |        155 |
+> |           | ~18M         |       18570 |        683 |
+> |           |              |       18473 |        806 |
+> |           |              |       21020 |        643 |
+> |           |              |       21764 |        652 |
+> +-----------+--------------+-------------+------------+
+> The values are obtained by surrounding the calls to iommu_map_sg()
+> (with default_iommu_map_sg() helper used as .map_sg() callback) and
+> iommu_unmap() with ktime-based time measurement code. Taken 4 samples
+> of every buffer size. ~18M means around 17-19M due do the variance
+> in requested buffer sizes.
+
+Those are pretty impressive numbers.
+
+Thierry
+
+--P+33d92oIH25kiaB
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJWCllvAAoJEN0jrNd/PrOhbXUP/0o96KL/hY1LiuIQRbJ5P5qz
+Ln+0vOReZ1w1k5IRnspI9wMYz2ZuczwBkLNr0cSFjJUSbrlx0LEzgIfkr5XUf01u
+rkhILqjDJOWrxBURZuTLwKUYUNG54QS1wIIe2D09idBVCWfrxdlr+JujQyzpvA8B
+E2osI+6kb0pVkpXwdLwok2ZDHsD4Z1ODfWL3ut1O6vclsdsgc3F0swy11j0sfv+y
+t8vjkFR7i1rckKudF0q1PuzqybKE2M9BSYCrcWEuDb4eoHCyaw419uWltB+hzK4Q
+32wVx/ZNUQfcnFpxlX3RUHQxwc1nND6qdqUHt7il6WxHBeNl5wEpyA4i93/sT4LP
+TMOTZ6SRswZBpv0OO7tv7Y7E2GGDEn5Qg+nCyzHLFhdYPS3vQjsghgLpDCZOEe/B
+LSnI/dPOO2A+v91uwEuqQWMBImkjT16YO1Peof0+hbBezJNxhJzrHeCC/3XmDCU+
+jeESQbtkmS1N9zKNlV91Wykk3SlyuVdtSrfM6dByg5jAajwp+ZyVfF1iEHKa6qzk
+VnIswJDGFnuuwnJAcWLJYDF+dDjdNnE6z4vB3XYWNjOe76u8Tz/YZjcPI9DFUkQQ
+mFqXoIWiX885PkA2VURTBT1Dg1cGQE4LsHIQkqghlwlF1DR1B+9L2gQ7iwU/BFC9
+CoVP0/3QSs1cIL5xKaF0
+=mu7r
+-----END PGP SIGNATURE-----
+
+--P+33d92oIH25kiaB--
+
+--===============7020999691867273013==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============7020999691867273013==--
