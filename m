@@ -1,185 +1,121 @@
-From: Ashutosh Dixit <ashutosh.dixit-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH char-misc-next v2 01/22] iommu: iova: Move iova cache
-	management to the iova library
-Date: Tue, 29 Sep 2015 18:07:02 -0700
-Message-ID: <40199221085e2c4a0ea5d4328b6457be99be0f09.1443573394.git.ashutosh.dixit@intel.com>
+From: Ashutosh Dixit <ashutosh.dixit@intel.com>
+Subject: [PATCH char-misc-next v2 02/22] iommu: iova: Export symbols
+Date: Tue, 29 Sep 2015 18:07:30 -0700
+Message-ID: <a08bece80106b017a691239c48c15d1432c1d1c9.1443573394.git.ashutosh.dixit@intel.com>
 References: <cover.1443573394.git.ashutosh.dixit@intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1443573394.git.ashutosh.dixit-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Sudeep Dutt <sudeep.dutt-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ashutosh Dixit <ashutosh.dixit-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Nikhil Rao <nikhil.rao-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1443573394.git.ashutosh.dixit@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org
+Cc: Sakari Ailus <sakari.ailus@linux.intel.com>, David Woodhouse <David.Woodhouse@intel.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, Ashutosh Dixit <ashutosh.dixit@intel.com>, Sudeep Dutt <sudeep.dutt@intel.com>, Nikhil Rao <nikhil.rao@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Sakari Ailus <sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-This is necessary to separate intel-iommu from the iova library.
+Use EXPORT_SYMBOL_GPL() to export the iova library symbols. The symbols
+include:
 
-Signed-off-by: Sakari Ailus <sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+	init_iova_domain();
+	iova_cache_get();
+	iova_cache_put();
+	iova_cache_init();
+	alloc_iova();
+	find_iova();
+	__free_iova();
+	free_iova();
+	put_iova_domain();
+	reserve_iova();
+	copy_reserved_iova();
+
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: David Woodhouse <David.Woodhouse@intel.com>
 ---
- drivers/iommu/intel-iommu.c |  6 ++--
- drivers/iommu/iova.c        | 83 ++++++++++++++++++++++++++-------------------
- include/linux/iova.h        |  4 +--
- 3 files changed, 54 insertions(+), 39 deletions(-)
+ drivers/iommu/iova.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 2d7349a..7b27bcd 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3711,7 +3711,7 @@ static inline int iommu_devinfo_cache_init(void)
- static int __init iommu_init_mempool(void)
- {
- 	int ret;
--	ret = iommu_iova_cache_init();
-+	ret = iova_cache_get();
- 	if (ret)
- 		return ret;
- 
-@@ -3725,7 +3725,7 @@ static int __init iommu_init_mempool(void)
- 
- 	kmem_cache_destroy(iommu_domain_cache);
- domain_error:
--	iommu_iova_cache_destroy();
-+	iova_cache_put();
- 
- 	return -ENOMEM;
- }
-@@ -3734,7 +3734,7 @@ static void __init iommu_exit_mempool(void)
- {
- 	kmem_cache_destroy(iommu_devinfo_cache);
- 	kmem_cache_destroy(iommu_domain_cache);
--	iommu_iova_cache_destroy();
-+	iova_cache_put();
- }
- 
- static void quirk_ioat_snb_local_iommu(struct pci_dev *pdev)
 diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index b7c3d92..400f4d1 100644
+index 400f4d1..dd87123 100644
 --- a/drivers/iommu/iova.c
 +++ b/drivers/iommu/iova.c
-@@ -20,40 +20,6 @@
- #include <linux/iova.h>
- #include <linux/slab.h>
- 
--static struct kmem_cache *iommu_iova_cache;
--
--int iommu_iova_cache_init(void)
--{
--	int ret = 0;
--
--	iommu_iova_cache = kmem_cache_create("iommu_iova",
--					 sizeof(struct iova),
--					 0,
--					 SLAB_HWCACHE_ALIGN,
--					 NULL);
--	if (!iommu_iova_cache) {
--		pr_err("Couldn't create iova cache\n");
--		ret = -ENOMEM;
--	}
--
--	return ret;
--}
--
--void iommu_iova_cache_destroy(void)
--{
--	kmem_cache_destroy(iommu_iova_cache);
--}
--
--struct iova *alloc_iova_mem(void)
--{
--	return kmem_cache_alloc(iommu_iova_cache, GFP_ATOMIC);
--}
--
--void free_iova_mem(struct iova *iova)
--{
--	kmem_cache_free(iommu_iova_cache, iova);
--}
--
- void
- init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- 	unsigned long start_pfn, unsigned long pfn_32bit)
-@@ -242,6 +208,55 @@ iova_insert_rbtree(struct rb_root *root, struct iova *iova)
- 	rb_insert_color(&iova->node, root);
+@@ -38,6 +38,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+ 	iovad->start_pfn = start_pfn;
+ 	iovad->dma_32bit_pfn = pfn_32bit;
  }
++EXPORT_SYMBOL_GPL(init_iova_domain);
  
-+static struct kmem_cache *iova_cache;
-+static unsigned int iova_cache_users;
-+static DEFINE_MUTEX(iova_cache_mutex);
-+
-+struct iova *alloc_iova_mem(void)
-+{
-+	return kmem_cache_alloc(iova_cache, GFP_ATOMIC);
-+}
-+EXPORT_SYMBOL(alloc_iova_mem);
-+
-+void free_iova_mem(struct iova *iova)
-+{
-+	kmem_cache_free(iova_cache, iova);
-+}
-+EXPORT_SYMBOL(free_iova_mem);
-+
-+int iova_cache_get(void)
-+{
-+	mutex_lock(&iova_cache_mutex);
-+	if (!iova_cache_users) {
-+		iova_cache = kmem_cache_create(
-+			"iommu_iova", sizeof(struct iova), 0,
-+			SLAB_HWCACHE_ALIGN, NULL);
-+		if (!iova_cache) {
-+			mutex_unlock(&iova_cache_mutex);
-+			printk(KERN_ERR "Couldn't create iova cache\n");
-+			return -ENOMEM;
-+		}
-+	}
-+
-+	iova_cache_users++;
-+	mutex_unlock(&iova_cache_mutex);
-+
-+	return 0;
-+}
-+
-+void iova_cache_put(void)
-+{
-+	mutex_lock(&iova_cache_mutex);
-+	if (WARN_ON(!iova_cache_users)) {
-+		mutex_unlock(&iova_cache_mutex);
-+		return;
-+	}
-+	iova_cache_users--;
-+	if (!iova_cache_users)
-+		kmem_cache_destroy(iova_cache);
-+	mutex_unlock(&iova_cache_mutex);
-+}
-+
+ static struct rb_node *
+ __get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
+@@ -243,6 +244,7 @@ int iova_cache_get(void)
+ 
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(iova_cache_get);
+ 
+ void iova_cache_put(void)
+ {
+@@ -256,6 +258,7 @@ void iova_cache_put(void)
+ 		kmem_cache_destroy(iova_cache);
+ 	mutex_unlock(&iova_cache_mutex);
+ }
++EXPORT_SYMBOL_GPL(iova_cache_put);
+ 
  /**
   * alloc_iova - allocates an iova
-  * @iovad: - iova domain in question
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index 3920a19..92f7177 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -68,8 +68,8 @@ static inline unsigned long iova_pfn(struct iova_domain *iovad, dma_addr_t iova)
- 	return iova >> iova_shift(iovad);
+@@ -296,6 +299,7 @@ alloc_iova(struct iova_domain *iovad, unsigned long size,
+ 
+ 	return new_iova;
  }
++EXPORT_SYMBOL_GPL(alloc_iova);
  
--int iommu_iova_cache_init(void);
--void iommu_iova_cache_destroy(void);
-+int iova_cache_get(void);
-+void iova_cache_put(void);
+ /**
+  * find_iova - find's an iova for a given pfn
+@@ -336,6 +340,7 @@ struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn)
+ 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ 	return NULL;
+ }
++EXPORT_SYMBOL_GPL(find_iova);
  
- struct iova *alloc_iova_mem(void);
- void free_iova_mem(struct iova *iova);
+ /**
+  * __free_iova - frees the given iova
+@@ -354,6 +359,7 @@ __free_iova(struct iova_domain *iovad, struct iova *iova)
+ 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ 	free_iova_mem(iova);
+ }
++EXPORT_SYMBOL_GPL(__free_iova);
+ 
+ /**
+  * free_iova - finds and frees the iova for a given pfn
+@@ -371,6 +377,7 @@ free_iova(struct iova_domain *iovad, unsigned long pfn)
+ 		__free_iova(iovad, iova);
+ 
+ }
++EXPORT_SYMBOL_GPL(free_iova);
+ 
+ /**
+  * put_iova_domain - destroys the iova doamin
+@@ -393,6 +400,7 @@ void put_iova_domain(struct iova_domain *iovad)
+ 	}
+ 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ }
++EXPORT_SYMBOL_GPL(put_iova_domain);
+ 
+ static int
+ __is_range_overlap(struct rb_node *node,
+@@ -482,6 +490,7 @@ finish:
+ 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ 	return iova;
+ }
++EXPORT_SYMBOL_GPL(reserve_iova);
+ 
+ /**
+  * copy_reserved_iova - copies the reserved between domains
+@@ -508,6 +517,7 @@ copy_reserved_iova(struct iova_domain *from, struct iova_domain *to)
+ 	}
+ 	spin_unlock_irqrestore(&from->iova_rbtree_lock, flags);
+ }
++EXPORT_SYMBOL_GPL(copy_reserved_iova);
+ 
+ struct iova *
+ split_and_remove_iova(struct iova_domain *iovad, struct iova *iova,
 -- 
 2.0.0.rc3.2.g998f840
