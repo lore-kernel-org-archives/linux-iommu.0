@@ -1,7 +1,7 @@
 From: Ashutosh Dixit <ashutosh.dixit@intel.com>
-Subject: [PATCH char-misc-next v2 02/22] iommu: iova: Export symbols
-Date: Tue, 29 Sep 2015 18:07:30 -0700
-Message-ID: <a08bece80106b017a691239c48c15d1432c1d1c9.1443573394.git.ashutosh.dixit@intel.com>
+Subject: [PATCH char-misc-next v2 03/22] iommu: Make the iova library a module
+Date: Tue, 29 Sep 2015 18:08:26 -0700
+Message-ID: <866d1f9f43d7b7d779e5e7545c0859a3704e5ed0.1443573394.git.ashutosh.dixit@intel.com>
 References: <cover.1443573394.git.ashutosh.dixit@intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1443573394.git.ashutosh.dixit@intel.com>
@@ -12,110 +12,47 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-Use EXPORT_SYMBOL_GPL() to export the iova library symbols. The symbols
-include:
-
-	init_iova_domain();
-	iova_cache_get();
-	iova_cache_put();
-	iova_cache_init();
-	alloc_iova();
-	find_iova();
-	__free_iova();
-	free_iova();
-	put_iova_domain();
-	reserve_iova();
-	copy_reserved_iova();
+The iova library has use outside the intel-iommu driver, thus make it a
+module.
 
 Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
 Signed-off-by: David Woodhouse <David.Woodhouse@intel.com>
 ---
- drivers/iommu/iova.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/iommu/Kconfig | 2 +-
+ drivers/iommu/iova.c  | 4 ++++
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 4664c2a..d9da766 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -43,7 +43,7 @@ config IOMMU_IO_PGTABLE_LPAE_SELFTEST
+ endmenu
+ 
+ config IOMMU_IOVA
+-	bool
++	tristate
+ 
+ config OF_IOMMU
+        def_bool y
 diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 400f4d1..dd87123 100644
+index dd87123..dd64d33 100644
 --- a/drivers/iommu/iova.c
 +++ b/drivers/iommu/iova.c
-@@ -38,6 +38,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- 	iovad->start_pfn = start_pfn;
- 	iovad->dma_32bit_pfn = pfn_32bit;
- }
-+EXPORT_SYMBOL_GPL(init_iova_domain);
+@@ -18,6 +18,7 @@
+  */
  
- static struct rb_node *
- __get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
-@@ -243,6 +244,7 @@ int iova_cache_get(void)
+ #include <linux/iova.h>
++#include <linux/module.h>
+ #include <linux/slab.h>
  
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(iova_cache_get);
- 
- void iova_cache_put(void)
- {
-@@ -256,6 +258,7 @@ void iova_cache_put(void)
- 		kmem_cache_destroy(iova_cache);
- 	mutex_unlock(&iova_cache_mutex);
- }
-+EXPORT_SYMBOL_GPL(iova_cache_put);
- 
- /**
-  * alloc_iova - allocates an iova
-@@ -296,6 +299,7 @@ alloc_iova(struct iova_domain *iovad, unsigned long size,
- 
- 	return new_iova;
- }
-+EXPORT_SYMBOL_GPL(alloc_iova);
- 
- /**
-  * find_iova - find's an iova for a given pfn
-@@ -336,6 +340,7 @@ struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn)
- 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ void
+@@ -559,3 +560,6 @@ error:
+ 		free_iova_mem(prev);
  	return NULL;
  }
-+EXPORT_SYMBOL_GPL(find_iova);
- 
- /**
-  * __free_iova - frees the given iova
-@@ -354,6 +359,7 @@ __free_iova(struct iova_domain *iovad, struct iova *iova)
- 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
- 	free_iova_mem(iova);
- }
-+EXPORT_SYMBOL_GPL(__free_iova);
- 
- /**
-  * free_iova - finds and frees the iova for a given pfn
-@@ -371,6 +377,7 @@ free_iova(struct iova_domain *iovad, unsigned long pfn)
- 		__free_iova(iovad, iova);
- 
- }
-+EXPORT_SYMBOL_GPL(free_iova);
- 
- /**
-  * put_iova_domain - destroys the iova doamin
-@@ -393,6 +400,7 @@ void put_iova_domain(struct iova_domain *iovad)
- 	}
- 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
- }
-+EXPORT_SYMBOL_GPL(put_iova_domain);
- 
- static int
- __is_range_overlap(struct rb_node *node,
-@@ -482,6 +490,7 @@ finish:
- 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
- 	return iova;
- }
-+EXPORT_SYMBOL_GPL(reserve_iova);
- 
- /**
-  * copy_reserved_iova - copies the reserved between domains
-@@ -508,6 +517,7 @@ copy_reserved_iova(struct iova_domain *from, struct iova_domain *to)
- 	}
- 	spin_unlock_irqrestore(&from->iova_rbtree_lock, flags);
- }
-+EXPORT_SYMBOL_GPL(copy_reserved_iova);
- 
- struct iova *
- split_and_remove_iova(struct iova_domain *iovad, struct iova *iova,
++
++MODULE_AUTHOR("Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>");
++MODULE_LICENSE("GPL");
 -- 
 2.0.0.rc3.2.g998f840
