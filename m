@@ -1,14 +1,21 @@
-From: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Subject: [RFC PATCH v5 3/3] vfio: platform: return device properties as arrays
-	of unsigned integers
-Date: Wed, 30 Sep 2015 11:09:07 +0200
-Message-ID: <1443604149-3242-3-git-send-email-b.reynal@virtualopensystems.com>
-References: <1443604149-3242-1-git-send-email-b.reynal@virtualopensystems.com>
+From: Andreas Hartmann <andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org>
+Subject: Re: [dm-devel] AMD-Vi IO_PAGE_FAULTs and ata3.00: failed command:
+	READ FPDMA QUEUED errors since Linux 4.0
+Date: Wed, 30 Sep 2015 16:52:47 +0200
+Message-ID: <560BF73F.8000008@maya.org>
+References: <55B7BEA2.30205@01019freenet.de>
+	<20150728175054.GB24782@redhat.com> <55B7D054.4070308@maya.org>
+	<20150728192908.GA25264@redhat.com> <55BCD5A7.2080708@maya.org>
+	<55BE1D5E.6020709@maya.org>
+	<alpine.LRH.2.02.1508021347480.17729@file01.intranet.prod.int.rdu2.redhat.com>
+	<55FE5740.2060701@maya.org> <20150929152100.GL3036@8bytes.org>
+	<alpine.LRH.2.02.1509291143170.24174@file01.intranet.prod.int.rdu2.redhat.com>
+	<20150929162042.GR3036@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1443604149-3242-1-git-send-email-b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+In-Reply-To: <20150929162042.GR3036-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,98 +25,37 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
-Cc: tech-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:VFIO PLATFORM DRIVER" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Mikulas Patocka <mpatocka-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: device-mapper development <dm-devel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jens Axboe <axboe-b10kYP2dOMg@public.gmane.org>, Andreas Hartmann <andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org>, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Milan Broz <mbroz-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
+On 09/29/2015 at 06:20 PM, Joerg Roedel wrote:
+> On Tue, Sep 29, 2015 at 11:58:10AM -0400, Mikulas Patocka wrote:
+>> On Tue, 29 Sep 2015, Joerg Roedel wrote:
+>> There was a patch (34b48db66e08ca1c1bc07cf305d672ac940268dc) that 
+>> increased default block request size. That patch triggers AMD-Vi page 
+>> faults. The bug may be in ATA driver, in ATA controller on in AMD-Vi 
+>> driver or hardware. I didn't see anything in that thread that proves that 
+>> the bug in not in AMD-Vi IOMMU.
+>>
+>> The bug probably existed even before kernel 3.19, but it was masked by the 
+>> fact that I/O request size was artifically capped. Bisecting probably 
+>> won't find it, as it may have existed since ever.
+> 
+> Okay, I see. But as long as the request-size is not bigger than 128MB
+> (the biggest chunk the AMD IOMMU driver can map at once), I don't see
+> how the IOMMU driver could be at fault.
+> 
+> Which ATA driver is in use when this happens and are there instructions
+> on how to reproduce the issue?
+> 
+> Alternativly someone who can reproduce it should trace the calls to
+> __map_single and __unmap_single in the AMD IOMMU driver to find out
+> whether the addresses which the faults happen on are really mapped, or
+> at least requested from the AMD IOMMU driver.
 
-Certain properties of a device are accessible as an array of unsigned
-integers, either u64, u32, u16, or u8. Let the VFIO user query this
-type of device properties.
+How can I trace it?
 
-Signed-off-by: Antonios Motakis <a.motakis-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
-Signed-off-by: Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>
 
----
-v4 -> v5:
- - fix return error when the buffer size is too small
----
- drivers/vfio/platform/properties.c | 62 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 61 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/vfio/platform/properties.c b/drivers/vfio/platform/properties.c
-index 212755f..a4b6955 100644
---- a/drivers/vfio/platform/properties.c
-+++ b/drivers/vfio/platform/properties.c
-@@ -70,7 +70,67 @@ static int dev_property_get_uint(struct device *dev,
- 				 char *name, uint32_t type, unsigned *lenp,
- 				 void __user *datap, unsigned long datasz)
- {
--	return -EINVAL;
-+	int ret, n;
-+	u8 *out;
-+	size_t sz;
-+	int (*func)(const struct device *, const char *, void *, size_t)
-+		= NULL;
-+
-+	switch (type) {
-+	case VFIO_DEV_PROPERTY_TYPE_U64:
-+		sz = sizeof(u64);
-+		func = (int (*)(const struct device *,
-+				const char *, void *, size_t))
-+			device_property_read_u64_array;
-+		break;
-+	case VFIO_DEV_PROPERTY_TYPE_U32:
-+		sz = sizeof(u32);
-+		func = (int (*)(const struct device *,
-+				const char *, void *, size_t))
-+			device_property_read_u32_array;
-+		break;
-+	case VFIO_DEV_PROPERTY_TYPE_U16:
-+		sz = sizeof(u16);
-+		func = (int (*)(const struct device *,
-+				const char *, void *, size_t))
-+			device_property_read_u16_array;
-+		break;
-+	case VFIO_DEV_PROPERTY_TYPE_U8:
-+		sz = sizeof(u8);
-+		func = (int (*)(const struct device *,
-+				const char *, void *, size_t))
-+			device_property_read_u8_array;
-+		break;
-+
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	/* get size of array */
-+	n = func(dev, name, NULL, 0);
-+	if (n < 0)
-+		return n;
-+
-+	if (lenp)
-+		*lenp = n * sz;
-+
-+	if (n * sz > datasz)
-+		return -ENOSPC;
-+
-+	out = kcalloc(n, sz, GFP_KERNEL);
-+	if (!out)
-+		return -ENOMEM;
-+
-+	ret = func(dev, name, out, n);
-+	if (ret)
-+		goto out;
-+
-+	if (copy_to_user(datap, out, n * sz))
-+		ret = -EFAULT;
-+
-+out:
-+	kfree(out);
-+	return ret;
- }
- 
- int vfio_platform_dev_properties(struct device *dev,
--- 
-2.6.0
+Thanks,
+Andreas
