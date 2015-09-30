@@ -1,58 +1,59 @@
-From: Ashutosh Dixit <ashutosh.dixit@intel.com>
-Subject: [PATCH char-misc-next v2 03/22] iommu: Make the iova library a module
-Date: Tue, 29 Sep 2015 18:08:26 -0700
-Message-ID: <866d1f9f43d7b7d779e5e7545c0859a3704e5ed0.1443573394.git.ashutosh.dixit@intel.com>
+From: Ashutosh Dixit <ashutosh.dixit-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH char-misc-next v2 04/22] iommu: Allow iova to be used without
+	requiring IOMMU_SUPPORT
+Date: Tue, 29 Sep 2015 18:09:05 -0700
+Message-ID: <bff58cca8a0f5591e0a39680ff73e8ee34269668.1443573394.git.ashutosh.dixit@intel.com>
 References: <cover.1443573394.git.ashutosh.dixit@intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1443573394.git.ashutosh.dixit@intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org
-Cc: Sakari Ailus <sakari.ailus@linux.intel.com>, David Woodhouse <David.Woodhouse@intel.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, Ashutosh Dixit <ashutosh.dixit@intel.com>, Sudeep Dutt <sudeep.dutt@intel.com>, Nikhil Rao <nikhil.rao@intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <cover.1443573394.git.ashutosh.dixit-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Sudeep Dutt <sudeep.dutt-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ashutosh Dixit <ashutosh.dixit-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Nikhil Rao <nikhil.rao-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
+From: Sudeep Dutt <sudeep.dutt-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 
-The iova library has use outside the intel-iommu driver, thus make it a
-module.
+iova is a library which can be built without IOMMU_SUPPORT
 
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: David Woodhouse <David.Woodhouse@intel.com>
+Signed-off-by: Sudeep Dutt <sudeep.dutt-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/Kconfig | 2 +-
- drivers/iommu/iova.c  | 4 ++++
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ drivers/iommu/Kconfig | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 4664c2a..d9da766 100644
+index d9da766..71d1c46 100644
 --- a/drivers/iommu/Kconfig
 +++ b/drivers/iommu/Kconfig
-@@ -43,7 +43,7 @@ config IOMMU_IO_PGTABLE_LPAE_SELFTEST
+@@ -12,6 +12,9 @@ menuconfig IOMMU_SUPPORT
+ 	  remap DMA requests and/or remap interrupts from other devices on the
+ 	  system.
+ 
++config IOMMU_IOVA
++	tristate
++
+ if IOMMU_SUPPORT
+ 
+ menu "Generic IOMMU Pagetable Support"
+@@ -42,9 +45,6 @@ config IOMMU_IO_PGTABLE_LPAE_SELFTEST
+ 
  endmenu
  
- config IOMMU_IOVA
--	bool
-+	tristate
- 
+-config IOMMU_IOVA
+-	tristate
+-
  config OF_IOMMU
         def_bool y
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index dd87123..dd64d33 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -18,6 +18,7 @@
-  */
- 
- #include <linux/iova.h>
-+#include <linux/module.h>
- #include <linux/slab.h>
- 
- void
-@@ -559,3 +560,6 @@ error:
- 		free_iova_mem(prev);
- 	return NULL;
- }
-+
-+MODULE_AUTHOR("Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>");
-+MODULE_LICENSE("GPL");
+        depends on OF && IOMMU_API
 -- 
 2.0.0.rc3.2.g998f840
