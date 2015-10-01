@@ -1,13 +1,11 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v6 3/3] arm64: Hook up IOMMU dma_ops
-Date: Thu,  1 Oct 2015 20:14:00 +0100
-Message-ID: <54719d2df262edae25171d54439fd2df3d3c797a.1443718557.git.robin.murphy@arm.com>
-References: <cover.1443718557.git.robin.murphy@arm.com>
+Subject: [PATCH v6 0/3] arm64: IOMMU-backed DMA mapping
+Date: Thu,  1 Oct 2015 20:13:57 +0100
+Message-ID: <cover.1443718557.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1443718557.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,93 +19,56 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public
 Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-With iommu_dma_ops in place, hook them up to the configuration code, so
-IOMMU-fronted devices will get them automatically.
+Hi all,
 
-Acked-by: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
- arch/arm64/Kconfig                   |  1 +
- arch/arm64/include/asm/dma-mapping.h | 15 +++++++--------
- arch/arm64/mm/dma-mapping.c          | 22 ++++++++++++++++++++++
- 3 files changed, 30 insertions(+), 8 deletions(-)
+Here's the latest, and hopefully last, revision of the initial arm64
+IOMMU dma_ops support.
 
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 7d95663..6597311 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -74,6 +74,7 @@ config ARM64
- 	select HAVE_PERF_USER_STACK_DUMP
- 	select HAVE_RCU_TABLE_FREE
- 	select HAVE_SYSCALL_TRACEPOINTS
-+	select IOMMU_DMA if IOMMU_SUPPORT
- 	select IRQ_DOMAIN
- 	select IRQ_FORCED_THREADING
- 	select MODULES_USE_ELF_RELA
-diff --git a/arch/arm64/include/asm/dma-mapping.h b/arch/arm64/include/asm/dma-mapping.h
-index cfdb34b..54d0ead 100644
---- a/arch/arm64/include/asm/dma-mapping.h
-+++ b/arch/arm64/include/asm/dma-mapping.h
-@@ -54,16 +54,15 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
- 		return __generic_dma_ops(dev);
- }
- 
--static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
--				      struct iommu_ops *iommu, bool coherent)
--{
--	if (!acpi_disabled && !dev->archdata.dma_ops)
--		dev->archdata.dma_ops = dma_ops;
--
--	dev->archdata.dma_coherent = coherent;
--}
-+void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-+			struct iommu_ops *iommu, bool coherent);
- #define arch_setup_dma_ops	arch_setup_dma_ops
- 
-+#ifdef CONFIG_IOMMU_DMA
-+void arch_teardown_dma_ops(struct device *dev);
-+#define arch_teardown_dma_ops	arch_teardown_dma_ops
-+#endif
-+
- /* do not use this function in a driver */
- static inline bool is_device_dma_coherent(struct device *dev)
- {
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index dd2d6e6..02ef19d 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -960,6 +960,19 @@ static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
- 	}
- }
- 
-+void arch_teardown_dma_ops(struct device *dev)
-+{
-+	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-+
-+	if (domain) {
-+		iommu_detach_device(domain, dev);
-+		if (domain->type & __IOMMU_DOMAIN_FAKE_DEFAULT)
-+			iommu_domain_free(domain);
-+	}
-+
-+	dev->archdata.dma_ops = NULL;
-+}
-+
- #else
- 
- static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-@@ -968,3 +981,12 @@ static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
- 
- #endif  /* CONFIG_IOMMU_DMA */
- 
-+void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-+			struct iommu_ops *iommu, bool coherent)
-+{
-+	if (!acpi_disabled && !dev->archdata.dma_ops)
-+		dev->archdata.dma_ops = dma_ops;
-+
-+	dev->archdata.dma_coherent = coherent;
-+	__iommu_setup_dma_ops(dev, dma_base, size, iommu);
-+}
+There are a couple of dependencies still currently in -next and the
+intel-iommu tree[0]: "iommu: iova: Move iova cache management to the
+iova library" is necessary for the rename of iova_cache_get(), and
+"iommu/iova: Avoid over-allocating when size-aligned" will be needed
+with some IOMMU drivers to prevent unmapping errors.
+
+Changes from v5[1]:
+- Change __iommu_dma_unmap() from BUG to WARN when things go wrong, and
+  prevent a NULL dereference on double-free.
+- Fix iommu_dma_map_sg() to ensure segments can never inadvertently end
+  mapped across a segment boundary. As a result, we have to lose the
+  segment-merging optimisation from before (I might revisit that if
+  there's some evidence it's really worthwhile, though).
+- Cleaned up the platform device workarounds for config order and
+  default domains, and removed the other hacks. Demanding that the IOMMU
+  drivers assign groups, and support IOMMU_DOMAIN_DMA via the methods
+  provided, keeps things bearable, and the behaviour should now be
+  consistent across all cases.
+
+As a bonus, whilst the underlying of_iommu_configure() code only supports
+platform devices at the moment, I can also say that this has now been
+tested to work for PCI devices too, via some horrible hacks on a Juno r1.
+
+Thanks,
+Robin.
+
+[0]:http://thread.gmane.org/gmane.linux.kernel.iommu/11033
+[1]:http://thread.gmane.org/gmane.linux.kernel.iommu/10439
+
+Robin Murphy (3):
+  iommu: Implement common IOMMU ops for DMA mapping
+  arm64: Add IOMMU dma_ops
+  arm64: Hook up IOMMU dma_ops
+
+ arch/arm64/Kconfig                   |   1 +
+ arch/arm64/include/asm/dma-mapping.h |  15 +-
+ arch/arm64/mm/dma-mapping.c          | 457 ++++++++++++++++++++++++++++++
+ drivers/iommu/Kconfig                |   7 +
+ drivers/iommu/Makefile               |   1 +
+ drivers/iommu/dma-iommu.c            | 524 +++++++++++++++++++++++++++++++++++
+ include/linux/dma-iommu.h            |  85 ++++++
+ include/linux/iommu.h                |   1 +
+ 8 files changed, 1083 insertions(+), 8 deletions(-)
+ create mode 100644 drivers/iommu/dma-iommu.c
+ create mode 100644 include/linux/dma-iommu.h
+
 -- 
 1.9.1
