@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 2/2] iommu/vt-d: Create RMRR mappings in newly allocated
-	domains
-Date: Thu,  1 Oct 2015 16:34:34 +0200
-Message-ID: <1443710074-29701-3-git-send-email-joro@8bytes.org>
+Subject: [PATCH 1/2] iommu/vt-d: Split iommu_prepare_identity_map
+Date: Thu,  1 Oct 2015 16:34:33 +0200
+Message-ID: <1443710074-29701-2-git-send-email-joro@8bytes.org>
 References: <1443710074-29701-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,54 +23,86 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Currently the RMRR entries are created only at boot time.
-This means they will vanish when the domain allocated at
-boot time is destroyed.
-This patch makes sure that also newly allocated domains will
-get RMRR mappings.
+Split the part of the function that fetches the domain out
+and put the rest into into a domain_prepare_identity_map, so
+that the code can also be used with when the domain is
+already known.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ drivers/iommu/intel-iommu.c | 40 ++++++++++++++++++++++------------------
+ 1 file changed, 22 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index e182d81..e9ace17 100644
+index 2d7349a..e182d81 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -3243,7 +3243,10 @@ static struct iova *intel_alloc_iova(struct device *dev,
+@@ -2429,17 +2429,13 @@ static int iommu_domain_identity_map(struct dmar_domain *domain,
+ 				  DMA_PTE_READ|DMA_PTE_WRITE);
+ }
  
- static struct dmar_domain *__get_valid_domain_for_dev(struct device *dev)
+-static int iommu_prepare_identity_map(struct device *dev,
+-				      unsigned long long start,
+-				      unsigned long long end)
++static int domain_prepare_identity_map(struct device *dev,
++				       struct dmar_domain *domain,
++				       unsigned long long start,
++				       unsigned long long end)
  {
-+	struct dmar_rmrr_unit *rmrr;
- 	struct dmar_domain *domain;
-+	struct device *i_dev;
-+	int i, ret;
+-	struct dmar_domain *domain;
+ 	int ret;
  
- 	domain = get_domain_for_dev(dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
- 	if (!domain) {
-@@ -3252,6 +3255,23 @@ static struct dmar_domain *__get_valid_domain_for_dev(struct device *dev)
- 		return NULL;
+-	domain = get_domain_for_dev(dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
+-	if (!domain)
+-		return -ENOMEM;
+-
+ 	/* For _hardware_ passthrough, don't bother. But for software
+ 	   passthrough, we do it anyway -- it may indicate a memory
+ 	   range which is reserved in E820, so which didn't get set
+@@ -2459,8 +2455,7 @@ static int iommu_prepare_identity_map(struct device *dev,
+ 			dmi_get_system_info(DMI_BIOS_VENDOR),
+ 			dmi_get_system_info(DMI_BIOS_VERSION),
+ 		     dmi_get_system_info(DMI_PRODUCT_VERSION));
+-		ret = -EIO;
+-		goto error;
++		return -EIO;
  	}
  
-+	/* We have a new domain - setup possible RMRRs for the device */
-+	rcu_read_lock();
-+	for_each_rmrr_units(rmrr) {
-+		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
-+					  i, i_dev) {
-+			if (i_dev != dev)
-+				continue;
+ 	if (end >> agaw_to_width(domain->agaw)) {
+@@ -2470,18 +2465,27 @@ static int iommu_prepare_identity_map(struct device *dev,
+ 		     dmi_get_system_info(DMI_BIOS_VENDOR),
+ 		     dmi_get_system_info(DMI_BIOS_VERSION),
+ 		     dmi_get_system_info(DMI_PRODUCT_VERSION));
+-		ret = -EIO;
+-		goto error;
++		return -EIO;
+ 	}
+ 
+-	ret = iommu_domain_identity_map(domain, start, end);
+-	if (ret)
+-		goto error;
++	return iommu_domain_identity_map(domain, start, end);
++}
+ 
+-	return 0;
++static int iommu_prepare_identity_map(struct device *dev,
++				      unsigned long long start,
++				      unsigned long long end)
++{
++	struct dmar_domain *domain;
++	int ret;
 +
-+			ret = domain_prepare_identity_map(dev, domain,
-+							  rmrr->base_address,
-+							  rmrr->end_address);
-+			if (ret)
-+				dev_err(dev, "Mapping reserved region failed\n");
-+		}
-+	}
-+	rcu_read_unlock();
++	domain = get_domain_for_dev(dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
++	if (!domain)
++		return -ENOMEM;
 +
- 	return domain;
++	ret = domain_prepare_identity_map(dev, domain, start, end);
++	if (ret)
++		domain_exit(domain);
+ 
+- error:
+-	domain_exit(domain);
+ 	return ret;
  }
  
 -- 
