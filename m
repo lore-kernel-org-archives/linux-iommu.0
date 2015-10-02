@@ -1,49 +1,94 @@
-From: Peter Maydell <peter.maydell@linaro.org>
-Subject: Re: [RFC PATCH v5 0/3] vfio: platform: return device properties for a
- platform device
-Date: Fri, 2 Oct 2015 23:53:07 +0100
-Message-ID: <CAFEAcA84seKfSh94XFJZxBeBzRd=twj2QaFvjMeDKYhrWQu7Nw@mail.gmail.com>
-References: <1443604077-3155-1-git-send-email-b.reynal@virtualopensystems.com>
- <1443814099.26107.124.camel@redhat.com> <20151002202844.GD32011@cbox>
+From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Subject: [REPOST PATCH 1/2] Documentation: dt: Update OMAP iommu bindings for
+	DRA7 DSPs
+Date: Fri, 2 Oct 2015 18:02:43 -0500
+Message-ID: <1443826964-10691-2-git-send-email-s-anna@ti.com>
+References: <1443826964-10691-1-git-send-email-s-anna@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
-In-Reply-To: <20151002202844.GD32011@cbox>
-List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
-List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
-List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
-List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
-List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
-Errors-To: kvmarm-bounces@lists.cs.columbia.edu
-Sender: kvmarm-bounces@lists.cs.columbia.edu
-To: Christoffer Dall <christoffer.dall@linaro.org>
-Cc: Alex Williamson <alex.williamson@redhat.com>, "tech@virtualopensystems.com" <tech@virtualopensystems.com>, iommu@lists.linux-foundation.org, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1443826964-10691-1-git-send-email-s-anna-l0cyMroinI0@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2 October 2015 at 21:28, Christoffer Dall
-<christoffer.dall@linaro.org> wrote:
-> We discussed this for the purposes of ARM during SFO15 last week, and
-> basically arrived at the conclusion that the resonable thing to do is to
-> rely on sysfs device tree parsing in userspace.  We don't have a great
-> solution for ACPI yet, but we also don't know of any ACPI-only devices
-> that want platform device passthrough yet.
+The DSP processor sub-systems on DRA7xx have two MMU instances
+each, one for the processor core and the other for an internal
+EDMA block. These MMUs need an additional shared register to be
+programmed in the DSP_SYSTEM sub-module to be enabled properly.
 
-I wasn't hugely happy with that approach though:
- * it's DT specific and just won't work on ACPI platforms; implementing
-   features with a "needs DT" dependency seems like it will come back to
-   bite us later
- * I don't really want to build in a lot of infrastructure into
-   QEMU to either build the DTC compiler into it or else introduce
-   a runtime dependency on the dtc binary, if this is just going
-   to be a stopgap solution until somebody says "has to work on
-   ACPI" and we need to do it some other way
+The OMAP IOMMU bindings is updated to account for this additional
+syscon property required for these DSP IOMMU instances on DRA7xx
+SoCs. A new compatible "ti,dra7-dsp-iommu" is also defined to
+distinguish these devices specifically from other DRA7 IOMMU
+devices.
 
-On the other hand I don't exactly have a better approach to suggest
-(except "don't do device passthrough for platform devices, insist
-on a real bus like PCI"...)
+An example of the DRA7 DSP IOMMU nodes is also added to the
+document for clarity.
 
-thanks
--- PMM
+Signed-off-by: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+---
+ .../devicetree/bindings/iommu/ti,omap-iommu.txt    | 27 ++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt b/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
+index 869699925fd5..4bd10dd881b8 100644
+--- a/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
++++ b/Documentation/devicetree/bindings/iommu/ti,omap-iommu.txt
+@@ -4,6 +4,7 @@ Required properties:
+ - compatible : Should be one of,
+ 		"ti,omap2-iommu" for OMAP2/OMAP3 IOMMU instances
+ 		"ti,omap4-iommu" for OMAP4/OMAP5 IOMMU instances
++		"ti,dra7-dsp-iommu" for DRA7xx DSP IOMMU instances
+ 		"ti,dra7-iommu" for DRA7xx IOMMU instances
+ - ti,hwmods  : Name of the hwmod associated with the IOMMU instance
+ - reg        : Address space for the configuration registers
+@@ -19,6 +20,13 @@ Optional properties:
+                     Should be either 8 or 32 (default: 32)
+ - ti,iommu-bus-err-back : Indicates the IOMMU instance supports throwing
+ 		          back a bus error response on MMU faults.
++- ti,syscon-mmuconfig : Should be a pair of the phandle to the DSP_SYSTEM
++                        syscon node that contains the additional control
++                        register for enabling the MMU, and the MMU instance
++                        number (0-indexed) within the sub-system. This property
++                        is required for DSP IOMMU instances on DRA7xx SoCs. The
++                        instance number should be 0 for DSP MDMA MMUs and 1 for
++                        DSP EDMA MMUs.
+ 
+ Example:
+ 	/* OMAP3 ISP MMU */
+@@ -30,3 +38,22 @@ Example:
+ 		ti,hwmods = "mmu_isp";
+ 		ti,#tlb-entries = <8>;
+ 	};
++
++	/* DRA74x DSP2 MMUs */
++	mmu0_dsp2: mmu@41501000 {
++		compatible = "ti,dra7-dsp-iommu";
++		reg = <0x41501000 0x100>;
++		interrupts = <GIC_SPI 146 IRQ_TYPE_LEVEL_HIGH>;
++		ti,hwmods = "mmu0_dsp2";
++		#iommu-cells = <0>;
++		ti,syscon-mmuconfig = <&dsp2_system 0x0>;
++	};
++
++	mmu1_dsp2: mmu@41502000 {
++		compatible = "ti,dra7-dsp-iommu";
++		reg = <0x41502000 0x100>;
++		interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
++		ti,hwmods = "mmu1_dsp2";
++		#iommu-cells = <0>;
++		ti,syscon-mmuconfig = <&dsp2_system 0x1>;
++	};
+-- 
+2.6.0
