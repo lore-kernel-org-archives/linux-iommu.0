@@ -1,97 +1,109 @@
-From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [RFC PATCH v5 0/3] vfio: platform: return device properties for
- a platform device
-Date: Mon, 5 Oct 2015 11:48:11 +0100
-Message-ID: <20151005104811.GD19064@leverpostej>
-References: <1443604077-3155-1-git-send-email-b.reynal@virtualopensystems.com>
- <1443814099.26107.124.camel@redhat.com>
- <20151002202844.GD32011@cbox>
- <CAFEAcA84seKfSh94XFJZxBeBzRd=twj2QaFvjMeDKYhrWQu7Nw@mail.gmail.com>
- <20151005093739.GF9011@cbox>
- <CAFEAcA_ZGaS__7LPFR_JJEs0=KpDNjYQB_ib2pNDLLp2S0zSMA@mail.gmail.com>
- <20151005103200.GB11536@cbox>
+From: "Woodhouse, David" <david.woodhouse@intel.com>
+Subject: Re: [PATCH char-misc-next v2 04/22] iommu: Allow iova to be used
+ without requiring IOMMU_SUPPORT
+Date: Mon, 5 Oct 2015 10:50:25 +0000
+Message-ID: <1444042224.4674.149.camel@intel.com>
+References: <cover.1443573394.git.ashutosh.dixit@intel.com>
+	 <bff58cca8a0f5591e0a39680ff73e8ee34269668.1443573394.git.ashutosh.dixit@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
-Content-Disposition: inline
-In-Reply-To: <20151005103200.GB11536@cbox>
-List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
-List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
-List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
-List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
-List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
-Errors-To: kvmarm-bounces@lists.cs.columbia.edu
-Sender: kvmarm-bounces@lists.cs.columbia.edu
-To: Christoffer Dall <christoffer.dall@linaro.org>
-Cc: iommu@lists.linux-foundation.org, Alex Williamson <alex.williamson@redhat.com>, Shannon Zhao <shannon.zhao@linaro.org>, "tech@virtualopensystems.com" <tech@virtualopensystems.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>
+Content-Type: multipart/signed; micalg=sha-1;
+	protocol="application/x-pkcs7-signature"; boundary="=-+al9eRWpo5fqVRP8PCBn"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <bff58cca8a0f5591e0a39680ff73e8ee34269668.1443573394.git.ashutosh.dixit@intel.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Dixit, Ashutosh" <ashutosh.dixit@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "Rao, Nikhil" <nikhil.rao@intel.com>, "joro@8bytes.org" <joro@8bytes.org>, "Dutt, Sudeep" <sudeep.dutt@intel.com>, "sakari.ailus@linux.intel.com" <sakari.ailus@linux.intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Oct 05, 2015 at 12:32:00PM +0200, Christoffer Dall wrote:
-> [cc'ing Mark R. and Shannon for their input on FDT and ACPI].
-> 
-> On Mon, Oct 05, 2015 at 11:07:35AM +0100, Peter Maydell wrote:
-> > On 5 October 2015 at 10:37, Christoffer Dall
-> > <christoffer.dall@linaro.org> wrote:
-> > > On Fri, Oct 02, 2015 at 11:53:07PM +0100, Peter Maydell wrote:
-> > >>  * I don't really want to build in a lot of infrastructure into
-> > >>    QEMU to either build the DTC compiler into it or else introduce
-> > >>    a runtime dependency on the dtc binary
-> > >
-> > > what level of complexity are we really talking about here?  Doesn't QEMU
-> > > already link against libfdt and doesn't it support exactly what we're
-> > > trying to do here?
-> > 
-> > We link against libfdt, but libfdt is for manipulating and creating
-> > dt binary blobs. As I understand it what sysfs exposes to userspace
-> > is not a dt binary blob (or fragment thereof) but a bit of dt source.
-> > libfdt doesn't do parsing of source into blobs; that is done by the
-> > dtc compiler, which QEMU doesn't currently build and which is set
-> > up to build only a separate command line binary anyway, not to be
-> > a utility library for compiling dt sources.
-> > 
-> > Do correct me if I'm wrong about the sysfs interface -- if it is
-> > just exposing dt blobs that would be easier to deal with.
-> > 
-> 
-> I thought there was also /sys/firmware/fdt being the unflattened one
-> accessible by libfdt, but dtc -I dtb seems to be unhappy parsin this on
-> my Mustang.
-> 
-> Mark, can you refresh my memory about this?
+--=-+al9eRWpo5fqVRP8PCBn
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-/sys/firmware/fdt is the original, unadulterated DTB passed to the
-kernel, while /sys/firmware/device-tree is the unflattened form which
-may have had overlays (or perhaps other fixups) applied.
+On Tue, 2015-09-29 at 18:09 -0700, Ashutosh Dixit wrote:
+> From: Sudeep Dutt <sudeep.dutt@intel.com>
+>=20
+> iova is a library which can be built without IOMMU_SUPPORT
+>=20
+> Signed-off-by: Sudeep Dutt <sudeep.dutt@intel.com>
 
-For runtime stuff I'd generally expect /sys/firmware/device-tree to be
-preferable (e.g. if we want to expose some device added by an overlay).
-We added /sys/firmware/fdt for kexec, as memory reservations are in the
-DTB header, which doesn't show up in the unflattened tree.
+The first three of these patches are in 4.3-rc4 already. Apologies for
+the delay in pushing them out.
 
-> > > I also don't think this is the job of VFIO, assuming there is some
-> > > better place to do this.  I initially thought exposing device properties
-> > > in some canonical format from sysfs independently from whether the
-> > > system was booted with ACPI or DT was the right thing to do, but the
-> > > counter argument to this was essentially that the guest kernel needs the
-> > > same description as the host kernel and therefore we really have to find
-> > > a way to pass the HW description bits on to the guest.
-> > 
-> > So we end up with even more code to pass through ACPI table
-> > fragments as well :-(
-> > 
-> 
-> Probaby, yes.  But I think it's even worse, because there's no guarantee
-> you can get at the original firmware data, because it's all from the
-> DSDT so invoking the initial 'probe' method of the device entry could
-> theoretically overwrite itself...  (If I remember the details
-> correctly).
+This one looks sane enough too, but perhaps in that case we should move
+the code *out* of drivers/iommu/ and into lib/iova/ ?
 
-I don't think you can realistically expose host AML to the guest. Even
-if it doesn't overwrite itself, it could perform oneshot configuration
-that breaks if executed repeatedly, try to access otehr bits of ACPI
-which may or may not be present, call to secure firmware, etc.
+--=20
+David Woodhouse                            Open Source Technology Centre
+David.Woodhouse@intel.com                              Intel Corporation
 
-Mark.
+
+--=-+al9eRWpo5fqVRP8PCBn
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+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
+kiW8/Nj6KITQvHqz7x/Es0IRJCc9/zBES7yMeD+fgJKHAEv/uTcFfGM9HIWxPQIDAQABo4IC6jCC
+AuYwHQYDVR0OBBYEFGK1Mey+kPYGHowHJ0YXtQU4NmbSMB8GA1UdIwQYMBaAFB5pKrTcKP5HGE4h
+Cz+8rBEv8Jj1MIHJBgNVHR8EgcEwgb4wgbuggbiggbWGVGh0dHA6Ly93d3cuaW50ZWwuY29tL3Jl
+cG9zaXRvcnkvQ1JML0ludGVsJTIwRXh0ZXJuYWwlMjBCYXNpYyUyMElzc3VpbmclMjBDQSUyMDRB
+LmNybIZdaHR0cDovL2NlcnRpZmljYXRlcy5pbnRlbC5jb20vcmVwb3NpdG9yeS9DUkwvSW50ZWwl
+MjBFeHRlcm5hbCUyMEJhc2ljJTIwSXNzdWluZyUyMENBJTIwNEEuY3JsMIHvBggrBgEFBQcBAQSB
+4jCB3zBpBggrBgEFBQcwAoZdaHR0cDovL3d3dy5pbnRlbC5jb20vcmVwb3NpdG9yeS9jZXJ0aWZp
+Y2F0ZXMvSW50ZWwlMjBFeHRlcm5hbCUyMEJhc2ljJTIwSXNzdWluZyUyMENBJTIwNEEuY3J0MHIG
+CCsGAQUFBzAChmZodHRwOi8vY2VydGlmaWNhdGVzLmludGVsLmNvbS9yZXBvc2l0b3J5L2NlcnRp
+ZmljYXRlcy9JbnRlbCUyMEV4dGVybmFsJTIwQmFzaWMlMjBJc3N1aW5nJTIwQ0ElMjA0QS5jcnQw
+CwYDVR0PBAQDAgeAMDwGCSsGAQQBgjcVBwQvMC0GJSsGAQQBgjcVCIbDjHWEmeVRg/2BKIWOn1OC
+kcAJZ4HevTmV8EMCAWQCAQgwHwYDVR0lBBgwFgYIKwYBBQUHAwQGCisGAQQBgjcKAwwwKQYJKwYB
+BAGCNxUKBBwwGjAKBggrBgEFBQcDBDAMBgorBgEEAYI3CgMMME8GA1UdEQRIMEagKQYKKwYBBAGC
+NxQCA6AbDBlkYXZpZC53b29kaG91c2VAaW50ZWwuY29tgRlkYXZpZC53b29kaG91c2VAaW50ZWwu
+Y29tMA0GCSqGSIb3DQEBBQUAA4IBAQBCQ4UH3yybC+PzPo7W4PQJQwIDkKfD2i20i/DosQ7+Yeof
+KF7qDASe9eoJGXbINBx1u648uOnaMBsxgUUamJo7pdt1ZnsetRtCQrJIsrsJA3Q2MOsrv7xHkzqn
+DF99KHEbO2yKvyjJVDznHUWh8M1OFmdoziyWE/VPdqTwXwS/UKO81XaTtWUDGO716HHVlfT9yPle
+Ukg2MTcIhhNWmlS8gDUayhteIAlPci71f/oXzXxBiGiO6FVZUEx+rZBQB84Ey0S0Tfm7hiGzoegg
+ra0hfiiMOKMio+n0r4NUn03Z+VRUTbdjHIA6Lkozwpadvs9/uK8dIGqfcgxYgk9qdjFPMYICDjCC
+AgoCAQEwgYcweTELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRQwEgYDVQQHEwtTYW50YSBDbGFy
+YTEaMBgGA1UEChMRSW50ZWwgQ29ycG9yYXRpb24xKzApBgNVBAMTIkludGVsIEV4dGVybmFsIEJh
+c2ljIElzc3VpbmcgQ0EgNEECCmJiMmoAAAAATKAwCQYFKw4DAhoFAKBdMBgGCSqGSIb3DQEJAzEL
+BgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1MTAwNTEwNTAyNFowIwYJKoZIhvcNAQkEMRYE
+FL5Rwk9tTT1MXV89QtBk65vSWXCgMA0GCSqGSIb3DQEBAQUABIIBAH/4MSrfSSV7sdzxHCmu45rC
+KYcAGOhd5IxPOczZXxmMpb5Rh7Ffb6x9PIc0ZR4wpvbZQgOQXMlPwP21yE2FDtCY+HMRdT4nDmbI
+2zHzopFLxuUWoY6798pm6yvGz9BC1plSYRvtLdxDjlPyMycpXHHLYf2crPf+sMpEjxtkZ7sPaRlL
+K1TRpTl6jUl1AkI9ub+00eeHZT6G/I4xXAxAxGr+SZUNRtGuuxhiYYwMVS2+mT3FdmUUrmZepjzX
+M/pSpavTx4tKH3bFtAOw2OBZzHol2gWsYMT37i9qOwpNl8p9aYzfVMUIEN9gesE/4Namq/Q7iO20
+gHjb837DMjRPUQgAAAAAAAA=
+
+
+--=-+al9eRWpo5fqVRP8PCBn--
