@@ -1,44 +1,80 @@
-From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: [PATCH V5 1/2] ACPI / EC: Fix broken 64bit big-endian users of
-	'global_lock'
-Date: Sun, 4 Oct 2015 10:54:01 +0100
-Message-ID: <20151004095401.GA29706@kroah.com>
-References: <8d3d3428c3a36f821e4c3d8563d094ca4b4763fd.1443304934.git.viresh.kumar@linaro.org>
-	<CAJZ5v0imYBPVNfVjkgX1r8a1x6QbY4LtRcS7BNsGzg5=yuPRfA@mail.gmail.com>
+From: Christoffer Dall <christoffer.dall@linaro.org>
+Subject: Re: [RFC PATCH v5 0/3] vfio: platform: return device properties for
+ a platform device
+Date: Mon, 5 Oct 2015 11:37:39 +0200
+Message-ID: <20151005093739.GF9011@cbox>
+References: <1443604077-3155-1-git-send-email-b.reynal@virtualopensystems.com>
+ <1443814099.26107.124.camel@redhat.com>
+ <20151002202844.GD32011@cbox>
+ <CAFEAcA84seKfSh94XFJZxBeBzRd=twj2QaFvjMeDKYhrWQu7Nw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
 Content-Disposition: inline
-In-Reply-To: <CAJZ5v0imYBPVNfVjkgX1r8a1x6QbY4LtRcS7BNsGzg5=yuPRfA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." <alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org>, Lists linaro-kernel <linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, "open list:TARGET SUBSYSTEM" <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:DOCUMENTATION" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Viresh Kumar <viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "open list:ULTRA-WIDEBAND (UWB) SUBSYSTEM:" <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:NETWORKING DRIVERS (WIRELESS)" <linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, QCA ath9k Development <ath9k-devel-A+ZNKFmMK5xy9aJCnZT0Uw@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Intel Linux Wireless <ilw-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, ACPI Devel Maling List <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:AMD IOMMU (AMD-VI)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux Memory Management List <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>l
+In-Reply-To: <CAFEAcA84seKfSh94XFJZxBeBzRd=twj2QaFvjMeDKYhrWQu7Nw@mail.gmail.com>
+List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
+List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
+List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
+List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
+List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
+Errors-To: kvmarm-bounces@lists.cs.columbia.edu
+Sender: kvmarm-bounces@lists.cs.columbia.edu
+To: Peter Maydell <peter.maydell@linaro.org>
+Cc: Alex Williamson <alex.williamson@redhat.com>, "tech@virtualopensystems.com" <tech@virtualopensystems.com>, iommu@lists.linux-foundation.org, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, Sep 27, 2015 at 03:48:24PM +0200, Rafael J. Wysocki wrote:
-> On Sun, Sep 27, 2015 at 12:04 AM, Viresh Kumar <viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
-> > global_lock is defined as an unsigned long and accessing only its lower
-> > 32 bits from sysfs is incorrect, as we need to consider other 32 bits
-> > for big endian 64-bit systems. There are no such platforms yet, but the
-> > code needs to be robust for such a case.
-> >
-> > Fix that by changing type of 'global_lock' to u32.
-> >
-> > Signed-off-by: Viresh Kumar <viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+On Fri, Oct 02, 2015 at 11:53:07PM +0100, Peter Maydell wrote:
+> On 2 October 2015 at 21:28, Christoffer Dall
+> <christoffer.dall@linaro.org> wrote:
+> > We discussed this for the purposes of ARM during SFO15 last week, and
+> > basically arrived at the conclusion that the resonable thing to do is to
+> > rely on sysfs device tree parsing in userspace.  We don't have a great
+> > solution for ACPI yet, but we also don't know of any ACPI-only devices
+> > that want platform device passthrough yet.
 > 
-> Acked-by: Rafael J. Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> I wasn't hugely happy with that approach though:
+>  * it's DT specific and just won't work on ACPI platforms; implementing
+>    features with a "needs DT" dependency seems like it will come back to
+>    bite us later
+
+I tend to agree with that point of view, but I don't have hugely better
+ideas.
+
+>  * I don't really want to build in a lot of infrastructure into
+>    QEMU to either build the DTC compiler into it or else introduce
+>    a runtime dependency on the dtc binary
+
+what level of complexity are we really talking about here?  Doesn't QEMU
+already link against libfdt and doesn't it support exactly what we're
+trying to do here?
+
+> , if this is just going
+>    to be a stopgap solution until somebody says "has to work on
+>    ACPI" and we need to do it some other way
 > 
-> Greg, please take this one along with the [2/2] if that one looks good to you.
+> On the other hand I don't exactly have a better approach to suggest
 
-Thanks, will do.
+I also don't think this is the job of VFIO, assuming there is some
+better place to do this.  I initially thought exposing device properties
+in some canonical format from sysfs independently from whether the
+system was booted with ACPI or DT was the right thing to do, but the
+counter argument to this was essentially that the guest kernel needs the
+same description as the host kernel and therefore we really have to find
+a way to pass the HW description bits on to the guest.
 
-greg k-h
+> (except "don't do device passthrough for platform devices, insist
+> on a real bus like PCI"...)
+> 
+While I appreciate the simplicity of this solution from our
+(maintainers') point of view, I still see the latter point as relatively
+moot.  We have hardware with 10G platform ethernet devices that people
+want to do device assignment on already, and I think we should try to
+find a reasonable set of boundaries for setups that we can support
+upstream instead of this becoming a black hole of derivative code bases
+to do this sort of thing.
+
+Thanks,
+-Christoffer
