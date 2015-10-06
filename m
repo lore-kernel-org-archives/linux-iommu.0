@@ -1,7 +1,7 @@
 From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH] iommu/arm-smmu: Add support for MSI on SMMUv3
-Date: Tue,  6 Oct 2015 16:48:03 +0100
-Message-ID: <1444146484-29628-1-git-send-email-marc.zyngier@arm.com>
+Subject: [PATCH v2] iommu/arm-smmu: Add support for MSI on SMMUv3
+Date: Tue,  6 Oct 2015 19:15:26 +0100
+Message-ID: <1444155326-28379-1-git-send-email-marc.zyngier@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -25,11 +25,14 @@ enjoy faults being reported in a new and exciting way.
 
 Signed-off-by: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 78 +++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 76 insertions(+), 2 deletions(-)
+Now rebased on top of Will's iommu/devel branch, which leads to
+a slightly different patch.
+
+ drivers/iommu/arm-smmu-v3.c | 82 ++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 78 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index dafaf59..38f24bf 100644
+index 5b11b77..3ccc8ed 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
 @@ -26,6 +26,7 @@
@@ -39,8 +42,8 @@ index dafaf59..38f24bf 100644
 +#include <linux/msi.h>
  #include <linux/of.h>
  #include <linux/of_address.h>
- #include <linux/pci.h>
-@@ -2182,6 +2183,63 @@ static int arm_smmu_write_reg_sync(struct arm_smmu_device *smmu, u32 val,
+ #include <linux/of_platform.h>
+@@ -2176,6 +2177,63 @@ static int arm_smmu_write_reg_sync(struct arm_smmu_device *smmu, u32 val,
  					  1, ARM_SMMU_POLL_TIMEOUT_US);
  }
  
@@ -104,7 +107,7 @@ index dafaf59..38f24bf 100644
  static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
  {
  	int ret, irq;
-@@ -2198,6 +2256,23 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+@@ -2192,6 +2250,23 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
  	/* Clear the MSI address regs */
  	writeq_relaxed(0, smmu->base + ARM_SMMU_GERROR_IRQ_CFG0);
  	writeq_relaxed(0, smmu->base + ARM_SMMU_EVTQ_IRQ_CFG0);
@@ -128,7 +131,7 @@ index dafaf59..38f24bf 100644
  
  	/* Request wired interrupt lines */
  	irq = smmu->evtq.q.irq;
-@@ -2228,8 +2303,6 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+@@ -2222,8 +2297,6 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
  	}
  
  	if (smmu->features & ARM_SMMU_FEAT_PRI) {
@@ -137,13 +140,22 @@ index dafaf59..38f24bf 100644
  		irq = smmu->priq.q.irq;
  		if (irq) {
  			ret = devm_request_threaded_irq(smmu->dev, irq,
-@@ -2562,6 +2635,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 	}
- 	smmu->dev = dev;
-+	dev_set_drvdata(dev, smmu);
+@@ -2602,13 +2675,14 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
  
- 	/* Base address */
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	/* Record our private device structure */
++	platform_set_drvdata(pdev, smmu);
++
+ 	/* Reset the device */
+ 	ret = arm_smmu_device_reset(smmu);
+ 	if (ret)
+ 		goto out_free_structures;
+ 
+-	/* Record our private device structure */
+-	platform_set_drvdata(pdev, smmu);
+ 	return 0;
+ 
+ out_free_structures:
 -- 
 2.1.4
