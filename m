@@ -1,100 +1,139 @@
-From: "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: [PATCH char-misc-next v2 04/22] iommu: Allow iova to be used
-	without requiring IOMMU_SUPPORT
-Date: Tue, 6 Oct 2015 09:33:00 +0100
-Message-ID: <20151006083300.GA21156@kroah.com>
-References: <cover.1443573394.git.ashutosh.dixit@intel.com>
-	<bff58cca8a0f5591e0a39680ff73e8ee34269668.1443573394.git.ashutosh.dixit@intel.com>
-	<1444042224.4674.149.camel@intel.com>
-	<1444066723.93285.146.camel@localhost>
-	<20151006051240.GA23487@kroah.com>
-	<20151006052029.GA7959@kroah.com>
-	<1444109018.93285.176.camel@localhost>
-	<20151006075610.GB18449@kroah.com>
-	<1444118727.93285.187.camel@localhost>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [dm-devel] AMD-Vi IO_PAGE_FAULTs and ata3.00: failed command:
+ READ FPDMA QUEUED errors since Linux 4.0
+Date: Tue, 6 Oct 2015 12:13:56 +0200
+Message-ID: <20151006101356.GE12506@8bytes.org>
+References: <55B7D054.4070308@maya.org>
+ <20150728192908.GA25264@redhat.com>
+ <55BCD5A7.2080708@maya.org>
+ <55BE1D5E.6020709@maya.org>
+ <alpine.LRH.2.02.1508021347480.17729@file01.intranet.prod.int.rdu2.redhat.com>
+ <55FE5740.2060701@maya.org>
+ <20150929152100.GL3036@8bytes.org>
+ <alpine.LRH.2.02.1509291143170.24174@file01.intranet.prod.int.rdu2.redhat.com>
+ <20150929162042.GR3036@8bytes.org>
+ <560BF73F.8000008@maya.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: multipart/mixed; boundary="liOOAslEiF7prFVr"
+Return-path: <linux-pci-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1444118727.93285.187.camel@localhost>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sudeep Dutt <sudeep.dutt-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: "Woodhouse, David" <david.woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Dixit, Ashutosh" <ashutosh.dixit-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Rao, Nikhil" <nikhil.rao-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <560BF73F.8000008@maya.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Andreas Hartmann <andihartmann@freenet.de>
+Cc: Mikulas Patocka <mpatocka@redhat.com>, iommu@lists.linux-foundation.org, Leo Duran <leo.duran@amd.com>, Christoph Hellwig <hch@lst.de>, device-mapper development <dm-devel@redhat.com>, Milan Broz <mbroz@redhat.com>, Jens Axboe <axboe@fb.com>, linux-pci <linux-pci@vger.kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Oct 06, 2015 at 01:05:27AM -0700, Sudeep Dutt wrote:
-> On Tue, 2015-10-06 at 08:56 +0100, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org wrote:
-> > On Mon, Oct 05, 2015 at 10:23:38PM -0700, Sudeep Dutt wrote:
-> > > On Tue, 2015-10-06 at 06:20 +0100, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org wrote:
-> > > > On Tue, Oct 06, 2015 at 06:12:40AM +0100, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org wrote:
-> > > > > On Mon, Oct 05, 2015 at 10:38:43AM -0700, Sudeep Dutt wrote:
-> > > > > > On Mon, 2015-10-05 at 03:50 -0700, Woodhouse, David wrote:
-> > > > > > > On Tue, 2015-09-29 at 18:09 -0700, Ashutosh Dixit wrote:
-> > > > > > > > From: Sudeep Dutt <sudeep.dutt-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> > > > > > > > 
-> > > > > > > > iova is a library which can be built without IOMMU_SUPPORT
-> > > > > > > > 
-> > > > > > > > Signed-off-by: Sudeep Dutt <sudeep.dutt-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> > > > > > > 
-> > > > > > > The first three of these patches are in 4.3-rc4 already. Apologies for
-> > > > > > > the delay in pushing them out.
-> > > > > > > 
-> > > > > > > This one looks sane enough too, but perhaps in that case we should move
-> > > > > > > the code *out* of drivers/iommu/ and into lib/iova/ ?
-> > > > > > > 
-> > > > > > 
-> > > > > > Yes, moving the code into lib/iova is the correct long term solution. I
-> > > > > > have sent Greg a patch which reverts this commit since it is no longer
-> > > > > > required and will create a merge conflict for him unnecessarily as well
-> > > > > > with 4.3-rc4.
-> > > > > 
-> > > > > I can handle merge issues, that's trivial.  Reverting the patch
-> > > > > shoulnd't really be needed, right?  Let me see what happens when I merge
-> > > > > to see if your patch is necessary...
-> > > > 
-> > > > Ok, I don't think it is needed, the merge was pretty trivial.
-> > > > 
-> > > > Can you test out my char-misc-testing branch right now to see if it's
-> > > > all ok with the merge?  If so, I'll move it all over to the "real" place
-> > > > for it to start showing up in linux-next, i.e. my char-misc-next branch.
-> > > > 
-> > > 
-> > > Hi Greg,
-> > > 
-> > > I think it is best to revert this patch as it is incorrect. The iommu
-> > > folder gets compiled only if IOMMU_SUPPORT is enabled so IOMMU_IOVA
-> > > should indeed be included only when IOMMU_SUPPORT is enabled.
-> > > 
-> > > Sincere apologies for the mess here but I believe it will all get fixed
-> > > up if you accept the revert of 353649e5da I sent across earlier today.
-> > 
-> > Again, look at the merge, I think I already handled this in that manner.
-> > If not, let me know.
-> > 
-> 
-> Hi Greg,
-> 
-> I took a look at your latest char-misc-testing tree and it needs to be
-> fixed up. IOMMU_IOVA should be inside the "if IOMMU_SUPPORT" block
-> instead of above it.
-> 
-> git revert 353649e5da in the char-misc-testing tree will fix everything
-> up or you could also apply the patch I sent earlier today which has the
-> same revert.
 
-Ok, I've applied your patch, rolled back the merge, and that should be
-good, right?  If so, I'll push this branch out to char-misc-next and
-then merge in 4.3-rc4 just to keep everything up to date.
+--liOOAslEiF7prFVr
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-thanks,
+On Wed, Sep 30, 2015 at 04:52:47PM +0200, Andreas Hartmann wrote:
+> > Alternativly someone who can reproduce it should trace the calls to
+> > __map_single and __unmap_single in the AMD IOMMU driver to find out
+> > whether the addresses which the faults happen on are really mapped, or
+> > at least requested from the AMD IOMMU driver.
+> 
+> How can I trace it?
 
-greg k-h
+Please apply the attached debug patch on-top of Linux v4.3-rc3 and boot
+the machine. After boot you run (as root):
+
+
+	# cat /sys/kernel/debug/tracing/trace_pipe > trace-data
+
+Please run this in a seperate shell an keep it running.
+
+Then trigger the problem while the above command is running. When you
+triggered it, please send me the (compressed) trace-data file, full
+dmesg and output of lspci on the box.
+
+Please let me know if you have further questions.
+
+
+Thanks,
+
+	Joerg
+
+
+--liOOAslEiF7prFVr
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment; filename="iommu-debug.patch"
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index f82060e7..0002e79 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2465,6 +2465,7 @@ static dma_addr_t __map_single(struct device *dev,
+ {
+ 	dma_addr_t offset = paddr & ~PAGE_MASK;
+ 	dma_addr_t address, start, ret;
++	phys_addr_t old_paddr = paddr;
+ 	unsigned int pages;
+ 	unsigned long align_mask = 0;
+ 	int i;
+@@ -2521,6 +2522,8 @@ retry:
+ 		domain_flush_pages(&dma_dom->domain, address, size);
+ 
+ out:
++	trace_printk("%s: mapped %llx paddr %llx size %zu\n",
++			dev_name(dev), address, old_paddr, size);
+ 	return address;
+ 
+ out_unmap:
+@@ -2532,6 +2535,9 @@ out_unmap:
+ 
+ 	dma_ops_free_addresses(dma_dom, address, pages);
+ 
++	trace_printk("%s: return DMA_ERROR_CODE paddr %llx size %zu\n",
++			dev_name(dev), old_paddr, size);
++
+ 	return DMA_ERROR_CODE;
+ }
+ 
+@@ -2628,6 +2634,8 @@ static void unmap_page(struct device *dev, dma_addr_t dma_addr, size_t size,
+ 
+ 	spin_lock_irqsave(&domain->lock, flags);
+ 
++	trace_printk("%s: unmap dma_addr %llx size %zu\n",
++			dev_name(dev), dma_addr, size);
+ 	__unmap_single(domain->priv, dma_addr, size, dir);
+ 
+ 	domain_flush_complete(domain);
+@@ -2683,9 +2691,13 @@ out:
+ 	return mapped_elems;
+ unmap:
+ 	for_each_sg(sglist, s, mapped_elems, i) {
+-		if (s->dma_address)
++		if (s->dma_address) {
++			trace_printk("%s: unmap dma_addr %llx size %u\n",
++					dev_name(dev), s->dma_address,
++					s->dma_length);
+ 			__unmap_single(domain->priv, s->dma_address,
+ 				       s->dma_length, dir);
++		}
+ 		s->dma_address = s->dma_length = 0;
+ 	}
+ 
+@@ -2716,6 +2728,9 @@ static void unmap_sg(struct device *dev, struct scatterlist *sglist,
+ 	spin_lock_irqsave(&domain->lock, flags);
+ 
+ 	for_each_sg(sglist, s, nelems, i) {
++	trace_printk("%s: unmap dma_addr %llx size %u\n",
++			dev_name(dev), s->dma_address, s->dma_length);
++
+ 		__unmap_single(domain->priv, s->dma_address,
+ 			       s->dma_length, dir);
+ 		s->dma_address = s->dma_length = 0;
+@@ -2813,6 +2828,9 @@ static void free_coherent(struct device *dev, size_t size,
+ 
+ 	spin_lock_irqsave(&domain->lock, flags);
+ 
++	trace_printk("%s: unmap dma_addr %llx size %zu\n",
++			dev_name(dev), dma_addr, size);
++
+ 	__unmap_single(domain->priv, dma_addr, size, DMA_BIDIRECTIONAL);
+ 
+ 	domain_flush_complete(domain);
+
+--liOOAslEiF7prFVr--
