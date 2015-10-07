@@ -1,21 +1,15 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [dm-devel] AMD-Vi IO_PAGE_FAULTs and ata3.00: failed command:
-	READ FPDMA QUEUED errors since Linux 4.0
-Date: Wed, 7 Oct 2015 18:10:22 +0200
-Message-ID: <20151007161022.GI28811@8bytes.org>
-References: <55BE1D5E.6020709@maya.org>
-	<alpine.LRH.2.02.1508021347480.17729@file01.intranet.prod.int.rdu2.redhat.com>
-	<55FE5740.2060701@maya.org> <20150929152100.GL3036@8bytes.org>
-	<alpine.LRH.2.02.1509291143170.24174@file01.intranet.prod.int.rdu2.redhat.com>
-	<20150929162042.GR3036@8bytes.org> <560BF73F.8000008@maya.org>
-	<20151006101356.GE12506@8bytes.org> <56141507.7040103@maya.org>
-	<56148A1B.5060506@maya.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v6 2/3] arm64: Add IOMMU dma_ops
+Date: Wed, 7 Oct 2015 17:36:24 +0100
+Message-ID: <56154A08.6060207@arm.com>
+References: <cover.1443718557.git.robin.murphy@arm.com>
+	<80cb035144a2648a5d94eb1fec3336f17ad249f1.1443718557.git.robin.murphy@arm.com>
+	<CAAhSdy2tpAfH+i=1axDkmRqZixsbVhd-_9VGvpyQ=5e06v=Kpg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <56148A1B.5060506-YKS6W9RDU/w@public.gmane.org>
+In-Reply-To: <CAAhSdy2tpAfH+i=1axDkmRqZixsbVhd-_9VGvpyQ=5e06v=Kpg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,29 +19,94 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andreas Hartmann <andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org>
-Cc: linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, device-mapper development <dm-devel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jens Axboe <axboe-b10kYP2dOMg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mikulas Patocka <mpatocka-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Milan Broz <mbroz-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: Anup Patel <anup-aa5cPYPs4nSSZfiimGR9Ow@public.gmane.org>
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Oct 07, 2015 at 04:57:31AM +0200, Andreas Hartmann wrote:
-> Got it during a single mount (I booted with massively reduced mounts and
-> did the mount afterwards manually. During the second manually mount, the
-> problem can be seen).
-> 
-> I attached the requested files. The mount starts at 80 seconds.
-> Hope this helps.
+On 07/10/15 10:03, Anup Patel wrote:
+[...]
+>> +static bool do_iommu_attach(struct device *dev, const struct iommu_ops *ops,
+>> +                          u64 dma_base, u64 size)
+>> +{
+>> +       struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+>> +
+>> +       /*
+>> +        * Best case: The device is either part of a group which was
+>> +        * already attached to a domain in a previous call, or it's
+>> +        * been put in a default DMA domain by the IOMMU core.
+>> +        */
+>> +       if (!domain) {
+>> +               /*
+>> +                * Urgh. The IOMMU core isn't going to do default domains
+>> +                * for non-PCI devices anyway, until it has some means of
+>> +                * abstracting the entirely implementation-specific
+>> +                * sideband data/SoC topology/unicorn dust that may or
+>> +                * may not differentiate upstream masters.
+>> +                * So until then, HORRIBLE HACKS!
+>> +                */
+>> +               domain = ops->domain_alloc(IOMMU_DOMAIN_DMA);
+>> +               if (!domain)
+>> +                       goto out_no_domain;
+>> +
+>> +               domain->ops = ops;
+>> +               domain->type = IOMMU_DOMAIN_DMA | __IOMMU_DOMAIN_FAKE_DEFAULT;
+>
+> We require iommu_get_dma_cookie(domain) here. If we dont
+> allocate iommu cookie then iommu_dma_init_domain() will fail.
 
-Okay, the lowest dma-addr the AMD IOMMU driver returns is 0x1000 and
-the highest is 0x7ff4000. All fault addresses are outside of this range,
-so the AMD IOMMU driver never returned these addresses.
+The iova cookie is tightly coupled with the domain, so it really only 
+makes sense for the IOMMU driver to deal with it as part of its 
+domain_alloc/domain_free callbacks.
 
-This doesn't mean that it is not at fault, but it looks still unlikely.
-Maybe I can reproduce the problem here. Can you please tell me some
-details about the partitions you mounted to trigger this?
+Doing that here was one of the nastier 'compatibility' hacks which I've 
+now taken out; trying to make things work without modifying existing 
+IOMMU drivers was just too impractical. Drivers which want to play are 
+now required to support the IOMMU_DOMAIN_DMA type appropriately, but 
+it's still only a minimal change, as per the example diff for the ARM 
+SMMU driver below (big pile of further patches necessary to make said 
+driver compatible in other respects notwithstanding).
 
-I remember something about a xfs->lvm->dm_crypt->md_raid->sata setup, but
-having more details may help me to reproduce.
+Robin.
 
+--->8---
+@@ -29,6 +29,7 @@
+  #define pr_fmt(fmt) "arm-smmu: " fmt
 
+  #include <linux/delay.h>
++#include <linux/dma-iommu.h>
+  #include <linux/dma-mapping.h>
+  #include <linux/err.h>
+  #include <linux/interrupt.h>
+@@ -973,7 +974,7 @@ static struct iommu_domain 
+*arm_smmu_domain_alloc(unsigned type)
+  {
+  	struct arm_smmu_domain *smmu_domain;
 
-	Joerg
+-	if (type != IOMMU_DOMAIN_UNMANAGED)
++	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
+  		return NULL;
+  	/*
+  	 * Allocate the domain and initialise some of its data structures.
+@@ -984,6 +985,12 @@ static struct iommu_domain 
+*arm_smmu_domain_alloc(unsigned type)
+  	if (!smmu_domain)
+  		return NULL;
+
++	if (type == IOMMU_DOMAIN_DMA &&
++	    iommu_get_dma_cookie(&smmu_domain->domain)) {
++		kfree(smmu_domain);
++		return NULL;
++	}
++
+  	mutex_init(&smmu_domain->init_mutex);
+  	spin_lock_init(&smmu_domain->pgtbl_lock);
+
+@@ -998,6 +1005,7 @@ static void arm_smmu_domain_free(struct 
+iommu_domain *domain)
+  	 * Free the domain resources. We assume that all devices have
+  	 * already been detached.
+  	 */
++	iommu_put_dma_cookie(domain);
+  	arm_smmu_destroy_domain_context(domain);
+  	kfree(smmu_domain);
+  }
