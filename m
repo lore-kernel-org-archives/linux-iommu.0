@@ -1,74 +1,235 @@
-From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: [PATCH 5/7] iommu/vt-d: Assume BIOS lies about ATSR for integrated gfx
-Date: Fri, 09 Oct 2015 00:53:30 +0100
-Message-ID: <1444348410.92154.33.camel@infradead.org>
+From: David Woodhouse <dwmw2@infradead.org>
+Subject: [PATCH 6/7] iommu/vt-d: Enable page request interrupt
+Date: Fri, 09 Oct 2015 00:53:45 +0100
+Message-ID: <1444348425.92154.34.camel@infradead.org>
 References: <1444348223.92154.22.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============2772537656907363543=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1444348223.92154.22.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, intel-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, jesse.barnes-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+Content-Type: multipart/mixed; boundary="===============1269185295=="
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+In-Reply-To: <1444348223.92154.22.camel@infradead.org>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: iommu@lists.linux-foundation.org, intel-gfx@lists.freedesktop.org, jesse.barnes@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============2772537656907363543==
+--===============1269185295==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-R5y3QCf5S1+mXxMmrTrQ"
+	boundary="=-RrC0ObkGyscIxacCZgaJ"
 
 
---=-R5y3QCf5S1+mXxMmrTrQ
+--=-RrC0ObkGyscIxacCZgaJ
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-If the device itself reports ATS in its PCIe capabilities, but the BIOS
-neglects to provide an ATSR structure to indicate that the root port can
-also cope, then assume the latter is lying.
-
-Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: David Woodhouse <David.Woodhouse@intel.com>
 ---
- drivers/iommu/intel-iommu.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/iommu/intel-iommu.c | 22 +++++++++++++-
+ drivers/iommu/intel-svm.c   | 71 +++++++++++++++++++++++++++++++++++++++++=
+++++
+ include/linux/intel-iommu.h |  5 ++++
+ 3 files changed, 97 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index a6fd639..b5ab009 100644
+index b5ab009..e27b9c6 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1447,9 +1447,14 @@ iommu_support_dev_iotlb (struct dmar_domain *domain,=
- struct intel_iommu *iommu,
- 	if (!pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ATS))
- 		return NULL;
+@@ -1687,8 +1687,11 @@ static void free_dmar_iommu(struct intel_iommu *iomm=
+u)
+ 	free_context_table(iommu);
 =20
--	if (!dmar_find_matched_atsr_unit(pdev))
--		return NULL;
--
-+	if (!dmar_find_matched_atsr_unit(pdev)) {
-+		if (intel_iommu_pasid28 && IS_GFX_DEVICE(pdev) &&
-+		    pdev->vendor =3D=3D 0x8086) {
-+			pr_warn("BIOS denies ATSR capability for %s; assuming it lies\n",
-+				dev_name(info->dev));
-+		} else
-+			return NULL;
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+-	if (pasid_enabled(iommu))
++	if (pasid_enabled(iommu)) {
++		if (ecap_prs(iommu->ecap))
++			intel_svm_finish_prq(iommu);
+ 		intel_svm_free_pasid_tables(iommu);
 +	}
- 	return info;
+ #endif
  }
 =20
+@@ -3204,6 +3207,13 @@ domains_done:
+=20
+ 		iommu_flush_write_buffer(iommu);
+=20
++#ifdef CONFIG_INTEL_IOMMU_SVM
++		if (pasid_enabled(iommu) && ecap_prs(iommu->ecap)) {
++			ret =3D intel_svm_enable_prq(iommu);
++			if (ret)
++				goto free_iommu;
++		}
++#endif
+ 		ret =3D dmar_set_interrupt(iommu);
+ 		if (ret)
+ 			goto free_iommu;
+@@ -4148,6 +4158,14 @@ static int intel_iommu_add(struct dmar_drhd_unit *dm=
+aru)
+=20
+ 	intel_iommu_init_qi(iommu);
+ 	iommu_flush_write_buffer(iommu);
++
++#ifdef CONFIG_INTEL_IOMMU_SVM
++	if (pasid_enabled(iommu) && ecap_prs(iommu->ecap)) {
++		ret =3D intel_svm_enable_prq(iommu);
++		if (ret)
++			goto disable_iommu;
++	}
++#endif
+ 	ret =3D dmar_set_interrupt(iommu);
+ 	if (ret)
+ 		goto disable_iommu;
+@@ -4952,6 +4970,8 @@ int intel_iommu_enable_pasid(struct intel_svm *svm)
+ 				ctx_lo |=3D CONTEXT_TT_PT_PASID << 2;
+ 		}
+ 		ctx_lo |=3D CONTEXT_PASIDE;
++		if (svm->dev_iotlb && ecap_prs(svm->iommu->ecap))
++			ctx_lo |=3D CONTEXT_PRS;
+ 		context[0].lo =3D ctx_lo;
+ 		wmb();
+ 		svm->iommu->flush.flush_context(svm->iommu, svm->did,
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index 913c3a1..1260e87 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -18,6 +18,10 @@
+ #include <linux/sched.h>
+ #include <linux/slab.h>
+ #include <linux/intel-svm.h>
++#include <linux/dmar.h>
++#include <linux/interrupt.h>
++
++static irqreturn_t prq_event_thread(int irq, void *d);
+=20
+ struct pasid_entry {
+ 	u64 val;
+@@ -75,6 +79,65 @@ int intel_svm_free_pasid_tables(struct intel_iommu *iomm=
+u)
+ 	return 0;
+ }
+=20
++#define PRQ_ORDER 0
++int intel_svm_enable_prq(struct intel_iommu *iommu)
++{
++	struct page *pages;
++	int irq, ret;
++
++	pages =3D alloc_pages(GFP_KERNEL | __GFP_ZERO, PRQ_ORDER);
++	if (!pages) {
++		pr_warn("IOMMU: %s: Failed to allocate page request queue\n",
++			iommu->name);
++		return -ENOMEM;
++	}
++	iommu->prq =3D page_address(pages);
++
++	irq =3D dmar_alloc_hwirq(DMAR_UNITS_SUPPORTED + iommu->seq_id, iommu->nod=
+e, iommu);
++	if (irq <=3D 0) {
++		pr_err("IOMMU: %s: Failed to create IRQ vector for page request queue\n"=
+,
++		       iommu->name);
++		ret =3D -EINVAL;
++	err:
++		free_pages((unsigned long)iommu->prq, PRQ_ORDER);
++		iommu->prq =3D 0;
++		return ret;
++	}
++	iommu->pr_irq =3D irq;
++
++	snprintf(iommu->prq_name, sizeof(iommu->prq_name), "dmar%d-prq", iommu->s=
+eq_id);
++
++	ret =3D request_threaded_irq(irq, NULL, prq_event_thread, IRQF_ONESHOT,
++				   iommu->prq_name, iommu);
++	if (ret) {
++		pr_err("IOMMU: %s: Failed to request IRQ for page request queue\n",
++		       iommu->name);
++		dmar_free_hwirq(irq);
++		goto err;
++	}
++	dmar_writeq(iommu->reg + DMAR_PQH_REG, 0ULL);
++	dmar_writeq(iommu->reg + DMAR_PQT_REG, 0ULL);
++	dmar_writeq(iommu->reg + DMAR_PQA_REG, virt_to_phys(iommu->prq) | PRQ_ORD=
+ER);
++
++	return 0;
++}
++
++int intel_svm_finish_prq(struct intel_iommu *iommu)
++{
++	dmar_writeq(iommu->reg + DMAR_PQH_REG, 0ULL);
++	dmar_writeq(iommu->reg + DMAR_PQT_REG, 0ULL);
++	dmar_writeq(iommu->reg + DMAR_PQA_REG, 0ULL);
++
++	free_irq(iommu->pr_irq, iommu);
++	dmar_free_hwirq(iommu->pr_irq);
++	iommu->pr_irq =3D 0;
++
++	free_pages((unsigned long)iommu->prq, PRQ_ORDER);
++	iommu->prq =3D 0;
++
++	return 0;
++}
++
+ static void intel_flush_svm_range(struct intel_svm *svm,
+ 				  unsigned long address, int pages, int ih)
+ {
+@@ -292,3 +355,11 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(intel_svm_unbind_mm);
++
++
++static irqreturn_t prq_event_thread(int irq, void *d)
++{
++	struct intel_iommu *iommu =3D d;
++	printk("PRQ event on %s\n", iommu->name);
++	return IRQ_HANDLED;
++}
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 564a61b..bf034b0 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -370,6 +370,7 @@ enum {
+=20
+ struct pasid_entry;
+ struct pasid_state_entry;
++struct page_req_dsc;
+=20
+ struct intel_iommu {
+ 	void __iomem	*reg; /* Pointer to hardware regs, virtual addr */
+@@ -402,6 +403,8 @@ struct intel_iommu {
+ 	 * told to. But while it's all driver-arbitrated, we're fine. */
+ 	struct pasid_entry *pasid_table;
+ 	struct pasid_state_entry *pasid_state_table;
++	struct page_req_dsc *prq;
++	unsigned char prq_name[16];    /* Name for PRQ interrupt */
+ 	struct idr pasid_idr;
+ #endif
+ 	struct q_inval  *qi;            /* Queued invalidation info */
+@@ -445,6 +448,8 @@ extern int dmar_ir_support(void);
+=20
+ extern int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu);
+ extern int intel_svm_free_pasid_tables(struct intel_iommu *iommu);
++extern int intel_svm_enable_prq(struct intel_iommu *iommu);
++extern int intel_svm_finish_prq(struct intel_iommu *iommu);
+=20
+ struct intel_svm {
+ 	struct kref kref;
 --=20
 2.4.3
 
 --=20
 David Woodhouse                            Open Source Technology Centre
-David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
+David.Woodhouse@intel.com                              Intel Corporation
 
---=-R5y3QCf5S1+mXxMmrTrQ
+--=-RrC0ObkGyscIxacCZgaJ
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -161,28 +322,31 @@ Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
 ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
 AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUxMDA4MjM1MzMwWjAjBgkqhkiG9w0BCQQxFgQUcOMOQL43eevpPew4C5jChLCrgjYw
+CQUxDxcNMTUxMDA4MjM1MzQ1WjAjBgkqhkiG9w0BCQQxFgQUZ9BqmwO1XMcJF9pWm7uEuHrvA50w
 gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
 ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
 L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
 CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
 LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
 U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQAgvrB5w/vjW/r42RCJASvxjQ7x4mubCXZUY7zW/zzx+SiuWbuomAnj6NVS
-HeuOCzefxkJ4qC792JfjA59jUVbvV8U9ky6JnJkYXceebAr7DxiNkQadj7wmc1WYBYCTS1MfuhLx
-vRpynFcQoP/s/J/KV13pPKKSx2ZuuDax5wdAa9QGw4Uoi97808xg/ptXPpfoIC3wOrapoDXX3x+K
-6hAK4P+jy8Al5FsvWdmn8qdMYKB7lUewCeXAQRdjcfy3Pm58+P1wJYsn0ZiU5Tp4D3Cmtdo5hZ29
-Iz2nbJZQGSI/M0mwzX7a1DXI9W3Ej2TLJcChMHTi8VqM+0j2vO+loTWVAAAAAAAA
+hkiG9w0BAQEFAASCAQBZp44049MX1oUvtmOQAtGurp4cFg8zLbsgEdp28Xe3F61TfhGYdDhDWmU2
+3drJWbg+YarsB0sJ8UuPONyMalk6nm0TCDJJj4C/4d1l5CtxpiJy06bsXsvUkJ4Q6w7A6pv2Bxvf
+rd3bs2cUcq2lqR1uzrY50d8CdFbM+xT8kj43CPjNHiZNybP2Ynkd/S9epVXywH5tV/hkOIwPwBet
+WcmLVTQXzj/Sl4AB66hG5+c5wxzq7/8Rt1WDW0GvRJK2e2T77dEKzaGREIB/ntIDorL0fxlrYSFK
+UDvQ8+6xtCV4yWMPSvn5RR/NL/xNAHbIEcrl2mTDK5z10UK7G6j/t81UAAAAAAAA
 
 
---=-R5y3QCf5S1+mXxMmrTrQ--
+--=-RrC0ObkGyscIxacCZgaJ--
 
 
---===============2772537656907363543==
-Content-Type: text/plain; charset="us-ascii"
+--===============1269185295==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
 Content-Disposition: inline
 
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4
+IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0
+cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRlbC1nZngK
 
---===============2772537656907363543==--
+--===============1269185295==--
