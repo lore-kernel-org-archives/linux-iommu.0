@@ -1,60 +1,122 @@
-From: David Woodhouse <dwmw2@infradead.org>
-Subject: [PATCH 0/7] Enable SVM for Intel VT-d
-Date: Fri, 09 Oct 2015 00:50:23 +0100
-Message-ID: <1444348223.92154.22.camel@infradead.org>
+From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: [PATCH 1/7] iommu/vt-d: Introduce intel_iommu=pasid28, and
+	pasid_enabled() macro
+Date: Fri, 09 Oct 2015 00:52:13 +0100
+Message-ID: <1444348332.92154.23.camel@infradead.org>
+References: <1444348223.92154.22.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1310701644=="
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: iommu@lists.linux-foundation.org, intel-gfx@lists.freedesktop.org, "Barnes, Jesse" <jesse.barnes@intel.com>
+Content-Type: multipart/mixed; boundary="===============2989348002835733261=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1444348223.92154.22.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, intel-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, jesse.barnes-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============1310701644==
+--===============2989348002835733261==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-azwV3kHqUZsctk+tm6zk"
+	boundary="=-uOVhgsfrPWFuetrzGcFI"
 
 
---=-azwV3kHqUZsctk+tm6zk
+--=-uOVhgsfrPWFuetrzGcFI
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-This patch set enables PASID support for the Intel IOMMU, along with
-page request support.
+As long as we use an identity mapping to work around the worst of the
+hardware bugs which caused us to defeature it and change the definition
+of the capability bit, we *can* use PASID support on the devices which
+advertised it in bit 28 of the Extended Capability Register.
 
-Like its AMD counterpart, it exposes an IOMMU-specific API. I believe
-we'll have a session at the Kernel Summit later this month in which we
-can work out a generic API which will cover the two (now) existing
-implementations as well as upcoming ARM (and other?) versions.
+Allow people to do so with 'intel_iommu=3Dpasid28' on the command line.
 
-For the time being, however, exposing an Intel-specific API is good
-enough, especially as we don't have the required TLP prefix support on
-our PCIe root ports and we *can't* support discrete PCIe devices with
-PASID support. It's purely on-chip stuff right now, which is basically
-only Intel graphics.
+Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c | 20 ++++++++++++++------
+ include/linux/intel-iommu.h |  2 +-
+ 2 files changed, 15 insertions(+), 7 deletions(-)
 
-The AMD implementation allows a per-device PASID space, and managing
-the PASID space is left entirely to the device driver. In contrast,
-this implementation maintains a per-IOMMU PASID space, and drivers
-calling intel_svm_bind_mm() will be *given* the PASID that they are to
-use. In general we seem to be converging on using a single PASID space
-across *all* IOMMUs in the system, and this will support that mode of
-operation.
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 041bc18..a1514a5 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -497,13 +497,21 @@ static int dmar_forcedac;
+ static int intel_iommu_strict;
+ static int intel_iommu_superpage =3D 1;
+ static int intel_iommu_ecs =3D 1;
++static int intel_iommu_pasid28;
++static int iommu_identity_mapping;
++
++#define IDENTMAP_ALL		1
++#define IDENTMAP_GFX		2
++#define IDENTMAP_AZALIA		4
+=20
+ /* We only actually use ECS when PASID support (on the new bit 40)
+  * is also advertised. Some early implementations =E2=80=94 the ones with
+  * PASID support on bit 28 =E2=80=94 have issues even when we *only* use
+  * extended root/context tables. */
++#define pasid_enabled(iommu) (ecap_pasid(iommu->ecap) || \
++			      (intel_iommu_pasid28 && ecap_broken_pasid(iommu->ecap)))
+ #define ecs_enabled(iommu) (intel_iommu_ecs && ecap_ecs(iommu->ecap) && \
+-			    ecap_pasid(iommu->ecap))
++			    pasid_enabled(iommu))
+=20
+ int intel_iommu_gfx_mapped;
+ EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped);
+@@ -566,6 +574,11 @@ static int __init intel_iommu_setup(char *str)
+ 			printk(KERN_INFO
+ 				"Intel-IOMMU: disable extended context table support\n");
+ 			intel_iommu_ecs =3D 0;
++		} else if (!strncmp(str, "pasid28", 7)) {
++			printk(KERN_INFO
++				"Intel-IOMMU: enable pre-production PASID support\n");
++			intel_iommu_pasid28 =3D 1;
++			iommu_identity_mapping |=3D IDENTMAP_GFX;
+ 		}
+=20
+ 		str +=3D strcspn(str, ",");
+@@ -2399,11 +2412,6 @@ found_domain:
+ 	return domain;
+ }
+=20
+-static int iommu_identity_mapping;
+-#define IDENTMAP_ALL		1
+-#define IDENTMAP_GFX		2
+-#define IDENTMAP_AZALIA		4
+-
+ static int iommu_domain_identity_map(struct dmar_domain *domain,
+ 				     unsigned long long start,
+ 				     unsigned long long end)
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 6240063..c03316d 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -123,7 +123,7 @@ static inline void dmar_writeq(void __iomem *addr, u64 =
+val)
+ #define ecap_srs(e)		((e >> 31) & 0x1)
+ #define ecap_ers(e)		((e >> 30) & 0x1)
+ #define ecap_prs(e)		((e >> 29) & 0x1)
+-/* PASID support used to be on bit 28 */
++#define ecap_broken_pasid(e)	((e >> 28) & 0x1)
+ #define ecap_dis(e)		((e >> 27) & 0x1)
+ #define ecap_nest(e)		((e >> 26) & 0x1)
+ #define ecap_mts(e)		((e >> 25) & 0x1)
+--=20
+2.4.3
 
 --=20
 David Woodhouse                            Open Source Technology Centre
-David.Woodhouse@intel.com                              Intel Corporation
+David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
 
 
---=-azwV3kHqUZsctk+tm6zk
+--=-uOVhgsfrPWFuetrzGcFI
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -147,31 +209,28 @@ Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
 ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
 AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUxMDA4MjM1MDIzWjAjBgkqhkiG9w0BCQQxFgQUZOYqzP1ku9Ugqx3OYJ3AzM5Mdqww
+CQUxDxcNMTUxMDA4MjM1MjEzWjAjBgkqhkiG9w0BCQQxFgQUHn22yZkfRcoEIarsg4bytHwcRHsw
 gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
 ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
 L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
 CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
 LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
 U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQAUC97dv0UisPlvT2z5wO0VZ2qD9cA4KWi3TPTCyALjTNHQMVMs+q+diFvn
-kPMqYJsIhnhun/UeUy4PywTjeJihmHomY9+1cB0LL63vJ08mSUHoxxm1HnBQTW0o0yh/aRNCTNiX
-zm2S6nBV+9IDWcUlaLEI3W1lMvuxqTERVbEQawgWOzZnS2XswgY4VUTzygJOJghH+WcsluFDWV4Q
-ckCDj4qkWy72v2qpf/j2iotoG4LX+zCjFmzZK9+C3roqbG4CvaRSh43E5bJCVUEnwdsTAAWcSSDm
-mKnbL9rXxsqcIzWHhByRadoltTgpsPCCTLHJd4EAAViL1M6W4D/qFIV3AAAAAAAA
+hkiG9w0BAQEFAASCAQBwLLgtTUEJa1MOUGdrqcGqgEepLkMoc+7J3TyzP0XngqvGq3A9qk7tgFk8
+FRspttAwI36DGCP/HZ3GfkrdbpDv789Hv6XdU7h1oINGtdyM+1xYfe9obKTqnTw0FsYBtAuGM57Z
+WeZ1VXCcgM10Cu4JOP/Evgi4fqbma0tj86kwKXp8TlqsB/BFHesY20LWGbw9JoRcBTh4dm9frncg
+l+DjDw1T5GRRrThjAbFrRyT04LfR11DkiS0zVZv8HivXQHRX0Y90QWKsC/O3YBjoX7VNaCs2tahy
+duDahQQdNM3DedjfDOPWaPg1RChX3PCzw/iXywOGx3YSv5IeFqssDJDBAAAAAAAA
 
 
---=-azwV3kHqUZsctk+tm6zk--
+--=-uOVhgsfrPWFuetrzGcFI--
 
 
---===============1310701644==
-Content-Type: text/plain; charset="utf-8"
+--===============2989348002835733261==
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4
-IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0
-cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRlbC1nZngK
 
---===============1310701644==--
+--===============2989348002835733261==--
