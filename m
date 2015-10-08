@@ -1,179 +1,74 @@
-From: David Woodhouse <dwmw2@infradead.org>
-Subject: [PATCH 4/7] iommu/vt-d: Generalise DMAR MSI setup to
- allow for page request events
-Date: Fri, 09 Oct 2015 00:53:14 +0100
-Message-ID: <1444348394.92154.32.camel@infradead.org>
+From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: [PATCH 5/7] iommu/vt-d: Assume BIOS lies about ATSR for integrated gfx
+Date: Fri, 09 Oct 2015 00:53:30 +0100
+Message-ID: <1444348410.92154.33.camel@infradead.org>
 References: <1444348223.92154.22.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1561301678=="
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <1444348223.92154.22.camel@infradead.org>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: iommu@lists.linux-foundation.org, intel-gfx@lists.freedesktop.org, jesse.barnes@intel.com
+Content-Type: multipart/mixed; boundary="===============2772537656907363543=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1444348223.92154.22.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, intel-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, jesse.barnes-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============1561301678==
+--===============2772537656907363543==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-G8m2w0DBc3PZDpksdHOz"
+	boundary="=-R5y3QCf5S1+mXxMmrTrQ"
 
 
---=-G8m2w0DBc3PZDpksdHOz
+--=-R5y3QCf5S1+mXxMmrTrQ
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: David Woodhouse <David.Woodhouse@intel.com>
----
- drivers/iommu/dmar.c        | 42 +++++++++++++++++++++++++++++++----------=
--
- include/linux/intel-iommu.h | 10 +++++++++-
- 2 files changed, 40 insertions(+), 12 deletions(-)
+If the device itself reports ATS in its PCIe capabilities, but the BIOS
+neglects to provide an ATSR structure to indicate that the root port can
+also cope, then assume the latter is lying.
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 8757f8d..80e3c17 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -1086,6 +1086,11 @@ static void free_iommu(struct intel_iommu *iommu)
- 	iommu_device_destroy(iommu->iommu_dev);
+Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index a6fd639..b5ab009 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1447,9 +1447,14 @@ iommu_support_dev_iotlb (struct dmar_domain *domain,=
+ struct intel_iommu *iommu,
+ 	if (!pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ATS))
+ 		return NULL;
 =20
- 	if (iommu->irq) {
-+		if (iommu->pr_irq) {
-+			free_irq(iommu->pr_irq, iommu);
-+			dmar_free_hwirq(iommu->pr_irq);
-+			iommu->pr_irq =3D 0;
-+		}
- 		free_irq(iommu->irq, iommu);
- 		dmar_free_hwirq(iommu->irq);
- 		iommu->irq =3D 0;
-@@ -1493,53 +1498,68 @@ static const char *dmar_get_fault_reason(u8 fault_r=
-eason, int *fault_type)
- 	}
+-	if (!dmar_find_matched_atsr_unit(pdev))
+-		return NULL;
+-
++	if (!dmar_find_matched_atsr_unit(pdev)) {
++		if (intel_iommu_pasid28 && IS_GFX_DEVICE(pdev) &&
++		    pdev->vendor =3D=3D 0x8086) {
++			pr_warn("BIOS denies ATSR capability for %s; assuming it lies\n",
++				dev_name(info->dev));
++		} else
++			return NULL;
++	}
+ 	return info;
  }
-=20
-+
-+static inline int dmar_msi_reg(struct intel_iommu *iommu, int irq)
-+{
-+	if (iommu->irq =3D=3D irq)
-+		return DMAR_FECTL_REG;
-+	else if (iommu->pr_irq =3D=3D irq)
-+		return DMAR_PECTL_REG;
-+	else
-+		BUG();
-+}
-+
- void dmar_msi_unmask(struct irq_data *data)
- {
- 	struct intel_iommu *iommu =3D irq_data_get_irq_handler_data(data);
-+	int reg =3D dmar_msi_reg(iommu, data->irq);
- 	unsigned long flag;
-=20
- 	/* unmask it */
- 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
--	writel(0, iommu->reg + DMAR_FECTL_REG);
-+	writel(0, iommu->reg + reg);
- 	/* Read a reg to force flush the post write */
--	readl(iommu->reg + DMAR_FECTL_REG);
-+	readl(iommu->reg + reg);
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
- }
-=20
- void dmar_msi_mask(struct irq_data *data)
- {
--	unsigned long flag;
- 	struct intel_iommu *iommu =3D irq_data_get_irq_handler_data(data);
-+	int reg =3D dmar_msi_reg(iommu, data->irq);
-+	unsigned long flag;
-=20
- 	/* mask it */
- 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
--	writel(DMA_FECTL_IM, iommu->reg + DMAR_FECTL_REG);
-+	writel(DMA_FECTL_IM, iommu->reg + reg);
- 	/* Read a reg to force flush the post write */
--	readl(iommu->reg + DMAR_FECTL_REG);
-+	readl(iommu->reg + reg);
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
- }
-=20
- void dmar_msi_write(int irq, struct msi_msg *msg)
- {
- 	struct intel_iommu *iommu =3D irq_get_handler_data(irq);
-+	int reg =3D dmar_msi_reg(iommu, irq);
- 	unsigned long flag;
-=20
- 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
--	writel(msg->data, iommu->reg + DMAR_FEDATA_REG);
--	writel(msg->address_lo, iommu->reg + DMAR_FEADDR_REG);
--	writel(msg->address_hi, iommu->reg + DMAR_FEUADDR_REG);
-+	writel(msg->data, iommu->reg + reg + 4);
-+	writel(msg->address_lo, iommu->reg + reg + 8);
-+	writel(msg->address_hi, iommu->reg + reg + 12);
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
- }
-=20
- void dmar_msi_read(int irq, struct msi_msg *msg)
- {
- 	struct intel_iommu *iommu =3D irq_get_handler_data(irq);
-+	int reg =3D dmar_msi_reg(iommu, irq);
- 	unsigned long flag;
-=20
- 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
--	msg->data =3D readl(iommu->reg + DMAR_FEDATA_REG);
--	msg->address_lo =3D readl(iommu->reg + DMAR_FEADDR_REG);
--	msg->address_hi =3D readl(iommu->reg + DMAR_FEUADDR_REG);
-+	msg->data =3D readl(iommu->reg + reg + 4);
-+	msg->address_lo =3D readl(iommu->reg + reg + 8);
-+	msg->address_hi =3D readl(iommu->reg + reg + 12);
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
- }
-=20
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index b0df572..564a61b 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -59,6 +59,14 @@
- #define DMAR_IQA_REG	0x90	/* Invalidation queue addr register */
- #define DMAR_ICS_REG	0x9c	/* Invalidation complete status register */
- #define DMAR_IRTA_REG	0xb8    /* Interrupt remapping table addr register *=
-/
-+#define DMAR_PQH_REG	0xc0	/* Page request queue head register */
-+#define DMAR_PQT_REG	0xc8	/* Page request queue tail register */
-+#define DMAR_PQA_REG	0xd0	/* Page request queue address register */
-+#define DMAR_PRS_REG	0xdc	/* Page request status register */
-+#define DMAR_PECTL_REG	0xe0	/* Page request event control register */
-+#define	DMAR_PEDATA_REG	0xe4	/* Page request event interrupt data register=
- */
-+#define	DMAR_PEADDR_REG	0xe8	/* Page request event interrupt addr register=
- */
-+#define	DMAR_PEUADDR_REG 0xec	/* Page request event Upper address register=
- */
-=20
- #define OFFSET_STRIDE		(9)
- /*
-@@ -374,7 +382,7 @@ struct intel_iommu {
- 	int		seq_id;	/* sequence id of the iommu */
- 	int		agaw; /* agaw of this iommu */
- 	int		msagaw; /* max sagaw of this iommu */
--	unsigned int 	irq;
-+	unsigned int 	irq, pr_irq;
- 	u16		segment;     /* PCI segment# */
- 	unsigned char 	name[13];    /* Device Name */
 =20
 --=20
 2.4.3
 
 --=20
 David Woodhouse                            Open Source Technology Centre
-David.Woodhouse@intel.com                              Intel Corporation
+David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
 
---=-G8m2w0DBc3PZDpksdHOz
+--=-R5y3QCf5S1+mXxMmrTrQ
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -266,31 +161,28 @@ Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
 ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
 AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUxMDA4MjM1MzE0WjAjBgkqhkiG9w0BCQQxFgQUQcrCvr6V2jk83LQbOitbQi9+fM0w
+CQUxDxcNMTUxMDA4MjM1MzMwWjAjBgkqhkiG9w0BCQQxFgQUcOMOQL43eevpPew4C5jChLCrgjYw
 gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
 ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
 L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
 CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
 LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
 U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQBnN5zjljOEX2KUfEg42qERgGqaSKGb3OzJ5df8RhpOsSgqs0XAp9Aw3zcE
-sc4uNyWkcBuJBF/JLSi2aIf5uzTYI+S+iTePKvoVi7X7K77engPNce9vKNAZG/Mb8evmonsDoi3L
-s+WahrG8JuZwQghL9Pf1bnMlAHq0Ulsqn3Dd1BoxFmb58UQ0ETauafIZ+OJzCLOipWw3lhKg6asO
-JkaCiQxvApLalVDQ2Hw9H2IY3LW0QqyfKTEHrpWm7UgiP5a4AzQUw+XtyIhOStbhPRVlMxJeloEH
-gDxwdxa+SB/jOiutUKBYHxflQxlP9Y5j+n/F1jXlVRHcKpBB5cAjrpicAAAAAAAA
+hkiG9w0BAQEFAASCAQAgvrB5w/vjW/r42RCJASvxjQ7x4mubCXZUY7zW/zzx+SiuWbuomAnj6NVS
+HeuOCzefxkJ4qC792JfjA59jUVbvV8U9ky6JnJkYXceebAr7DxiNkQadj7wmc1WYBYCTS1MfuhLx
+vRpynFcQoP/s/J/KV13pPKKSx2ZuuDax5wdAa9QGw4Uoi97808xg/ptXPpfoIC3wOrapoDXX3x+K
+6hAK4P+jy8Al5FsvWdmn8qdMYKB7lUewCeXAQRdjcfy3Pm58+P1wJYsn0ZiU5Tp4D3Cmtdo5hZ29
+Iz2nbJZQGSI/M0mwzX7a1DXI9W3Ej2TLJcChMHTi8VqM+0j2vO+loTWVAAAAAAAA
 
 
---=-G8m2w0DBc3PZDpksdHOz--
+--=-R5y3QCf5S1+mXxMmrTrQ--
 
 
---===============1561301678==
-Content-Type: text/plain; charset="utf-8"
+--===============2772537656907363543==
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4
-IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0
-cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRlbC1nZngK
 
---===============1561301678==--
+--===============2772537656907363543==--
