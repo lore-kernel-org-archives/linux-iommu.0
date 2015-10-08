@@ -1,11 +1,11 @@
 From: David Woodhouse <dwmw2@infradead.org>
-Subject: [PATCH 2/7] iommu/vt-d: Add initial support for PASID
-	tables
-Date: Fri, 09 Oct 2015 00:52:35 +0100
-Message-ID: <1444348355.92154.30.camel@infradead.org>
+Subject: [PATCH 3/7] iommu/vt-d: Add intel_svm_{un,
+	}bind_mm() functions
+Date: Fri, 09 Oct 2015 00:52:56 +0100
+Message-ID: <1444348376.92154.31.camel@infradead.org>
 References: <1444348223.92154.22.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0953060799=="
+Content-Type: multipart/mixed; boundary="===============0233914305=="
 Return-path: <intel-gfx-bounces@lists.freedesktop.org>
 In-Reply-To: <1444348223.92154.22.camel@infradead.org>
 List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
@@ -21,109 +21,555 @@ To: iommu@lists.linux-foundation.org, intel-gfx@lists.freedesktop.org, jesse.bar
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============0953060799==
+--===============0233914305==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-X48EFyJhrT/kKBlaaqf3"
+	boundary="=-qcRDw8A4mb6iavaiolCi"
 
 
---=-X48EFyJhrT/kKBlaaqf3
+--=-qcRDw8A4mb6iavaiolCi
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Add CONFIG_INTEL_IOMMU_SVM, and allocate PASID tables on supported hardware=
-.
+This provides basic PASID support for endpoint devices, tested with a
+version of the i915 driver.
+
+A given process can bind to only one device per IOMMU for now. Making
+that more generic isn't particularly difficult but isn't needed yet, and
+can come later once the basic functionality is stable.
+
+Eventually we'll also want the PASID space to be system-wide, not just
+per-IOMMU. But when we have that requirement we'll also have a way to
+achieve it.
 
 Signed-off-by: David Woodhouse <David.Woodhouse@intel.com>
 ---
- drivers/iommu/Kconfig       |  8 ++++++
- drivers/iommu/Makefile      |  1 +
- drivers/iommu/intel-iommu.c | 14 ++++++++++
- drivers/iommu/intel-svm.c   | 65 +++++++++++++++++++++++++++++++++++++++++=
+ drivers/iommu/intel-iommu.c   | 100 ++++++++++++++++++
+ drivers/iommu/intel-svm.c     | 229 ++++++++++++++++++++++++++++++++++++++=
 ++++
- include/linux/intel-iommu.h | 15 +++++++++++
- 5 files changed, 103 insertions(+)
- create mode 100644 drivers/iommu/intel-svm.c
+ include/linux/dma_remapping.h |   7 ++
+ include/linux/intel-iommu.h   |  59 ++++++++++-
+ include/linux/intel-svm.h     |  68 +++++++++++++
+ 5 files changed, 458 insertions(+), 5 deletions(-)
+ create mode 100644 include/linux/intel-svm.h
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index d9da766..e3b2c2e 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -135,6 +135,14 @@ config INTEL_IOMMU
- 	  and include PCI device scope covered by these DMA
- 	  remapping devices.
-=20
-+config INTEL_IOMMU_SVM
-+	bool "Support for Shared Virtual Memory with Intel IOMMU"
-+	depends on INTEL_IOMMU && X86
-+	help
-+	  Shared Virtual Memory (SVM) provides a facility for devices
-+	  to access DMA resources through process address space by
-+	  means of a Process Address Space ID (PASID).
-+
- config INTEL_IOMMU_DEFAULT_ON
- 	def_bool y
- 	prompt "Enable Intel DMA Remapping Devices by default"
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index c6dcc51..dc6f511 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -12,6 +12,7 @@ obj-$(CONFIG_ARM_SMMU) +=3D arm-smmu.o
- obj-$(CONFIG_ARM_SMMU_V3) +=3D arm-smmu-v3.o
- obj-$(CONFIG_DMAR_TABLE) +=3D dmar.o
- obj-$(CONFIG_INTEL_IOMMU) +=3D intel-iommu.o
-+obj-$(CONFIG_INTEL_IOMMU_SVM) +=3D intel-svm.o
- obj-$(CONFIG_IPMMU_VMSA) +=3D ipmmu-vmsa.o
- obj-$(CONFIG_IRQ_REMAP) +=3D intel_irq_remapping.o irq_remapping.o
- obj-$(CONFIG_OMAP_IOMMU) +=3D omap-iommu.o
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index a1514a5..1f89064 100644
+index 1f89064..a6fd639 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1680,6 +1680,11 @@ static void free_dmar_iommu(struct intel_iommu *iomm=
-u)
-=20
- 	/* free context mapping */
- 	free_context_table(iommu);
-+
-+#ifdef CONFIG_INTEL_IOMMU_SVM
-+	if (pasid_enabled(iommu))
-+		intel_svm_free_pasid_tables(iommu);
-+#endif
+@@ -4882,6 +4882,106 @@ static void intel_iommu_remove_device(struct device=
+ *dev)
+ 	iommu_device_unlink(iommu->iommu_dev, dev);
  }
 =20
- static struct dmar_domain *alloc_domain(int flags)
-@@ -3103,6 +3108,10 @@ static int __init init_dmars(void)
-=20
- 		if (!ecap_pass_through(iommu->ecap))
- 			hw_pass_through =3D 0;
 +#ifdef CONFIG_INTEL_IOMMU_SVM
-+		if (pasid_enabled(iommu))
-+			intel_svm_alloc_pasid_tables(iommu);
-+#endif
- 	}
-=20
- 	if (iommu_pass_through)
-@@ -4118,6 +4127,11 @@ static int intel_iommu_add(struct dmar_drhd_unit *dm=
-aru)
- 	if (ret)
- 		goto out;
-=20
-+#ifdef CONFIG_INTEL_IOMMU_SVM
-+	if (pasid_enabled(iommu))
-+		intel_svm_alloc_pasid_tables(iommu);
-+#endif
++int intel_iommu_enable_pasid(struct intel_svm *svm)
++{
++	struct device_domain_info *info =3D NULL;
++	struct context_entry *context;
++	struct dmar_domain *domain;
++	unsigned long flags;
++	u8 bus, devfn;
++	u64 ctx_lo;
 +
- 	if (dmaru->ignored) {
- 		/*
- 		 * we always have to disable PMRs or DMA may fail on this device
++	if (iommu_dummy(svm->dev)) {
++		dev_warn(svm->dev,
++			 "No IOMMU translation for device; cannot enable SVM\n");
++		return -EINVAL;
++	}
++
++	domain =3D get_valid_domain_for_dev(svm->dev);
++	if (!domain) {
++		dev_warn(svm->dev, "Cannot get IOMMU domain to enable SVM\n");
++		return -EINVAL;
++	}
++
++	svm->iommu =3D device_to_iommu(svm->dev, &bus, &devfn);
++	if (!ecs_enabled(svm->iommu)) {
++		dev_dbg(svm->dev, "No ECS support on IOMMU; cannot enable SVM\n");
++		return -EINVAL;
++	}
++	svm->did =3D domain->iommu_did[svm->iommu->seq_id];
++
++	spin_lock_irqsave(&device_domain_lock, flags);
++	spin_lock(&svm->iommu->lock);
++	context =3D iommu_context_addr(svm->iommu, bus, devfn, 0);
++	if (WARN_ON(!context)) {
++		spin_unlock(&svm->iommu->lock);
++		spin_unlock_irqrestore(&device_domain_lock, flags);
++		return -EINVAL;
++	}
++
++	ctx_lo =3D context[0].lo;
++	/* Modes in which the device IOTLB is enabled are 1 and 5. Modes
++	 * 3 and 7 are invalid. so we only need to test the low bit of TT */
++	svm->dev_iotlb =3D (ctx_lo >> 2) & 1;
++
++	if (!(ctx_lo & CONTEXT_PASIDE)) {
++		context[1].hi =3D (u64)virt_to_phys(svm->iommu->pasid_state_table);
++		context[1].lo =3D (u64)virt_to_phys(svm->iommu->pasid_table) | ecap_pss(=
+svm->iommu->ecap);
++		wmb();
++		/* CONTEXT_TT_MULTI_LEVEL and CONTEXT_TT_DEV_IOTLB are both
++		 * extended to permit requests-with-PASID if the PASIDE bit
++		 * is set. which makes sense. For CONTEXT_TT_PASS_THROUGH,
++		 * however, the PASIDE bit is ignored and requests-with-PASID
++		 * are unconditionally blocked. Which makes less sense.
++		 * So convert from CONTEXT_TT_PASS_THROUGH to one of the new
++		 * "guest mode" translation types depending on whether ATS
++		 * is available or not. */
++		if ((ctx_lo & CONTEXT_TT_MASK) =3D=3D (CONTEXT_TT_PASS_THROUGH << 2)) {
++			ctx_lo &=3D ~CONTEXT_TT_MASK;
++			info =3D iommu_support_dev_iotlb(domain, svm->iommu, bus, devfn);
++			if (info) {
++				ctx_lo |=3D CONTEXT_TT_PT_PASID_DEV_IOTLB << 2;
++				svm->dev_iotlb =3D 1;
++			} else
++				ctx_lo |=3D CONTEXT_TT_PT_PASID << 2;
++		}
++		ctx_lo |=3D CONTEXT_PASIDE;
++		context[0].lo =3D ctx_lo;
++		wmb();
++		svm->iommu->flush.flush_context(svm->iommu, svm->did,
++						(((u16)bus) << 8) | devfn,
++						DMA_CCMD_MASK_NOBIT,
++						DMA_CCMD_DEVICE_INVL);
++	}
++	spin_unlock(&svm->iommu->lock);
++	spin_unlock_irqrestore(&device_domain_lock, flags);
++
++	/* This only happens if we just switched from CONTEXT_TT_PASS_THROUGH */
++	if (info)
++		iommu_enable_dev_iotlb(info);
++
++	/* This can also happen when we were already in a dev-iotlb mode */
++	if (svm->dev_iotlb) {
++		svm->qdep =3D pci_ats_queue_depth(to_pci_dev(svm->dev));
++		if (svm->qdep >=3D QI_DEV_EIOTLB_MAX_INVS)
++			svm->qdep =3D 0;
++		svm->sid =3D (((u16)bus) << 8) | devfn;
++	}
++
++	return 0;
++}
++
++/* Helper function for SVM code, so that we can look up a given PASID
++ * in its IOMMU's pasid_idr for unbinding */
++struct intel_iommu *intel_iommu_device_to_iommu(struct device *dev)
++{
++	u8 bus, devfn;
++
++	return device_to_iommu(dev, &bus, &devfn);
++}
++#endif /* CONFIG_INTEL_IOMMU_SVM */
++
+ static const struct iommu_ops intel_iommu_ops =3D {
+ 	.capable	=3D intel_iommu_capable,
+ 	.domain_alloc	=3D intel_iommu_domain_alloc,
 diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-new file mode 100644
-index 0000000..9b40ad6
---- /dev/null
+index 9b40ad6..913c3a1 100644
+--- a/drivers/iommu/intel-svm.c
 +++ b/drivers/iommu/intel-svm.c
-@@ -0,0 +1,65 @@
+@@ -14,6 +14,14 @@
+  */
+=20
+ #include <linux/intel-iommu.h>
++#include <linux/mmu_notifier.h>
++#include <linux/sched.h>
++#include <linux/slab.h>
++#include <linux/intel-svm.h>
++
++struct pasid_entry {
++	u64 val;
++};
+=20
+ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
+ {
+@@ -40,6 +48,8 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iomm=
+u)
+ 		return -ENOMEM;
+ 	}
+ 	iommu->pasid_state_table =3D page_address(pages);
++	idr_init(&iommu->pasid_idr);
++
+ 	pr_info("%s: Allocated order %d PASID table.\n", iommu->name, order);
+=20
+ 	return 0;
+@@ -61,5 +71,224 @@ int intel_svm_free_pasid_tables(struct intel_iommu *iom=
+mu)
+ 		free_pages((unsigned long)iommu->pasid_state_table, order);
+ 		iommu->pasid_state_table =3D NULL;
+ 	}
++	idr_destroy(&iommu->pasid_idr);
+ 	return 0;
+ }
++
++static void intel_flush_svm_range(struct intel_svm *svm,
++				  unsigned long address, int pages, int ih)
++{
++	struct qi_desc desc;
++	int mask =3D ilog2(__roundup_pow_of_two(pages));
++
++	if (pages =3D=3D -1 || !cap_pgsel_inv(svm->iommu->cap) ||
++	    mask > cap_max_amask_val(svm->iommu->cap)) {
++		desc.low =3D QI_EIOTLB_PASID(svm->pasid) | QI_EIOTLB_DID(svm->did) |
++			QI_EIOTLB_GRAN(QI_GRAN_NONG_PASID) | QI_EIOTLB_TYPE;
++		desc.high =3D 0;
++	} else {
++		desc.low =3D QI_EIOTLB_PASID(svm->pasid) | QI_EIOTLB_DID(svm->did) |
++			QI_EIOTLB_GRAN(QI_GRAN_PSI_PASID) | QI_EIOTLB_TYPE;
++		desc.high =3D QI_EIOTLB_ADDR(address) | QI_EIOTLB_GL(1) |
++			QI_EIOTLB_IH(ih) | QI_EIOTLB_AM(mask);
++	}
++
++	qi_submit_sync(&desc, svm->iommu);
++
++	if (svm->dev_iotlb) {
++		desc.low =3D QI_DEV_EIOTLB_PASID(svm->pasid) | QI_DEV_EIOTLB_SID(svm->si=
+d) |
++			QI_DEV_EIOTLB_QDEP(svm->qdep) | QI_DEIOTLB_TYPE;
++		if (mask) {
++			unsigned long adr, delta;
++
++			/* Least significant zero bits in the address indicate the
++			 * range of the request. So mask them out according to the
++			 * size. */
++			adr =3D address & ((1<<(VTD_PAGE_SHIFT + mask)) - 1);
++
++			/* Now ensure that we round down further if the original
++			 * request was not aligned w.r.t. its size */
++			delta =3D address - adr;
++			if (delta + (pages << VTD_PAGE_SHIFT) >=3D (1 << (VTD_PAGE_SHIFT + mask=
+)))
++				adr &=3D ~(1 << (VTD_PAGE_SHIFT + mask));
++			desc.high =3D QI_DEV_EIOTLB_ADDR(adr) | QI_DEV_EIOTLB_SIZE;
++		} else {
++			desc.high =3D QI_DEV_EIOTLB_ADDR(address);
++		}
++		qi_submit_sync(&desc, svm->iommu);
++	}
++}
++
++
++static void intel_change_pte(struct mmu_notifier *mn, struct mm_struct *mm=
+,
++			     unsigned long address, pte_t pte)
++{
++	struct intel_svm *svm =3D container_of(mn, struct intel_svm, notifier);
++
++	intel_flush_svm_range(svm, address, 1, 1);
++}
++
++static void intel_invalidate_page(struct mmu_notifier *mn, struct mm_struc=
+t *mm,
++				  unsigned long address)
++{
++	struct intel_svm *svm =3D container_of(mn, struct intel_svm, notifier);
++
++	intel_flush_svm_range(svm, address, 1, 1);
++}
++
++/* Pages have been freed at this point */
++static void intel_invalidate_range_end(struct mmu_notifier *mn,
++				       struct mm_struct *mm,
++				       unsigned long start, unsigned long end)
++{
++	struct intel_svm *svm =3D container_of(mn, struct intel_svm, notifier);
++
++	intel_flush_svm_range(svm, start,
++			      (end - start + PAGE_SIZE - 1) >> VTD_PAGE_SHIFT , 0);
++}
++
++static void intel_flush_pasid(struct intel_svm *svm)
++{
++	struct qi_desc desc;
++
++	desc.high =3D 0;
++	desc.low =3D QI_PC_TYPE | QI_PC_DID(svm->did) | QI_PC_PASID_SEL | QI_PC_P=
+ASID(svm->pasid);
++
++	qi_submit_sync(&desc, svm->iommu);
++}
++
++static void intel_mm_release(struct mmu_notifier *mn, struct mm_struct *mm=
+)
++{
++	struct intel_svm *svm =3D container_of(mn, struct intel_svm, notifier);
++
++	/* Called either when the process exits, or on the last unbind */
++	svm->iommu->pasid_table[svm->pasid].val =3D 0;
++
++	intel_flush_pasid(svm);
++	intel_flush_svm_range(svm, 0, -1, 0);
++
++	/* XXX: Callback to device driver to let it know? */
++}
++
++static const struct mmu_notifier_ops intel_mmuops =3D {
++	.release =3D intel_mm_release,
++	.change_pte =3D intel_change_pte,
++	.invalidate_page =3D intel_invalidate_page,
++	.invalidate_range_end =3D intel_invalidate_range_end,
++};
++
++static DEFINE_MUTEX(pasid_mutex);
++
++int intel_svm_bind_mm(struct device *dev, int *pasid)
++{
++	struct intel_svm *svm;
++	int pasid_max;
++	int ret;
++
++	BUG_ON(pasid && !current->mm);
++
++	mutex_lock(&pasid_mutex);
++	if (pasid) {
++		struct intel_iommu *iommu =3D intel_iommu_device_to_iommu(dev);
++		int pasid;
++
++		if (!iommu || !iommu->pasid_table) {
++			ret =3D -EINVAL;
++			goto out;
++		}
++
++		idr_for_each_entry(&iommu->pasid_idr, svm, pasid) {
++			if (svm->mm !=3D current->mm)
++				continue;
++
++			if (dev !=3D svm->dev) {
++				ret =3D -EBUSY;
++				goto out;
++			}
++
++			kref_get(&svm->kref);
++			goto success;
++		}
++	}
++
++	svm =3D kzalloc(sizeof(*svm), GFP_KERNEL);
++	if (!svm) {
++		ret =3D -ENOMEM;
++		goto out;
++	}
++	kref_init(&svm->kref);
++	svm->dev =3D dev;
++	ret =3D intel_iommu_enable_pasid(svm);
++	if (ret) {
++		kfree(svm);
++		goto out;
++	}
++	if (!pasid) {
++		/* If they don't actually want to assign a PASID, this is
++		 * just an enabling check/preparation. */
++		kfree(svm);
++		goto out;
++	}
++
++	pasid_max =3D 2 << ecap_pss(svm->iommu->ecap);
++	/* FIXME: Factor in device max too. */
++	ret =3D idr_alloc(&svm->iommu->pasid_idr, svm, 0, pasid_max - 1,
++			GFP_KERNEL);
++	if (ret < 0) {
++		kfree(svm);
++		goto out;
++	}
++	svm->pasid =3D ret;
++	svm->notifier.ops =3D &intel_mmuops;
++	svm->mm =3D get_task_mm(current);
++	ret =3D -ENOMEM;
++	if (!svm->mm || (ret =3D mmu_notifier_register(&svm->notifier, svm->mm)))=
+ {
++		idr_remove(&svm->iommu->pasid_idr, svm->pasid);
++		kfree(svm);
++		goto out;
++	}
++	svm->iommu->pasid_table[svm->pasid].val =3D (u64)__pa(current->mm->pgd) |=
+ 1;
++
++ success:
++	*pasid =3D svm->pasid;
++	ret =3D 0;
++ out:
++	mutex_unlock(&pasid_mutex);
++	return ret;
++}
++EXPORT_SYMBOL_GPL(intel_svm_bind_mm);
++
++static void intel_mm_free(struct kref *svm_ref)
++{
++	struct intel_svm *svm =3D container_of(svm_ref, struct intel_svm, kref);
++
++	mmu_notifier_unregister(&svm->notifier, svm->mm);
++
++	idr_remove(&svm->iommu->pasid_idr, svm->pasid);
++	mmput(svm->mm);
++	kfree(svm);
++}
++
++int intel_svm_unbind_mm(struct device *dev, int pasid)
++{
++	struct intel_svm *svm;
++	struct intel_iommu *iommu;
++	int ret =3D -EINVAL;
++
++	mutex_lock(&pasid_mutex);
++	iommu =3D intel_iommu_device_to_iommu(dev);
++	if (!iommu || !iommu->pasid_table)
++		goto out;
++
++	svm =3D idr_find(&iommu->pasid_idr, pasid);
++	if (!svm)
++		goto out;
++
++	kref_put(&svm->kref, intel_mm_free);
++	ret =3D 0;
++ out:
++	mutex_unlock(&pasid_mutex);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(intel_svm_unbind_mm);
+diff --git a/include/linux/dma_remapping.h b/include/linux/dma_remapping.h
+index 7ac17f5..0e114bf 100644
+--- a/include/linux/dma_remapping.h
++++ b/include/linux/dma_remapping.h
+@@ -20,6 +20,13 @@
+ #define CONTEXT_TT_MULTI_LEVEL	0
+ #define CONTEXT_TT_DEV_IOTLB	1
+ #define CONTEXT_TT_PASS_THROUGH 2
++/* Extended context entry types */
++#define CONTEXT_TT_PT_PASID	4
++#define CONTEXT_TT_PT_PASID_DEV_IOTLB 5
++#define CONTEXT_TT_MASK (7ULL << 2)
++
++#define CONTEXT_PRS		(1ULL << 9)
++#define CONTEXT_PASIDE		(1ULL << 11)
+=20
+ struct intel_iommu;
+ struct dmar_domain;
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 47844cb..b0df572 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -1,5 +1,9 @@
+ /*
+- * Copyright (c) 2006, Intel Corporation.
++ * Copyright =C2=A9 2006-2015, Intel Corporation.
++ *
++ * Authors: Ashok Raj <ashok.raj@intel.com>
++ *          Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>
++ *          David Woodhouse <David.Woodhouse@intel.com>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms and conditions of the GNU General Public License,
+@@ -13,10 +17,6 @@
+  * You should have received a copy of the GNU General Public License along=
+ with
+  * this program; if not, write to the Free Software Foundation, Inc., 59 T=
+emple
+  * Place - Suite 330, Boston, MA 02111-1307 USA.
+- *
+- * Copyright (C) 2006-2008 Intel Corporation
+- * Author: Ashok Raj <ashok.raj@intel.com>
+- * Author: Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>
+  */
+=20
+ #ifndef _INTEL_IOMMU_H_
+@@ -25,7 +25,9 @@
+ #include <linux/types.h>
+ #include <linux/iova.h>
+ #include <linux/io.h>
++#include <linux/idr.h>
+ #include <linux/dma_remapping.h>
++#include <linux/mmu_notifier.h>
+ #include <asm/cacheflush.h>
+ #include <asm/iommu.h>
+=20
+@@ -253,6 +255,9 @@ enum {
+ #define QI_DIOTLB_TYPE		0x3
+ #define QI_IEC_TYPE		0x4
+ #define QI_IWD_TYPE		0x5
++#define QI_EIOTLB_TYPE		0x6
++#define QI_PC_TYPE		0x7
++#define QI_DEIOTLB_TYPE		0x8
+=20
+ #define QI_IEC_SELECTIVE	(((u64)1) << 4)
+ #define QI_IEC_IIDEX(idx)	(((u64)(idx & 0xffff) << 32))
+@@ -280,6 +285,34 @@ enum {
+ #define QI_DEV_IOTLB_SIZE	1
+ #define QI_DEV_IOTLB_MAX_INVS	32
+=20
++#define QI_PC_PASID(pasid)	(((u64)pasid) << 32)
++#define QI_PC_DID(did)		(((u64)did) << 16)
++#define QI_PC_GRAN(gran)	(((u64)gran) << 4)
++
++#define QI_PC_ALL_PASIDS	(QI_PC_TYPE | QI_PC_GRAN(0))
++#define QI_PC_PASID_SEL		(QI_PC_TYPE | QI_PC_GRAN(1))
++
++#define QI_EIOTLB_ADDR(addr)	((u64)(addr) & VTD_PAGE_MASK)
++#define QI_EIOTLB_GL(gl)	(((u64)gl) << 7)
++#define QI_EIOTLB_IH(ih)	(((u64)ih) << 6)
++#define QI_EIOTLB_AM(am)	(((u64)am))
++#define QI_EIOTLB_PASID(pasid) 	(((u64)pasid) << 32)
++#define QI_EIOTLB_DID(did)	(((u64)did) << 16)
++#define QI_EIOTLB_GRAN(gran) 	(((u64)gran) << 4)
++
++#define QI_DEV_EIOTLB_ADDR(a)	((u64)(a) & VTD_PAGE_MASK)
++#define QI_DEV_EIOTLB_SIZE	(((u64)1) << 11)
++#define QI_DEV_EIOTLB_GLOB(g)	((u64)g)
++#define QI_DEV_EIOTLB_PASID(p)	(((u64)p) << 32)
++#define QI_DEV_EIOTLB_SID(sid)	((u64)((sid) & 0xffff) << 32)
++#define QI_DEV_EIOTLB_QDEP(qd)	(((qd) & 0x1f) << 16)
++#define QI_DEV_EIOTLB_MAX_INVS	32
++
++#define QI_GRAN_ALL_ALL			0
++#define QI_GRAN_NONG_ALL		1
++#define QI_GRAN_NONG_PASID		2
++#define QI_GRAN_PSI_PASID		3
++
+ struct qi_desc {
+ 	u64 low, high;
+ };
+@@ -361,6 +394,7 @@ struct intel_iommu {
+ 	 * told to. But while it's all driver-arbitrated, we're fine. */
+ 	struct pasid_entry *pasid_table;
+ 	struct pasid_state_entry *pasid_state_table;
++	struct idr pasid_idr;
+ #endif
+ 	struct q_inval  *qi;            /* Queued invalidation info */
+ 	u32 *iommu_state; /* Store iommu states between suspend and resume.*/
+@@ -404,6 +438,21 @@ extern int dmar_ir_support(void);
+ extern int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu);
+ extern int intel_svm_free_pasid_tables(struct intel_iommu *iommu);
+=20
++struct intel_svm {
++	struct kref kref;
++	struct mmu_notifier notifier;
++	struct mm_struct *mm;
++	struct intel_iommu *iommu;
++	struct device *dev;
++	int pasid;
++	u16 did;
++	u16 dev_iotlb:1;
++	u16 sid, qdep;
++};
++
++extern int intel_iommu_enable_pasid(struct intel_svm *svm);
++extern struct intel_iommu *intel_iommu_device_to_iommu(struct device *dev)=
+;
++
+ extern const struct attribute_group *intel_iommu_groups[];
+=20
+ #endif
+diff --git a/include/linux/intel-svm.h b/include/linux/intel-svm.h
+new file mode 100644
+index 0000000..1e84f3e
+--- /dev/null
++++ b/include/linux/intel-svm.h
+@@ -0,0 +1,68 @@
 +/*
 + * Copyright =C2=A9 2015 Intel Corporation.
++ *
++ * Authors: David Woodhouse <David.Woodhouse@intel.com>
 + *
 + * This program is free software; you can redistribute it and/or modify it
 + * under the terms and conditions of the GNU General Public License,
@@ -134,101 +580,61 @@ index 0000000..9b40ad6
 + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License f=
 or
 + * more details.
-+ *
-+ * Authors: David Woodhouse <dwmw2@infradead.org>
 + */
 +
-+#include <linux/intel-iommu.h>
++#ifndef __INTEL_SVM_H__
++#define __INTEL_SVM_H__
 +
-+int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
-+{
-+	struct page *pages;
-+	int order;
++struct device;
 +
-+	order =3D ecap_pss(iommu->ecap) + 7 - PAGE_SHIFT;
-+	if (order < 0)
-+		order =3D 0;
++/**
++ * intel_svm_bind_mm() - Bind the current process to a PASID
++ * @dev:	Device to be granted acccess
++ * @pasid:	Address for allocated PASID
++ *
++ * This function attempts to enable PASID support for the given device.
++ * If the @pasid argument is non-%NULL, a PASID is allocated for access
++ * to the MM of the current process.
++ *
++ * By using a %NULL value for the @pasid argument, this function can
++ * be used to simply validate that PASID support is available for the
++ * given device =E2=80=94 i.e. that it is behind an IOMMU which has the
++ * requisite support, and is enabled.
++ *
++ * Page faults are handled transparently by the IOMMU code, and there
++ * should be no need for the device driver to be involved. If a page
++ * fault cannot be handled (i.e. is an invalid address rather than
++ * just needs paging in), then the page request will be completed by
++ * the core IOMMU code with appropriate status, and the device itself
++ * can then report the resulting fault to its driver via whatever
++ * mechanism is appropriate.
++ *
++ * Multiple calls from the same process may result in the same PASID
++ * being re-used. A reference count is kept.
++ */
++extern int intel_svm_bind_mm(struct device *dev, int *pasid);
 +
-+	pages =3D alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
-+	if (!pages) {
-+		pr_warn("IOMMU: %s: Failed to allocate PASID table\n",
-+			iommu->name);
-+		return -ENOMEM;
-+	}
-+	iommu->pasid_table =3D page_address(pages);
-+	pages =3D alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
-+	if (!pages) {
-+		pr_warn("IOMMU: %s: Failed to allocate PASID state table\n",
-+			iommu->name);
-+		free_pages((unsigned long)iommu->pasid_table, order);
-+		iommu->pasid_table =3D NULL;
-+		return -ENOMEM;
-+	}
-+	iommu->pasid_state_table =3D page_address(pages);
-+	pr_info("%s: Allocated order %d PASID table.\n", iommu->name, order);
++#define intel_svm_available(dev) intel_svm_bind_mm((dev), NULL)
 +
-+	return 0;
-+}
++/**
++ * intel_svm_unbind_mm() - Unbind a specified PASID
++ * @dev:	Device for which PASID was allocated
++ * @pasid:	PASID value to be unbound
++ *
++ * This function allows a PASID to be retired when the device no
++ * longer requires access to the address space of a given process.
++ *
++ * If the use count for the PASID in question reaches zero, the
++ * PASID is revoked and may no longer be used by hardware.
++ *
++ * Device drivers are required to ensure that no access (including
++ * page requests) is currently outstanding for the PASID in question,
++ * before calling this function.
++ */
++extern int intel_svm_unbind_mm(struct device *dev, int pasid);
 +
-+int intel_svm_free_pasid_tables(struct intel_iommu *iommu)
-+{
-+	int order;
 +
-+	order =3D ecap_pss(iommu->ecap) + 7 - PAGE_SHIFT;
-+	if (order < 0)
-+		order =3D 0;
-+
-+	if (iommu->pasid_table) {
-+		free_pages((unsigned long)iommu->pasid_table, order);
-+		iommu->pasid_table =3D NULL;
-+	}
-+	if (iommu->pasid_state_table) {
-+		free_pages((unsigned long)iommu->pasid_state_table, order);
-+		iommu->pasid_state_table =3D NULL;
-+	}
-+	return 0;
-+}
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index c03316d..47844cb 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -327,6 +327,9 @@ enum {
- #define VTD_FLAG_TRANS_PRE_ENABLED	(1 << 0)
- #define VTD_FLAG_IRQ_REMAP_PRE_ENABLED	(1 << 1)
-=20
-+struct pasid_entry;
-+struct pasid_state_entry;
-+
- struct intel_iommu {
- 	void __iomem	*reg; /* Pointer to hardware regs, virtual addr */
- 	u64 		reg_phys; /* physical address of hw register set */
-@@ -350,6 +353,15 @@ struct intel_iommu {
-=20
- 	struct iommu_flush flush;
- #endif
-+#ifdef CONFIG_INTEL_IOMMU_SVM
-+	/* These are large and need to be contiguous, so we allocate just
-+	 * one for now. We'll maybe want to rethink that if we truly give
-+	 * devices away to userspace processes (e.g. for DPDK) and don't
-+	 * want to trust that userspace will use *only* the PASID it was
-+	 * told to. But while it's all driver-arbitrated, we're fine. */
-+	struct pasid_entry *pasid_table;
-+	struct pasid_state_entry *pasid_state_table;
-+#endif
- 	struct q_inval  *qi;            /* Queued invalidation info */
- 	u32 *iommu_state; /* Store iommu states between suspend and resume.*/
-=20
-@@ -389,6 +401,9 @@ extern int qi_submit_sync(struct qi_desc *desc, struct =
-intel_iommu *iommu);
-=20
- extern int dmar_ir_support(void);
-=20
-+extern int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu);
-+extern int intel_svm_free_pasid_tables(struct intel_iommu *iommu);
-+
- extern const struct attribute_group *intel_iommu_groups[];
-=20
- #endif
++#endif /* __INTEL_SVM_H__ */
 --=20
 2.4.3
 
@@ -236,7 +642,7 @@ intel_iommu *iommu);
 David Woodhouse                            Open Source Technology Centre
 David.Woodhouse@intel.com                              Intel Corporation
 
---=-X48EFyJhrT/kKBlaaqf3
+--=-qcRDw8A4mb6iavaiolCi
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -329,24 +735,24 @@ Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
 ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
 AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUxMDA4MjM1MjM1WjAjBgkqhkiG9w0BCQQxFgQUUJUpPJ7eN5Q/kGERf+dYeytJ1Wkw
+CQUxDxcNMTUxMDA4MjM1MjU2WjAjBgkqhkiG9w0BCQQxFgQUvZ3A1WpXrnjkvjLLsXivQvX0Mogw
 gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
 ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
 L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
 CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
 LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
 U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQCZB67BRwlMahO7aPY34XoDj5taZxjj2SVhOUgwhojLTqkqtcXyGPigstie
-Q3slGq2DkEWEmzvjTFrtNUiLEtXEk6xFR4cf3y371pbtb0k/xKF/+ayydWcv9yfsG2fRjAiSiX1+
-ejJbolXT1vHdcXZI4SzVTdLFauezwtKQ+4x3VrGHXIuURw3TShrZqjYcii4kPowph//VAXvaAEHU
-1JFChlTgnICyA8trHXk8z50LmWut8CCLK2seD9QyLYkWBfzdxQlxJMq7C9w3rJ4hrjhVZ3FOjTiS
-osc+Izu5GczL1ZSY32jFFabyN30b6oHGfoBelhNUVEfYnRCaAqL6T09fAAAAAAAA
+hkiG9w0BAQEFAASCAQCTq+n9W1ES6+irdVl48+b8rSiPywkjBzTHQTnIfY8xpm8qCg70+HHyg0/A
+TGRHC63uT180X599Qk/YxaG+oKYkjXzD+OiOqodRfJ0rU3qynwiIrC1jp5wiFufpIOFRZVdbGhGh
+qVrYoxCUZGvSEa/492Ibuobe2pqlavoUBl2WqyEhMCvsNj/IaMwIH3thBGxzU4KUcrETI6o7yXhC
+eK9ieqKo1V7FKv8gXmhPVg6WThsMD9l7xfZTRcAZWBB2ibRyoxxXgF3WgbtwMPI4FSSZOrTN6+Ne
+HkScdOavtK/TXIugMALEYp+d328ZtZYSn27KOHwpZU/2Yv1pcvV3qeskAAAAAAAA
 
 
---=-X48EFyJhrT/kKBlaaqf3--
+--=-qcRDw8A4mb6iavaiolCi--
 
 
---===============0953060799==
+--===============0233914305==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -356,4 +762,4 @@ X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4
 IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0
 cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRlbC1nZngK
 
---===============0953060799==--
+--===============0233914305==--
