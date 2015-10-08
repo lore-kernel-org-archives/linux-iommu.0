@@ -1,122 +1,242 @@
-From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: [PATCH 1/7] iommu/vt-d: Introduce intel_iommu=pasid28, and
-	pasid_enabled() macro
-Date: Fri, 09 Oct 2015 00:52:13 +0100
-Message-ID: <1444348332.92154.23.camel@infradead.org>
+From: David Woodhouse <dwmw2@infradead.org>
+Subject: [PATCH 2/7] iommu/vt-d: Add initial support for PASID
+	tables
+Date: Fri, 09 Oct 2015 00:52:35 +0100
+Message-ID: <1444348355.92154.30.camel@infradead.org>
 References: <1444348223.92154.22.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============2989348002835733261=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1444348223.92154.22.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, intel-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, jesse.barnes-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+Content-Type: multipart/mixed; boundary="===============0953060799=="
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+In-Reply-To: <1444348223.92154.22.camel@infradead.org>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: iommu@lists.linux-foundation.org, intel-gfx@lists.freedesktop.org, jesse.barnes@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============2989348002835733261==
+--===============0953060799==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-uOVhgsfrPWFuetrzGcFI"
+	boundary="=-X48EFyJhrT/kKBlaaqf3"
 
 
---=-uOVhgsfrPWFuetrzGcFI
+--=-X48EFyJhrT/kKBlaaqf3
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-As long as we use an identity mapping to work around the worst of the
-hardware bugs which caused us to defeature it and change the definition
-of the capability bit, we *can* use PASID support on the devices which
-advertised it in bit 28 of the Extended Capability Register.
+Add CONFIG_INTEL_IOMMU_SVM, and allocate PASID tables on supported hardware=
+.
 
-Allow people to do so with 'intel_iommu=3Dpasid28' on the command line.
-
-Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: David Woodhouse <David.Woodhouse@intel.com>
 ---
- drivers/iommu/intel-iommu.c | 20 ++++++++++++++------
- include/linux/intel-iommu.h |  2 +-
- 2 files changed, 15 insertions(+), 7 deletions(-)
+ drivers/iommu/Kconfig       |  8 ++++++
+ drivers/iommu/Makefile      |  1 +
+ drivers/iommu/intel-iommu.c | 14 ++++++++++
+ drivers/iommu/intel-svm.c   | 65 +++++++++++++++++++++++++++++++++++++++++=
+++++
+ include/linux/intel-iommu.h | 15 +++++++++++
+ 5 files changed, 103 insertions(+)
+ create mode 100644 drivers/iommu/intel-svm.c
 
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index d9da766..e3b2c2e 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -135,6 +135,14 @@ config INTEL_IOMMU
+ 	  and include PCI device scope covered by these DMA
+ 	  remapping devices.
+=20
++config INTEL_IOMMU_SVM
++	bool "Support for Shared Virtual Memory with Intel IOMMU"
++	depends on INTEL_IOMMU && X86
++	help
++	  Shared Virtual Memory (SVM) provides a facility for devices
++	  to access DMA resources through process address space by
++	  means of a Process Address Space ID (PASID).
++
+ config INTEL_IOMMU_DEFAULT_ON
+ 	def_bool y
+ 	prompt "Enable Intel DMA Remapping Devices by default"
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index c6dcc51..dc6f511 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -12,6 +12,7 @@ obj-$(CONFIG_ARM_SMMU) +=3D arm-smmu.o
+ obj-$(CONFIG_ARM_SMMU_V3) +=3D arm-smmu-v3.o
+ obj-$(CONFIG_DMAR_TABLE) +=3D dmar.o
+ obj-$(CONFIG_INTEL_IOMMU) +=3D intel-iommu.o
++obj-$(CONFIG_INTEL_IOMMU_SVM) +=3D intel-svm.o
+ obj-$(CONFIG_IPMMU_VMSA) +=3D ipmmu-vmsa.o
+ obj-$(CONFIG_IRQ_REMAP) +=3D intel_irq_remapping.o irq_remapping.o
+ obj-$(CONFIG_OMAP_IOMMU) +=3D omap-iommu.o
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 041bc18..a1514a5 100644
+index a1514a5..1f89064 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -497,13 +497,21 @@ static int dmar_forcedac;
- static int intel_iommu_strict;
- static int intel_iommu_superpage =3D 1;
- static int intel_iommu_ecs =3D 1;
-+static int intel_iommu_pasid28;
-+static int iommu_identity_mapping;
+@@ -1680,6 +1680,11 @@ static void free_dmar_iommu(struct intel_iommu *iomm=
+u)
+=20
+ 	/* free context mapping */
+ 	free_context_table(iommu);
 +
-+#define IDENTMAP_ALL		1
-+#define IDENTMAP_GFX		2
-+#define IDENTMAP_AZALIA		4
-=20
- /* We only actually use ECS when PASID support (on the new bit 40)
-  * is also advertised. Some early implementations =E2=80=94 the ones with
-  * PASID support on bit 28 =E2=80=94 have issues even when we *only* use
-  * extended root/context tables. */
-+#define pasid_enabled(iommu) (ecap_pasid(iommu->ecap) || \
-+			      (intel_iommu_pasid28 && ecap_broken_pasid(iommu->ecap)))
- #define ecs_enabled(iommu) (intel_iommu_ecs && ecap_ecs(iommu->ecap) && \
--			    ecap_pasid(iommu->ecap))
-+			    pasid_enabled(iommu))
-=20
- int intel_iommu_gfx_mapped;
- EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped);
-@@ -566,6 +574,11 @@ static int __init intel_iommu_setup(char *str)
- 			printk(KERN_INFO
- 				"Intel-IOMMU: disable extended context table support\n");
- 			intel_iommu_ecs =3D 0;
-+		} else if (!strncmp(str, "pasid28", 7)) {
-+			printk(KERN_INFO
-+				"Intel-IOMMU: enable pre-production PASID support\n");
-+			intel_iommu_pasid28 =3D 1;
-+			iommu_identity_mapping |=3D IDENTMAP_GFX;
- 		}
-=20
- 		str +=3D strcspn(str, ",");
-@@ -2399,11 +2412,6 @@ found_domain:
- 	return domain;
++#ifdef CONFIG_INTEL_IOMMU_SVM
++	if (pasid_enabled(iommu))
++		intel_svm_free_pasid_tables(iommu);
++#endif
  }
 =20
--static int iommu_identity_mapping;
--#define IDENTMAP_ALL		1
--#define IDENTMAP_GFX		2
--#define IDENTMAP_AZALIA		4
--
- static int iommu_domain_identity_map(struct dmar_domain *domain,
- 				     unsigned long long start,
- 				     unsigned long long end)
+ static struct dmar_domain *alloc_domain(int flags)
+@@ -3103,6 +3108,10 @@ static int __init init_dmars(void)
+=20
+ 		if (!ecap_pass_through(iommu->ecap))
+ 			hw_pass_through =3D 0;
++#ifdef CONFIG_INTEL_IOMMU_SVM
++		if (pasid_enabled(iommu))
++			intel_svm_alloc_pasid_tables(iommu);
++#endif
+ 	}
+=20
+ 	if (iommu_pass_through)
+@@ -4118,6 +4127,11 @@ static int intel_iommu_add(struct dmar_drhd_unit *dm=
+aru)
+ 	if (ret)
+ 		goto out;
+=20
++#ifdef CONFIG_INTEL_IOMMU_SVM
++	if (pasid_enabled(iommu))
++		intel_svm_alloc_pasid_tables(iommu);
++#endif
++
+ 	if (dmaru->ignored) {
+ 		/*
+ 		 * we always have to disable PMRs or DMA may fail on this device
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+new file mode 100644
+index 0000000..9b40ad6
+--- /dev/null
++++ b/drivers/iommu/intel-svm.c
+@@ -0,0 +1,65 @@
++/*
++ * Copyright =C2=A9 2015 Intel Corporation.
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License f=
+or
++ * more details.
++ *
++ * Authors: David Woodhouse <dwmw2@infradead.org>
++ */
++
++#include <linux/intel-iommu.h>
++
++int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
++{
++	struct page *pages;
++	int order;
++
++	order =3D ecap_pss(iommu->ecap) + 7 - PAGE_SHIFT;
++	if (order < 0)
++		order =3D 0;
++
++	pages =3D alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
++	if (!pages) {
++		pr_warn("IOMMU: %s: Failed to allocate PASID table\n",
++			iommu->name);
++		return -ENOMEM;
++	}
++	iommu->pasid_table =3D page_address(pages);
++	pages =3D alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
++	if (!pages) {
++		pr_warn("IOMMU: %s: Failed to allocate PASID state table\n",
++			iommu->name);
++		free_pages((unsigned long)iommu->pasid_table, order);
++		iommu->pasid_table =3D NULL;
++		return -ENOMEM;
++	}
++	iommu->pasid_state_table =3D page_address(pages);
++	pr_info("%s: Allocated order %d PASID table.\n", iommu->name, order);
++
++	return 0;
++}
++
++int intel_svm_free_pasid_tables(struct intel_iommu *iommu)
++{
++	int order;
++
++	order =3D ecap_pss(iommu->ecap) + 7 - PAGE_SHIFT;
++	if (order < 0)
++		order =3D 0;
++
++	if (iommu->pasid_table) {
++		free_pages((unsigned long)iommu->pasid_table, order);
++		iommu->pasid_table =3D NULL;
++	}
++	if (iommu->pasid_state_table) {
++		free_pages((unsigned long)iommu->pasid_state_table, order);
++		iommu->pasid_state_table =3D NULL;
++	}
++	return 0;
++}
 diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 6240063..c03316d 100644
+index c03316d..47844cb 100644
 --- a/include/linux/intel-iommu.h
 +++ b/include/linux/intel-iommu.h
-@@ -123,7 +123,7 @@ static inline void dmar_writeq(void __iomem *addr, u64 =
-val)
- #define ecap_srs(e)		((e >> 31) & 0x1)
- #define ecap_ers(e)		((e >> 30) & 0x1)
- #define ecap_prs(e)		((e >> 29) & 0x1)
--/* PASID support used to be on bit 28 */
-+#define ecap_broken_pasid(e)	((e >> 28) & 0x1)
- #define ecap_dis(e)		((e >> 27) & 0x1)
- #define ecap_nest(e)		((e >> 26) & 0x1)
- #define ecap_mts(e)		((e >> 25) & 0x1)
+@@ -327,6 +327,9 @@ enum {
+ #define VTD_FLAG_TRANS_PRE_ENABLED	(1 << 0)
+ #define VTD_FLAG_IRQ_REMAP_PRE_ENABLED	(1 << 1)
+=20
++struct pasid_entry;
++struct pasid_state_entry;
++
+ struct intel_iommu {
+ 	void __iomem	*reg; /* Pointer to hardware regs, virtual addr */
+ 	u64 		reg_phys; /* physical address of hw register set */
+@@ -350,6 +353,15 @@ struct intel_iommu {
+=20
+ 	struct iommu_flush flush;
+ #endif
++#ifdef CONFIG_INTEL_IOMMU_SVM
++	/* These are large and need to be contiguous, so we allocate just
++	 * one for now. We'll maybe want to rethink that if we truly give
++	 * devices away to userspace processes (e.g. for DPDK) and don't
++	 * want to trust that userspace will use *only* the PASID it was
++	 * told to. But while it's all driver-arbitrated, we're fine. */
++	struct pasid_entry *pasid_table;
++	struct pasid_state_entry *pasid_state_table;
++#endif
+ 	struct q_inval  *qi;            /* Queued invalidation info */
+ 	u32 *iommu_state; /* Store iommu states between suspend and resume.*/
+=20
+@@ -389,6 +401,9 @@ extern int qi_submit_sync(struct qi_desc *desc, struct =
+intel_iommu *iommu);
+=20
+ extern int dmar_ir_support(void);
+=20
++extern int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu);
++extern int intel_svm_free_pasid_tables(struct intel_iommu *iommu);
++
+ extern const struct attribute_group *intel_iommu_groups[];
+=20
+ #endif
 --=20
 2.4.3
 
 --=20
 David Woodhouse                            Open Source Technology Centre
-David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
+David.Woodhouse@intel.com                              Intel Corporation
 
-
---=-uOVhgsfrPWFuetrzGcFI
+--=-X48EFyJhrT/kKBlaaqf3
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -209,28 +329,31 @@ Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
 ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
 AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUxMDA4MjM1MjEzWjAjBgkqhkiG9w0BCQQxFgQUHn22yZkfRcoEIarsg4bytHwcRHsw
+CQUxDxcNMTUxMDA4MjM1MjM1WjAjBgkqhkiG9w0BCQQxFgQUUJUpPJ7eN5Q/kGERf+dYeytJ1Wkw
 gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
 ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
 L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
 CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
 LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
 U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQBwLLgtTUEJa1MOUGdrqcGqgEepLkMoc+7J3TyzP0XngqvGq3A9qk7tgFk8
-FRspttAwI36DGCP/HZ3GfkrdbpDv789Hv6XdU7h1oINGtdyM+1xYfe9obKTqnTw0FsYBtAuGM57Z
-WeZ1VXCcgM10Cu4JOP/Evgi4fqbma0tj86kwKXp8TlqsB/BFHesY20LWGbw9JoRcBTh4dm9frncg
-l+DjDw1T5GRRrThjAbFrRyT04LfR11DkiS0zVZv8HivXQHRX0Y90QWKsC/O3YBjoX7VNaCs2tahy
-duDahQQdNM3DedjfDOPWaPg1RChX3PCzw/iXywOGx3YSv5IeFqssDJDBAAAAAAAA
+hkiG9w0BAQEFAASCAQCZB67BRwlMahO7aPY34XoDj5taZxjj2SVhOUgwhojLTqkqtcXyGPigstie
+Q3slGq2DkEWEmzvjTFrtNUiLEtXEk6xFR4cf3y371pbtb0k/xKF/+ayydWcv9yfsG2fRjAiSiX1+
+ejJbolXT1vHdcXZI4SzVTdLFauezwtKQ+4x3VrGHXIuURw3TShrZqjYcii4kPowph//VAXvaAEHU
+1JFChlTgnICyA8trHXk8z50LmWut8CCLK2seD9QyLYkWBfzdxQlxJMq7C9w3rJ4hrjhVZ3FOjTiS
+osc+Izu5GczL1ZSY32jFFabyN30b6oHGfoBelhNUVEfYnRCaAqL6T09fAAAAAAAA
 
 
---=-uOVhgsfrPWFuetrzGcFI--
+--=-X48EFyJhrT/kKBlaaqf3--
 
 
---===============2989348002835733261==
-Content-Type: text/plain; charset="us-ascii"
+--===============0953060799==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
 Content-Disposition: inline
 
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4
+IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0
+cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRlbC1nZngK
 
---===============2989348002835733261==--
+--===============0953060799==--
