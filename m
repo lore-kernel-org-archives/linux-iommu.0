@@ -1,10 +1,10 @@
 From: David Woodhouse <dwmw2@infradead.org>
-Subject: [PATCH 6/7] iommu/vt-d: Enable page request interrupt
-Date: Fri, 09 Oct 2015 00:53:45 +0100
-Message-ID: <1444348425.92154.34.camel@infradead.org>
+Subject: [PATCH 7/7] iommu/vt-d: Implement page request handling
+Date: Fri, 09 Oct 2015 00:54:07 +0100
+Message-ID: <1444348447.92154.35.camel@infradead.org>
 References: <1444348223.92154.22.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1269185295=="
+Content-Type: multipart/mixed; boundary="===============0054167925=="
 Return-path: <intel-gfx-bounces@lists.freedesktop.org>
 In-Reply-To: <1444348223.92154.22.camel@infradead.org>
 List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
@@ -20,208 +20,190 @@ To: iommu@lists.linux-foundation.org, intel-gfx@lists.freedesktop.org, jesse.bar
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============1269185295==
+--===============0054167925==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-RrC0ObkGyscIxacCZgaJ"
+	boundary="=-1I1XYc84ivNUmmPJAub1"
 
 
---=-RrC0ObkGyscIxacCZgaJ
+--=-1I1XYc84ivNUmmPJAub1
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Signed-off-by: David Woodhouse <David.Woodhouse@intel.com>
 ---
- drivers/iommu/intel-iommu.c | 22 +++++++++++++-
- drivers/iommu/intel-svm.c   | 71 +++++++++++++++++++++++++++++++++++++++++=
-++++
- include/linux/intel-iommu.h |  5 ++++
- 3 files changed, 97 insertions(+), 1 deletion(-)
+ drivers/iommu/intel-svm.c   | 115 ++++++++++++++++++++++++++++++++++++++++=
++++-
+ include/linux/intel-iommu.h |  21 ++++++++
+ 2 files changed, 134 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index b5ab009..e27b9c6 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1687,8 +1687,11 @@ static void free_dmar_iommu(struct intel_iommu *iomm=
-u)
- 	free_context_table(iommu);
-=20
- #ifdef CONFIG_INTEL_IOMMU_SVM
--	if (pasid_enabled(iommu))
-+	if (pasid_enabled(iommu)) {
-+		if (ecap_prs(iommu->ecap))
-+			intel_svm_finish_prq(iommu);
- 		intel_svm_free_pasid_tables(iommu);
-+	}
- #endif
- }
-=20
-@@ -3204,6 +3207,13 @@ domains_done:
-=20
- 		iommu_flush_write_buffer(iommu);
-=20
-+#ifdef CONFIG_INTEL_IOMMU_SVM
-+		if (pasid_enabled(iommu) && ecap_prs(iommu->ecap)) {
-+			ret =3D intel_svm_enable_prq(iommu);
-+			if (ret)
-+				goto free_iommu;
-+		}
-+#endif
- 		ret =3D dmar_set_interrupt(iommu);
- 		if (ret)
- 			goto free_iommu;
-@@ -4148,6 +4158,14 @@ static int intel_iommu_add(struct dmar_drhd_unit *dm=
-aru)
-=20
- 	intel_iommu_init_qi(iommu);
- 	iommu_flush_write_buffer(iommu);
-+
-+#ifdef CONFIG_INTEL_IOMMU_SVM
-+	if (pasid_enabled(iommu) && ecap_prs(iommu->ecap)) {
-+		ret =3D intel_svm_enable_prq(iommu);
-+		if (ret)
-+			goto disable_iommu;
-+	}
-+#endif
- 	ret =3D dmar_set_interrupt(iommu);
- 	if (ret)
- 		goto disable_iommu;
-@@ -4952,6 +4970,8 @@ int intel_iommu_enable_pasid(struct intel_svm *svm)
- 				ctx_lo |=3D CONTEXT_TT_PT_PASID << 2;
- 		}
- 		ctx_lo |=3D CONTEXT_PASIDE;
-+		if (svm->dev_iotlb && ecap_prs(svm->iommu->ecap))
-+			ctx_lo |=3D CONTEXT_PRS;
- 		context[0].lo =3D ctx_lo;
- 		wmb();
- 		svm->iommu->flush.flush_context(svm->iommu, svm->did,
 diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 913c3a1..1260e87 100644
+index 1260e87..ace1e32 100644
 --- a/drivers/iommu/intel-svm.c
 +++ b/drivers/iommu/intel-svm.c
-@@ -18,6 +18,10 @@
- #include <linux/sched.h>
- #include <linux/slab.h>
- #include <linux/intel-svm.h>
-+#include <linux/dmar.h>
-+#include <linux/interrupt.h>
-+
-+static irqreturn_t prq_event_thread(int irq, void *d);
-=20
- struct pasid_entry {
- 	u64 val;
-@@ -75,6 +79,65 @@ int intel_svm_free_pasid_tables(struct intel_iommu *iomm=
-u)
- 	return 0;
- }
-=20
-+#define PRQ_ORDER 0
-+int intel_svm_enable_prq(struct intel_iommu *iommu)
-+{
-+	struct page *pages;
-+	int irq, ret;
-+
-+	pages =3D alloc_pages(GFP_KERNEL | __GFP_ZERO, PRQ_ORDER);
-+	if (!pages) {
-+		pr_warn("IOMMU: %s: Failed to allocate page request queue\n",
-+			iommu->name);
-+		return -ENOMEM;
-+	}
-+	iommu->prq =3D page_address(pages);
-+
-+	irq =3D dmar_alloc_hwirq(DMAR_UNITS_SUPPORTED + iommu->seq_id, iommu->nod=
-e, iommu);
-+	if (irq <=3D 0) {
-+		pr_err("IOMMU: %s: Failed to create IRQ vector for page request queue\n"=
-,
-+		       iommu->name);
-+		ret =3D -EINVAL;
-+	err:
-+		free_pages((unsigned long)iommu->prq, PRQ_ORDER);
-+		iommu->prq =3D 0;
-+		return ret;
-+	}
-+	iommu->pr_irq =3D irq;
-+
-+	snprintf(iommu->prq_name, sizeof(iommu->prq_name), "dmar%d-prq", iommu->s=
-eq_id);
-+
-+	ret =3D request_threaded_irq(irq, NULL, prq_event_thread, IRQF_ONESHOT,
-+				   iommu->prq_name, iommu);
-+	if (ret) {
-+		pr_err("IOMMU: %s: Failed to request IRQ for page request queue\n",
-+		       iommu->name);
-+		dmar_free_hwirq(irq);
-+		goto err;
-+	}
-+	dmar_writeq(iommu->reg + DMAR_PQH_REG, 0ULL);
-+	dmar_writeq(iommu->reg + DMAR_PQT_REG, 0ULL);
-+	dmar_writeq(iommu->reg + DMAR_PQA_REG, virt_to_phys(iommu->prq) | PRQ_ORD=
-ER);
-+
-+	return 0;
-+}
-+
-+int intel_svm_finish_prq(struct intel_iommu *iommu)
-+{
-+	dmar_writeq(iommu->reg + DMAR_PQH_REG, 0ULL);
-+	dmar_writeq(iommu->reg + DMAR_PQT_REG, 0ULL);
-+	dmar_writeq(iommu->reg + DMAR_PQA_REG, 0ULL);
-+
-+	free_irq(iommu->pr_irq, iommu);
-+	dmar_free_hwirq(iommu->pr_irq);
-+	iommu->pr_irq =3D 0;
-+
-+	free_pages((unsigned long)iommu->prq, PRQ_ORDER);
-+	iommu->prq =3D 0;
-+
-+	return 0;
-+}
-+
- static void intel_flush_svm_range(struct intel_svm *svm,
- 				  unsigned long address, int pages, int ih)
- {
-@@ -292,3 +355,11 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
- 	return ret;
+@@ -356,10 +356,121 @@ int intel_svm_unbind_mm(struct device *dev, int pasi=
+d)
  }
  EXPORT_SYMBOL_GPL(intel_svm_unbind_mm);
+=20
++/* Page request queue descriptor */
++struct page_req_dsc {
++	u64 srr:1;
++	u64 bof:1;
++	u64 pasid_present:1;
++	u64 lpig:1;
++	u64 pasid:20;
++	u64 bus:8;
++	u64 private:23;
++	u64 prg_index:9;
++	u64 rd_req:1;
++	u64 wr_req:1;
++	u64 exe_req:1;
++	u64 priv_req:1;
++	u64 devfn:8;
++	u64 addr:52;
++};
+=20
++#define PRQ_RING_MASK ((0x1000 << PRQ_ORDER) - 0x10)
+ static irqreturn_t prq_event_thread(int irq, void *d)
+ {
+ 	struct intel_iommu *iommu =3D d;
+-	printk("PRQ event on %s\n", iommu->name);
+-	return IRQ_HANDLED;
++	struct intel_svm *svm =3D NULL;
++	int head, tail, handled =3D 0;
 +
++	tail =3D dmar_readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK;
++	head =3D dmar_readq(iommu->reg + DMAR_PQH_REG) & PRQ_RING_MASK;
++	while (head !=3D tail) {
++		struct vm_area_struct *vma;
++		struct page_req_dsc *req;
++		struct qi_desc resp;
++		int ret, result;
++		u64 address;
 +
-+static irqreturn_t prq_event_thread(int irq, void *d)
-+{
-+	struct intel_iommu *iommu =3D d;
-+	printk("PRQ event on %s\n", iommu->name);
-+	return IRQ_HANDLED;
-+}
++		handled =3D 1;
++
++		req =3D &iommu->prq[head / sizeof(*req)];
++
++		result =3D QI_RESP_INVALID;
++		address =3D req->addr << PAGE_SHIFT;
++		if (!req->pasid_present) {
++			pr_err("%s: Page request without PASID: %08llx %08llx\n",
++			       iommu->name, ((unsigned long long *)req)[0],
++			       ((unsigned long long *)req)[1]);
++			goto inval_req;
++		}
++
++		if (!svm || svm->pasid !=3D req->pasid) {
++			mutex_lock(&pasid_mutex);
++			if (svm)
++				kref_put(&svm->kref, &intel_mm_free);
++
++			svm =3D idr_find(&iommu->pasid_idr, req->pasid);
++			if (!svm) {
++				pr_err("%s: Page request for invalid PASID %d: %08llx %08llx\n",
++				       iommu->name, req->pasid, ((unsigned long long *)req)[0],
++				       ((unsigned long long *)req)[1]);
++				mutex_unlock(&pasid_mutex);
++				goto inval_req;
++			}
++			/* Strictly speaking, we shouldn't need this. It is forbidden
++			   to unbind the PASID while there may still be requests in
++			   flight. But let's do it anyway. */
++			kref_get(&svm->kref);
++			mutex_unlock(&pasid_mutex);
++		}
++
++		result =3D QI_RESP_FAILURE;
++		down_read(&svm->mm->mmap_sem);
++		vma =3D find_extend_vma(svm->mm, address);
++		if (!vma || address < vma->vm_start)
++			goto hard_fault;
++
++		ret =3D handle_mm_fault(svm->mm, vma, address,
++				      req->wr_req ? FAULT_FLAG_WRITE : 0);
++		if (ret & VM_FAULT_ERROR)
++			goto hard_fault;
++
++		result =3D QI_RESP_SUCCESS;
++	hard_fault:
++		up_read(&svm->mm->mmap_sem);
++	inval_req:
++		/* Accounting for major/minor faults? */
++
++		if (req->lpig) {
++			/* Page Group Response */
++			resp.low =3D QI_PGRP_PASID(req->pasid) |
++				QI_PGRP_DID((req->bus << 8) | req->devfn) |
++				QI_PGRP_PASID_P(req->pasid_present) |
++				QI_PGRP_RESP_TYPE;
++			resp.high =3D QI_PGRP_IDX(req->prg_index) |
++				QI_PGRP_PRIV(req->private) | QI_PGRP_RESP_CODE(result);
++
++			qi_submit_sync(&resp, svm->iommu);
++		} else if (req->srr) {
++			/* Page Stream Response */
++			resp.low =3D QI_PSTRM_IDX(req->prg_index) |
++				QI_PSTRM_PRIV(req->private) | QI_PSTRM_BUS(req->bus) |
++				QI_PSTRM_PASID(req->pasid) | QI_PSTRM_RESP_TYPE;
++			resp.high =3D QI_PSTRM_ADDR(address) | QI_PSTRM_DEVFN(req->devfn) |
++				QI_PSTRM_RESP_CODE(result);
++
++			qi_submit_sync(&resp, svm->iommu);
++		}
++
++		head =3D (head + sizeof(*req)) & PRQ_RING_MASK;
++	}
++
++	if (svm) {
++		mutex_lock(&pasid_mutex);
++		kref_put(&svm->kref, &intel_mm_free);
++		mutex_unlock(&pasid_mutex);
++	}
++
++	dmar_writeq(iommu->reg + DMAR_PQH_REG, tail);
++
++	return IRQ_RETVAL(handled);
+ }
 diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 564a61b..bf034b0 100644
+index bf034b0..aa7e02d 100644
 --- a/include/linux/intel-iommu.h
 +++ b/include/linux/intel-iommu.h
-@@ -370,6 +370,7 @@ enum {
+@@ -266,6 +266,8 @@ enum {
+ #define QI_EIOTLB_TYPE		0x6
+ #define QI_PC_TYPE		0x7
+ #define QI_DEIOTLB_TYPE		0x8
++#define QI_PGRP_RESP_TYPE	0x9
++#define QI_PSTRM_RESP_TYPE	0xa
 =20
- struct pasid_entry;
- struct pasid_state_entry;
-+struct page_req_dsc;
+ #define QI_IEC_SELECTIVE	(((u64)1) << 4)
+ #define QI_IEC_IIDEX(idx)	(((u64)(idx & 0xffff) << 32))
+@@ -316,6 +318,25 @@ enum {
+ #define QI_DEV_EIOTLB_QDEP(qd)	(((qd) & 0x1f) << 16)
+ #define QI_DEV_EIOTLB_MAX_INVS	32
 =20
- struct intel_iommu {
- 	void __iomem	*reg; /* Pointer to hardware regs, virtual addr */
-@@ -402,6 +403,8 @@ struct intel_iommu {
- 	 * told to. But while it's all driver-arbitrated, we're fine. */
- 	struct pasid_entry *pasid_table;
- 	struct pasid_state_entry *pasid_state_table;
-+	struct page_req_dsc *prq;
-+	unsigned char prq_name[16];    /* Name for PRQ interrupt */
- 	struct idr pasid_idr;
- #endif
- 	struct q_inval  *qi;            /* Queued invalidation info */
-@@ -445,6 +448,8 @@ extern int dmar_ir_support(void);
-=20
- extern int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu);
- extern int intel_svm_free_pasid_tables(struct intel_iommu *iommu);
-+extern int intel_svm_enable_prq(struct intel_iommu *iommu);
-+extern int intel_svm_finish_prq(struct intel_iommu *iommu);
-=20
- struct intel_svm {
- 	struct kref kref;
++#define QI_PGRP_IDX(idx)	(((u64)(idx)) << 55)
++#define QI_PGRP_PRIV(priv)	(((u64)(priv)) << 32)
++#define QI_PGRP_RESP_CODE(res)	((u64)(res))
++#define QI_PGRP_PASID(pasid)	(((u64)(pasid)) << 32)
++#define QI_PGRP_DID(did)	(((u64)(did)) << 16)
++#define QI_PGRP_PASID_P(p)	(((u64)(p)) << 4)
++
++#define QI_PSTRM_ADDR(addr)	(((u64)(addr)) & VTD_PAGE_MASK)
++#define QI_PSTRM_DEVFN(devfn)	(((u64)(devfn)) << 4)
++#define QI_PSTRM_RESP_CODE(res)	((u64)(res))
++#define QI_PSTRM_IDX(idx)	(((u64)(idx)) << 55)
++#define QI_PSTRM_PRIV(priv)	(((u64)(priv)) << 32)
++#define QI_PSTRM_BUS(bus)	(((u64)(bus)) << 24)
++#define QI_PSTRM_PASID(pasid)	(((u64)(pasid)) << 4)
++
++#define QI_RESP_SUCCESS		0x0
++#define QI_RESP_INVALID		0x1
++#define QI_RESP_FAILURE		0xf
++
+ #define QI_GRAN_ALL_ALL			0
+ #define QI_GRAN_NONG_ALL		1
+ #define QI_GRAN_NONG_PASID		2
 --=20
 2.4.3
 
@@ -229,7 +211,7 @@ index 564a61b..bf034b0 100644
 David Woodhouse                            Open Source Technology Centre
 David.Woodhouse@intel.com                              Intel Corporation
 
---=-RrC0ObkGyscIxacCZgaJ
+--=-1I1XYc84ivNUmmPJAub1
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -322,24 +304,24 @@ Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
 ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
 AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUxMDA4MjM1MzQ1WjAjBgkqhkiG9w0BCQQxFgQUZ9BqmwO1XMcJF9pWm7uEuHrvA50w
+CQUxDxcNMTUxMDA4MjM1NDA3WjAjBgkqhkiG9w0BCQQxFgQUpso/NBw9J41O+03GK4EKRPQfwPsw
 gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
 ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
 L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
 CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
 LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
 U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQBZp44049MX1oUvtmOQAtGurp4cFg8zLbsgEdp28Xe3F61TfhGYdDhDWmU2
-3drJWbg+YarsB0sJ8UuPONyMalk6nm0TCDJJj4C/4d1l5CtxpiJy06bsXsvUkJ4Q6w7A6pv2Bxvf
-rd3bs2cUcq2lqR1uzrY50d8CdFbM+xT8kj43CPjNHiZNybP2Ynkd/S9epVXywH5tV/hkOIwPwBet
-WcmLVTQXzj/Sl4AB66hG5+c5wxzq7/8Rt1WDW0GvRJK2e2T77dEKzaGREIB/ntIDorL0fxlrYSFK
-UDvQ8+6xtCV4yWMPSvn5RR/NL/xNAHbIEcrl2mTDK5z10UK7G6j/t81UAAAAAAAA
+hkiG9w0BAQEFAASCAQBx6d1ZPyQytAITcWVA+b3l8A+lX1DU6pNpaPvSF5S1o35wzMkiY88SF9XW
+aqRXD9NuPwcjdvyfKxLex2oRiKURaMA73ZI3Eyk13yvCT5NStoyoGgTZNZekb9mriv6xV5LhFmav
+sNuRF3Eabc+ynNYfT8U1n+pCLZs993ymBs5Wm8wyzwV7DHupghDSB78kqZklSp7mHsQBirhT6JT/
+pPm9rD8mhY14dszo5MhT77+DlyC31ZBDwIOV2hD0sI8Uz9bH8QIOdUPNOk6K3sCEetr/aagL99aq
+whgRPCoZs18L8S76gZ0nmdAnSuGrmbgRTOnwrzkTVtL7F8eRzPGlLViLAAAAAAAA
 
 
---=-RrC0ObkGyscIxacCZgaJ--
+--=-1I1XYc84ivNUmmPJAub1--
 
 
---===============1269185295==
+--===============0054167925==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -349,4 +331,4 @@ X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4
 IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0
 cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRlbC1nZngK
 
---===============1269185295==--
+--===============0054167925==--
