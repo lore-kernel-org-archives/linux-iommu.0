@@ -1,20 +1,15 @@
-From: Andreas Hartmann <andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org>
-Subject: Re: [dm-devel] AMD-Vi IO_PAGE_FAULTs and ata3.00: failed command:
-	READ FPDMA QUEUED errors since Linux 4.0
-Date: Fri, 9 Oct 2015 07:20:38 +0200
-Message-ID: <56174EA6.7000106@maya.org>
-References: <55FE5740.2060701@maya.org> <20150929152100.GL3036@8bytes.org>
-	<alpine.LRH.2.02.1509291143170.24174@file01.intranet.prod.int.rdu2.redhat.com>
-	<20150929162042.GR3036@8bytes.org> <560BF73F.8000008@maya.org>
-	<20151006101356.GE12506@8bytes.org> <56141507.7040103@maya.org>
-	<56148A1B.5060506@maya.org> <20151007161022.GI28811@8bytes.org>
-	<56154DEA.5050901@maya.org> <20151008163957.GK28811@8bytes.org>
-	<5616B436.1000802@maya.org> <5616C998.1010309@maya.org>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v6 2/3] arm64: Add IOMMU dma_ops
+Date: Fri, 9 Oct 2015 13:44:53 +0800
+Message-ID: <1444369493.24380.53.camel@mhfsdcap03>
+References: <cover.1443718557.git.robin.murphy@arm.com>
+	<80cb035144a2648a5d94eb1fec3336f17ad249f1.1443718557.git.robin.murphy@arm.com>
+	<1444129203.6621.46.camel@mhfsdcap03> <56154349.8040101@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5616C998.1010309-YKS6W9RDU/w@public.gmane.org>
+In-Reply-To: <56154349.8040101-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,77 +19,148 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, device-mapper development <dm-devel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jens Axboe <axboe-b10kYP2dOMg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mikulas Patocka <mpatocka-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Milan Broz <mbroz-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/08/2015 at 09:52 PM, Andreas Hartmann wrote:
-> On 10/08/2015 at 08:21 PM, Andreas Hartmann wrote:
->> Am 08.10.2015 um 18:39 schrieb Joerg Roedel:
->>> On Wed, Oct 07, 2015 at 06:52:58PM +0200, Andreas Hartmann wrote:
->>>> To reproduce the error:
->>>> First I mounted /daten2, afterwards /raid/mt, which produces the errors.
->>>> The ssd mounts have been already active (during boot by fstab).
->>>
->>> Okay, I spent the day on that problem, and managed to reproduce it here
->>> on one of my AMD IOMMU boxes. I wasn't an easy journey, as I can only
->>> reproduce it if I setup the crypto partition and everything above that
->>> (like mounting the lvm volumes) _after_ the system has finished booting.
->>> If everything is setup during system boot it works fine and I don't see
->>> any IO_PAGE_FAULTS.
->>
->> Thank you very much for spending so much of your time to reproduce the
->> problem!
->>
->>> I also tried kernel v4.3-rc4 first, to have it tested with a
->>> self-compiled kernel. It didn't show up there, so I built a 4.1.0, where
->>> it showed up again. Something seems to have fixed the issue in the
->>> latest kernels.
->>>
->>> So I looked a little bit around at the commits that were merged into the
->>> respective parts involved here, and found this one:
->>>
->>>     586b286 dm crypt: constrain crypt device's max_segment_size to
->>> PAGE_SIZE
->>>
->>> The problem fixed with this commit looks quite similar to what you have
->>> seen (execpt that there was no IOMMU involved). So I cherry-picked that
->>> commit on 4.1.0 and tested that. The problem was gone.
->>
->> That's true - I already knew this patch and tested it some weeks ago -
->> unfortunately it doesn't fix the problem here.
->>
->> To be really sure, I just retested it now again. I couldn't see any
->> IO_PAGE_FAULTS errors today (unfortunately I can't remember anymore if I
->> didn't see them too a few weeks ago) - but the ata errors remain.
->> Therefore, this patch isn't a solution for the problem I encounter here.
->>
->>> So it looks like it was a dm-crypt issue, the patch went into v4.3-rc3,
->>> either this kernel of rc4 should fix the problem for you too. Can you
->>> please verify this is fixed for you too with v4.3-rc4?
->>
->> As I already wrote, I even couldn't see the problem with v4.3-rc2 any
->> more (as far as I was able to test because of the other problem). I have
->> to do some more tests now with this kernel to be really sure.
+On Wed, 2015-10-07 at 17:07 +0100, Robin Murphy wrote:
+> On 06/10/15 12:00, Yong Wu wrote:
+> > On Thu, 2015-10-01 at 20:13 +0100, Robin Murphy wrote:
+> >> Taking some inspiration from the arch/arm code, implement the
+> >> arch-specific side of the DMA mapping ops using the new IOMMU-DMA layer.
+> >>
+> >> Since there is still work to do elsewhere to make DMA configuration happen
+> >> in a more appropriate order and properly support platform devices in the
+> >> IOMMU core, the device setup code unfortunately starts out carrying some
+> >> workarounds to ensure it works correctly in the current state of things.
+> >>
+> >> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> >> ---
+> >>   arch/arm64/mm/dma-mapping.c | 435 ++++++++++++++++++++++++++++++++++++++++++++
+> >>   1 file changed, 435 insertions(+)
+> >>
+> > [...]
+> >> +/*
+> >> + * TODO: Right now __iommu_setup_dma_ops() gets called too early to do
+> >> + * everything it needs to - the device is only partially created and the
+> >> + * IOMMU driver hasn't seen it yet, so it can't have a group. Thus we
+> >> + * need this delayed attachment dance. Once IOMMU probe ordering is sorted
+> >> + * to move the arch_setup_dma_ops() call later, all the notifier bits below
+> >> + * become unnecessary, and will go away.
+> >> + */
+> >
+> > Hi Robin,
+> >        Could I ask a question about the plan in the future:
+> >        How to move arch_setup_dma_ops() call later than IOMMU probe?
+> >
+> >        arch_setup_dma_ops is from of_dma_configure which is from
+> > arm64_device_init, and IOMMU probe is subsys_init. So
+> > arch_setup_dma_ops will run before IOMMU probe normally, is it right?
 > 
-> I now tested w/ v4.3-rc4. I couldn't see any IO_PAGE_FAULTS but the ata
-> errors remain. The ata errors can be easily activated by copying a large
-> file (> 4 GB) from one partition on the raid to another partition on the
-> raid.
+> Yup, hence the need to call of_platform_device_create() manually in your 
+> IOMMU_OF_DECLARE init function if you need the actual device instance to 
+> be ready before the root of_platform_populate() runs.
 
-Hmmm, I retested this morning w/ v4.3-rc4 and 4.1.10 (with the above
-mentioned patch applied) - and now, I didn't get any more ata errors.
+Thanks. I have added of_platform_device_create.
 
-I'm confused now. The only difference between yesterday evening and this
-morning was, that the machine was over night completely powerless (via
-socket outlet switch). Could this really be the reason? Let's wait and
-see if this is a persistent state ... .
+If the arch_setup_dma_ops always be called before IOMMU probe, What's
+the meaning of the TODO comment here?  Does the arch_setup_dma_ops()
+will be moved to run later than IOMMU probe? How to do this.
 
-But the other new error w/ 4.3-rc-2 or 4 while starting a VM with PCI
-passthrough remains even this morning :-(. Would have been nice if it
-would have gone over night, too ...
+> 
+> >        Does Laurent's probe-deferral series could help do this? what's
+> > the state of this series.
+> 
+> What Laurent's patches do is to leave the DMA mask configuration where 
+> it is early in device creation, but split out the dma_ops configuration 
+> to be called just before the actual driver probe, and defer that if the 
+> IOMMU device hasn't probed yet. At the moment, those patches (plus a bit 
+> of my own development on top) are working fairly well in the simple 
+> case, but I've seen things start falling apart if the client driver then 
+> requests its own probe deferral, and there are probably other 
+> troublesome edge cases to find - I need to dig into that further, but 
+> sorting out my ARM SMMU driver patches is currently looking like a 
+> higher priority.
+> 
+> >> +struct iommu_dma_notifier_data {
+> >> +	struct list_head list;
+> >> +	struct device *dev;
+> >> +	const struct iommu_ops *ops;
+> >> +	u64 dma_base;
+> >> +	u64 size;
+> >> +};
+> [...]
+> >> +static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> >> +				  const struct iommu_ops *ops)
+> >> +{
+> >> +	struct iommu_group *group;
+> >> +
+> >> +	if (!ops)
+> >> +		return;
+> >> +	/*
+> >> +	 * TODO: As a concession to the future, we're ready to handle being
+> >> +	 * called both early and late (i.e. after bus_add_device). Once all
+> >> +	 * the platform bus code is reworked to call us late and the notifier
+> >> +	 * junk above goes away, move the body of do_iommu_attach here.
+> >> +	 */
+> >> +	group = iommu_group_get(dev);
+> >
+> >     If iommu_setup_dma_ops run after bus_add_device, then the device has
+> > its group here. It will enter do_iommu_attach which will alloc a default
+> > iommu domain and attach this device to the new iommu domain.
+> >     But mtk-iommu don't expect like this, we would like to attach to the
+> > same domain. So we should alloc a default iommu domain(if there is no
+> > iommu domain at that time) and attach the device to the same domain in
+> > our xx_add_device, is it right?
+> 
+> Yes, if you attach the device to your own 'real' default domain after 
+> setting up the group in add_device, then do_iommu_attach() will now pick 
+> that domain up and use it instead of trying to create a new one, and the 
+> arch code will stop short of tearing the domain down if the device probe 
+> fails and it gets detached again. Additionally, since from add_device 
+> you should hopefully have all the information you need to get back to 
+> the relevant m4u instance, it should now be OK to keep the default 
+> domain there and finally get rid of that pesky global variable.
+> 
+> Robin.
 
+Thanks very much for your confirm.
 
-Thanks,
-regards,
-Andreas
+I have added it following this. As above, the arch_setup_dma_ops always
+be called before IOMMU probe, so the attach_device will be called
+earlier than probe and the iommu domain will exist already in
+add_device.
+
+Meanwhile I attach all the iommu devices into the same domain in the
+add_device and free the other unnecessary domains in the attach_device.
+
+Here I wrote may be not clear, so I send the detail code[1]. when you
+are free, please also help have a look.
+
+Currently it's based on the condition that arch_setup_dma_ops run before
+IOMMU probe, But from your TODO comment, the sequence of
+arch_setup_dma_ops may be changed. this series is not a final version?
+You also question me "how can you guarantee domain_alloc() happens
+before this driver is probed?". So I am a little confused this TODO.
+
+[1]:http://lists.linuxfoundation.org/pipermail/iommu/2015-October/014591.html
+
+> 
+> >> +	if (group) {
+> >> +		do_iommu_attach(dev, ops, dma_base, size);
+> >> +		iommu_group_put(group);
+> >> +	} else {
+> >> +		queue_iommu_attach(dev, ops, dma_base, size);
+> >> +	}
+> >> +}
+> >> +
+> >> +#else
+> >> +
+> >> +static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> >> +				  struct iommu_ops *iommu)
+> >> +{ }
+> >> +
+> >> +#endif  /* CONFIG_IOMMU_DMA */
+> >> +
+> >
+> 
