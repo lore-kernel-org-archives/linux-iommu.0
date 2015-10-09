@@ -1,152 +1,100 @@
-From: Yong Wu <yong.wu@mediatek.com>
-Subject: [PATCH v5 6/6] dts: mt8173: Add iommu/smi nodes for mt8173
-Date: Fri, 9 Oct 2015 10:23:08 +0800
-Message-ID: <1444357388-30257-7-git-send-email-yong.wu@mediatek.com>
-References: <1444357388-30257-1-git-send-email-yong.wu@mediatek.com>
+From: Andreas Hartmann <andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org>
+Subject: Re: [dm-devel] AMD-Vi IO_PAGE_FAULTs and ata3.00: failed command:
+	READ FPDMA QUEUED errors since Linux 4.0
+Date: Fri, 9 Oct 2015 07:20:38 +0200
+Message-ID: <56174EA6.7000106@maya.org>
+References: <55FE5740.2060701@maya.org> <20150929152100.GL3036@8bytes.org>
+	<alpine.LRH.2.02.1509291143170.24174@file01.intranet.prod.int.rdu2.redhat.com>
+	<20150929162042.GR3036@8bytes.org> <560BF73F.8000008@maya.org>
+	<20151006101356.GE12506@8bytes.org> <56141507.7040103@maya.org>
+	<56148A1B.5060506@maya.org> <20151007161022.GI28811@8bytes.org>
+	<56154DEA.5050901@maya.org> <20151008163957.GK28811@8bytes.org>
+	<5616B436.1000802@maya.org> <5616C998.1010309@maya.org>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1444357388-30257-1-git-send-email-yong.wu@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Lucas Stach <l.stach@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org, Sasha Hauer <kernel@pengutronix.de>, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, pebolle@tiscali.nl, arnd@arndb.de, mitchelh@codeaurora.org, Sricharan R <sricharan@codeaurora.org>, youhua.li@mediatek.com, k.zhang@mediatek.com, kendrick.hsu@mediatek.com, Yong Wu <yong.wu@mediatek.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5616C998.1010309-YKS6W9RDU/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, device-mapper development <dm-devel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jens Axboe <axboe-b10kYP2dOMg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mikulas Patocka <mpatocka-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Milan Broz <mbroz-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch add the iommu/larbs nodes for mt8173
+On 10/08/2015 at 09:52 PM, Andreas Hartmann wrote:
+> On 10/08/2015 at 08:21 PM, Andreas Hartmann wrote:
+>> Am 08.10.2015 um 18:39 schrieb Joerg Roedel:
+>>> On Wed, Oct 07, 2015 at 06:52:58PM +0200, Andreas Hartmann wrote:
+>>>> To reproduce the error:
+>>>> First I mounted /daten2, afterwards /raid/mt, which produces the errors.
+>>>> The ssd mounts have been already active (during boot by fstab).
+>>>
+>>> Okay, I spent the day on that problem, and managed to reproduce it here
+>>> on one of my AMD IOMMU boxes. I wasn't an easy journey, as I can only
+>>> reproduce it if I setup the crypto partition and everything above that
+>>> (like mounting the lvm volumes) _after_ the system has finished booting.
+>>> If everything is setup during system boot it works fine and I don't see
+>>> any IO_PAGE_FAULTS.
+>>
+>> Thank you very much for spending so much of your time to reproduce the
+>> problem!
+>>
+>>> I also tried kernel v4.3-rc4 first, to have it tested with a
+>>> self-compiled kernel. It didn't show up there, so I built a 4.1.0, where
+>>> it showed up again. Something seems to have fixed the issue in the
+>>> latest kernels.
+>>>
+>>> So I looked a little bit around at the commits that were merged into the
+>>> respective parts involved here, and found this one:
+>>>
+>>>     586b286 dm crypt: constrain crypt device's max_segment_size to
+>>> PAGE_SIZE
+>>>
+>>> The problem fixed with this commit looks quite similar to what you have
+>>> seen (execpt that there was no IOMMU involved). So I cherry-picked that
+>>> commit on 4.1.0 and tested that. The problem was gone.
+>>
+>> That's true - I already knew this patch and tested it some weeks ago -
+>> unfortunately it doesn't fix the problem here.
+>>
+>> To be really sure, I just retested it now again. I couldn't see any
+>> IO_PAGE_FAULTS errors today (unfortunately I can't remember anymore if I
+>> didn't see them too a few weeks ago) - but the ata errors remain.
+>> Therefore, this patch isn't a solution for the problem I encounter here.
+>>
+>>> So it looks like it was a dm-crypt issue, the patch went into v4.3-rc3,
+>>> either this kernel of rc4 should fix the problem for you too. Can you
+>>> please verify this is fixed for you too with v4.3-rc4?
+>>
+>> As I already wrote, I even couldn't see the problem with v4.3-rc2 any
+>> more (as far as I was able to test because of the other problem). I have
+>> to do some more tests now with this kernel to be really sure.
+> 
+> I now tested w/ v4.3-rc4. I couldn't see any IO_PAGE_FAULTS but the ata
+> errors remain. The ata errors can be easily activated by copying a large
+> file (> 4 GB) from one partition on the raid to another partition on the
+> raid.
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
- arch/arm64/boot/dts/mediatek/mt8173.dtsi | 81 ++++++++++++++++++++++++++++++++
- 1 file changed, 81 insertions(+)
+Hmmm, I retested this morning w/ v4.3-rc4 and 4.1.10 (with the above
+mentioned patch applied) - and now, I didn't get any more ata errors.
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-index 42540b2..524d305 100644
---- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-@@ -14,6 +14,7 @@
- #include <dt-bindings/clock/mt8173-clk.h>
- #include <dt-bindings/interrupt-controller/irq.h>
- #include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include <dt-bindings/memory/mt8173-larb-port.h>
- #include <dt-bindings/power/mt8173-power.h>
- #include <dt-bindings/reset-controller/mt8173-resets.h>
- #include "mt8173-pinfunc.h"
-@@ -265,6 +266,17 @@
- 			reg = <0 0x10200620 0 0x20>;
- 		};
- 
-+		iommu: iommu@10205000 {
-+			compatible = "mediatek,mt8173-m4u";
-+			reg = <0 0x10205000 0 0x1000>;
-+			interrupts = <GIC_SPI 139 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&infracfg CLK_INFRA_M4U>;
-+			clock-names = "bclk";
-+			mediatek,larb = <&larb0 &larb1 &larb2
-+					 &larb3 &larb4 &larb5>;
-+			#iommu-cells = <2>;
-+		};
-+
- 		apmixedsys: clock-controller@10209000 {
- 			compatible = "mediatek,mt8173-apmixedsys";
- 			reg = <0 0x10209000 0 0x1000>;
-@@ -514,29 +526,98 @@
- 			#clock-cells = <1>;
- 		};
- 
-+		larb0: larb@14021000 {
-+			compatible = "mediatek,mt8173-smi-larb";
-+			reg = <0 0x14021000 0 0x1000>;
-+			mediatek,smi = <&smi_common>;
-+			power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
-+			clocks = <&mmsys CLK_MM_SMI_LARB0>,
-+				 <&mmsys CLK_MM_SMI_LARB0>;
-+			clock-names = "apb", "smi";
-+		};
-+
-+		smi_common: smi@14022000 {
-+			compatible = "mediatek,mt8173-smi";
-+			reg = <0 0x14022000 0 0x1000>;
-+			power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
-+			clocks = <&mmsys CLK_MM_SMI_COMMON>,
-+				 <&mmsys CLK_MM_SMI_COMMON>;
-+			clock-names = "apb", "smi";
-+		};
-+
-+		larb4: larb@14027000 {
-+			compatible = "mediatek,mt8173-smi-larb";
-+			reg = <0 0x14027000 0 0x1000>;
-+			mediatek,smi = <&smi_common>;
-+			power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
-+			clocks = <&mmsys CLK_MM_SMI_LARB4>,
-+				 <&mmsys CLK_MM_SMI_LARB4>;
-+			clock-names = "apb", "smi";
-+		};
-+
- 		imgsys: clock-controller@15000000 {
- 			compatible = "mediatek,mt8173-imgsys", "syscon";
- 			reg = <0 0x15000000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
- 
-+		larb2: larb@15001000 {
-+			compatible = "mediatek,mt8173-smi-larb";
-+			reg = <0 0x15001000 0 0x1000>;
-+			mediatek,smi = <&smi_common>;
-+			power-domains = <&scpsys MT8173_POWER_DOMAIN_ISP>;
-+			clocks = <&imgsys CLK_IMG_LARB2_SMI>,
-+				 <&imgsys CLK_IMG_LARB2_SMI>;
-+			clock-names = "apb", "smi";
-+		};
-+
- 		vdecsys: clock-controller@16000000 {
- 			compatible = "mediatek,mt8173-vdecsys", "syscon";
- 			reg = <0 0x16000000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
- 
-+		larb1: larb@16010000 {
-+			compatible = "mediatek,mt8173-smi-larb";
-+			reg = <0 0x16010000 0 0x1000>;
-+			mediatek,smi = <&smi_common>;
-+			power-domains = <&scpsys MT8173_POWER_DOMAIN_VDEC>;
-+			clocks = <&vdecsys CLK_VDEC_CKEN>,
-+				 <&vdecsys CLK_VDEC_LARB_CKEN>;
-+			clock-names = "apb", "smi";
-+		};
-+
- 		vencsys: clock-controller@18000000 {
- 			compatible = "mediatek,mt8173-vencsys", "syscon";
- 			reg = <0 0x18000000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
- 
-+		larb3: larb@18001000 {
-+			compatible = "mediatek,mt8173-smi-larb";
-+			reg = <0 0x18001000 0 0x1000>;
-+			mediatek,smi = <&smi_common>;
-+			power-domains = <&scpsys MT8173_POWER_DOMAIN_VENC>;
-+			clocks = <&vencsys CLK_VENC_CKE1>,
-+				 <&vencsys CLK_VENC_CKE0>;
-+			clock-names = "apb", "smi";
-+		};
-+
- 		vencltsys: clock-controller@19000000 {
- 			compatible = "mediatek,mt8173-vencltsys", "syscon";
- 			reg = <0 0x19000000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
-+
-+		larb5: larb@19001000 {
-+			compatible = "mediatek,mt8173-smi-larb";
-+			reg = <0 0x19001000 0 0x1000>;
-+			mediatek,smi = <&smi_common>;
-+			power-domains = <&scpsys MT8173_POWER_DOMAIN_VENC_LT>;
-+			clocks = <&vencltsys CLK_VENCLT_CKE1>,
-+				 <&vencltsys CLK_VENCLT_CKE0>;
-+			clock-names = "apb", "smi";
-+		};
- 	};
- };
- 
--- 
-1.8.1.1.dirty
+I'm confused now. The only difference between yesterday evening and this
+morning was, that the machine was over night completely powerless (via
+socket outlet switch). Could this really be the reason? Let's wait and
+see if this is a persistent state ... .
+
+But the other new error w/ 4.3-rc-2 or 4 while starting a VM with PCI
+passthrough remains even this morning :-(. Would have been nice if it
+would have gone over night, too ...
+
+
+Thanks,
+regards,
+Andreas
