@@ -1,7 +1,7 @@
 From: Yong Wu <yong.wu@mediatek.com>
-Subject: [PATCH v5 3/6] iommu: add ARM short descriptor page table allocator
-Date: Fri, 9 Oct 2015 10:23:05 +0800
-Message-ID: <1444357388-30257-4-git-send-email-yong.wu@mediatek.com>
+Subject: [PATCH v5 4/6] memory: mediatek: Add SMI driver
+Date: Fri, 9 Oct 2015 10:23:06 +0800
+Message-ID: <1444357388-30257-5-git-send-email-yong.wu@mediatek.com>
 References: <1444357388-30257-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,66 +12,56 @@ To: Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Mark Ru
 Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Lucas Stach <l.stach@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org, Sasha Hauer <kernel@pengutronix.de>, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, pebolle@tiscali.nl, arnd@arndb.de, mitchelh@codeaurora.org, Sricharan R <sricharan@codeaurora.org>, youhua.li@mediatek.com, k.zhang@mediatek.com, kendrick.hsu@mediatek.com, Yong Wu <yong.wu@mediatek.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch is for ARM Short Descriptor Format.
+This patch add SMI(Smart Multimedia Interface) driver. This driver
+is responsible to enable/disable iommu and control the clocks of each
+local arbiter
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/iommu/Kconfig                |  18 +
- drivers/iommu/Makefile               |   1 +
- drivers/iommu/io-pgtable-arm-short.c | 827 +++++++++++++++++++++++++++++++++++
- drivers/iommu/io-pgtable-arm.c       |   3 -
- drivers/iommu/io-pgtable.c           |   3 +
- drivers/iommu/io-pgtable.h           |  18 +-
- 6 files changed, 866 insertions(+), 4 deletions(-)
- create mode 100644 drivers/iommu/io-pgtable-arm-short.c
+ drivers/memory/Kconfig     |   8 ++
+ drivers/memory/Makefile    |   1 +
+ drivers/memory/mtk-smi.c   | 274 +++++++++++++++++++++++++++++++++++++++++++++
+ include/soc/mediatek/smi.h |  60 ++++++++++
+ 4 files changed, 343 insertions(+)
+ create mode 100644 drivers/memory/mtk-smi.c
+ create mode 100644 include/soc/mediatek/smi.h
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 4664c2a..a7920fb 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -40,6 +40,24 @@ config IOMMU_IO_PGTABLE_LPAE_SELFTEST
+diff --git a/drivers/memory/Kconfig b/drivers/memory/Kconfig
+index c6a644b..6eab27c 100644
+--- a/drivers/memory/Kconfig
++++ b/drivers/memory/Kconfig
+@@ -108,6 +108,14 @@ config JZ4780_NEMC
+ 	  the Ingenic JZ4780. This controller is used to handle external
+ 	  memory devices such as NAND and SRAM.
  
- 	  If unsure, say N here.
- 
-+config IOMMU_IO_PGTABLE_SHORT
-+	bool "ARMv7/v8 Short Descriptor Format"
-+	select IOMMU_IO_PGTABLE
-+	depends on HAS_DMA && (ARM || ARM64 || COMPILE_TEST)
++config MTK_SMI
++	bool
++	depends on ARCH_MEDIATEK || COMPILE_TEST
 +	help
-+	  Enable support for the ARM Short-descriptor pagetable format.
-+	  This allocator supports 2 levels of translation tables, which
-+	  enables a 32-bit memory map based on memory sections or pages.
++	  This driver is for the Memory Controller module in MediaTek SoCs,
++	  mainly help enable/disable iommu and control the clock for each
++	  local arbiter.
 +
-+config IOMMU_IO_PGTABLE_SHORT_SELFTEST
-+	bool "Short Descriptor selftests"
-+	depends on IOMMU_IO_PGTABLE_SHORT
-+	help
-+	  Enable self-tests for Short-descriptor page table allocator.
-+	  This performs a series of page-table consistency checks during boot.
-+
-+	  If unsure, say N here.
-+
- endmenu
+ source "drivers/memory/tegra/Kconfig"
  
- config IOMMU_IOVA
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index c6dcc51..06df3e6 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -3,6 +3,7 @@ obj-$(CONFIG_IOMMU_API) += iommu-traces.o
- obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
-+obj-$(CONFIG_IOMMU_IO_PGTABLE_SHORT) += io-pgtable-arm-short.o
- obj-$(CONFIG_IOMMU_IOVA) += iova.o
- obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
- obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o msm_iommu_dev.o
-diff --git a/drivers/iommu/io-pgtable-arm-short.c b/drivers/iommu/io-pgtable-arm-short.c
+ endif
+diff --git a/drivers/memory/Makefile b/drivers/memory/Makefile
+index 1c46af5..890bdf4 100644
+--- a/drivers/memory/Makefile
++++ b/drivers/memory/Makefile
+@@ -15,5 +15,6 @@ obj-$(CONFIG_FSL_IFC)		+= fsl_ifc.o
+ obj-$(CONFIG_MVEBU_DEVBUS)	+= mvebu-devbus.o
+ obj-$(CONFIG_TEGRA20_MC)	+= tegra20-mc.o
+ obj-$(CONFIG_JZ4780_NEMC)	+= jz4780-nemc.o
++obj-$(CONFIG_MTK_SMI)		+= mtk-smi.o
+ 
+ obj-$(CONFIG_TEGRA_MC)		+= tegra/
+diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
 new file mode 100644
-index 0000000..6337c61
+index 0000000..2d9d61b
 --- /dev/null
-+++ b/drivers/iommu/io-pgtable-arm-short.c
-@@ -0,0 +1,827 @@
++++ b/drivers/memory/mtk-smi.c
+@@ -0,0 +1,274 @@
 +/*
 + * Copyright (c) 2014-2015 MediaTek Inc.
 + * Author: Yong Wu <yong.wu@mediatek.com>
@@ -85,903 +75,332 @@ index 0000000..6337c61
 + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 + * GNU General Public License for more details.
 + */
++#include <linux/io.h>
++#include <linux/platform_device.h>
++#include <linux/clk.h>
 +#include <linux/err.h>
++#include <linux/module.h>
 +#include <linux/slab.h>
-+#include <linux/iommu.h>
-+#include <linux/errno.h>
-+#include "io-pgtable.h"
++#include <linux/of_address.h>
++#include <linux/of_irq.h>
++#include <linux/of_platform.h>
++#include <linux/pm_runtime.h>
++#include <soc/mediatek/smi.h>
 +
-+typedef u32 arm_short_iopte;
++#define SMI_LARB_MMU_EN		0xf00
++#define F_SMI_MMU_EN(port)	BIT(port)
 +
-+struct arm_short_io_pgtable {
-+	struct io_pgtable	iop;
-+	struct kmem_cache	*pgtable_cached;
-+	size_t			pgd_size;
-+	void			*pgd;
++struct mtk_smi_data {
++	struct clk		*clk_apb;
++	struct clk		*clk_smi;
 +};
 +
-+#define io_pgtable_to_data(x)			\
-+	container_of((x), struct arm_short_io_pgtable, iop)
++struct mtk_larb_data { /* larb: local arbiter */
++	void __iomem		*base;
++	struct clk		*clk_apb;
++	struct clk		*clk_smi;
++	struct device		*smidev;
++};
 +
-+#define io_pgtable_ops_to_data(x)		\
-+	io_pgtable_to_data(io_pgtable_ops_to_pgtable(x))
++struct mtk_larb_mmu {
++	u32			mmu;
++};
 +
-+#define io_pgtable_cfg_to_pgtable(x)		\
-+	container_of((x), struct io_pgtable, cfg)
-+
-+#define io_pgtable_cfg_to_data(x)		\
-+	io_pgtable_to_data(io_pgtable_cfg_to_pgtable(x))
-+
-+#define ARM_SHORT_PGDIR_SHIFT			20
-+#define ARM_SHORT_PAGE_SHIFT			12
-+#define ARM_SHORT_PTRS_PER_PTE			\
-+	(1 << (ARM_SHORT_PGDIR_SHIFT - ARM_SHORT_PAGE_SHIFT))
-+#define ARM_SHORT_BYTES_PER_PTE			\
-+	(ARM_SHORT_PTRS_PER_PTE * sizeof(arm_short_iopte))
-+
-+/* level 1 pagetable */
-+#define ARM_SHORT_PGD_TYPE_PGTABLE		BIT(0)
-+#define ARM_SHORT_PGD_TYPE_SECTION		BIT(1)
-+#define ARM_SHORT_PGD_B				BIT(2)
-+#define ARM_SHORT_PGD_C				BIT(3)
-+#define ARM_SHORT_PGD_PGTABLE_NS		BIT(3)
-+#define ARM_SHORT_PGD_SECTION_XN		BIT(4)
-+#define ARM_SHORT_PGD_IMPLE			BIT(9)
-+#define ARM_SHORT_PGD_RD_WR			(3 << 10)
-+#define ARM_SHORT_PGD_RDONLY			BIT(15)
-+#define ARM_SHORT_PGD_S				BIT(16)
-+#define ARM_SHORT_PGD_nG			BIT(17)
-+#define ARM_SHORT_PGD_SUPERSECTION		BIT(18)
-+#define ARM_SHORT_PGD_SECTION_NS		BIT(19)
-+
-+#define ARM_SHORT_PGD_TYPE_SUPERSECTION		\
-+	(ARM_SHORT_PGD_TYPE_SECTION | ARM_SHORT_PGD_SUPERSECTION)
-+#define ARM_SHORT_PGD_SECTION_TYPE_MSK		\
-+	(ARM_SHORT_PGD_TYPE_SECTION | ARM_SHORT_PGD_SUPERSECTION)
-+#define ARM_SHORT_PGD_PGTABLE_TYPE_MSK		\
-+	(ARM_SHORT_PGD_TYPE_SECTION | ARM_SHORT_PGD_TYPE_PGTABLE)
-+#define ARM_SHORT_PGD_TYPE_IS_PGTABLE(pgd)	\
-+	(((pgd) & ARM_SHORT_PGD_PGTABLE_TYPE_MSK) == ARM_SHORT_PGD_TYPE_PGTABLE)
-+#define ARM_SHORT_PGD_TYPE_IS_SECTION(pgd)	\
-+	(((pgd) & ARM_SHORT_PGD_SECTION_TYPE_MSK) == ARM_SHORT_PGD_TYPE_SECTION)
-+#define ARM_SHORT_PGD_TYPE_IS_SUPERSECTION(pgd)	\
-+	(((pgd) & ARM_SHORT_PGD_SECTION_TYPE_MSK) == \
-+	ARM_SHORT_PGD_TYPE_SUPERSECTION)
-+#define ARM_SHORT_PGD_PGTABLE_MSK		(~(ARM_SHORT_BYTES_PER_PTE - 1))
-+#define ARM_SHORT_PGD_SECTION_MSK		(~(SZ_1M - 1))
-+#define ARM_SHORT_PGD_SUPERSECTION_MSK		(~(SZ_16M - 1))
-+
-+/* level 2 pagetable */
-+#define ARM_SHORT_PTE_TYPE_LARGE		BIT(0)
-+#define ARM_SHORT_PTE_SMALL_XN			BIT(0)
-+#define ARM_SHORT_PTE_TYPE_SMALL		BIT(1)
-+#define ARM_SHORT_PTE_B				BIT(2)
-+#define ARM_SHORT_PTE_C				BIT(3)
-+#define ARM_SHORT_PTE_RD_WR			(3 << 4)
-+#define ARM_SHORT_PTE_RDONLY			BIT(9)
-+#define ARM_SHORT_PTE_S				BIT(10)
-+#define ARM_SHORT_PTE_nG			BIT(11)
-+#define ARM_SHORT_PTE_LARGE_XN			BIT(15)
-+#define ARM_SHORT_PTE_LARGE_MSK			(~(SZ_64K - 1))
-+#define ARM_SHORT_PTE_SMALL_MSK			(~(SZ_4K - 1))
-+#define ARM_SHORT_PTE_TYPE_MSK			\
-+	(ARM_SHORT_PTE_TYPE_LARGE | ARM_SHORT_PTE_TYPE_SMALL)
-+/* Bit[0] in small page is the XN bit */
-+#define ARM_SHORT_PTE_TYPE_IS_SMALLPAGE(pte)	\
-+	(((pte) & ARM_SHORT_PTE_TYPE_SMALL) == ARM_SHORT_PTE_TYPE_SMALL)
-+#define ARM_SHORT_PTE_TYPE_IS_LARGEPAGE(pte)	\
-+	(((pte) & ARM_SHORT_PTE_TYPE_MSK) == ARM_SHORT_PTE_TYPE_LARGE)
-+
-+#define ARM_SHORT_PGD_IDX(a)			((a) >> ARM_SHORT_PGDIR_SHIFT)
-+#define ARM_SHORT_PTE_IDX(a)			\
-+	(((a) >> ARM_SHORT_PAGE_SHIFT) & (ARM_SHORT_PTRS_PER_PTE - 1))
-+
-+#define ARM_SHORT_GET_PGTABLE_VA(pgd)		\
-+	(phys_to_virt((pgd) & ARM_SHORT_PGD_PGTABLE_MSK))
-+
-+/* Get the prot of large page for split */
-+#define ARM_SHORT_PTE_GET_PROT_LARGE(pte)	\
-+	(((pte) & (~ARM_SHORT_PTE_LARGE_MSK)) & ~ARM_SHORT_PTE_TYPE_MSK)
-+
-+#define ARM_SHORT_PGD_GET_PROT(pgd)		\
-+	(((pgd) & (~ARM_SHORT_PGD_SECTION_MSK)) & ~ARM_SHORT_PGD_SUPERSECTION)
-+
-+static bool selftest_running;
-+
-+static arm_short_iopte *
-+arm_short_get_pte_in_pgd(arm_short_iopte pgd, unsigned int iova)
++static int __mtk_smi_get(struct device *dev, struct clk *apb, struct clk *smi)
 +{
-+	arm_short_iopte *pte;
++	int ret;
 +
-+	pte = ARM_SHORT_GET_PGTABLE_VA(pgd);
-+	pte += ARM_SHORT_PTE_IDX(iova);
-+	return pte;
-+}
++	ret = pm_runtime_get_sync(dev);
++	if (ret < 0)
++		return ret;
 +
-+static dma_addr_t __arm_short_dma_addr(void *va)
-+{
-+	return (dma_addr_t)virt_to_phys(va);
-+}
-+
-+static int
-+__arm_short_set_pte(arm_short_iopte *ptep, arm_short_iopte pte,
-+		    unsigned int ptenr, struct io_pgtable_cfg *cfg)
-+{
-+	int i;
-+
-+	for (i = 0; i < ptenr; i++) {
-+		if (ptep[i] && pte) {
-+			/* Someone else may have allocated for this pte */
-+			WARN_ON(!selftest_running);
-+			goto err_exist_pte;
-+		}
-+		ptep[i] = pte;
++	ret = clk_prepare_enable(apb);
++	if (ret) {
++		dev_err(dev, "Failed to enable the apb clock\n");
++		goto err_put_pm;
 +	}
-+
-+	if (selftest_running)
-+		return 0;
-+
-+	dma_sync_single_for_device(cfg->iommu_dev, __arm_short_dma_addr(ptep),
-+				   sizeof(*ptep) * ptenr, DMA_TO_DEVICE);
++	ret = clk_prepare_enable(smi);
++	if (ret) {
++		dev_err(dev, "Failed to enable the smi clock\n");
++		goto err_disable_apb;
++	}
 +	return 0;
 +
-+err_exist_pte:
-+	while (i--) {
-+		ptep[i] = 0;
-+		if (!selftest_running)
-+			dma_sync_single_for_device(
-+				cfg->iommu_dev, __arm_short_dma_addr(ptep + i),
-+				sizeof(*ptep), DMA_TO_DEVICE);
-+	}
-+	return -EEXIST;
++err_disable_apb:
++	clk_disable_unprepare(apb);
++err_put_pm:
++	pm_runtime_put(dev);
++	return ret;
 +}
 +
-+static void *
-+__arm_short_alloc_pgtable(size_t size, gfp_t gfp, bool pgd,
-+			  struct io_pgtable_cfg *cfg)
++static void __mtk_smi_put(struct device *dev, struct clk *apb, struct clk *smi)
 +{
-+	struct arm_short_io_pgtable *data;
-+	struct device *dev = cfg->iommu_dev;
-+	dma_addr_t dma;
-+	void *va;
++	clk_disable_unprepare(smi);
++	clk_disable_unprepare(apb);
++	pm_runtime_put(dev);
++}
 +
-+	if (pgd) {/* lvl1 pagetable */
-+		va = alloc_pages_exact(size, gfp);
-+	} else {  /* lvl2 pagetable */
-+		data = io_pgtable_cfg_to_data(cfg);
-+		va = kmem_cache_zalloc(data->pgtable_cached, gfp);
++int mtk_smi_larb_get(struct device *larbdev)
++{
++	struct mtk_larb_data *larbdata = dev_get_drvdata(larbdev);
++	struct mtk_smi_data *smidata = dev_get_drvdata(larbdata->smidev);
++	struct mtk_larb_mmu *mmucfg = larbdev->platform_data;
++	int ret;
++
++	/* Enable smidev's power and clockes firstly, then enable the larb's. */
++	ret = __mtk_smi_get(larbdata->smidev, smidata->clk_apb,
++			    smidata->clk_smi);
++	if (ret)
++		return ret;
++
++	ret = __mtk_smi_get(larbdev, larbdata->clk_apb, larbdata->clk_smi);
++	if (ret)
++		goto err_put_smi;
++
++	/* config iommu */
++	writel_relaxed(mmucfg->mmu, larbdata->base + SMI_LARB_MMU_EN);
++
++	return ret;
++
++err_put_smi:
++	__mtk_smi_put(larbdata->smidev, smidata->clk_apb, smidata->clk_smi);
++	return ret;
++}
++
++void mtk_smi_larb_put(struct device *larbdev)
++{
++	struct mtk_larb_data *larbdata = dev_get_drvdata(larbdev);
++	struct mtk_smi_data *smidata = dev_get_drvdata(larbdata->smidev);
++
++	__mtk_smi_put(larbdev, larbdata->clk_apb, larbdata->clk_smi);
++	__mtk_smi_put(larbdata->smidev, smidata->clk_apb, smidata->clk_smi);
++}
++
++int mtk_smi_config_port(struct device *larbdev, unsigned int larbportid,
++			bool enable)
++{
++	struct mtk_larb_mmu *mmucfg = larbdev->platform_data;
++
++	if (!mmucfg) {
++		mmucfg = kzalloc(sizeof(*mmucfg), GFP_KERNEL);
++		if (!mmucfg)
++			return -ENOMEM;
++		larbdev->platform_data = mmucfg;
 +	}
 +
-+	if (!va)
-+		return NULL;
++	dev_dbg(larbdev, "%s iommu port id %d\n",
++		enable ? "enable" : "disable", larbportid);
 +
-+	if (selftest_running)
-+		return va;
-+
-+	dma = dma_map_single(dev, va, size, DMA_TO_DEVICE);
-+	if (dma_mapping_error(dev, dma))
-+		goto out_free;
-+
-+	if (dma != virt_to_phys(va))
-+		goto out_unmap;
-+
-+	if (!pgd)
-+		kmemleak_ignore(va);
-+
-+	return va;
-+
-+out_unmap:
-+	dev_err(dev, "Cannot accommodate DMA translation for IOMMU page tables\n");
-+	dma_unmap_single(dev, dma, size, DMA_TO_DEVICE);
-+out_free:
-+	if (pgd)
-+		free_pages_exact(va, size);
++	if (enable)
++		mmucfg->mmu |= F_SMI_MMU_EN(larbportid);
 +	else
-+		kmem_cache_free(data->pgtable_cached, va);
-+	return NULL;
-+}
++		mmucfg->mmu &= ~F_SMI_MMU_EN(larbportid);
 +
-+static void
-+__arm_short_free_pgtable(void *va, size_t size, bool pgd,
-+			 struct io_pgtable_cfg *cfg)
-+{
-+	struct arm_short_io_pgtable *data;
-+
-+	if (!selftest_running)
-+		dma_unmap_single(cfg->iommu_dev, __arm_short_dma_addr(va),
-+				 size, DMA_TO_DEVICE);
-+
-+	if (pgd) {
-+		free_pages_exact(va, size);
-+	} else {
-+		data = io_pgtable_cfg_to_data(cfg);
-+		kmem_cache_free(data->pgtable_cached, va);
-+	}
-+}
-+
-+static arm_short_iopte
-+__arm_short_pte_prot(struct arm_short_io_pgtable *data, int prot, bool large)
-+{
-+	arm_short_iopte pteprot;
-+	int quirk = data->iop.cfg.quirks;
-+
-+	pteprot = ARM_SHORT_PTE_S | ARM_SHORT_PTE_nG;
-+	pteprot |= large ? ARM_SHORT_PTE_TYPE_LARGE :
-+				ARM_SHORT_PTE_TYPE_SMALL;
-+	if (prot & IOMMU_CACHE)
-+		pteprot |=  ARM_SHORT_PTE_B | ARM_SHORT_PTE_C;
-+
-+	if (!(quirk & IO_PGTABLE_QUIRK_NO_PERMS)) {
-+		if (prot & IOMMU_NOEXEC) {
-+			pteprot |= large ? ARM_SHORT_PTE_LARGE_XN :
-+				ARM_SHORT_PTE_SMALL_XN;
-+		}
-+		pteprot |= ARM_SHORT_PTE_RD_WR;
-+		if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
-+			pteprot |= ARM_SHORT_PTE_RDONLY;
-+	}
-+
-+	return pteprot;
-+}
-+
-+static arm_short_iopte
-+__arm_short_pgd_prot(struct arm_short_io_pgtable *data, int prot, bool super)
-+{
-+	arm_short_iopte pgdprot;
-+	int quirk = data->iop.cfg.quirks;
-+
-+	pgdprot = ARM_SHORT_PGD_S | ARM_SHORT_PGD_nG;
-+	pgdprot |= super ? ARM_SHORT_PGD_TYPE_SUPERSECTION :
-+				ARM_SHORT_PGD_TYPE_SECTION;
-+	if (prot & IOMMU_CACHE)
-+		pgdprot |= ARM_SHORT_PGD_C | ARM_SHORT_PGD_B;
-+	if (quirk & IO_PGTABLE_QUIRK_ARM_NS)
-+		pgdprot |= ARM_SHORT_PGD_SECTION_NS;
-+
-+	if (!(quirk & IO_PGTABLE_QUIRK_NO_PERMS)) {
-+		if (prot & IOMMU_NOEXEC)
-+			pgdprot |= ARM_SHORT_PGD_SECTION_XN;
-+		pgdprot |= ARM_SHORT_PGD_RD_WR;
-+		if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
-+			pgdprot |= ARM_SHORT_PGD_RDONLY;
-+	}
-+
-+	return pgdprot;
-+}
-+
-+static arm_short_iopte
-+__arm_short_pte_prot_split(struct arm_short_io_pgtable *data,
-+			   arm_short_iopte pgdprot,
-+			   arm_short_iopte pteprot_large,
-+			   bool large)
-+{
-+	arm_short_iopte pteprot = 0;
-+
-+	pteprot = ARM_SHORT_PTE_S | ARM_SHORT_PTE_nG;
-+	pteprot |= large ? ARM_SHORT_PTE_TYPE_LARGE :
-+				ARM_SHORT_PTE_TYPE_SMALL;
-+
-+	/* Get the pte prot while large page split to small page */
-+	if (!pgdprot && !large) {
-+		pteprot |= pteprot_large & ~ARM_SHORT_PTE_SMALL_MSK;
-+		if (pteprot_large & ARM_SHORT_PTE_LARGE_XN)
-+			pteprot |= ARM_SHORT_PTE_SMALL_XN;
-+	}
-+
-+	/* Section to pte prot */
-+	if (pgdprot & ARM_SHORT_PGD_C)
-+		pteprot |= ARM_SHORT_PTE_C;
-+	if (pgdprot & ARM_SHORT_PGD_B)
-+		pteprot |= ARM_SHORT_PTE_B;
-+	if (pgdprot & ARM_SHORT_PGD_nG)
-+		pteprot |= ARM_SHORT_PTE_nG;
-+	if (pgdprot & ARM_SHORT_PGD_SECTION_XN)
-+		pteprot |= large ? ARM_SHORT_PTE_LARGE_XN :
-+				ARM_SHORT_PTE_SMALL_XN;
-+	if (pgdprot & ARM_SHORT_PGD_RD_WR)
-+		pteprot |= ARM_SHORT_PTE_RD_WR;
-+	if (pgdprot & ARM_SHORT_PGD_RDONLY)
-+		pteprot |= ARM_SHORT_PTE_RDONLY;
-+
-+	return pteprot;
-+}
-+
-+static arm_short_iopte
-+__arm_short_pgtable_prot(struct arm_short_io_pgtable *data)
-+{
-+	arm_short_iopte pgdprot = 0;
-+
-+	pgdprot = ARM_SHORT_PGD_TYPE_PGTABLE;
-+	if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_ARM_NS)
-+		pgdprot |= ARM_SHORT_PGD_PGTABLE_NS;
-+	return pgdprot;
-+}
-+
-+static int
-+_arm_short_map(struct arm_short_io_pgtable *data,
-+	       unsigned int iova, size_t size, phys_addr_t paddr,
-+	       arm_short_iopte pgdprot, arm_short_iopte pteprot)
-+{
-+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-+	const struct iommu_gather_ops *tlb = cfg->tlb;
-+	arm_short_iopte *pgd = data->pgd, *pte;
-+	void *cookie = data->iop.cookie, *pgtable_new = NULL;
-+	unsigned int pte_nr;
-+	int ret;
-+
-+	pgd += ARM_SHORT_PGD_IDX(iova);
-+
-+	if (!pteprot) { /* section or supersection */
-+		pte = pgd;
-+		pteprot = pgdprot;
-+		pte_nr = (size == SZ_1M) ? 1 : 16;
-+	} else {        /* page or largepage */
-+		if (!(*pgd)) {
-+			pgtable_new = __arm_short_alloc_pgtable(
-+					ARM_SHORT_BYTES_PER_PTE,
-+					GFP_ATOMIC, false, cfg);
-+			if (unlikely(!pgtable_new))
-+				return -ENOMEM;
-+			pgdprot |= virt_to_phys(pgtable_new);
-+			__arm_short_set_pte(pgd, pgdprot, 1, cfg);
-+		}
-+		pte = arm_short_get_pte_in_pgd(*pgd, iova);
-+		pte_nr = (size == SZ_4K) ? 1 : 16;
-+	}
-+
-+	pteprot |= (arm_short_iopte)paddr;
-+	ret = __arm_short_set_pte(pte, pteprot, pte_nr, cfg);
-+	if (ret && pgtable_new)
-+		goto err_unmap_pgd;
-+
-+	if (cfg->quirks & IO_PGTABLE_QUIRK_TLBI_ON_MAP) {
-+		tlb->tlb_add_flush(iova, size, true, cookie);
-+		tlb->tlb_sync(cookie);
-+	}
-+	return ret;
-+
-+err_unmap_pgd:
-+	__arm_short_set_pte(pgd, 0, 1, cfg);
-+	tlb->tlb_add_flush(iova, SZ_1M, false, cookie);/* Flush whole the pgd */
-+	tlb->tlb_sync(cookie);
-+	__arm_short_free_pgtable(pgtable_new, ARM_SHORT_BYTES_PER_PTE,
-+				 false, cfg);
-+	return ret;
-+}
-+
-+static int arm_short_map(struct io_pgtable_ops *ops, unsigned long iova,
-+			 phys_addr_t paddr, size_t size, int prot)
-+{
-+	struct arm_short_io_pgtable *data = io_pgtable_ops_to_data(ops);
-+	arm_short_iopte pgdprot = 0, pteprot = 0;
-+	bool large;
-+
-+	/* If no access, then nothing to do */
-+	if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
-+		return 0;
-+
-+	if (WARN_ON((iova | paddr) & (size - 1)))
-+		return -EINVAL;
-+
-+	switch (size) {
-+	case SZ_4K:
-+	case SZ_64K:
-+		large = (size == SZ_64K) ? true : false;
-+		pteprot = __arm_short_pte_prot(data, prot, large);
-+		pgdprot = __arm_short_pgtable_prot(data);
-+		break;
-+
-+	case SZ_1M:
-+	case SZ_16M:
-+		large = (size == SZ_16M) ? true : false;
-+		pgdprot = __arm_short_pgd_prot(data, prot, large);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return _arm_short_map(data, iova, size, paddr, pgdprot, pteprot);
-+}
-+
-+static phys_addr_t arm_short_iova_to_phys(struct io_pgtable_ops *ops,
-+					  unsigned long iova)
-+{
-+	struct arm_short_io_pgtable *data = io_pgtable_ops_to_data(ops);
-+	arm_short_iopte *pte, *pgd = data->pgd;
-+	phys_addr_t pa = 0;
-+
-+	pgd += ARM_SHORT_PGD_IDX(iova);
-+
-+	if (ARM_SHORT_PGD_TYPE_IS_PGTABLE(*pgd)) {
-+		pte = arm_short_get_pte_in_pgd(*pgd, iova);
-+
-+		if (ARM_SHORT_PTE_TYPE_IS_LARGEPAGE(*pte)) {
-+			pa = (*pte) & ARM_SHORT_PTE_LARGE_MSK;
-+			pa |= iova & ~ARM_SHORT_PTE_LARGE_MSK;
-+		} else if (ARM_SHORT_PTE_TYPE_IS_SMALLPAGE(*pte)) {
-+			pa = (*pte) & ARM_SHORT_PTE_SMALL_MSK;
-+			pa |= iova & ~ARM_SHORT_PTE_SMALL_MSK;
-+		}
-+	} else if (ARM_SHORT_PGD_TYPE_IS_SECTION(*pgd)) {
-+		pa = (*pgd) & ARM_SHORT_PGD_SECTION_MSK;
-+		pa |= iova & ~ARM_SHORT_PGD_SECTION_MSK;
-+	} else if (ARM_SHORT_PGD_TYPE_IS_SUPERSECTION(*pgd)) {
-+		pa = (*pgd) & ARM_SHORT_PGD_SUPERSECTION_MSK;
-+		pa |= iova & ~ARM_SHORT_PGD_SUPERSECTION_MSK;
-+	}
-+
-+	return pa;
-+}
-+
-+static bool __arm_short_pgtable_empty(arm_short_iopte *pgd)
-+{
-+	arm_short_iopte *pte;
-+	int i;
-+
-+	pte = ARM_SHORT_GET_PGTABLE_VA(*pgd);
-+	for (i = 0; i < ARM_SHORT_PTRS_PER_PTE; i++) {
-+		if (pte[i])
-+			return false;
-+	}
-+
-+	return true;
-+}
-+
-+static int
-+arm_short_split_blk_unmap(struct io_pgtable_ops *ops, unsigned int iova,
-+			  size_t size, size_t blk_size,
-+			  arm_short_iopte pgdprotup, arm_short_iopte pteprotup)
-+{
-+	struct arm_short_io_pgtable *data = io_pgtable_ops_to_data(ops);
-+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-+	unsigned long *pgbitmap = &cfg->pgsize_bitmap;
-+	unsigned int blk_base, blk_start, blk_end, i;
-+	arm_short_iopte pgdprot, pteprot;
-+	phys_addr_t blk_paddr;
-+	size_t mapsize = 0, nextmapsize;
-+	int ret;
-+
-+	/* Find the nearest mapsize */
-+	for (i = find_first_bit(pgbitmap, BITS_PER_LONG);
-+	     i < BITS_PER_LONG && ((1 << i) < blk_size) &&
-+	     IS_ALIGNED(size, 1 << i);
-+	     i = find_next_bit(pgbitmap, BITS_PER_LONG, i + 1))
-+		mapsize = 1 << i;
-+
-+	if (WARN_ON(!mapsize))
-+		return 0; /* Bytes unmapped */
-+	nextmapsize = 1 << i;
-+
-+	blk_base = iova & ~(blk_size - 1);
-+	blk_start = blk_base;
-+	blk_end = blk_start + blk_size;
-+	blk_paddr = arm_short_iova_to_phys(ops, blk_base);
-+
-+	for (; blk_start < blk_end;
-+	     blk_start += mapsize, blk_paddr += mapsize) {
-+		/* Unmap! */
-+		if (blk_start == iova)
-+			continue;
-+
-+		/* Try to upper map */
-+		if (blk_base != blk_start &&
-+		    IS_ALIGNED(blk_start | blk_paddr, nextmapsize) &&
-+		    mapsize != nextmapsize) {
-+			mapsize = nextmapsize;
-+			i = find_next_bit(pgbitmap, BITS_PER_LONG, i + 1);
-+			if (i < BITS_PER_LONG)
-+				nextmapsize = 1 << i;
-+		}
-+
-+		if (mapsize == SZ_1M) {
-+			pgdprot = pgdprotup;
-+			pgdprot |= __arm_short_pgd_prot(data, 0, false);
-+			pteprot = 0;
-+		} else { /* small or large page */
-+			pgdprot = (blk_size == SZ_64K) ? 0 : pgdprotup;
-+			pteprot = __arm_short_pte_prot_split(
-+					data, pgdprot, pteprotup,
-+					mapsize == SZ_64K);
-+			pgdprot = __arm_short_pgtable_prot(data);
-+		}
-+
-+		ret = _arm_short_map(data, blk_start, mapsize,
-+				     blk_paddr, pgdprot, pteprot);
-+		if (ret)
-+			return 0;/* Bytes unmapped */
-+	}
-+
-+	return size;
-+}
-+
-+static int arm_short_unmap(struct io_pgtable_ops *ops,
-+			   unsigned long iova,
-+			   size_t size)
-+{
-+	struct arm_short_io_pgtable *data = io_pgtable_ops_to_data(ops);
-+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-+	void *cookie = data->iop.cookie;
-+	arm_short_iopte *pgd_base = data->pgd;
-+	arm_short_iopte *pgd, *pte = NULL;
-+	arm_short_iopte pgd_tmp, pte_tmp = 0;
-+	unsigned int blk_base, blk_size;
-+	int unmap_size = 0;
-+	bool pgtempty;
-+
-+	do {
-+		pgd = pgd_base + ARM_SHORT_PGD_IDX(iova);
-+		blk_size = 0;
-+		pgtempty = false;
-+
-+		/* Get block size */
-+		if (ARM_SHORT_PGD_TYPE_IS_PGTABLE(*pgd)) {
-+			pte = arm_short_get_pte_in_pgd(*pgd, iova);
-+
-+			if (ARM_SHORT_PTE_TYPE_IS_SMALLPAGE(*pte))
-+				blk_size = SZ_4K;
-+			else if (ARM_SHORT_PTE_TYPE_IS_LARGEPAGE(*pte))
-+				blk_size = SZ_64K;
-+		} else if (ARM_SHORT_PGD_TYPE_IS_SECTION(*pgd)) {
-+			blk_size = SZ_1M;
-+		} else if (ARM_SHORT_PGD_TYPE_IS_SUPERSECTION(*pgd)) {
-+			blk_size = SZ_16M;
-+		}
-+
-+		if (WARN_ON(!blk_size))
-+			return 0;
-+
-+		/* Unmap the pgd/pte of the block base */
-+		blk_base = iova & ~(blk_size - 1);
-+		pgd = pgd_base + ARM_SHORT_PGD_IDX(blk_base);
-+		pgd_tmp = *pgd;
-+
-+		if (blk_size == SZ_4K || blk_size == SZ_64K) {
-+			pte = arm_short_get_pte_in_pgd(*pgd, blk_base);
-+			pte_tmp = *pte;
-+			__arm_short_set_pte(pte, 0, blk_size / SZ_4K, cfg);
-+
-+			pgtempty = __arm_short_pgtable_empty(pgd);
-+			if (pgtempty)
-+				__arm_short_set_pte(pgd, 0, 1, cfg);
-+		} else if (blk_size == SZ_1M || blk_size == SZ_16M) {
-+			__arm_short_set_pte(pgd, 0, blk_size / SZ_1M, cfg);
-+		}
-+
-+		cfg->tlb->tlb_add_flush(blk_base, blk_size, true, cookie);
-+		cfg->tlb->tlb_sync(cookie);
-+
-+		if (pgtempty)/* Free lvl2 pgtable after tlb-flush */
-+			__arm_short_free_pgtable(
-+					ARM_SHORT_GET_PGTABLE_VA(pgd_tmp),
-+					ARM_SHORT_BYTES_PER_PTE, false, cfg);
-+
-+		/*
-+		 * If the unmap size that from the pgsize_bitmap is more
-+		 * than the current blk_size, unmap it continuously.
-+		 */
-+		if (blk_size <= size) {
-+			iova += blk_size;
-+			size -= blk_size;
-+			unmap_size += blk_size;
-+			continue;
-+		} else { /* Split this block */
-+			return arm_short_split_blk_unmap(
-+					ops, iova, size, blk_size,
-+					ARM_SHORT_PGD_GET_PROT(pgd_tmp),
-+					ARM_SHORT_PTE_GET_PROT_LARGE(pte_tmp));
-+		}
-+	} while (size);
-+
-+	return unmap_size;
-+}
-+
-+static struct io_pgtable *
-+arm_short_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
-+{
-+	struct arm_short_io_pgtable *data;
-+
-+	if (cfg->ias > 32 || cfg->oas > 32)
-+		return NULL;
-+
-+	cfg->pgsize_bitmap &=
-+		(cfg->quirks & IO_PGTABLE_QUIRK_SHORT_SUPERSECTION) ?
-+		(SZ_4K | SZ_64K | SZ_1M | SZ_16M) : (SZ_4K | SZ_64K | SZ_1M);
-+
-+	if (!selftest_running && cfg->iommu_dev->dma_pfn_offset) {
-+		dev_err(cfg->iommu_dev, "Cannot accommodate DMA offset for IOMMU page tables\n");
-+		return NULL;
-+	}
-+
-+	data = kzalloc(sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return NULL;
-+
-+	data->pgd_size = SZ_16K;
-+	data->pgd = __arm_short_alloc_pgtable(
-+					data->pgd_size,
-+					GFP_KERNEL | __GFP_ZERO | GFP_DMA,
-+					true, cfg);
-+	if (!data->pgd)
-+		goto out_free_data;
-+	wmb();/* Ensure the empty pgd is visible before any actual TTBR write */
-+
-+	data->pgtable_cached = kmem_cache_create(
-+					"io-pgtable-arm-short",
-+					 ARM_SHORT_BYTES_PER_PTE,
-+					 ARM_SHORT_BYTES_PER_PTE,
-+					 SLAB_CACHE_DMA, NULL);
-+	if (!data->pgtable_cached)
-+		goto out_free_pgd;
-+
-+	/* TTBRs */
-+	cfg->arm_short_cfg.ttbr[0] = virt_to_phys(data->pgd);
-+	cfg->arm_short_cfg.ttbr[1] = 0;
-+	cfg->arm_short_cfg.tcr = 0;
-+	cfg->arm_short_cfg.nmrr = 0;
-+	cfg->arm_short_cfg.prrr = 0;
-+	/* The access flag is not supported as SCTLR isn't implemented */
-+
-+	data->iop.ops = (struct io_pgtable_ops) {
-+		.map		= arm_short_map,
-+		.unmap		= arm_short_unmap,
-+		.iova_to_phys	= arm_short_iova_to_phys,
-+	};
-+
-+	return &data->iop;
-+
-+out_free_pgd:
-+	__arm_short_free_pgtable(data->pgd, data->pgd_size, true, cfg);
-+out_free_data:
-+	kfree(data);
-+	return NULL;
-+}
-+
-+static void arm_short_free_pgtable(struct io_pgtable *iop)
-+{
-+	struct arm_short_io_pgtable *data = io_pgtable_to_data(iop);
-+
-+	kmem_cache_destroy(data->pgtable_cached);
-+	__arm_short_free_pgtable(data->pgd, data->pgd_size,
-+				 true, &data->iop.cfg);
-+	kfree(data);
-+}
-+
-+struct io_pgtable_init_fns io_pgtable_arm_short_init_fns = {
-+	.alloc	= arm_short_alloc_pgtable,
-+	.free	= arm_short_free_pgtable,
-+};
-+
-+#ifdef CONFIG_IOMMU_IO_PGTABLE_SHORT_SELFTEST
-+
-+static struct io_pgtable_cfg *cfg_cookie;
-+
-+static void dummy_tlb_flush_all(void *cookie)
-+{
-+	WARN_ON(cookie != cfg_cookie);
-+}
-+
-+static void dummy_tlb_add_flush(unsigned long iova, size_t size, bool leaf,
-+				void *cookie)
-+{
-+	WARN_ON(cookie != cfg_cookie);
-+	WARN_ON(!(size & cfg_cookie->pgsize_bitmap));
-+}
-+
-+static void dummy_tlb_sync(void *cookie)
-+{
-+	WARN_ON(cookie != cfg_cookie);
-+}
-+
-+static struct iommu_gather_ops dummy_tlb_ops = {
-+	.tlb_flush_all	= dummy_tlb_flush_all,
-+	.tlb_add_flush	= dummy_tlb_add_flush,
-+	.tlb_sync	= dummy_tlb_sync,
-+};
-+
-+#define __FAIL(ops)	({				\
-+		WARN(1, "selftest: test failed\n");	\
-+		selftest_running = false;		\
-+		-EFAULT;				\
-+})
-+
-+static int __init arm_short_do_selftests(void)
-+{
-+	struct io_pgtable_ops *ops;
-+	struct io_pgtable_cfg cfg = {
-+		.tlb = &dummy_tlb_ops,
-+		.oas = 32,
-+		.ias = 32,
-+		.quirks = IO_PGTABLE_QUIRK_ARM_NS |
-+			IO_PGTABLE_QUIRK_SHORT_SUPERSECTION,
-+		.pgsize_bitmap = SZ_4K | SZ_64K | SZ_1M | SZ_16M,
-+	};
-+	unsigned int iova, size, iova_start;
-+	unsigned int i, loopnr = 0;
-+
-+	selftest_running = true;
-+
-+	cfg_cookie = &cfg;
-+
-+	ops = alloc_io_pgtable_ops(ARM_SHORT_DESC, &cfg, &cfg);
-+	if (!ops) {
-+		pr_err("Failed to alloc short desc io pgtable\n");
-+		return -EINVAL;
-+	}
-+
-+	/*
-+	 * Initial sanity checks.
-+	 * Empty page tables shouldn't provide any translations.
-+	 */
-+	if (ops->iova_to_phys(ops, 42))
-+		return __FAIL(ops);
-+
-+	if (ops->iova_to_phys(ops, SZ_1G + 42))
-+		return __FAIL(ops);
-+
-+	if (ops->iova_to_phys(ops, SZ_2G + 42))
-+		return __FAIL(ops);
-+
-+	/*
-+	 * Distinct mappings of different granule sizes.
-+	 */
-+	iova = 0;
-+	i = find_first_bit(&cfg.pgsize_bitmap, BITS_PER_LONG);
-+	while (i != BITS_PER_LONG) {
-+		size = 1UL << i;
-+		if (ops->map(ops, iova, iova, size, IOMMU_READ |
-+						    IOMMU_WRITE |
-+						    IOMMU_NOEXEC |
-+						    IOMMU_CACHE))
-+			return __FAIL(ops);
-+
-+		/* Overlapping mappings */
-+		if (!ops->map(ops, iova, iova + size, size,
-+			      IOMMU_READ | IOMMU_NOEXEC))
-+			return __FAIL(ops);
-+
-+		if (ops->iova_to_phys(ops, iova + 42) != (iova + 42))
-+			return __FAIL(ops);
-+
-+		iova += SZ_16M;
-+		i++;
-+		i = find_next_bit(&cfg.pgsize_bitmap, BITS_PER_LONG, i);
-+		loopnr++;
-+	}
-+
-+	/* Partial unmap */
-+	i = 1;
-+	size = 1UL << __ffs(cfg.pgsize_bitmap);
-+	while (i < loopnr) {
-+		iova_start = i * SZ_16M;
-+		if (ops->unmap(ops, iova_start + size, size) != size)
-+			return __FAIL(ops);
-+
-+		/* Remap of partial unmap */
-+		if (ops->map(ops, iova_start + size, size, size, IOMMU_READ))
-+			return __FAIL(ops);
-+
-+		if (ops->iova_to_phys(ops, iova_start + size + 42)
-+		    != (size + 42))
-+			return __FAIL(ops);
-+		i++;
-+	}
-+
-+	/* Full unmap */
-+	iova = 0;
-+	i = find_first_bit(&cfg.pgsize_bitmap, BITS_PER_LONG);
-+	while (i != BITS_PER_LONG) {
-+		size = 1UL << i;
-+
-+		if (ops->unmap(ops, iova, size) != size)
-+			return __FAIL(ops);
-+
-+		if (ops->iova_to_phys(ops, iova + 42))
-+			return __FAIL(ops);
-+
-+		/* Remap full block */
-+		if (ops->map(ops, iova, iova, size, IOMMU_WRITE))
-+			return __FAIL(ops);
-+
-+		if (ops->iova_to_phys(ops, iova + 42) != (iova + 42))
-+			return __FAIL(ops);
-+
-+		iova += SZ_16M;
-+		i++;
-+		i = find_next_bit(&cfg.pgsize_bitmap, BITS_PER_LONG, i);
-+	}
-+
-+	free_io_pgtable_ops(ops);
-+
-+	selftest_running = false;
-+
-+	pr_info("arm-short io-pgtable: self test ok\n");
 +	return 0;
 +}
-+subsys_initcall(arm_short_do_selftests);
-+#endif
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 73c0748..0d7bcfc 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -38,9 +38,6 @@
- #define io_pgtable_to_data(x)						\
- 	container_of((x), struct arm_lpae_io_pgtable, iop)
- 
--#define io_pgtable_ops_to_pgtable(x)					\
--	container_of((x), struct io_pgtable, ops)
--
- #define io_pgtable_ops_to_data(x)					\
- 	io_pgtable_to_data(io_pgtable_ops_to_pgtable(x))
- 
-diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
-index 6f2e319..e7b0b1a 100644
---- a/drivers/iommu/io-pgtable.c
-+++ b/drivers/iommu/io-pgtable.c
-@@ -33,6 +33,9 @@ io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] =
- 	[ARM_64_LPAE_S1] = &io_pgtable_arm_64_lpae_s1_init_fns,
- 	[ARM_64_LPAE_S2] = &io_pgtable_arm_64_lpae_s2_init_fns,
- #endif
-+#ifdef CONFIG_IOMMU_IO_PGTABLE_SHORT
-+	[ARM_SHORT_DESC] = &io_pgtable_arm_short_init_fns,
-+#endif
- };
- 
- struct io_pgtable_ops *alloc_io_pgtable_ops(enum io_pgtable_fmt fmt,
-diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-index ac9e234..af09467 100644
---- a/drivers/iommu/io-pgtable.h
-+++ b/drivers/iommu/io-pgtable.h
-@@ -9,6 +9,7 @@ enum io_pgtable_fmt {
- 	ARM_32_LPAE_S2,
- 	ARM_64_LPAE_S1,
- 	ARM_64_LPAE_S2,
-+	ARM_SHORT_DESC,
- 	IO_PGTABLE_NUM_FMTS,
- };
- 
-@@ -45,7 +46,10 @@ struct iommu_gather_ops {
-  *                 page table walker.
-  */
- struct io_pgtable_cfg {
--	#define IO_PGTABLE_QUIRK_ARM_NS	(1 << 0)	/* Set NS bit in PTEs */
-+	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0) /* Set NS bit in PTEs */
-+	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1) /* No AP/XN bits */
-+	#define IO_PGTABLE_QUIRK_TLBI_ON_MAP	BIT(2) /* TLB Inv. on map */
-+	#define IO_PGTABLE_QUIRK_SHORT_SUPERSECTION	BIT(3)
- 	int				quirks;
- 	unsigned long			pgsize_bitmap;
- 	unsigned int			ias;
-@@ -65,6 +69,14 @@ struct io_pgtable_cfg {
- 			u64	vttbr;
- 			u64	vtcr;
- 		} arm_lpae_s2_cfg;
 +
-+		struct {
-+			u32	ttbr[2];
-+			u32	tcr;
-+			u32	nmrr;
-+			u32	prrr;
-+			u32	sctlr;
-+		} arm_short_cfg;
- 	};
- };
- 
-@@ -131,6 +143,9 @@ struct io_pgtable {
- 	struct io_pgtable_ops	ops;
- };
- 
-+#define io_pgtable_ops_to_pgtable(x)		\
-+	container_of((x), struct io_pgtable, ops)
++static int mtk_smi_larb_probe(struct platform_device *pdev)
++{
++	struct mtk_larb_data *larbdata;
++	struct resource *res;
++	struct device *dev = &pdev->dev;
++	struct device_node *smi_node;
++	struct platform_device *smi_pdev;
 +
- /**
-  * struct io_pgtable_init_fns - Alloc/free a set of page tables for a
-  *                              particular format.
-@@ -147,5 +162,6 @@ extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s1_init_fns;
- extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s2_init_fns;
- extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns;
- extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns;
-+extern struct io_pgtable_init_fns io_pgtable_arm_short_init_fns;
- 
- #endif /* __IO_PGTABLE_H */
++	if (!dev->pm_domain)
++		return -EPROBE_DEFER;
++
++	larbdata = devm_kzalloc(dev, sizeof(*larbdata), GFP_KERNEL);
++	if (!larbdata)
++		return -ENOMEM;
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	larbdata->base = devm_ioremap_resource(dev, res);
++	if (IS_ERR(larbdata->base))
++		return PTR_ERR(larbdata->base);
++
++	larbdata->clk_apb = devm_clk_get(dev, "apb");
++	if (IS_ERR(larbdata->clk_apb))
++		return PTR_ERR(larbdata->clk_apb);
++
++	larbdata->clk_smi = devm_clk_get(dev, "smi");
++	if (IS_ERR(larbdata->clk_smi))
++		return PTR_ERR(larbdata->clk_smi);
++
++	smi_node = of_parse_phandle(dev->of_node, "mediatek,smi", 0);
++	if (!smi_node)
++		return -EINVAL;
++
++	smi_pdev = of_find_device_by_node(smi_node);
++	of_node_put(smi_node);
++	if (smi_pdev) {
++		larbdata->smidev = &smi_pdev->dev;
++	} else {
++		dev_err(dev, "Failed to get the smi_common device\n");
++		return -EINVAL;
++	}
++
++	pm_runtime_enable(dev);
++	dev_set_drvdata(dev, larbdata);
++	return 0;
++}
++
++static int mtk_smi_larb_remove(struct platform_device *pdev)
++{
++	struct mtk_larb_mmu *mmucfg = pdev->dev.platform_data;
++
++	kfree(mmucfg);
++	pm_runtime_disable(&pdev->dev);
++	return 0;
++}
++
++static const struct of_device_id mtk_smi_larb_of_ids[] = {
++	{ .compatible = "mediatek,mt8173-smi-larb",},
++	{}
++};
++
++static struct platform_driver mtk_smi_larb_driver = {
++	.probe	= mtk_smi_larb_probe,
++	.remove = mtk_smi_larb_remove,
++	.driver	= {
++		.name = "mtk-smi-larb",
++		.of_match_table = mtk_smi_larb_of_ids,
++	}
++};
++
++static int mtk_smi_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct mtk_smi_data *smidata;
++	int ret;
++
++	if (!dev->pm_domain)
++		return -EPROBE_DEFER;
++
++	smidata = devm_kzalloc(dev, sizeof(*smidata), GFP_KERNEL);
++	if (!smidata)
++		return -ENOMEM;
++
++	smidata->clk_apb = devm_clk_get(dev, "apb");
++	if (IS_ERR(smidata->clk_apb))
++		return PTR_ERR(smidata->clk_apb);
++
++	smidata->clk_smi = devm_clk_get(dev, "smi");
++	if (IS_ERR(smidata->clk_smi))
++		return PTR_ERR(smidata->clk_smi);
++
++	pm_runtime_enable(dev);
++	dev_set_drvdata(dev, smidata);
++	return ret;
++}
++
++static int mtk_smi_remove(struct platform_device *pdev)
++{
++	pm_runtime_disable(&pdev->dev);
++	return 0;
++}
++
++static const struct of_device_id mtk_smi_of_ids[] = {
++	{ .compatible = "mediatek,mt8173-smi",},
++	{}
++};
++
++static struct platform_driver mtk_smi_driver = {
++	.probe	= mtk_smi_probe,
++	.remove = mtk_smi_remove,
++	.driver	= {
++		.name = "mtk-smi",
++		.of_match_table = mtk_smi_of_ids,
++	}
++};
++
++static int __init mtk_smi_init(void)
++{
++	int ret;
++
++	ret = platform_driver_register(&mtk_smi_driver);
++	if (ret != 0) {
++		pr_err("Failed to register SMI driver\n");
++		return ret;
++	}
++
++	ret = platform_driver_register(&mtk_smi_larb_driver);
++	if (ret != 0) {
++		pr_err("Failed to register SMI-LARB driver\n");
++		goto err_unreg_smi;
++	}
++	return ret;
++
++err_unreg_smi:
++	platform_driver_unregister(&mtk_smi_driver);
++	return ret;
++}
++module_init(mtk_smi_init);
+diff --git a/include/soc/mediatek/smi.h b/include/soc/mediatek/smi.h
+new file mode 100644
+index 0000000..189d575
+--- /dev/null
++++ b/include/soc/mediatek/smi.h
+@@ -0,0 +1,60 @@
++/*
++ * Copyright (c) 2014-2015 MediaTek Inc.
++ * Author: Yong Wu <yong.wu@mediatek.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++#ifndef MTK_IOMMU_SMI_H
++#define MTK_IOMMU_SMI_H
++
++#include <linux/device.h>
++
++#ifdef CONFIG_MTK_SMI
++
++/*
++ * Record the iommu info for each port in the local arbiter.
++ * It is only for iommu.
++ *
++ * Returns 0 if successfully, others if failed.
++ */
++int mtk_smi_config_port(struct device *larbdev, unsigned int larbportid,
++			bool enable);
++/*
++ * The two function below config iommu and enable/disable the clock
++ * for the larb.
++ *
++ * mtk_smi_larb_get must be called before the multimedia HW work.
++ * mtk_smi_larb_put must be called after HW done.
++ * Both should be called in non-atomic context.
++ *
++ * Returns 0 if successfully, others if failed.
++ */
++int mtk_smi_larb_get(struct device *larbdev);
++void mtk_smi_larb_put(struct device *larbdev);
++
++#else
++
++static int
++mtk_smi_config_port(struct device *larbdev, unsigned int larbportid,
++		    bool enable)
++{
++	return 0;
++}
++
++static inline int mtk_smi_larb_get(struct device *larbdev)
++{
++	return 0;
++}
++
++static inline void mtk_smi_larb_put(struct device *larbdev) { }
++
++#endif
++
++#endif
 -- 
 1.8.1.1.dirty
