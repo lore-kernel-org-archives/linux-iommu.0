@@ -1,19 +1,14 @@
-From: Andreas Hartmann <andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org>
-Subject: Re: [dm-devel] AMD-Vi IO_PAGE_FAULTs and ata3.00: failed command:
-	READ FPDMA QUEUED errors since Linux 4.0
-Date: Sun, 11 Oct 2015 14:23:15 +0200
-Message-ID: <561A54B3.5000504@maya.org>
-References: <20151006101356.GE12506@8bytes.org> <56141507.7040103@maya.org>
-	<56148A1B.5060506@maya.org> <20151007161022.GI28811@8bytes.org>
-	<56154DEA.5050901@maya.org> <20151008163957.GK28811@8bytes.org>
-	<5616B436.1000802@maya.org> <5616C998.1010309@maya.org>
-	<56174EA6.7000106@maya.org> <56178599.6010807@maya.org>
-	<20151009145951.GC27420@8bytes.org> <5617FD6E.70802@maya.org>
+From: Oded Gabbay <oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 0/7] Enable SVM for Intel VT-d
+Date: Sun, 11 Oct 2015 16:48:31 +0300
+Message-ID: <CAFCwf11gkwGaqJ+Rtbp6Roo3GzKJdXeTp189pJSGattY8POCjA@mail.gmail.com>
+References: <1444348223.92154.22.camel@infradead.org>
+	<1444483075.92154.98.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5617FD6E.70802-YKS6W9RDU/w@public.gmane.org>
+In-Reply-To: <1444483075.92154.98.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,35 +18,83 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, James.Bottomley-d9PhHud1JfjCXq6kfMZ53/egYHeGw8Jk@public.gmane.org, Hannes Reinecke <hare-l3A5Bk7waGM@public.gmane.org>
-Cc: linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, device-mapper development <dm-devel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jens Axboe <axboe-b10kYP2dOMg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mikulas Patocka <mpatocka-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Milan Broz <mbroz-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: intel-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Barnes,
+	Jesse" <jesse.barnes-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Alex Deucher <alexander.deucher-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/09/2015 at 07:46 PM, Andreas Hartmann wrote:
-> Hello J=F6rg,
-> =
+On Sat, Oct 10, 2015 at 4:17 PM, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> wrote:
+>
+> On Fri, 2015-10-09 at 00:50 +0100, David Woodhouse wrote:
+> > This patch set enables PASID support for the Intel IOMMU, along with
+> > page request support.
+> >
+> > Like its AMD counterpart, it exposes an IOMMU-specific API. I believe
+> > we'll have a session at the Kernel Summit later this month in which we
+> > can work out a generic API which will cover the two (now) existing
+> > implementations as well as upcoming ARM (and other?) versions.
+> >
+> > For the time being, however, exposing an Intel-specific API is good
+> > enough, especially as we don't have the required TLP prefix support on
+> > our PCIe root ports and we *can't* support discrete PCIe devices with
+> > PASID support. It's purely on-chip stuff right now, which is basically
+> > only Intel graphics.
+> >
+> > The AMD implementation allows a per-device PASID space, and managing
+> > the PASID space is left entirely to the device driver. In contrast,
+> > this implementation maintains a per-IOMMU PASID space, and drivers
+> > calling intel_svm_bind_mm() will be *given* the PASID that they are to
+> > use. In general we seem to be converging on using a single PASID space
+> > across *all* IOMMUs in the system, and this will support that mode of
+> > operation.
+>
+> The other noticeable difference is the lifetime management of the mm.
+> My code takes a reference on it, and will only do the mmput() when the
+> driver unbinds the PASID. So the mmu_notifier's .release() method won't
+> get called before that.
+>
+> The AMD version doesn't take that refcount, and its .release() method
+> therefore needs to actually call back into the device driver and ensure
+> that all access to the mm, including pending page faults, is flushed.
+> The locking issues there scare me a little, especially if page faults
+> are currently outstanding.
+>
+> In the i915 case we have an open file descriptor associated with the
+> gfx context. When the process dies, the fd is closed and the driver can
+> go and clean up after it.
+>
+> The amdkfd driver, on the other hand, keeps the device-side job running
+> even after the process has closed its file descriptor. So it *needs*
+> the .release() call to happen when the process exits, as it otherwise
+> doesn't know when to clean up.
+>
+> I am somewhat dubious about that as a design decision. If we're moving
+> to a more explicit management of off-cpu tasks with mm access, as is to
+> be discussed at the Kernel Summit, then hopefully we can fix that. It's
+> a *lot* simpler if we just pin the mm while the device context has
+> access to it.
+>
+> --
+> dwmw2
+>
 
-> On 10/09/2015 at 04:59 PM, Joerg Roedel wrote:
->> On Fri, Oct 09, 2015 at 11:15:05AM +0200, Andreas Hartmann wrote:
->>> v4.3-rc4 isn't usable at all for me as long as is hangs the machine on
->>> the necessary PCI passthrough for VMs (I need them).
->>
->> If the fix I just sent you works, could you please test this again with
->> a (patched) v4.3-rc4 kernel?
-> =
+Hi David,
 
-> Your IOMMU-patch works fine - but the ata-problem can be seen here, too.
-> Same behavior as with 4.1.10.
-> =
+There was a whole debate about this issue (amdkfd binding to mm struct
+lifespan instead of to fd) when we upstreamed amdkfd, with good
+arguments for and against. If you want to understand the reasons, I
+suggest reading the following email thread:
 
+https://lists.linuxfoundation.org/pipermail/iommu/2014-July/009005.html
 
-Ok, this patch seems to fix the ata errors (I did a lot of tests until
-now w/ v4.1.10 - but anyway I'm cautious):
+TL;DR, IIRC, the bottom line was that (over-simplified):
 
-http://thread.gmane.org/gmane.linux.scsi/104141/focus=3D104267
+1. HSA/amdkfd is not a "classic" device driver, is it performs
+operations in context of a process working on multiple devices and
+doesn't contain an "instance per device". It's conceptually more like
+a subsystem/system call interface then a device driver.
 
-Would be nice to have it in all kernels (as stable patch too in 4.1.x).
+2. It is not a one-of-a-kind in the kernel, as there are other drivers
+which use this method.
 
-
-Regards,
-Andreas
+        Oded
