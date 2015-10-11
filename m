@@ -1,14 +1,14 @@
-From: Oded Gabbay <oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 0/7] Enable SVM for Intel VT-d
-Date: Sun, 11 Oct 2015 16:48:31 +0300
-Message-ID: <CAFCwf11gkwGaqJ+Rtbp6Roo3GzKJdXeTp189pJSGattY8POCjA@mail.gmail.com>
-References: <1444348223.92154.22.camel@infradead.org>
-	<1444483075.92154.98.camel@infradead.org>
+From: Varun Sethi <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: RE: [RFC PATCH 0/2] VFIO no-iommu
+Date: Sun, 11 Oct 2015 17:29:27 +0000
+Message-ID: <BN1PR0301MB0627AEEF3B5B7E5FB87ECB29EA320@BN1PR0301MB0627.namprd03.prod.outlook.com>
+References: <20151009182228.14752.99700.stgit@gimli.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1444483075.92154.98.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+In-Reply-To: <20151009182228.14752.99700.stgit-GCcqpEzw8uZBDLzU/O5InQ@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,83 +18,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: intel-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Barnes,
-	Jesse" <jesse.barnes-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Alex Deucher <alexander.deucher-5C7GfCeVMHo@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "avi-VrcmuVmyx1hWk0Htik3J/w@public.gmane.org" <avi-VrcmuVmyx1hWk0Htik3J/w@public.gmane.org>, "avi-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org" <avi-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org>, "gleb-VrcmuVmyx1hWk0Htik3J/w@public.gmane.org" <gleb-VrcmuVmyx1hWk0Htik3J/w@public.gmane.org>, "corbet-T1hC0tSOHrs@public.gmane.org" <corbet-T1hC0tSOHrs@public.gmane.org>, "bruce.richardson-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <bruce.richardson-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "alexander.duyck-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <alexander.duyck-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "gleb-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org" <gleb-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org>, "stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org" <stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org>, "vladz-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org" <vladz-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "hjk-vqZO0P4V72/QD6PfKP4TzA@public.gmane.org" <hjk-vqZO0P4V72/QD6PfKP4TzA@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Oct 10, 2015 at 4:17 PM, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> wrote:
->
-> On Fri, 2015-10-09 at 00:50 +0100, David Woodhouse wrote:
-> > This patch set enables PASID support for the Intel IOMMU, along with
-> > page request support.
-> >
-> > Like its AMD counterpart, it exposes an IOMMU-specific API. I believe
-> > we'll have a session at the Kernel Summit later this month in which we
-> > can work out a generic API which will cover the two (now) existing
-> > implementations as well as upcoming ARM (and other?) versions.
-> >
-> > For the time being, however, exposing an Intel-specific API is good
-> > enough, especially as we don't have the required TLP prefix support on
-> > our PCIe root ports and we *can't* support discrete PCIe devices with
-> > PASID support. It's purely on-chip stuff right now, which is basically
-> > only Intel graphics.
-> >
-> > The AMD implementation allows a per-device PASID space, and managing
-> > the PASID space is left entirely to the device driver. In contrast,
-> > this implementation maintains a per-IOMMU PASID space, and drivers
-> > calling intel_svm_bind_mm() will be *given* the PASID that they are to
-> > use. In general we seem to be converging on using a single PASID space
-> > across *all* IOMMUs in the system, and this will support that mode of
-> > operation.
->
-> The other noticeable difference is the lifetime management of the mm.
-> My code takes a reference on it, and will only do the mmput() when the
-> driver unbinds the PASID. So the mmu_notifier's .release() method won't
-> get called before that.
->
-> The AMD version doesn't take that refcount, and its .release() method
-> therefore needs to actually call back into the device driver and ensure
-> that all access to the mm, including pending page faults, is flushed.
-> The locking issues there scare me a little, especially if page faults
-> are currently outstanding.
->
-> In the i915 case we have an open file descriptor associated with the
-> gfx context. When the process dies, the fd is closed and the driver can
-> go and clean up after it.
->
-> The amdkfd driver, on the other hand, keeps the device-side job running
-> even after the process has closed its file descriptor. So it *needs*
-> the .release() call to happen when the process exits, as it otherwise
-> doesn't know when to clean up.
->
-> I am somewhat dubious about that as a design decision. If we're moving
-> to a more explicit management of off-cpu tasks with mm access, as is to
-> be discussed at the Kernel Summit, then hopefully we can fix that. It's
-> a *lot* simpler if we just pin the mm while the device context has
-> access to it.
->
-> --
-> dwmw2
->
+Hi Alex,
+Thanks for the patch Alex. This would also require support in Qemu to expose the physical address to the VM. Are you looking at that part as well?
 
-Hi David,
+Regards
+Varun
 
-There was a whole debate about this issue (amdkfd binding to mm struct
-lifespan instead of to fd) when we upstreamed amdkfd, with good
-arguments for and against. If you want to understand the reasons, I
-suggest reading the following email thread:
+-----Original Message-----
+From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Alex Williamson
+Sent: Saturday, October 10, 2015 12:11 AM
+To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: avi-VrcmuVmyx1hWk0Htik3J/w@public.gmane.org; avi-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org; gleb-VrcmuVmyx1hWk0Htik3J/w@public.gmane.org; mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; bruce.richardson-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org; corbet-T1hC0tSOHrs@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; alexander.duyck-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; gleb-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org; stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org; vladz-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; hjk-vqZO0P4V72/QD6PfKP4TzA@public.gmane.org; gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
+Subject: [RFC PATCH 0/2] VFIO no-iommu
 
-https://lists.linuxfoundation.org/pipermail/iommu/2014-July/009005.html
+Recent patches for UIO have been attempting to add MSI/X support, which unfortunately implies DMA support, which users have been enabling anyway, but was never intended for UIO.  VFIO on the other hand expects an IOMMU to provide isolation of devices, but provides a much more complete device interface, which already supports full MSI/X support.  There's really no way to support userspace drivers with DMA capable devices without an IOMMU to protect the host, but we can at least think about doing it in a way that properly taints the kernel and avoids creating new code duplicating existing code, that does have a supportable use case.
 
-TL;DR, IIRC, the bottom line was that (over-simplified):
+The diffstat is only so large because I moved vfio.c to vfio_core.c so I could more easily keep the module named vfio.ko while keeping the bulk of the no-iommu support in a separate file that can be optionally compiled.  We're really looking at a couple hundred lines of mostly stub code.  The VFIO_NOIOMMU_IOMMU could certainly be expanded to do page pinning and virt_to_bus() translation, but I didn't want to complicate anything yet.
 
-1. HSA/amdkfd is not a "classic" device driver, is it performs
-operations in context of a process working on multiple devices and
-doesn't contain an "instance per device". It's conceptually more like
-a subsystem/system call interface then a device driver.
+I've only compiled this and tested loading the module with the new no-iommu mode enabled, I haven't actually tried to port a DPDK driver to it, though it ought to be a pretty obvious mix of the existing UIO and VFIO versions (set the IOMMU, but avoid using it for mapping, use however bus translations are done w/ UIO).  The core vfio device file is still /dev/vfio/vfio, but all the groups become /dev/vfio-noiommu/$GROUP.
 
-2. It is not a one-of-a-kind in the kernel, as there are other drivers
-which use this method.
+It should be obvious, but I always feel obligated to state that this does not and will not ever enable device assignment to virtual machines on non-IOMMU capable platforms.
 
-        Oded
+I'm curious what IOMMU folks think of this.  This hack is really only possible because we don't use iommu_ops for regular DMA, so we can hijack it fairly safely.  I believe that's intended to change though, so this may not be practical long term.  Thanks,
+
+Alex
+
+---
+
+Alex Williamson (2):
+      vfio: Move vfio.c vfio_core.c
+      vfio: Include no-iommu mode
+
+
+ drivers/vfio/Kconfig        |   15 
+ drivers/vfio/Makefile       |    4 
+ drivers/vfio/vfio.c         | 1640 ------------------------------------------
+ drivers/vfio/vfio_core.c    | 1680 +++++++++++++++++++++++++++++++++++++++++++
+ drivers/vfio/vfio_noiommu.c |  185 +++++
+ drivers/vfio/vfio_private.h |   31 +
+ include/uapi/linux/vfio.h   |    2 
+ 7 files changed, 1917 insertions(+), 1640 deletions(-)  delete mode 100644 drivers/vfio/vfio.c  create mode 100644 drivers/vfio/vfio_core.c  create mode 100644 drivers/vfio/vfio_noiommu.c  create mode 100644 drivers/vfio/vfio_private.h _______________________________________________
+iommu mailing list
+iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
