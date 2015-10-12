@@ -1,17 +1,15 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH 2/2] vfio: Include no-iommu mode
-Date: Mon, 12 Oct 2015 12:08:08 -0600
-Message-ID: <1444673288.4059.396.camel@redhat.com>
-References: <20151009182228.14752.99700.stgit@gimli.home>
-	<20151009184110.14752.53531.stgit@gimli.home>
-	<20151012085607.2c64f98f@urahara>
-	<20151012191150-mutt-send-email-mst@redhat.com>
-	<1444672015.4059.380.camel@redhat.com>
+From: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [REPOST PATCH 1/4] ARM: dts: DRA7: Add dsp1_system syscon node
+Date: Mon, 12 Oct 2015 14:43:04 -0700
+Message-ID: <20151012214304.GD23801@atomide.com>
+References: <1443828205-18706-1-git-send-email-s-anna@ti.com>
+	<1443828205-18706-2-git-send-email-s-anna@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1444672015.4059.380.camel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1443828205-18706-2-git-send-email-s-anna-l0cyMroinI0@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,131 +19,52 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: avi-VrcmuVmyx1hWk0Htik3J/w@public.gmane.org, avi-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org, gleb-VrcmuVmyx1hWk0Htik3J/w@public.gmane.org, corbet-T1hC0tSOHrs@public.gmane.org, bruce.richardson-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alexander.duyck-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gleb-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org, Stephen Hemminger <stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org>, vladz-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, hjk-vqZO0P4V72/QD6PfKP4TzA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
+To: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2015-10-12 at 11:46 -0600, Alex Williamson wrote:
-> On Mon, 2015-10-12 at 19:27 +0300, Michael S. Tsirkin wrote:
-> > On Mon, Oct 12, 2015 at 08:56:07AM -0700, Stephen Hemminger wrote:
-> > > On Fri, 09 Oct 2015 12:41:10 -0600
-> > > Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> > > 
-> > > > There is really no way to safely give a user full access to a PCI
-> > > > without an IOMMU to protect the host from errant DMA.  There is also
-> > > > no way to provide DMA translation, for use cases such as devices
-> > > > assignment to virtual machines.  However, there are still those users
-> > > > that want userspace drivers under those conditions.  The UIO driver
-> > > > exists for this use case, but does not provide the degree of device
-> > > > access and programming that VFIO has.  In an effort to avoid code
-> > > > duplication, this introduces a No-IOMMU mode for VFIO.
-> > > > 
-> > > > This mode requires enabling CONFIG_VFIO_NOIOMMU and loading the vfio
-> > > > module with the option "enable_unsafe_pci_noiommu_mode".  This should
-> > > > make it very clear that this mode is not safe.  In this mode, there is
-> > > > no support for unprivileged users, CAP_SYS_ADMIN is required for
-> > > > access to the necessary dev files.  Mixing no-iommu and secure VFIO is
-> > > > also unsupported, as are any VFIO IOMMU backends other than the
-> > > > vfio-noiommu backend.  Furthermore, unsafe group files are relocated
-> > > > to /dev/vfio-noiommu/.  Upon successful loading in this mode, the
-> > > > kernel is tainted due to the dummy IOMMU put in place.  Unloading of
-> > > > the module in this mode is also unsupported and will BUG due to the
-> > > > lack of support for unregistering an IOMMU for a bus type.
-> > > > 
-> > > > Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> > > 
-> > > Will this work for distro's where chaning kernel command line options
-> > > is really not that practical. We need to boot with one command line
-> > > and then decide to use IOMMU (or not) later on during the service
-> > > startup of the dataplane application.
-> > 
-> > On open? That's too late in my opinion. But maybe the flag can be
-> > tweaked so that it will probe for iommu, if there - do the
-> > right thing, but if that fails, enable the dummy one.
-> > And maybe defer tainting until device open.
+* Suman Anna <s-anna-l0cyMroinI0@public.gmane.org> [151002 16:27]:
+> The DSP_SYSTEM sub-module is a dedicated system control logic
+> module present within a DRA7 DSP processor sub-system. This
+> module is responsible for power management, clock generation
+> and connection to the device PRCM module.
+> 
+> Add a syscon node for this module for the DSP1 processor
+> sub-system. This is added as a syscon node as it is a common
+> configuration module that can be used by the different IOMMU
+> instances and the corresponding remoteproc device.
+> 
+> The node is added to the common dra7.dtsi file, as the DSP1
+> processor sub-system is mostly common across all the variants
+> of the DRA7 SoC family.
+> 
+> Signed-off-by: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+> ---
+>  arch/arm/boot/dts/dra7.dtsi | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/arch/arm/boot/dts/dra7.dtsi b/arch/arm/boot/dts/dra7.dtsi
+> index e289c706d27d..62055094e8d5 100644
+> --- a/arch/arm/boot/dts/dra7.dtsi
+> +++ b/arch/arm/boot/dts/dra7.dtsi
+> @@ -292,6 +292,11 @@
+>  				#thermal-sensor-cells = <1>;
+>  		};
+>  
+> +		dsp1_system: dsp_system@40d00000 {
+> +			compatible = "syscon";
+> +			reg = <0x40d00000 0x100>;
+> +		};
+> +
+>  		sdma: dma-controller@4a056000 {
+>  			compatible = "ti,omap4430-sdma";
+>  			reg = <0x4a056000 0x1000>;
 
-I forgot to address the tainting point; I think we were previously
-talking about tainting at the point where bus master is enabled, but I
-chose to do it much earlier here because the act of registering a dummy
-iommu_ops for a bus type is pretty much the point at which we have a
-good chance of breaking the system.  I also considered that some devices
-can manipulate their config space registers using device specific
-registers (such as the example of GPUs that mirror config space in
-mmio).  It's therefore not always possible to taint at the point where
-we think the user has done something bad.  The best case would be
-tainting at the point where the device file descriptor is opened as you
-suggested, but we can't do that while we're exposing dummy iommu_ops to
-the whole bus type.  Maybe another option would be to create vfio
-wrappers for the iommu callbacks to have the iommu facade more local to
-vfio.
+Hmm so why would you want to set up a complete device as a syscon
+mapping rather than just doing ioremap on it?
 
-My main requirements are that I do not want be disruptive to the
-existing vfio code or add a significant amount of code that needs to be
-maintained for the purpose of supporting a use mode that we don't really
-think is supportable.  Thanks,
+What drivers will be sharing access to these registers?
 
-Alex
+Regards,
 
-> The vfio mechanics are that a vfio bus driver, such as vfio-pci binds to
-> a device.  In the probe function, we check for an iommu group, which
-> vfio-core then uses to create the vfio group.  So there's nothing to
-> open(), the iommu association needs to be made prior to even binding the
-> device to vfio-pci.  Probing for an iommu can also only be done on a per
-> bus_type basis, which will likely eventually become a per bus instance
-> to support heterogeneous iommus, so vfio can't simply determine that an
-> iommu is not present globally.  This is why the new module option
-> includes the word "pci", so that it can probe for and attach the dummy
-> iommu specifically on the pci_bus_type.
-> 
-> We can still consider if there are better points at which to initiate
-> the fake iommu group.  Trying to think through vfio-pci doing it on
-> probe(), but it seems pretty ugly.
-> 
-> In this RFC, I specifically avoided making the vfio no-iommu iommu
-> driver just another modular iommu backend, I wanted it to be tied to a
-> vfio module option such that vfio behaves differently with open()s and
-> certain ioctls.  I think it would be really confusing to users if safe
-> and unsafe modes could be used concurrently for different devices.
-> 
-> > Won't address the "old IOMMUs add performance overhead"
-> > usecase but I'm not very impressed by that in any case.
-> 
-> Yep, me neither, certainly not for static mappings.  There's a lot of
-> FUD left over from latencies in the streaming DMA mapping paths where
-> mappings are created and destroyed at a high rate.  That has more to do
-> with flushing mappings out of the hardware than with iotlb miss latency
-> or actual translation, which is all that should be in play for most uses
-> here.
-> 
-> > > Recent experience is that IOMMU's
-> > > are broken on many platforms so the only way to make a DPDK application
-> > > it to write a test program that can be used to check if VFIO+IOMMU
-> > > works first.
-> > 
-> > In userspace? Well that's just piling up work-arounds.  And assuming
-> > hardware is broken, who knows what's going on security-wise.  These
-> > broken systems need to be identified and black-listed in kernel.
-> > 
-> > > Also, although you think the long option will set the bar high
-> > > enough it probably will not satisfy anyone. It is annoying enough, that
-> > > I would just carry a patch to remove it the silly requirement.
-> > 
-> > That sounds reasonable. Anyone who can carry a kernel patch
-> > does not need the warning.
-> > 
-> > > And the the people who believe
-> > > all user mode DMA is evil won't be satisfied either.
-> > > But I really like having the same consistent API for handling device
-> > > access with IOMMU and when IOMMU will/won't work.
-> > 
-> > I agree that's good. Makes it easier to migrate applications to
-> > the safe configuration down the road. Thanks Alex!
-> > 
-> 
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+Tony
