@@ -1,10 +1,11 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: [RFC/PATCH] media: omap3isp: Set maximum DMA segment size
-Date: Tue, 13 Oct 2015 16:18:36 +0300
-Message-ID: <1444742316-27986-1-git-send-email-laurent.pinchart@ideasonboard.com>
+From: Jinpu Wang <jinpu.wang-EIkl63zCoXaH+58JC4qpiA@public.gmane.org>
+Subject: [RFI] WARNING: CPU: 0 PID: 14493 at drivers/iommu/intel-iommu.c:2048
+	__domain_mapping+0x37d/0x390()
+Date: Mon, 12 Oct 2015 15:29:25 +0200
+Message-ID: <CAMGffEmgpksfFhm5H9PB3n4ZWUEYbnC703xvSsQi0_hD1xtE5w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -15,69 +16,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sakari.ailus-X3B1VOXEql0@public.gmane.org, Shuah Khan <shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Christian Zander <christian-dt00mrq0sMmU+1/U8MakDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The maximum DMA segment size controls the IOMMU mapping granularity. Its
-default value is 64kB, resulting in potentially non-contiguous IOMMU
-mappings. Configure it to 4GB to ensure that buffers get mapped
-contiguously.
-
-Signed-off-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
----
- drivers/media/platform/omap3isp/isp.c | 4 ++++
- drivers/media/platform/omap3isp/isp.h | 1 +
- 2 files changed, 5 insertions(+)
-
-I'm posting this as an RFC because I'm not happy with the patch, even if it
-gets the job done.
-
-On ARM the maximum DMA segment size is used when creating IOMMU mappings. As
-a large number of devices require contiguous memory buffers (this is a very
-common requirement for video-related embedded devices) the default 64kB value
-doesn't work.
-
-I haven't investigated the history behind this API in details but I have a
-feeling something is not quite right. We force most drivers to explicitly set
-the maximum segment size from a default that seems valid for specific use
-cases only. Furthermore, as the DMA parameters are not stored directly in
-struct device this require allocation of external memory for which we have no
-proper management rule, making automatic handling of the DMA parameters in
-frameworks or helper functions cumbersome (for a discussion on this topic see
-http://www.spinics.net/lists/linux-media/msg92467.html and
-http://lists.infradead.org/pipermail/linux-arm-kernel/2014-November/305913.html).
-
-Is it time to fix this mess ?
-
-diff --git a/drivers/media/platform/omap3isp/isp.c b/drivers/media/platform/omap3isp/isp.c
-index 17430a6ed85a..ebf7dc76e94d 100644
---- a/drivers/media/platform/omap3isp/isp.c
-+++ b/drivers/media/platform/omap3isp/isp.c
-@@ -2444,6 +2444,10 @@ static int isp_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto error;
- 
-+	isp->dev->dma_parms = &isp->dma_parms;
-+	dma_set_max_seg_size(isp->dev, DMA_BIT_MASK(32));
-+	dma_set_seg_boundary(isp->dev, 0xffffffff);
-+
- 	platform_set_drvdata(pdev, isp);
- 
- 	/* Regulators */
-diff --git a/drivers/media/platform/omap3isp/isp.h b/drivers/media/platform/omap3isp/isp.h
-index e579943175c4..4b2231cf01be 100644
---- a/drivers/media/platform/omap3isp/isp.h
-+++ b/drivers/media/platform/omap3isp/isp.h
-@@ -193,6 +193,7 @@ struct isp_device {
- 	u32 syscon_offset;
- 	u32 phy_type;
- 
-+	struct device_dma_parameters dma_parms;
- 	struct dma_iommu_mapping *mapping;
- 
- 	/* ISP Obj */
--- 
-Regards,
-
-Laurent Pinchart
+SGkgZXhwZXJ0cywKCldlIGhpdCB3YXJuaW5nIGJlbG93IGR1cmluZyB0ZXN0OgoKWzEzNTYwLjU0
+MTU2Ml0gRVJST1I6IERNQSBQVEUgZm9yIHZQRk4gMHhjM2EwMCBhbHJlYWR5IHNldCAodG8KNDI4
+MzRhMDAzIG5vdCAxMTQ2MDAwODMpClsxMzU2MC41NDE2OTZdIC0tLS0tLS0tLS0tLVsgY3V0IGhl
+cmUgXS0tLS0tLS0tLS0tLQpbMTM1NjAuNTQxNzAxXSBXQVJOSU5HOiBDUFU6IDAgUElEOiAyMjQy
+NyBhdApkcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmM6MjA0OCBfX2RvbWFpbl9tYXBwaW5nKzB4
+MzdkLzB4MzkwKCkKWzEzNTYwLjU0MTcwMl0gTW9kdWxlcyBsaW5rZWQgaW46IGRtX3NuYXBzaG90
+IGRtX2J1ZmlvIGlibmJkX3NlcnZlcihPKQppYnRyc19zZXJ2ZXIoTykgcmRtYV9jbSBpd19jbSBp
+Yl91dmVyYnMgaXBtaV9kZXYKaW50ZiBpYl9pcG9pYiBpYl9jbSBpYl91bWFkIGxvb3AgbWx4NF9p
+YiBpYl9zYSBpYl9tYWQgaWJfY29yZSBpYl9hZGRyCmlwdjYgaGlkX2dlbmVyaWMgdXNiaGlkIG1s
+eDRfY29yZSBpMmNfaTgwMSBpb2F0ZG0KYSBlaGNpX3BjaSBzYl9lZGFjIGkyY19jb3JlIGVoY2lf
+aGNkIGVkYWNfY29yZSBkY2EgaXBtaV9zaQppcG1pX21zZ2hhbmRsZXIgYnV0dG9uIGRtX21vZCBz
+ZyBlMTAwMGUKWzEzNTYwLjU0MTcyNl0gQ1BVOiAwIFBJRDogMjI0MjcgQ29tbToga3dvcmtlci8w
+OjAgVGFpbnRlZDogRwogTyAgIDMuMTguMjEtMS1zdG9yYWdlICMxClsxMzU2MC41NDE3MjddIEhh
+cmR3YXJlIG5hbWU6IFN1cGVybWljcm8gWDlTUkwtRi9YOVNSTC1GLCBCSU9TIDMuMDAgMDcvMDQv
+MjAxMwpbMTM1NjAuNTQxNzMwXSBXb3JrcXVldWU6IGliX2NtIGliX2Rlc3Ryb3lfY21faWQgW2li
+X2NtXQpbMTM1NjAuNTQxNzMxXSAgMDAwMDAwMDAwMDAwMDAwOSBmZmZmODgwMTA5MjEzOTY4IGZm
+ZmZmZmZmODE1YmFjNDUKMDAwMDAwMDAwMDAwMDAwMApbMTM1NjAuNTQxNzMzXSAgMDAwMDAwMDAw
+MDAwMDAwMCBmZmZmODgwMTA5MjEzOWE4IGZmZmZmZmZmODEwNTBkM2MKZmZmZjg4MDEwOTIxMzlj
+OApbMTM1NjAuNTQxNzM0XSAgMDAwMDAwMDExNDYwMDA4MyBmZmZmODgwMDc5OTJmMGU4IDAwMDAw
+MDAwMDAwMDAyMDAKMDAwMDAwMDAwMDBjM2EwMApbMTM1NjAuNTQxNzM2XSBDYWxsIFRyYWNlOgpb
+MTM1NjAuNTQxNzQwXSAgWzxmZmZmZmZmZjgxNWJhYzQ1Pl0gZHVtcF9zdGFjaysweDQ2LzB4NTgK
+WzEzNTYwLjU0MTc0M10gIFs8ZmZmZmZmZmY4MTA1MGQzYz5dIHdhcm5fc2xvd3BhdGhfY29tbW9u
+KzB4OGMvMHhjMApbMTM1NjAuNTQxNzQ0XSAgWzxmZmZmZmZmZjgxMDUwZDhhPl0gd2Fybl9zbG93
+cGF0aF9udWxsKzB4MWEvMHgyMApbMTM1NjAuNTQxNzQ2XSAgWzxmZmZmZmZmZjgxNGZjMGFkPl0g
+X19kb21haW5fbWFwcGluZysweDM3ZC8weDM5MApbMTM1NjAuNTQxNzQ4XSAgWzxmZmZmZmZmZjgx
+NGZkY2VkPl0gX19pbnRlbF9tYXBfc2luZ2xlKzB4MTBkLzB4MWQwClsxMzU2MC41NDE3NDldICBb
+PGZmZmZmZmZmODE0ZmRkZTk+XSBpbnRlbF9tYXBfcGFnZSsweDM5LzB4NDAKCmFuZCBkdXJpbmcg
+c2VhcmNoIEkgZm91bmQgYSBwYXRjaCBmcm9tIENocmlzdGlhbjoKaHR0cDovL3Blcm1hbGluay5n
+bWFuZS5vcmcvZ21hbmUubGludXgua2VybmVsLmlvbW11Lzk5OTMKClNlZW1zIHdlIGhhdmUgc2lt
+aWxhciBlcnJvciBtZXNzYWdlIGF0IGxlYXN0LCBhbmQgd2UgYWxzbyBtYXAgNE0KbWVtb3J5IGVh
+Y2ggdGltZSwgYWZ0ZXIgc2V2ZXJhbCBtYXAsIGl0IHRyaWdnZXJlZCB3YXJuaW5nIGFib3ZlLCBh
+cHBseQp0aGUgcGF0Y2ggc2VlbXMgZml4IHRoZSB3YXJuaW5nIGZvciB1cywgYnV0IGNoZWNraW5n
+IHdpdGggbGFzdGVzdApsaW51cyB0cmVlIDQuMy1yYzQsIGl0J3Mgbm90IHRoZXJlIHlldCwgY291
+bGQgeW91IGd1eXMgZ2l2ZSBzb21lCmNvbW1lbnQgb24gdGhlIHBhdGNoLCAgaXMgaXQgdGhlIHJp
+Z2h0IGZpeCBvciB3ZSBuZWVkIHRvIGZpeCBpdAphbm90aGVyIHdheSwgb3IgaXQncyBzaW1wbHkg
+aW1wbHkgZHJpdmVyIGJ1Zz8KClBsZWFzZSBzaGFyZSB5b3VyIGNvbW1lbnRzIQoKLS0gCk1pdCBm
+cmV1bmRsaWNoZW4gR3LDvMOfZW4sCkJlc3QgUmVnYXJkcywKCkphY2sgV2FuZwoKTGludXggS2Vy
+bmVsIERldmVsb3BlciBTdG9yYWdlClByb2ZpdEJyaWNrcyBHbWJIICBUaGUgSWFhUy1Db21wYW55
+LgoKUHJvZml0QnJpY2tzIEdtYkgKR3JlaWZzd2FsZGVyIFN0ci4gMjA3CkQgLSAxMDQwNSBCZXJs
+aW4KVGVsOiArNDkgMzAgNTc3MDA4My00MgpGYXg6ICs0OSAzMCA1NzcwMDg1LTk4CkVtYWlsOiBq
+aW5wdS53YW5nQHByb2ZpdGJyaWNrcy5jb20KVVJMOiBodHRwOi8vd3d3LnByb2ZpdGJyaWNrcy5k
+ZQoKU2l0eiBkZXIgR2VzZWxsc2NoYWZ0OiBCZXJsaW4uClJlZ2lzdGVyZ2VyaWNodDogQW10c2dl
+cmljaHQgQ2hhcmxvdHRlbmJ1cmcsIEhSQiAxMjU1MDYgQi4KR2VzY2jDpGZ0c2bDvGhyZXI6IEFu
+ZHJlYXMgR2F1Z2VyLCBBY2hpbSBXZWlzcy4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZv
+dW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xp
+c3RpbmZvL2lvbW11
