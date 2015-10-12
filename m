@@ -1,47 +1,58 @@
-From: Mikulas Patocka <mpatocka@redhat.com>
-Subject: Re: [dm-devel] AMD-Vi IO_PAGE_FAULTs and ata3.00: failed command:
- READ FPDMA QUEUED errors since Linux 4.0
-Date: Mon, 12 Oct 2015 08:34:23 -0400 (EDT)
-Message-ID: <alpine.LRH.2.02.1510120833390.8783@file01.intranet.prod.int.rdu2.redhat.com>
-References: <20151006101356.GE12506@8bytes.org> <56141507.7040103@maya.org> <56148A1B.5060506@maya.org> <20151007161022.GI28811@8bytes.org> <56154DEA.5050901@maya.org> <20151008163957.GK28811@8bytes.org> <5616B436.1000802@maya.org> <5616C998.1010309@maya.org>
- <56174EA6.7000106@maya.org> <56178599.6010807@maya.org> <20151009145951.GC27420@8bytes.org> <5617FD6E.70802@maya.org>
+From: Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: [RFC PATCH 2/2] vfio: Include no-iommu mode
+Date: Mon, 12 Oct 2015 08:56:07 -0700
+Message-ID: <20151012085607.2c64f98f@urahara>
+References: <20151009182228.14752.99700.stgit@gimli.home>
+	<20151009184110.14752.53531.stgit@gimli.home>
 Mime-Version: 1.0
-Content-Type: MULTIPART/MIXED; BOUNDARY="185206533-397221843-1444653267=:8783"
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <5617FD6E.70802@maya.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: Andreas Hartmann <andihartmann@freenet.de>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, Leo Duran <leo.duran@amd.com>, Christoph Hellwig <hch@lst.de>, device-mapper development <dm-devel@redhat.com>, Milan Broz <mbroz@redhat.com>, Jens Axboe <axboe@fb.com>, linux-pci <linux-pci@vger.kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20151009184110.14752.53531.stgit@gimli.home>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: avi@scylladb.com, avi@cloudius-systems.com, gleb@scylladb.com, corbet@lwn.net, bruce.richardson@intel.com, mst@redhat.com, linux-kernel@vger.kernel.org, alexander.duyck@gmail.com, gleb@cloudius-systems.com, vladz@cloudius-systems.com, iommu@lists.linux-foundation.org, hjk@hansjkoch.de, gregkh@linuxfoundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Fri, 09 Oct 2015 12:41:10 -0600
+Alex Williamson <alex.williamson@redhat.com> wrote:
 
---185206533-397221843-1444653267=:8783
-Content-Type: TEXT/PLAIN; charset=windows-1252
-Content-Transfer-Encoding: 8BIT
-
-
-
-On Fri, 9 Oct 2015, Andreas Hartmann wrote:
-
-> Hello Jörg,
+> There is really no way to safely give a user full access to a PCI
+> without an IOMMU to protect the host from errant DMA.  There is also
+> no way to provide DMA translation, for use cases such as devices
+> assignment to virtual machines.  However, there are still those users
+> that want userspace drivers under those conditions.  The UIO driver
+> exists for this use case, but does not provide the degree of device
+> access and programming that VFIO has.  In an effort to avoid code
+> duplication, this introduces a No-IOMMU mode for VFIO.
 > 
-> On 10/09/2015 at 04:59 PM, Joerg Roedel wrote:
-> > On Fri, Oct 09, 2015 at 11:15:05AM +0200, Andreas Hartmann wrote:
-> >> v4.3-rc4 isn't usable at all for me as long as is hangs the machine on
-> >> the necessary PCI passthrough for VMs (I need them).
-> > 
-> > If the fix I just sent you works, could you please test this again with
-> > a (patched) v4.3-rc4 kernel?
+> This mode requires enabling CONFIG_VFIO_NOIOMMU and loading the vfio
+> module with the option "enable_unsafe_pci_noiommu_mode".  This should
+> make it very clear that this mode is not safe.  In this mode, there is
+> no support for unprivileged users, CAP_SYS_ADMIN is required for
+> access to the necessary dev files.  Mixing no-iommu and secure VFIO is
+> also unsupported, as are any VFIO IOMMU backends other than the
+> vfio-noiommu backend.  Furthermore, unsafe group files are relocated
+> to /dev/vfio-noiommu/.  Upon successful loading in this mode, the
+> kernel is tainted due to the dummy IOMMU put in place.  Unloading of
+> the module in this mode is also unsupported and will BUG due to the
+> lack of support for unregistering an IOMMU for a bus type.
 > 
-> Your IOMMU-patch works fine - but the ata-problem can be seen here, too.
-> Same behavior as with 4.1.10.
+> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 
-Could you try another ata disk? (copy the whole filesystem to it and run 
-the same test)
+Will this work for distro's where chaning kernel command line options
+is really not that practical. We need to boot with one command line
+and then decide to use IOMMU (or not) later on during the service
+startup of the dataplane application. Recent experience is that IOMMU's
+are broken on many platforms so the only way to make a DPDK application
+it to write a test program that can be used to check if VFIO+IOMMU
+works first.
 
-It may be bug in disk's firmware.
+Also, although you think the long option will set the bar high
+enough it probably will not satisfy anyone. It is annoying enough, that
+I would just carry a patch to remove it the silly requirement.
+And the the people who believe
+all user mode DMA is evil won't be satisfied either.
 
-Mikulas
---185206533-397221843-1444653267=:8783--
+But I really like having the same consistent API for handling device
+access with IOMMU and when IOMMU will/won't work.
