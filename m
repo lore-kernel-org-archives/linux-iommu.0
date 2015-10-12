@@ -1,23 +1,16 @@
-From: Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 1/6] mmput: use notifier chain to call subsystem exit
-	handler.
-Date: Mon, 12 Oct 2015 13:41:31 -0400
-Message-ID: <20151012174130.GA8037@gmail.com>
-References: <20140701210620.GL26537@8bytes.org>
-	<20140701213208.GC3322@gmail.com> <20140703183024.GA3306@gmail.com>
-	<20140703231541.GR26537@8bytes.org>
-	<019CCE693E457142B37B791721487FD918085329@storexdag01.amd.com>
-	<20140707101158.GD1958@8bytes.org>
-	<1404729783.31606.1.camel@tlv-gabbay-ws.amd.com>
-	<20140708080059.GF1958@8bytes.org>
-	<20140708170355.GA2469@gmail.com>
-	<1444590209.92154.116.camel@infradead.org>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC PATCH 2/2] vfio: Include no-iommu mode
+Date: Mon, 12 Oct 2015 11:46:55 -0600
+Message-ID: <1444672015.4059.380.camel@redhat.com>
+References: <20151009182228.14752.99700.stgit@gimli.home>
+	<20151009184110.14752.53531.stgit@gimli.home>
+	<20151012085607.2c64f98f@urahara>
+	<20151012191150-mutt-send-email-mst@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1444590209.92154.116.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+In-Reply-To: <20151012191150-mutt-send-email-mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,133 +20,100 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: "peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jakumar-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <jakumar-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "ldunning-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <ldunning-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "mgorman-l3A5Bk7waGM@public.gmane.org" <mgorman-l3A5Bk7waGM@public.gmane.org>, "jweiner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jweiner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "sgutti-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <sgutti-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Bridgman,
-	John" <John.Bridgman-5C7GfCeVMHo@public.gmane.org>, "jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <jhubbard-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "mhairgrove-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <mhairgrove-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "cabuschardt-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <cabuschardt-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "dpoole-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <dpoole-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "Cornwall,
-	Jay" <Jay.Cornwall-5C7GfCeVMHo@public.gmane.org>, "Lewycky, Andrew" <Andrew.Lewycky-5C7GfCeVMHo@public.gmane.org>, "SCheung-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <SCheung-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu@lists.>
+To: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: avi-VrcmuVmyx1hWk0Htik3J/w@public.gmane.org, avi-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org, gleb-VrcmuVmyx1hWk0Htik3J/w@public.gmane.org, corbet-T1hC0tSOHrs@public.gmane.org, bruce.richardson-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alexander.duyck-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gleb-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org, Stephen Hemminger <stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org>, vladz-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, hjk-vqZO0P4V72/QD6PfKP4TzA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On Mon, 2015-10-12 at 19:27 +0300, Michael S. Tsirkin wrote:
+> On Mon, Oct 12, 2015 at 08:56:07AM -0700, Stephen Hemminger wrote:
+> > On Fri, 09 Oct 2015 12:41:10 -0600
+> > Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+> > 
+> > > There is really no way to safely give a user full access to a PCI
+> > > without an IOMMU to protect the host from errant DMA.  There is also
+> > > no way to provide DMA translation, for use cases such as devices
+> > > assignment to virtual machines.  However, there are still those users
+> > > that want userspace drivers under those conditions.  The UIO driver
+> > > exists for this use case, but does not provide the degree of device
+> > > access and programming that VFIO has.  In an effort to avoid code
+> > > duplication, this introduces a No-IOMMU mode for VFIO.
+> > > 
+> > > This mode requires enabling CONFIG_VFIO_NOIOMMU and loading the vfio
+> > > module with the option "enable_unsafe_pci_noiommu_mode".  This should
+> > > make it very clear that this mode is not safe.  In this mode, there is
+> > > no support for unprivileged users, CAP_SYS_ADMIN is required for
+> > > access to the necessary dev files.  Mixing no-iommu and secure VFIO is
+> > > also unsupported, as are any VFIO IOMMU backends other than the
+> > > vfio-noiommu backend.  Furthermore, unsafe group files are relocated
+> > > to /dev/vfio-noiommu/.  Upon successful loading in this mode, the
+> > > kernel is tainted due to the dummy IOMMU put in place.  Unloading of
+> > > the module in this mode is also unsupported and will BUG due to the
+> > > lack of support for unregistering an IOMMU for a bus type.
+> > > 
+> > > Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> > 
+> > Will this work for distro's where chaning kernel command line options
+> > is really not that practical. We need to boot with one command line
+> > and then decide to use IOMMU (or not) later on during the service
+> > startup of the dataplane application.
+> 
+> On open? That's too late in my opinion. But maybe the flag can be
+> tweaked so that it will probe for iommu, if there - do the
+> right thing, but if that fails, enable the dummy one.
+> And maybe defer tainting until device open.
 
-Note that i am no longer actively pushing this patch serie but i believe the
-solution it provides to be needed in one form or another. So I still think
-discussion on this to be useful so see below for my answer.
+The vfio mechanics are that a vfio bus driver, such as vfio-pci binds to
+a device.  In the probe function, we check for an iommu group, which
+vfio-core then uses to create the vfio group.  So there's nothing to
+open(), the iommu association needs to be made prior to even binding the
+device to vfio-pci.  Probing for an iommu can also only be done on a per
+bus_type basis, which will likely eventually become a per bus instance
+to support heterogeneous iommus, so vfio can't simply determine that an
+iommu is not present globally.  This is why the new module option
+includes the word "pci", so that it can probe for and attach the dummy
+iommu specifically on the pci_bus_type.
 
-On Sun, Oct 11, 2015 at 08:03:29PM +0100, David Woodhouse wrote:
-> On Tue, 2014-07-08 at 13:03 -0400, Jerome Glisse wrote:
-> > =
+We can still consider if there are better points at which to initiate
+the fake iommu group.  Trying to think through vfio-pci doing it on
+probe(), but it seems pretty ugly.
 
-> > Now regarding the device side, if we were to cleanup inside the file re=
-lease
-> > callback than we would be broken in front of fork. Imagine the followin=
-g :
-> >   - process A open device file and mirror its address space (hmm or kfd)
-> >     through a device file.
-> >   - process A forks itself (child is B) while having the device file op=
-en.
-> >   - process A quits
-> > =
+In this RFC, I specifically avoided making the vfio no-iommu iommu
+driver just another modular iommu backend, I wanted it to be tied to a
+vfio module option such that vfio behaves differently with open()s and
+certain ioctls.  I think it would be really confusing to users if safe
+and unsafe modes could be used concurrently for different devices.
 
-> > Now the file release will not be call until child B exit which might in=
-finite.
-> > Thus we would be leaking memory. As we already pointed out we can not f=
-ree the
-> > resources from the mmu_notifier >release callback.
-> =
+> Won't address the "old IOMMUs add performance overhead"
+> usecase but I'm not very impressed by that in any case.
 
-> So if your library just registers a pthread_atfork() handler to close
-> the file descriptor in the child, that problem goes away? Like any
-> other "if we continue to hold file descriptors open when we should
-> close them, resources don't get freed" problem?
+Yep, me neither, certainly not for static mappings.  There's a lot of
+FUD left over from latencies in the streaming DMA mapping paths where
+mappings are created and destroyed at a high rate.  That has more to do
+with flushing mappings out of the hardware than with iotlb miss latency
+or actual translation, which is all that should be in play for most uses
+here.
 
-
-I was just pointing out existing device driver usage pattern where user
-space open device file and do ioctl on it without necessarily caring
-about the mm struct.
-
-New usecase where device actually run thread against a specific process
-mm is different and require proper synchronization as file lifetime is
-different from process lifetime in many case when fork is involve.
-
-> =
-
-> Perhaps we could even handled that automatically in the kernel, with
-> something like an O_CLOFORK flag on the file descriptor. Although
-> that's a little horrid.
-> =
-
-> You've argued that the amdkfd code is special and not just a device
-> driver. I'm not going to contradict you there, but now we *are* going
-> to see device drivers doing this kind of thing. And we definitely
-> *don't* want to be calling back into device driver code from the
-> mmu_notifier's .release() function.
-
-Well that's the current solution, call back into device driver from the
-mmu_notifer release() call back. Since changes to mmu_notifier this is
-a workable solution (thanks to mmu_notifier_unregister_no_release()).
-
-> =
-
-> I think amdkfd absolutely is *not* a useful precedent for normal device
-> drivers, and we *don't* want to follow this model in the general case.
-> =
-
-> As we try to put together a generic API for device access to processes'
-> address space, I definitely think we want to stick with the model that
-> we take a reference on the mm, and we *keep* it until the device driver
-> unbinds from the mm (because its file descriptor is closed, or
-> whatever).
-
-Well i think when a process is kill (for whatever reasons) we do want to
-also kill all device threads at the same time. For instance we do not want
-to have zombie GPU threads that can keep running indefinitly. This is why
-use mmu_notifier.release() callback is kind of right place as it will be
-call once all threads using a given mm are killed.
-
-The exit_mm() or do_exit() are also places from where we could a callback
-to let device know that it must kill all thread related to a given mm.
-
->
-> Perhaps you can keep a back door into the AMD IOMMU code to continue to
-> do what you're doing, or perhaps the explicit management of off-cpu
-> tasks that is being posited will give you a sane cleanup path that
-> *doesn't* involve the IOMMU's mmu_notifier calling back to you. But
-> either way, I *really* don't want this to be the way it works for
-> device drivers.
-
-So at kernel summit we are supposedly gonna have a discussion about device
-thread and scheduling and i think device thread lifetime belongs to that
-discussion too. My opinion is that device threads must be kill when a
-process quits.
-
-
-> > One hacky way to do it would be to schedule some delayed job from =
-
-> > >release callback but then again we would have no way to properly =
-
-> > synchronize ourself with other mm destruction code ie the delayed job =
-
-> > could run concurently with other mm destruction code and interfer
-> > badly.
-> =
-
-> With the RCU-based free of the struct containing the notifier, your
-> 'schedule some delayed job' is basically what we have now, isn't it?
-> =
-
-> I note that you also have your *own* notifier which does other things,
-> and has to cope with being called before or after the IOMMU's notifier.
-> =
-
-> Seriously, we don't want device drivers having to do this. We really
-> need to keep it simple.
-
-So right now in HMM what happens is that device driver get a callback as
-a result of mmu_notifier.release() and can call the unregister functions
-and device driver must then schedule through whatever means a call to the
-unregister function (can be a workqueue or other a kernel thread).
-
-Basicly i am hidding the issue inside the device driver until we can agree
-on a common proper way to do this.
-
-Cheers,
-J=E9r=F4me
+> > Recent experience is that IOMMU's
+> > are broken on many platforms so the only way to make a DPDK application
+> > it to write a test program that can be used to check if VFIO+IOMMU
+> > works first.
+> 
+> In userspace? Well that's just piling up work-arounds.  And assuming
+> hardware is broken, who knows what's going on security-wise.  These
+> broken systems need to be identified and black-listed in kernel.
+> 
+> > Also, although you think the long option will set the bar high
+> > enough it probably will not satisfy anyone. It is annoying enough, that
+> > I would just carry a patch to remove it the silly requirement.
+> 
+> That sounds reasonable. Anyone who can carry a kernel patch
+> does not need the warning.
+> 
+> > And the the people who believe
+> > all user mode DMA is evil won't be satisfied either.
+> > But I really like having the same consistent API for handling device
+> > access with IOMMU and when IOMMU will/won't work.
+> 
+> I agree that's good. Makes it easier to migrate applications to
+> the safe configuration down the road. Thanks Alex!
+> 
