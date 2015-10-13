@@ -1,11 +1,11 @@
 From: David Woodhouse <dwmw2@infradead.org>
-Subject: [PATCH v2 07/10] iommu/vt-d: Implement deferred
-	invalidate for SVM
-Date: Tue, 13 Oct 2015 22:35:08 +0100
-Message-ID: <1444772108.125804.65.camel@infradead.org>
+Subject: [PATCH v2 08/10] iommu/vt-d: Generalise DMAR MSI setup
+ to allow for page request events
+Date: Tue, 13 Oct 2015 22:35:21 +0100
+Message-ID: <1444772121.125804.66.camel@infradead.org>
 References: <1444771787.125804.50.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1208914670=="
+Content-Type: multipart/mixed; boundary="===============1546466645=="
 Return-path: <intel-gfx-bounces@lists.freedesktop.org>
 In-Reply-To: <1444771787.125804.50.camel@infradead.org>
 List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
@@ -21,76 +21,150 @@ To: iommu@lists.linux-foundation.org, intel-gfx@lists.freedesktop.org, Jesse Bar
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============1208914670==
+--===============1546466645==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-cSKtWATkzs596MmvtZzZ"
+	boundary="=-BQvD+xMcD/GRU1u40EFM"
 
 
---=-cSKtWATkzs596MmvtZzZ
+--=-BQvD+xMcD/GRU1u40EFM
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Signed-off-by: David Woodhouse <David.Woodhouse@intel.com>
 ---
- drivers/iommu/intel-iommu.c   | 2 ++
- drivers/iommu/intel-svm.c     | 9 +++++++++
- include/linux/dma_remapping.h | 1 +
- 3 files changed, 12 insertions(+)
+ drivers/iommu/dmar.c        | 42 +++++++++++++++++++++++++++++++----------=
+-
+ include/linux/intel-iommu.h | 10 +++++++++-
+ 2 files changed, 40 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 4c462ab..787cd6e 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4993,6 +4993,8 @@ int intel_iommu_enable_pasid(struct intel_iommu *iomm=
-u, struct intel_svm_dev *sd
- 				ctx_lo |=3D CONTEXT_TT_PT_PASID << 2;
- 		}
- 		ctx_lo |=3D CONTEXT_PASIDE;
-+		if (iommu->pasid_state_table)
-+			ctx_lo |=3D CONTEXT_DINVE;
- 		context[0].lo =3D ctx_lo;
- 		wmb();
- 		iommu->flush.flush_context(iommu, sdev->did,
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 82d53e1..a64720b 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -26,6 +26,10 @@ struct pasid_entry {
- 	u64 val;
- };
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 8757f8d..80e3c17 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -1086,6 +1086,11 @@ static void free_iommu(struct intel_iommu *iommu)
+ 	iommu_device_destroy(iommu->iommu_dev);
 =20
-+struct pasid_state_entry {
-+	u64 val;
-+};
+ 	if (iommu->irq) {
++		if (iommu->pr_irq) {
++			free_irq(iommu->pr_irq, iommu);
++			dmar_free_hwirq(iommu->pr_irq);
++			iommu->pr_irq =3D 0;
++		}
+ 		free_irq(iommu->irq, iommu);
+ 		dmar_free_hwirq(iommu->irq);
+ 		iommu->irq =3D 0;
+@@ -1493,53 +1498,68 @@ static const char *dmar_get_fault_reason(u8 fault_r=
+eason, int *fault_type)
+ 	}
+ }
+=20
 +
- int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
- {
- 	struct page *pages;
-@@ -127,6 +131,11 @@ static void intel_flush_svm_range(struct intel_svm *sv=
-m, unsigned long address,
- {
- 	struct intel_svm_dev *sdev;
-=20
-+	/* Try deferred invalidate if available */
-+	if (svm->iommu->pasid_state_table &&
-+	    !cmpxchg64(&svm->iommu->pasid_state_table[svm->pasid].val, 0, 1ULL <<=
- 63))
-+		return;
++static inline int dmar_msi_reg(struct intel_iommu *iommu, int irq)
++{
++	if (iommu->irq =3D=3D irq)
++		return DMAR_FECTL_REG;
++	else if (iommu->pr_irq =3D=3D irq)
++		return DMAR_PECTL_REG;
++	else
++		BUG();
++}
 +
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(sdev, &svm->devs, list)
- 		intel_flush_svm_range_dev(svm, sdev, address, pages, ih);
-diff --git a/include/linux/dma_remapping.h b/include/linux/dma_remapping.h
-index 0e114bf..187c102 100644
---- a/include/linux/dma_remapping.h
-+++ b/include/linux/dma_remapping.h
-@@ -25,6 +25,7 @@
- #define CONTEXT_TT_PT_PASID_DEV_IOTLB 5
- #define CONTEXT_TT_MASK (7ULL << 2)
+ void dmar_msi_unmask(struct irq_data *data)
+ {
+ 	struct intel_iommu *iommu =3D irq_data_get_irq_handler_data(data);
++	int reg =3D dmar_msi_reg(iommu, data->irq);
+ 	unsigned long flag;
 =20
-+#define CONTEXT_DINVE		(1ULL << 8)
- #define CONTEXT_PRS		(1ULL << 9)
- #define CONTEXT_PASIDE		(1ULL << 11)
+ 	/* unmask it */
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
+-	writel(0, iommu->reg + DMAR_FECTL_REG);
++	writel(0, iommu->reg + reg);
+ 	/* Read a reg to force flush the post write */
+-	readl(iommu->reg + DMAR_FECTL_REG);
++	readl(iommu->reg + reg);
+ 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
+ }
+=20
+ void dmar_msi_mask(struct irq_data *data)
+ {
+-	unsigned long flag;
+ 	struct intel_iommu *iommu =3D irq_data_get_irq_handler_data(data);
++	int reg =3D dmar_msi_reg(iommu, data->irq);
++	unsigned long flag;
+=20
+ 	/* mask it */
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
+-	writel(DMA_FECTL_IM, iommu->reg + DMAR_FECTL_REG);
++	writel(DMA_FECTL_IM, iommu->reg + reg);
+ 	/* Read a reg to force flush the post write */
+-	readl(iommu->reg + DMAR_FECTL_REG);
++	readl(iommu->reg + reg);
+ 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
+ }
+=20
+ void dmar_msi_write(int irq, struct msi_msg *msg)
+ {
+ 	struct intel_iommu *iommu =3D irq_get_handler_data(irq);
++	int reg =3D dmar_msi_reg(iommu, irq);
+ 	unsigned long flag;
+=20
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
+-	writel(msg->data, iommu->reg + DMAR_FEDATA_REG);
+-	writel(msg->address_lo, iommu->reg + DMAR_FEADDR_REG);
+-	writel(msg->address_hi, iommu->reg + DMAR_FEUADDR_REG);
++	writel(msg->data, iommu->reg + reg + 4);
++	writel(msg->address_lo, iommu->reg + reg + 8);
++	writel(msg->address_hi, iommu->reg + reg + 12);
+ 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
+ }
+=20
+ void dmar_msi_read(int irq, struct msi_msg *msg)
+ {
+ 	struct intel_iommu *iommu =3D irq_get_handler_data(irq);
++	int reg =3D dmar_msi_reg(iommu, irq);
+ 	unsigned long flag;
+=20
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
+-	msg->data =3D readl(iommu->reg + DMAR_FEDATA_REG);
+-	msg->address_lo =3D readl(iommu->reg + DMAR_FEADDR_REG);
+-	msg->address_hi =3D readl(iommu->reg + DMAR_FEUADDR_REG);
++	msg->data =3D readl(iommu->reg + reg + 4);
++	msg->address_lo =3D readl(iommu->reg + reg + 8);
++	msg->address_hi =3D readl(iommu->reg + reg + 12);
+ 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
+ }
+=20
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 46add60..f16a2b9 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -60,6 +60,14 @@
+ #define DMAR_IQA_REG	0x90	/* Invalidation queue addr register */
+ #define DMAR_ICS_REG	0x9c	/* Invalidation complete status register */
+ #define DMAR_IRTA_REG	0xb8    /* Interrupt remapping table addr register *=
+/
++#define DMAR_PQH_REG	0xc0	/* Page request queue head register */
++#define DMAR_PQT_REG	0xc8	/* Page request queue tail register */
++#define DMAR_PQA_REG	0xd0	/* Page request queue address register */
++#define DMAR_PRS_REG	0xdc	/* Page request status register */
++#define DMAR_PECTL_REG	0xe0	/* Page request event control register */
++#define	DMAR_PEDATA_REG	0xe4	/* Page request event interrupt data register=
+ */
++#define	DMAR_PEADDR_REG	0xe8	/* Page request event interrupt addr register=
+ */
++#define	DMAR_PEUADDR_REG 0xec	/* Page request event Upper address register=
+ */
+=20
+ #define OFFSET_STRIDE		(9)
+=20
+@@ -373,7 +381,7 @@ struct intel_iommu {
+ 	int		seq_id;	/* sequence id of the iommu */
+ 	int		agaw; /* agaw of this iommu */
+ 	int		msagaw; /* max sagaw of this iommu */
+-	unsigned int 	irq;
++	unsigned int 	irq, pr_irq;
+ 	u16		segment;     /* PCI segment# */
+ 	unsigned char 	name[13];    /* Device Name */
 =20
 --=20
 2.4.3
@@ -99,7 +173,7 @@ index 0e114bf..187c102 100644
 David Woodhouse                            Open Source Technology Centre
 David.Woodhouse@intel.com                              Intel Corporation
 
---=-cSKtWATkzs596MmvtZzZ
+--=-BQvD+xMcD/GRU1u40EFM
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -192,24 +266,24 @@ Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
 ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
 AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUxMDEzMjEzNTA4WjAjBgkqhkiG9w0BCQQxFgQUvxPqTlfoD89faXlA+euWEqquZV8w
+CQUxDxcNMTUxMDEzMjEzNTIxWjAjBgkqhkiG9w0BCQQxFgQURLcmBZmn+AaxPMLkdoqquNb/rpEw
 gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
 ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
 L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
 CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
 LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
 U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQCqtEoHrVeLv5X4PEp5Gld+rtQh1jhsSWlgXA6J+he/AYRhtdR+duRGdFJt
-qQxiuWUSz+PeEeNceWgoOwTGfqUNqFUgpvPbRvN4S3SoLke+qkuCAMDyRzeZEoMAv5BqwTQ5Kc++
-Tq9hYdyv2wcoQn8pCZqtZmXiPS8J/6A0nUNbeJOdJGKvG1wViASKd7Rs8Rkz7Uv1nHGG+k5gxtGV
-U4EQcicm1NxD9dPsqClVn2OCz7kL2Z4hyephiE+GC1UTVjpUCVCuJPgW24uZL3ZyuXtrGyubBZdh
-jcjf8dSj6c/JfBq213V24ReJox2lw2PH9sDBAIY0r8YRMAKPrrw9L55mAAAAAAAA
+hkiG9w0BAQEFAASCAQAbheFbAsEU8eN/iwblZ/36AUEG7oj0O9C/bDcU/Ds1QM62GQ7gcCxKeX5S
+ideYKDy3+ID6Z5wCasWsiUU3Cy/vK511lSzpu98RTNlH5fnYz/6V9j/tA8SCfJxB+goccoggYDJJ
+PAG5rZO8SgcysmxnPsNP4wHKI8dZt8skM5miCjRwA+tzLVLn3bJlD7O2DGPq0JQ2DQLHtPg/83T9
+NlevO0HdGi0JQvDMwuKlTIxMw5g3Vy4DzrCte3PaXAje7hCrBGxEGi0LZ7w1OIrjijzsZdeQ7hOX
+d5h2CSI3NXdp2KlpS0MbriEZndxD7XDYp5oxOeYjVVzw4XLZOMF913DPAAAAAAAA
 
 
---=-cSKtWATkzs596MmvtZzZ--
+--=-BQvD+xMcD/GRU1u40EFM--
 
 
---===============1208914670==
+--===============1546466645==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -219,4 +293,4 @@ X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4
 IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0
 cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRlbC1nZngK
 
---===============1208914670==--
+--===============1546466645==--
