@@ -1,72 +1,82 @@
-From: David Woodhouse <dwmw2@infradead.org>
-Subject: [PATCH v2 0/10] Enable SVM for Intel VT-d
-Date: Tue, 13 Oct 2015 22:29:47 +0100
-Message-ID: <1444771787.125804.50.camel@infradead.org>
+From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: [PATCH v2 01/10] iommu/vt-d: Use plain writeq() for dmar_writeq()
+	where available
+Date: Tue, 13 Oct 2015 22:33:12 +0100
+Message-ID: <1444771992.125804.51.camel@infradead.org>
+References: <1444771787.125804.50.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============2073402004=="
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: iommu@lists.linux-foundation.org, intel-gfx@lists.freedesktop.org, "Barnes, Jesse" <jesse.barnes@intel.com>
+Content-Type: multipart/mixed; boundary="===============1810791051282676461=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1444771787.125804.50.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, intel-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Jesse Barnes <jesse.barnes-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============2073402004==
+--===============1810791051282676461==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-orzseoxwiwE5Sp0t++7v"
+	boundary="=-VNbtz/ZFsHHRDGmeve/3"
 
 
---=-orzseoxwiwE5Sp0t++7v
+--=-VNbtz/ZFsHHRDGmeve/3
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-This patch set enables PASID support for the Intel IOMMU, along with
-page request support.
+Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+---
+ include/linux/intel-iommu.h | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-Like its AMD counterpart, it exposes an IOMMU-specific API. I believe
-we'll have a session at the Kernel Summit later this month in which we
-can work out a generic API which will cover the two (now) existing
-implementations as well as upcoming ARM (and other?) versions.
-
-For the time being, however, exposing an Intel-specific API is good
-enough, especially as we don't have the required TLP prefix support on
-our PCIe root ports and we *can't* support discrete PCIe devices with
-PASID support. It's purely on-chip stuff right now, which is basically
-only Intel graphics.
-
-The AMD implementation allows a per-device PASID space, and managing
-the PASID space is left entirely to the device driver. In contrast,
-this implementation maintains a per-IOMMU PASID space, and drivers
-calling intel_svm_bind_mm() will be *given* the PASID that they are to
-use. In general we seem to be converging on using a single PASID space
-across *all* IOMMUs in the system, and this will support that mode of
-operation.
-
-The other main different to note is the lifetime management of the
-linked mm. This implementation keeps a refcount on the mm and will only
-release it when the device driver unbinds the PASID. The AMD
-implementation doesn't, and relies on mmu_notifier_release().
-
-v2: Various cleanups
-    Support multiple devices per PASID
-    Support deferred invalidation
-    Add callback to device driver on fault
-    Fix fault response codes (swap INVALID vs. FAILURE)
-    Fix PASID/PRI capability handling
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 6240063..08802b9 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -59,14 +59,11 @@
+ #define DMAR_IRTA_REG	0xb8    /* Interrupt remapping table addr register *=
+/
+=20
+ #define OFFSET_STRIDE		(9)
+-/*
+-#define dmar_readl(dmar, reg) readl(dmar + reg)
+-#define dmar_readq(dmar, reg) ({ \
+-		u32 lo, hi; \
+-		lo =3D readl(dmar + reg); \
+-		hi =3D readl(dmar + reg + 4); \
+-		(((u64) hi) << 32) + lo; })
+-*/
++
++#ifdef CONFIG_64BIT
++#define dmar_readq(a) readq(a)
++#define dmar_writeq(a,v) writeq(v,a)
++#else
+ static inline u64 dmar_readq(void __iomem *addr)
+ {
+ 	u32 lo, hi;
+@@ -80,6 +77,7 @@ static inline void dmar_writeq(void __iomem *addr, u64 va=
+l)
+ 	writel((u32)val, addr);
+ 	writel((u32)(val >> 32), addr + 4);
+ }
++#endif
+=20
+ #define DMAR_VER_MAJOR(v)		(((v) & 0xf0) >> 4)
+ #define DMAR_VER_MINOR(v)		((v) & 0x0f)
+--=20
+2.4.3
 
 --=20
 David Woodhouse                            Open Source Technology Centre
-David.Woodhouse@intel.com                              Intel Corporation
+David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
 
-
---=-orzseoxwiwE5Sp0t++7v
+--=-VNbtz/ZFsHHRDGmeve/3
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -159,31 +169,28 @@ Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
 ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
 AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUxMDEzMjEyOTQ3WjAjBgkqhkiG9w0BCQQxFgQUBBA/vpjksTzETWDk5H/DwrCXHxQw
+CQUxDxcNMTUxMDEzMjEzMzEyWjAjBgkqhkiG9w0BCQQxFgQUa6bh9a1J+lybJjsvxaM0c6LQEzow
 gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
 ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
 L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
 CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
 LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
 U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQDHGF1E4r59Kjz3jpyWX9sR2MyvE5wLEZLKWCSE76lQLo1+YfZ4b3kaNAQi
-IlTbY8OHv9FgI24cxikr3kW9Vb/RafgP+KbaTIqREnP3MZ/WMRP1RZfWYoUopitQ3HpiLBrO6N3d
-3rEyqOIt3SUSKRnWm5KVWwvrB9iLaiFjqD0AFlhlX8OmOXJUfzWt55LXrUeJEoWV4i4FGGew99JK
-h5gs0JpkTJl48R48mvoPJCaZQlJUxnPtj73iAHmTBLdorIrCZyI9ePshlBcNFgVLA12vgbPEGtOb
-LpsnJc2M4zQisjZ+Zm51nt/+5b/Y5jgIn6bU/qyxEF4pGSUClbgrNf5RAAAAAAAA
+hkiG9w0BAQEFAASCAQC6PNgTazesu7P75dujiF/oZyGU545lMvzPBQe/qMXxhJIYOpg44iR6W6Qs
+dZpSGZHYSSuUg5Uo7vx1XlbfQ935nuBpX+9XQmbpsYZQA+NuZblcqpp3t087PpRxdOn7ejr53CdG
+PO4T8vxySiYqIYNzc/f1R3qNoNJggF8TS0ry27hAUA+E8jFQ2VFprmOrliHPJgeowRRduaKT8KN7
+yP1VD+OKulv20mZhUNf6mU+1x0BqxICTIcy3irh0sCNgBSNiEps22I9wawnbKrAhY+Rovijf9Hzi
+42X6OV9Sn+2575gRslvfUK6PlZACk898mVa/4xxV7pWz7y5QppDF6+uyAAAAAAAA
 
 
---=-orzseoxwiwE5Sp0t++7v--
+--=-VNbtz/ZFsHHRDGmeve/3--
 
 
---===============2073402004==
-Content-Type: text/plain; charset="utf-8"
+--===============1810791051282676461==
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4
-IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0
-cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRlbC1nZngK
 
---===============2073402004==--
+--===============1810791051282676461==--
