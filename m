@@ -1,12 +1,14 @@
 From: Jinpu Wang <jinpu.wang-EIkl63zCoXaH+58JC4qpiA@public.gmane.org>
-Subject: [RFI] WARNING: CPU: 0 PID: 14493 at drivers/iommu/intel-iommu.c:2048
-	__domain_mapping+0x37d/0x390()
-Date: Mon, 12 Oct 2015 15:29:25 +0200
-Message-ID: <CAMGffEmgpksfFhm5H9PB3n4ZWUEYbnC703xvSsQi0_hD1xtE5w@mail.gmail.com>
+Subject: Re: [RFI] WARNING: CPU: 0 PID: 14493 at
+	drivers/iommu/intel-iommu.c:2048 __domain_mapping+0x37d/0x390()
+Date: Tue, 13 Oct 2015 17:18:29 +0200
+Message-ID: <CAMGffEkwcAzMQbvzNJw8_xFAr5YptEMLk4Vfu_QJiOjjTh9K_w@mail.gmail.com>
+References: <CAMGffEmgpksfFhm5H9PB3n4ZWUEYbnC703xvSsQi0_hD1xtE5w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAMGffEmgpksfFhm5H9PB3n4ZWUEYbnC703xvSsQi0_hD1xtE5w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,50 +22,57 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Christian Zander <christian-dt00mrq0sMmU+1/U8MakDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgZXhwZXJ0cywKCldlIGhpdCB3YXJuaW5nIGJlbG93IGR1cmluZyB0ZXN0OgoKWzEzNTYwLjU0
-MTU2Ml0gRVJST1I6IERNQSBQVEUgZm9yIHZQRk4gMHhjM2EwMCBhbHJlYWR5IHNldCAodG8KNDI4
-MzRhMDAzIG5vdCAxMTQ2MDAwODMpClsxMzU2MC41NDE2OTZdIC0tLS0tLS0tLS0tLVsgY3V0IGhl
-cmUgXS0tLS0tLS0tLS0tLQpbMTM1NjAuNTQxNzAxXSBXQVJOSU5HOiBDUFU6IDAgUElEOiAyMjQy
-NyBhdApkcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmM6MjA0OCBfX2RvbWFpbl9tYXBwaW5nKzB4
-MzdkLzB4MzkwKCkKWzEzNTYwLjU0MTcwMl0gTW9kdWxlcyBsaW5rZWQgaW46IGRtX3NuYXBzaG90
-IGRtX2J1ZmlvIGlibmJkX3NlcnZlcihPKQppYnRyc19zZXJ2ZXIoTykgcmRtYV9jbSBpd19jbSBp
-Yl91dmVyYnMgaXBtaV9kZXYKaW50ZiBpYl9pcG9pYiBpYl9jbSBpYl91bWFkIGxvb3AgbWx4NF9p
-YiBpYl9zYSBpYl9tYWQgaWJfY29yZSBpYl9hZGRyCmlwdjYgaGlkX2dlbmVyaWMgdXNiaGlkIG1s
-eDRfY29yZSBpMmNfaTgwMSBpb2F0ZG0KYSBlaGNpX3BjaSBzYl9lZGFjIGkyY19jb3JlIGVoY2lf
-aGNkIGVkYWNfY29yZSBkY2EgaXBtaV9zaQppcG1pX21zZ2hhbmRsZXIgYnV0dG9uIGRtX21vZCBz
-ZyBlMTAwMGUKWzEzNTYwLjU0MTcyNl0gQ1BVOiAwIFBJRDogMjI0MjcgQ29tbToga3dvcmtlci8w
-OjAgVGFpbnRlZDogRwogTyAgIDMuMTguMjEtMS1zdG9yYWdlICMxClsxMzU2MC41NDE3MjddIEhh
-cmR3YXJlIG5hbWU6IFN1cGVybWljcm8gWDlTUkwtRi9YOVNSTC1GLCBCSU9TIDMuMDAgMDcvMDQv
-MjAxMwpbMTM1NjAuNTQxNzMwXSBXb3JrcXVldWU6IGliX2NtIGliX2Rlc3Ryb3lfY21faWQgW2li
-X2NtXQpbMTM1NjAuNTQxNzMxXSAgMDAwMDAwMDAwMDAwMDAwOSBmZmZmODgwMTA5MjEzOTY4IGZm
-ZmZmZmZmODE1YmFjNDUKMDAwMDAwMDAwMDAwMDAwMApbMTM1NjAuNTQxNzMzXSAgMDAwMDAwMDAw
-MDAwMDAwMCBmZmZmODgwMTA5MjEzOWE4IGZmZmZmZmZmODEwNTBkM2MKZmZmZjg4MDEwOTIxMzlj
-OApbMTM1NjAuNTQxNzM0XSAgMDAwMDAwMDExNDYwMDA4MyBmZmZmODgwMDc5OTJmMGU4IDAwMDAw
-MDAwMDAwMDAyMDAKMDAwMDAwMDAwMDBjM2EwMApbMTM1NjAuNTQxNzM2XSBDYWxsIFRyYWNlOgpb
-MTM1NjAuNTQxNzQwXSAgWzxmZmZmZmZmZjgxNWJhYzQ1Pl0gZHVtcF9zdGFjaysweDQ2LzB4NTgK
-WzEzNTYwLjU0MTc0M10gIFs8ZmZmZmZmZmY4MTA1MGQzYz5dIHdhcm5fc2xvd3BhdGhfY29tbW9u
-KzB4OGMvMHhjMApbMTM1NjAuNTQxNzQ0XSAgWzxmZmZmZmZmZjgxMDUwZDhhPl0gd2Fybl9zbG93
-cGF0aF9udWxsKzB4MWEvMHgyMApbMTM1NjAuNTQxNzQ2XSAgWzxmZmZmZmZmZjgxNGZjMGFkPl0g
-X19kb21haW5fbWFwcGluZysweDM3ZC8weDM5MApbMTM1NjAuNTQxNzQ4XSAgWzxmZmZmZmZmZjgx
-NGZkY2VkPl0gX19pbnRlbF9tYXBfc2luZ2xlKzB4MTBkLzB4MWQwClsxMzU2MC41NDE3NDldICBb
-PGZmZmZmZmZmODE0ZmRkZTk+XSBpbnRlbF9tYXBfcGFnZSsweDM5LzB4NDAKCmFuZCBkdXJpbmcg
-c2VhcmNoIEkgZm91bmQgYSBwYXRjaCBmcm9tIENocmlzdGlhbjoKaHR0cDovL3Blcm1hbGluay5n
-bWFuZS5vcmcvZ21hbmUubGludXgua2VybmVsLmlvbW11Lzk5OTMKClNlZW1zIHdlIGhhdmUgc2lt
-aWxhciBlcnJvciBtZXNzYWdlIGF0IGxlYXN0LCBhbmQgd2UgYWxzbyBtYXAgNE0KbWVtb3J5IGVh
-Y2ggdGltZSwgYWZ0ZXIgc2V2ZXJhbCBtYXAsIGl0IHRyaWdnZXJlZCB3YXJuaW5nIGFib3ZlLCBh
-cHBseQp0aGUgcGF0Y2ggc2VlbXMgZml4IHRoZSB3YXJuaW5nIGZvciB1cywgYnV0IGNoZWNraW5n
-IHdpdGggbGFzdGVzdApsaW51cyB0cmVlIDQuMy1yYzQsIGl0J3Mgbm90IHRoZXJlIHlldCwgY291
-bGQgeW91IGd1eXMgZ2l2ZSBzb21lCmNvbW1lbnQgb24gdGhlIHBhdGNoLCAgaXMgaXQgdGhlIHJp
-Z2h0IGZpeCBvciB3ZSBuZWVkIHRvIGZpeCBpdAphbm90aGVyIHdheSwgb3IgaXQncyBzaW1wbHkg
-aW1wbHkgZHJpdmVyIGJ1Zz8KClBsZWFzZSBzaGFyZSB5b3VyIGNvbW1lbnRzIQoKLS0gCk1pdCBm
-cmV1bmRsaWNoZW4gR3LDvMOfZW4sCkJlc3QgUmVnYXJkcywKCkphY2sgV2FuZwoKTGludXggS2Vy
-bmVsIERldmVsb3BlciBTdG9yYWdlClByb2ZpdEJyaWNrcyBHbWJIICBUaGUgSWFhUy1Db21wYW55
-LgoKUHJvZml0QnJpY2tzIEdtYkgKR3JlaWZzd2FsZGVyIFN0ci4gMjA3CkQgLSAxMDQwNSBCZXJs
-aW4KVGVsOiArNDkgMzAgNTc3MDA4My00MgpGYXg6ICs0OSAzMCA1NzcwMDg1LTk4CkVtYWlsOiBq
-aW5wdS53YW5nQHByb2ZpdGJyaWNrcy5jb20KVVJMOiBodHRwOi8vd3d3LnByb2ZpdGJyaWNrcy5k
-ZQoKU2l0eiBkZXIgR2VzZWxsc2NoYWZ0OiBCZXJsaW4uClJlZ2lzdGVyZ2VyaWNodDogQW10c2dl
-cmljaHQgQ2hhcmxvdHRlbmJ1cmcsIEhSQiAxMjU1MDYgQi4KR2VzY2jDpGZ0c2bDvGhyZXI6IEFu
-ZHJlYXMgR2F1Z2VyLCBBY2hpbSBXZWlzcy4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZv
-dW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xp
-c3RpbmZvL2lvbW11
+On Mon, Oct 12, 2015 at 3:29 PM, Jinpu Wang <jinpu.wang-EIkl63zCoXaH+58JC4qpiA@public.gmane.org> wrote:
+> Hi experts,
+>
+> We hit warning below during test:
+>
+> [13560.541562] ERROR: DMA PTE for vPFN 0xc3a00 already set (to
+> 42834a003 not 114600083)
+> [13560.541696] ------------[ cut here ]------------
+> [13560.541701] WARNING: CPU: 0 PID: 22427 at
+> drivers/iommu/intel-iommu.c:2048 __domain_mapping+0x37d/0x390()
+> [13560.541702] Modules linked in: dm_snapshot dm_bufio ibnbd_server(O)
+> ibtrs_server(O) rdma_cm iw_cm ib_uverbs ipmi_dev
+> intf ib_ipoib ib_cm ib_umad loop mlx4_ib ib_sa ib_mad ib_core ib_addr
+> ipv6 hid_generic usbhid mlx4_core i2c_i801 ioatdm
+> a ehci_pci sb_edac i2c_core ehci_hcd edac_core dca ipmi_si
+> ipmi_msghandler button dm_mod sg e1000e
+> [13560.541726] CPU: 0 PID: 22427 Comm: kworker/0:0 Tainted: G
+>  O   3.18.21-1-storage #1
+> [13560.541727] Hardware name: Supermicro X9SRL-F/X9SRL-F, BIOS 3.00 07/04/2013
+> [13560.541730] Workqueue: ib_cm ib_destroy_cm_id [ib_cm]
+> [13560.541731]  0000000000000009 ffff880109213968 ffffffff815bac45
+> 0000000000000000
+> [13560.541733]  0000000000000000 ffff8801092139a8 ffffffff81050d3c
+> ffff8801092139c8
+> [13560.541734]  0000000114600083 ffff88007992f0e8 0000000000000200
+> 00000000000c3a00
+> [13560.541736] Call Trace:
+> [13560.541740]  [<ffffffff815bac45>] dump_stack+0x46/0x58
+> [13560.541743]  [<ffffffff81050d3c>] warn_slowpath_common+0x8c/0xc0
+> [13560.541744]  [<ffffffff81050d8a>] warn_slowpath_null+0x1a/0x20
+> [13560.541746]  [<ffffffff814fc0ad>] __domain_mapping+0x37d/0x390
+> [13560.541748]  [<ffffffff814fdced>] __intel_map_single+0x10d/0x1d0
+> [13560.541749]  [<ffffffff814fdde9>] intel_map_page+0x39/0x40
+>
+> and during search I found a patch from Christian:
+> http://permalink.gmane.org/gmane.linux.kernel.iommu/9993
+>
+> Seems we have similar error message at least, and we also map 4M
+> memory each time, after several map, it triggered warning above, apply
+> the patch seems fix the warning for us, but checking with lastest
+> linus tree 4.3-rc4, it's not there yet, could you guys give some
+> comment on the patch,  is it the right fix or we need to fix it
+> another way, or it's simply imply driver bug?
+>
+> Please share your comments!
+>
+Ping,
+
+Can you shed any light on this?
+
+
+Regards,
+
+Jack
