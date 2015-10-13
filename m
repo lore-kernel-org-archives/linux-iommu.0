@@ -1,13 +1,11 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v6 0/3] arm64: IOMMU-backed DMA mapping
-Date: Tue, 13 Oct 2015 13:12:46 +0100
-Message-ID: <561CF53E.7000809@arm.com>
-References: <cover.1443718557.git.robin.murphy@arm.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: [RFC/PATCH] media: omap3isp: Set maximum DMA segment size
+Date: Tue, 13 Oct 2015 16:18:36 +0300
+Message-ID: <1444742316-27986-1-git-send-email-laurent.pinchart@ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1443718557.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,85 +15,69 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sakari.ailus-X3B1VOXEql0@public.gmane.org, Shuah Khan <shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+The maximum DMA segment size controls the IOMMU mapping granularity. Its
+default value is 64kB, resulting in potentially non-contiguous IOMMU
+mappings. Configure it to 4GB to ensure that buffers get mapped
+contiguously.
 
-On 01/10/15 20:13, Robin Murphy wrote:
-> Hi all,
->
-> Here's the latest, and hopefully last, revision of the initial arm64
-> IOMMU dma_ops support.
->
-> There are a couple of dependencies still currently in -next and the
-> intel-iommu tree[0]: "iommu: iova: Move iova cache management to the
-> iova library" is necessary for the rename of iova_cache_get(), and
-> "iommu/iova: Avoid over-allocating when size-aligned" will be needed
-> with some IOMMU drivers to prevent unmapping errors.
->
-> Changes from v5[1]:
-> - Change __iommu_dma_unmap() from BUG to WARN when things go wrong, and
->    prevent a NULL dereference on double-free.
-> - Fix iommu_dma_map_sg() to ensure segments can never inadvertently end
->    mapped across a segment boundary. As a result, we have to lose the
->    segment-merging optimisation from before (I might revisit that if
->    there's some evidence it's really worthwhile, though).
-> - Cleaned up the platform device workarounds for config order and
->    default domains, and removed the other hacks. Demanding that the IOMMU
->    drivers assign groups, and support IOMMU_DOMAIN_DMA via the methods
->    provided, keeps things bearable, and the behaviour should now be
->    consistent across all cases.
+Signed-off-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+---
+ drivers/media/platform/omap3isp/isp.c | 4 ++++
+ drivers/media/platform/omap3isp/isp.h | 1 +
+ 2 files changed, 5 insertions(+)
 
-I realise there was one other point you raised which I never explicitly 
-addressed (I had to go off and do some investigation at the time) - the 
-domain detach/free in arch_teardown_dma_ops does currently get called if 
-the client device driver fails it probe (or asks to defer). This 
-prevents us leaking any of our own domains we had to create, and lets us 
-start from a clean slate if the device gets re-probed later.
+I'm posting this as an RFC because I'm not happy with the patch, even if it
+gets the job done.
 
-Anyway, what are your thoughts on taking this for 4.4? Since the 
-dependencies are now in and we're at -rc5 already, I'm on the verge of 
-reposting a self-contained version to go through arm64, as we really 
-need to unblock all the follow-on development there (it's a shame that 
-of the people I'm aware want this, it's only me and the Mediatek/Chrome 
-guys here on the list saying so).
+On ARM the maximum DMA segment size is used when creating IOMMU mappings. As
+a large number of devices require contiguous memory buffers (this is a very
+common requirement for video-related embedded devices) the default 64kB value
+doesn't work.
 
-Yes, there's still plenty more to do in the OF/device layer for platform 
-device infrastructure as a whole (I hope my last reply[0] helped explain 
-why it has to look so upside-down compared to the nice simple x86 PCI 
-model), but I can only do it one chunk at a time ;)
+I haven't investigated the history behind this API in details but I have a
+feeling something is not quite right. We force most drivers to explicitly set
+the maximum segment size from a default that seems valid for specific use
+cases only. Furthermore, as the DMA parameters are not stored directly in
+struct device this require allocation of external memory for which we have no
+proper management rule, making automatic handling of the DMA parameters in
+frameworks or helper functions cumbersome (for a discussion on this topic see
+http://www.spinics.net/lists/linux-media/msg92467.html and
+http://lists.infradead.org/pipermail/linux-arm-kernel/2014-November/305913.html).
 
-Thanks,
-Robin.
+Is it time to fix this mess ?
 
-[0]:http://article.gmane.org/gmane.linux.kernel.iommu/10607
+diff --git a/drivers/media/platform/omap3isp/isp.c b/drivers/media/platform/omap3isp/isp.c
+index 17430a6ed85a..ebf7dc76e94d 100644
+--- a/drivers/media/platform/omap3isp/isp.c
++++ b/drivers/media/platform/omap3isp/isp.c
+@@ -2444,6 +2444,10 @@ static int isp_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto error;
+ 
++	isp->dev->dma_parms = &isp->dma_parms;
++	dma_set_max_seg_size(isp->dev, DMA_BIT_MASK(32));
++	dma_set_seg_boundary(isp->dev, 0xffffffff);
++
+ 	platform_set_drvdata(pdev, isp);
+ 
+ 	/* Regulators */
+diff --git a/drivers/media/platform/omap3isp/isp.h b/drivers/media/platform/omap3isp/isp.h
+index e579943175c4..4b2231cf01be 100644
+--- a/drivers/media/platform/omap3isp/isp.h
++++ b/drivers/media/platform/omap3isp/isp.h
+@@ -193,6 +193,7 @@ struct isp_device {
+ 	u32 syscon_offset;
+ 	u32 phy_type;
+ 
++	struct device_dma_parameters dma_parms;
+ 	struct dma_iommu_mapping *mapping;
+ 
+ 	/* ISP Obj */
+-- 
+Regards,
 
-> As a bonus, whilst the underlying of_iommu_configure() code only supports
-> platform devices at the moment, I can also say that this has now been
-> tested to work for PCI devices too, via some horrible hacks on a Juno r1.
->
-> Thanks,
-> Robin.
->
-> [0]:http://thread.gmane.org/gmane.linux.kernel.iommu/11033
-> [1]:http://thread.gmane.org/gmane.linux.kernel.iommu/10439
->
-> Robin Murphy (3):
->    iommu: Implement common IOMMU ops for DMA mapping
->    arm64: Add IOMMU dma_ops
->    arm64: Hook up IOMMU dma_ops
->
->   arch/arm64/Kconfig                   |   1 +
->   arch/arm64/include/asm/dma-mapping.h |  15 +-
->   arch/arm64/mm/dma-mapping.c          | 457 ++++++++++++++++++++++++++++++
->   drivers/iommu/Kconfig                |   7 +
->   drivers/iommu/Makefile               |   1 +
->   drivers/iommu/dma-iommu.c            | 524 +++++++++++++++++++++++++++++++++++
->   include/linux/dma-iommu.h            |  85 ++++++
->   include/linux/iommu.h                |   1 +
->   8 files changed, 1083 insertions(+), 8 deletions(-)
->   create mode 100644 drivers/iommu/dma-iommu.c
->   create mode 100644 include/linux/dma-iommu.h
->
+Laurent Pinchart
