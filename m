@@ -1,11 +1,11 @@
 From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: [PATCH v2 01/10] iommu/vt-d: Use plain writeq() for dmar_writeq()
-	where available
-Date: Tue, 13 Oct 2015 22:33:12 +0100
-Message-ID: <1444771992.125804.51.camel@infradead.org>
+Subject: [PATCH v2 02/10] iommu/vt-d: Introduce intel_iommu=pasid28, and
+	pasid_enabled() macro
+Date: Tue, 13 Oct 2015 22:33:32 +0100
+Message-ID: <1444772012.125804.54.camel@infradead.org>
 References: <1444771787.125804.50.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1810791051282676461=="
+Content-Type: multipart/mixed; boundary="===============0130724204459562695=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 In-Reply-To: <1444771787.125804.50.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
@@ -21,54 +21,93 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, intel-gf
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============1810791051282676461==
+--===============0130724204459562695==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-VNbtz/ZFsHHRDGmeve/3"
+	boundary="=-1U8YsiPJXgo7UBF7SgXR"
 
 
---=-VNbtz/ZFsHHRDGmeve/3
+--=-1U8YsiPJXgo7UBF7SgXR
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
+As long as we use an identity mapping to work around the worst of the
+hardware bugs which caused us to defeature it and change the definition
+of the capability bit, we *can* use PASID support on the devices which
+advertised it in bit 28 of the Extended Capability Register.
+
+Allow people to do so with 'intel_iommu=3Dpasid28' on the command line.
+
 Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- include/linux/intel-iommu.h | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ drivers/iommu/intel-iommu.c | 20 ++++++++++++++------
+ include/linux/intel-iommu.h |  2 +-
+ 2 files changed, 15 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index df53855..1448751 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -497,13 +497,21 @@ static int dmar_forcedac;
+ static int intel_iommu_strict;
+ static int intel_iommu_superpage =3D 1;
+ static int intel_iommu_ecs =3D 1;
++static int intel_iommu_pasid28;
++static int iommu_identity_mapping;
++
++#define IDENTMAP_ALL		1
++#define IDENTMAP_GFX		2
++#define IDENTMAP_AZALIA		4
+=20
+ /* We only actually use ECS when PASID support (on the new bit 40)
+  * is also advertised. Some early implementations =E2=80=94 the ones with
+  * PASID support on bit 28 =E2=80=94 have issues even when we *only* use
+  * extended root/context tables. */
++#define pasid_enabled(iommu) (ecap_pasid(iommu->ecap) || \
++			      (intel_iommu_pasid28 && ecap_broken_pasid(iommu->ecap)))
+ #define ecs_enabled(iommu) (intel_iommu_ecs && ecap_ecs(iommu->ecap) && \
+-			    ecap_pasid(iommu->ecap))
++			    pasid_enabled(iommu))
+=20
+ int intel_iommu_gfx_mapped;
+ EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped);
+@@ -566,6 +574,11 @@ static int __init intel_iommu_setup(char *str)
+ 			printk(KERN_INFO
+ 				"Intel-IOMMU: disable extended context table support\n");
+ 			intel_iommu_ecs =3D 0;
++		} else if (!strncmp(str, "pasid28", 7)) {
++			printk(KERN_INFO
++				"Intel-IOMMU: enable pre-production PASID support\n");
++			intel_iommu_pasid28 =3D 1;
++			iommu_identity_mapping |=3D IDENTMAP_GFX;
+ 		}
+=20
+ 		str +=3D strcspn(str, ",");
+@@ -2403,11 +2416,6 @@ found_domain:
+ 	return domain;
+ }
+=20
+-static int iommu_identity_mapping;
+-#define IDENTMAP_ALL		1
+-#define IDENTMAP_GFX		2
+-#define IDENTMAP_AZALIA		4
+-
+ static int iommu_domain_identity_map(struct dmar_domain *domain,
+ 				     unsigned long long start,
+ 				     unsigned long long end)
 diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 6240063..08802b9 100644
+index 08802b9..1d69c1d 100644
 --- a/include/linux/intel-iommu.h
 +++ b/include/linux/intel-iommu.h
-@@ -59,14 +59,11 @@
- #define DMAR_IRTA_REG	0xb8    /* Interrupt remapping table addr register *=
-/
-=20
- #define OFFSET_STRIDE		(9)
--/*
--#define dmar_readl(dmar, reg) readl(dmar + reg)
--#define dmar_readq(dmar, reg) ({ \
--		u32 lo, hi; \
--		lo =3D readl(dmar + reg); \
--		hi =3D readl(dmar + reg + 4); \
--		(((u64) hi) << 32) + lo; })
--*/
-+
-+#ifdef CONFIG_64BIT
-+#define dmar_readq(a) readq(a)
-+#define dmar_writeq(a,v) writeq(v,a)
-+#else
- static inline u64 dmar_readq(void __iomem *addr)
- {
- 	u32 lo, hi;
-@@ -80,6 +77,7 @@ static inline void dmar_writeq(void __iomem *addr, u64 va=
-l)
- 	writel((u32)val, addr);
- 	writel((u32)(val >> 32), addr + 4);
- }
-+#endif
-=20
- #define DMAR_VER_MAJOR(v)		(((v) & 0xf0) >> 4)
- #define DMAR_VER_MINOR(v)		((v) & 0x0f)
+@@ -121,7 +121,7 @@ static inline void dmar_writeq(void __iomem *addr, u64 =
+val)
+ #define ecap_srs(e)		((e >> 31) & 0x1)
+ #define ecap_ers(e)		((e >> 30) & 0x1)
+ #define ecap_prs(e)		((e >> 29) & 0x1)
+-/* PASID support used to be on bit 28 */
++#define ecap_broken_pasid(e)	((e >> 28) & 0x1)
+ #define ecap_dis(e)		((e >> 27) & 0x1)
+ #define ecap_nest(e)		((e >> 26) & 0x1)
+ #define ecap_mts(e)		((e >> 25) & 0x1)
 --=20
 2.4.3
 
@@ -76,7 +115,7 @@ l)
 David Woodhouse                            Open Source Technology Centre
 David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
 
---=-VNbtz/ZFsHHRDGmeve/3
+--=-1U8YsiPJXgo7UBF7SgXR
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -169,28 +208,28 @@ Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
 ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
 AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUxMDEzMjEzMzEyWjAjBgkqhkiG9w0BCQQxFgQUa6bh9a1J+lybJjsvxaM0c6LQEzow
+CQUxDxcNMTUxMDEzMjEzMzMyWjAjBgkqhkiG9w0BCQQxFgQUq+XmOJ95uIuuAuOL/5E+hdkJcncw
 gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
 ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
 L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
 CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
 LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
 U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQC6PNgTazesu7P75dujiF/oZyGU545lMvzPBQe/qMXxhJIYOpg44iR6W6Qs
-dZpSGZHYSSuUg5Uo7vx1XlbfQ935nuBpX+9XQmbpsYZQA+NuZblcqpp3t087PpRxdOn7ejr53CdG
-PO4T8vxySiYqIYNzc/f1R3qNoNJggF8TS0ry27hAUA+E8jFQ2VFprmOrliHPJgeowRRduaKT8KN7
-yP1VD+OKulv20mZhUNf6mU+1x0BqxICTIcy3irh0sCNgBSNiEps22I9wawnbKrAhY+Rovijf9Hzi
-42X6OV9Sn+2575gRslvfUK6PlZACk898mVa/4xxV7pWz7y5QppDF6+uyAAAAAAAA
+hkiG9w0BAQEFAASCAQArlqOm0eXWgc7A76UQR9dpEbCX5wGi60ZvhUNwJxtEr+bjMpnWFvqiPuK2
+VcoFIrpGwSu+678Hp7nR320Wh5ayZBo2s2QmiEp2+mmMkyxko2wtoLUE9hsgwNQDisrATGbreBoa
+/XasR0dGs830P/MGoKUgTfCIcf9eUR7kMs4DmuxEnP4Cm/XhjpTMCZkQ22gxRg2oxu8CNezZgDMq
+FcWlIhgnUO7OnUNE5i3AckQWq++4aSLbU5zzwryOmBIS9o3acBiUjc1Rv8QkNKdwpx6j9j5P55tj
+lXR8fM/8gnSwti950d8CMMNorBG43lmMZ2Iq3oP1orZiNKqw2OqsCyFzAAAAAAAA
 
 
---=-VNbtz/ZFsHHRDGmeve/3--
+--=-1U8YsiPJXgo7UBF7SgXR--
 
 
---===============1810791051282676461==
+--===============0130724204459562695==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============1810791051282676461==--
+--===============0130724204459562695==--
