@@ -1,241 +1,75 @@
-From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: [PATCH v2 03/10] iommu/vt-d: Add initial support for PASID tables
-Date: Tue, 13 Oct 2015 22:33:51 +0100
-Message-ID: <1444772031.125804.61.camel@infradead.org>
+From: David Woodhouse <dwmw2@infradead.org>
+Subject: [PATCH v2 04/10] iommu/vt-d: Assume BIOS lies about
+ ATSR for integrated gfx
+Date: Tue, 13 Oct 2015 22:34:09 +0100
+Message-ID: <1444772049.125804.62.camel@infradead.org>
 References: <1444771787.125804.50.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1003727645619572631=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1444771787.125804.50.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, intel-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Jesse Barnes <jesse.barnes-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Content-Type: multipart/mixed; boundary="===============0659760502=="
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+In-Reply-To: <1444771787.125804.50.camel@infradead.org>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: iommu@lists.linux-foundation.org, intel-gfx@lists.freedesktop.org, Jesse Barnes <jesse.barnes@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============1003727645619572631==
+--===============0659760502==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-TRz5/6S0xZpaH5USQxTl"
+	boundary="=-lri+U28GY8AQ9cewIGpr"
 
 
---=-TRz5/6S0xZpaH5USQxTl
+--=-lri+U28GY8AQ9cewIGpr
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Add CONFIG_INTEL_IOMMU_SVM, and allocate PASID tables on supported hardware=
-.
+If the device itself reports ATS in its PCIe capabilities, but the BIOS
+neglects to provide an ATSR structure to indicate that the root port can
+also cope, then assume the latter is lying.
 
-Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: David Woodhouse <David.Woodhouse@intel.com>
 ---
- drivers/iommu/Kconfig       |  8 ++++++
- drivers/iommu/Makefile      |  1 +
- drivers/iommu/intel-iommu.c | 14 ++++++++++
- drivers/iommu/intel-svm.c   | 65 +++++++++++++++++++++++++++++++++++++++++=
-++++
- include/linux/intel-iommu.h | 15 +++++++++++
- 5 files changed, 103 insertions(+)
- create mode 100644 drivers/iommu/intel-svm.c
+ drivers/iommu/intel-iommu.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index d9da766..e3b2c2e 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -135,6 +135,14 @@ config INTEL_IOMMU
- 	  and include PCI device scope covered by these DMA
- 	  remapping devices.
-=20
-+config INTEL_IOMMU_SVM
-+	bool "Support for Shared Virtual Memory with Intel IOMMU"
-+	depends on INTEL_IOMMU && X86
-+	help
-+	  Shared Virtual Memory (SVM) provides a facility for devices
-+	  to access DMA resources through process address space by
-+	  means of a Process Address Space ID (PASID).
-+
- config INTEL_IOMMU_DEFAULT_ON
- 	def_bool y
- 	prompt "Enable Intel DMA Remapping Devices by default"
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index c6dcc51..dc6f511 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -12,6 +12,7 @@ obj-$(CONFIG_ARM_SMMU) +=3D arm-smmu.o
- obj-$(CONFIG_ARM_SMMU_V3) +=3D arm-smmu-v3.o
- obj-$(CONFIG_DMAR_TABLE) +=3D dmar.o
- obj-$(CONFIG_INTEL_IOMMU) +=3D intel-iommu.o
-+obj-$(CONFIG_INTEL_IOMMU_SVM) +=3D intel-svm.o
- obj-$(CONFIG_IPMMU_VMSA) +=3D ipmmu-vmsa.o
- obj-$(CONFIG_IRQ_REMAP) +=3D intel_irq_remapping.o irq_remapping.o
- obj-$(CONFIG_OMAP_IOMMU) +=3D omap-iommu.o
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 1448751..7136dc4 100644
+index 7136dc4..4a81523b 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1680,6 +1680,11 @@ static void free_dmar_iommu(struct intel_iommu *iomm=
-u)
+@@ -1447,9 +1447,14 @@ iommu_support_dev_iotlb (struct dmar_domain *domain,=
+ struct intel_iommu *iommu,
+ 	if (!pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ATS))
+ 		return NULL;
 =20
- 	/* free context mapping */
- 	free_context_table(iommu);
-+
-+#ifdef CONFIG_INTEL_IOMMU_SVM
-+	if (pasid_enabled(iommu))
-+		intel_svm_free_pasid_tables(iommu);
-+#endif
+-	if (!dmar_find_matched_atsr_unit(pdev))
+-		return NULL;
+-
++	if (!dmar_find_matched_atsr_unit(pdev)) {
++		if (intel_iommu_pasid28 && IS_GFX_DEVICE(pdev) &&
++		    pdev->vendor =3D=3D 0x8086) {
++			pr_warn("BIOS denies ATSR capability for %s; assuming it lies\n",
++				dev_name(info->dev));
++		} else
++			return NULL;
++	}
+ 	return info;
  }
 =20
- static struct dmar_domain *alloc_domain(int flags)
-@@ -3107,6 +3112,10 @@ static int __init init_dmars(void)
-=20
- 		if (!ecap_pass_through(iommu->ecap))
- 			hw_pass_through =3D 0;
-+#ifdef CONFIG_INTEL_IOMMU_SVM
-+		if (pasid_enabled(iommu))
-+			intel_svm_alloc_pasid_tables(iommu);
-+#endif
- 	}
-=20
- 	if (iommu_pass_through)
-@@ -4122,6 +4131,11 @@ static int intel_iommu_add(struct dmar_drhd_unit *dm=
-aru)
- 	if (ret)
- 		goto out;
-=20
-+#ifdef CONFIG_INTEL_IOMMU_SVM
-+	if (pasid_enabled(iommu))
-+		intel_svm_alloc_pasid_tables(iommu);
-+#endif
-+
- 	if (dmaru->ignored) {
- 		/*
- 		 * we always have to disable PMRs or DMA may fail on this device
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-new file mode 100644
-index 0000000..5b42a95
---- /dev/null
-+++ b/drivers/iommu/intel-svm.c
-@@ -0,0 +1,65 @@
-+/*
-+ * Copyright =C2=A9 2015 Intel Corporation.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License f=
-or
-+ * more details.
-+ *
-+ * Authors: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-+ */
-+
-+#include <linux/intel-iommu.h>
-+
-+int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
-+{
-+	struct page *pages;
-+	int order;
-+
-+	order =3D ecap_pss(iommu->ecap) + 7 - PAGE_SHIFT;
-+	if (order < 0)
-+		order =3D 0;
-+
-+	pages =3D alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
-+	if (!pages) {
-+		pr_warn("IOMMU: %s: Failed to allocate PASID table\n",
-+			iommu->name);
-+		return -ENOMEM;
-+	}
-+	iommu->pasid_table =3D page_address(pages);
-+	pr_info("%s: Allocated order %d PASID table.\n", iommu->name, order);
-+
-+	if (ecap_dis(iommu->ecap)) {
-+		pages =3D alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
-+		if (pages)
-+			iommu->pasid_state_table =3D page_address(pages);
-+		else
-+			pr_warn("IOMMU: %s: Failed to allocate PASID state table\n",
-+				iommu->name);
-+	}
-+
-+	return 0;
-+}
-+
-+int intel_svm_free_pasid_tables(struct intel_iommu *iommu)
-+{
-+	int order;
-+
-+	order =3D ecap_pss(iommu->ecap) + 7 - PAGE_SHIFT;
-+	if (order < 0)
-+		order =3D 0;
-+
-+	if (iommu->pasid_table) {
-+		free_pages((unsigned long)iommu->pasid_table, order);
-+		iommu->pasid_table =3D NULL;
-+	}
-+	if (iommu->pasid_state_table) {
-+		free_pages((unsigned long)iommu->pasid_state_table, order);
-+		iommu->pasid_state_table =3D NULL;
-+	}
-+	return 0;
-+}
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 1d69c1d..0f38e60 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -325,6 +325,9 @@ enum {
- #define VTD_FLAG_TRANS_PRE_ENABLED	(1 << 0)
- #define VTD_FLAG_IRQ_REMAP_PRE_ENABLED	(1 << 1)
-=20
-+struct pasid_entry;
-+struct pasid_state_entry;
-+
- struct intel_iommu {
- 	void __iomem	*reg; /* Pointer to hardware regs, virtual addr */
- 	u64 		reg_phys; /* physical address of hw register set */
-@@ -348,6 +351,15 @@ struct intel_iommu {
-=20
- 	struct iommu_flush flush;
- #endif
-+#ifdef CONFIG_INTEL_IOMMU_SVM
-+	/* These are large and need to be contiguous, so we allocate just
-+	 * one for now. We'll maybe want to rethink that if we truly give
-+	 * devices away to userspace processes (e.g. for DPDK) and don't
-+	 * want to trust that userspace will use *only* the PASID it was
-+	 * told to. But while it's all driver-arbitrated, we're fine. */
-+	struct pasid_entry *pasid_table;
-+	struct pasid_state_entry *pasid_state_table;
-+#endif
- 	struct q_inval  *qi;            /* Queued invalidation info */
- 	u32 *iommu_state; /* Store iommu states between suspend and resume.*/
-=20
-@@ -387,6 +399,9 @@ extern int qi_submit_sync(struct qi_desc *desc, struct =
-intel_iommu *iommu);
-=20
- extern int dmar_ir_support(void);
-=20
-+extern int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu);
-+extern int intel_svm_free_pasid_tables(struct intel_iommu *iommu);
-+
- extern const struct attribute_group *intel_iommu_groups[];
-=20
- #endif
 --=20
 2.4.3
 
 --=20
 David Woodhouse                            Open Source Technology Centre
-David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
+David.Woodhouse@intel.com                              Intel Corporation
 
---=-TRz5/6S0xZpaH5USQxTl
+--=-lri+U28GY8AQ9cewIGpr
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -328,28 +162,31 @@ Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
 ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
 AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUxMDEzMjEzMzUxWjAjBgkqhkiG9w0BCQQxFgQU6FNzbgwS+30cevBFCr5qfAxIKFgw
+CQUxDxcNMTUxMDEzMjEzNDA5WjAjBgkqhkiG9w0BCQQxFgQUzbVU+GZoWmseYOkSmzvfe/VUn78w
 gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
 ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
 L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
 CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
 LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
 U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQCl/cLao90HAGGqKPRXGJd5lAjkAbrekZO+vwLiRrgo9ifhMu7dzXjl7oZf
-eVrFiAZR1P8dlMAHVNSTIZoqcwpPMbsnxApf2U+SFrDeH4/nOHqYCtnW737VxQxPy6bpc9RUFoz+
-VDdwOu5NzLyqlc0uI1HwaWvWSCrgl6AWBIb5fK6caCik/olbg0A5XF4LQodlk9jMA1uTXfZJPz7n
-HA9IHIlR3lhkG83uigFJ8kj8SHDh2snqCAPTcIlFfUdGh/aRJNKX5Pq2v30UxgxhpKeMbjysl1Uy
-g/CB3qjeUPY/aBRwCFgd0Np5AEeF0LeE7C0zsDb0mf3Nxds4lPJlwUyzAAAAAAAA
+hkiG9w0BAQEFAASCAQA8nYrpzxlaQ0zhHx0rc/1wzTBHVy72Xk92EMO61XMTK0nichE5ZZa/Y7CH
+PA2Kad4X6KIE9KYuC+4idaQtV+erqlW2+WIO9Zr1xVj8IYzcMfMzjS7jmRH7GTY6Uk81m/FLId4f
+JaPYDvcWTyoAJA/nAWvIUZ9KCdUZi2CpOWUVuahoo9YUUwczMaeC8cvJsz0BUPxRMztrVB3FCK+/
+1xeITjgG9e6u/xygd2cWuTDjT3SOCQ4ivPddshCv4dA20B+tXdhjF6Y0lGVPQj907YOxikCMCqL5
+rMpw9+OGqjIOCRq/PZCFleNEcutPn30z6YJBJ2+xplSqkTQErCTeeG9AAAAAAAAA
 
 
---=-TRz5/6S0xZpaH5USQxTl--
+--=-lri+U28GY8AQ9cewIGpr--
 
 
---===============1003727645619572631==
-Content-Type: text/plain; charset="us-ascii"
+--===============0659760502==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
 Content-Disposition: inline
 
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4
+IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0
+cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRlbC1nZngK
 
---===============1003727645619572631==--
+--===============0659760502==--
