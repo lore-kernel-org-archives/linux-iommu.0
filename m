@@ -1,75 +1,240 @@
-From: David Woodhouse <dwmw2@infradead.org>
-Subject: [PATCH v2 04/10] iommu/vt-d: Assume BIOS lies about
- ATSR for integrated gfx
-Date: Tue, 13 Oct 2015 22:34:09 +0100
-Message-ID: <1444772049.125804.62.camel@infradead.org>
+From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: [PATCH v2 05/10] iommu/vt-d: Always enable PASID/PRI PCI
+	capabilities before ATS
+Date: Tue, 13 Oct 2015 22:34:27 +0100
+Message-ID: <1444772067.125804.63.camel@infradead.org>
 References: <1444771787.125804.50.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0659760502=="
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <1444771787.125804.50.camel@infradead.org>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: iommu@lists.linux-foundation.org, intel-gfx@lists.freedesktop.org, Jesse Barnes <jesse.barnes@intel.com>
+Content-Type: multipart/mixed; boundary="===============7459903664306524894=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1444771787.125804.50.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, intel-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Jesse Barnes <jesse.barnes-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============0659760502==
+--===============7459903664306524894==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-lri+U28GY8AQ9cewIGpr"
+	boundary="=-EeGn8/Q0i6GSAfjNuZU/"
 
 
---=-lri+U28GY8AQ9cewIGpr
+--=-EeGn8/Q0i6GSAfjNuZU/
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-If the device itself reports ATS in its PCIe capabilities, but the BIOS
-neglects to provide an ATSR structure to indicate that the root port can
-also cope, then assume the latter is lying.
+The behaviour if you enable PASID support after ATS is undefined. So we
+have to enable it first, even if we don't know whether we'll need it.
 
-Signed-off-by: David Woodhouse <David.Woodhouse@intel.com>
+This is safe enough; unless we set up a context that permits it, the device
+can't actually *do* anything with it.
+
+Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/iommu/Kconfig       |  1 +
+ drivers/iommu/intel-iommu.c | 96 ++++++++++++++++++++++++++++++++---------=
+----
+ 2 files changed, 70 insertions(+), 27 deletions(-)
 
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index e3b2c2e..8d23f5e 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -138,6 +138,7 @@ config INTEL_IOMMU
+ config INTEL_IOMMU_SVM
+ 	bool "Support for Shared Virtual Memory with Intel IOMMU"
+ 	depends on INTEL_IOMMU && X86
++	select PCI_PASID
+ 	help
+ 	  Shared Virtual Memory (SVM) provides a facility for devices
+ 	  to access DMA resources through process address space by
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 7136dc4..4a81523b 100644
+index 4a81523b..3b901ca 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1447,9 +1447,14 @@ iommu_support_dev_iotlb (struct dmar_domain *domain,=
- struct intel_iommu *iommu,
- 	if (!pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ATS))
- 		return NULL;
+@@ -418,10 +418,13 @@ struct device_domain_info {
+ 	struct list_head global; /* link to global list */
+ 	u8 bus;			/* PCI bus number */
+ 	u8 devfn;		/* PCI devfn number */
+-	struct {
+-		u8 enabled:1;
+-		u8 qdep;
+-	} ats;			/* ATS state */
++	u8 pasid_supported:3;
++	u8 pasid_enabled:1;
++	u8 pri_supported:1;
++	u8 pri_enabled:1;
++	u8 ats_supported:1;
++	u8 ats_enabled:1;
++	u8 ats_qdep;
+ 	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
+ 	struct intel_iommu *iommu; /* IOMMU used by this device */
+ 	struct dmar_domain *domain; /* pointer to domain */
+@@ -1426,9 +1429,6 @@ iommu_support_dev_iotlb (struct dmar_domain *domain, =
+struct intel_iommu *iommu,
 =20
--	if (!dmar_find_matched_atsr_unit(pdev))
+ 	assert_spin_locked(&device_domain_lock);
+=20
+-	if (!ecap_dev_iotlb_support(iommu->ecap))
 -		return NULL;
 -
-+	if (!dmar_find_matched_atsr_unit(pdev)) {
-+		if (intel_iommu_pasid28 && IS_GFX_DEVICE(pdev) &&
-+		    pdev->vendor =3D=3D 0x8086) {
-+			pr_warn("BIOS denies ATSR capability for %s; assuming it lies\n",
-+				dev_name(info->dev));
-+		} else
-+			return NULL;
+ 	if (!iommu->qi)
+ 		return NULL;
+=20
+@@ -1444,16 +1444,27 @@ iommu_support_dev_iotlb (struct dmar_domain *domain=
+, struct intel_iommu *iommu,
+=20
+ 	pdev =3D to_pci_dev(info->dev);
+=20
+-	if (!pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ATS))
+-		return NULL;
++	if (ecs_enabled(iommu)) {
++		if (pasid_enabled(iommu)) {
++			int features =3D pci_pasid_features(pdev);
++			if (features >=3D 0)
++				info->pasid_supported =3D features | 1;
++		}
++
++		if (ecap_prs(iommu->ecap) && pci_find_ext_capability(pdev, PCI_EXT_CAP_I=
+D_PRI))
++			info->pri_supported =3D 1;
 +	}
+=20
+-	if (!dmar_find_matched_atsr_unit(pdev)) {
+-		if (intel_iommu_pasid28 && IS_GFX_DEVICE(pdev) &&
+-		    pdev->vendor =3D=3D 0x8086) {
++	if (ecap_dev_iotlb_support(iommu->ecap) &&
++	    pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ATS)) {
++		if (dmar_find_matched_atsr_unit(pdev))
++			info->ats_supported =3D 1;
++		else if (intel_iommu_pasid28 && IS_GFX_DEVICE(pdev) &&
++			 pdev->vendor =3D=3D 0x8086) {
+ 			pr_warn("BIOS denies ATSR capability for %s; assuming it lies\n",
+ 				dev_name(info->dev));
+-		} else
+-			return NULL;
++			info->ats_supported =3D 1;
++		}
+ 	}
  	return info;
  }
+@@ -1466,20 +1477,48 @@ static void iommu_enable_dev_iotlb(struct device_do=
+main_info *info)
+ 		return;
 =20
+ 	pdev =3D to_pci_dev(info->dev);
+-	if (pci_enable_ats(pdev, VTD_PAGE_SHIFT))
+-		return;
+=20
+-	info->ats.enabled =3D 1;
+-	info->ats.qdep =3D pci_ats_queue_depth(pdev);
++#ifdef CONFIG_INTEL_IOMMU_SVM
++	/* The PCIe spec, in its wisdom, declares that the behaviour of
++	   the device if you enable PASID support after ATS support is
++	   undefined. So always enable PASID support on devices which
++	   have it, even if we can't yet know if we're ever going to
++	   use it. */
++	if (info->pasid_supported && !pci_enable_pasid(pdev, info->pasid_supporte=
+d & ~1))
++		info->pasid_enabled =3D 1;
++
++	if (info->pri_supported && !pci_reset_pri(pdev) && !pci_enable_pri(pdev, =
+32))
++		info->pri_enabled =3D 1;
++#endif
++	if (info->ats_supported && !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
++		info->ats_enabled =3D 1;
++		info->ats_qdep =3D pci_ats_queue_depth(pdev);
++	}
+ }
+=20
+ static void iommu_disable_dev_iotlb(struct device_domain_info *info)
+ {
+-	if (!info->ats.enabled)
++	struct pci_dev *pdev;
++
++	if (dev_is_pci(info->dev))
+ 		return;
+=20
+-	pci_disable_ats(to_pci_dev(info->dev));
+-	info->ats.enabled =3D 0;
++	pdev =3D to_pci_dev(info->dev);
++
++	if (info->ats_enabled) {
++		pci_disable_ats(pdev);
++		info->ats_enabled =3D 0;
++	}
++#ifdef CONFIG_INTEL_IOMMU_SVM
++	if (info->pri_enabled) {
++		pci_disable_pri(pdev);
++		info->pri_enabled =3D 0;
++	}
++	if (info->pasid_enabled) {
++		pci_disable_pasid(pdev);
++		info->pasid_enabled =3D 0;
++	}
++#endif
+ }
+=20
+ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
+@@ -1491,11 +1530,11 @@ static void iommu_flush_dev_iotlb(struct dmar_domai=
+n *domain,
+=20
+ 	spin_lock_irqsave(&device_domain_lock, flags);
+ 	list_for_each_entry(info, &domain->devices, link) {
+-		if (!info->ats.enabled)
++		if (!info->ats_enabled)
+ 			continue;
+=20
+ 		sid =3D info->bus << 8 | info->devfn;
+-		qdep =3D info->ats.qdep;
++		qdep =3D info->ats_qdep;
+ 		qi_flush_dev_iotlb(info->iommu, sid, qdep, addr, mask);
+ 	}
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+@@ -1957,8 +1996,10 @@ static int domain_context_mapping_one(struct dmar_do=
+main *domain,
+ 		}
+=20
+ 		info =3D iommu_support_dev_iotlb(domain, iommu, bus, devfn);
+-		translation =3D info ? CONTEXT_TT_DEV_IOTLB :
+-				     CONTEXT_TT_MULTI_LEVEL;
++		if (info && info->ats_supported)
++			translation =3D CONTEXT_TT_DEV_IOTLB;
++		else
++			translation =3D CONTEXT_TT_MULTI_LEVEL;
+=20
+ 		context_set_address_root(context, virt_to_phys(pgd));
+ 		context_set_address_width(context, iommu->agaw);
+@@ -2296,8 +2337,9 @@ static struct dmar_domain *dmar_insert_one_dev_info(s=
+truct intel_iommu *iommu,
+=20
+ 	info->bus =3D bus;
+ 	info->devfn =3D devfn;
+-	info->ats.enabled =3D 0;
+-	info->ats.qdep =3D 0;
++	info->ats_supported =3D info->pasid_supported =3D info->pri_supported =3D=
+ 0;
++	info->ats_enabled =3D info->pasid_enabled =3D info->pri_enabled =3D 0;
++	info->ats_qdep =3D 0;
+ 	info->dev =3D dev;
+ 	info->domain =3D domain;
+ 	info->iommu =3D iommu;
 --=20
 2.4.3
 
 --=20
 David Woodhouse                            Open Source Technology Centre
-David.Woodhouse@intel.com                              Intel Corporation
+David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
 
---=-lri+U28GY8AQ9cewIGpr
+--=-EeGn8/Q0i6GSAfjNuZU/
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -162,31 +327,28 @@ Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
 ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
 AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUxMDEzMjEzNDA5WjAjBgkqhkiG9w0BCQQxFgQUzbVU+GZoWmseYOkSmzvfe/VUn78w
+CQUxDxcNMTUxMDEzMjEzNDI3WjAjBgkqhkiG9w0BCQQxFgQUSRV5rJ0stEmKh5EGoKcJeUYw4gAw
 gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
 ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
 L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
 CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
 LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
 U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQA8nYrpzxlaQ0zhHx0rc/1wzTBHVy72Xk92EMO61XMTK0nichE5ZZa/Y7CH
-PA2Kad4X6KIE9KYuC+4idaQtV+erqlW2+WIO9Zr1xVj8IYzcMfMzjS7jmRH7GTY6Uk81m/FLId4f
-JaPYDvcWTyoAJA/nAWvIUZ9KCdUZi2CpOWUVuahoo9YUUwczMaeC8cvJsz0BUPxRMztrVB3FCK+/
-1xeITjgG9e6u/xygd2cWuTDjT3SOCQ4ivPddshCv4dA20B+tXdhjF6Y0lGVPQj907YOxikCMCqL5
-rMpw9+OGqjIOCRq/PZCFleNEcutPn30z6YJBJ2+xplSqkTQErCTeeG9AAAAAAAAA
+hkiG9w0BAQEFAASCAQCvq3NUiv0auIHXwZrsQxIFTcr7HdjNLI3ehuC+EMYyds2hsE8E89fjFca0
+kKWux7X/zH8VYZCDJpaELj4qlpX2AigXibsyNkkCsCDX07B2axSRV9/vA1ExIaSgcp4MWhGJnCci
+eb8T0nltxwCr29ZtBASuRjETFr9L4d6zuwBwrgTtvug1F+ZFNoFpDk/kDJkYGf5LYTdI7Ql7dcYw
+mJmEsomVz0yWI74TIRgYpwFVyFp5QVT73N36AqmpQ9WwB1oZkNplgG8h2O8YAWLhrbNMBoMpa85g
+LA0dBtOJ+EcgFfeGlJguPQQLjlbdZjkATFdcbQSOWKh/ISx2Pl9piEBeAAAAAAAA
 
 
---=-lri+U28GY8AQ9cewIGpr--
+--=-EeGn8/Q0i6GSAfjNuZU/--
 
 
---===============0659760502==
-Content-Type: text/plain; charset="utf-8"
+--===============7459903664306524894==
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4
-IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0
-cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRlbC1nZngK
 
---===============0659760502==--
+--===============7459903664306524894==--
