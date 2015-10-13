@@ -1,10 +1,11 @@
 From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: [PATCH v2 09/10] iommu/vt-d: Implement page request handling
-Date: Tue, 13 Oct 2015 22:35:35 +0100
-Message-ID: <1444772135.125804.67.camel@infradead.org>
+Subject: [PATCH v2 10/10] iommu/vt-d: Add callback to device driver on page
+	faults
+Date: Tue, 13 Oct 2015 22:35:48 +0100
+Message-ID: <1444772148.125804.68.camel@infradead.org>
 References: <1444771787.125804.50.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============8058882837357788032=="
+Content-Type: multipart/mixed; boundary="===============7304592813066175183=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 In-Reply-To: <1444771787.125804.50.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
@@ -20,350 +21,188 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, intel-gf
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============8058882837357788032==
+--===============7304592813066175183==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-fKa141+ZBBO1Vnu9iq+J"
+	boundary="=-6mSj02Ij270iurtm4Ii9"
 
 
---=-fKa141+ZBBO1Vnu9iq+J
+--=-6mSj02Ij270iurtm4Ii9
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Largely based on the driver-mode implementation by Jesse Barnes.
-
 Signed-off-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c |  22 +++++-
- drivers/iommu/intel-svm.c   | 173 ++++++++++++++++++++++++++++++++++++++++=
-++++
- include/linux/intel-iommu.h |  26 +++++++
- 3 files changed, 220 insertions(+), 1 deletion(-)
+ drivers/iommu/intel-iommu.c |  3 ++-
+ drivers/iommu/intel-svm.c   | 26 +++++++++++++++++++++++++-
+ include/linux/intel-iommu.h |  3 +++
+ include/linux/intel-svm.h   | 21 ++++++++++++++++++---
+ 4 files changed, 48 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 787cd6e..548f6e5 100644
+index 548f6e5..4f2eab6 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1726,8 +1726,11 @@ static void free_dmar_iommu(struct intel_iommu *iomm=
-u)
- 	free_context_table(iommu);
+@@ -5029,12 +5029,13 @@ int intel_iommu_enable_pasid(struct intel_iommu *io=
+mmu, struct intel_svm_dev *sd
+ 	if (!info->pasid_enabled)
+ 		iommu_enable_dev_iotlb(info);
 =20
- #ifdef CONFIG_INTEL_IOMMU_SVM
--	if (pasid_enabled(iommu))
-+	if (pasid_enabled(iommu)) {
-+		if (ecap_prs(iommu->ecap))
-+			intel_svm_finish_prq(iommu);
- 		intel_svm_free_pasid_tables(iommu);
-+	}
- #endif
- }
-=20
-@@ -3250,6 +3253,13 @@ domains_done:
-=20
- 		iommu_flush_write_buffer(iommu);
-=20
-+#ifdef CONFIG_INTEL_IOMMU_SVM
-+		if (pasid_enabled(iommu) && ecap_prs(iommu->ecap)) {
-+			ret =3D intel_svm_enable_prq(iommu);
-+			if (ret)
-+				goto free_iommu;
-+		}
-+#endif
- 		ret =3D dmar_set_interrupt(iommu);
- 		if (ret)
- 			goto free_iommu;
-@@ -4194,6 +4204,14 @@ static int intel_iommu_add(struct dmar_drhd_unit *dm=
-aru)
-=20
- 	intel_iommu_init_qi(iommu);
- 	iommu_flush_write_buffer(iommu);
++	sdev->sid =3D (((u16)bus) << 8) | devfn;
 +
-+#ifdef CONFIG_INTEL_IOMMU_SVM
-+	if (pasid_enabled(iommu) && ecap_prs(iommu->ecap)) {
-+		ret =3D intel_svm_enable_prq(iommu);
-+		if (ret)
-+			goto disable_iommu;
-+	}
-+#endif
- 	ret =3D dmar_set_interrupt(iommu);
- 	if (ret)
- 		goto disable_iommu;
-@@ -4995,6 +5013,8 @@ int intel_iommu_enable_pasid(struct intel_iommu *iomm=
-u, struct intel_svm_dev *sd
- 		ctx_lo |=3D CONTEXT_PASIDE;
- 		if (iommu->pasid_state_table)
- 			ctx_lo |=3D CONTEXT_DINVE;
-+		if (info->pri_supported)
-+			ctx_lo |=3D CONTEXT_PRS;
- 		context[0].lo =3D ctx_lo;
- 		wmb();
- 		iommu->flush.flush_context(iommu, sdev->did,
+ 	if (info->ats_enabled) {
+ 		sdev->dev_iotlb =3D 1;
+ 		sdev->qdep =3D info->ats_qdep;
+ 		if (sdev->qdep >=3D QI_DEV_EIOTLB_MAX_INVS)
+ 			sdev->qdep =3D 0;
+-		sdev->sid =3D (((u16)bus) << 8) | devfn;
+ 	}
+=20
+ 	return 0;
 diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index a64720b..0e86542 100644
+index 0e86542..0a31350 100644
 --- a/drivers/iommu/intel-svm.c
 +++ b/drivers/iommu/intel-svm.c
-@@ -21,6 +21,10 @@
- #include <linux/rculist.h>
- #include <linux/pci.h>
- #include <linux/pci-ats.h>
-+#include <linux/dmar.h>
-+#include <linux/interrupt.h>
-+
-+static irqreturn_t prq_event_thread(int irq, void *d);
+@@ -264,7 +264,7 @@ static const struct mmu_notifier_ops intel_mmuops =3D {
 =20
- struct pasid_entry {
- 	u64 val;
-@@ -82,6 +86,66 @@ int intel_svm_free_pasid_tables(struct intel_iommu *iomm=
-u)
- 	return 0;
- }
+ static DEFINE_MUTEX(pasid_mutex);
 =20
-+#define PRQ_ORDER 0
-+
-+int intel_svm_enable_prq(struct intel_iommu *iommu)
-+{
-+	struct page *pages;
-+	int irq, ret;
-+
-+	pages =3D alloc_pages(GFP_KERNEL | __GFP_ZERO, PRQ_ORDER);
-+	if (!pages) {
-+		pr_warn("IOMMU: %s: Failed to allocate page request queue\n",
-+			iommu->name);
-+		return -ENOMEM;
-+	}
-+	iommu->prq =3D page_address(pages);
-+
-+	irq =3D dmar_alloc_hwirq(DMAR_UNITS_SUPPORTED + iommu->seq_id, iommu->nod=
-e, iommu);
-+	if (irq <=3D 0) {
-+		pr_err("IOMMU: %s: Failed to create IRQ vector for page request queue\n"=
-,
-+		       iommu->name);
-+		ret =3D -EINVAL;
-+	err:
-+		free_pages((unsigned long)iommu->prq, PRQ_ORDER);
-+		iommu->prq =3D NULL;
-+		return ret;
-+	}
-+	iommu->pr_irq =3D irq;
-+
-+	snprintf(iommu->prq_name, sizeof(iommu->prq_name), "dmar%d-prq", iommu->s=
-eq_id);
-+
-+	ret =3D request_threaded_irq(irq, NULL, prq_event_thread, IRQF_ONESHOT,
-+				   iommu->prq_name, iommu);
-+	if (ret) {
-+		pr_err("IOMMU: %s: Failed to request IRQ for page request queue\n",
-+		       iommu->name);
-+		dmar_free_hwirq(irq);
-+		goto err;
-+	}
-+	dmar_writeq(iommu->reg + DMAR_PQH_REG, 0ULL);
-+	dmar_writeq(iommu->reg + DMAR_PQT_REG, 0ULL);
-+	dmar_writeq(iommu->reg + DMAR_PQA_REG, virt_to_phys(iommu->prq) | PRQ_ORD=
-ER);
-+
-+	return 0;
-+}
-+
-+int intel_svm_finish_prq(struct intel_iommu *iommu)
-+{
-+	dmar_writeq(iommu->reg + DMAR_PQH_REG, 0ULL);
-+	dmar_writeq(iommu->reg + DMAR_PQT_REG, 0ULL);
-+	dmar_writeq(iommu->reg + DMAR_PQA_REG, 0ULL);
-+
-+	free_irq(iommu->pr_irq, iommu);
-+	dmar_free_hwirq(iommu->pr_irq);
-+	iommu->pr_irq =3D 0;
-+
-+	free_pages((unsigned long)iommu->prq, PRQ_ORDER);
-+	iommu->prq =3D NULL;
-+
-+	return 0;
-+}
-+
- static void intel_flush_svm_range_dev (struct intel_svm *svm, struct intel=
-_svm_dev *sdev,
- 				       unsigned long address, int pages, int ih)
+-int intel_svm_bind_mm(struct device *dev, int *pasid)
++int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct sv=
+m_dev_ops *ops)
  {
-@@ -363,3 +427,112 @@ int intel_svm_unbind_mm(struct device *dev, int pasid=
-)
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(intel_svm_unbind_mm);
-+
-+/* Page request queue descriptor */
-+struct page_req_dsc {
-+	u64 srr:1;
-+	u64 bof:1;
-+	u64 pasid_present:1;
-+	u64 lpig:1;
-+	u64 pasid:20;
-+	u64 bus:8;
-+	u64 private:23;
-+	u64 prg_index:9;
-+	u64 rd_req:1;
-+	u64 wr_req:1;
-+	u64 exe_req:1;
-+	u64 priv_req:1;
-+	u64 devfn:8;
-+	u64 addr:52;
-+};
-+
-+#define PRQ_RING_MASK ((0x1000 << PRQ_ORDER) - 0x10)
-+static irqreturn_t prq_event_thread(int irq, void *d)
-+{
-+	struct intel_iommu *iommu =3D d;
-+	struct intel_svm *svm =3D NULL;
-+	int head, tail, handled =3D 0;
-+
-+	tail =3D dmar_readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK;
-+	head =3D dmar_readq(iommu->reg + DMAR_PQH_REG) & PRQ_RING_MASK;
-+	while (head !=3D tail) {
-+		struct vm_area_struct *vma;
-+		struct page_req_dsc *req;
-+		struct qi_desc resp;
-+		int ret, result;
-+		u64 address;
-+
-+		handled =3D 1;
-+
-+		req =3D &iommu->prq[head / sizeof(*req)];
-+
-+		result =3D QI_RESP_FAILURE;
-+		address =3D req->addr << PAGE_SHIFT;
-+		if (!req->pasid_present) {
-+			pr_err("%s: Page request without PASID: %08llx %08llx\n",
-+			       iommu->name, ((unsigned long long *)req)[0],
-+			       ((unsigned long long *)req)[1]);
-+			goto bad_req;
+ 	struct intel_iommu *iommu =3D intel_svm_device_to_iommu(dev);
+ 	struct intel_svm_dev *sdev;
+@@ -302,6 +302,10 @@ int intel_svm_bind_mm(struct device *dev, int *pasid)
+=20
+ 			list_for_each_entry(sdev, &svm->devs, list) {
+ 				if (dev =3D=3D sdev->dev) {
++					if (sdev->ops !=3D ops) {
++						ret =3D -EBUSY;
++						goto out;
++					}
+ 					sdev->users++;
+ 					goto success;
+ 				}
+@@ -327,6 +331,7 @@ int intel_svm_bind_mm(struct device *dev, int *pasid)
+ 	}
+ 	/* Finish the setup now we know we're keeping it */
+ 	sdev->users =3D 1;
++	sdev->ops =3D ops;
+ 	init_rcu_head(&sdev->rcu);
+=20
+ 	if (!svm) {
+@@ -456,6 +461,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 	tail =3D dmar_readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK;
+ 	head =3D dmar_readq(iommu->reg + DMAR_PQH_REG) & PRQ_RING_MASK;
+ 	while (head !=3D tail) {
++		struct intel_svm_dev *sdev;
+ 		struct vm_area_struct *vma;
+ 		struct page_req_dsc *req;
+ 		struct qi_desc resp;
+@@ -507,6 +513,24 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 		up_read(&svm->mm->mmap_sem);
+ 	bad_req:
+ 		/* Accounting for major/minor faults? */
++		rcu_read_lock();
++		list_for_each_entry_rcu(sdev, &svm->devs, list) {
++			if (sdev->sid =3D=3D ((req->bus << 8) | req->devfn))
++				break;
 +		}
++		/* Other devices can go away, but the drivers are not permitted
++		 * to unbind while any page faults might be in flight. So it's
++		 * OK to drop the 'lock' here now we have it. */
++		rcu_read_unlock();
 +
-+		if (!svm || svm->pasid !=3D req->pasid) {
-+			rcu_read_lock();
-+			svm =3D idr_find(&iommu->pasid_idr, req->pasid);
-+			/* It *can't* go away, because the driver is not permitted
-+			 * to unbind the mm while any page faults are outstanding.
-+			 * So we only need RCU to protect the internal idr code. */
-+			rcu_read_unlock();
++		if (WARN_ON(&sdev->list =3D=3D &svm->devs))
++			sdev =3D NULL;
 +
-+			if (!svm) {
-+				pr_err("%s: Page request for invalid PASID %d: %08llx %08llx\n",
-+				       iommu->name, req->pasid, ((unsigned long long *)req)[0],
-+				       ((unsigned long long *)req)[1]);
-+				goto bad_req;
-+			}
++		if (sdev && sdev->ops && sdev->ops->fault_cb) {
++			int rwxp =3D (req->rd_req << 3) | (req->wr_req << 2) |
++				(req->wr_req << 1) | (req->exe_req);
++			sdev->ops->fault_cb(sdev->dev, req->pasid, req->addr, req->private, rwx=
+p, result);
 +		}
-+
-+		result =3D QI_RESP_INVALID;
-+		down_read(&svm->mm->mmap_sem);
-+		vma =3D find_extend_vma(svm->mm, address);
-+		if (!vma || address < vma->vm_start)
-+			goto invalid;
-+
-+		ret =3D handle_mm_fault(svm->mm, vma, address,
-+				      req->wr_req ? FAULT_FLAG_WRITE : 0);
-+		if (ret & VM_FAULT_ERROR)
-+			goto invalid;
-+
-+		result =3D QI_RESP_SUCCESS;
-+	invalid:
-+		up_read(&svm->mm->mmap_sem);
-+	bad_req:
-+		/* Accounting for major/minor faults? */
-+
-+		if (req->lpig) {
-+			/* Page Group Response */
-+			resp.low =3D QI_PGRP_PASID(req->pasid) |
-+				QI_PGRP_DID((req->bus << 8) | req->devfn) |
-+				QI_PGRP_PASID_P(req->pasid_present) |
-+				QI_PGRP_RESP_TYPE;
-+			resp.high =3D QI_PGRP_IDX(req->prg_index) |
-+				QI_PGRP_PRIV(req->private) | QI_PGRP_RESP_CODE(result);
-+
-+			qi_submit_sync(&resp, svm->iommu);
-+		} else if (req->srr) {
-+			/* Page Stream Response */
-+			resp.low =3D QI_PSTRM_IDX(req->prg_index) |
-+				QI_PSTRM_PRIV(req->private) | QI_PSTRM_BUS(req->bus) |
-+				QI_PSTRM_PASID(req->pasid) | QI_PSTRM_RESP_TYPE;
-+			resp.high =3D QI_PSTRM_ADDR(address) | QI_PSTRM_DEVFN(req->devfn) |
-+				QI_PSTRM_RESP_CODE(result);
-+
-+			qi_submit_sync(&resp, svm->iommu);
-+		}
-+
-+		head =3D (head + sizeof(*req)) & PRQ_RING_MASK;
-+	}
-+
-+	dmar_writeq(iommu->reg + DMAR_PQH_REG, tail);
-+
-+	return IRQ_RETVAL(handled);
-+}
+=20
+ 		if (req->lpig) {
+ 			/* Page Group Response */
 diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index f16a2b9..e5b80d3 100644
+index e5b80d3..57be14f 100644
 --- a/include/linux/intel-iommu.h
 +++ b/include/linux/intel-iommu.h
-@@ -265,6 +265,8 @@ enum {
- #define QI_EIOTLB_TYPE		0x6
- #define QI_PC_TYPE		0x7
- #define QI_DEIOTLB_TYPE		0x8
-+#define QI_PGRP_RESP_TYPE	0x9
-+#define QI_PSTRM_RESP_TYPE	0xa
+@@ -472,10 +472,13 @@ extern int intel_svm_free_pasid_tables(struct intel_i=
+ommu *iommu);
+ extern int intel_svm_enable_prq(struct intel_iommu *iommu);
+ extern int intel_svm_finish_prq(struct intel_iommu *iommu);
 =20
- #define QI_IEC_SELECTIVE	(((u64)1) << 4)
- #define QI_IEC_IIDEX(idx)	(((u64)(idx & 0xffff) << 32))
-@@ -315,6 +317,25 @@ enum {
- #define QI_DEV_EIOTLB_QDEP(qd)	(((qd) & 0x1f) << 16)
- #define QI_DEV_EIOTLB_MAX_INVS	32
-=20
-+#define QI_PGRP_IDX(idx)	(((u64)(idx)) << 55)
-+#define QI_PGRP_PRIV(priv)	(((u64)(priv)) << 32)
-+#define QI_PGRP_RESP_CODE(res)	((u64)(res))
-+#define QI_PGRP_PASID(pasid)	(((u64)(pasid)) << 32)
-+#define QI_PGRP_DID(did)	(((u64)(did)) << 16)
-+#define QI_PGRP_PASID_P(p)	(((u64)(p)) << 4)
++struct svm_dev_ops;
 +
-+#define QI_PSTRM_ADDR(addr)	(((u64)(addr)) & VTD_PAGE_MASK)
-+#define QI_PSTRM_DEVFN(devfn)	(((u64)(devfn)) << 4)
-+#define QI_PSTRM_RESP_CODE(res)	((u64)(res))
-+#define QI_PSTRM_IDX(idx)	(((u64)(idx)) << 55)
-+#define QI_PSTRM_PRIV(priv)	(((u64)(priv)) << 32)
-+#define QI_PSTRM_BUS(bus)	(((u64)(bus)) << 24)
-+#define QI_PSTRM_PASID(pasid)	(((u64)(pasid)) << 4)
-+
-+#define QI_RESP_SUCCESS		0x0
-+#define QI_RESP_INVALID		0x1
-+#define QI_RESP_FAILURE		0xf
-+
- #define QI_GRAN_ALL_ALL			0
- #define QI_GRAN_NONG_ALL		1
- #define QI_GRAN_NONG_PASID		2
-@@ -369,6 +390,7 @@ enum {
-=20
- struct pasid_entry;
- struct pasid_state_entry;
-+struct page_req_dsc;
-=20
- struct intel_iommu {
- 	void __iomem	*reg; /* Pointer to hardware regs, virtual addr */
-@@ -401,6 +423,8 @@ struct intel_iommu {
- 	 * told to. But while it's all driver-arbitrated, we're fine. */
- 	struct pasid_entry *pasid_table;
- 	struct pasid_state_entry *pasid_state_table;
-+	struct page_req_dsc *prq;
-+	unsigned char prq_name[16];    /* Name for PRQ interrupt */
- 	struct idr pasid_idr;
- #endif
- 	struct q_inval  *qi;            /* Queued invalidation info */
-@@ -445,6 +469,8 @@ extern int dmar_ir_support(void);
- #ifdef CONFIG_INTEL_IOMMU_SVM
- extern int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu);
- extern int intel_svm_free_pasid_tables(struct intel_iommu *iommu);
-+extern int intel_svm_enable_prq(struct intel_iommu *iommu);
-+extern int intel_svm_finish_prq(struct intel_iommu *iommu);
-=20
  struct intel_svm_dev {
  	struct list_head list;
+ 	struct rcu_head rcu;
+ 	struct device *dev;
++	struct svm_dev_ops *ops;
+ 	int users;
+ 	u16 did;
+ 	u16 dev_iotlb:1;
+diff --git a/include/linux/intel-svm.h b/include/linux/intel-svm.h
+index 42f80ad..239f8a1 100644
+--- a/include/linux/intel-svm.h
++++ b/include/linux/intel-svm.h
+@@ -20,10 +20,23 @@
+=20
+ struct device;
+=20
++struct svm_dev_ops {
++	void (*fault_cb)(struct device *dev, int pasid, u64 address,
++			 u32 private, int rwxp, int response);
++};
++
++/* Values for rxwp in fault_cb callback */
++#define SVM_REQ_READ	(1<<3)
++#define SVM_REQ_WRITE	(1<<2)
++#define SVM_REQ_EXEC	(1<<1)
++#define SVM_REQ_PRIV	(1<<0)
++
+ /**
+  * intel_svm_bind_mm() - Bind the current process to a PASID
+  * @dev:	Device to be granted acccess
+  * @pasid:	Address for allocated PASID
++ * @flags:	Flags. Later for requesting supervisor mode, etc.
++ * @ops:	Callbacks to device driver
+  *
+  * This function attempts to enable PASID support for the given device.
+  * If the @pasid argument is non-%NULL, a PASID is allocated for access
+@@ -45,7 +58,8 @@ struct device;
+  * Multiple calls from the same process may result in the same PASID
+  * being re-used. A reference count is kept.
+  */
+-extern int intel_svm_bind_mm(struct device *dev, int *pasid);
++extern int intel_svm_bind_mm(struct device *dev, int *pasid, int flags,
++			     struct svm_dev_ops *ops);
+=20
+ /**
+  * intel_svm_unbind_mm() - Unbind a specified PASID
+@@ -66,7 +80,8 @@ extern int intel_svm_unbind_mm(struct device *dev, int pa=
+sid);
+=20
+ #else /* CONFIG_INTEL_IOMMU_SVM */
+=20
+-static inline int intel_svm_bind_mm(struct device *dev, int *pasid)
++static inline int intel_svm_bind_mm(struct device *dev, int *pasid,
++				    int flags, struct svm_dev_ops *ops)
+ {
+ 	return -ENOSYS;
+ }
+@@ -77,6 +92,6 @@ static inline int intel_svm_unbind_mm(struct device *dev,=
+ int pasid)
+ }
+ #endif /* CONFIG_INTEL_IOMMU_SVM */
+=20
+-#define intel_svm_available(dev) (!intel_svm_bind_mm((dev), NULL))
++#define intel_svm_available(dev) (!intel_svm_bind_mm((dev), NULL, 0, NULL)=
+)
+=20
+ #endif /* __INTEL_SVM_H__ */
 --=20
 2.4.3
 
@@ -371,7 +210,7 @@ index f16a2b9..e5b80d3 100644
 David Woodhouse                            Open Source Technology Centre
 David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
 
---=-fKa141+ZBBO1Vnu9iq+J
+--=-6mSj02Ij270iurtm4Ii9
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -464,28 +303,28 @@ Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
 ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
 AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUxMDEzMjEzNTM1WjAjBgkqhkiG9w0BCQQxFgQUtU3RzuqHnnb1QuetU8GMlSonMVQw
+CQUxDxcNMTUxMDEzMjEzNTQ5WjAjBgkqhkiG9w0BCQQxFgQURhucJ91OlK4gf9bWdsY1Jis4hRMw
 gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
 ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
 L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
 CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
 LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
 U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQCc9bijlWWj5Ic08suDj/nc8XDlgdoGcPmcMgoCzclPSOCgJ1JcgbGu/UiA
-0ajaE1+UQFsPRMHmYx12ilgYQoMB6bD9lvgTVOqyKPmz1+hGC5j4Q8FSqyzcuq//gGKZqICavh4h
-SpCX81ZBOiC06N3rHb+j2gcYb6pTynn/Fxa2py9Gvb7kmw4Gf/rMNq7tAr8TGbRSXpQvIn5bskZu
-fnGYuJbcNvzTRl9XYf3lKwrSCDT9CAoZXqyajejIh+56sst8VcsPd05d6S+wXNraSV0TKmX9eWtl
-FG/8nGxLRjmmnQg3OfxbQwJYysHIOGdfjAZAwWES4yq6oxJyZxj1yBMaAAAAAAAA
+hkiG9w0BAQEFAASCAQAOl1KtU3ZmldjVlK0msW4z4WyjeeTMa/TLE+NX80Dvi/u3YLc+4Mo87wKC
+bKImBK60q8Eq2u8r8CUQzMp8a7+n4pxbqR6nc1nqWaARBt8xxjUry526eMDT0izbdComAHBB0qK4
+D+dLRLX8lsJwtdiEuaqBXeh9hmfYa+CtOyHwYG6ktP+Q0q6dJ9od9FnOwv81lhMg9O8w+pbllVd9
+QufH9E6kGb5XxFrE/zZJ15M0DfRGXjVozBTfCvncr0Q2ORCQBZFnzI2F27Sq80jqppF0kQX0wjH7
+XJXam0G2nt2SC2y0KUAuLJhKbMpBkTL1q1iYxUCV+q+Bynu5s6ZKgNZMAAAAAAAA
 
 
---=-fKa141+ZBBO1Vnu9iq+J--
+--=-6mSj02Ij270iurtm4Ii9--
 
 
---===============8058882837357788032==
+--===============7304592813066175183==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============8058882837357788032==--
+--===============7304592813066175183==--
