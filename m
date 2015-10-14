@@ -1,15 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: AMD-Vi: Event logged [INVALID_DEVICE_REQUEST device=00:14.0
-	address=0x000000fdf9103300 flags=0x0600]
-Date: Wed, 14 Oct 2015 11:06:49 +0200
-Message-ID: <20151014090649.GI27420@8bytes.org>
-References: <CADw2B2Mzo2DbMMiyTVjBGVc4-f6Koa6sWQjoLmfX7NZ3B4+saA@mail.gmail.com>
+Subject: Re: [PATCH RESEND] iommu/amd: Fix BUG when faulting a PROT_NONE VMA
+Date: Wed, 14 Oct 2015 11:10:15 +0200
+Message-ID: <20151014091015.GJ27420@8bytes.org>
+References: <1444729963-13815-1-git-send-email-jay@jcornwall.me>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CADw2B2Mzo2DbMMiyTVjBGVc4-f6Koa6sWQjoLmfX7NZ3B4+saA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <1444729963-13815-1-git-send-email-jay-gJmSnxjMpeIFV7jr3Ov9Ew@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,16 +18,29 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "G. Richard Bellamy" <rbellamy-1/AleqyZJC8ybS5Ee8rs3A@public.gmane.org>
+To: Jay Cornwall <jay-gJmSnxjMpeIFV7jr3Ov9Ew@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Oct 03, 2015 at 05:19:25PM -0700, G. Richard Bellamy wrote:
-> What happens: Kernel logs message to journal, kvm VMs no longer work. Kernel messages spew at a rate of ~660/sec.
+Hi Jay,
 
-The problem is that device 00:14.0 is trying to write to the system
-management area and is forbidden to do so by the IOMMU. Can you please
-boot with amd_iommu_dump on the kernel command line and send me dmesg?
+On Tue, Oct 13, 2015 at 04:52:43AM -0500, Jay Cornwall wrote:
+> handle_mm_fault indirectly triggers a BUG in do_numa_page when given
+> a VMA without read/write/execute access. Check this condition in do_fault.
+> 
+> do_fault -> handle_mm_fault -> handle_pte_fault -> do_numa_page
+> 
+>   mm/memory.c
+>   3147  static int do_numa_page(struct mm_struct *mm, struct vm_area_st...
+>   ....
+>   3159  /* A PROT_NONE fault should not end up here */
+>   3160  BUG_ON(!(vma->vm_flags & (VM_READ | VM_EXEC | VM_WRITE)));
+
+Thanks for the fix! Next time please Cc me directly on patches for AMD
+IOMMU code, so I see your patches earlier.
+
+Also this looks relevant for stable, can you find out which stable
+kernels need this fix too?
 
 
 Thanks,
