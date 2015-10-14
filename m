@@ -1,170 +1,463 @@
-From: David Woodhouse <dwmw2@infradead.org>
-Subject: Re: [PATCH v2 04/10] iommu/vt-d: Assume BIOS lies about ATSR for
- integrated gfx
-Date: Wed, 14 Oct 2015 22:35:36 +0100
-Message-ID: <1444858536.125804.195.camel@infradead.org>
-References: <1444771787.125804.50.camel@infradead.org>
-	 <1444772049.125804.62.camel@infradead.org>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [RFC PATCH v2] vfio: Include No-IOMMU mode
+Date: Wed, 14 Oct 2015 15:51:18 -0600
+Message-ID: <20151014212933.22236.22913.stgit@gimli.home>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-UNIv+HE7RFtCKa8LOhrC"
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1444772049.125804.62.camel@infradead.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, intel-gfx@lists.freedesktop.org, Jesse Barnes <jesse.barnes@intel.com>
-Cc: linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: avi-VrcmuVmyx1hWk0Htik3J/w@public.gmane.org, avi-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org, gleb-VrcmuVmyx1hWk0Htik3J/w@public.gmane.org, mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bruce.richardson-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, corbet-T1hC0tSOHrs@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alexander.duyck-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gleb-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org, stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org, vladz-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, hjk-vqZO0P4V72/QD6PfKP4TzA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+There is really no way to safely give a user full access to a DMA
+capable device without an IOMMU to protect the host system.  There is
+also no way to provide DMA translation, for use cases such as device
+assignment to virtual machines.  However, there are still those users
+that want userspace drivers even under those conditions.  The UIO
+driver exists for this use case, but does not provide the degree of
+device access and programming that VFIO has.  In an effort to avoid
+code duplication, this introduces a No-IOMMU mode for VFIO.
 
---=-UNIv+HE7RFtCKa8LOhrC
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This mode requires building VFIO with CONFIG_VFIO_NOIOMMU and enabling
+the "enable_unsafe_noiommu_mode" option on the vfio driver.  This
+should make it very clear that this mode is not safe.  Additionally,
+CAP_SYS_RAWIO privileges are necessary to work with groups and
+containers using this mode.  Groups making use of this support are
+named /dev/vfio/noiommu-$GROUP and can only make use of the special
+VFIO_NOIOMMU_IOMMU for the container.  Use of this mode, specifically
+binding a device without a native IOMMU group to a VFIO bus driver
+will taint the kernel and should therefore not be considered
+supported.  This patch includes no-iommu support for the vfio-pci bus
+driver only.
 
-On Tue, 2015-10-13 at 22:34 +0100, David Woodhouse wrote:
-> If the device itself reports ATS in its PCIe capabilities, but the BIOS
-> neglects to provide an ATSR structure to indicate that the root port can
-> also cope, then assume the latter is lying.
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
 
-Except, of course, that integrated devices aren't behind a root port. I
-think this should fix it the correct way?
+v2:
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 4f2eab6..70a031d 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4280,14 +4280,17 @@ int dmar_find_matched_atsr_unit(struct pci_dev *dev=
-)
- 	dev =3D pci_physfn(dev);
- 	for (bus =3D dev->bus; bus; bus =3D bus->parent) {
- 		bridge =3D bus->self;
--		if (!bridge || !pci_is_pcie(bridge) ||
-+		/* If it's an integrated device, allow ATS */
-+		if (!bridge)
-+			return 1;
-+		/* Connected via non-PCIe: no ATS */
-+		if (!pci_is_pcie(bridge) ||
- 		    pci_pcie_type(bridge) =3D=3D PCI_EXP_TYPE_PCI_BRIDGE)
- 			return 0;
-+		/* If we found the root port, look it up in the ATSR */
- 		if (pci_pcie_type(bridge) =3D=3D PCI_EXP_TYPE_ROOT_PORT)
- 			break;
+Less code, more features.  We don't really need to register an iommu_ops
+for a bus, we can get away with creating an IOMMU group on-demand when
+we're running in noiommu mode.  That also let's us have a mechanism to
+test for these fake groups, an IOMMU group without iommu_present().  We
+can therefore be more dynamic in allowing this mode and even allowing it
+alongside properly IOMMU backed devices (what do I care, the kernel is
+already tainted).  This also decouples us from pci_bus_type, even though
+vfio-pci is the only VFIO bus driver modified to enable noiommu here.
+Having combined modes means we can't easily relocate the noiommu groups
+to a separate sub-directory, so as noted in the commit log, they're
+prefixed with "noiommu-" in the /dev/vfio/ directory.  Also, rather than
+CAP_SYS_ADMIN, access to these groups require CAP_SYS_RAWIO, as Avi
+suggested.  These should be the only user visible changes from v1.
+
+I feel a little better about not hijacking iommu_ops for a whole bus,
+but an IOMMU group w/o iommu_ops still leaves us in a strange situation.
+We can (and do) now remove the IOMMU group when unbound from the VFIO
+bus driver, so this group only exists for the window of time the device
+is owned by the VFIO bus driver, so we need to be careful of what IOMMU
+API interfaces are used, but since our IOMMU backend doesn't do
+anything, we should be all set.  Comments or suggestions?
+
+ drivers/vfio/Kconfig        |   15 ++++
+ drivers/vfio/pci/vfio_pci.c |    8 +-
+ drivers/vfio/vfio.c         |  183 ++++++++++++++++++++++++++++++++++++++++++-
+ include/linux/vfio.h        |    3 +
+ include/uapi/linux/vfio.h   |    7 ++
+ 5 files changed, 206 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+index 4540179..b6d3cdc 100644
+--- a/drivers/vfio/Kconfig
++++ b/drivers/vfio/Kconfig
+@@ -31,5 +31,20 @@ menuconfig VFIO
+ 
+ 	  If you don't know what to do here, say N.
+ 
++menuconfig VFIO_NOIOMMU
++	bool "VFIO No-IOMMU support"
++	depends on VFIO
++	help
++	  VFIO is built on the ability to isolate devices using the IOMMU.
++	  Only with an IOMMU can userspace access to DMA capable devices be
++	  considered secure.  VFIO No-IOMMU mode enables IOMMU groups for
++	  devices without IOMMU backing for the purpose of re-using the VFIO
++	  infrastructure in a non-secure mode.  Use of this mode will result
++	  in an unsupportable kernel and will therefore taint the kernel.
++	  Device assignment to virtual machines is also not possible with
++	  this mode since there is no IOMMU to provide DMA translation.
++
++	  If you don't know what to do here, say N.
++
+ source "drivers/vfio/pci/Kconfig"
+ source "drivers/vfio/platform/Kconfig"
+diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
+index 964ad57..32b88bd 100644
+--- a/drivers/vfio/pci/vfio_pci.c
++++ b/drivers/vfio/pci/vfio_pci.c
+@@ -940,13 +940,13 @@ static int vfio_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	if (pdev->hdr_type != PCI_HEADER_TYPE_NORMAL)
+ 		return -EINVAL;
+ 
+-	group = iommu_group_get(&pdev->dev);
++	group = vfio_iommu_group_get(&pdev->dev);
+ 	if (!group)
+ 		return -EINVAL;
+ 
+ 	vdev = kzalloc(sizeof(*vdev), GFP_KERNEL);
+ 	if (!vdev) {
+-		iommu_group_put(group);
++		vfio_iommu_group_put(group, &pdev->dev);
+ 		return -ENOMEM;
  	}
--	if (!bridge)
--		return 0;
-=20
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(atsru, &dmar_atsr_units, list) {
-
---=20
-David Woodhouse                            Open Source Technology Centre
-David.Woodhouse@intel.com                              Intel Corporation
-
-
---=-UNIv+HE7RFtCKa8LOhrC
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIISjjCCBicw
-ggUPoAMCAQICAw3vNzANBgkqhkiG9w0BAQUFADCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
-YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
-ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
-MB4XDTE1MDUwNTA5NDM0MVoXDTE2MDUwNTA5NTMzNlowQjEcMBoGA1UEAwwTZHdtdzJAaW5mcmFk
-ZWFkLm9yZzEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
-AQEBBQADggEPADCCAQoCggEBAMkbm9kPbx1j/X4RVyf/pPKSYwelcco69TvnQQbKM8m8xkWjXJI1
-jpJ1jMaGUZGFToINMSZi7lZawUozudWbXSKy1SikENSTJHffsdRAIlsp+hR8vWvjsKUry6sEdqPG
-doa5RY7+N4WRusWZDYW/RRWE6i9EL9qV86CVPYqw22UBOUw4/j/HVGCV6TSB8yE5iEwhk/hUuzRr
-FZm1MJMR7mCS7BCR8Lr5jFY61lWpBiXNXIxLZCvDc26KR5L5tYX43iUVO3fzES1GRVoYnxxk2tmz
-fcsZG5vK+Trc9L8OZJfkYrEHH3+Iw41MQ0w/djVtYr1+HYldx0QmYXAtnhIj+UMCAwEAAaOCAtkw
-ggLVMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgSwMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcD
-BDAdBgNVHQ4EFgQUszC96C3w5/2+d+atSr0IpT26YI4wHwYDVR0jBBgwFoAUU3Ltkpzg2ssBXHx+
-ljVO8tS4UYIwHgYDVR0RBBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzCCAUwGA1UdIASCAUMwggE/
-MIIBOwYLKwYBBAGBtTcBAgMwggEqMC4GCCsGAQUFBwIBFiJodHRwOi8vd3d3LnN0YXJ0c3NsLmNv
-bS9wb2xpY3kucGRmMIH3BggrBgEFBQcCAjCB6jAnFiBTdGFydENvbSBDZXJ0aWZpY2F0aW9uIEF1
-dGhvcml0eTADAgEBGoG+VGhpcyBjZXJ0aWZpY2F0ZSB3YXMgaXNzdWVkIGFjY29yZGluZyB0byB0
-aGUgQ2xhc3MgMSBWYWxpZGF0aW9uIHJlcXVpcmVtZW50cyBvZiB0aGUgU3RhcnRDb20gQ0EgcG9s
-aWN5LCByZWxpYW5jZSBvbmx5IGZvciB0aGUgaW50ZW5kZWQgcHVycG9zZSBpbiBjb21wbGlhbmNl
-IG9mIHRoZSByZWx5aW5nIHBhcnR5IG9ibGlnYXRpb25zLjA2BgNVHR8ELzAtMCugKaAnhiVodHRw
-Oi8vY3JsLnN0YXJ0c3NsLmNvbS9jcnR1MS1jcmwuY3JsMIGOBggrBgEFBQcBAQSBgTB/MDkGCCsG
-AQUFBzABhi1odHRwOi8vb2NzcC5zdGFydHNzbC5jb20vc3ViL2NsYXNzMS9jbGllbnQvY2EwQgYI
-KwYBBQUHMAKGNmh0dHA6Ly9haWEuc3RhcnRzc2wuY29tL2NlcnRzL3N1Yi5jbGFzczEuY2xpZW50
-LmNhLmNydDAjBgNVHRIEHDAahhhodHRwOi8vd3d3LnN0YXJ0c3NsLmNvbS8wDQYJKoZIhvcNAQEF
-BQADggEBAHMQmxHHodpS85X8HRyxhvfkys7r+taCNOaNU9cxQu/cZ/6k5nS2qGNMzZ6jb7ueY/V7
-7p+4DW/9ZWODDTf4Fz00mh5SSVc20Bz7t+hhxwHd62PZgENh5i76Qq2tw48U8AsYo5damHby1epf
-neZafLpUkLLO7AGBJIiRVTevdvyXQ0qnixOmKMWyvrhSNGuVIKVdeqLP+102Dwf+dpFyw+j1hz28
-jEEKpHa+NR1b2kXuSPi/rMGhexwlJOh4tK8KQ6Ryr0rIN//NSbOgbyYZrzc/ZUWX9V5OA84ChFb2
-vkFl0OcYrttp/rhDBLITwffPxSZeoBh9H7zYzkbCXKL3BUIwggYnMIIFD6ADAgECAgMN7zcwDQYJ
-KoZIhvcNAQEFBQAwgYwxCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSswKQYD
-VQQLEyJTZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFydENv
-bSBDbGFzcyAxIFByaW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQTAeFw0xNTA1MDUwOTQzNDFa
-Fw0xNjA1MDUwOTUzMzZaMEIxHDAaBgNVBAMME2R3bXcyQGluZnJhZGVhZC5vcmcxIjAgBgkqhkiG
-9w0BCQEWE2R3bXcyQGluZnJhZGVhZC5vcmcwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
-AQDJG5vZD28dY/1+EVcn/6TykmMHpXHKOvU750EGyjPJvMZFo1ySNY6SdYzGhlGRhU6CDTEmYu5W
-WsFKM7nVm10istUopBDUkyR337HUQCJbKfoUfL1r47ClK8urBHajxnaGuUWO/jeFkbrFmQ2Fv0UV
-hOovRC/alfOglT2KsNtlATlMOP4/x1Rglek0gfMhOYhMIZP4VLs0axWZtTCTEe5gkuwQkfC6+YxW
-OtZVqQYlzVyMS2Qrw3NuikeS+bWF+N4lFTt38xEtRkVaGJ8cZNrZs33LGRubyvk63PS/DmSX5GKx
-Bx9/iMONTENMP3Y1bWK9fh2JXcdEJmFwLZ4SI/lDAgMBAAGjggLZMIIC1TAJBgNVHRMEAjAAMAsG
-A1UdDwQEAwIEsDAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwQwHQYDVR0OBBYEFLMwvegt
-8Of9vnfmrUq9CKU9umCOMB8GA1UdIwQYMBaAFFNy7ZKc4NrLAVx8fpY1TvLUuFGCMB4GA1UdEQQX
-MBWBE2R3bXcyQGluZnJhZGVhZC5vcmcwggFMBgNVHSAEggFDMIIBPzCCATsGCysGAQQBgbU3AQID
-MIIBKjAuBggrBgEFBQcCARYiaHR0cDovL3d3dy5zdGFydHNzbC5jb20vcG9saWN5LnBkZjCB9wYI
-KwYBBQUHAgIwgeowJxYgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkwAwIBARqBvlRo
-aXMgY2VydGlmaWNhdGUgd2FzIGlzc3VlZCBhY2NvcmRpbmcgdG8gdGhlIENsYXNzIDEgVmFsaWRh
-dGlvbiByZXF1aXJlbWVudHMgb2YgdGhlIFN0YXJ0Q29tIENBIHBvbGljeSwgcmVsaWFuY2Ugb25s
-eSBmb3IgdGhlIGludGVuZGVkIHB1cnBvc2UgaW4gY29tcGxpYW5jZSBvZiB0aGUgcmVseWluZyBw
-YXJ0eSBvYmxpZ2F0aW9ucy4wNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5zdGFydHNzbC5j
-b20vY3J0dTEtY3JsLmNybDCBjgYIKwYBBQUHAQEEgYEwfzA5BggrBgEFBQcwAYYtaHR0cDovL29j
-c3Auc3RhcnRzc2wuY29tL3N1Yi9jbGFzczEvY2xpZW50L2NhMEIGCCsGAQUFBzAChjZodHRwOi8v
-YWlhLnN0YXJ0c3NsLmNvbS9jZXJ0cy9zdWIuY2xhc3MxLmNsaWVudC5jYS5jcnQwIwYDVR0SBBww
-GoYYaHR0cDovL3d3dy5zdGFydHNzbC5jb20vMA0GCSqGSIb3DQEBBQUAA4IBAQBzEJsRx6HaUvOV
-/B0csYb35MrO6/rWgjTmjVPXMULv3Gf+pOZ0tqhjTM2eo2+7nmP1e+6fuA1v/WVjgw03+Bc9NJoe
-UklXNtAc+7foYccB3etj2YBDYeYu+kKtrcOPFPALGKOXWph28tXqX53mWny6VJCyzuwBgSSIkVU3
-r3b8l0NKp4sTpijFsr64UjRrlSClXXqiz/tdNg8H/naRcsPo9Yc9vIxBCqR2vjUdW9pF7kj4v6zB
-oXscJSToeLSvCkOkcq9KyDf/zUmzoG8mGa83P2VFl/VeTgPOAoRW9r5BZdDnGK7baf64QwSyE8H3
-z8UmXqAYfR+82M5Gwlyi9wVCMIIGNDCCBBygAwIBAgIBHjANBgkqhkiG9w0BAQUFADB9MQswCQYD
-VQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwg
-Q2VydGlmaWNhdGUgU2lnbmluZzEpMCcGA1UEAxMgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRo
-b3JpdHkwHhcNMDcxMDI0MjEwMTU1WhcNMTcxMDI0MjEwMTU1WjCBjDELMAkGA1UEBhMCSUwxFjAU
-BgNVBAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRl
-IFNpZ25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUg
-Q2xpZW50IENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxwmDzM4t2BqxKaQuE6uW
-vooyg4ymiEGWVUet1G8SD+rqvyNH4QrvnEIaFHxOhESip7vMz39ScLpNLbL1QpOlPW/tFIzNHS3q
-d2XRNYG5Sv9RcGE+T4qbLtsjjJbi6sL7Ls/f/X9ftTyhxvxWkf8KW37iKrueKsxw2HqolH7GM6FX
-5UfNAwAu4ZifkpmZzU1slBhyWwaQPEPPZRsWoTb7q8hmgv6Nv3Hg9rmA1/VPBIOQ6SKRkHXG0Hhm
-q1dOFoAFI411+a/9nWm5rcVjGcIWZ2v/43Yksq60jExipA4l5uv9/+Hm33mbgmCszdj/Dthf13tg
-Av2O83hLJ0exTqfrlwIDAQABo4IBrTCCAakwDwYDVR0TAQH/BAUwAwEB/zAOBgNVHQ8BAf8EBAMC
-AQYwHQYDVR0OBBYEFFNy7ZKc4NrLAVx8fpY1TvLUuFGCMB8GA1UdIwQYMBaAFE4L7xqkQFulF2mH
-MMo0aEPQQa7yMGYGCCsGAQUFBwEBBFowWDAnBggrBgEFBQcwAYYbaHR0cDovL29jc3Auc3RhcnRz
-c2wuY29tL2NhMC0GCCsGAQUFBzAChiFodHRwOi8vd3d3LnN0YXJ0c3NsLmNvbS9zZnNjYS5jcnQw
-WwYDVR0fBFQwUjAnoCWgI4YhaHR0cDovL3d3dy5zdGFydHNzbC5jb20vc2ZzY2EuY3JsMCegJaAj
-hiFodHRwOi8vY3JsLnN0YXJ0c3NsLmNvbS9zZnNjYS5jcmwwgYAGA1UdIAR5MHcwdQYLKwYBBAGB
-tTcBAgEwZjAuBggrBgEFBQcCARYiaHR0cDovL3d3dy5zdGFydHNzbC5jb20vcG9saWN5LnBkZjA0
-BggrBgEFBQcCARYoaHR0cDovL3d3dy5zdGFydHNzbC5jb20vaW50ZXJtZWRpYXRlLnBkZjANBgkq
-hkiG9w0BAQUFAAOCAgEACoMIfXirLAZcuGOMXq4cuSN3TaFx2H2GvD5VSy/6rV55BYHbWNaPeQn3
-oBSU8KgQZn/Kck1JxbLpAxVCNtsxeW1R87ifhsYZ0qjdrA9anrW2MAWCtosmAOT4OxK9QPoSjCMx
-M3HbkZCDJgnlE8jMopH21BbyAYr7b5EfGRQJNtgWcvqSXwKHnTutR08+Kkn0KAkXCzeQNLeA5LlY
-UzFyM7kPAp8pIRMQ+seHunmyG642S2+y/qHEdMuGIwpfz3eDF1PdctL04qYK/zu+Qg1Bw0RwgigV
-Zs/0c5HP2/e9DBHh7eSwtzYlk4AUr6yxLlcwSjOfOmKEQ/Q8tzh0IFiNu9IPuTGAPBn4CPxD0+Ru
-8T2wg8/s43R/PT3kd1OEqOJUl7q+h+r6fpvU0Fzxd2tC8Ga6fDEPme+1Nbi+03pVjuZQKbGwKJ66
-gEn06WqaxVZC+J8hh/jR0k9mST1iAZPNYulcNJ8tKmVtjYsv0L1TSm2+NwON58tO+pIVzu3DWwSE
-XSf+qkDavQam+QtEOZxLBXI++aMUEapSn+k3Lxm48ZCYfAWLb/Xj7F5JQMbZvCexglAbYR0kIHqW
-5DnsYSdMD/IplJMojx0NBrxJ3fN9dvX2Y6BIXRsF1du4qESm4/3CKuyUV7p9DW3mPlHTGLvYxnyK
-Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
-YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
-ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
-AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUxMDE0MjEzNTM2WjAjBgkqhkiG9w0BCQQxFgQUzwaJrtxUaWH9jhRGYtK6ysXlK7sw
-gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
-ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
-L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
-CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
-LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
-U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQBG7yEA8rZ63JeP56NcvwIBfbDL1D2psJgRtkZ3DRIJKV0kgwi1jNDozWAK
-cxHzdjccyzWQsD2HBYiPPOwpa2Er5wfAf75QvQlBihJDzhXw8TVOWjdMrU6BfJtHPRMHzFMmNVd2
-aRw9sG6//+uKQe8lr9ZMeTIcKonUs3tTlYwPh+iCCZGPASDkK0r0BaYp/CsXBZIpT+3Vba6nvjHn
-Ph5Y8OoKj6GrWbCGZ6+OA27X7oLLp+rICQdbkhAMrZv/3A34GIkfRaeyOBd5ubsRhJCmYBIh94iv
-ZsiyPPmUDw/HRCdQnkZzllUi6rwimmp/GNX3evLoKXzk7Psfhg9kT9hNAAAAAAAA
-
-
---=-UNIv+HE7RFtCKa8LOhrC--
+ 
+@@ -957,7 +957,7 @@ static int vfio_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	ret = vfio_add_group_dev(&pdev->dev, &vfio_pci_ops, vdev);
+ 	if (ret) {
+-		iommu_group_put(group);
++		vfio_iommu_group_put(group, &pdev->dev);
+ 		kfree(vdev);
+ 		return ret;
+ 	}
+@@ -993,7 +993,7 @@ static void vfio_pci_remove(struct pci_dev *pdev)
+ 	if (!vdev)
+ 		return;
+ 
+-	iommu_group_put(pdev->dev.iommu_group);
++	vfio_iommu_group_put(pdev->dev.iommu_group, &pdev->dev);
+ 	kfree(vdev);
+ 
+ 	if (vfio_pci_is_vga(pdev)) {
+diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+index 563c510..7f75d6d 100644
+--- a/drivers/vfio/vfio.c
++++ b/drivers/vfio/vfio.c
+@@ -61,6 +61,7 @@ struct vfio_container {
+ 	struct rw_semaphore		group_lock;
+ 	struct vfio_iommu_driver	*iommu_driver;
+ 	void				*iommu_data;
++	bool				noiommu;
+ };
+ 
+ struct vfio_unbound_dev {
+@@ -83,6 +84,7 @@ struct vfio_group {
+ 	struct list_head		unbound_list;
+ 	struct mutex			unbound_lock;
+ 	atomic_t			opened;
++	bool				noiommu;
+ };
+ 
+ struct vfio_device {
+@@ -94,6 +96,148 @@ struct vfio_device {
+ 	void				*device_data;
+ };
+ 
++#ifdef CONFIG_VFIO_NOIOMMU
++static bool noiommu __read_mostly;
++module_param_named(enable_unsafe_noiommu_support,
++		   noiommu, bool, S_IRUGO | S_IWUSR);
++MODULE_PARM_DESC(enable_unsafe_noiommu_mode, "Enable UNSAFE, no-IOMMU mode.  This mode provides no device isolation, no DMA translation, no host kernel protection, cannot be used for device assignment to virtual machines, requires RAWIO permissions, and will taint the kernel.  If you do not know what this is for, step away. (default: false)");
++#endif
++
++/*
++ * vfio_iommu_group_{get,put} are only intended for VFIO bus driver probe
++ * and remove functions, any use cases other than acquiring the first
++ * reference for the purpose of calling vfio_add_group_dev() or removing
++ * that symmetric reference after vfio_del_group_dev() should use the raw
++ * iommu_group_{get,put} functions.  In particular, vfio_iommu_group_put()
++ * removes the device from the dummy group and cannot be nested.
++ */
++struct iommu_group *vfio_iommu_group_get(struct device *dev)
++{
++	struct iommu_group *group;
++	int __maybe_unused ret;
++
++	group = iommu_group_get(dev);
++
++#ifdef CONFIG_VFIO_NOIOMMU
++	/*
++	 * With noiommu enabled, an IOMMU group will be created for a device
++	 * that doesn't already have one and doesn't have an iommu_ops on their
++	 * bus.  We use iommu_present() again in the main code to detect these
++	 * fake groups.
++	 */
++	if (group || !noiommu || iommu_present(dev->bus))
++		return group;
++
++	group = iommu_group_alloc();
++	if (IS_ERR(group))
++		return NULL;
++
++	iommu_group_set_name(group, "vfio-noiommu");
++	ret = iommu_group_add_device(group, dev);
++	iommu_group_put(group);
++	if (ret)
++		return NULL;
++
++	/*
++	 * Where to taint?  At this point we've added an IOMMU group for a
++	 * device that is not backed by iommu_ops, therefore any iommu_
++	 * callback using iommu_ops can legitimately Oops.  So, while we may
++	 * be about to give a DMA capable device to a user without IOMMU
++	 * protection, which is clearly taint-worthy, let's go ahead and do
++	 * it here.
++	 */
++	add_taint(TAINT_USER, LOCKDEP_STILL_OK);
++	pr_warn("VFIO: Adding kernel taint for vfio-noiommu group on device "
++		"%s\n", dev_name(dev));
++#endif
++
++	return group;
++}
++EXPORT_SYMBOL_GPL(vfio_iommu_group_get);
++
++void vfio_iommu_group_put(struct iommu_group *group, struct device *dev)
++{
++#ifdef CONFIG_VFIO_NOIOMMU
++	if (!iommu_present(dev->bus))
++		iommu_group_remove_device(dev);
++#endif
++
++	iommu_group_put(group);
++}
++EXPORT_SYMBOL_GPL(vfio_iommu_group_put);
++
++#ifdef CONFIG_VFIO_NOIOMMU
++static void *vfio_noiommu_open(unsigned long arg)
++{
++	if (arg != VFIO_NOIOMMU_IOMMU)
++		return ERR_PTR(-EINVAL);
++	if (!capable(CAP_SYS_RAWIO))
++		return ERR_PTR(-EPERM);
++
++	return NULL;
++}
++
++static void vfio_noiommu_release(void *iommu_data)
++{
++}
++
++static long vfio_noiommu_ioctl(void *iommu_data,
++			       unsigned int cmd, unsigned long arg)
++{
++	if (cmd == VFIO_CHECK_EXTENSION)
++		return arg == VFIO_NOIOMMU_IOMMU ? 1 : 0;
++
++	return -ENOTTY;
++}
++
++static int vfio_iommu_present(struct device *dev, void *unused)
++{
++	return iommu_present(dev->bus) ? 1 : 0;
++}
++
++static int vfio_noiommu_attach_group(void *iommu_data,
++				     struct iommu_group *iommu_group)
++{
++	return iommu_group_for_each_dev(iommu_group, NULL,
++					vfio_iommu_present) ? -EINVAL : 0;
++}
++
++static void vfio_noiommu_detach_group(void *iommu_data,
++				      struct iommu_group *iommu_group)
++{
++}
++
++static struct vfio_iommu_driver_ops vfio_noiommu_ops = {
++	.name = "vfio-noiommu",
++	.owner = THIS_MODULE,
++	.open = vfio_noiommu_open,
++	.release = vfio_noiommu_release,
++	.ioctl = vfio_noiommu_ioctl,
++	.attach_group = vfio_noiommu_attach_group,
++	.detach_group = vfio_noiommu_detach_group,
++};
++
++static struct vfio_iommu_driver vfio_noiommu_driver = {
++	.ops = &vfio_noiommu_ops,
++};
++
++/*
++ * Wrap IOMMU drivers, the noiommu driver is the one and only driver for
++ * noiommu groups (and thus containers) and not available for normal groups.
++ */
++#define vfio_for_each_iommu_driver(con, pos)				\
++	for (pos = con->noiommu ? &vfio_noiommu_driver :		\
++	     list_first_entry(&vfio.iommu_drivers_list,			\
++			      struct vfio_iommu_driver, vfio_next);	\
++	     (con->noiommu && pos) || (!con->noiommu &&			\
++			&pos->vfio_next != &vfio.iommu_drivers_list);	\
++	      pos = con->noiommu ? NULL : list_next_entry(pos, vfio_next))
++#else
++#define vfio_for_each_iommu_driver(con, pos)				\
++	list_for_each_entry(pos, &vfio.iommu_drivers_list, vfio_next)
++#endif
++
++
+ /**
+  * IOMMU driver registration
+  */
+@@ -198,7 +342,8 @@ static void vfio_group_unlock_and_free(struct vfio_group *group)
+ /**
+  * Group objects - create, release, get, put, search
+  */
+-static struct vfio_group *vfio_create_group(struct iommu_group *iommu_group)
++static struct vfio_group *vfio_create_group(struct iommu_group *iommu_group,
++					    bool noiommu)
+ {
+ 	struct vfio_group *group, *tmp;
+ 	struct device *dev;
+@@ -216,6 +361,7 @@ static struct vfio_group *vfio_create_group(struct iommu_group *iommu_group)
+ 	atomic_set(&group->container_users, 0);
+ 	atomic_set(&group->opened, 0);
+ 	group->iommu_group = iommu_group;
++	group->noiommu = noiommu;
+ 
+ 	group->nb.notifier_call = vfio_iommu_group_notifier;
+ 
+@@ -251,7 +397,8 @@ static struct vfio_group *vfio_create_group(struct iommu_group *iommu_group)
+ 
+ 	dev = device_create(vfio.class, NULL,
+ 			    MKDEV(MAJOR(vfio.group_devt), minor),
+-			    group, "%d", iommu_group_id(iommu_group));
++			    group, "%s%d", noiommu ? "noiommu-" : "",
++			    iommu_group_id(iommu_group));
+ 	if (IS_ERR(dev)) {
+ 		vfio_free_group_minor(minor);
+ 		vfio_group_unlock_and_free(group);
+@@ -621,7 +768,8 @@ int vfio_add_group_dev(struct device *dev,
+ 
+ 	group = vfio_group_get_from_iommu(iommu_group);
+ 	if (!group) {
+-		group = vfio_create_group(iommu_group);
++		group = vfio_create_group(iommu_group,
++					  !iommu_present(dev->bus));
+ 		if (IS_ERR(group)) {
+ 			iommu_group_put(iommu_group);
+ 			return PTR_ERR(group);
+@@ -832,8 +980,7 @@ static long vfio_ioctl_check_extension(struct vfio_container *container,
+ 		 */
+ 		if (!driver) {
+ 			mutex_lock(&vfio.iommu_drivers_lock);
+-			list_for_each_entry(driver, &vfio.iommu_drivers_list,
+-					    vfio_next) {
++			vfio_for_each_iommu_driver(container, driver) {
+ 				if (!try_module_get(driver->ops->owner))
+ 					continue;
+ 
+@@ -902,7 +1049,7 @@ static long vfio_ioctl_set_iommu(struct vfio_container *container,
+ 	}
+ 
+ 	mutex_lock(&vfio.iommu_drivers_lock);
+-	list_for_each_entry(driver, &vfio.iommu_drivers_list, vfio_next) {
++	vfio_for_each_iommu_driver(container, driver) {
+ 		void *data;
+ 
+ 		if (!try_module_get(driver->ops->owner))
+@@ -1167,6 +1314,9 @@ static int vfio_group_set_container(struct vfio_group *group, int container_fd)
+ 	if (atomic_read(&group->container_users))
+ 		return -EINVAL;
+ 
++	if (group->noiommu && !capable(CAP_SYS_RAWIO))
++		return -EPERM;
++
+ 	f = fdget(container_fd);
+ 	if (!f.file)
+ 		return -EBADF;
+@@ -1182,6 +1332,13 @@ static int vfio_group_set_container(struct vfio_group *group, int container_fd)
+ 
+ 	down_write(&container->group_lock);
+ 
++	/* Real groups and fake groups cannot mix */
++	if (!list_empty(&container->group_list) &&
++	    container->noiommu != group->noiommu) {
++		ret = -EPERM;
++		goto unlock_out;
++	}
++
+ 	driver = container->iommu_driver;
+ 	if (driver) {
+ 		ret = driver->ops->attach_group(container->iommu_data,
+@@ -1191,6 +1348,7 @@ static int vfio_group_set_container(struct vfio_group *group, int container_fd)
+ 	}
+ 
+ 	group->container = container;
++	container->noiommu = group->noiommu;
+ 	list_add(&group->container_next, &container->group_list);
+ 
+ 	/* Get a reference on the container and mark a user within the group */
+@@ -1221,6 +1379,9 @@ static int vfio_group_get_device_fd(struct vfio_group *group, char *buf)
+ 	    !group->container->iommu_driver || !vfio_group_viable(group))
+ 		return -EINVAL;
+ 
++	if (group->noiommu && !capable(CAP_SYS_RAWIO))
++		return -EPERM;
++
+ 	device = vfio_device_get_from_name(group, buf);
+ 	if (!device)
+ 		return -ENODEV;
+@@ -1351,6 +1512,11 @@ static int vfio_group_fops_open(struct inode *inode, struct file *filep)
+ 	if (!group)
+ 		return -ENODEV;
+ 
++	if (group->noiommu && !capable(CAP_SYS_RAWIO)) {
++		vfio_group_put(group);
++		return -EPERM;
++	}
++
+ 	/* Do we need multiple instances of the group open?  Seems not. */
+ 	opened = atomic_cmpxchg(&group->opened, 0, 1);
+ 	if (opened) {
+@@ -1513,6 +1679,11 @@ struct vfio_group *vfio_group_get_external_user(struct file *filep)
+ 	if (!atomic_inc_not_zero(&group->container_users))
+ 		return ERR_PTR(-EINVAL);
+ 
++	if (group->noiommu) {
++		atomic_dec(&group->container_users);
++		return ERR_PTR(-EPERM);
++	}
++
+ 	if (!group->container->iommu_driver ||
+ 			!vfio_group_viable(group)) {
+ 		atomic_dec(&group->container_users);
+diff --git a/include/linux/vfio.h b/include/linux/vfio.h
+index ddb4409..610a86a 100644
+--- a/include/linux/vfio.h
++++ b/include/linux/vfio.h
+@@ -44,6 +44,9 @@ struct vfio_device_ops {
+ 	void	(*request)(void *device_data, unsigned int count);
+ };
+ 
++extern struct iommu_group *vfio_iommu_group_get(struct device *dev);
++extern void vfio_iommu_group_put(struct iommu_group *group, struct device *dev);
++
+ extern int vfio_add_group_dev(struct device *dev,
+ 			      const struct vfio_device_ops *ops,
+ 			      void *device_data);
+diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+index 9fd7b5d..34f7faf 100644
+--- a/include/uapi/linux/vfio.h
++++ b/include/uapi/linux/vfio.h
+@@ -39,6 +39,13 @@
+ #define VFIO_SPAPR_TCE_v2_IOMMU		7
+ 
+ /*
++ * The No-IOMMU IOMMU offers no translation or isolation for devices and
++ * supports no iotls outside of VFIO_CHECK_EXTENSION.  Use of VFIO's No-IOMMU
++ * code will taint the host kernel and should be used with extreme caution.
++ */
++#define VFIO_NOIOMMU_IOMMU		8
++
++/*
+  * The IOCTL interface is designed for extensibility by embedding the
+  * structure length (argsz) and flags into structures passed between
+  * kernel and userspace.  We therefore use the _IO() macro for these
