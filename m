@@ -1,14 +1,16 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH RESEND] iommu/amd: Fix BUG when faulting a PROT_NONE VMA
-Date: Wed, 14 Oct 2015 11:10:15 +0200
-Message-ID: <20151014091015.GJ27420@8bytes.org>
-References: <1444729963-13815-1-git-send-email-jay@jcornwall.me>
+Subject: Re: [RFI] WARNING: CPU: 0 PID: 14493 at
+	drivers/iommu/intel-iommu.c:2048 __domain_mapping+0x37d/0x390()
+Date: Wed, 14 Oct 2015 13:19:29 +0200
+Message-ID: <20151014111929.GK27420@8bytes.org>
+References: <CAMGffEmgpksfFhm5H9PB3n4ZWUEYbnC703xvSsQi0_hD1xtE5w@mail.gmail.com>
+	<CAMGffEkwcAzMQbvzNJw8_xFAr5YptEMLk4Vfu_QJiOjjTh9K_w@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1444729963-13815-1-git-send-email-jay-gJmSnxjMpeIFV7jr3Ov9Ew@public.gmane.org>
+In-Reply-To: <CAMGffEkwcAzMQbvzNJw8_xFAr5YptEMLk4Vfu_QJiOjjTh9K_w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,31 +20,12 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jay Cornwall <jay-gJmSnxjMpeIFV7jr3Ov9Ew@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jinpu Wang <jinpu.wang-EIkl63zCoXaH+58JC4qpiA@public.gmane.org>
+Cc: Christian Zander <christian-dt00mrq0sMmU+1/U8MakDg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jay,
+On Tue, Oct 13, 2015 at 05:18:29PM +0200, Jinpu Wang wrote:
+> > and during search I found a patch from Christian:
+> > http://permalink.gmane.org/gmane.linux.kernel.iommu/9993
 
-On Tue, Oct 13, 2015 at 04:52:43AM -0500, Jay Cornwall wrote:
-> handle_mm_fault indirectly triggers a BUG in do_numa_page when given
-> a VMA without read/write/execute access. Check this condition in do_fault.
-> 
-> do_fault -> handle_mm_fault -> handle_pte_fault -> do_numa_page
-> 
->   mm/memory.c
->   3147  static int do_numa_page(struct mm_struct *mm, struct vm_area_st...
->   ....
->   3159  /* A PROT_NONE fault should not end up here */
->   3160  BUG_ON(!(vma->vm_flags & (VM_READ | VM_EXEC | VM_WRITE)));
-
-Thanks for the fix! Next time please Cc me directly on patches for AMD
-IOMMU code, so I see your patches earlier.
-
-Also this looks relevant for stable, can you find out which stable
-kernels need this fix too?
-
-
-Thanks,
-
-	Joerg
+I think David alreadt applied this patch.
