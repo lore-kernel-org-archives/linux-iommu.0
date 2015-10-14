@@ -1,463 +1,440 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC PATCH v2] vfio: Include No-IOMMU mode
-Date: Wed, 14 Oct 2015 15:51:18 -0600
-Message-ID: <20151014212933.22236.22913.stgit@gimli.home>
+From: David Matlack <dmatlack@google.com>
+Subject: Re: [PATCH v9 17/18] KVM: Update Posted-Interrupts Descriptor when
+ vCPU is blocked
+Date: Wed, 14 Oct 2015 16:41:27 -0700
+Message-ID: <CALzav=f8KhXswW-FCuKOYmWoih3QM3HMFHkGmQ3q9mnLoqg+hA@mail.gmail.com>
+References: <1442586596-5920-1-git-send-email-feng.wu@intel.com> <1442586596-5920-18-git-send-email-feng.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: avi-VrcmuVmyx1hWk0Htik3J/w@public.gmane.org, avi-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org, gleb-VrcmuVmyx1hWk0Htik3J/w@public.gmane.org, mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bruce.richardson-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, corbet-T1hC0tSOHrs@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alexander.duyck-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gleb-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org, stephen-OTpzqLSitTUnbdJkjeBofR2eb7JE58TQ@public.gmane.org, vladz-RmZWMc9puTNJc61us3aD9laTQe2KTcn/@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, hjk-vqZO0P4V72/QD6PfKP4TzA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1442586596-5920-18-git-send-email-feng.wu@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Feng Wu <feng.wu@intel.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>, alex.williamson@redhat.com, Joerg Roedel <joro@8bytes.org>, Marcelo Tosatti <mtosatti@redhat.com>, eric.auger@linaro.org, kvm list <kvm@vger.kernel.org>, iommu@lists.linux-foundation.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-There is really no way to safely give a user full access to a DMA
-capable device without an IOMMU to protect the host system.  There is
-also no way to provide DMA translation, for use cases such as device
-assignment to virtual machines.  However, there are still those users
-that want userspace drivers even under those conditions.  The UIO
-driver exists for this use case, but does not provide the degree of
-device access and programming that VFIO has.  In an effort to avoid
-code duplication, this introduces a No-IOMMU mode for VFIO.
+Hi Feng.
 
-This mode requires building VFIO with CONFIG_VFIO_NOIOMMU and enabling
-the "enable_unsafe_noiommu_mode" option on the vfio driver.  This
-should make it very clear that this mode is not safe.  Additionally,
-CAP_SYS_RAWIO privileges are necessary to work with groups and
-containers using this mode.  Groups making use of this support are
-named /dev/vfio/noiommu-$GROUP and can only make use of the special
-VFIO_NOIOMMU_IOMMU for the container.  Use of this mode, specifically
-binding a device without a native IOMMU group to a VFIO bus driver
-will taint the kernel and should therefore not be considered
-supported.  This patch includes no-iommu support for the vfio-pci bus
-driver only.
+On Fri, Sep 18, 2015 at 7:29 AM, Feng Wu <feng.wu@intel.com> wrote:
+> This patch updates the Posted-Interrupts Descriptor when vCPU
+> is blocked.
+>
+> pre-block:
+> - Add the vCPU to the blocked per-CPU list
+> - Set 'NV' to POSTED_INTR_WAKEUP_VECTOR
+>
+> post-block:
+> - Remove the vCPU from the per-CPU list
 
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
+I'm wondering what happens if a posted interrupt arrives at the IOMMU
+after pre-block and before post-block.
 
-v2:
+In pre_block, NV is set to POSTED_INTR_WAKEUP_VECTOR. IIUC, this means
+future posted interrupts will not trigger "Posted-Interrupt Processing"
+(PIR will not get copied to VIRR). Instead, the IOMMU will do ON := 1,
+PIR |= (1 << vector), and send POSTED_INTR_WAKEUP_VECTOR. PIWV calls
+wakeup_handler which does kvm_vcpu_kick. kvm_vcpu_kick does a wait-queue
+wakeup and possibly a scheduler ipi.
 
-Less code, more features.  We don't really need to register an iommu_ops
-for a bus, we can get away with creating an IOMMU group on-demand when
-we're running in noiommu mode.  That also let's us have a mechanism to
-test for these fake groups, an IOMMU group without iommu_present().  We
-can therefore be more dynamic in allowing this mode and even allowing it
-alongside properly IOMMU backed devices (what do I care, the kernel is
-already tainted).  This also decouples us from pci_bus_type, even though
-vfio-pci is the only VFIO bus driver modified to enable noiommu here.
-Having combined modes means we can't easily relocate the noiommu groups
-to a separate sub-directory, so as noted in the commit log, they're
-prefixed with "noiommu-" in the /dev/vfio/ directory.  Also, rather than
-CAP_SYS_ADMIN, access to these groups require CAP_SYS_RAWIO, as Avi
-suggested.  These should be the only user visible changes from v1.
+But the VCPU is sitting in kvm_vcpu_block. It spins and/or schedules
+(wait queue) until it has a reason to wake up. I couldn't find a code
+path from kvm_vcpu_block that lead to checking ON or PIR. How does the
+blocked VCPU "receive" the posted interrupt? (And when does Posted-
+Interrupt Processing get triggered?)
 
-I feel a little better about not hijacking iommu_ops for a whole bus,
-but an IOMMU group w/o iommu_ops still leaves us in a strange situation.
-We can (and do) now remove the IOMMU group when unbound from the VFIO
-bus driver, so this group only exists for the window of time the device
-is owned by the VFIO bus driver, so we need to be careful of what IOMMU
-API interfaces are used, but since our IOMMU backend doesn't do
-anything, we should be all set.  Comments or suggestions?
+Thanks!
 
- drivers/vfio/Kconfig        |   15 ++++
- drivers/vfio/pci/vfio_pci.c |    8 +-
- drivers/vfio/vfio.c         |  183 ++++++++++++++++++++++++++++++++++++++++++-
- include/linux/vfio.h        |    3 +
- include/uapi/linux/vfio.h   |    7 ++
- 5 files changed, 206 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
-index 4540179..b6d3cdc 100644
---- a/drivers/vfio/Kconfig
-+++ b/drivers/vfio/Kconfig
-@@ -31,5 +31,20 @@ menuconfig VFIO
- 
- 	  If you don't know what to do here, say N.
- 
-+menuconfig VFIO_NOIOMMU
-+	bool "VFIO No-IOMMU support"
-+	depends on VFIO
-+	help
-+	  VFIO is built on the ability to isolate devices using the IOMMU.
-+	  Only with an IOMMU can userspace access to DMA capable devices be
-+	  considered secure.  VFIO No-IOMMU mode enables IOMMU groups for
-+	  devices without IOMMU backing for the purpose of re-using the VFIO
-+	  infrastructure in a non-secure mode.  Use of this mode will result
-+	  in an unsupportable kernel and will therefore taint the kernel.
-+	  Device assignment to virtual machines is also not possible with
-+	  this mode since there is no IOMMU to provide DMA translation.
-+
-+	  If you don't know what to do here, say N.
-+
- source "drivers/vfio/pci/Kconfig"
- source "drivers/vfio/platform/Kconfig"
-diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
-index 964ad57..32b88bd 100644
---- a/drivers/vfio/pci/vfio_pci.c
-+++ b/drivers/vfio/pci/vfio_pci.c
-@@ -940,13 +940,13 @@ static int vfio_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	if (pdev->hdr_type != PCI_HEADER_TYPE_NORMAL)
- 		return -EINVAL;
- 
--	group = iommu_group_get(&pdev->dev);
-+	group = vfio_iommu_group_get(&pdev->dev);
- 	if (!group)
- 		return -EINVAL;
- 
- 	vdev = kzalloc(sizeof(*vdev), GFP_KERNEL);
- 	if (!vdev) {
--		iommu_group_put(group);
-+		vfio_iommu_group_put(group, &pdev->dev);
- 		return -ENOMEM;
- 	}
- 
-@@ -957,7 +957,7 @@ static int vfio_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 
- 	ret = vfio_add_group_dev(&pdev->dev, &vfio_pci_ops, vdev);
- 	if (ret) {
--		iommu_group_put(group);
-+		vfio_iommu_group_put(group, &pdev->dev);
- 		kfree(vdev);
- 		return ret;
- 	}
-@@ -993,7 +993,7 @@ static void vfio_pci_remove(struct pci_dev *pdev)
- 	if (!vdev)
- 		return;
- 
--	iommu_group_put(pdev->dev.iommu_group);
-+	vfio_iommu_group_put(pdev->dev.iommu_group, &pdev->dev);
- 	kfree(vdev);
- 
- 	if (vfio_pci_is_vga(pdev)) {
-diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-index 563c510..7f75d6d 100644
---- a/drivers/vfio/vfio.c
-+++ b/drivers/vfio/vfio.c
-@@ -61,6 +61,7 @@ struct vfio_container {
- 	struct rw_semaphore		group_lock;
- 	struct vfio_iommu_driver	*iommu_driver;
- 	void				*iommu_data;
-+	bool				noiommu;
- };
- 
- struct vfio_unbound_dev {
-@@ -83,6 +84,7 @@ struct vfio_group {
- 	struct list_head		unbound_list;
- 	struct mutex			unbound_lock;
- 	atomic_t			opened;
-+	bool				noiommu;
- };
- 
- struct vfio_device {
-@@ -94,6 +96,148 @@ struct vfio_device {
- 	void				*device_data;
- };
- 
-+#ifdef CONFIG_VFIO_NOIOMMU
-+static bool noiommu __read_mostly;
-+module_param_named(enable_unsafe_noiommu_support,
-+		   noiommu, bool, S_IRUGO | S_IWUSR);
-+MODULE_PARM_DESC(enable_unsafe_noiommu_mode, "Enable UNSAFE, no-IOMMU mode.  This mode provides no device isolation, no DMA translation, no host kernel protection, cannot be used for device assignment to virtual machines, requires RAWIO permissions, and will taint the kernel.  If you do not know what this is for, step away. (default: false)");
-+#endif
-+
-+/*
-+ * vfio_iommu_group_{get,put} are only intended for VFIO bus driver probe
-+ * and remove functions, any use cases other than acquiring the first
-+ * reference for the purpose of calling vfio_add_group_dev() or removing
-+ * that symmetric reference after vfio_del_group_dev() should use the raw
-+ * iommu_group_{get,put} functions.  In particular, vfio_iommu_group_put()
-+ * removes the device from the dummy group and cannot be nested.
-+ */
-+struct iommu_group *vfio_iommu_group_get(struct device *dev)
-+{
-+	struct iommu_group *group;
-+	int __maybe_unused ret;
-+
-+	group = iommu_group_get(dev);
-+
-+#ifdef CONFIG_VFIO_NOIOMMU
-+	/*
-+	 * With noiommu enabled, an IOMMU group will be created for a device
-+	 * that doesn't already have one and doesn't have an iommu_ops on their
-+	 * bus.  We use iommu_present() again in the main code to detect these
-+	 * fake groups.
-+	 */
-+	if (group || !noiommu || iommu_present(dev->bus))
-+		return group;
-+
-+	group = iommu_group_alloc();
-+	if (IS_ERR(group))
-+		return NULL;
-+
-+	iommu_group_set_name(group, "vfio-noiommu");
-+	ret = iommu_group_add_device(group, dev);
-+	iommu_group_put(group);
-+	if (ret)
-+		return NULL;
-+
-+	/*
-+	 * Where to taint?  At this point we've added an IOMMU group for a
-+	 * device that is not backed by iommu_ops, therefore any iommu_
-+	 * callback using iommu_ops can legitimately Oops.  So, while we may
-+	 * be about to give a DMA capable device to a user without IOMMU
-+	 * protection, which is clearly taint-worthy, let's go ahead and do
-+	 * it here.
-+	 */
-+	add_taint(TAINT_USER, LOCKDEP_STILL_OK);
-+	pr_warn("VFIO: Adding kernel taint for vfio-noiommu group on device "
-+		"%s\n", dev_name(dev));
-+#endif
-+
-+	return group;
-+}
-+EXPORT_SYMBOL_GPL(vfio_iommu_group_get);
-+
-+void vfio_iommu_group_put(struct iommu_group *group, struct device *dev)
-+{
-+#ifdef CONFIG_VFIO_NOIOMMU
-+	if (!iommu_present(dev->bus))
-+		iommu_group_remove_device(dev);
-+#endif
-+
-+	iommu_group_put(group);
-+}
-+EXPORT_SYMBOL_GPL(vfio_iommu_group_put);
-+
-+#ifdef CONFIG_VFIO_NOIOMMU
-+static void *vfio_noiommu_open(unsigned long arg)
-+{
-+	if (arg != VFIO_NOIOMMU_IOMMU)
-+		return ERR_PTR(-EINVAL);
-+	if (!capable(CAP_SYS_RAWIO))
-+		return ERR_PTR(-EPERM);
-+
-+	return NULL;
-+}
-+
-+static void vfio_noiommu_release(void *iommu_data)
-+{
-+}
-+
-+static long vfio_noiommu_ioctl(void *iommu_data,
-+			       unsigned int cmd, unsigned long arg)
-+{
-+	if (cmd == VFIO_CHECK_EXTENSION)
-+		return arg == VFIO_NOIOMMU_IOMMU ? 1 : 0;
-+
-+	return -ENOTTY;
-+}
-+
-+static int vfio_iommu_present(struct device *dev, void *unused)
-+{
-+	return iommu_present(dev->bus) ? 1 : 0;
-+}
-+
-+static int vfio_noiommu_attach_group(void *iommu_data,
-+				     struct iommu_group *iommu_group)
-+{
-+	return iommu_group_for_each_dev(iommu_group, NULL,
-+					vfio_iommu_present) ? -EINVAL : 0;
-+}
-+
-+static void vfio_noiommu_detach_group(void *iommu_data,
-+				      struct iommu_group *iommu_group)
-+{
-+}
-+
-+static struct vfio_iommu_driver_ops vfio_noiommu_ops = {
-+	.name = "vfio-noiommu",
-+	.owner = THIS_MODULE,
-+	.open = vfio_noiommu_open,
-+	.release = vfio_noiommu_release,
-+	.ioctl = vfio_noiommu_ioctl,
-+	.attach_group = vfio_noiommu_attach_group,
-+	.detach_group = vfio_noiommu_detach_group,
-+};
-+
-+static struct vfio_iommu_driver vfio_noiommu_driver = {
-+	.ops = &vfio_noiommu_ops,
-+};
-+
-+/*
-+ * Wrap IOMMU drivers, the noiommu driver is the one and only driver for
-+ * noiommu groups (and thus containers) and not available for normal groups.
-+ */
-+#define vfio_for_each_iommu_driver(con, pos)				\
-+	for (pos = con->noiommu ? &vfio_noiommu_driver :		\
-+	     list_first_entry(&vfio.iommu_drivers_list,			\
-+			      struct vfio_iommu_driver, vfio_next);	\
-+	     (con->noiommu && pos) || (!con->noiommu &&			\
-+			&pos->vfio_next != &vfio.iommu_drivers_list);	\
-+	      pos = con->noiommu ? NULL : list_next_entry(pos, vfio_next))
-+#else
-+#define vfio_for_each_iommu_driver(con, pos)				\
-+	list_for_each_entry(pos, &vfio.iommu_drivers_list, vfio_next)
-+#endif
-+
-+
- /**
-  * IOMMU driver registration
-  */
-@@ -198,7 +342,8 @@ static void vfio_group_unlock_and_free(struct vfio_group *group)
- /**
-  * Group objects - create, release, get, put, search
-  */
--static struct vfio_group *vfio_create_group(struct iommu_group *iommu_group)
-+static struct vfio_group *vfio_create_group(struct iommu_group *iommu_group,
-+					    bool noiommu)
- {
- 	struct vfio_group *group, *tmp;
- 	struct device *dev;
-@@ -216,6 +361,7 @@ static struct vfio_group *vfio_create_group(struct iommu_group *iommu_group)
- 	atomic_set(&group->container_users, 0);
- 	atomic_set(&group->opened, 0);
- 	group->iommu_group = iommu_group;
-+	group->noiommu = noiommu;
- 
- 	group->nb.notifier_call = vfio_iommu_group_notifier;
- 
-@@ -251,7 +397,8 @@ static struct vfio_group *vfio_create_group(struct iommu_group *iommu_group)
- 
- 	dev = device_create(vfio.class, NULL,
- 			    MKDEV(MAJOR(vfio.group_devt), minor),
--			    group, "%d", iommu_group_id(iommu_group));
-+			    group, "%s%d", noiommu ? "noiommu-" : "",
-+			    iommu_group_id(iommu_group));
- 	if (IS_ERR(dev)) {
- 		vfio_free_group_minor(minor);
- 		vfio_group_unlock_and_free(group);
-@@ -621,7 +768,8 @@ int vfio_add_group_dev(struct device *dev,
- 
- 	group = vfio_group_get_from_iommu(iommu_group);
- 	if (!group) {
--		group = vfio_create_group(iommu_group);
-+		group = vfio_create_group(iommu_group,
-+					  !iommu_present(dev->bus));
- 		if (IS_ERR(group)) {
- 			iommu_group_put(iommu_group);
- 			return PTR_ERR(group);
-@@ -832,8 +980,7 @@ static long vfio_ioctl_check_extension(struct vfio_container *container,
- 		 */
- 		if (!driver) {
- 			mutex_lock(&vfio.iommu_drivers_lock);
--			list_for_each_entry(driver, &vfio.iommu_drivers_list,
--					    vfio_next) {
-+			vfio_for_each_iommu_driver(container, driver) {
- 				if (!try_module_get(driver->ops->owner))
- 					continue;
- 
-@@ -902,7 +1049,7 @@ static long vfio_ioctl_set_iommu(struct vfio_container *container,
- 	}
- 
- 	mutex_lock(&vfio.iommu_drivers_lock);
--	list_for_each_entry(driver, &vfio.iommu_drivers_list, vfio_next) {
-+	vfio_for_each_iommu_driver(container, driver) {
- 		void *data;
- 
- 		if (!try_module_get(driver->ops->owner))
-@@ -1167,6 +1314,9 @@ static int vfio_group_set_container(struct vfio_group *group, int container_fd)
- 	if (atomic_read(&group->container_users))
- 		return -EINVAL;
- 
-+	if (group->noiommu && !capable(CAP_SYS_RAWIO))
-+		return -EPERM;
-+
- 	f = fdget(container_fd);
- 	if (!f.file)
- 		return -EBADF;
-@@ -1182,6 +1332,13 @@ static int vfio_group_set_container(struct vfio_group *group, int container_fd)
- 
- 	down_write(&container->group_lock);
- 
-+	/* Real groups and fake groups cannot mix */
-+	if (!list_empty(&container->group_list) &&
-+	    container->noiommu != group->noiommu) {
-+		ret = -EPERM;
-+		goto unlock_out;
-+	}
-+
- 	driver = container->iommu_driver;
- 	if (driver) {
- 		ret = driver->ops->attach_group(container->iommu_data,
-@@ -1191,6 +1348,7 @@ static int vfio_group_set_container(struct vfio_group *group, int container_fd)
- 	}
- 
- 	group->container = container;
-+	container->noiommu = group->noiommu;
- 	list_add(&group->container_next, &container->group_list);
- 
- 	/* Get a reference on the container and mark a user within the group */
-@@ -1221,6 +1379,9 @@ static int vfio_group_get_device_fd(struct vfio_group *group, char *buf)
- 	    !group->container->iommu_driver || !vfio_group_viable(group))
- 		return -EINVAL;
- 
-+	if (group->noiommu && !capable(CAP_SYS_RAWIO))
-+		return -EPERM;
-+
- 	device = vfio_device_get_from_name(group, buf);
- 	if (!device)
- 		return -ENODEV;
-@@ -1351,6 +1512,11 @@ static int vfio_group_fops_open(struct inode *inode, struct file *filep)
- 	if (!group)
- 		return -ENODEV;
- 
-+	if (group->noiommu && !capable(CAP_SYS_RAWIO)) {
-+		vfio_group_put(group);
-+		return -EPERM;
-+	}
-+
- 	/* Do we need multiple instances of the group open?  Seems not. */
- 	opened = atomic_cmpxchg(&group->opened, 0, 1);
- 	if (opened) {
-@@ -1513,6 +1679,11 @@ struct vfio_group *vfio_group_get_external_user(struct file *filep)
- 	if (!atomic_inc_not_zero(&group->container_users))
- 		return ERR_PTR(-EINVAL);
- 
-+	if (group->noiommu) {
-+		atomic_dec(&group->container_users);
-+		return ERR_PTR(-EPERM);
-+	}
-+
- 	if (!group->container->iommu_driver ||
- 			!vfio_group_viable(group)) {
- 		atomic_dec(&group->container_users);
-diff --git a/include/linux/vfio.h b/include/linux/vfio.h
-index ddb4409..610a86a 100644
---- a/include/linux/vfio.h
-+++ b/include/linux/vfio.h
-@@ -44,6 +44,9 @@ struct vfio_device_ops {
- 	void	(*request)(void *device_data, unsigned int count);
- };
- 
-+extern struct iommu_group *vfio_iommu_group_get(struct device *dev);
-+extern void vfio_iommu_group_put(struct iommu_group *group, struct device *dev);
-+
- extern int vfio_add_group_dev(struct device *dev,
- 			      const struct vfio_device_ops *ops,
- 			      void *device_data);
-diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-index 9fd7b5d..34f7faf 100644
---- a/include/uapi/linux/vfio.h
-+++ b/include/uapi/linux/vfio.h
-@@ -39,6 +39,13 @@
- #define VFIO_SPAPR_TCE_v2_IOMMU		7
- 
- /*
-+ * The No-IOMMU IOMMU offers no translation or isolation for devices and
-+ * supports no iotls outside of VFIO_CHECK_EXTENSION.  Use of VFIO's No-IOMMU
-+ * code will taint the host kernel and should be used with extreme caution.
-+ */
-+#define VFIO_NOIOMMU_IOMMU		8
-+
-+/*
-  * The IOCTL interface is designed for extensibility by embedding the
-  * structure length (argsz) and flags into structures passed between
-  * kernel and userspace.  We therefore use the _IO() macro for these
+>
+> Signed-off-by: Feng Wu <feng.wu@intel.com>
+> ---
+> v9:
+> - Add description for blocked_vcpu_on_cpu_lock in Documentation/virtual/kvm/locking.txt
+> - Check !kvm_arch_has_assigned_device(vcpu->kvm) first, then
+>   !irq_remapping_cap(IRQ_POSTING_CAP)
+>
+> v8:
+> - Rename 'pi_pre_block' to 'pre_block'
+> - Rename 'pi_post_block' to 'post_block'
+> - Change some comments
+> - Only add the vCPU to the blocking list when the VM has assigned devices.
+>
+>  Documentation/virtual/kvm/locking.txt |  12 +++
+>  arch/x86/include/asm/kvm_host.h       |  13 +++
+>  arch/x86/kvm/vmx.c                    | 153 ++++++++++++++++++++++++++++++++++
+>  arch/x86/kvm/x86.c                    |  53 +++++++++---
+>  include/linux/kvm_host.h              |   3 +
+>  virt/kvm/kvm_main.c                   |   3 +
+>  6 files changed, 227 insertions(+), 10 deletions(-)
+>
+> diff --git a/Documentation/virtual/kvm/locking.txt b/Documentation/virtual/kvm/locking.txt
+> index d68af4d..19f94a6 100644
+> --- a/Documentation/virtual/kvm/locking.txt
+> +++ b/Documentation/virtual/kvm/locking.txt
+> @@ -166,3 +166,15 @@ Comment:   The srcu read lock must be held while accessing memslots (e.g.
+>                 MMIO/PIO address->device structure mapping (kvm->buses).
+>                 The srcu index can be stored in kvm_vcpu->srcu_idx per vcpu
+>                 if it is needed by multiple functions.
+> +
+> +Name:          blocked_vcpu_on_cpu_lock
+> +Type:          spinlock_t
+> +Arch:          x86
+> +Protects:      blocked_vcpu_on_cpu
+> +Comment:       This is a per-CPU lock and it is used for VT-d posted-interrupts.
+> +               When VT-d posted-interrupts is supported and the VM has assigned
+> +               devices, we put the blocked vCPU on the list blocked_vcpu_on_cpu
+> +               protected by blocked_vcpu_on_cpu_lock, when VT-d hardware issues
+> +               wakeup notification event since external interrupts from the
+> +               assigned devices happens, we will find the vCPU on the list to
+> +               wakeup.
+> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> index 0ddd353..304fbb5 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -552,6 +552,8 @@ struct kvm_vcpu_arch {
+>          */
+>         bool write_fault_to_shadow_pgtable;
+>
+> +       bool halted;
+> +
+>         /* set at EPT violation at this point */
+>         unsigned long exit_qualification;
+>
+> @@ -864,6 +866,17 @@ struct kvm_x86_ops {
+>         /* pmu operations of sub-arch */
+>         const struct kvm_pmu_ops *pmu_ops;
+>
+> +       /*
+> +        * Architecture specific hooks for vCPU blocking due to
+> +        * HLT instruction.
+> +        * Returns for .pre_block():
+> +        *    - 0 means continue to block the vCPU.
+> +        *    - 1 means we cannot block the vCPU since some event
+> +        *        happens during this period, such as, 'ON' bit in
+> +        *        posted-interrupts descriptor is set.
+> +        */
+> +       int (*pre_block)(struct kvm_vcpu *vcpu);
+> +       void (*post_block)(struct kvm_vcpu *vcpu);
+>         int (*update_pi_irte)(struct kvm *kvm, unsigned int host_irq,
+>                               uint32_t guest_irq, bool set);
+>  };
+> diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+> index 902a67d..9968896 100644
+> --- a/arch/x86/kvm/vmx.c
+> +++ b/arch/x86/kvm/vmx.c
+> @@ -879,6 +879,13 @@ static DEFINE_PER_CPU(struct vmcs *, current_vmcs);
+>  static DEFINE_PER_CPU(struct list_head, loaded_vmcss_on_cpu);
+>  static DEFINE_PER_CPU(struct desc_ptr, host_gdt);
+>
+> +/*
+> + * We maintian a per-CPU linked-list of vCPU, so in wakeup_handler() we
+> + * can find which vCPU should be waken up.
+> + */
+> +static DEFINE_PER_CPU(struct list_head, blocked_vcpu_on_cpu);
+> +static DEFINE_PER_CPU(spinlock_t, blocked_vcpu_on_cpu_lock);
+> +
+>  static unsigned long *vmx_io_bitmap_a;
+>  static unsigned long *vmx_io_bitmap_b;
+>  static unsigned long *vmx_msr_bitmap_legacy;
+> @@ -2985,6 +2992,8 @@ static int hardware_enable(void)
+>                 return -EBUSY;
+>
+>         INIT_LIST_HEAD(&per_cpu(loaded_vmcss_on_cpu, cpu));
+> +       INIT_LIST_HEAD(&per_cpu(blocked_vcpu_on_cpu, cpu));
+> +       spin_lock_init(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
+>
+>         /*
+>          * Now we can enable the vmclear operation in kdump
+> @@ -6121,6 +6130,25 @@ static void update_ple_window_actual_max(void)
+>                                             ple_window_grow, INT_MIN);
+>  }
+>
+> +/*
+> + * Handler for POSTED_INTERRUPT_WAKEUP_VECTOR.
+> + */
+> +static void wakeup_handler(void)
+> +{
+> +       struct kvm_vcpu *vcpu;
+> +       int cpu = smp_processor_id();
+> +
+> +       spin_lock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
+> +       list_for_each_entry(vcpu, &per_cpu(blocked_vcpu_on_cpu, cpu),
+> +                       blocked_vcpu_list) {
+> +               struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
+> +
+> +               if (pi_test_on(pi_desc) == 1)
+> +                       kvm_vcpu_kick(vcpu);
+> +       }
+> +       spin_unlock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
+> +}
+> +
+>  static __init int hardware_setup(void)
+>  {
+>         int r = -ENOMEM, i, msr;
+> @@ -6305,6 +6333,8 @@ static __init int hardware_setup(void)
+>                 kvm_x86_ops->enable_log_dirty_pt_masked = NULL;
+>         }
+>
+> +       kvm_set_posted_intr_wakeup_handler(wakeup_handler);
+> +
+>         return alloc_kvm_area();
+>
+>  out8:
+> @@ -10430,6 +10460,126 @@ static void vmx_enable_log_dirty_pt_masked(struct kvm *kvm,
+>  }
+>
+>  /*
+> + * This routine does the following things for vCPU which is going
+> + * to be blocked if VT-d PI is enabled.
+> + * - Store the vCPU to the wakeup list, so when interrupts happen
+> + *   we can find the right vCPU to wake up.
+> + * - Change the Posted-interrupt descriptor as below:
+> + *      'NDST' <-- vcpu->pre_pcpu
+> + *      'NV' <-- POSTED_INTR_WAKEUP_VECTOR
+> + * - If 'ON' is set during this process, which means at least one
+> + *   interrupt is posted for this vCPU, we cannot block it, in
+> + *   this case, return 1, otherwise, return 0.
+> + *
+> + */
+> +static int vmx_pre_block(struct kvm_vcpu *vcpu)
+> +{
+> +       unsigned long flags;
+> +       unsigned int dest;
+> +       struct pi_desc old, new;
+> +       struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
+> +
+> +       if (!kvm_arch_has_assigned_device(vcpu->kvm) ||
+> +               !irq_remapping_cap(IRQ_POSTING_CAP))
+> +               return 0;
+> +
+> +       vcpu->pre_pcpu = vcpu->cpu;
+> +       spin_lock_irqsave(&per_cpu(blocked_vcpu_on_cpu_lock,
+> +                         vcpu->pre_pcpu), flags);
+> +       list_add_tail(&vcpu->blocked_vcpu_list,
+> +                     &per_cpu(blocked_vcpu_on_cpu,
+> +                     vcpu->pre_pcpu));
+> +       spin_unlock_irqrestore(&per_cpu(blocked_vcpu_on_cpu_lock,
+> +                              vcpu->pre_pcpu), flags);
+> +
+> +       do {
+> +               old.control = new.control = pi_desc->control;
+> +
+> +               /*
+> +                * We should not block the vCPU if
+> +                * an interrupt is posted for it.
+> +                */
+> +               if (pi_test_on(pi_desc) == 1) {
+> +                       spin_lock_irqsave(&per_cpu(blocked_vcpu_on_cpu_lock,
+> +                                         vcpu->pre_pcpu), flags);
+> +                       list_del(&vcpu->blocked_vcpu_list);
+> +                       spin_unlock_irqrestore(
+> +                                       &per_cpu(blocked_vcpu_on_cpu_lock,
+> +                                       vcpu->pre_pcpu), flags);
+> +                       vcpu->pre_pcpu = -1;
+> +
+> +                       return 1;
+> +               }
+> +
+> +               WARN((pi_desc->sn == 1),
+> +                    "Warning: SN field of posted-interrupts "
+> +                    "is set before blocking\n");
+> +
+> +               /*
+> +                * Since vCPU can be preempted during this process,
+> +                * vcpu->cpu could be different with pre_pcpu, we
+> +                * need to set pre_pcpu as the destination of wakeup
+> +                * notification event, then we can find the right vCPU
+> +                * to wakeup in wakeup handler if interrupts happen
+> +                * when the vCPU is in blocked state.
+> +                */
+> +               dest = cpu_physical_id(vcpu->pre_pcpu);
+> +
+> +               if (x2apic_enabled())
+> +                       new.ndst = dest;
+> +               else
+> +                       new.ndst = (dest << 8) & 0xFF00;
+> +
+> +               /* set 'NV' to 'wakeup vector' */
+> +               new.nv = POSTED_INTR_WAKEUP_VECTOR;
+> +       } while (cmpxchg(&pi_desc->control, old.control,
+> +                       new.control) != old.control);
+> +
+> +       return 0;
+> +}
+> +
+> +static void vmx_post_block(struct kvm_vcpu *vcpu)
+> +{
+> +       struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
+> +       struct pi_desc old, new;
+> +       unsigned int dest;
+> +       unsigned long flags;
+> +
+> +       if (!kvm_arch_has_assigned_device(vcpu->kvm) ||
+> +               !irq_remapping_cap(IRQ_POSTING_CAP))
+> +               return;
+> +
+> +       do {
+> +               old.control = new.control = pi_desc->control;
+> +
+> +               dest = cpu_physical_id(vcpu->cpu);
+> +
+> +               if (x2apic_enabled())
+> +                       new.ndst = dest;
+> +               else
+> +                       new.ndst = (dest << 8) & 0xFF00;
+> +
+> +               /* Allow posting non-urgent interrupts */
+> +               new.sn = 0;
+> +
+> +               /* set 'NV' to 'notification vector' */
+> +               new.nv = POSTED_INTR_VECTOR;
+> +       } while (cmpxchg(&pi_desc->control, old.control,
+> +                       new.control) != old.control);
+> +
+> +       if(vcpu->pre_pcpu != -1) {
+> +               spin_lock_irqsave(
+> +                       &per_cpu(blocked_vcpu_on_cpu_lock,
+> +                       vcpu->pre_pcpu), flags);
+> +               list_del(&vcpu->blocked_vcpu_list);
+> +               spin_unlock_irqrestore(
+> +                       &per_cpu(blocked_vcpu_on_cpu_lock,
+> +                       vcpu->pre_pcpu), flags);
+> +               vcpu->pre_pcpu = -1;
+> +       }
+> +}
+> +
+> +/*
+>   * vmx_update_pi_irte - set IRTE for Posted-Interrupts
+>   *
+>   * @kvm: kvm
+> @@ -10620,6 +10770,9 @@ static struct kvm_x86_ops vmx_x86_ops = {
+>         .flush_log_dirty = vmx_flush_log_dirty,
+>         .enable_log_dirty_pt_masked = vmx_enable_log_dirty_pt_masked,
+>
+> +       .pre_block = vmx_pre_block,
+> +       .post_block = vmx_post_block,
+> +
+>         .pmu_ops = &intel_pmu_ops,
+>
+>         .update_pi_irte = vmx_update_pi_irte,
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index 58688aa..46f55b2 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -5869,7 +5869,12 @@ int kvm_vcpu_halt(struct kvm_vcpu *vcpu)
+>  {
+>         ++vcpu->stat.halt_exits;
+>         if (irqchip_in_kernel(vcpu->kvm)) {
+> -               vcpu->arch.mp_state = KVM_MP_STATE_HALTED;
+> +               /* Handle posted-interrupt when vCPU is to be halted */
+> +               if (!kvm_x86_ops->pre_block ||
+> +                               kvm_x86_ops->pre_block(vcpu) == 0) {
+> +                       vcpu->arch.halted = true;
+> +                       vcpu->arch.mp_state = KVM_MP_STATE_HALTED;
+> +               }
+>                 return 1;
+>         } else {
+>                 vcpu->run->exit_reason = KVM_EXIT_HLT;
+> @@ -6518,6 +6523,20 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+>                         kvm_vcpu_reload_apic_access_page(vcpu);
+>         }
+>
+> +       /*
+> +        * KVM_REQ_EVENT is not set when posted interrupts are set by
+> +        * VT-d hardware, so we have to update RVI unconditionally.
+> +        */
+> +       if (kvm_lapic_enabled(vcpu)) {
+> +               /*
+> +                * Update architecture specific hints for APIC
+> +                * virtual interrupt delivery.
+> +                */
+> +               if (kvm_x86_ops->hwapic_irr_update)
+> +                       kvm_x86_ops->hwapic_irr_update(vcpu,
+> +                               kvm_lapic_find_highest_irr(vcpu));
+> +       }
+> +
+>         if (kvm_check_request(KVM_REQ_EVENT, vcpu) || req_int_win) {
+>                 kvm_apic_accept_events(vcpu);
+>                 if (vcpu->arch.mp_state == KVM_MP_STATE_INIT_RECEIVED) {
+> @@ -6534,13 +6553,6 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+>                         kvm_x86_ops->enable_irq_window(vcpu);
+>
+>                 if (kvm_lapic_enabled(vcpu)) {
+> -                       /*
+> -                        * Update architecture specific hints for APIC
+> -                        * virtual interrupt delivery.
+> -                        */
+> -                       if (kvm_x86_ops->hwapic_irr_update)
+> -                               kvm_x86_ops->hwapic_irr_update(vcpu,
+> -                                       kvm_lapic_find_highest_irr(vcpu));
+>                         update_cr8_intercept(vcpu);
+>                         kvm_lapic_sync_to_vapic(vcpu);
+>                 }
+> @@ -6711,10 +6723,31 @@ static int vcpu_run(struct kvm_vcpu *vcpu)
+>
+>         for (;;) {
+>                 if (vcpu->arch.mp_state == KVM_MP_STATE_RUNNABLE &&
+> -                   !vcpu->arch.apf.halted)
+> +                   !vcpu->arch.apf.halted) {
+> +                       /*
+> +                        * For some cases, we can get here with
+> +                        * vcpu->arch.halted being true.
+> +                        */
+> +                       if (kvm_x86_ops->post_block && vcpu->arch.halted) {
+> +                               kvm_x86_ops->post_block(vcpu);
+> +                               vcpu->arch.halted = false;
+> +                       }
+> +
+>                         r = vcpu_enter_guest(vcpu);
+> -               else
+> +               } else {
+>                         r = vcpu_block(kvm, vcpu);
+> +
+> +                       /*
+> +                        * post_block() must be called after
+> +                        * pre_block() which is called in
+> +                        * kvm_vcpu_halt().
+> +                        */
+> +                       if (kvm_x86_ops->post_block && vcpu->arch.halted) {
+> +                               kvm_x86_ops->post_block(vcpu);
+> +                               vcpu->arch.halted = false;
+> +                       }
+> +               }
+> +
+>                 if (r <= 0)
+>                         break;
+>
+> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+> index feba1fb..bf462e7 100644
+> --- a/include/linux/kvm_host.h
+> +++ b/include/linux/kvm_host.h
+> @@ -231,6 +231,9 @@ struct kvm_vcpu {
+>         unsigned long requests;
+>         unsigned long guest_debug;
+>
+> +       int pre_pcpu;
+> +       struct list_head blocked_vcpu_list;
+> +
+>         struct mutex mutex;
+>         struct kvm_run *run;
+>
+> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> index 8b8a444..191c7eb 100644
+> --- a/virt/kvm/kvm_main.c
+> +++ b/virt/kvm/kvm_main.c
+> @@ -220,6 +220,9 @@ int kvm_vcpu_init(struct kvm_vcpu *vcpu, struct kvm *kvm, unsigned id)
+>         init_waitqueue_head(&vcpu->wq);
+>         kvm_async_pf_vcpu_init(vcpu);
+>
+> +       vcpu->pre_pcpu = -1;
+> +       INIT_LIST_HEAD(&vcpu->blocked_vcpu_list);
+> +
+>         page = alloc_page(GFP_KERNEL | __GFP_ZERO);
+>         if (!page) {
+>                 r = -ENOMEM;
+> --
+> 2.1.0
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe kvm" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
