@@ -1,15 +1,15 @@
-From: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v6 0/3] arm64: IOMMU-backed DMA mapping
-Date: Wed, 14 Oct 2015 13:50:13 +0200
-Message-ID: <20151014115013.GM27420@8bytes.org>
-References: <cover.1443718557.git.robin.murphy@arm.com>
-	<561CF53E.7000809@arm.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 2/3] iommu/hisilicon: Add hi6220 iommu driver
+Date: Wed, 14 Oct 2015 14:18:43 +0200
+Message-ID: <20151014121843.GN27420@8bytes.org>
+References: <1444290348-66509-1-git-send-email-puck.chen@hisilicon.com>
+	<1444290348-66509-2-git-send-email-puck.chen@hisilicon.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <561CF53E.7000809-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1444290348-66509-2-git-send-email-puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,23 +19,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: "laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Chen Feng <puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Cc: dan.zhao-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, w.f-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, peter.panshilin-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, z.liuxinliang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, qijiwen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, haojian.zhuang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, weidong2-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, kong.kongxinwei-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, yudongbin-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, saberlily.xia-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+On Thu, Oct 08, 2015 at 03:45:47PM +0800, Chen Feng wrote:
+> +static int hi6220_smmu_attach_dev(struct iommu_domain *domain,
+> +				  struct device *dev)
+> +{
+> +	struct hi6220_domain *m_domain = to_hi6220_domain(domain);
+> +
+> +	smmu_domain_prepare(m_domain);
+> +	dev->archdata.iommu = &m_domain->smmu_dev->iova_allocator;
+> +
+> +	return 0;
+> +}
 
-On Tue, Oct 13, 2015 at 01:12:46PM +0100, Robin Murphy wrote:
-> Anyway, what are your thoughts on taking this for 4.4? Since the
-> dependencies are now in and we're at -rc5 already, I'm on the verge
-> of reposting a self-contained version to go through arm64, as we
-> really need to unblock all the follow-on development there (it's a
-> shame that of the people I'm aware want this, it's only me and the
-> Mediatek/Chrome guys here on the list saying so).
+What happens when you attach devices behind different smmus to one
+domain? Will that overwrite the smmu_dev pointer in the domain?
 
-I plan to take it for 4.4, given the missing ack arrives. What are your
-plans to resolve the remaining issues, like with the probe deferral
-patch-set?
+> +static size_t hi6220_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
+> +				size_t size)
+> +{
+> +	struct hi6220_domain *m_domain = to_hi6220_domain(domain);
+> +	size_t page_size = m_domain->smmu_dev->page_size;
+> +	struct hi6220_smmu *smmu_dev = m_domain->smmu_dev;
+> +	int *page_table = (unsigned int *)smmu_dev->pgtable_virt;
+> +
+> +	if (size != page_size) {
+> +		pr_err("unmap size error, only support %zd\n", page_size);
+> +		return 0;
+> +	}
+> +
+> +	__clear_smmu_pte(page_table + IOVA_PFN(iova));
+> +
+> +	return page_size;
+> +}
+
+Don't you need a call to __invalid_smmu_tlb here too?
+
 
 
 	Joerg
