@@ -1,14 +1,14 @@
-From: Jay Cornwall <jay-gJmSnxjMpeIFV7jr3Ov9Ew@public.gmane.org>
-Subject: Re: [PATCH RESEND] iommu/amd: Fix BUG when faulting a PROT_NONE VMA
-Date: Wed, 14 Oct 2015 11:56:00 -0500
-Message-ID: <0528b4ee6c9af3fa326880eb18cf13b8@jcornwall.me>
-References: <1444729963-13815-1-git-send-email-jay@jcornwall.me>
-	<20151014091015.GJ27420@8bytes.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v6 0/3] arm64: IOMMU-backed DMA mapping
+Date: Wed, 14 Oct 2015 19:19:44 +0100
+Message-ID: <561E9CC0.40701@arm.com>
+References: <cover.1443718557.git.robin.murphy@arm.com>
+	<561CF53E.7000809@arm.com> <20151014115013.GM27420@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20151014091015.GJ27420-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20151014115013.GM27420-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,36 +18,39 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2015-10-14 04:10, Joerg Roedel wrote:
-> Hi Jay,
-> 
-> On Tue, Oct 13, 2015 at 04:52:43AM -0500, Jay Cornwall wrote:
->> handle_mm_fault indirectly triggers a BUG in do_numa_page when given
->> a VMA without read/write/execute access. Check this condition in 
->> do_fault.
->> 
->> do_fault -> handle_mm_fault -> handle_pte_fault -> do_numa_page
->> 
->>   mm/memory.c
->>   3147  static int do_numa_page(struct mm_struct *mm, struct 
->> vm_area_st...
->>   ....
->>   3159  /* A PROT_NONE fault should not end up here */
->>   3160  BUG_ON(!(vma->vm_flags & (VM_READ | VM_EXEC | VM_WRITE)));
-> 
-> Thanks for the fix! Next time please Cc me directly on patches for AMD
-> IOMMU code, so I see your patches earlier.
-> 
-> Also this looks relevant for stable, can you find out which stable
-> kernels need this fix too?
+On 14/10/15 12:50, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org wrote:
+> Hi Robin,
+>
+> On Tue, Oct 13, 2015 at 01:12:46PM +0100, Robin Murphy wrote:
+>> Anyway, what are your thoughts on taking this for 4.4? Since the
+>> dependencies are now in and we're at -rc5 already, I'm on the verge
+>> of reposting a self-contained version to go through arm64, as we
+>> really need to unblock all the follow-on development there (it's a
+>> shame that of the people I'm aware want this, it's only me and the
+>> Mediatek/Chrome guys here on the list saying so).
+>
+> I plan to take it for 4.4, given the missing ack arrives. What are your
+> plans to resolve the remaining issues, like with the probe deferral
+> patch-set?
 
-Sure.
+That's great, thanks. I've been keeping an eye on the on-demand probing 
+series[0], and now that things are looking promising there I'm having a 
+go at pulling it in as it lets us solve the device dependency issue in 
+an even neater way than deferral. With the rest of Laurent's patches to 
+move the OF dma_ops configuration into the probe path, I just need to 
+finish working out how to handle probe failure/deferral, and we should 
+be good to go. That's my priority for 4.5, in parallel with properly 
+wiring up the ARM SMMU driver to work nicely with this stuff.
 
-Cc: <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org> # v4.1+
+Sorting out the configuration order also gets us a lot closer to 
+handling multiple IOMMU drivers for platform devices, and moving 32-bit 
+ARM over to the common code - plus I now have some RK3288 hardware which 
+can serve to test both of those, too.
 
--- 
-Jay Cornwall
+Robin.
+
+[0]:http://thread.gmane.org/gmane.linux.acpi.devel/78653
