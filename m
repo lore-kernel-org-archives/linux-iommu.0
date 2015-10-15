@@ -1,85 +1,77 @@
-From: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH] iommu/vt-d: Use cmpxchg16b to update posted format IRTE
-	atomically
-Date: Thu, 15 Oct 2015 10:19:11 +0800
-Message-ID: <1444875551-4064-1-git-send-email-feng.wu@intel.com>
+From: Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH v4 4/5] iommu/arm-smmu: to backward compatible with probe non-deferral
+Date: Thu, 15 Oct 2015 16:30:46 +0800
+Message-ID: <1444897847-18040-5-git-send-email-thunder.leizhen@huawei.com>
+References: <1444897847-18040-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1444897847-18040-1-git-send-email-thunder.leizhen@huawei.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: Zefan Li <lizefan@huawei.com>, Xinwei Hu <huxinwei@huawei.com>, Tianhong Ding <dingtianhong@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Zhen Lei <thunder.leizhen@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-If IRTE is in posted format, the 'pda' field goes across the 64-bit
-boundary, we need use cmpxchg16b to atomically update it. We only
-expose posted-interrupt when X86_FEATURE_CX16 is supported and use
-to update it atomically.
+This patch eliminate the strong dependence on Laurent's series(to support
+probe deferral). That means, no matter whether Laurent's series upstreamed
+or not, the smmu-v3 driver will always work well.
 
-Signed-off-by: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- drivers/iommu/intel_irq_remapping.c | 33 ++++++++++++++++++++++++++++++---
- 1 file changed, 30 insertions(+), 3 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index f15692a..b4f7569 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -169,8 +169,26 @@ static int modify_irte(struct irq_2_iommu *irq_iommu,
- 	index = irq_iommu->irte_index + irq_iommu->sub_handle;
- 	irte = &iommu->ir_table->base[index];
- 
--	set_64bit(&irte->low, irte_modified->low);
--	set_64bit(&irte->high, irte_modified->high);
-+#if defined(CONFIG_HAVE_CMPXCHG_DOUBLE)
-+	if ((irte->pst == 1) || (irte_modified->pst == 1)) {
-+		bool ret;
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 021a846..66052e9 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1857,6 +1857,12 @@ static int arm_smmu_add_device(struct device *dev)
+ 	struct pci_dev *pdev;
+ 	struct device *root;
+
++	if (dev->archdata.iommu == ERR_PTR(-EPROBE_DEFER)) {
++		dev->archdata.iommu = NULL;
 +
-+		ret = cmpxchg_double(&irte->low, &irte->high,
-+				     irte->low, irte->high,
-+				     irte_modified->low, irte_modified->high);
-+		/*
-+		 * We use cmpxchg16 to atomically update the 128-bit IRTE,
-+		 * and it cannot be updated by the hardware or other processors
-+		 * behind us, so the return value of cmpxchg16 should be the
-+		 * same as the old value.
-+		 */
-+		BUG_ON(!ret);
-+	} else
-+#endif
-+	{
-+		set_64bit(&irte->low, irte_modified->low);
-+		set_64bit(&irte->high, irte_modified->high);
++		return of_iommu_configure(dev, dev->of_node) ? 0 : -ENODEV;
 +	}
- 	__iommu_flush_cache(iommu, irte, sizeof(*irte));
- 
- 	rc = qi_flush_iec(iommu, index, 0);
-@@ -725,7 +743,16 @@ static inline void set_irq_posting_cap(void)
- 	struct intel_iommu *iommu;
- 
- 	if (!disable_irq_post) {
--		intel_irq_remap_ops.capability |= 1 << IRQ_POSTING_CAP;
-+		/*
-+		 * If IRTE is in posted format, the 'pda' field goes across the
-+		 * 64-bit boundary, we need use cmpxchg16b to atomically update
-+		 * it. We only expose posted-interrupt when X86_FEATURE_CX16
-+		 * is supported. Actually, hardware platforms supporting PI
-+		 * should have X86_FEATURE_CX16 support, this has been confirmed
-+		 * with Intel hardware guys.
-+		 */
-+		if ( cpu_has_cx16 )
-+			intel_irq_remap_ops.capability |= 1 << IRQ_POSTING_CAP;
- 
- 		for_each_iommu(iommu, drhd)
- 			if (!cap_pi_support(iommu->cap)) {
--- 
-2.1.0
++
+ 	/* only support pci devices hotplug */
+ 	if (!dev_is_pci(dev))
+ 		return -ENODEV;
+@@ -1930,6 +1936,11 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
+ 		return -EINVAL;
+
+ 	smmu = platform_get_drvdata(pdev);
++	if (!smmu) {
++		dev->archdata.iommu = ERR_PTR(-EPROBE_DEFER);
++
++		return -EPROBE_DEFER;
++	}
+
+ 	if (!dev->archdata.iommu)
+ 		dev->archdata.iommu = smmu;
+@@ -2768,7 +2779,6 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+
+ 	/* Record our private device structure */
+ 	platform_set_drvdata(pdev, smmu);
+-	of_iommu_set_ops(smmu->dev->of_node, &arm_smmu_ops);
+
+ 	/* Reset the device */
+ 	ret = arm_smmu_device_reset(smmu);
+@@ -2840,7 +2850,13 @@ static void __exit arm_smmu_exit(void)
+ subsys_initcall(arm_smmu_init);
+ module_exit(arm_smmu_exit);
+
+-IOMMU_OF_DECLARE(arm_smmu_v3, "arm,smmu-v3", NULL);
++static int arm_smmu_of_iommu_init(struct device_node *np)
++{
++	of_iommu_set_ops(np, &arm_smmu_ops);
++
++	return 0;
++}
++IOMMU_OF_DECLARE(arm_smmu_v3, "arm,smmu-v3", arm_smmu_of_iommu_init);
+
+ MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
+ MODULE_AUTHOR("Will Deacon <will.deacon@arm.com>");
+--
+2.5.0
