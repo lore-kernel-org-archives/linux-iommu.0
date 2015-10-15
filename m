@@ -1,7 +1,7 @@
 From: Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v4 3/5] iommu/arm-smmu: add support for non-pci devices
-Date: Thu, 15 Oct 2015 16:30:45 +0800
-Message-ID: <1444897847-18040-4-git-send-email-thunder.leizhen@huawei.com>
+Subject: [PATCH v4 5/5] iommu/arm-smmu: describe the limitation of #iommu-cells
+Date: Thu, 15 Oct 2015 16:30:47 +0800
+Message-ID: <1444897847-18040-6-git-send-email-thunder.leizhen@huawei.com>
 References: <1444897847-18040-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,79 +12,29 @@ To: Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>
 Cc: Zefan Li <lizefan@huawei.com>, Xinwei Hu <huxinwei@huawei.com>, Tianhong Ding <dingtianhong@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Zhen Lei <thunder.leizhen@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch support a master with multiple stream IDs, but doesn't support a
-master behinds more than one SMMUs.
+Only support #iommu-cells = <1>.
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- drivers/iommu/arm-smmu-v3.c | 40 ++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 38 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index b577d61..021a846 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -31,6 +31,7 @@
- #include <linux/of_address.h>
- #include <linux/of_platform.h>
- #include <linux/of_iommu.h>
-+#include <linux/amba/bus.h>
- #include <linux/pci.h>
- #include <linux/platform_device.h>
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+index 947863a..4845d44 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+@@ -5,6 +5,12 @@ revisions, replacing the MMIO register interface with in-memory command
+ and event queues and adding support for the ATS and PRI components of
+ the PCIe specification.
 
-@@ -1938,9 +1939,36 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 		return -EINVAL;
- 	}
++Please read ./iommu.txt first, here list something special as below:
++
++** SMMUv3 limited properties:
++- #iommu-cells      : fixed to <1>. The pci root device is a special case,
++                      its IDs can be omitted in dts, seems #iommu-cells = <0>.
++
+ ** SMMUv3 required properties:
 
--	/* We only support PCI, for now */
- 	if (!dev_is_pci(dev)) {
--		return -ENODEV;
-+		struct iommu_group *group;
-+
-+		if (args->args_count != 1) {
-+			dev_err(dev,
-+				"only support #iommu-cells = <1>, please check node: %s\n",
-+				dev_name(smmu->dev));
-+			return -ENODEV;
-+		}
-+
-+		group = iommu_group_get(dev);
-+		if (!group) {
-+			group = iommu_group_alloc();
-+			if (IS_ERR(group)) {
-+				dev_err(dev, "failed to allocate IOMMU group\n");
-+				return PTR_ERR(group);
-+			}
-+
-+			ret = iommu_group_add_device(group, dev);
-+			if (ret) {
-+				iommu_group_put(group);
-+				dev_err(dev, "failed to add device into IOMMU group\n");
-+				return ret;
-+			}
-+		}
-+		iommu_group_put(group);
-+
-+		ret = __arm_smmu_add_device(dev, args->args[0]);
-+		if (ret)
-+			return ret;
- 	} else {
- 		struct device *root;
- 		struct pci_dev *pdev = NULL;
-@@ -2793,6 +2821,14 @@ static int __init arm_smmu_init(void)
- 	if (ret)
- 		return ret;
-
-+	if (!iommu_present(&platform_bus_type))
-+		bus_set_iommu(&platform_bus_type, &arm_smmu_ops);
-+
-+#ifdef CONFIG_ARM_AMBA
-+	if (!iommu_present(&amba_bustype))
-+		bus_set_iommu(&amba_bustype, &arm_smmu_ops);
-+#endif
-+
- 	return bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
- }
-
+ - compatible        : Should include:
 --
 2.5.0
