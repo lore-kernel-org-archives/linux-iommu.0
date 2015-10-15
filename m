@@ -1,7 +1,8 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 3/6] iommu/arm-smmu: ThunderX mis-extends 64bit registers
-Date: Thu, 15 Oct 2015 16:04:21 +0100
-Message-ID: <1444921464-14895-4-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 1/6] iommu/arm-smmu: Use drvdata instead of maintaining
+	smmu_devices list
+Date: Thu, 15 Oct 2015 16:04:19 +0100
+Message-ID: <1444921464-14895-2-git-send-email-will.deacon@arm.com>
 References: <1444921464-14895-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,121 +22,110 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: fabio.estevam-KZfg59tc24xl57MIdRCFDg@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Rather than keep a private list of struct arm_smmu_device and searching
+this whenever we need to look up the correct SMMU instance, instead use
+the drvdata field in the struct device to take care of the mapping for
+us.
 
-The SMMU architecture defines two different behaviors when 64-bit
-registers are written with 32-bit writes.  The first behavior causes
-zero extension into the upper 32-bits.  The second behavior splits a
-64-bit register into "normal" 32-bit register pairs.
-
-On some buggy implementations, registers incorrectly zero extended
-when they should instead behave as normal 32-bit register pairs.
-
-Signed-off-by: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-[will: removed redundant macro parameters]
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 50 ++++++++++++++++++++++++++----------------------
- 1 file changed, 27 insertions(+), 23 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 42 +++++++++---------------------------------
+ 1 file changed, 9 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 677fba9e6b11..9aadf36a0747 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -70,6 +70,18 @@
- 		((smmu->options & ARM_SMMU_OPT_SECURE_CFG_ACCESS)	\
- 			? 0x400 : 0))
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index dafaf59dc3b8..637014ab8965 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -28,6 +28,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
++#include <linux/of_platform.h>
+ #include <linux/pci.h>
+ #include <linux/platform_device.h>
  
-+#ifdef CONFIG_64BIT
-+#define smmu_writeq	writeq_relaxed
-+#else
-+#define smmu_writeq(reg64, addr)				\
-+	do {							\
-+		u64 __val = (reg64);				\
-+		void __iomem *__addr = (addr);			\
-+		writel_relaxed(__val >> 32, __addr + 4);	\
-+		writel_relaxed(__val, __addr);			\
-+	} while (0)
-+#endif
-+
- /* Configuration registers */
- #define ARM_SMMU_GR0_sCR0		0x0
- #define sCR0_CLIENTPD			(1 << 0)
-@@ -185,10 +197,8 @@
- #define ARM_SMMU_CB_SCTLR		0x0
- #define ARM_SMMU_CB_RESUME		0x8
- #define ARM_SMMU_CB_TTBCR2		0x10
--#define ARM_SMMU_CB_TTBR0_LO		0x20
--#define ARM_SMMU_CB_TTBR0_HI		0x24
--#define ARM_SMMU_CB_TTBR1_LO		0x28
--#define ARM_SMMU_CB_TTBR1_HI		0x2c
-+#define ARM_SMMU_CB_TTBR0		0x20
-+#define ARM_SMMU_CB_TTBR1		0x28
- #define ARM_SMMU_CB_TTBCR		0x30
- #define ARM_SMMU_CB_S1_MAIR0		0x38
- #define ARM_SMMU_CB_S1_MAIR1		0x3c
-@@ -226,7 +236,7 @@
- #define TTBCR2_SEP_SHIFT		15
- #define TTBCR2_SEP_UPSTREAM		(0x7 << TTBCR2_SEP_SHIFT)
+@@ -568,7 +569,6 @@ struct arm_smmu_device {
+ 	unsigned int			sid_bits;
  
--#define TTBRn_HI_ASID_SHIFT            16
-+#define TTBRn_ASID_SHIFT		48
+ 	struct arm_smmu_strtab_cfg	strtab_cfg;
+-	struct list_head		list;
+ };
  
- #define FSR_MULTI			(1 << 31)
- #define FSR_SS				(1 << 30)
-@@ -695,6 +705,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 				       struct io_pgtable_cfg *pgtbl_cfg)
- {
- 	u32 reg;
-+	u64 reg64;
- 	bool stage1;
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
-@@ -738,22 +749,17 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ /* SMMU private data for an IOMMU group */
+@@ -603,10 +603,6 @@ struct arm_smmu_domain {
+ 	struct iommu_domain		domain;
+ };
  
- 	/* TTBRs */
- 	if (stage1) {
--		reg = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
--		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0_LO);
--		reg = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0] >> 32;
--		reg |= ARM_SMMU_CB_ASID(cfg) << TTBRn_HI_ASID_SHIFT;
--		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0_HI);
+-/* Our list of SMMU instances */
+-static DEFINE_SPINLOCK(arm_smmu_devices_lock);
+-static LIST_HEAD(arm_smmu_devices);
 -
--		reg = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
--		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR1_LO);
--		reg = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1] >> 32;
--		reg |= ARM_SMMU_CB_ASID(cfg) << TTBRn_HI_ASID_SHIFT;
--		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR1_HI);
-+		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
+ struct arm_smmu_option_prop {
+ 	u32 opt;
+ 	const char *prop;
+@@ -1722,7 +1718,8 @@ static void __arm_smmu_release_pci_iommudata(void *data)
+ static struct arm_smmu_device *arm_smmu_get_for_pci_dev(struct pci_dev *pdev)
+ {
+ 	struct device_node *of_node;
+-	struct arm_smmu_device *curr, *smmu = NULL;
++	struct platform_device *smmu_pdev;
++	struct arm_smmu_device *smmu = NULL;
+ 	struct pci_bus *bus = pdev->bus;
+ 
+ 	/* Walk up to the root bus */
+@@ -1735,14 +1732,10 @@ static struct arm_smmu_device *arm_smmu_get_for_pci_dev(struct pci_dev *pdev)
+ 		return NULL;
+ 
+ 	/* See if we can find an SMMU corresponding to the phandle */
+-	spin_lock(&arm_smmu_devices_lock);
+-	list_for_each_entry(curr, &arm_smmu_devices, list) {
+-		if (curr->dev->of_node == of_node) {
+-			smmu = curr;
+-			break;
+-		}
+-	}
+-	spin_unlock(&arm_smmu_devices_lock);
++	smmu_pdev = of_find_device_by_node(of_node);
++	if (smmu_pdev)
++		smmu = platform_get_drvdata(smmu_pdev);
 +
-+		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
-+		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR0);
-+
-+		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
-+		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
-+		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR1);
- 	} else {
--		reg = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
--		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0_LO);
--		reg = pgtbl_cfg->arm_lpae_s2_cfg.vttbr >> 32;
--		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0_HI);
-+		reg64 = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
-+		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR0);
- 	}
+ 	of_node_put(of_node);
+ 	return smmu;
+ }
+@@ -2609,10 +2602,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 		goto out_free_structures;
  
- 	/* TTBCR */
-@@ -1212,11 +1218,9 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
+ 	/* Record our private device structure */
+-	INIT_LIST_HEAD(&smmu->list);
+-	spin_lock(&arm_smmu_devices_lock);
+-	list_add(&smmu->list, &arm_smmu_devices);
+-	spin_unlock(&arm_smmu_devices_lock);
++	platform_set_drvdata(pdev, smmu);
+ 	return 0;
  
- 	/* ATS1 registers can only be written atomically */
- 	va = iova & ~0xfffUL;
--#ifdef CONFIG_64BIT
- 	if (smmu->version == ARM_SMMU_V2)
--		writeq_relaxed(va, cb_base + ARM_SMMU_CB_ATS1PR);
-+		smmu_writeq(va, cb_base + ARM_SMMU_CB_ATS1PR);
- 	else
--#endif
- 		writel_relaxed(va, cb_base + ARM_SMMU_CB_ATS1PR);
+ out_free_structures:
+@@ -2622,21 +2612,7 @@ out_free_structures:
  
- 	if (readl_poll_timeout_atomic(cb_base + ARM_SMMU_CB_ATSR, tmp,
+ static int arm_smmu_device_remove(struct platform_device *pdev)
+ {
+-	struct arm_smmu_device *curr, *smmu = NULL;
+-	struct device *dev = &pdev->dev;
+-
+-	spin_lock(&arm_smmu_devices_lock);
+-	list_for_each_entry(curr, &arm_smmu_devices, list) {
+-		if (curr->dev == dev) {
+-			smmu = curr;
+-			list_del(&smmu->list);
+-			break;
+-		}
+-	}
+-	spin_unlock(&arm_smmu_devices_lock);
+-
+-	if (!smmu)
+-		return -ENODEV;
++	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+ 
+ 	arm_smmu_device_disable(smmu);
+ 	arm_smmu_free_structures(smmu);
 -- 
 2.1.4
