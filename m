@@ -1,7 +1,7 @@
 From: Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v4 4/5] iommu/arm-smmu: to backward compatible with probe non-deferral
-Date: Thu, 15 Oct 2015 16:30:46 +0800
-Message-ID: <1444897847-18040-5-git-send-email-thunder.leizhen@huawei.com>
+Subject: [PATCH v4 3/5] iommu/arm-smmu: add support for non-pci devices
+Date: Thu, 15 Oct 2015 16:30:45 +0800
+Message-ID: <1444897847-18040-4-git-send-email-thunder.leizhen@huawei.com>
 References: <1444897847-18040-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,66 +12,79 @@ To: Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>
 Cc: Zefan Li <lizefan@huawei.com>, Xinwei Hu <huxinwei@huawei.com>, Tianhong Ding <dingtianhong@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Zhen Lei <thunder.leizhen@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch eliminate the strong dependence on Laurent's series(to support
-probe deferral). That means, no matter whether Laurent's series upstreamed
-or not, the smmu-v3 driver will always work well.
+This patch support a master with multiple stream IDs, but doesn't support a
+master behinds more than one SMMUs.
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- drivers/iommu/arm-smmu-v3.c | 20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 40 ++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 38 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 021a846..66052e9 100644
+index b577d61..021a846 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1857,6 +1857,12 @@ static int arm_smmu_add_device(struct device *dev)
- 	struct pci_dev *pdev;
- 	struct device *root;
+@@ -31,6 +31,7 @@
+ #include <linux/of_address.h>
+ #include <linux/of_platform.h>
+ #include <linux/of_iommu.h>
++#include <linux/amba/bus.h>
+ #include <linux/pci.h>
+ #include <linux/platform_device.h>
 
-+	if (dev->archdata.iommu == ERR_PTR(-EPROBE_DEFER)) {
-+		dev->archdata.iommu = NULL;
-+
-+		return of_iommu_configure(dev, dev->of_node) ? 0 : -ENODEV;
-+	}
-+
- 	/* only support pci devices hotplug */
- 	if (!dev_is_pci(dev))
- 		return -ENODEV;
-@@ -1930,6 +1936,11 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
+@@ -1938,9 +1939,36 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
  		return -EINVAL;
+ 	}
 
- 	smmu = platform_get_drvdata(pdev);
-+	if (!smmu) {
-+		dev->archdata.iommu = ERR_PTR(-EPROBE_DEFER);
+-	/* We only support PCI, for now */
+ 	if (!dev_is_pci(dev)) {
+-		return -ENODEV;
++		struct iommu_group *group;
 +
-+		return -EPROBE_DEFER;
-+	}
-
- 	if (!dev->archdata.iommu)
- 		dev->archdata.iommu = smmu;
-@@ -2768,7 +2779,6 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
-
- 	/* Record our private device structure */
- 	platform_set_drvdata(pdev, smmu);
--	of_iommu_set_ops(smmu->dev->of_node, &arm_smmu_ops);
-
- 	/* Reset the device */
- 	ret = arm_smmu_device_reset(smmu);
-@@ -2840,7 +2850,13 @@ static void __exit arm_smmu_exit(void)
- subsys_initcall(arm_smmu_init);
- module_exit(arm_smmu_exit);
-
--IOMMU_OF_DECLARE(arm_smmu_v3, "arm,smmu-v3", NULL);
-+static int arm_smmu_of_iommu_init(struct device_node *np)
-+{
-+	of_iommu_set_ops(np, &arm_smmu_ops);
++		if (args->args_count != 1) {
++			dev_err(dev,
++				"only support #iommu-cells = <1>, please check node: %s\n",
++				dev_name(smmu->dev));
++			return -ENODEV;
++		}
 +
-+	return 0;
-+}
-+IOMMU_OF_DECLARE(arm_smmu_v3, "arm,smmu-v3", arm_smmu_of_iommu_init);
++		group = iommu_group_get(dev);
++		if (!group) {
++			group = iommu_group_alloc();
++			if (IS_ERR(group)) {
++				dev_err(dev, "failed to allocate IOMMU group\n");
++				return PTR_ERR(group);
++			}
++
++			ret = iommu_group_add_device(group, dev);
++			if (ret) {
++				iommu_group_put(group);
++				dev_err(dev, "failed to add device into IOMMU group\n");
++				return ret;
++			}
++		}
++		iommu_group_put(group);
++
++		ret = __arm_smmu_add_device(dev, args->args[0]);
++		if (ret)
++			return ret;
+ 	} else {
+ 		struct device *root;
+ 		struct pci_dev *pdev = NULL;
+@@ -2793,6 +2821,14 @@ static int __init arm_smmu_init(void)
+ 	if (ret)
+ 		return ret;
 
- MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
- MODULE_AUTHOR("Will Deacon <will.deacon@arm.com>");
++	if (!iommu_present(&platform_bus_type))
++		bus_set_iommu(&platform_bus_type, &arm_smmu_ops);
++
++#ifdef CONFIG_ARM_AMBA
++	if (!iommu_present(&amba_bustype))
++		bus_set_iommu(&amba_bustype, &arm_smmu_ops);
++#endif
++
+ 	return bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
+ }
+
 --
 2.5.0
