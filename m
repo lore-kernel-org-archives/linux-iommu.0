@@ -1,45 +1,61 @@
-From: Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: [RFC PATCH v2] vfio: Include No-IOMMU mode
-Date: Thu, 15 Oct 2015 15:40:25 -0700
-Message-ID: <20151015154025.6c9a17cf@xeon-e3>
-References: <20151014212933.22236.22913.stgit@gimli.home>
+From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH] iommu/vt-d: Use cmpxchg16b to update posted format IRTE
+	atomically
+Date: Fri, 16 Oct 2015 01:01:02 +0000
+Message-ID: <E959C4978C3B6342920538CF579893F00ADDD81E@SHSMSX104.ccr.corp.intel.com>
+References: <1444875551-4064-1-git-send-email-feng.wu@intel.com>
+	<20151015142420.GT27420@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20151014212933.22236.22913.stgit@gimli.home>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: avi@scylladb.com, avi@cloudius-systems.com, gleb@scylladb.com, corbet@lwn.net, bruce.richardson@intel.com, mst@redhat.com, linux-kernel@vger.kernel.org, alexander.duyck@gmail.com, gleb@cloudius-systems.com, vladz@cloudius-systems.com, iommu@lists.linux-foundation.org, hjk@hansjkoch.de, gregkh@linuxfoundation.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20151015142420.GT27420-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 14 Oct 2015 15:51:18 -0600
-Alex Williamson <alex.williamson@redhat.com> wrote:
 
-> There is really no way to safely give a user full access to a DMA
-> capable device without an IOMMU to protect the host system.  There is
-> also no way to provide DMA translation, for use cases such as device
-> assignment to virtual machines.  However, there are still those users
-> that want userspace drivers even under those conditions.  The UIO
-> driver exists for this use case, but does not provide the degree of
-> device access and programming that VFIO has.  In an effort to avoid
-> code duplication, this introduces a No-IOMMU mode for VFIO.
+
+> -----Original Message-----
+> From: linux-kernel-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org [mailto:linux-kernel-
+> owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org] On Behalf Of Joerg Roedel
+> Sent: Thursday, October 15, 2015 10:24 PM
+> To: Wu, Feng <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Subject: Re: [PATCH] iommu/vt-d: Use cmpxchg16b to update posted format
+> IRTE atomically
 > 
-> This mode requires building VFIO with CONFIG_VFIO_NOIOMMU and enabling
-> the "enable_unsafe_noiommu_mode" option on the vfio driver.  This
-> should make it very clear that this mode is not safe.  Additionally,
-> CAP_SYS_RAWIO privileges are necessary to work with groups and
-> containers using this mode.  Groups making use of this support are
-> named /dev/vfio/noiommu-$GROUP and can only make use of the special
-> VFIO_NOIOMMU_IOMMU for the container.  Use of this mode, specifically
-> binding a device without a native IOMMU group to a VFIO bus driver
-> will taint the kernel and should therefore not be considered
-> supported.  This patch includes no-iommu support for the vfio-pci bus
-> driver only.
+> On Thu, Oct 15, 2015 at 10:19:11AM +0800, Feng Wu wrote:
+> > If IRTE is in posted format, the 'pda' field goes across the 64-bit
+> > boundary, we need use cmpxchg16b to atomically update it. We only
+> > expose posted-interrupt when X86_FEATURE_CX16 is supported and use
+> > to update it atomically.
+> > +
+> > +		ret = cmpxchg_double(&irte->low, &irte->high,
+> > +				     irte->low, irte->high,
+> > +				     irte_modified->low, irte_modified->high);
+> > +		/*
+> > +		 * We use cmpxchg16 to atomically update the 128-bit IRTE,
+> > +		 * and it cannot be updated by the hardware or other
+> processors
+> > +		 * behind us, so the return value of cmpxchg16 should be the
+> > +		 * same as the old value.
+> > +		 */
+> > +		BUG_ON(!ret);
 > 
-> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+> Changed this to a WARN_ON, otherwise applied.
 
-The concept looks good.
+Thanks a lot, Joerg!
 
-I am trying it now to see how well this works for the use case of DPDK
-in a VM.
+Thanks,
+Feng
