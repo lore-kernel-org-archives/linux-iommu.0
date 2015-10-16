@@ -1,14 +1,19 @@
-From: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Subject: Re: [PATCH 2/2] arm64: Use gfpflags_allow_blocking()
-Date: Fri, 16 Oct 2015 13:59:00 -0700
-Message-ID: <20151016135900.bc1e10115a866a301dbb0cd8@linux-foundation.org>
-References: <ecbbf6550654071f13d1bdc04b86dc4d69ad09b4.1445008695.git.robin.murphy@arm.com>
-	<adf855c7692b1512ab7216579468ad1eef2f25a8.1445008695.git.robin.murphy@arm.com>
+From: "G. Richard Bellamy" <rbellamy-1/AleqyZJC8ybS5Ee8rs3A@public.gmane.org>
+Subject: Re: AMD-Vi: Event logged [INVALID_DEVICE_REQUEST device=00:14.0
+	address=0x000000fdf9103300 flags=0x0600]
+Date: Fri, 16 Oct 2015 15:02:41 -0700
+Message-ID: <CADw2B2PR7C1Uz+ewRM+686dZg7dPFRZ5szbfNqhSCFp-AG3zpA@mail.gmail.com>
+References: <CADw2B2Mzo2DbMMiyTVjBGVc4-f6Koa6sWQjoLmfX7NZ3B4+saA@mail.gmail.com>
+	<20151014090649.GI27420@8bytes.org>
+	<CADw2B2MzAMhNX5x9kZ5MN0mAh24ttDu=23EGVLy2aq6Paik4tQ@mail.gmail.com>
+	<20151014163338.GR27420@8bytes.org>
+	<CADw2B2MnBKOMvXOFNKo0-awM5oA7aYnEz0JgCqqOToVYYuzjZQ@mail.gmail.com>
+	<CADw2B2N3VZdXVWTtotomZ2pZ3xb8ZEot=TR7j1gUq7-FM_R41w@mail.gmail.com>
+	<20151016090254.GU27420@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============5461330435622893394=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <adf855c7692b1512ab7216579468ad1eef2f25a8.1445008695.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20151016090254.GU27420-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,40 +23,73 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, Mel Gorman <mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 16 Oct 2015 16:33:42 +0100 Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+--===============5461330435622893394==
+Content-Type: multipart/alternative; boundary=047d7b3a8bd05f86f705223ff438
 
-> __GFP_WAIT is going away to live its life under a new identity; convert
-> __iommu_alloc_attrs() to the new helper function instead.
-> 
-> ...
+--047d7b3a8bd05f86f705223ff438
+Content-Type: text/plain; charset=UTF-8
+
+With with virtualization enabled and running.
+
+On Fri, Oct 16, 2015 at 2:02 AM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+
+> On Thu, Oct 15, 2015 at 11:28:03PM -0700, G. Richard Bellamy wrote:
+> > Applied the patch, and no longer receiving the kernel error messages.
+> Haven't
+> > tried to do anything with my VMs yet, but thought you'd want to know
+> sooner
+> > than later.
 >
-> --- a/arch/arm64/mm/dma-mapping.c
-> +++ b/arch/arm64/mm/dma-mapping.c
-> @@ -566,7 +566,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
->  	 */
->  	gfp |= __GFP_ZERO;
->  
-> -	if (gfp & __GFP_WAIT) {
-> +	if (gfpflags_allow_blocking(gfp)) {
->  		struct page **pages;
->  		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
+> Okay, thanks. It is possible that the issue only happens when you start
+> a VM, so it would be great if you could test this too.
+>
+>
+> Thanks,
+>
+>         Joerg
+>
+>
 
-Seems unnecessarily elaborate.  What's wrong with
+--047d7b3a8bd05f86f705223ff438
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
---- a/arch/arm64/mm/dma-mapping.c~mm-page_alloc-rename-__gfp_wait-to-__gfp_reclaim-arm-fix
-+++ a/arch/arm64/mm/dma-mapping.c
-@@ -562,7 +562,7 @@ static void *__iommu_alloc_attrs(struct
- 	 */
- 	gfp |= __GFP_ZERO;
- 
--	if (gfp & __GFP_WAIT) {
-+	if (gfp & __GFP_RECLAIM) {
- 		struct page **pages;
- 		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
- 
+<div dir=3D"ltr"><div class=3D"gmail_default" style=3D"font-family:verdana,=
+sans-serif">With with virtualization enabled and running.<br></div></div><d=
+iv class=3D"gmail_extra"><br><div class=3D"gmail_quote">On Fri, Oct 16, 201=
+5 at 2:02 AM, Joerg Roedel <span dir=3D"ltr">&lt;<a href=3D"mailto:joro@8by=
+tes.org" target=3D"_blank">joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org</a>&gt;</span> wrote:<br><blockq=
+uote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc =
+solid;padding-left:1ex"><span class=3D"">On Thu, Oct 15, 2015 at 11:28:03PM=
+ -0700, G. Richard Bellamy wrote:<br>
+&gt; Applied the patch, and no longer receiving the kernel error messages. =
+Haven&#39;t<br>
+&gt; tried to do anything with my VMs yet, but thought you&#39;d want to kn=
+ow sooner<br>
+&gt; than later.<br>
+<br>
+</span>Okay, thanks. It is possible that the issue only happens when you st=
+art<br>
+a VM, so it would be great if you could test this too.<br>
+<br>
+<br>
+Thanks,<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 Joerg<br>
+<br>
+</blockquote></div><br></div>
 
-?
+--047d7b3a8bd05f86f705223ff438--
+
+--===============5461330435622893394==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============5461330435622893394==--
