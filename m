@@ -1,72 +1,87 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH] iommu/ipmmu-vmsa: Include SoC part number in DT binding docs
-Date: Mon, 19 Oct 2015 09:44:04 +0300
-Message-ID: <9833652.FLB0aRvpVP@avalon>
-References: <20151019031003.7878.28510.sendpatchset@little-apple>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 2/2] arm64: Use gfpflags_allow_blocking()
+Date: Mon, 19 Oct 2015 13:43:13 +0100
+Message-ID: <5624E561.6010107@arm.com>
+References: <ecbbf6550654071f13d1bdc04b86dc4d69ad09b4.1445008695.git.robin.murphy@arm.com>
+	<adf855c7692b1512ab7216579468ad1eef2f25a8.1445008695.git.robin.murphy@arm.com>
+	<20151016135900.bc1e10115a866a301dbb0cd8@linux-foundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <20151019031003.7878.28510.sendpatchset@little-apple>
-Sender: linux-sh-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: devicetree@vger.kernel.org, mark.rutland@arm.com, laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, joro@8bytes.org, linux-sh@vger.kernel.org, iommu@lists.linux-foundation.org, robh+dt@kernel.org, galak@codeaurora.org, horms+renesas@verge.net.au
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20151016135900.bc1e10115a866a301dbb0cd8-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, Mel Gorman <mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Magnus,
+Hi Andrew,
 
-Thank you for the patch.
+On 16/10/15 21:59, Andrew Morton wrote:
+> On Fri, 16 Oct 2015 16:33:42 +0100 Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>
+>> __GFP_WAIT is going away to live its life under a new identity; convert
+>> __iommu_alloc_attrs() to the new helper function instead.
+>>
+>> ...
+>>
+>> --- a/arch/arm64/mm/dma-mapping.c
+>> +++ b/arch/arm64/mm/dma-mapping.c
+>> @@ -566,7 +566,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
+>>   	 */
+>>   	gfp |= __GFP_ZERO;
+>>
+>> -	if (gfp & __GFP_WAIT) {
+>> +	if (gfpflags_allow_blocking(gfp)) {
+>>   		struct page **pages;
+>>   		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
+>
+> Seems unnecessarily elaborate.  What's wrong with
+>
+> --- a/arch/arm64/mm/dma-mapping.c~mm-page_alloc-rename-__gfp_wait-to-__gfp_reclaim-arm-fix
+> +++ a/arch/arm64/mm/dma-mapping.c
+> @@ -562,7 +562,7 @@ static void *__iommu_alloc_attrs(struct
+>   	 */
+>   	gfp |= __GFP_ZERO;
+>
+> -	if (gfp & __GFP_WAIT) {
+> +	if (gfp & __GFP_RECLAIM) {
+>   		struct page **pages;
+>   		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
+>
+>
+> ?
 
-On Monday 19 October 2015 12:10:03 Magnus Damm wrote:
-> From: Magnus Damm <damm+renesas@opensource.se>
-> 
-> Add part numbers for APE6 and current set of R-Car Gen2 SoCs to the
-> IPMMU DT binding documentation. The example is also updated to show
-> how the generic compatible string may be used as fallback.
+Well, in that case the charge of "unnecessarily elaborate" should have 
+been directed at the original patch, and the 53 other locations where 
+(flags & __GFP_WAIT) was changed as per the commit message:
 
-I'd use a wording stronger than "may" here, as the generic compatible value is 
-required. I would also explicitly state that in the bindings documentation.
+   "Callers that are checking if they are non-blocking should use the
+    helper gfpflags_allow_blocking() where possible."
 
-> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
-> ---
-> 
->  Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |   12
-> ++++++++-- 1 file changed, 10 insertions(+), 2 deletions(-)
-> 
-> --- 0001/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-> +++
-> work/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt	
-2015-10
-> -18 15:53:08.850513000 +0900 @@ -7,7 +7,15 @@ connected to the IPMMU through
-> a port ca
-> 
->  Required Properties:
-> 
-> -  - compatible: Must contain "renesas,ipmmu-vmsa".
-> +  - compatible: Must contain one of the following:
-> +
-> +    - "renesas,ipmmu-r8a73a4" for the R8A73A4 (R-Mobile APE6) IPMMU.
-> +    - "renesas,ipmmu-r8a7790" for the R8A7790 (R-Car H2) IPMMU.
-> +    - "renesas,ipmmu-r8a7791" for the R8A7791 (R-Car M2-W) IPMMU.
-> +    - "renesas,ipmmu-r8a7793" for the R8A7793 (R-Car M2-N) IPMMU.
-> +    - "renesas,ipmmu-r8a7794" for the R8A7794 (R-Car E2) IPMMU.
-> +    - "renesas,ipmmu-vmsa" for generic R-Car Gen2 VMSA-compatible IPMMU.
-> +
->    - reg: Base address and size of the IPMMU registers.
->    - interrupts: Specifiers for the MMU fault interrupts. For instances that
-> support secure mode two interrupts must be specified, for non-secure and @@
-> -27,7 +35,7 @@ node with the following property:
->  Example: R8A7791 IPMMU-MX and VSP1-D0 bus master
-> 
->  	ipmmu_mx: mmu@fe951000 {
-> -		compatible = "renasas,ipmmu-vmsa";
-> +		compatible = "renasas,ipmmu-r8a7791", "renasas,ipmmu-vmsa";
->  		reg = <0 0xfe951000 0 0x1000>;
->  		interrupts = <0 222 IRQ_TYPE_LEVEL_HIGH>,
->  			     <0 221 IRQ_TYPE_LEVEL_HIGH>;
+More importantly, it's also now apparently inconsistent with all the 
+other dma_alloc_coherent() implementations, which thanks to the helper 
+function are testing against __GFP_DIRECT_RECLAIM instead. As I have no 
+clear understanding of what the difference between the two flags is, and 
+how they relate to whether it's safe to call map_vm_area() or not (which 
+is what principally matters here), I'm very uncomfortable with a change 
+introducing that inconsistency.
 
--- 
-Regards,
+If instead of my two patches you'd prefer to carry a fix through -mm and 
+coordinate with Joerg and Linus to ensure everything gets merged in the 
+right order, that's fine by me, but either way the change needs to 
+guarantee the same behaviour as all the other instances in arch/arm and 
+arch/arm64 which return a remapped buffer (and I have to say personally 
+I much prefer having the rather inscrutable flag logic hidden behind a 
+clearly-named helper function).
 
-Laurent Pinchart
-
+Thanks,
+Robin.
