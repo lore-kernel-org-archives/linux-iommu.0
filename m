@@ -1,47 +1,66 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH] iommu/ipmmu-vmsa: Drop LPAE Kconfig dependency
-Date: Tue, 20 Oct 2015 13:28:17 +0300
-Message-ID: <1853633.usacnlzPRA@avalon>
-References: <20151019030253.6274.46547.sendpatchset@little-apple> <1739171.POGWkgX12k@avalon> <CANqRtoTuK4gcc7WMTcMQ4REtRL8oGtT_hLpo7UHgPiQ8e6L+9A@mail.gmail.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH] iommu/amd: Don't clear DTE flags when modifying it
+Date: Tue, 20 Oct 2015 14:59:36 +0200
+Message-ID: <1445345976-6786-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <CANqRtoTuK4gcc7WMTcMQ4REtRL8oGtT_hLpo7UHgPiQ8e6L+9A@mail.gmail.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>, Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: iommu@lists.linux-foundation.org, SH-Linux <linux-sh@vger.kernel.org>, joro <joro@8bytes.org>, linux-kernel <linux-kernel@vger.kernel.org>, Simon Horman <horms+renesas@verge.net.au>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Magnus,
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-On Tuesday 20 October 2015 17:54:59 Magnus Damm wrote:
-> On Mon, Oct 19, 2015 at 3:42 PM, Laurent Pinchart wrote:
-> > On Monday 19 October 2015 12:02:53 Magnus Damm wrote:
-> >> From: Magnus Damm <damm+renesas@opensource.se>
-> >> 
-> >> Neither the ARM page table code enabled by IOMMU_IO_PGTABLE_LPAE
-> >> nor the IPMMU_VMSA driver actually depends on ARM_LPAE, so get
-> >> rid of the dependency.
-> >> 
-> >> Tested with ipmmu-vmsa on r8a7794 ALT and a kernel config using:
-> >>  # CONFIG_ARM_LPAE is not set
-> > 
-> > The driver only supports the 40-bits page table format for now, hence the
-> > dependency on LPAE, but it indeed seems that the dependency is bogus. As
-> > long as the 8 MSBs of the translated address are all 0 I assume the
-> > output 40-bit address is usable on a 32-bit physical address system.
-> > 
-> > How have you tested the patch ?
-> 
-> Modetest with local IPMMUMX enablement on r8a7794 ALT.
+During device assignment/deassignment the flags in the DTE
+get lost, which might cause spurious faults, for example
+when the device tries to access the system management range.
+Fix this by not clearing the flags with the rest of the DTE.
 
-Then,
+Reported-by: G. Richard Bellamy <rbellamy-1/AleqyZJC8ybS5Ee8rs3A@public.gmane.org>
+Tested-by: G. Richard Bellamy <rbellamy-1/AleqyZJC8ybS5Ee8rs3A@public.gmane.org>
+Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c       | 4 ++--
+ drivers/iommu/amd_iommu_types.h | 1 +
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-Acked-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index f82060e7..d44dc2b 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1974,8 +1974,8 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
+ static void clear_dte_entry(u16 devid)
+ {
+ 	/* remove entry from the device table seen by the hardware */
+-	amd_iommu_dev_table[devid].data[0] = IOMMU_PTE_P | IOMMU_PTE_TV;
+-	amd_iommu_dev_table[devid].data[1] = 0;
++	amd_iommu_dev_table[devid].data[0]  = IOMMU_PTE_P | IOMMU_PTE_TV;
++	amd_iommu_dev_table[devid].data[1] &= DTE_FLAG_MASK;
+ 
+ 	amd_iommu_apply_erratum_63(devid);
+ }
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index f659088..c9b6472 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -295,6 +295,7 @@
+ #define IOMMU_PTE_IR (1ULL << 61)
+ #define IOMMU_PTE_IW (1ULL << 62)
+ 
++#define DTE_FLAG_MASK	(0x3ffULL << 32)
+ #define DTE_FLAG_IOTLB	(0x01UL << 32)
+ #define DTE_FLAG_GV	(0x01ULL << 55)
+ #define DTE_GLX_SHIFT	(56)
 -- 
-Regards,
-
-Laurent Pinchart
-
+1.9.1
