@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 04/12] iommu/amd: WARN when __[attach|detach]_device are
-	called with irqs enabled
-Date: Tue, 20 Oct 2015 17:33:37 +0200
-Message-ID: <1445355225-17557-5-git-send-email-joro@8bytes.org>
+Subject: [PATCH 03/12] iommu/amd: Don't disable IRQs in __detach_device
+Date: Tue, 20 Oct 2015 17:33:36 +0200
+Message-ID: <1445355225-17557-4-git-send-email-joro@8bytes.org>
 References: <1445355225-17557-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,43 +23,38 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-These functions rely on being called with IRQs disabled. Add
-a WARN_ON to detect early when its not.
+This function is already called with IRQs disabled already.
+So no need to disable them again.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/iommu/amd_iommu.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 54e0862..d47c4b1 100644
+index b86c5f0..54e0862 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -2039,6 +2039,12 @@ static int __attach_device(struct iommu_dev_data *dev_data,
- {
- 	int ret;
- 
-+	/*
-+	 * Must be called with IRQs disabled. Warn here to detect early
-+	 * when its not.
-+	 */
-+	WARN_ON(!irqs_disabled());
-+
- 	/* lock domain */
- 	spin_lock(&domain->lock);
- 
-@@ -2199,6 +2205,12 @@ static void __detach_device(struct iommu_dev_data *dev_data)
+@@ -2198,18 +2198,17 @@ static int attach_device(struct device *dev,
+ static void __detach_device(struct iommu_dev_data *dev_data)
  {
  	struct protection_domain *domain;
+-	unsigned long flags;
  
-+	/*
-+	 * Must be called with IRQs disabled. Warn here to detect early
-+	 * when its not.
-+	 */
-+	WARN_ON(!irqs_disabled());
-+
  	if (WARN_ON(!dev_data->domain))
  		return;
  
+ 	domain = dev_data->domain;
+ 
+-	spin_lock_irqsave(&domain->lock, flags);
++	spin_lock(&domain->lock);
+ 
+ 	do_detach(dev_data);
+ 
+-	spin_unlock_irqrestore(&domain->lock, flags);
++	spin_unlock(&domain->lock);
+ }
+ 
+ /*
 -- 
 1.9.1
