@@ -1,50 +1,61 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 01/12] iommu/amd: Do not BUG_ON in __detach_device()
-Date: Tue, 20 Oct 2015 17:33:34 +0200
-Message-ID: <1445355225-17557-2-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 12/12] iommu/amd: Remove find_last_devid_on_pci()
+Date: Tue, 20 Oct 2015 17:33:45 +0200
+Message-ID: <1445355225-17557-13-git-send-email-joro@8bytes.org>
 References: <1445355225-17557-1-git-send-email-joro@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1445355225-17557-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1445355225-17557-1-git-send-email-joro@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+From: Joerg Roedel <jroedel@suse.de>
 
-The condition in the BUG_ON is an indicator of a BUG, but no
-reason to kill the code path. Turn it into a WARN_ON and
-bail out if it is hit.
+The value read from the PCI header is not reliable, so
+remove this code.
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/amd_iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iommu/amd_iommu_init.c | 19 -------------------
+ 1 file changed, 19 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 08d2775..bde87be 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2213,7 +2213,8 @@ static void __detach_device(struct iommu_dev_data *dev_data)
- 	struct protection_domain *domain;
- 	unsigned long flags;
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index e3afa37..65674104 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -408,20 +408,6 @@ static inline int ivhd_entry_length(u8 *ivhd)
+ }
  
--	BUG_ON(!dev_data->domain);
-+	if (WARN_ON(!dev_data->domain))
-+		return;
+ /*
+- * This function reads the last device id the IOMMU has to handle from the PCI
+- * capability header for this IOMMU
+- */
+-static int __init find_last_devid_on_pci(int bus, int dev, int fn, int cap_ptr)
+-{
+-	u32 cap;
+-
+-	cap = read_pci_config(bus, dev, fn, cap_ptr+MMIO_RANGE_OFFSET);
+-	update_last_devid(PCI_DEVID(MMIO_GET_BUS(cap), MMIO_GET_LD(cap)));
+-
+-	return 0;
+-}
+-
+-/*
+  * After reading the highest device id from the IOMMU PCI capability header
+  * this function looks if there is a higher device id defined in the ACPI table
+  */
+@@ -433,11 +419,6 @@ static int __init find_last_devid_from_ivhd(struct ivhd_header *h)
+ 	p += sizeof(*h);
+ 	end += h->length;
  
- 	domain = dev_data->domain;
- 
+-	find_last_devid_on_pci(PCI_BUS_NUM(h->devid),
+-			PCI_SLOT(h->devid),
+-			PCI_FUNC(h->devid),
+-			h->cap_ptr);
+-
+ 	while (p < end) {
+ 		dev = (struct ivhd_entry *)p;
+ 		switch (dev->type) {
 -- 
 1.9.1
