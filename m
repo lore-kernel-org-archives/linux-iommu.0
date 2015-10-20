@@ -1,108 +1,96 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 11/12] iommu/amd: Remove first/last_device handling
-Date: Tue, 20 Oct 2015 17:33:44 +0200
-Message-ID: <1445355225-17557-12-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 02/12] iommu/amd: Do not iterate over alias-list in
+	__[attach|detach]_device
+Date: Tue, 20 Oct 2015 17:33:35 +0200
+Message-ID: <1445355225-17557-3-git-send-email-joro@8bytes.org>
 References: <1445355225-17557-1-git-send-email-joro@8bytes.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1445355225-17557-1-git-send-email-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1445355225-17557-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-The code is buggy and the values read from PCI are not
-reliable anyway, so it is the best to just remove this code.
+The alias list is handled aleady by iommu core code. No need
+anymore to handle it in this part of the AMD IOMMU code
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c  | 34 +++-------------------------------
- drivers/iommu/amd_iommu_types.h |  5 -----
- 2 files changed, 3 insertions(+), 36 deletions(-)
+ drivers/iommu/amd_iommu.c | 26 +++-----------------------
+ 1 file changed, 3 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 6432bdb..e3afa37 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -824,20 +824,10 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
- 		switch (e->type) {
- 		case IVHD_DEV_ALL:
- 
--			DUMP_printk("  DEV_ALL\t\t\t first devid: %02x:%02x.%x"
--				    " last device %02x:%02x.%x flags: %02x\n",
--				    PCI_BUS_NUM(iommu->first_device),
--				    PCI_SLOT(iommu->first_device),
--				    PCI_FUNC(iommu->first_device),
--				    PCI_BUS_NUM(iommu->last_device),
--				    PCI_SLOT(iommu->last_device),
--				    PCI_FUNC(iommu->last_device),
--				    e->flags);
-+			DUMP_printk("  DEV_ALL\t\t\tflags: %02x\n", e->flags);
- 
--			for (dev_i = iommu->first_device;
--					dev_i <= iommu->last_device; ++dev_i)
--				set_dev_entry_from_acpi(iommu, dev_i,
--							e->flags, 0);
-+			for (dev_i = 0; dev_i <= amd_iommu_last_bdf; ++dev_i)
-+				set_dev_entry_from_acpi(iommu, dev_i, e->flags, 0);
- 			break;
- 		case IVHD_DEV_SELECT:
- 
-@@ -993,17 +983,6 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
- 	return 0;
- }
- 
--/* Initializes the device->iommu mapping for the driver */
--static int __init init_iommu_devices(struct amd_iommu *iommu)
--{
--	u32 i;
--
--	for (i = iommu->first_device; i <= iommu->last_device; ++i)
--		set_iommu_for_device(iommu, i);
--
--	return 0;
--}
--
- static void __init free_iommu_one(struct amd_iommu *iommu)
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index bde87be..b86c5f0 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2037,29 +2037,17 @@ static void do_detach(struct iommu_dev_data *dev_data)
+ static int __attach_device(struct iommu_dev_data *dev_data,
+ 			   struct protection_domain *domain)
  {
- 	free_command_buffer(iommu);
-@@ -1122,8 +1101,6 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
- 	 */
- 	amd_iommu_rlookup_table[iommu->devid] = NULL;
+-	struct iommu_dev_data *head, *entry;
+ 	int ret;
  
--	init_iommu_devices(iommu);
+ 	/* lock domain */
+ 	spin_lock(&domain->lock);
+ 
+-	head = dev_data;
 -
- 	return 0;
+-	if (head->alias_data != NULL)
+-		head = head->alias_data;
+-
+-	/* Now we have the root of the alias group, if any */
+-
+ 	ret = -EBUSY;
+-	if (head->domain != NULL)
++	if (dev_data->domain != NULL)
+ 		goto out_unlock;
+ 
+ 	/* Attach alias group root */
+-	do_attach(head, domain);
+-
+-	/* Attach other devices in the alias group */
+-	list_for_each_entry(entry, &head->alias_list, alias_list)
+-		do_attach(entry, domain);
++	do_attach(dev_data, domain);
+ 
+ 	ret = 0;
+ 
+@@ -2209,7 +2197,6 @@ static int attach_device(struct device *dev,
+  */
+ static void __detach_device(struct iommu_dev_data *dev_data)
+ {
+-	struct iommu_dev_data *head, *entry;
+ 	struct protection_domain *domain;
+ 	unsigned long flags;
+ 
+@@ -2220,14 +2207,7 @@ static void __detach_device(struct iommu_dev_data *dev_data)
+ 
+ 	spin_lock_irqsave(&domain->lock, flags);
+ 
+-	head = dev_data;
+-	if (head->alias_data != NULL)
+-		head = head->alias_data;
+-
+-	list_for_each_entry(entry, &head->alias_list, alias_list)
+-		do_detach(entry);
+-
+-	do_detach(head);
++	do_detach(dev_data);
+ 
+ 	spin_unlock_irqrestore(&domain->lock, flags);
  }
- 
-@@ -1253,11 +1230,6 @@ static int iommu_init_pci(struct amd_iommu *iommu)
- 	pci_read_config_dword(iommu->dev, cap_ptr + MMIO_MISC_OFFSET,
- 			      &misc);
- 
--	iommu->first_device = PCI_DEVID(MMIO_GET_BUS(range),
--					 MMIO_GET_FD(range));
--	iommu->last_device = PCI_DEVID(MMIO_GET_BUS(range),
--					MMIO_GET_LD(range));
--
- 	if (!(iommu->cap & (1 << IOMMU_CAP_IOTLB)))
- 		amd_iommu_iotlb_sup = false;
- 
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 921b2e9..fc9501d 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -516,11 +516,6 @@ struct amd_iommu {
- 	/* pci domain of this IOMMU */
- 	u16 pci_seg;
- 
--	/* first device this IOMMU handles. read from PCI */
--	u16 first_device;
--	/* last device this IOMMU handles. read from PCI */
--	u16 last_device;
--
- 	/* start of exclusion range of that IOMMU */
- 	u64 exclusion_start;
- 	/* length of exclusion range of that IOMMU */
 -- 
 1.9.1
