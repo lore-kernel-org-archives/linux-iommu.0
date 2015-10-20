@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 09/12] iommu/amd: Cleanup buffer allocation
-Date: Tue, 20 Oct 2015 17:33:42 +0200
-Message-ID: <1445355225-17557-10-git-send-email-joro@8bytes.org>
+Subject: [PATCH 05/12] iommu/amd: Set alias DTE in do_attach/do_detach
+Date: Tue, 20 Oct 2015 17:33:38 +0200
+Message-ID: <1445355225-17557-6-git-send-email-joro@8bytes.org>
 References: <1445355225-17557-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,107 +23,86 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Clean up the functions to allocate the command, event and
-ppr-log buffers. Remove redundant code and change the return
-value to int.
+With this we don't have to create dev_data entries for
+non-existent devices (which only exist as request-ids).
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c | 46 +++++++++++++++---------------------------
- 1 file changed, 16 insertions(+), 30 deletions(-)
+ drivers/iommu/amd_iommu.c | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 930a5d4..2f7fb1e 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -513,15 +513,12 @@ static int __init find_last_devid_acpi(struct acpi_table_header *table)
-  * write commands to that buffer later and the IOMMU will execute them
-  * asynchronously
-  */
--static u8 * __init alloc_command_buffer(struct amd_iommu *iommu)
-+static int __init alloc_command_buffer(struct amd_iommu *iommu)
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index d47c4b1..187a8bf 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1114,11 +1114,15 @@ static int device_flush_iotlb(struct iommu_dev_data *dev_data,
+ static int device_flush_dte(struct iommu_dev_data *dev_data)
  {
--	u8 *cmd_buf = (u8 *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
--			get_order(CMD_BUFFER_SIZE));
-+	iommu->cmd_buf = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
-+						  get_order(CMD_BUFFER_SIZE));
+ 	struct amd_iommu *iommu;
++	u16 alias;
+ 	int ret;
  
--	if (cmd_buf == NULL)
--		return NULL;
--
--	return cmd_buf;
-+	return iommu->cmd_buf ? 0 : -ENOMEM;
- }
+ 	iommu = amd_iommu_rlookup_table[dev_data->devid];
++	alias = amd_iommu_alias_table[dev_data->devid];
  
- /*
-@@ -563,15 +560,12 @@ static void __init free_command_buffer(struct amd_iommu *iommu)
- }
+ 	ret = iommu_flush_dte(iommu, dev_data->devid);
++	if (!ret && alias != dev_data->devid)
++		ret = iommu_flush_dte(iommu, alias);
+ 	if (ret)
+ 		return ret;
  
- /* allocates the memory where the IOMMU will log its events to */
--static u8 * __init alloc_event_buffer(struct amd_iommu *iommu)
-+static int __init alloc_event_buffer(struct amd_iommu *iommu)
+@@ -1984,27 +1988,33 @@ static void do_attach(struct iommu_dev_data *dev_data,
+ 		      struct protection_domain *domain)
  {
--	iommu->evt_buf = (u8 *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
--						get_order(EVT_BUFFER_SIZE));
-+	iommu->evt_buf = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
-+						  get_order(EVT_BUFFER_SIZE));
+ 	struct amd_iommu *iommu;
++	u16 alias;
+ 	bool ats;
  
--	if (iommu->evt_buf == NULL)
--		return NULL;
--
--	return iommu->evt_buf;
-+	return iommu->evt_buf ? 0 : -ENOMEM;
+ 	iommu = amd_iommu_rlookup_table[dev_data->devid];
++	alias = amd_iommu_alias_table[dev_data->devid];
+ 	ats   = dev_data->ats.enabled;
+ 
+ 	/* Update data structures */
+ 	dev_data->domain = domain;
+ 	list_add(&dev_data->list, &domain->dev_list);
+-	set_dte_entry(dev_data->devid, domain, ats);
+ 
+ 	/* Do reference counting */
+ 	domain->dev_iommu[iommu->index] += 1;
+ 	domain->dev_cnt                 += 1;
+ 
+-	/* Flush the DTE entry */
++	/* Update device table */
++	set_dte_entry(dev_data->devid, domain, ats);
++	if (alias != dev_data->devid)
++		set_dte_entry(dev_data->devid, domain, ats);
++
+ 	device_flush_dte(dev_data);
  }
  
- static void iommu_enable_event_buffer(struct amd_iommu *iommu)
-@@ -598,15 +592,12 @@ static void __init free_event_buffer(struct amd_iommu *iommu)
- }
- 
- /* allocates the memory where the IOMMU will log its events to */
--static u8 * __init alloc_ppr_log(struct amd_iommu *iommu)
-+static int __init alloc_ppr_log(struct amd_iommu *iommu)
+ static void do_detach(struct iommu_dev_data *dev_data)
  {
--	iommu->ppr_log = (u8 *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
--						get_order(PPR_LOG_SIZE));
-+	iommu->ppr_log = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
-+						  get_order(PPR_LOG_SIZE));
+ 	struct amd_iommu *iommu;
++	u16 alias;
  
--	if (iommu->ppr_log == NULL)
--		return NULL;
--
--	return iommu->ppr_log;
-+	return iommu->ppr_log ? 0 : -ENOMEM;
- }
+ 	/*
+ 	 * First check if the device is still attached. It might already
+@@ -2016,6 +2026,7 @@ static void do_detach(struct iommu_dev_data *dev_data)
+ 		return;
  
- static void iommu_enable_ppr_log(struct amd_iommu *iommu)
-@@ -1105,12 +1096,10 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
- 	if (!iommu->mmio_base)
- 		return -ENOMEM;
+ 	iommu = amd_iommu_rlookup_table[dev_data->devid];
++	alias = amd_iommu_alias_table[dev_data->devid];
  
--	iommu->cmd_buf = alloc_command_buffer(iommu);
--	if (!iommu->cmd_buf)
-+	if (alloc_command_buffer(iommu))
- 		return -ENOMEM;
+ 	/* decrease reference counters */
+ 	dev_data->domain->dev_iommu[iommu->index] -= 1;
+@@ -2025,6 +2036,8 @@ static void do_detach(struct iommu_dev_data *dev_data)
+ 	dev_data->domain = NULL;
+ 	list_del(&dev_data->list);
+ 	clear_dte_entry(dev_data->devid);
++	if (alias != dev_data->devid)
++		clear_dte_entry(alias);
  
--	iommu->evt_buf = alloc_event_buffer(iommu);
--	if (!iommu->evt_buf)
-+	if (alloc_event_buffer(iommu))
- 		return -ENOMEM;
- 
- 	iommu->int_enabled = false;
-@@ -1302,11 +1291,8 @@ static int iommu_init_pci(struct amd_iommu *iommu)
- 		amd_iommu_v2_present = true;
- 	}
- 
--	if (iommu_feature(iommu, FEATURE_PPR)) {
--		iommu->ppr_log = alloc_ppr_log(iommu);
--		if (!iommu->ppr_log)
--			return -ENOMEM;
--	}
-+	if (iommu_feature(iommu, FEATURE_PPR) && alloc_ppr_log(iommu))
-+		return -ENOMEM;
- 
- 	if (iommu->cap & (1UL << IOMMU_CAP_NPCACHE))
- 		amd_iommu_np_cache = true;
+ 	/* Flush the DTE entry */
+ 	device_flush_dte(dev_data);
 -- 
 1.9.1
