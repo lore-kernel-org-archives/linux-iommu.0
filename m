@@ -1,144 +1,181 @@
-From: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Subject: Re: [PATCH 09/22] PCI: Add pci_peer_traffic_supported()
-Date: Wed, 21 Oct 2015 21:10:46 +1100
-Message-ID: <1445422246.3025.26.camel@kernel.crashing.org>
-References: <1442337067-22964-1-git-send-email-wdavis@nvidia.com>
-	 <1442337067-22964-10-git-send-email-wdavis@nvidia.com>
+From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: [GIT PULL] Minor intel-iommu fix for 4.3
+Date: Wed, 21 Oct 2015 11:27:09 +0100
+Message-ID: <1445423229.4486.121.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1442337067-22964-10-git-send-email-wdavis@nvidia.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Will Davis <wdavis@nvidia.com>, Bjorn Helgaas <bhelgaas@google.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Konrad Wilk <konrad.wilk@oracle.com>, Mark Hounschell <markh@compro.net>, "David S. Miller" <davem@davemloft.net>, Jonathan Corbet <corbet@lwn.net>, Terence Ripperda <tripperda@nvidia.com>, John Hubbard <jhubbard@nvidia.com>, Jerome Glisse <jglisse@redhat.com>
+Content-Type: multipart/mixed; boundary="===============6945531037558181567=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2015-09-15 at 12:10 -0500, Will Davis wrote:
 
-> +bool pci_peer_traffic_supported(struct pci_dev *dev, struct pci_dev
-> *peer)
-> +{
-> +> 	> struct pci_host_bridge *dev_host_bridge;
-> +> 	> struct pci_host_bridge *peer_host_bridge;
-> +
-> +> 	> /*
-> +> 	>  * Disallow the peer-to-peer traffic if the devices do not share a
-> +> 	>  * host bridge. The PCI specifications does not make any guarantees
-> +> 	>  * about P2P capabilities between devices under separate domains.
-> +> 	>  *
-> +> 	>  * PCI Local Bus Specification Revision 3.0, section 3.10:
-> +> 	>  *    "Peer-to-peer transactions crossing multiple host bridges
-> +> 	>  *     PCI host bridges may, but are not required to, support PCI
-> +> 	>  *     peer-to-peer transactions that traverse multiple PCI host
-> +> 	>  *     bridges."
-> +> 	>  */
-> +	dev_host_bridge = pci_find_host_bridge(dev->bus);
-> +> 	> peer_host_bridge = pci_find_host_bridge(peer->bus);
-> +> 	> if (dev_host_bridge != peer_host_bridge)
-> +> 	> 	> return false;
+--===============6945531037558181567==
+Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
+	boundary="=-NnscLh92TqklxQs/mLWQ"
 
-This needs to be platform specific. Some architectures will allow
-routing between multiple bridges, some won't.
 
-> +		/*
-> +> 	> 	>  * Access Control Services (ACS) Checks
-> +> 	> 	>  *
-> +> 	> 	>  * ACS has a capability bit for P2P Request Redirects (RR),
-> +> 	> 	>  * but unfortunately it doesn't tell us much about the real
-> +> 	> 	>  * capabilities of the hardware.
-> +> 	> 	>  *
-> +> 	> 	>  * PCI Express Base Specification Revision 3.0, section
-> +> 	> 	>  * 6.12.1.1:
-> +> 	> 	>  *    "ACS P2P Request Redirect: must be implemented by Root
-> +> 	> 	>  *     Ports that support peer-to-peer traffic with other
-> +> 	> 	>  *     Root Ports; [80]"
-> +> 	> 	>  * but
-> +> 	> 	>  *    "[80] Root Port indication of ACS P2P Request Redirect
-> +> 	> 	>  *     or ACS P2P Completion Redirect support does not imply
-> +> 	> 	>  *     any particular level of peer-to-peer support by the
-> +> 	> 	>  *     Root Complex, or that peer-to-peer traffic is
-> +> 	> 	>  *     supported at all"
-> +> 	> 	>  */
-> +> 	> 	> struct pci_dev *rpdev = dev->bus->self;
-> +> 	> 	> struct pci_dev *rppeer = peer->bus->self;
-> +> 	> 	> struct pci_dev *common_upstream;
-> +> 	> 	> int pos;
-> +> 	> 	> u16 cap;
-> +
-> +> 	> 	> while ((rpdev) && (pci_is_pcie(rpdev)) &&
-> +> 	> 	>        (pci_pcie_type(rpdev) != PCI_EXP_TYPE_ROOT_PORT))
-> +> 	> 	> 	> rpdev = rpdev->bus->self;
-> +
-> +> 	> 	> while ((rppeer) && (pci_is_pcie(rppeer)) &&
-> +> 	> 	>        (pci_pcie_type(rppeer) != PCI_EXP_TYPE_ROOT_PORT))
-> +> 	> 	> 	> rppeer = rppeer->bus->self;
-> +
-> +> 	> 	> common_upstream = pci_find_common_upstream_dev(dev, peer);
-> +
-> +> 	> 	> /*
-> +> 	> 	>  * If ACS is not implemented, we have no idea about P2P
-> +> 	> 	>  * support. Optimistically allow this if there is a common
-> +> 	> 	>  * upstream device.
-> +> 	> 	>  */
-> +> 	> 	> pos = pci_find_ext_capability(rpdev, PCI_EXT_CAP_ID_ACS);
-> +> 	> 	> if (!pos)
-> +> 	> 	> 	> return common_upstream != NULL;
+--=-NnscLh92TqklxQs/mLWQ
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-We might need a hook as well here. PLX switch may or may not allow it
-depending on some configuration bits.
+Linus, please pull from
+	git://git.infradead.org/intel-iommu.git for-linus-20151021
 
-> +		/*
-> +> 	> 	>  * If the devices are under the same root port and have a common
-> +> 	> 	>  * upstream device, allow if the root port is further upstream
-> +> 	> 	>  * from the common upstream device and the common upstream
-> +> 	> 	>  * device has Upstream Forwarding disabled, or if the root port
-> +> 	> 	>  * is the common upstream device and ACS is not implemented.
-> +> 	> 	>  */
-> +> 	> 	> pci_read_config_word(rpdev, pos + PCI_ACS_CAP, &cap);
-> +> 	> 	> if ((rpdev == rppeer && common_upstream) &&
-> +> 	> 	>     (((common_upstream != rpdev) &&
-> +> 	> 	>       !pci_acs_enabled(common_upstream, PCI_ACS_UF)) ||
-> +> 	> 	>      ((common_upstream == rpdev) && ((cap & PCI_ACS_RR) == 0))))
-> +> 	> 	> 	> return true;
-> +
-> +> 	> 	> /*
-> +> 	> 	>  * If ACS RR is implemented and disabled, allow only if the
-> +> 	> 	>  * devices are under the same root port.
-> +> 	> 	>  */
-> +> 	> 	> if (cap & PCI_ACS_RR && !pci_acs_enabled(rpdev, PCI_ACS_RR))
-> +> 	> 	> 	> return rpdev == rppeer;
-> +
-> +> 	> 	> /*
-> +> 	> 	>  * If ACS RR is not implemented, or is implemented and enabled,
-> +> 	> 	>  * only allow if there's a translation agent enabled to do the
-> +> 	> 	>  * redirect.
-> +> 	> 	>  */
-> +> 	> 	> return iommu_present(&pci_bus_type);
-> +> 	> }
-> +
-> +> 	> return false;
-> +}
-> +
->  #define RESOURCE_ALIGNMENT_PARAM_SIZE COMMAND_LINE_SIZE
->  static char resource_alignment_param[RESOURCE_ALIGNMENT_PARAM_SIZE] = {0};
->  static DEFINE_SPINLOCK(resource_alignment_lock);
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index 8262b9e..db0cb51 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -824,6 +824,8 @@ void pci_stop_root_bus(struct pci_bus *bus);
->  void pci_remove_root_bus(struct pci_bus *bus);
->  void pci_setup_cardbus(struct pci_bus *bus);
->  void pci_sort_breadthfirst(void);
-> +bool pci_peer_traffic_supported(struct pci_dev *dev, struct pci_dev *peer);
-> +
->  #define dev_is_pci(d) ((d)->bus == &pci_bus_type)
->  #define dev_is_pf(d) ((dev_is_pci(d) ? to_pci_dev(d)->is_physfn : false))
->  #define dev_num_vf(d) ((dev_is_pci(d) ? pci_num_vf(to_pci_dev(d)) : 0))
-> @@ -1914,4 +1916,5 @@ static inline bool pci_ari_enabled(struct pci_bus *bus)
->  {
->  > 	> return bus->self && bus->self->ari_enabled;
->  }
-> +
->  #endif /* LINUX_PCI_H */
+This contains a single fix, for when the IOMMU API is used to overlay
+an existing mapping comprised of 4KiB pages, with a mapping that can
+use superpages.
+
+For the *first* superpage in the new mapping, we were correctly=C2=B9
+freeing the old bottom-level page table page and clearing the link to
+it, before installing the superpage. For subsequent superpages,
+however, we weren't. This causes a memory leak, and a warning about
+setting a PTE which is already set.
+
+=C2=B9 Well, not *entirely* correctly. We just free the page table pages
+right there and then, which is wrong. In fact they should only be freed
+*after* the IOTLB is flushed so we know the hardware will no longer be
+looking at them.... and in fact I note that the IOTLB flush is
+completely missing from the intel_iommu_map() code path, although it
+needs to be there if it's permitted to overwrite existing mappings.
+Fixing those is somewhat more intrusive though, and will probably need
+to wait for 4.4 at this point.
+
+Christian Zander (1):
+      iommu/vt-d: fix range computation when making room for large pages
+
+ drivers/iommu/intel-iommu.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+--=20
+David Woodhouse                            Open Source Technology Centre
+David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
+
+
+--=-NnscLh92TqklxQs/mLWQ
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIISjjCCBicw
+ggUPoAMCAQICAw3vNzANBgkqhkiG9w0BAQUFADCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
+YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
+ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
+MB4XDTE1MDUwNTA5NDM0MVoXDTE2MDUwNTA5NTMzNlowQjEcMBoGA1UEAwwTZHdtdzJAaW5mcmFk
+ZWFkLm9yZzEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBAMkbm9kPbx1j/X4RVyf/pPKSYwelcco69TvnQQbKM8m8xkWjXJI1
+jpJ1jMaGUZGFToINMSZi7lZawUozudWbXSKy1SikENSTJHffsdRAIlsp+hR8vWvjsKUry6sEdqPG
+doa5RY7+N4WRusWZDYW/RRWE6i9EL9qV86CVPYqw22UBOUw4/j/HVGCV6TSB8yE5iEwhk/hUuzRr
+FZm1MJMR7mCS7BCR8Lr5jFY61lWpBiXNXIxLZCvDc26KR5L5tYX43iUVO3fzES1GRVoYnxxk2tmz
+fcsZG5vK+Trc9L8OZJfkYrEHH3+Iw41MQ0w/djVtYr1+HYldx0QmYXAtnhIj+UMCAwEAAaOCAtkw
+ggLVMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgSwMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcD
+BDAdBgNVHQ4EFgQUszC96C3w5/2+d+atSr0IpT26YI4wHwYDVR0jBBgwFoAUU3Ltkpzg2ssBXHx+
+ljVO8tS4UYIwHgYDVR0RBBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzCCAUwGA1UdIASCAUMwggE/
+MIIBOwYLKwYBBAGBtTcBAgMwggEqMC4GCCsGAQUFBwIBFiJodHRwOi8vd3d3LnN0YXJ0c3NsLmNv
+bS9wb2xpY3kucGRmMIH3BggrBgEFBQcCAjCB6jAnFiBTdGFydENvbSBDZXJ0aWZpY2F0aW9uIEF1
+dGhvcml0eTADAgEBGoG+VGhpcyBjZXJ0aWZpY2F0ZSB3YXMgaXNzdWVkIGFjY29yZGluZyB0byB0
+aGUgQ2xhc3MgMSBWYWxpZGF0aW9uIHJlcXVpcmVtZW50cyBvZiB0aGUgU3RhcnRDb20gQ0EgcG9s
+aWN5LCByZWxpYW5jZSBvbmx5IGZvciB0aGUgaW50ZW5kZWQgcHVycG9zZSBpbiBjb21wbGlhbmNl
+IG9mIHRoZSByZWx5aW5nIHBhcnR5IG9ibGlnYXRpb25zLjA2BgNVHR8ELzAtMCugKaAnhiVodHRw
+Oi8vY3JsLnN0YXJ0c3NsLmNvbS9jcnR1MS1jcmwuY3JsMIGOBggrBgEFBQcBAQSBgTB/MDkGCCsG
+AQUFBzABhi1odHRwOi8vb2NzcC5zdGFydHNzbC5jb20vc3ViL2NsYXNzMS9jbGllbnQvY2EwQgYI
+KwYBBQUHMAKGNmh0dHA6Ly9haWEuc3RhcnRzc2wuY29tL2NlcnRzL3N1Yi5jbGFzczEuY2xpZW50
+LmNhLmNydDAjBgNVHRIEHDAahhhodHRwOi8vd3d3LnN0YXJ0c3NsLmNvbS8wDQYJKoZIhvcNAQEF
+BQADggEBAHMQmxHHodpS85X8HRyxhvfkys7r+taCNOaNU9cxQu/cZ/6k5nS2qGNMzZ6jb7ueY/V7
+7p+4DW/9ZWODDTf4Fz00mh5SSVc20Bz7t+hhxwHd62PZgENh5i76Qq2tw48U8AsYo5damHby1epf
+neZafLpUkLLO7AGBJIiRVTevdvyXQ0qnixOmKMWyvrhSNGuVIKVdeqLP+102Dwf+dpFyw+j1hz28
+jEEKpHa+NR1b2kXuSPi/rMGhexwlJOh4tK8KQ6Ryr0rIN//NSbOgbyYZrzc/ZUWX9V5OA84ChFb2
+vkFl0OcYrttp/rhDBLITwffPxSZeoBh9H7zYzkbCXKL3BUIwggYnMIIFD6ADAgECAgMN7zcwDQYJ
+KoZIhvcNAQEFBQAwgYwxCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSswKQYD
+VQQLEyJTZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFydENv
+bSBDbGFzcyAxIFByaW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQTAeFw0xNTA1MDUwOTQzNDFa
+Fw0xNjA1MDUwOTUzMzZaMEIxHDAaBgNVBAMME2R3bXcyQGluZnJhZGVhZC5vcmcxIjAgBgkqhkiG
+9w0BCQEWE2R3bXcyQGluZnJhZGVhZC5vcmcwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
+AQDJG5vZD28dY/1+EVcn/6TykmMHpXHKOvU750EGyjPJvMZFo1ySNY6SdYzGhlGRhU6CDTEmYu5W
+WsFKM7nVm10istUopBDUkyR337HUQCJbKfoUfL1r47ClK8urBHajxnaGuUWO/jeFkbrFmQ2Fv0UV
+hOovRC/alfOglT2KsNtlATlMOP4/x1Rglek0gfMhOYhMIZP4VLs0axWZtTCTEe5gkuwQkfC6+YxW
+OtZVqQYlzVyMS2Qrw3NuikeS+bWF+N4lFTt38xEtRkVaGJ8cZNrZs33LGRubyvk63PS/DmSX5GKx
+Bx9/iMONTENMP3Y1bWK9fh2JXcdEJmFwLZ4SI/lDAgMBAAGjggLZMIIC1TAJBgNVHRMEAjAAMAsG
+A1UdDwQEAwIEsDAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwQwHQYDVR0OBBYEFLMwvegt
+8Of9vnfmrUq9CKU9umCOMB8GA1UdIwQYMBaAFFNy7ZKc4NrLAVx8fpY1TvLUuFGCMB4GA1UdEQQX
+MBWBE2R3bXcyQGluZnJhZGVhZC5vcmcwggFMBgNVHSAEggFDMIIBPzCCATsGCysGAQQBgbU3AQID
+MIIBKjAuBggrBgEFBQcCARYiaHR0cDovL3d3dy5zdGFydHNzbC5jb20vcG9saWN5LnBkZjCB9wYI
+KwYBBQUHAgIwgeowJxYgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkwAwIBARqBvlRo
+aXMgY2VydGlmaWNhdGUgd2FzIGlzc3VlZCBhY2NvcmRpbmcgdG8gdGhlIENsYXNzIDEgVmFsaWRh
+dGlvbiByZXF1aXJlbWVudHMgb2YgdGhlIFN0YXJ0Q29tIENBIHBvbGljeSwgcmVsaWFuY2Ugb25s
+eSBmb3IgdGhlIGludGVuZGVkIHB1cnBvc2UgaW4gY29tcGxpYW5jZSBvZiB0aGUgcmVseWluZyBw
+YXJ0eSBvYmxpZ2F0aW9ucy4wNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5zdGFydHNzbC5j
+b20vY3J0dTEtY3JsLmNybDCBjgYIKwYBBQUHAQEEgYEwfzA5BggrBgEFBQcwAYYtaHR0cDovL29j
+c3Auc3RhcnRzc2wuY29tL3N1Yi9jbGFzczEvY2xpZW50L2NhMEIGCCsGAQUFBzAChjZodHRwOi8v
+YWlhLnN0YXJ0c3NsLmNvbS9jZXJ0cy9zdWIuY2xhc3MxLmNsaWVudC5jYS5jcnQwIwYDVR0SBBww
+GoYYaHR0cDovL3d3dy5zdGFydHNzbC5jb20vMA0GCSqGSIb3DQEBBQUAA4IBAQBzEJsRx6HaUvOV
+/B0csYb35MrO6/rWgjTmjVPXMULv3Gf+pOZ0tqhjTM2eo2+7nmP1e+6fuA1v/WVjgw03+Bc9NJoe
+UklXNtAc+7foYccB3etj2YBDYeYu+kKtrcOPFPALGKOXWph28tXqX53mWny6VJCyzuwBgSSIkVU3
+r3b8l0NKp4sTpijFsr64UjRrlSClXXqiz/tdNg8H/naRcsPo9Yc9vIxBCqR2vjUdW9pF7kj4v6zB
+oXscJSToeLSvCkOkcq9KyDf/zUmzoG8mGa83P2VFl/VeTgPOAoRW9r5BZdDnGK7baf64QwSyE8H3
+z8UmXqAYfR+82M5Gwlyi9wVCMIIGNDCCBBygAwIBAgIBHjANBgkqhkiG9w0BAQUFADB9MQswCQYD
+VQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwg
+Q2VydGlmaWNhdGUgU2lnbmluZzEpMCcGA1UEAxMgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRo
+b3JpdHkwHhcNMDcxMDI0MjEwMTU1WhcNMTcxMDI0MjEwMTU1WjCBjDELMAkGA1UEBhMCSUwxFjAU
+BgNVBAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRl
+IFNpZ25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUg
+Q2xpZW50IENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxwmDzM4t2BqxKaQuE6uW
+vooyg4ymiEGWVUet1G8SD+rqvyNH4QrvnEIaFHxOhESip7vMz39ScLpNLbL1QpOlPW/tFIzNHS3q
+d2XRNYG5Sv9RcGE+T4qbLtsjjJbi6sL7Ls/f/X9ftTyhxvxWkf8KW37iKrueKsxw2HqolH7GM6FX
+5UfNAwAu4ZifkpmZzU1slBhyWwaQPEPPZRsWoTb7q8hmgv6Nv3Hg9rmA1/VPBIOQ6SKRkHXG0Hhm
+q1dOFoAFI411+a/9nWm5rcVjGcIWZ2v/43Yksq60jExipA4l5uv9/+Hm33mbgmCszdj/Dthf13tg
+Av2O83hLJ0exTqfrlwIDAQABo4IBrTCCAakwDwYDVR0TAQH/BAUwAwEB/zAOBgNVHQ8BAf8EBAMC
+AQYwHQYDVR0OBBYEFFNy7ZKc4NrLAVx8fpY1TvLUuFGCMB8GA1UdIwQYMBaAFE4L7xqkQFulF2mH
+MMo0aEPQQa7yMGYGCCsGAQUFBwEBBFowWDAnBggrBgEFBQcwAYYbaHR0cDovL29jc3Auc3RhcnRz
+c2wuY29tL2NhMC0GCCsGAQUFBzAChiFodHRwOi8vd3d3LnN0YXJ0c3NsLmNvbS9zZnNjYS5jcnQw
+WwYDVR0fBFQwUjAnoCWgI4YhaHR0cDovL3d3dy5zdGFydHNzbC5jb20vc2ZzY2EuY3JsMCegJaAj
+hiFodHRwOi8vY3JsLnN0YXJ0c3NsLmNvbS9zZnNjYS5jcmwwgYAGA1UdIAR5MHcwdQYLKwYBBAGB
+tTcBAgEwZjAuBggrBgEFBQcCARYiaHR0cDovL3d3dy5zdGFydHNzbC5jb20vcG9saWN5LnBkZjA0
+BggrBgEFBQcCARYoaHR0cDovL3d3dy5zdGFydHNzbC5jb20vaW50ZXJtZWRpYXRlLnBkZjANBgkq
+hkiG9w0BAQUFAAOCAgEACoMIfXirLAZcuGOMXq4cuSN3TaFx2H2GvD5VSy/6rV55BYHbWNaPeQn3
+oBSU8KgQZn/Kck1JxbLpAxVCNtsxeW1R87ifhsYZ0qjdrA9anrW2MAWCtosmAOT4OxK9QPoSjCMx
+M3HbkZCDJgnlE8jMopH21BbyAYr7b5EfGRQJNtgWcvqSXwKHnTutR08+Kkn0KAkXCzeQNLeA5LlY
+UzFyM7kPAp8pIRMQ+seHunmyG642S2+y/qHEdMuGIwpfz3eDF1PdctL04qYK/zu+Qg1Bw0RwgigV
+Zs/0c5HP2/e9DBHh7eSwtzYlk4AUr6yxLlcwSjOfOmKEQ/Q8tzh0IFiNu9IPuTGAPBn4CPxD0+Ru
+8T2wg8/s43R/PT3kd1OEqOJUl7q+h+r6fpvU0Fzxd2tC8Ga6fDEPme+1Nbi+03pVjuZQKbGwKJ66
+gEn06WqaxVZC+J8hh/jR0k9mST1iAZPNYulcNJ8tKmVtjYsv0L1TSm2+NwON58tO+pIVzu3DWwSE
+XSf+qkDavQam+QtEOZxLBXI++aMUEapSn+k3Lxm48ZCYfAWLb/Xj7F5JQMbZvCexglAbYR0kIHqW
+5DnsYSdMD/IplJMojx0NBrxJ3fN9dvX2Y6BIXRsF1du4qESm4/3CKuyUV7p9DW3mPlHTGLvYxnyK
+Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
+YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
+ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
+AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
+CQUxDxcNMTUxMDIxMTAyNzA5WjAjBgkqhkiG9w0BCQQxFgQUutuD3rWYB94Yp89pyHLW9JUFeXAw
+gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
+ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
+L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
+CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
+LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
+U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
+hkiG9w0BAQEFAASCAQA0IGBgqLKJiLGjBZscSeXLSaLqDuI9R4dpGdV4FC49ZqIjCSGzTm/UphHF
+K+zJj1ctkLlMPxna+1UNuPwmGhA6WwhXwaQBAFcJC/7GDEdxWCkXeBrKnER3ntB00Z1SclzyJWgz
+qabunBoFFMJOIRCZ6Gjd1/O9JNGVNzO5UlpbV3kr34+UUodaZrXvCl31Md/MznjmHJBMTzvyL+y1
+jBGs9oFskramtg+Lj13TV7PP2KUsqETuU8aK2AV7Mmel66dAhBkOpWSvbTpnCNC3ogvxtuGynMUk
+s/C4szf7wrvA+7NzeAI6XdVal3e893Z+RydwflEnlArWBpYp+AzVzyVMAAAAAAAA
+
+
+--=-NnscLh92TqklxQs/mLWQ--
+
+
+--===============6945531037558181567==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============6945531037558181567==--
