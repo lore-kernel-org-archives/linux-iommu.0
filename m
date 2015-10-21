@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 4/8] iommu: Add device_group call-back to x86 iommu drivers
-Date: Wed, 21 Oct 2015 23:51:39 +0200
-Message-ID: <1445464303-18206-5-git-send-email-joro@8bytes.org>
+Subject: [PATCH 7/8] iommu: Remove is_pci_dev() fall-back from
+	iommu_group_get_for_dev
+Date: Wed, 21 Oct 2015 23:51:42 +0200
+Message-ID: <1445464303-18206-8-git-send-email-joro@8bytes.org>
 References: <1445464303-18206-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,38 +24,27 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Set the device_group call-back to pci_device_group() for the
-Intel VT-d and the AMD IOMMU driver.
+All callers of iommu_group_get_for_dev() provide a
+device_group call-back now, so this fall-back is no longer
+needed.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c   | 1 +
- drivers/iommu/intel-iommu.c | 1 +
- 2 files changed, 2 insertions(+)
+ drivers/iommu/iommu.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 08d2775..a76a3e5 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3198,6 +3198,7 @@ static const struct iommu_ops amd_iommu_ops = {
- 	.iova_to_phys = amd_iommu_iova_to_phys,
- 	.add_device = amd_iommu_add_device,
- 	.remove_device = amd_iommu_remove_device,
-+	.device_group = pci_device_group,
- 	.get_dm_regions = amd_iommu_get_dm_regions,
- 	.put_dm_regions = amd_iommu_put_dm_regions,
- 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 35365f0..f2b276d 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4873,6 +4873,7 @@ static const struct iommu_ops intel_iommu_ops = {
- 	.iova_to_phys	= intel_iommu_iova_to_phys,
- 	.add_device	= intel_iommu_add_device,
- 	.remove_device	= intel_iommu_remove_device,
-+	.device_group   = pci_device_group,
- 	.pgsize_bitmap	= INTEL_IOMMU_PGSIZES,
- };
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index a80c9c5..e2b5526 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -845,8 +845,6 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
  
+ 	if (ops && ops->device_group)
+ 		group = ops->device_group(dev);
+-	else if (dev_is_pci(dev))
+-		group = pci_device_group(dev);
+ 
+ 	if (IS_ERR(group))
+ 		return group;
 -- 
 1.9.1
