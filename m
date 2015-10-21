@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 2/8] iommu: Export and rename iommu_group_get_for_pci_dev()
-Date: Wed, 21 Oct 2015 23:51:37 +0200
-Message-ID: <1445464303-18206-3-git-send-email-joro@8bytes.org>
+Subject: [PATCH 1/8] iommu: Revive device_group iommu-ops call-back
+Date: Wed, 21 Oct 2015 23:51:36 +0200
+Message-ID: <1445464303-18206-2-git-send-email-joro@8bytes.org>
 References: <1445464303-18206-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,61 +23,58 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Rename that function to pci_device_group() and export it, so
-that IOMMU drivers can use it as their device_group
-call-back.
+That call-back is currently unused, change it into a
+call-back function for finding the right IOMMU group for a
+device.
+This is a first step to remove the hard-coded PCI dependency
+in the iommu-group code.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 8 ++++++--
- include/linux/iommu.h | 3 +++
- 2 files changed, 9 insertions(+), 2 deletions(-)
+ drivers/iommu/iommu.c | 9 ++++++---
+ include/linux/iommu.h | 2 +-
+ 2 files changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 5637463..fdea700 100644
+index 049df49..5637463 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -731,13 +731,17 @@ static int get_pci_alias_or_group(struct pci_dev *pdev, u16 alias, void *opaque)
-  * Use standard PCI bus topology, isolation features, and DMA alias quirks
-  * to find or create an IOMMU group for a device.
+@@ -814,6 +814,7 @@ static struct iommu_group *iommu_group_get_for_pci_dev(struct pci_dev *pdev)
   */
--static struct iommu_group *iommu_group_get_for_pci_dev(struct pci_dev *pdev)
-+struct iommu_group *pci_device_group(struct device *dev)
+ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
  {
-+	struct pci_dev *pdev = to_pci_dev(dev);
- 	struct group_for_pci_data data;
- 	struct pci_bus *bus;
- 	struct iommu_group *group = NULL;
- 	u64 devfns[4] = { 0 };
++	const struct iommu_ops *ops = dev->bus->iommu_ops;
+ 	struct iommu_group *group;
+ 	int ret;
  
-+	if (WARN_ON(!dev_is_pci(dev)))
-+		return ERR_PTR(-EINVAL);
-+
- 	/*
- 	 * Find the upstream DMA alias for the device.  A device must not
- 	 * be aliased due to topology in order to have its own IOMMU group.
-@@ -827,7 +831,7 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
- 	if (ops && ops->device_group)
- 		group = ops->device_group(dev);
- 	else if (dev_is_pci(dev))
--		group = iommu_group_get_for_pci_dev(to_pci_dev(dev));
-+		group = pci_device_group(dev);
+@@ -821,10 +822,12 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
+ 	if (group)
+ 		return group;
+ 
+-	if (!dev_is_pci(dev))
+-		return ERR_PTR(-EINVAL);
++	group = ERR_PTR(-EINVAL);
+ 
+-	group = iommu_group_get_for_pci_dev(to_pci_dev(dev));
++	if (ops && ops->device_group)
++		group = ops->device_group(dev);
++	else if (dev_is_pci(dev))
++		group = iommu_group_get_for_pci_dev(to_pci_dev(dev));
  
  	if (IS_ERR(group))
  		return group;
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 5a19952..8026e6a 100644
+index f9c1b6d..5a19952 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -316,6 +316,9 @@ static inline size_t iommu_map_sg(struct iommu_domain *domain,
- 	return domain->ops->map_sg(domain, iova, sg, nents, prot);
- }
- 
-+/* PCI device grouping function */
-+extern struct iommu_group *pci_device_group(struct device *dev);
-+
- #else /* CONFIG_IOMMU_API */
- 
- struct iommu_ops {};
+@@ -167,7 +167,7 @@ struct iommu_ops {
+ 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
+ 	int (*add_device)(struct device *dev);
+ 	void (*remove_device)(struct device *dev);
+-	int (*device_group)(struct device *dev, unsigned int *groupid);
++	struct iommu_group *(*device_group)(struct device *dev);
+ 	int (*domain_get_attr)(struct iommu_domain *domain,
+ 			       enum iommu_attr attr, void *data);
+ 	int (*domain_set_attr)(struct iommu_domain *domain,
 -- 
 1.9.1
