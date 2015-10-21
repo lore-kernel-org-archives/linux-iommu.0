@@ -1,181 +1,202 @@
-From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: [GIT PULL] Minor intel-iommu fix for 4.3
-Date: Wed, 21 Oct 2015 11:27:09 +0100
-Message-ID: <1445423229.4486.121.camel@infradead.org>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v4 3/6] iommu: add ARM short descriptor page table
+ allocator.
+Date: Wed, 21 Oct 2015 18:34:08 +0800
+Message-ID: <1445423648.27202.52.camel@mhfsdcap03>
+References: <1438597279-2937-1-git-send-email-yong.wu@mediatek.com>
+	 <1438597279-2937-4-git-send-email-yong.wu@mediatek.com>
+	 <20150916155824.GM28771@arm.com> <1442501662.8145.151.camel@mhfsdcap03>
+	 <1442931167.17514.39.camel@mhfsdcap03> <20151009155750.GS26278@arm.com>
+	 <5617FC5F.60505@arm.com> <20151009181929.GU26278@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============6945531037558181567=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20151009181929.GU26278-5wv7dgnIgG8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org" <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, "frederic.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <frederic.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Daniel
 List-Id: iommu@lists.linux-foundation.org
 
+On Fri, 2015-10-09 at 19:19 +0100, Will Deacon wrote:
+> On Fri, Oct 09, 2015 at 06:41:51PM +0100, Robin Murphy wrote:
+> > On 09/10/15 16:57, Will Deacon wrote:
+> > >On Tue, Sep 22, 2015 at 03:12:47PM +0100, Yong Wu wrote:
+> > >>      I would like to show you a problem I met, The recursion here may
+> > >>lead to stack overflow while we test FHD video decode.
+> > >>
+> > >>     From the log, I get the internal variable in the error case: the
+> > >>"size" is 0x100000, the "iova" is 0xfea00000, but at that time the
+> > >>"blk_size" is 0x1000 as it was the map of small-page. so it enter the
+> > >>recursion here.
+> > >>
+> > >>     After check the unmap flow, there is only a iommu_unmap in
+> > >>__iommu_dma_unmap, and it won't check the physical address align in
+> > >>iommu_unmap.
+> > >
+> > >That sounds like a bug in __iommu_dma_unmap. Robin?
+> > 
+> > Isn't it just cf27ec930be9 again wearing different trousers? All I do is
+> > call iommu_unmap with the same total size that was mapped originally.
+> 
+> I don't think it's the same as that issue, which was to do with installing
+> block mappings over the top of an existing table entry. The problem here
+> seems to be that we don't walk the page table properly on unmap.
+> 
+> The long descriptor code has:
+> 
+> 	/* If the size matches this level, we're in the right place */
+> 	if (size == blk_size) {
+> 		__arm_lpae_set_pte(ptep, 0, &data->iop.cfg);
+> 
+> 		if (!iopte_leaf(pte, lvl)) {
+> 			/* Also flush any partial walks */
+> 			tlb->tlb_add_flush(iova, size, false, cookie);
+> 			tlb->tlb_sync(cookie);
+> 			ptep = iopte_deref(pte, data);
+> 			__arm_lpae_free_pgtable(data, lvl + 1, ptep);
+> 		} else {
+> 			tlb->tlb_add_flush(iova, size, true, cookie);
+> 		}
+> 
+> 		return size;
+> 	} else if (iopte_leaf(pte, lvl)) {
+> 		/*
+> 		 * Insert a table at the next level to map the old region,
+> 		 * minus the part we want to unmap
+> 		 */
+> 		return arm_lpae_split_blk_unmap(data, iova, size,
+> 						iopte_prot(pte), lvl, ptep,
+> 						blk_size);
+> 	}
+> 
+> why doesn't something similar work for short descriptors?
+> 
+> Will
 
---===============6945531037558181567==
-Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-NnscLh92TqklxQs/mLWQ"
+Hi Will,
+
+   There are some different between long and short descriptor, I can not
+use it directly.
+
+1. Long descriptor control the blk_size with 3 levels easily whose 
+lvl1 is 4KB, lvl2 is 2MB and lvl3 is 1GB in stage 1. It have 3 levels
+pagetable, then it use 3 levels block_size here. It is ok.
+
+But I don't use the "level" in short descriptor. At the beginning of
+designing short, I planned to use 4 levels whose lvl1 is 4KB, lvl2 is
+64KB, lvl3 is 1MB, lvl4 is 16MB in short descriptor. then the code may
+be more similar with long descriptor. But there is only 2 levels
+pagetable in short. if we use 4 levels here, It may lead to
+misunderstand. so I don't use the "level" and list the four case in map
+and unmap.
+(If you think short-descriptor could use 4 level like above, I can try
+it.)
+
+2. Following the unmap in long, if it's not a leaf, we free the
+pagetable, then we can delete do-while. I have tested this:
+ 
+//===========================
+static int arm_short_unmap(struct io_pgtable_ops *ops,
+			   unsigned long iova,
+			   size_t size)
+{
+	struct arm_short_io_pgtable *data = io_pgtable_ops_to_data(ops);
+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+	void *cookie = data->iop.cookie;
+	arm_short_iopte *pgd, *pte = NULL;
+	arm_short_iopte pgd_tmp, pte_tmp = 0;
+	unsigned int blk_size = 0, blk_base;
+	bool empty = false, split = false;
+	int i;
+
+	blk_size = arm_short_iova_to_blk_size(ops, iova);
+	if (WARN_ON(!blk_size))
+		return 0;
+
+	blk_base = iova & ~(blk_size - 1);
+	pgd = (arm_short_iopte *)data->pgd + ARM_SHORT_PGD_IDX(blk_base);
+
+	if (size == SZ_1M || size == SZ_16M) {/* section or supersection */
+		for (i = 0; i < size/SZ_1M; i++, pgd++, blk_base += SZ_1M) {
+			pgd_tmp = *pgd;
+			__arm_short_set_pte(pgd, 0, 1, cfg);
+
+			cfg->tlb->tlb_add_flush(blk_base, SZ_1M, true, cookie);
+			cfg->tlb->tlb_sync(cookie);
+
+			/* Lvl2 pgtable should be freed while current is pgtable */
+			if (ARM_SHORT_PGD_TYPE_IS_PGTABLE(pgd_tmp))
+				__arm_short_free_pgtable(
+					ARM_SHORT_GET_PGTABLE_VA(pgd_tmp),
+					ARM_SHORT_BYTES_PER_PTE, false, cfg);
+
+			/* Split is needed while unmap 1M in supersection */
+			if (size == SZ_1M && blk_size == SZ_16M)
+				split = true;
+		}
+	} else if (size == SZ_4K || size == SZ_64K) {/* page or large page */
+		pgd_tmp = *pgd;
+
+		/* Unmap the current node */
+		if (blk_size == SZ_4K || blk_size == SZ_64K) {
+			pte = arm_short_get_pte_in_pgd(*pgd, blk_base);
+			pte_tmp = *pte;
+			__arm_short_set_pte(
+				pte, 0, max_t(size_t, size, blk_size) / SZ_4K, cfg);
+
+			empty = __arm_short_pgtable_empty(pgd);
+			if (empty)
+				__arm_short_set_pte(pgd, 0, 1, cfg);
+		} else if (blk_size == SZ_1M || blk_size == SZ_16M) {
+			__arm_short_set_pte(pgd, 0, blk_size / SZ_1M, cfg);
+		}
+
+		cfg->tlb->tlb_add_flush(blk_size, size, true, cookie);
+		cfg->tlb->tlb_sync(cookie);
+
+		if (empty)/* Free lvl2 pgtable */
+			__arm_short_free_pgtable(
+					ARM_SHORT_GET_PGTABLE_VA(pgd_tmp),
+					ARM_SHORT_BYTES_PER_PTE, false, cfg);
+
+		if (blk_size > size)
+			split = true;
+
+	} else {
+		return 0;/* Unmapped size */
+	}
+
+	if (split)/* Split while blk_size > size */
+		return arm_short_split_blk_unmap(
+				ops, iova, size, blk_size,
+				ARM_SHORT_PGD_GET_PROT(pgd_tmp),
+				ARM_SHORT_PTE_GET_PROT_LARGE(pte_tmp));
+
+	return size;
+}
+//===========================
+This look also not good. The do-while in our v5 maybe better than this
+one. what's your opinion?
+
+3. (Also add Joerg)There is a line in iommu_map:
+size_t pgsize = iommu_pgsize(domain, iova | paddr, size);
+
+   And there is a line in iommu_unmap:
+size_t pgsize = iommu_pgsize(domain, iova, size - unmapped);
+
+   Is it possible to change like this:
+phys_addr_t paddr = domain->ops->iova_to_phys(domain, iova);
+size_t pgsize = iommu_pgsize(domain, iova | paddr, size - unmapped);
+
+   If we add physical address align check in iommu_unmap, then it may be
+simpler in the unmap flow.
+   I think iommu_map&iommu_unmap both should be atmoic map/unmap,
+iommu_map check the physical address, Why iommu_unmap don't check the
+physical address?
 
 
---=-NnscLh92TqklxQs/mLWQ
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-Linus, please pull from
-	git://git.infradead.org/intel-iommu.git for-linus-20151021
-
-This contains a single fix, for when the IOMMU API is used to overlay
-an existing mapping comprised of 4KiB pages, with a mapping that can
-use superpages.
-
-For the *first* superpage in the new mapping, we were correctly=C2=B9
-freeing the old bottom-level page table page and clearing the link to
-it, before installing the superpage. For subsequent superpages,
-however, we weren't. This causes a memory leak, and a warning about
-setting a PTE which is already set.
-
-=C2=B9 Well, not *entirely* correctly. We just free the page table pages
-right there and then, which is wrong. In fact they should only be freed
-*after* the IOTLB is flushed so we know the hardware will no longer be
-looking at them.... and in fact I note that the IOTLB flush is
-completely missing from the intel_iommu_map() code path, although it
-needs to be there if it's permitted to overwrite existing mappings.
-Fixing those is somewhat more intrusive though, and will probably need
-to wait for 4.4 at this point.
-
-Christian Zander (1):
-      iommu/vt-d: fix range computation when making room for large pages
-
- drivers/iommu/intel-iommu.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
-
---=20
-David Woodhouse                            Open Source Technology Centre
-David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
-
-
---=-NnscLh92TqklxQs/mLWQ
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIISjjCCBicw
-ggUPoAMCAQICAw3vNzANBgkqhkiG9w0BAQUFADCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
-YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
-ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
-MB4XDTE1MDUwNTA5NDM0MVoXDTE2MDUwNTA5NTMzNlowQjEcMBoGA1UEAwwTZHdtdzJAaW5mcmFk
-ZWFkLm9yZzEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
-AQEBBQADggEPADCCAQoCggEBAMkbm9kPbx1j/X4RVyf/pPKSYwelcco69TvnQQbKM8m8xkWjXJI1
-jpJ1jMaGUZGFToINMSZi7lZawUozudWbXSKy1SikENSTJHffsdRAIlsp+hR8vWvjsKUry6sEdqPG
-doa5RY7+N4WRusWZDYW/RRWE6i9EL9qV86CVPYqw22UBOUw4/j/HVGCV6TSB8yE5iEwhk/hUuzRr
-FZm1MJMR7mCS7BCR8Lr5jFY61lWpBiXNXIxLZCvDc26KR5L5tYX43iUVO3fzES1GRVoYnxxk2tmz
-fcsZG5vK+Trc9L8OZJfkYrEHH3+Iw41MQ0w/djVtYr1+HYldx0QmYXAtnhIj+UMCAwEAAaOCAtkw
-ggLVMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgSwMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcD
-BDAdBgNVHQ4EFgQUszC96C3w5/2+d+atSr0IpT26YI4wHwYDVR0jBBgwFoAUU3Ltkpzg2ssBXHx+
-ljVO8tS4UYIwHgYDVR0RBBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzCCAUwGA1UdIASCAUMwggE/
-MIIBOwYLKwYBBAGBtTcBAgMwggEqMC4GCCsGAQUFBwIBFiJodHRwOi8vd3d3LnN0YXJ0c3NsLmNv
-bS9wb2xpY3kucGRmMIH3BggrBgEFBQcCAjCB6jAnFiBTdGFydENvbSBDZXJ0aWZpY2F0aW9uIEF1
-dGhvcml0eTADAgEBGoG+VGhpcyBjZXJ0aWZpY2F0ZSB3YXMgaXNzdWVkIGFjY29yZGluZyB0byB0
-aGUgQ2xhc3MgMSBWYWxpZGF0aW9uIHJlcXVpcmVtZW50cyBvZiB0aGUgU3RhcnRDb20gQ0EgcG9s
-aWN5LCByZWxpYW5jZSBvbmx5IGZvciB0aGUgaW50ZW5kZWQgcHVycG9zZSBpbiBjb21wbGlhbmNl
-IG9mIHRoZSByZWx5aW5nIHBhcnR5IG9ibGlnYXRpb25zLjA2BgNVHR8ELzAtMCugKaAnhiVodHRw
-Oi8vY3JsLnN0YXJ0c3NsLmNvbS9jcnR1MS1jcmwuY3JsMIGOBggrBgEFBQcBAQSBgTB/MDkGCCsG
-AQUFBzABhi1odHRwOi8vb2NzcC5zdGFydHNzbC5jb20vc3ViL2NsYXNzMS9jbGllbnQvY2EwQgYI
-KwYBBQUHMAKGNmh0dHA6Ly9haWEuc3RhcnRzc2wuY29tL2NlcnRzL3N1Yi5jbGFzczEuY2xpZW50
-LmNhLmNydDAjBgNVHRIEHDAahhhodHRwOi8vd3d3LnN0YXJ0c3NsLmNvbS8wDQYJKoZIhvcNAQEF
-BQADggEBAHMQmxHHodpS85X8HRyxhvfkys7r+taCNOaNU9cxQu/cZ/6k5nS2qGNMzZ6jb7ueY/V7
-7p+4DW/9ZWODDTf4Fz00mh5SSVc20Bz7t+hhxwHd62PZgENh5i76Qq2tw48U8AsYo5damHby1epf
-neZafLpUkLLO7AGBJIiRVTevdvyXQ0qnixOmKMWyvrhSNGuVIKVdeqLP+102Dwf+dpFyw+j1hz28
-jEEKpHa+NR1b2kXuSPi/rMGhexwlJOh4tK8KQ6Ryr0rIN//NSbOgbyYZrzc/ZUWX9V5OA84ChFb2
-vkFl0OcYrttp/rhDBLITwffPxSZeoBh9H7zYzkbCXKL3BUIwggYnMIIFD6ADAgECAgMN7zcwDQYJ
-KoZIhvcNAQEFBQAwgYwxCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSswKQYD
-VQQLEyJTZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFydENv
-bSBDbGFzcyAxIFByaW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQTAeFw0xNTA1MDUwOTQzNDFa
-Fw0xNjA1MDUwOTUzMzZaMEIxHDAaBgNVBAMME2R3bXcyQGluZnJhZGVhZC5vcmcxIjAgBgkqhkiG
-9w0BCQEWE2R3bXcyQGluZnJhZGVhZC5vcmcwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
-AQDJG5vZD28dY/1+EVcn/6TykmMHpXHKOvU750EGyjPJvMZFo1ySNY6SdYzGhlGRhU6CDTEmYu5W
-WsFKM7nVm10istUopBDUkyR337HUQCJbKfoUfL1r47ClK8urBHajxnaGuUWO/jeFkbrFmQ2Fv0UV
-hOovRC/alfOglT2KsNtlATlMOP4/x1Rglek0gfMhOYhMIZP4VLs0axWZtTCTEe5gkuwQkfC6+YxW
-OtZVqQYlzVyMS2Qrw3NuikeS+bWF+N4lFTt38xEtRkVaGJ8cZNrZs33LGRubyvk63PS/DmSX5GKx
-Bx9/iMONTENMP3Y1bWK9fh2JXcdEJmFwLZ4SI/lDAgMBAAGjggLZMIIC1TAJBgNVHRMEAjAAMAsG
-A1UdDwQEAwIEsDAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwQwHQYDVR0OBBYEFLMwvegt
-8Of9vnfmrUq9CKU9umCOMB8GA1UdIwQYMBaAFFNy7ZKc4NrLAVx8fpY1TvLUuFGCMB4GA1UdEQQX
-MBWBE2R3bXcyQGluZnJhZGVhZC5vcmcwggFMBgNVHSAEggFDMIIBPzCCATsGCysGAQQBgbU3AQID
-MIIBKjAuBggrBgEFBQcCARYiaHR0cDovL3d3dy5zdGFydHNzbC5jb20vcG9saWN5LnBkZjCB9wYI
-KwYBBQUHAgIwgeowJxYgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkwAwIBARqBvlRo
-aXMgY2VydGlmaWNhdGUgd2FzIGlzc3VlZCBhY2NvcmRpbmcgdG8gdGhlIENsYXNzIDEgVmFsaWRh
-dGlvbiByZXF1aXJlbWVudHMgb2YgdGhlIFN0YXJ0Q29tIENBIHBvbGljeSwgcmVsaWFuY2Ugb25s
-eSBmb3IgdGhlIGludGVuZGVkIHB1cnBvc2UgaW4gY29tcGxpYW5jZSBvZiB0aGUgcmVseWluZyBw
-YXJ0eSBvYmxpZ2F0aW9ucy4wNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5zdGFydHNzbC5j
-b20vY3J0dTEtY3JsLmNybDCBjgYIKwYBBQUHAQEEgYEwfzA5BggrBgEFBQcwAYYtaHR0cDovL29j
-c3Auc3RhcnRzc2wuY29tL3N1Yi9jbGFzczEvY2xpZW50L2NhMEIGCCsGAQUFBzAChjZodHRwOi8v
-YWlhLnN0YXJ0c3NsLmNvbS9jZXJ0cy9zdWIuY2xhc3MxLmNsaWVudC5jYS5jcnQwIwYDVR0SBBww
-GoYYaHR0cDovL3d3dy5zdGFydHNzbC5jb20vMA0GCSqGSIb3DQEBBQUAA4IBAQBzEJsRx6HaUvOV
-/B0csYb35MrO6/rWgjTmjVPXMULv3Gf+pOZ0tqhjTM2eo2+7nmP1e+6fuA1v/WVjgw03+Bc9NJoe
-UklXNtAc+7foYccB3etj2YBDYeYu+kKtrcOPFPALGKOXWph28tXqX53mWny6VJCyzuwBgSSIkVU3
-r3b8l0NKp4sTpijFsr64UjRrlSClXXqiz/tdNg8H/naRcsPo9Yc9vIxBCqR2vjUdW9pF7kj4v6zB
-oXscJSToeLSvCkOkcq9KyDf/zUmzoG8mGa83P2VFl/VeTgPOAoRW9r5BZdDnGK7baf64QwSyE8H3
-z8UmXqAYfR+82M5Gwlyi9wVCMIIGNDCCBBygAwIBAgIBHjANBgkqhkiG9w0BAQUFADB9MQswCQYD
-VQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwg
-Q2VydGlmaWNhdGUgU2lnbmluZzEpMCcGA1UEAxMgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRo
-b3JpdHkwHhcNMDcxMDI0MjEwMTU1WhcNMTcxMDI0MjEwMTU1WjCBjDELMAkGA1UEBhMCSUwxFjAU
-BgNVBAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRl
-IFNpZ25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUg
-Q2xpZW50IENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxwmDzM4t2BqxKaQuE6uW
-vooyg4ymiEGWVUet1G8SD+rqvyNH4QrvnEIaFHxOhESip7vMz39ScLpNLbL1QpOlPW/tFIzNHS3q
-d2XRNYG5Sv9RcGE+T4qbLtsjjJbi6sL7Ls/f/X9ftTyhxvxWkf8KW37iKrueKsxw2HqolH7GM6FX
-5UfNAwAu4ZifkpmZzU1slBhyWwaQPEPPZRsWoTb7q8hmgv6Nv3Hg9rmA1/VPBIOQ6SKRkHXG0Hhm
-q1dOFoAFI411+a/9nWm5rcVjGcIWZ2v/43Yksq60jExipA4l5uv9/+Hm33mbgmCszdj/Dthf13tg
-Av2O83hLJ0exTqfrlwIDAQABo4IBrTCCAakwDwYDVR0TAQH/BAUwAwEB/zAOBgNVHQ8BAf8EBAMC
-AQYwHQYDVR0OBBYEFFNy7ZKc4NrLAVx8fpY1TvLUuFGCMB8GA1UdIwQYMBaAFE4L7xqkQFulF2mH
-MMo0aEPQQa7yMGYGCCsGAQUFBwEBBFowWDAnBggrBgEFBQcwAYYbaHR0cDovL29jc3Auc3RhcnRz
-c2wuY29tL2NhMC0GCCsGAQUFBzAChiFodHRwOi8vd3d3LnN0YXJ0c3NsLmNvbS9zZnNjYS5jcnQw
-WwYDVR0fBFQwUjAnoCWgI4YhaHR0cDovL3d3dy5zdGFydHNzbC5jb20vc2ZzY2EuY3JsMCegJaAj
-hiFodHRwOi8vY3JsLnN0YXJ0c3NsLmNvbS9zZnNjYS5jcmwwgYAGA1UdIAR5MHcwdQYLKwYBBAGB
-tTcBAgEwZjAuBggrBgEFBQcCARYiaHR0cDovL3d3dy5zdGFydHNzbC5jb20vcG9saWN5LnBkZjA0
-BggrBgEFBQcCARYoaHR0cDovL3d3dy5zdGFydHNzbC5jb20vaW50ZXJtZWRpYXRlLnBkZjANBgkq
-hkiG9w0BAQUFAAOCAgEACoMIfXirLAZcuGOMXq4cuSN3TaFx2H2GvD5VSy/6rV55BYHbWNaPeQn3
-oBSU8KgQZn/Kck1JxbLpAxVCNtsxeW1R87ifhsYZ0qjdrA9anrW2MAWCtosmAOT4OxK9QPoSjCMx
-M3HbkZCDJgnlE8jMopH21BbyAYr7b5EfGRQJNtgWcvqSXwKHnTutR08+Kkn0KAkXCzeQNLeA5LlY
-UzFyM7kPAp8pIRMQ+seHunmyG642S2+y/qHEdMuGIwpfz3eDF1PdctL04qYK/zu+Qg1Bw0RwgigV
-Zs/0c5HP2/e9DBHh7eSwtzYlk4AUr6yxLlcwSjOfOmKEQ/Q8tzh0IFiNu9IPuTGAPBn4CPxD0+Ru
-8T2wg8/s43R/PT3kd1OEqOJUl7q+h+r6fpvU0Fzxd2tC8Ga6fDEPme+1Nbi+03pVjuZQKbGwKJ66
-gEn06WqaxVZC+J8hh/jR0k9mST1iAZPNYulcNJ8tKmVtjYsv0L1TSm2+NwON58tO+pIVzu3DWwSE
-XSf+qkDavQam+QtEOZxLBXI++aMUEapSn+k3Lxm48ZCYfAWLb/Xj7F5JQMbZvCexglAbYR0kIHqW
-5DnsYSdMD/IplJMojx0NBrxJ3fN9dvX2Y6BIXRsF1du4qESm4/3CKuyUV7p9DW3mPlHTGLvYxnyK
-Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
-YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
-ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
-AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUxMDIxMTAyNzA5WjAjBgkqhkiG9w0BCQQxFgQUutuD3rWYB94Yp89pyHLW9JUFeXAw
-gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
-ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
-L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
-CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
-LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
-U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQA0IGBgqLKJiLGjBZscSeXLSaLqDuI9R4dpGdV4FC49ZqIjCSGzTm/UphHF
-K+zJj1ctkLlMPxna+1UNuPwmGhA6WwhXwaQBAFcJC/7GDEdxWCkXeBrKnER3ntB00Z1SclzyJWgz
-qabunBoFFMJOIRCZ6Gjd1/O9JNGVNzO5UlpbV3kr34+UUodaZrXvCl31Md/MznjmHJBMTzvyL+y1
-jBGs9oFskramtg+Lj13TV7PP2KUsqETuU8aK2AV7Mmel66dAhBkOpWSvbTpnCNC3ogvxtuGynMUk
-s/C4szf7wrvA+7NzeAI6XdVal3e893Z+RydwflEnlArWBpYp+AzVzyVMAAAAAAAA
-
-
---=-NnscLh92TqklxQs/mLWQ--
-
-
---===============6945531037558181567==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============6945531037558181567==--
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
