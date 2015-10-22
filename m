@@ -1,14 +1,12 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v5 0/6] MT8173 IOMMU SUPPORT
-Date: Thu, 22 Oct 2015 12:40:02 +0800
-Message-ID: <1445488802.27202.67.camel@mhfsdcap03>
-References: <1444357388-30257-1-git-send-email-yong.wu@mediatek.com>
-	<20151014125620.GQ27420@8bytes.org>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [Patch v2] iommu/vt-d: Adjsut the return value of the
+	parse_ioapics_under_ir
+Date: Thu, 22 Oct 2015 14:00:51 +0800
+Message-ID: <1445493651-3398-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20151014125620.GQ27420-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,47 +16,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2015-10-14 at 14:56 +0200, Joerg Roedel wrote:
-> On Fri, Oct 09, 2015 at 10:23:02AM +0800, Yong Wu wrote:
-> > Yong Wu (6):
-> >   dt-bindings: iommu: Add binding for mediatek IOMMU
-> >   dt-bindings: mediatek: Add smi dts binding
-> >   iommu: add ARM short descriptor page table allocator
-> >   memory: mediatek: Add SMI driver
-> >   iommu/mediatek: Add mt8173 IOMMU driver
-> >   dts: mt8173: Add iommu/smi nodes for mt8173
-> > 
-> >  .../devicetree/bindings/iommu/mediatek,iommu.txt   |  61 ++
-> >  .../memory-controllers/mediatek,smi-larb.txt       |  25 +
-> >  .../bindings/memory-controllers/mediatek,smi.txt   |  24 +
-> >  arch/arm64/boot/dts/mediatek/mt8173.dtsi           |  81 ++
-> >  drivers/iommu/Kconfig                              |  33 +
-> >  drivers/iommu/Makefile                             |   2 +
-> >  drivers/iommu/io-pgtable-arm-short.c               | 827 +++++++++++++++++++++
-> >  drivers/iommu/io-pgtable-arm.c                     |   3 -
-> >  drivers/iommu/io-pgtable.c                         |   3 +
-> >  drivers/iommu/io-pgtable.h                         |  18 +-
-> >  drivers/iommu/mtk_iommu.c                          | 767 +++++++++++++++++++
-> >  drivers/memory/Kconfig                             |   8 +
-> >  drivers/memory/Makefile                            |   1 +
-> >  drivers/memory/mtk-smi.c                           | 274 +++++++
-> >  include/dt-bindings/memory/mt8173-larb-port.h      | 105 +++
-> >  include/soc/mediatek/smi.h                         |  60 ++
-> 
-> So this contains not only IOMMU code. Are the patches dependent on each
-> other or can the iommu parts be merged independently?
-> 
-> 	Joerg
-> 
-Hi Joerg,
-     Sorry for reply late.
-     The ARM short descriptor is independent. This one can be merged
-independently.
+Adjust the return value of parse_ioapics_under_ir as negative value representing
+failure and "0" representing succcess. Just make it consistent with other
+function implementation, and we can judge if calling is successfull by
+if (!parse_ioapics_under_ir()) style.
 
-     But the mtk-iommu depend on the drivers/memory/mtk-smi.c(mtk-iommu
-has called a function of the mtk-smi).
-     So if there is dependence here, How should we do to merge them?
+Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
+v1->v2:
+    Drop the patch 2/1 of v1 patchset since it's a wrong patch.
+    Joerg suggested that replace "-1" with "-ENODEV" which is more specific.
+
+ drivers/iommu/intel_irq_remapping.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 9ec4e0d..12b11be 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -672,7 +672,7 @@ static int __init intel_prepare_irq_remapping(void)
+ 	if (!dmar_ir_support())
+ 		return -ENODEV;
+ 
+-	if (parse_ioapics_under_ir() != 1) {
++	if (!parse_ioapics_under_ir()) {
+ 		pr_info("Not enabling interrupt remapping\n");
+ 		goto error;
+ 	}
+@@ -916,7 +916,7 @@ static int __init parse_ioapics_under_ir(void)
+ 		}
+ 
+ 	if (!ir_supported)
+-		return 0;
++		return -ENODEV;
+ 
+ 	for (ioapic_idx = 0; ioapic_idx < nr_ioapics; ioapic_idx++) {
+ 		int ioapic_id = mpc_ioapic_id(ioapic_idx);
+@@ -928,7 +928,7 @@ static int __init parse_ioapics_under_ir(void)
+ 		}
+ 	}
+ 
+-	return 1;
++	return 0;
+ }
+ 
+ static int __init ir_dev_scope_init(void)
+-- 
+2.1.0
