@@ -1,12 +1,13 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [Patch v2] iommu/vt-d: Adjsut the return value of the
-	parse_ioapics_under_ir
-Date: Thu, 22 Oct 2015 14:00:51 +0800
-Message-ID: <1445493651-3398-1-git-send-email-bhe@redhat.com>
+From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH 0/4] Cleanup legacy OMAP IOMMU device creation
+Date: Thu, 22 Oct 2015 12:15:55 -0500
+Message-ID: <562919CB.1000606@ti.com>
+References: <1442447302-5246-1-git-send-email-s-anna@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1442447302-5246-1-git-send-email-s-anna-l0cyMroinI0@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,54 +17,55 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+Cc: Paul Walmsley <paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org>, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Adjust the return value of parse_ioapics_under_ir as negative value representing
-failure and "0" representing succcess. Just make it consistent with other
-function implementation, and we can judge if calling is successfull by
-if (!parse_ioapics_under_ir()) style.
+Hi Tony,
 
-Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
-v1->v2:
-    Drop the patch 2/1 of v1 patchset since it's a wrong patch.
-    Joerg suggested that replace "-1" with "-ENODEV" which is more specific.
+On 09/16/2015 06:48 PM, Suman Anna wrote:
+> Hi Tony,
+> 
+> The following series removes the legacy platform device creation
+> logic for OMAP IOMMU devices. I will cleanup the legacy support
+> from the OMAP IOMMU driver in a subsequent merge window after
+> this series makes it to mainline.
+> 
+> Patches are based on 4.3-rc1 + the OMAP3 ISP instantiation cleanup
+> patch [1]. All the patches need to be picked up sequentially,
+> otherwise a NULL pointer dereference crash might be seen on OMAP3
+> legacy boots as the dev attribute structure is deferenced directly
+> in mach-omap2/omap-iommu.c during platform data creation. Also, the
+> last patch removes the structure definition altogether, so will
+> cause build issues if picked separately from the hwmod cleanup
+> patches.
+> 
+> I do not have any boards where I can still perform a legacy-style
+> boot, so patches verified using DT-boot only.
+> 
+> regards
+> Suman
+> 
+> [1] https://patchwork.kernel.org/patch/6806891/
+> 
+> Suman Anna (4):
+>   ARM: OMAP2+: Remove legacy device instantiation of IOMMUs
+>   ARM: OMAP3: hwmod data: Remove legacy IOMMU data
+>   ARM: OMAP4: hwmod data: Remove legacy IOMMU attr and addrs
+>   ARM: OMAP2+: Remove omap_mmu_dev_attr structure
 
- drivers/iommu/intel_irq_remapping.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Ping on this series. You should be able to pick up atleast patch 1 if
+not picking all, now that the OMAP3 ISP cleanup patch is staged in your
+omap-for-4.4/cleanup branch.
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 9ec4e0d..12b11be 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -672,7 +672,7 @@ static int __init intel_prepare_irq_remapping(void)
- 	if (!dmar_ir_support())
- 		return -ENODEV;
- 
--	if (parse_ioapics_under_ir() != 1) {
-+	if (!parse_ioapics_under_ir()) {
- 		pr_info("Not enabling interrupt remapping\n");
- 		goto error;
- 	}
-@@ -916,7 +916,7 @@ static int __init parse_ioapics_under_ir(void)
- 		}
- 
- 	if (!ir_supported)
--		return 0;
-+		return -ENODEV;
- 
- 	for (ioapic_idx = 0; ioapic_idx < nr_ioapics; ioapic_idx++) {
- 		int ioapic_id = mpc_ioapic_id(ioapic_idx);
-@@ -928,7 +928,7 @@ static int __init parse_ioapics_under_ir(void)
- 		}
- 	}
- 
--	return 1;
-+	return 0;
- }
- 
- static int __init ir_dev_scope_init(void)
--- 
-2.1.0
+Thanks
+Suman
+
+> 
+>  arch/arm/mach-omap2/omap-iommu.c           | 66 ------------------------------
+>  arch/arm/mach-omap2/omap_hwmod_3xxx_data.c | 42 -------------------
+>  arch/arm/mach-omap2/omap_hwmod_44xx_data.c | 31 --------------
+>  include/linux/platform_data/iommu-omap.h   |  9 ----
+>  4 files changed, 148 deletions(-)
+>  delete mode 100644 arch/arm/mach-omap2/omap-iommu.c
+> 
