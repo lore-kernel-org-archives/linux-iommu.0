@@ -1,13 +1,14 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 6/8] iommu/arm-smmu: Switch to device_group call-back
-Date: Wed, 21 Oct 2015 23:51:41 +0200
-Message-ID: <1445464303-18206-7-git-send-email-joro@8bytes.org>
-References: <1445464303-18206-1-git-send-email-joro@8bytes.org>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v5 0/6] MT8173 IOMMU SUPPORT
+Date: Thu, 22 Oct 2015 12:40:02 +0800
+Message-ID: <1445488802.27202.67.camel@mhfsdcap03>
+References: <1444357388-30257-1-git-send-email-yong.wu@mediatek.com>
+	<20151014125620.GQ27420@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1445464303-18206-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20151014125620.GQ27420-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,170 +18,47 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+On Wed, 2015-10-14 at 14:56 +0200, Joerg Roedel wrote:
+> On Fri, Oct 09, 2015 at 10:23:02AM +0800, Yong Wu wrote:
+> > Yong Wu (6):
+> >   dt-bindings: iommu: Add binding for mediatek IOMMU
+> >   dt-bindings: mediatek: Add smi dts binding
+> >   iommu: add ARM short descriptor page table allocator
+> >   memory: mediatek: Add SMI driver
+> >   iommu/mediatek: Add mt8173 IOMMU driver
+> >   dts: mt8173: Add iommu/smi nodes for mt8173
+> > 
+> >  .../devicetree/bindings/iommu/mediatek,iommu.txt   |  61 ++
+> >  .../memory-controllers/mediatek,smi-larb.txt       |  25 +
+> >  .../bindings/memory-controllers/mediatek,smi.txt   |  24 +
+> >  arch/arm64/boot/dts/mediatek/mt8173.dtsi           |  81 ++
+> >  drivers/iommu/Kconfig                              |  33 +
+> >  drivers/iommu/Makefile                             |   2 +
+> >  drivers/iommu/io-pgtable-arm-short.c               | 827 +++++++++++++++++++++
+> >  drivers/iommu/io-pgtable-arm.c                     |   3 -
+> >  drivers/iommu/io-pgtable.c                         |   3 +
+> >  drivers/iommu/io-pgtable.h                         |  18 +-
+> >  drivers/iommu/mtk_iommu.c                          | 767 +++++++++++++++++++
+> >  drivers/memory/Kconfig                             |   8 +
+> >  drivers/memory/Makefile                            |   1 +
+> >  drivers/memory/mtk-smi.c                           | 274 +++++++
+> >  include/dt-bindings/memory/mt8173-larb-port.h      | 105 +++
+> >  include/soc/mediatek/smi.h                         |  60 ++
+> 
+> So this contains not only IOMMU code. Are the patches dependent on each
+> other or can the iommu parts be merged independently?
+> 
+> 	Joerg
+> 
+Hi Joerg,
+     Sorry for reply late.
+     The ARM short descriptor is independent. This one can be merged
+independently.
 
-This converts the ARM SMMU and the SMMUv3 driver to use the
-new device_group call-back.
-
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c |  1 +
- drivers/iommu/arm-smmu.c    | 77 +++++++++++++++++++++++++++------------------
- 2 files changed, 47 insertions(+), 31 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 286e890..e9e591c 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1902,6 +1902,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.iova_to_phys		= arm_smmu_iova_to_phys,
- 	.add_device		= arm_smmu_add_device,
- 	.remove_device		= arm_smmu_remove_device,
-+	.device_group		= pci_device_group,
- 	.domain_get_attr	= arm_smmu_domain_get_attr,
- 	.domain_set_attr	= arm_smmu_domain_set_attr,
- 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 48a39df..b4c0629 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1292,33 +1292,25 @@ static void __arm_smmu_release_pci_iommudata(void *data)
- 	kfree(data);
- }
- 
--static int arm_smmu_add_pci_device(struct pci_dev *pdev)
-+static int arm_smmu_init_pci_device(struct pci_dev *pdev,
-+				    struct iommu_group *group)
- {
--	int i, ret;
--	u16 sid;
--	struct iommu_group *group;
- 	struct arm_smmu_master_cfg *cfg;
--
--	group = iommu_group_get_for_dev(&pdev->dev);
--	if (IS_ERR(group))
--		return PTR_ERR(group);
-+	u16 sid;
-+	int i;
- 
- 	cfg = iommu_group_get_iommudata(group);
- 	if (!cfg) {
- 		cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
--		if (!cfg) {
--			ret = -ENOMEM;
--			goto out_put_group;
--		}
-+		if (!cfg)
-+			return -ENOMEM;
- 
- 		iommu_group_set_iommudata(group, cfg,
- 					  __arm_smmu_release_pci_iommudata);
- 	}
- 
--	if (cfg->num_streamids >= MAX_MASTER_STREAMIDS) {
--		ret = -ENOSPC;
--		goto out_put_group;
--	}
-+	if (cfg->num_streamids >= MAX_MASTER_STREAMIDS)
-+		return -ENOSPC;
- 
- 	/*
- 	 * Assume Stream ID == Requester ID for now.
-@@ -1334,16 +1326,13 @@ static int arm_smmu_add_pci_device(struct pci_dev *pdev)
- 		cfg->streamids[cfg->num_streamids++] = sid;
- 
- 	return 0;
--out_put_group:
--	iommu_group_put(group);
--	return ret;
- }
- 
--static int arm_smmu_add_platform_device(struct device *dev)
-+static int arm_smmu_init_platform_device(struct device *dev,
-+					 struct iommu_group *group)
- {
--	struct iommu_group *group;
--	struct arm_smmu_master *master;
- 	struct arm_smmu_device *smmu = find_smmu_for_device(dev);
-+	struct arm_smmu_master *master;
- 
- 	if (!smmu)
- 		return -ENODEV;
-@@ -1352,21 +1341,20 @@ static int arm_smmu_add_platform_device(struct device *dev)
- 	if (!master)
- 		return -ENODEV;
- 
--	/* No automatic group creation for platform devices */
--	group = iommu_group_alloc();
--	if (IS_ERR(group))
--		return PTR_ERR(group);
--
- 	iommu_group_set_iommudata(group, &master->cfg, NULL);
--	return iommu_group_add_device(group, dev);
-+
-+	return 0;
- }
- 
- static int arm_smmu_add_device(struct device *dev)
- {
--	if (dev_is_pci(dev))
--		return arm_smmu_add_pci_device(to_pci_dev(dev));
-+	struct iommu_group *group;
- 
--	return arm_smmu_add_platform_device(dev);
-+	group = iommu_group_get_for_dev(dev);
-+	if (IS_ERR(group))
-+		return PTR_ERR(group);
-+
-+	return 0;
- }
- 
- static void arm_smmu_remove_device(struct device *dev)
-@@ -1374,6 +1362,32 @@ static void arm_smmu_remove_device(struct device *dev)
- 	iommu_group_remove_device(dev);
- }
- 
-+static struct iommu_group *arm_smmu_device_group(struct device *dev)
-+{
-+	struct iommu_group *group;
-+	int ret;
-+
-+	if (dev_is_pci(dev))
-+		group = pci_device_group(dev);
-+	else
-+		group = generic_device_group(dev);
-+
-+	if (IS_ERR(group))
-+		return group;
-+
-+	if (dev_is_pci(dev))
-+		ret = arm_smmu_init_pci_device(to_pci_dev(dev), group);
-+	else
-+		ret = arm_smmu_init_platform_device(dev, group);
-+
-+	if (ret) {
-+		iommu_group_put(group);
-+		group = ERR_PTR(ret);
-+	}
-+
-+	return group;
-+}
-+
- static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
- 				    enum iommu_attr attr, void *data)
- {
-@@ -1430,6 +1444,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.iova_to_phys		= arm_smmu_iova_to_phys,
- 	.add_device		= arm_smmu_add_device,
- 	.remove_device		= arm_smmu_remove_device,
-+	.device_group		= arm_smmu_device_group,
- 	.domain_get_attr	= arm_smmu_domain_get_attr,
- 	.domain_set_attr	= arm_smmu_domain_set_attr,
- 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
--- 
-1.9.1
+     But the mtk-iommu depend on the drivers/memory/mtk-smi.c(mtk-iommu
+has called a function of the mtk-smi).
+     So if there is dependence here, How should we do to merge them?
