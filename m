@@ -1,72 +1,61 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH] iommu/vt-d: Propagate error-value from
- ir_parse_ioapic_hpet_scope()
-Date: Fri, 23 Oct 2015 12:04:07 +0200
-Message-ID: <20151023100407.GB17032@8bytes.org>
-References: <1445493651-3398-1-git-send-email-bhe@redhat.com>
+Subject: Re: [RFC PATCH] iommu/vt-d: Add IOTLB flush support for kernel
+ addresses
+Date: Fri, 23 Oct 2015 12:20:44 +0200
+Message-ID: <20151023102043.GZ27420@8bytes.org>
+References: <1445356379.4486.56.camel@infradead.org>
+ <20151020160328.GV27420@8bytes.org>
+ <1445357824.4486.65.camel@infradead.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <owner-linux-mm@kvack.org>
 Content-Disposition: inline
-In-Reply-To: <1445493651-3398-1-git-send-email-bhe@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Baoquan He <bhe@redhat.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+In-Reply-To: <1445357824.4486.65.camel@infradead.org>
+Sender: owner-linux-mm@kvack.org
+To: David Woodhouse <dwmw2@infradead.org>
+Cc: "linux-mm@kvack.org" <linux-mm@kvack.org>, iommu@lists.linux-foundation.org, Sudeep Dutt <sudeep.dutt@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Oct 22, 2015 at 02:00:51PM +0800, Baoquan He wrote:
-> Adjust the return value of parse_ioapics_under_ir as negative value representing
-> failure and "0" representing succcess. Just make it consistent with other
-> function implementation, and we can judge if calling is successfull by
-> if (!parse_ioapics_under_ir()) style.
-> 
-> Signed-off-by: Baoquan He <bhe@redhat.com>
+On Tue, Oct 20, 2015 at 05:17:04PM +0100, David Woodhouse wrote:
+> Can we assume that only one type of SVM-capable IOMMU will be present
+> in the system at a time? Perhaps we could just register a single
+> function (intel_iommu_flush_kernel_pasid in the VT-d case) to be used
+> as a notifier callback from tlb_flush_kernel_range()? Rather than the
+> overhead of a *list* of notifiers?
 
-Applied thanks. I also put below patch on-top to also propate the error
-value returned from ir_parse_ioapic_hpet_scope().
+Yes, a single notifier is certainly preferable to a list. It is just
+too easy for others to attach to this list silently and adding more
+overhead to kernel TLB flushing.
 
->From 66ef950d1841487c852d68d00977726f1cd9f053 Mon Sep 17 00:00:00 2001
-From: Joerg Roedel <jroedel@suse.de>
-Date: Fri, 23 Oct 2015 11:57:13 +0200
-Subject: [PATCH] iommu/vt-d: Propagate error-value from
- ir_parse_ioapic_hpet_scope()
+> But... that's because the PASID-space is currently per-IOMMU. The plan
+> is to have a *single* PASID-space system-wide, And then I still want to
+> retain the property that there can be only *one* kernel PASID.
 
-Propagate the error-value from the function ir_parse_ioapic_hpet_scope()
-in parse_ioapics_under_ir() and cleanup its calling loop.
+That makes a lot of sense. Then we can check in the call-back simply if
+this pasid has users and bail out early when not.
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
----
- drivers/iommu/intel_irq_remapping.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+> I have forbidden the use of a given PASID to access *both* kernel and
+> user addresses. I'm hoping we can get away with putting that
+> restriction into the generic SVM APIs.
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 7843252..f3a9bd1 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -934,13 +934,18 @@ static int __init parse_ioapics_under_ir(void)
- 	bool ir_supported = false;
- 	int ioapic_idx;
- 
--	for_each_iommu(iommu, drhd)
--		if (ecap_ir_support(iommu->ecap)) {
--			if (ir_parse_ioapic_hpet_scope(drhd->hdr, iommu))
--				return -1;
-+	for_each_iommu(iommu, drhd) {
-+		int ret;
- 
--			ir_supported = true;
--		}
-+		if (!ecap_ir_support(iommu->ecap))
-+			continue;
-+
-+		ret = ir_parse_ioapic_hpet_scope(drhd->hdr, iommu);
-+		if (ret)
-+			return ret;
-+
-+		ir_supported = true;
-+	}
- 
- 	if (!ir_supported)
- 		return -ENODEV;
--- 
-1.8.4.5
+We have to, having kernel-pasids already nullifies all protection the
+IOMMU provides, giving kernel-access to a process-pasid is security wise
+equivalent to accessing /dev/mem.
+
+> So yeah, perhaps we can set the notifier pointer to NULL when there's
+> no kernel PASID assigned, and only set it to point to
+> ${MY_IOMMU}_flush_kernel_pasid() if/when there *is* one?
+
+That sounds like it needs some clever locking. Instead of checking the
+function pointer it is probably easier to put the check for pasid-users
+into an inline function and just do the real flush-call only when
+necessary.
+
+
+	Joerg
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
