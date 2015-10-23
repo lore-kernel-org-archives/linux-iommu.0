@@ -1,32 +1,29 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v5 0/6] MT8173 IOMMU SUPPORT
-Date: Fri, 23 Oct 2015 11:26:37 +0200
-Message-ID: <20151023092636.GX27420@8bytes.org>
-References: <1444357388-30257-1-git-send-email-yong.wu@mediatek.com>
- <20151014125620.GQ27420@8bytes.org>
- <1445488802.27202.67.camel@mhfsdcap03>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] iommu/ipmmu-vmsa: Drop LPAE Kconfig dependency
+Date: Fri, 23 Oct 2015 11:49:48 +0200
+Message-ID: <20151023094947.GA17032@8bytes.org>
+References: <20151019030253.6274.46547.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-sh-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1445488802.27202.67.camel@mhfsdcap03>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <20151019030253.6274.46547.sendpatchset@little-apple>
+Sender: linux-sh-owner@vger.kernel.org
+To: Magnus Damm <magnus.damm@gmail.com>
+Cc: iommu@lists.linux-foundation.org, laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, horms+renesas@verge.net.au
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Oct 22, 2015 at 12:40:02PM +0800, Yong Wu wrote:
->      But the mtk-iommu depend on the drivers/memory/mtk-smi.c(mtk-iommu
-> has called a function of the mtk-smi).
->      So if there is dependence here, How should we do to merge them?
+On Mon, Oct 19, 2015 at 12:02:53PM +0900, Magnus Damm wrote:
+> From: Magnus Damm <damm+renesas@opensource.se>
+> 
+> Neither the ARM page table code enabled by IOMMU_IO_PGTABLE_LPAE
+> nor the IPMMU_VMSA driver actually depends on ARM_LPAE, so get
+> rid of the dependency.
+> 
+> Tested with ipmmu-vmsa on r8a7794 ALT and a kernel config using:
+>  # CONFIG_ARM_LPAE is not set
+> 
+> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
 
-I can surely merge mtk-smi too, if it gets proper Reviewed-by and
-Acked-by tags from the maintainer(s).
+Applied, thanks.
 
-
-	Joerg
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
