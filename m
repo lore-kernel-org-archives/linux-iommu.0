@@ -1,11 +1,13 @@
 From: Chen Feng <puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Subject: [PATCH 1/3] bindings for hisilicon hi6220 iommu driver
-Date: Tue, 27 Oct 2015 15:00:45 +0800
-Message-ID: <1445929247-68573-1-git-send-email-puck.chen@hisilicon.com>
+Subject: [PATCH V3 RESEND 3/3] Add iommu node for hi6220 SoC platform
+Date: Tue, 27 Oct 2015 15:16:21 +0800
+Message-ID: <1445930181-71565-3-git-send-email-puck.chen@hisilicon.com>
+References: <1445930181-71565-1-git-send-email-puck.chen@hisilicon.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1445930181-71565-1-git-send-email-puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,76 +21,36 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJ
 Cc: dan.zhao-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, peter.panshilin-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, qijiwen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-docs: iommu: Documentation for iommu in hi6220 SoC.
+arm64: dts: Add dts node for hi6220 smmu driver
 
 Signed-off-by: Chen Feng <puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
 Signed-off-by: Yu Dongbin <yudongbin-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
 ---
- .../bindings/iommu/hisi,hi6220-iommu.txt           | 56 ++++++++++++++++++++++
- 1 file changed, 56 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iommu/hisi,hi6220-iommu.txt
+ arch/arm64/boot/dts/hisilicon/hi6220.dtsi | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iommu/hisi,hi6220-iommu.txt b/Documentation/devicetree/bindings/iommu/hisi,hi6220-iommu.txt
-new file mode 100644
-index 0000000..756e64f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iommu/hisi,hi6220-iommu.txt
-@@ -0,0 +1,56 @@
-+Hi6220 SoC SMMU Device Driver devicetree document
-+=======================================================================
-+The Architecture of SMMU on Hi6220 SoC:
+diff --git a/arch/arm64/boot/dts/hisilicon/hi6220.dtsi b/arch/arm64/boot/dts/hisilicon/hi6220.dtsi
+index 3f03380..7ae0984 100644
+--- a/arch/arm64/boot/dts/hisilicon/hi6220.dtsi
++++ b/arch/arm64/boot/dts/hisilicon/hi6220.dtsi
+@@ -167,5 +167,18 @@
+ 			clocks = <&ao_ctrl 36>, <&ao_ctrl 36>;
+ 			clock-names = "uartclk", "apb_pclk";
+ 		};
 +
-+   +------------------------------------------------------------------+
-+   |                                                                  |
-+   |         +---------+  +--------+  +-------------+   +-------+     |
-+   |         |   ADE   |  |  ISP   |  |  V/J codec  |   |  G3D  |     |
-+   |         +----|----+  +---|----+  +------|------+   +---|---|     |
-+   |              |           |              |              |         |
-+   |     ---------v-----------v--------------v--------------v-----    |
-+   |                           Media Bus                              |
-+   |     --------------------------------|---------------|--------    |
-+   |                                     |               |            |
-+   |                                 +---v---------------v--------+   |
-+   |                                 |            SMMU            |   |
-+   |                                 +----------|---------|-------+   |
-+   |                                            |         |           |
-+   +--------------------------------------------|---------|-----------+
-+                                                |         |
-+                                   +------------v---------v-----------+
-+                                   |              DDRC                |
-+                                   +----------------------------------+
-+
-+Note:
-+The media system shared the same smmu IP to access DDR memory. And all
-+media IP used the same page table.
-+
-+Below binding describes the system mmu for media system in hi6220 platform
-+
-+Required properties:
-+- compatible: should contain "hisilicon,hi6220-smmu".
-+- reg: A tuple of base address and size of System MMU registers.
-+- clocks: a list of phandle + clock-specifier pairs, one for each entry
-+  in clock-names.
-+- clock-names: should contain:
-+  * "smmu"
-+  * "media-sc"
-+  * "smmu-peri"
-+- interrupts: An interrupt specifier for interrupt signal of System MMU.
-+- #iommu-cells: The iommu-cells should be 0. Because no additional information
-+  needs to be encoded in the specifier.
-+
-+Examples:
-+	iommu@f4210000 {
-+		compatible = "hisilicon,hi6220-smmu";
-+		reg = <0x0 0xf4210000 0x0 0x1000>;
-+		interrupts = <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>;
-+		clocks = <&sys_ctrl HI6220_MMU_CLK>,
-+		         <&media_ctrl HI6220_MED_MMU>,
-+		         <&sys_ctrl HI6220_MEDIA_PLL_SRC>;
-+		clock-names = "smmu",
-+			      "media-sc",
-+			      "smmu-peri";
-+		#iommu-cells = <0>;
-+	};
++		iommu: iommu@f4210000 {
++			compatible = "hisilicon,hi6220-smmu";
++			reg = <0x0 0xf4210000 0x0 0x1000>;
++			interrupts = <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&sys_ctrl HI6220_MMU_CLK>,
++				 <&media_ctrl HI6220_MED_MMU>,
++				 <&sys_ctrl HI6220_MEDIA_PLL_SRC>;
++			clock-names = "smmu",
++				      "media-sc",
++				      "smmu-peri";
++			#iommu-cells = <0>;
++		};
+ 	};
+ };
 -- 
 1.9.1
