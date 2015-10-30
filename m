@@ -1,82 +1,183 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH] vfio/type1: Do not support IOMMUs that allow bypass
-Date: Thu, 29 Oct 2015 18:50:14 +0000
-Message-ID: <20151029185014.GN3440@arm.com>
-References: <20151015205046.28129.50479.stgit@gimli.home>
-	<5621039F.50609@linaro.org> <1445010682.4059.508.camel@redhat.com>
-	<20151027154043.GF1689@arm.com>
-	<1445961611.8018.269.camel@redhat.com>
-	<20151029182819.GJ3440@arm.com> <56326882.10109@arm.com>
+From: Daniel Kurtz <djkurtz@chromium.org>
+Subject: Re: [PATCH v6 1/3] iommu: Implement common IOMMU ops for DMA mapping
+Date: Fri, 30 Oct 2015 09:17:52 +0800
+Message-ID: <CAGS+omAWCQsqk56iv0PW2ZhTJ1342GufUsJCP=VYSgCxZNLJpA@mail.gmail.com>
+References: <cover.1443718557.git.robin.murphy@arm.com> <ab8e1caa40d6da1afa4a49f30242ef4e6e1f17df.1443718557.git.robin.murphy@arm.com>
+ <1445867094.30736.14.camel@mhfsdcap03> <562E5AE4.9070001@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <56326882.10109-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: "eric.auger" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-media-owner@vger.kernel.org>
+In-Reply-To: <562E5AE4.9070001@arm.com>
+Sender: linux-media-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, Pawel Osciak <pawel@osciak.com>
+Cc: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, thunder.leizhen@huawei.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, laurent.pinchart+renesas@ideasonboard.com, Thierry Reding <treding@nvidia.com>, Lin PoChun <pochun.lin@mediatek.com>, "Bobby Batacharia (via Google Docs)" <Bobby.Batacharia@arm.com>, linux-media@vger.kernel.org, Marek Szyprowski <m.szyprowski@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Oct 29, 2015 at 06:42:10PM +0000, Robin Murphy wrote:
-> On 29/10/15 18:28, Will Deacon wrote:
-> >On Tue, Oct 27, 2015 at 10:00:11AM -0600, Alex Williamson wrote:
-> >>On Tue, 2015-10-27 at 15:40 +0000, Will Deacon wrote:
-> >>>On Fri, Oct 16, 2015 at 09:51:22AM -0600, Alex Williamson wrote:
-> >>>>Would it be possible to add iommu_domain_geometry support to arm-smmu.c?
-> >>>>In addition to this test to verify that DMA cannot bypass the IOMMU, I'd
-> >>>>eventually like to pass the aperture information out through the VFIO
-> >>>>API.  Thanks,
-> >>>
-> >>>The slight snag here is that we don't know which SMMU in the system the
-> >>>domain is attached to at the point when the geometry is queried, so I
-> >>>can't give you an upper bound on the aperture. For example, if there is
-> >>>an SMMU with a 32-bit input address and another with a 48-bit input
-> >>>address.
-> >>>
-> >>>We could play the same horrible games that we do with the pgsize bitmap,
-> >>>and truncate some global aperture everytime we probe an SMMU device, but
-> >>>I'd really like to have fewer hacks like that if possible. The root of
-> >>>the problem is still that domains are allocated for a bus, rather than
-> >>>an IOMMU instance.
-> >>
-> >>Yes, Intel VT-d has this issue as well.  In theory we can have
-> >>heterogeneous IOMMU hardware units (DRHDs) in a system and the upper
-> >>bound of the geometry could be diminished if we add a less capable DRHD
-> >>into the domain.  I suspect this is more a theoretical problem than a
-> >>practical one though as we're typically mixing similar DRHDs and I think
-> >>we're still capable of 39-bit addressing in the least capable version
-> >>per the spec.
-> >>
-> >>In any case, I really want to start testing geometry.force_aperture,
-> >>even if we're not yet comfortable to expose the IOMMU limits to the
-> >>user.  The vfio type1 shouldn't be enabled at all for underlying
-> >>hardware that allows DMA bypass.  Thanks,
-> >
-> >Ok, I'll put it on my list of things to look at under the assumption that
-> >the actual aperture limits don't need to be accurate as long as DMA to
-> >an arbitrary unmapped address always faults.
-> 
-> I'm pretty sure we'd only ever set the aperture to the full input address
-> range anyway (since we're not a GART-type thing), in which case we should
-> only need to worry about unmatched streams that don't hit in a domain at
-> all. Doesn't the disable_bypass option already cover that? (FWIW I hacked it
-> up for v2 a while back, too[0]).
++linux-media & VIDEOBUF2 FRAMEWORK maintainers since this is about the
+v4l2-contig's usage of the DMA API.
 
-Well, the "full input address range" is tricky when you have multiple SMMU
-instances with different input address sizes. I can do something similar
-to the pgsize_bitmap.
+Hi Robin,
 
-I also don't think the disable_bypass option is what we're after -- this
-is about devices attached to a VFIO domain that can still mysteriously
-bypass the SMMU for some ranges AFAIU (and shouldn't be an issue for ARM).
+On Tue, Oct 27, 2015 at 12:55 AM, Robin Murphy <robin.murphy@arm.com> wrote:
+> On 26/10/15 13:44, Yong Wu wrote:
+>>
+>> On Thu, 2015-10-01 at 20:13 +0100, Robin Murphy wrote:
+>> [...]
+>>>
+>>> +/*
+>>> + * The DMA API client is passing in a scatterlist which could describe
+>>> + * any old buffer layout, but the IOMMU API requires everything to be
+>>> + * aligned to IOMMU pages. Hence the need for this complicated bit of
+>>> + * impedance-matching, to be able to hand off a suitably-aligned list,
+>>> + * but still preserve the original offsets and sizes for the caller.
+>>> + */
+>>> +int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+>>> +               int nents, int prot)
+>>> +{
+>>> +       struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+>>> +       struct iova_domain *iovad = domain->iova_cookie;
+>>> +       struct iova *iova;
+>>> +       struct scatterlist *s, *prev = NULL;
+>>> +       dma_addr_t dma_addr;
+>>> +       size_t iova_len = 0;
+>>> +       int i;
+>>> +
+>>> +       /*
+>>> +        * Work out how much IOVA space we need, and align the segments
+>>> to
+>>> +        * IOVA granules for the IOMMU driver to handle. With some clever
+>>> +        * trickery we can modify the list in-place, but reversibly, by
+>>> +        * hiding the original data in the as-yet-unused DMA fields.
+>>> +        */
+>>> +       for_each_sg(sg, s, nents, i) {
+>>> +               size_t s_offset = iova_offset(iovad, s->offset);
+>>> +               size_t s_length = s->length;
+>>> +
+>>> +               sg_dma_address(s) = s->offset;
+>>> +               sg_dma_len(s) = s_length;
+>>> +               s->offset -= s_offset;
+>>> +               s_length = iova_align(iovad, s_length + s_offset);
+>>> +               s->length = s_length;
+>>> +
+>>> +               /*
+>>> +                * The simple way to avoid the rare case of a segment
+>>> +                * crossing the boundary mask is to pad the previous one
+>>> +                * to end at a naturally-aligned IOVA for this one's
+>>> size,
+>>> +                * at the cost of potentially over-allocating a little.
+>>> +                */
+>>> +               if (prev) {
+>>> +                       size_t pad_len = roundup_pow_of_two(s_length);
+>>> +
+>>> +                       pad_len = (pad_len - iova_len) & (pad_len - 1);
+>>> +                       prev->length += pad_len;
+>>
+>>
+>> Hi Robin,
+>>        While our v4l2 testing, It seems that we met a problem here.
+>>        Here we update prev->length again, Do we need update
+>> sg_dma_len(prev) again too?
+>>
+>>        Some function like vb2_dc_get_contiguous_size[1] always get
+>> sg_dma_len(s) to compare instead of s->length. so it may break
+>> unexpectedly while sg_dma_len(s) is not same with s->length.
+>
+>
+> This is just tweaking the faked-up length that we hand off to iommu_map_sg()
+> (see also the iova_align() above), to trick it into bumping this segment up
+> to a suitable starting IOVA. The real length at this point is stashed in
+> sg_dma_len(s), and will be copied back into s->length in __finalise_sg(), so
+> both will hold the same true length once we return to the caller.
+>
+> Yes, it does mean that if you have a list where the segment lengths are page
+> aligned but not monotonically decreasing, e.g. {64k, 16k, 64k}, then you'll
+> still end up with a gap between the second and third segments, but that's
+> fine because the DMA API offers no guarantees about what the resulting DMA
+> addresses will be (consider the no-IOMMU case where they would each just be
+> "mapped" to their physical address). If that breaks v4l, then it's probably
+> v4l's DMA API use that needs looking at (again).
 
-Will
+Hmm, I thought the DMA API maps a (possibly) non-contiguous set of
+memory pages into a contiguous block in device memory address space.
+This would allow passing a dma mapped buffer to device dma using just
+a device address and length.
+IIUC, the change above breaks this model by inserting gaps in how the
+buffer is mapped to device memory, such that the buffer is no longer
+contiguous in dma address space.
+
+Here is the code in question from
+drivers/media/v4l2-core/videobuf2-dma-contig.c :
+
+static unsigned long vb2_dc_get_contiguous_size(struct sg_table *sgt)
+{
+        struct scatterlist *s;
+        dma_addr_t expected = sg_dma_address(sgt->sgl);
+        unsigned int i;
+        unsigned long size = 0;
+
+        for_each_sg(sgt->sgl, s, sgt->nents, i) {
+                if (sg_dma_address(s) != expected)
+                        break;
+                expected = sg_dma_address(s) + sg_dma_len(s);
+                size += sg_dma_len(s);
+        }
+        return size;
+}
+
+
+static void *vb2_dc_get_userptr(void *alloc_ctx, unsigned long vaddr,
+        unsigned long size, enum dma_data_direction dma_dir)
+{
+        struct vb2_dc_conf *conf = alloc_ctx;
+        struct vb2_dc_buf *buf;
+        struct frame_vector *vec;
+        unsigned long offset;
+        int n_pages, i;
+        int ret = 0;
+        struct sg_table *sgt;
+        unsigned long contig_size;
+        unsigned long dma_align = dma_get_cache_alignment();
+        DEFINE_DMA_ATTRS(attrs);
+
+        dma_set_attr(DMA_ATTR_SKIP_CPU_SYNC, &attrs);
+
+        buf = kzalloc(sizeof *buf, GFP_KERNEL);
+        buf->dma_dir = dma_dir;
+
+        offset = vaddr & ~PAGE_MASK;
+        vec = vb2_create_framevec(vaddr, size, dma_dir == DMA_FROM_DEVICE);
+        buf->vec = vec;
+        n_pages = frame_vector_count(vec);
+
+        sgt = kzalloc(sizeof(*sgt), GFP_KERNEL);
+
+        ret = sg_alloc_table_from_pages(sgt, frame_vector_pages(vec), n_pages,
+                offset, size, GFP_KERNEL);
+
+        sgt->nents = dma_map_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
+                                      buf->dma_dir, &attrs);
+
+        contig_size = vb2_dc_get_contiguous_size(sgt);
+        if (contig_size < size) {
+
+    <<<===   if the original buffer had sg entries that were not
+aligned on the "natural" alignment for their size, the new arm64 iommu
+core code inserts  a 'gap' in the iommu mapping, which causes
+vb2_dc_get_contiguous_size() to exit early (and return a smaller size
+than expected).
+
+                pr_err("contiguous mapping is too small %lu/%lu\n",
+                        contig_size, size);
+                ret = -EFAULT;
+                goto fail_map_sg;
+        }
+
+
+So, is the videobuf2-dma-contig.c based on an incorrect assumption
+about how the DMA API is supposed to work?
+Is it even possible to map a "contiguous-in-iova-range" mapping for a
+buffer given as an sg_table with an arbitrary set of pages?
+
+Thanks for helping to move this forward.
+
+-Dan
