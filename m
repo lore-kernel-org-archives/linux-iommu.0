@@ -1,274 +1,234 @@
-From: Tomasz Figa <tfiga@chromium.org>
-Subject: Re: [PATCH v6 1/3] iommu: Implement common IOMMU ops for DMA mapping
-Date: Mon, 2 Nov 2015 22:43:05 +0900
-Message-ID: <CAAFQd5C_dkWBZrQXtyO59ARw7q-0fg-Wk98yApC5VHdQ8-AmNw@mail.gmail.com>
-References: <cover.1443718557.git.robin.murphy@arm.com> <ab8e1caa40d6da1afa4a49f30242ef4e6e1f17df.1443718557.git.robin.murphy@arm.com>
- <1445867094.30736.14.camel@mhfsdcap03> <562E5AE4.9070001@arm.com>
- <CAGS+omAWCQsqk56iv0PW2ZhTJ1342GufUsJCP=VYSgCxZNLJpA@mail.gmail.com>
- <56337E4D.1010304@arm.com> <CAGS+omAmxbb4uVzaQh1xPmkFtcF6KP-HSV-40=sm1BRTdh+=OQ@mail.gmail.com>
+From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: [GIT PULL] Shared Virtual Memory for Intel IOMMU
+Date: Mon, 02 Nov 2015 21:51:26 +0000
+Message-ID: <1446501086.15061.42.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-media-owner@vger.kernel.org>
-In-Reply-To: <CAGS+omAmxbb4uVzaQh1xPmkFtcF6KP-HSV-40=sm1BRTdh+=OQ@mail.gmail.com>
-Sender: linux-media-owner@vger.kernel.org
-To: Daniel Kurtz <djkurtz@chromium.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, Lin PoChun <pochun.lin@mediatek.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Yingjoe Chen <yingjoe.chen@mediatek.com>, Will Deacon <will.deacon@arm.com>, linux-media@vger.kernel.org, Thierry Reding <treding@nvidia.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, "Bobby Batacharia (via Google Docs)" <Bobby.Batacharia@arm.com>, Kyungmin Park <kyungmin.park@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Yong Wu <yong.wu@mediatek.com>, Pawel Osciak <pawel@osciak.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Joerg Roedel <joro@8bytes.org>, thunder.leizhen@huawei.com, Catalin Marinas <catalin.marinas@arm.com>, Russell King <rmk+kernel@arm.linux.org.uk>, linux-mediatek@lists.infradead.org
+Content-Type: multipart/mixed; boundary="===============4023970083713422870=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 2, 2015 at 10:11 PM, Daniel Kurtz <djkurtz@chromium.org> wrote:
->
-> +Tomasz, so he can reply to the thread
-> +Marek and Russell as recommended by Tomasz
->
-> On Oct 30, 2015 22:27, "Robin Murphy" <robin.murphy@arm.com> wrote:
-> >
-> > Hi Dan,
-> >
-> > On 30/10/15 01:17, Daniel Kurtz wrote:
-> >>
-> >> +linux-media & VIDEOBUF2 FRAMEWORK maintainers since this is about the
-> >> v4l2-contig's usage of the DMA API.
-> >>
-> >> Hi Robin,
-> >>
-> >> On Tue, Oct 27, 2015 at 12:55 AM, Robin Murphy <robin.murphy@arm.com> wrote:
-> >>>
-> >>> On 26/10/15 13:44, Yong Wu wrote:
-> >>>>
-> >>>>
-> >>>> On Thu, 2015-10-01 at 20:13 +0100, Robin Murphy wrote:
-> >>>> [...]
-> >>>>>
-> >>>>>
-> >>>>> +/*
-> >>>>> + * The DMA API client is passing in a scatterlist which could describe
-> >>>>> + * any old buffer layout, but the IOMMU API requires everything to be
-> >>>>> + * aligned to IOMMU pages. Hence the need for this complicated bit of
-> >>>>> + * impedance-matching, to be able to hand off a suitably-aligned list,
-> >>>>> + * but still preserve the original offsets and sizes for the caller.
-> >>>>> + */
-> >>>>> +int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
-> >>>>> +               int nents, int prot)
-> >>>>> +{
-> >>>>> +       struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> >>>>> +       struct iova_domain *iovad = domain->iova_cookie;
-> >>>>> +       struct iova *iova;
-> >>>>> +       struct scatterlist *s, *prev = NULL;
-> >>>>> +       dma_addr_t dma_addr;
-> >>>>> +       size_t iova_len = 0;
-> >>>>> +       int i;
-> >>>>> +
-> >>>>> +       /*
-> >>>>> +        * Work out how much IOVA space we need, and align the segments
-> >>>>> to
-> >>>>> +        * IOVA granules for the IOMMU driver to handle. With some clever
-> >>>>> +        * trickery we can modify the list in-place, but reversibly, by
-> >>>>> +        * hiding the original data in the as-yet-unused DMA fields.
-> >>>>> +        */
-> >>>>> +       for_each_sg(sg, s, nents, i) {
-> >>>>> +               size_t s_offset = iova_offset(iovad, s->offset);
-> >>>>> +               size_t s_length = s->length;
-> >>>>> +
-> >>>>> +               sg_dma_address(s) = s->offset;
-> >>>>> +               sg_dma_len(s) = s_length;
-> >>>>> +               s->offset -= s_offset;
-> >>>>> +               s_length = iova_align(iovad, s_length + s_offset);
-> >>>>> +               s->length = s_length;
-> >>>>> +
-> >>>>> +               /*
-> >>>>> +                * The simple way to avoid the rare case of a segment
-> >>>>> +                * crossing the boundary mask is to pad the previous one
-> >>>>> +                * to end at a naturally-aligned IOVA for this one's
-> >>>>> size,
-> >>>>> +                * at the cost of potentially over-allocating a little.
 
-I'd like to know what is the boundary mask and what hardware imposes
-requirements like this. The cost here is not only over-allocating a
-little, but making many, many buffers contiguously mappable on the
-CPU, unmappable contiguously in IOMMU, which just defeats the purpose
-of having an IOMMU, which I believe should be there for simple IP
-blocks taking one DMA address to be able to view the buffer the same
-way as the CPU.
+--===============4023970083713422870==
+Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
+	boundary="=-cF8ZdndllMK1qGZCfYd0"
 
-> >>>>> +                */
-> >>>>> +               if (prev) {
-> >>>>> +                       size_t pad_len = roundup_pow_of_two(s_length);
-> >>>>> +
-> >>>>> +                       pad_len = (pad_len - iova_len) & (pad_len - 1);
-> >>>>> +                       prev->length += pad_len;
-> >>>>
-> >>>>
-> >>>>
-> >>>> Hi Robin,
-> >>>>         While our v4l2 testing, It seems that we met a problem here.
-> >>>>         Here we update prev->length again, Do we need update
-> >>>> sg_dma_len(prev) again too?
-> >>>>
-> >>>>         Some function like vb2_dc_get_contiguous_size[1] always get
-> >>>> sg_dma_len(s) to compare instead of s->length. so it may break
-> >>>> unexpectedly while sg_dma_len(s) is not same with s->length.
-> >>>
-> >>>
-> >>>
-> >>> This is just tweaking the faked-up length that we hand off to iommu_map_sg()
-> >>> (see also the iova_align() above), to trick it into bumping this segment up
-> >>> to a suitable starting IOVA. The real length at this point is stashed in
-> >>> sg_dma_len(s), and will be copied back into s->length in __finalise_sg(), so
-> >>> both will hold the same true length once we return to the caller.
-> >>>
-> >>> Yes, it does mean that if you have a list where the segment lengths are page
-> >>> aligned but not monotonically decreasing, e.g. {64k, 16k, 64k}, then you'll
-> >>> still end up with a gap between the second and third segments, but that's
-> >>> fine because the DMA API offers no guarantees about what the resulting DMA
-> >>> addresses will be (consider the no-IOMMU case where they would each just be
-> >>> "mapped" to their physical address). If that breaks v4l, then it's probably
-> >>> v4l's DMA API use that needs looking at (again).
-> >>
-> >>
-> >> Hmm, I thought the DMA API maps a (possibly) non-contiguous set of
-> >> memory pages into a contiguous block in device memory address space.
-> >> This would allow passing a dma mapped buffer to device dma using just
-> >> a device address and length.
-> >
-> >
-> > Not at all. The streaming DMA API (dma_map_* and friends) has two responsibilities: performing any necessary cache maintenance to ensure the device will correctly see data from the CPU, and the CPU will correctly see data from the device; and working out an address for that buffer from the device's point of view to actually hand off to the hardware (which is perfectly well allowed to fail).
 
-Agreed. The dma_map_*() API is not guaranteed to return a single
-contiguous part of virtual address space for any given SG list.
-However it was understood to be able to map buffers contiguously
-mappable by the CPU into a single segment and users,
-videobuf2-dma-contig in particular, relied on this.
+--=-cF8ZdndllMK1qGZCfYd0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> >
-> > Consider SWIOTLB's implementation - segments which already lie at physical addresses within the device's DMA mask just get passed through, while those that lie outside it get mapped into the bounce buffer, but still as individual allocations (arch code just handles cache maintenance on the resulting physical addresses and can apply any hard-wired DMA offset for the device concerned).
+Linus, please pull from
+	git://git.infradead.org/intel-iommu.git
 
-And this is fine for vb2-dma-contig, which was made for devices that
-require buffers contiguous in its address space. Without IOMMU it will
-allow only physically contiguous buffers and fails otherwise, which is
-fine, because it's a hardware requirement.
+This adds "Shared Virtual Memory" (aka PASID support) for the Intel
+IOMMU. This allows devices to do DMA using process address space,
+translated through the normal CPU page tables for the relevant mm.
 
-> >
-> >> IIUC, the change above breaks this model by inserting gaps in how the
-> >> buffer is mapped to device memory, such that the buffer is no longer
-> >> contiguous in dma address space.
-> >
-> >
-> > Even the existing arch/arm IOMMU DMA code which I guess this implicitly relies on doesn't guarantee that behaviour - if the mapping happens to reach one of the segment length/boundary limits it won't just leave a gap, it'll start an entirely new IOVA allocation which could well start at a wildly different address[0].
+With corresponding support added to the i915 driver, this has been
+tested with the graphics device on Skylake. We don't have the required
+TLP support in our PCIe root ports for supporting discrete devices yet,
+so it's only integrated devices that can do it so far.
 
-Could you explain segment length/boundary limits and when buffers can
-reach them? Sorry, i haven't been following all the discussions, but
-I'm not aware of any similar requirements of the IOMMU hardware I
-worked with.
+Dan Carpenter (2):
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: shift wrapping bug in prq_e=
+vent_thread()
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: fix a loop in prq_event_thr=
+ead()
 
-> >
-> >> Here is the code in question from
-> >> drivers/media/v4l2-core/videobuf2-dma-contig.c :
-> >>
-> >> static unsigned long vb2_dc_get_contiguous_size(struct sg_table *sgt)
-> >> {
-> >>          struct scatterlist *s;
-> >>          dma_addr_t expected = sg_dma_address(sgt->sgl);
-> >>          unsigned int i;
-> >>          unsigned long size = 0;
-> >>
-> >>          for_each_sg(sgt->sgl, s, sgt->nents, i) {
-> >>                  if (sg_dma_address(s) != expected)
-> >>                          break;
-> >>                  expected = sg_dma_address(s) + sg_dma_len(s);
-> >>                  size += sg_dma_len(s);
-> >>          }
-> >>          return size;
-> >> }
-> >>
-> >>
-> >> static void *vb2_dc_get_userptr(void *alloc_ctx, unsigned long vaddr,
-> >>          unsigned long size, enum dma_data_direction dma_dir)
-> >> {
-> >>          struct vb2_dc_conf *conf = alloc_ctx;
-> >>          struct vb2_dc_buf *buf;
-> >>          struct frame_vector *vec;
-> >>          unsigned long offset;
-> >>          int n_pages, i;
-> >>          int ret = 0;
-> >>          struct sg_table *sgt;
-> >>          unsigned long contig_size;
-> >>          unsigned long dma_align = dma_get_cache_alignment();
-> >>          DEFINE_DMA_ATTRS(attrs);
-> >>
-> >>          dma_set_attr(DMA_ATTR_SKIP_CPU_SYNC, &attrs);
-> >>
-> >>          buf = kzalloc(sizeof *buf, GFP_KERNEL);
-> >>          buf->dma_dir = dma_dir;
-> >>
-> >>          offset = vaddr & ~PAGE_MASK;
-> >>          vec = vb2_create_framevec(vaddr, size, dma_dir == DMA_FROM_DEVICE);
-> >>          buf->vec = vec;
-> >>          n_pages = frame_vector_count(vec);
-> >>
-> >>          sgt = kzalloc(sizeof(*sgt), GFP_KERNEL);
-> >>
-> >>          ret = sg_alloc_table_from_pages(sgt, frame_vector_pages(vec), n_pages,
-> >>                  offset, size, GFP_KERNEL);
-> >>
-> >>          sgt->nents = dma_map_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
-> >>                                        buf->dma_dir, &attrs);
-> >>
-> >>          contig_size = vb2_dc_get_contiguous_size(sgt);
-> >
-> >
-> > (as an aside, it's rather unintuitive that the handling of the dma_map_sg call actually failing is entirely implicit here)
+David Woodhouse (20):
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Use plain writeq() for dmar=
+_writeq() where available
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Fix ATSR handling for Root-=
+Complex integrated endpoints
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Introduce intel_iommu=3Dpas=
+id28, and pasid_enabled() macro
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Add initial support for PAS=
+ID tables
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Always enable PASID/PRI PCI=
+ capabilities before ATS
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Add basic SVM PASID support
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Implement deferred invalida=
+te for SVM
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Generalise DMAR MSI setup t=
+o allow for page request events
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Implement page request hand=
+ling
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Add callback to device driv=
+er on page faults
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Implement SVM_FLAG_PRIVATE_=
+PASID to allocate unique PASIDs
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Implement SVM_FLAG_SUPERVIS=
+OR_MODE for kernel access
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Fix NULL pointer dereferenc=
+e in page request error case
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Fix address shifting in pag=
+e request handler
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Fix IOTLB flushing for glob=
+al pages
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Fix SVM IOTLB flush handlin=
+g
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Handle Caching Mode impleme=
+ntations of SVM
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Clean up pasid_enabled() an=
+d ecs_enabled() dependencies
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Expose struct svm_dev_ops w=
+ithout CONFIG_INTEL_IOMMU_SVM
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Fix rwxp flags in SVM devic=
+e fault callback
 
-I'm not sure what you mean, please elaborate. The code considers only
-the case of contiguously mapping at least the requested size as a
-success, because anything else is useless with the hardware.
+Sudeep Dutt (1):
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iommu/vt-d: Use dev_err(..) in intel_sv=
+m_device_to_iommu(..)
 
-> >
-> >>          if (contig_size < size) {
-> >>
-> >>      <<<===   if the original buffer had sg entries that were not
-> >> aligned on the "natural" alignment for their size, the new arm64 iommu
-> >> core code inserts  a 'gap' in the iommu mapping, which causes
-> >> vb2_dc_get_contiguous_size() to exit early (and return a smaller size
-> >> than expected).
-> >>
-> >>                  pr_err("contiguous mapping is too small %lu/%lu\n",
-> >>                          contig_size, size);
-> >>                  ret = -EFAULT;
-> >>                  goto fail_map_sg;
-> >>          }
-> >>
-> >>
-> >> So, is the videobuf2-dma-contig.c based on an incorrect assumption
-> >> about how the DMA API is supposed to work?
-> >> Is it even possible to map a "contiguous-in-iova-range" mapping for a
-> >> buffer given as an sg_table with an arbitrary set of pages?
-> >
-> >
-> > From the Streaming DMA mappings section of Documentation/DMA-API.txt:
-> >
-> >   Note also that the above constraints on physical contiguity and
-> >   dma_mask may not apply if the platform has an IOMMU (a device which
-> >   maps an I/O DMA address to a physical memory address).  However, to be
-> >   portable, device driver writers may *not* assume that such an IOMMU
-> >   exists.
-> >
-> > There's not strictly any harm in using the DMA API this way and *hoping* you get what you want, as long as you're happy for it to fail pretty much 100% of the time on some systems, and still in a minority of corner cases on any system.
+=C2=A0drivers/iommu/Kconfig=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0|=C2=A0=C2=A010 +++
+=C2=A0drivers/iommu/Makefile=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0|=C2=A0=C2=A0=C2=A01 +
+=C2=A0drivers/iommu/dmar.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0|=C2=A0=C2=A042 ++++++++---
+=C2=A0drivers/iommu/intel-iommu.c=C2=A0=C2=A0=C2=A0| 303 ++++++++++++++++++=
++++++++++++++++++++++++++++++++++++++++++++------------
+=C2=A0drivers/iommu/intel-svm.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| 602 ++++++++=
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+=C2=A0include/linux/dma_remapping.h |=C2=A0=C2=A0=C2=A08 ++
+=C2=A0include/linux/intel-iommu.h=C2=A0=C2=A0=C2=A0| 139 ++++++++++++++++++=
+++++++++++++----
+=C2=A0include/linux/intel-svm.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| 121 ++++++++=
+++++++++++++++++++++++
+=C2=A08 files changed, 1152 insertions(+), 74 deletions(-)
 
-Could you please elaborate? I'd like to see examples, because I can't
-really imagine buffers mappable contiguously on CPU, but not on IOMMU.
-Also, as I said, the hardware I worked with didn't suffer from
-problems like this.
+--=20
+David Woodhouse                            Open Source Technology Centre
+David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
 
-> > However, if there's a real dependency on IOMMUs and tight control of IOVA allocation here, then the DMA API isn't really the right tool for the job, and maybe it's time to start looking to how to better fit these multimedia-subsystem-type use cases into the IOMMU API - as far as I understand it there's at least some conceptual overlap with the HSA PASID stuff being prototyped in PCI/x86-land at the moment, so it could be an apposite time to try and bang out some common requirements.
 
-The DMA API is actually the only good tool to use here to keep the
-videobuf2-dma-contig code away from the knowledge about platform
-specific data, e.g. presence of IOMMU. The only thing it knows is that
-the target hardware requires a single contiguous buffer and it relies
-on the fact that in correct cases the buffer given to it will meet
-this requirement (i.e. physically contiguous w/o IOMMU; CPU mappable
-with IOMMU).
+--=-cF8ZdndllMK1qGZCfYd0
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
 
-Best regards,
-Tomasz
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIISjjCCBicw
+ggUPoAMCAQICAw3vNzANBgkqhkiG9w0BAQUFADCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
+YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
+ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
+MB4XDTE1MDUwNTA5NDM0MVoXDTE2MDUwNTA5NTMzNlowQjEcMBoGA1UEAwwTZHdtdzJAaW5mcmFk
+ZWFkLm9yZzEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBAMkbm9kPbx1j/X4RVyf/pPKSYwelcco69TvnQQbKM8m8xkWjXJI1
+jpJ1jMaGUZGFToINMSZi7lZawUozudWbXSKy1SikENSTJHffsdRAIlsp+hR8vWvjsKUry6sEdqPG
+doa5RY7+N4WRusWZDYW/RRWE6i9EL9qV86CVPYqw22UBOUw4/j/HVGCV6TSB8yE5iEwhk/hUuzRr
+FZm1MJMR7mCS7BCR8Lr5jFY61lWpBiXNXIxLZCvDc26KR5L5tYX43iUVO3fzES1GRVoYnxxk2tmz
+fcsZG5vK+Trc9L8OZJfkYrEHH3+Iw41MQ0w/djVtYr1+HYldx0QmYXAtnhIj+UMCAwEAAaOCAtkw
+ggLVMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgSwMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcD
+BDAdBgNVHQ4EFgQUszC96C3w5/2+d+atSr0IpT26YI4wHwYDVR0jBBgwFoAUU3Ltkpzg2ssBXHx+
+ljVO8tS4UYIwHgYDVR0RBBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzCCAUwGA1UdIASCAUMwggE/
+MIIBOwYLKwYBBAGBtTcBAgMwggEqMC4GCCsGAQUFBwIBFiJodHRwOi8vd3d3LnN0YXJ0c3NsLmNv
+bS9wb2xpY3kucGRmMIH3BggrBgEFBQcCAjCB6jAnFiBTdGFydENvbSBDZXJ0aWZpY2F0aW9uIEF1
+dGhvcml0eTADAgEBGoG+VGhpcyBjZXJ0aWZpY2F0ZSB3YXMgaXNzdWVkIGFjY29yZGluZyB0byB0
+aGUgQ2xhc3MgMSBWYWxpZGF0aW9uIHJlcXVpcmVtZW50cyBvZiB0aGUgU3RhcnRDb20gQ0EgcG9s
+aWN5LCByZWxpYW5jZSBvbmx5IGZvciB0aGUgaW50ZW5kZWQgcHVycG9zZSBpbiBjb21wbGlhbmNl
+IG9mIHRoZSByZWx5aW5nIHBhcnR5IG9ibGlnYXRpb25zLjA2BgNVHR8ELzAtMCugKaAnhiVodHRw
+Oi8vY3JsLnN0YXJ0c3NsLmNvbS9jcnR1MS1jcmwuY3JsMIGOBggrBgEFBQcBAQSBgTB/MDkGCCsG
+AQUFBzABhi1odHRwOi8vb2NzcC5zdGFydHNzbC5jb20vc3ViL2NsYXNzMS9jbGllbnQvY2EwQgYI
+KwYBBQUHMAKGNmh0dHA6Ly9haWEuc3RhcnRzc2wuY29tL2NlcnRzL3N1Yi5jbGFzczEuY2xpZW50
+LmNhLmNydDAjBgNVHRIEHDAahhhodHRwOi8vd3d3LnN0YXJ0c3NsLmNvbS8wDQYJKoZIhvcNAQEF
+BQADggEBAHMQmxHHodpS85X8HRyxhvfkys7r+taCNOaNU9cxQu/cZ/6k5nS2qGNMzZ6jb7ueY/V7
+7p+4DW/9ZWODDTf4Fz00mh5SSVc20Bz7t+hhxwHd62PZgENh5i76Qq2tw48U8AsYo5damHby1epf
+neZafLpUkLLO7AGBJIiRVTevdvyXQ0qnixOmKMWyvrhSNGuVIKVdeqLP+102Dwf+dpFyw+j1hz28
+jEEKpHa+NR1b2kXuSPi/rMGhexwlJOh4tK8KQ6Ryr0rIN//NSbOgbyYZrzc/ZUWX9V5OA84ChFb2
+vkFl0OcYrttp/rhDBLITwffPxSZeoBh9H7zYzkbCXKL3BUIwggYnMIIFD6ADAgECAgMN7zcwDQYJ
+KoZIhvcNAQEFBQAwgYwxCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSswKQYD
+VQQLEyJTZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFydENv
+bSBDbGFzcyAxIFByaW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQTAeFw0xNTA1MDUwOTQzNDFa
+Fw0xNjA1MDUwOTUzMzZaMEIxHDAaBgNVBAMME2R3bXcyQGluZnJhZGVhZC5vcmcxIjAgBgkqhkiG
+9w0BCQEWE2R3bXcyQGluZnJhZGVhZC5vcmcwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
+AQDJG5vZD28dY/1+EVcn/6TykmMHpXHKOvU750EGyjPJvMZFo1ySNY6SdYzGhlGRhU6CDTEmYu5W
+WsFKM7nVm10istUopBDUkyR337HUQCJbKfoUfL1r47ClK8urBHajxnaGuUWO/jeFkbrFmQ2Fv0UV
+hOovRC/alfOglT2KsNtlATlMOP4/x1Rglek0gfMhOYhMIZP4VLs0axWZtTCTEe5gkuwQkfC6+YxW
+OtZVqQYlzVyMS2Qrw3NuikeS+bWF+N4lFTt38xEtRkVaGJ8cZNrZs33LGRubyvk63PS/DmSX5GKx
+Bx9/iMONTENMP3Y1bWK9fh2JXcdEJmFwLZ4SI/lDAgMBAAGjggLZMIIC1TAJBgNVHRMEAjAAMAsG
+A1UdDwQEAwIEsDAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwQwHQYDVR0OBBYEFLMwvegt
+8Of9vnfmrUq9CKU9umCOMB8GA1UdIwQYMBaAFFNy7ZKc4NrLAVx8fpY1TvLUuFGCMB4GA1UdEQQX
+MBWBE2R3bXcyQGluZnJhZGVhZC5vcmcwggFMBgNVHSAEggFDMIIBPzCCATsGCysGAQQBgbU3AQID
+MIIBKjAuBggrBgEFBQcCARYiaHR0cDovL3d3dy5zdGFydHNzbC5jb20vcG9saWN5LnBkZjCB9wYI
+KwYBBQUHAgIwgeowJxYgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkwAwIBARqBvlRo
+aXMgY2VydGlmaWNhdGUgd2FzIGlzc3VlZCBhY2NvcmRpbmcgdG8gdGhlIENsYXNzIDEgVmFsaWRh
+dGlvbiByZXF1aXJlbWVudHMgb2YgdGhlIFN0YXJ0Q29tIENBIHBvbGljeSwgcmVsaWFuY2Ugb25s
+eSBmb3IgdGhlIGludGVuZGVkIHB1cnBvc2UgaW4gY29tcGxpYW5jZSBvZiB0aGUgcmVseWluZyBw
+YXJ0eSBvYmxpZ2F0aW9ucy4wNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5zdGFydHNzbC5j
+b20vY3J0dTEtY3JsLmNybDCBjgYIKwYBBQUHAQEEgYEwfzA5BggrBgEFBQcwAYYtaHR0cDovL29j
+c3Auc3RhcnRzc2wuY29tL3N1Yi9jbGFzczEvY2xpZW50L2NhMEIGCCsGAQUFBzAChjZodHRwOi8v
+YWlhLnN0YXJ0c3NsLmNvbS9jZXJ0cy9zdWIuY2xhc3MxLmNsaWVudC5jYS5jcnQwIwYDVR0SBBww
+GoYYaHR0cDovL3d3dy5zdGFydHNzbC5jb20vMA0GCSqGSIb3DQEBBQUAA4IBAQBzEJsRx6HaUvOV
+/B0csYb35MrO6/rWgjTmjVPXMULv3Gf+pOZ0tqhjTM2eo2+7nmP1e+6fuA1v/WVjgw03+Bc9NJoe
+UklXNtAc+7foYccB3etj2YBDYeYu+kKtrcOPFPALGKOXWph28tXqX53mWny6VJCyzuwBgSSIkVU3
+r3b8l0NKp4sTpijFsr64UjRrlSClXXqiz/tdNg8H/naRcsPo9Yc9vIxBCqR2vjUdW9pF7kj4v6zB
+oXscJSToeLSvCkOkcq9KyDf/zUmzoG8mGa83P2VFl/VeTgPOAoRW9r5BZdDnGK7baf64QwSyE8H3
+z8UmXqAYfR+82M5Gwlyi9wVCMIIGNDCCBBygAwIBAgIBHjANBgkqhkiG9w0BAQUFADB9MQswCQYD
+VQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwg
+Q2VydGlmaWNhdGUgU2lnbmluZzEpMCcGA1UEAxMgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRo
+b3JpdHkwHhcNMDcxMDI0MjEwMTU1WhcNMTcxMDI0MjEwMTU1WjCBjDELMAkGA1UEBhMCSUwxFjAU
+BgNVBAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRl
+IFNpZ25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUg
+Q2xpZW50IENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxwmDzM4t2BqxKaQuE6uW
+vooyg4ymiEGWVUet1G8SD+rqvyNH4QrvnEIaFHxOhESip7vMz39ScLpNLbL1QpOlPW/tFIzNHS3q
+d2XRNYG5Sv9RcGE+T4qbLtsjjJbi6sL7Ls/f/X9ftTyhxvxWkf8KW37iKrueKsxw2HqolH7GM6FX
+5UfNAwAu4ZifkpmZzU1slBhyWwaQPEPPZRsWoTb7q8hmgv6Nv3Hg9rmA1/VPBIOQ6SKRkHXG0Hhm
+q1dOFoAFI411+a/9nWm5rcVjGcIWZ2v/43Yksq60jExipA4l5uv9/+Hm33mbgmCszdj/Dthf13tg
+Av2O83hLJ0exTqfrlwIDAQABo4IBrTCCAakwDwYDVR0TAQH/BAUwAwEB/zAOBgNVHQ8BAf8EBAMC
+AQYwHQYDVR0OBBYEFFNy7ZKc4NrLAVx8fpY1TvLUuFGCMB8GA1UdIwQYMBaAFE4L7xqkQFulF2mH
+MMo0aEPQQa7yMGYGCCsGAQUFBwEBBFowWDAnBggrBgEFBQcwAYYbaHR0cDovL29jc3Auc3RhcnRz
+c2wuY29tL2NhMC0GCCsGAQUFBzAChiFodHRwOi8vd3d3LnN0YXJ0c3NsLmNvbS9zZnNjYS5jcnQw
+WwYDVR0fBFQwUjAnoCWgI4YhaHR0cDovL3d3dy5zdGFydHNzbC5jb20vc2ZzY2EuY3JsMCegJaAj
+hiFodHRwOi8vY3JsLnN0YXJ0c3NsLmNvbS9zZnNjYS5jcmwwgYAGA1UdIAR5MHcwdQYLKwYBBAGB
+tTcBAgEwZjAuBggrBgEFBQcCARYiaHR0cDovL3d3dy5zdGFydHNzbC5jb20vcG9saWN5LnBkZjA0
+BggrBgEFBQcCARYoaHR0cDovL3d3dy5zdGFydHNzbC5jb20vaW50ZXJtZWRpYXRlLnBkZjANBgkq
+hkiG9w0BAQUFAAOCAgEACoMIfXirLAZcuGOMXq4cuSN3TaFx2H2GvD5VSy/6rV55BYHbWNaPeQn3
+oBSU8KgQZn/Kck1JxbLpAxVCNtsxeW1R87ifhsYZ0qjdrA9anrW2MAWCtosmAOT4OxK9QPoSjCMx
+M3HbkZCDJgnlE8jMopH21BbyAYr7b5EfGRQJNtgWcvqSXwKHnTutR08+Kkn0KAkXCzeQNLeA5LlY
+UzFyM7kPAp8pIRMQ+seHunmyG642S2+y/qHEdMuGIwpfz3eDF1PdctL04qYK/zu+Qg1Bw0RwgigV
+Zs/0c5HP2/e9DBHh7eSwtzYlk4AUr6yxLlcwSjOfOmKEQ/Q8tzh0IFiNu9IPuTGAPBn4CPxD0+Ru
+8T2wg8/s43R/PT3kd1OEqOJUl7q+h+r6fpvU0Fzxd2tC8Ga6fDEPme+1Nbi+03pVjuZQKbGwKJ66
+gEn06WqaxVZC+J8hh/jR0k9mST1iAZPNYulcNJ8tKmVtjYsv0L1TSm2+NwON58tO+pIVzu3DWwSE
+XSf+qkDavQam+QtEOZxLBXI++aMUEapSn+k3Lxm48ZCYfAWLb/Xj7F5JQMbZvCexglAbYR0kIHqW
+5DnsYSdMD/IplJMojx0NBrxJ3fN9dvX2Y6BIXRsF1du4qESm4/3CKuyUV7p9DW3mPlHTGLvYxnyK
+Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
+YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
+ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
+AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
+CQUxDxcNMTUxMTAyMjE1MTI2WjAjBgkqhkiG9w0BCQQxFgQUQfwOP9A540LkBp7aB3s5rJmHMR8w
+gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
+ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
+L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
+CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
+LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
+U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
+hkiG9w0BAQEFAASCAQBxPAmXdGYctaCAPnOp8brprRQgIp1tdhwnkieSMTvmsK7/00BOcb1C64k+
+NhJnPfBN+LbZC6WHVpTMSGNs/AKHd5ZXKcILlggdXvxlH7Ndv1azat4y2BBEqECprPrT2TUtAVoL
+sSlfzcxpjPkEfkR+iXg7kti0pZHb8ln7S1Gafhh2PujhDU1SRBP3d3djov48o8nsGnwVQT/SfJ3t
+lrA1tQl+heNwVdLdGjnhzc3MhwJV/iK2U8CXFM0rohphzH2wrfeZxb4Z7IBCdc7VEq4SQ6t7aJ7U
+PhGgOM7gy+sJ3qnXJtbldz3qkhNCJ3q8XBY0fQG6a2N6cy6j6iMOUSDBAAAAAAAA
+
+
+--=-cF8ZdndllMK1qGZCfYd0--
+
+
+--===============4023970083713422870==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============4023970083713422870==--
