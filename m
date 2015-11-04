@@ -1,14 +1,12 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: Question about arm smmu
-Date: Wed, 4 Nov 2015 15:31:55 +0000
-Message-ID: <563A24EB.6090106@arm.com>
-References: <20151104134439.GA4022@linux-4gyl.site>
-	<20151104144308.GQ5405@arm.com>
+From: Laine Stump <laine-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Regression in kernel 4.2.3+ (relative to 4.1.10) on AMD 990FX system
+	with IOMMU enabled
+Date: Wed, 4 Nov 2015 12:24:52 -0500
+Message-ID: <563A3F64.50808@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20151104144308.GQ5405-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,62 +16,40 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/11/15 14:43, Will Deacon wrote:
-> On Wed, Nov 04, 2015 at 09:44:40PM +0800, Peng Fan wrote:
->> Hi Will,
->
-> Hello,
->
->> I am trying to enable SMMU(mmu500) on an platform.
->> My platform support only 32 SIDs, but it have more than 100 masters.
+Last week I upgraded my Fedora 22 AMD 990FX system from kernel 4.1.10 to 
+4.2.3 (standard Fedora builds) and multiple devices stopped working:
 
-Do you mean the MMU-500 configuration really only has 5 bits of stream 
-ID wired up (which seems a bit unlikely, especially given that in such a 
-configuration you should gain extra bits from the prepended TBU number), 
-or that you have a sufficient number of stream ID bits but only have 32 
-stream matching groups?
+* 00:14.2 Audio device: Advanced Micro Devices, Inc. [AMD/ATI] SBx00 
+Azalia (Intel HDA) (rev 40)
 
->> So I need to let different masters share one SID. I read current
->> arm-smmu.c, but it needs each master has unique SID. Do you have
->> some suggestions about how to let different masters sharing one
->> SID?
->
-> We can achieve that using iommu_groups, but then we need a way to
-> describe those groups in the device-tree, as opposed to putting
-> each device into its own group like we do at present. Robin (CC'd) had
-> some work-in-progress for this, iirc.
+* 02:00.[01] Ethernet controller: Intel Corporation 82576 Gigabit 
+Network Connection
 
-I spent enough time on it that I reached the point of thinking there's 
-no feasible DT binding that is sufficiently hardware-agnostic, and isn't 
-just trying to paint a Linux implementation detail as hardware 
-description - the master IDs are already there, so it might as well be 
-up to the thing parsing them to work out what, if anything, it wants to 
-do with duplicates.
+* 01:00.1 Audio device: Advanced Micro Devices, Inc. [AMD/ATI] Cedar 
+HDMI Audio [Radeon HD 5400/6300 Series]
 
-What I have now is a simple little lookup table solution inside the 
-SMMUv2 driver to automatically track groups by stream ID for platform 
-devices. I've not yet tried pulling in Joerg's generic group series, but 
-I think it's going to slot together really neatly with that, so I might 
-try breaking it out of the big stream ID probing rework I'm currently 
-half-way through.
+(The 1st is integrated on the motherboard, the 2nd & 3rd are behind an 
+AMD RD890 pci-pci bridge. There may be other devices failing, but these 
+are the ones immediately obvious.)
 
->> On my platform, SID can be dynamically programmed. So I can program
->> DMA0 and DMA1 using one SID, saying 0x5. But I do not have a good
->> idea how to support this use case in arm-smmu.c driver.
->
-> I think we've have the firmware allocating the SIDs, then describing
-> the grouping to Linux in the device-tree.
+Whatever is the source of the failure, it ends up that the drivers for 
+these devices aren't loaded.
 
-Yeah, regardless of how we handle groups we need the SIDs to be in the 
-DT and not change at runtime, so the programming is going to have to be 
-done before the kernel even runs.
+At Alex Williamson's suggestion, I tried disabling IOMMU in the BIOS, 
+and magically all the devices resumed normal operation (except that I 
+can't do vfio device assignment because the IOMMU is disabled).
 
-Robin.
+Reverting to kernel 4.1.10 very definitely eliminates the problem. I've 
+also tried kernel 4.2.5 and it has the same problem as 4.2.3 (these 
+three are the only pre-built kernels for F22). I can provide dmesg / 
+lspci output from each of these, or any other debug info anyone might 
+like me to gather.
 
->
-> Will
->
+What can I do to help figure out the cause of this problem and get it 
+fixed? (keeping in mind that the last time I built a Linux kernel for 
+myself was 2.6.something about 7 years ago :-). I would be willing to 
+set things up to build my own and go bisecting with git, but there's 
+likely something more expedient...)
