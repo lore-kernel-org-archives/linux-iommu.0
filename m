@@ -1,60 +1,70 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH v6 1/3] iommu: Implement common IOMMU ops for DMA mapping
-Date: Tue, 3 Nov 2015 18:40:19 +0000
-Message-ID: <20151103184019.GD8644@n2100.arm.linux.org.uk>
-References: <cover.1443718557.git.robin.murphy@arm.com>
- <ab8e1caa40d6da1afa4a49f30242ef4e6e1f17df.1443718557.git.robin.murphy@arm.com>
- <1445867094.30736.14.camel@mhfsdcap03>
- <562E5AE4.9070001@arm.com>
- <CAGS+omAWCQsqk56iv0PW2ZhTJ1342GufUsJCP=VYSgCxZNLJpA@mail.gmail.com>
- <56337E4D.1010304@arm.com>
- <CAGS+omAmxbb4uVzaQh1xPmkFtcF6KP-HSV-40=sm1BRTdh+=OQ@mail.gmail.com>
- <CAAFQd5C_dkWBZrQXtyO59ARw7q-0fg-Wk98yApC5VHdQ8-AmNw@mail.gmail.com>
- <5638F1C4.3000900@arm.com>
+From: Peng Fan <b51431-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Subject: Re: [RFC] iommu: arm-smmu: correct reference count
+Date: Wed, 4 Nov 2015 10:48:28 +0800
+Message-ID: <20151104024825.GA27479@shlinux2>
+References: <1446555557-3097-1-git-send-email-van.freenix@gmail.com>
+	<20151103131734.GE14159@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-media-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <5638F1C4.3000900@arm.com>
-Sender: linux-media-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Tomasz Figa <tfiga@chromium.org>, Daniel Kurtz <djkurtz@chromium.org>, Lin PoChun <pochun.lin@mediatek.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Yingjoe Chen <yingjoe.chen@mediatek.com>, Will Deacon <will.deacon@arm.com>, linux-media@vger.kernel.org, Thierry Reding <treding@nvidia.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, "Bobby Batacharia (via Google Docs)" <Bobby.Batacharia@arm.com>, Kyungmin Park <kyungmin.park@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Yong Wu <yong.wu@mediatek.com>, Pawel Osciak <pawel@osciak.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Joerg Roedel <joro@8bytes.org>, thunder.leizhen@huawei.com, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org
+In-Reply-To: <20151103131734.GE14159-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Nov 03, 2015 at 05:41:24PM +0000, Robin Murphy wrote:
-> Hi Tomasz,
-> 
-> On 02/11/15 13:43, Tomasz Figa wrote:
-> >Agreed. The dma_map_*() API is not guaranteed to return a single
-> >contiguous part of virtual address space for any given SG list.
-> >However it was understood to be able to map buffers contiguously
-> >mappable by the CPU into a single segment and users,
-> >videobuf2-dma-contig in particular, relied on this.
-> 
-> I don't follow that - _any_ buffer made of page-sized chunks is going to be
-> mappable contiguously by the CPU; it's clearly impossible for the streaming
-> DMA API itself to offer such a guarantee, because it's entirely orthogonal
-> to the presence or otherwise of an IOMMU.
+Hi Will,
 
-Tomasz's use of "virtual address space" above in combination with the
-DMA API is really confusing.
+On Tue, Nov 03, 2015 at 01:17:34PM +0000, Will Deacon wrote:
+>On Tue, Nov 03, 2015 at 08:59:17PM +0800, Peng Fan wrote:
+>> iommu_group_alloc will initialize the reference count for group to 1.
+>> iommu_group_add_device also increase the group reference count,
+>> if nothing bad happends. And we need to add iommu_group_put to
+>> decrease the reference count for group.
+>> 
+>> Signed-off-by: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+>> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+>> ---
+>> 
+>> Not sure whether my understanding is correct or not. I checked rockchip-iommu.c
+>> exynos-iommu.c and fsl_pamu_domain.c, and they all have iommu_group_put after
+>> iommu_group_add_device.
+>
+>Doesn't this pair up with the iommu_group_remove_device in
+>arm_smmu_remove_device? Are you actually seeing an issue in practice?
 
-dma_map_sg() does *not* construct a CPU view of the passed scatterlist.
-The only thing dma_map_sg() might do with virtual addresses is to use
-them as a way to achieve cache coherence for one particular view of
-that memory, that being the kernel's own lowmem mapping and any kmaps.
-It doesn't extend to vmalloc() or userspace mappings of the memory.
+In arm_smmu_add_platform_device,
+iommu_group_alloc --> group->device_kobj ref count will be init to 1.
+iommu_group_add_device --> group->device_kobj ref count will be added 1 to 2.
 
-If the scatterlist is converted to an array of struct page pointers,
-it's possible to map it with vmap(), but it's implementation defined
-whether such a mapping will receive cache maintanence as part of the
-DMA API or not.  (If you have PIPT caches, it will, if they're VIPT
-caches, maybe not.)
+In arm_smmu_remove_device:
+iommu_group_remove_device --> Decrease group->device_kobj ref count by 1.
+After arm_smmu_remove_device, the ref count of group->device_kobj is not 0.
 
-There is a separate set of calls to deal with the flushing issues for
-vmap()'d memory in this case - see flush_kernel_vmap_range() and
-invalidate_kernel_vmap_range().
+So I think need to add iommu_group_put after iommu_group_add_device.
+If I am wrong, please correct me.
+
+Just code inspection, not have a platform to test this.
+
+Regards,
+Peng.
+
+>
+>Will
+>_______________________________________________
+>iommu mailing list
+>iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+>https://lists.linuxfoundation.org/mailman/listinfo/iommu
 
 -- 
-FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
-according to speedtest.net.
