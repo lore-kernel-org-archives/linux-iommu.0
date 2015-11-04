@@ -1,82 +1,141 @@
-From: Tomasz Figa <tfiga@chromium.org>
-Subject: Re: [PATCH v6 1/3] iommu: Implement common IOMMU ops for DMA mapping
-Date: Wed, 4 Nov 2015 18:48:50 +0900
-Message-ID: <CAAFQd5ApSFC6Pm4tDhZbJOVZ7szCx=diKUtGXq=M9a5Y_4qzOQ@mail.gmail.com>
-References: <cover.1443718557.git.robin.murphy@arm.com> <ab8e1caa40d6da1afa4a49f30242ef4e6e1f17df.1443718557.git.robin.murphy@arm.com>
- <1445867094.30736.14.camel@mhfsdcap03> <562E5AE4.9070001@arm.com>
- <CAGS+omAWCQsqk56iv0PW2ZhTJ1342GufUsJCP=VYSgCxZNLJpA@mail.gmail.com>
- <56337E4D.1010304@arm.com> <CAGS+omAmxbb4uVzaQh1xPmkFtcF6KP-HSV-40=sm1BRTdh+=OQ@mail.gmail.com>
- <CAAFQd5C_dkWBZrQXtyO59ARw7q-0fg-Wk98yApC5VHdQ8-AmNw@mail.gmail.com>
- <5638F1C4.3000900@arm.com> <CAAFQd5A4TcvkDMFezqEpkfWL+7yO2v=Hm=twk=p-NpADPpvqEQ@mail.gmail.com>
- <20151104092748.GI8644@n2100.arm.linux.org.uk>
+From: Jinpu Wang <jinpu.wang-EIkl63zCoXaH+58JC4qpiA@public.gmane.org>
+Subject: [RFI] Watchdog detected hard LOCKUP on alloc_iova
+Date: Wed, 4 Nov 2015 11:08:01 +0100
+Message-ID: <CAMGffEnuCpptLphnh6VcahZrTnckMH=GrzE6k9tUnwEPK=dk-g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-media-owner@vger.kernel.org>
-In-Reply-To: <20151104092748.GI8644@n2100.arm.linux.org.uk>
-Sender: linux-media-owner@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Robin Murphy <robin.murphy@arm.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Pawel Osciak <pawel@osciak.com>, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Kyungmin Park <kyungmin.park@samsung.com>, Daniel Kurtz <djkurtz@chromium.org>, Yong Wu <yong.wu@mediatek.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, "Bobby Batacharia (via Google Docs)" <Bobby.Batacharia@arm.com>, linux-mediatek@lists.infradead.org, Lin PoChun <pochun.lin@mediatek.com>, thunder.leizhen@huawei.com, Marek Szyprowski <m.szyprowski@samsung.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>, Thierry Reding <treding@nvidia.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-media@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Christian Zander <christian-dt00mrq0sMmU+1/U8MakDg@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Nov 4, 2015 at 6:27 PM, Russell King - ARM Linux
-<linux@arm.linux.org.uk> wrote:
-> On Wed, Nov 04, 2015 at 02:12:03PM +0900, Tomasz Figa wrote:
->> My understanding of a scatterlist was that it represents a buffer as a
->> whole, by joining together its physically discontinuous segments.
->
-> Correct, and it may also be scattered in CPU virtual space as well.
->
->> I don't see how single segments (layout of which is completely up to
->> the allocator; often just single pages) would be usable for hardware
->> that needs to do some work more serious than just writing a byte
->> stream continuously to subsequent buffers. In case of such simple
->> devices you don't even need an IOMMU (for means other than protection
->> and/or getting over address space limitations).
->
-> All that's required is that the addresses described in the scatterlist
-> are accessed as an apparently contiguous series of bytes.  They don't
-> have to be contiguous in any address view, provided the device access
-> appears to be contiguous.  How that is done is really neither here nor
-> there.
->
-> IOMMUs are normally there as an address translator - for example, the
-> underlying device may not have the capability to address a scatterlist
-> (eg, because it makes effectively random access) and in order to be
-> accessible to the device, it needs to be made contiguous in device
-> address space.
->
-> Another scenario is that you have more bits of physical address than
-> a device can generate itself for DMA purposes, and you need an IOMMU
-> to create a (possibly scattered) mapping in device address space
-> within the ability of the device to address.
->
-> The requirements here depend on the device behind the IOMMU.
-
-I fully agree with you.
-
-The problem is that the code being discussed here breaks the case of
-devices that don't have the capability of addressing a scatterlist,
-supposedly for the sake of devices that have such capability (but as I
-suggested, they both could be happily supported, by distinguishing
-special values of DMA max segment size and boundary mask).
-
->> However, IMHO the most important use case of an IOMMU is to make
->> buffers, which are contiguous in CPU virtual address space (VA),
->> contiguous in device's address space (IOVA).
->
-> No - there is no requirement for CPU virtual contiguous buffers to also
-> be contiguous in the device address space.
-
-There is no requirement, but shouldn't it be desired for the mapping
-code to map them as such? Otherwise, how could the IOMMU use case you
-described above (address translator for devices which don't have the
-capability to address a scatterlist) be handled properly?
-
-Is the general conclusion now that dma_map_sg() should not be used to
-create IOMMU mappings and we should make a step backwards making all
-drivers (or frameworks, such as videobuf2) do that manually? That
-would be really backwards, because code not aware of IOMMU existence
-at all would have to become aware of it.
-
-Best regards,
-Tomasz
+SGkgRGF2aWQsCgpXZSBoaXQgdGhlIHdhcm5pbmcgZHVyaW5nIHRlc3Q6CgpPY3QgMTkgMTU6MjM6
+MjAgc3RvcmFnZTktcWEga2VybmVsOiBbICA2MzguMTM5NzIyXSAtLS0tLS0tLS0tLS1bIGN1dApo
+ZXJlIF0tLS0tLS0tLS0tLS0KT2N0IDE5IDE1OjIzOjIwIHN0b3JhZ2U5LXFhIGtlcm5lbDogWyAg
+NjM4LjEzOTczMF0gV0FSTklORzogQ1BVOiA1ClBJRDogMTI4MSBhdCBrZXJuZWwvd2F0Y2hkb2cu
+YzoyOTAKd2F0Y2hkb2dfb3ZlcmZsb3dfY2FsbGJhY2srMHg5OC8weGMwKCkKT2N0IDE5IDE1OjIz
+OjIwIHN0b3JhZ2U5LXFhIGtlcm5lbDogWyAgNjM4LjEzOTczMV0gV2F0Y2hkb2cgZGV0ZWN0ZWQK
+aGFyZCBMT0NLVVAgb24gY3B1IDUKT2N0IDE5IDE1OjIzOjIwIHN0b3JhZ2U5LXFhIGtlcm5lbDog
+WyAgNjM4LjEzOTczMl0gTW9kdWxlcyBsaW5rZWQgaW46CmlibmJkX3NlcnZlcihPKSBpYnRyc19z
+ZXJ2ZXIoTykgcmRtYV91Y20gcmRtYV9jbSBpd19jbSBpYl9pcG9pYiBpYl9jbQppYl91dmVyYnMg
+aWJfdW1hZCBtbHg0X2liIGliX3NhIGliX21hZCBpYl9jb3JlIGliX2FkZHIgbWx4NF9jb3JlIGlw
+djYKaGlkX2dlbmVyaWMgdXNiaGlkIGlwbWlfZGV2aW50ZiBsb29wIG51bGxfYmxrIGJyZCBzYl9l
+ZGFjIGVkYWNfY29yZQppMmNfaTgwMSBpMmNfY29yZSBlaGNpX3BjaSBlaGNpX2hjZCBpb2F0ZG1h
+IGlwbWlfc2kgZGNhCmlwbWlfbXNnaGFuZGxlciBidXR0b24gZG1fbW9kIHNnIGFoY2kgbGliYWhj
+aSBlMTAwMGUgbGliYXRhIFtsYXN0CnVubG9hZGVkOiBtbHg0X2NvcmVdCk9jdCAxOSAxNToyMzoy
+MCBzdG9yYWdlOS1xYSBrZXJuZWw6IFsgIDYzOC4xMzk3NTRdIENQVTogNSBQSUQ6IDEyODEKQ29t
+bToga3dvcmtlci91MTY6MiBUYWludGVkOiBHICAgICAgICAgICBPICAgMy4xOC4yMS0xLXN0b3Jh
+Z2UgIzEKT2N0IDE5IDE1OjIzOjIwIHN0b3JhZ2U5LXFhIGtlcm5lbDogWyAgNjM4LjEzOTc1NV0g
+SGFyZHdhcmUgbmFtZToKU3VwZXJtaWNybyBYOVNSTC1GL1g5U1JMLUYsIEJJT1MgMy4yIDAxLzE2
+LzIwMTUKT2N0IDE5IDE1OjIzOjIwIHN0b3JhZ2U5LXFhIGtlcm5lbDogWyAgNjM4LjEzOTc1OV0g
+V29ya3F1ZXVlOiBpYl9tYWQxCmliX3Bvc3Rfc2VuZF9tYWQgW2liX21hZF0KT2N0IDE5IDE1OjIz
+OjIwIHN0b3JhZ2U5LXFhIGtlcm5lbDogWyAgNjM4LjEzOTc2MV0gIDAwMDAwMDAwMDAwMDAxMjIK
+ZmZmZjg4MDQ3ZmQ0NmJhOCBmZmZmZmZmZjgxNWMzZTU1IDAwMDAwMDAwMDAwMDAxMjIKT2N0IDE5
+IDE1OjIzOjIwIHN0b3JhZ2U5LXFhIGtlcm5lbDogWyAgNjM4LjEzOTc2M10gIGZmZmY4ODA0N2Zk
+NDZiZjgKZmZmZjg4MDQ3ZmQ0NmJlOCBmZmZmZmZmZjgxMDUzNjBjIDAwMDAwMDAwMDAwMDAwMDAK
+T2N0IDE5IDE1OjIzOjIwIHN0b3JhZ2U5LXFhIGtlcm5lbDogWyAgNjM4LjEzOTc2NV0gIGZmZmY4
+ODA0NjkyZTAwMDAKMDAwMDAwMDAwMDAwMDAwMCBmZmZmODgwNDdmZDQ2ZDI4IDAwMDAwMDAwMDAw
+MDAwMDAKT2N0IDE5IDE1OjIzOjIwIHN0b3JhZ2U5LXFhIGtlcm5lbDogWyAgNjM4LjEzOTc2N10g
+Q2FsbCBUcmFjZToKT2N0IDE5IDE1OjIzOjIwIHN0b3JhZ2U5LXFhIGtlcm5lbDogWyAgNjM4LjEz
+OTc2OF0gIDxOTUk+Cls8ZmZmZmZmZmY4MTVjM2U1NT5dIGR1bXBfc3RhY2srMHg0OS8weDVjCk9j
+dCAxOSAxNToyMzoyMCBzdG9yYWdlOS1xYSBrZXJuZWw6IFsgIDYzOC4xMzk3NzVdCls8ZmZmZmZm
+ZmY4MTA1MzYwYz5dIHdhcm5fc2xvd3BhdGhfY29tbW9uKzB4OGMvMHhjMApPY3QgMTkgMTU6MjM6
+MjAgc3RvcmFnZTktcWEga2VybmVsOiBbICA2MzguMTM5Nzc3XQpbPGZmZmZmZmZmODEwNTM2ZjY+
+XSB3YXJuX3Nsb3dwYXRoX2ZtdCsweDQ2LzB4NTAKT2N0IDE5IDE1OjIzOjIwIHN0b3JhZ2U5LXFh
+IGtlcm5lbDogWyAgNjM4LjEzOTc3OV0KWzxmZmZmZmZmZjgxMGRjZGY4Pl0gd2F0Y2hkb2dfb3Zl
+cmZsb3dfY2FsbGJhY2srMHg5OC8weGMwCk9jdCAxOSAxNToyMzoyMCBzdG9yYWdlOS1xYSBrZXJu
+ZWw6IFsgIDYzOC4xMzk3ODJdCls8ZmZmZmZmZmY4MTExN2Q1Yz5dIF9fcGVyZl9ldmVudF9vdmVy
+ZmxvdysweDljLzB4MjIwCk9jdCAxOSAxNToyMzoyMCBzdG9yYWdlOS1xYSBrZXJuZWw6IFsgIDYz
+OC4xMzk3ODVdCls8ZmZmZmZmZmY4MTAxOGEwYT5dID8geDg2X3BlcmZfZXZlbnRfc2V0X3Blcmlv
+ZCsweGRhLzB4MTcwCk9jdCAxOSAxNToyMzoyMCBzdG9yYWdlOS1xYSBrZXJuZWw6IFsgIDYzOC4x
+Mzk3ODhdCls8ZmZmZmZmZmY4MTExODYxND5dIHBlcmZfZXZlbnRfb3ZlcmZsb3crMHgxNC8weDIw
+Ck9jdCAxOSAxNToyMzoyMCBzdG9yYWdlOS1xYSBrZXJuZWw6IFsgIDYzOC4xMzk3OTBdCls8ZmZm
+ZmZmZmY4MTAyMGI2Mj5dIGludGVsX3BtdV9oYW5kbGVfaXJxKzB4MjAyLzB4M2YwCk9jdCAxOSAx
+NToyMzoyMCBzdG9yYWdlOS1xYSBrZXJuZWw6IFsgIDYzOC4xMzk3OTNdCls8ZmZmZmZmZmY4MTE1
+YTM4MT5dID8gdW5tYXBfa2VybmVsX3JhbmdlX25vZmx1c2grMHgxMS8weDIwCk9jdCAxOSAxNToy
+MzoyMCBzdG9yYWdlOS1xYSBrZXJuZWw6IFsgIDYzOC4xMzk3OTddCls8ZmZmZmZmZmY4MTM5NjEz
+ZD5dID8gZ2hlc19jb3B5X3RvZnJvbV9waHlzKzB4ZmQvMHgxZjAKT2N0IDE5IDE1OjIzOjIwIHN0
+b3JhZ2U5LXFhIGtlcm5lbDogWyAgNjM4LjEzOTc5OV0KWzxmZmZmZmZmZjgxMDE4MGI0Pl0gcGVy
+Zl9ldmVudF9ubWlfaGFuZGxlcisweDM0LzB4NjAKT2N0IDE5IDE1OjIzOjIwIHN0b3JhZ2U5LXFh
+IGtlcm5lbDogWyAgNjM4LjEzOTgwMl0KWzxmZmZmZmZmZjgxMDBjMmIzPl0gPyBuYXRpdmVfc2No
+ZWRfY2xvY2srMHgzMy8weGQwCk9jdCAxOSAxNToyMzoyMCBzdG9yYWdlOS1xYSBrZXJuZWw6IFsg
+IDYzOC4xMzk4MDRdCls8ZmZmZmZmZmY4MTAwNmJmYj5dIG5taV9oYW5kbGUrMHg3Yi8weDEyMApP
+Y3QgMTkgMTU6MjM6MjAgc3RvcmFnZTktcWEga2VybmVsOiBbICA2MzguMTM5ODA2XQpbPGZmZmZm
+ZmZmODEwMDZlYjQ+XSBkZWZhdWx0X2RvX25taSsweDU0LzB4MTEwCk9jdCAxOSAxNToyMzoyMCBz
+dG9yYWdlOS1xYSBrZXJuZWw6IFsgIDYzOC4xMzk4MDhdCls8ZmZmZmZmZmY4MTAwNzAwMD5dIGRv
+X25taSsweDkwLzB4ZDAKT2N0IDE5IDE1OjIzOjIwIHN0b3JhZ2U5LXFhIGtlcm5lbDogWyAgNjM4
+LjEzOTgxMV0KWzxmZmZmZmZmZjgxNWNhNzgxPl0gZW5kX3JlcGVhdF9ubWkrMHgxZS8weDJlCk9j
+dCAxOSAxNToyMzoyMCBzdG9yYWdlOS1xYSBrZXJuZWw6IFsgIDYzOC4xMzk4MTRdCls8ZmZmZmZm
+ZmY4MTMxMDM0Nz5dID8gcmJfcHJldisweDI3LzB4NjAKT2N0IDE5IDE1OjIzOjIwIHN0b3JhZ2U5
+LXFhIGtlcm5lbDogWyAgNjM4LjEzOTgxNV0KWzxmZmZmZmZmZjgxMzEwMzQ3Pl0gPyByYl9wcmV2
+KzB4MjcvMHg2MApPY3QgMTkgMTU6MjM6MjAgc3RvcmFnZTktcWEga2VybmVsOiBbICA2MzguMTM5
+ODE3XQpbPGZmZmZmZmZmODEzMTAzNDc+XSA/IHJiX3ByZXYrMHgyNy8weDYwCk9jdCAxOSAxNToy
+MzoyMCBzdG9yYWdlOS1xYSBrZXJuZWw6IFsgIDYzOC4xMzk4MThdICA8PEVPRT4+Cls8ZmZmZmZm
+ZmY4MTUwNTZmNj5dIGFsbG9jX2lvdmErMHhjNi8weDIyMApPY3QgMTkgMTU6MjM6MjAgc3RvcmFn
+ZTktcWEga2VybmVsOiBbICA2MzguMTM5ODIzXQpbPGZmZmZmZmZmODE1MDdjZjU+XSBpbnRlbF9h
+bGxvY19pb3ZhKzB4YjUvMHhmMApPY3QgMTkgMTU6MjM6MjAgc3RvcmFnZTktcWEga2VybmVsOiBb
+ICA2MzguMTM5ODI1XQpbPGZmZmZmZmZmODE1MGE4ODc+XSBfX2ludGVsX21hcF9zaW5nbGUrMHhi
+Ny8weDIzMApPY3QgMTkgMTU6MjM6MjAgc3RvcmFnZTktcWEga2VybmVsOiBbICA2MzguMTM5ODI4
+XQpbPGZmZmZmZmZmODE1MGFhMzk+XSBpbnRlbF9tYXBfcGFnZSsweDM5LzB4NDAKT2N0IDE5IDE1
+OjIzOjIwIHN0b3JhZ2U5LXFhIGtlcm5lbDogWyAgNjM4LjEzOTgzMF0KWzxmZmZmZmZmZmEwMGM3
+ZmM0Pl0gaWJfc2VuZF9tYWQrMHgyNzQvMHg3NzAgW2liX21hZF0KT2N0IDE5IDE1OjIzOjIwIHN0
+b3JhZ2U5LXFhIGtlcm5lbDogWyAgNjM4LjEzOTgzM10KWzxmZmZmZmZmZmEwMGM5YzI4Pl0gaWJf
+cG9zdF9zZW5kX21hZCsweGFlOC8weDE5OTAgW2liX21hZF0KT2N0IDE5IDE1OjIzOjIwIHN0b3Jh
+Z2U5LXFhIGtlcm5lbDogWyAgNjM4LjEzOTgzNl0KWzxmZmZmZmZmZjgxMDZhNmE1Pl0gcHJvY2Vz
+c19vbmVfd29yaysweDE0NS8weDQ1MApPY3QgMTkgMTU6MjM6MjAgc3RvcmFnZTktcWEga2VybmVs
+OiBbICA2MzguMTM5ODM4XQpbPGZmZmZmZmZmODEwNmFhY2U+XSB3b3JrZXJfdGhyZWFkKzB4MTFl
+LzB4NGYwCk9jdCAxOSAxNToyMzoyMCBzdG9yYWdlOS1xYSBrZXJuZWw6IFsgIDYzOC4xMzk4NDBd
+Cls8ZmZmZmZmZmY4MTVjNDJkOT5dID8gX19zY2hlZHVsZSsweDM2OS8weDg4MApPY3QgMTkgMTU6
+MjM6MjAgc3RvcmFnZTktcWEga2VybmVsOiBbICA2MzguMTM5ODQyXQpbPGZmZmZmZmZmODEwNmE5
+YjA+XSA/IHByb2Nlc3Nfb25lX3dvcmsrMHg0NTAvMHg0NTAKT2N0IDE5IDE1OjIzOjIwIHN0b3Jh
+Z2U5LXFhIGtlcm5lbDogWyAgNjM4LjEzOTg0NF0KWzxmZmZmZmZmZjgxMDZmYTVlPl0ga3RocmVh
+ZCsweGNlLzB4MTAwCk9jdCAxOSAxNToyMzoyMCBzdG9yYWdlOS1xYSBrZXJuZWw6IFsgIDYzOC4x
+Mzk4NDddCls8ZmZmZmZmZmY4MTA2Zjk5MD5dID8ga3RocmVhZF9mcmVlemFibGVfc2hvdWxkX3N0
+b3ArMHg3MC8weDcwCk9jdCAxOSAxNToyMzoyMCBzdG9yYWdlOS1xYSBrZXJuZWw6IFsgIDYzOC4x
+Mzk4NDldCls8ZmZmZmZmZmY4MTVjODc1OD5dIHJldF9mcm9tX2ZvcmsrMHg1OC8weDkwCk9jdCAx
+OSAxNToyMzoyMCBzdG9yYWdlOS1xYSBrZXJuZWw6IFsgIDYzOC4xMzk4NTFdCls8ZmZmZmZmZmY4
+MTA2Zjk5MD5dID8ga3RocmVhZF9mcmVlemFibGVfc2hvdWxkX3N0b3ArMHg3MC8weDcwCk9jdCAx
+OSAxNToyMzoyMCBzdG9yYWdlOS1xYSBrZXJuZWw6IFsgIDYzOC4xMzk4NTNdIC0tLVsgZW5kIHRy
+YWNlCjM2YzI5OGMzZGFkNWMzZjUgXS0tLQoKZ2RiIHNob3cgbGFzdCBjYWxsOgpnZGIpIGxpc3Qg
+KmFsbG9jX2lvdmErMHhjNgoweGZmZmZmZmZmODE1MDU2ZjYgaXMgaW4gYWxsb2NfaW92YSAoZHJp
+dmVycy9pb21tdS9pb3ZhLmM6MTA3KS4KMTAyIC8qIFdhbGsgdGhlIHRyZWUgYmFja3dhcmRzICov
+CjEwMyBzcGluX2xvY2tfaXJxc2F2ZSgmaW92YWQtPmlvdmFfcmJ0cmVlX2xvY2ssIGZsYWdzKTsK
+MTA0IHNhdmVkX3BmbiA9IGxpbWl0X3BmbjsKMTA1IGN1cnIgPSBfX2dldF9jYWNoZWRfcmJub2Rl
+KGlvdmFkLCAmbGltaXRfcGZuKTsKMTA2IHByZXYgPSBjdXJyOwoxMDcgd2hpbGUgKGN1cnIpIHsK
+MTA4IHN0cnVjdCBpb3ZhICpjdXJyX2lvdmEgPSBjb250YWluZXJfb2YoY3Vyciwgc3RydWN0IGlv
+dmEsIG5vZGUpOwoxMDkKMTEwIGlmIChsaW1pdF9wZm4gPCBjdXJyX2lvdmEtPnBmbl9sbykKMTEx
+IGdvdG8gbW92ZV9sZWZ0OwoxMTIgZWxzZSBpZiAobGltaXRfcGZuIDwgY3Vycl9pb3ZhLT5wZm5f
+aGkpCjExMyBnb3RvIGFkanVzdF9saW1pdF9wZm47CjExNCBlbHNlCnsgMTE1IGlmIChzaXplX2Fs
+aWduZWQpIDExNiBwYWRfc2l6ZSA9IGlvdmFfZ2V0X3BhZF9zaXplKHNpemUsCmxpbWl0X3Bmbik7
+IDExNyBpZiAoKGN1cnJfaW92YS0+cGZuX2hpICsgc2l6ZSArIHBhZF9zaXplKSA8PQpsaW1pdF9w
+Zm4pIDExOCBicmVhazsgLyogZm91bmQgYSBmcmVlIHNsb3QgKi8gMTE5IH0KMTIwIGFkanVzdF9s
+aW1pdF9wZm46CjEyMSBsaW1pdF9wZm4gPSBjdXJyX2lvdmEtPnBmbl9sbyAtIDE7CjEyMiBtb3Zl
+X2xlZnQ6CjEyMyBwcmV2ID0gY3VycjsKMTI0IGN1cnIgPSByYl9wcmV2KGN1cnIpOwoxMjUgfQoo
+Z2RiKQoKc28gbG9va3MgaXQncyBsb29wIGZvciB2ZXJ5IGxvbmcgdGltZSB3aXRoIGxvY2sgaG9s
+ZC4KCkkgY2hlY2tlZCB0aGUgZ2l0IGxvZyBubyBidWdmaXggZm9yIHRoaXMsIElNSE8sIGJ1dCBt
+YXliZSBJIG1pc3Mgc29tZXRoaW5nLgoKVGhpcyBoYXBwZW4gd2l0aCB0aGUgZml4IGZyb20gQ2hy
+aXN0YW4gKGNvbW1pdDpiYTIzNzRmZCBpb21tdS92dC1kOgpmaXggcmFuZ2UgY29tcHV0YXRpb24g
+d2hlbiBtYWtpbmcgcm9vbSBmb3IgbGFyZ2UgcGFnZXMpIG9uIHRvcCBvZgozLjE4LjIxLgoKSXQg
+YWxzbyBoYXBwZW5lZCB3aGVuIHdlIHBhc3Mga2VybmVsIHBhcmFtZXRlciAiaW50ZWxfaW9tbXU9
+c3Bfb2ZmIgoKTG9va2luZyBmb3J3YXJkIHRvIHlvdXIgaW5wdXQuCgotLSAKTWl0IGZyZXVuZGxp
+Y2hlbiBHcsO8w59lbiwKQmVzdCBSZWdhcmRzLAoKSmFjayBXYW5nCgpMaW51eCBLZXJuZWwgRGV2
+ZWxvcGVyIFN0b3JhZ2UKUHJvZml0QnJpY2tzIEdtYkggIFRoZSBJYWFTLUNvbXBhbnkuCgpQcm9m
+aXRCcmlja3MgR21iSApHcmVpZnN3YWxkZXIgU3RyLiAyMDcKRCAtIDEwNDA1IEJlcmxpbgpUZWw6
+ICs0OSAzMCA1NzcwMDgzLTQyCkZheDogKzQ5IDMwIDU3NzAwODUtOTgKRW1haWw6IGppbnB1Lndh
+bmdAcHJvZml0YnJpY2tzLmNvbQpVUkw6IGh0dHA6Ly93d3cucHJvZml0YnJpY2tzLmRlCgpTaXR6
+IGRlciBHZXNlbGxzY2hhZnQ6IEJlcmxpbi4KUmVnaXN0ZXJnZXJpY2h0OiBBbXRzZ2VyaWNodCBD
+aGFybG90dGVuYnVyZywgSFJCIDEyNTUwNiBCLgpHZXNjaMOkZnRzZsO8aHJlcjogQW5kcmVhcyBH
+YXVnZXIsIEFjaGltIFdlaXNzLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlv
+bi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8v
+aW9tbXU=
