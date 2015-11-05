@@ -1,13 +1,13 @@
 From: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 3/7] doc:bindings:Document for hi655x pmic driver
-Date: Thu, 5 Nov 2015 14:23:47 +0000
-Message-ID: <20151105142347.GI18409@sirena.org.uk>
+Subject: Re: [PATCH 4/7] mfd: hi655x: Add hi665x pmic driver
+Date: Thu, 5 Nov 2015 14:30:10 +0000
+Message-ID: <20151105143010.GJ18409@sirena.org.uk>
 References: <1446730488-31930-1-git-send-email-puck.chen@hisilicon.com>
-	<1446730488-31930-4-git-send-email-puck.chen@hisilicon.com>
+	<1446730488-31930-5-git-send-email-puck.chen@hisilicon.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0465971537905300454=="
+Content-Type: multipart/mixed; boundary="===============3694602394536599762=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1446730488-31930-4-git-send-email-puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+In-Reply-To: <1446730488-31930-5-git-send-email-puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,102 +22,81 @@ Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, dan.zhao-C8/M+/jPZTeaMJb+Lgu22Q@p
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============0465971537905300454==
+--===============3694602394536599762==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="xQR6quUbZ63TTuTU"
+	protocol="application/pgp-signature"; boundary="LG0Ll82vYr46+VA1"
 Content-Disposition: inline
 
 
---xQR6quUbZ63TTuTU
+--LG0Ll82vYr46+VA1
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, Nov 05, 2015 at 09:34:44PM +0800, Chen Feng wrote:
+On Thu, Nov 05, 2015 at 09:34:45PM +0800, Chen Feng wrote:
 
-> +Required properties:
-> +- compatible: Must be "hisilicon,hi655x-regulator-pmic";
+> +config MFD_HI655X_PMIC
+> +        bool "HiSilicon Hi655X series PMU/Codec IC"
 
-If this is a subfunction of a MFD it shouldn't have a compatible string.
-If it is instead a standalone device it should just have a name in the
-form "vendor,chip" without any random suffixes.
+Why is this bool and not tristate?
 
-> +- regulator-name: Regulator name in SoC.
-> +- regulator-min-microvolt: Smallest voltage support.
-> +- regulator-max-microvolt: Largest voltages support.
+> +        depends on ARCH_HISI
 
-These should *never* be mandatory properties and the generic regulator
-bindings should be reference rather than copied into the binding for a
-specific device, that way the standard definitions for things are always
-used and people know about any other properties that are available as
-standard.
+Can we have an || COMPILE_TEST here?
 
-> +- regulator-off-on-delay: The time wait for power steady
-> +- regulator-ctrl-regs: Registers offset of control register.
-> +  In turn with enable disable and status register offset.
-> +- regulator-ctrl-mask: The control mask of the register.
-> +- regulator-vset-regs: Voltage set register offset.
-> +- regulator-vset-mask: voltage set control mask.
-> +- regulator-n-vol: The num of support voltages.
-> +- regulator-vset-table: The table of support voltages.
+> +static irqreturn_t hi655x_pmic_irq_handler(int irq, void *data)
+> +{
+> +	struct hi655x_pmic *pmic = (struct hi655x_pmic *)data;
+> +	u32 pending;
+> +	u32 ret = IRQ_NONE;
+> +	unsigned long offset;
+> +	int i;
 
-Why is this in the binding?  This is a binding for a specific device,
-there is no point in putting all these data tables in the DT - it just
-bloats the DT and makes it harder for us to enhance our support for this
-device in the future.  Just=20
+This looks like you should be able to use regmap_irq?
 
+> +static int hi655x_pmic_remove(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct hi655x_pmic *pmic = platform_get_drvdata(pdev);
 > +
-> +Example:
-> +        pmic: pmic@f8000000 {
-> +                compatible =3D "hisilicon,hi655x-pmic-driver";
-> +		...
-> +                ldo2: regulator@a21 {
-> +                        compatible =3D "hisilicon,hi655x-regulator-pmic";
-> +                        regulator-name =3D "ldo2";
-> +                        regulator-min-microvolt =3D <2500000>;
-> +                        regulator-max-microvolt =3D <3200000>;
-> +                        regulator-valid-modes-mask =3D <0x02>;
-> +                        regulator-initial-mode =3D <0x02>;
-> +                        regulator-off-on-delay =3D <120>;
-> +                        regulator-ctrl-regs =3D <0x029 0x02a 0x02b>;
-> +                        regulator-ctrl-mask =3D <0x1>;
-> +                        regulator-vset-regs =3D <0x072>;
-> +                        regulator-vset-mask =3D <0x3>;
-> +                        regulator-n-vol =3D <8>;
-> +                        regulator-vset-table  =3D <2500000>,<2600000>,
-> +                                                <2700000>,<2800000>,
-> +                                                <2900000>,<3000000>,
-> +                                                <3100000>,<3200000>;
-> +                };
-> +		...
-> +	}
-> --=20
-> 1.9.1
->=20
->=20
+> +	free_irq(pmic->irq, pmic);
+> +	gpio_free(pmic->gpio);
+> +	devm_release_mem_region(dev, pmic->res->start,
+> +				resource_size(pmic->res));
+> +	devm_kfree(dev, pmic);
+> +	platform_set_drvdata(pdev, NULL);
 
---xQR6quUbZ63TTuTU
+There is no point in using devm_ cleanup functions in the device removal
+path unless there's some ordering issue with respect to other stuff
+which doesn't seem to be the case here.
+
+> +static struct platform_driver hi655x_pmic_driver = {
+> +	.driver	= {
+> +		.name =	"hisi,hi655x-pmic",
+
+We don't normally use OF style names in the Linux driver names.
+
+--LG0Ll82vYr46+VA1
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEcBAEBCAAGBQJWO2ZyAAoJECTWi3JdVIfQRjYH/15bCAD+yeC34ZD8dRLzBYuU
-5MwOy/3knMKzgOuHyXVqaDOm5y1ttWY5rOQljrdGJh67K+DHTRnYkApW9iESEcQ4
-k1WYKcRvUzLsHStsS94O/ve5/cXvgBEoMA3cPravUrcKOZQ8sDwjZQFrbm1WbybX
-zcfBkrVEaxiI0nC5O1AFwCd63JYjsMMYLtJbGDbjEHZprDvy8kMrDEdz+OhBBro/
-A56zwkIUVbBr4oBQVNbJBpivDqPCiOlfqH8qFhkdKw2bimguuT5xeg+uW8ncGbti
-AWKU4514d4P4Hr5UX/LT1pehtl4pgfhuX1erp5MqPqoE1WYalhR0Jkx2KnLj8tQ=
-=U5j/
+iQEcBAEBCAAGBQJWO2fyAAoJECTWi3JdVIfQhXQH/RIo7rtxAZ5RgzWByhvia68h
+h5TtUQIJz2IPKcI21LCPrX0yVAs4vWz8ekT/Ogd0NUVwC/kszq2UOg8VfiI8X4e+
+4xIniMVPeJIBc6NkL1k3V3DQ2bWzlQFUonSTOVzdUtftgAckci0t2zy+pOad9m9Q
+JdJPUQYq9S2Z7j62MDcPcr+7uBggABD7ry39kooawcz2OrT/r/xbm7ibpXwsDehZ
+/QauvnvOTKdBdn9K3lE6ejufxzTlGbaLGxvjeLSG6pbDN2UWIsFIOYZuulrl4Cc7
+sEH7G5rbG1XHdbTChB7sgKZe8Y/8Hz4ycuP7sYRaizsHIOn1TnSxwQ4QdUzoM0E=
+=H64R
 -----END PGP SIGNATURE-----
 
---xQR6quUbZ63TTuTU--
+--LG0Ll82vYr46+VA1--
 
---===============0465971537905300454==
+--===============3694602394536599762==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============0465971537905300454==--
+--===============3694602394536599762==--
