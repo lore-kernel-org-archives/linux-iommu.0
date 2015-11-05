@@ -1,11 +1,13 @@
 From: Chen Feng <puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Subject: [PATCH 0/7] Add Support for Hi6220 PMIC Hi6553 MFD Core
-Date: Thu, 5 Nov 2015 21:34:41 +0800
-Message-ID: <1446730488-31930-1-git-send-email-puck.chen@hisilicon.com>
+Subject: [PATCH 2/7] doc:bindings:Document for mtcmos regulator on hi6220 SoC
+Date: Thu, 5 Nov 2015 21:34:43 +0800
+Message-ID: <1446730488-31930-3-git-send-email-puck.chen@hisilicon.com>
+References: <1446730488-31930-1-git-send-email-puck.chen@hisilicon.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1446730488-31930-1-git-send-email-puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,56 +21,52 @@ To: w.f-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, sameo-VuQAYsv1563Yd54FQh9/CA@pu
 Cc: dan.zhao-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, peter.panshilin-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, qijiwen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-  The patch sets add support for Hi6220 PMIC Hi655x MFD core and its
-regulator driver.
-  Current testing and support board is Hikey which is one of 96boards.
-It is an arm64 open source board. For more information about this board,
-please access https://www.96boards.org.
+Add Document for mtcmos driver on hi6220 SoC
 
-This is hardware layout for access PMIC Hi655x from AP SoC Hi6220.
-Between PMIC Hi655x and Hi6220, the physical signal channel is SSI.
-We can use memory-mapped I/O to communicate.
-
-+----------------+             +-------------+
-|                |             |             |
-|    Hi6220      |   SSI bus   |   Hi655x    |
-|                |-------------|             |
-|                |(REGMAP_MMIO)|             |
-+----------------+             +-------------+
-
-The patch sets are based on 4.3-rc7.
-
-Chen Feng (7):
-  doc:bindings:Add document for mfd hi665x PMIC
-  doc:bindings:Document for mtcmos regulator on hi6220 SoC
-  doc:bindings:Document for hi655x pmic driver
-  mfd: hi655x: Add hi665x pmic driver
-  regulator: add driver for mtcmos voltage regulator on hi6220 SoC
-  regulator: hisilicon: Add hi655x pmic voltage regulator driver
-  arm64: dts: Add mtcmos and pmic node for hi6220 HiKey board
-
- .../devicetree/bindings/mfd/hisilicon,hi655x.txt   |  18 ++
- .../bindings/regulator/hisilicon,hi6220-mtcmos.txt |  32 +++
- .../regulator/hisilicon,hi655x-regulator.txt       |  50 ++++
- arch/arm64/boot/dts/hisilicon/hi6220.dtsi          | 210 ++++++++++++++
- drivers/mfd/Kconfig                                |   9 +
- drivers/mfd/Makefile                               |   1 +
- drivers/mfd/hi655x-pmic.c                          | 315 +++++++++++++++++++++
- drivers/regulator/Kconfig                          |  13 +
- drivers/regulator/Makefile                         |   2 +
- drivers/regulator/hi6220-mtcmos.c                  | 245 ++++++++++++++++
- drivers/regulator/hi655x-regulator.c               | 246 ++++++++++++++++
- include/linux/mfd/hi655x-pmic.h                    |  50 ++++
- include/linux/regulator/hi655x-regulator.h         |  63 +++++
- 13 files changed, 1254 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/hisilicon,hi655x.txt
+Signed-off-by: Chen Feng <puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Signed-off-by: Fei Wang <w.f-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+---
+ .../bindings/regulator/hisilicon,hi6220-mtcmos.txt | 32 ++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/regulator/hisilicon,hi6220-mtcmos.txt
- create mode 100644 Documentation/devicetree/bindings/regulator/hisilicon,hi655x-regulator.txt
- create mode 100644 drivers/mfd/hi655x-pmic.c
- create mode 100644 drivers/regulator/hi6220-mtcmos.c
- create mode 100644 drivers/regulator/hi655x-regulator.c
- create mode 100644 include/linux/mfd/hi655x-pmic.h
- create mode 100644 include/linux/regulator/hi655x-regulator.h
 
+diff --git a/Documentation/devicetree/bindings/regulator/hisilicon,hi6220-mtcmos.txt b/Documentation/devicetree/bindings/regulator/hisilicon,hi6220-mtcmos.txt
+new file mode 100644
+index 0000000..bb06e1b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/regulator/hisilicon,hi6220-mtcmos.txt
+@@ -0,0 +1,32 @@
++Hi6220 mtcmos Voltage regulators
++
++Required parent device properties:
++- compatible: Must be "hisilicon,hi6220-mtcmos-driver"
++- hisilicon,mtcmos-steady-us: The time to wait for power steady
++- hisilicon,mtcmos-sc-on-base: address of mtcmos on hi6220 SoC
++
++Required child device properties:
++- regulator-name: The name of mtcmos
++- hisilicon,ctrl-regs: Offset of ctrl-regs
++- hisilicon,ctrl-data: The bit to ctrl the regulator
++
++Example:
++        mtcmos {
++                compatible = "hisilicon,hi6220-mtcmos-driver";
++                hisilicon,mtcmos-steady-us = <10>;
++                hisilicon,mtcmos-sc-on-base  = <0xf7800000>;
++                hisilicon,mtcmos-acpu-on-base = <0xf65a0000>;
++
++                mtcmos1: regulator@a1{
++                        regulator-name = "G3D_PD_VDD";
++                        regulator-compatible = "mtcmos1";
++                        hisilicon,ctrl-regs = <0x830 0x834 0x83c>;
++                        hisilicon,ctrl-data = <1 0x1>;
++                };
++                mtcmos2: regulator@a2{
++                        regulator-name = "SOC_MED";
++                        regulator-compatible = "mtcmos2";
++                        hisilicon,ctrl-regs = <0x830 0x834 0x83c>;
++                        hisilicon,ctrl-data = <2 0x1>;
++                };
++        };
 -- 
 1.9.1
