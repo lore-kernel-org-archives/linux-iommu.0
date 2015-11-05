@@ -1,7 +1,7 @@
 From: Chen Feng <puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Subject: [PATCH 1/7] doc:bindings:Add document for mfd hi665x PMIC
-Date: Thu, 5 Nov 2015 21:34:42 +0800
-Message-ID: <1446730488-31930-2-git-send-email-puck.chen@hisilicon.com>
+Subject: [PATCH 3/7] doc:bindings:Document for hi655x pmic driver
+Date: Thu, 5 Nov 2015 21:34:44 +0800
+Message-ID: <1446730488-31930-4-git-send-email-puck.chen@hisilicon.com>
 References: <1446730488-31930-1-git-send-email-puck.chen@hisilicon.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,38 +21,70 @@ To: w.f-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, sameo-VuQAYsv1563Yd54FQh9/CA@pu
 Cc: dan.zhao-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, peter.panshilin-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, qijiwen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add document for mfd driver hi655x pmic driver
+Add Document for hi655x pmic driver
 
 Signed-off-by: Chen Feng <puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
 Signed-off-by: Fei Wang <w.f-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 ---
- .../devicetree/bindings/mfd/hisilicon,hi655x.txt       | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/hisilicon,hi655x.txt
+ .../regulator/hisilicon,hi655x-regulator.txt       | 50 ++++++++++++++++++++++
+ 1 file changed, 50 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/regulator/hisilicon,hi655x-regulator.txt
 
-diff --git a/Documentation/devicetree/bindings/mfd/hisilicon,hi655x.txt b/Documentation/devicetree/bindings/mfd/hisilicon,hi655x.txt
+diff --git a/Documentation/devicetree/bindings/regulator/hisilicon,hi655x-regulator.txt b/Documentation/devicetree/bindings/regulator/hisilicon,hi655x-regulator.txt
 new file mode 100644
-index 0000000..afa2fa5
+index 0000000..66c6a73
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/hisilicon,hi655x.txt
-@@ -0,0 +1,18 @@
-+Hisilicon hi655x Power Management Integrated Circuit (PMIC)
++++ b/Documentation/devicetree/bindings/regulator/hisilicon,hi655x-regulator.txt
+@@ -0,0 +1,50 @@
++Hisilicon Hi655x Voltage regulators
++
++Note:
++The hi655x regulator control is managed by hi655x Power IC.
++So the node of this regulator must be child node of hi655x
++pmic node.
++
++The driver uses the regulator core framework, so please also
++take the bindings of regulator.txt for reference.
 +
 +Required properties:
-+- compatible: Should be "hisilicon,hi655x-pmic-driver"
-+- reg: Base address of PMIC on hi6220 soc
-+- #interrupt-cells: Should be 2, two cells are needed for irq.
-+- interrupt-controller: hi655x has internal IRQs (has own IRQ domain).
-+- pmu_irq_gpio: should be &gpio_pmu_irq_n, is the IRQ gpio of hi655x.
++- compatible: Must be "hisilicon,hi655x-regulator-pmic";
++- regulator-name: Regulator name in SoC.
++- regulator-min-microvolt: Smallest voltage support.
++- regulator-max-microvolt: Largest voltages support.
++- regulator-initial-mode: Init mode of this regulator.
++- regulator-valid-modes-mask: Valid support mode mask.
++- regulator-off-on-delay: The time wait for power steady
++- regulator-ctrl-regs: Registers offset of control register.
++  In turn with enable disable and status register offset.
++- regulator-ctrl-mask: The control mask of the register.
++- regulator-vset-regs: Voltage set register offset.
++- regulator-vset-mask: voltage set control mask.
++- regulator-n-vol: The num of support voltages.
++- regulator-vset-table: The table of support voltages.
 +
 +Example:
-+	pmic: pmic@f8000000 {
-+		compatible = "hisilicon,hi655x-pmic-driver";
-+		reg = <0x0 0xf8000000 0x0 0x1000>;
-+		#interrupt-cells = <2>;
-+		interrupt-controller;
-+		pmic_gpios = <&gpio_pmu_irq_n>;
-+		status = "okay";
++        pmic: pmic@f8000000 {
++                compatible = "hisilicon,hi655x-pmic-driver";
++		...
++                ldo2: regulator@a21 {
++                        compatible = "hisilicon,hi655x-regulator-pmic";
++                        regulator-name = "ldo2";
++                        regulator-min-microvolt = <2500000>;
++                        regulator-max-microvolt = <3200000>;
++                        regulator-valid-modes-mask = <0x02>;
++                        regulator-initial-mode = <0x02>;
++                        regulator-off-on-delay = <120>;
++                        regulator-ctrl-regs = <0x029 0x02a 0x02b>;
++                        regulator-ctrl-mask = <0x1>;
++                        regulator-vset-regs = <0x072>;
++                        regulator-vset-mask = <0x3>;
++                        regulator-n-vol = <8>;
++                        regulator-vset-table  = <2500000>,<2600000>,
++                                                <2700000>,<2800000>,
++                                                <2900000>,<3000000>,
++                                                <3100000>,<3200000>;
++                };
++		...
 +	}
 -- 
 1.9.1
