@@ -1,148 +1,90 @@
-From: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 5/7] regulator: add driver for mtcmos voltage regulator
-	on hi6220 SoC
-Date: Thu, 5 Nov 2015 14:44:41 +0000
-Message-ID: <20151105144441.GK18409@sirena.org.uk>
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH 6/7] regulator: hisilicon: Add hi655x pmic voltage
+ regulator driver
+Date: Thu, 5 Nov 2015 14:52:35 +0000
+Message-ID: <20151105145235.GL18409@sirena.org.uk>
 References: <1446730488-31930-1-git-send-email-puck.chen@hisilicon.com>
-	<1446730488-31930-6-git-send-email-puck.chen@hisilicon.com>
+ <1446730488-31930-7-git-send-email-puck.chen@hisilicon.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============4301795931876115261=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1446730488-31930-6-git-send-email-puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Chen Feng <puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, dan.zhao-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, w.f-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, haojian.zhuang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, z.liuxinliang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, kong.kongxinwei-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, qijiwen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, haojian.zhuang-1ViLX0X+lBJBDgjK7y7TUQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, weidong2-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, leo.yan-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, yudongbin-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, peter.panshilin-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, saberlily.xia-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="HBg0C3yr6HVa1ZCc"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1446730488-31930-7-git-send-email-puck.chen@hisilicon.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Chen Feng <puck.chen@hisilicon.com>
+Cc: w.f@huawei.com, sameo@linux.intel.com, lee.jones@linaro.org, linux-kernel@vger.kernel.org, lgirdwood@gmail.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, joro@8bytes.org, iommu@lists.linux-foundation.org, haojian.zhuang@linaro.org, devicetree@vger.kernel.org, xuwei5@hisilicon.com, xuyiping@hisilicon.com, kong.kongxinwei@hisilicon.com, z.liuxinliang@hisilicon.com, yudongbin@hisilicon.com, weidong2@hisilicon.com, saberlily.xia@hisilicon.com, haojian.zhuang@outlook.com, leo.yan@linaro.org, linuxarm@huawei.com, dan.zhao@hisilicon.com, peter.panshilin@hisilicon.com, qijiwen@hisilicon.com
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============4301795931876115261==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="7ArrI7P/b+va1vZ8"
-Content-Disposition: inline
-
-
---7ArrI7P/b+va1vZ8
+--HBg0C3yr6HVa1ZCc
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Thu, Nov 05, 2015 at 09:34:46PM +0800, Chen Feng wrote:
-> Add driver to support mtcmos on hi6220
+On Thu, Nov 05, 2015 at 09:34:47PM +0800, Chen Feng wrote:
 
-I just noticed that these patches are all being posted to the IOMMU list
-- that seems a bit odd?
+> +config REGULATOR_HI6220_MTCMOS
+> +        bool "Hisilicon Hi6220 mtcmos support"
+> +        depends on ARCH_HISI
+> +        help
+> +          This driver provides support for the mtcmos regulators of Hi6220 Soc.
+> +
 
-> +static int hi6220_mtcmos_is_on(struct hi6220_mtcmos *mtcmos,
-> +			       unsigned int regs, unsigned int mask, int shift)
+The Kconfig and Makefile updates for MCTMOS should have been in the
+patch adding the driver for that.
+
+> +config REGULATOR_HI655X
+> +        bool "HiSilicon Hi655x PMIC voltage regulator support"
+> +        depends on ARCH_HISI
+
+For both of these we should have an || COMPILE_TEST and there's no need
+for either to be bool I can see, they should be tristate.
+
+> +static int hi655x_is_enabled(struct regulator_dev *rdev)
 > +{
-> +	unsigned int ret;
+> +	unsigned int value = 0;
 > +
-> +	ret = readl(mtcmos->sc_on_regs + regs);
-> +	ret &= (mask << shift);
+> +	struct hi655x_regulator *regulator = rdev_get_drvdata(rdev);
+> +	struct hi655x_regulator_ctrl_regs *ctrl_regs = &regulator->ctrl_regs;
 > +
-> +	return ret;
-> +}
-> +
-> +static int hi6220_mtcmos_is_enabled(struct regulator_dev *rdev)
-> +{
-> +	int ret;
-> +	struct hi6220_mtcmos_info *sreg = rdev_get_drvdata(rdev);
-> +	struct platform_device *pdev =
-> +		container_of(rdev->dev.parent, struct platform_device, dev);
-> +	struct hi6220_mtcmos *mtcmos = platform_get_drvdata(pdev);
-> +	struct hi6220_mtcmos_ctrl_regs *ctrl_regs = &sreg->ctrl_regs;
-> +	struct hi6220_mtcmos_ctrl_data *ctrl_data = &sreg->ctrl_data;
-> +
-> +	ret = hi6220_mtcmos_is_on(mtcmos, ctrl_regs->status_reg,
-> +				  ctrl_data->mask, ctrl_data->shift);
-> +	return ret;
+> +	regmap_read(rdev->regmap, ctrl_regs->status_reg, &value);
+> +	return (value & BIT(regulator->ctrl_mask));
 > +}
 
-That's a *lot* of code for checking if a single bit is set, the same
-thinng applies to the rest of the driver.  Unless this is for some
-reason very performance critical I'd recommend just using regmap-mmio
-and the regmap helpers, that will enable you to remove almost all the
-code here.  Even if you can't do that at least removing the extra level
-of helper function would help.
+Use the standard regmap helpers, don't open code them.
 
-> +	sc_on_regs = of_get_property(np, "hisilicon,mtcmos-sc-on-base", NULL);
-> +	if (sc_on_regs) {
-> +		regs = ioremap(be32_to_cpu(*sc_on_regs), SZ_4K);
-> +		mtcmos->sc_on_regs = regs;
-> +	} else
-> +		return -ENODEV;
+> +static int hi655x_set_voltage(struct regulator_dev *rdev,
+> +			      int min_uV, int max_uV, unsigned *selector)
 
-{ } on both sides of the if statement.  You should also use normal
-reg resource specifiers for register blocks the you need rather than
-open coding some custom properties with absolute addresses.
+Use the standard helpers, including one of the map_voltage()s and
+set_voltage_sel_regmap(), don't open code them.
 
-> +	for (i = 0; i < HI6220_RG_MAX; i++) {
-> +		init_data = hi6220_mtcmos_matches[i].init_data;
-> +		if (!init_data)
-> +			continue;
-
-No, you should register all regulators on the device not just those with
-init_data - you should just let the core do the DT parsing for you using
-the standard of_match feature in the regulator_desc.
-
-> +		mtcmos->rdev[i] = regulator_register(&sreg->rdesc, &config);
-> +		if (IS_ERR(mtcmos->rdev[i])) {
-
-devm_regulator_register().
-
-> +static const struct of_device_id of_hi6220_mtcmos_match_tbl[] = {
-> +	{ .compatible = "hisilicon,hi6220-mtcmos-driver", },
-
-Why is -driver part of the compatible?
-
-> +	.driver = {
-> +		.name = "hisi_hi6220_mtcmos",
-
-Linux generally uses - not _ in names.
-
-> +static int __init hi6220_mtcmos_init(void)
+> +static unsigned int hi655x_map_mode(unsigned int mode)
 > +{
-> +	return platform_driver_register(&mtcmos_driver);
+> +	/* hi655x pmic on hi6220 SoC only support normal mode */
+> +	if (mode == REGULATOR_MODE_NORMAL)
+> +		return REGULATOR_MODE_NORMAL;
+> +	else
+> +		return -EINVAL;
 > +}
-> +
-> +static void __exit hi6220_mtcmos_exit(void)
-> +{
-> +	platform_driver_unregister(&mtcmos_driver);
-> +}
-> +
-> +fs_initcall(hi6220_mtcmos_init);
 
-Why is this at fs_initcall?!
+If the device only has one mode it should not have any mode operations,
+they're only meaningful if there are multiple modes to set and they are
+optional.
 
---7ArrI7P/b+va1vZ8
+--HBg0C3yr6HVa1ZCc
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEcBAEBCAAGBQJWO2tYAAoJECTWi3JdVIfQjuAH/R2MXGGGUX6dgSc/DAE+NxTy
-zD/n3DLQS/hg/jNok/L/b225iwPNU8IwGt+QaVarcuRlaYRhB/XQJfF326UKK03S
-dZ5AZKk/G7pR4PppRS7huL9dleDEhWXEETSseVdghb8zqeMN01iIVraIqNrxNZSp
-3gKUicN/CR2GwPBMZpCuVsrPcyiQHpPEfI/5UCOVSiTZoRyw/oFzaxrk7aSMNEuo
-XnIIaYKwSK+REpHW3Aunv/yL9bcqQP7MWf47Bz8av7LxJCdX1PZZoSXhsCFaLJJ7
-D77YKV2EidQs4AUH3xD5XaFYVuNrw5s7TgkXl5VaqKGe/EsT6Gn//CN/Z3XXfPY=
-=Rhqg
+iQEcBAEBCAAGBQJWO20zAAoJECTWi3JdVIfQzNEH/jpa836KNhSjL0W65vB9atoO
+dRea5z98Kf63gySLLlDetVOpkognKWcINX1JpA8lX/rRcz+k7aMiGiUOMKcl8Nme
+FARTdYniBeaWFzsqnQ5x3Fj+hYQKZI1w790zmYXq8s62poBOKD7urZORFa6t7FyM
+dQbx+cv4GjTomMHyHP/ZG1sqzzmU5OOl3pU250perDTnMsAhWa7Ffcuiig3zvoSz
+mfkydBteaWlXHGfea7HY1qPD02ZVCbJXd+ggVGxbAVs4d8uW9uUDrdWPqGAkaelK
+Fj1hbNBp/bCxQyIXb/4wKx0vj/8an/MoRUMaanfofInXeRNj3Jdp0Mx0oXXiLPU=
+=9lqP
 -----END PGP SIGNATURE-----
 
---7ArrI7P/b+va1vZ8--
-
---===============4301795931876115261==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============4301795931876115261==--
+--HBg0C3yr6HVa1ZCc--
