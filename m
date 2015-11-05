@@ -1,11 +1,14 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC] Independent use of IOMMU groups
-Date: Thu, 05 Nov 2015 10:54:39 -0700
-Message-ID: <1446746079.8831.82.camel@redhat.com>
+From: Laine Stump <laine-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: Regression in kernel 4.2.3+ (relative to 4.1.10) on AMD 990FX
+	system with IOMMU enabled
+Date: Thu, 5 Nov 2015 14:05:55 -0500
+Message-ID: <563BA893.4020202@redhat.com>
+References: <563A3F64.50808@redhat.com> <1446671291.3692.147.camel@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1446671291.3692.147.camel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,61 +18,90 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On 11/04/2015 04:08 PM, Alex Williamson wrote:
+> On Wed, 2015-11-04 at 12:24 -0500, Laine Stump wrote:
+>> Last week I upgraded my Fedora 22 AMD 990FX system from kernel 4.1.10 to
+>> 4.2.3 (standard Fedora builds) and multiple devices stopped working:
+>>
+>> * 00:14.2 Audio device: Advanced Micro Devices, Inc. [AMD/ATI] SBx00
+>> Azalia (Intel HDA) (rev 40)
+>>
+>> * 02:00.[01] Ethernet controller: Intel Corporation 82576 Gigabit
+>> Network Connection
+>>
+>> * 01:00.1 Audio device: Advanced Micro Devices, Inc. [AMD/ATI] Cedar
+>> HDMI Audio [Radeon HD 5400/6300 Series]
+>>
+>> (The 1st is integrated on the motherboard, the 2nd & 3rd are behind an
+>> AMD RD890 pci-pci bridge. There may be other devices failing, but these
+>> are the ones immediately obvious.)
+>>
+>> Whatever is the source of the failure, it ends up that the drivers for
+>> these devices aren't loaded.
+>>
+>> At Alex Williamson's suggestion, I tried disabling IOMMU in the BIOS,
+>> and magically all the devices resumed normal operation (except that I
+>> can't do vfio device assignment because the IOMMU is disabled).
+>>
+>> Reverting to kernel 4.1.10 very definitely eliminates the problem. I've
+>> also tried kernel 4.2.5 and it has the same problem as 4.2.3 (these
+>> three are the only pre-built kernels for F22). I can provide dmesg /
+>> lspci output from each of these, or any other debug info anyone might
+>> like me to gather.
+>
+> I built a 4.2.3 kernel for my 990fx system and can't seem to reproduce
+> it.  Does 'lspci -k' for those devices show any driver?
 
-We have a couple things in-flight that are trying to make use of IOMMU
-groups, independent of the rest of the IOMMU API.  One is the proposed
-VFIO No-IOMMU hack that will create an IOMMU group for a non-IOMMU
-backed device in order to make it operate within vfio and exposed via
-vfio-pci:
+00:14.2 Audio device: Advanced Micro Devices, Inc. [AMD/ATI] SBx00 
+Azalia (Intel HDA) (rev 40)
+	Subsystem: Gigabyte Technology Co., Ltd Device a132
+	Kernel modules: snd_hda_intel
+01:00.1 Audio device: Advanced Micro Devices, Inc. [AMD/ATI] Cedar HDMI 
+Audio [Radeon HD 5400/6300 Series]
+	Subsystem: Gigabyte Technology Co., Ltd Device aa68
+	Kernel modules: snd_hda_intel
+02:00.0 Ethernet controller: Intel Corporation 82576 Gigabit Network 
+Connection (rev 01)
+	Subsystem: Intel Corporation Gigabit ET Dual Port Server Adapter
+	Kernel driver in use: igb
+	Kernel modules: igb
+02:00.1 Ethernet controller: Intel Corporation 82576 Gigabit Network 
+Connection (rev 01)
+	Subsystem: Intel Corporation Gigabit ET Dual Port Server Adapter
+	Kernel modules: igb
 
-https://lkml.org/lkml/2015/11/4/437
+/sys/devices/pci0000:00/0000:00:04.0/0000:02:00.0 does show a link from 
+driver to ........drivers/igb, but .......:02::00.1 doesn't have a link, 
+and neither of them shows up in /sys/class/net.
 
-This has all the caveats that DMA for the device is unsafe and we taint
-the kernel, but at least it provides users that are already doing this
-thing with a more featureful interface without duplicating tons of code
-into UIO and it gives them a consistent device model to easily move to
-when an IOMMU is supported.
+Similarly for 01:00.[01] (which are behind the PCI to PCI bridge at 
+00:02.0), the .0 device does have a link to the radeon driver, but the 
+.1 device (which is the sound device on the radeon video card) has no 
+driver link.
 
-When we do this, vfio creates the IOMMU group for the device when it
-binds to the vfio bus driver (vfio-pci) and removes it when unbound.
-For that period, we own the device and don't interact with the IOMMU API
-for any sort of mapping.
+And 00:14.2 (the motherboard integrated sound device) shows no driver 
+link in sysfs either.
 
-Another idea that's floating around is that vfio could actually expose
-virtual devices to a user, think for instance vGPUs in a non-SR-IOV
-scenario.  A struct device is created where portions of the device are
-backed directly by some subset of a physical device while other parts
-may be emulated by the vfio bus driver.  The virtual device needs an
-IOMMU group to participate in the vfio framework, but the platform
-itself doesn't necessarily need an IOMMU.  In this case isolation of the
-virtual device might be provided by policing of the user programming of
-the device and MMU control on the physical device itself.  The vfio
-IOMMU backend for such a device would use device specific programming
-rather than making use of the IOMMU API.
+> Does 'lsmod'
+> show the drivers loaded, igb and snd_hda_intel?  If not, does manually
+> modprobe'ing either of those drivers change anything?
 
-The IOMMU group address space is global, so creating these groups will
-necessarily cause them to appear in /sys/kernel/iommu_groups/, so I want
-to make sure there are no objections to these sorts of uses.  In one
-scenario the device is real, but the IOMMU group is only present when
-bound to a driver that knows the usage restrictions, in the other the
-device is virtual, created by the driver itself, which is therefore
-aware of its restrictions.  Comments?
+Both of those drivers show up in lsmod output.
 
-A question I'd expect to be asked is why not create a new bus_type and
-register an IOMMU for it?  In the no-iommu case, the bus for the device
-already exists and does not have an IOMMU present.  Registering an IOMMU
-for that bus_type risks other devices on that bus_type attempting to do
-real IOMMU API tasks.  In the virtual case, this is more reasonable
-since all the virtual devices could be children on a new bus_type, but
-the overhead of trying to mate a general purpose API to a device that
-really only requires very special purpose mappings seems like
-unnecessary overhead.
+> You haven't
+> installed a script that writes to driver_override or setup a
+> configuration where those devices are claimed by pci-stub and forgotten
+> about it, have you? (it's happened to me)
 
-If there are any gotchas that I'm missing, please let me know.  Thanks,
+Not that I'm aware of. /etc/modules.d/local.conf had a few stray very 
+old items that I'd forgotten about, but I removed those and the results 
+are the same.
 
-Alex
+   Otherwise, dmesg is probably
+> a good place to start.
+
+Thanks to the uber-verbosity of systemd, this file is about 11MB. Where 
+do you want me to put it?
