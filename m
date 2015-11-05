@@ -1,70 +1,53 @@
-From: Mark Hounschell <markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
-Subject: Re: Regression in kernel 4.2.3+ (relative to 4.1.10) on AMD 990FX
-	system with IOMMU enabled
-Date: Thu, 5 Nov 2015 09:11:15 -0500
-Message-ID: <563B6383.50701@compro.net>
-References: <563A3F64.50808@redhat.com> <1446671291.3692.147.camel@redhat.com>
-Reply-To: markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH 2/7] doc:bindings:Document for mtcmos regulator on hi6220
+ SoC
+Date: Thu, 5 Nov 2015 14:14:02 +0000
+Message-ID: <20151105141402.GH18409@sirena.org.uk>
+References: <1446730488-31930-1-git-send-email-puck.chen@hisilicon.com>
+ <1446730488-31930-3-git-send-email-puck.chen@hisilicon.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1446671291.3692.147.camel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Laine Stump <laine-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="G44BJl3Aq1QbV/QL"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1446730488-31930-3-git-send-email-puck.chen@hisilicon.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Chen Feng <puck.chen@hisilicon.com>
+Cc: w.f@huawei.com, sameo@linux.intel.com, lee.jones@linaro.org, linux-kernel@vger.kernel.org, lgirdwood@gmail.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, joro@8bytes.org, iommu@lists.linux-foundation.org, haojian.zhuang@linaro.org, devicetree@vger.kernel.org, xuwei5@hisilicon.com, xuyiping@hisilicon.com, kong.kongxinwei@hisilicon.com, z.liuxinliang@hisilicon.com, yudongbin@hisilicon.com, weidong2@hisilicon.com, saberlily.xia@hisilicon.com, haojian.zhuang@outlook.com, leo.yan@linaro.org, linuxarm@huawei.com, dan.zhao@hisilicon.com, peter.panshilin@hisilicon.com, qijiwen@hisilicon.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/04/2015 04:08 PM, Alex Williamson wrote:
-> On Wed, 2015-11-04 at 12:24 -0500, Laine Stump wrote:
->> Last week I upgraded my Fedora 22 AMD 990FX system from kernel 4.1.10 to
->> 4.2.3 (standard Fedora builds) and multiple devices stopped working:
->>
->> * 00:14.2 Audio device: Advanced Micro Devices, Inc. [AMD/ATI] SBx00
->> Azalia (Intel HDA) (rev 40)
->>
->> * 02:00.[01] Ethernet controller: Intel Corporation 82576 Gigabit
->> Network Connection
->>
->> * 01:00.1 Audio device: Advanced Micro Devices, Inc. [AMD/ATI] Cedar
->> HDMI Audio [Radeon HD 5400/6300 Series]
->>
->> (The 1st is integrated on the motherboard, the 2nd & 3rd are behind an
->> AMD RD890 pci-pci bridge. There may be other devices failing, but these
->> are the ones immediately obvious.)
->>
->> Whatever is the source of the failure, it ends up that the drivers for
->> these devices aren't loaded.
->>
->> At Alex Williamson's suggestion, I tried disabling IOMMU in the BIOS,
->> and magically all the devices resumed normal operation (except that I
->> can't do vfio device assignment because the IOMMU is disabled).
->>
->> Reverting to kernel 4.1.10 very definitely eliminates the problem. I've
->> also tried kernel 4.2.5 and it has the same problem as 4.2.3 (these
->> three are the only pre-built kernels for F22). I can provide dmesg /
->> lspci output from each of these, or any other debug info anyone might
->> like me to gather.
->
-> I built a 4.2.3 kernel for my 990fx system and can't seem to reproduce
-> it.  Does 'lspci -k' for those devices show any driver?  Does 'lsmod'
-> show the drivers loaded, igb and snd_hda_intel?  If not, does manually
-> modprobe'ing either of those drivers change anything?  You haven't
-> installed a script that writes to driver_override or setup a
-> configuration where those devices are claimed by pci-stub and forgotten
-> about it, have you? (it's happened to me)  Otherwise, dmesg is probably
-> a good place to start.  Thanks,
->
-> Alex
 
-I'm also running one of these with a 4.2.5 kernel with no IOMMU issues.
+--G44BJl3Aq1QbV/QL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-mark
+On Thu, Nov 05, 2015 at 09:34:43PM +0800, Chen Feng wrote:
+
+> +- hisilicon,mtcmos-steady-us: The time to wait for power steady
+> +- hisilicon,mtcmos-sc-on-base: address of mtcmos on hi6220 SoC
+> +
+> +Required child device properties:
+> +- regulator-name: The name of mtcmos
+> +- hisilicon,ctrl-regs: Offset of ctrl-regs
+> +- hisilicon,ctrl-data: The bit to ctrl the regulator
+
+This doesn't look like a regulator binding at all...  for one thing
+there's no reference to the generic regulator bindings, and having a
+mandatory regulator-name seems like there's a problem somewhere.
+
+--G44BJl3Aq1QbV/QL
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQEcBAEBCAAGBQJWO2QpAAoJECTWi3JdVIfQjWgH/1GAS4hIwaq3xg+vCn+MqmD5
+TpGgA0E/HGs+s+uZhfMHeKz27+uwUcMfOzzQ2xmyJOa1zP+PzyFdbXPAhE89El+m
+AiStkraFQdWEx+TRJbvs/pdI7oNC9uOgU386snZNKPy89/d1iKosANFT/XHxLxI2
+HPWR0JJyrniVhpyozFzuZ8e435BpMZFQMjz1e4qZtUJRcXkRb0CC4V63NTeIvYlM
+ucrU2SyEjL1gei58HQLujQj1btVDMdafNqOfcL4CJO4GJpgKO5TVGUa58HFSiiSs
+/qEjweFPfHpDcDbNSkZcH8nLIhWEFPG7RXZmTO8g4aQ8M7BPg3auYoT29upgxF4=
+=OODY
+-----END PGP SIGNATURE-----
+
+--G44BJl3Aq1QbV/QL--
