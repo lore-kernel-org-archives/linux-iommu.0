@@ -1,13 +1,14 @@
 From: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 4/7] mfd: hi655x: Add hi665x pmic driver
-Date: Thu, 5 Nov 2015 14:30:10 +0000
-Message-ID: <20151105143010.GJ18409@sirena.org.uk>
+Subject: Re: [PATCH 5/7] regulator: add driver for mtcmos voltage regulator
+	on hi6220 SoC
+Date: Thu, 5 Nov 2015 14:44:41 +0000
+Message-ID: <20151105144441.GK18409@sirena.org.uk>
 References: <1446730488-31930-1-git-send-email-puck.chen@hisilicon.com>
-	<1446730488-31930-5-git-send-email-puck.chen@hisilicon.com>
+	<1446730488-31930-6-git-send-email-puck.chen@hisilicon.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============3694602394536599762=="
+Content-Type: multipart/mixed; boundary="===============4301795931876115261=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1446730488-31930-5-git-send-email-puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+In-Reply-To: <1446730488-31930-6-git-send-email-puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,81 +23,126 @@ Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, dan.zhao-C8/M+/jPZTeaMJb+Lgu22Q@p
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============3694602394536599762==
+--===============4301795931876115261==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="LG0Ll82vYr46+VA1"
+	protocol="application/pgp-signature"; boundary="7ArrI7P/b+va1vZ8"
 Content-Disposition: inline
 
 
---LG0Ll82vYr46+VA1
+--7ArrI7P/b+va1vZ8
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Thu, Nov 05, 2015 at 09:34:45PM +0800, Chen Feng wrote:
+On Thu, Nov 05, 2015 at 09:34:46PM +0800, Chen Feng wrote:
+> Add driver to support mtcmos on hi6220
 
-> +config MFD_HI655X_PMIC
-> +        bool "HiSilicon Hi655X series PMU/Codec IC"
+I just noticed that these patches are all being posted to the IOMMU list
+- that seems a bit odd?
 
-Why is this bool and not tristate?
-
-> +        depends on ARCH_HISI
-
-Can we have an || COMPILE_TEST here?
-
-> +static irqreturn_t hi655x_pmic_irq_handler(int irq, void *data)
+> +static int hi6220_mtcmos_is_on(struct hi6220_mtcmos *mtcmos,
+> +			       unsigned int regs, unsigned int mask, int shift)
 > +{
-> +	struct hi655x_pmic *pmic = (struct hi655x_pmic *)data;
-> +	u32 pending;
-> +	u32 ret = IRQ_NONE;
-> +	unsigned long offset;
-> +	int i;
-
-This looks like you should be able to use regmap_irq?
-
-> +static int hi655x_pmic_remove(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct hi655x_pmic *pmic = platform_get_drvdata(pdev);
+> +	unsigned int ret;
 > +
-> +	free_irq(pmic->irq, pmic);
-> +	gpio_free(pmic->gpio);
-> +	devm_release_mem_region(dev, pmic->res->start,
-> +				resource_size(pmic->res));
-> +	devm_kfree(dev, pmic);
-> +	platform_set_drvdata(pdev, NULL);
+> +	ret = readl(mtcmos->sc_on_regs + regs);
+> +	ret &= (mask << shift);
+> +
+> +	return ret;
+> +}
+> +
+> +static int hi6220_mtcmos_is_enabled(struct regulator_dev *rdev)
+> +{
+> +	int ret;
+> +	struct hi6220_mtcmos_info *sreg = rdev_get_drvdata(rdev);
+> +	struct platform_device *pdev =
+> +		container_of(rdev->dev.parent, struct platform_device, dev);
+> +	struct hi6220_mtcmos *mtcmos = platform_get_drvdata(pdev);
+> +	struct hi6220_mtcmos_ctrl_regs *ctrl_regs = &sreg->ctrl_regs;
+> +	struct hi6220_mtcmos_ctrl_data *ctrl_data = &sreg->ctrl_data;
+> +
+> +	ret = hi6220_mtcmos_is_on(mtcmos, ctrl_regs->status_reg,
+> +				  ctrl_data->mask, ctrl_data->shift);
+> +	return ret;
+> +}
 
-There is no point in using devm_ cleanup functions in the device removal
-path unless there's some ordering issue with respect to other stuff
-which doesn't seem to be the case here.
+That's a *lot* of code for checking if a single bit is set, the same
+thinng applies to the rest of the driver.  Unless this is for some
+reason very performance critical I'd recommend just using regmap-mmio
+and the regmap helpers, that will enable you to remove almost all the
+code here.  Even if you can't do that at least removing the extra level
+of helper function would help.
 
-> +static struct platform_driver hi655x_pmic_driver = {
-> +	.driver	= {
-> +		.name =	"hisi,hi655x-pmic",
+> +	sc_on_regs = of_get_property(np, "hisilicon,mtcmos-sc-on-base", NULL);
+> +	if (sc_on_regs) {
+> +		regs = ioremap(be32_to_cpu(*sc_on_regs), SZ_4K);
+> +		mtcmos->sc_on_regs = regs;
+> +	} else
+> +		return -ENODEV;
 
-We don't normally use OF style names in the Linux driver names.
+{ } on both sides of the if statement.  You should also use normal
+reg resource specifiers for register blocks the you need rather than
+open coding some custom properties with absolute addresses.
 
---LG0Ll82vYr46+VA1
+> +	for (i = 0; i < HI6220_RG_MAX; i++) {
+> +		init_data = hi6220_mtcmos_matches[i].init_data;
+> +		if (!init_data)
+> +			continue;
+
+No, you should register all regulators on the device not just those with
+init_data - you should just let the core do the DT parsing for you using
+the standard of_match feature in the regulator_desc.
+
+> +		mtcmos->rdev[i] = regulator_register(&sreg->rdesc, &config);
+> +		if (IS_ERR(mtcmos->rdev[i])) {
+
+devm_regulator_register().
+
+> +static const struct of_device_id of_hi6220_mtcmos_match_tbl[] = {
+> +	{ .compatible = "hisilicon,hi6220-mtcmos-driver", },
+
+Why is -driver part of the compatible?
+
+> +	.driver = {
+> +		.name = "hisi_hi6220_mtcmos",
+
+Linux generally uses - not _ in names.
+
+> +static int __init hi6220_mtcmos_init(void)
+> +{
+> +	return platform_driver_register(&mtcmos_driver);
+> +}
+> +
+> +static void __exit hi6220_mtcmos_exit(void)
+> +{
+> +	platform_driver_unregister(&mtcmos_driver);
+> +}
+> +
+> +fs_initcall(hi6220_mtcmos_init);
+
+Why is this at fs_initcall?!
+
+--7ArrI7P/b+va1vZ8
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEcBAEBCAAGBQJWO2fyAAoJECTWi3JdVIfQhXQH/RIo7rtxAZ5RgzWByhvia68h
-h5TtUQIJz2IPKcI21LCPrX0yVAs4vWz8ekT/Ogd0NUVwC/kszq2UOg8VfiI8X4e+
-4xIniMVPeJIBc6NkL1k3V3DQ2bWzlQFUonSTOVzdUtftgAckci0t2zy+pOad9m9Q
-JdJPUQYq9S2Z7j62MDcPcr+7uBggABD7ry39kooawcz2OrT/r/xbm7ibpXwsDehZ
-/QauvnvOTKdBdn9K3lE6ejufxzTlGbaLGxvjeLSG6pbDN2UWIsFIOYZuulrl4Cc7
-sEH7G5rbG1XHdbTChB7sgKZe8Y/8Hz4ycuP7sYRaizsHIOn1TnSxwQ4QdUzoM0E=
-=H64R
+iQEcBAEBCAAGBQJWO2tYAAoJECTWi3JdVIfQjuAH/R2MXGGGUX6dgSc/DAE+NxTy
+zD/n3DLQS/hg/jNok/L/b225iwPNU8IwGt+QaVarcuRlaYRhB/XQJfF326UKK03S
+dZ5AZKk/G7pR4PppRS7huL9dleDEhWXEETSseVdghb8zqeMN01iIVraIqNrxNZSp
+3gKUicN/CR2GwPBMZpCuVsrPcyiQHpPEfI/5UCOVSiTZoRyw/oFzaxrk7aSMNEuo
+XnIIaYKwSK+REpHW3Aunv/yL9bcqQP7MWf47Bz8av7LxJCdX1PZZoSXhsCFaLJJ7
+D77YKV2EidQs4AUH3xD5XaFYVuNrw5s7TgkXl5VaqKGe/EsT6Gn//CN/Z3XXfPY=
+=Rhqg
 -----END PGP SIGNATURE-----
 
---LG0Ll82vYr46+VA1--
+--7ArrI7P/b+va1vZ8--
 
---===============3694602394536599762==
+--===============4301795931876115261==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============3694602394536599762==--
+--===============4301795931876115261==--
