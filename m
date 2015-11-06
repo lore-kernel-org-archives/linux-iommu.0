@@ -1,482 +1,301 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 4/7] mfd: hi655x: Add hi665x pmic driver
-Date: Fri, 6 Nov 2015 22:21:54 +0200
-Message-ID: <CAHp75Ve4AftT2B2TaTVi26o40xt5r-cqgykaxOvU+p44gV0wrQ@mail.gmail.com>
+From: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 6/7] regulator: hisilicon: Add hi655x pmic voltage
+ regulator driver
+Date: Fri, 6 Nov 2015 23:29:40 +0200
+Message-ID: <CAHp75VeFdSWOxgKGEdyeRWqK2JSZ_Nw+AkaXXPnGFU-kuoazPQ@mail.gmail.com>
 References: <1446730488-31930-1-git-send-email-puck.chen@hisilicon.com>
-	<1446730488-31930-5-git-send-email-puck.chen@hisilicon.com>
+	<1446730488-31930-7-git-send-email-puck.chen@hisilicon.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1446730488-31930-5-git-send-email-puck.chen@hisilicon.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Chen Feng <puck.chen@hisilicon.com>
-Cc: w.f@huawei.com, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, ijc+devicetree <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, joro@8bytes.org, iommu@lists.linux-foundation.org, haojian.zhuang@linaro.org, devicetree <devicetree@vger.kernel.org>, xuwei5@hisilicon.com, xuyiping@hisilicon.com, kong.kongxinwei@hisilicon.com, z.liuxinliang@hisilicon.com, yudongbin@hisilicon.com, weidong2@hisilicon.com, saberlily.xia@hisilicon.com, haojian.zhuang@outlook.com, leo.yan@linaro.org, linuxarm@huawei.com, dan.zhao@hisilicon.com, peter.panshilin@hisilicon.com, qijiwen@hisilicon.com
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1446730488-31930-7-git-send-email-puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Chen Feng <puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Cc: w.f-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, ijc+devicetree <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, haojian.zhuang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, xuyiping-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, kong.kongxinwei-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, z.liuxinliang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, yudongbin-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, weidong2-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, saberlily.xia-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, haojian.zhuang-1ViLX0X+lBJBDgjK7y7TUQ@public.gmane.org, leo.yan-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, dan.zhao-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, peter.panshilin-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, qijiwen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 5, 2015 at 3:34 PM, Chen Feng <puck.chen@hisilicon.com> wro=
-te:
-> Add pmic driver to support hisilicon hi665x pmic.
+On Thu, Nov 5, 2015 at 3:34 PM, Chen Feng <puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org> wrote:
+> Add driver support for HiSilicon Hi655x voltage regulators.
 
-> +#include <linux/io.h>
-> +#include <linux/irq.h>
-> +#include <linux/err.h>
-> +#include <linux/clk.h>
 > +#include <linux/slab.h>
-> +#include <linux/ioport.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/init.h>
-> +#include <linux/gpio.h>
-> +#include <linux/types.h>
-> +#include <linux/mutex.h>
-> +#include <linux/delay.h>
+> +#include <linux/device.h>
 > +#include <linux/module.h>
-> +#include <linux/kernel.h>
-> +#include <linux/hardirq.h>
-> +#include <linux/of_gpio.h>
+> +#include <linux/err.h>
+> +#include <linux/io.h>
 > +#include <linux/platform_device.h>
-> +#include <linux/of_platform.h>
-> +#include <linux/irqdomain.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+> +#include <linux/of_address.h>
+> +#include <linux/regmap.h>
+> +#include <linux/regulator/driver.h>
+> +#include <linux/regulator/machine.h>
+> +#include <linux/regulator/of_regulator.h>
+> +#include <linux/delay.h>
+> +#include <linux/time.h>
+> +#include <linux/regulator/hi655x-regulator.h>
 > +#include <linux/mfd/hi655x-pmic.h>
 > +#include <linux/regmap.h>
-
-Do you need all of those?
-
-> +static irqreturn_t hi655x_pmic_irq_handler(int irq, void *data)
+> +#include <linux/bitops.h>
+> +
+> +static int hi655x_is_enabled(struct regulator_dev *rdev)
 > +{
-> +       struct hi655x_pmic *pmic =3D (struct hi655x_pmic *)data;
-
-No need to explicitly cast from or to void *.
-
-> +       u32 pending;
-
-unsigned long?
-
-> +       u32 ret =3D IRQ_NONE;
-
-irqreturn_t ret =E2=80=A6
-
-> +       unsigned long offset;
-> +       int i;
+> +       unsigned int value = 0;
 > +
-> +       for (i =3D 0; i < HI655X_IRQ_ARRAY; i++) {
-> +               regmap_read(pmic->regmap,
-> +                           HI655X_REG_TO_BUS_ADDR(i + HI655X_IRQ_STA=
-T_BASE),
-> +                           &pending);
-> +               if (pending)
-> +                       pr_debug("pending[%d]=3D0x%x\n\r", i, pending=
-);
-
-Why not move below?
-
+> +       struct hi655x_regulator *regulator = rdev_get_drvdata(rdev);
+> +       struct hi655x_regulator_ctrl_regs *ctrl_regs = &regulator->ctrl_regs;
 > +
-> +               /* clear pmic-sub-interrupt */
-
-"Clear =E2=80=A6"
-
-> +               regmap_write(pmic->regmap,
-> +                            HI655X_REG_TO_BUS_ADDR(i + HI655X_IRQ_ST=
-AT_BASE),
-> +                            pending);
+> +       regmap_read(rdev->regmap, ctrl_regs->status_reg, &value);
+> +       return (value & BIT(regulator->ctrl_mask));
+> +}
 > +
-> +               if (pending) {
-> +                       for_each_set_bit(offset, (unsigned long *)&pe=
-nding,
-
-If pending is unsigned long no need to cast.
-
-> +                                        HI655X_BITS)
-> +                               generic_handle_irq(pmic->irqs[offset =
-+
-> +                                                  i * HI655X_BITS]);
-> +                       ret =3D IRQ_HANDLED;
-> +               }
-> +       }
+> +static int hi655x_enable(struct regulator_dev *rdev)
+> +{
+> +       int ret = 0;
+> +       struct hi655x_regulator *regulator = rdev_get_drvdata(rdev);
+> +       struct hi655x_regulator_ctrl_regs *ctrl_regs = &regulator->ctrl_regs;
+> +
+> +       ret = regmap_update_bits(rdev->regmap, ctrl_regs->enable_reg,
+> +                                regulator->ctrl_mask, regulator->ctrl_mask);
 > +       return ret;
 > +}
 > +
-> +static void hi655x_pmic_irq_mask(struct irq_data *d)
+> +static int hi655x_disable(struct regulator_dev *rdev)
 > +{
-> +       u32 data, offset;
-> +       unsigned long pmic_spin_flag =3D 0;
-
-Why not more shorter flags?
-Redundant assignment btw.
-
-> +       struct hi655x_pmic *pmic =3D irq_data_get_irq_chip_data(d);
+> +       int ret = 0;
+> +       struct hi655x_regulator *regulator = rdev_get_drvdata(rdev);
 > +
-> +       offset =3D ((irqd_to_hwirq(d) >> 3) + HI655X_IRQ_MASK_BASE);
-
-External parens are not needed.
-
-> +       spin_lock_irqsave(&pmic->ssi_hw_lock, pmic_spin_flag);
-> +       regmap_read(pmic->regmap, HI655X_REG_TO_BUS_ADDR(offset), &da=
-ta);
-> +       data |=3D (1 << (irqd_to_hwirq(d) & 0x07));
-
-Ditto.
-
-> +       regmap_write(pmic->regmap, HI655X_REG_TO_BUS_ADDR(offset), da=
-ta);
-> +       spin_unlock_irqrestore(&pmic->ssi_hw_lock, pmic_spin_flag);
-> +}
-> +
-> +static void hi655x_pmic_irq_unmask(struct irq_data *d)
-> +{
-> +       u32 data, offset;
-> +       unsigned long pmic_spin_flag =3D 0;
-
-Same comments as above.
-
-> +       struct hi655x_pmic *pmic =3D irq_data_get_irq_chip_data(d);
-> +
-> +       offset =3D ((irqd_to_hwirq(d) >> 3) + HI655X_IRQ_MASK_BASE);
-
-Same comments as above.
-
-> +       spin_lock_irqsave(&pmic->ssi_hw_lock, pmic_spin_flag);
-> +       regmap_read(pmic->regmap, HI655X_REG_TO_BUS_ADDR(offset), &da=
-ta);
-> +       data &=3D ~(1 << (irqd_to_hwirq(d) & 0x07));
-
-> +       regmap_write(pmic->regmap, HI655X_REG_TO_BUS_ADDR(offset), da=
-ta);
-> +       spin_unlock_irqrestore(&pmic->ssi_hw_lock, pmic_spin_flag);
-> +}
-> +
-> +static struct irq_chip hi655x_pmic_irqchip =3D {
-> +       .name           =3D "hisi-hi655x-pmic-irqchip",
-> +       .irq_mask       =3D hi655x_pmic_irq_mask,
-> +       .irq_unmask     =3D hi655x_pmic_irq_unmask,
-> +};
-> +
-> +static int hi655x_pmic_irq_map(struct irq_domain *d, unsigned int vi=
-rq,
-> +                              irq_hw_number_t hw)
-> +{
-> +       struct hi655x_pmic *pmic =3D d->host_data;
-> +
-> +       irq_set_chip_and_handler_name(virq, &hi655x_pmic_irqchip,
-> +                                     handle_simple_irq,
-> +                                     "hisi-hi655x-pmic-irqchip");
-> +       irq_set_chip_data(virq, pmic);
-> +       irq_set_irq_type(virq, IRQ_TYPE_NONE);
-> +
-> +       return 0;
-> +}
-> +
-> +static struct irq_domain_ops hi655x_domain_ops =3D {
-> +       .map    =3D hi655x_pmic_irq_map,
-> +       .xlate  =3D irq_domain_xlate_twocell,
-> +};
-> +
-> +static inline void hi655x_pmic_clear_int(struct hi655x_pmic *pmic)
-> +{
-> +       int addr;
-> +
-> +       for (addr =3D HI655X_IRQ_STAT_BASE;
-> +            addr < (HI655X_IRQ_STAT_BASE + HI655X_IRQ_ARRAY);
-> +            addr++) {
-> +               regmap_write(pmic->regmap,
-> +                            HI655X_REG_TO_BUS_ADDR(addr), HI655X_IRQ=
-_CLR);
+> +       if (!regulator) {
+> +               pr_err("get driver data error!\n");
+> +               return -ENODEV;
 > +       }
-
-int addr =3D =E2=80=A6;
-
-do {
-} while (++addr < =E2=80=A6);
-
-looks simpler.
-
-> +}
+> +       struct hi655x_regulator_ctrl_regs *ctrl_regs = &regulator->ctrl_regs;
 > +
-> +static inline void hi655x_pmic_mask_int(struct hi655x_pmic *pmic)
-> +{
-> +       int addr;
-> +
-> +       for (addr =3D HI655X_IRQ_MASK_BASE;
-> +            addr < (HI655X_IRQ_MASK_BASE + HI655X_IRQ_ARRAY);
-> +            addr++) {
-> +               regmap_write(pmic->regmap,
-> +                            HI655X_REG_TO_BUS_ADDR(addr), HI655X_IRQ=
-_MASK);
-> +       }
-
-Ditto.
-
-> +}
-> +
-> +static struct regmap_config hi655x_regmap_config =3D {
-> +       .reg_bits =3D 32,
-> +       .reg_stride =3D 4,
-> +       .val_bits =3D 8,
-> +       .max_register =3D HI655X_REG_TO_BUS_ADDR(HI655X_REG_MAX),
-> +};
-> +
-> +static int hi655x_pmic_irq_init(struct platform_device *pdev,
-> +                               struct hi655x_pmic *pmic)
-> +{
-> +       enum of_gpio_flags gpio_flags;
-> +       struct device_node *np =3D (&pdev->dev)->of_node;
-
-Why not dot?
-
-Of course you may do
- struct device *dev =3D &pdev->dev;
-and use it here and below.
-
-> +       struct device_node *gpio_np =3D NULL;
-
-Redundant assignment?
-
-> +       unsigned int virq =3D 0;
-
-> +       int i, ret =3D 0;
-
-Ditto.
-
-Btw unsigned int i;
-
-> +
-> +       pmic->ver =3D hi655x_pmic_get_version(pmic);
-> +       if ((pmic->ver < PMU_VER_START) || (pmic->ver > PMU_VER_END))=
- {
-> +               dev_warn(&pdev->dev, "it is wrong pmu version\n");
-> +               return -EINVAL;
-> +       }
-> +
-> +       regmap_write(pmic->regmap, HI655X_REG_TO_BUS_ADDR(ANA_IRQM_RE=
-G0), 0xff);
-> +
-> +       gpio_np =3D of_parse_phandle(np, "pmic-gpios", 0);
-> +       if (!gpio_np) {
-> +               dev_err(&pdev->dev, "can't parse property\n");
-> +               return -ENOENT;
-> +       }
-> +       pmic->gpio =3D of_get_gpio_flags(gpio_np, 0, &gpio_flags);
-> +       if (pmic->gpio < 0) {
-> +               dev_err(&pdev->dev,
-> +                       "failed to of_get_gpio_flags %d\n", pmic->gpi=
-o);
-> +               return  pmic->gpio;
-> +       }
-> +       if (!gpio_is_valid(pmic->gpio)) {
-> +               dev_err(&pdev->dev, "it is invalid gpio %d\n", pmic->=
-gpio);
-> +               return -EINVAL;
-> +       }
-
-I think you may join this and above one.
-
-> +       ret =3D gpio_request_one(pmic->gpio, GPIOF_IN, "hi655x_pmic_i=
-rq");
-> +       if (ret < 0) {
-> +               dev_err(&pdev->dev, "failed to request gpio %d  ret =3D=
- %d\n",
-> +                       pmic->gpio, ret);
-> +               return ret;
-> +       }
-> +       pmic->irq =3D gpio_to_irq(pmic->gpio);
-> +
-> +       hi655x_pmic_clear_int(pmic);
-> +       hi655x_pmic_mask_int(pmic);
-> +       pmic->domain =3D irq_domain_add_simple(np,
-> +                       HI655X_NR_IRQ, 0, &hi655x_domain_ops, pmic);
-> +       if (!pmic->domain) {
-> +               dev_err(&pdev->dev, "failed irq domain add simple!\n"=
-);
-> +               ret =3D -ENODEV;
-> +               goto irq_domain_add_simple;
-> +       }
-> +
-> +       for (i =3D 0; i < HI655X_NR_IRQ; i++) {
-> +               virq =3D irq_create_mapping(pmic->domain, i);
-> +               if (!virq) {
-> +                       dev_err(&pdev->dev, "Failed mapping hwirq\n")=
-;
-> +                       ret =3D -ENOSPC;
-> +                       goto irq_create_mapping;
-> +               }
-> +               pmic->irqs[i] =3D virq;
-> +       }
-> +
-> +       ret =3D request_threaded_irq(pmic->irq, hi655x_pmic_irq_handl=
-er,
-> +                                  NULL, IRQF_TRIGGER_LOW |
-> +                                  IRQF_SHARED | IRQF_NO_SUSPEND,
-> +                                  "hi655x-pmic-irq", pmic);
-> +       if (ret < 0) {
-> +               dev_err(&pdev->dev, "could not claim pmic %d\n", ret)=
-;
-> +               ret =3D -ENODEV;
-
-Why replace actual error?
-
-> +               goto request_threaded_irq;
-> +       }
-> +       return 0;
-> +
-> +irq_domain_add_simple:
-> +irq_create_mapping:
-> +request_threaded_irq:
-
-Looks strange. Either one label, or put them in proper places.
-
-> +       free_irq(pmic->irq, pmic);
-> +       gpio_free(pmic->gpio);
+> +       ret = regmap_update_bits(rdev->regmap, ctrl_regs->disable_reg,
+> +                                regulator->ctrl_mask, regulator->ctrl_mask);
 > +       return ret;
 > +}
 > +
-> +static int hi655x_pmic_probe(struct platform_device *pdev)
+> +static int hi655x_get_voltage(struct regulator_dev *rdev)
 > +{
-> +       struct device_node *np =3D (&pdev->dev)->of_node;
-
-Why not dot?
-
-> +       struct hi655x_pmic *pmic =3D NULL;
-
-Redundant assignment.
-
-> +       void __iomem *base;
-> +       int ret;
+> +       unsigned int value = 0;
+> +       struct hi655x_regulator *regulator = rdev_get_drvdata(rdev);
 > +
-> +       pmic =3D devm_kzalloc(&pdev->dev, sizeof(*pmic), GFP_KERNEL);
-> +       if (!pmic)
-> +               return -ENOMEM;
+> +       if (!regulator) {
+> +               pr_err("get driver data error!\n");
+> +               return -ENODEV;
+> +       }
+> +       struct hi655x_regulator_vset_regs *vset_regs = &regulator->vset_regs;
 > +
-> +       spin_lock_init(&pmic->ssi_hw_lock);
-> +       pmic->res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +       base =3D devm_ioremap_resource(&pdev->dev, pmic->res);
-> +       if (!base)
-> +               return -ENOMEM;
+> +       regmap_read(rdev->regmap, vset_regs->vset_reg, &value);
 > +
-> +       pmic->regmap =3D devm_regmap_init_mmio_clk(&pdev->dev, NULL, =
-base,
-> +                                                &hi655x_regmap_confi=
-g);
-> +       ret =3D hi655x_pmic_irq_init(pdev, pmic);
-> +       if (ret) {
-> +               dev_err(&pdev->dev, "pmic irq init failed: %d\n", ret=
-);
-> +               return ret;
+> +       return regulator->vset_table[value];
+> +}
+> +
+> +static int hi655x_set_voltage(struct regulator_dev *rdev,
+> +                             int min_uV, int max_uV, unsigned *selector)
+> +{
+> +       int i = 0;
+> +       int ret = 0;
+> +       int vol = 0;
+> +       struct hi655x_regulator *regulator = rdev_get_drvdata(rdev);
+> +
+> +       if (!regulator) {
+> +               pr_err("get driver data error!\n");
+> +               return -ENODEV;
 > +       }
 > +
-> +       pmic->dev =3D &pdev->dev;
-> +       platform_set_drvdata(pdev, pmic);
-> +       of_platform_populate(np, of_hi655x_pmic_child_match_tbl,
-> +                            NULL, &pdev->dev);
+> +       struct hi655x_regulator_vset_regs *vset_regs = &regulator->vset_regs;
 > +
-> +       return 0;
+> +       /**
+> +        * search the matched vol and get its index
+> +        */
+> +       for (i = 0; i < regulator->vol_numb; i++) {
+> +               vol = regulator->vset_table[i];
+> +               if ((vol >= min_uV) && (vol <= max_uV))
+> +                       break;
+> +       }
+> +
+> +       if (i == regulator->vol_numb)
+> +               return -1;
+> +
+> +       regmap_update_bits(rdev->regmap, vset_regs->vset_reg,
+> +                          regulator->vset_mask, i);
+> +       *selector = i;
+> +
+> +       return ret;
 > +}
 > +
-> +static int hi655x_pmic_remove(struct platform_device *pdev)
+> +static unsigned int hi655x_map_mode(unsigned int mode)
 > +{
-> +       struct device *dev =3D &pdev->dev;
-> +       struct hi655x_pmic *pmic =3D platform_get_drvdata(pdev);
-> +
-> +       free_irq(pmic->irq, pmic);
-> +       gpio_free(pmic->gpio);
-> +       devm_release_mem_region(dev, pmic->res->start,
-> +                               resource_size(pmic->res));
-
-> +       devm_kfree(dev, pmic);
-
-Why?
-
-
-> +       platform_set_drvdata(pdev, NULL);
-> +       return 0;
+> +       /* hi655x pmic on hi6220 SoC only support normal mode */
+> +       if (mode == REGULATOR_MODE_NORMAL)
+> +               return REGULATOR_MODE_NORMAL;
+> +       else
+> +               return -EINVAL;
 > +}
 > +
-> +static struct platform_driver hi655x_pmic_driver =3D {
-> +       .driver =3D {
-> +               .name =3D "hisi,hi655x-pmic",
-> +               .owner =3D THIS_MODULE,
-> +               .of_match_table =3D of_hi655x_pmic_match_tbl,
+> +static int hi655x_set_mode(struct regulator_dev *rdev,
+> +                          unsigned int mode)
+> +
+> +{
+> +       if (mode == REGULATOR_MODE_NORMAL)
+> +               return 0;
+> +       else
+> +               return -EINVAL;
+> +}
+> +
+> +static struct regulator_ops hi655x_regulator_ops = {
+> +       .is_enabled = hi655x_is_enabled,
+> +       .enable = hi655x_enable,
+> +       .disable = hi655x_disable,
+> +       .list_voltage = regulator_list_voltage_table,
+> +       .get_voltage = hi655x_get_voltage,
+> +       .set_voltage = hi655x_set_voltage,
+> +       .set_mode = hi655x_set_mode,
+> +};
+> +
+> +static const struct of_device_id of_hi655x_regulator_match_tbl[] = {
+> +       {
+> +               .compatible = "hisilicon,hi655x-regulator-pmic",
 > +       },
-> +       .probe  =3D hi655x_pmic_probe,
-> +       .remove =3D hi655x_pmic_remove,
 > +};
-> +module_platform_driver(hi655x_pmic_driver);
+> +MODULE_DEVICE_TABLE(of, of_hi655x_regulator_match_tbl);
 > +
-> +MODULE_AUTHOR("Fei Wang <w.f@huawei.com>");
-> +MODULE_DESCRIPTION("Hisi hi655x pmic driver");
+> +/**
+> + * get the hi655x specific data from dt node.
+> + */
+> +static void of_get_hi655x_ctr(struct hi655x_regulator *regulator,
+> +                             struct device *dev, struct device_node *np)
+> +{
+> +       unsigned int *vset_table = NULL;
+> +
+> +       of_property_read_u32_array(np, "regulator-ctrl-regs",
+
+device property API?
+
+> +                                  (u32 *)&regulator->ctrl_regs, 0x3);
+> +       of_property_read_u32(np, "regulator-ctrl-mask", &regulator->ctrl_mask);
+> +       of_property_read_u32(np, "regulator-vset-regs",
+> +                            (u32 *)&regulator->vset_regs);
+> +       of_property_read_u32(np, "regulator-vset-mask", &regulator->vset_mask);
+> +       of_property_read_u32(np, "regulator-n-vol", &regulator->vol_numb);
+> +       of_property_read_u32(np, "regulator-off-on-delay",
+> +                            &regulator->rdesc.off_on_delay);
+> +
+> +       vset_table = devm_kzalloc(dev, regulator->vol_numb * sizeof(int),
+> +                                 GFP_KERNEL);
+> +
+> +       of_property_read_u32_array(np, "regulator-vset-table",
+> +                                  vset_table,
+> +                                  regulator->vol_numb);
+> +       regulator->vset_table = vset_table;
+> +       regulator->rdesc.volt_table = vset_table;
+> +       regulator->rdesc.n_voltages = regulator->vol_numb;
+> +}
+> +
+> +static int hi655x_regulator_probe(struct platform_device *pdev)
+> +{
+> +       int ret = 0;
+
+Is it used?
+
+make W=1
+
+> +       struct hi655x_regulator *regulator;
+> +       struct hi655x_pmic *pmic;
+> +       struct regulator_init_data *init_data;
+> +       struct regulator_config config = { };
+> +       struct device_node *np = pdev->dev.of_node;
+> +
+> +       pmic = dev_get_drvdata(pdev->dev.parent);
+> +       if (!pmic) {
+> +               pr_err("no pmic in the regulator parent node\n");
+
+pr_err -> dev_err. Here and in other places.
+
+> +               return -ENODEV;
+> +       }
+> +
+> +       regulator = devm_kzalloc(&pdev->dev, sizeof(*regulator), GFP_KERNEL);
+> +       if (!regulator)
+> +               return -ENOMEM;
+> +       of_get_hi655x_ctr(regulator, &pdev->dev, np);
+> +
+> +       regulator->rdesc.name = dev_name(&pdev->dev);
+> +       regulator->rdesc.type = REGULATOR_VOLTAGE;
+> +       regulator->rdesc.owner = THIS_MODULE;
+> +       regulator->rdesc.of_map_mode = hi655x_map_mode;
+> +       regulator->rdesc.ops = &hi655x_regulator_ops;
+> +       init_data = of_get_regulator_init_data(&pdev->dev, pdev->dev.of_node,
+> +                                              &regulator->rdesc);
+> +       if (!init_data) {
+> +               pr_err("get init data from dts error!\n");
+> +               return -EINVAL;
+> +       }
+> +       config.dev = &pdev->dev;
+> +       config.init_data = init_data;
+> +       config.driver_data = regulator;
+> +       config.regmap = pmic->regmap;
+> +
+> +       regulator->regdev = devm_regulator_register(&pdev->dev,
+> +                                                   &regulator->rdesc,
+> +                                                   &config);
+> +       if (IS_ERR(regulator->regdev)) {
+> +               pr_err("register regulator to system error!\n");
+> +               return PTR_ERR(regulator->regdev);
+> +       }
+> +
+> +       platform_set_drvdata(pdev, regulator);
+> +       return 0;
+> +}
+> +
+> +static struct platform_driver hi655x_regulator_driver = {
+> +       .driver = {
+> +               .name   = "hi655x_regulator",
+> +               .of_match_table = of_hi655x_regulator_match_tbl,
+> +       },
+> +       .probe  = hi655x_regulator_probe,
+> +};
+> +module_platform_driver(hi655x_regulator_driver);
+> +
+> +MODULE_AUTHOR("Chen Feng <puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>");
+> +MODULE_DESCRIPTION("Hisi hi655x regulator driver");
 > +MODULE_LICENSE("GPL v2");
-> diff --git a/include/linux/mfd/hi655x-pmic.h b/include/linux/mfd/hi65=
-5x-pmic.h
+> diff --git a/include/linux/regulator/hi655x-regulator.h b/include/linux/regulator/hi655x-regulator.h
 > new file mode 100644
-> index 0000000..b303fb6
+> index 0000000..4a32095
 > --- /dev/null
-> +++ b/include/linux/mfd/hi655x-pmic.h
-> @@ -0,0 +1,50 @@
+> +++ b/include/linux/regulator/hi655x-regulator.h
+> @@ -0,0 +1,63 @@
 > +/*
-> + * Head file for hi655x pmic
+> + * Device driver for regulators in HI6553 IC
 > + *
 > + * Copyright (c) 2015 Hisilicon.
 > + *
-> + * Fei Wang <w.f@huawei.com>
-> + * Chen Feng <puck.chen@hisilicon.com>
+> + * Fei Wang  <w.f-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> + * Chen Feng <puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
 > + *
-> + * This program is free software; you can redistribute it and/or mod=
-ify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + */
-> +
-> +#ifndef __HI655X_PMIC_H
-> +#define __HI655X_PMIC_H
-> +
-> +/* Hi655x registers are mapped to memory bus in 4 bytes stride */
-> +#define HI655X_REG_TO_BUS_ADDR(x)        ((x) << 2)
-> +
-> +#define HI655X_BITS                      (8)
-> +
-> +/*numb of sub-interrupt*/
-> +#define HI655X_NR_IRQ                    (32)
-> +
-> +#define HI655X_IRQ_STAT_BASE             (0x003)
-> +#define HI655X_IRQ_MASK_BASE             (0x007)
-> +#define HI655X_IRQ_ARRAY                 (4)
-> +#define HI655X_IRQ_MASK                  (0x0ff)
-> +#define HI655X_IRQ_CLR                   (0x0ff)
-> +#define HI655X_VER_REG                   (0x000)
-> +#define HI655X_VER_REG                   (0x000)
-> +#define HI655X_REG_MAX                   (0x000)
-> +
-> +#define PMU_VER_START                    (0x010)
-> +#define PMU_VER_END                      (0x038)
-> +#define ANA_IRQM_REG0                    (0x1b5)
-> +
-> +struct hi655x_pmic {
-> +       struct resource *res;
-> +       struct device *dev;
-> +       struct regmap *regmap;
-> +       spinlock_t ssi_hw_lock;
+> + * this regulator's probe function will be called lots of times,,
+> + * because of there are lots of regulator nodes in dtb.
+> + * so,that's say, the driver must be inited before the regulator nodes
+> + * registor to system.
 
-Just lock as a name.
+Something with spelling is broken here.
 
-> +       struct clk *clk;
-> +       struct irq_domain *domain;
-> +       int irq;
-> +       int gpio;
-> +       unsigned int irqs[HI655X_NR_IRQ];
-> +       unsigned int ver;
-> +};
-> +#endif
-> --
-> 1.9.1
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kerne=
-l" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+> + *
+> + * Makefile have proved my guess, please refor to the makefile.
+> + * when the code is rebuild i hope we can build pmu sub_system.
+> + * init order can not base on compile
+
+And here.
 
 
 
---=20
+
+-- 
 With Best Regards,
 Andy Shevchenko
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
