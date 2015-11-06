@@ -1,7 +1,8 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [Patch v2 3/9] iommu/amd: make several functions globally seen
-Date: Fri,  6 Nov 2015 20:10:45 +0800
-Message-ID: <1446811851-20623-4-git-send-email-bhe@redhat.com>
+Subject: [Patch v2 6/9] iommu/amd: Add functions
+	copy_command_buffer/copy_event_buffer
+Date: Fri,  6 Nov 2015 20:10:48 +0800
+Message-ID: <1446811851-20623-7-git-send-email-bhe@redhat.com>
 References: <1446811851-20623-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,49 +22,73 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-They will be called later when copy old dev/irq tables. It's better to use them
-then call iommu_flush_all_caches() since iommu_flush_all_caches() will
-iterate many empty table entries.
-
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c       | 4 ++--
- drivers/iommu/amd_iommu_proto.h | 2 ++
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ drivers/iommu/amd_iommu_init.c  | 39 +++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/amd_iommu_types.h |  1 +
+ 2 files changed, 40 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index b01006d..48bcd83 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -995,7 +995,7 @@ static int iommu_queue_command(struct amd_iommu *iommu, struct iommu_cmd *cmd)
-  * This function queues a completion wait command into the command
-  * buffer of an IOMMU
-  */
--static int iommu_completion_wait(struct amd_iommu *iommu)
-+int iommu_completion_wait(struct amd_iommu *iommu)
- {
- 	struct iommu_cmd cmd;
- 	volatile u64 sem = 0;
-@@ -1013,7 +1013,7 @@ static int iommu_completion_wait(struct amd_iommu *iommu)
- 	return wait_on_sem(&sem);
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 16aea93..9c414f0 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -739,6 +739,45 @@ static void copy_dev_tables(void)
+         }
  }
  
--static int iommu_flush_dte(struct amd_iommu *iommu, u16 devid)
-+int iommu_flush_dte(struct amd_iommu *iommu, u16 devid)
++static void copy_command_buffer(void)
++{
++        u64 entry;
++        u32 lo, hi;
++        phys_addr_t old_phys;
++        u64 old_virt;
++        struct amd_iommu *iommu;
++
++        for_each_iommu(iommu) {
++                lo = readl(iommu->mmio_base + MMIO_CMD_BUF_OFFSET);
++                hi = readl(iommu->mmio_base + MMIO_CMD_BUF_OFFSET + 4);
++                entry = (((u64) hi) << 32) + lo;
++                old_phys &= (1<<MMIO_CMD_SIZE_SHIFT) -1;
++                old_virt = ioremap_cache(old_phys, CMD_BUFFER_SIZE);
++                memcpy(iommu->cmd_buf, old_virt, CMD_BUFFER_SIZE);
++		iommu->cmd_buf_size &= ~(CMD_BUFFER_UNINITIALIZED);
++                iounmap(old_virt);
++        }
++}
++
++static void copy_event_buffer(void)
++{
++        u64 entry;
++        u32 lo, hi;
++        phys_addr_t old_phys;
++        u64 old_virt;
++        struct amd_iommu *iommu;
++
++        for_each_iommu(iommu) {
++                lo = readl(iommu->mmio_base + MMIO_EVT_BUF_OFFSET);
++                hi = readl(iommu->mmio_base + MMIO_EVT_BUF_OFFSET + 4);
++                entry = (((u64) hi) << 32) + lo;
++                old_phys &= (1<<MMIO_EVT_SIZE_SHIFT) -1;
++                old_virt = ioremap_cache(old_phys, EVT_BUFFER_SIZE);
++                memcpy(iommu->evt_buf, old_virt, EVT_BUFFER_SIZE);
++                iounmap(old_virt);
++        }
++}
++
+ /* sets a specific bit in the device table entry. */
+ static void set_dev_entry_bit(u16 devid, u8 bit)
  {
- 	struct iommu_cmd cmd;
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index a481c74..4277cc9 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -209,6 +209,7 @@
+ /* constants for event buffer handling */
+ #define EVT_BUFFER_SIZE		8192 /* 512 entries */
+ #define EVT_LEN_MASK		(0x9ULL << 56)
++#define MMIO_EVT_SIZE_SHIFT 56
  
-diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
-index 743e209..62d8f2f 100644
---- a/drivers/iommu/amd_iommu_proto.h
-+++ b/drivers/iommu/amd_iommu_proto.h
-@@ -101,5 +101,7 @@ static inline bool iommu_feature(struct amd_iommu *iommu, u64 f)
- /* kdump checking  */
- extern bool translation_pre_enabled(void);
- extern void clear_translation_pre_enabled(void);
-+extern int iommu_completion_wait(struct amd_iommu *iommu);
-+extern int iommu_flush_dte(struct amd_iommu *iommu, u16 devid);
- 
- #endif /* _ASM_X86_AMD_IOMMU_PROTO_H  */
+ /* Constants for PPR Log handling */
+ #define PPR_LOG_ENTRIES		512
 -- 
 2.4.0
