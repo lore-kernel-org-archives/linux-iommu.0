@@ -1,15 +1,14 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC] iommu: arm-smmu: correct reference count
-Date: Fri, 6 Nov 2015 12:23:39 +0000
-Message-ID: <20151106122338.GI6087@arm.com>
-References: <1446555557-3097-1-git-send-email-van.freenix@gmail.com>
-	<20151103131734.GE14159@arm.com> <20151104024825.GA27479@shlinux2>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC] Independent use of IOMMU groups
+Date: Fri, 6 Nov 2015 13:29:40 +0100
+Message-ID: <20151106122939.GA13027@8bytes.org>
+References: <1446746079.8831.82.camel@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20151104024825.GA27479@shlinux2>
+In-Reply-To: <1446746079.8831.82.camel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,44 +18,28 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Peng Fan <b51431-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-Cc: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Nov 04, 2015 at 10:48:28AM +0800, Peng Fan wrote:
-> On Tue, Nov 03, 2015 at 01:17:34PM +0000, Will Deacon wrote:
-> >On Tue, Nov 03, 2015 at 08:59:17PM +0800, Peng Fan wrote:
-> >> iommu_group_alloc will initialize the reference count for group to 1.
-> >> iommu_group_add_device also increase the group reference count,
-> >> if nothing bad happends. And we need to add iommu_group_put to
-> >> decrease the reference count for group.
-> >> 
-> >> Signed-off-by: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> >> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> >> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> >> ---
-> >> 
-> >> Not sure whether my understanding is correct or not. I checked rockchip-iommu.c
-> >> exynos-iommu.c and fsl_pamu_domain.c, and they all have iommu_group_put after
-> >> iommu_group_add_device.
-> >
-> >Doesn't this pair up with the iommu_group_remove_device in
-> >arm_smmu_remove_device? Are you actually seeing an issue in practice?
-> 
-> In arm_smmu_add_platform_device,
-> iommu_group_alloc --> group->device_kobj ref count will be init to 1.
-> iommu_group_add_device --> group->device_kobj ref count will be added 1 to 2.
-> 
-> In arm_smmu_remove_device:
-> iommu_group_remove_device --> Decrease group->device_kobj ref count by 1.
-> After arm_smmu_remove_device, the ref count of group->device_kobj is not 0.
-> 
-> So I think need to add iommu_group_put after iommu_group_add_device.
-> If I am wrong, please correct me.
+Hi Alex,
 
-Ok, I see what you're saying. iommu_group_get_for_dev has exactly the
-same issue, so could you update arm-smmu-v3.c as well, please?
+On Thu, Nov 05, 2015 at 10:54:39AM -0700, Alex Williamson wrote:
+> We have a couple things in-flight that are trying to make use of IOMMU
+> groups, independent of the rest of the IOMMU API.  One is the proposed
+> VFIO No-IOMMU hack that will create an IOMMU group for a non-IOMMU
+> backed device in order to make it operate within vfio and exposed via
+> vfio-pci:
+> 
+> https://lkml.org/lkml/2015/11/4/437
 
-Thanks,
+Do you really need iommu-groups for non-IOMMU vfio backend? VFIO has its
+own representation of groups (iirc they map 1-1 to iommu-groups). Can
+this concept in VFIO not be made more independent of iommu-groups?
 
-Will
+I think having iommu-groups in sysfs without an iommu in the system is
+pretty confusing for the user. Not to say that the usual iommu grouping
+code makes no sense anymore, as there is no isolation at all :)
+
+
+	Joerg
