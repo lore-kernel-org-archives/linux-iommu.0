@@ -1,84 +1,57 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC V2] iommu: correct group reference count
-Date: Mon, 09 Nov 2015 08:28:09 -0700
-Message-ID: <1447082889.4925.5.camel@redhat.com>
-References: <1447049608-6123-1-git-send-email-van.freenix@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1447049608-6123-1-git-send-email-van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: [PATCH 01/16] dma-mapping: make the generic coherent dma mmap implementation optional
+Date: Mon,  9 Nov 2015 19:17:06 +0100
+Message-ID: <1447093041-21832-2-git-send-email-hch@lst.de>
+References: <1447093041-21832-1-git-send-email-hch@lst.de>
+Return-path: <linux-metag-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1447093041-21832-1-git-send-email-hch-jcswGhMUV9g@public.gmane.org>
+Sender: linux-metag-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Haavard Skinnemoen <hskinnemoen-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Hans-Christian Egtvedt <egtvedt-BrfabpQBY5qlHtIdYg32fQ@public.gmane.org>, Steven Miao <realmz6-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Ley Foon Tan <lftan-EIB2kfCEclfQT0dZR+AlfA@public.gmane.org>, David Howells <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Koichi Yasutake <yasutake.koichi-NAum8xwdG0+S7A1Ibl2khg@public.gmane.org>, Chris Metcalf <cmetcalf-d5a29ZRxExrQT0dZR+AlfA@public.gmane.org>, linux-snps-arc-IAPFreCvJWPLiZjB17Co1B2eb7JE58TQ@public.gmane.org, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-cris-kernel-VrBV9hrLPhE@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, linux-metag-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2015-11-09 at 14:13 +0800, Peng Fan wrote:
-> The basic flow for iommu_group_for_dev is:
-> iommu_group_get_for_dev
->         |->  iommu_group_get   : increase reference count by 1.
->              return group;
->         |->  ops->device_group : Init/increase reference count to/by 1.
->              iommu_group_add_device  : Increase reference count by 1.
->              return group;
-> 
-> We can see that ops->device_group and iommu_group_add_device will together
-> increase the iommu group reference count by 2. Actually we only need 1,
-> but not 2. So we need add iommu_group_put after iommu_group_add_device
-> to make sure iommu_group_get_for_dev only increase reference count by 1.
+We have a couple architectures that do not want to support this code,
+so add another Kconfig symbol that disables the code similar to what we
+do for the nommu case.
 
-The premise seems incorrect to me.  In the first case where
-iommu_group_get() provides a group, the reference is increased by 1, but
-the device is already a member of the group and therefore already
-increases the reference count of the group by 1.  The minimum group
-reference at that point is therefore 2.  In the second case, the group
-is created, which gives us our first reference, and the device is added,
-giving us our second reference.  Therefore the minimum reference count
-is also 2.  If we decrement it, allowing the caller to get the group
-with a single reference and they release that reference, the group will
-be destroyed even though it has a device member.  One reference to the
-group is for the caller, the other reference is for the device contained
-in the group.  Thanks,
+Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+---
+ arch/Kconfig               | 3 +++
+ drivers/base/dma-mapping.c | 4 ++--
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
-Alex
-
-> Signed-off-by: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> ---
-> 
-> V1 thread: https://lkml.org/lkml/2015/11/3/304
-> Changes V2:
->  I did not see the update about device_group when I worked out V1. So
->  redo the patch and refine commit msg and rebased to latest linus'
->  linux master tree.
-> 
->  drivers/iommu/iommu.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index abae363..9c1971b 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -852,10 +852,10 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
->  	}
->  
->  	ret = iommu_group_add_device(group, dev);
-> -	if (ret) {
-> -		iommu_group_put(group);
-> +	iommu_group_put(group);
-> +
-> +	if (ret)
->  		return ERR_PTR(ret);
-> -	}
->  
->  	return group;
->  }
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 4e949e5..e47995f 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -564,4 +564,7 @@ config OLD_SIGACTION
+ config COMPAT_OLD_SIGACTION
+ 	bool
+ 
++config ARCH_NO_COHERENT_DMA_MMAP
++	bool
++
+ source "kernel/gcov/Kconfig"
+diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
+index d95c597..381e39d 100644
+--- a/drivers/base/dma-mapping.c
++++ b/drivers/base/dma-mapping.c
+@@ -247,7 +247,7 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
+ 		    void *cpu_addr, dma_addr_t dma_addr, size_t size)
+ {
+ 	int ret = -ENXIO;
+-#ifdef CONFIG_MMU
++#if defined(CONFIG_MMU) && !defined(CONFIG_ARCH_NO_COHERENT_DMA_MMAP)
+ 	unsigned long user_count = (vma->vm_end - vma->vm_start) >> PAGE_SHIFT;
+ 	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+ 	unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
+@@ -264,7 +264,7 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
+ 				      user_count << PAGE_SHIFT,
+ 				      vma->vm_page_prot);
+ 	}
+-#endif	/* CONFIG_MMU */
++#endif	/* CONFIG_MMU && !CONFIG_ARCH_NO_COHERENT_DMA_MMAP */
+ 
+ 	return ret;
+ }
+-- 
+1.9.1
