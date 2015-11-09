@@ -1,15 +1,16 @@
-From: Laine Stump <laine-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: Regression in kernel 4.2.3+ (relative to 4.1.10) on AMD 990FX
-	system with IOMMU enabled
-Date: Sun, 8 Nov 2015 11:52:56 -0500
-Message-ID: <563F7DE8.1090206@redhat.com>
-References: <563A3F64.50808@redhat.com> <1446671291.3692.147.camel@redhat.com>
-	<563BA893.4020202@redhat.com>
+From: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [RFC] iommu: arm-smmu: correct reference count
+Date: Mon, 9 Nov 2015 13:41:45 +0800
+Message-ID: <20151109054143.GA5704@linux-jyl1.ap.freescale.net>
+References: <1446555557-3097-1-git-send-email-van.freenix@gmail.com>
+	<20151103131734.GE14159@arm.com> <20151104024825.GA27479@shlinux2>
+	<20151106122338.GI6087@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <563BA893.4020202-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20151106122338.GI6087-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,74 +20,58 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Peng Fan <b51431-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/05/2015 02:05 PM, Laine Stump wrote:
-> On 11/04/2015 04:08 PM, Alex Williamson wrote:
->>
->> I built a 4.2.3 kernel for my 990fx system and can't seem to reproduce
->> it.  Does 'lspci -k' for those devices show any driver?
->
-> 00:14.2 Audio device: Advanced Micro Devices, Inc. [AMD/ATI] SBx00
-> Azalia (Intel HDA) (rev 40)
->      Subsystem: Gigabyte Technology Co., Ltd Device a132
->      Kernel modules: snd_hda_intel
-> 01:00.1 Audio device: Advanced Micro Devices, Inc. [AMD/ATI] Cedar HDMI
-> Audio [Radeon HD 5400/6300 Series]
->      Subsystem: Gigabyte Technology Co., Ltd Device aa68
->      Kernel modules: snd_hda_intel
-> 02:00.0 Ethernet controller: Intel Corporation 82576 Gigabit Network
-> Connection (rev 01)
->      Subsystem: Intel Corporation Gigabit ET Dual Port Server Adapter
->      Kernel driver in use: igb
->      Kernel modules: igb
-> 02:00.1 Ethernet controller: Intel Corporation 82576 Gigabit Network
-> Connection (rev 01)
->      Subsystem: Intel Corporation Gigabit ET Dual Port Server Adapter
->      Kernel modules: igb
->
-> /sys/devices/pci0000:00/0000:00:04.0/0000:02:00.0 does show a link from
-> driver to ........drivers/igb, but .......:02::00.1 doesn't have a link,
-> and neither of them shows up in /sys/class/net.
->
-> Similarly for 01:00.[01] (which are behind the PCI to PCI bridge at
-> 00:02.0), the .0 device does have a link to the radeon driver, but the
-> .1 device (which is the sound device on the radeon video card) has no
-> driver link.
->
-> And 00:14.2 (the motherboard integrated sound device) shows no driver
-> link in sysfs either.
->
->> Does 'lsmod'
->> show the drivers loaded, igb and snd_hda_intel?  If not, does manually
->> modprobe'ing either of those drivers change anything?
->
-> Both of those drivers show up in lsmod output.
->
->> You haven't
->> installed a script that writes to driver_override or setup a
->> configuration where those devices are claimed by pci-stub and forgotten
->> about it, have you? (it's happened to me)
->
-> Not that I'm aware of. /etc/modules.d/local.conf had a few stray very
-> old items that I'd forgotten about, but I removed those and the results
-> are the same.
->
->    Otherwise, dmesg is probably
->> a good place to start.
->
-> Thanks to the uber-verbosity of systemd, this file is about 11MB. Where
-> do you want me to put it?
+Hi Will,
 
-I figured out that somehow my kernel commandlines had gotten options to 
-put systemd logging into kmsg *and* set its logging to debug mode. Now 
-that that is fixed, dmesg is much more manageable. Here is the dmesg 
-with IOMMU enabled in the BIOS (i.e. the devices *don't* work):
+On Fri, Nov 06, 2015 at 12:23:39PM +0000, Will Deacon wrote:
+>On Wed, Nov 04, 2015 at 10:48:28AM +0800, Peng Fan wrote:
+>> On Tue, Nov 03, 2015 at 01:17:34PM +0000, Will Deacon wrote:
+>> >On Tue, Nov 03, 2015 at 08:59:17PM +0800, Peng Fan wrote:
+>> >> iommu_group_alloc will initialize the reference count for group to 1.
+>> >> iommu_group_add_device also increase the group reference count,
+>> >> if nothing bad happends. And we need to add iommu_group_put to
+>> >> decrease the reference count for group.
+>> >> 
+>> >> Signed-off-by: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>> >> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+>> >> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+>> >> ---
+>> >> 
+>> >> Not sure whether my understanding is correct or not. I checked rockchip-iommu.c
+>> >> exynos-iommu.c and fsl_pamu_domain.c, and they all have iommu_group_put after
+>> >> iommu_group_add_device.
+>> >
+>> >Doesn't this pair up with the iommu_group_remove_device in
+>> >arm_smmu_remove_device? Are you actually seeing an issue in practice?
+>> 
+>> In arm_smmu_add_platform_device,
+>> iommu_group_alloc --> group->device_kobj ref count will be init to 1.
+>> iommu_group_add_device --> group->device_kobj ref count will be added 1 to 2.
+>> 
+>> In arm_smmu_remove_device:
+>> iommu_group_remove_device --> Decrease group->device_kobj ref count by 1.
+>> After arm_smmu_remove_device, the ref count of group->device_kobj is not 0.
+>> 
+>> So I think need to add iommu_group_put after iommu_group_add_device.
+>> If I am wrong, please correct me.
+>
+>Ok, I see what you're saying. iommu_group_get_for_dev has exactly the
+>same issue, so could you update arm-smmu-v3.c as well, please?
 
-   http://fpaste.org/288181/70011531/
+I did not see the update about device_group for iommu, when I worked out this patch.
+Rebased to latest linux/master, whether to arm-smmu.c or arm-smmu-v3.c,
+only add 'iommu_group_put' at the end of iommu_group_get_for_dev is ok as the
+following.
 
-and here is is when IOMMU has been *disabled* in the BIOS (the devices 
-*do* work):
+I'll send out V2.
 
-   http://fpaste.org/288182/47001302/
+Thanks,
+Peng.
+
+>
+>Thanks,
+>
+>Will
