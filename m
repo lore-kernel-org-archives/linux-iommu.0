@@ -1,1847 +1,746 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 15/16] dma-mapping: always provide the dma_map_ops based implementation
-Date: Mon,  9 Nov 2015 19:17:20 +0100
-Message-ID: <1447093041-21832-16-git-send-email-hch@lst.de>
+From: Helge Deller <deller@gmx.de>
+Subject: Re: [PATCH 09/16] parisc: convert to dma_map_ops
+Date: Mon, 9 Nov 2015 20:32:24 +0100
+Message-ID: <5640F4C8.5060206@gmx.de>
 References: <1447093041-21832-1-git-send-email-hch@lst.de>
-Return-path: <linux-metag-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1447093041-21832-1-git-send-email-hch-jcswGhMUV9g@public.gmane.org>
-Sender: linux-metag-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Haavard Skinnemoen <hskinnemoen-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Hans-Christian Egtvedt <egtvedt-BrfabpQBY5qlHtIdYg32fQ@public.gmane.org>, Steven Miao <realmz6-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Ley Foon Tan <lftan-EIB2kfCEclfQT0dZR+AlfA@public.gmane.org>, David Howells <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Koichi Yasutake <yasutake.koichi-NAum8xwdG0+S7A1Ibl2khg@public.gmane.org>, Chris Metcalf <cmetcalf-d5a29ZRxExrQT0dZR+AlfA@public.gmane.org>, linux-snps-arc-IAPFreCvJWPLiZjB17Co1B2eb7JE58TQ@public.gmane.org, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-cris-kernel-VrBV9hrLPhE@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, linux-metag-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+ <1447093041-21832-10-git-send-email-hch@lst.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-parisc-owner@vger.kernel.org>
+In-Reply-To: <1447093041-21832-10-git-send-email-hch@lst.de>
+Sender: linux-parisc-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>, Andrew Morton <akpm@linux-foundation.org>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Steven Miao <realmz6@gmail.com>, Ley Foon Tan <lftan@altera.com>, David Howells <dhowells@redhat.com>, Koichi Yasutake <yasutake.koichi@jp.panasonic.com>, Chris Metcalf <cmetcalf@ezchip.com>, linux-c6x-dev@linux-c6x.org, linux-cris-kernel@axis.com, linux-parisc@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-metag@vger.kernel.org, sparclinux@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Move the generic implementation to <linux/dma-mapping.h> now that all
-architectures support it and remove the HAVE_DMA_ATTR Kconfig symbol
-now that everyone supports them.
+On 09.11.2015 19:17, Christoph Hellwig wrote:
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
----
- Documentation/DMA-API-HOWTO.txt                    |  10 -
- .../features/io/dma_map_attrs/arch-support.txt     |  40 ---
- arch/Kconfig                                       |   3 -
- arch/alpha/Kconfig                                 |   1 -
- arch/alpha/include/asm/dma-mapping.h               |   2 -
- arch/arc/Kconfig                                   |   1 -
- arch/arc/include/asm/dma-mapping.h                 |   2 -
- arch/arm/Kconfig                                   |   1 -
- arch/arm/include/asm/dma-mapping.h                 |   7 -
- arch/arm64/Kconfig                                 |   1 -
- arch/arm64/include/asm/dma-mapping.h               |   2 -
- arch/avr32/Kconfig                                 |   1 -
- arch/avr32/include/asm/dma-mapping.h               |   2 -
- arch/blackfin/Kconfig                              |   1 -
- arch/blackfin/include/asm/dma-mapping.h            |   2 -
- arch/c6x/Kconfig                                   |   1 -
- arch/c6x/include/asm/dma-mapping.h                 |   2 -
- arch/cris/Kconfig                                  |   1 -
- arch/cris/include/asm/dma-mapping.h                |   2 -
- arch/frv/Kconfig                                   |   1 -
- arch/frv/include/asm/dma-mapping.h                 |   2 -
- arch/h8300/Kconfig                                 |   1 -
- arch/h8300/include/asm/dma-mapping.h               |   2 -
- arch/hexagon/Kconfig                               |   1 -
- arch/hexagon/include/asm/dma-mapping.h             |   2 -
- arch/ia64/Kconfig                                  |   1 -
- arch/ia64/include/asm/dma-mapping.h                |   2 -
- arch/m68k/Kconfig                                  |   1 -
- arch/m68k/include/asm/dma-mapping.h                |   2 -
- arch/metag/Kconfig                                 |   1 -
- arch/metag/include/asm/dma-mapping.h               |   2 -
- arch/microblaze/Kconfig                            |   1 -
- arch/microblaze/include/asm/dma-mapping.h          |   2 -
- arch/mips/Kconfig                                  |   1 -
- arch/mips/include/asm/dma-mapping.h                |   2 -
- arch/mn10300/Kconfig                               |   1 -
- arch/mn10300/include/asm/dma-mapping.h             |   2 -
- arch/nios2/Kconfig                                 |   1 -
- arch/openrisc/Kconfig                              |   3 -
- arch/openrisc/include/asm/dma-mapping.h            |   2 -
- arch/parisc/Kconfig                                |   1 -
- arch/parisc/include/asm/dma-mapping.h              |   2 -
- arch/powerpc/Kconfig                               |   1 -
- arch/powerpc/include/asm/dma-mapping.h             |   2 -
- arch/s390/Kconfig                                  |   1 -
- arch/s390/include/asm/dma-mapping.h                |   2 -
- arch/sh/Kconfig                                    |   1 -
- arch/sh/include/asm/dma-mapping.h                  |   2 -
- arch/sparc/Kconfig                                 |   1 -
- arch/sparc/include/asm/dma-mapping.h               |   2 -
- arch/tile/Kconfig                                  |   1 -
- arch/tile/include/asm/dma-mapping.h                |   3 -
- arch/unicore32/Kconfig                             |   1 -
- arch/unicore32/include/asm/dma-mapping.h           |   2 -
- arch/x86/Kconfig                                   |   1 -
- arch/x86/include/asm/dma-mapping.h                 |   2 -
- arch/xtensa/Kconfig                                |   1 -
- arch/xtensa/include/asm/dma-mapping.h              |   2 -
- drivers/gpu/drm/Kconfig                            |   4 +-
- drivers/gpu/drm/imx/Kconfig                        |   2 +-
- drivers/gpu/drm/rcar-du/Kconfig                    |   2 +-
- drivers/gpu/drm/shmobile/Kconfig                   |   2 +-
- drivers/gpu/drm/sti/Kconfig                        |   2 +-
- drivers/gpu/drm/tilcdc/Kconfig                     |   2 +-
- drivers/media/platform/Kconfig                     |   1 -
- include/asm-generic/dma-mapping-broken.h           |  95 ------
- include/asm-generic/dma-mapping-common.h           | 358 -------------------
- include/linux/dma-attrs.h                          |  10 -
- include/linux/dma-mapping.h                        | 379 ++++++++++++++++++++-
- 69 files changed, 368 insertions(+), 632 deletions(-)
- delete mode 100644 Documentation/features/io/dma_map_attrs/arch-support.txt
- delete mode 100644 include/asm-generic/dma-mapping-broken.h
- delete mode 100644 include/asm-generic/dma-mapping-common.h
+Nice cleanup/consolidation patches!
 
-diff --git a/Documentation/DMA-API-HOWTO.txt b/Documentation/DMA-API-HOWTO.txt
-index d69b3fc..781024e 100644
---- a/Documentation/DMA-API-HOWTO.txt
-+++ b/Documentation/DMA-API-HOWTO.txt
-@@ -951,16 +951,6 @@ to "Closing".
-    alignment constraints (e.g. the alignment constraints about 64-bit
-    objects).
- 
--3) Supporting multiple types of IOMMUs
--
--   If your architecture needs to support multiple types of IOMMUs, you
--   can use include/linux/asm-generic/dma-mapping-common.h. It's a
--   library to support the DMA API with multiple types of IOMMUs. Lots
--   of architectures (x86, powerpc, sh, alpha, ia64, microblaze and
--   sparc) use it. Choose one to see how it can be used. If you need to
--   support multiple types of IOMMUs in a single system, the example of
--   x86 or powerpc helps.
--
- 			   Closing
- 
- This document, and the API itself, would not be in its current
-diff --git a/Documentation/features/io/dma_map_attrs/arch-support.txt b/Documentation/features/io/dma_map_attrs/arch-support.txt
-deleted file mode 100644
-index 51d0f1c..0000000
---- a/Documentation/features/io/dma_map_attrs/arch-support.txt
-+++ /dev/null
-@@ -1,40 +0,0 @@
--#
--# Feature name:          dma_map_attrs
--#         Kconfig:       HAVE_DMA_ATTRS
--#         description:   arch provides dma_*map*_attrs() APIs
--#
--    -----------------------
--    |         arch |status|
--    -----------------------
--    |       alpha: |  ok  |
--    |         arc: | TODO |
--    |         arm: |  ok  |
--    |       arm64: |  ok  |
--    |       avr32: | TODO |
--    |    blackfin: | TODO |
--    |         c6x: | TODO |
--    |        cris: | TODO |
--    |         frv: | TODO |
--    |       h8300: |  ok  |
--    |     hexagon: |  ok  |
--    |        ia64: |  ok  |
--    |        m32r: | TODO |
--    |        m68k: | TODO |
--    |       metag: | TODO |
--    |  microblaze: |  ok  |
--    |        mips: |  ok  |
--    |     mn10300: | TODO |
--    |       nios2: | TODO |
--    |    openrisc: |  ok  |
--    |      parisc: | TODO |
--    |     powerpc: |  ok  |
--    |        s390: |  ok  |
--    |       score: | TODO |
--    |          sh: |  ok  |
--    |       sparc: |  ok  |
--    |        tile: |  ok  |
--    |          um: | TODO |
--    |   unicore32: |  ok  |
--    |         x86: |  ok  |
--    |      xtensa: | TODO |
--    -----------------------
-diff --git a/arch/Kconfig b/arch/Kconfig
-index e47995f..58541e7 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -205,9 +205,6 @@ config HAVE_NMI_WATCHDOG
- config HAVE_ARCH_TRACEHOOK
- 	bool
- 
--config HAVE_DMA_ATTRS
--	bool
--
- config HAVE_DMA_CONTIGUOUS
- 	bool
- 
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index f515a4d..9d8a858 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -9,7 +9,6 @@ config ALPHA
- 	select HAVE_OPROFILE
- 	select HAVE_PCSPKR_PLATFORM
- 	select HAVE_PERF_EVENTS
--	select HAVE_DMA_ATTRS
- 	select VIRT_TO_BUS
- 	select GENERIC_IRQ_PROBE
- 	select AUTO_IRQ_AFFINITY if SMP
-diff --git a/arch/alpha/include/asm/dma-mapping.h b/arch/alpha/include/asm/dma-mapping.h
-index 72a8ca7..3c3451f 100644
---- a/arch/alpha/include/asm/dma-mapping.h
-+++ b/arch/alpha/include/asm/dma-mapping.h
-@@ -10,8 +10,6 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
- 	return dma_ops;
- }
- 
--#include <asm-generic/dma-mapping-common.h>
--
- #define dma_cache_sync(dev, va, size, dir)		  ((void)0)
- 
- #endif	/* _ALPHA_DMA_MAPPING_H */
-diff --git a/arch/arc/Kconfig b/arch/arc/Kconfig
-index fdf217c..2c2ac3f 100644
---- a/arch/arc/Kconfig
-+++ b/arch/arc/Kconfig
-@@ -38,7 +38,6 @@ config ARC
- 	select OF_EARLY_FLATTREE
- 	select PERF_USE_VMALLOC
- 	select HAVE_DEBUG_STACKOVERFLOW
--	select HAVE_DMA_ATTRS
- 
- config TRACE_IRQFLAGS_SUPPORT
- 	def_bool y
-diff --git a/arch/arc/include/asm/dma-mapping.h b/arch/arc/include/asm/dma-mapping.h
-index 2a617f9..6602054 100644
---- a/arch/arc/include/asm/dma-mapping.h
-+++ b/arch/arc/include/asm/dma-mapping.h
-@@ -18,6 +18,4 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
- 	return &arc_dma_ops;
- }
- 
--#include <asm-generic/dma-mapping-common.h>
--
- #endif
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index f1ed110..f359203 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -43,7 +43,6 @@ config ARM
- 	select HAVE_C_RECORDMCOUNT
- 	select HAVE_DEBUG_KMEMLEAK
- 	select HAVE_DMA_API_DEBUG
--	select HAVE_DMA_ATTRS
- 	select HAVE_DMA_CONTIGUOUS if MMU
- 	select HAVE_DYNAMIC_FTRACE if (!XIP_KERNEL) && !CPU_ENDIAN_BE32
- 	select HAVE_EFFICIENT_UNALIGNED_ACCESS if (CPU_V6 || CPU_V6K || CPU_V7) && MMU
-diff --git a/arch/arm/include/asm/dma-mapping.h b/arch/arm/include/asm/dma-mapping.h
-index ccb3aa6..6ad1ced 100644
---- a/arch/arm/include/asm/dma-mapping.h
-+++ b/arch/arm/include/asm/dma-mapping.h
-@@ -41,13 +41,6 @@ static inline void set_dma_ops(struct device *dev, struct dma_map_ops *ops)
- #define HAVE_ARCH_DMA_SUPPORTED 1
- extern int dma_supported(struct device *dev, u64 mask);
- 
--/*
-- * Note that while the generic code provides dummy dma_{alloc,free}_noncoherent
-- * implementations, we don't provide a dma_cache_sync function so drivers using
-- * this API are highlighted with build warnings.
-- */
--#include <asm-generic/dma-mapping-common.h>
--
- #ifdef __arch_page_to_dma
- #error Please update to __arch_pfn_to_dma
- #endif
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 851fe11..4ebd1b9 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -60,7 +60,6 @@ config ARM64
- 	select HAVE_DEBUG_BUGVERBOSE
- 	select HAVE_DEBUG_KMEMLEAK
- 	select HAVE_DMA_API_DEBUG
--	select HAVE_DMA_ATTRS
- 	select HAVE_DMA_CONTIGUOUS
- 	select HAVE_DYNAMIC_FTRACE
- 	select HAVE_EFFICIENT_UNALIGNED_ACCESS
-diff --git a/arch/arm64/include/asm/dma-mapping.h b/arch/arm64/include/asm/dma-mapping.h
-index 54d0ead..16dfd3b 100644
---- a/arch/arm64/include/asm/dma-mapping.h
-+++ b/arch/arm64/include/asm/dma-mapping.h
-@@ -71,8 +71,6 @@ static inline bool is_device_dma_coherent(struct device *dev)
- 	return dev->archdata.dma_coherent;
- }
- 
--#include <asm-generic/dma-mapping-common.h>
--
- static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
- {
- 	return (dma_addr_t)paddr;
-diff --git a/arch/avr32/Kconfig b/arch/avr32/Kconfig
-index b545384..b6878eb 100644
---- a/arch/avr32/Kconfig
-+++ b/arch/avr32/Kconfig
-@@ -17,7 +17,6 @@ config AVR32
- 	select GENERIC_CLOCKEVENTS
- 	select HAVE_MOD_ARCH_SPECIFIC
- 	select MODULES_USE_ELF_RELA
--	select HAVE_DMA_ATTRS
- 	help
- 	  AVR32 is a high-performance 32-bit RISC microprocessor core,
- 	  designed for cost-sensitive embedded applications, with particular
-diff --git a/arch/avr32/include/asm/dma-mapping.h b/arch/avr32/include/asm/dma-mapping.h
-index 0239ca8..1115f2a 100644
---- a/arch/avr32/include/asm/dma-mapping.h
-+++ b/arch/avr32/include/asm/dma-mapping.h
-@@ -11,6 +11,4 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
- 	return &avr32_dma_ops;
- }
- 
--#include <asm-generic/dma-mapping-common.h>
--
- #endif /* __ASM_AVR32_DMA_MAPPING_H */
-diff --git a/arch/blackfin/Kconfig b/arch/blackfin/Kconfig
-index d3c68dd..af76634 100644
---- a/arch/blackfin/Kconfig
-+++ b/arch/blackfin/Kconfig
-@@ -40,7 +40,6 @@ config BLACKFIN
- 	select HAVE_MOD_ARCH_SPECIFIC
- 	select MODULES_USE_ELF_RELA
- 	select HAVE_DEBUG_STACKOVERFLOW
--	select HAVE_DMA_ATTRS
- 
- config GENERIC_CSUM
- 	def_bool y
-diff --git a/arch/blackfin/include/asm/dma-mapping.h b/arch/blackfin/include/asm/dma-mapping.h
-index ea5a2e8..3490570 100644
---- a/arch/blackfin/include/asm/dma-mapping.h
-+++ b/arch/blackfin/include/asm/dma-mapping.h
-@@ -43,6 +43,4 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
- 	return &bfin_dma_ops;
- }
- 
--#include <asm-generic/dma-mapping-common.h>
--
- #endif				/* _BLACKFIN_DMA_MAPPING_H */
-diff --git a/arch/c6x/Kconfig b/arch/c6x/Kconfig
-index 8602f72..79049d4 100644
---- a/arch/c6x/Kconfig
-+++ b/arch/c6x/Kconfig
-@@ -18,7 +18,6 @@ config C6X
- 	select GENERIC_CLOCKEVENTS
- 	select MODULES_USE_ELF_RELA
- 	select ARCH_NO_COHERENT_DMA_MMAP
--	select HAVE_DMA_ATTRS
- 
- config MMU
- 	def_bool n
-diff --git a/arch/c6x/include/asm/dma-mapping.h b/arch/c6x/include/asm/dma-mapping.h
-index 6aa20fd..b810147 100644
---- a/arch/c6x/include/asm/dma-mapping.h
-+++ b/arch/c6x/include/asm/dma-mapping.h
-@@ -24,6 +24,4 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
- 	return &c6x_dma_ops;
- }
- 
--#include <asm-generic/dma-mapping-common.h>
--
- #endif	/* _ASM_C6X_DMA_MAPPING_H */
-diff --git a/arch/cris/Kconfig b/arch/cris/Kconfig
-index f5dd700..e086f9e 100644
---- a/arch/cris/Kconfig
-+++ b/arch/cris/Kconfig
-@@ -69,7 +69,6 @@ config CRIS
- 	select GENERIC_CLOCKEVENTS if ETRAX_ARCH_V32
- 	select GENERIC_SCHED_CLOCK if ETRAX_ARCH_V32
- 	select HAVE_DEBUG_BUGVERBOSE if ETRAX_ARCH_V32
--	select HAVE_DMA_ATTRS
- 
- config HZ
- 	int
-diff --git a/arch/cris/include/asm/dma-mapping.h b/arch/cris/include/asm/dma-mapping.h
-index 34e7c7c..5a37017 100644
---- a/arch/cris/include/asm/dma-mapping.h
-+++ b/arch/cris/include/asm/dma-mapping.h
-@@ -16,8 +16,6 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
- }
- #endif
- 
--#include <asm-generic/dma-mapping-common.h>
--
- static inline void
- dma_cache_sync(struct device *dev, void *vaddr, size_t size,
- 	       enum dma_data_direction direction)
-diff --git a/arch/frv/Kconfig b/arch/frv/Kconfig
-index d4fc724..4211be8 100644
---- a/arch/frv/Kconfig
-+++ b/arch/frv/Kconfig
-@@ -15,7 +15,6 @@ config FRV
- 	select OLD_SIGACTION
- 	select HAVE_DEBUG_STACKOVERFLOW
- 	select ARCH_NO_COHERENT_DMA_MMAP
--	select HAVE_DMA_ATTRS
- 
- config ZONE_DMA
- 	bool
-diff --git a/arch/frv/include/asm/dma-mapping.h b/arch/frv/include/asm/dma-mapping.h
-index 750951c..9a82bfa 100644
---- a/arch/frv/include/asm/dma-mapping.h
-+++ b/arch/frv/include/asm/dma-mapping.h
-@@ -21,6 +21,4 @@ void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
- 	flush_write_buffers();
- }
- 
--#include <asm-generic/dma-mapping-common.h>
--
- #endif  /* _ASM_DMA_MAPPING_H */
-diff --git a/arch/h8300/Kconfig b/arch/h8300/Kconfig
-index db58916..275ad93 100644
---- a/arch/h8300/Kconfig
-+++ b/arch/h8300/Kconfig
-@@ -15,7 +15,6 @@ config H8300
- 	select OF_IRQ
- 	select OF_EARLY_FLATTREE
- 	select HAVE_MEMBLOCK
--	select HAVE_DMA_ATTRS
- 
- config RWSEM_GENERIC_SPINLOCK
- 	def_bool y
-diff --git a/arch/h8300/include/asm/dma-mapping.h b/arch/h8300/include/asm/dma-mapping.h
-index d9b5b80..7ac7fad 100644
---- a/arch/h8300/include/asm/dma-mapping.h
-+++ b/arch/h8300/include/asm/dma-mapping.h
-@@ -8,6 +8,4 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
- 	return &h8300_dma_map_ops;
- }
- 
--#include <asm-generic/dma-mapping-common.h>
--
- #endif
-diff --git a/arch/hexagon/Kconfig b/arch/hexagon/Kconfig
-index 4dc89d1..57298e7 100644
---- a/arch/hexagon/Kconfig
-+++ b/arch/hexagon/Kconfig
-@@ -27,7 +27,6 @@ config HEXAGON
- 	select GENERIC_CLOCKEVENTS_BROADCAST
- 	select MODULES_USE_ELF_RELA
- 	select GENERIC_CPU_DEVICES
--	select HAVE_DMA_ATTRS
- 	---help---
- 	  Qualcomm Hexagon is a processor architecture designed for high
- 	  performance and low power across a wide variety of applications.
-diff --git a/arch/hexagon/include/asm/dma-mapping.h b/arch/hexagon/include/asm/dma-mapping.h
-index 268fde8..aa62034 100644
---- a/arch/hexagon/include/asm/dma-mapping.h
-+++ b/arch/hexagon/include/asm/dma-mapping.h
-@@ -49,8 +49,6 @@ extern int dma_is_consistent(struct device *dev, dma_addr_t dma_handle);
- extern void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
- 			   enum dma_data_direction direction);
- 
--#include <asm-generic/dma-mapping-common.h>
--
- static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
- {
- 	if (!dev->dma_mask)
-diff --git a/arch/ia64/Kconfig b/arch/ia64/Kconfig
-index eb0249e..fb0515e 100644
---- a/arch/ia64/Kconfig
-+++ b/arch/ia64/Kconfig
-@@ -25,7 +25,6 @@ config IA64
- 	select HAVE_FTRACE_MCOUNT_RECORD
- 	select HAVE_DYNAMIC_FTRACE if (!ITANIUM)
- 	select HAVE_FUNCTION_TRACER
--	select HAVE_DMA_ATTRS
- 	select TTY
- 	select HAVE_ARCH_TRACEHOOK
- 	select HAVE_DMA_API_DEBUG
-diff --git a/arch/ia64/include/asm/dma-mapping.h b/arch/ia64/include/asm/dma-mapping.h
-index 9beccf8..d472805 100644
---- a/arch/ia64/include/asm/dma-mapping.h
-+++ b/arch/ia64/include/asm/dma-mapping.h
-@@ -25,8 +25,6 @@ extern void machvec_dma_sync_sg(struct device *, struct scatterlist *, int,
- 
- #define get_dma_ops(dev) platform_dma_get_ops(dev)
- 
--#include <asm-generic/dma-mapping-common.h>
--
- static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
- {
- 	if (!dev->dma_mask)
-diff --git a/arch/m68k/Kconfig b/arch/m68k/Kconfig
-index d5d75b3..498b567 100644
---- a/arch/m68k/Kconfig
-+++ b/arch/m68k/Kconfig
-@@ -23,7 +23,6 @@ config M68K
- 	select MODULES_USE_ELF_RELA
- 	select OLD_SIGSUSPEND3
- 	select OLD_SIGACTION
--	select HAVE_DMA_ATTRS
- 
- config RWSEM_GENERIC_SPINLOCK
- 	bool
-diff --git a/arch/m68k/include/asm/dma-mapping.h b/arch/m68k/include/asm/dma-mapping.h
-index 2c082a6..96c5361 100644
---- a/arch/m68k/include/asm/dma-mapping.h
-+++ b/arch/m68k/include/asm/dma-mapping.h
-@@ -8,8 +8,6 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
-         return &m68k_dma_ops;
- }
- 
--#include <asm-generic/dma-mapping-common.h>
--
- static inline void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
- 				  enum dma_data_direction dir)
- {
-diff --git a/arch/metag/Kconfig b/arch/metag/Kconfig
-index 36af3c0..0b389a8 100644
---- a/arch/metag/Kconfig
-+++ b/arch/metag/Kconfig
-@@ -29,7 +29,6 @@ config METAG
- 	select OF
- 	select OF_EARLY_FLATTREE
- 	select SPARSE_IRQ
--	select HAVE_DMA_ATTRS
- 
- config STACKTRACE_SUPPORT
- 	def_bool y
-diff --git a/arch/metag/include/asm/dma-mapping.h b/arch/metag/include/asm/dma-mapping.h
-index 768f2e3..27af5d47 100644
---- a/arch/metag/include/asm/dma-mapping.h
-+++ b/arch/metag/include/asm/dma-mapping.h
-@@ -8,8 +8,6 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
- 	return &metag_dma_ops;
- }
- 
--#include <asm-generic/dma-mapping-common.h>
--
- /*
-  * dma_alloc_noncoherent() returns non-cacheable memory, so there's no need to
-  * do any flushing here.
-diff --git a/arch/microblaze/Kconfig b/arch/microblaze/Kconfig
-index 0bce820..d1f5891 100644
---- a/arch/microblaze/Kconfig
-+++ b/arch/microblaze/Kconfig
-@@ -19,7 +19,6 @@ config MICROBLAZE
- 	select HAVE_ARCH_KGDB
- 	select HAVE_DEBUG_KMEMLEAK
- 	select HAVE_DMA_API_DEBUG
--	select HAVE_DMA_ATTRS
- 	select HAVE_DYNAMIC_FTRACE
- 	select HAVE_FTRACE_MCOUNT_RECORD
- 	select HAVE_FUNCTION_GRAPH_TRACER
-diff --git a/arch/microblaze/include/asm/dma-mapping.h b/arch/microblaze/include/asm/dma-mapping.h
-index 24b1297..1884783 100644
---- a/arch/microblaze/include/asm/dma-mapping.h
-+++ b/arch/microblaze/include/asm/dma-mapping.h
-@@ -44,8 +44,6 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
- 	return &dma_direct_ops;
- }
- 
--#include <asm-generic/dma-mapping-common.h>
--
- static inline void __dma_sync(unsigned long paddr,
- 			      size_t size, enum dma_data_direction direction)
- {
-diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index e3aa5b0..1b41781 100644
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -30,7 +30,6 @@ config MIPS
- 	select RTC_LIB if !MACH_LOONGSON64
- 	select GENERIC_ATOMIC64 if !64BIT
- 	select ARCH_HAS_ATOMIC64_DEC_IF_POSITIVE
--	select HAVE_DMA_ATTRS
- 	select HAVE_DMA_CONTIGUOUS
- 	select HAVE_DMA_API_DEBUG
- 	select GENERIC_IRQ_PROBE
-diff --git a/arch/mips/include/asm/dma-mapping.h b/arch/mips/include/asm/dma-mapping.h
-index e604f76..12fa79e 100644
---- a/arch/mips/include/asm/dma-mapping.h
-+++ b/arch/mips/include/asm/dma-mapping.h
-@@ -29,8 +29,6 @@ static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
- 
- static inline void dma_mark_clean(void *addr, size_t size) {}
- 
--#include <asm-generic/dma-mapping-common.h>
--
- extern void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
- 	       enum dma_data_direction direction);
- 
-diff --git a/arch/mn10300/Kconfig b/arch/mn10300/Kconfig
-index 1bf3af2..000745b 100644
---- a/arch/mn10300/Kconfig
-+++ b/arch/mn10300/Kconfig
-@@ -14,7 +14,6 @@ config MN10300
- 	select OLD_SIGACTION
- 	select HAVE_DEBUG_STACKOVERFLOW
- 	select ARCH_NO_COHERENT_DMA_MMAP
--	select HAVE_DMA_ATTRS
- 
- config AM33_2
- 	def_bool n
-diff --git a/arch/mn10300/include/asm/dma-mapping.h b/arch/mn10300/include/asm/dma-mapping.h
-index e69b013..1dcd447 100644
---- a/arch/mn10300/include/asm/dma-mapping.h
-+++ b/arch/mn10300/include/asm/dma-mapping.h
-@@ -28,6 +28,4 @@ void dma_cache_sync(void *vaddr, size_t size,
- 	mn10300_dcache_flush_inv();
- }
- 
--#include <asm-generic/dma-mapping-common.h>
--
- #endif
-diff --git a/arch/nios2/Kconfig b/arch/nios2/Kconfig
-index 4b2504d..4375554 100644
---- a/arch/nios2/Kconfig
-+++ b/arch/nios2/Kconfig
-@@ -16,7 +16,6 @@ config NIOS2
- 	select SOC_BUS
- 	select SPARSE_IRQ
- 	select USB_ARCH_HAS_HCD if USB_SUPPORT
--	select HAVE_DMA_ATTRS
- 
- config GENERIC_CSUM
- 	def_bool y
-diff --git a/arch/openrisc/Kconfig b/arch/openrisc/Kconfig
-index 443f44d..e118c02 100644
---- a/arch/openrisc/Kconfig
-+++ b/arch/openrisc/Kconfig
-@@ -29,9 +29,6 @@ config OPENRISC
- config MMU
- 	def_bool y
- 
--config HAVE_DMA_ATTRS
--	def_bool y
--
- config RWSEM_GENERIC_SPINLOCK
- 	def_bool y
- 
-diff --git a/arch/openrisc/include/asm/dma-mapping.h b/arch/openrisc/include/asm/dma-mapping.h
-index 413bfcf..1f260bc 100644
---- a/arch/openrisc/include/asm/dma-mapping.h
-+++ b/arch/openrisc/include/asm/dma-mapping.h
-@@ -42,6 +42,4 @@ static inline int dma_supported(struct device *dev, u64 dma_mask)
- 	return dma_mask == DMA_BIT_MASK(32);
- }
- 
--#include <asm-generic/dma-mapping-common.h>
--
- #endif	/* __ASM_OPENRISC_DMA_MAPPING_H */
-diff --git a/arch/parisc/Kconfig b/arch/parisc/Kconfig
-index bdabfcd..f6fa59e 100644
---- a/arch/parisc/Kconfig
-+++ b/arch/parisc/Kconfig
-@@ -30,7 +30,6 @@ config PARISC
- 	select HAVE_DEBUG_STACKOVERFLOW
- 	select HAVE_ARCH_AUDITSYSCALL
- 	select ARCH_NO_COHERENT_DMA_MMAP
--	select HAVE_DMA_ATTRS
- 
- 	help
- 	  The PA-RISC microprocessor is designed by Hewlett-Packard and used
-diff --git a/arch/parisc/include/asm/dma-mapping.h b/arch/parisc/include/asm/dma-mapping.h
-index 4de5186..16e0246 100644
---- a/arch/parisc/include/asm/dma-mapping.h
-+++ b/arch/parisc/include/asm/dma-mapping.h
-@@ -83,6 +83,4 @@ struct parisc_device;
- void * sba_get_iommu(struct parisc_device *dev);
- #endif
- 
--#include <asm-generic/dma-mapping-common.h>
--
- #endif
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index db49e0d..855e644 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -111,7 +111,6 @@ config PPC
- 	select HAVE_ARCH_TRACEHOOK
- 	select HAVE_MEMBLOCK
- 	select HAVE_MEMBLOCK_NODE_MAP
--	select HAVE_DMA_ATTRS
- 	select HAVE_DMA_API_DEBUG
- 	select HAVE_OPROFILE
- 	select HAVE_DEBUG_KMEMLEAK
-diff --git a/arch/powerpc/include/asm/dma-mapping.h b/arch/powerpc/include/asm/dma-mapping.h
-index 7f522c0..77816ac 100644
---- a/arch/powerpc/include/asm/dma-mapping.h
-+++ b/arch/powerpc/include/asm/dma-mapping.h
-@@ -125,8 +125,6 @@ static inline void set_dma_offset(struct device *dev, dma_addr_t off)
- #define HAVE_ARCH_DMA_SET_MASK 1
- extern int dma_set_mask(struct device *dev, u64 dma_mask);
- 
--#include <asm-generic/dma-mapping-common.h>
--
- extern int __dma_set_mask(struct device *dev, u64 dma_mask);
- extern u64 __dma_get_required_mask(struct device *dev);
- 
-diff --git a/arch/s390/Kconfig b/arch/s390/Kconfig
-index 3a55f49..919e3f0 100644
---- a/arch/s390/Kconfig
-+++ b/arch/s390/Kconfig
-@@ -582,7 +582,6 @@ config QDIO
- 
- menuconfig PCI
- 	bool "PCI support"
--	select HAVE_DMA_ATTRS
- 	select PCI_MSI
- 	select IOMMU_SUPPORT
- 	help
-diff --git a/arch/s390/include/asm/dma-mapping.h b/arch/s390/include/asm/dma-mapping.h
-index b3fd54d..e64bfcb 100644
---- a/arch/s390/include/asm/dma-mapping.h
-+++ b/arch/s390/include/asm/dma-mapping.h
-@@ -23,8 +23,6 @@ static inline void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
- {
- }
- 
--#include <asm-generic/dma-mapping-common.h>
--
- static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
- {
- 	if (!dev->dma_mask)
-diff --git a/arch/sh/Kconfig b/arch/sh/Kconfig
-index d514df7e..9ded138 100644
---- a/arch/sh/Kconfig
-+++ b/arch/sh/Kconfig
-@@ -11,7 +11,6 @@ config SUPERH
- 	select HAVE_GENERIC_DMA_COHERENT
- 	select HAVE_ARCH_TRACEHOOK
- 	select HAVE_DMA_API_DEBUG
--	select HAVE_DMA_ATTRS
- 	select HAVE_PERF_EVENTS
- 	select HAVE_DEBUG_BUGVERBOSE
- 	select ARCH_HAVE_CUSTOM_GPIO_H
-diff --git a/arch/sh/include/asm/dma-mapping.h b/arch/sh/include/asm/dma-mapping.h
-index a3745a3..e11cf0c 100644
---- a/arch/sh/include/asm/dma-mapping.h
-+++ b/arch/sh/include/asm/dma-mapping.h
-@@ -11,8 +11,6 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
- 
- #define DMA_ERROR_CODE 0
- 
--#include <asm-generic/dma-mapping-common.h>
--
- void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
- 		    enum dma_data_direction dir);
- 
-diff --git a/arch/sparc/Kconfig b/arch/sparc/Kconfig
-index 56442d2..64dc438 100644
---- a/arch/sparc/Kconfig
-+++ b/arch/sparc/Kconfig
-@@ -26,7 +26,6 @@ config SPARC
- 	select RTC_CLASS
- 	select RTC_DRV_M48T59
- 	select RTC_SYSTOHC
--	select HAVE_DMA_ATTRS
- 	select HAVE_DMA_API_DEBUG
- 	select HAVE_ARCH_JUMP_LABEL if SPARC64
- 	select GENERIC_IRQ_SHOW
-diff --git a/arch/sparc/include/asm/dma-mapping.h b/arch/sparc/include/asm/dma-mapping.h
-index 2777092..1180ae2 100644
---- a/arch/sparc/include/asm/dma-mapping.h
-+++ b/arch/sparc/include/asm/dma-mapping.h
-@@ -37,6 +37,4 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
- 	return dma_ops;
- }
- 
--#include <asm-generic/dma-mapping-common.h>
--
- #endif
-diff --git a/arch/tile/Kconfig b/arch/tile/Kconfig
-index 106c21b..5227501 100644
---- a/arch/tile/Kconfig
-+++ b/arch/tile/Kconfig
-@@ -5,7 +5,6 @@ config TILE
- 	def_bool y
- 	select HAVE_PERF_EVENTS
- 	select USE_PMC if PERF_EVENTS
--	select HAVE_DMA_ATTRS
- 	select HAVE_DMA_API_DEBUG
- 	select HAVE_KVM if !TILEGX
- 	select GENERIC_FIND_FIRST_BIT
-diff --git a/arch/tile/include/asm/dma-mapping.h b/arch/tile/include/asm/dma-mapping.h
-index c342736..01ceb4a 100644
---- a/arch/tile/include/asm/dma-mapping.h
-+++ b/arch/tile/include/asm/dma-mapping.h
-@@ -73,9 +73,6 @@ static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
- }
- 
- #define HAVE_ARCH_DMA_SET_MASK 1
--
--#include <asm-generic/dma-mapping-common.h>
--
- int dma_set_mask(struct device *dev, u64 mask);
- 
- /*
-diff --git a/arch/unicore32/Kconfig b/arch/unicore32/Kconfig
-index c9faddc..4a7dc1a 100644
---- a/arch/unicore32/Kconfig
-+++ b/arch/unicore32/Kconfig
-@@ -4,7 +4,6 @@ config UNICORE32
- 	select ARCH_MIGHT_HAVE_PC_SERIO
- 	select HAVE_MEMBLOCK
- 	select HAVE_GENERIC_DMA_COHERENT
--	select HAVE_DMA_ATTRS
- 	select HAVE_KERNEL_GZIP
- 	select HAVE_KERNEL_BZIP2
- 	select GENERIC_ATOMIC64
-diff --git a/arch/unicore32/include/asm/dma-mapping.h b/arch/unicore32/include/asm/dma-mapping.h
-index 8140e05..4749854 100644
---- a/arch/unicore32/include/asm/dma-mapping.h
-+++ b/arch/unicore32/include/asm/dma-mapping.h
-@@ -28,8 +28,6 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
- 	return &swiotlb_dma_map_ops;
- }
- 
--#include <asm-generic/dma-mapping-common.h>
--
- static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
- {
- 	if (dev && dev->dma_mask)
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index db3622f..db6a408 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -96,7 +96,6 @@ config X86
- 	select HAVE_DEBUG_KMEMLEAK
- 	select HAVE_DEBUG_STACKOVERFLOW
- 	select HAVE_DMA_API_DEBUG
--	select HAVE_DMA_ATTRS
- 	select HAVE_DMA_CONTIGUOUS
- 	select HAVE_DYNAMIC_FTRACE
- 	select HAVE_DYNAMIC_FTRACE_WITH_REGS
-diff --git a/arch/x86/include/asm/dma-mapping.h b/arch/x86/include/asm/dma-mapping.h
-index 953b726..3a27b93 100644
---- a/arch/x86/include/asm/dma-mapping.h
-+++ b/arch/x86/include/asm/dma-mapping.h
-@@ -46,8 +46,6 @@ bool arch_dma_alloc_attrs(struct device **dev, gfp_t *gfp);
- #define HAVE_ARCH_DMA_SUPPORTED 1
- extern int dma_supported(struct device *hwdev, u64 mask);
- 
--#include <asm-generic/dma-mapping-common.h>
--
- extern void *dma_generic_alloc_coherent(struct device *dev, size_t size,
- 					dma_addr_t *dma_addr, gfp_t flag,
- 					struct dma_attrs *attrs);
-diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
-index 3bd3504..b1f9c4e 100644
---- a/arch/xtensa/Kconfig
-+++ b/arch/xtensa/Kconfig
-@@ -15,7 +15,6 @@ config XTENSA
- 	select GENERIC_PCI_IOMAP
- 	select GENERIC_SCHED_CLOCK
- 	select HAVE_DMA_API_DEBUG
--	select HAVE_DMA_ATTRS
- 	select HAVE_FUNCTION_TRACER
- 	select HAVE_IRQ_TIME_ACCOUNTING
- 	select HAVE_OPROFILE
-diff --git a/arch/xtensa/include/asm/dma-mapping.h b/arch/xtensa/include/asm/dma-mapping.h
-index 4427f38..32350e9 100644
---- a/arch/xtensa/include/asm/dma-mapping.h
-+++ b/arch/xtensa/include/asm/dma-mapping.h
-@@ -30,8 +30,6 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
- 		return &xtensa_dma_map_ops;
- }
- 
--#include <asm-generic/dma-mapping-common.h>
--
- void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
- 		    enum dma_data_direction direction);
- 
-diff --git a/drivers/gpu/drm/Kconfig b/drivers/gpu/drm/Kconfig
-index 1a0a8df..9091fef 100644
---- a/drivers/gpu/drm/Kconfig
-+++ b/drivers/gpu/drm/Kconfig
-@@ -82,13 +82,13 @@ config DRM_TTM
- 
- config DRM_GEM_CMA_HELPER
- 	bool
--	depends on DRM && HAVE_DMA_ATTRS
-+	depends on DRM
- 	help
- 	  Choose this if you need the GEM CMA helper functions
- 
- config DRM_KMS_CMA_HELPER
- 	bool
--	depends on DRM && HAVE_DMA_ATTRS
-+	depends on DRM
- 	select DRM_GEM_CMA_HELPER
- 	select DRM_KMS_FB_HELPER
- 	select FB_SYS_FILLRECT
-diff --git a/drivers/gpu/drm/imx/Kconfig b/drivers/gpu/drm/imx/Kconfig
-index 2b81a41..cda71db 100644
---- a/drivers/gpu/drm/imx/Kconfig
-+++ b/drivers/gpu/drm/imx/Kconfig
-@@ -5,7 +5,7 @@ config DRM_IMX
- 	select VIDEOMODE_HELPERS
- 	select DRM_GEM_CMA_HELPER
- 	select DRM_KMS_CMA_HELPER
--	depends on DRM && (ARCH_MXC || ARCH_MULTIPLATFORM) && HAVE_DMA_ATTRS
-+	depends on DRM && (ARCH_MXC || ARCH_MULTIPLATFORM)
- 	depends on IMX_IPUV3_CORE
- 	help
- 	  enable i.MX graphics support
-diff --git a/drivers/gpu/drm/rcar-du/Kconfig b/drivers/gpu/drm/rcar-du/Kconfig
-index 11485a4..2324a52 100644
---- a/drivers/gpu/drm/rcar-du/Kconfig
-+++ b/drivers/gpu/drm/rcar-du/Kconfig
-@@ -1,6 +1,6 @@
- config DRM_RCAR_DU
- 	tristate "DRM Support for R-Car Display Unit"
--	depends on DRM && ARM && HAVE_DMA_ATTRS
-+	depends on DRM && ARM
- 	depends on ARCH_SHMOBILE || COMPILE_TEST
- 	select DRM_KMS_HELPER
- 	select DRM_KMS_CMA_HELPER
-diff --git a/drivers/gpu/drm/shmobile/Kconfig b/drivers/gpu/drm/shmobile/Kconfig
-index b9202aa..8d17d00 100644
---- a/drivers/gpu/drm/shmobile/Kconfig
-+++ b/drivers/gpu/drm/shmobile/Kconfig
-@@ -1,6 +1,6 @@
- config DRM_SHMOBILE
- 	tristate "DRM Support for SH Mobile"
--	depends on DRM && ARM && HAVE_DMA_ATTRS
-+	depends on DRM && ARM
- 	depends on ARCH_SHMOBILE || COMPILE_TEST
- 	depends on FB_SH_MOBILE_MERAM || !FB_SH_MOBILE_MERAM
- 	select BACKLIGHT_CLASS_DEVICE
-diff --git a/drivers/gpu/drm/sti/Kconfig b/drivers/gpu/drm/sti/Kconfig
-index fbccc10..20d5f77 100644
---- a/drivers/gpu/drm/sti/Kconfig
-+++ b/drivers/gpu/drm/sti/Kconfig
-@@ -1,6 +1,6 @@
- config DRM_STI
- 	tristate "DRM Support for STMicroelectronics SoC stiH41x Series"
--	depends on DRM && (SOC_STIH415 || SOC_STIH416 || ARCH_MULTIPLATFORM) && HAVE_DMA_ATTRS
-+	depends on DRM && (SOC_STIH415 || SOC_STIH416 || ARCH_MULTIPLATFORM)
- 	select RESET_CONTROLLER
- 	select DRM_KMS_HELPER
- 	select DRM_GEM_CMA_HELPER
-diff --git a/drivers/gpu/drm/tilcdc/Kconfig b/drivers/gpu/drm/tilcdc/Kconfig
-index 78beafb..f60a1ec 100644
---- a/drivers/gpu/drm/tilcdc/Kconfig
-+++ b/drivers/gpu/drm/tilcdc/Kconfig
-@@ -1,6 +1,6 @@
- config DRM_TILCDC
- 	tristate "DRM Support for TI LCDC Display Controller"
--	depends on DRM && OF && ARM && HAVE_DMA_ATTRS
-+	depends on DRM && OF && ARM
- 	select DRM_KMS_HELPER
- 	select DRM_KMS_FB_HELPER
- 	select DRM_KMS_CMA_HELPER
-diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
-index ccbc974..15431c1 100644
---- a/drivers/media/platform/Kconfig
-+++ b/drivers/media/platform/Kconfig
-@@ -216,7 +216,6 @@ config VIDEO_STI_BDISP
- 	tristate "STMicroelectronics BDISP 2D blitter driver"
- 	depends on VIDEO_DEV && VIDEO_V4L2
- 	depends on ARCH_STI || COMPILE_TEST
--	depends on HAVE_DMA_ATTRS
- 	select VIDEOBUF2_DMA_CONTIG
- 	select V4L2_MEM2MEM_DEV
- 	help
-diff --git a/include/asm-generic/dma-mapping-broken.h b/include/asm-generic/dma-mapping-broken.h
-deleted file mode 100644
-index 6c32af9..0000000
---- a/include/asm-generic/dma-mapping-broken.h
-+++ /dev/null
-@@ -1,95 +0,0 @@
--#ifndef _ASM_GENERIC_DMA_MAPPING_H
--#define _ASM_GENERIC_DMA_MAPPING_H
--
--/* define the dma api to allow compilation but not linking of
-- * dma dependent code.  Code that depends on the dma-mapping
-- * API needs to set 'depends on HAS_DMA' in its Kconfig
-- */
--
--struct scatterlist;
--
--extern void *
--dma_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_handle,
--		   gfp_t flag);
--
--extern void
--dma_free_coherent(struct device *dev, size_t size, void *cpu_addr,
--		    dma_addr_t dma_handle);
--
--static inline void *dma_alloc_attrs(struct device *dev, size_t size,
--				    dma_addr_t *dma_handle, gfp_t flag,
--				    struct dma_attrs *attrs)
--{
--	/* attrs is not supported and ignored */
--	return dma_alloc_coherent(dev, size, dma_handle, flag);
--}
--
--static inline void dma_free_attrs(struct device *dev, size_t size,
--				  void *cpu_addr, dma_addr_t dma_handle,
--				  struct dma_attrs *attrs)
--{
--	/* attrs is not supported and ignored */
--	dma_free_coherent(dev, size, cpu_addr, dma_handle);
--}
--
--#define dma_alloc_noncoherent(d, s, h, f) dma_alloc_coherent(d, s, h, f)
--#define dma_free_noncoherent(d, s, v, h) dma_free_coherent(d, s, v, h)
--
--extern dma_addr_t
--dma_map_single(struct device *dev, void *ptr, size_t size,
--	       enum dma_data_direction direction);
--
--extern void
--dma_unmap_single(struct device *dev, dma_addr_t dma_addr, size_t size,
--		 enum dma_data_direction direction);
--
--extern int
--dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
--	   enum dma_data_direction direction);
--
--extern void
--dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nhwentries,
--	     enum dma_data_direction direction);
--
--extern dma_addr_t
--dma_map_page(struct device *dev, struct page *page, unsigned long offset,
--	     size_t size, enum dma_data_direction direction);
--
--extern void
--dma_unmap_page(struct device *dev, dma_addr_t dma_address, size_t size,
--	       enum dma_data_direction direction);
--
--extern void
--dma_sync_single_for_cpu(struct device *dev, dma_addr_t dma_handle, size_t size,
--			enum dma_data_direction direction);
--
--extern void
--dma_sync_single_range_for_cpu(struct device *dev, dma_addr_t dma_handle,
--			      unsigned long offset, size_t size,
--			      enum dma_data_direction direction);
--
--extern void
--dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg, int nelems,
--		    enum dma_data_direction direction);
--
--#define dma_sync_single_for_device dma_sync_single_for_cpu
--#define dma_sync_single_range_for_device dma_sync_single_range_for_cpu
--#define dma_sync_sg_for_device dma_sync_sg_for_cpu
--
--extern int
--dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
--
--extern int
--dma_supported(struct device *dev, u64 mask);
--
--extern int
--dma_set_mask(struct device *dev, u64 mask);
--
--extern int
--dma_get_cache_alignment(void);
--
--extern void
--dma_cache_sync(struct device *dev, void *vaddr, size_t size,
--	       enum dma_data_direction direction);
--
--#endif /* _ASM_GENERIC_DMA_MAPPING_H */
-diff --git a/include/asm-generic/dma-mapping-common.h b/include/asm-generic/dma-mapping-common.h
-deleted file mode 100644
-index b1bc954..0000000
---- a/include/asm-generic/dma-mapping-common.h
-+++ /dev/null
-@@ -1,358 +0,0 @@
--#ifndef _ASM_GENERIC_DMA_MAPPING_H
--#define _ASM_GENERIC_DMA_MAPPING_H
--
--#include <linux/kmemcheck.h>
--#include <linux/bug.h>
--#include <linux/scatterlist.h>
--#include <linux/dma-debug.h>
--#include <linux/dma-attrs.h>
--#include <asm-generic/dma-coherent.h>
--
--static inline dma_addr_t dma_map_single_attrs(struct device *dev, void *ptr,
--					      size_t size,
--					      enum dma_data_direction dir,
--					      struct dma_attrs *attrs)
--{
--	struct dma_map_ops *ops = get_dma_ops(dev);
--	dma_addr_t addr;
--
--	kmemcheck_mark_initialized(ptr, size);
--	BUG_ON(!valid_dma_direction(dir));
--	addr = ops->map_page(dev, virt_to_page(ptr),
--			     (unsigned long)ptr & ~PAGE_MASK, size,
--			     dir, attrs);
--	debug_dma_map_page(dev, virt_to_page(ptr),
--			   (unsigned long)ptr & ~PAGE_MASK, size,
--			   dir, addr, true);
--	return addr;
--}
--
--static inline void dma_unmap_single_attrs(struct device *dev, dma_addr_t addr,
--					  size_t size,
--					  enum dma_data_direction dir,
--					  struct dma_attrs *attrs)
--{
--	struct dma_map_ops *ops = get_dma_ops(dev);
--
--	BUG_ON(!valid_dma_direction(dir));
--	if (ops->unmap_page)
--		ops->unmap_page(dev, addr, size, dir, attrs);
--	debug_dma_unmap_page(dev, addr, size, dir, true);
--}
--
--/*
-- * dma_maps_sg_attrs returns 0 on error and > 0 on success.
-- * It should never return a value < 0.
-- */
--static inline int dma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
--				   int nents, enum dma_data_direction dir,
--				   struct dma_attrs *attrs)
--{
--	struct dma_map_ops *ops = get_dma_ops(dev);
--	int i, ents;
--	struct scatterlist *s;
--
--	for_each_sg(sg, s, nents, i)
--		kmemcheck_mark_initialized(sg_virt(s), s->length);
--	BUG_ON(!valid_dma_direction(dir));
--	ents = ops->map_sg(dev, sg, nents, dir, attrs);
--	BUG_ON(ents < 0);
--	debug_dma_map_sg(dev, sg, nents, ents, dir);
--
--	return ents;
--}
--
--static inline void dma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
--				      int nents, enum dma_data_direction dir,
--				      struct dma_attrs *attrs)
--{
--	struct dma_map_ops *ops = get_dma_ops(dev);
--
--	BUG_ON(!valid_dma_direction(dir));
--	debug_dma_unmap_sg(dev, sg, nents, dir);
--	if (ops->unmap_sg)
--		ops->unmap_sg(dev, sg, nents, dir, attrs);
--}
--
--static inline dma_addr_t dma_map_page(struct device *dev, struct page *page,
--				      size_t offset, size_t size,
--				      enum dma_data_direction dir)
--{
--	struct dma_map_ops *ops = get_dma_ops(dev);
--	dma_addr_t addr;
--
--	kmemcheck_mark_initialized(page_address(page) + offset, size);
--	BUG_ON(!valid_dma_direction(dir));
--	addr = ops->map_page(dev, page, offset, size, dir, NULL);
--	debug_dma_map_page(dev, page, offset, size, dir, addr, false);
--
--	return addr;
--}
--
--static inline void dma_unmap_page(struct device *dev, dma_addr_t addr,
--				  size_t size, enum dma_data_direction dir)
--{
--	struct dma_map_ops *ops = get_dma_ops(dev);
--
--	BUG_ON(!valid_dma_direction(dir));
--	if (ops->unmap_page)
--		ops->unmap_page(dev, addr, size, dir, NULL);
--	debug_dma_unmap_page(dev, addr, size, dir, false);
--}
--
--static inline void dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr,
--					   size_t size,
--					   enum dma_data_direction dir)
--{
--	struct dma_map_ops *ops = get_dma_ops(dev);
--
--	BUG_ON(!valid_dma_direction(dir));
--	if (ops->sync_single_for_cpu)
--		ops->sync_single_for_cpu(dev, addr, size, dir);
--	debug_dma_sync_single_for_cpu(dev, addr, size, dir);
--}
--
--static inline void dma_sync_single_for_device(struct device *dev,
--					      dma_addr_t addr, size_t size,
--					      enum dma_data_direction dir)
--{
--	struct dma_map_ops *ops = get_dma_ops(dev);
--
--	BUG_ON(!valid_dma_direction(dir));
--	if (ops->sync_single_for_device)
--		ops->sync_single_for_device(dev, addr, size, dir);
--	debug_dma_sync_single_for_device(dev, addr, size, dir);
--}
--
--static inline void dma_sync_single_range_for_cpu(struct device *dev,
--						 dma_addr_t addr,
--						 unsigned long offset,
--						 size_t size,
--						 enum dma_data_direction dir)
--{
--	const struct dma_map_ops *ops = get_dma_ops(dev);
--
--	BUG_ON(!valid_dma_direction(dir));
--	if (ops->sync_single_for_cpu)
--		ops->sync_single_for_cpu(dev, addr + offset, size, dir);
--	debug_dma_sync_single_range_for_cpu(dev, addr, offset, size, dir);
--}
--
--static inline void dma_sync_single_range_for_device(struct device *dev,
--						    dma_addr_t addr,
--						    unsigned long offset,
--						    size_t size,
--						    enum dma_data_direction dir)
--{
--	const struct dma_map_ops *ops = get_dma_ops(dev);
--
--	BUG_ON(!valid_dma_direction(dir));
--	if (ops->sync_single_for_device)
--		ops->sync_single_for_device(dev, addr + offset, size, dir);
--	debug_dma_sync_single_range_for_device(dev, addr, offset, size, dir);
--}
--
--static inline void
--dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
--		    int nelems, enum dma_data_direction dir)
--{
--	struct dma_map_ops *ops = get_dma_ops(dev);
--
--	BUG_ON(!valid_dma_direction(dir));
--	if (ops->sync_sg_for_cpu)
--		ops->sync_sg_for_cpu(dev, sg, nelems, dir);
--	debug_dma_sync_sg_for_cpu(dev, sg, nelems, dir);
--}
--
--static inline void
--dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
--		       int nelems, enum dma_data_direction dir)
--{
--	struct dma_map_ops *ops = get_dma_ops(dev);
--
--	BUG_ON(!valid_dma_direction(dir));
--	if (ops->sync_sg_for_device)
--		ops->sync_sg_for_device(dev, sg, nelems, dir);
--	debug_dma_sync_sg_for_device(dev, sg, nelems, dir);
--
--}
--
--#define dma_map_single(d, a, s, r) dma_map_single_attrs(d, a, s, r, NULL)
--#define dma_unmap_single(d, a, s, r) dma_unmap_single_attrs(d, a, s, r, NULL)
--#define dma_map_sg(d, s, n, r) dma_map_sg_attrs(d, s, n, r, NULL)
--#define dma_unmap_sg(d, s, n, r) dma_unmap_sg_attrs(d, s, n, r, NULL)
--
--extern int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
--			   void *cpu_addr, dma_addr_t dma_addr, size_t size);
--
--void *dma_common_contiguous_remap(struct page *page, size_t size,
--			unsigned long vm_flags,
--			pgprot_t prot, const void *caller);
--
--void *dma_common_pages_remap(struct page **pages, size_t size,
--			unsigned long vm_flags, pgprot_t prot,
--			const void *caller);
--void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags);
--
--/**
-- * dma_mmap_attrs - map a coherent DMA allocation into user space
-- * @dev: valid struct device pointer, or NULL for ISA and EISA-like devices
-- * @vma: vm_area_struct describing requested user mapping
-- * @cpu_addr: kernel CPU-view address returned from dma_alloc_attrs
-- * @handle: device-view address returned from dma_alloc_attrs
-- * @size: size of memory originally requested in dma_alloc_attrs
-- * @attrs: attributes of mapping properties requested in dma_alloc_attrs
-- *
-- * Map a coherent DMA buffer previously allocated by dma_alloc_attrs
-- * into user space.  The coherent DMA buffer must not be freed by the
-- * driver until the user space mapping has been released.
-- */
--static inline int
--dma_mmap_attrs(struct device *dev, struct vm_area_struct *vma, void *cpu_addr,
--	       dma_addr_t dma_addr, size_t size, struct dma_attrs *attrs)
--{
--	struct dma_map_ops *ops = get_dma_ops(dev);
--	BUG_ON(!ops);
--	if (ops->mmap)
--		return ops->mmap(dev, vma, cpu_addr, dma_addr, size, attrs);
--	return dma_common_mmap(dev, vma, cpu_addr, dma_addr, size);
--}
--
--#define dma_mmap_coherent(d, v, c, h, s) dma_mmap_attrs(d, v, c, h, s, NULL)
--
--int
--dma_common_get_sgtable(struct device *dev, struct sg_table *sgt,
--		       void *cpu_addr, dma_addr_t dma_addr, size_t size);
--
--static inline int
--dma_get_sgtable_attrs(struct device *dev, struct sg_table *sgt, void *cpu_addr,
--		      dma_addr_t dma_addr, size_t size, struct dma_attrs *attrs)
--{
--	struct dma_map_ops *ops = get_dma_ops(dev);
--	BUG_ON(!ops);
--	if (ops->get_sgtable)
--		return ops->get_sgtable(dev, sgt, cpu_addr, dma_addr, size,
--					attrs);
--	return dma_common_get_sgtable(dev, sgt, cpu_addr, dma_addr, size);
--}
--
--#define dma_get_sgtable(d, t, v, h, s) dma_get_sgtable_attrs(d, t, v, h, s, NULL)
--
--#ifndef arch_dma_alloc_attrs
--#define arch_dma_alloc_attrs(dev, flag)	(true)
--#endif
--
--static inline void *dma_alloc_attrs(struct device *dev, size_t size,
--				       dma_addr_t *dma_handle, gfp_t flag,
--				       struct dma_attrs *attrs)
--{
--	struct dma_map_ops *ops = get_dma_ops(dev);
--	void *cpu_addr;
--
--	BUG_ON(!ops);
--
--	if (dma_alloc_from_coherent(dev, size, dma_handle, &cpu_addr))
--		return cpu_addr;
--
--	if (!arch_dma_alloc_attrs(&dev, &flag))
--		return NULL;
--	if (!ops->alloc)
--		return NULL;
--
--	cpu_addr = ops->alloc(dev, size, dma_handle, flag, attrs);
--	debug_dma_alloc_coherent(dev, size, *dma_handle, cpu_addr);
--	return cpu_addr;
--}
--
--static inline void dma_free_attrs(struct device *dev, size_t size,
--				     void *cpu_addr, dma_addr_t dma_handle,
--				     struct dma_attrs *attrs)
--{
--	struct dma_map_ops *ops = get_dma_ops(dev);
--
--	BUG_ON(!ops);
--	WARN_ON(irqs_disabled());
--
--	if (dma_release_from_coherent(dev, get_order(size), cpu_addr))
--		return;
--
--	if (!ops->free)
--		return;
--
--	debug_dma_free_coherent(dev, size, cpu_addr, dma_handle);
--	ops->free(dev, size, cpu_addr, dma_handle, attrs);
--}
--
--static inline void *dma_alloc_coherent(struct device *dev, size_t size,
--		dma_addr_t *dma_handle, gfp_t flag)
--{
--	return dma_alloc_attrs(dev, size, dma_handle, flag, NULL);
--}
--
--static inline void dma_free_coherent(struct device *dev, size_t size,
--		void *cpu_addr, dma_addr_t dma_handle)
--{
--	return dma_free_attrs(dev, size, cpu_addr, dma_handle, NULL);
--}
--
--static inline void *dma_alloc_noncoherent(struct device *dev, size_t size,
--		dma_addr_t *dma_handle, gfp_t gfp)
--{
--	DEFINE_DMA_ATTRS(attrs);
--
--	dma_set_attr(DMA_ATTR_NON_CONSISTENT, &attrs);
--	return dma_alloc_attrs(dev, size, dma_handle, gfp, &attrs);
--}
--
--static inline void dma_free_noncoherent(struct device *dev, size_t size,
--		void *cpu_addr, dma_addr_t dma_handle)
--{
--	DEFINE_DMA_ATTRS(attrs);
--
--	dma_set_attr(DMA_ATTR_NON_CONSISTENT, &attrs);
--	dma_free_attrs(dev, size, cpu_addr, dma_handle, &attrs);
--}
--
--static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
--{
--	debug_dma_mapping_error(dev, dma_addr);
--
--	if (get_dma_ops(dev)->mapping_error)
--		return get_dma_ops(dev)->mapping_error(dev, dma_addr);
--
--#ifdef DMA_ERROR_CODE
--	return dma_addr == DMA_ERROR_CODE;
--#else
--	return 0;
--#endif
--}
--
--#ifndef HAVE_ARCH_DMA_SUPPORTED
--static inline int dma_supported(struct device *dev, u64 mask)
--{
--	struct dma_map_ops *ops = get_dma_ops(dev);
--
--	if (!ops)
--		return 0;
--	if (!ops->dma_supported)
--		return 1;
--	return ops->dma_supported(dev, mask);
--}
--#endif
--
--#ifndef HAVE_ARCH_DMA_SET_MASK
--static inline int dma_set_mask(struct device *dev, u64 mask)
--{
--	struct dma_map_ops *ops = get_dma_ops(dev);
--
--	if (ops->set_dma_mask)
--		return ops->set_dma_mask(dev, mask);
--
--	if (!dev->dma_mask || !dma_supported(dev, mask))
--		return -EIO;
--	*dev->dma_mask = mask;
--	return 0;
--}
--#endif
--
--#endif
-diff --git a/include/linux/dma-attrs.h b/include/linux/dma-attrs.h
-index c8e1831..99c0be0 100644
---- a/include/linux/dma-attrs.h
-+++ b/include/linux/dma-attrs.h
-@@ -41,7 +41,6 @@ static inline void init_dma_attrs(struct dma_attrs *attrs)
- 	bitmap_zero(attrs->flags, __DMA_ATTRS_LONGS);
- }
- 
--#ifdef CONFIG_HAVE_DMA_ATTRS
- /**
-  * dma_set_attr - set a specific attribute
-  * @attr: attribute to set
-@@ -67,14 +66,5 @@ static inline int dma_get_attr(enum dma_attr attr, struct dma_attrs *attrs)
- 	BUG_ON(attr >= DMA_ATTR_MAX);
- 	return test_bit(attr, attrs->flags);
- }
--#else /* !CONFIG_HAVE_DMA_ATTRS */
--static inline void dma_set_attr(enum dma_attr attr, struct dma_attrs *attrs)
--{
--}
- 
--static inline int dma_get_attr(enum dma_attr attr, struct dma_attrs *attrs)
--{
--	return 0;
--}
--#endif /* CONFIG_HAVE_DMA_ATTRS */
- #endif /* _DMA_ATTR_H */
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 2e551e2..cc0517b 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -6,8 +6,12 @@
- #include <linux/device.h>
- #include <linux/err.h>
- #include <linux/dma-attrs.h>
-+#include <linux/dma-debug.h>
- #include <linux/dma-direction.h>
- #include <linux/scatterlist.h>
-+#include <linux/kmemcheck.h>
-+#include <linux/bug.h>
-+#include <asm-generic/dma-coherent.h>
- 
- /*
-  * A dma_addr_t can hold any valid DMA or bus address for the platform.
-@@ -86,7 +90,363 @@ static inline int is_device_dma_capable(struct device *dev)
- #ifdef CONFIG_HAS_DMA
- #include <asm/dma-mapping.h>
- #else
--#include <asm-generic/dma-mapping-broken.h>
-+/*
-+ * Define the dma api to allow compilation but not linking of
-+ * dma dependent code.  Code that depends on the dma-mapping
-+ * API needs to set 'depends on HAS_DMA' in its Kconfig
-+ */
-+extern struct dma_map_ops bad_dma_ops;
-+static inline struct dma_map_ops *get_dma_ops(struct device *dev)
-+{
-+	return &bad_dma_ops;
-+}
-+#endif
-+
-+static inline dma_addr_t dma_map_single_attrs(struct device *dev, void *ptr,
-+					      size_t size,
-+					      enum dma_data_direction dir,
-+					      struct dma_attrs *attrs)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+	dma_addr_t addr;
-+
-+	kmemcheck_mark_initialized(ptr, size);
-+	BUG_ON(!valid_dma_direction(dir));
-+	addr = ops->map_page(dev, virt_to_page(ptr),
-+			     (unsigned long)ptr & ~PAGE_MASK, size,
-+			     dir, attrs);
-+	debug_dma_map_page(dev, virt_to_page(ptr),
-+			   (unsigned long)ptr & ~PAGE_MASK, size,
-+			   dir, addr, true);
-+	return addr;
-+}
-+
-+static inline void dma_unmap_single_attrs(struct device *dev, dma_addr_t addr,
-+					  size_t size,
-+					  enum dma_data_direction dir,
-+					  struct dma_attrs *attrs)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	BUG_ON(!valid_dma_direction(dir));
-+	if (ops->unmap_page)
-+		ops->unmap_page(dev, addr, size, dir, attrs);
-+	debug_dma_unmap_page(dev, addr, size, dir, true);
-+}
-+
-+/*
-+ * dma_maps_sg_attrs returns 0 on error and > 0 on success.
-+ * It should never return a value < 0.
-+ */
-+static inline int dma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
-+				   int nents, enum dma_data_direction dir,
-+				   struct dma_attrs *attrs)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+	int i, ents;
-+	struct scatterlist *s;
-+
-+	for_each_sg(sg, s, nents, i)
-+		kmemcheck_mark_initialized(sg_virt(s), s->length);
-+	BUG_ON(!valid_dma_direction(dir));
-+	ents = ops->map_sg(dev, sg, nents, dir, attrs);
-+	BUG_ON(ents < 0);
-+	debug_dma_map_sg(dev, sg, nents, ents, dir);
-+
-+	return ents;
-+}
-+
-+static inline void dma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
-+				      int nents, enum dma_data_direction dir,
-+				      struct dma_attrs *attrs)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	BUG_ON(!valid_dma_direction(dir));
-+	debug_dma_unmap_sg(dev, sg, nents, dir);
-+	if (ops->unmap_sg)
-+		ops->unmap_sg(dev, sg, nents, dir, attrs);
-+}
-+
-+static inline dma_addr_t dma_map_page(struct device *dev, struct page *page,
-+				      size_t offset, size_t size,
-+				      enum dma_data_direction dir)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+	dma_addr_t addr;
-+
-+	kmemcheck_mark_initialized(page_address(page) + offset, size);
-+	BUG_ON(!valid_dma_direction(dir));
-+	addr = ops->map_page(dev, page, offset, size, dir, NULL);
-+	debug_dma_map_page(dev, page, offset, size, dir, addr, false);
-+
-+	return addr;
-+}
-+
-+static inline void dma_unmap_page(struct device *dev, dma_addr_t addr,
-+				  size_t size, enum dma_data_direction dir)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	BUG_ON(!valid_dma_direction(dir));
-+	if (ops->unmap_page)
-+		ops->unmap_page(dev, addr, size, dir, NULL);
-+	debug_dma_unmap_page(dev, addr, size, dir, false);
-+}
-+
-+static inline void dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr,
-+					   size_t size,
-+					   enum dma_data_direction dir)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	BUG_ON(!valid_dma_direction(dir));
-+	if (ops->sync_single_for_cpu)
-+		ops->sync_single_for_cpu(dev, addr, size, dir);
-+	debug_dma_sync_single_for_cpu(dev, addr, size, dir);
-+}
-+
-+static inline void dma_sync_single_for_device(struct device *dev,
-+					      dma_addr_t addr, size_t size,
-+					      enum dma_data_direction dir)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	BUG_ON(!valid_dma_direction(dir));
-+	if (ops->sync_single_for_device)
-+		ops->sync_single_for_device(dev, addr, size, dir);
-+	debug_dma_sync_single_for_device(dev, addr, size, dir);
-+}
-+
-+static inline void dma_sync_single_range_for_cpu(struct device *dev,
-+						 dma_addr_t addr,
-+						 unsigned long offset,
-+						 size_t size,
-+						 enum dma_data_direction dir)
-+{
-+	const struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	BUG_ON(!valid_dma_direction(dir));
-+	if (ops->sync_single_for_cpu)
-+		ops->sync_single_for_cpu(dev, addr + offset, size, dir);
-+	debug_dma_sync_single_range_for_cpu(dev, addr, offset, size, dir);
-+}
-+
-+static inline void dma_sync_single_range_for_device(struct device *dev,
-+						    dma_addr_t addr,
-+						    unsigned long offset,
-+						    size_t size,
-+						    enum dma_data_direction dir)
-+{
-+	const struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	BUG_ON(!valid_dma_direction(dir));
-+	if (ops->sync_single_for_device)
-+		ops->sync_single_for_device(dev, addr + offset, size, dir);
-+	debug_dma_sync_single_range_for_device(dev, addr, offset, size, dir);
-+}
-+
-+static inline void
-+dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
-+		    int nelems, enum dma_data_direction dir)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	BUG_ON(!valid_dma_direction(dir));
-+	if (ops->sync_sg_for_cpu)
-+		ops->sync_sg_for_cpu(dev, sg, nelems, dir);
-+	debug_dma_sync_sg_for_cpu(dev, sg, nelems, dir);
-+}
-+
-+static inline void
-+dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
-+		       int nelems, enum dma_data_direction dir)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	BUG_ON(!valid_dma_direction(dir));
-+	if (ops->sync_sg_for_device)
-+		ops->sync_sg_for_device(dev, sg, nelems, dir);
-+	debug_dma_sync_sg_for_device(dev, sg, nelems, dir);
-+
-+}
-+
-+#define dma_map_single(d, a, s, r) dma_map_single_attrs(d, a, s, r, NULL)
-+#define dma_unmap_single(d, a, s, r) dma_unmap_single_attrs(d, a, s, r, NULL)
-+#define dma_map_sg(d, s, n, r) dma_map_sg_attrs(d, s, n, r, NULL)
-+#define dma_unmap_sg(d, s, n, r) dma_unmap_sg_attrs(d, s, n, r, NULL)
-+
-+extern int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
-+			   void *cpu_addr, dma_addr_t dma_addr, size_t size);
-+
-+void *dma_common_contiguous_remap(struct page *page, size_t size,
-+			unsigned long vm_flags,
-+			pgprot_t prot, const void *caller);
-+
-+void *dma_common_pages_remap(struct page **pages, size_t size,
-+			unsigned long vm_flags, pgprot_t prot,
-+			const void *caller);
-+void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags);
-+
-+/**
-+ * dma_mmap_attrs - map a coherent DMA allocation into user space
-+ * @dev: valid struct device pointer, or NULL for ISA and EISA-like devices
-+ * @vma: vm_area_struct describing requested user mapping
-+ * @cpu_addr: kernel CPU-view address returned from dma_alloc_attrs
-+ * @handle: device-view address returned from dma_alloc_attrs
-+ * @size: size of memory originally requested in dma_alloc_attrs
-+ * @attrs: attributes of mapping properties requested in dma_alloc_attrs
-+ *
-+ * Map a coherent DMA buffer previously allocated by dma_alloc_attrs
-+ * into user space.  The coherent DMA buffer must not be freed by the
-+ * driver until the user space mapping has been released.
-+ */
-+static inline int
-+dma_mmap_attrs(struct device *dev, struct vm_area_struct *vma, void *cpu_addr,
-+	       dma_addr_t dma_addr, size_t size, struct dma_attrs *attrs)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+	BUG_ON(!ops);
-+	if (ops->mmap)
-+		return ops->mmap(dev, vma, cpu_addr, dma_addr, size, attrs);
-+	return dma_common_mmap(dev, vma, cpu_addr, dma_addr, size);
-+}
-+
-+#define dma_mmap_coherent(d, v, c, h, s) dma_mmap_attrs(d, v, c, h, s, NULL)
-+
-+int
-+dma_common_get_sgtable(struct device *dev, struct sg_table *sgt,
-+		       void *cpu_addr, dma_addr_t dma_addr, size_t size);
-+
-+static inline int
-+dma_get_sgtable_attrs(struct device *dev, struct sg_table *sgt, void *cpu_addr,
-+		      dma_addr_t dma_addr, size_t size, struct dma_attrs *attrs)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+	BUG_ON(!ops);
-+	if (ops->get_sgtable)
-+		return ops->get_sgtable(dev, sgt, cpu_addr, dma_addr, size,
-+					attrs);
-+	return dma_common_get_sgtable(dev, sgt, cpu_addr, dma_addr, size);
-+}
-+
-+#define dma_get_sgtable(d, t, v, h, s) dma_get_sgtable_attrs(d, t, v, h, s, NULL)
-+
-+#ifndef arch_dma_alloc_attrs
-+#define arch_dma_alloc_attrs(dev, flag)	(true)
-+#endif
-+
-+static inline void *dma_alloc_attrs(struct device *dev, size_t size,
-+				       dma_addr_t *dma_handle, gfp_t flag,
-+				       struct dma_attrs *attrs)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+	void *cpu_addr;
-+
-+	BUG_ON(!ops);
-+
-+	if (dma_alloc_from_coherent(dev, size, dma_handle, &cpu_addr))
-+		return cpu_addr;
-+
-+	if (!arch_dma_alloc_attrs(&dev, &flag))
-+		return NULL;
-+	if (!ops->alloc)
-+		return NULL;
-+
-+	cpu_addr = ops->alloc(dev, size, dma_handle, flag, attrs);
-+	debug_dma_alloc_coherent(dev, size, *dma_handle, cpu_addr);
-+	return cpu_addr;
-+}
-+
-+static inline void dma_free_attrs(struct device *dev, size_t size,
-+				     void *cpu_addr, dma_addr_t dma_handle,
-+				     struct dma_attrs *attrs)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	BUG_ON(!ops);
-+	WARN_ON(irqs_disabled());
-+
-+	if (dma_release_from_coherent(dev, get_order(size), cpu_addr))
-+		return;
-+
-+	if (!ops->free)
-+		return;
-+
-+	debug_dma_free_coherent(dev, size, cpu_addr, dma_handle);
-+	ops->free(dev, size, cpu_addr, dma_handle, attrs);
-+}
-+
-+static inline void *dma_alloc_coherent(struct device *dev, size_t size,
-+		dma_addr_t *dma_handle, gfp_t flag)
-+{
-+	return dma_alloc_attrs(dev, size, dma_handle, flag, NULL);
-+}
-+
-+static inline void dma_free_coherent(struct device *dev, size_t size,
-+		void *cpu_addr, dma_addr_t dma_handle)
-+{
-+	return dma_free_attrs(dev, size, cpu_addr, dma_handle, NULL);
-+}
-+
-+static inline void *dma_alloc_noncoherent(struct device *dev, size_t size,
-+		dma_addr_t *dma_handle, gfp_t gfp)
-+{
-+	DEFINE_DMA_ATTRS(attrs);
-+
-+	dma_set_attr(DMA_ATTR_NON_CONSISTENT, &attrs);
-+	return dma_alloc_attrs(dev, size, dma_handle, gfp, &attrs);
-+}
-+
-+static inline void dma_free_noncoherent(struct device *dev, size_t size,
-+		void *cpu_addr, dma_addr_t dma_handle)
-+{
-+	DEFINE_DMA_ATTRS(attrs);
-+
-+	dma_set_attr(DMA_ATTR_NON_CONSISTENT, &attrs);
-+	dma_free_attrs(dev, size, cpu_addr, dma_handle, &attrs);
-+}
-+
-+static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
-+{
-+	debug_dma_mapping_error(dev, dma_addr);
-+
-+	if (get_dma_ops(dev)->mapping_error)
-+		return get_dma_ops(dev)->mapping_error(dev, dma_addr);
-+
-+#ifdef DMA_ERROR_CODE
-+	return dma_addr == DMA_ERROR_CODE;
-+#else
-+	return 0;
-+#endif
-+}
-+
-+#ifndef HAVE_ARCH_DMA_SUPPORTED
-+static inline int dma_supported(struct device *dev, u64 mask)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	if (!ops)
-+		return 0;
-+	if (!ops->dma_supported)
-+		return 1;
-+	return ops->dma_supported(dev, mask);
-+}
-+#endif
-+
-+#ifndef HAVE_ARCH_DMA_SET_MASK
-+static inline int dma_set_mask(struct device *dev, u64 mask)
-+{
-+	struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	if (ops->set_dma_mask)
-+		return ops->set_dma_mask(dev, mask);
-+
-+	if (!dev->dma_mask || !dma_supported(dev, mask))
-+		return -EIO;
-+	*dev->dma_mask = mask;
-+	return 0;
-+}
- #endif
- 
- static inline u64 dma_get_mask(struct device *dev)
-@@ -259,22 +619,6 @@ static inline void dmam_release_declared_memory(struct device *dev)
- }
- #endif /* ARCH_HAS_DMA_DECLARE_COHERENT_MEMORY */
- 
--#ifndef CONFIG_HAVE_DMA_ATTRS
--struct dma_attrs;
--
--#define dma_map_single_attrs(dev, cpu_addr, size, dir, attrs) \
--	dma_map_single(dev, cpu_addr, size, dir)
--
--#define dma_unmap_single_attrs(dev, dma_addr, size, dir, attrs) \
--	dma_unmap_single(dev, dma_addr, size, dir)
--
--#define dma_map_sg_attrs(dev, sgl, nents, dir, attrs) \
--	dma_map_sg(dev, sgl, nents, dir)
--
--#define dma_unmap_sg_attrs(dev, sgl, nents, dir, attrs) \
--	dma_unmap_sg(dev, sgl, nents, dir)
--
--#else
- static inline void *dma_alloc_writecombine(struct device *dev, size_t size,
- 					   dma_addr_t *dma_addr, gfp_t gfp)
- {
-@@ -300,7 +644,6 @@ static inline int dma_mmap_writecombine(struct device *dev,
- 	dma_set_attr(DMA_ATTR_WRITE_COMBINE, &attrs);
- 	return dma_mmap_attrs(dev, vma, cpu_addr, dma_addr, size, &attrs);
- }
--#endif /* CONFIG_HAVE_DMA_ATTRS */
- 
- #ifdef CONFIG_NEED_DMA_MAP_STATE
- #define DEFINE_DMA_UNMAP_ADDR(ADDR_NAME)        dma_addr_t ADDR_NAME
--- 
-1.9.1
+I pulled your branch, built the 32- and 64bit parisc kernels
+and successfully booted them on 3 different PA-RISC machines: 
+HP 715/64, C3000 and C8000
+Everything OK.
+
+Tested-by: Helge Deller <deller@gmx.de>
+Acked-by: Helge Deller <deller@gmx.de>
+
+Thanks!
+Helge
+
+> ---
+>  arch/parisc/Kconfig                   |   2 +
+>  arch/parisc/include/asm/dma-mapping.h | 189 ++--------------------------------
+>  arch/parisc/kernel/drivers.c          |   2 +-
+>  arch/parisc/kernel/pci-dma.c          |  92 ++++++++++-------
+>  drivers/parisc/ccio-dma.c             |  57 +++++-----
+>  drivers/parisc/sba_iommu.c            |  52 +++++-----
+>  6 files changed, 124 insertions(+), 270 deletions(-)
+> 
+> diff --git a/arch/parisc/Kconfig b/arch/parisc/Kconfig
+> index c365469..bdabfcd 100644
+> --- a/arch/parisc/Kconfig
+> +++ b/arch/parisc/Kconfig
+> @@ -29,6 +29,8 @@ config PARISC
+>  	select TTY # Needed for pdc_cons.c
+>  	select HAVE_DEBUG_STACKOVERFLOW
+>  	select HAVE_ARCH_AUDITSYSCALL
+> +	select ARCH_NO_COHERENT_DMA_MMAP
+> +	select HAVE_DMA_ATTRS
+>  
+>  	help
+>  	  The PA-RISC microprocessor is designed by Hewlett-Packard and used
+> diff --git a/arch/parisc/include/asm/dma-mapping.h b/arch/parisc/include/asm/dma-mapping.h
+> index d8d60a5..4de5186 100644
+> --- a/arch/parisc/include/asm/dma-mapping.h
+> +++ b/arch/parisc/include/asm/dma-mapping.h
+> @@ -1,30 +1,11 @@
+>  #ifndef _PARISC_DMA_MAPPING_H
+>  #define _PARISC_DMA_MAPPING_H
+>  
+> -#include <linux/mm.h>
+> -#include <linux/scatterlist.h>
+>  #include <asm/cacheflush.h>
+>  
+> -/* See Documentation/DMA-API-HOWTO.txt */
+> -struct hppa_dma_ops {
+> -	int  (*dma_supported)(struct device *dev, u64 mask);
+> -	void *(*alloc_consistent)(struct device *dev, size_t size, dma_addr_t *iova, gfp_t flag);
+> -	void *(*alloc_noncoherent)(struct device *dev, size_t size, dma_addr_t *iova, gfp_t flag);
+> -	void (*free_consistent)(struct device *dev, size_t size, void *vaddr, dma_addr_t iova);
+> -	dma_addr_t (*map_single)(struct device *dev, void *addr, size_t size, enum dma_data_direction direction);
+> -	void (*unmap_single)(struct device *dev, dma_addr_t iova, size_t size, enum dma_data_direction direction);
+> -	int  (*map_sg)(struct device *dev, struct scatterlist *sg, int nents, enum dma_data_direction direction);
+> -	void (*unmap_sg)(struct device *dev, struct scatterlist *sg, int nhwents, enum dma_data_direction direction);
+> -	void (*dma_sync_single_for_cpu)(struct device *dev, dma_addr_t iova, unsigned long offset, size_t size, enum dma_data_direction direction);
+> -	void (*dma_sync_single_for_device)(struct device *dev, dma_addr_t iova, unsigned long offset, size_t size, enum dma_data_direction direction);
+> -	void (*dma_sync_sg_for_cpu)(struct device *dev, struct scatterlist *sg, int nelems, enum dma_data_direction direction);
+> -	void (*dma_sync_sg_for_device)(struct device *dev, struct scatterlist *sg, int nelems, enum dma_data_direction direction);
+> -};
+> -
+>  /*
+> -** We could live without the hppa_dma_ops indirection if we didn't want
+> -** to support 4 different coherent dma models with one binary (they will
+> -** someday be loadable modules):
+> +** We need to support 4 different coherent dma models with one binary:
+> +**
+>  **     I/O MMU        consistent method           dma_sync behavior
+>  **  =============   ======================       =======================
+>  **  a) PA-7x00LC    uncachable host memory          flush/purge
+> @@ -40,158 +21,22 @@ struct hppa_dma_ops {
+>  */
+>  
+>  #ifdef CONFIG_PA11
+> -extern struct hppa_dma_ops pcxl_dma_ops;
+> -extern struct hppa_dma_ops pcx_dma_ops;
+> +extern struct dma_map_ops pcxl_dma_ops;
+> +extern struct dma_map_ops pcx_dma_ops;
+>  #endif
+>  
+> -extern struct hppa_dma_ops *hppa_dma_ops;
+> -
+> -#define dma_alloc_attrs(d, s, h, f, a) dma_alloc_coherent(d, s, h, f)
+> -#define dma_free_attrs(d, s, h, f, a) dma_free_coherent(d, s, h, f)
+> -
+> -static inline void *
+> -dma_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_handle,
+> -		   gfp_t flag)
+> -{
+> -	return hppa_dma_ops->alloc_consistent(dev, size, dma_handle, flag);
+> -}
+> -
+> -static inline void *
+> -dma_alloc_noncoherent(struct device *dev, size_t size, dma_addr_t *dma_handle,
+> -		      gfp_t flag)
+> -{
+> -	return hppa_dma_ops->alloc_noncoherent(dev, size, dma_handle, flag);
+> -}
+> -
+> -static inline void
+> -dma_free_coherent(struct device *dev, size_t size, 
+> -		    void *vaddr, dma_addr_t dma_handle)
+> -{
+> -	hppa_dma_ops->free_consistent(dev, size, vaddr, dma_handle);
+> -}
+> -
+> -static inline void
+> -dma_free_noncoherent(struct device *dev, size_t size, 
+> -		    void *vaddr, dma_addr_t dma_handle)
+> -{
+> -	hppa_dma_ops->free_consistent(dev, size, vaddr, dma_handle);
+> -}
+> -
+> -static inline dma_addr_t
+> -dma_map_single(struct device *dev, void *ptr, size_t size,
+> -	       enum dma_data_direction direction)
+> -{
+> -	return hppa_dma_ops->map_single(dev, ptr, size, direction);
+> -}
+> -
+> -static inline void
+> -dma_unmap_single(struct device *dev, dma_addr_t dma_addr, size_t size,
+> -		 enum dma_data_direction direction)
+> -{
+> -	hppa_dma_ops->unmap_single(dev, dma_addr, size, direction);
+> -}
+> -
+> -static inline int
+> -dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+> -	   enum dma_data_direction direction)
+> -{
+> -	return hppa_dma_ops->map_sg(dev, sg, nents, direction);
+> -}
+> -
+> -static inline void
+> -dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nhwentries,
+> -	     enum dma_data_direction direction)
+> -{
+> -	hppa_dma_ops->unmap_sg(dev, sg, nhwentries, direction);
+> -}
+> -
+> -static inline dma_addr_t
+> -dma_map_page(struct device *dev, struct page *page, unsigned long offset,
+> -	     size_t size, enum dma_data_direction direction)
+> -{
+> -	return dma_map_single(dev, (page_address(page) + (offset)), size, direction);
+> -}
+> -
+> -static inline void
+> -dma_unmap_page(struct device *dev, dma_addr_t dma_address, size_t size,
+> -	       enum dma_data_direction direction)
+> -{
+> -	dma_unmap_single(dev, dma_address, size, direction);
+> -}
+> -
+> -
+> -static inline void
+> -dma_sync_single_for_cpu(struct device *dev, dma_addr_t dma_handle, size_t size,
+> -		enum dma_data_direction direction)
+> -{
+> -	if(hppa_dma_ops->dma_sync_single_for_cpu)
+> -		hppa_dma_ops->dma_sync_single_for_cpu(dev, dma_handle, 0, size, direction);
+> -}
+> -
+> -static inline void
+> -dma_sync_single_for_device(struct device *dev, dma_addr_t dma_handle, size_t size,
+> -		enum dma_data_direction direction)
+> -{
+> -	if(hppa_dma_ops->dma_sync_single_for_device)
+> -		hppa_dma_ops->dma_sync_single_for_device(dev, dma_handle, 0, size, direction);
+> -}
+> -
+> -static inline void
+> -dma_sync_single_range_for_cpu(struct device *dev, dma_addr_t dma_handle,
+> -		      unsigned long offset, size_t size,
+> -		      enum dma_data_direction direction)
+> -{
+> -	if(hppa_dma_ops->dma_sync_single_for_cpu)
+> -		hppa_dma_ops->dma_sync_single_for_cpu(dev, dma_handle, offset, size, direction);
+> -}
+> +extern struct dma_map_ops *hppa_dma_ops;
+>  
+> -static inline void
+> -dma_sync_single_range_for_device(struct device *dev, dma_addr_t dma_handle,
+> -		      unsigned long offset, size_t size,
+> -		      enum dma_data_direction direction)
+> +static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+>  {
+> -	if(hppa_dma_ops->dma_sync_single_for_device)
+> -		hppa_dma_ops->dma_sync_single_for_device(dev, dma_handle, offset, size, direction);
+> -}
+> -
+> -static inline void
+> -dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg, int nelems,
+> -		 enum dma_data_direction direction)
+> -{
+> -	if(hppa_dma_ops->dma_sync_sg_for_cpu)
+> -		hppa_dma_ops->dma_sync_sg_for_cpu(dev, sg, nelems, direction);
+> -}
+> -
+> -static inline void
+> -dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg, int nelems,
+> -		 enum dma_data_direction direction)
+> -{
+> -	if(hppa_dma_ops->dma_sync_sg_for_device)
+> -		hppa_dma_ops->dma_sync_sg_for_device(dev, sg, nelems, direction);
+> -}
+> -
+> -static inline int
+> -dma_supported(struct device *dev, u64 mask)
+> -{
+> -	return hppa_dma_ops->dma_supported(dev, mask);
+> -}
+> -
+> -static inline int
+> -dma_set_mask(struct device *dev, u64 mask)
+> -{
+> -	if(!dev->dma_mask || !dma_supported(dev, mask))
+> -		return -EIO;
+> -
+> -	*dev->dma_mask = mask;
+> -
+> -	return 0;
+> +	return hppa_dma_ops;
+>  }
+>  
+>  static inline void
+>  dma_cache_sync(struct device *dev, void *vaddr, size_t size,
+>  	       enum dma_data_direction direction)
+>  {
+> -	if(hppa_dma_ops->dma_sync_single_for_cpu)
+> +	if (hppa_dma_ops->sync_single_for_cpu)
+>  		flush_kernel_dcache_range((unsigned long)vaddr, size);
+>  }
+>  
+> @@ -238,22 +83,6 @@ struct parisc_device;
+>  void * sba_get_iommu(struct parisc_device *dev);
+>  #endif
+>  
+> -/* At the moment, we panic on error for IOMMU resource exaustion */
+> -#define dma_mapping_error(dev, x)	0
+> -
+> -/* This API cannot be supported on PA-RISC */
+> -static inline int dma_mmap_coherent(struct device *dev,
+> -				    struct vm_area_struct *vma, void *cpu_addr,
+> -				    dma_addr_t dma_addr, size_t size)
+> -{
+> -	return -EINVAL;
+> -}
+> -
+> -static inline int dma_get_sgtable(struct device *dev, struct sg_table *sgt,
+> -				  void *cpu_addr, dma_addr_t dma_addr,
+> -				  size_t size)
+> -{
+> -	return -EINVAL;
+> -}
+> +#include <asm-generic/dma-mapping-common.h>
+>  
+>  #endif
+> diff --git a/arch/parisc/kernel/drivers.c b/arch/parisc/kernel/drivers.c
+> index dba508f..f815066 100644
+> --- a/arch/parisc/kernel/drivers.c
+> +++ b/arch/parisc/kernel/drivers.c
+> @@ -40,7 +40,7 @@
+>  #include <asm/parisc-device.h>
+>  
+>  /* See comments in include/asm-parisc/pci.h */
+> -struct hppa_dma_ops *hppa_dma_ops __read_mostly;
+> +struct dma_map_ops *hppa_dma_ops __read_mostly;
+>  EXPORT_SYMBOL(hppa_dma_ops);
+>  
+>  static struct device root = {
+> diff --git a/arch/parisc/kernel/pci-dma.c b/arch/parisc/kernel/pci-dma.c
+> index b9402c9..a27e492 100644
+> --- a/arch/parisc/kernel/pci-dma.c
+> +++ b/arch/parisc/kernel/pci-dma.c
+> @@ -413,7 +413,8 @@ pcxl_dma_init(void)
+>  
+>  __initcall(pcxl_dma_init);
+>  
+> -static void * pa11_dma_alloc_consistent (struct device *dev, size_t size, dma_addr_t *dma_handle, gfp_t flag)
+> +static void *pa11_dma_alloc(struct device *dev, size_t size,
+> +		dma_addr_t *dma_handle, gfp_t flag, struct dma_attrs *attrs)
+>  {
+>  	unsigned long vaddr;
+>  	unsigned long paddr;
+> @@ -439,7 +440,8 @@ static void * pa11_dma_alloc_consistent (struct device *dev, size_t size, dma_ad
+>  	return (void *)vaddr;
+>  }
+>  
+> -static void pa11_dma_free_consistent (struct device *dev, size_t size, void *vaddr, dma_addr_t dma_handle)
+> +static void pa11_dma_free(struct device *dev, size_t size, void *vaddr,
+> +		dma_addr_t dma_handle, struct dma_attrs *attrs)
+>  {
+>  	int order;
+>  
+> @@ -450,15 +452,20 @@ static void pa11_dma_free_consistent (struct device *dev, size_t size, void *vad
+>  	free_pages((unsigned long)__va(dma_handle), order);
+>  }
+>  
+> -static dma_addr_t pa11_dma_map_single(struct device *dev, void *addr, size_t size, enum dma_data_direction direction)
+> +static dma_addr_t pa11_dma_map_page(struct device *dev, struct page *page,
+> +		unsigned long offset, size_t size,
+> +		enum dma_data_direction direction, struct dma_attrs *attrs)
+>  {
+> +	void *addr = page_address(page) + offset;
+>  	BUG_ON(direction == DMA_NONE);
+>  
+>  	flush_kernel_dcache_range((unsigned long) addr, size);
+>  	return virt_to_phys(addr);
+>  }
+>  
+> -static void pa11_dma_unmap_single(struct device *dev, dma_addr_t dma_handle, size_t size, enum dma_data_direction direction)
+> +static void pa11_dma_unmap_page(struct device *dev, dma_addr_t dma_handle,
+> +		size_t size, enum dma_data_direction direction,
+> +		struct dma_attrs *attrs)
+>  {
+>  	BUG_ON(direction == DMA_NONE);
+>  
+> @@ -475,7 +482,9 @@ static void pa11_dma_unmap_single(struct device *dev, dma_addr_t dma_handle, siz
+>  	return;
+>  }
+>  
+> -static int pa11_dma_map_sg(struct device *dev, struct scatterlist *sglist, int nents, enum dma_data_direction direction)
+> +static int pa11_dma_map_sg(struct device *dev, struct scatterlist *sglist,
+> +		int nents, enum dma_data_direction direction,
+> +		struct dma_attrs *attrs)
+>  {
+>  	int i;
+>  	struct scatterlist *sg;
+> @@ -492,7 +501,9 @@ static int pa11_dma_map_sg(struct device *dev, struct scatterlist *sglist, int n
+>  	return nents;
+>  }
+>  
+> -static void pa11_dma_unmap_sg(struct device *dev, struct scatterlist *sglist, int nents, enum dma_data_direction direction)
+> +static void pa11_dma_unmap_sg(struct device *dev, struct scatterlist *sglist,
+> +		int nents, enum dma_data_direction direction,
+> +		struct dma_attrs *attrs)
+>  {
+>  	int i;
+>  	struct scatterlist *sg;
+> @@ -509,18 +520,24 @@ static void pa11_dma_unmap_sg(struct device *dev, struct scatterlist *sglist, in
+>  	return;
+>  }
+>  
+> -static void pa11_dma_sync_single_for_cpu(struct device *dev, dma_addr_t dma_handle, unsigned long offset, size_t size, enum dma_data_direction direction)
+> +static void pa11_dma_sync_single_for_cpu(struct device *dev,
+> +		dma_addr_t dma_handle, size_t size,
+> +		enum dma_data_direction direction)
+>  {
+>  	BUG_ON(direction == DMA_NONE);
+>  
+> -	flush_kernel_dcache_range((unsigned long) phys_to_virt(dma_handle) + offset, size);
+> +	flush_kernel_dcache_range((unsigned long) phys_to_virt(dma_handle),
+> +			size);
+>  }
+>  
+> -static void pa11_dma_sync_single_for_device(struct device *dev, dma_addr_t dma_handle, unsigned long offset, size_t size, enum dma_data_direction direction)
+> +static void pa11_dma_sync_single_for_device(struct device *dev,
+> +		dma_addr_t dma_handle, size_t size,
+> +		enum dma_data_direction direction)
+>  {
+>  	BUG_ON(direction == DMA_NONE);
+>  
+> -	flush_kernel_dcache_range((unsigned long) phys_to_virt(dma_handle) + offset, size);
+> +	flush_kernel_dcache_range((unsigned long) phys_to_virt(dma_handle),
+> +			size);
+>  }
+>  
+>  static void pa11_dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sglist, int nents, enum dma_data_direction direction)
+> @@ -545,32 +562,28 @@ static void pa11_dma_sync_sg_for_device(struct device *dev, struct scatterlist *
+>  		flush_kernel_vmap_range(sg_virt(sg), sg->length);
+>  }
+>  
+> -struct hppa_dma_ops pcxl_dma_ops = {
+> +struct dma_map_ops pcxl_dma_ops = {
+>  	.dma_supported =	pa11_dma_supported,
+> -	.alloc_consistent =	pa11_dma_alloc_consistent,
+> -	.alloc_noncoherent =	pa11_dma_alloc_consistent,
+> -	.free_consistent =	pa11_dma_free_consistent,
+> -	.map_single =		pa11_dma_map_single,
+> -	.unmap_single =		pa11_dma_unmap_single,
+> +	.alloc =		pa11_dma_alloc,
+> +	.free =			pa11_dma_free,
+> +	.map_page =		pa11_dma_map_page,
+> +	.unmap_page =		pa11_dma_unmap_page,
+>  	.map_sg =		pa11_dma_map_sg,
+>  	.unmap_sg =		pa11_dma_unmap_sg,
+> -	.dma_sync_single_for_cpu = pa11_dma_sync_single_for_cpu,
+> -	.dma_sync_single_for_device = pa11_dma_sync_single_for_device,
+> -	.dma_sync_sg_for_cpu = pa11_dma_sync_sg_for_cpu,
+> -	.dma_sync_sg_for_device = pa11_dma_sync_sg_for_device,
+> +	.sync_single_for_cpu =	pa11_dma_sync_single_for_cpu,
+> +	.sync_single_for_device = pa11_dma_sync_single_for_device,
+> +	.sync_sg_for_cpu =	pa11_dma_sync_sg_for_cpu,
+> +	.sync_sg_for_device =	pa11_dma_sync_sg_for_device,
+>  };
+>  
+> -static void *fail_alloc_consistent(struct device *dev, size_t size,
+> -				   dma_addr_t *dma_handle, gfp_t flag)
+> -{
+> -	return NULL;
+> -}
+> -
+> -static void *pa11_dma_alloc_noncoherent(struct device *dev, size_t size,
+> -					  dma_addr_t *dma_handle, gfp_t flag)
+> +static void *pcx_dma_alloc(struct device *dev, size_t size,
+> +		dma_addr_t *dma_handle, gfp_t flag, struct dma_attrs *attrs)
+>  {
+>  	void *addr;
+>  
+> +	if (!dma_get_attr(DMA_ATTR_NON_CONSISTENT, attrs))
+> +		return NULL;
+> +
+>  	addr = (void *)__get_free_pages(flag, get_order(size));
+>  	if (addr)
+>  		*dma_handle = (dma_addr_t)virt_to_phys(addr);
+> @@ -578,24 +591,23 @@ static void *pa11_dma_alloc_noncoherent(struct device *dev, size_t size,
+>  	return addr;
+>  }
+>  
+> -static void pa11_dma_free_noncoherent(struct device *dev, size_t size,
+> -					void *vaddr, dma_addr_t iova)
+> +static void pcx_dma_free(struct device *dev, size_t size, void *vaddr,
+> +		dma_addr_t iova, struct dma_attrs *attrs)
+>  {
+>  	free_pages((unsigned long)vaddr, get_order(size));
+>  	return;
+>  }
+>  
+> -struct hppa_dma_ops pcx_dma_ops = {
+> +struct dma_map_ops pcx_dma_ops = {
+>  	.dma_supported =	pa11_dma_supported,
+> -	.alloc_consistent =	fail_alloc_consistent,
+> -	.alloc_noncoherent =	pa11_dma_alloc_noncoherent,
+> -	.free_consistent =	pa11_dma_free_noncoherent,
+> -	.map_single =		pa11_dma_map_single,
+> -	.unmap_single =		pa11_dma_unmap_single,
+> +	.alloc =		pcx_dma_alloc,
+> +	.free =			pcx_dma_free,
+> +	.map_page =		pa11_dma_map_page,
+> +	.unmap_page =		pa11_dma_unmap_page,
+>  	.map_sg =		pa11_dma_map_sg,
+>  	.unmap_sg =		pa11_dma_unmap_sg,
+> -	.dma_sync_single_for_cpu =	pa11_dma_sync_single_for_cpu,
+> -	.dma_sync_single_for_device =	pa11_dma_sync_single_for_device,
+> -	.dma_sync_sg_for_cpu =		pa11_dma_sync_sg_for_cpu,
+> -	.dma_sync_sg_for_device =	pa11_dma_sync_sg_for_device,
+> +	.sync_single_for_cpu =	pa11_dma_sync_single_for_cpu,
+> +	.sync_single_for_device = pa11_dma_sync_single_for_device,
+> +	.sync_sg_for_cpu =	pa11_dma_sync_sg_for_cpu,
+> +	.sync_sg_for_device =	pa11_dma_sync_sg_for_device,
+>  };
+> diff --git a/drivers/parisc/ccio-dma.c b/drivers/parisc/ccio-dma.c
+> index 957b421..a4c7153 100644
+> --- a/drivers/parisc/ccio-dma.c
+> +++ b/drivers/parisc/ccio-dma.c
+> @@ -788,18 +788,27 @@ ccio_map_single(struct device *dev, void *addr, size_t size,
+>  	return CCIO_IOVA(iovp, offset);
+>  }
+>  
+> +
+> +static dma_addr_t 
+> +ccio_map_page(struct device *dev, struct page *page, unsigned long offset,
+> +		size_t size, enum dma_data_direction direction,
+> +		struct dma_attrs *attrs)
+> +{
+> +	return ccio_map_single(dev, page_address(page) + offset, size,
+> +			direction);
+> +}
+> +
+> +
+>  /**
+> - * ccio_unmap_single - Unmap an address range from the IOMMU.
+> + * ccio_unmap_page - Unmap an address range from the IOMMU.
+>   * @dev: The PCI device.
+>   * @addr: The start address of the DMA region.
+>   * @size: The length of the DMA region.
+>   * @direction: The direction of the DMA transaction (to/from device).
+> - *
+> - * This function implements the pci_unmap_single function.
+>   */
+>  static void 
+> -ccio_unmap_single(struct device *dev, dma_addr_t iova, size_t size, 
+> -		  enum dma_data_direction direction)
+> +ccio_unmap_page(struct device *dev, dma_addr_t iova, size_t size, 
+> +		enum dma_data_direction direction, struct dma_attrs *attrs)
+>  {
+>  	struct ioc *ioc;
+>  	unsigned long flags; 
+> @@ -828,7 +837,7 @@ ccio_unmap_single(struct device *dev, dma_addr_t iova, size_t size,
+>  }
+>  
+>  /**
+> - * ccio_alloc_consistent - Allocate a consistent DMA mapping.
+> + * ccio_alloc - Allocate a consistent DMA mapping.
+>   * @dev: The PCI device.
+>   * @size: The length of the DMA region.
+>   * @dma_handle: The DMA address handed back to the device (not the cpu).
+> @@ -836,7 +845,8 @@ ccio_unmap_single(struct device *dev, dma_addr_t iova, size_t size,
+>   * This function implements the pci_alloc_consistent function.
+>   */
+>  static void * 
+> -ccio_alloc_consistent(struct device *dev, size_t size, dma_addr_t *dma_handle, gfp_t flag)
+> +ccio_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle, gfp_t flag,
+> +		struct dma_attrs *attrs)
+>  {
+>        void *ret;
+>  #if 0
+> @@ -860,7 +870,7 @@ ccio_alloc_consistent(struct device *dev, size_t size, dma_addr_t *dma_handle, g
+>  }
+>  
+>  /**
+> - * ccio_free_consistent - Free a consistent DMA mapping.
+> + * ccio_free - Free a consistent DMA mapping.
+>   * @dev: The PCI device.
+>   * @size: The length of the DMA region.
+>   * @cpu_addr: The cpu address returned from the ccio_alloc_consistent.
+> @@ -869,10 +879,10 @@ ccio_alloc_consistent(struct device *dev, size_t size, dma_addr_t *dma_handle, g
+>   * This function implements the pci_free_consistent function.
+>   */
+>  static void 
+> -ccio_free_consistent(struct device *dev, size_t size, void *cpu_addr, 
+> -		     dma_addr_t dma_handle)
+> +ccio_free(struct device *dev, size_t size, void *cpu_addr,
+> +		dma_addr_t dma_handle, struct dma_attrs *attrs)
+>  {
+> -	ccio_unmap_single(dev, dma_handle, size, 0);
+> +	ccio_unmap_page(dev, dma_handle, size, 0, NULL);
+>  	free_pages((unsigned long)cpu_addr, get_order(size));
+>  }
+>  
+> @@ -899,7 +909,7 @@ ccio_free_consistent(struct device *dev, size_t size, void *cpu_addr,
+>   */
+>  static int
+>  ccio_map_sg(struct device *dev, struct scatterlist *sglist, int nents, 
+> -	    enum dma_data_direction direction)
+> +	    enum dma_data_direction direction, struct dma_attrs *attrs)
+>  {
+>  	struct ioc *ioc;
+>  	int coalesced, filled = 0;
+> @@ -976,7 +986,7 @@ ccio_map_sg(struct device *dev, struct scatterlist *sglist, int nents,
+>   */
+>  static void 
+>  ccio_unmap_sg(struct device *dev, struct scatterlist *sglist, int nents, 
+> -	      enum dma_data_direction direction)
+> +	      enum dma_data_direction direction, struct dma_attrs *attrs)
+>  {
+>  	struct ioc *ioc;
+>  
+> @@ -995,27 +1005,22 @@ ccio_unmap_sg(struct device *dev, struct scatterlist *sglist, int nents,
+>  #ifdef CCIO_COLLECT_STATS
+>  		ioc->usg_pages += sg_dma_len(sglist) >> PAGE_SHIFT;
+>  #endif
+> -		ccio_unmap_single(dev, sg_dma_address(sglist),
+> -				  sg_dma_len(sglist), direction);
+> +		ccio_unmap_page(dev, sg_dma_address(sglist),
+> +				  sg_dma_len(sglist), direction, NULL);
+>  		++sglist;
+>  	}
+>  
+>  	DBG_RUN_SG("%s() DONE (nents %d)\n", __func__, nents);
+>  }
+>  
+> -static struct hppa_dma_ops ccio_ops = {
+> +static struct dma_map_ops ccio_ops = {
+>  	.dma_supported =	ccio_dma_supported,
+> -	.alloc_consistent =	ccio_alloc_consistent,
+> -	.alloc_noncoherent =	ccio_alloc_consistent,
+> -	.free_consistent =	ccio_free_consistent,
+> -	.map_single =		ccio_map_single,
+> -	.unmap_single =		ccio_unmap_single,
+> +	.alloc =		ccio_alloc,
+> +	.free =			ccio_free,
+> +	.map_page =		ccio_map_page,
+> +	.unmap_page =		ccio_unmap_page,
+>  	.map_sg = 		ccio_map_sg,
+>  	.unmap_sg = 		ccio_unmap_sg,
+> -	.dma_sync_single_for_cpu =	NULL,	/* NOP for U2/Uturn */
+> -	.dma_sync_single_for_device =	NULL,	/* NOP for U2/Uturn */
+> -	.dma_sync_sg_for_cpu =		NULL,	/* ditto */
+> -	.dma_sync_sg_for_device =		NULL,	/* ditto */
+>  };
+>  
+>  #ifdef CONFIG_PROC_FS
+> @@ -1064,7 +1069,7 @@ static int ccio_proc_info(struct seq_file *m, void *p)
+>  			   ioc->msingle_calls, ioc->msingle_pages,
+>  			   (int)((ioc->msingle_pages * 1000)/ioc->msingle_calls));
+>  
+> -		/* KLUGE - unmap_sg calls unmap_single for each mapped page */
+> +		/* KLUGE - unmap_sg calls unmap_page for each mapped page */
+>  		min = ioc->usingle_calls - ioc->usg_calls;
+>  		max = ioc->usingle_pages - ioc->usg_pages;
+>  		seq_printf(m, "pci_unmap_single: %8ld calls  %8ld pages (avg %d/1000)\n",
+> diff --git a/drivers/parisc/sba_iommu.c b/drivers/parisc/sba_iommu.c
+> index 225049b..24ec9b8 100644
+> --- a/drivers/parisc/sba_iommu.c
+> +++ b/drivers/parisc/sba_iommu.c
+> @@ -780,8 +780,18 @@ sba_map_single(struct device *dev, void *addr, size_t size,
+>  }
+>  
+>  
+> +static dma_addr_t 
+> +sba_map_page(struct device *dev, struct page *page, unsigned long offset,
+> +		size_t size, enum dma_data_direction direction,
+> +		struct dma_attrs *attrs)
+> +{
+> +	return sba_map_single(dev, page_address(page) + offset, size,
+> +			direction);
+> +}
+> +
+> +
+>  /**
+> - * sba_unmap_single - unmap one IOVA and free resources
+> + * sba_unmap_page - unmap one IOVA and free resources
+>   * @dev: instance of PCI owned by the driver that's asking.
+>   * @iova:  IOVA of driver buffer previously mapped.
+>   * @size:  number of bytes mapped in driver buffer.
+> @@ -790,8 +800,8 @@ sba_map_single(struct device *dev, void *addr, size_t size,
+>   * See Documentation/DMA-API-HOWTO.txt
+>   */
+>  static void
+> -sba_unmap_single(struct device *dev, dma_addr_t iova, size_t size,
+> -		 enum dma_data_direction direction)
+> +sba_unmap_page(struct device *dev, dma_addr_t iova, size_t size,
+> +		enum dma_data_direction direction, struct dma_attrs *attrs)
+>  {
+>  	struct ioc *ioc;
+>  #if DELAYED_RESOURCE_CNT > 0
+> @@ -858,15 +868,15 @@ sba_unmap_single(struct device *dev, dma_addr_t iova, size_t size,
+>  
+>  
+>  /**
+> - * sba_alloc_consistent - allocate/map shared mem for DMA
+> + * sba_alloc - allocate/map shared mem for DMA
+>   * @hwdev: instance of PCI owned by the driver that's asking.
+>   * @size:  number of bytes mapped in driver buffer.
+>   * @dma_handle:  IOVA of new buffer.
+>   *
+>   * See Documentation/DMA-API-HOWTO.txt
+>   */
+> -static void *sba_alloc_consistent(struct device *hwdev, size_t size,
+> -					dma_addr_t *dma_handle, gfp_t gfp)
+> +static void *sba_alloc(struct device *hwdev, size_t size, dma_addr_t *dma_handle,
+> +		gfp_t gfp, struct dma_attrs *attrs)
+>  {
+>  	void *ret;
+>  
+> @@ -888,7 +898,7 @@ static void *sba_alloc_consistent(struct device *hwdev, size_t size,
+>  
+>  
+>  /**
+> - * sba_free_consistent - free/unmap shared mem for DMA
+> + * sba_free - free/unmap shared mem for DMA
+>   * @hwdev: instance of PCI owned by the driver that's asking.
+>   * @size:  number of bytes mapped in driver buffer.
+>   * @vaddr:  virtual address IOVA of "consistent" buffer.
+> @@ -897,10 +907,10 @@ static void *sba_alloc_consistent(struct device *hwdev, size_t size,
+>   * See Documentation/DMA-API-HOWTO.txt
+>   */
+>  static void
+> -sba_free_consistent(struct device *hwdev, size_t size, void *vaddr,
+> -		    dma_addr_t dma_handle)
+> +sba_free(struct device *hwdev, size_t size, void *vaddr,
+> +		    dma_addr_t dma_handle, struct dma_attrs *attrs)
+>  {
+> -	sba_unmap_single(hwdev, dma_handle, size, 0);
+> +	sba_unmap_page(hwdev, dma_handle, size, 0, NULL);
+>  	free_pages((unsigned long) vaddr, get_order(size));
+>  }
+>  
+> @@ -933,7 +943,7 @@ int dump_run_sg = 0;
+>   */
+>  static int
+>  sba_map_sg(struct device *dev, struct scatterlist *sglist, int nents,
+> -	   enum dma_data_direction direction)
+> +	   enum dma_data_direction direction, struct dma_attrs *attrs)
+>  {
+>  	struct ioc *ioc;
+>  	int coalesced, filled = 0;
+> @@ -1016,7 +1026,7 @@ sba_map_sg(struct device *dev, struct scatterlist *sglist, int nents,
+>   */
+>  static void 
+>  sba_unmap_sg(struct device *dev, struct scatterlist *sglist, int nents,
+> -	     enum dma_data_direction direction)
+> +	     enum dma_data_direction direction, struct dma_attrs *attrs)
+>  {
+>  	struct ioc *ioc;
+>  #ifdef ASSERT_PDIR_SANITY
+> @@ -1040,7 +1050,8 @@ sba_unmap_sg(struct device *dev, struct scatterlist *sglist, int nents,
+>  
+>  	while (sg_dma_len(sglist) && nents--) {
+>  
+> -		sba_unmap_single(dev, sg_dma_address(sglist), sg_dma_len(sglist), direction);
+> +		sba_unmap_page(dev, sg_dma_address(sglist), sg_dma_len(sglist),
+> +				direction, NULL);
+>  #ifdef SBA_COLLECT_STATS
+>  		ioc->usg_pages += ((sg_dma_address(sglist) & ~IOVP_MASK) + sg_dma_len(sglist) + IOVP_SIZE - 1) >> PAGE_SHIFT;
+>  		ioc->usingle_calls--;	/* kluge since call is unmap_sg() */
+> @@ -1058,19 +1069,14 @@ sba_unmap_sg(struct device *dev, struct scatterlist *sglist, int nents,
+>  
+>  }
+>  
+> -static struct hppa_dma_ops sba_ops = {
+> +static struct dma_map_ops sba_ops = {
+>  	.dma_supported =	sba_dma_supported,
+> -	.alloc_consistent =	sba_alloc_consistent,
+> -	.alloc_noncoherent =	sba_alloc_consistent,
+> -	.free_consistent =	sba_free_consistent,
+> -	.map_single =		sba_map_single,
+> -	.unmap_single =		sba_unmap_single,
+> +	.alloc =		sba_alloc,
+> +	.free =			sba_free,
+> +	.map_page =		sba_map_page,
+> +	.unmap_page =		sba_unmap_page,
+>  	.map_sg =		sba_map_sg,
+>  	.unmap_sg =		sba_unmap_sg,
+> -	.dma_sync_single_for_cpu =	NULL,
+> -	.dma_sync_single_for_device =	NULL,
+> -	.dma_sync_sg_for_cpu =		NULL,
+> -	.dma_sync_sg_for_device =	NULL,
+>  };
+>  
+>  
+> 
+
