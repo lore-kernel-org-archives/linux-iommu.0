@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 4/4] iommu/vt-d: Do access checks before calling
-	handle_mm_fault()
-Date: Tue, 10 Nov 2015 14:26:46 +0100
-Message-ID: <1447162006-20672-5-git-send-email-joro@8bytes.org>
+Subject: [PATCH 2/4] iommu/amd: Correctly set flags for handle_mm_fault call
+Date: Tue, 10 Nov 2015 14:26:44 +0100
+Message-ID: <1447162006-20672-3-git-send-email-joro@8bytes.org>
 References: <1447162006-20672-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,43 +23,52 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Not doing so is a bug and might trigger a BUG_ON in
-handle_mm_fault(). So add the proper permission checks
-before calling into mm code.
+Instead of just checking for a write access, calculate the
+flags that are passed to handle_mm_fault() more precisly and
+use the pre-defined macros.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/intel-svm.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/iommu/amd_iommu_v2.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index c69e3f9..4ebf097 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -484,6 +484,14 @@ struct page_req_dsc {
- };
- 
- #define PRQ_RING_MASK ((0x1000 << PRQ_ORDER) - 0x10)
-+
-+static bool access_error(struct vm_area_struct *vma, struct page_req_dsc *req)
-+{
-+	return !((req->rd_req  && (vma->vm_flags & VM_READ))  ||
-+		 (req->wr_req  && (vma->vm_flags & VM_WRITE)) ||
-+		 (req->exe_req && (vma->vm_flags & VM_EXEC)));
-+}
-+
- static irqreturn_t prq_event_thread(int irq, void *d)
+diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
+index 612f7c8..afa8f9c 100644
+--- a/drivers/iommu/amd_iommu_v2.c
++++ b/drivers/iommu/amd_iommu_v2.c
+@@ -513,16 +513,20 @@ static bool access_error(struct vm_area_struct *vma, struct fault *fault)
+ static void do_fault(struct work_struct *work)
  {
- 	struct intel_iommu *iommu = d;
-@@ -539,6 +547,9 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 		if (!vma || address < vma->vm_start)
- 			goto invalid;
+ 	struct fault *fault = container_of(work, struct fault, work);
+-	struct mm_struct *mm;
+ 	struct vm_area_struct *vma;
++	unsigned int flags = 0;
++	struct mm_struct *mm;
+ 	u64 address;
+-	int ret, write;
+-
+-	write = !!(fault->flags & PPR_FAULT_WRITE);
++	int ret;
  
-+		if (access_error(vma, req))
-+			goto invalid;
+ 	mm = fault->state->mm;
+ 	address = fault->address;
+ 
++	if (fault->flags & PPR_FAULT_USER)
++		flags |= FAULT_FLAG_USER;
++	if (fault->flags & PPR_FAULT_WRITE)
++		flags |= FAULT_FLAG_WRITE;
 +
- 		ret = handle_mm_fault(svm->mm, vma, address,
- 				      req->wr_req ? FAULT_FLAG_WRITE : 0);
- 		if (ret & VM_FAULT_ERROR)
+ 	down_read(&mm->mmap_sem);
+ 	vma = find_extend_vma(mm, address);
+ 	if (!vma || address < vma->vm_start) {
+@@ -539,7 +543,7 @@ static void do_fault(struct work_struct *work)
+ 		goto out;
+ 	}
+ 
+-	ret = handle_mm_fault(mm, vma, address, write);
++	ret = handle_mm_fault(mm, vma, address, flags);
+ 	if (ret & VM_FAULT_ERROR) {
+ 		/* failed to service fault */
+ 		up_read(&mm->mmap_sem);
 -- 
 1.9.1
