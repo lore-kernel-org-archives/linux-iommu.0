@@ -1,57 +1,53 @@
-From: Joerg Roedel <jroedel@suse.de>
+From: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
 Subject: Re: [PATCH 4/4] iommu/vt-d: Do access checks before calling
- handle_mm_fault()
-Date: Tue, 10 Nov 2015 15:52:26 +0100
-Message-ID: <20151110145226.GK2255@suse.de>
+	handle_mm_fault()
+Date: Tue, 10 Nov 2015 09:43:03 -0800
+Message-ID: <CA+55aFwXn2ak_zjKyVGznYwoCDewHicFYX-ngLtrofDPyQ0N=w@mail.gmail.com>
 References: <1447162006-20672-1-git-send-email-joro@8bytes.org>
- <1447162006-20672-5-git-send-email-joro@8bytes.org>
- <1447166756.81031.66.camel@infradead.org>
+	<1447162006-20672-5-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1447166756.81031.66.camel@infradead.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: David Woodhouse <dwmw2@infradead.org>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, Oded Gabbay <oded.gabbay@gmail.com>, Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, jbarnes@virtuousgeek.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1447162006-20672-5-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "open list:AMD IOMMU (AMD-VI)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Nov 10, 2015 at 02:45:56PM +0000, David Woodhouse wrote:
-> On Tue, 2015-11-10 at 14:26 +0100, Joerg Roedel wrote:
-> > +static bool access_error(struct vm_area_struct *vma, struct
-> > page_req_dsc *req)
-> > +{
-> > +	return !((req->rd_req=C2=A0=C2=A0&& (vma->vm_flags & VM_READ))=C2=
-=A0=C2=A0||
-> > +		=C2=A0(req->wr_req=C2=A0=C2=A0&& (vma->vm_flags & VM_WRITE)) ||
-> > +		=C2=A0(req->exe_req && (vma->vm_flags & VM_EXEC)));
-> > +}
-> > +
->=20
-> This is a TLB fill request from the device =E2=80=94 can it not be as=
-king for
-> *all* of read, write and exec privs? And you allow it to succeed if a=
-ny
-> *one* of the permissions that it asks for is available?
->=20
-> Even if we don't see read+write in the same request, the VT-d spec do=
-es
-> seem quite clear that we *will* see read+exec (=C2=A77.5.1.1 p7-17 of=
- v2.3:
->=20
-> =E2=80=A2 Execute Requested: If the PASID Present, Read Requested and=
- Execute
-> =C2=A0 Requested fields are all 1, the request-with-PASID that encoun=
-tered=C2=A0
-> =C2=A0 the recoverable fault that resulted in this page request, requ=
-ires=C2=A0
-> =C2=A0 execute access to the page.
+On Tue, Nov 10, 2015 at 5:26 AM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> +
+> +static bool access_error(struct vm_area_struct *vma, struct page_req_dsc *req)
+> +{
+> +       return !((req->rd_req  && (vma->vm_flags & VM_READ))  ||
+> +                (req->wr_req  && (vma->vm_flags & VM_WRITE)) ||
+> +                (req->exe_req && (vma->vm_flags & VM_EXEC)));
+> +}
 
-Okay, thanks for the clarification. The code above assumes that only on=
-e
-of RWX is set. I'll update the patch to correctly check when multiple
-bits are set.
+This seems odd.
 
+Shouldn't it be
 
-	Joerg
+    return ((req->rd_req  && !(vma->vm_flags & VM_READ))  ||
+            (req->wr_req  && !(vma->vm_flags & VM_WRITE)) ||
+            (req->exe_req && !(vma->vm_flags & VM_EXEC)));
+
+instead?
+
+Of course, if you just used the VM_xyz flags internally itself, this
+would all be easier, and you'd end up with something like
+
+    /* Do we have requested bits that aren't in the allowed set? */
+    return (requested & ~vma->vm_flags) != 0;
+
+instead..
+
+              Linus
