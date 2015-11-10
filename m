@@ -1,8 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 1/4] iommu/amd: Do proper access checking before calling
+Subject: [PATCH 4/4] iommu/vt-d: Do access checks before calling
 	handle_mm_fault()
-Date: Tue, 10 Nov 2015 14:26:43 +0100
-Message-ID: <1447162006-20672-2-git-send-email-joro@8bytes.org>
+Date: Tue, 10 Nov 2015 14:26:46 +0100
+Message-ID: <1447162006-20672-5-git-send-email-joro@8bytes.org>
 References: <1447162006-20672-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,54 +24,43 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-The handle_mm_fault function expects the caller to do the
-access checks. Not doing so and calling the function with
-wrong permissions is a bug (catched by a BUG_ON).
-So fix this bug by adding proper access checking to the io
-page-fault code in the AMD IOMMUv2 driver.
+Not doing so is a bug and might trigger a BUG_ON in
+handle_mm_fault(). So add the proper permission checks
+before calling into mm code.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_v2.c | 20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
+ drivers/iommu/intel-svm.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index d21d4ed..612f7c8 100644
---- a/drivers/iommu/amd_iommu_v2.c
-+++ b/drivers/iommu/amd_iommu_v2.c
-@@ -494,6 +494,22 @@ static void handle_fault_error(struct fault *fault)
- 	}
- }
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index c69e3f9..4ebf097 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -484,6 +484,14 @@ struct page_req_dsc {
+ };
  
-+static bool access_error(struct vm_area_struct *vma, struct fault *fault)
+ #define PRQ_RING_MASK ((0x1000 << PRQ_ORDER) - 0x10)
++
++static bool access_error(struct vm_area_struct *vma, struct page_req_dsc *req)
 +{
-+	unsigned int allowed = 0;
-+
-+	if (fault->flags & PPR_FAULT_EXEC)
-+		allowed = vma->vm_flags & VM_EXEC;
-+
-+	if (fault->flags & PPR_FAULT_READ)
-+		allowed = vma->vm_flags & VM_READ;
-+
-+	if (fault->flags & PPR_FAULT_WRITE)
-+		allowed = vma->vm_flags & VM_WRITE;
-+
-+	return allowed ? false : true;
++	return !((req->rd_req  && (vma->vm_flags & VM_READ))  ||
++		 (req->wr_req  && (vma->vm_flags & VM_WRITE)) ||
++		 (req->exe_req && (vma->vm_flags & VM_EXEC)));
 +}
 +
- static void do_fault(struct work_struct *work)
+ static irqreturn_t prq_event_thread(int irq, void *d)
  {
- 	struct fault *fault = container_of(work, struct fault, work);
-@@ -516,8 +532,8 @@ static void do_fault(struct work_struct *work)
- 		goto out;
- 	}
+ 	struct intel_iommu *iommu = d;
+@@ -539,6 +547,9 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 		if (!vma || address < vma->vm_start)
+ 			goto invalid;
  
--	if (!(vma->vm_flags & (VM_READ | VM_EXEC | VM_WRITE))) {
--		/* handle_mm_fault would BUG_ON() */
-+	/* Check if we have the right permissions on the vma */
-+	if (access_error(vma, fault)) {
- 		up_read(&mm->mmap_sem);
- 		handle_fault_error(fault);
- 		goto out;
++		if (access_error(vma, req))
++			goto invalid;
++
+ 		ret = handle_mm_fault(svm->mm, vma, address,
+ 				      req->wr_req ? FAULT_FLAG_WRITE : 0);
+ 		if (ret & VM_FAULT_ERROR)
 -- 
 1.9.1
