@@ -1,13 +1,14 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH] iommu/dma: Map scatterlists more parsimoniously
-Date: Thu, 12 Nov 2015 13:47:09 +0800
-Message-ID: <1447307229.27650.5.camel@mhfsdcap03>
-References: <104b4682056bc5b4aa0afadd39196c03fc06555d.1447249098.git.robin.murphy@arm.com>
+From: Laine Stump <laine-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: Regression in kernel 4.2.3+ (relative to 4.1.10) on AMD 990FX
+	system with IOMMU enabled
+Date: Thu, 12 Nov 2015 12:33:53 -0500
+Message-ID: <5644CD81.2020304@redhat.com>
+References: <563A3F64.50808@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <104b4682056bc5b4aa0afadd39196c03fc06555d.1447249098.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <563A3F64.50808-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,83 +18,61 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tiffany.lin-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2015-11-11 at 14:54 +0000, Robin Murphy wrote:
-> Whilst blindly assuming the worst case for segment boundaries and
-> aligning every segment individually is safe from the point of view
-> of respecting the device's parameters, it is also undeniably a waste
-> of IOVA space. Futhermore, the knock-on effects of more pages than
-> necessary being exposed to device access, additional overhead in page
-> table updates and TLB invalidations, etc., are even more undesirable.
-> 
-> Improve matters by taking the actual boundary mask into account to
-> actively detect the cases in which we really do need to adjust a
-> segment, and avoid wasting space in the remainder.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
-> 
-> Hi all,
-> 
-> I've given this some brief testing on Juno with USB and (via magic
-> PCI hacks) SATA to confirm that all the +1s and -1s at least seem to
-> be in the right places, so I'm throwing it out now for a head-start on
-> checking whether it also helps the media folks with the v4l portability
-> issues they're up against (I'm confident it should). If all goes well I
-> figure I'll repost next week based on rc1 instead of some random local
-> development commit.
-> 
-> Robin.
+(Cc'ing Joerg because I have a question for him down towards the bottom...)
 
-It works well on MT8173. containing
-VDA/VEA(VideoDecodeAccelerator/VideoEncodeAccelerator) unit test.
+On 11/04/2015 12:24 PM, Laine Stump wrote:
+> Last week I upgraded my Fedora 22 AMD 990FX system from kernel 4.1.10 to
+> 4.2.3 (standard Fedora builds) and multiple devices stopped working:
+>
+> * 00:14.2 Audio device: Advanced Micro Devices, Inc. [AMD/ATI] SBx00
+> Azalia (Intel HDA) (rev 40)
+>
+> * 02:00.[01] Ethernet controller: Intel Corporation 82576 Gigabit
+> Network Connection
+>
+> * 01:00.1 Audio device: Advanced Micro Devices, Inc. [AMD/ATI] Cedar
+> HDMI Audio [Radeon HD 5400/6300 Series]
+>
+> (The 1st is integrated on the motherboard, the 2nd & 3rd are behind an
+> AMD RD890 pci-pci bridge. There may be other devices failing, but these
+> are the ones immediately obvious.)
+>
+> Whatever is the source of the failure, it ends up that the drivers for
+> these devices aren't loaded.
 
-Tested-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+That is actually a bit misleading/incorrect - the igb device is 
+apparently loaded for one of the two devices in the 82576 card 
+(02:00.0), and one (out of expected 7) VF device entries is created in 
+/sys/devices/pci0000:00/*, but something happens that results in none of 
+these devices being put in /sys/class/net, the other 6 VFs don't get 
+entries in /sys/device/pci0000:00/*, and the igb driver isn't loaded for 
+the 2nd PF (02:00.1).
 
-> 
->  drivers/iommu/dma-iommu.c | 19 +++++++++++--------
->  1 file changed, 11 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 3a20db4..821ebc4 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -441,6 +441,7 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
->  	struct scatterlist *s, *prev = NULL;
->  	dma_addr_t dma_addr;
->  	size_t iova_len = 0;
-> +	unsigned long mask = dma_get_seg_boundary(dev);
->  	int i;
->  
->  	/*
-> @@ -460,17 +461,19 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
->  		s->length = s_length;
->  
->  		/*
-> -		 * The simple way to avoid the rare case of a segment
-> -		 * crossing the boundary mask is to pad the previous one
-> -		 * to end at a naturally-aligned IOVA for this one's size,
-> -		 * at the cost of potentially over-allocating a little.
-> +		 * With a single size-aligned IOVA allocation, no segment risks
-> +		 * crossing the boundary mask unless the total size exceeds
-> +		 * the mask itself. The simple way to maintain alignment when
-> +		 * that does happen is to pad the previous segment to end at the
-> +		 * next boundary, at the cost of over-allocating a little.
->  		 */
->  		if (prev) {
-> -			size_t pad_len = roundup_pow_of_two(s_length);
-> +			size_t pad_len = (mask - iova_len + 1) & mask;
->  
-> -			pad_len = (pad_len - iova_len) & (pad_len - 1);
-> -			prev->length += pad_len;
-> -			iova_len += pad_len;
-> +			if (pad_len && pad_len < s_length - 1) {
-> +				prev->length += pad_len;
-> +				iova_len += pad_len;
-> +			}
->  		}
->  
->  		iova_len += s_length;
+> At Alex Williamson's suggestion, I tried disabling IOMMU in the BIOS,
+> and magically all the devices resumed normal operation (except that I
+> can't do vfio device assignment because the IOMMU is disabled).
+
+After a crash course in kernel building from Alex, I bisected down to 
+commit aafd8ba - a kernel built without this commit succeeds in setting 
+up all the devices mentioned, adding it causes failure (and a very long 
+delay during boot). Joerg, do you have any ideas for debugging the 
+problem further to see what in the commit causes this problem? (note 
+that 2 other people with the same chipset but slightly different 
+hardware plugged into it report no failure - see the other replies to 
+the parent of this message for more detail). I'm happy to build a kernel 
+with any suggested patches and report results...
+
+commit aafd8ba0ca74894b9397e412bbd7f8ea2662ead8
+Author: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Date:   Thu May 28 18:41:39 2015 +0200
+
+     iommu/amd: Implement add_device and remove_device
+
+     Implement these two iommu-ops call-backs to make use of the
+     initialization and notifier features of the iommu core.
+
+     Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
