@@ -1,71 +1,105 @@
-From: Chen Feng <puck.chen@hisilicon.com>
-Subject: [PATCH RFC 0/3] Add iommu support for hi6220 HiKey board
-Date: Tue, 17 Nov 2015 19:57:45 +0800
-Message-ID: <1447761468-36952-1-git-send-email-puck.chen@hisilicon.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [RFC/PATCH] media: omap3isp: Set maximum DMA segment size
+Date: Tue, 17 Nov 2015 13:15:10 +0100
+Message-ID: <564B1A4E.7040001@samsung.com>
+References: <1444742316-27986-1-git-send-email-laurent.pinchart@ideasonboard.com>
+	<1560214.1Y1q0qLZA4@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: puck.chen@hisilicon.com, yudongbin@hisilicon.com, saberlily.xia@hisilicon.com, suzhuangluan@hisilicon.com, kong.kongxinwei@hisilicon.com, xuyiping@hisilicon.com, z.liuxinliang@hisilicon.com, puck.chen@aliyun.com, weidong2@hisilicon.com, w.f@huawei.com, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, xuwei5@hisilicon.com
-Cc: qijiwen@hisilicon.com, peter.panshilin@hisilicon.com, dan.zhao@hisilicon.com, linuxarm@huawei.com, arnd@linaro.org, rob.herring@linaro.org, guodong.xu@linaro.org, liguozhu@hisilicon.com
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <1560214.1Y1q0qLZA4@avalon>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sakari.ailus-X3B1VOXEql0@public.gmane.org, Shuah Khan <shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The patch sets add iommu support for Hi6220 SoC. Current testing and support
-board is Hikey which is one of 96boards.
-It is an arm64 open source board. For more information about this board,
-please access https://www.96boards.org.
+Hi Laurent,
 
-The Architecture of SMMU on Hi6220 SoC:
+I really have no idea how this problem should be addressed. I've already 
+proposed
+to handle it in videobuf2-dc, but this has been rejected. Maybe the only 
+way will
+be to add dma_set_max_seg_size(isp->dev, DMA_BIT_MASK(32)) to every v4l2 
+driver,
+which use videobuf2-dc and add a check in videobuf2-dc.
 
-   +------------------------------------------------------------------+
-   |                                                                  |
-   |         +---------+  +--------+  +-------------+   +-------+     |
-   |         |   ADE   |  |  ISP   |  |  V/J codec  |   |  G3D  |     |
-   |         +----|----+  +---|----+  +------|------+   +---|---|     |
-   |              |           |              |              |         |
-   |     ---------v-----------v--------------v--------------v-----    |
-   |                           Media Bus                              |
-   |     --------------------------------|---------------|--------    |
-   |                                     |               |            |
-   |                                 +---v---------------v--------+   |
-   |                                 |            SMMU            |   |
-   |                                 +----------|---------|-------+   |
-   |                                            |         |           |
-   +--------------------------------------------|---------|-----------+
-                                                |         |
-                                   +------------v---------v-----------+
-                                   |              DDRC                |
-                                   +----------------------------------+
-
-Note:
-The media system share the same smmu IP to access DDR memory. And all
-media IP use the same page table. The hi6220 iommu driver also uses the
-iova api to manage an iova allocator to ensure that the caller get different
-iova address.
-The caller can use the follow sample code to map phy and iova address.
-
-eg:
-struct iommu_domain *domain = iommu_domain_alloc(bus);
-iommu_attach_device(domain, dev);
-struct iova_domain *iovad = (struct iova_domain *)m_dev->archdata.iommu;
-struct iova * t_iova = alloc_iova(iovad, size, limit_pfn, align);
-iommu_map(domain, t_iova->pfn_lo << 12, phy_addr, size, port);
-
-The patch sets are based on 4.4-RC1
-
-Chen Feng (3):
-  docs: iommu: Documentation for iommu in hi6220 SoC
-  iommu/hisilicon: Add hi6220-SoC smmu driver
-  arm64: dts: Add dts node for hi6220 smmu driver
-
- .../bindings/iommu/hisi,hi6220-iommu.txt           |  32 ++
- arch/arm64/boot/dts/hisilicon/hi6220.dtsi          |  13 +
- drivers/iommu/Kconfig                              |  11 +
- drivers/iommu/Makefile                             |   1 +
- drivers/iommu/hi6220_iommu.c                       | 492 +++++++++++++++++++++
- 5 files changed, 549 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iommu/hisi,hi6220-iommu.txt
- create mode 100644 drivers/iommu/hi6220_iommu.c
-
+Best regards
 -- 
-1.9.1
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
+On 2015-11-09 15:18, Laurent Pinchart wrote:
+> Hello everybody,
+>
+> Ping ?
+>
+> On Tuesday 13 October 2015 16:18:36 Laurent Pinchart wrote:
+>> The maximum DMA segment size controls the IOMMU mapping granularity. Its
+>> default value is 64kB, resulting in potentially non-contiguous IOMMU
+>> mappings. Configure it to 4GB to ensure that buffers get mapped
+>> contiguously.
+>>
+>> Signed-off-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+>> ---
+>>   drivers/media/platform/omap3isp/isp.c | 4 ++++
+>>   drivers/media/platform/omap3isp/isp.h | 1 +
+>>   2 files changed, 5 insertions(+)
+>>
+>> I'm posting this as an RFC because I'm not happy with the patch, even if it
+>> gets the job done.
+>>
+>> On ARM the maximum DMA segment size is used when creating IOMMU mappings. As
+>> a large number of devices require contiguous memory buffers (this is a very
+>> common requirement for video-related embedded devices) the default 64kB
+>> value doesn't work.
+>>
+>> I haven't investigated the history behind this API in details but I have a
+>> feeling something is not quite right. We force most drivers to explicitly
+>> set the maximum segment size from a default that seems valid for specific
+>> use cases only. Furthermore, as the DMA parameters are not stored directly
+>> in struct device this require allocation of external memory for which we
+>> have no proper management rule, making automatic handling of the DMA
+>> parameters in frameworks or helper functions cumbersome (for a discussion
+>> on this topic see http://www.spinics.net/lists/linux-media/msg92467.html
+>> and http://lists.infradead.org/pipermail/linux-arm-kernel/2014-> November/305913.html).
+>>
+>> Is it time to fix this mess ?
+>>
+>> diff --git a/drivers/media/platform/omap3isp/isp.c
+>> b/drivers/media/platform/omap3isp/isp.c index 17430a6ed85a..ebf7dc76e94d
+>> 100644
+>> --- a/drivers/media/platform/omap3isp/isp.c
+>> +++ b/drivers/media/platform/omap3isp/isp.c
+>> @@ -2444,6 +2444,10 @@ static int isp_probe(struct platform_device *pdev)
+>>   	if (ret)
+>>   		goto error;
+>>
+>> +	isp->dev->dma_parms = &isp->dma_parms;
+>> +	dma_set_max_seg_size(isp->dev, DMA_BIT_MASK(32));
+>> +	dma_set_seg_boundary(isp->dev, 0xffffffff);
+>> +
+>>   	platform_set_drvdata(pdev, isp);
+>>
+>>   	/* Regulators */
+>> diff --git a/drivers/media/platform/omap3isp/isp.h
+>> b/drivers/media/platform/omap3isp/isp.h index e579943175c4..4b2231cf01be
+>> 100644
+>> --- a/drivers/media/platform/omap3isp/isp.h
+>> +++ b/drivers/media/platform/omap3isp/isp.h
+>> @@ -193,6 +193,7 @@ struct isp_device {
+>>   	u32 syscon_offset;
+>>   	u32 phy_type;
+>>
+>> +	struct device_dma_parameters dma_parms;
+>>   	struct dma_iommu_mapping *mapping;
+>>
+>>   	/* ISP Obj */
