@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 2/4] iommu/amd: Correctly set flags for handle_mm_fault call
-Date: Tue, 17 Nov 2015 16:11:37 +0100
-Message-ID: <1447773099-2444-3-git-send-email-joro@8bytes.org>
+Subject: [PATCH 4/4] iommu/vt-d: Do access checks before calling
+	handle_mm_fault()
+Date: Tue, 17 Nov 2015 16:11:39 +0100
+Message-ID: <1447773099-2444-5-git-send-email-joro@8bytes.org>
 References: <1447773099-2444-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,52 +24,52 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Instead of just checking for a write access, calculate the
-flags that are passed to handle_mm_fault() more precisly and
-use the pre-defined macros.
+Not doing so is a bug and might trigger a BUG_ON in
+handle_mm_fault(). So add the proper permission checks
+before calling into mm code.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_v2.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ drivers/iommu/intel-svm.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index 7caf2fa..a7edbd6 100644
---- a/drivers/iommu/amd_iommu_v2.c
-+++ b/drivers/iommu/amd_iommu_v2.c
-@@ -513,16 +513,20 @@ static bool access_error(struct vm_area_struct *vma, struct fault *fault)
- static void do_fault(struct work_struct *work)
- {
- 	struct fault *fault = container_of(work, struct fault, work);
--	struct mm_struct *mm;
- 	struct vm_area_struct *vma;
-+	unsigned int flags = 0;
-+	struct mm_struct *mm;
- 	u64 address;
--	int ret, write;
--
--	write = !!(fault->flags & PPR_FAULT_WRITE);
-+	int ret;
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index c69e3f9..5046483 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -484,6 +484,23 @@ struct page_req_dsc {
+ };
  
- 	mm = fault->state->mm;
- 	address = fault->address;
- 
-+	if (fault->flags & PPR_FAULT_USER)
-+		flags |= FAULT_FLAG_USER;
-+	if (fault->flags & PPR_FAULT_WRITE)
-+		flags |= FAULT_FLAG_WRITE;
+ #define PRQ_RING_MASK ((0x1000 << PRQ_ORDER) - 0x10)
 +
- 	down_read(&mm->mmap_sem);
- 	vma = find_extend_vma(mm, address);
- 	if (!vma || address < vma->vm_start) {
-@@ -539,7 +543,7 @@ static void do_fault(struct work_struct *work)
- 		goto out;
- 	}
++static bool access_error(struct vm_area_struct *vma, struct page_req_dsc *req)
++{
++	unsigned long requested = 0;
++
++	if (req->exe_req)
++		requested |= VM_EXEC;
++
++	if (req->rd_req)
++		requested |= VM_READ;
++
++	if (req->wr_req)
++		requested |= VM_WRITE;
++
++	return (requested & ~vma->vm_flags) != 0;
++}
++
+ static irqreturn_t prq_event_thread(int irq, void *d)
+ {
+ 	struct intel_iommu *iommu = d;
+@@ -539,6 +556,9 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 		if (!vma || address < vma->vm_start)
+ 			goto invalid;
  
--	ret = handle_mm_fault(mm, vma, address, write);
-+	ret = handle_mm_fault(mm, vma, address, flags);
- 	if (ret & VM_FAULT_ERROR) {
- 		/* failed to service fault */
- 		up_read(&mm->mmap_sem);
++		if (access_error(vma, req))
++			goto invalid;
++
+ 		ret = handle_mm_fault(svm->mm, vma, address,
+ 				      req->wr_req ? FAULT_FLAG_WRITE : 0);
+ 		if (ret & VM_FAULT_ERROR)
 -- 
 1.9.1
