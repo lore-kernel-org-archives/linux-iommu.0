@@ -1,14 +1,11 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [RFC/PATCH] media: omap3isp: Set maximum DMA segment size
-Date: Tue, 17 Nov 2015 13:15:10 +0100
-Message-ID: <564B1A4E.7040001@samsung.com>
-References: <1444742316-27986-1-git-send-email-laurent.pinchart@ideasonboard.com>
-	<1560214.1Y1q0qLZA4@avalon>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 0/4 v2] Implement access checks in iommu page fault paths
+Date: Tue, 17 Nov 2015 16:11:35 +0100
+Message-ID: <1447773099-2444-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1560214.1Y1q0qLZA4@avalon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,88 +15,47 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sakari.ailus-X3B1VOXEql0@public.gmane.org, Shuah Khan <shuahkhan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jesse Barnes <jbarnes-Y1mF5jBUw70BENJcbMCuUQ@public.gmane.org>, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Laurent,
+Hi,
 
-I really have no idea how this problem should be addressed. I've already 
-proposed
-to handle it in videobuf2-dc, but this has been rejected. Maybe the only 
-way will
-be to add dma_set_max_seg_size(isp->dev, DMA_BIT_MASK(32)) to every v4l2 
-driver,
-which use videobuf2-dc and add a check in videobuf2-dc.
+here is the second version of the patch-set to implement
+proper access checks into the io-page-fault handlers of the
+AMD IOMMU and Intel VT-d drivers.
 
-Best regards
+Two additional patches clean up the AMD part a bit further.
+Since I can't test this this code myself due to lack of
+hardware or software that utilizes it, I'd appreciate some
+external testing.
+
+It took me a while to get these out, mostly because I tried
+to setup my own HSA test environment to at least test the
+AMD changes myself. That failed, so I am sending this out
+with another request for testing.
+
+Oded, Jesse, would you two please test these patches and
+report back? Thanks a lot!
+
+
+	Joerg
+
+Changes since v1:
+
+	* Updated the access_error functions based on
+	  Linus' feedback
+	* Rebased to v4.4-rc1
+
+Joerg Roedel (4):
+  iommu/amd: Do proper access checking before calling handle_mm_fault()
+  iommu/amd: Correctly set flags for handle_mm_fault call
+  iommu/amd: Cleanup error handling in do_fault()
+  iommu/vt-d: Do access checks before calling handle_mm_fault()
+
+ drivers/iommu/amd_iommu_v2.c | 54 +++++++++++++++++++++++++++-----------------
+ drivers/iommu/intel-svm.c    | 20 ++++++++++++++++
+ 2 files changed, 53 insertions(+), 21 deletions(-)
+
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
-On 2015-11-09 15:18, Laurent Pinchart wrote:
-> Hello everybody,
->
-> Ping ?
->
-> On Tuesday 13 October 2015 16:18:36 Laurent Pinchart wrote:
->> The maximum DMA segment size controls the IOMMU mapping granularity. Its
->> default value is 64kB, resulting in potentially non-contiguous IOMMU
->> mappings. Configure it to 4GB to ensure that buffers get mapped
->> contiguously.
->>
->> Signed-off-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
->> ---
->>   drivers/media/platform/omap3isp/isp.c | 4 ++++
->>   drivers/media/platform/omap3isp/isp.h | 1 +
->>   2 files changed, 5 insertions(+)
->>
->> I'm posting this as an RFC because I'm not happy with the patch, even if it
->> gets the job done.
->>
->> On ARM the maximum DMA segment size is used when creating IOMMU mappings. As
->> a large number of devices require contiguous memory buffers (this is a very
->> common requirement for video-related embedded devices) the default 64kB
->> value doesn't work.
->>
->> I haven't investigated the history behind this API in details but I have a
->> feeling something is not quite right. We force most drivers to explicitly
->> set the maximum segment size from a default that seems valid for specific
->> use cases only. Furthermore, as the DMA parameters are not stored directly
->> in struct device this require allocation of external memory for which we
->> have no proper management rule, making automatic handling of the DMA
->> parameters in frameworks or helper functions cumbersome (for a discussion
->> on this topic see http://www.spinics.net/lists/linux-media/msg92467.html
->> and http://lists.infradead.org/pipermail/linux-arm-kernel/2014-> November/305913.html).
->>
->> Is it time to fix this mess ?
->>
->> diff --git a/drivers/media/platform/omap3isp/isp.c
->> b/drivers/media/platform/omap3isp/isp.c index 17430a6ed85a..ebf7dc76e94d
->> 100644
->> --- a/drivers/media/platform/omap3isp/isp.c
->> +++ b/drivers/media/platform/omap3isp/isp.c
->> @@ -2444,6 +2444,10 @@ static int isp_probe(struct platform_device *pdev)
->>   	if (ret)
->>   		goto error;
->>
->> +	isp->dev->dma_parms = &isp->dma_parms;
->> +	dma_set_max_seg_size(isp->dev, DMA_BIT_MASK(32));
->> +	dma_set_seg_boundary(isp->dev, 0xffffffff);
->> +
->>   	platform_set_drvdata(pdev, isp);
->>
->>   	/* Regulators */
->> diff --git a/drivers/media/platform/omap3isp/isp.h
->> b/drivers/media/platform/omap3isp/isp.h index e579943175c4..4b2231cf01be
->> 100644
->> --- a/drivers/media/platform/omap3isp/isp.h
->> +++ b/drivers/media/platform/omap3isp/isp.h
->> @@ -193,6 +193,7 @@ struct isp_device {
->>   	u32 syscon_offset;
->>   	u32 phy_type;
->>
->> +	struct device_dma_parameters dma_parms;
->>   	struct dma_iommu_mapping *mapping;
->>
->>   	/* ISP Obj */
+1.9.1
