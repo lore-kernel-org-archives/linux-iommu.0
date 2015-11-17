@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 3/4] iommu/amd: Cleanup error handling in do_fault()
-Date: Tue, 17 Nov 2015 16:11:38 +0100
-Message-ID: <1447773099-2444-4-git-send-email-joro@8bytes.org>
+Subject: [PATCH 1/4] iommu/amd: Do proper access checking before calling
+	handle_mm_fault()
+Date: Tue, 17 Nov 2015 16:11:36 +0100
+Message-ID: <1447773099-2444-2-git-send-email-joro@8bytes.org>
 References: <1447773099-2444-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,68 +24,54 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Get rid of the three error paths that look the same and move
-error handling to a single place.
+The handle_mm_fault function expects the caller to do the
+access checks. Not doing so and calling the function with
+wrong permissions is a bug (catched by a BUG_ON).
+So fix this bug by adding proper access checking to the io
+page-fault code in the AMD IOMMUv2 driver.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_v2.c | 24 ++++++++----------------
- 1 file changed, 8 insertions(+), 16 deletions(-)
+ drivers/iommu/amd_iommu_v2.c | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index a7edbd6..6a28b74 100644
+index d21d4ed..7caf2fa 100644
 --- a/drivers/iommu/amd_iommu_v2.c
 +++ b/drivers/iommu/amd_iommu_v2.c
-@@ -514,10 +514,10 @@ static void do_fault(struct work_struct *work)
+@@ -494,6 +494,22 @@ static void handle_fault_error(struct fault *fault)
+ 	}
+ }
+ 
++static bool access_error(struct vm_area_struct *vma, struct fault *fault)
++{
++	unsigned long requested = 0;
++
++	if (fault->flags & PPR_FAULT_EXEC)
++		requested |= VM_EXEC;
++
++	if (fault->flags & PPR_FAULT_READ)
++		requested |= VM_READ;
++
++	if (fault->flags & PPR_FAULT_WRITE)
++		requested |= VM_WRITE;
++
++	return (requested & ~vma->vm_flags) != 0;
++}
++
+ static void do_fault(struct work_struct *work)
  {
  	struct fault *fault = container_of(work, struct fault, work);
- 	struct vm_area_struct *vma;
-+	int ret = VM_FAULT_ERROR;
- 	unsigned int flags = 0;
- 	struct mm_struct *mm;
- 	u64 address;
--	int ret;
- 
- 	mm = fault->state->mm;
- 	address = fault->address;
-@@ -529,31 +529,23 @@ static void do_fault(struct work_struct *work)
- 
- 	down_read(&mm->mmap_sem);
- 	vma = find_extend_vma(mm, address);
--	if (!vma || address < vma->vm_start) {
-+	if (!vma || address < vma->vm_start)
- 		/* failed to get a vma in the right range */
--		up_read(&mm->mmap_sem);
--		handle_fault_error(fault);
+@@ -516,8 +532,8 @@ static void do_fault(struct work_struct *work)
  		goto out;
--	}
+ 	}
  
- 	/* Check if we have the right permissions on the vma */
--	if (access_error(vma, fault)) {
--		up_read(&mm->mmap_sem);
--		handle_fault_error(fault);
-+	if (access_error(vma, fault))
+-	if (!(vma->vm_flags & (VM_READ | VM_EXEC | VM_WRITE))) {
+-		/* handle_mm_fault would BUG_ON() */
++	/* Check if we have the right permissions on the vma */
++	if (access_error(vma, fault)) {
+ 		up_read(&mm->mmap_sem);
+ 		handle_fault_error(fault);
  		goto out;
--	}
- 
- 	ret = handle_mm_fault(mm, vma, address, flags);
--	if (ret & VM_FAULT_ERROR) {
--		/* failed to service fault */
--		up_read(&mm->mmap_sem);
--		handle_fault_error(fault);
--		goto out;
--	}
- 
-+out:
- 	up_read(&mm->mmap_sem);
- 
--out:
-+	if (ret & VM_FAULT_ERROR)
-+		/* failed to service fault */
-+		handle_fault_error(fault);
-+
- 	finish_pri_tag(fault->dev_state, fault->state, fault->tag);
- 
- 	put_pasid_state(fault->state);
 -- 
 1.9.1
