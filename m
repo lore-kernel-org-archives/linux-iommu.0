@@ -1,14 +1,13 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [Patch v2 0/9] Fix AMD IOMMU faults in kdump kernel
-Date: Wed, 18 Nov 2015 14:14:53 +0800
-Message-ID: <20151118061453.GB16814@dhcp-128-28.nay.redhat.com>
-References: <1446811851-20623-1-git-send-email-bhe@redhat.com>
+From: Oded Gabbay <oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 0/4 v2] Implement access checks in iommu page fault paths
+Date: Wed, 18 Nov 2015 16:07:39 +0200
+Message-ID: <CAFCwf11Z5OQ_mT2dV2UXdAS6_+vMnfNEpyR4jFUheW-3uib-VQ@mail.gmail.com>
+References: <1447773099-2444-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1446811851-20623-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1447773099-2444-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,60 +17,64 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Linux-Kernel@Vger. Kernel. Org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jesse Barnes <jbarnes-Y1mF5jBUw70BENJcbMCuUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
+
+On Tue, Nov 17, 2015 at 5:11 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> Hi,
+>
+> here is the second version of the patch-set to implement
+> proper access checks into the io-page-fault handlers of the
+> AMD IOMMU and Intel VT-d drivers.
+>
+> Two additional patches clean up the AMD part a bit further.
+> Since I can't test this this code myself due to lack of
+> hardware or software that utilizes it, I'd appreciate some
+> external testing.
+>
+> It took me a while to get these out, mostly because I tried
+> to setup my own HSA test environment to at least test the
+> AMD changes myself. That failed, so I am sending this out
+> with another request for testing.
+>
+> Oded, Jesse, would you two please test these patches and
+> report back? Thanks a lot!
+>
+>
+>         Joerg
+>
+> Changes since v1:
+>
+>         * Updated the access_error functions based on
+>           Linus' feedback
+>         * Rebased to v4.4-rc1
+>
+> Joerg Roedel (4):
+>   iommu/amd: Do proper access checking before calling handle_mm_fault()
+>   iommu/amd: Correctly set flags for handle_mm_fault call
+>   iommu/amd: Cleanup error handling in do_fault()
+>   iommu/vt-d: Do access checks before calling handle_mm_fault()
+>
+>  drivers/iommu/amd_iommu_v2.c | 54 +++++++++++++++++++++++++++-----------------
+>  drivers/iommu/intel-svm.c    | 20 ++++++++++++++++
+>  2 files changed, 53 insertions(+), 21 deletions(-)
+>
+> --
+> 1.9.1
+>
 
 Hi Joerg,
 
-Could you please help have a look and give some suggestions on this
-issue?
+I have very limited testing capabilities since I left AMD - I only
+have Kaveri (which is kind of obsolete) and I only have a very simple
+test utility.
 
-Or any one else who is familiar with AMD IOMMU have any idea about
-this?
+>From what I could check, I didn't see any problems, but this is really
+such a very basic check that I don't even want to presume to give a
+Tested-by tag. Sorry.
 
-Thanks
-Baoquan
-On 11/06/15 at 08:10pm, Baoquan He wrote:
-> This is v2 draft patch set. It mainly functions as the following steps:
-> 
-> 1. Checking if it's in kdump kernel and previously enabled
-> 2. If yes do below operatons:
->     a. Do not disable amd iommu and do not touch dev tables before coping old dev tables
->     b. Copy dev table from old kernel and set the old domain id in amd_iommu_pd_alloc_bitmap
->     c. Copy irq tables from old kernel
->     d. Copy command buffer and event buffer
->     e. Don't call update_domain() to set domain->pt_root to dev entries before device driver initialization.
->     f. Reset the pre-enabled status in case IOMMU_DMA_OPS of state_next(). 
-> 
-> Existed problems:
-> 
-> 1. It always prints the following message whenever do a flush:
-> 
-> 	"AMD-Vi: Completion-Wait loop timed out"
-> 
-> 2. Maybe there's someing wrong with the old irq remapping handling, the hard disk can't be brought up
-> successfully. You can check the attached kdump kernel boot log with this patchset applied.
-> 
-> Baoquan He (9):
->   iommu/amd: Use standard bitmap operation to set bitmap
->   iommu/amd: Detect pre enabled translation
->   iommu/amd: make several functions global
->   iommu/amd: add copy_irq_table function
->   iommu/amd: Add function copy_dev_tables
->   iommu/amd: Add functions copy_command_buffer/copy_event_buffer
->   iommu/amd: copy old tables and do not update dev tables before driver
->     init
->   iommu/amd: Do not update the information of domain to devtables before
->     device driver init
->   iommu/amd: Clear the iommu pre enabled setting
-> 
->  drivers/iommu/amd_iommu.c       |  27 +++---
->  drivers/iommu/amd_iommu_init.c  | 208 +++++++++++++++++++++++++++++++++-------
->  drivers/iommu/amd_iommu_proto.h |   6 ++
->  drivers/iommu/amd_iommu_types.h |   4 +
->  4 files changed, 198 insertions(+), 47 deletions(-)
-> 
-> -- 
-> 2.4.0
-> 
+I suggest you talk to AMD people, as they have access to Carrizo H/W
+and S/W testing framework.
+
+        Oded
