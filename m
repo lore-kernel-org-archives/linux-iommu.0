@@ -1,70 +1,77 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2] iommu/ipmmu-vmsa: Include SoC part number in DT
- binding docs
-Date: Tue, 17 Nov 2015 15:00:50 -0600
-Message-ID: <20151117210050.GA11889@rob-hp-laptop>
-References: <20151117035320.30676.88818.sendpatchset@little-apple>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [Patch v2 0/9] Fix AMD IOMMU faults in kdump kernel
+Date: Wed, 18 Nov 2015 14:14:53 +0800
+Message-ID: <20151118061453.GB16814@dhcp-128-28.nay.redhat.com>
+References: <1446811851-20623-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20151117035320.30676.88818.sendpatchset@little-apple>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
+In-Reply-To: <1446811851-20623-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Nov 17, 2015 at 12:53:20PM +0900, Magnus Damm wrote:
-> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
-> 
-> Add part numbers for APE6 and current set of R-Car Gen2 SoCs to the
-> IPMMU DT binding documentation. The example is also updated to show
-> how the generic compatible string may be used as fallback.
-> 
-> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+Hi Joerg,
 
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Could you please help have a look and give some suggestions on this
+issue?
 
-> ---
+Or any one else who is familiar with AMD IOMMU have any idea about
+this?
+
+Thanks
+Baoquan
+On 11/06/15 at 08:10pm, Baoquan He wrote:
+> This is v2 draft patch set. It mainly functions as the following steps:
 > 
->  Changes since V1:
->  - Updated compat string section to the following:
->    "Must contain SoC-specific and generic entries from below."
+> 1. Checking if it's in kdump kernel and previously enabled
+> 2. If yes do below operatons:
+>     a. Do not disable amd iommu and do not touch dev tables before coping old dev tables
+>     b. Copy dev table from old kernel and set the old domain id in amd_iommu_pd_alloc_bitmap
+>     c. Copy irq tables from old kernel
+>     d. Copy command buffer and event buffer
+>     e. Don't call update_domain() to set domain->pt_root to dev entries before device driver initialization.
+>     f. Reset the pre-enabled status in case IOMMU_DMA_OPS of state_next(). 
 > 
->  Thanks to Laurent for feedback!
+> Existed problems:
 > 
->  Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |   12 ++++++++--
->  1 file changed, 10 insertions(+), 2 deletions(-)
+> 1. It always prints the following message whenever do a flush:
 > 
-> --- 0001/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-> +++ work/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt	2015-11-17 12:45:26.080513000 +0900
-> @@ -7,7 +7,15 @@ connected to the IPMMU through a port ca
->  
->  Required Properties:
->  
-> -  - compatible: Must contain "renesas,ipmmu-vmsa".
-> +  - compatible: Must contain SoC-specific and generic entries from below.
-> +
-> +    - "renesas,ipmmu-r8a73a4" for the R8A73A4 (R-Mobile APE6) IPMMU.
-> +    - "renesas,ipmmu-r8a7790" for the R8A7790 (R-Car H2) IPMMU.
-> +    - "renesas,ipmmu-r8a7791" for the R8A7791 (R-Car M2-W) IPMMU.
-> +    - "renesas,ipmmu-r8a7793" for the R8A7793 (R-Car M2-N) IPMMU.
-> +    - "renesas,ipmmu-r8a7794" for the R8A7794 (R-Car E2) IPMMU.
-> +    - "renesas,ipmmu-vmsa" for generic R-Car Gen2 VMSA-compatible IPMMU.
-> +
->    - reg: Base address and size of the IPMMU registers.
->    - interrupts: Specifiers for the MMU fault interrupts. For instances that
->      support secure mode two interrupts must be specified, for non-secure and
-> @@ -27,7 +35,7 @@ node with the following property:
->  Example: R8A7791 IPMMU-MX and VSP1-D0 bus master
->  
->  	ipmmu_mx: mmu@fe951000 {
-> -		compatible = "renasas,ipmmu-vmsa";
-> +		compatible = "renasas,ipmmu-r8a7791", "renasas,ipmmu-vmsa";
->  		reg = <0 0xfe951000 0 0x1000>;
->  		interrupts = <0 222 IRQ_TYPE_LEVEL_HIGH>,
->  			     <0 221 IRQ_TYPE_LEVEL_HIGH>;
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 	"AMD-Vi: Completion-Wait loop timed out"
+> 
+> 2. Maybe there's someing wrong with the old irq remapping handling, the hard disk can't be brought up
+> successfully. You can check the attached kdump kernel boot log with this patchset applied.
+> 
+> Baoquan He (9):
+>   iommu/amd: Use standard bitmap operation to set bitmap
+>   iommu/amd: Detect pre enabled translation
+>   iommu/amd: make several functions global
+>   iommu/amd: add copy_irq_table function
+>   iommu/amd: Add function copy_dev_tables
+>   iommu/amd: Add functions copy_command_buffer/copy_event_buffer
+>   iommu/amd: copy old tables and do not update dev tables before driver
+>     init
+>   iommu/amd: Do not update the information of domain to devtables before
+>     device driver init
+>   iommu/amd: Clear the iommu pre enabled setting
+> 
+>  drivers/iommu/amd_iommu.c       |  27 +++---
+>  drivers/iommu/amd_iommu_init.c  | 208 +++++++++++++++++++++++++++++++++-------
+>  drivers/iommu/amd_iommu_proto.h |   6 ++
+>  drivers/iommu/amd_iommu_types.h |   4 +
+>  4 files changed, 198 insertions(+), 47 deletions(-)
+> 
+> -- 
+> 2.4.0
+> 
