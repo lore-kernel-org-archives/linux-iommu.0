@@ -1,16 +1,13 @@
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: Regression in kernel 4.2.3+ (relative to 4.1.10) on AMD 990FX
-	system with IOMMU enabled
-Date: Wed, 18 Nov 2015 16:18:41 +0100
-Message-ID: <20151118151841.GA2517@suse.de>
-References: <563A3F64.50808@redhat.com>
- <5644CD81.2020304@redhat.com>
+From: Jesse Barnes <jbarnes-Y1mF5jBUw70BENJcbMCuUQ@public.gmane.org>
+Subject: Re: [PATCH 0/4 v2] Implement access checks in iommu page fault paths
+Date: Wed, 18 Nov 2015 08:13:56 -0800
+Message-ID: <564CA3C4.60609@virtuousgeek.org>
+References: <1447773099-2444-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <5644CD81.2020304-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1447773099-2444-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,39 +17,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laine Stump <laine-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello Laine,
-
-On Thu, Nov 12, 2015 at 12:33:53PM -0500, Laine Stump wrote:
-> After a crash course in kernel building from Alex, I bisected down
-> to commit aafd8ba - a kernel built without this commit succeeds in
-> setting up all the devices mentioned, adding it causes failure (and
-> a very long delay during boot). Joerg, do you have any ideas for
-> debugging the problem further to see what in the commit causes this
-> problem? (note that 2 other people with the same chipset but
-> slightly different hardware plugged into it report no failure - see
-> the other replies to the parent of this message for more detail).
-> I'm happy to build a kernel with any suggested patches and report
-> results...
+On 11/17/2015 07:11 AM, Joerg Roedel wrote:
+> Hi,
 > 
-> commit aafd8ba0ca74894b9397e412bbd7f8ea2662ead8
-> Author: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> Date:   Thu May 28 18:41:39 2015 +0200
+> here is the second version of the patch-set to implement
+> proper access checks into the io-page-fault handlers of the
+> AMD IOMMU and Intel VT-d drivers.
 > 
->     iommu/amd: Implement add_device and remove_device
+> Two additional patches clean up the AMD part a bit further.
+> Since I can't test this this code myself due to lack of
+> hardware or software that utilizes it, I'd appreciate some
+> external testing.
 > 
->     Implement these two iommu-ops call-backs to make use of the
->     initialization and notifier features of the iommu core.
+> It took me a while to get these out, mostly because I tried
+> to setup my own HSA test environment to at least test the
+> AMD changes myself. That failed, so I am sending this out
+> with another request for testing.
 > 
->     Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> Oded, Jesse, would you two please test these patches and
+> report back? Thanks a lot!
 
-I have no idea yet how this patch causes your regression. You certainly
-already posted it, but since I was not on Cc, can you please give me an
-overview about the problem you are seeing with this patch?
+I might be able to find time later this week or next; I have to update
+my tree to David's latest bits and rebase my i915 code on top along with
+these patches.  Then I can run some of my tests and expand them to try
+r/w tests w/o mapping the buffer with the right access mode.
 
-
-
-	Joerg
+Jesse
