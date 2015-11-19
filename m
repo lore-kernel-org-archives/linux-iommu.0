@@ -1,15 +1,11 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 0/8] iommu: Make core iommu-groups code more generic
-Date: Thu, 19 Nov 2015 14:41:14 +0100
-Message-ID: <20151119134114.GC2064@8bytes.org>
-References: <1445464303-18206-1-git-send-email-joro@8bytes.org>
-	<1447920801.27650.49.camel@mhfsdcap03>
+From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v2 1/1] iommu/vt-d: use lo_hi_readq() / lo_hi_writeq()
+Date: Thu, 19 Nov 2015 18:22:47 +0200
+Message-ID: <1447950167-111241-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1447920801.27650.49.camel@mhfsdcap03>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,31 +15,57 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Yong Wu,
+There is already helper functions to do 64-bit I/O on 32-bit machines or buses,
+thus we don't need to reinvent the wheel.
 
-On Thu, Nov 19, 2015 at 04:13:21PM +0800, Yong Wu wrote:
-> (151119_13:39:37.472)WARNING:
-> at /proj/mtk40525/upstreamdev/v4.4/kernel/mediatek/drivers/iommu/iommu.c:1154
-> (151119_13:39:37.472)Modules linked in:
-> (151119_13:39:37.472)CPU: 1 PID: 731 Comm: sh Not tainted 4.4.0-rc1+
-> #37
-> (151119_13:39:37.472)Hardware name: MediaTek MT8173 evaluation board
-> (DT)
-> (151119_13:39:37.472)task: ffffffc076bb4d00 ti: ffffffc076bdc000
-> task.ti: ffffffc076bdc000
-> (151119_13:39:37.472)PC is at iommu_detach_device+0x5c/0xb0
-> (151119_13:39:37.472)LR is at iommu_detach_device+0x30/0xb0
-> xxx
+Signed-off-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+---
+Cahngelog v2:
+- rebase on top of recent linux-next
+ include/linux/intel-iommu.h | 18 ++----------------
+ 1 file changed, 2 insertions(+), 16 deletions(-)
 
-This warning triggers when you use iommu_detach_device() with a device
-that is in a group with other devices. For those devices you must
-attach/detach the whole group of devices.
-
-For that you have to use iommu_detach_group() and iommu_attach_group().
-
-
-	Joerg
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 821273c..34066ee 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -29,6 +29,8 @@
+ #include <linux/dma_remapping.h>
+ #include <linux/mmu_notifier.h>
+ #include <linux/list.h>
++#include <linux/io-64-nonatomic-lo-hi.h>
++
+ #include <asm/cacheflush.h>
+ #include <asm/iommu.h>
+ 
+@@ -71,24 +73,8 @@
+ 
+ #define OFFSET_STRIDE		(9)
+ 
+-#ifdef CONFIG_64BIT
+ #define dmar_readq(a) readq(a)
+ #define dmar_writeq(a,v) writeq(v,a)
+-#else
+-static inline u64 dmar_readq(void __iomem *addr)
+-{
+-	u32 lo, hi;
+-	lo = readl(addr);
+-	hi = readl(addr + 4);
+-	return (((u64) hi) << 32) + lo;
+-}
+-
+-static inline void dmar_writeq(void __iomem *addr, u64 val)
+-{
+-	writel((u32)val, addr);
+-	writel((u32)(val >> 32), addr + 4);
+-}
+-#endif
+ 
+ #define DMAR_VER_MAJOR(v)		(((v) & 0xf0) >> 4)
+ #define DMAR_VER_MINOR(v)		((v) & 0x0f)
+-- 
+2.6.2
