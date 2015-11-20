@@ -1,12 +1,14 @@
 From: Michael Wang <yun.wang@profitbricks.com>
-Subject: [RFC PATCH] iommu/amd: make kmemleak ignore the 'irq_remap_table'
- object
-Date: Fri, 20 Nov 2015 12:09:30 +0100
-Message-ID: <564EFF6A.2050709@profitbricks.com>
+Subject: [RFC PATCH v2] iommu/amd: gray the 'irq_remap_table' object for
+ kmemleak
+Date: Fri, 20 Nov 2015 12:33:50 +0100
+Message-ID: <564F051E.9010703@profitbricks.com>
+References: <564EFF6A.2050709@profitbricks.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <564EFF6A.2050709@profitbricks.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Joerg Roedel <joro@8bytes.org>
 Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
@@ -26,16 +28,21 @@ unreferenced object 0xffff880233ff9010 (size 16):
 
 This is caused by the 'irq_lookup_table' was allocated with
 __get_free_pages() which won't create kmemleak object, thus it's
-pointers won't be count as referencing in kmemleak scanning.
+pointers won't be count as referencing 'irq_remap_table' in
+kmemleak scan.
 
-The 'irq_remap_table' allocated won't be freed after initialized,
-doesn't make sense to let kmemleak scan it.
+The 'irq_remap_table' won't be freed after initialized, doesn't
+make sense to check it's leaking.
 
-This patch mark the 'irq_remap_table' object as 'ignored' to
-stop the 'false positives' report.
+This patch mark the 'irq_remap_table' object as 'gray' to stop
+the 'false positives' report.
 
 Signed-off-by: Michael Wang <yun.wang@profitbricks.com>
 ---
+v2:
+  Use kmemleak_not_leak() instead of kmemleak_ignore() since
+  the 'irq_remap_table' itself also contain pointer.
+
  drivers/iommu/amd_iommu.c | 1 +
  1 file changed, 1 insertion(+)
 
@@ -47,7 +54,7 @@ index 8b2be1e..87a1a88 100644
  	}
  
  	irq_lookup_table[devid] = table;
-+	kmemleak_ignore(table);
++	kmemleak_not_leak(table);
  	set_dte_irq_entry(devid, table);
  	iommu_flush_dte(iommu, devid);
  	if (devid != alias) {
