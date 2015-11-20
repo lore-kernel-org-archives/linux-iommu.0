@@ -1,51 +1,74 @@
-From: Chen Feng <puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Subject: [PATCH V5 RESEND 3/3] arm64: dts: Add dts node for hi6220 smmu driver
-Date: Fri, 20 Nov 2015 10:25:09 +0800
-Message-ID: <1447986309-47548-4-git-send-email-puck.chen@hisilicon.com>
-References: <1447986309-47548-1-git-send-email-puck.chen@hisilicon.com>
+From: Chen Feng <puck.chen@hisilicon.com>
+Subject: [PATCH V5 RESEND 0/3] Add iommu support for hi6220 HiKey board
+Date: Fri, 20 Nov 2015 10:25:06 +0800
+Message-ID: <1447986309-47548-1-git-send-email-puck.chen@hisilicon.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1447986309-47548-1-git-send-email-puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: puck.chen-Dw/NWeUnuQfQT0dZR+AlfA@public.gmane.org, w.f-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, guodong.xu-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, arnd-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, haojian.zhuang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, puck.chen@hisilicon.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, devicetree@vger.kernel.org
+Cc: puck.chen@aliyun.com, w.f@huawei.com, xuwei5@hisilicon.com, guodong.xu@linaro.org, arnd@linaro.org, haojian.zhuang@linaro.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add iommu node for hi6220 SoC platform
+The patch sets add iommu support for Hi6220 SoC. Current testing and support
+board is Hikey which is one of 96boards.
+It is an arm64 open source board. For more information about this board,
+please access https://www.96boards.org.
 
-Signed-off-by: Chen Feng <puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
----
- arch/arm64/boot/dts/hisilicon/hi6220.dtsi | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+The Architecture of SMMU on Hi6220 SoC:
 
-diff --git a/arch/arm64/boot/dts/hisilicon/hi6220.dtsi b/arch/arm64/boot/dts/hisilicon/hi6220.dtsi
-index 82d2488..589424a 100644
---- a/arch/arm64/boot/dts/hisilicon/hi6220.dtsi
-+++ b/arch/arm64/boot/dts/hisilicon/hi6220.dtsi
-@@ -208,5 +208,18 @@
- 			clock-names = "uartclk", "apb_pclk";
- 			status = "disabled";
- 		};
-+
-+		iommu: iommu@f4210000 {
-+			compatible = "hisilicon,hi6220-smmu";
-+			reg = <0x0 0xf4210000 0x0 0x1000>;
-+			interrupts = <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&sys_ctrl HI6220_MMU_CLK>,
-+				 <&media_ctrl HI6220_MED_MMU>,
-+				 <&sys_ctrl HI6220_MEDIA_PLL_SRC>;
-+			clock-names = "smmu",
-+				      "media-sc",
-+				      "smmu-peri";
-+			#iommu-cells = <0>;
-+		};
- 	};
- };
+   +------------------------------------------------------------------+
+   |                                                                  |
+   |         +---------+  +--------+  +-------------+   +-------+     |
+   |         |   ADE   |  |  ISP   |  |  V/J codec  |   |  G3D  |     |
+   |         +----|----+  +---|----+  +------|------+   +---|---|     |
+   |              |           |              |              |         |
+   |     ---------v-----------v--------------v--------------v-----    |
+   |                           Media Bus                              |
+   |     --------------------------------|---------------|--------    |
+   |                                     |               |            |
+   |                                 +---v---------------v--------+   |
+   |                                 |            SMMU            |   |
+   |                                 +----------|---------|-------+   |
+   |                                            |         |           |
+   +--------------------------------------------|---------|-----------+
+                                                |         |
+                                   +------------v---------v-----------+
+                                   |              DDRC                |
+                                   +----------------------------------+
+Note:
+The media system share the same smmu IP to access DDR memory. And all
+media IP use the same page table. The hi6220 iommu driver also uses the
+iova api to manage an iova allocator to ensure that the caller get different
+iova address.
+The caller can use the follow sample code to map phy and iova address.
+
+eg:
+struct iommu_domain *domain = iommu_domain_alloc(bus);
+iommu_attach_device(domain, dev);
+struct iova_domain *iovad = (struct iova_domain *)m_dev->archdata.iommu;
+struct iova * t_iova = alloc_iova(iovad, size, limit_pfn, align);
+iommu_map(domain, t_iova->pfn_lo << 12, phy_addr, size, port);
+
+The patch sets are based on 4.4-RC1
+
+V2: Fix tlb flush when unmap
+V3: Fix format issue and iova address range
+V5: Add cover-letter and resend to dt maillist
+
+Chen Feng (3):
+  docs: iommu: Documentation for iommu in hi6220 SoC
+  iommu/hisilicon: Add hi6220-SoC smmu driver
+  arm64: dts: Add dts node for hi6220 smmu driver
+
+ .../bindings/iommu/hisi,hi6220-iommu.txt           |  32 ++
+ arch/arm64/boot/dts/hisilicon/hi6220.dtsi          |  13 +
+ drivers/iommu/Kconfig                              |  11 +
+ drivers/iommu/Makefile                             |   1 +
+ drivers/iommu/hi6220_iommu.c                       | 492 +++++++++++++++++++++
+ 5 files changed, 549 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/hisi,hi6220-iommu.txt
+ create mode 100644 drivers/iommu/hi6220_iommu.c
+
 -- 
 1.9.1
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
