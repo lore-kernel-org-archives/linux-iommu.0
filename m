@@ -1,59 +1,69 @@
-From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [PATCH 4/4] iommu/vt-d: Do access checks before calling
-	handle_mm_fault()
-Date: Fri, 20 Nov 2015 15:35:53 +0000
-Message-ID: <1448033753.89124.19.camel@infradead.org>
-References: <1447773099-2444-1-git-send-email-joro@8bytes.org>
-	<1447773099-2444-5-git-send-email-joro@8bytes.org>
+From: David Woodhouse <dwmw2@infradead.org>
+Subject: Re: [PATCH 1/6] mmput: use notifier chain to call subsystem exit
+ handler.
+Date: Fri, 20 Nov 2015 15:45:29 +0000
+Message-ID: <1448034329.89124.26.camel@infradead.org>
+References: <20140701110018.GH26537@8bytes.org>
+	 <20140701193343.GB3322@gmail.com> <20140701210620.GL26537@8bytes.org>
+	 <20140701213208.GC3322@gmail.com> <20140703183024.GA3306@gmail.com>
+	 <20140703231541.GR26537@8bytes.org>
+	 <019CCE693E457142B37B791721487FD918085329@storexdag01.amd.com>
+	 <20140707101158.GD1958@8bytes.org>
+	 <1404729783.31606.1.camel@tlv-gabbay-ws.amd.com>
+	 <20140708080059.GF1958@8bytes.org> <20140708170355.GA2469@gmail.com>
+	 <1444590209.92154.116.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============5149073743507767748=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1447773099-2444-5-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jesse Barnes <jbarnes-Y1mF5jBUw70BENJcbMCuUQ@public.gmane.org>
+Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
+	boundary="=-s7xX5QrOV+dS+Os8SMv/"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1444590209.92154.116.camel@infradead.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jerome Glisse <j.glisse@gmail.com>, "joro@8bytes.org" <joro@8bytes.org>, "Tang, CQ" <cq.tang@intel.com>
+Cc: "peterz@infradead.org" <peterz@infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "hpa@zytor.com" <hpa@zytor.com>, "aarcange@redhat.com" <aarcange@redhat.com>, "jakumar@nvidia.com" <jakumar@nvidia.com>, "ldunning@nvidia.com" <ldunning@nvidia.com>, "mgorman@suse.de" <mgorman@suse.de>, "jweiner@redhat.com" <jweiner@redhat.com>, "sgutti@nvidia.com" <sgutti@nvidia.com>, "riel@redhat.com" <riel@redhat.com>, "Bridgman, John" <John.Bridgman@amd.com>, "jhubbard@nvidia.com" <jhubbard@nvidia.com>, "mhairgrove@nvidia.com" <mhairgrove@nvidia.com>, "cabuschardt@nvidia.com" <cabuschardt@nvidia.com>, "dpoole@nvidia.com" <dpoole@nvidia.com>, "Cornwall, Jay" <Jay.Cornwall@amd.com>, "Lewycky, Andrew" <Andrew.Lewycky@amd.com>, "SCheung@nvidia.com" <SCheung@nvidia.com>, "iommu@lists.linux-foundation.org" <iommu@lis>
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============5149073743507767748==
-Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-0wp7Ov6cNwfpaH7Nch61"
-
-
---=-0wp7Ov6cNwfpaH7Nch61
+--=-s7xX5QrOV+dS+Os8SMv/
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2015-11-17 at 16:11 +0100, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
->=20
-> Not doing so is a bug and might trigger a BUG_ON in
-> handle_mm_fault(). So add the proper permission checks
-> before calling into mm code.
->=20
-> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+On Sun, 2015-10-11 at 20:03 +0100, David Woodhouse wrote:
+> As we try to put together a generic API for device access to processes'
+> address space, I definitely think we want to stick with the model that
+> we take a reference on the mm, and we *keep* it until the device driver
+> unbinds from the mm (because its file descriptor is closed, or
+> whatever).
 
-Acked-By: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+I've found another problem with this.
 
-As noted, I can't test it right now until I've replaced my test
-hardware. Certainly looks better than the last version though :)
+In use some cases, we mmap() the device file descriptor which is
+responsible for the PASID binding. And in that case we end up with a
+recursive refcount.
 
-Thanks.
+When the process exits, its file descriptors are closed... but the
+underlying struct file remains open because it's still referenced from
+the mmap'd VMA.
+
+That VMA remains alive because it's still part of the MM.
+
+And the MM remains alive because the PASID binding still holds a
+refcount for it because device's struct file didn't get closed yet...
+because it's still mmap'd... because the MM is still alive...
+
+So I suspect that even for the relatively simple case where the
+lifetime of the PASID can be bound to a file descriptor (unlike with
+amdkfd), we probably still want to explicitly manage its lifetime as an
+'off-cpu task' and explicitly kill it when the process dies.
+
+I'm still not keen on doing that implicitly through the mm_release. I
+think that way lies a lot of subtle bugs.
 
 --=20
 David Woodhouse                            Open Source Technology Centre
-David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
+David.Woodhouse@intel.com                              Intel Corporation
 
 
---=-0wp7Ov6cNwfpaH7Nch61
+--=-s7xX5QrOV+dS+Os8SMv/
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -146,28 +156,18 @@ Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
 ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
 AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTUxMTIwMTUzNTUzWjAjBgkqhkiG9w0BCQQxFgQUQ9Bq20v2POx6ePcSL907OzpwNYIw
+CQUxDxcNMTUxMTIwMTU0NTI5WjAjBgkqhkiG9w0BCQQxFgQUdiKgPyof2nH+YZpUJ06xxNjx/7ww
 gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
 ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
 L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
 CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
 LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
 U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQBfHQ2/CRPcLXrKZOh7DMaCmaev86XDqBDfyaDTyA2FbfPEmJOPxILV5s09
-bGVhrZRUvC29zesr7JCv9QS9ab1RljIEVc/KWRNFfTLBp2PTbS4Rdn2UBuxVbgZ99/CCshnzqHRL
-6/3JTaDgyeYNloECRlXA2Iru3RlNcrZO2iI/Dn8/LHcvH1T+m62G2BHkHgpD4NZkFPlN0GfJAWDE
-G6JckvJ/gqNPVmNnFJUzqXIWJ3lwWb8dDnPc/jLyrFGUUXRvLyULmsh1G9o+CZ1bmZTRKgZkL8y+
-i0eEyLlFRdfHR7xuw5pCisNvQmtGVMC1p+e7epL0mh2PzOHrUYulY/FUAAAAAAAA
+hkiG9w0BAQEFAASCAQAQQfbViuIk23wEhvPN09mpqNAgP/PWna7ohcNhm8fHFE6dsJn0pj5yeCFJ
+4ze0Ec9P9SpPEfzYh1SbpSW53nYXjyEBpTwTKLa+j/kfHaFqZavJkI1E8G04Kn9wbZCFJYo+LzlD
+6DdFRQv1avxmBksi00/xEZJYn/2wBDrZ+rzxw73YoUqOFM9BgdiHfKDAMvjcIl0OADum5dYkH9wH
+63fm+X48JzWoroksV/QD4Kbjbbpj3siDQck/I1T7Ttsn/ePSy7PnFqRNy3MFXIy3cR6xHw7gaM5t
+Ln8xJYccMPHGdWC/yNOxDGK6x5d2t0yh0xYl06Sz+fv/bVAYV1tmvdrLAAAAAAAA
 
 
---=-0wp7Ov6cNwfpaH7Nch61--
-
-
---===============5149073743507767748==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============5149073743507767748==--
+--=-s7xX5QrOV+dS+Os8SMv/--
