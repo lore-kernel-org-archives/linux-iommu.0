@@ -1,13 +1,12 @@
 From: "Woodhouse, David" <david.woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 2/4] iommu: add a bitmap based dma address allocator
-Date: Tue, 24 Nov 2015 21:56:50 +0000
-Message-ID: <1448402209.44976.109.camel@intel.com>
-References: <cover.1448401089.git.shli@fb.com>
-	<4c0804c85404be81acfe81fcd402f1af484e9d5f.1448401089.git.shli@fb.com>
+Subject: Re: [PATCH] intel-iommu: respect iommu=pt
+Date: Tue, 24 Nov 2015 21:59:09 +0000
+Message-ID: <1448402349.44976.112.camel@intel.com>
+References: <58e2344c50053de58ceed658272ecc0f349c2f2f.1448401068.git.shli@fb.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0794821642138383412=="
+Content-Type: multipart/mixed; boundary="===============0965296256640180886=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <4c0804c85404be81acfe81fcd402f1af484e9d5f.1448401089.git.shli-b10kYP2dOMg@public.gmane.org>
+In-Reply-To: <58e2344c50053de58ceed658272ecc0f349c2f2f.1448401068.git.shli-b10kYP2dOMg@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -22,28 +21,44 @@ To: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-
 Cc: "Kernel-team-b10kYP2dOMg@public.gmane.org" <Kernel-team-b10kYP2dOMg@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
---===============0794821642138383412==
+--===============0965296256640180886==
 Content-Language: en-US
 Content-Type: multipart/signed; micalg=sha-1;
-	protocol="application/x-pkcs7-signature"; boundary="=-tru39cRVCQyLBYh/MU1R"
+	protocol="application/x-pkcs7-signature"; boundary="=-bbH3ndSbwo6mYFceRUPv"
 
---=-tru39cRVCQyLBYh/MU1R
+--=-bbH3ndSbwo6mYFceRUPv
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2015-11-24 at 13:54 -0800, Shaohua Li wrote:
->=20
-> This patch introduces a bitmap based allocator.
+On Tue, 2015-11-24 at 13:53 -0800, Shaohua Li wrote:
+> Currently if a device has rmrr or the device is a pci device,
+> passthrough is disabled even with iommu=3Dpt. The worry is moving such
+> devices between domains don't work. But some users don't do the domain
+> reassignment at all, disabling passthough punish everybody. And iommu=3Dp=
+t
+> is a boot option, user knows the risk. So intead of failing the
+> passthough, just print a warning and continue the passthough.
 
-Why not just use the one in lib/iommu-common.c? I'd like to see
-intel-iommu completely drop the iova.c code.
+We tend to suggest that iommu=3Dpt gives you performance for the *decent*
+devices, while dubious devices still get translated. So your crappy 32-
+bit devices still get translated. And anything unfortunate enough to
+have an RMRR can *still* get translated.
+
+I'm reluctant to change that. If it hurts you, kick your system vendor
+until they stop doing stupid things with RMRRs.
+
+I think we also need to revisit the whole 'iommu=3Dpt' thing anyway and
+define the semantics we expect across archiectures =E2=80=94 given that SPA=
+RC
+and POWER are doing passthrough for 'decent' devices by *default*. So
+let's not tweak it right now.
 
 --=20
 David Woodhouse                            Open Source Technology Centre
 David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
 
 
---=-tru39cRVCQyLBYh/MU1R
+--=-bbH3ndSbwo6mYFceRUPv
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -102,22 +117,22 @@ ra0hfiiMOKMio+n0r4NUn03Z+VRUTbdjHIA6Lkozwpadvs9/uK8dIGqfcgxYgk9qdjFPMYICDjCC
 AgoCAQEwgYcweTELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRQwEgYDVQQHEwtTYW50YSBDbGFy
 YTEaMBgGA1UEChMRSW50ZWwgQ29ycG9yYXRpb24xKzApBgNVBAMTIkludGVsIEV4dGVybmFsIEJh
 c2ljIElzc3VpbmcgQ0EgNEECCmJiMmoAAAAATKAwCQYFKw4DAhoFAKBdMBgGCSqGSIb3DQEJAzEL
-BgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1MTEyNDIxNTY0OVowIwYJKoZIhvcNAQkEMRYE
-FMRscF9P4+DThBJEVBC4ipaFW2WYMA0GCSqGSIb3DQEBAQUABIIBALwago2FE/gP8qSLb9j9K4jx
-D28NHWyGuXS86VfkSlsJgAciZpMMx8SjizI0jn4ep2D8uqeYx/ZLBcrfa1jqqOtlU4NY8xr15nZK
-w4abmd3Ahc7nVVo1RL4ZRrL7LrcRZileUUk+3V06qtrZO262mxfr/QvA0uZrXiByf//pkOhYrhGD
-PS5rKh8KBnoYnwp4zKGYzSdgiReIQ+NR/FAPLB++90awpypvg6feHDeNb5rcH6kRu75Mh84cZC/p
-AgX2lQJ3Yqi9n+RUj2UyEo3NpW49HUPMlBXCzcCUhn7xZtSFFdI0t6Fwi6uCwIAlq5olzZDPneoW
-E1v2KZIwXR5Jcj0AAAAAAAA=
+BgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1MTEyNDIxNTkwOVowIwYJKoZIhvcNAQkEMRYE
+FKxH1qRRp8neFc+edOeNUZ7LlpGVMA0GCSqGSIb3DQEBAQUABIIBAE077LYgmC17yDkx2FaDyC4x
+EPK3qKwtjq6WxvqFEjMb5Kh1NsBKbjoF50lq8wKehv9W8TwnyWNIlo+k2FuJv0zxkJGSWphPCpW5
+3TnLdoxXLk0ZbUmr4DLZqBXKkw1J2seOqLHMvEzv2WiMxc9aljW7/4Ll52fMU1lr/N/Qk1c6USmk
+q0kJliPQPRJfoXwao+PHH9TvONl2jJkkeg/nNklrh9BYfiCPA8H3y4gsSVhmATMIbSWJm8G0Jcue
+cWs3OxsXyuALkYOcL0rEziF05xduYNwXbHlLzOOJmS/vT8Z3tbSliCkS0gEW9aV/l1BFPqfTi89a
+MubYecV0FkS9GaUAAAAAAAA=
 
 
---=-tru39cRVCQyLBYh/MU1R--
+--=-bbH3ndSbwo6mYFceRUPv--
 
---===============0794821642138383412==
+--===============0965296256640180886==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============0794821642138383412==--
+--===============0965296256640180886==--
