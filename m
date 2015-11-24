@@ -1,81 +1,123 @@
-From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v5 0/6] MT8173 IOMMU SUPPORT
-Date: Tue, 24 Nov 2015 11:38:21 +0100
-Message-ID: <20151124103819.GE17658@ulmo.nvidia.com>
-References: <1444357388-30257-1-git-send-email-yong.wu@mediatek.com>
- <20151014125620.GQ27420@8bytes.org>
- <1445488802.27202.67.camel@mhfsdcap03>
- <20151023092636.GX27420@8bytes.org>
- <1448344693.13079.6.camel@mhfsdcap03>
+From: "Woodhouse, David" <david.woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 2/4] iommu: add a bitmap based dma address allocator
+Date: Tue, 24 Nov 2015 21:56:50 +0000
+Message-ID: <1448402209.44976.109.camel@intel.com>
+References: <cover.1448401089.git.shli@fb.com>
+	<4c0804c85404be81acfe81fcd402f1af484e9d5f.1448401089.git.shli@fb.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="s9fJI615cBHmzTOP"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1448344693.13079.6.camel@mhfsdcap03>
-Content-Disposition: inline
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Content-Type: multipart/mixed; boundary="===============0794821642138383412=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <4c0804c85404be81acfe81fcd402f1af484e9d5f.1448401089.git.shli-b10kYP2dOMg@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "shli-b10kYP2dOMg@public.gmane.org" <shli-b10kYP2dOMg@public.gmane.org>
+Cc: "Kernel-team-b10kYP2dOMg@public.gmane.org" <Kernel-team-b10kYP2dOMg@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
---s9fJI615cBHmzTOP
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+--===============0794821642138383412==
+Content-Language: en-US
+Content-Type: multipart/signed; micalg=sha-1;
+	protocol="application/x-pkcs7-signature"; boundary="=-tru39cRVCQyLBYh/MU1R"
+
+--=-tru39cRVCQyLBYh/MU1R
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Nov 24, 2015 at 01:58:13PM +0800, Yong Wu wrote:
-> On Fri, 2015-10-23 at 11:26 +0200, Joerg Roedel wrote:
-> > On Thu, Oct 22, 2015 at 12:40:02PM +0800, Yong Wu wrote:
-> > >      But the mtk-iommu depend on the drivers/memory/mtk-smi.c(mtk-iom=
-mu
-> > > has called a function of the mtk-smi).
-> > >      So if there is dependence here, How should we do to merge them?
-> >=20
-> > I can surely merge mtk-smi too, if it gets proper Reviewed-by and
-> > Acked-by tags from the maintainer(s).
-> >=20
-> >=20
-> > 	Joerg
-> >=20
-> Hi Joerg,
+On Tue, 2015-11-24 at 13:54 -0800, Shaohua Li wrote:
 >=20
->    About the driver/memory/, We don't know who is his maintainer.
-> MAINTAINERS file don't have drivers/memory maintainer.
-> From the history in drivers/memory/ it looks like most of the
-> drivers land with an ack from the architecture maintainer.
-> And Matthias Brugger is our "ARM/Mediatek SoC support" maintainer.
->=20
-> Then do you mean that we need Matthias's ACK or whom others?
+> This patch introduces a bitmap based allocator.
 
-Yes, I think the sub-architecture maintainer's ACK is probably going to
-be as good as it gets. Historically drivers/memory hasn't had enough of
-a common ground to instate a framework.
+Why not just use the one in lib/iommu-common.c? I'd like to see
+intel-iommu completely drop the iova.c code.
 
-Thierry
+--=20
+David Woodhouse                            Open Source Technology Centre
+David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
 
---s9fJI615cBHmzTOP
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+--=-tru39cRVCQyLBYh/MU1R
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
 
-iQIcBAABCAAGBQJWVD4bAAoJEN0jrNd/PrOhBwoQAJGexJ6rJpgdiD9zXboXiLXA
-fLx/1lLSKXdRUI4ydNnPiIn+AI/ZY+zZZPyt5PGu7f0JopfKj+cg93laYyHkTpJ4
-YBIICNEnbgWEy1nETxovQj1sa662y8eR+CV/18eXDGAz4h2lNo51lVQG8N2RlIA3
-xgPvzpfpAVHPliGxVS7YI87sVq2bs3JPqnWD4+ja52nuTjSuDAL1Ch+P8KcwbiW+
-k6TPbEZ6qOWVnoImfpaDped7m924r4s+iw33wMAfHN8WjnPqtqdO1SmiEt+c9geW
-rrT7QF4FH7We7heYiRK8lgb4wZH9td6e1tv4r/iuiWrlyOOzuSwag94RTkakB2sx
-BkTwN+TnQ+b6ofycpJGZNVsSRTaTQeHfa7dFkt8E0BlzdTqgYMGAN6EYg6up/uxg
-nDnq3WxiwvgJF1tsa+1DPmUf/IPp9YRx3BtGmhQrGAgiP4suT0ZXUwMp0iH+SUvi
-VINzMZwa0K172iTZQYD6HMkNTdczqvLiuHNyPjJj/yyIJnPeM+k6Q8lTxrgAh5K6
-aOl2oicQeiATbpwF2wY4J2l9L5Lw78+BN17w/zoNZuCU8ESsU0QdCZw3/bPzSJv2
-w6w66VNemFB6Vnks8rZj1d4sVcgatNbMiHuDj3ajIetKo7/mjvETgGSnyqBnuUYL
-dydJyvIuQVZUflXlejxm
-=+/cW
------END PGP SIGNATURE-----
+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
+kiW8/Nj6KITQvHqz7x/Es0IRJCc9/zBES7yMeD+fgJKHAEv/uTcFfGM9HIWxPQIDAQABo4IC6jCC
+AuYwHQYDVR0OBBYEFGK1Mey+kPYGHowHJ0YXtQU4NmbSMB8GA1UdIwQYMBaAFB5pKrTcKP5HGE4h
+Cz+8rBEv8Jj1MIHJBgNVHR8EgcEwgb4wgbuggbiggbWGVGh0dHA6Ly93d3cuaW50ZWwuY29tL3Jl
+cG9zaXRvcnkvQ1JML0ludGVsJTIwRXh0ZXJuYWwlMjBCYXNpYyUyMElzc3VpbmclMjBDQSUyMDRB
+LmNybIZdaHR0cDovL2NlcnRpZmljYXRlcy5pbnRlbC5jb20vcmVwb3NpdG9yeS9DUkwvSW50ZWwl
+MjBFeHRlcm5hbCUyMEJhc2ljJTIwSXNzdWluZyUyMENBJTIwNEEuY3JsMIHvBggrBgEFBQcBAQSB
+4jCB3zBpBggrBgEFBQcwAoZdaHR0cDovL3d3dy5pbnRlbC5jb20vcmVwb3NpdG9yeS9jZXJ0aWZp
+Y2F0ZXMvSW50ZWwlMjBFeHRlcm5hbCUyMEJhc2ljJTIwSXNzdWluZyUyMENBJTIwNEEuY3J0MHIG
+CCsGAQUFBzAChmZodHRwOi8vY2VydGlmaWNhdGVzLmludGVsLmNvbS9yZXBvc2l0b3J5L2NlcnRp
+ZmljYXRlcy9JbnRlbCUyMEV4dGVybmFsJTIwQmFzaWMlMjBJc3N1aW5nJTIwQ0ElMjA0QS5jcnQw
+CwYDVR0PBAQDAgeAMDwGCSsGAQQBgjcVBwQvMC0GJSsGAQQBgjcVCIbDjHWEmeVRg/2BKIWOn1OC
+kcAJZ4HevTmV8EMCAWQCAQgwHwYDVR0lBBgwFgYIKwYBBQUHAwQGCisGAQQBgjcKAwwwKQYJKwYB
+BAGCNxUKBBwwGjAKBggrBgEFBQcDBDAMBgorBgEEAYI3CgMMME8GA1UdEQRIMEagKQYKKwYBBAGC
+NxQCA6AbDBlkYXZpZC53b29kaG91c2VAaW50ZWwuY29tgRlkYXZpZC53b29kaG91c2VAaW50ZWwu
+Y29tMA0GCSqGSIb3DQEBBQUAA4IBAQBCQ4UH3yybC+PzPo7W4PQJQwIDkKfD2i20i/DosQ7+Yeof
+KF7qDASe9eoJGXbINBx1u648uOnaMBsxgUUamJo7pdt1ZnsetRtCQrJIsrsJA3Q2MOsrv7xHkzqn
+DF99KHEbO2yKvyjJVDznHUWh8M1OFmdoziyWE/VPdqTwXwS/UKO81XaTtWUDGO716HHVlfT9yPle
+Ukg2MTcIhhNWmlS8gDUayhteIAlPci71f/oXzXxBiGiO6FVZUEx+rZBQB84Ey0S0Tfm7hiGzoegg
+ra0hfiiMOKMio+n0r4NUn03Z+VRUTbdjHIA6Lkozwpadvs9/uK8dIGqfcgxYgk9qdjFPMYICDjCC
+AgoCAQEwgYcweTELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRQwEgYDVQQHEwtTYW50YSBDbGFy
+YTEaMBgGA1UEChMRSW50ZWwgQ29ycG9yYXRpb24xKzApBgNVBAMTIkludGVsIEV4dGVybmFsIEJh
+c2ljIElzc3VpbmcgQ0EgNEECCmJiMmoAAAAATKAwCQYFKw4DAhoFAKBdMBgGCSqGSIb3DQEJAzEL
+BgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE1MTEyNDIxNTY0OVowIwYJKoZIhvcNAQkEMRYE
+FMRscF9P4+DThBJEVBC4ipaFW2WYMA0GCSqGSIb3DQEBAQUABIIBALwago2FE/gP8qSLb9j9K4jx
+D28NHWyGuXS86VfkSlsJgAciZpMMx8SjizI0jn4ep2D8uqeYx/ZLBcrfa1jqqOtlU4NY8xr15nZK
+w4abmd3Ahc7nVVo1RL4ZRrL7LrcRZileUUk+3V06qtrZO262mxfr/QvA0uZrXiByf//pkOhYrhGD
+PS5rKh8KBnoYnwp4zKGYzSdgiReIQ+NR/FAPLB++90awpypvg6feHDeNb5rcH6kRu75Mh84cZC/p
+AgX2lQJ3Yqi9n+RUj2UyEo3NpW49HUPMlBXCzcCUhn7xZtSFFdI0t6Fwi6uCwIAlq5olzZDPneoW
+E1v2KZIwXR5Jcj0AAAAAAAA=
 
---s9fJI615cBHmzTOP--
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+--=-tru39cRVCQyLBYh/MU1R--
+
+--===============0794821642138383412==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============0794821642138383412==--
