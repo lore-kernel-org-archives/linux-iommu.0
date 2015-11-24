@@ -1,16 +1,15 @@
 From: Shaohua Li <shli-b10kYP2dOMg@public.gmane.org>
-Subject: Re: [PATCH 2/4] iommu: add a bitmap based dma address allocator
-Date: Tue, 24 Nov 2015 14:05:12 -0800
-Message-ID: <20151124220511.GA2106568@devbig084.prn1.facebook.com>
-References: <cover.1448401089.git.shli@fb.com>
-	<4c0804c85404be81acfe81fcd402f1af484e9d5f.1448401089.git.shli@fb.com>
-	<1448402209.44976.109.camel@intel.com>
+Subject: Re: [PATCH] intel-iommu: respect iommu=pt
+Date: Tue, 24 Nov 2015 14:15:27 -0800
+Message-ID: <20151124221515.GB2106568@devbig084.prn1.facebook.com>
+References: <58e2344c50053de58ceed658272ecc0f349c2f2f.1448401068.git.shli@fb.com>
+	<1448402349.44976.112.camel@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1448402209.44976.109.camel-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1448402349.44976.112.camel-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,19 +23,31 @@ To: "Woodhouse, David" <david.woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "Kernel-team-b10kYP2dOMg@public.gmane.org" <Kernel-team-b10kYP2dOMg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Nov 24, 2015 at 09:56:50PM +0000, Woodhouse, David wrote:
-> On Tue, 2015-11-24 at 13:54 -0800, Shaohua Li wrote:
-> > 
-> > This patch introduces a bitmap based allocator.
-> 
-> Why not just use the one in lib/iommu-common.c? I'd like to see
-> intel-iommu completely drop the iova.c code.
-
-The lib/iommu-common.c uses a bitmap and a lock. This implementation
-actually uses a percpu_ida which completely avoids locking. It would be
-possible to make lib/iommu-common.c use percpu_ida too if somebody wants
-to do it, but I think this shouldn't be a blocker for these patches
-giving it has huge performance gain.
-
-Thanks,
-Shaohua
+T24gVHVlLCBOb3YgMjQsIDIwMTUgYXQgMDk6NTk6MDlQTSArMDAwMCwgV29vZGhvdXNlLCBEYXZp
+ZCB3cm90ZToKPiBPbiBUdWUsIDIwMTUtMTEtMjQgYXQgMTM6NTMgLTA4MDAsIFNoYW9odWEgTGkg
+d3JvdGU6Cj4gPiBDdXJyZW50bHkgaWYgYSBkZXZpY2UgaGFzIHJtcnIgb3IgdGhlIGRldmljZSBp
+cyBhIHBjaSBkZXZpY2UsCj4gPiBwYXNzdGhyb3VnaCBpcyBkaXNhYmxlZCBldmVuIHdpdGggaW9t
+bXU9cHQuIFRoZSB3b3JyeSBpcyBtb3Zpbmcgc3VjaAo+ID4gZGV2aWNlcyBiZXR3ZWVuIGRvbWFp
+bnMgZG9uJ3Qgd29yay4gQnV0IHNvbWUgdXNlcnMgZG9uJ3QgZG8gdGhlIGRvbWFpbgo+ID4gcmVh
+c3NpZ25tZW50IGF0IGFsbCwgZGlzYWJsaW5nIHBhc3N0aG91Z2ggcHVuaXNoIGV2ZXJ5Ym9keS4g
+QW5kIGlvbW11PXB0Cj4gPiBpcyBhIGJvb3Qgb3B0aW9uLCB1c2VyIGtub3dzIHRoZSByaXNrLiBT
+byBpbnRlYWQgb2YgZmFpbGluZyB0aGUKPiA+IHBhc3N0aG91Z2gsIGp1c3QgcHJpbnQgYSB3YXJu
+aW5nIGFuZCBjb250aW51ZSB0aGUgcGFzc3Rob3VnaC4KPiAKPiBXZSB0ZW5kIHRvIHN1Z2dlc3Qg
+dGhhdCBpb21tdT1wdCBnaXZlcyB5b3UgcGVyZm9ybWFuY2UgZm9yIHRoZSAqZGVjZW50Kgo+IGRl
+dmljZXMsIHdoaWxlIGR1YmlvdXMgZGV2aWNlcyBzdGlsbCBnZXQgdHJhbnNsYXRlZC4gU28geW91
+ciBjcmFwcHkgMzItCj4gYml0IGRldmljZXMgc3RpbGwgZ2V0IHRyYW5zbGF0ZWQuIEFuZCBhbnl0
+aGluZyB1bmZvcnR1bmF0ZSBlbm91Z2ggdG8KPiBoYXZlIGFuIFJNUlIgY2FuICpzdGlsbCogZ2V0
+IHRyYW5zbGF0ZWQuCj4gCj4gSSdtIHJlbHVjdGFudCB0byBjaGFuZ2UgdGhhdC4gSWYgaXQgaHVy
+dHMgeW91LCBraWNrIHlvdXIgc3lzdGVtIHZlbmRvcgo+IHVudGlsIHRoZXkgc3RvcCBkb2luZyBz
+dHVwaWQgdGhpbmdzIHdpdGggUk1SUnMuCgpIbW0sIHllcywgaXQncyBhIGRldmljZSB3aXRoIFJN
+UlIuIERvbid0IHRoaW5rIHdlIGNhbiBhc2sgdmVuZG9yIHRvIHN0b3AKaXQgdGhvdWdoLgo+IEkg
+dGhpbmsgd2UgYWxzbyBuZWVkIHRvIHJldmlzaXQgdGhlIHdob2xlICdpb21tdT1wdCcgdGhpbmcg
+YW55d2F5IGFuZAo+IGRlZmluZSB0aGUgc2VtYW50aWNzIHdlIGV4cGVjdCBhY3Jvc3MgYXJjaGll
+Y3R1cmVzIOKAlCBnaXZlbiB0aGF0IFNQQVJDCj4gYW5kIFBPV0VSIGFyZSBkb2luZyBwYXNzdGhy
+b3VnaCBmb3IgJ2RlY2VudCcgZGV2aWNlcyBieSAqZGVmYXVsdCouIFNvCj4gbGV0J3Mgbm90IHR3
+ZWFrIGl0IHJpZ2h0IG5vdy4KCkknZCByZWFsbHkgbGlrZSBhbiBvcHRpb24gdG8gYXZvaWQgdGhl
+IHBlbmFsaXR5IGZvciBSTVJSIGRldmljZXMuIFdvdWxkCmEgbmV3IG9wdGlvbiBsaWtlICdpb21t
+dT1zdHJpY3RwdCcgd29yaz8KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
+b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
+bW11
