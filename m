@@ -1,13 +1,16 @@
 From: Shaohua Li <shli-b10kYP2dOMg@public.gmane.org>
-Subject: [PATCH 4/4] iommu: free_iova doesn't need lock twice
-Date: Tue, 24 Nov 2015 13:54:10 -0800
-Message-ID: <c1cce71e3011a4e966d3da57e1f4802af957ab21.1448401089.git.shli@fb.com>
+Subject: Re: [PATCH 2/4] iommu: add a bitmap based dma address allocator
+Date: Tue, 24 Nov 2015 14:05:12 -0800
+Message-ID: <20151124220511.GA2106568@devbig084.prn1.facebook.com>
 References: <cover.1448401089.git.shli@fb.com>
+	<4c0804c85404be81acfe81fcd402f1af484e9d5f.1448401089.git.shli@fb.com>
+	<1448402209.44976.109.camel@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1448401089.git.shli-b10kYP2dOMg@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1448402209.44976.109.camel-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,118 +20,23 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Kernel-team-b10kYP2dOMg@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: "Woodhouse, David" <david.woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "Kernel-team-b10kYP2dOMg@public.gmane.org" <Kernel-team-b10kYP2dOMg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-cleanup the code a bit. free_iova doesn't need lock twice.
+On Tue, Nov 24, 2015 at 09:56:50PM +0000, Woodhouse, David wrote:
+> On Tue, 2015-11-24 at 13:54 -0800, Shaohua Li wrote:
+> > 
+> > This patch introduces a bitmap based allocator.
+> 
+> Why not just use the one in lib/iommu-common.c? I'd like to see
+> intel-iommu completely drop the iova.c code.
 
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Cc: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Shaohua Li <shli-b10kYP2dOMg@public.gmane.org>
----
- drivers/iommu/iova.c | 57 ++++++++++++++++++++++++++++++++--------------------
- 1 file changed, 35 insertions(+), 22 deletions(-)
+The lib/iommu-common.c uses a bitmap and a lock. This implementation
+actually uses a percpu_ida which completely avoids locking. It would be
+possible to make lib/iommu-common.c use percpu_ida too if somebody wants
+to do it, but I think this shouldn't be a blocker for these patches
+giving it has huge performance gain.
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 0d71be7..5f03c42 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -348,33 +348,16 @@ alloc_iova(struct iova_domain *iovad, unsigned long size,
- }
- EXPORT_SYMBOL_GPL(alloc_iova);
- 
--/**
-- * find_iova - find's an iova for a given pfn
-- * @iovad: - iova domain in question.
-- * @pfn: - page frame number
-- * This function finds and returns an iova belonging to the
-- * given doamin which matches the given pfn.
-- */
--struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn)
-+static struct iova *__find_iova(struct iova_domain *iovad, unsigned long pfn)
- {
--	unsigned long flags;
- 	struct rb_node *node;
- 
--	/* Take the lock so that no other thread is manipulating the rbtree */
--	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
- 	node = iovad->rbroot.rb_node;
- 	while (node) {
- 		struct iova *iova = container_of(node, struct iova, node);
- 
- 		/* If pfn falls within iova's range, return iova */
- 		if ((pfn >= iova->pfn_lo) && (pfn <= iova->pfn_hi)) {
--			spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
--			/* We are not holding the lock while this iova
--			 * is referenced by the caller as the same thread
--			 * which called this function also calls __free_iova()
--			 * and it is by design that only one thread can possibly
--			 * reference a particular iova and hence no conflict.
--			 */
- 			return iova;
- 		}
- 
-@@ -384,9 +367,33 @@ struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn)
- 			node = node->rb_right;
- 	}
- 
--	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
- 	return NULL;
- }
-+
-+/**
-+ * find_iova - find's an iova for a given pfn
-+ * @iovad: - iova domain in question.
-+ * @pfn: - page frame number
-+ * This function finds and returns an iova belonging to the
-+ * given doamin which matches the given pfn.
-+ */
-+struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn)
-+{
-+	unsigned long flags;
-+	struct iova *iova;
-+
-+	/* Take the lock so that no other thread is manipulating the rbtree */
-+	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
-+	iova = __find_iova(iovad, pfn);
-+	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-+	/* We are not holding the lock while this iova
-+	 * is referenced by the caller as the same thread
-+	 * which called this function also calls __free_iova()
-+	 * and it is by design that only one thread can possibly
-+	 * reference a particular iova and hence no conflict.
-+	 */
-+	return iova;
-+}
- EXPORT_SYMBOL_GPL(find_iova);
- 
- /**
-@@ -421,6 +428,7 @@ void
- free_iova(struct iova_domain *iovad, unsigned long pfn)
- {
- 	struct iova *iova;
-+	unsigned long flags;
- 
- 	if (iova_pfn_in_bitmap(iovad, pfn)) {
- 		int tag;
-@@ -431,9 +439,14 @@ free_iova(struct iova_domain *iovad, unsigned long pfn)
- 		return;
- 	}
- 
--	iova = find_iova(iovad, pfn);
--	if (iova)
--		__free_iova(iovad, iova);
-+	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
-+	iova = __find_iova(iovad, pfn);
-+	if (iova) {
-+		__cached_rbnode_delete_update(iovad, iova);
-+		rb_erase(&iova->node, &iovad->rbroot);
-+	}
-+	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-+	free_iova_mem(iova);
- }
- EXPORT_SYMBOL_GPL(free_iova);
- 
--- 
-2.4.6
+Thanks,
+Shaohua
