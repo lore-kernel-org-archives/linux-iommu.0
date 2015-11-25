@@ -1,41 +1,42 @@
-From: "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [PATCH 2/4] iommu: add a bitmap based dma address allocator
-Date: Wed, 25 Nov 2015 15:46:13 +0100
-Message-ID: <20151125144613.GA3763@suse.de>
-References: <cover.1448401089.git.shli@fb.com>
-	<4c0804c85404be81acfe81fcd402f1af484e9d5f.1448401089.git.shli@fb.com>
-	<1448402209.44976.109.camel@intel.com>
-	<20151124220511.GA2106568@devbig084.prn1.facebook.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [RFC PATCH v2] iommu/amd: gray the 'irq_remap_table' object for
+ kmemleak
+Date: Wed, 25 Nov 2015 16:08:06 +0100
+Message-ID: <20151125150806.GG2064@8bytes.org>
+References: <564EFF6A.2050709@profitbricks.com>
+ <564F051E.9010703@profitbricks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20151124220511.GA2106568-tb7CFzD8y5b7E6g3fPdp/g2O0Ztt9esIQQ4Iyu8u01E@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Shaohua Li <shli-b10kYP2dOMg@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Kernel-team-b10kYP2dOMg@public.gmane.org" <Kernel-team-b10kYP2dOMg@public.gmane.org>, "Woodhouse,
-	David" <david.woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <564F051E.9010703@profitbricks.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Michael Wang <yun.wang@profitbricks.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Nov 24, 2015 at 02:05:12PM -0800, Shaohua Li wrote:
-> The lib/iommu-common.c uses a bitmap and a lock. This implementation
-> actually uses a percpu_ida which completely avoids locking. It would be
-> possible to make lib/iommu-common.c use percpu_ida too if somebody wants
-> to do it, but I think this shouldn't be a blocker for these patches
-> giving it has huge performance gain.
+On Fri, Nov 20, 2015 at 12:33:50PM +0100, Michael Wang wrote:
+> The kmemleak testing on 3.18.24 show:
+> 
+> unreferenced object 0xffff880233ff9010 (size 16):
+>   comm "swapper/0", pid 1, jiffies 4294937440 (age 2010.490s)
+>   hex dump (first 16 bytes):
+>     0a 0a 00 00 20 00 00 00 00 44 fb 33 02 88 ff ff  .... ....D.3....
+>   backtrace:
+>     [<ffffffff8118192d>] create_object+0x10d/0x2d0
+>     [<ffffffff815c2d4b>] kmemleak_alloc+0x5b/0xc0
+>     [<ffffffff8116dd19>] kmem_cache_alloc_trace+0xb9/0x160
+>     [<ffffffff814ffe51>] get_irq_table+0x151/0x380
+> 
+> This is caused by the 'irq_lookup_table' was allocated with
+> __get_free_pages() which won't create kmemleak object, thus it's
+> pointers won't be count as referencing 'irq_remap_table' in
+> kmemleak scan.
 
-It doesn't "completely avoids locking", the percpu_ida code uses a lock
-internally too. Also, what is the memory and device address space
-overhead per cpu?
+Isn't it better to allocate the kmemleak object manually instead of
+ignoring all irq-table pointers? With this patch we might not notice any
+real leak of irq-tables.
+
 
 
 	Joerg
