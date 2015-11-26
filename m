@@ -1,77 +1,24 @@
-From: Shaohua Li <shli-b10kYP2dOMg@public.gmane.org>
-Subject: Re: [PATCH 2/4] iommu: add a bitmap based dma address allocator
-Date: Wed, 25 Nov 2015 10:57:42 -0800
-Message-ID: <20151125185723.GA247498@devbig084.prn1.facebook.com>
-References: <cover.1448401089.git.shli@fb.com>
-	<4c0804c85404be81acfe81fcd402f1af484e9d5f.1448401089.git.shli@fb.com>
-	<1448402209.44976.109.camel@intel.com>
-	<20151124220511.GA2106568@devbig084.prn1.facebook.com>
-	<20151125144613.GA3763@suse.de>
-	<1448469599.44976.134.camel@intel.com> <5655E545.1010509@fb.com>
-	<20151125173320.GA92074@devbig084.prn1.facebook.com>
-	<5655F1F8.9070203@fb.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] iommu/s390: fix sparse warnings
+Date: Thu, 26 Nov 2015 14:41:54 +0100
+Message-ID: <20151126134154.GA17674@8bytes.org>
+References: <alpine.LFD.2.11.1511061723260.2646@denkbrett>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <5655F1F8.9070203-b10kYP2dOMg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jens Axboe <axboe-b10kYP2dOMg@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "Woodhouse,
-	David" <david.woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Kernel-team-b10kYP2dOMg@public.gmane.org" <Kernel-team-b10kYP2dOMg@public.gmane.org>
+In-Reply-To: <alpine.LFD.2.11.1511061723260.2646@denkbrett>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sebastian Ott <sebott@linux.vnet.ibm.com>
+Cc: Gerald Schaefer <gerald.schaefer@de.ibm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Nov 25, 2015 at 10:38:00AM -0700, Jens Axboe wrote:
-> On 11/25/2015 10:33 AM, Shaohua Li wrote:
-> >On Wed, Nov 25, 2015 at 09:43:49AM -0700, Jens Axboe wrote:
-> >>On 11/25/2015 09:40 AM, Woodhouse, David wrote:
-> >>>On Wed, 2015-11-25 at 15:46 +0100, jroedel-l3A5Bk7waGM@public.gmane.org wrote:
-> >>>>On Tue, Nov 24, 2015 at 02:05:12PM -0800, Shaohua Li wrote:
-> >>>>>The lib/iommu-common.c uses a bitmap and a lock. This implementation
-> >>>>>actually uses a percpu_ida which completely avoids locking. It would be
-> >>>>>possible to make lib/iommu-common.c use percpu_ida too if somebody wants
-> >>>>>to do it, but I think this shouldn't be a blocker for these patches
-> >>>>>giving it has huge performance gain.
-> >>>>
-> >>>>It doesn't "completely avoids locking", the percpu_ida code uses a lock
-> >>>>internally too. Also, what is the memory and device address space
-> >>>>overhead per cpu?
-> >>>
-> >>>A percpu lock doesn't bounce cachelines between CPUs very much, so from
-> >>>that point of view it might as well not exist :)
-> >>
-> >>As long as the address space can remain more than ~50% empty, it is
-> >>indeed practically lockless. Are we ever worried about higher
-> >>utilization? If so, in my experience percpu_ida fails miserable near
-> >>or at exhaustion.
-> >
-> >The patch uses TASK_RUNNING for tag allocation, so it doesn't wait. I
-> >thought it's ok, no?
+On Fri, Nov 06, 2015 at 05:26:24PM +0100, Sebastian Ott wrote:
+> Fix these warnings:
+>   CHECK   drivers/iommu/s390-iommu.c
+> drivers/iommu/s390-iommu.c:52:21: warning: symbol 's390_domain_alloc' was not declared. Should it be static?
+> drivers/iommu/s390-iommu.c:76:6: warning: symbol 's390_domain_free' was not declared. Should it be static?
 > 
-> Even without the waiting it can end up sucking. If you are near
-> exhaustion, multiple tasks allocating will end up stealing from each
-> other.
-> 
-> Maybe it's not a concern here, if the space is big enough?
+> Signed-off-by: Sebastian Ott <sebott@linux.vnet.ibm.com>
 
-There are 128k tags. I think we can double it without problems within
-32-bit DMA address space if necessary. But if driver holds the DMA
-address space, we will have space shortage. If 64-bit DMA address is on
-by default in the future, this will not be a concern.
-
-> In any case, the pathological case isn't any worse than the normal
-> case for the current code...
-
-Yep, it should be not worse than current spinlock.
-
-Thanks,
-Shaohua
+Applied, thanks.
