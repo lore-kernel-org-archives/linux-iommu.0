@@ -1,16 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [Patch v2 7/9] iommu/amd: copy old tables and do not update dev
-	tables before driver init
-Date: Fri, 27 Nov 2015 12:35:17 +0100
-Message-ID: <20151127113517.GF24300@8bytes.org>
+Subject: Re: [Patch v2 0/9] Fix AMD IOMMU faults in kdump kernel
+Date: Fri, 27 Nov 2015 12:38:16 +0100
+Message-ID: <20151127113816.GG24300@8bytes.org>
 References: <1446811851-20623-1-git-send-email-bhe@redhat.com>
-	<1446811851-20623-8-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1446811851-20623-8-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1446811851-20623-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,62 +22,33 @@ To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Nov 06, 2015 at 08:10:49PM +0800, Baoquan He wrote:
-> Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-
-Missing patch description.
-
-> ---
->  drivers/iommu/amd_iommu.c      | 19 +++++------
->  drivers/iommu/amd_iommu_init.c | 71 ++++++++++++++++++++++++------------------
->  2 files changed, 49 insertions(+), 41 deletions(-)
+On Fri, Nov 06, 2015 at 08:10:42PM +0800, Baoquan He wrote:
+> This is v2 draft patch set. It mainly functions as the following steps:
 > 
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index 48bcd83..90c6205 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -1992,14 +1992,15 @@ static void do_attach(struct iommu_dev_data *dev_data,
->  	/* Update data structures */
->  	dev_data->domain = domain;
->  	list_add(&dev_data->list, &domain->dev_list);
-> -	set_dte_entry(dev_data->devid, domain, ats);
-> +	if (!translation_pre_enabled()) {
-> +		set_dte_entry(dev_data->devid, domain, ats);
-> +		/* Flush the DTE entry */
-> +		device_flush_dte(dev_data);
-> +	}
+> 1. Checking if it's in kdump kernel and previously enabled
+> 2. If yes do below operatons:
+>     a. Do not disable amd iommu and do not touch dev tables before coping old dev tables
+>     b. Copy dev table from old kernel and set the old domain id in amd_iommu_pd_alloc_bitmap
+>     c. Copy irq tables from old kernel
+>     d. Copy command buffer and event buffer
+>     e. Don't call update_domain() to set domain->pt_root to dev entries before device driver initialization.
+>     f. Reset the pre-enabled status in case IOMMU_DMA_OPS of state_next(). 
+> 
+> Existed problems:
 
-Hmm, this patch adds a lot of special cases into the AMD IOMMU code to
-make sure the domain is attached at driver init time.
+"Existed" means here these problems are gone?
 
-Can we change the code to generally defer domain attachment to driver
-init time? There is a set_dma_mask call-back in the dma-ops that can be
-used for that.
+> 
+> 1. It always prints the following message whenever do a flush:
+> 
+> 	"AMD-Vi: Completion-Wait loop timed out"
+> 
+> 2. Maybe there's someing wrong with the old irq remapping handling, the hard disk can't be brought up
+> successfully. You can check the attached kdump kernel boot log with this patchset applied.
 
-This would limit the special cases to device table initialization and
-iommu enable time.
-
-> +	if ( !translation_pre_enabled()) {
-> +		if (flags & ACPI_DEVFLAG_INITPASS)
-> +			set_dev_entry_bit(devid, DEV_ENTRY_INIT_PASS);
-> +		if (flags & ACPI_DEVFLAG_EXTINT)
-> +			set_dev_entry_bit(devid, DEV_ENTRY_EINT_PASS);
-> +		if (flags & ACPI_DEVFLAG_NMI)
-> +			set_dev_entry_bit(devid, DEV_ENTRY_NMI_PASS);
-> +		if (flags & ACPI_DEVFLAG_SYSMGT1)
-> +			set_dev_entry_bit(devid, DEV_ENTRY_SYSMGT1);
-> +		if (flags & ACPI_DEVFLAG_SYSMGT2)
-> +			set_dev_entry_bit(devid, DEV_ENTRY_SYSMGT2);
-> +		if (flags & ACPI_DEVFLAG_LINT0)
-> +			set_dev_entry_bit(devid, DEV_ENTRY_LINT0_PASS);
-> +		if (flags & ACPI_DEVFLAG_LINT1)
-> +			set_dev_entry_bit(devid, DEV_ENTRY_LINT1_PASS);
-> +
-> +		amd_iommu_apply_erratum_63(devid);
-> +	}
-
-This bothers, will the flags still get set when translation is
-pre-enabled?
+The reason is most likely that you didn't re-initialize the command
+buffer before doing any flushes. The you see the above Completion-Wait
+loop timeouts.
 
 
 	Joerg
