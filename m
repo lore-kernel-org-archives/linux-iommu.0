@@ -1,15 +1,16 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2] iommu/dma: Map scatterlists more parsimoniously
-Date: Fri, 27 Nov 2015 16:16:53 +0100
-Message-ID: <20151127151653.GK2064@8bytes.org>
-References: <cf89e25139683d85862302e75f9923d101ba233e.1448016328.git.robin.murphy@arm.com>
-	<20151126153728.GC17674@8bytes.org> <56574314.30205@arm.com>
+Subject: Re: [RFC] Independent use of IOMMU groups
+Date: Fri, 27 Nov 2015 16:39:10 +0100
+Message-ID: <20151127153910.GL2064@8bytes.org>
+References: <1446746079.8831.82.camel@redhat.com>
+	<20151106122939.GA13027@8bytes.org>
+	<1446824140.8831.168.camel@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <56574314.30205-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1446824140.8831.168.camel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,46 +20,36 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 26, 2015 at 05:36:20PM +0000, Robin Murphy wrote:
-> On 26/11/15 15:37, Joerg Roedel wrote:
-> >When the size is bigger than the mask you can either put a WARN on into
-> >and return error (to see if that really happens), or just do multiple
-> >smaller allocations that fit into the boundary mask.
-> 
-> That case is actually surprisingly common in at least one situation
-> - a typical scatterlist coming in from the SCSI layer seems to have
-> a max segment length of 65536, a boundary mask of 0xffff, and a
-> short first segment followed by subsequent full segments (I guess
-> they are the command buffer and data buffers respectively), meaning
-> an alignment bump is needed fairly frequently there.
+Hi Alex,
 
-The boundary_mask is a property of the underlying device, which one is
-it with that boundary mask?
+On Fri, Nov 06, 2015 at 08:35:40AM -0700, Alex Williamson wrote:
+> VFIO is really built on iommu groups, so making a vfio group independent
+> of iommu groups is a difficult proposition.
 
-> I wanted to avoid multiple allocations for various reasons:
->  - iommu_map_sg() only takes a single base IOVA, but it's nice if we
-> can make use of it.
->  - Some of the "complication" would just be shifted into the unmap
-> path, and having to make multiple unmap requests to the IOMMU driver
-> increases the number of potentially costly TLB syncs.
+I have been thinking about the relation between vfio device groups and
+iommu-groups lately, because at least for PCI the iommu-grouping is too
+coarse grained. I ran into this with the default-domain approach I am
+working on.
 
-Yeah, its a trade-off between wasting iova space and a faster
-implementation.
+Grouping devices together that have different request-ids (multifunction
+and acs based grouping) only makes sense when the device is controlled
+by an untrusted piece of software, in our case userspace or a KVM guest.
+The device drivers in Linux are trusted, and this coarse grained
+grouping becomes problematic, because it forces more devices into a
+single domain, which can become a bottleneck for DMA-API allocations.
 
->  - It minimises contention in the IOVA allocator, which is
-> apparently a real-world problem ;)
+I have been thinking about moving the multi-function and acs grouping
+into vfio code, meaning that a vfio-group contains more than one
+iommu-group. The problem with this is that iommu-groups are exposed
+in sysfs and thus became a userspace ABI.
 
-Thats why we currently evaluate options to get rid of it completly :)
-
->  - I like to minimise the number of people complaining at me that
-> whole scatterlists don't get mapped into contiguous IOVA ranges.
-
-Making that assumption is a bug anyway, this is the simple answer you
-can give to anyone complaining.
+So the vfio-group code might need changes anyway which could solve the
+above problem too, no? I am just not sure yet what the best way is to
+solve it.
 
 
 	Joerg
