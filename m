@@ -1,16 +1,13 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH V5 RESEND 2/3] iommu/hisilicon: Add hi6220-SoC smmu driver
-Date: Sat, 28 Nov 2015 13:19:58 +0100
-Message-ID: <20151128121958.GA18805@8bytes.org>
-References: <1447986309-47548-1-git-send-email-puck.chen@hisilicon.com>
-	<1447986309-47548-3-git-send-email-puck.chen@hisilicon.com>
-	<20151127120203.GI24300@8bytes.org> <56590F22.90105@hisilicon.com>
+From: Jesse Barnes <jbarnes-Y1mF5jBUw70BENJcbMCuUQ@public.gmane.org>
+Subject: Re: [PATCH 0/4 v2] Implement access checks in iommu page fault paths
+Date: Sat, 28 Nov 2015 08:12:22 -0800
+Message-ID: <arpeuk73ktop4vbf1svmic5f.1448727142412@email.android.com>
+References: <1447773099-2444-1-git-send-email-joro@8bytes.org>
+	<564CA3C4.60609@virtuousgeek.org> <20151127120751.GJ24300@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============1841161074426593309=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <56590F22.90105-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+In-Reply-To: <20151127120751.GJ24300-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,43 +17,55 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: chenfeng <puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, guodong.xu-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, w.f-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, haojian.zhuang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, puck.chen-Dw/NWeUnuQfQT0dZR+AlfA@public.gmane.org, arnd-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Nov 28, 2015 at 10:19:14AM +0800, chenfeng wrote:
-> On 2015/11/27 20:02, Joerg Roedel wrote:
-> > You need to create an iommu-group per smmu in your system and put all
-> > devices translated by this smmu in that group. And then you must change
-> > your code to allow attaching/detaching this iommu-group to different
-> > domains.
-> > 
-> I read the code,I am confused about these concepts.
-> In my opinion,
-> IOMMU-Domain: The masters in one domain share the same iova space. Is that right?
+--===============1841161074426593309==
+Content-Type: multipart/alternative; boundary="--_com.android.email_11289344889431410"
 
-Yes, an iommu-domain is an abstraction of a single page-table and
-describes one iova address space. The SMMU in your hardware supports
-only on page-table, so all devices behind it share a single iova address
-space, und must be in the same domain.
+----_com.android.email_11289344889431410
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
 
-But the way you implemented it there could be only one domain per SMMU.
-With the IOMMU-API we must support to change the domain of an SMMU.
-Think of one domain for DMA-API usage and another for VFIO, for example.
+Tm8gc29ycnksIGFuZCBub3cgaXQgbG9va3MgbGlrZSBpdCdsbCBiZSBhbm90aGVyIGNvdXBsZSBv
+ZiB3ZWVrcy4gSSdkIHNheSBnbyBhaGVhZCBhbmQgbGFuZCB0aGVtIHRob3VnaC4gWW91IGNhbiBh
+ZGQgbXkgci1iIGFuZCBJJ2xsIHRlc3QgdGhlbSBuZXh0IHRpbWUgSSByZWJhc2UgbXkgaTkxNSBw
+YXRjaGVzLiAKClRoYW5rcywgCkplc3NlIAoKLS0tLSBKb2VyZyBSb2VkZWwgd3JvdGUgLS0tLQoK
+PkhleSBKZXNzZSwKPgo+T24gV2VkLCBOb3YgMTgsIDIwMTUgYXQgMDg6MTM6NTZBTSAtMDgwMCwg
+SmVzc2UgQmFybmVzIHdyb3RlOgo+PiAKPj4gSSBtaWdodCBiZSBhYmxlIHRvIGZpbmQgdGltZSBs
+YXRlciB0aGlzIHdlZWsgb3IgbmV4dDsgSSBoYXZlIHRvIHVwZGF0ZQo+PiBteSB0cmVlIHRvIERh
+dmlkJ3MgbGF0ZXN0IGJpdHMgYW5kIHJlYmFzZSBteSBpOTE1IGNvZGUgb24gdG9wIGFsb25nIHdp
+dGgKPj4gdGhlc2UgcGF0Y2hlcy4gIFRoZW4gSSBjYW4gcnVuIHNvbWUgb2YgbXkgdGVzdHMgYW5k
+IGV4cGFuZCB0aGVtIHRvIHRyeQo+PiByL3cgdGVzdHMgdy9vIG1hcHBpbmcgdGhlIGJ1ZmZlciB3
+aXRoIHRoZSByaWdodCBhY2Nlc3MgbW9kZS4KPgo+SGF2ZSB5b3UgZm91bmQgdGltZSB0byBydW4g
+c29tZSBzbWFsbCB0ZXN0cyBvbiB0aGlzPwo+Cj4KPlRoYW5rcywKPgo+CUpvZXJnCj4KPgo=
+----_com.android.email_11289344889431410
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: base64
 
-> IOMMU-GROUP: As you mentioned up,all devices translated by this smmu
-> should be into one group.  I can do this. But if there is only on
-> domain in the system, how can I attaching/detaching the group to
-> different domains.
+PHAgZGlyPSJsdHIiPk5vIHNvcnJ5LCBhbmQgbm93IGl0IGxvb2tzIGxpa2UgaXQnbGwgYmUgYW5v
+dGhlciBjb3VwbGUgb2Ygd2Vla3MuIEknZCBzYXkgZ28gYWhlYWQgYW5kIGxhbmQgdGhlbSB0aG91
+Z2guIFlvdSBjYW4gYWRkIG15IHItYiBhbmQgSSdsbCB0ZXN0IHRoZW0gbmV4dCB0aW1lIEkgcmVi
+YXNlIG15IGk5MTUgcGF0Y2hlcy4gPC9wPgo8cCBkaXI9Imx0ciI+VGhhbmtzLCA8YnI+Ckplc3Nl
+IDwvcD4KPGJyPjxicj4tLS0tIEpvZXJnIFJvZWRlbCB3cm90ZSAtLS0tPGJyPjxicj5IZXkgSmVz
+c2UsPGJyPjxicj5PbiBXZWQsIE5vdiAxOCwgMjAxNSBhdCAwODoxMzo1NkFNIC0wODAwLCBKZXNz
+ZSBCYXJuZXMgd3JvdGU6PGJyPiZndDsgPGJyPiZndDsgSSBtaWdodCBiZSBhYmxlIHRvIGZpbmQg
+dGltZSBsYXRlciB0aGlzIHdlZWsgb3IgbmV4dDsgSSBoYXZlIHRvIHVwZGF0ZTxicj4mZ3Q7IG15
+IHRyZWUgdG8gRGF2aWQncyBsYXRlc3QgYml0cyBhbmQgcmViYXNlIG15IGk5MTUgY29kZSBvbiB0
+b3AgYWxvbmcgd2l0aDxicj4mZ3Q7IHRoZXNlIHBhdGNoZXMuJm5ic3A7IFRoZW4gSSBjYW4gcnVu
+IHNvbWUgb2YgbXkgdGVzdHMgYW5kIGV4cGFuZCB0aGVtIHRvIHRyeTxicj4mZ3Q7IHIvdyB0ZXN0
+cyB3L28gbWFwcGluZyB0aGUgYnVmZmVyIHdpdGggdGhlIHJpZ2h0IGFjY2VzcyBtb2RlLjxicj48
+YnI+SGF2ZSB5b3UgZm91bmQgdGltZSB0byBydW4gc29tZSBzbWFsbCB0ZXN0cyBvbiB0aGlzPzxi
+cj48YnI+PGJyPlRoYW5rcyw8YnI+PGJyPglKb2VyZzxicj48YnI+PGJyPg==
+----_com.android.email_11289344889431410--
 
-IOMMU-groups describe the isolation capabilities of the IOMMU between
-devices. If devices are in a different IOMMU-group, this means that
-the hardware can isolate them from each other.
 
-Attaching the devices in a group to a new domain means in your case,
-that you set a different page-table for them. Since you can only do that
-for all devices behind a SMMU, these devices must be in on IOMMU-group.
-
+--===============1841161074426593309==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 
-	Joerg
+--===============1841161074426593309==--
