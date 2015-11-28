@@ -1,15 +1,14 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2] iommu/dma: Map scatterlists more parsimoniously
-Date: Fri, 27 Nov 2015 19:49:41 +0000
-Message-ID: <5658B3D5.9010008@arm.com>
-References: <cf89e25139683d85862302e75f9923d101ba233e.1448016328.git.robin.murphy@arm.com>
-	<20151126153728.GC17674@8bytes.org> <56574314.30205@arm.com>
-	<20151127151653.GK2064@8bytes.org>
+From: chenfeng <puck.chen-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Subject: Re: [PATCH V5 RESEND 0/3] Add iommu support for hi6220 HiKey board
+Date: Sat, 28 Nov 2015 10:09:07 +0800
+Message-ID: <56590CC3.5050401@hisilicon.com>
+References: <1447986309-47548-1-git-send-email-puck.chen@hisilicon.com>
+	<20151127114920.GH24300@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20151127151653.GK2064-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20151127114920.GH24300-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,66 +19,31 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, guodong.xu-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, w.f-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, haojian.zhuang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, puck.chen-Dw/NWeUnuQfQT0dZR+AlfA@public.gmane.org, arnd-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 27/11/15 15:16, Joerg Roedel wrote:
-> On Thu, Nov 26, 2015 at 05:36:20PM +0000, Robin Murphy wrote:
->> On 26/11/15 15:37, Joerg Roedel wrote:
->>> When the size is bigger than the mask you can either put a WARN on into
->>> and return error (to see if that really happens), or just do multiple
->>> smaller allocations that fit into the boundary mask.
->>
->> That case is actually surprisingly common in at least one situation
->> - a typical scatterlist coming in from the SCSI layer seems to have
->> a max segment length of 65536, a boundary mask of 0xffff, and a
->> short first segment followed by subsequent full segments (I guess
->> they are the command buffer and data buffers respectively), meaning
->> an alignment bump is needed fairly frequently there.
->
-> The boundary_mask is a property of the underlying device, which one is
-> it with that boundary mask?
 
-That particular one is actually ATA_DMA_BOUNDARY, which is used by 
-several drivers - sata_sil24 is the specific one I was testing with.
 
->> I wanted to avoid multiple allocations for various reasons:
->>   - iommu_map_sg() only takes a single base IOVA, but it's nice if we
->> can make use of it.
->>   - Some of the "complication" would just be shifted into the unmap
->> path, and having to make multiple unmap requests to the IOMMU driver
->> increases the number of potentially costly TLB syncs.
->
-> Yeah, its a trade-off between wasting iova space and a faster
-> implementation.
+On 2015/11/27 19:49, Joerg Roedel wrote:
+> On Fri, Nov 20, 2015 at 10:25:06AM +0800, Chen Feng wrote:
+>> eg:
+>> struct iommu_domain *domain = iommu_domain_alloc(bus);
+>> iommu_attach_device(domain, dev);
+>> struct iova_domain *iovad = (struct iova_domain *)m_dev->archdata.iommu;
+>> struct iova * t_iova = alloc_iova(iovad, size, limit_pfn, align);
+>> iommu_map(domain, t_iova->pfn_lo << 12, phy_addr, size, port);
+> 
+> Any reason the media subsystem should use the iommu-api directly, and
+> not the dma-api? You can make your iommu available by adapting the
+> common dma-iommu implementation from Robin Murphy to your iommu to make
+> it usable through the dma-api.
+> 
 
-Certainly my hunch is that in the great majority of use-cases 
-(particularly on 64-bit systems) the IOVA space itself is going to be 
-considerably less precious than the time spent managing it.
-
->>   - It minimises contention in the IOVA allocator, which is
->> apparently a real-world problem ;)
->
-> Thats why we currently evaluate options to get rid of it completly :)
-
-Heh, as long as the interface is sane, the implementation backing it can 
-change as much as it likes. AFAICS it's still going to be generally the 
-case that searching for one space once is more efficient than multiple 
-searches for multiple spaces, though.
-
->>   - I like to minimise the number of people complaining at me that
->> whole scatterlists don't get mapped into contiguous IOVA ranges.
->
-> Making that assumption is a bug anyway, this is the simple answer you
-> can give to anyone complaining.
-
-And indeed I have, repeatedly ;)
-
-Anyway, this patch is merely making an objective improvement to the way 
-the existing code does the thing it does: for comparison, 'dd bs=1M 
-count=1K ...' reading from a USB mass storage device with the current 
-code adds unnecessary padding to a segment in the order of a couple of 
-hundred times; with this patch it never happens at all, which seems like 
-precisely what you asked for.
-
-Robin.
+ok, I will change this to dma-api. Since v1 version, the dma-api was not ok for arm64.
+I will do this with dma-api function.
+> 
+> 	Joerg
+> 
+> 
+> .
+> 
