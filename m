@@ -1,15 +1,16 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [Patch v2 0/9] Fix AMD IOMMU faults in kdump kernel
-Date: Mon, 30 Nov 2015 19:16:45 +0800
-Message-ID: <20151130111645.GA25496@dhcp-128-28.nay.redhat.com>
+Subject: Re: [Patch v2 2/9] iommu/amd: Detect pre enabled translation
+Date: Mon, 30 Nov 2015 19:18:33 +0800
+Message-ID: <20151130111833.GB25496@dhcp-128-28.nay.redhat.com>
 References: <1446811851-20623-1-git-send-email-bhe@redhat.com>
-	<20151127113816.GG24300@8bytes.org>
+	<1446811851-20623-3-git-send-email-bhe@redhat.com>
+	<20151127110312.GA24300@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20151127113816.GG24300-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20151127110312.GA24300-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,51 +24,37 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-
-Thanks a lot for reviewing this patchset.
-
-On 11/27/15 at 12:38pm, Joerg Roedel wrote:
-> On Fri, Nov 06, 2015 at 08:10:42PM +0800, Baoquan He wrote:
-> > This is v2 draft patch set. It mainly functions as the following steps:
+On 11/27/15 at 12:03pm, Joerg Roedel wrote:
+> On Fri, Nov 06, 2015 at 08:10:44PM +0800, Baoquan He wrote:
+> > Add functions to check whether translation is already enabled in IOMMU.
 > > 
-> > 1. Checking if it's in kdump kernel and previously enabled
-> > 2. If yes do below operatons:
-> >     a. Do not disable amd iommu and do not touch dev tables before coping old dev tables
-> >     b. Copy dev table from old kernel and set the old domain id in amd_iommu_pd_alloc_bitmap
-> >     c. Copy irq tables from old kernel
-> >     d. Copy command buffer and event buffer
-> >     e. Don't call update_domain() to set domain->pt_root to dev entries before device driver initialization.
-> >     f. Reset the pre-enabled status in case IOMMU_DMA_OPS of state_next(). 
+> > Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> > ---
+> >  drivers/iommu/amd_iommu_init.c  | 26 ++++++++++++++++++++++++++
+> >  drivers/iommu/amd_iommu_proto.h |  4 ++++
+> >  2 files changed, 30 insertions(+)
 > > 
-> > Existed problems:
+> > diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+> > index 1dcd8e3..6ef86b1 100644
+> > --- a/drivers/iommu/amd_iommu_init.c
+> > +++ b/drivers/iommu/amd_iommu_init.c
+> > @@ -229,6 +229,27 @@ static int amd_iommu_enable_interrupts(void);
+> >  static int __init iommu_go_to_state(enum iommu_init_state state);
+> >  static void init_device_table_dma(void);
+> >  
+> > +static u8 g_pre_enabled;
 > 
-> "Existed" means here these problems are gone?
-
-It should be existing, I used wrong word.
-
+> Better use bool here ...
 > 
-> > 
-> > 1. It always prints the following message whenever do a flush:
-> > 
-> > 	"AMD-Vi: Completion-Wait loop timed out"
-> > 
-> > 2. Maybe there's someing wrong with the old irq remapping handling, the hard disk can't be brought up
-> > successfully. You can check the attached kdump kernel boot log with this patchset applied.
+> > +
+> > +bool translation_pre_enabled(void)
 > 
-> The reason is most likely that you didn't re-initialize the command
-> buffer before doing any flushes. The you see the above Completion-Wait
-> loop timeouts.
+> ... since this function returns bool anyway, and ...
+> 
+> > +{
+> > +        return !!g_pre_enabled;
+> 
+> ... use save the ugly !! operators.
 
-Yeah, you are right. I tried many kinds of calling, but didn't try
-calling iommu_enable_command_buffer() earlier than copy_dev_tables().
-Now I tried calling iommu_enable_command_buffer() and
-iommu_enable_event_buffer() earlier than copy_dev_tables(), message "AMD-Vi:
-Completion-Wait loop timed out" is gone on my AMD IOMMU V1 machine. On
-my AMD A10-7850K which is AMD IOMMU V2 it still print that message, I am
-debugging.
 
-And problem that sata disk can't be brought up still exist.
-
-Thanks
-Baoquan
+OK, will change.
