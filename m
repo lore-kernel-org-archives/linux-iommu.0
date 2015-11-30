@@ -1,17 +1,15 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [Patch v2 7/9] iommu/amd: copy old tables and do not update dev
-	tables before driver init
-Date: Mon, 30 Nov 2015 20:13:20 +0800
-Message-ID: <20151130121320.GB24717@dhcp-128-28.nay.redhat.com>
-References: <1446811851-20623-1-git-send-email-bhe@redhat.com>
-	<1446811851-20623-8-git-send-email-bhe@redhat.com>
-	<20151127113517.GF24300@8bytes.org>
+From: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 0/4] Cleanup legacy OMAP IOMMU device creation
+Date: Mon, 30 Nov 2015 10:34:23 -0800
+Message-ID: <20151130183423.GJ2517@atomide.com>
+References: <1442447302-5246-1-git-send-email-s-anna@ti.com>
+	<562919CB.1000606@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20151127113517.GF24300-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <562919CB.1000606-l0cyMroinI0@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,69 +19,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Cc: Paul Walmsley <paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org>, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/27/15 at 12:35pm, Joerg Roedel wrote:
-> On Fri, Nov 06, 2015 at 08:10:49PM +0800, Baoquan He wrote:
-> > Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+* Suman Anna <s-anna-l0cyMroinI0@public.gmane.org> [151022 10:16]:
+> Hi Tony,
 > 
-> Missing patch description.
-> 
-> > ---
-> >  drivers/iommu/amd_iommu.c      | 19 +++++------
-> >  drivers/iommu/amd_iommu_init.c | 71 ++++++++++++++++++++++++------------------
-> >  2 files changed, 49 insertions(+), 41 deletions(-)
+> On 09/16/2015 06:48 PM, Suman Anna wrote:
+> > Hi Tony,
 > > 
-> > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> > index 48bcd83..90c6205 100644
-> > --- a/drivers/iommu/amd_iommu.c
-> > +++ b/drivers/iommu/amd_iommu.c
-> > @@ -1992,14 +1992,15 @@ static void do_attach(struct iommu_dev_data *dev_data,
-> >  	/* Update data structures */
-> >  	dev_data->domain = domain;
-> >  	list_add(&dev_data->list, &domain->dev_list);
-> > -	set_dte_entry(dev_data->devid, domain, ats);
-> > +	if (!translation_pre_enabled()) {
-> > +		set_dte_entry(dev_data->devid, domain, ats);
-> > +		/* Flush the DTE entry */
-> > +		device_flush_dte(dev_data);
-> > +	}
+> > The following series removes the legacy platform device creation
+> > logic for OMAP IOMMU devices. I will cleanup the legacy support
+> > from the OMAP IOMMU driver in a subsequent merge window after
+> > this series makes it to mainline.
+> > 
+> > Patches are based on 4.3-rc1 + the OMAP3 ISP instantiation cleanup
+> > patch [1]. All the patches need to be picked up sequentially,
+> > otherwise a NULL pointer dereference crash might be seen on OMAP3
+> > legacy boots as the dev attribute structure is deferenced directly
+> > in mach-omap2/omap-iommu.c during platform data creation. Also, the
+> > last patch removes the structure definition altogether, so will
+> > cause build issues if picked separately from the hwmod cleanup
+> > patches.
+> > 
+> > I do not have any boards where I can still perform a legacy-style
+> > boot, so patches verified using DT-boot only.
+> > 
+> > regards
+> > Suman
+> > 
+> > [1] https://patchwork.kernel.org/patch/6806891/
+> > 
+> > Suman Anna (4):
+> >   ARM: OMAP2+: Remove legacy device instantiation of IOMMUs
+> >   ARM: OMAP3: hwmod data: Remove legacy IOMMU data
+> >   ARM: OMAP4: hwmod data: Remove legacy IOMMU attr and addrs
+> >   ARM: OMAP2+: Remove omap_mmu_dev_attr structure
 > 
-> Hmm, this patch adds a lot of special cases into the AMD IOMMU code to
-> make sure the domain is attached at driver init time.
-> 
-> Can we change the code to generally defer domain attachment to driver
-> init time? There is a set_dma_mask call-back in the dma-ops that can be
-> used for that.
-> 
-> This would limit the special cases to device table initialization and
-> iommu enable time.
+> Ping on this series. You should be able to pick up atleast patch 1 if
+> not picking all, now that the OMAP3 ISP cleanup patch is staged in your
+> omap-for-4.4/cleanup branch.
 
-Will try set_dma_mask().
-> 
-> > +	if ( !translation_pre_enabled()) {
-> > +		if (flags & ACPI_DEVFLAG_INITPASS)
-> > +			set_dev_entry_bit(devid, DEV_ENTRY_INIT_PASS);
-> > +		if (flags & ACPI_DEVFLAG_EXTINT)
-> > +			set_dev_entry_bit(devid, DEV_ENTRY_EINT_PASS);
-> > +		if (flags & ACPI_DEVFLAG_NMI)
-> > +			set_dev_entry_bit(devid, DEV_ENTRY_NMI_PASS);
-> > +		if (flags & ACPI_DEVFLAG_SYSMGT1)
-> > +			set_dev_entry_bit(devid, DEV_ENTRY_SYSMGT1);
-> > +		if (flags & ACPI_DEVFLAG_SYSMGT2)
-> > +			set_dev_entry_bit(devid, DEV_ENTRY_SYSMGT2);
-> > +		if (flags & ACPI_DEVFLAG_LINT0)
-> > +			set_dev_entry_bit(devid, DEV_ENTRY_LINT0_PASS);
-> > +		if (flags & ACPI_DEVFLAG_LINT1)
-> > +			set_dev_entry_bit(devid, DEV_ENTRY_LINT1_PASS);
-> > +
-> > +		amd_iommu_apply_erratum_63(devid);
-> > +	}
-> 
-> This bothers, will the flags still get set when translation is
-> pre-enabled?
+Sorry for the delays, applying this series into omap-for-v4.5/soc.
 
-Yeah, it will call set_dev_entry_from_acpi() to set dev table if do not
-check here.
+Regards,
+
+Tony
