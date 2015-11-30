@@ -1,16 +1,17 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [Patch v2 5/9] iommu/amd: Add function copy_dev_tables
-Date: Mon, 30 Nov 2015 19:59:06 +0800
-Message-ID: <20151130115906.GA24717@dhcp-128-28.nay.redhat.com>
+Subject: Re: [Patch v2 6/9] iommu/amd: Add functions
+	copy_command_buffer/copy_event_buffer
+Date: Mon, 30 Nov 2015 20:02:18 +0800
+Message-ID: <20151130120218.GE25496@dhcp-128-28.nay.redhat.com>
 References: <1446811851-20623-1-git-send-email-bhe@redhat.com>
-	<1446811851-20623-6-git-send-email-bhe@redhat.com>
-	<20151127112152.GD24300@8bytes.org>
+	<1446811851-20623-7-git-send-email-bhe@redhat.com>
+	<20151127112446.GE24300@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20151127112152.GD24300-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20151127112446.GE24300-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,65 +25,21 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/27/15 at 12:21pm, Joerg Roedel wrote:
-> On Fri, Nov 06, 2015 at 08:10:47PM +0800, Baoquan He wrote:
-> > +static void copy_dev_tables(void)
+On 11/27/15 at 12:24pm, Joerg Roedel wrote:
+> On Fri, Nov 06, 2015 at 08:10:48PM +0800, Baoquan He wrote:
+> >  
+> > +static void copy_command_buffer(void)
+> > +
+> > +static void copy_event_buffer(void)
 > > +{
-> > +        u64 entry;
-> > +        u32 lo, hi;
-> > +        phys_addr_t old_devtb_phys;
-> > +        struct dev_table_entry *old_devtb;
-> > +        struct amd_iommu *iommu;
-> > +        u16 dom_id;
-> > +        u32 devid;
-> > +
-> > +        for_each_iommu(iommu) {
 > 
-> You don't need to do this for all IOMMUs in the system. Linux uses the
-> same device table for all IOMMUs, so it is better to just check whether
-> all IOMMUs in the system are enabled and also point to the same device
-> table. If any of this is not the case we should just bail out of any
-> tries to copy over data from the old kernel.
-
-Make sense. Will do.
-
+> There is no need to copy any of these buffers. For the command buffer
+> you just need to safely reinialize the hardware to use your newly
+> allocated buffer.
 > 
-> > +		/*
-> > +		 * This is used to prevent the WARNING in iommu_queue_command_sync()
-> > +		 * when call flush function
-> > +		 */
-> > +		iommu->cmd_buf_size &= ~(CMD_BUFFER_UNINITIALIZED);
-> 
-> This is a hack. You need to add code to re-initialize the command buffer
-> and the error and ppr logs in the new kernel.
+> Same for the event buffer. But here it makes sense to actually check the
+> old event buffer for content and print out the errors the old kernel
+> didn't get a chance to handle before the crash.
 
-Yeah, it's just a hack. I removed it directly since you have a commit to
-remove cmd_buf_size in struct amd_iommu.
-
-commit deba4bce168a87ef90211ba69850d3428b453765
-Author: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Date:   Tue Oct 20 17:33:41 2015 +0200
-
-    iommu/amd: Remove cmd_buf_size and evt_buf_size from struct amd_iommu
-
-> 
-> > +
-> > +                lo = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET);
-> > +                hi = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET + 4);
-> > +                entry = (((u64) hi) << 32) + lo;
-> > +                old_devtb_phys = entry & PAGE_MASK;
-> > +                old_devtb = ioremap_cache(old_devtb_phys, dev_table_size);
-> 
-> Please use memremap.
-
-Will do.
-> 
-> > +                for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
-> > +                        amd_iommu_dev_table[devid] = old_devtb[devid];
-> > +                        dom_id = amd_iommu_dev_table[devid].data[1] & DEV_DOMID_MASK;
-> > +			if (!dom_id)
-> > +				continue;
-> 
-> Check the V and IV bits of the here instead of the domid.
-
-Will do.
+OK, will check the old event buffer and then call
+iommu_enable_command_buffer()/iommu_enable_event_buffer().
