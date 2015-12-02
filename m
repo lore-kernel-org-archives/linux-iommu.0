@@ -1,91 +1,87 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH] vfio: Include No-IOMMU mode
-Date: Wed, 02 Dec 2015 08:28:43 -0700
-Message-ID: <1449070123.15753.35.camel@redhat.com>
-References: <20151028211309.14155.23867.stgit@gimli.home>
- <1447693613.3946.258.camel@redhat.com> <564A0E70.4030409@scylladb.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC] Independent use of IOMMU groups
+Date: Wed, 02 Dec 2015 08:58:16 -0700
+Message-ID: <1449071896.15753.50.camel@redhat.com>
+References: <1446746079.8831.82.camel@redhat.com>
+	<20151106122939.GA13027@8bytes.org>
+	<1446824140.8831.168.camel@redhat.com>
+	<20151127153910.GL2064@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <dev-bounces@dpdk.org>
-In-Reply-To: <564A0E70.4030409@scylladb.com>
-List-Unsubscribe: <http://dpdk.org/ml/options/dev>,
- <mailto:dev-request@dpdk.org?subject=unsubscribe>
-List-Archive: <http://dpdk.org/ml/archives/dev/>
-List-Post: <mailto:dev@dpdk.org>
-List-Help: <mailto:dev-request@dpdk.org?subject=help>
-List-Subscribe: <http://dpdk.org/ml/listinfo/dev>,
- <mailto:dev-request@dpdk.org?subject=subscribe>
-Errors-To: dev-bounces@dpdk.org
-Sender: "dev" <dev-bounces@dpdk.org>
-To: Avi Kivity <avi@scylladb.com>
-Cc: gleb@scylladb.com, mst@redhat.com, "<dev@dpdk.org>" <dev@dpdk.org>, corbet@lwn.net, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, hjk@hansjkoch.de, gregkh@linuxfoundation.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20151127153910.GL2064-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2015-11-16 at 19:12 +0200, Avi Kivity wrote:
-> On 11/16/2015 07:06 PM, Alex Williamson wrote:
-> > On Wed, 2015-10-28 at 15:21 -0600, Alex Williamson wrote:
-> >> There is really no way to safely give a user full access to a DMA
-> >> capable device without an IOMMU to protect the host system.  There is
-> >> also no way to provide DMA translation, for use cases such as device
-> >> assignment to virtual machines.  However, there are still those users
-> >> that want userspace drivers even under those conditions.  The UIO
-> >> driver exists for this use case, but does not provide the degree of
-> >> device access and programming that VFIO has.  In an effort to avoid
-> >> code duplication, this introduces a No-IOMMU mode for VFIO.
-> >>
-> >> This mode requires building VFIO with CONFIG_VFIO_NOIOMMU and enabling
-> >> the "enable_unsafe_noiommu_mode" option on the vfio driver.  This
-> >> should make it very clear that this mode is not safe.  Additionally,
-> >> CAP_SYS_RAWIO privileges are necessary to work with groups and
-> >> containers using this mode.  Groups making use of this support are
-> >> named /dev/vfio/noiommu-$GROUP and can only make use of the special
-> >> VFIO_NOIOMMU_IOMMU for the container.  Use of this mode, specifically
-> >> binding a device without a native IOMMU group to a VFIO bus driver
-> >> will taint the kernel and should therefore not be considered
-> >> supported.  This patch includes no-iommu support for the vfio-pci bus
-> >> driver only.
-> >>
-> >> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
-> >> ---
-> >>
-> >> This is pretty well the same as RFCv2, I've changed the pr_warn to a
-> >> dev_warn and added another, printing the pid and comm of the task when
-> >> it actually opens the device.  If Stephen can port the driver code
-> >> over and prove that this actually works sometime next week, and there
-> >> aren't any objections to this code, I'll include it in a pull request
-> >> for the next merge window.  MST, I dropped your ack due to the
-> >> changes, but I'll be happy to add it back if you like.  Thanks,
-> >>
-> >> Alex
-> >>
-> >>   drivers/vfio/Kconfig        |   15 +++
-> >>   drivers/vfio/pci/vfio_pci.c |    8 +-
-> >>   drivers/vfio/vfio.c         |  186 ++++++++++++++++++++++++++++++++++++++++++-
-> >>   include/linux/vfio.h        |    3 +
-> >>   include/uapi/linux/vfio.h   |    7 ++
-> >>   5 files changed, 209 insertions(+), 10 deletions(-)
-> > FYI, this is now in v4.4-rc1 (the slightly modified v2 version).  I want
-> > to give fair warning though that while we seem to agree on this idea, it
-> > hasn't been proven with a userspace driver port.  I've opted to include
-> > it in this merge window rather than delaying it until v4.5, but I really
-> > need to see a user for this before the end of the v4.4 cycle or I think
-> > we'll need to revert and revisit for v4.5 anyway.  I don't really have
-> > any interest in adding and maintaining code that has no users.  Please
-> > keep me informed of progress with a dpdk port.  Thanks,
-> >
-> >
+On Fri, 2015-11-27 at 16:39 +0100, Joerg Roedel wrote:
+> Hi Alex,
 > 
-> Thanks Alex.  Copying the dpdk mailing list, where the users live.
+> On Fri, Nov 06, 2015 at 08:35:40AM -0700, Alex Williamson wrote:
+> > VFIO is really built on iommu groups, so making a vfio group independent
+> > of iommu groups is a difficult proposition.
 > 
-> dpdk-ers: vfio-noiommu is a replacement for uio_pci_generic and 
-> uio_igb.  It supports MSI-X and so can be used on SR/IOV VF devices.  
-> The intent is that you can use dpdk without an external module, using 
-> vfio, whether you are on bare metal with an iommu, bare metal without an 
-> iommu, or virtualized.  However, dpdk needs modification to support this.
+> I have been thinking about the relation between vfio device groups and
+> iommu-groups lately, because at least for PCI the iommu-grouping is too
+> coarse grained. I ran into this with the default-domain approach I am
+> working on.
+> 
+> Grouping devices together that have different request-ids (multifunction
+> and acs based grouping) only makes sense when the device is controlled
+> by an untrusted piece of software, in our case userspace or a KVM guest.
+> The device drivers in Linux are trusted, and this coarse grained
+> grouping becomes problematic, because it forces more devices into a
+> single domain, which can become a bottleneck for DMA-API allocations.
+> 
+> I have been thinking about moving the multi-function and acs grouping
+> into vfio code, meaning that a vfio-group contains more than one
+> iommu-group. The problem with this is that iommu-groups are exposed
+> in sysfs and thus became a userspace ABI.
+> 
+> So the vfio-group code might need changes anyway which could solve the
+> above problem too, no? I am just not sure yet what the best way is to
+> solve it.
 
+Hi Joerg,
 
-Still no users for this that I'm aware of.  I'm going to revert this in
-rc5 unless something changes.  Thanks,
+That's a hard one.  As you say, iommu groups are really a userspace ABI
+and tightly integrated into the mapping of vfio groups, so I don't
+really think we have much flexibility in re-defining an iommu group.
+The original intent with putting the grouping logic in the iommu drivers
+and core code was that vfio isn't smart enough to be able to determine
+both the iommu visibility and topology based isolation for any given
+architecture.  I think that's still true.  We don't really want to
+enable vfio on platforms that haven't given the issue sufficient
+consideration to enable the iommu API for devices.
+
+On the other hand, it doesn't make a whole lot of sense for native
+kernel drivers to care about topology based isolation.  It would be
+preferable to fully isolate a device, but we do manage the IOVA address
+space for native drivers, so unintentional peer-to-peer shouldn't really
+be a possibility.
+
+It makes sense to me to think about an iommu group as a set of one or
+more iommu granules, where each granule is the granularity of the iommu
+visibility.  A granule probably also has a relation to DMA aliases.  So
+perhaps the granule encompasses all DMA related visibility issues and
+the group is an overlay which takes topology into account when the IOVA
+space is defined by the user (and malicious DMA needs to be considered
+as well).
+
+So maybe the first step is to create that dividing line and figure out
+what granules look like and how we can more explicitly expose groups on
+top of them.  Easier said than done, I'm sure.  Thanks,
 
 Alex
+
+PS - sorry for the delay, was off on holiday.
