@@ -1,16 +1,19 @@
-From: Michael Wang <yun.wang-EIkl63zCoXaH+58JC4qpiA@public.gmane.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Subject: Re: [RFC PATCH v2] iommu/amd: gray the 'irq_remap_table' object for
 	kmemleak
-Date: Wed, 2 Dec 2015 11:56:20 +0100
-Message-ID: <565ECE54.5080706@profitbricks.com>
+Date: Wed, 2 Dec 2015 12:17:35 +0100
+Message-ID: <20151202111735.GC18805@8bytes.org>
 References: <564EFF6A.2050709@profitbricks.com>
-	<564F051E.9010703@profitbricks.com> <20151125150806.GG2064@8bytes.org>
-	<5655D072.1000901@profitbricks.com> <565EC9F4.2050401@profitbricks.com>
+	<564F051E.9010703@profitbricks.com>
+	<20151125150806.GG2064@8bytes.org>
+	<5655D072.1000901@profitbricks.com>
+	<565EC9F4.2050401@profitbricks.com>
 	<CAHkRjk5QNQiNeJTcjKFQzpac_4us_3Ts1w4+uRw6TY16LbgsJA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
 In-Reply-To: <CAHkRjk5QNQiNeJTcjKFQzpac_4us_3Ts1w4+uRw6TY16LbgsJA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -22,28 +25,10 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Catalin Marinas <catalin.marinas-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Michael Wang <yun.wang-EIkl63zCoXaH+58JC4qpiA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
-On 12/02/2015 11:52 AM, Catalin Marinas wrote:
-[snip]
->>
->> Is there any more concern? actually we just want to get rid of this
->> annoying report on obj won't leak, if you're going to create obj for
->> 'irq_lookup_table' that's also fine for us, or will you pick this patch?
-> 
-> My preference (from a kmemleak perspective) is to tell kmemleak about
-> the irq_lookup_table. Untested:
-
-I'm fine with both solution, will leave the decision to maintainer :-)
-
-BTW, could you please send a formal patch with descriptions?
-
-Regards,
-Michael Wang
-
-> 
+On Wed, Dec 02, 2015 at 10:52:02AM +0000, Catalin Marinas wrote:
 > diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
 > index 013bdfff2d4d..c41609f71cbe 100644
 > --- a/drivers/iommu/amd_iommu_init.c
@@ -72,4 +57,5 @@ Michael Wang
 >   if (!irq_lookup_table)
 >   goto out;
 >   }
-> 
+
+Yes, this looks way better.
