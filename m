@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 1/5] iommu/io-pgtable-arm: Avoid dereferencing bogus PTEs
-Date: Fri,  4 Dec 2015 17:52:58 +0000
-Message-ID: <ad5898fd59575d0e2a8dccabafde71650f44e2a8.1449246988.git.robin.murphy@arm.com>
+Subject: [PATCH 3/5] iommu/arm-smmu: Invalidate TLBs properly
+Date: Fri,  4 Dec 2015 17:53:00 +0000
+Message-ID: <2acaea8656f14a4421d7d466dd242fe5a3d0f6f6.1449246988.git.robin.murphy@arm.com>
 References: <cover.1449246988.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,40 +21,61 @@ To: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8
 Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-In the case of corrupted page tables, or when an invalid size is given,
-__arm_lpae_unmap() may recurse beyond the maximum number of levels.
-Unfortunately the detection of this error condition only happens *after*
-calculating a nonsense offset from something which might not be a valid
-table pointer and dereferencing that to see if it is a valid PTE.
+When invalidating an IOVA range potentially spanning multiple pages,
+such as when removing an entire intermediate-level table, we currently
+only issue an invalidation for the first IOVA of that range. Since the
+architecture specifies that address-based TLB maintenance operations
+target a single entry, an SMMU could feasibly retain live entries for
+subsequent pages within that unmapped range, which is not good.
 
-Make things a little more robust by checking the level is valid before
-doing anything which depends on it being so.
+Make sure we hit every possible entry by iterating over the whole range
+at the granularity provided by the pagetable implementation.
 
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/io-pgtable-arm.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/iommu/arm-smmu.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 7df9777..366a354 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -486,11 +486,13 @@ static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 	void *cookie = data->iop.cookie;
- 	size_t blk_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
- 
-+	/* Something went horribly wrong and we ran out of page table */
-+	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
-+		return 0;
-+
- 	ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
- 	pte = *ptep;
--
--	/* Something went horribly wrong and we ran out of page table */
--	if (WARN_ON(!pte || (lvl == ARM_LPAE_MAX_LEVELS)))
-+	if (WARN_ON(!pte))
- 		return 0;
- 
- 	/* If the size matches this level, we're in the right place */
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 601e3dd..f1d6fa7 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -597,12 +597,20 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 		if (!IS_ENABLED(CONFIG_64BIT) || smmu->version == ARM_SMMU_V1) {
+ 			iova &= ~12UL;
+ 			iova |= ARM_SMMU_CB_ASID(cfg);
+-			writel_relaxed(iova, reg);
++			while (size) {
++				writel_relaxed(iova, reg);
++				size -= granule;
++				iova += granule;
++			}
+ #ifdef CONFIG_64BIT
+ 		} else {
+ 			iova >>= 12;
+ 			iova |= (u64)ARM_SMMU_CB_ASID(cfg) << 48;
+-			writeq_relaxed(iova, reg);
++			while (size) {
++				writeq_relaxed(iova, reg);
++				size -= granule;
++				iova += granule >> 12;
++			}
+ #endif
+ 		}
+ #ifdef CONFIG_64BIT
+@@ -610,7 +618,12 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 		reg = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
+ 		reg += leaf ? ARM_SMMU_CB_S2_TLBIIPAS2L :
+ 			      ARM_SMMU_CB_S2_TLBIIPAS2;
+-		writeq_relaxed(iova >> 12, reg);
++		iova >>= 12;
++		while (size) {
++			writeq_relaxed(iova, reg);
++			size -= granule;
++			iova += granule >> 12;
++		}
+ #endif
+ 	} else {
+ 		reg = ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_TLBIVMID;
 -- 
 1.9.1
