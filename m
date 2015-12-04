@@ -1,8 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 4/5] iommu/io-pgtable: Make io_pgtable_ops_to_pgtable() macro
-	common
-Date: Fri,  4 Dec 2015 17:53:01 +0000
-Message-ID: <ef5954ba727840a020b62b0135a1ce9f4a10fb2c.1449246988.git.robin.murphy@arm.com>
+Subject: [PATCH 2/5] iommu/io-pgtable: Indicate granule for TLB maintenance
+Date: Fri,  4 Dec 2015 17:52:59 +0000
+Message-ID: <67223d4b1ff57f3f46e8c3102e663a063a50a7f7.1449246988.git.robin.murphy@arm.com>
 References: <cover.1449246988.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,42 +21,187 @@ To: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8
 Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-There is no need to keep a useful accessor for a public structure hidden
-away in a private implementation. Move it out alongside the structure
-definition so that other implementations may reuse it.
+IOMMU hardware with range-based TLB maintenance commands can work
+happily with the iova and size arguments passed via the tlb_add_flush
+callback, but for IOMMUs which require separate commands per entry in
+the range, it is not straightforward to infer the necessary granularity
+when it comes to issuing the actual commands.
+
+Add an additional argument indicating the granularity for the benefit
+of drivers needing to know, and update the ARM LPAE code appropriately
+(for non-leaf invalidations we currently just assume the worst-case
+page granularity rather than walking the table to check).
 
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/io-pgtable-arm.c | 3 ---
- drivers/iommu/io-pgtable.h     | 2 ++
- 2 files changed, 2 insertions(+), 3 deletions(-)
+ drivers/iommu/arm-smmu-v3.c    |  2 +-
+ drivers/iommu/arm-smmu.c       |  2 +-
+ drivers/iommu/io-pgtable-arm.c | 27 +++++++++++++++------------
+ drivers/iommu/io-pgtable.h     |  4 ++--
+ drivers/iommu/ipmmu-vmsa.c     |  4 ++--
+ 5 files changed, 21 insertions(+), 18 deletions(-)
 
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 4e5118a..c302b65 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1335,7 +1335,7 @@ static void arm_smmu_tlb_inv_context(void *cookie)
+ }
+ 
+ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+-					  bool leaf, void *cookie)
++					  size_t granule, bool leaf, void *cookie)
+ {
+ 	struct arm_smmu_domain *smmu_domain = cookie;
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 47dc7a7..601e3dd 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -582,7 +582,7 @@ static void arm_smmu_tlb_inv_context(void *cookie)
+ }
+ 
+ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+-					  bool leaf, void *cookie)
++					  size_t granule, bool leaf, void *cookie)
+ {
+ 	struct arm_smmu_domain *smmu_domain = cookie;
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
 diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 9088d27..1619681 100644
+index 366a354..9088d27 100644
 --- a/drivers/iommu/io-pgtable-arm.c
 +++ b/drivers/iommu/io-pgtable-arm.c
-@@ -38,9 +38,6 @@
- #define io_pgtable_to_data(x)						\
- 	container_of((x), struct arm_lpae_io_pgtable, iop)
+@@ -58,8 +58,10 @@
+ 	((((d)->levels - ((l) - ARM_LPAE_START_LVL(d) + 1))		\
+ 	  * (d)->bits_per_level) + (d)->pg_shift)
  
--#define io_pgtable_ops_to_pgtable(x)					\
--	container_of((x), struct io_pgtable, ops)
--
- #define io_pgtable_ops_to_data(x)					\
- 	io_pgtable_to_data(io_pgtable_ops_to_pgtable(x))
++#define ARM_LPAE_GRANULE(d)		(1UL << (d)->pg_shift)
++
+ #define ARM_LPAE_PAGES_PER_PGD(d)					\
+-	DIV_ROUND_UP((d)->pgd_size, 1UL << (d)->pg_shift)
++	DIV_ROUND_UP((d)->pgd_size, ARM_LPAE_GRANULE(d))
  
+ /*
+  * Calculate the index at level l used to map virtual address a using the
+@@ -169,7 +171,7 @@
+ /* IOPTE accessors */
+ #define iopte_deref(pte,d)					\
+ 	(__va((pte) & ((1ULL << ARM_LPAE_MAX_ADDR_BITS) - 1)	\
+-	& ~((1ULL << (d)->pg_shift) - 1)))
++	& ~(ARM_LPAE_GRANULE(d) - 1)))
+ 
+ #define iopte_type(pte,l)					\
+ 	(((pte) >> ARM_LPAE_PTE_TYPE_SHIFT) & ARM_LPAE_PTE_TYPE_MASK)
+@@ -326,7 +328,7 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
+ 	/* Grab a pointer to the next level */
+ 	pte = *ptep;
+ 	if (!pte) {
+-		cptep = __arm_lpae_alloc_pages(1UL << data->pg_shift,
++		cptep = __arm_lpae_alloc_pages(ARM_LPAE_GRANULE(data),
+ 					       GFP_ATOMIC, cfg);
+ 		if (!cptep)
+ 			return -ENOMEM;
+@@ -412,7 +414,7 @@ static void __arm_lpae_free_pgtable(struct arm_lpae_io_pgtable *data, int lvl,
+ 	if (lvl == ARM_LPAE_START_LVL(data))
+ 		table_size = data->pgd_size;
+ 	else
+-		table_size = 1UL << data->pg_shift;
++		table_size = ARM_LPAE_GRANULE(data);
+ 
+ 	start = ptep;
+ 	end = (void *)ptep + table_size;
+@@ -473,7 +475,7 @@ static int arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+ 
+ 	__arm_lpae_set_pte(ptep, table, cfg);
+ 	iova &= ~(blk_size - 1);
+-	cfg->tlb->tlb_add_flush(iova, blk_size, true, data->iop.cookie);
++	cfg->tlb->tlb_add_flush(iova, blk_size, blk_size, true, data->iop.cookie);
+ 	return size;
+ }
+ 
+@@ -501,12 +503,13 @@ static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 
+ 		if (!iopte_leaf(pte, lvl)) {
+ 			/* Also flush any partial walks */
+-			tlb->tlb_add_flush(iova, size, false, cookie);
++			tlb->tlb_add_flush(iova, size, ARM_LPAE_GRANULE(data),
++					   false, cookie);
+ 			tlb->tlb_sync(cookie);
+ 			ptep = iopte_deref(pte, data);
+ 			__arm_lpae_free_pgtable(data, lvl + 1, ptep);
+ 		} else {
+-			tlb->tlb_add_flush(iova, size, true, cookie);
++			tlb->tlb_add_flush(iova, size, size, true, cookie);
+ 		}
+ 
+ 		return size;
+@@ -572,7 +575,7 @@ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+ 	return 0;
+ 
+ found_translation:
+-	iova &= ((1 << data->pg_shift) - 1);
++	iova &= (ARM_LPAE_GRANULE(data) - 1);
+ 	return ((phys_addr_t)iopte_to_pfn(pte,data) << data->pg_shift) | iova;
+ }
+ 
+@@ -670,7 +673,7 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+ 	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT) |
+ 	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
+ 
+-	switch (1 << data->pg_shift) {
++	switch (ARM_LPAE_GRANULE(data)) {
+ 	case SZ_4K:
+ 		reg |= ARM_LPAE_TCR_TG0_4K;
+ 		break;
+@@ -771,7 +774,7 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
+ 
+ 	sl = ARM_LPAE_START_LVL(data);
+ 
+-	switch (1 << data->pg_shift) {
++	switch (ARM_LPAE_GRANULE(data)) {
+ 	case SZ_4K:
+ 		reg |= ARM_LPAE_TCR_TG0_4K;
+ 		sl++; /* SL0 format is different for 4K granule size */
+@@ -891,8 +894,8 @@ static void dummy_tlb_flush_all(void *cookie)
+ 	WARN_ON(cookie != cfg_cookie);
+ }
+ 
+-static void dummy_tlb_add_flush(unsigned long iova, size_t size, bool leaf,
+-				void *cookie)
++static void dummy_tlb_add_flush(unsigned long iova, size_t size,
++				size_t granule, bool leaf, void *cookie)
+ {
+ 	WARN_ON(cookie != cfg_cookie);
+ 	WARN_ON(!(size & cfg_cookie->pgsize_bitmap));
 diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-index 2e18469..36673c8 100644
+index ac9e234..2e18469 100644
 --- a/drivers/iommu/io-pgtable.h
 +++ b/drivers/iommu/io-pgtable.h
-@@ -131,6 +131,8 @@ struct io_pgtable {
- 	struct io_pgtable_ops	ops;
+@@ -26,8 +26,8 @@ enum io_pgtable_fmt {
+  */
+ struct iommu_gather_ops {
+ 	void (*tlb_flush_all)(void *cookie);
+-	void (*tlb_add_flush)(unsigned long iova, size_t size, bool leaf,
+-			      void *cookie);
++	void (*tlb_add_flush)(unsigned long iova, size_t size, size_t granule,
++			      bool leaf, void *cookie);
+ 	void (*tlb_sync)(void *cookie);
  };
  
-+#define io_pgtable_ops_to_pgtable(x) container_of((x), struct io_pgtable, ops)
-+
- /**
-  * struct io_pgtable_init_fns - Alloc/free a set of page tables for a
-  *                              particular format.
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 8cf605f..5b1166d 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -277,8 +277,8 @@ static void ipmmu_tlb_flush_all(void *cookie)
+ 	ipmmu_tlb_invalidate(domain);
+ }
+ 
+-static void ipmmu_tlb_add_flush(unsigned long iova, size_t size, bool leaf,
+-				void *cookie)
++static void ipmmu_tlb_add_flush(unsigned long iova, size_t size,
++				size_t granule, bool leaf, void *cookie)
+ {
+ 	/* The hardware doesn't support selective TLB flush. */
+ }
 -- 
 1.9.1
