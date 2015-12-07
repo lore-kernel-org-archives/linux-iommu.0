@@ -1,14 +1,13 @@
-From: Shaohua Li <shli-b10kYP2dOMg@public.gmane.org>
-Subject: Re: [PATCH 0/4] iommu: remove lock contention in iova allocation
-Date: Mon, 7 Dec 2015 09:52:31 -0800
-Message-ID: <20151207175230.GA2746403@devbig084.prn1.facebook.com>
-References: <cover.1448401089.git.shli@fb.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v2] iommu/arm-smmu: Invalidate TLBs properly
+Date: Mon,  7 Dec 2015 18:18:52 +0000
+Message-ID: <ac2d6aedf473cf01eb1df48a1f81614f0f74b0b1.1449501523.git.robin.murphy@arm.com>
+References: <2acaea8656f14a4421d7d466dd242fe5a3d0f6f6.1449246988.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <cover.1448401089.git.shli-b10kYP2dOMg@public.gmane.org>
+In-Reply-To: <2acaea8656f14a4421d7d466dd242fe5a3d0f6f6.1449246988.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,49 +17,82 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Ping!
+When invalidating an IOVA range potentially spanning multiple pages,
+such as when removing an entire intermediate-level table, we currently
+only issue an invalidation for the first IOVA of that range. Since the
+architecture specifies that address-based TLB maintenance operations
+target a single entry, an SMMU could feasibly retain live entries for
+subsequent pages within that unmapped range, which is not good.
 
-On Tue, Nov 24, 2015 at 01:54:06PM -0800, Shaohua Li wrote:
-> Hi,
-> 
-> The lock contention in iova allocation is very significant. In my iperf test
-> with intel 10Gbps NIC card with 48 threads, I observed 99% cpu time is spending
-> on the lock contention. In the test:
-> 
-> CPU utilization 100%, iperf reports ~1Gbps
-> 
-> The patches introduce a bitmap based approach for dma address allocation. It
-> completetly avoids the lock contention. Run the same test:
-> 
-> CPU utilization 1%, iperf reports 9.3Gbps
-> 
-> I also tried the test with the patch, but disable bitmap. The result is the
-> same as that without the patch.
-> 
-> The patches only work for DMA less than 8k, which is the most comman case we
-> have highest request(DMA) per second. Bigger size DMA still fallback to rbtree
-> based allocation. But if required and DAC is enabled by default, it's easy to
-> support bigger size DMA in the bitmap allocation.
-> 
-> Thanks,
-> Shaohua
-> 
-> 
-> Shaohua Li (4):
->   iommu: alloc_iova returns a pfn
->   iommu: add a bitmap based dma address allocator
->   iommu: enable bitmap allocation for intel iommu
->   iommu: free_iova doesn't need lock twice
-> 
->  drivers/iommu/dma-iommu.c   |  32 ++++-----
->  drivers/iommu/intel-iommu.c |  96 ++++++++++++++++-----------
->  drivers/iommu/iova.c        | 157 +++++++++++++++++++++++++++++++++-----------
->  include/linux/iova.h        |  21 ++++--
->  4 files changed, 210 insertions(+), 96 deletions(-)
-> 
-> -- 
-> 2.4.6
-> 
+Make sure we hit every possible entry by iterating over the whole range
+at the granularity provided by the pagetable implementation.
+
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+
+v2: include SMMUv3 fix, use the same shorter loop construct everywhere.
+
+ drivers/iommu/arm-smmu-v3.c |  5 ++++-
+ drivers/iommu/arm-smmu.c    | 16 +++++++++++++---
+ 2 files changed, 17 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index c302b65..8bb5abf 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1354,7 +1354,10 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
+ 	}
+ 
+-	arm_smmu_cmdq_issue_cmd(smmu, &cmd);
++	do {
++		arm_smmu_cmdq_issue_cmd(smmu, &cmd);
++		cmd.tlbi.addr += granule;
++	} while (size -= granule);
+ }
+ 
+ static struct iommu_gather_ops arm_smmu_gather_ops = {
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 601e3dd..eb28c3e 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -597,12 +597,18 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 		if (!IS_ENABLED(CONFIG_64BIT) || smmu->version == ARM_SMMU_V1) {
+ 			iova &= ~12UL;
+ 			iova |= ARM_SMMU_CB_ASID(cfg);
+-			writel_relaxed(iova, reg);
++			do {
++				writel_relaxed(iova, reg);
++				iova += granule;
++			} while (size -= granule);
+ #ifdef CONFIG_64BIT
+ 		} else {
+ 			iova >>= 12;
+ 			iova |= (u64)ARM_SMMU_CB_ASID(cfg) << 48;
+-			writeq_relaxed(iova, reg);
++			do {
++				writeq_relaxed(iova, reg);
++				iova += granule >> 12;
++			} while (size -= granule)
+ #endif
+ 		}
+ #ifdef CONFIG_64BIT
+@@ -610,7 +616,11 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 		reg = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
+ 		reg += leaf ? ARM_SMMU_CB_S2_TLBIIPAS2L :
+ 			      ARM_SMMU_CB_S2_TLBIIPAS2;
+-		writeq_relaxed(iova >> 12, reg);
++		iova >>= 12;
++		do {
++			writeq_relaxed(iova, reg);
++			iova += granule >> 12;
++		} while (size -= granule)
+ #endif
+ 	} else {
+ 		reg = ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_TLBIVMID;
+-- 
+1.9.1
