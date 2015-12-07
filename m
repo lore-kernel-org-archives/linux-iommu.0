@@ -1,15 +1,15 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 2/5] iommu/io-pgtable: Indicate granule for TLB maintenance
-Date: Mon, 7 Dec 2015 12:09:56 +0000
-Message-ID: <56657714.50504@arm.com>
+Subject: Re: [PATCH 3/5] iommu/arm-smmu: Invalidate TLBs properly
+Date: Mon, 7 Dec 2015 13:09:35 +0000
+Message-ID: <5665850F.1060406@arm.com>
 References: <cover.1449246988.git.robin.murphy@arm.com>
-	<67223d4b1ff57f3f46e8c3102e663a063a50a7f7.1449246988.git.robin.murphy@arm.com>
-	<20151207110804.GA23430@arm.com>
+	<2acaea8656f14a4421d7d466dd242fe5a3d0f6f6.1449246988.git.robin.murphy@arm.com>
+	<20151207110939.GB23430@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20151207110804.GA23430-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20151207110939.GB23430-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,64 +23,71 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 07/12/15 11:08, Will Deacon wrote:
-[...]
->> +#define ARM_LPAE_GRANULE(d)		(1UL << (d)->pg_shift)
->> +
->>   #define ARM_LPAE_PAGES_PER_PGD(d)					\
->> -	DIV_ROUND_UP((d)->pgd_size, 1UL << (d)->pg_shift)
->> +	DIV_ROUND_UP((d)->pgd_size, ARM_LPAE_GRANULE(d))
+On 07/12/15 11:09, Will Deacon wrote:
+> On Fri, Dec 04, 2015 at 05:53:00PM +0000, Robin Murphy wrote:
+>> When invalidating an IOVA range potentially spanning multiple pages,
+>> such as when removing an entire intermediate-level table, we currently
+>> only issue an invalidation for the first IOVA of that range. Since the
+>> architecture specifies that address-based TLB maintenance operations
+>> target a single entry, an SMMU could feasibly retain live entries for
+>> subsequent pages within that unmapped range, which is not good.
 >>
->>   /*
->>    * Calculate the index at level l used to map virtual address a using the
->> @@ -169,7 +171,7 @@
->>   /* IOPTE accessors */
->>   #define iopte_deref(pte,d)					\
->>   	(__va((pte) & ((1ULL << ARM_LPAE_MAX_ADDR_BITS) - 1)	\
->> -	& ~((1ULL << (d)->pg_shift) - 1)))
->> +	& ~(ARM_LPAE_GRANULE(d) - 1)))
+>> Make sure we hit every possible entry by iterating over the whole range
+>> at the granularity provided by the pagetable implementation.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> ---
+>>   drivers/iommu/arm-smmu.c | 19 ++++++++++++++++---
+>>   1 file changed, 16 insertions(+), 3 deletions(-)
 >
-> Do we run the risk of truncating the VA on 32-bit ARM here?
+> Can you do something similar for arm-smmu-v3.c as well, please?
 
-Indeed, in all honesty I'd missed that, but since __va is going to 
-truncate it to a 32-bit void * anyway, doing it earlier in the 
-expression actually seems to result in better code - with iopte_deref 
-wrapped like so to make it easier to pick out:
+Something like this? (untested as I don't have a v3 model set up):
 
-arm_lpae_iopte *__iopte_deref(arm_lpae_iopte pte, struct 
-arm_lpae_io_pgtable *d) {
-	return iopte_deref(pte, d);
-}
+------>8------
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Date: Mon, 7 Dec 2015 12:52:56 +0000
+Subject: [PATCH] iommu/arm-smmu: Fix TLB invalidation
 
-the result goes from this:
+SMMUv3 operates under the same rules as SMMUv2 and the CPU
+architectures, so when invalidating an IOVA range we have to hit
+every address for which a TLB entry might exist.
 
-1568:	e92d4070 	push	{r4, r5, r6, lr}
-156c:	e3a0e001 	mov	lr, #1
-1570:	e592c060 	ldr	ip, [r2, #96]	; 0x60
-1574:	e3e04000 	mvn	r4, #0
-1578:	e30f5fff 	movw	r5, #65535	; 0xffff
-157c:	e26c6020 	rsb	r6, ip, #32
-1580:	e1a02c1e 	lsl	r2, lr, ip
-1584:	e2722000 	rsbs	r2, r2, #0
-1588:	e0000002 	and	r0, r0, r2
-158c:	e0000004 	and	r0, r0, r4
-1590:	e2400481 	sub	r0, r0, #-2130706432	; 0x81000000
-1594:	e8bd8070 	pop	{r4, r5, r6, pc}
+To fix this, issue commands for the whole range rather than just the
+initial address; as a minor optimisation, try to avoid flooding the
+queue by falling back to 'invalidate all' if the range is large.
 
-to this:
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+  drivers/iommu/arm-smmu-v3.c | 9 ++++++++-
+  1 file changed, 8 insertions(+), 1 deletion(-)
 
-151c:	e5922060	ldr	r2, [r2, #96] ; 0x60
-1520:	e3e03000	mvn	r3, #0
-1524:	e1a03213	lsl	r3, r3, r2
-1528:	e0000003	and	r0, r0, r3
-152c:	e2400481	sub	r0, r0, #-2130706432 ; 0x81000000
-1530:	e12fff1e	bx	lr
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index c302b65..afa0b41 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1346,6 +1346,10 @@ static void 
+arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+  		},
+  	};
 
-which, given how mind-bogglingly silly some of the former code looks, 
-seems like an inadvertent win.
++	/* If we'd fill the whole queue or more, don't even bother... */
++	if (granule << smmu->cmdq.q.max_n_shift >= size / (CMDQ_ENT_DWORDS << 3))
++		return arm_smmu_tlb_inv_context(cookie);
++
+  	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
+  		cmd.opcode	= CMDQ_OP_TLBI_NH_VA;
+  		cmd.tlbi.asid	= smmu_domain->s1_cfg.cd.asid;
+@@ -1354,7 +1358,10 @@ static void 
+arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+  		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
+  	}
 
-Robin.
+-	arm_smmu_cmdq_issue_cmd(smmu, &cmd);
++	do {
++		arm_smmu_cmdq_issue_cmd(smmu, &cmd);
++		cmd.tlbi.addr += granule;
++	} while (size -= granule);
+  }
 
->
-> Will
->
+  static struct iommu_gather_ops arm_smmu_gather_ops = {
