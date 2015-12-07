@@ -1,13 +1,15 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2] iommu/io-pgtable: Indicate granule for TLB maintenance
-Date: Mon,  7 Dec 2015 18:18:53 +0000
-Message-ID: <d86f273f520fd8ab7baec0af120fce601e42f6ec.1449511351.git.robin.murphy@arm.com>
-References: <67223d4b1ff57f3f46e8c3102e663a063a50a7f7.1449246988.git.robin.murphy@arm.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2] iommu/arm-smmu: Invalidate TLBs properly
+Date: Mon, 7 Dec 2015 18:28:21 +0000
+Message-ID: <20151207182821.GH26191@arm.com>
+References: <2acaea8656f14a4421d7d466dd242fe5a3d0f6f6.1449246988.git.robin.murphy@arm.com>
+	<ac2d6aedf473cf01eb1df48a1f81614f0f74b0b1.1449501523.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <67223d4b1ff57f3f46e8c3102e663a063a50a7f7.1449246988.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <ac2d6aedf473cf01eb1df48a1f81614f0f74b0b1.1449501523.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,197 +19,87 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-IOMMU hardware with range-based TLB maintenance commands can work
-happily with the iova and size arguments passed via the tlb_add_flush
-callback, but for IOMMUs which require separate commands per entry in
-the range, it is not straightforward to infer the necessary granularity
-when it comes to issuing the actual commands.
+On Mon, Dec 07, 2015 at 06:18:52PM +0000, Robin Murphy wrote:
+> When invalidating an IOVA range potentially spanning multiple pages,
+> such as when removing an entire intermediate-level table, we currently
+> only issue an invalidation for the first IOVA of that range. Since the
+> architecture specifies that address-based TLB maintenance operations
+> target a single entry, an SMMU could feasibly retain live entries for
+> subsequent pages within that unmapped range, which is not good.
+> 
+> Make sure we hit every possible entry by iterating over the whole range
+> at the granularity provided by the pagetable implementation.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+> 
+> v2: include SMMUv3 fix, use the same shorter loop construct everywhere.
+> 
+>  drivers/iommu/arm-smmu-v3.c |  5 ++++-
+>  drivers/iommu/arm-smmu.c    | 16 +++++++++++++---
+>  2 files changed, 17 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index c302b65..8bb5abf 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -1354,7 +1354,10 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+>  		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
+>  	}
+>  
+> -	arm_smmu_cmdq_issue_cmd(smmu, &cmd);
+> +	do {
+> +		arm_smmu_cmdq_issue_cmd(smmu, &cmd);
+> +		cmd.tlbi.addr += granule;
+> +	} while (size -= granule);
+>  }
+>  
+>  static struct iommu_gather_ops arm_smmu_gather_ops = {
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 601e3dd..eb28c3e 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -597,12 +597,18 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+>  		if (!IS_ENABLED(CONFIG_64BIT) || smmu->version == ARM_SMMU_V1) {
+>  			iova &= ~12UL;
+>  			iova |= ARM_SMMU_CB_ASID(cfg);
+> -			writel_relaxed(iova, reg);
+> +			do {
+> +				writel_relaxed(iova, reg);
+> +				iova += granule;
+> +			} while (size -= granule);
+>  #ifdef CONFIG_64BIT
+>  		} else {
+>  			iova >>= 12;
+>  			iova |= (u64)ARM_SMMU_CB_ASID(cfg) << 48;
+> -			writeq_relaxed(iova, reg);
+> +			do {
+> +				writeq_relaxed(iova, reg);
+> +				iova += granule >> 12;
+> +			} while (size -= granule)
 
-Add an additional argument indicating the granularity for the benefit
-of drivers needing to know, and update the ARM LPAE code appropriately
-(for non-leaf invalidations we currently just assume the worst-case
-page granularity rather than walking the table to check).
+This doesn't compile.
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
+>  #endif
+>  		}
+>  #ifdef CONFIG_64BIT
+> @@ -610,7 +616,11 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+>  		reg = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
+>  		reg += leaf ? ARM_SMMU_CB_S2_TLBIIPAS2L :
+>  			      ARM_SMMU_CB_S2_TLBIIPAS2;
+> -		writeq_relaxed(iova >> 12, reg);
+> +		iova >>= 12;
+> +		do {
+> +			writeq_relaxed(iova, reg);
+> +			iova += granule >> 12;
+> +		} while (size -= granule)
 
-v2: avoid truncation in iopte_deref - forcing the type promotion in
-    the subtraction rather than the shift still somewhat improves the
-    resulting 32-bit assembly code, too.
+Same here.
 
-assembly code
- drivers/iommu/arm-smmu-v3.c    |  2 +-
- drivers/iommu/arm-smmu.c       |  2 +-
- drivers/iommu/io-pgtable-arm.c | 27 +++++++++++++++------------
- drivers/iommu/io-pgtable.h     |  4 ++--
- drivers/iommu/ipmmu-vmsa.c     |  4 ++--
- 5 files changed, 21 insertions(+), 18 deletions(-)
+Please at least build your patches, and preferably test them too.
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 4e5118a..c302b65 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1335,7 +1335,7 @@ static void arm_smmu_tlb_inv_context(void *cookie)
- }
- 
- static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
--					  bool leaf, void *cookie)
-+					  size_t granule, bool leaf, void *cookie)
- {
- 	struct arm_smmu_domain *smmu_domain = cookie;
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 47dc7a7..601e3dd 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -582,7 +582,7 @@ static void arm_smmu_tlb_inv_context(void *cookie)
- }
- 
- static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
--					  bool leaf, void *cookie)
-+					  size_t granule, bool leaf, void *cookie)
- {
- 	struct arm_smmu_domain *smmu_domain = cookie;
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 366a354..7a5c772 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -58,8 +58,10 @@
- 	((((d)->levels - ((l) - ARM_LPAE_START_LVL(d) + 1))		\
- 	  * (d)->bits_per_level) + (d)->pg_shift)
- 
-+#define ARM_LPAE_GRANULE(d)		(1UL << (d)->pg_shift)
-+
- #define ARM_LPAE_PAGES_PER_PGD(d)					\
--	DIV_ROUND_UP((d)->pgd_size, 1UL << (d)->pg_shift)
-+	DIV_ROUND_UP((d)->pgd_size, ARM_LPAE_GRANULE(d))
- 
- /*
-  * Calculate the index at level l used to map virtual address a using the
-@@ -169,7 +171,7 @@
- /* IOPTE accessors */
- #define iopte_deref(pte,d)					\
- 	(__va((pte) & ((1ULL << ARM_LPAE_MAX_ADDR_BITS) - 1)	\
--	& ~((1ULL << (d)->pg_shift) - 1)))
-+	& ~(ARM_LPAE_GRANULE(d) - 1ULL)))
- 
- #define iopte_type(pte,l)					\
- 	(((pte) >> ARM_LPAE_PTE_TYPE_SHIFT) & ARM_LPAE_PTE_TYPE_MASK)
-@@ -326,7 +328,7 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
- 	/* Grab a pointer to the next level */
- 	pte = *ptep;
- 	if (!pte) {
--		cptep = __arm_lpae_alloc_pages(1UL << data->pg_shift,
-+		cptep = __arm_lpae_alloc_pages(ARM_LPAE_GRANULE(data),
- 					       GFP_ATOMIC, cfg);
- 		if (!cptep)
- 			return -ENOMEM;
-@@ -412,7 +414,7 @@ static void __arm_lpae_free_pgtable(struct arm_lpae_io_pgtable *data, int lvl,
- 	if (lvl == ARM_LPAE_START_LVL(data))
- 		table_size = data->pgd_size;
- 	else
--		table_size = 1UL << data->pg_shift;
-+		table_size = ARM_LPAE_GRANULE(data);
- 
- 	start = ptep;
- 	end = (void *)ptep + table_size;
-@@ -473,7 +475,7 @@ static int arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
- 
- 	__arm_lpae_set_pte(ptep, table, cfg);
- 	iova &= ~(blk_size - 1);
--	cfg->tlb->tlb_add_flush(iova, blk_size, true, data->iop.cookie);
-+	cfg->tlb->tlb_add_flush(iova, blk_size, blk_size, true, data->iop.cookie);
- 	return size;
- }
- 
-@@ -501,12 +503,13 @@ static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 
- 		if (!iopte_leaf(pte, lvl)) {
- 			/* Also flush any partial walks */
--			tlb->tlb_add_flush(iova, size, false, cookie);
-+			tlb->tlb_add_flush(iova, size, ARM_LPAE_GRANULE(data),
-+					   false, cookie);
- 			tlb->tlb_sync(cookie);
- 			ptep = iopte_deref(pte, data);
- 			__arm_lpae_free_pgtable(data, lvl + 1, ptep);
- 		} else {
--			tlb->tlb_add_flush(iova, size, true, cookie);
-+			tlb->tlb_add_flush(iova, size, size, true, cookie);
- 		}
- 
- 		return size;
-@@ -572,7 +575,7 @@ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
- 	return 0;
- 
- found_translation:
--	iova &= ((1 << data->pg_shift) - 1);
-+	iova &= (ARM_LPAE_GRANULE(data) - 1);
- 	return ((phys_addr_t)iopte_to_pfn(pte,data) << data->pg_shift) | iova;
- }
- 
-@@ -670,7 +673,7 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT) |
- 	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
- 
--	switch (1 << data->pg_shift) {
-+	switch (ARM_LPAE_GRANULE(data)) {
- 	case SZ_4K:
- 		reg |= ARM_LPAE_TCR_TG0_4K;
- 		break;
-@@ -771,7 +774,7 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
- 
- 	sl = ARM_LPAE_START_LVL(data);
- 
--	switch (1 << data->pg_shift) {
-+	switch (ARM_LPAE_GRANULE(data)) {
- 	case SZ_4K:
- 		reg |= ARM_LPAE_TCR_TG0_4K;
- 		sl++; /* SL0 format is different for 4K granule size */
-@@ -891,8 +894,8 @@ static void dummy_tlb_flush_all(void *cookie)
- 	WARN_ON(cookie != cfg_cookie);
- }
- 
--static void dummy_tlb_add_flush(unsigned long iova, size_t size, bool leaf,
--				void *cookie)
-+static void dummy_tlb_add_flush(unsigned long iova, size_t size,
-+				size_t granule, bool leaf, void *cookie)
- {
- 	WARN_ON(cookie != cfg_cookie);
- 	WARN_ON(!(size & cfg_cookie->pgsize_bitmap));
-diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-index ac9e234..2e18469 100644
---- a/drivers/iommu/io-pgtable.h
-+++ b/drivers/iommu/io-pgtable.h
-@@ -26,8 +26,8 @@ enum io_pgtable_fmt {
-  */
- struct iommu_gather_ops {
- 	void (*tlb_flush_all)(void *cookie);
--	void (*tlb_add_flush)(unsigned long iova, size_t size, bool leaf,
--			      void *cookie);
-+	void (*tlb_add_flush)(unsigned long iova, size_t size, size_t granule,
-+			      bool leaf, void *cookie);
- 	void (*tlb_sync)(void *cookie);
- };
- 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 8cf605f..5b1166d 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -277,8 +277,8 @@ static void ipmmu_tlb_flush_all(void *cookie)
- 	ipmmu_tlb_invalidate(domain);
- }
- 
--static void ipmmu_tlb_add_flush(unsigned long iova, size_t size, bool leaf,
--				void *cookie)
-+static void ipmmu_tlb_add_flush(unsigned long iova, size_t size,
-+				size_t granule, bool leaf, void *cookie)
- {
- 	/* The hardware doesn't support selective TLB flush. */
- }
--- 
-1.9.1
+Will
