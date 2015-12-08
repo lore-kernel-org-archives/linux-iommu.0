@@ -1,302 +1,217 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH 5/5] iommu/io-pgtable: Add ARMv7 short descriptor support
-Date: Tue, 8 Dec 2015 16:58:11 +0800
-Message-ID: <1449565091.14761.32.camel@mhfsdcap03>
-References: <cover.1449246988.git.robin.murphy@arm.com>
-	<3c72de1e8caa28cbfd423de41c6cba812db4e7db.1449246988.git.robin.murphy@arm.com>
+From: Yong Wu <yong.wu@mediatek.com>
+Subject: [PATCH v6 1/5] dt-bindings: iommu: Add binding for mediatek IOMMU
+Date: Tue, 8 Dec 2015 17:49:09 +0800
+Message-ID: <1449568153-15643-2-git-send-email-yong.wu@mediatek.com>
+References: <1449568153-15643-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <3c72de1e8caa28cbfd423de41c6cba812db4e7db.1449246988.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1449568153-15643-1-git-send-email-yong.wu@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Lucas Stach <l.stach@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org, Sasha Hauer <kernel@pengutronix.de>, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, pebolle@tiscali.nl, arnd@arndb.de, mitchelh@codeaurora.org, p.zabel@pengutronix.de, yingjoe.chen@mediatek.com, Yong Wu <yong.wu@mediatek.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+This patch add mediatek iommu dts binding document.
 
-   Thanks very much for your rewriting. It looks more pretty.
-   
-   This works well in my selftest. and I will push to our chrome branch
-and request our video/display to test more.
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+---
+ .../devicetree/bindings/iommu/mediatek,iommu.txt   |  68 +++++++++++++
+ include/dt-bindings/memory/mt8173-larb-port.h      | 111 +++++++++++++++++++++
+ 2 files changed, 179 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
+ create mode 100644 include/dt-bindings/memory/mt8173-larb-port.h
 
-   Only a little comment below.
-
-On Fri, 2015-12-04 at 17:53 +0000, Robin Murphy wrote:
-> Add a nearly-complete ARMv7 short descriptor implementation, omitting
-> only a few legacy and CPU-centric aspects which shouldn't be necessary
-> for IOMMU API use anyway.
-> 
-> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
-[...]
-> +/* PTE type bits: these are all mixed up with XN/PXN bits in most cases */
-> +#define ARM_V7S_PTE_TYPE_TABLE		0x1
-> +#define ARM_V7S_PTE_TYPE_PAGE		0x2
-> +#define ARM_V7S_PTE_TYPE_CONT_PAGE	0x1
-
->From the spec, This is Large page, Do we need add a comment for
-readable?
-/* Large page */
-
-and add /* Supersection */ for CONT_SECTION too.
-
-> +
-> +#define ARM_V7S_PTE_IS_VALID(pte)	(((pte) & 0x3) != 0)
-> +#define ARM_V7S_PTE_IS_TABLE(pte, lvl)	(lvl < 2 && ((pte) & ARM_V7S_PTE_TYPE_TABLE))
-> +
-> +/* Page table bits */
-> +#define ARM_V7S_ATTR_XN(lvl)		BIT(4 * (2 - (lvl)))
-> +#define ARM_V7S_ATTR_B			BIT(2)
-> +#define ARM_V7S_ATTR_C			BIT(3)
-> +#define ARM_V7S_ATTR_NS_TABLE		BIT(3)
-> +#define ARM_V7S_ATTR_NS_SECTION		BIT(19)
-> +
-> +#define ARM_V7S_CONT_SECTION		BIT(18)
-> +#define ARM_V7S_CONT_PAGE_XN_SHIFT	15
-> +
-[...]
-> +static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
-> +				   struct arm_v7s_io_pgtable *data)
-> +{
-> +	struct device *dev = data->iop.cfg.iommu_dev;
-> +	dma_addr_t dma;
-> +	size_t size = ARM_V7S_TABLE_SIZE(lvl);
-> +	void *table = NULL;
-> +
-> +	if (lvl == 1)
-> +		table = (void *)__get_dma_pages(__GFP_ZERO, get_order(size));
-> +	else if (lvl == 2)
-> +		table = kmem_cache_zalloc(data->l2_tables, gfp);
-> +	if (table && !selftest_running) {
-> +		dma = dma_map_single(dev, table, size, DMA_TO_DEVICE);
-> +		if (dma_mapping_error(dev, dma))
-> +			goto out_free;
-> +		/*
-> +		 * We depend on the IOMMU being able to work with any physical
-> +		 * address directly, so if the DMA layer suggests otherwise by
-> +		 * translating or truncating them, that bodes very badly...
-> +		 */
-> +		if (dma != virt_to_phys(table))
-> +			goto out_unmap;
-> +	}
-
-There is some special while we use kmem_cache, we save the physical
-address into the pagetable, then get the virtual address via
-phys_to_virt, then free it.
-It isn't same with the normal case that saving the va and free the va.
-Do we need add kmemleak_ignore here?
-
-> +	return table;
-> +
-> +out_unmap:
-> +	dev_err(dev, "Cannot accommodate DMA translation for IOMMU page tables\n");
-> +	dma_unmap_single(dev, dma, size, DMA_TO_DEVICE);
-> +out_free:
-> +	if (lvl == 1)
-> +		free_pages((unsigned long)table, get_order(size));
-> +	else
-> +		kmem_cache_free(data->l2_tables, table);
-> +	return NULL;
-> +}
-> +
-[...]
-> +static int arm_v7s_init_pte(struct arm_v7s_io_pgtable *data,
-> +			    unsigned long iova, phys_addr_t paddr, int prot,
-> +			    int lvl, int num_entries, arm_v7s_iopte *ptep)
-> +{
-> +	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-> +	arm_v7s_iopte pte = arm_v7s_prot_to_pte(prot, lvl, cfg);
-> +	int i;
-> +
-> +	for (i = 0; i < num_entries; i++)
-> +		if (ARM_V7S_PTE_IS_TABLE(ptep[i], lvl)) {
-> +			/*
-> +			 * We need to unmap and free the old table before
-> +			 * overwriting it with a block entry.
-> +			 */
-> +			arm_v7s_iopte *tblp;
-> +			size_t sz = ARM_V7S_BLOCK_SIZE(lvl);
-> +
-> +			tblp = ptep + i - ARM_V7S_LVL_IDX(iova, lvl);
-> +			if (WARN_ON(__arm_v7s_unmap(data, iova, sz, lvl, tblp)
-> +					!= sz))
-> +				return -EINVAL;
-
-Here it may come from Will's "iommu/io-pgtable-arm: Unmap and free table
-when overwriting with block".
-
-But if we have IO_PGTABLE_QUIRK_TLBI_ON_MAP, the condition(1) in that
-comment don't exist.  So we don't need take care whether the exist one
-is a pgtable or not, we could always return -EEXIST here?
-
-> +		} else if (ptep[i]) {
-> +			/* We require an unmap first */
-> +			WARN_ON(!selftest_running);
-> +			return -EEXIST;
-> +		}
-> +
-
-[...]
-
-> +static int __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
-> +			    unsigned long iova, size_t size, int lvl,
-> +			    arm_v7s_iopte *ptep)
-> +{
-> +	arm_v7s_iopte pte[ARM_V7S_CONT_PAGES];
-> +	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-> +	const struct iommu_gather_ops *tlb = cfg->tlb;
-> +	void *cookie = data->iop.cookie;
-> +	int idx, i = 0, num_entries = size >> ARM_V7S_LVL_SHIFT(lvl);
-> +
-> +	/* Something went horribly wrong and we ran out of page table */
-> +	if (WARN_ON(lvl > 2))
-> +		return 0;
-> +
-> +	idx = ARM_V7S_LVL_IDX(iova, lvl);
-> +	ptep += idx;
-> +	do {
-> +		if (WARN_ON(!ARM_V7S_PTE_IS_VALID(ptep[i])))
-> +			return 0;
-> +		pte[i] = ptep[i];
-> +	} while (++i < num_entries);
-> +
-> +	/*
-> +	 * If we've hit a contiguous 'large page' entry at this level, it
-> +	 * needs splitting first, unless we're unmapping the whole lot.
-> +	 */
-> +	if (num_entries <= 1 && arm_v7s_pte_is_cont(pte[0], lvl))
-> +		arm_v7s_split_cont(data, iova, idx, lvl, ptep);
-> +
-> +	/* If the size matches this level, we're in the right place */
-> +	if (num_entries) {
-> +		size_t blk_size = ARM_V7S_BLOCK_SIZE(lvl);
-> +
-> +		__arm_v7s_set_pte(ptep, 0, num_entries, cfg);
-> +
-> +		for (i = 0; i < num_entries; i++) {
-> +			if (ARM_V7S_PTE_IS_TABLE(pte[i], lvl)) {
-> +				/* Also flush any partial walks */
-> +				tlb->tlb_add_flush(iova, blk_size,
-> +						   ARM_V7S_BLOCK_SIZE(2),
-> +						   false, cookie);
-> +				tlb->tlb_sync(cookie);
-
-MTK iommu driver will get a warning here in my test.
-
-There is a tlb_sync here, and in arm_v7s_unmap, there is another one.
-then the flow is:
-
- tlb->tlb_add_flush(xxx)
- tlb->tlb_sync()
- tlb->tlb_sync()
-
-
-In MTK tlb_sync, The code is:
-
-static void mtk_iommu_tlb_sync(void *cookie)
-{
-	struct mtk_iommu_data *data = cookie;
-	int ret;
-	u32 tmp;
-
-	ret = readl_poll_timeout_atomic(data->base + REG_MMU_CPE_DONE, tmp,
-					tmp != 0, 10, 100000);
-	if (ret) {
-		dev_warn(data->dev,
-			 "Partial TLB flush timed out, falling back to full flush\n");
-		mtk_iommu_tlb_flush_all(cookie);
-	}
-	/* Clear the CPE status */
-	writel_relaxed(0, data->base + REG_MMU_CPE_DONE);
-}
-
-In the end of this function, We have to write 0 to clear the CPE status,
-then the HW could check the status in the next time.
-
-So if we call tlb_sync twice continually. It will time out in the second
-time, then we can see this log:
-
-Partial TLB flush timed out, falling back to full flush
-
-I don't know whether it is our HW special behavior, is this case ok in
-the arm-smmu.c?
-Is there some suggestion about this?
-
-
-> +				ptep = iopte_deref(pte[i], lvl);
-> +				__arm_v7s_free_table(ptep, lvl + 1, data);
-> +			} else {
-> +				tlb->tlb_add_flush(iova, blk_size, blk_size,
-> +						   true, cookie);
-> +			}
-> +			iova += blk_size;
-> +		}
-> +		return size;
-> +	} else if (lvl == 1 && !ARM_V7S_PTE_IS_TABLE(pte[0], lvl)) {
-> +		/*
-> +		 * Insert a table at the next level to map the old region,
-> +		 * minus the part we want to unmap
-> +		 */
-> +		return arm_v7s_split_blk_unmap(data, iova, size, ptep);
-> +	}
-> +
-> +	/* Keep on walkin' */
-> +	ptep = iopte_deref(pte[0], lvl);
-> +	return __arm_v7s_unmap(data, iova, size, lvl + 1, ptep);
-> +}
-> +
-> +static int arm_v7s_unmap(struct io_pgtable_ops *ops, unsigned long iova,
-> +			 size_t size)
-> +{
-> +	size_t unmapped;
-> +	struct arm_v7s_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> +	struct io_pgtable *iop = &data->iop;
-> +
-> +	unmapped = __arm_v7s_unmap(data, iova, size, 1, data->pgd);
-> +	if (unmapped)
-> +		iop->cfg.tlb->tlb_sync(iop->cookie);
-> +
-> +	return unmapped;
-> +}
-> +
-> +static phys_addr_t arm_v7s_iova_to_phys(struct io_pgtable_ops *ops,
-> +					unsigned long iova)
-> +{
-> +	struct arm_v7s_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> +	arm_v7s_iopte *ptep = data->pgd, pte = ARM_V7S_PTE_TYPE_TABLE;
-> +	int lvl = 0;
-> +	u32 mask;
-> +
-> +	while (ARM_V7S_PTE_IS_TABLE(pte, lvl)) {
-> +		pte = ptep[ARM_V7S_LVL_IDX(iova, ++lvl)];
-> +		ptep = iopte_deref(pte, lvl);
-> +	}
-
-If we would like it always enter this while.
-Could we use do{}while? then we don't need initialize the pte.
-
-And in this file, the valid lvl should be 1 or 2. but here the "lvl" is
-initialized to 0. Do we need add a enum for the lvl for more safe and
-readable?
-
-> +	if (!ARM_V7S_PTE_IS_VALID(pte))
-> +		return 0;
-> +
-> +	mask = ARM_V7S_LVL_MASK(lvl);
-> +	if (arm_v7s_pte_is_cont(pte, lvl))
-> +		mask *= ARM_V7S_CONT_PAGES;
-> +	return (pte & mask) | (iova & ~mask);
-> +}
-> +
-[...]
+diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
+new file mode 100644
+index 0000000..c2fb06e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
+@@ -0,0 +1,68 @@
++* Mediatek IOMMU Architecture Implementation
++
++  Some Mediatek SOCs contain a Multimedia Memory Management Unit (M4U) which
++uses the ARM Short-Descriptor translation table format for address translation.
++
++  About the M4U Hardware Block Diagram, please check below:
++
++              EMI (External Memory Interface)
++               |
++              m4u (Multimedia Memory Management Unit)
++               |
++           SMI Common(Smart Multimedia Interface Common)
++               |
++       +----------------+-------
++       |                |
++       |                |
++   SMI larb0        SMI larb1   ... SoCs have several SMI local arbiter(larb).
++   (display)         (vdec)
++       |                |
++       |                |
++ +-----+-----+     +----+----+
++ |     |     |     |    |    |
++ |     |     |...  |    |    |  ... There are different ports in each larb.
++ |     |     |     |    |    |
++OVL0 RDMA0 WDMA0  MC   PP   VLD
++
++  As above, The Multimedia HW will go through SMI and M4U while it
++access EMI. SMI is a brige between m4u and the Multimedia HW. It contain
++smi local arbiter and smi common. It will control whether the Multimedia
++HW should go though the m4u for translation or bypass it and talk
++directly with EMI. And also SMI help control the power domain and clocks for
++each local arbiter.
++  Normally we specify a local arbiter(larb) for each multimedia HW
++like display, video decode, and camera. And there are different ports
++in each larb. Take a example, There are many ports like MC, PP, VLD in the
++video decode local arbiter, all these ports are according to the video HW.
++
++Required properties:
++- compatible : must be "mediatek,mt8173-m4u".
++- reg : m4u register base and size.
++- interrupts : the interrupt of m4u.
++- clocks : must contain one entry for each clock-names.
++- clock-names : must be "bclk", It is the block clock of m4u.
++- mediatek,larbs : List of phandle to the local arbiters in the current Socs.
++	Refer to bindings/memory-controllers/mediatek,smi-larb.txt. It must sort
++	according to the local arbiter index, like larb0, larb1, larb2...
++- iommu-cells : must be 1. This is the mtk_m4u_id according to the HW.
++	Specifies the mtk_m4u_id as defined in
++	dt-binding/memory/mt8173-larb-port.h.
++
++Example:
++	iommu: iommu@10205000 {
++		compatible = "mediatek,mt8173-m4u";
++		reg = <0 0x10205000 0 0x1000>;
++		interrupts = <GIC_SPI 139 IRQ_TYPE_LEVEL_LOW>;
++		clocks = <&infracfg CLK_INFRA_M4U>;
++		clock-names = "bclk";
++		mediatek,larbs = <&larb0 &larb1 &larb2 &larb3 &larb4 &larb5>;
++		#iommu-cells = <1>;
++	};
++
++Example for a client device:
++	display {
++		compatible = "mediatek,mt8173-disp";
++		iommus = <&iommu M4U_PORT_DISP_OVL0>,
++			 <&iommu M4U_PORT_DISP_RDMA0>;
++		...
++	};
+diff --git a/include/dt-bindings/memory/mt8173-larb-port.h b/include/dt-bindings/memory/mt8173-larb-port.h
+new file mode 100644
+index 0000000..50ccb93
+--- /dev/null
++++ b/include/dt-bindings/memory/mt8173-larb-port.h
+@@ -0,0 +1,111 @@
++/*
++ * Copyright (c) 2014-2015 MediaTek Inc.
++ * Author: Yong Wu <yong.wu@mediatek.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++#ifndef __DTS_IOMMU_PORT_MT8173_H
++#define __DTS_IOMMU_PORT_MT8173_H
++
++#define MTK_M4U_ID(larb, port)		(((larb) << 5) | (port))
++/* Local arbiter ID */
++#define MTK_M4U_TO_LARB(id)		(((id) >> 5) & 0x7)
++/* PortID within the local arbiter */
++#define MTK_M4U_TO_PORT(id)		((id) & 0x1f)
++
++#define M4U_LARB0_ID			0
++#define M4U_LARB1_ID			1
++#define M4U_LARB2_ID			2
++#define M4U_LARB3_ID			3
++#define M4U_LARB4_ID			4
++#define M4U_LARB5_ID			5
++
++/* larb0 */
++#define M4U_PORT_DISP_OVL0		MTK_M4U_ID(M4U_LARB0_ID, 0)
++#define M4U_PORT_DISP_RDMA0		MTK_M4U_ID(M4U_LARB0_ID, 1)
++#define M4U_PORT_DISP_WDMA0		MTK_M4U_ID(M4U_LARB0_ID, 2)
++#define M4U_PORT_DISP_OD_R		MTK_M4U_ID(M4U_LARB0_ID, 3)
++#define M4U_PORT_DISP_OD_W		MTK_M4U_ID(M4U_LARB0_ID, 4)
++#define M4U_PORT_MDP_RDMA0		MTK_M4U_ID(M4U_LARB0_ID, 5)
++#define M4U_PORT_MDP_WDMA		MTK_M4U_ID(M4U_LARB0_ID, 6)
++#define M4U_PORT_MDP_WROT0		MTK_M4U_ID(M4U_LARB0_ID, 7)
++
++/* larb1 */
++#define M4U_PORT_HW_VDEC_MC_EXT		MTK_M4U_ID(M4U_LARB1_ID, 0)
++#define M4U_PORT_HW_VDEC_PP_EXT		MTK_M4U_ID(M4U_LARB1_ID, 1)
++#define M4U_PORT_HW_VDEC_UFO_EXT	MTK_M4U_ID(M4U_LARB1_ID, 2)
++#define M4U_PORT_HW_VDEC_VLD_EXT	MTK_M4U_ID(M4U_LARB1_ID, 3)
++#define M4U_PORT_HW_VDEC_VLD2_EXT	MTK_M4U_ID(M4U_LARB1_ID, 4)
++#define M4U_PORT_HW_VDEC_AVC_MV_EXT	MTK_M4U_ID(M4U_LARB1_ID, 5)
++#define M4U_PORT_HW_VDEC_PRED_RD_EXT	MTK_M4U_ID(M4U_LARB1_ID, 6)
++#define M4U_PORT_HW_VDEC_PRED_WR_EXT	MTK_M4U_ID(M4U_LARB1_ID, 7)
++#define M4U_PORT_HW_VDEC_PPWRAP_EXT	MTK_M4U_ID(M4U_LARB1_ID, 8)
++#define M4U_PORT_HW_VDEC_TILE		MTK_M4U_ID(M4U_LARB1_ID, 9)
++
++/* larb2 */
++#define M4U_PORT_IMGO			MTK_M4U_ID(M4U_LARB2_ID, 0)
++#define M4U_PORT_RRZO			MTK_M4U_ID(M4U_LARB2_ID, 1)
++#define M4U_PORT_AAO			MTK_M4U_ID(M4U_LARB2_ID, 2)
++#define M4U_PORT_LCSO			MTK_M4U_ID(M4U_LARB2_ID, 3)
++#define M4U_PORT_ESFKO			MTK_M4U_ID(M4U_LARB2_ID, 4)
++#define M4U_PORT_IMGO_D			MTK_M4U_ID(M4U_LARB2_ID, 5)
++#define M4U_PORT_LSCI			MTK_M4U_ID(M4U_LARB2_ID, 6)
++#define M4U_PORT_LSCI_D			MTK_M4U_ID(M4U_LARB2_ID, 7)
++#define M4U_PORT_BPCI			MTK_M4U_ID(M4U_LARB2_ID, 8)
++#define M4U_PORT_BPCI_D			MTK_M4U_ID(M4U_LARB2_ID, 9)
++#define M4U_PORT_UFDI			MTK_M4U_ID(M4U_LARB2_ID, 10)
++#define M4U_PORT_IMGI			MTK_M4U_ID(M4U_LARB2_ID, 11)
++#define M4U_PORT_IMG2O			MTK_M4U_ID(M4U_LARB2_ID, 12)
++#define M4U_PORT_IMG3O			MTK_M4U_ID(M4U_LARB2_ID, 13)
++#define M4U_PORT_VIPI			MTK_M4U_ID(M4U_LARB2_ID, 14)
++#define M4U_PORT_VIP2I			MTK_M4U_ID(M4U_LARB2_ID, 15)
++#define M4U_PORT_VIP3I			MTK_M4U_ID(M4U_LARB2_ID, 16)
++#define M4U_PORT_LCEI			MTK_M4U_ID(M4U_LARB2_ID, 17)
++#define M4U_PORT_RB			MTK_M4U_ID(M4U_LARB2_ID, 18)
++#define M4U_PORT_RP			MTK_M4U_ID(M4U_LARB2_ID, 19)
++#define M4U_PORT_WR			MTK_M4U_ID(M4U_LARB2_ID, 20)
++
++/* larb3 */
++#define M4U_PORT_VENC_RCPU		MTK_M4U_ID(M4U_LARB3_ID, 0)
++#define M4U_PORT_VENC_REC		MTK_M4U_ID(M4U_LARB3_ID, 1)
++#define M4U_PORT_VENC_BSDMA		MTK_M4U_ID(M4U_LARB3_ID, 2)
++#define M4U_PORT_VENC_SV_COMV		MTK_M4U_ID(M4U_LARB3_ID, 3)
++#define M4U_PORT_VENC_RD_COMV		MTK_M4U_ID(M4U_LARB3_ID, 4)
++#define M4U_PORT_JPGENC_RDMA		MTK_M4U_ID(M4U_LARB3_ID, 5)
++#define M4U_PORT_JPGENC_BSDMA		MTK_M4U_ID(M4U_LARB3_ID, 6)
++#define M4U_PORT_JPGDEC_WDMA		MTK_M4U_ID(M4U_LARB3_ID, 7)
++#define M4U_PORT_JPGDEC_BSDMA		MTK_M4U_ID(M4U_LARB3_ID, 8)
++#define M4U_PORT_VENC_CUR_LUMA		MTK_M4U_ID(M4U_LARB3_ID, 9)
++#define M4U_PORT_VENC_CUR_CHROMA	MTK_M4U_ID(M4U_LARB3_ID, 10)
++#define M4U_PORT_VENC_REF_LUMA		MTK_M4U_ID(M4U_LARB3_ID, 11)
++#define M4U_PORT_VENC_REF_CHROMA	MTK_M4U_ID(M4U_LARB3_ID, 12)
++#define M4U_PORT_VENC_NBM_RDMA		MTK_M4U_ID(M4U_LARB3_ID, 13)
++#define M4U_PORT_VENC_NBM_WDMA		MTK_M4U_ID(M4U_LARB3_ID, 14)
++
++/* larb4 */
++#define M4U_PORT_DISP_OVL1		MTK_M4U_ID(M4U_LARB4_ID, 0)
++#define M4U_PORT_DISP_RDMA1		MTK_M4U_ID(M4U_LARB4_ID, 1)
++#define M4U_PORT_DISP_RDMA2		MTK_M4U_ID(M4U_LARB4_ID, 2)
++#define M4U_PORT_DISP_WDMA1		MTK_M4U_ID(M4U_LARB4_ID, 3)
++#define M4U_PORT_MDP_RDMA1		MTK_M4U_ID(M4U_LARB4_ID, 4)
++#define M4U_PORT_MDP_WROT1		MTK_M4U_ID(M4U_LARB4_ID, 5)
++
++/* larb5 */
++#define M4U_PORT_VENC_RCPU_SET2		MTK_M4U_ID(M4U_LARB5_ID, 0)
++#define M4U_PORT_VENC_REC_FRM_SET2	MTK_M4U_ID(M4U_LARB5_ID, 1)
++#define M4U_PORT_VENC_REF_LUMA_SET2	MTK_M4U_ID(M4U_LARB5_ID, 2)
++#define M4U_PORT_VENC_REC_CHROMA_SET2	MTK_M4U_ID(M4U_LARB5_ID, 3)
++#define M4U_PORT_VENC_BSDMA_SET2	MTK_M4U_ID(M4U_LARB5_ID, 4)
++#define M4U_PORT_VENC_CUR_LUMA_SET2	MTK_M4U_ID(M4U_LARB5_ID, 5)
++#define M4U_PORT_VENC_CUR_CHROMA_SET2	MTK_M4U_ID(M4U_LARB5_ID, 6)
++#define M4U_PORT_VENC_RD_COMA_SET2	MTK_M4U_ID(M4U_LARB5_ID, 7)
++#define M4U_PORT_VENC_SV_COMA_SET2	MTK_M4U_ID(M4U_LARB5_ID, 8)
++
++#endif
+-- 
+1.8.1.1.dirty
