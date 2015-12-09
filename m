@@ -1,13 +1,13 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+From: Tobias Geiger <tobias.geiger-9woOUGhjKTphl2p70BpVqQ@public.gmane.org>
 Subject: Re: Regression since 4.1
-Date: Wed, 09 Dec 2015 12:07:48 -0700
-Message-ID: <1449688068.15753.461.camel@redhat.com>
-References: <5418503.92eb9JWhCR@t400>
+Date: Thu, 10 Dec 2015 00:07:57 +0100
+Message-ID: <6847091.8HQyRDvvTU@pc>
+References: <5418503.92eb9JWhCR@t400> <1449688068.15753.461.camel@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5418503.92eb9JWhCR@t400>
+In-Reply-To: <1449688068.15753.461.camel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,37 +17,39 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tobias Geiger <tobias.geiger-9woOUGhjKTphl2p70BpVqQ@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2015-12-09 at 18:01 +0100, Tobias Geiger wrote:
-> Hello!
-> 
-> in short:
-> No Kernel since 4.1 boots on my machine.
-> 
-> I can make newer kernels boot, but ONLY when i remove "iommu=on 
-> intel_iommu=on" from the cmdline.
-> If i leave it in, as with all the kernels before and including 4.1, newer 
-> kernels dont boot, and in a really not very informative way:
-> They dont even print a single message to the console, i only see the grub-
-> messages (like "loading kernel" and "loading initial ramdisk") - after these 
-> messages NO more output of any kind - also no SysRQ keys working - nothing.
-> 
-> Because of this complete lack of information, i guess its hard to debug for 
-> you the cause of this.
-> Perhaps i can help - but how?
-> 
-> i'm writing from a pure IOMMU-User perspective - i can compile kernels, but 
-> never git-bisected, so maybe a hint to a tutorial for that would be great!
+Hello Alex,
 
+thanks for looking into this.
 
-Try simply removing the "quiet" and "splash" or "rhgb" options if there
-are any from the kernel command line in grub first.  You can temporarily
-just editing the commandline manually as you boot.  If you don't have a
-serial console available, at least have a camera handy to take a picture
-of the screen.  You can also add "ignore_loglevel" to the kernel
-commandline to get more logging.  Thanks,
+Nothing helps - not adding "ignore_loglevel" , not removing everything but the 
+most necessary (="BOOT_IMAGE=/boot/vmlinuz-4.3.0-trunk-amd64 ro 
+root=LABEL=dom0root  panic=15 iommu=on intel_iommu=on ignore_loglevel") - grub 
+loads the kernel, loads initrd, execs the kernel - and then nothing. no output 
+of any kind from the kernel. no sysrq, no panic-reboot despite panic=15 ... 
+nothing. not even a blinking cursor, just a steady cursor which is still from 
+grub i guess...
 
-Alex
+It all comes down to kernel > 4.1 && iommu=on = not working here
+
+Hardware is:
+Intel DX58SO, Intel CPU i7 920... all pretty solid running for years now, 
+always with iommo=on.
+
+I'd love to debug this further, just dont know how...
+
+Greetings!
+Tobias
+
+Am Mittwoch, 9. Dezember 2015, 12:07:48 schrieb Alex Williamson:
+> Try simply removing the "quiet" and "splash" or "rhgb" options if there
+> are any from the kernel command line in grub first.  You can temporarily
+> just editing the commandline manually as you boot.  If you don't have a
+> serial console available, at least have a camera handy to take a picture
+> of the screen.  You can also add "ignore_loglevel" to the kernel
+> commandline to get more logging.  Thanks,
+> 
+> Alex
