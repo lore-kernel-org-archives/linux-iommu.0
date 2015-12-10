@@ -1,55 +1,63 @@
-From: Tobias Geiger <tobias.geiger-9woOUGhjKTphl2p70BpVqQ@public.gmane.org>
-Subject: Re: Regression since 4.1
-Date: Thu, 10 Dec 2015 00:07:57 +0100
-Message-ID: <6847091.8HQyRDvvTU@pc>
-References: <5418503.92eb9JWhCR@t400> <1449688068.15753.461.camel@redhat.com>
+From: Vinod Koul <vinod.koul@intel.com>
+Subject: Re: [PATCH 4/9] dmaengine: pl330: add new items for pl330 private
+ data
+Date: Thu, 10 Dec 2015 09:39:09 +0530
+Message-ID: <20151210040909.GM1854@localhost>
+References: <1449199466-6081-1-git-send-email-annie.wang@amd.com>
+ <1449199466-6081-5-git-send-email-annie.wang@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1449688068.15753.461.camel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1449199466-6081-5-git-send-email-annie.wang@amd.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Wang Hongcheng <annie.wang@amd.com>
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org, Borislav Petkov <bp@alien8.de>, Huang Rui <ray.huang@amd.com>, Wan Zongshun <vincent.wan@amd.com>, Ken Xue <ken.xue@amd.com>, Tony Li <tony.li@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello Alex,
+On Fri, Dec 04, 2015 at 11:24:21AM +0800, Wang Hongcheng wrote:
+> has_no_cap_mask means this device has no preset cap mask.
+> mcbuf_sz means bytes to allocate for MC buffer.
 
-thanks for looking into this.
+MC ?
 
-Nothing helps - not adding "ignore_loglevel" , not removing everything but the 
-most necessary (="BOOT_IMAGE=/boot/vmlinuz-4.3.0-trunk-amd64 ro 
-root=LABEL=dom0root  panic=15 iommu=on intel_iommu=on ignore_loglevel") - grub 
-loads the kernel, loads initrd, execs the kernel - and then nothing. no output 
-of any kind from the kernel. no sysrq, no panic-reboot despite panic=15 ... 
-nothing. not even a blinking cursor, just a steady cursor which is still from 
-grub i guess...
-
-It all comes down to kernel > 4.1 && iommu=on = not working here
-
-Hardware is:
-Intel DX58SO, Intel CPU i7 920... all pretty solid running for years now, 
-always with iommo=on.
-
-I'd love to debug this further, just dont know how...
-
-Greetings!
-Tobias
-
-Am Mittwoch, 9. Dezember 2015, 12:07:48 schrieb Alex Williamson:
-> Try simply removing the "quiet" and "splash" or "rhgb" options if there
-> are any from the kernel command line in grub first.  You can temporarily
-> just editing the commandline manually as you boot.  If you don't have a
-> serial console available, at least have a camera handy to take a picture
-> of the screen.  You can also add "ignore_loglevel" to the kernel
-> commandline to get more logging.  Thanks,
+> flags is for irq sharing, default is non-shared, in AMD
+> Carrizo, pl330 shares IRQ with its corresponding UART device.
 > 
-> Alex
+> Signed-off-by: Wang Hongcheng <annie.wang@amd.com>
+> ---
+>  drivers/acpi/acpi_apd.c    | 13 ++++++++++++-
+>  drivers/dma/pl330.c        | 19 +++++++++++++------
+>  include/linux/amba/pl330.h |  3 +++
+>  3 files changed, 28 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/acpi/acpi_apd.c b/drivers/acpi/acpi_apd.c
+> index eb3316a..7a582f5 100644
+> --- a/drivers/acpi/acpi_apd.c
+> +++ b/drivers/acpi/acpi_apd.c
+> @@ -21,6 +21,7 @@
+>  #include <linux/amba/bus.h>
+>  #include <linux/kernel.h>
+>  #include <linux/sizes.h>
+> +#include <linux/amba/pl330.h>
+>  #include <linux/interrupt.h>
+>  
+>  #include "internal.h"
+> @@ -35,6 +36,16 @@ struct apd_private_data;
+>  #define ACPI_APD_SYSFS	BIT(0)
+>  #define ACPI_APD_PM	BIT(1)
+>  
+> +static u8 peri_id[2] = { 0, 1 };
+> +
+> +static struct dma_pl330_platdata amd_pl330 = {
+> +	.nr_valid_peri = 2,
+> +	.peri_id = peri_id,
+> +	.has_no_cap_mask = true,
+> +	.mcbuf_sz = 0,
+> +	.flags = IRQF_SHARED,
+> +};
+
+Why not DT or ACPI for this?
+
+-- 
+~Vinod
