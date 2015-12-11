@@ -1,127 +1,37 @@
-From: "Wang, Annie" <Annie.Wang@amd.com>
-Subject: RE: [PATCH 3/9] ACPI: add struct acpi_amba_quirk for AMD pl330
- specific device config
-Date: Fri, 11 Dec 2015 06:57:51 +0000
-Message-ID: <BLUPR12MB04339648B98F07977B6FA61F81EA0@BLUPR12MB0433.namprd12.prod.outlook.com>
-References: <1449199466-6081-1-git-send-email-annie.wang@amd.com>
- <1449199466-6081-4-git-send-email-annie.wang@amd.com>
- <20151204131619.GC11655@xora-haswell.xora.org.uk>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v6 3/5] memory: mediatek: Add SMI driver
+Date: Fri, 11 Dec 2015 15:22:30 +0800
+Message-ID: <1449818550.14149.2.camel@mhfsdcap03>
+References: <1449568153-15643-1-git-send-email-yong.wu@mediatek.com>
+	 <1449568153-15643-4-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20151204131619.GC11655@xora-haswell.xora.org.uk>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Graeme Gregory <gg@slimlogic.co.uk>
-Cc: Vinod Koul <vinod.koul@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Borislav Petkov <bp@alien8.de>, "Huang, Ray" <Ray.Huang@amd.com>, "Wan, Vincent" <Vincent.Wan@amd.com>, "Xue, Ken" <Ken.Xue@amd.com>, "Li, Tony" <Tony.Li@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1449568153-15643-4-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
->-----Original Message-----
->From: Graeme Gregory [mailto:gg@slimlogic.co.uk]
->Sent: Friday, December 04, 2015 9:16 PM
->To: Wang, Annie
->Cc: Vinod Koul; Mika Westerberg; Joerg Roedel; Greg Kroah-Hartman; Rafael J.
->Wysocki; linux-acpi@vger.kernel.org; linux-kernel@vger.kernel.org; linux-
->serial@vger.kernel.org; dmaengine@vger.kernel.org; iommu@lists.linux-
->foundation.org; Borislav Petkov; Huang, Ray; Wan, Vincent; Xue, Ken; Li, Tony
->Subject: Re: [PATCH 3/9] ACPI: add struct acpi_amba_quirk for AMD pl330
->specific device config
->
->On Fri, Dec 04, 2015 at 11:24:20AM +0800, Wang Hongcheng wrote:
->> AMD pl330 is a UART DMA device, it shares one ACPI item with UART. So
->> a platform device and an acpi device will be created according to
->> AMD0020 ACPI dev. And its mem base address must have an offset. As a
->> result, MULTI_ATTACHED_QUIRK and MULTI_ATTACHED_QUIRK are used.
->>
->> Signed-off-by: Wang Hongcheng <annie.wang@amd.com>
->> ---
->>  drivers/acpi/acpi_amba.c | 31 +++++++++++++++++++++++----
->> drivers/acpi/acpi_apd.c  | 56 +++++++++++++++++++++++++++++++++++++------
->-----
->>  include/linux/acpi.h     | 13 +++++++++--
->>  3 files changed, 81 insertions(+), 19 deletions(-)
->>
->> diff --git a/drivers/acpi/acpi_amba.c b/drivers/acpi/acpi_amba.c index
->> 4f0366a..8a5269c 100644
->> --- a/drivers/acpi/acpi_amba.c
->> +++ b/drivers/acpi/acpi_amba.c
->> @@ -31,6 +31,8 @@ ACPI_MODULE_NAME("amba");
->>   * @periphid: AMBA device periphid.
->>   * @fixed_rate: Clock frequency.
->>   * @pdata: Platform data specific to the device.
->> + * @quirk: Specific device config, including device multiattach.
->> + * and mem base offset.
->>   *
->>   * Check if the given @adev can be represented as an AMBA device and, if
->>   * that's the case, create and register an AMBA device, populate its
->> @@ -42,7 +44,8 @@ ACPI_MODULE_NAME("amba");  struct amba_device
->> *acpi_create_amba_device(struct acpi_device *adev,
->>  					    unsigned int periphid,
->>  					    unsigned long fixed_rate,
->> -					    void *pdata)
->> +					    void *pdata,
->> +					    struct acpi_amba_quirk *quirk)
->>  {
->>  	struct amba_device *amba_dev = NULL;
->>  	struct device *parent;
->> @@ -54,12 +57,14 @@ struct amba_device *acpi_create_amba_device(struct
->acpi_device *adev,
->>  	unsigned int i;
->>  	unsigned int irq[AMBA_NR_IRQS];
->>  	struct clk *clk = ERR_PTR(-ENODEV);
->> +	char amba_devname[100];
->>
->>  	/*
->>  	 * If the ACPI node already has a physical device attached,
->> -	 * skip it.
->> +	 * skip it. Except some special devices such as AMD0020 which
->> +	 * needs attach physical devices two times.
->>  	 */
->> -	if (adev->physical_node_count)
->> +	if (adev->physical_node_count && !(quirk->quirk &
->> +MULTI_ATTACHED_QUIRK))
->>  		return NULL;
->>
->>  	INIT_LIST_HEAD(&resource_list);
->> @@ -85,7 +90,24 @@ struct amba_device *acpi_create_amba_device(struct
->acpi_device *adev,
->>  			memcpy(resource, rentry->res, sizeof(struct resource));
->>  	}
->>
->> -	amba_dev = amba_device_alloc(dev_name(&adev->dev),
->> +	/*
->> +	 * The memory address of AMD pl330 has an offset of ACPI
->> +	 * mem resource.
->> +	 */
->> +	if (quirk->quirk & BASE_OFFSET_QUIRK)
->> +		resource->start += quirk->base_offset;
->> +
->> +	/*
->> +	 * If the ACPI device already has a node attached. It must be
->> +	 * renamed.
->> +	 */
->> +	if (quirk->quirk & MULTI_ATTACHED_QUIRK)
->> +		sprintf(amba_devname, "%s%s", dev_name(&adev->dev),
->"DMA");
->> +	else
->> +		memcpy(amba_devname, dev_name(&adev->dev),
->> +		       strlen(dev_name(&adev->dev)));
->> +
->> +	amba_dev = amba_device_alloc(amba_devname,
->>  				     resource->start,
->>  				     resource_size(resource));
->>
->
->Isn't this basially an MFD in a rather odd fashion?
->
->I would have though having a device which just splits the resources then creates 2
->children would be a whole lot simpler?
->
->Graeme
+On Tue, 2015-12-08 at 17:49 +0800, Yong Wu wrote:
+> This patch add SMI(Smart Multimedia Interface) driver. This driver
+> is responsible to enable/disable iommu and control the power domain
+> and clocks of each local arbiter.
+> 
+> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> ---
 
-It seems more complex, if I  trans an ACPI device to pdev, then attach 2 platform child nodes,
-and create an amba device refer to one of the childs. Too many trans. 
+Hi Matthias,
+   Because drivers/memory/ don't have the maintainer, and our IOMMU,
+V4L2 and DRM rely on the SMI. From Joerg and Thierry[1], we need your
+help. Could you have a loot at our SMI while free?
+Look forward to any comment from you.
+Thanks.
 
-Thanks,
-Hongcheng(Annie)
+[1]http://lists.linuxfoundation.org/pipermail/iommu/2015-November/014981.html
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
