@@ -1,51 +1,84 @@
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH] perf/x86/amd: Adding support for new IOMMU performance event
-Date: Fri, 11 Dec 2015 16:53:17 -0600
-Message-ID: <1449874397-27056-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+From: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
+Subject: [PATCH] iommu/amd: Assign default IOMMU when there is only one IOMMU
+Date: Fri, 11 Dec 2015 16:54:38 -0600
+Message-ID: <1449874478-31770-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Current driver makes assumption that device with devid zero is always
+included in the range of devices to be managed by IOMMU. However,
+certain FW does not include devid zero in IVRS table.
+This has caused IOMMU perf driver to fail to initialize.
 
-This patch adds new IOMMU performance event based on
-the information in table 74 of the AMD I/O Virtualization Technology
-(IOMMU) Specification (Document Id: 4882, Rev 2.62, Feb 2015)
+This patch implements a workaround for this case by always assign
+devid zero to be handled by the first IOMMU.
 
-Link: http://support.amd.com/TechDocs/48882_IOMMU.pdf
-Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
 ---
- arch/x86/kernel/cpu/perf_event_amd_iommu.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/iommu/amd_iommu_init.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/perf_event_amd_iommu.c b/arch/x86/kernel/cpu/perf_event_amd_iommu.c
-index 97242a9..86f8259 100644
---- a/arch/x86/kernel/cpu/perf_event_amd_iommu.c
-+++ b/arch/x86/kernel/cpu/perf_event_amd_iommu.c
-@@ -118,6 +118,11 @@ static struct amd_iommu_event_desc amd_iommu_v2_event_descs[] = {
- 	AMD_IOMMU_EVENT_DESC(cmd_processed,           "csource=0x11"),
- 	AMD_IOMMU_EVENT_DESC(cmd_processed_inv,       "csource=0x12"),
- 	AMD_IOMMU_EVENT_DESC(tlb_inv,                 "csource=0x13"),
-+	AMD_IOMMU_EVENT_DESC(ign_rd_wr_mmio_1ff8h,    "csource=0x14"),
-+	AMD_IOMMU_EVENT_DESC(vapic_int_non_guest,     "csource=0x15"),
-+	AMD_IOMMU_EVENT_DESC(vapic_int_guest,         "csource=0x16"),
-+	AMD_IOMMU_EVENT_DESC(smi_recv,                "csource=0x17"),
-+	AMD_IOMMU_EVENT_DESC(smi_blk,                 "csource=0x18"),
- 	{ /* end: all zeroes */ },
- };
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 013bdff..3bbad5c 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -656,6 +656,16 @@ static void __init set_iommu_for_device(struct amd_iommu *iommu, u16 devid)
+ 	amd_iommu_rlookup_table[devid] = iommu;
+ }
  
++static struct amd_iommu *get_iommu_for_device(u16 devid)
++{
++	struct amd_iommu *iommu = amd_iommu_rlookup_table[devid];
++
++	/* Workaround: Always assign devid zero to the first IOMMU */
++	if (!iommu && !devid && amd_iommus_present)
++		iommu = amd_iommus[0];
++	return iommu;
++}
++
+ /*
+  * This function takes the device specific flags read from the ACPI
+  * table and sets up the device table entry with that information
+@@ -751,7 +761,7 @@ static int __init add_early_maps(void)
+  */
+ static void __init set_device_exclusion_range(u16 devid, struct ivmd_header *m)
+ {
+-	struct amd_iommu *iommu = amd_iommu_rlookup_table[devid];
++	struct amd_iommu *iommu = get_iommu_for_device(devid);
+ 
+ 	if (!(m->flags & IVMD_FLAG_EXCL_RANGE))
+ 		return;
+@@ -2255,7 +2265,7 @@ u8 amd_iommu_pc_get_max_banks(u16 devid)
+ 	u8 ret = 0;
+ 
+ 	/* locate the iommu governing the devid */
+-	iommu = amd_iommu_rlookup_table[devid];
++	iommu = get_iommu_for_device(devid);
+ 	if (iommu)
+ 		ret = iommu->max_banks;
+ 
+@@ -2275,7 +2285,7 @@ u8 amd_iommu_pc_get_max_counters(u16 devid)
+ 	u8 ret = 0;
+ 
+ 	/* locate the iommu governing the devid */
+-	iommu = amd_iommu_rlookup_table[devid];
++	iommu = get_iommu_for_device(devid);
+ 	if (iommu)
+ 		ret = iommu->max_counters;
+ 
+@@ -2295,7 +2305,7 @@ int amd_iommu_pc_get_set_reg_val(u16 devid, u8 bank, u8 cntr, u8 fxn,
+ 		return -ENODEV;
+ 
+ 	/* Locate the iommu associated with the device ID */
+-	iommu = amd_iommu_rlookup_table[devid];
++	iommu = get_iommu_for_device(devid);
+ 
+ 	/* Check for valid iommu and pc register indexing */
+ 	if (WARN_ON((iommu == NULL) || (fxn > 0x28) || (fxn & 7)))
 -- 
 1.9.1
