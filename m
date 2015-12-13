@@ -1,10 +1,14 @@
-From: kumara rathnavel <kumara.bsd-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Using Contig alloc finction
-Date: Sun, 13 Dec 2015 18:46:17 +0530
-Message-ID: <CA+NzLaOYuVcbwXFT0_sLP0-59xAVq8NF6jcJyD4KHe+V96GAiw@mail.gmail.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH 1/5] iommu/io-pgtable-arm: Avoid dereferencing bogus PTEs
+Date: Sun, 13 Dec 2015 23:41:01 +0200
+Message-ID: <7110327.9BOBJr0LiQ@avalon>
+References: <cover.1449246988.git.robin.murphy@arm.com>
+	<ad5898fd59575d0e2a8dccabafde71650f44e2a8.1449246988.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0481147111498675695=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <ad5898fd59575d0e2a8dccabafde71650f44e2a8.1449246988.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -14,51 +18,59 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
---===============0481147111498675695==
-Content-Type: multipart/alternative; boundary=047d7ba97d689cfc5d0526c75c0e
+Hi Robin,
 
---047d7ba97d689cfc5d0526c75c0e
-Content-Type: text/plain; charset=UTF-8
+Thank you for the patch.
 
-Hello Everyone,
+On Friday 04 December 2015 17:52:58 Robin Murphy wrote:
+> In the case of corrupted page tables, or when an invalid size is given,
+> __arm_lpae_unmap() may recurse beyond the maximum number of levels.
+> Unfortunately the detection of this error condition only happens *after*
+> calculating a nonsense offset from something which might not be a valid
+> table pointer and dereferencing that to see if it is a valid PTE.
+> 
+> Make things a little more robust by checking the level is valid before
+> doing anything which depends on it being so.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-I need a around 2GB of physically contiguous memory in Linux.  I am using
-vanilla kernel 4.3 in Fedroa22. I am aware about the function
-alloc_contig_range and that function should be used through DMA. In DMA
-what is the exact API to be used and I have enabled CONFIG_CMA and
-CONFIG_CMA_DMA . In kernel coomand line parameters what is the exact stuff
-to be given. The documentation is not proper for the kernel parameters in
- the documentation provided in the source code. Is there any other way to
-allocate large chunk of memory that is contiguous.
+This looks good to me.
 
-Thanking You,
-Kumar.
+Reviewed-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 
---047d7ba97d689cfc5d0526c75c0e
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+I'm curious though, have you seen this error in practice ?
 
-<div dir=3D"ltr">Hello Everyone,<div><br></div><div>I need a around 2GB of =
-physically contiguous memory in Linux.=C2=A0 I am using vanilla kernel 4.3 =
-in Fedroa22. I am aware about the function alloc_contig_range and that func=
-tion should be used through DMA. In DMA what is the exact API to be used an=
-d I have enabled CONFIG_CMA and CONFIG_CMA_DMA . In kernel coomand line par=
-ameters what is the exact stuff to be given. The documentation is not prope=
-r for the kernel parameters in =C2=A0the documentation provided in the sour=
-ce code. Is there any other way to=C2=A0</div><div>allocate large chunk of =
-memory that is contiguous.</div><div><br></div><div>Thanking You,</div><div=
->Kumar.=C2=A0</div></div>
+> ---
+>  drivers/iommu/io-pgtable-arm.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index 7df9777..366a354 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -486,11 +486,13 @@ static int __arm_lpae_unmap(struct arm_lpae_io_pgtable
+> *data, void *cookie = data->iop.cookie;
+>  	size_t blk_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
+> 
+> +	/* Something went horribly wrong and we ran out of page table */
+> +	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
+> +		return 0;
+> +
+>  	ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
+>  	pte = *ptep;
+> -
+> -	/* Something went horribly wrong and we ran out of page table */
+> -	if (WARN_ON(!pte || (lvl == ARM_LPAE_MAX_LEVELS)))
+> +	if (WARN_ON(!pte))
+>  		return 0;
+> 
+>  	/* If the size matches this level, we're in the right place */
 
---047d7ba97d689cfc5d0526c75c0e--
+-- 
+Regards,
 
---===============0481147111498675695==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============0481147111498675695==--
+Laurent Pinchart
