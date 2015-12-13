@@ -1,14 +1,15 @@
 From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH 1/5] iommu/io-pgtable-arm: Avoid dereferencing bogus PTEs
-Date: Sun, 13 Dec 2015 23:41:01 +0200
-Message-ID: <7110327.9BOBJr0LiQ@avalon>
+Subject: Re: [PATCH 4/5] iommu/io-pgtable: Make io_pgtable_ops_to_pgtable()
+	macro common
+Date: Sun, 13 Dec 2015 23:52:25 +0200
+Message-ID: <2226267.jznMrI8GVh@avalon>
 References: <cover.1449246988.git.robin.murphy@arm.com>
-	<ad5898fd59575d0e2a8dccabafde71650f44e2a8.1449246988.git.robin.murphy@arm.com>
+	<ef5954ba727840a020b62b0135a1ce9f4a10fb2c.1449246988.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <ad5898fd59575d0e2a8dccabafde71650f44e2a8.1449246988.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <ef5954ba727840a020b62b0135a1ce9f4a10fb2c.1449246988.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,49 +27,47 @@ Hi Robin,
 
 Thank you for the patch.
 
-On Friday 04 December 2015 17:52:58 Robin Murphy wrote:
-> In the case of corrupted page tables, or when an invalid size is given,
-> __arm_lpae_unmap() may recurse beyond the maximum number of levels.
-> Unfortunately the detection of this error condition only happens *after*
-> calculating a nonsense offset from something which might not be a valid
-> table pointer and dereferencing that to see if it is a valid PTE.
-> 
-> Make things a little more robust by checking the level is valid before
-> doing anything which depends on it being so.
+On Friday 04 December 2015 17:53:01 Robin Murphy wrote:
+> There is no need to keep a useful accessor for a public structure hidden
+> away in a private implementation. Move it out alongside the structure
+> definition so that other implementations may reuse it.
 > 
 > Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-This looks good to me.
-
-Reviewed-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-
-I'm curious though, have you seen this error in practice ?
+Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 
 > ---
->  drivers/iommu/io-pgtable-arm.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
+>  drivers/iommu/io-pgtable-arm.c | 3 ---
+>  drivers/iommu/io-pgtable.h     | 2 ++
+>  2 files changed, 2 insertions(+), 3 deletions(-)
 > 
 > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 7df9777..366a354 100644
+> index 9088d27..1619681 100644
 > --- a/drivers/iommu/io-pgtable-arm.c
 > +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -486,11 +486,13 @@ static int __arm_lpae_unmap(struct arm_lpae_io_pgtable
-> *data, void *cookie = data->iop.cookie;
->  	size_t blk_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
+> @@ -38,9 +38,6 @@
+>  #define io_pgtable_to_data(x)						\
+>  	container_of((x), struct arm_lpae_io_pgtable, iop)
 > 
-> +	/* Something went horribly wrong and we ran out of page table */
-> +	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
-> +		return 0;
-> +
->  	ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
->  	pte = *ptep;
+> -#define io_pgtable_ops_to_pgtable(x)					\
+> -	container_of((x), struct io_pgtable, ops)
 > -
-> -	/* Something went horribly wrong and we ran out of page table */
-> -	if (WARN_ON(!pte || (lvl == ARM_LPAE_MAX_LEVELS)))
-> +	if (WARN_ON(!pte))
->  		return 0;
+>  #define io_pgtable_ops_to_data(x)					\
+>  	io_pgtable_to_data(io_pgtable_ops_to_pgtable(x))
 > 
->  	/* If the size matches this level, we're in the right place */
+> diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+> index 2e18469..36673c8 100644
+> --- a/drivers/iommu/io-pgtable.h
+> +++ b/drivers/iommu/io-pgtable.h
+> @@ -131,6 +131,8 @@ struct io_pgtable {
+>  	struct io_pgtable_ops	ops;
+>  };
+> 
+> +#define io_pgtable_ops_to_pgtable(x) container_of((x), struct io_pgtable,
+> ops) +
+>  /**
+>   * struct io_pgtable_init_fns - Alloc/free a set of page tables for a
+>   *                              particular format.
 
 -- 
 Regards,
