@@ -1,87 +1,64 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 0/9] 8250: AMD Carrizo UART PL300 DMA enablement
-Date: Sun, 13 Dec 2015 04:32:15 +0200
-Message-ID: <CAHp75Vcvn+8A=PPbUQURJmUyUELt5FmFj-rrb0h3uQRMeOXcSQ@mail.gmail.com>
-References: <1449199466-6081-1-git-send-email-annie.wang@amd.com>
+From: kumara rathnavel <kumara.bsd-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Using Contig alloc finction
+Date: Sun, 13 Dec 2015 18:46:17 +0530
+Message-ID: <CA+NzLaOYuVcbwXFT0_sLP0-59xAVq8NF6jcJyD4KHe+V96GAiw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1449199466-6081-1-git-send-email-annie.wang@amd.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Wang Hongcheng <annie.wang@amd.com>
-Cc: Vinod Koul <vinod.koul@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, dmaengine <dmaengine@vger.kernel.org>, iommu@lists.linux-foundation.org, Borislav Petkov <bp@alien8.de>, Huang Rui <ray.huang@amd.com>, Wan Zongshun <vincent.wan@amd.com>, Ken Xue <ken.xue@amd.com>, Tony Li <tony.li@amd.com>
+Content-Type: multipart/mixed; boundary="===============0481147111498675695=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Dec 4, 2015 at 5:24 AM, Wang Hongcheng <annie.wang@amd.com> wrote:
-> Hi all,
->
-> As AMD carrizo UART device is compatible with 8250 and has pl330 DMA
-> IP, our uart driver is serial:8250 and DMA engines are registered by
-> driver/dma/pl330. The following patches are made, in order to enable
-> DMA.
->
-> Firstly, we add an universal ACPI amba glue layer to create an amba
-> device based on ACPI table. Then we alter 8250/Kconfig to support
-> AMD 8250 device and add quirk for AMD specific request.
-> Secondly, since pl330 driver only provides dma engine for platform
-> devices, we add an acpi dma engine interface.
-> Then we add a new port type for AMD carrizo and set UART registers
-> and dma rx size as hardware requirement.
-> In the end, we make our IOMMU driver to support non-pci device, so
-> UART DMA really works.
->
+--===============0481147111498675695==
+Content-Type: multipart/alternative; boundary=047d7ba97d689cfc5d0526c75c0e
 
-I commented on a few patches, thoughI might miss something in the rest.
-Include me in Cc list next version.
+--047d7ba97d689cfc5d0526c75c0e
+Content-Type: text/plain; charset=UTF-8
 
-> Thanks,
-> Hongcheng
->
-> Huang Rui (1):
->   ACPI: Add support for AMBA bus type
->
-> Wan Zongshun (2):
->   Documentation: Add ivrs_acpihid kernel parameter description
->   iommu/amd: Add ACPI HID named devices IOMMU driver support
->
-> Wang Hongcheng (6):
->   8250/Kconfig: add config option CONFIG_SERIAL_8250_AMD
->   ACPI: add struct acpi_amba_quirk for AMD pl330 specific device config
->   dmaengine: pl330: add new items for pl330 private data
->   dmaengine: pl330: provide ACPI dmaengine interface
->   dmaengine:pl330: set segment_boundary_mask = 0cffffffff
->   Serial:8250: New Port Type PORT_AMD_8250
->
->  Documentation/kernel-parameters.txt |   7 ++
->  drivers/acpi/Makefile               |   1 +
->  drivers/acpi/acpi_amba.c            | 180 ++++++++++++++++++++++++++++++++++++
->  drivers/acpi/acpi_apd.c             |  89 +++++++++++++++---
->  drivers/dma/pl330.c                 |  61 ++++++++++--
->  drivers/iommu/amd_iommu.c           | 165 +++++++++++++++++++++++++++++----
->  drivers/iommu/amd_iommu_init.c      | 123 +++++++++++++++++++++++-
->  drivers/iommu/amd_iommu_types.h     |  11 +++
->  drivers/tty/serial/8250/8250_dw.c   |  16 ++++
->  drivers/tty/serial/8250/8250_port.c |   9 ++
->  drivers/tty/serial/8250/Kconfig     |   8 ++
->  include/linux/acpi.h                |  30 ++++++
->  include/linux/amba/pl330.h          |   4 +
->  include/linux/serial_8250.h         |   4 +
->  include/uapi/linux/serial_core.h    |   3 +-
->  include/uapi/linux/serial_reg.h     |   2 +
->  16 files changed, 673 insertions(+), 40 deletions(-)
->  create mode 100644 drivers/acpi/acpi_amba.c
->
-> --
-> 1.9.1
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+Hello Everyone,
+
+I need a around 2GB of physically contiguous memory in Linux.  I am using
+vanilla kernel 4.3 in Fedroa22. I am aware about the function
+alloc_contig_range and that function should be used through DMA. In DMA
+what is the exact API to be used and I have enabled CONFIG_CMA and
+CONFIG_CMA_DMA . In kernel coomand line parameters what is the exact stuff
+to be given. The documentation is not proper for the kernel parameters in
+ the documentation provided in the source code. Is there any other way to
+allocate large chunk of memory that is contiguous.
+
+Thanking You,
+Kumar.
+
+--047d7ba97d689cfc5d0526c75c0e
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hello Everyone,<div><br></div><div>I need a around 2GB of =
+physically contiguous memory in Linux.=C2=A0 I am using vanilla kernel 4.3 =
+in Fedroa22. I am aware about the function alloc_contig_range and that func=
+tion should be used through DMA. In DMA what is the exact API to be used an=
+d I have enabled CONFIG_CMA and CONFIG_CMA_DMA . In kernel coomand line par=
+ameters what is the exact stuff to be given. The documentation is not prope=
+r for the kernel parameters in =C2=A0the documentation provided in the sour=
+ce code. Is there any other way to=C2=A0</div><div>allocate large chunk of =
+memory that is contiguous.</div><div><br></div><div>Thanking You,</div><div=
+>Kumar.=C2=A0</div></div>
+
+--047d7ba97d689cfc5d0526c75c0e--
+
+--===============0481147111498675695==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 
-
--- 
-With Best Regards,
-Andy Shevchenko
+--===============0481147111498675695==--
