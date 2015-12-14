@@ -1,15 +1,15 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH 4/5] iommu/io-pgtable: Make io_pgtable_ops_to_pgtable()
-	macro common
-Date: Sun, 13 Dec 2015 23:52:25 +0200
-Message-ID: <2226267.jznMrI8GVh@avalon>
-References: <cover.1449246988.git.robin.murphy@arm.com>
-	<ef5954ba727840a020b62b0135a1ce9f4a10fb2c.1449246988.git.robin.murphy@arm.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v6 4/5] iommu/mediatek: Add mt8173 IOMMU driver
+Date: Mon, 14 Dec 2015 15:16:57 +0100
+Message-ID: <20151214141656.GG18805@8bytes.org>
+References: <1449568153-15643-1-git-send-email-yong.wu@mediatek.com>
+	<1449568153-15643-5-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <ef5954ba727840a020b62b0135a1ce9f4a10fb2c.1449246988.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1449568153-15643-5-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,57 +19,73 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+On Tue, Dec 08, 2015 at 05:49:12PM +0800, Yong Wu wrote:
+> +static int mtk_iommu_attach_device(struct iommu_domain *domain,
+> +				   struct device *dev)
+> +{
+> +	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+> +	struct mtk_iommu_client_priv *priv = dev->archdata.iommu;
+> +	struct mtk_iommu_data *data;
+> +	int ret;
+> +
+> +	if (!priv)
+> +		return -ENODEV;
+> +
+> +	data = dev_get_drvdata(priv->m4udev);
+> +	if (!data) {
+> +		/*
+> +		 * The DMA core will run earlier than this probe, and it will
+> +		 * create a default iommu domain for each a iommu device.
+> +		 * But here there is only one domain called the m4u domain
+> +		 * which all the multimedia HW share.
+> +		 * The default domain isn't needed here.
+> +		 */
 
-Thank you for the patch.
+The iommu core creates one domain per iommu-group. In your case this
+means one default domain per iommu in the system.
 
-On Friday 04 December 2015 17:53:01 Robin Murphy wrote:
-> There is no need to keep a useful accessor for a public structure hidden
-> away in a private implementation. Move it out alongside the structure
-> definition so that other implementations may reuse it.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> +		iommu_domain_free(domain);
 
-Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+This function is not supposed to free the domain passed to it.
 
-> ---
->  drivers/iommu/io-pgtable-arm.c | 3 ---
->  drivers/iommu/io-pgtable.h     | 2 ++
->  2 files changed, 2 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 9088d27..1619681 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -38,9 +38,6 @@
->  #define io_pgtable_to_data(x)						\
->  	container_of((x), struct arm_lpae_io_pgtable, iop)
-> 
-> -#define io_pgtable_ops_to_pgtable(x)					\
-> -	container_of((x), struct io_pgtable, ops)
-> -
->  #define io_pgtable_ops_to_data(x)					\
->  	io_pgtable_to_data(io_pgtable_ops_to_pgtable(x))
-> 
-> diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-> index 2e18469..36673c8 100644
-> --- a/drivers/iommu/io-pgtable.h
-> +++ b/drivers/iommu/io-pgtable.h
-> @@ -131,6 +131,8 @@ struct io_pgtable {
->  	struct io_pgtable_ops	ops;
->  };
-> 
-> +#define io_pgtable_ops_to_pgtable(x) container_of((x), struct io_pgtable,
-> ops) +
->  /**
->   * struct io_pgtable_init_fns - Alloc/free a set of page tables for a
->   *                              particular format.
+> +static int mtk_iommu_add_device(struct device *dev)
+> +{
+> +	struct iommu_group *group;
+> +
+> +	if (!dev->archdata.iommu) /* Not a iommu client device */
+> +		return -ENODEV;
+> +
+> +	group = iommu_group_get_for_dev(dev);
+> +	if (IS_ERR(group))
+> +		return PTR_ERR(group);
+> +
+> +	iommu_group_put(group);
+> +	return 0;
+> +}
 
--- 
-Regards,
+[...]
 
-Laurent Pinchart
+> +static struct iommu_group *mtk_iommu_device_group(struct device *dev)
+> +{
+> +	struct mtk_iommu_data *data;
+> +	struct mtk_iommu_client_priv *priv;
+> +
+> +	priv = dev->archdata.iommu;
+> +	if (!priv)
+> +		return ERR_PTR(-ENODEV);
+> +
+> +	/* All the client devices are in the same m4u iommu-group */
+> +	data = dev_get_drvdata(priv->m4udev);
+> +	if (!data->m4u_group) {
+> +		data->m4u_group = iommu_group_alloc();
+> +		if (IS_ERR(data->m4u_group))
+> +			dev_err(dev, "Failed to allocate M4U IOMMU group\n");
+> +	}
+> +	return data->m4u_group;
+> +}
+
+This looks much better than before, thanks.
