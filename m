@@ -1,46 +1,52 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu: Remove unused Renesas IPMMU/IPMMUI driver
-Date: Mon, 14 Dec 2015 15:56:20 +0100
-Message-ID: <20151214145620.GC11292@8bytes.org>
-References: <1449244736-22949-1-git-send-email-geert+renesas@glider.be>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] perf/x86/amd: Adding support for new IOMMU performance
+ event
+Date: Mon, 14 Dec 2015 16:05:42 +0100
+Message-ID: <20151214150542.GD11292@8bytes.org>
+References: <1449874397-27056-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1449244736-22949-1-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <1449874397-27056-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
+Cc: peterz@infradead.org, mingo@redhat.com, acme@kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Dec 04, 2015 at 04:58:56PM +0100, Geert Uytterhoeven wrote:
-> As of commit 44d88c754e57a6d9 ("ARM: shmobile: Remove legacy SoC code
-> for R-Mobile A1"), the Renesas IPMMU/IPMMUI driver is no longer used.
-> In theory it could still be used on SH-Mobile AG5 and R-Mobile A1 SoCs,
-> but that requires adding DT support to the driver, which is not
-> planned.
+On Fri, Dec 11, 2015 at 04:53:17PM -0600, Suravee Suthikulpanit wrote:
+> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > 
-> Remove the driver, it can be resurrected from git history when needed.
+> This patch adds new IOMMU performance event based on
+> the information in table 74 of the AMD I/O Virtualization Technology
+> (IOMMU) Specification (Document Id: 4882, Rev 2.62, Feb 2015)
 > 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+> Link: http://support.amd.com/TechDocs/48882_IOMMU.pdf
+> Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
 > ---
->  drivers/iommu/Kconfig          |  75 --------
->  drivers/iommu/Makefile         |   2 -
->  drivers/iommu/shmobile-iommu.c | 402 -----------------------------------------
->  drivers/iommu/shmobile-ipmmu.c | 129 -------------
->  drivers/iommu/shmobile-ipmmu.h |  34 ----
->  5 files changed, 642 deletions(-)
->  delete mode 100644 drivers/iommu/shmobile-iommu.c
->  delete mode 100644 drivers/iommu/shmobile-ipmmu.c
->  delete mode 100644 drivers/iommu/shmobile-ipmmu.h
+>  arch/x86/kernel/cpu/perf_event_amd_iommu.c | 5 +++++
+>  1 file changed, 5 insertions(+)
 
-Applied, thanks.
+Reviewed-by: Joerg Roedel <jroedel@suse.de>
+Acked-by: Joerg Roedel <jroedel@suse.de>
+
+> 
+> diff --git a/arch/x86/kernel/cpu/perf_event_amd_iommu.c b/arch/x86/kernel/cpu/perf_event_amd_iommu.c
+> index 97242a9..86f8259 100644
+> --- a/arch/x86/kernel/cpu/perf_event_amd_iommu.c
+> +++ b/arch/x86/kernel/cpu/perf_event_amd_iommu.c
+> @@ -118,6 +118,11 @@ static struct amd_iommu_event_desc amd_iommu_v2_event_descs[] = {
+>  	AMD_IOMMU_EVENT_DESC(cmd_processed,           "csource=0x11"),
+>  	AMD_IOMMU_EVENT_DESC(cmd_processed_inv,       "csource=0x12"),
+>  	AMD_IOMMU_EVENT_DESC(tlb_inv,                 "csource=0x13"),
+> +	AMD_IOMMU_EVENT_DESC(ign_rd_wr_mmio_1ff8h,    "csource=0x14"),
+> +	AMD_IOMMU_EVENT_DESC(vapic_int_non_guest,     "csource=0x15"),
+> +	AMD_IOMMU_EVENT_DESC(vapic_int_guest,         "csource=0x16"),
+> +	AMD_IOMMU_EVENT_DESC(smi_recv,                "csource=0x17"),
+> +	AMD_IOMMU_EVENT_DESC(smi_blk,                 "csource=0x18"),
+>  	{ /* end: all zeroes */ },
+>  };
+>  
+> -- 
+> 1.9.1
+> 
