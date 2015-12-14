@@ -1,7 +1,8 @@
 From: Prem Mallappa <pmallapp-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v2] IOMMU: arm-smmu-v3: Use STE.S1STALLD only when supported
-Date: Mon, 14 Dec 2015 22:01:23 +0530
-Message-ID: <1450110683-32163-1-git-send-email-pmallapp@broadcom.com>
+Subject: [PATCH] IOMMU: arm-smmu-v3: fix broken S2PS and AARCH64 in Broadcom
+	Vulcan
+Date: Mon, 14 Dec 2015 22:01:27 +0530
+Message-ID: <1450110687-32207-1-git-send-email-pmallapp@broadcom.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -19,60 +20,58 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.dea
 Cc: jchandra-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, Prem Mallappa <pmallapp-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-It is ILLEGAL to set STE.S1STALLD to 1 if stage 1 is enabled and
-either the stall or terminate models are not supported.
-Also fix the STALLD check. which has wierd encoding.
+Vulcan SMMUv3 looks for AARCH64 and S2PS inroder to validate the STE entry,
+which is a overkill, but when proper encoding not found; the SMMU stops
+processing PCIe read/write requests. Giving the h/w what it wants.
 
 Signed-off-by: Prem Mallappa <pmallapp-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 4e5118a..d4af50d 100644
+index d4af50d..dfda564 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -40,7 +40,10 @@
- #define IDR0_ST_LVL_SHIFT		27
- #define IDR0_ST_LVL_MASK		0x3
- #define IDR0_ST_LVL_2LVL		(1 << IDR0_ST_LVL_SHIFT)
--#define IDR0_STALL_MODEL		(3 << 24)
-+#define IDR0_STALL_SHIFT		24
-+#define IDR0_STALL_MASK			0x3
-+#define IDR0_STALL_MODEL_STALL		(0 << IDR0_STALL_SHIFT)
-+#define IDR0_STALL_MODEL_FORCE		(2 << IDR0_STALL_SHIFT)
- #define IDR0_TTENDIAN_SHIFT		21
- #define IDR0_TTENDIAN_MASK		0x3
- #define IDR0_TTENDIAN_LE		(2 << IDR0_TTENDIAN_SHIFT)
-@@ -1056,12 +1059,14 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
- 			 STRTAB_STE_1_S1C_CACHE_WBRA
- 			 << STRTAB_STE_1_S1COR_SHIFT |
- 			 STRTAB_STE_1_S1C_SH_ISH << STRTAB_STE_1_S1CSH_SHIFT |
--			 STRTAB_STE_1_S1STALLD |
- #ifdef CONFIG_PCI_ATS
- 			 STRTAB_STE_1_EATS_TRANS << STRTAB_STE_1_EATS_SHIFT |
- #endif
- 			 STRTAB_STE_1_STRW_NSEL1 << STRTAB_STE_1_STRW_SHIFT);
+@@ -260,6 +260,7 @@
+ #define STRTAB_STE_2_S2VMID_MASK	0xffffUL
+ #define STRTAB_STE_2_VTCR_SHIFT		32
+ #define STRTAB_STE_2_VTCR_MASK		0x7ffffUL
++#define STRTAB_STE_2_S2PS_SHIFT        48
+ #define STRTAB_STE_2_S2AA64		(1UL << 51)
+ #define STRTAB_STE_2_S2ENDI		(1UL << 52)
+ #define STRTAB_STE_2_S2PTW		(1UL << 54)
+@@ -577,6 +578,7 @@ struct arm_smmu_device {
+ 	u32				features;
  
-+		if (smmu->features & ARM_SMMU_FEAT_STALLS)
-+			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
++#define ARM_SMMU_OPT_BROKEN_STE_VALID	(1 << 1)
+ 	u32				options;
+ 
+ 	struct arm_smmu_cmdq		cmdq;
+@@ -641,6 +643,7 @@ struct arm_smmu_option_prop {
+ 
+ static struct arm_smmu_option_prop arm_smmu_options[] = {
+ 	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
++	{ ARM_SMMU_OPT_BROKEN_STE_VALID, "broadcom,broken-ste-valid-check" },
+ 	{ 0, NULL},
+ };
+ 
+@@ -1046,6 +1049,15 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+ 				      : STRTAB_STE_0_CFG_BYPASS;
+ 		dst[0] = cpu_to_le64(val);
+ 		dst[2] = 0; /* Nuke the VMID */
 +
- 		val |= (ste->s1_cfg->cdptr_dma & STRTAB_STE_0_S1CTXPTR_MASK
- 		        << STRTAB_STE_0_S1CTXPTR_SHIFT) |
- 			STRTAB_STE_0_CFG_S1_TRANS;
-@@ -2532,8 +2537,12 @@ static int arm_smmu_device_probe(struct arm_smmu_device *smmu)
- 		dev_warn(smmu->dev, "IDR0.COHACC overridden by dma-coherent property (%s)\n",
- 			 coherent ? "true" : "false");
- 
--	if (reg & IDR0_STALL_MODEL)
-+	switch (reg & (IDR0_STALL_MASK << IDR0_STALL_SHIFT)) {
-+	case IDR0_STALL_MODEL_STALL:
-+	case IDR0_STALL_MODEL_FORCE:
- 		smmu->features |= ARM_SMMU_FEAT_STALLS;
-+		break;
-+	}
- 
- 	if (reg & IDR0_S1P)
- 		smmu->features |= ARM_SMMU_FEAT_TRANS_S1;
++		if (smmu && (smmu->options & ARM_SMMU_OPT_BROKEN_STE_VALID)) {
++#define SMMU_STE_OAS_44_BITS 0x4UL
++			WARN_ON(smmu->oas != 44);
++			dst[1] = STRTAB_STE_1_EATS_TRANS << STRTAB_STE_1_EATS_SHIFT;
++			dst[2] |= cpu_to_le64((SMMU_STE_OAS_44_BITS << STRTAB_STE_2_S2PS_SHIFT) |
++					STRTAB_STE_2_S2AA64);
++		}
++
+ 		if (ste_live)
+ 			arm_smmu_sync_ste_for_sid(smmu, sid);
+ 		return;
 -- 
 2.6.0
