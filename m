@@ -1,31 +1,37 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 2/3] iommu/amd: constify mmu_notifier_ops structures
-Date: Mon, 14 Dec 2015 15:45:00 +0100
-Message-ID: <20151214144500.GA11292@8bytes.org>
-References: <1448834571-2988-1-git-send-email-Julia.Lawall@lip6.fr>
- <1448834571-2988-3-git-send-email-Julia.Lawall@lip6.fr>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu/msm: Use platform_register/unregister_drivers()
+Date: Mon, 14 Dec 2015 15:51:43 +0100
+Message-ID: <20151214145143.GB11292@8bytes.org>
+References: <1449073561-11875-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1448834571-2988-3-git-send-email-Julia.Lawall@lip6.fr>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Julia Lawall <Julia.Lawall@lip6.fr>
-Cc: kernel-janitors@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+In-Reply-To: <1449073561-11875-1-git-send-email-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, Nov 29, 2015 at 11:02:50PM +0100, Julia Lawall wrote:
-> This mmu_notifier_ops structure is never modified, so declare it as
-> const, like the other mmu_notifier_ops structures.
+On Wed, Dec 02, 2015 at 05:26:01PM +0100, Thierry Reding wrote:
+> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 > 
-> Done with the help of Coccinelle.
+> These new helpers simplify implementing multi-driver modules and
+> properly handle failure to register one driver by unregistering all
+> previously registered drivers.
 > 
-> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-> 
+> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 > ---
-> The patches in this series are independent of each other.
-> 
->  drivers/iommu/amd_iommu_v2.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/iommu/msm_iommu_dev.c | 25 +++++++------------------
+>  1 file changed, 7 insertions(+), 18 deletions(-)
 
 Applied, thanks.
