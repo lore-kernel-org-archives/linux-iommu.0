@@ -1,7 +1,8 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 03/06] iommu/ipmmu-vmsa: Break out utlb control function
-Date: Tue, 15 Dec 2015 21:02:39 +0900
-Message-ID: <20151215120239.26216.43390.sendpatchset@little-apple>
+Subject: [PATCH 04/06] iommu/ipmmu-vmsa: Rework interrupt code and use bitmap
+	for context
+Date: Tue, 15 Dec 2015 21:02:49 +0900
+Message-ID: <20151215120249.26216.25148.sendpatchset@little-apple>
 References: <20151215120212.26216.61530.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,72 +24,114 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Introduce the function ipmmu_utlb_ctrl() that shares code
-to enable or disable utlbs.
+Introduce a bitmap for context handing and convert the
+interrupt routine to go handle all registered contexts.
+
+At this point the number of contexts are still limited.
+
+The purpose of this patch is to remove the use of the
+ARM specific mapping variable from ipmmu_irq(). 
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
- drivers/iommu/ipmmu-vmsa.c |   30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c |   37 ++++++++++++++++++++++++++-----------
+ 1 file changed, 26 insertions(+), 11 deletions(-)
 
---- 0004/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2015-12-15 13:17:40.580513000 +0900
-@@ -279,9 +279,18 @@ static void ipmmu_utlb_enable(struct ipm
- static void ipmmu_utlb_disable(struct ipmmu_vmsa_domain *domain,
- 			       unsigned int utlb)
- {
--	struct ipmmu_vmsa_device *mmu = domain->mmu;
-+	ipmmu_write(domain->mmu, IMUCTR(utlb), 0);
-+}
+--- 0007/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2015-12-15 13:14:35.540513000 +0900
+@@ -8,6 +8,7 @@
+  * the Free Software Foundation; version 2 of the License.
+  */
+ 
++#include <linux/bitmap.h>
+ #include <linux/delay.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/err.h>
+@@ -26,12 +27,16 @@
+ 
+ #include "io-pgtable.h"
+ 
++#define IPMMU_CTX_MAX 1
 +
-+static void ipmmu_utlb_ctrl(struct ipmmu_vmsa_domain *domain,
-+			    void (*fn)(struct ipmmu_vmsa_domain *,
-+				       unsigned int utlb), struct device *dev)
-+{
-+	struct ipmmu_vmsa_dev_data *dev_data = get_dev_data(dev);
-+	unsigned int i;
+ struct ipmmu_vmsa_device {
+ 	struct device *dev;
+ 	void __iomem *base;
+ 	struct list_head list;
  
--	ipmmu_write(mmu, IMUCTR(utlb), 0);
-+	for (i = 0; i < dev_data->num_utlbs; ++i)
-+		fn(domain, dev_data->utlbs[i]);
- }
+ 	unsigned int num_utlbs;
++	DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
++	struct ipmmu_vmsa_domain *domains[IPMMU_CTX_MAX];
  
- static void ipmmu_tlb_flush_all(void *cookie)
-@@ -503,7 +512,6 @@ static int ipmmu_attach_device(struct io
- 	struct ipmmu_vmsa_device *mmu = dev_data->mmu;
- 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
- 	unsigned long flags;
--	unsigned int i;
- 	int ret = 0;
- 
- 	if (!mmu) {
-@@ -529,24 +537,16 @@ static int ipmmu_attach_device(struct io
- 
- 	spin_unlock_irqrestore(&domain->lock, flags);
- 
--	if (ret < 0)
--		return ret;
-+	if (!ret)
-+		ipmmu_utlb_ctrl(domain, ipmmu_utlb_enable, dev);
- 
--	for (i = 0; i < dev_data->num_utlbs; ++i)
--		ipmmu_utlb_enable(domain, dev_data->utlbs[i]);
--
--	return 0;
-+	return ret;
- }
- 
- static void ipmmu_detach_device(struct iommu_domain *io_domain,
- 				struct device *dev)
+ 	struct dma_iommu_mapping *mapping;
+ };
+@@ -319,6 +324,7 @@ static struct iommu_gather_ops ipmmu_gat
+ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
  {
--	struct ipmmu_vmsa_dev_data *dev_data = get_dev_data(dev);
--	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
--	unsigned int i;
--
--	for (i = 0; i < dev_data->num_utlbs; ++i)
--		ipmmu_utlb_disable(domain, dev_data->utlbs[i]);
-+	ipmmu_utlb_ctrl(to_vmsa_domain(io_domain), ipmmu_utlb_disable, dev);
+ 	phys_addr_t ttbr;
++	int ret;
  
  	/*
- 	 * TODO: Optimize by disabling the context when no device is attached.
+ 	 * Allocate the page table operations.
+@@ -348,10 +354,16 @@ static int ipmmu_domain_init_context(str
+ 		return -EINVAL;
+ 
+ 	/*
+-	 * TODO: When adding support for multiple contexts, find an unused
+-	 * context.
++	 * Find an unused context.
+ 	 */
+-	domain->context_id = 0;
++	ret = bitmap_find_free_region(domain->mmu->ctx, IPMMU_CTX_MAX, 0);
++	if (ret < 0) {
++		free_io_pgtable_ops(domain->iop);
++		return ret;
++	}
++
++	domain->context_id = ret;
++	domain->mmu->domains[ret] = domain;
+ 
+ 	/* TTBR0 */
+ 	ttbr = domain->cfg.arm_lpae_s1_cfg.ttbr[0];
+@@ -395,6 +407,8 @@ static int ipmmu_domain_init_context(str
+ 
+ static void ipmmu_domain_destroy_context(struct ipmmu_vmsa_domain *domain)
+ {
++	bitmap_release_region(domain->mmu->ctx, domain->context_id, 0);
++
+ 	/*
+ 	 * Disable the context. Flush the TLB as required when modifying the
+ 	 * context registers.
+@@ -460,16 +474,16 @@ static irqreturn_t ipmmu_domain_irq(stru
+ static irqreturn_t ipmmu_irq(int irq, void *dev)
+ {
+ 	struct ipmmu_vmsa_device *mmu = dev;
+-	struct iommu_domain *io_domain;
+-	struct ipmmu_vmsa_domain *domain;
+-
+-	if (!mmu->mapping)
+-		return IRQ_NONE;
++	irqreturn_t status = IRQ_NONE;
++	unsigned int k;
+ 
+-	io_domain = mmu->mapping->domain;
+-	domain = to_vmsa_domain(io_domain);
++	/* Check interrupts for all active contexts */
++	for (k = find_first_bit(mmu->ctx, IPMMU_CTX_MAX);
++	     k < IPMMU_CTX_MAX && status == IRQ_NONE;
++	     k = find_next_bit(mmu->ctx, IPMMU_CTX_MAX, k))
++		status = ipmmu_domain_irq(mmu->domains[k]);
+ 
+-	return ipmmu_domain_irq(domain);
++	return status;
+ }
+ 
+ /* -----------------------------------------------------------------------------
+@@ -788,6 +802,7 @@ static int ipmmu_probe(struct platform_d
+ 
+ 	mmu->dev = &pdev->dev;
+ 	mmu->num_utlbs = 32;
++	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
+ 
+ 	/* Map I/O memory and request IRQ. */
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
