@@ -1,58 +1,111 @@
 From: Magnus Damm <magnus.damm@gmail.com>
-Subject: [PATCH/RFC 00/10] iommu/ipmmu-vmsa: Experimental r8a7795 support
-Date: Tue, 15 Dec 2015 22:05:08 +0900
-Message-ID: <20151215130508.13535.26186.sendpatchset@little-apple>
-Return-path: <linux-sh-owner@vger.kernel.org>
-Sender: linux-sh-owner@vger.kernel.org
+Subject: [PATCH/RFC 01/10] iommu/ipmmu-vmsa: Introduce features, break out alias
+Date: Tue, 15 Dec 2015 22:05:18 +0900
+Message-ID: <20151215130518.13535.13822.sendpatchset@little-apple>
+References: <20151215130508.13535.26186.sendpatchset@little-apple>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20151215130508.13535.26186.sendpatchset@little-apple>
+Sender: linux-kernel-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org
 Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, linux-sh@vger.kernel.org, joro@8bytes.org, linux-kernel@vger.kernel.org, horms+renesas@verge.net.au, Magnus Damm <magnus.damm@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-iommu/ipmmu-vmsa: Experimental r8a7795 support
+From: Magnus Damm <damm+renesas@opensource.se>
 
-[PATCH/RFC 01/10] iommu/ipmmu-vmsa: Introduce features, break out alias
-[PATCH/RFC 02/10] iommu/ipmmu-vmsa: Add optional root device feature
-[PATCH/RFC 03/10] iommu/ipmmu-vmsa: Write IMCTR twice
-[PATCH/RFC 04/10] iommu/ipmmu-vmsa: Make IMBUSCTR setup optional
-[PATCH/RFC 05/10] iommu/ipmmu-vmsa: Allow two bit SL0
-[PATCH/RFC 06/10] iommu/ipmmu-vmsa: Also use IOMMU_OF_DECLARE()
-[PATCH/RFC 07/10] iommu/ipmmu-vmsa: Break out utlb parsing code
-[PATCH/RFC 08/10] iommu/ipmmu-vmsa: Break out domain allocation code
-[PATCH/RFC 09/10] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
-[PATCH/RFC 10/10] iommu/ipmmu-vmsa: Hook up r8a7795 DT matching code
-
-Add experimental r8a7795 support for the IPMMU driver. At this point
-the code is in rather early stages of development and not ready for
-upstream merge. The DT binding is undocumented and will change.
-
-The r8a7795 IPMMU is almost register compatible with earlier devices
-like r8a7790-r8a7794, however some bitfields have been shifted
-slightly. On a grander scale topology has been added and interrupts
-have been reworked. So now there are several "cache" IPMMU units
-without interrupt that somehow communicate with IPMMU-MM that
-is the only instance that supports interrupts. The code refers to
-IPMMU-MM as a "root" device and the other ones as leaf nodes.
-In the future the plan is to use DT to describe the relationship.
-
-To make this more interesting the IPMMU driver needs to be shared
-between 32-bit ARM for r8a7790-r8a7794 and 64-bit ARM for r8a7795.
-In practice this means that two separate implementations are needed
-inside the driver to attach to the rather different architecture
-specific code.
-
-CONFIG_IOMMU_DMA=y is needed on 64-bit ARM while on 32-bit ARM
-the arch specific dma-mapping code is hooked up rather directly.
-During init 64-bit ARM IPMMU support is relying on IOMMU_OF_DECLARE().
-
-The code is known to build on 32-bit and 64-bit ARM and x86_64.
-Tested on 32-bit ARM and 64-bit ARM with addtional DT integration
-changes.
+Introduce struct ipmmu_features to track various hardware
+and software implementation changes inside the driver for
+various kinds of IPMMU hardware. Add use_ns_alias_offset
+as a first example of a feature to control if the secure
+register bank offset should be used or not.
 
 Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
 ---
 
- Developed on top of renesas-drivers-2015-12-08-v4.4-rc4 and
- [PATCH 00/06] iommu/ipmmu-vmsa: IPMMU multi-arch update
+ drivers/iommu/ipmmu-vmsa.c |   34 ++++++++++++++++++++++++++++------
+ 1 file changed, 28 insertions(+), 6 deletions(-)
 
- drivers/iommu/ipmmu-vmsa.c |  438 ++++++++++++++++++++++++++++++++++----------
- 1 file changed, 344 insertions(+), 94 deletions(-)
+--- 0009/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2015-12-15 13:41:22.600513000 +0900
+@@ -31,6 +31,10 @@
+ 
+ #define IPMMU_CTX_MAX 1
+ 
++struct ipmmu_features {
++	bool use_ns_alias_offset;
++};
++
+ struct ipmmu_vmsa_device {
+ 	struct device *dev;
+ 	void __iomem *base;
+@@ -43,6 +47,7 @@ struct ipmmu_vmsa_device {
+ #ifdef CONFIG_ARM
+ 	struct dma_iommu_mapping *mapping;
+ #endif
++	const struct ipmmu_features *features;
+ };
+ 
+ struct ipmmu_vmsa_domain {
+@@ -817,13 +822,33 @@ static void ipmmu_device_reset(struct ip
+ 		ipmmu_write(mmu, i * IM_CTX_SIZE + IMCTR, 0);
+ }
+ 
++static const struct ipmmu_features ipmmu_features_default = {
++	.use_ns_alias_offset = true,
++};
++
++static const struct of_device_id ipmmu_of_ids[] = {
++	{
++		.compatible = "renesas,ipmmu-vmsa",
++		.data = &ipmmu_features_default,
++	}, {
++		/* Terminator */
++	},
++};
++
++MODULE_DEVICE_TABLE(of, ipmmu_of_ids);
++
+ static int ipmmu_probe(struct platform_device *pdev)
+ {
+ 	struct ipmmu_vmsa_device *mmu;
++	const struct of_device_id *match;
+ 	struct resource *res;
+ 	int irq;
+ 	int ret;
+ 
++	match = of_match_node(ipmmu_of_ids, pdev->dev.of_node);
++	if (!match)
++		return -EINVAL;
++
+ 	mmu = devm_kzalloc(&pdev->dev, sizeof(*mmu), GFP_KERNEL);
+ 	if (!mmu) {
+ 		dev_err(&pdev->dev, "cannot allocate device data\n");
+@@ -833,6 +858,7 @@ static int ipmmu_probe(struct platform_d
+ 	mmu->dev = &pdev->dev;
+ 	mmu->num_utlbs = 32;
+ 	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
++	mmu->features = match->data;
+ 
+ 	/* Map I/O memory and request IRQ. */
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+@@ -852,7 +878,8 @@ static int ipmmu_probe(struct platform_d
+ 	 * Offset the registers base unconditionally to point to the non-secure
+ 	 * alias space for now.
+ 	 */
+-	mmu->base += IM_NS_ALIAS_OFFSET;
++	if (mmu->features->use_ns_alias_offset)
++		mmu->base += IM_NS_ALIAS_OFFSET;
+ 
+ 	irq = platform_get_irq(pdev, 0);
+ 	if (irq < 0) {
+@@ -899,11 +926,6 @@ static int ipmmu_remove(struct platform_
+ 	return 0;
+ }
+ 
+-static const struct of_device_id ipmmu_of_ids[] = {
+-	{ .compatible = "renesas,ipmmu-vmsa", },
+-	{ }
+-};
+-
+ static struct platform_driver ipmmu_driver = {
+ 	.driver = {
+ 		.name = "ipmmu-vmsa",
