@@ -1,15 +1,16 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v6 4/5] iommu/mediatek: Add mt8173 IOMMU driver
-Date: Tue, 15 Dec 2015 11:28:52 +0800
-Message-ID: <1450150132.22854.57.camel@mhfsdcap03>
+From: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH v6 3/5] memory: mediatek: Add SMI driver
+Date: Tue, 15 Dec 2015 13:45:26 +0800
+Message-ID: <CAGS+omDTt646fH3p7kA+EHkR93xGX0APu1sOEjY7MCzQfpO8DA@mail.gmail.com>
 References: <1449568153-15643-1-git-send-email-yong.wu@mediatek.com>
-	<1449568153-15643-5-git-send-email-yong.wu@mediatek.com>
-	<20151214141656.GG18805@8bytes.org>
+	<1449568153-15643-4-git-send-email-yong.wu@mediatek.com>
+	<24171857.0SPpBlzoZl@linux-gy6r.site>
+	<1450147103.22854.23.camel@mhfsdcap03>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20151214141656.GG18805-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1450147103.22854.23.camel@mhfsdcap03>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,144 +20,219 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "open list:OPEN FIRMWARE AND..." <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, srv_heupstream <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2015-12-14 at 15:16 +0100, Joerg Roedel wrote:
-> On Tue, Dec 08, 2015 at 05:49:12PM +0800, Yong Wu wrote:
-> > +static int mtk_iommu_attach_device(struct iommu_domain *domain,
-> > +				   struct device *dev)
-> > +{
-> > +	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
-> > +	struct mtk_iommu_client_priv *priv = dev->archdata.iommu;
-> > +	struct mtk_iommu_data *data;
-> > +	int ret;
-> > +
-> > +	if (!priv)
-> > +		return -ENODEV;
-> > +
-> > +	data = dev_get_drvdata(priv->m4udev);
-> > +	if (!data) {
-> > +		/*
-> > +		 * The DMA core will run earlier than this probe, and it will
-> > +		 * create a default iommu domain for each a iommu device.
-> > +		 * But here there is only one domain called the m4u domain
-> > +		 * which all the multimedia HW share.
-> > +		 * The default domain isn't needed here.
-> > +		 */
-> 
-> The iommu core creates one domain per iommu-group. In your case this
-> means one default domain per iommu in the system.
+Hi Yong,
 
-Yes. The iommu core will create one domain per iommu-group.
-see the next "if" here.
+On Tue, Dec 15, 2015 at 10:38 AM, Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
+> On Mon, 2015-12-14 at 19:18 +0100, Matthias Brugger wrote:
+>> On Tuesday 08 Dec 2015 17:49:11 Yong Wu wrote:
+>> > This patch add SMI(Smart Multimedia Interface) driver. This driver
+>> > is responsible to enable/disable iommu and control the power domain
+>> > and clocks of each local arbiter.
+>> >
+>> > Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+>> > ---
+>> >   Currently SMI offer mtk_smi_larb_get/put to enable the power-domain
+>> > ,clocks and initialize the iommu configuration register for each a local
+>> > arbiter, The reason is:
+>> >   a) If a device would like to disable iommu, it also need call
+>> > mtk_smi_larb_get/put to enable its power and clocks.
+>> >   b) The iommu core don't support attach/detach a device within a
+>> > iommu-group. So we cann't use iommu_attach_device(iommu_detach_device)
+>> > instead
+>> > of mtk_smi_larb_get/put.
+>> >
+> [..]
+>> > +static int
+>> > +mtk_smi_enable(struct device *dev, struct clk *apb, struct clk *smi)
+>> > +{
+>> > +   int ret;
+>> > +
+>> > +   ret = pm_runtime_get_sync(dev);
+>> > +   if (ret < 0)
+>> > +           return ret;
+>> > +
+>> > +   ret = clk_prepare_enable(apb);
+>> > +   if (ret)
+>> > +           goto err_put_pm;
+>> > +
+>> > +   ret = clk_prepare_enable(smi);
+>> > +   if (ret)
+>> > +           goto err_disable_apb;
+>> > +
+>> > +   return 0;
+>> > +
+>> > +err_disable_apb:
+>> > +   clk_disable_unprepare(apb);
+>> > +err_put_pm:
+>> > +   pm_runtime_put_sync(dev);
+>> > +   return ret;
+>> > +}
+>> > +
+>> > +static void
+>> > +mtk_smi_disable(struct device *dev, struct clk *apb, struct clk *smi)
+>> > +{
+>> > +   clk_disable_unprepare(smi);
+>> > +   clk_disable_unprepare(apb);
+>> > +   pm_runtime_put_sync(dev);
+>> > +}
+>> > +
+>> > +static int mtk_smi_common_enable(struct mtk_smi_common *common)
+>> > +{
+>> > +   return mtk_smi_enable(common->dev, common->clk_apb, common->clk_smi);
+>> > +}
+>> > +
+>> > +static void mtk_smi_common_disable(struct mtk_smi_common *common)
+>> > +{
+>> > +   mtk_smi_disable(common->dev, common->clk_apb, common->clk_smi);
+>> > +}
+>> > +
+>> > +static int mtk_smi_larb_enable(struct mtk_smi_larb *larb)
+>> > +{
+>> > +   return mtk_smi_enable(larb->dev, larb->clk_apb, larb->clk_smi);
+>> > +}
+>> > +
+>> > +static void mtk_smi_larb_disable(struct mtk_smi_larb *larb)
+>> > +{
+>> > +   mtk_smi_disable(larb->dev, larb->clk_apb, larb->clk_smi);
+>> > +}
+>> > +
+>>
+>> This is somehow over-engineered. Just use mtk_smi_enable and mtk_smi_disable
+>> instead of adding an extra indirection.
+>
+> I added this only for readable...then the code in mtk_smi_larb_get below
+> may looks simple and readable.
+>
+> If I use mtk_smi_enable/disable directly, the code will be like our
+> v5[1], is it OK?
+> Maybe I don't need these help function here, and only add more comment
+> based on v5.
+>
+> [1]
+> http://lists.linuxfoundation.org/pipermail/iommu/2015-October/014590.html
 
-But the domain here is created by the current DMA64. It's from this
-function do_iommu_attach which will be called too early and will help
-create a default domain for each a iommu device.(my codebase is
-v4.4-rc1).
+bike-shedding...
+
+I like the fact that Yong is trying to make his helpers more type-safe.
+But, perhaps we can rename "struct mtk_smi_common" as "struct
+mtk_smi", and then make "struct mtk_smi_larb" contain a "struct
+mtk_smi":
+
+struct mtk_smi {
+  struct device *dev;
+  struct clk *clk_apb, *clk_smi;
+}
+
+struct mtk_smi_larb {
+  struct mtk_smi;
+  ...
+}
 
 
-//=====the next "if"===========
-} else if (!data->m4u_dom) {
-	/*
-	 * While a device is added into a iommu group, the iommu core
-	 * will create a default domain for each a iommu group.
-	 * This default domain is reserved as the m4u domain and is
-	 * initiated here.
-	 */
-	data->m4u_dom = dom;
-	if (domain->type == IOMMU_DOMAIN_DMA) {
-		ret = iommu_dma_init_domain(domain, 0,
-					    DMA_BIT_MASK(32));
-		if (ret)
-			goto err_uninit_dom;
-	}
+Then, have:
 
-	ret = mtk_iommu_domain_finalise(data);
-	if (ret)
-		goto err_uninit_dom;
-} 
-//======================
+int mtk_smi_enable(struct mtk_smi *smi)
+{
+  clk_enable(smi->clk_apb);
+  ...
+}
 
-> 
-> > +		iommu_domain_free(domain);
-> 
-> This function is not supposed to free the domain passed to it.
+int mtk_smi_disable(struct mtk_smi *smi)
+{
+}
 
-As above this domain is created in the do_iommu_attach which will help
-create a default domain for each a iommu device.
-We don't need this default domain!
+int mtk_smi_larb_get(struct device *larbdev)
+{
+  struct mtk_smi_larb *larb = dev_get_drvdata(larbdev);
+  struct mtk_smi *common = dev_get_drvdata(larb->smi_common_dev);
 
-If we don't free it here, there will be a memory leak.
+  mtk_smi_enable(common);
+  mtk_smi_enable(&larb->smi);
+  ...
+}
 
->From Robin's comment, He will improve the sequence of the
-__iommu_setup_dma_ops in the future.
+>>
+>> > +int mtk_smi_larb_get(struct device *larbdev)
+>> > +{
+>> > +   struct mtk_smi_larb *larb = dev_get_drvdata(larbdev);
+>> > +   struct mtk_smi_common *common = dev_get_drvdata(larb->smi_common_dev);
+>> > +   int ret;
+>> > +
+>> > +   ret = mtk_smi_common_enable(common);
+>> > +   if (ret)
+>> > +           return ret;
+>> > +
+>> > +   ret = mtk_smi_larb_enable(larb);
+>> > +   if (ret)
+>> > +           goto err_put_smi;
+>> > +
+>> > +   /* Configure the iommu info */
+>> > +   writel_relaxed(larb->mmu, larb->base + SMI_LARB_MMU_EN);
 
-/*
- * TODO: Right now __iommu_setup_dma_ops() gets called too early to do
- * everything it needs to - the device is only partially created and the
- * IOMMU driver hasn't seen it yet, so it can't have a group. Thus we
- * need this delayed attachment dance. Once IOMMU probe ordering is
-sorted
- * to move the arch_setup_dma_ops() call later, all the notifier bits
-below
- * become unnecessary, and will go away.
- */
+I think this should probably be writel() not writel_relaxed, since you
+really do want the barrier to ensure all other register accesses have
+completed before enabling the MMU.
 
-/*
- * Best case: The device is either part of a group which was
- * already attached to a domain in a previous call, or it's
- * been put in a default DMA domain by the IOMMU core.
- */
+>> > +
+>> > +   return 0;
+>> > +
+>> > +err_put_smi:
+>> > +   mtk_smi_common_disable(common);
+>> > +   return ret;
+>> > +}
+>> > +
+>> > +void mtk_smi_larb_put(struct device *larbdev)
+>> > +{
+>> > +   struct mtk_smi_larb *larb = dev_get_drvdata(larbdev);
+>> > +   struct mtk_smi_common *common = dev_get_drvdata(larb->smi_common_dev);
+>> > +
+>> > +   writel_relaxed(0, larb->base + SMI_LARB_MMU_EN);
+>> > +   mtk_smi_larb_disable(larb);
+>> > +   mtk_smi_common_disable(common);
+>> > +}
+>> > +
+>>
+>> Looks strange that you just disable all MMUs while you only enable some of
+>> them at runtime. Unfortunately the datasheet I have lacks the SMI part, so I
+>> can just guess how the HW is working.
+>> From the DTS it looks like as if a larb can be used by two different
+>> components (e.g. larb0 from ovl0 and rdma0). Wouldn't that produce a conflict?
+>
+> Thanks. It's really a problem.
+>
+> There are OVL0 and MDP in larb0, Both will call mtk_smi_larb_get/put, we
+> cann't disable all the MMUs in whole the larb0 here.  This register
+> should be reset to zero while the larb power domain turning off(rely on
+> the power-domain ref count).
+> I will delete this(keep this in our V5.)
 
-   But there is no this patch currently, so I add iommu_domain_free
-here.
- 
-   "free the domain" here looks really not good. Then I delete the
-iommu_domain_free here(allow this memory leak right now), is it ok?
-(It will also works after Robin's change in the future.)
+Hmm, mtk_smi_config_port(.., false) clears the bit in larb->mmu, but
+does not actually "disable" an enabled mmu.
+The MMU will be disabled only on the next mtk_smi_larb_get() (for a
+different port on the same larb).
+I guess this is ok.  The only weird thing is this situation, where an
+MMU can be left enabled when its user is done with it:
 
-> 
-> > +static int mtk_iommu_add_device(struct device *dev)
-> > +{
-> > +	struct iommu_group *group;
-> > +
-> > +	if (!dev->archdata.iommu) /* Not a iommu client device */
-> > +		return -ENODEV;
-> > +
-> > +	group = iommu_group_get_for_dev(dev);
-> > +	if (IS_ERR(group))
-> > +		return PTR_ERR(group);
-> > +
-> > +	iommu_group_put(group);
-> > +	return 0;
-> > +}
-> 
-> [...]
-> 
-> > +static struct iommu_group *mtk_iommu_device_group(struct device *dev)
-> > +{
-> > +	struct mtk_iommu_data *data;
-> > +	struct mtk_iommu_client_priv *priv;
-> > +
-> > +	priv = dev->archdata.iommu;
-> > +	if (!priv)
-> > +		return ERR_PTR(-ENODEV);
-> > +
-> > +	/* All the client devices are in the same m4u iommu-group */
-> > +	data = dev_get_drvdata(priv->m4udev);
-> > +	if (!data->m4u_group) {
-> > +		data->m4u_group = iommu_group_alloc();
-> > +		if (IS_ERR(data->m4u_group))
-> > +			dev_err(dev, "Failed to allocate M4U IOMMU group\n");
-> > +	}
-> > +	return data->m4u_group;
-> > +}
-> 
-> This looks much better than before, thanks.
+ /* configure port 0 as 'enabled' */
+ mtk_smi_config_port(0, true);
+ /* configure port 1 as 'enabled' */
+ mtk_smi_config_port(1, true);
 
-Thanks.
+/* user of port 0 wants to do work */
+mtk_smi_larb_get() /* turns on all clks, power & enables both MMUs */
 
-> 
+/* user of port 1 wants to do work */
+mtk_smi_larb_get()
+
+/* user of port 1 done doing work */
+mtk_smi_larb_put()
+
+/* MMU 1 is still enabled */
+
+
+Thanks!
+-Dan
