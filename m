@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH/RFC 09/10] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
-Date: Tue, 15 Dec 2015 22:06:32 +0900
-Message-ID: <20151215130632.13535.48038.sendpatchset@little-apple>
+Subject: [PATCH/RFC 10/10] iommu/ipmmu-vmsa: Hook up r8a7795 DT matching code
+Date: Tue, 15 Dec 2015 22:06:40 +0900
+Message-ID: <20151215130640.13535.41176.sendpatchset@little-apple>
 References: <20151215130508.13535.26186.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,125 +23,51 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Introduce a new set of iommu_ops suitable for 64-bit ARM
-and IOMMU_OF_DECLARE() used on r8a7795. The ->of_xlate()
-callback is wrapped in #ifdefs to also compile of x86_64.
+Tie in r8a7795 features and update the IOMMU_OF_DECLARE
+compat string to hook up the updated compat string.
+
+TODO:
+ - Describe IPMMU topology via DT
+ - Document DT binding and topology
+ - Figure out how to avoid multiple IOMMU_OF_DECLARE()
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
- drivers/iommu/ipmmu-vmsa.c |   89 +++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 88 insertions(+), 1 deletion(-)
+ drivers/iommu/ipmmu-vmsa.c |   13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
---- 0020/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2015-12-15 21:23:05.770513000 +0900
-@@ -10,6 +10,7 @@
- 
- #include <linux/bitmap.h>
- #include <linux/delay.h>
-+#include <linux/dma-iommu.h>
- #include <linux/dma-mapping.h>
- #include <linux/err.h>
- #include <linux/export.h>
-@@ -895,6 +896,92 @@ static const struct iommu_ops ipmmu_ops
- 	.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
+--- 0025/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2015-12-15 15:47:44.550513000 +0900
+@@ -999,11 +999,22 @@ static const struct ipmmu_features ipmmu
+ 	.use_of_iommu = false,
  };
  
-+static struct iommu_domain *ipmmu_domain_alloc_dma(unsigned type)
-+{
-+	struct iommu_domain *io_domain;
-+
-+	if (type != IOMMU_DOMAIN_DMA)
-+		return NULL;
-+
-+	io_domain = __ipmmu_domain_alloc(type);
-+	if (io_domain)
-+		iommu_get_dma_cookie(io_domain);
-+
-+	return io_domain;
-+}
-+
-+static void ipmmu_domain_free_dma(struct iommu_domain *io_domain)
-+{
-+	iommu_put_dma_cookie(io_domain);
-+	ipmmu_domain_free(io_domain);
-+}
-+
-+static int ipmmu_add_device_dma(struct device *dev)
-+{
-+	struct iommu_group *group;
-+
-+	/* only accept devices with iommus property */
-+	if (of_count_phandle_with_args(dev->of_node, "iommus",
-+				       "#iommu-cells") < 0)
-+		return -ENODEV;
-+
-+	group = iommu_group_get_for_dev(dev);
-+	if (IS_ERR(group))
-+		return PTR_ERR(group);
-+
-+	return 0;
-+}
-+
-+static void ipmmu_remove_device_dma(struct device *dev)
-+{
-+	iommu_group_remove_device(dev);
-+}
-+
-+static struct iommu_group *ipmmu_device_group_dma(struct device *dev)
-+{
-+	struct iommu_group *group;
-+	int ret;
-+
-+	group = generic_device_group(dev);
-+	if (IS_ERR(group))
-+		return group;
-+
-+	ret = ipmmu_init_platform_device(dev, group);
-+	if (ret) {
-+		iommu_group_put(group);
-+		group = ERR_PTR(ret);
-+	}
-+
-+	return group;
-+}
-+
-+#ifdef CONFIG_OF_IOMMU
-+static int ipmmu_of_xlate_dma(struct device *dev,
-+			      struct of_phandle_args *spec)
-+{
-+	/* dummy callback to satisfy of_iommu_configure() */
-+	return 0;
-+}
-+#endif
-+
-+static const struct iommu_ops ipmmu_ops_dma = {
-+	.domain_alloc = ipmmu_domain_alloc_dma,
-+	.domain_free = ipmmu_domain_free_dma,
-+	.attach_dev = ipmmu_attach_device,
-+	.detach_dev = ipmmu_detach_device,
-+	.map = ipmmu_map,
-+	.unmap = ipmmu_unmap,
-+	.map_sg = default_iommu_map_sg,
-+	.iova_to_phys = ipmmu_iova_to_phys,
-+	.add_device = ipmmu_add_device_dma,
-+	.remove_device = ipmmu_remove_device_dma,
-+	.device_group = ipmmu_device_group_dma,
-+	.pgsize_bitmap = SZ_4K,
-+#ifdef CONFIG_OF_IOMMU
-+	.of_xlate = ipmmu_of_xlate_dma,
-+#endif
++static const struct ipmmu_features ipmmu_features_r8a7795 = {
++	.use_ns_alias_offset = false,
++	.has_cache_leaf_nodes = true,
++	.setup_imbuscr = false,
++	.twobit_imttbcr_sl0 = true,
++	.use_of_iommu = true,
 +};
 +
- /* -----------------------------------------------------------------------------
-  * Probe/remove and init
-  */
-@@ -1068,7 +1155,7 @@ static int __init ipmmu_vmsa_iommu_of_se
- {
- 	const struct of_device_id *match;
- 	const struct ipmmu_features *feature;
--	static const struct iommu_ops *ops = &ipmmu_ops;
-+	static const struct iommu_ops *ops = &ipmmu_ops_dma;
+ static const struct of_device_id ipmmu_of_ids[] = {
+ 	{
+ 		.compatible = "renesas,ipmmu-vmsa",
+ 		.data = &ipmmu_features_default,
+ 	}, {
++		.compatible = "renesas,ipmmu-r8a7795",
++		.data = &ipmmu_features_r8a7795,
++	}, {
+ 		/* Terminator */
+ 	},
+ };
+@@ -1163,7 +1174,7 @@ static int __init ipmmu_vmsa_iommu_of_se
+ 	return 0;
+ }
  
- 	ipmmu_init();
+-IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "renesas,ipmmu-vmsa",
++IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "renesas,ipmmu-r8a7795",
+ 		 ipmmu_vmsa_iommu_of_setup);
  
+ MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
