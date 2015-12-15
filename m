@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH/RFC 05/10] iommu/ipmmu-vmsa: Allow two bit SL0
-Date: Tue, 15 Dec 2015 22:05:55 +0900
-Message-ID: <20151215130555.13535.39164.sendpatchset@little-apple>
+Subject: [PATCH/RFC 04/10] iommu/ipmmu-vmsa: Make IMBUSCTR setup optional
+Date: Tue, 15 Dec 2015 22:05:46 +0900
+Message-ID: <20151215130546.13535.13440.sendpatchset@little-apple>
 References: <20151215130508.13535.26186.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,66 +23,45 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Introduce support for two bit SL0 bitfield in IMTTBCR
-by using a separate feature flag.
+Allow certain DT compat strings to opt-out of setting up
+IMBUSCR. The default case is unchanged.
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
- drivers/iommu/ipmmu-vmsa.c |   15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ drivers/iommu/ipmmu-vmsa.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- 0014/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2015-12-15 21:17:55.110513000 +0900
-@@ -35,6 +35,7 @@ struct ipmmu_features {
+--- 0016/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2015-12-15 14:18:20.730513000 +0900
+@@ -34,6 +34,7 @@
+ struct ipmmu_features {
  	bool use_ns_alias_offset;
  	bool has_cache_leaf_nodes;
- 	bool setup_imbuscr;
-+	bool twobit_imttbcr_sl0;
++	bool setup_imbuscr;
  };
  
  struct ipmmu_vmsa_device {
-@@ -139,6 +140,10 @@ static struct ipmmu_vmsa_domain *to_vmsa
- #define IMTTBCR_TSZ0_MASK		(7 << 0)
- #define IMTTBCR_TSZ0_SHIFT		O
- 
-+#define IMTTBCR_SL0_TWOBIT_LVL_3	(0 << 6)
-+#define IMTTBCR_SL0_TWOBIT_LVL_2	(1 << 6)
-+#define IMTTBCR_SL0_TWOBIT_LVL_1	(2 << 6)
-+
- #define IMBUSCR				0x000c
- #define IMBUSCR_DVM			(1 << 2)
- #define IMBUSCR_BUSSEL_SYS		(0 << 0)
-@@ -377,6 +382,7 @@ static struct iommu_gather_ops ipmmu_gat
- static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
- {
- 	phys_addr_t ttbr;
-+	u32 tmp;
- 	int ret;
- 
- 	/*
-@@ -428,9 +434,15 @@ static int ipmmu_domain_init_context(str
- 	 * We use long descriptors with inner-shareable WBWA tables and allocate
- 	 * the whole 32-bit VA space to TTBR0.
- 	 */
-+
-+	if (domain->root->features->twobit_imttbcr_sl0)
-+		tmp = IMTTBCR_SL0_TWOBIT_LVL_1;
-+	else
-+		tmp = IMTTBCR_SL0_LVL_1;
-+
- 	ipmmu_ctx_write(domain, IMTTBCR, IMTTBCR_EAE |
- 			IMTTBCR_SH0_INNER_SHAREABLE | IMTTBCR_ORGN0_WB_WA |
--			IMTTBCR_IRGN0_WB_WA | IMTTBCR_SL0_LVL_1);
-+			IMTTBCR_IRGN0_WB_WA | tmp);
- 
- 	/* MAIR0 */
+@@ -435,10 +436,10 @@ static int ipmmu_domain_init_context(str
  	ipmmu_ctx_write(domain, IMMAIR0, domain->cfg.arm_lpae_s1_cfg.mair[0]);
-@@ -878,6 +890,7 @@ static const struct ipmmu_features ipmmu
+ 
+ 	/* IMBUSCR */
+-	ipmmu_ctx_write(domain, IMBUSCR,
+-			ipmmu_ctx_read(domain, IMBUSCR) &
+-			~(IMBUSCR_DVM | IMBUSCR_BUSSEL_MASK));
+-
++	if (domain->root->features->setup_imbuscr)
++		ipmmu_ctx_write(domain, IMBUSCR,
++				ipmmu_ctx_read(domain, IMBUSCR) &
++				~(IMBUSCR_DVM | IMBUSCR_BUSSEL_MASK));
+ 	/*
+ 	 * IMSTR
+ 	 * Clear all interrupt flags.
+@@ -876,6 +877,7 @@ static void ipmmu_device_reset(struct ip
+ static const struct ipmmu_features ipmmu_features_default = {
  	.use_ns_alias_offset = true,
  	.has_cache_leaf_nodes = false,
- 	.setup_imbuscr = true,
-+	.twobit_imttbcr_sl0 = false,
++	.setup_imbuscr = true,
  };
  
  static const struct of_device_id ipmmu_of_ids[] = {
