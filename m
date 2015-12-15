@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm@gmail.com>
-Subject: [PATCH/RFC 07/10] iommu/ipmmu-vmsa: Break out utlb parsing code
-Date: Tue, 15 Dec 2015 22:06:14 +0900
-Message-ID: <20151215130614.13535.5206.sendpatchset@little-apple>
+Subject: [PATCH/RFC 08/10] iommu/ipmmu-vmsa: Break out domain allocation code
+Date: Tue, 15 Dec 2015 22:06:23 +0900
+Message-ID: <20151215130623.13535.43116.sendpatchset@little-apple>
 References: <20151215130508.13535.26186.sendpatchset@little-apple>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20151215130508.13535.26186.sendpatchset@little-apple>
@@ -12,176 +12,44 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas@opensource.se>
 
-Break out the utlb parsing code and dev_data allocation into a
-separate function. This is preparation for future code sharing.
+Break out the domain allocation code into a separate function.
+This is preparation for future code sharing.
 
 Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
 ---
 
- drivers/iommu/ipmmu-vmsa.c |  126 ++++++++++++++++++++++++--------------------
- 1 file changed, 70 insertions(+), 56 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c |   13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
---- 0012/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2015-12-14 18:56:47.020513000 +0900
-@@ -607,6 +607,69 @@ static int ipmmu_find_utlbs(struct ipmmu
- 	return 0;
+--- 0014/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2015-12-14 19:23:22.210513000 +0900
+@@ -457,13 +457,10 @@ static irqreturn_t ipmmu_domain_irq(int
+  * IOMMU Operations
+  */
+ 
+-static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
++static struct iommu_domain *__ipmmu_domain_alloc(unsigned type)
+ {
+ 	struct ipmmu_vmsa_domain *domain;
+ 
+-	if (type != IOMMU_DOMAIN_UNMANAGED)
+-		return NULL;
+-
+ 	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
+ 	if (!domain)
+ 		return NULL;
+@@ -473,6 +470,14 @@ static struct iommu_domain *ipmmu_domain
+ 	return &domain->io_domain;
  }
  
-+static int ipmmu_init_platform_device(struct device *dev,
-+				      struct iommu_group *group)
++static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
 +{
-+	struct ipmmu_vmsa_dev_data *dev_data;
-+	struct ipmmu_vmsa_device *mmu;
-+	unsigned int *utlbs;
-+	unsigned int i;
-+	int num_utlbs;
-+	int ret = -ENODEV;
++	if (type != IOMMU_DOMAIN_UNMANAGED)
++		return NULL;
 +
-+	/* Find the master corresponding to the device. */
-+
-+	num_utlbs = of_count_phandle_with_args(dev->of_node, "iommus",
-+					       "#iommu-cells");
-+	if (num_utlbs < 0)
-+		return -ENODEV;
-+
-+	utlbs = kcalloc(num_utlbs, sizeof(*utlbs), GFP_KERNEL);
-+	if (!utlbs)
-+		return -ENOMEM;
-+
-+	spin_lock(&ipmmu_devices_lock);
-+
-+	list_for_each_entry(mmu, &ipmmu_devices, list) {
-+		ret = ipmmu_find_utlbs(mmu, dev, utlbs, num_utlbs);
-+		if (!ret) {
-+			/*
-+			 * TODO Take a reference to the MMU to protect
-+			 * against device removal.
-+			 */
-+			break;
-+		}
-+	}
-+
-+	spin_unlock(&ipmmu_devices_lock);
-+
-+	if (ret < 0)
-+		goto error;
-+
-+	for (i = 0; i < num_utlbs; ++i) {
-+		if (utlbs[i] >= mmu->num_utlbs) {
-+			ret = -EINVAL;
-+			goto error;
-+		}
-+	}
-+
-+	dev_data = kzalloc(sizeof(*dev_data), GFP_KERNEL);
-+	if (!dev_data) {
-+		ret = -ENOMEM;
-+		goto error;
-+	}
-+
-+	dev_data->mmu = mmu;
-+	dev_data->utlbs = utlbs;
-+	dev_data->num_utlbs = num_utlbs;
-+	set_dev_data(dev, dev_data);
-+	return 0;
-+
-+error:
-+	kfree(utlbs);
-+	return ret;
++	return __ipmmu_domain_alloc(type);
 +}
 +
- #ifdef CONFIG_ARM
- static int ipmmu_map_attach(struct device *dev, struct ipmmu_vmsa_device *mmu)
+ static void ipmmu_domain_free(struct iommu_domain *io_domain)
  {
-@@ -663,56 +726,15 @@ static inline void ipmmu_release_mapping
- 
- static int ipmmu_add_device(struct device *dev)
- {
--	struct ipmmu_vmsa_dev_data *dev_data = get_dev_data(dev);
--	struct ipmmu_vmsa_device *mmu;
--	struct iommu_group *group = NULL;
--	unsigned int *utlbs;
--	unsigned int i;
--	int num_utlbs;
--	int ret = -ENODEV;
-+	struct iommu_group *group;
-+	int ret;
- 
--	if (dev_data) {
-+	if (get_dev_data(dev)) {
- 		dev_warn(dev, "IOMMU driver already assigned to device %s\n",
- 			 dev_name(dev));
- 		return -EINVAL;
- 	}
- 
--	/* Find the master corresponding to the device. */
--
--	num_utlbs = of_count_phandle_with_args(dev->of_node, "iommus",
--					       "#iommu-cells");
--	if (num_utlbs < 0)
--		return -ENODEV;
--
--	utlbs = kcalloc(num_utlbs, sizeof(*utlbs), GFP_KERNEL);
--	if (!utlbs)
--		return -ENOMEM;
--
--	spin_lock(&ipmmu_devices_lock);
--
--	list_for_each_entry(mmu, &ipmmu_devices, list) {
--		ret = ipmmu_find_utlbs(mmu, dev, utlbs, num_utlbs);
--		if (!ret) {
--			/*
--			 * TODO Take a reference to the MMU to protect
--			 * against device removal.
--			 */
--			break;
--		}
--	}
--
--	spin_unlock(&ipmmu_devices_lock);
--
--	if (ret < 0)
--		return -ENODEV;
--
--	for (i = 0; i < num_utlbs; ++i) {
--		if (utlbs[i] >= mmu->num_utlbs) {
--			ret = -EINVAL;
--			goto error;
--		}
--	}
--
- 	/* Create a device group and add the device to it. */
- 	group = iommu_group_alloc();
- 	if (IS_ERR(group)) {
-@@ -730,27 +752,19 @@ static int ipmmu_add_device(struct devic
- 		goto error;
- 	}
- 
--	dev_data = kzalloc(sizeof(*dev_data), GFP_KERNEL);
--	if (!dev_data) {
--		ret = -ENOMEM;
-+	ret = ipmmu_init_platform_device(dev, group);
-+	if (ret < 0) {
-+		dev_err(dev, "Failed to init platform device\n");
- 		goto error;
- 	}
- 
--	dev_data->mmu = mmu;
--	dev_data->utlbs = utlbs;
--	dev_data->num_utlbs = num_utlbs;
--	set_dev_data(dev, dev_data);
--
--	ret = ipmmu_map_attach(dev, mmu);
-+	ret = ipmmu_map_attach(dev, get_dev_data(dev)->mmu);
- 	if (ret < 0)
- 		goto error;
- 
- 	return 0;
- 
- error:
--	kfree(dev_data);
--	kfree(utlbs);
--
- 	set_dev_data(dev, NULL);
- 
- 	if (!IS_ERR_OR_NULL(group))
+ 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
