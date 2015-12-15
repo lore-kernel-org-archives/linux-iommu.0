@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH/RFC 04/10] iommu/ipmmu-vmsa: Make IMBUSCTR setup optional
-Date: Tue, 15 Dec 2015 22:05:46 +0900
-Message-ID: <20151215130546.13535.13440.sendpatchset@little-apple>
+Subject: [PATCH/RFC 06/10] iommu/ipmmu-vmsa: Also use IOMMU_OF_DECLARE()
+Date: Tue, 15 Dec 2015 22:06:04 +0900
+Message-ID: <20151215130604.13535.42142.sendpatchset@little-apple>
 References: <20151215130508.13535.26186.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,45 +23,93 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Allow certain DT compat strings to opt-out of setting up
-IMBUSCR. The default case is unchanged.
+Hook up IOMMU_OF_DECLARE() support. The default case
+has the use_of_iommu feature disabled so the init
+order remains unchanged for the default case.
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
- drivers/iommu/ipmmu-vmsa.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c |   35 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 34 insertions(+), 1 deletion(-)
 
 --- 0016/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2015-12-15 14:18:20.730513000 +0900
-@@ -34,6 +34,7 @@
- struct ipmmu_features {
- 	bool use_ns_alias_offset;
++++ work/drivers/iommu/ipmmu-vmsa.c	2015-12-15 21:19:31.090513000 +0900
+@@ -18,6 +18,8 @@
+ #include <linux/iommu.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
++#include <linux/of_iommu.h>
++#include <linux/of_platform.h>
+ #include <linux/platform_device.h>
+ #include <linux/sizes.h>
+ #include <linux/slab.h>
+@@ -36,6 +38,7 @@ struct ipmmu_features {
  	bool has_cache_leaf_nodes;
-+	bool setup_imbuscr;
+ 	bool setup_imbuscr;
+ 	bool twobit_imttbcr_sl0;
++	bool use_of_iommu;
  };
  
  struct ipmmu_vmsa_device {
-@@ -435,10 +436,10 @@ static int ipmmu_domain_init_context(str
- 	ipmmu_ctx_write(domain, IMMAIR0, domain->cfg.arm_lpae_s1_cfg.mair[0]);
- 
- 	/* IMBUSCR */
--	ipmmu_ctx_write(domain, IMBUSCR,
--			ipmmu_ctx_read(domain, IMBUSCR) &
--			~(IMBUSCR_DVM | IMBUSCR_BUSSEL_MASK));
--
-+	if (domain->root->features->setup_imbuscr)
-+		ipmmu_ctx_write(domain, IMBUSCR,
-+				ipmmu_ctx_read(domain, IMBUSCR) &
-+				~(IMBUSCR_DVM | IMBUSCR_BUSSEL_MASK));
- 	/*
- 	 * IMSTR
- 	 * Clear all interrupt flags.
-@@ -876,6 +877,7 @@ static void ipmmu_device_reset(struct ip
- static const struct ipmmu_features ipmmu_features_default = {
- 	.use_ns_alias_offset = true,
+@@ -891,6 +894,7 @@ static const struct ipmmu_features ipmmu
  	.has_cache_leaf_nodes = false,
-+	.setup_imbuscr = true,
+ 	.setup_imbuscr = true,
+ 	.twobit_imttbcr_sl0 = false,
++	.use_of_iommu = false,
  };
  
  static const struct of_device_id ipmmu_of_ids[] = {
+@@ -1015,15 +1019,21 @@ static struct platform_driver ipmmu_driv
+ 
+ static int __init ipmmu_init(void)
+ {
++	static bool setup_done;
+ 	int ret;
+ 
++	if (setup_done)
++		return 0;
++
+ 	ret = platform_driver_register(&ipmmu_driver);
+ 	if (ret < 0)
+ 		return ret;
+ 
++#ifdef CONFIG_ARM
+ 	if (!iommu_present(&platform_bus_type))
+ 		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
+-
++#endif
++	setup_done = true;
+ 	return 0;
+ }
+ 
+@@ -1035,6 +1045,29 @@ static void __exit ipmmu_exit(void)
+ subsys_initcall(ipmmu_init);
+ module_exit(ipmmu_exit);
+ 
++static int __init ipmmu_vmsa_iommu_of_setup(struct device_node *np)
++{
++	const struct of_device_id *match;
++	const struct ipmmu_features *feature;
++	static const struct iommu_ops *ops = &ipmmu_ops;
++
++	ipmmu_init();
++
++	match = of_match_node(ipmmu_of_ids, np);
++	if (match) {
++		feature = match->data;
++		if (feature->use_of_iommu) {
++			of_iommu_set_ops(np, (struct iommu_ops *)ops);
++			if (!iommu_present(&platform_bus_type))
++				bus_set_iommu(&platform_bus_type, ops);
++		}
++	}
++	return 0;
++}
++
++IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "renesas,ipmmu-vmsa",
++		 ipmmu_vmsa_iommu_of_setup);
++
+ MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
+ MODULE_AUTHOR("Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>");
+ MODULE_LICENSE("GPL v2");
