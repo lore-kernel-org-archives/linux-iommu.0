@@ -1,287 +1,100 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v6 3/5] memory: mediatek: Add SMI driver
-Date: Wed, 16 Dec 2015 14:00:47 +0800
-Message-ID: <1450245647.22854.109.camel@mhfsdcap03>
-References: <1449568153-15643-1-git-send-email-yong.wu@mediatek.com>
-	 <1449568153-15643-4-git-send-email-yong.wu@mediatek.com>
-	 <24171857.0SPpBlzoZl@linux-gy6r.site>
-	 <1450147103.22854.23.camel@mhfsdcap03>
-	 <CAGS+omDTt646fH3p7kA+EHkR93xGX0APu1sOEjY7MCzQfpO8DA@mail.gmail.com>
+From: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
+Subject: Re: [PATCH] iommu/amd: Assign default IOMMU when there is only one
+ IOMMU
+Date: Wed, 16 Dec 2015 00:20:03 -0600
+Message-ID: <56710293.6010701@amd.com>
+References: <1449874478-31770-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+ <20151214150805.GE11292@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAGS+omDTt646fH3p7kA+EHkR93xGX0APu1sOEjY7MCzQfpO8DA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, srv_heupstream <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "open list:OPEN FIRMWARE AND..." <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Paul Bolle <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Philipp Zabel <p.zabel@p>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20151214150805.GE11292@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2015-12-15 at 13:45 +0800, Daniel Kurtz wrote:
-> Hi Yong,
-> 
-> On Tue, Dec 15, 2015 at 10:38 AM, Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
-> > On Mon, 2015-12-14 at 19:18 +0100, Matthias Brugger wrote:
-> >> On Tuesday 08 Dec 2015 17:49:11 Yong Wu wrote:
-> >> > This patch add SMI(Smart Multimedia Interface) driver. This driver
-> >> > is responsible to enable/disable iommu and control the power domain
-> >> > and clocks of each local arbiter.
-> >> >
-> >> > Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> >> > ---
-> >> >   Currently SMI offer mtk_smi_larb_get/put to enable the power-domain
-> >> > ,clocks and initialize the iommu configuration register for each a local
-> >> > arbiter, The reason is:
-> >> >   a) If a device would like to disable iommu, it also need call
-> >> > mtk_smi_larb_get/put to enable its power and clocks.
-> >> >   b) The iommu core don't support attach/detach a device within a
-> >> > iommu-group. So we cann't use iommu_attach_device(iommu_detach_device)
-> >> > instead
-> >> > of mtk_smi_larb_get/put.
-> >> >
-> > [..]
-> >> > +static int
-> >> > +mtk_smi_enable(struct device *dev, struct clk *apb, struct clk *smi)
-> >> > +{
-> >> > +   int ret;
-> >> > +
-> >> > +   ret = pm_runtime_get_sync(dev);
-> >> > +   if (ret < 0)
-> >> > +           return ret;
-> >> > +
-> >> > +   ret = clk_prepare_enable(apb);
-> >> > +   if (ret)
-> >> > +           goto err_put_pm;
-> >> > +
-> >> > +   ret = clk_prepare_enable(smi);
-> >> > +   if (ret)
-> >> > +           goto err_disable_apb;
-> >> > +
-> >> > +   return 0;
-> >> > +
-> >> > +err_disable_apb:
-> >> > +   clk_disable_unprepare(apb);
-> >> > +err_put_pm:
-> >> > +   pm_runtime_put_sync(dev);
-> >> > +   return ret;
-> >> > +}
-> >> > +
-> >> > +static void
-> >> > +mtk_smi_disable(struct device *dev, struct clk *apb, struct clk *smi)
-> >> > +{
-> >> > +   clk_disable_unprepare(smi);
-> >> > +   clk_disable_unprepare(apb);
-> >> > +   pm_runtime_put_sync(dev);
-> >> > +}
-> >> > +
-> >> > +static int mtk_smi_common_enable(struct mtk_smi_common *common)
-> >> > +{
-> >> > +   return mtk_smi_enable(common->dev, common->clk_apb, common->clk_smi);
-> >> > +}
-> >> > +
-> >> > +static void mtk_smi_common_disable(struct mtk_smi_common *common)
-> >> > +{
-> >> > +   mtk_smi_disable(common->dev, common->clk_apb, common->clk_smi);
-> >> > +}
-> >> > +
-> >> > +static int mtk_smi_larb_enable(struct mtk_smi_larb *larb)
-> >> > +{
-> >> > +   return mtk_smi_enable(larb->dev, larb->clk_apb, larb->clk_smi);
-> >> > +}
-> >> > +
-> >> > +static void mtk_smi_larb_disable(struct mtk_smi_larb *larb)
-> >> > +{
-> >> > +   mtk_smi_disable(larb->dev, larb->clk_apb, larb->clk_smi);
-> >> > +}
-> >> > +
-> >>
-> >> This is somehow over-engineered. Just use mtk_smi_enable and mtk_smi_disable
-> >> instead of adding an extra indirection.
-> >
-> > I added this only for readable...then the code in mtk_smi_larb_get below
-> > may looks simple and readable.
-> >
-> > If I use mtk_smi_enable/disable directly, the code will be like our
-> > v5[1], is it OK?
-> > Maybe I don't need these help function here, and only add more comment
-> > based on v5.
-> >
-> > [1]
-> > http://lists.linuxfoundation.org/pipermail/iommu/2015-October/014590.html
-> 
-> bike-shedding...
-> 
-> I like the fact that Yong is trying to make his helpers more type-safe.
-> But, perhaps we can rename "struct mtk_smi_common" as "struct
-> mtk_smi", and then make "struct mtk_smi_larb" contain a "struct
-> mtk_smi":
-> 
-> struct mtk_smi {
->   struct device *dev;
->   struct clk *clk_apb, *clk_smi;
-> }
-> 
-> struct mtk_smi_larb {
->   struct mtk_smi;
->   ...
-> }
-> 
-> 
-> Then, have:
-> 
-> int mtk_smi_enable(struct mtk_smi *smi)
-> {
->   clk_enable(smi->clk_apb);
->   ...
-> }
-> 
-> int mtk_smi_disable(struct mtk_smi *smi)
-> {
-> }
-> 
-> int mtk_smi_larb_get(struct device *larbdev)
-> {
->   struct mtk_smi_larb *larb = dev_get_drvdata(larbdev);
->   struct mtk_smi *common = dev_get_drvdata(larb->smi_common_dev);
-> 
->   mtk_smi_enable(common);
->   mtk_smi_enable(&larb->smi);
->   ...
-> }
+Hi Joerg,
 
-Thanks. I will change like this in next time.
+On 12/14/2015 09:08 AM, Joerg Roedel wrote:
+> On Fri, Dec 11, 2015 at 04:54:38PM -0600, Suravee Suthikulpanit wrote:
+>> Current driver makes assumption that device with devid zero is always
+>> included in the range of devices to be managed by IOMMU. However,
+>> certain FW does not include devid zero in IVRS table.
+>> This has caused IOMMU perf driver to fail to initialize.
+>
+> Hmm, this is a firmware bug. Is this bug seen in any systems that are
+> for sale?
+>
+>> This patch implements a workaround for this case by always assign
+>> devid zero to be handled by the first IOMMU.
+>
+> Otherwise its better to fix the firmware than to add workarounds.
+>
+>
+> 	Joerg
+>
 
-> 
-> >>
-> >> > +int mtk_smi_larb_get(struct device *larbdev)
-> >> > +{
-> >> > +   struct mtk_smi_larb *larb = dev_get_drvdata(larbdev);
-> >> > +   struct mtk_smi_common *common = dev_get_drvdata(larb->smi_common_dev);
-> >> > +   int ret;
-> >> > +
-> >> > +   ret = mtk_smi_common_enable(common);
-> >> > +   if (ret)
-> >> > +           return ret;
-> >> > +
-> >> > +   ret = mtk_smi_larb_enable(larb);
-> >> > +   if (ret)
-> >> > +           goto err_put_smi;
-> >> > +
-> >> > +   /* Configure the iommu info */
-> >> > +   writel_relaxed(larb->mmu, larb->base + SMI_LARB_MMU_EN);
-> 
-> I think this should probably be writel() not writel_relaxed, since you
-> really do want the barrier to ensure all other register accesses have
-> completed before enabling the MMU.
+Please correct me if I am wrong. But I don't think this is necessary a 
+bug in the FW. From the CZ system, here are the IVHD device entry dump 
+that belong to this IOMMU:
 
-Yes. I will fix this.
+[    0.070351] AMD-Vi: device: 00:00.2 cap: 0040 seg: 0 flags: b8 info 0000
+[    0.070354] AMD-Vi:        mmio-addr: 00000000feb80000
+[    0.070384] AMD-Vi:   DEV_SELECT_RANGE_START     devid: 00:01.0 flags: 00
+[    0.070386] AMD-Vi:   DEV_RANGE_END         devid: ff:1f.6
+[    0.071414] AMD-Vi:   DEV_ALIAS_RANGE         devid: ff:00.0 flags: 
+00 devid_to: 00:14.4
+[    0.071417] AMD-Vi:   DEV_RANGE_END         devid: ff:1f.7
+[    0.071423] AMD-Vi:   DEV_SPECIAL(HPET[0])        devid: 00:14.0
+[    0.071426] AMD-Vi:   DEV_SPECIAL(IOAPIC[0])        devid: 00:14.0
+[    0.071427] AMD-Vi:   DEV_SPECIAL(IOAPIC[1])        devid: 00:00.1
 
-> 
-> >> > +
-> >> > +   return 0;
-> >> > +
-> >> > +err_put_smi:
-> >> > +   mtk_smi_common_disable(common);
-> >> > +   return ret;
-> >> > +}
-> >> > +
-> >> > +void mtk_smi_larb_put(struct device *larbdev)
-> >> > +{
-> >> > +   struct mtk_smi_larb *larb = dev_get_drvdata(larbdev);
-> >> > +   struct mtk_smi_common *common = dev_get_drvdata(larb->smi_common_dev);
-> >> > +
-> >> > +   writel_relaxed(0, larb->base + SMI_LARB_MMU_EN);
-> >> > +   mtk_smi_larb_disable(larb);
-> >> > +   mtk_smi_common_disable(common);
-> >> > +}
-> >> > +
-> >>
-> >> Looks strange that you just disable all MMUs while you only enable some of
-> >> them at runtime. Unfortunately the datasheet I have lacks the SMI part, so I
-> >> can just guess how the HW is working.
-> >> From the DTS it looks like as if a larb can be used by two different
-> >> components (e.g. larb0 from ovl0 and rdma0). Wouldn't that produce a conflict?
-> >
-> > Thanks. It's really a problem.
-> >
-> > There are OVL0 and MDP in larb0, Both will call mtk_smi_larb_get/put, we
-> > cann't disable all the MMUs in whole the larb0 here.  This register
-> > should be reset to zero while the larb power domain turning off(rely on
-> > the power-domain ref count).
-> > I will delete this(keep this in our V5.)
-> 
-> Hmm, mtk_smi_config_port(.., false) clears the bit in larb->mmu, but
-> does not actually "disable" an enabled mmu.
+And here is the output from lspci:
 
-Actually mtk_smi_config_port(.., false) will never be called currently.
+00:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 1576
+00:00.2 IOMMU: Advanced Micro Devices, Inc. [AMD] Device 1577
+00:01.0 VGA compatible controller: Advanced Micro Devices, Inc. 
+[AMD/ATI] Device 9874 (rev c4)
+00:01.1 Audio device: Advanced Micro Devices, Inc. [AMD/ATI] Device 9840
+00:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 157b
+00:02.4 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 157c
+00:03.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 157b
+00:03.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 157c
+00:08.0 Encryption controller: Advanced Micro Devices, Inc. [AMD] Device 
+1578
+00:09.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 157d
+00:09.2 Audio device: Advanced Micro Devices, Inc. [AMD] Device 157a
+00:10.0 USB controller: Advanced Micro Devices, Inc. [AMD] FCH USB XHCI 
+Controller (rev 20)
+00:11.0 SATA controller: Advanced Micro Devices, Inc. [AMD] FCH SATA 
+Controller [AHCI mode] (rev 49)
+00:12.0 USB controller: Advanced Micro Devices, Inc. [AMD] FCH USB EHCI 
+Controller (rev 49)
+00:14.0 SMBus: Advanced Micro Devices, Inc. [AMD] FCH SMBus Controller 
+(rev 4a)
+00:14.3 ISA bridge: Advanced Micro Devices, Inc. [AMD] FCH LPC Bridge 
+(rev 11)
+00:14.7 SD Host controller: Advanced Micro Devices, Inc. [AMD] FCH SD 
+Flash Controller (rev 01)
+00:18.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 1570
+00:18.1 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 1571
+00:18.2 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 1572
+00:18.3 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 1573
+00:18.4 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 1574
+00:18.5 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 1575
+01:00.0 Ethernet controller: Broadcom Corporation NetXtreme BCM5720 
+Gigabit Ethernet PCIe
+01:00.1 Ethernet controller: Broadcom Corporation NetXtreme BCM5720 
+Gigabit Ethernet PCIe
+02:00.0 Ethernet controller: Intel Corporation 82599ES 10-Gigabit 
+SFI/SFP+ Network Connection (rev 01)
+02:00.1 Ethernet controller: Intel Corporation 82599ES 10-Gigabit 
+SFI/SFP+ Network Connection (rev 01)
 
-If anybody would like to call iommu_detach_device to config-port false.
-He will get the log below since the current iommu core don't support
-detach one device in a iommu-group which have many devices.
+The IVHD seems valid. We should not need to include from devid 0 if it 
+has already specified the IOAPIC[1] separately.
 
-That's to say that the larb->mmu is initialized in probe, and will never
-be changed again.
-
-(151119_13:39:37.472)WARNING:
-at /proj/mtk40525/upstreamdev/v4.4/kernel/mediatek/drivers/iommu/iommu.c:1154
-(151119_13:39:37.472)Modules linked in:
-(151119_13:39:37.472)CPU: 1 PID: 731 Comm: sh Not tainted 4.4.0-rc1+ #37
-(151119_13:39:37.472)Hardware name: MediaTek MT8173 evaluation board
-(DT)
-(151119_13:39:37.472)task: ffffffc076bb4d00 ti: ffffffc076bdc000
-task.ti: ffffffc076bdc000
-(151119_13:39:37.472)PC is at iommu_detach_device+0x5c/0xb0
-(151119_13:39:37.472)LR is at iommu_detach_device+0x30/0xb0
-...
-(151119_13:39:37.550)---[ end trace d831cba9f811edf3 ]---
-(151119_13:39:37.550)Call trace:
-(151119_13:39:37.550)[<ffffffc0003f8c70>] iommu_detach_device+0x5c/0xb0
-
-By the way, In the next version I plan to delete this interface
-mtk_smi_config_port, use the additional data of the component-bind
-instead of this.
-
-> The MMU will be disabled only on the next mtk_smi_larb_get() (for a
-> different port on the same larb).
-> I guess this is ok.  The only weird thing is this situation, where an
-> MMU can be left enabled when its user is done with it:
-> 
->  /* configure port 0 as 'enabled' */
->  mtk_smi_config_port(0, true);
->  /* configure port 1 as 'enabled' */
->  mtk_smi_config_port(1, true);
-> 
-> /* user of port 0 wants to do work */
-> mtk_smi_larb_get() /* turns on all clks, power & enables both MMUs */
-> 
-> /* user of port 1 wants to do work */
-> mtk_smi_larb_get()
-> 
-> /* user of port 1 done doing work */
-> mtk_smi_larb_put()
-> 
-> /* MMU 1 is still enabled */
-
-This is really not so perfect in this case.
-
-Even though the iommu-core support iommu-detach dynamically for our case
-in the future(there is no plan currently), This don't have bad effect.
-
-If user of port 1 want to work again, He should call mtk_smi_larb_get
-again.
-
->From the HW, there may be different modules in a local arbiter, SMI here
-can not detect which module call mtk_smi_larb_put and disable his
-special iommu bits. After all mtk_smi_larb_put is mainly for power off
-and disable the clocks.
-
-> 
-> 
-> Thanks!
-> -Dan
-
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Thanks,
+Suravee
