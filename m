@@ -1,100 +1,57 @@
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
-Subject: Re: [PATCH] iommu/amd: Assign default IOMMU when there is only one
- IOMMU
-Date: Wed, 16 Dec 2015 00:20:03 -0600
-Message-ID: <56710293.6010701@amd.com>
-References: <1449874478-31770-1-git-send-email-Suravee.Suthikulpanit@amd.com>
- <20151214150805.GE11292@8bytes.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH/RFC 01/10] iommu/ipmmu-vmsa: Introduce features, break out alias
+Date: Wed, 16 Dec 2015 09:17:59 +0100
+Message-ID: <CAMuHMdV2DzMVyWNX2Z3dOH4OV7_6G28HQMKcB9pEA06Vq=ZBhg@mail.gmail.com>
+References: <20151215130508.13535.26186.sendpatchset@little-apple>
+	<20151215130518.13535.13822.sendpatchset@little-apple>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20151214150805.GE11292@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <20151215130518.13535.13822.sendpatchset@little-apple>
+Sender: linux-sh-owner@vger.kernel.org
+To: Magnus Damm <magnus.damm@gmail.com>
+Cc: iommu@lists.linux-foundation.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Linux-sh list <linux-sh@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Simon Horman <horms+renesas@verge.net.au>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+Hi Magnus,
 
-On 12/14/2015 09:08 AM, Joerg Roedel wrote:
-> On Fri, Dec 11, 2015 at 04:54:38PM -0600, Suravee Suthikulpanit wrote:
->> Current driver makes assumption that device with devid zero is always
->> included in the range of devices to be managed by IOMMU. However,
->> certain FW does not include devid zero in IVRS table.
->> This has caused IOMMU perf driver to fail to initialize.
+On Tue, Dec 15, 2015 at 2:05 PM, Magnus Damm <magnus.damm@gmail.com> wrote:
+> From: Magnus Damm <damm+renesas@opensource.se>
 >
-> Hmm, this is a firmware bug. Is this bug seen in any systems that are
-> for sale?
+> Introduce struct ipmmu_features to track various hardware
+> and software implementation changes inside the driver for
+> various kinds of IPMMU hardware. Add use_ns_alias_offset
+> as a first example of a feature to control if the secure
+> register bank offset should be used or not.
 >
->> This patch implements a workaround for this case by always assign
->> devid zero to be handled by the first IOMMU.
+> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+> ---
 >
-> Otherwise its better to fix the firmware than to add workarounds.
+>  drivers/iommu/ipmmu-vmsa.c |   34 ++++++++++++++++++++++++++++------
+>  1 file changed, 28 insertions(+), 6 deletions(-)
 >
+> --- 0009/drivers/iommu/ipmmu-vmsa.c
+> +++ work/drivers/iommu/ipmmu-vmsa.c     2015-12-15 13:41:22.600513000 +0900
+> @@ -31,6 +31,10 @@
 >
-> 	Joerg
+>  #define IPMMU_CTX_MAX 1
 >
+> +struct ipmmu_features {
+> +       bool use_ns_alias_offset;
+> +};
 
-Please correct me if I am wrong. But I don't think this is necessary a 
-bug in the FW. From the CZ system, here are the IVHD device entry dump 
-that belong to this IOMMU:
+Given you're adding more than 4 features in this series, you may want to
+consider using an unsigned int bitfield instead.
 
-[    0.070351] AMD-Vi: device: 00:00.2 cap: 0040 seg: 0 flags: b8 info 0000
-[    0.070354] AMD-Vi:        mmio-addr: 00000000feb80000
-[    0.070384] AMD-Vi:   DEV_SELECT_RANGE_START     devid: 00:01.0 flags: 00
-[    0.070386] AMD-Vi:   DEV_RANGE_END         devid: ff:1f.6
-[    0.071414] AMD-Vi:   DEV_ALIAS_RANGE         devid: ff:00.0 flags: 
-00 devid_to: 00:14.4
-[    0.071417] AMD-Vi:   DEV_RANGE_END         devid: ff:1f.7
-[    0.071423] AMD-Vi:   DEV_SPECIAL(HPET[0])        devid: 00:14.0
-[    0.071426] AMD-Vi:   DEV_SPECIAL(IOAPIC[0])        devid: 00:14.0
-[    0.071427] AMD-Vi:   DEV_SPECIAL(IOAPIC[1])        devid: 00:00.1
+That way you could also store it directly in of_device_id.data, if you want.
 
-And here is the output from lspci:
+Gr{oetje,eeting}s,
 
-00:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 1576
-00:00.2 IOMMU: Advanced Micro Devices, Inc. [AMD] Device 1577
-00:01.0 VGA compatible controller: Advanced Micro Devices, Inc. 
-[AMD/ATI] Device 9874 (rev c4)
-00:01.1 Audio device: Advanced Micro Devices, Inc. [AMD/ATI] Device 9840
-00:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 157b
-00:02.4 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 157c
-00:03.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 157b
-00:03.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Device 157c
-00:08.0 Encryption controller: Advanced Micro Devices, Inc. [AMD] Device 
-1578
-00:09.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 157d
-00:09.2 Audio device: Advanced Micro Devices, Inc. [AMD] Device 157a
-00:10.0 USB controller: Advanced Micro Devices, Inc. [AMD] FCH USB XHCI 
-Controller (rev 20)
-00:11.0 SATA controller: Advanced Micro Devices, Inc. [AMD] FCH SATA 
-Controller [AHCI mode] (rev 49)
-00:12.0 USB controller: Advanced Micro Devices, Inc. [AMD] FCH USB EHCI 
-Controller (rev 49)
-00:14.0 SMBus: Advanced Micro Devices, Inc. [AMD] FCH SMBus Controller 
-(rev 4a)
-00:14.3 ISA bridge: Advanced Micro Devices, Inc. [AMD] FCH LPC Bridge 
-(rev 11)
-00:14.7 SD Host controller: Advanced Micro Devices, Inc. [AMD] FCH SD 
-Flash Controller (rev 01)
-00:18.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 1570
-00:18.1 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 1571
-00:18.2 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 1572
-00:18.3 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 1573
-00:18.4 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 1574
-00:18.5 Host bridge: Advanced Micro Devices, Inc. [AMD] Device 1575
-01:00.0 Ethernet controller: Broadcom Corporation NetXtreme BCM5720 
-Gigabit Ethernet PCIe
-01:00.1 Ethernet controller: Broadcom Corporation NetXtreme BCM5720 
-Gigabit Ethernet PCIe
-02:00.0 Ethernet controller: Intel Corporation 82599ES 10-Gigabit 
-SFI/SFP+ Network Connection (rev 01)
-02:00.1 Ethernet controller: Intel Corporation 82599ES 10-Gigabit 
-SFI/SFP+ Network Connection (rev 01)
+                        Geert
 
-The IVHD seems valid. We should not need to include from devid 0 if it 
-has already specified the IOAPIC[1] separately.
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Thanks,
-Suravee
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
