@@ -1,8 +1,7 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 03/13] iommu/arm-smmu: Delete an unnecessary check before
-	free_io_pgtable_ops()
-Date: Thu, 17 Dec 2015 12:12:03 +0000
-Message-ID: <1450354333-27256-4-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 07/13] iommu/io-pgtable-arm: Avoid dereferencing bogus PTEs
+Date: Thu, 17 Dec 2015 12:12:07 +0000
+Message-ID: <1450354333-27256-8-git-send-email-will.deacon@arm.com>
 References: <1450354333-27256-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,33 +21,44 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: jroedel-l3A5Bk7waGM@public.gmane.org, pmallapp-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, zhangbo_a-95E7rUnPDLLQT0dZR+AlfA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, elfring-Rn4VEauK+AKRv+LV9MX5uipxlwaOVQ5f@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Markus Elfring <elfring-Rn4VEauK+AKRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-The free_io_pgtable_ops() function tests whether its argument is NULL
-and then returns immediately. Thus the test around the call is not needed.
+In the case of corrupted page tables, or when an invalid size is given,
+__arm_lpae_unmap() may recurse beyond the maximum number of levels.
+Unfortunately the detection of this error condition only happens *after*
+calculating a nonsense offset from something which might not be a valid
+table pointer and dereferencing that to see if it is a valid PTE.
 
-This issue was detected by using the Coccinelle software.
+Make things a little more robust by checking the level is valid before
+doing anything which depends on it being so.
 
-Signed-off-by: Markus Elfring <elfring-Rn4VEauK+AKRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>
+Reviewed-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/iommu/io-pgtable-arm.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 47dc7a793f5c..1ce4b85d5216 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -945,9 +945,7 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
- 		free_irq(irq, domain);
- 	}
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 7df97777662d..366a354c689d 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -486,11 +486,13 @@ static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 	void *cookie = data->iop.cookie;
+ 	size_t blk_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
  
--	if (smmu_domain->pgtbl_ops)
--		free_io_pgtable_ops(smmu_domain->pgtbl_ops);
++	/* Something went horribly wrong and we ran out of page table */
++	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
++		return 0;
++
+ 	ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
+ 	pte = *ptep;
 -
-+	free_io_pgtable_ops(smmu_domain->pgtbl_ops);
- 	__arm_smmu_free_bitmap(smmu->context_map, cfg->cbndx);
- }
+-	/* Something went horribly wrong and we ran out of page table */
+-	if (WARN_ON(!pte || (lvl == ARM_LPAE_MAX_LEVELS)))
++	if (WARN_ON(!pte))
+ 		return 0;
  
+ 	/* If the size matches this level, we're in the right place */
 -- 
 2.1.4
