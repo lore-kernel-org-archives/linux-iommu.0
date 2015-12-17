@@ -1,7 +1,7 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 05/13] iommu/arm-smmu: Correct group reference count
-Date: Thu, 17 Dec 2015 12:12:05 +0000
-Message-ID: <1450354333-27256-6-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 06/13] iommu/arm-smmu: Handle unknown CERROR values gracefully
+Date: Thu, 17 Dec 2015 12:12:06 +0000
+Message-ID: <1450354333-27256-7-git-send-email-will.deacon@arm.com>
 References: <1450354333-27256-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,110 +21,39 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: jroedel-l3A5Bk7waGM@public.gmane.org, pmallapp-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, zhangbo_a-95E7rUnPDLLQT0dZR+AlfA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, elfring-Rn4VEauK+AKRv+LV9MX5uipxlwaOVQ5f@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Whilst the architecture only defines a few of the possible CERROR values,
+we should handle unknown values gracefully rather than go out of bounds
+trying to print out an error description.
 
-The basic flow for add a device:
- arm_smmu_add_device
-        |->iommu_group_get_for_dev
-            |->iommu_group_get
-                     return group;  (1)
-            |->ops->device_group : Init/increase reference count to/by 1.
-            |->iommu_group_add_device : Increase reference count by 1.
-		     return group   (2)
-        |->return 0;
-
-Since we are adding one device, the flow is (2) and the group reference
-count will be increased by 2. So, we need to add iommu_group_put at the
-end of arm_smmu_add_device to decrease the count by 1.
-
-Also take the failure path into consideration when fail to add a device.
-
-Signed-off-by: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 18 +++++++++++-------
- drivers/iommu/arm-smmu.c    |  1 +
- 2 files changed, 12 insertions(+), 7 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 2e3e235f509c..3ea4d576bf08 100644
+index 3ea4d576bf08..4c5ef4e5da98 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1809,13 +1809,13 @@ static int arm_smmu_add_device(struct device *dev)
- 		smmu = arm_smmu_get_for_pci_dev(pdev);
- 		if (!smmu) {
- 			ret = -ENOENT;
--			goto out_put_group;
-+			goto out_remove_dev;
- 		}
+@@ -857,15 +857,17 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
+ 	};
  
- 		smmu_group = kzalloc(sizeof(*smmu_group), GFP_KERNEL);
- 		if (!smmu_group) {
- 			ret = -ENOMEM;
--			goto out_put_group;
-+			goto out_remove_dev;
- 		}
+ 	dev_err(smmu->dev, "CMDQ error (cons 0x%08x): %s\n", cons,
+-		cerror_str[idx]);
++		idx < ARRAY_SIZE(cerror_str) ?  cerror_str[idx] : "Unknown");
  
- 		smmu_group->ste.valid	= true;
-@@ -1831,20 +1831,20 @@ static int arm_smmu_add_device(struct device *dev)
- 	for (i = 0; i < smmu_group->num_sids; ++i) {
- 		/* If we already know about this SID, then we're done */
- 		if (smmu_group->sids[i] == sid)
--			return 0;
-+			goto out_put_group;
+ 	switch (idx) {
+-	case CMDQ_ERR_CERROR_ILL_IDX:
+-		break;
+ 	case CMDQ_ERR_CERROR_ABT_IDX:
+ 		dev_err(smmu->dev, "retrying command fetch\n");
+ 	case CMDQ_ERR_CERROR_NONE_IDX:
+ 		return;
++	case CMDQ_ERR_CERROR_ILL_IDX:
++		/* Fallthrough */
++	default:
++		break;
  	}
  
- 	/* Check the SID is in range of the SMMU and our stream table */
- 	if (!arm_smmu_sid_in_range(smmu, sid)) {
- 		ret = -ERANGE;
--		goto out_put_group;
-+		goto out_remove_dev;
- 	}
- 
- 	/* Ensure l2 strtab is initialised */
- 	if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB) {
- 		ret = arm_smmu_init_l2_strtab(smmu, sid);
- 		if (ret)
--			goto out_put_group;
-+			goto out_remove_dev;
- 	}
- 
- 	/* Resize the SID array for the group */
-@@ -1854,16 +1854,20 @@ static int arm_smmu_add_device(struct device *dev)
- 	if (!sids) {
- 		smmu_group->num_sids--;
- 		ret = -ENOMEM;
--		goto out_put_group;
-+		goto out_remove_dev;
- 	}
- 
- 	/* Add the new SID */
- 	sids[smmu_group->num_sids - 1] = sid;
- 	smmu_group->sids = sids;
--	return 0;
- 
- out_put_group:
- 	iommu_group_put(group);
-+	return 0;
-+
-+out_remove_dev:
-+	iommu_group_remove_device(dev);
-+	iommu_group_put(group);
- 	return ret;
- }
- 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 1ce4b85d5216..6ed169bcb39d 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1355,6 +1355,7 @@ static int arm_smmu_add_device(struct device *dev)
- 	if (IS_ERR(group))
- 		return PTR_ERR(group);
- 
-+	iommu_group_put(group);
- 	return 0;
- }
- 
+ 	/*
 -- 
 2.1.4
