@@ -1,7 +1,8 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 08/13] iommu/io-pgtable: Indicate granule for TLB maintenance
-Date: Thu, 17 Dec 2015 12:12:08 +0000
-Message-ID: <1450354333-27256-9-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 04/13] iommu/arm-smmu: Use incoming shareability attributes in
+	bypass mode
+Date: Thu, 17 Dec 2015 12:12:04 +0000
+Message-ID: <1450354333-27256-5-git-send-email-will.deacon@arm.com>
 References: <1450354333-27256-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,190 +22,45 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: jroedel-l3A5Bk7waGM@public.gmane.org, pmallapp-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, zhangbo_a-95E7rUnPDLLQT0dZR+AlfA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, elfring-Rn4VEauK+AKRv+LV9MX5uipxlwaOVQ5f@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+When we initialise a bypass STE, we memset the structure to zero and
+set the Valid and Config fields to indicate that the stream should
+bypass the SMMU. Unfortunately, this results in an SHCFG field of 0
+which means that the shareability of any incoming transactions is
+overridden with non-shareable, leading to potential coherence problems
+down the line.
 
-IOMMU hardware with range-based TLB maintenance commands can work
-happily with the iova and size arguments passed via the tlb_add_flush
-callback, but for IOMMUs which require separate commands per entry in
-the range, it is not straightforward to infer the necessary granularity
-when it comes to issuing the actual commands.
+This patch fixes the issue by initialising bypass STEs to use the
+incoming shareability attributes. When translation is in effect at
+either stage 1 or stage 2, the shareability is determined by the
+page tables.
 
-Add an additional argument indicating the granularity for the benefit
-of drivers needing to know, and update the ARM LPAE code appropriately
-(for non-leaf invalidations we currently just assume the worst-case
-page granularity rather than walking the table to check).
-
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c    |  2 +-
- drivers/iommu/arm-smmu.c       |  2 +-
- drivers/iommu/io-pgtable-arm.c | 27 +++++++++++++++------------
- drivers/iommu/io-pgtable.h     |  4 ++--
- drivers/iommu/ipmmu-vmsa.c     |  4 ++--
- 5 files changed, 21 insertions(+), 18 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 4c5ef4e5da98..735ad2c58dd8 100644
+index 86480480895d..2e3e235f509c 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1341,7 +1341,7 @@ static void arm_smmu_tlb_inv_context(void *cookie)
- }
+@@ -253,6 +253,9 @@
+ #define STRTAB_STE_1_STRW_EL2		2UL
+ #define STRTAB_STE_1_STRW_SHIFT		30
  
- static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
--					  bool leaf, void *cookie)
-+					  size_t granule, bool leaf, void *cookie)
- {
- 	struct arm_smmu_domain *smmu_domain = cookie;
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 6ed169bcb39d..7e04bf5640ae 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -582,7 +582,7 @@ static void arm_smmu_tlb_inv_context(void *cookie)
- }
- 
- static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
--					  bool leaf, void *cookie)
-+					  size_t granule, bool leaf, void *cookie)
- {
- 	struct arm_smmu_domain *smmu_domain = cookie;
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 366a354c689d..7a5c772f7be2 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -58,8 +58,10 @@
- 	((((d)->levels - ((l) - ARM_LPAE_START_LVL(d) + 1))		\
- 	  * (d)->bits_per_level) + (d)->pg_shift)
- 
-+#define ARM_LPAE_GRANULE(d)		(1UL << (d)->pg_shift)
++#define STRTAB_STE_1_SHCFG_INCOMING	1UL
++#define STRTAB_STE_1_SHCFG_SHIFT	44
 +
- #define ARM_LPAE_PAGES_PER_PGD(d)					\
--	DIV_ROUND_UP((d)->pgd_size, 1UL << (d)->pg_shift)
-+	DIV_ROUND_UP((d)->pgd_size, ARM_LPAE_GRANULE(d))
- 
- /*
-  * Calculate the index at level l used to map virtual address a using the
-@@ -169,7 +171,7 @@
- /* IOPTE accessors */
- #define iopte_deref(pte,d)					\
- 	(__va((pte) & ((1ULL << ARM_LPAE_MAX_ADDR_BITS) - 1)	\
--	& ~((1ULL << (d)->pg_shift) - 1)))
-+	& ~(ARM_LPAE_GRANULE(d) - 1ULL)))
- 
- #define iopte_type(pte,l)					\
- 	(((pte) >> ARM_LPAE_PTE_TYPE_SHIFT) & ARM_LPAE_PTE_TYPE_MASK)
-@@ -326,7 +328,7 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
- 	/* Grab a pointer to the next level */
- 	pte = *ptep;
- 	if (!pte) {
--		cptep = __arm_lpae_alloc_pages(1UL << data->pg_shift,
-+		cptep = __arm_lpae_alloc_pages(ARM_LPAE_GRANULE(data),
- 					       GFP_ATOMIC, cfg);
- 		if (!cptep)
- 			return -ENOMEM;
-@@ -412,7 +414,7 @@ static void __arm_lpae_free_pgtable(struct arm_lpae_io_pgtable *data, int lvl,
- 	if (lvl == ARM_LPAE_START_LVL(data))
- 		table_size = data->pgd_size;
- 	else
--		table_size = 1UL << data->pg_shift;
-+		table_size = ARM_LPAE_GRANULE(data);
- 
- 	start = ptep;
- 	end = (void *)ptep + table_size;
-@@ -473,7 +475,7 @@ static int arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
- 
- 	__arm_lpae_set_pte(ptep, table, cfg);
- 	iova &= ~(blk_size - 1);
--	cfg->tlb->tlb_add_flush(iova, blk_size, true, data->iop.cookie);
-+	cfg->tlb->tlb_add_flush(iova, blk_size, blk_size, true, data->iop.cookie);
- 	return size;
- }
- 
-@@ -501,12 +503,13 @@ static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 
- 		if (!iopte_leaf(pte, lvl)) {
- 			/* Also flush any partial walks */
--			tlb->tlb_add_flush(iova, size, false, cookie);
-+			tlb->tlb_add_flush(iova, size, ARM_LPAE_GRANULE(data),
-+					   false, cookie);
- 			tlb->tlb_sync(cookie);
- 			ptep = iopte_deref(pte, data);
- 			__arm_lpae_free_pgtable(data, lvl + 1, ptep);
- 		} else {
--			tlb->tlb_add_flush(iova, size, true, cookie);
-+			tlb->tlb_add_flush(iova, size, size, true, cookie);
- 		}
- 
- 		return size;
-@@ -572,7 +575,7 @@ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
- 	return 0;
- 
- found_translation:
--	iova &= ((1 << data->pg_shift) - 1);
-+	iova &= (ARM_LPAE_GRANULE(data) - 1);
- 	return ((phys_addr_t)iopte_to_pfn(pte,data) << data->pg_shift) | iova;
- }
- 
-@@ -670,7 +673,7 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT) |
- 	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
- 
--	switch (1 << data->pg_shift) {
-+	switch (ARM_LPAE_GRANULE(data)) {
- 	case SZ_4K:
- 		reg |= ARM_LPAE_TCR_TG0_4K;
- 		break;
-@@ -771,7 +774,7 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
- 
- 	sl = ARM_LPAE_START_LVL(data);
- 
--	switch (1 << data->pg_shift) {
-+	switch (ARM_LPAE_GRANULE(data)) {
- 	case SZ_4K:
- 		reg |= ARM_LPAE_TCR_TG0_4K;
- 		sl++; /* SL0 format is different for 4K granule size */
-@@ -891,8 +894,8 @@ static void dummy_tlb_flush_all(void *cookie)
- 	WARN_ON(cookie != cfg_cookie);
- }
- 
--static void dummy_tlb_add_flush(unsigned long iova, size_t size, bool leaf,
--				void *cookie)
-+static void dummy_tlb_add_flush(unsigned long iova, size_t size,
-+				size_t granule, bool leaf, void *cookie)
- {
- 	WARN_ON(cookie != cfg_cookie);
- 	WARN_ON(!(size & cfg_cookie->pgsize_bitmap));
-diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-index ac9e2341a633..2e18469afe3c 100644
---- a/drivers/iommu/io-pgtable.h
-+++ b/drivers/iommu/io-pgtable.h
-@@ -26,8 +26,8 @@ enum io_pgtable_fmt {
-  */
- struct iommu_gather_ops {
- 	void (*tlb_flush_all)(void *cookie);
--	void (*tlb_add_flush)(unsigned long iova, size_t size, bool leaf,
--			      void *cookie);
-+	void (*tlb_add_flush)(unsigned long iova, size_t size, size_t granule,
-+			      bool leaf, void *cookie);
- 	void (*tlb_sync)(void *cookie);
- };
- 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 8cf605fa9946..5b1166d407c4 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -277,8 +277,8 @@ static void ipmmu_tlb_flush_all(void *cookie)
- 	ipmmu_tlb_invalidate(domain);
- }
- 
--static void ipmmu_tlb_add_flush(unsigned long iova, size_t size, bool leaf,
--				void *cookie)
-+static void ipmmu_tlb_add_flush(unsigned long iova, size_t size,
-+				size_t granule, bool leaf, void *cookie)
- {
- 	/* The hardware doesn't support selective TLB flush. */
- }
+ #define STRTAB_STE_2_S2VMID_SHIFT	0
+ #define STRTAB_STE_2_S2VMID_MASK	0xffffUL
+ #define STRTAB_STE_2_VTCR_SHIFT		32
+@@ -1041,6 +1044,8 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+ 		val |= disable_bypass ? STRTAB_STE_0_CFG_ABORT
+ 				      : STRTAB_STE_0_CFG_BYPASS;
+ 		dst[0] = cpu_to_le64(val);
++		dst[1] = cpu_to_le64(STRTAB_STE_1_SHCFG_INCOMING
++			 << STRTAB_STE_1_SHCFG_SHIFT);
+ 		dst[2] = 0; /* Nuke the VMID */
+ 		if (ste_live)
+ 			arm_smmu_sync_ste_for_sid(smmu, sid);
 -- 
 2.1.4
