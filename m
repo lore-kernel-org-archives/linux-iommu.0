@@ -1,11 +1,13 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 1/2] io-64-nonatomic: Add relaxed accessor variants
-Date: Fri, 18 Dec 2015 18:54:45 +0000
-Message-ID: <a2664d5691ff1889d80c711577cbd20680191b98.1450464706.git.robin.murphy@arm.com>
+Subject: [PATCH 2/2] iommu/arm-smmu: Tidy up 64-bit/atomic I/O accesses
+Date: Fri, 18 Dec 2015 18:54:46 +0000
+Message-ID: <4dcd1b2a30a8a12cb5010d17c416aca60cf9ed19.1450464706.git.robin.murphy@arm.com>
+References: <a2664d5691ff1889d80c711577cbd20680191b98.1450464706.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <a2664d5691ff1889d80c711577cbd20680191b98.1450464706.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,110 +18,148 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: will.deacon-5wv7dgnIgG8@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org
-Cc: Hitoshi Mitake <mitake.hitoshi-Zyj7fXuS5i5L9jVzuh4AOg@public.gmane.org>, Darren Hart <dvhart-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Whilst commit 9439eb3ab9d1 ("asm-generic: io: implement relaxed
-accessor macros as conditional wrappers") makes the *_relaxed forms of
-I/O accessors universally available to drivers, in cases where writeq()
-is implemented via the io-64-nonatomic helpers, writeq_relaxed() will
-end up falling back to writel() regardless of whether writel_relaxed()
-is available (identically for s/write/read/).
+With {read,write}q_relaxed now able to fall back to the common
+nonatomic-hi-lo helper, make use of that so that we don't have to
+open-code our own. In the process, also convert the other remaining
+split accesses, and repurpose the custom accessor to smooth out the
+couple of troublesome instances where we really want to avoid
+nonatomic writes (and a 64-bit access is unnecessary in the 32-bit
+context formats we would use on a 32-bit CPU).
 
-Add corresponding relaxed forms of the nonatomic helpers to delegate
-to the equivalent 32-bit accessors as appropriate.
+This paves the way for getting rid of some of the assumptions currently
+baked into the driver which make it really awkward to use 32-bit context
+formats with SMMUv2 under a 64-bit kernel.
 
-CC: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-CC: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-CC: Darren Hart <dvhart-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-CC: Hitoshi Mitake <mitake.hitoshi-Zyj7fXuS5i5L9jVzuh4AOg@public.gmane.org>
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- include/linux/io-64-nonatomic-hi-lo.h | 25 +++++++++++++++++++++++++
- include/linux/io-64-nonatomic-lo-hi.h | 25 +++++++++++++++++++++++++
- 2 files changed, 50 insertions(+)
+ drivers/iommu/arm-smmu.c | 48 +++++++++++++++++++-----------------------------
+ 1 file changed, 19 insertions(+), 29 deletions(-)
 
-diff --git a/include/linux/io-64-nonatomic-hi-lo.h b/include/linux/io-64-nonatomic-hi-lo.h
-index 11d7e84..1a85566 100644
---- a/include/linux/io-64-nonatomic-hi-lo.h
-+++ b/include/linux/io-64-nonatomic-hi-lo.h
-@@ -21,6 +21,23 @@ static inline void hi_lo_writeq(__u64 val, volatile void __iomem *addr)
- 	writel(val, addr);
- }
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 59ee4b8..bdb85b5 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -33,6 +33,7 @@
+ #include <linux/err.h>
+ #include <linux/interrupt.h>
+ #include <linux/io.h>
++#include <linux/io-64-nonatomic-hi-lo.h>
+ #include <linux/iommu.h>
+ #include <linux/iopoll.h>
+ #include <linux/module.h>
+@@ -70,16 +71,15 @@
+ 		((smmu->options & ARM_SMMU_OPT_SECURE_CFG_ACCESS)	\
+ 			? 0x400 : 0))
  
-+static inline __u64 hi_lo_readq_relaxed(const volatile void __iomem *addr)
-+{
-+	const volatile u32 __iomem *p = addr;
-+	u32 low, high;
-+
-+	high = readl_relaxed(p + 1);
-+	low = readl_relaxed(p);
-+
-+	return low + ((u64)high << 32);
-+}
-+
-+static inline void hi_lo_writeq_relaxed(__u64 val, volatile void __iomem *addr)
-+{
-+	writel_relaxed(val >> 32, addr + 4);
-+	writel_relaxed(val, addr);
-+}
-+
- #ifndef readq
- #define readq hi_lo_readq
- #endif
-@@ -29,4 +46,12 @@ static inline void hi_lo_writeq(__u64 val, volatile void __iomem *addr)
- #define writeq hi_lo_writeq
- #endif
- 
-+#ifndef readq_relaxed
-+#define readq_relaxed hi_lo_readq_relaxed
-+#endif
-+
-+#ifndef writeq_relaxed
-+#define writeq hi_lo_writeq_relaxed
-+#endif
-+
- #endif	/* _LINUX_IO_64_NONATOMIC_HI_LO_H_ */
-diff --git a/include/linux/io-64-nonatomic-lo-hi.h b/include/linux/io-64-nonatomic-lo-hi.h
-index 1a4315f..1b7411d 100644
---- a/include/linux/io-64-nonatomic-lo-hi.h
-+++ b/include/linux/io-64-nonatomic-lo-hi.h
-@@ -21,6 +21,23 @@ static inline void lo_hi_writeq(__u64 val, volatile void __iomem *addr)
- 	writel(val >> 32, addr + 4);
- }
- 
-+static inline __u64 lo_hi_readq_relaxed(const volatile void __iomem *addr)
-+{
-+	const volatile u32 __iomem *p = addr;
-+	u32 low, high;
-+
-+	low = readl_relaxed(p);
-+	high = readl_relaxed(p + 1);
-+
-+	return low + ((u64)high << 32);
-+}
-+
-+static inline void lo_hi_writeq_relaxed(__u64 val, volatile void __iomem *addr)
-+{
-+	writel_relaxed(val, addr);
-+	writel_relaxed(val >> 32, addr + 4);
-+}
-+
- #ifndef readq
- #define readq lo_hi_readq
- #endif
-@@ -29,4 +46,12 @@ static inline void lo_hi_writeq(__u64 val, volatile void __iomem *addr)
- #define writeq lo_hi_writeq
++/*
++ * Some 64-bit registers only make sense to write atomically, but in such
++ * cases all the data relevant to AArch32 formats lies within the lower word,
++ * therefore this actually makes more sense than it might first appear.
++ */
+ #ifdef CONFIG_64BIT
+-#define smmu_writeq	writeq_relaxed
++#define smmu_write_atomic_lq		writeq_relaxed
+ #else
+-#define smmu_writeq(reg64, addr)				\
+-	do {							\
+-		u64 __val = (reg64);				\
+-		void __iomem *__addr = (addr);			\
+-		writel_relaxed(__val >> 32, __addr + 4);	\
+-		writel_relaxed(__val, __addr);			\
+-	} while (0)
++#define smmu_write_atomic_lq		writel_relaxed
  #endif
  
-+#ifndef readq_relaxed
-+#define readq_relaxed hi_lo_readq_relaxed
-+#endif
-+
-+#ifndef writeq_relaxed
-+#define writeq hi_lo_writeq_relaxed
-+#endif
-+
- #endif	/* _LINUX_IO_64_NONATOMIC_LO_HI_H_ */
+ /* Configuration registers */
+@@ -202,11 +202,9 @@
+ #define ARM_SMMU_CB_TTBCR		0x30
+ #define ARM_SMMU_CB_S1_MAIR0		0x38
+ #define ARM_SMMU_CB_S1_MAIR1		0x3c
+-#define ARM_SMMU_CB_PAR_LO		0x50
+-#define ARM_SMMU_CB_PAR_HI		0x54
++#define ARM_SMMU_CB_PAR			0x50
+ #define ARM_SMMU_CB_FSR			0x58
+-#define ARM_SMMU_CB_FAR_LO		0x60
+-#define ARM_SMMU_CB_FAR_HI		0x64
++#define ARM_SMMU_CB_FAR			0x60
+ #define ARM_SMMU_CB_FSYNR0		0x68
+ #define ARM_SMMU_CB_S1_TLBIVA		0x600
+ #define ARM_SMMU_CB_S1_TLBIASID		0x610
+@@ -618,7 +616,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 			      ARM_SMMU_CB_S2_TLBIIPAS2;
+ 		iova >>= 12;
+ 		do {
+-			writeq_relaxed(iova, reg);
++			smmu_write_atomic_lq(iova, reg);
+ 			iova += granule >> 12;
+ 		} while (size -= granule);
+ #endif
+@@ -637,7 +635,7 @@ static struct iommu_gather_ops arm_smmu_gather_ops = {
+ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+ {
+ 	int flags, ret;
+-	u32 fsr, far, fsynr, resume;
++	u32 fsr, fsynr, resume;
+ 	unsigned long iova;
+ 	struct iommu_domain *domain = dev;
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+@@ -659,13 +657,7 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+ 	fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
+ 	flags = fsynr & FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ;
+ 
+-	far = readl_relaxed(cb_base + ARM_SMMU_CB_FAR_LO);
+-	iova = far;
+-#ifdef CONFIG_64BIT
+-	far = readl_relaxed(cb_base + ARM_SMMU_CB_FAR_HI);
+-	iova |= ((unsigned long)far << 32);
+-#endif
+-
++	iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
+ 	if (!report_iommu_fault(domain, smmu->dev, iova, flags)) {
+ 		ret = IRQ_HANDLED;
+ 		resume = RESUME_RETRY;
+@@ -761,14 +753,14 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
+ 
+ 		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
+-		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR0);
++		writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
+ 
+ 		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
+ 		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
+-		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR1);
++		writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR1);
+ 	} else {
+ 		reg64 = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
+-		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR0);
++		writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
+ 	}
+ 
+ 	/* TTBCR */
+@@ -1226,8 +1218,8 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
+ 	/* ATS1 registers can only be written atomically */
+ 	va = iova & ~0xfffUL;
+ 	if (smmu->version == ARM_SMMU_V2)
+-		smmu_writeq(va, cb_base + ARM_SMMU_CB_ATS1PR);
+-	else
++		smmu_write_atomic_lq(va, cb_base + ARM_SMMU_CB_ATS1PR);
++	else /* Register is only 32-bit in v1 */
+ 		writel_relaxed(va, cb_base + ARM_SMMU_CB_ATS1PR);
+ 
+ 	if (readl_poll_timeout_atomic(cb_base + ARM_SMMU_CB_ATSR, tmp,
+@@ -1238,9 +1230,7 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
+ 		return ops->iova_to_phys(ops, iova);
+ 	}
+ 
+-	phys = readl_relaxed(cb_base + ARM_SMMU_CB_PAR_LO);
+-	phys |= ((u64)readl_relaxed(cb_base + ARM_SMMU_CB_PAR_HI)) << 32;
+-
++	phys = readq_relaxed(cb_base + ARM_SMMU_CB_PAR);
+ 	if (phys & CB_PAR_F) {
+ 		dev_err(dev, "translation fault!\n");
+ 		dev_err(dev, "PAR = 0x%llx\n", phys);
 -- 
 1.9.1
