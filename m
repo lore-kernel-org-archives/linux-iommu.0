@@ -1,14 +1,11 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v7 4/5] iommu/mediatek: Add mt8173 IOMMU driver
-Date: Fri, 18 Dec 2015 17:44:49 +0000
-Message-ID: <56744611.3070604@arm.com>
-References: <1450426183-1571-1-git-send-email-yong.wu@mediatek.com>
-	<1450426183-1571-5-git-send-email-yong.wu@mediatek.com>
+Subject: [PATCH 1/2] io-64-nonatomic: Add relaxed accessor variants
+Date: Fri, 18 Dec 2015 18:54:45 +0000
+Message-ID: <a2664d5691ff1889d80c711577cbd20680191b98.1450464706.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1450426183-1571-5-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,99 +15,111 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org
+Cc: Hitoshi Mitake <mitake.hitoshi-Zyj7fXuS5i5L9jVzuh4AOg@public.gmane.org>, Darren Hart <dvhart-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 18/12/15 08:09, Yong Wu wrote:
-> This patch adds support for mediatek m4u (MultiMedia Memory Management
-> Unit).
->
-> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> ---
->   drivers/iommu/Kconfig     |  14 +
->   drivers/iommu/Makefile    |   1 +
->   drivers/iommu/mtk_iommu.c | 734 ++++++++++++++++++++++++++++++++++++++++++++++
->   3 files changed, 749 insertions(+)
->   create mode 100644 drivers/iommu/mtk_iommu.c
->
+Whilst commit 9439eb3ab9d1 ("asm-generic: io: implement relaxed
+accessor macros as conditional wrappers") makes the *_relaxed forms of
+I/O accessors universally available to drivers, in cases where writeq()
+is implemented via the io-64-nonatomic helpers, writeq_relaxed() will
+end up falling back to writel() regardless of whether writel_relaxed()
+is available (identically for s/write/read/).
 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> new file mode 100644
-> index 0000000..d000d31
-> --- /dev/null
-> +++ b/drivers/iommu/mtk_iommu.c
+Add corresponding relaxed forms of the nonatomic helpers to delegate
+to the equivalent 32-bit accessors as appropriate.
 
-[...]
+CC: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+CC: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+CC: Darren Hart <dvhart-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+CC: Hitoshi Mitake <mitake.hitoshi-Zyj7fXuS5i5L9jVzuh4AOg@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+ include/linux/io-64-nonatomic-hi-lo.h | 25 +++++++++++++++++++++++++
+ include/linux/io-64-nonatomic-lo-hi.h | 25 +++++++++++++++++++++++++
+ 2 files changed, 50 insertions(+)
 
-> +#define REG_MMU_CTRL_REG			0x110
-> +#define F_MMU_PREFETCH_RT_REPLACE_MOD		BIT(4)
-> +#define F_MMU_TF_PROTECT_SEL(prot)		(((prot) & 0x3) << 5)
-> +#define F_COHERENCE_EN				BIT(8)
-
-[...]
-
-> +static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
-> +{
-> +	u32 regval;
-> +	int ret;
-> +
-> +	ret = clk_prepare_enable(data->bclk);
-> +	if (ret) {
-> +		dev_err(data->dev, "Failed to enable iommu bclk(%d)\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	regval = F_MMU_PREFETCH_RT_REPLACE_MOD |
-> +		F_MMU_TF_PROTECT_SEL(2) |
-> +		F_COHERENCE_EN;
-
-I meant to ask this last time - does setting F_COHERENCE_EN here imply 
-that the M4U is capable of cache-coherent page table walks, or something 
-else? If it's the former, and assuming the MT8173 is actually wired up 
-to support that, then you should add a dma-coherent property to its DT 
-node in patch 5 (which will also save you all the cache flushes on page 
-table updates).
-
-> +	writel_relaxed(regval, data->base + REG_MMU_CTRL_REG);
-> +
-> +	regval = F_L2_MULIT_HIT_EN |
-> +		F_TABLE_WALK_FAULT_INT_EN |
-> +		F_PREETCH_FIFO_OVERFLOW_INT_EN |
-> +		F_MISS_FIFO_OVERFLOW_INT_EN |
-> +		F_PREFETCH_FIFO_ERR_INT_EN |
-> +		F_MISS_FIFO_ERR_INT_EN;
-> +	writel_relaxed(regval, data->base + REG_MMU_INT_CONTROL0);
-> +
-> +	regval = F_INT_TRANSLATION_FAULT |
-> +		F_INT_MAIN_MULTI_HIT_FAULT |
-> +		F_INT_INVALID_PA_FAULT |
-> +		F_INT_ENTRY_REPLACEMENT_FAULT |
-> +		F_INT_TLB_MISS_FAULT |
-> +		F_INT_MISS_TRANSATION_FIFO_FAULT |
-> +		F_INT_PRETETCH_TRANSATION_FIFO_FAULT;
-> +	writel_relaxed(regval, data->base + REG_MMU_INT_MAIN_CONTROL);
-> +
-> +	regval = F_MMU_IVRP_PA_SET(data->protect_base);
-> +	writel_relaxed(regval, data->base + REG_MMU_IVRP_PADDR);
-> +
-> +	writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
-> +	writel_relaxed(0, data->base + REG_MMU_STANDARD_AXI_MODE);
-> +
-> +	if (devm_request_irq(data->dev, data->irq, mtk_iommu_isr, 0,
-> +			     dev_name(data->dev), (void *)data)) {
-> +		writel_relaxed(0, data->base + REG_MMU_PT_BASE_ADDR);
-> +		clk_disable_unprepare(data->bclk);
-> +		dev_err(data->dev, "Failed @ IRQ-%d Request\n", data->irq);
-> +		return -ENODEV;
-> +	}
-> +
-> +	return 0;
-> +}
-
-Otherwise, I've not had the chance to go through this thoroughly but at 
-a glance it seems in pretty good shape now - nothing immediately jumps 
-out as looking wrong or worth making a fuss over.
-
-Thanks,
-Robin.
+diff --git a/include/linux/io-64-nonatomic-hi-lo.h b/include/linux/io-64-nonatomic-hi-lo.h
+index 11d7e84..1a85566 100644
+--- a/include/linux/io-64-nonatomic-hi-lo.h
++++ b/include/linux/io-64-nonatomic-hi-lo.h
+@@ -21,6 +21,23 @@ static inline void hi_lo_writeq(__u64 val, volatile void __iomem *addr)
+ 	writel(val, addr);
+ }
+ 
++static inline __u64 hi_lo_readq_relaxed(const volatile void __iomem *addr)
++{
++	const volatile u32 __iomem *p = addr;
++	u32 low, high;
++
++	high = readl_relaxed(p + 1);
++	low = readl_relaxed(p);
++
++	return low + ((u64)high << 32);
++}
++
++static inline void hi_lo_writeq_relaxed(__u64 val, volatile void __iomem *addr)
++{
++	writel_relaxed(val >> 32, addr + 4);
++	writel_relaxed(val, addr);
++}
++
+ #ifndef readq
+ #define readq hi_lo_readq
+ #endif
+@@ -29,4 +46,12 @@ static inline void hi_lo_writeq(__u64 val, volatile void __iomem *addr)
+ #define writeq hi_lo_writeq
+ #endif
+ 
++#ifndef readq_relaxed
++#define readq_relaxed hi_lo_readq_relaxed
++#endif
++
++#ifndef writeq_relaxed
++#define writeq hi_lo_writeq_relaxed
++#endif
++
+ #endif	/* _LINUX_IO_64_NONATOMIC_HI_LO_H_ */
+diff --git a/include/linux/io-64-nonatomic-lo-hi.h b/include/linux/io-64-nonatomic-lo-hi.h
+index 1a4315f..1b7411d 100644
+--- a/include/linux/io-64-nonatomic-lo-hi.h
++++ b/include/linux/io-64-nonatomic-lo-hi.h
+@@ -21,6 +21,23 @@ static inline void lo_hi_writeq(__u64 val, volatile void __iomem *addr)
+ 	writel(val >> 32, addr + 4);
+ }
+ 
++static inline __u64 lo_hi_readq_relaxed(const volatile void __iomem *addr)
++{
++	const volatile u32 __iomem *p = addr;
++	u32 low, high;
++
++	low = readl_relaxed(p);
++	high = readl_relaxed(p + 1);
++
++	return low + ((u64)high << 32);
++}
++
++static inline void lo_hi_writeq_relaxed(__u64 val, volatile void __iomem *addr)
++{
++	writel_relaxed(val, addr);
++	writel_relaxed(val >> 32, addr + 4);
++}
++
+ #ifndef readq
+ #define readq lo_hi_readq
+ #endif
+@@ -29,4 +46,12 @@ static inline void lo_hi_writeq(__u64 val, volatile void __iomem *addr)
+ #define writeq lo_hi_writeq
+ #endif
+ 
++#ifndef readq_relaxed
++#define readq_relaxed hi_lo_readq_relaxed
++#endif
++
++#ifndef writeq_relaxed
++#define writeq hi_lo_writeq_relaxed
++#endif
++
+ #endif	/* _LINUX_IO_64_NONATOMIC_LO_HI_H_ */
+-- 
+1.9.1
