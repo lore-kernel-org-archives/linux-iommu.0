@@ -1,17 +1,12 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 1/2] IOMMU: arm-smmu-v3: Fix broken STE.VALID check in
-	Broadcom Vulcan
-Date: Mon, 21 Dec 2015 09:55:01 +0000
-Message-ID: <20151221095500.GB23092@arm.com>
-References: <1450346376-30920-1-git-send-email-pmallapp@broadcom.com>
-	<20151217114216.GB11456@arm.com>
-	<CC0BC9CB4553B146B290EC1D4DC5C35901096047@SJEXCHMB15.corp.ad.broadcom.com>
+Subject: [GIT PULL] iommu/arm-smmu: Updates for 4.5
+Date: Mon, 21 Dec 2015 18:23:50 +0000
+Message-ID: <20151221182350.GV23092@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CC0BC9CB4553B146B290EC1D4DC5C35901096047-HXj2mutaA2rOzKo2G4nwXJr/X4hKkxxPpWgKQ6/u3Fg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,25 +16,66 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Prem (Premachandra) Mallappa" <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Jayachandran Chandrashekaran Nair <jchandra-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: jroedel-l3A5Bk7waGM@public.gmane.org
+Cc: pmallapp-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, elfring-Rn4VEauK+AKRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Dec 19, 2015 at 04:47:30AM +0000, Prem (Premachandra) Mallappa wrote:
-> Hi Will, 
+Hi Joerg,
 
-Hello Prem,
+Please pull the following arm-smmu updates for 4.5. Highlights include:
 
-> > 
-> > Is this workaround only needed for bypass STEs? If not, we have a problem
-> > when we install a stage-1 entry, because we'll clear the EATS bits as it stands.
-> >
-> 
-> Yes, this _was_ needed only in Bypass STEs, AFAIK.
-> However, the h/w fixes that were committed recently has this worked out. 
-> I have tested and confirmed this patch is no longer necessary. We'll drop
-> this series as STE.VALID is not broken anymore :).
+  * Some fixes to get the driver working nicely on Broadcom hardware
+  * A change to the io-pgtable API to indicate the unit in which to
+    flush (all callers converted, with Ack from Laurent)
+  * Use of devm_* for allocating/freeing the SMMUv3 buffers
 
-Hey, that's an early Christmas present! :)
+I'll be disappearing after tomorrow, but I'll be back on 4 January.
+
+Cheers,
 
 Will
+
+--->8
+
+The following changes since commit 8005c49d9aea74d382f474ce11afbbc7d7130bec:
+
+  Linux 4.4-rc1 (2015-11-15 17:00:27 -0800)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
+
+for you to fetch changes up to 12c2ab09571e8aae3a87da2a4a452632a5fac1e5:
+
+  iommu/io-pgtable-arm: Ensure we free the final level on teardown (2015-12-17 12:05:36 +0000)
+
+----------------------------------------------------------------
+Markus Elfring (1):
+      iommu/arm-smmu: Delete an unnecessary check before free_io_pgtable_ops()
+
+Peng Fan (1):
+      iommu/arm-smmu: Correct group reference count
+
+Prem Mallappa (2):
+      iommu/arm-smmu: Fix write to GERRORN register
+      iommu/arm-smmu: Use STE.S1STALLD only when supported
+
+Robin Murphy (4):
+      iommu/io-pgtable-arm: Avoid dereferencing bogus PTEs
+      iommu/io-pgtable: Indicate granule for TLB maintenance
+      iommu/arm-smmu: Invalidate TLBs properly
+      iommu/io-pgtable: Make io_pgtable_ops_to_pgtable() macro common
+
+Will Deacon (5):
+      iommu/arm-smmu: Remove #define for non-existent PRIQ_0_OF field
+      iommu/arm-smmu: Convert DMA buffer allocations to the managed API
+      iommu/arm-smmu: Use incoming shareability attributes in bypass mode
+      iommu/arm-smmu: Handle unknown CERROR values gracefully
+      iommu/io-pgtable-arm: Ensure we free the final level on teardown
+
+ drivers/iommu/arm-smmu-v3.c    | 210 ++++++++++++++---------------------------
+ drivers/iommu/arm-smmu.c       |  23 +++--
+ drivers/iommu/io-pgtable-arm.c |  49 +++++-----
+ drivers/iommu/io-pgtable.h     |   6 +-
+ drivers/iommu/ipmmu-vmsa.c     |   4 +-
+ 5 files changed, 119 insertions(+), 173 deletions(-)
