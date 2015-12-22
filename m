@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 08/23] iommu/amd: Move aperture_range.offset to another
-	cache-line
-Date: Tue, 22 Dec 2015 23:21:13 +0100
-Message-ID: <1450822888-22590-9-git-send-email-joro@8bytes.org>
+Subject: [PATCH 13/23] iommu/amd: Flush iommu tlb in dma_ops_free_addresses
+Date: Tue, 22 Dec 2015 23:21:18 +0100
+Message-ID: <1450822888-22590-14-git-send-email-joro@8bytes.org>
 References: <1450822888-22590-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,35 +23,30 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Moving it before the pte_pages array puts in into the same
-cache-line as the spin-lock and the bitmap array pointer.
-This should safe a cache-miss.
+Instead of setting need_flush, do the flush directly in
+dma_ops_free_addresses.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/iommu/amd_iommu.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index be0e81a..2a22515 100644
+index a26cd76..62a4079 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -124,6 +124,7 @@ struct aperture_range {
+@@ -1648,8 +1648,10 @@ static void dma_ops_free_addresses(struct dma_ops_domain *dom,
+ 		return;
+ #endif
  
- 	/* address allocation bitmap */
- 	unsigned long *bitmap;
-+	unsigned long offset;
+-	if ((address >> APERTURE_RANGE_SHIFT) >= dom->next_index)
+-		dom->need_flush = true;
++	if (address + pages > range->next_bit) {
++		domain_flush_tlb(&dom->domain);
++		domain_flush_complete(&dom->domain);
++	}
  
- 	/*
- 	 * Array of PTE pages for the aperture. In this array we save all the
-@@ -132,8 +133,6 @@ struct aperture_range {
- 	 * just calculate its address in constant time.
- 	 */
- 	u64 *pte_pages[64];
--
--	unsigned long offset;
- };
+ 	address = (address % APERTURE_RANGE_SIZE) >> PAGE_SHIFT;
  
- /*
 -- 
 1.9.1
