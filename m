@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 19/23] iommu/amd: Initialize new aperture range before making
-	it visible
-Date: Tue, 22 Dec 2015 23:21:24 +0100
-Message-ID: <1450822888-22590-20-git-send-email-joro@8bytes.org>
+Subject: [PATCH 21/23] iommu/amd: Make dma_ops_domain->next_index percpu
+Date: Tue, 22 Dec 2015 23:21:26 +0100
+Message-ID: <1450822888-22590-22-git-send-email-joro@8bytes.org>
 References: <1450822888-22590-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,95 +23,134 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Make sure the aperture range is fully initialized before it
-is visible to the address allocator.
+Make this pointer percpu so that we start searching for new
+addresses in the range we last stopped and which is has a
+higher probability of being still in the cache.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 33 ++++++++++++++++++++-------------
- 1 file changed, 20 insertions(+), 13 deletions(-)
+ drivers/iommu/amd_iommu.c | 39 +++++++++++++++++++++++++++++----------
+ 1 file changed, 29 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index ecdd3f7..11ee885 100644
+index e98a466..84c7da1 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -1425,8 +1425,10 @@ static int alloc_new_range(struct dma_ops_domain *dma_dom,
- 			   bool populate, gfp_t gfp)
+@@ -35,6 +35,7 @@
+ #include <linux/msi.h>
+ #include <linux/dma-contiguous.h>
+ #include <linux/irqdomain.h>
++#include <linux/percpu.h>
+ #include <asm/irq_remapping.h>
+ #include <asm/io_apic.h>
+ #include <asm/apic.h>
+@@ -147,7 +148,7 @@ struct dma_ops_domain {
+ 	unsigned long aperture_size;
+ 
+ 	/* aperture index we start searching for free addresses */
+-	unsigned long next_index;
++	u32 __percpu *next_index;
+ 
+ 	/* address space relevant data */
+ 	struct aperture_range *aperture[APERTURE_MAX_RANGES];
+@@ -1583,18 +1584,30 @@ static unsigned long dma_ops_area_alloc(struct device *dev,
  {
- 	int index = dma_dom->aperture_size >> APERTURE_RANGE_SHIFT;
--	struct amd_iommu *iommu;
- 	unsigned long i, old_size, pte_pgsize;
-+	struct aperture_range *range;
-+	struct amd_iommu *iommu;
-+	unsigned long flags;
+ 	unsigned long boundary_size, mask;
+ 	unsigned long address = -1;
+-	int start = dom->next_index;
+-	int i;
++	u32 start, i;
++
++	preempt_disable();
  
- #ifdef CONFIG_IOMMU_STRESS
- 	populate = false;
-@@ -1435,17 +1437,17 @@ static int alloc_new_range(struct dma_ops_domain *dma_dom,
- 	if (index >= APERTURE_MAX_RANGES)
- 		return -ENOMEM;
+ 	mask = dma_get_seg_boundary(dev);
  
--	dma_dom->aperture[index] = kzalloc(sizeof(struct aperture_range), gfp);
--	if (!dma_dom->aperture[index])
-+	range = kzalloc(sizeof(struct aperture_range), gfp);
-+	if (!range)
- 		return -ENOMEM;
++	start = this_cpu_read(*dom->next_index);
++
++	/* Sanity check - is it really necessary? */
++	if (unlikely(start > APERTURE_MAX_RANGES)) {
++		start = 0;
++		this_cpu_write(*dom->next_index, 0);
++	}
++
+ 	boundary_size = mask + 1 ? ALIGN(mask + 1, PAGE_SIZE) >> PAGE_SHIFT :
+ 				   1UL << (BITS_PER_LONG - PAGE_SHIFT);
  
--	dma_dom->aperture[index]->bitmap = (void *)get_zeroed_page(gfp);
--	if (!dma_dom->aperture[index]->bitmap)
-+	range->bitmap = (void *)get_zeroed_page(gfp);
-+	if (!range->bitmap)
- 		goto out_free;
+ 	for (i = 0; i < APERTURE_MAX_RANGES; ++i) {
+ 		struct aperture_range *range;
++		int index;
++
++		index = (start + i) % APERTURE_MAX_RANGES;
  
--	dma_dom->aperture[index]->offset = dma_dom->aperture_size;
-+	range->offset = dma_dom->aperture_size;
+-		range = dom->aperture[(start + i) % APERTURE_MAX_RANGES];
++		range = dom->aperture[index];
  
--	spin_lock_init(&dma_dom->aperture[index]->bitmap_lock);
-+	spin_lock_init(&range->bitmap_lock);
- 
- 	if (populate) {
- 		unsigned long address = dma_dom->aperture_size;
-@@ -1458,14 +1460,18 @@ static int alloc_new_range(struct dma_ops_domain *dma_dom,
- 			if (!pte)
- 				goto out_free;
- 
--			dma_dom->aperture[index]->pte_pages[i] = pte_page;
-+			range->pte_pages[i] = pte_page;
- 
- 			address += APERTURE_RANGE_SIZE / 64;
+ 		if (!range || range->offset >= dma_mask)
+ 			continue;
+@@ -1604,11 +1617,13 @@ static unsigned long dma_ops_area_alloc(struct device *dev,
+ 						 align_mask);
+ 		if (address != -1) {
+ 			address = range->offset + (address << PAGE_SHIFT);
+-			dom->next_index = i;
++			this_cpu_write(*dom->next_index, index);
+ 			break;
  		}
  	}
  
--	old_size                = dma_dom->aperture_size;
--	dma_dom->aperture_size += APERTURE_RANGE_SIZE;
-+	/* First take the bitmap_lock and then publish the range */
-+	spin_lock_irqsave(&range->bitmap_lock, flags);
++	preempt_enable();
 +
-+	old_size                 = dma_dom->aperture_size;
-+	dma_dom->aperture[index] = range;
-+	dma_dom->aperture_size  += APERTURE_RANGE_SIZE;
- 
- 	/* Reserve address range used for MSI messages */
- 	if (old_size < MSI_ADDR_BASE_LO &&
-@@ -1512,15 +1518,16 @@ static int alloc_new_range(struct dma_ops_domain *dma_dom,
- 
- 	update_domain(&dma_dom->domain);
- 
-+	spin_unlock_irqrestore(&range->bitmap_lock, flags);
-+
- 	return 0;
- 
- out_free:
- 	update_domain(&dma_dom->domain);
- 
--	free_page((unsigned long)dma_dom->aperture[index]->bitmap);
-+	free_page((unsigned long)range->bitmap);
- 
--	kfree(dma_dom->aperture[index]);
--	dma_dom->aperture[index] = NULL;
-+	kfree(range);
- 
- 	return -ENOMEM;
+ 	return address;
  }
+ 
+@@ -1620,10 +1635,6 @@ static unsigned long dma_ops_alloc_addresses(struct device *dev,
+ {
+ 	unsigned long address = -1;
+ 
+-#ifdef CONFIG_IOMMU_STRESS
+-	dom->next_index = 0;
+-#endif
+-
+ 	while (address == -1) {
+ 		address = dma_ops_area_alloc(dev, dom, pages,
+ 					     align_mask, dma_mask);
+@@ -1851,6 +1862,8 @@ static void dma_ops_domain_free(struct dma_ops_domain *dom)
+ 	if (!dom)
+ 		return;
+ 
++	free_percpu(dom->next_index);
++
+ 	del_domain_from_list(&dom->domain);
+ 
+ 	free_pagetable(&dom->domain);
+@@ -1873,6 +1886,7 @@ static void dma_ops_domain_free(struct dma_ops_domain *dom)
+ static struct dma_ops_domain *dma_ops_domain_alloc(void)
+ {
+ 	struct dma_ops_domain *dma_dom;
++	int cpu;
+ 
+ 	dma_dom = kzalloc(sizeof(struct dma_ops_domain), GFP_KERNEL);
+ 	if (!dma_dom)
+@@ -1881,6 +1895,10 @@ static struct dma_ops_domain *dma_ops_domain_alloc(void)
+ 	if (protection_domain_init(&dma_dom->domain))
+ 		goto free_dma_dom;
+ 
++	dma_dom->next_index = alloc_percpu(u32);
++	if (!dma_dom->next_index)
++		goto free_dma_dom;
++
+ 	dma_dom->domain.mode = PAGE_MODE_2_LEVEL;
+ 	dma_dom->domain.pt_root = (void *)get_zeroed_page(GFP_KERNEL);
+ 	dma_dom->domain.flags = PD_DMA_OPS_MASK;
+@@ -1898,8 +1916,9 @@ static struct dma_ops_domain *dma_ops_domain_alloc(void)
+ 	 * a valid dma-address. So we can use 0 as error value
+ 	 */
+ 	dma_dom->aperture[0]->bitmap[0] = 1;
+-	dma_dom->next_index = 0;
+ 
++	for_each_possible_cpu(cpu)
++		*per_cpu_ptr(dma_dom->next_index, cpu) = 0;
+ 
+ 	return dma_dom;
+ 
 -- 
 1.9.1
