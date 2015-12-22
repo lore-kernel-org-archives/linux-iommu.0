@@ -1,8 +1,7 @@
 From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 4/6] perf/amd/iommu: Introduce data structure for tracking
-	prev count.
-Date: Tue, 22 Dec 2015 13:19:15 -0600
-Message-ID: <1450811957-1511-5-git-send-email-Suravee.Suthikulpanit@amd.com>
+Subject: [PATCH 3/6] iommu/amd: Introduce amd_iommu_get_num_iommus()
+Date: Tue, 22 Dec 2015 13:19:14 -0600
+Message-ID: <1450811957-1511-4-git-send-email-Suravee.Suthikulpanit@amd.com>
 References: <1450811957-1511-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,75 +21,54 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@publ
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-To enable AMD IOMMU PMU to support multiple IOMMUs, this patch introduces
-a new data structure, perf_amd_iommu.prev_cnts, to track previous counts
-of IOMMU performance counters in multi-IOMMU environment.
-
-Also, this patch allocates perf_iommu_cnts for internal use
-when manages counters.
+This patch introduces amd_iommu_get_num_iommus(). Initially, this is
+intended to be used by Perf AMD IOMMU driver.
 
 Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 ---
- arch/x86/kernel/cpu/perf_event_amd_iommu.c | 26 ++++++++++++++++++++++----
- 1 file changed, 22 insertions(+), 4 deletions(-)
+ drivers/iommu/amd_iommu_init.c            | 16 ++++++++++++++++
+ include/linux/perf/perf_event_amd_iommu.h |  2 ++
+ 2 files changed, 18 insertions(+)
 
-diff --git a/arch/x86/kernel/cpu/perf_event_amd_iommu.c b/arch/x86/kernel/cpu/perf_event_amd_iommu.c
-index e6d2485..99fcd10 100644
---- a/arch/x86/kernel/cpu/perf_event_amd_iommu.c
-+++ b/arch/x86/kernel/cpu/perf_event_amd_iommu.c
-@@ -42,6 +42,7 @@ struct perf_amd_iommu {
- 	u64 cntr_assign_mask;
- 	raw_spinlock_t lock;
- 	const struct attribute_group *attr_groups[4];
-+	local64_t *prev_cnts;
- };
- 
- #define format_group	attr_groups[0]
-@@ -126,6 +127,8 @@ static struct amd_iommu_event_desc amd_iommu_v2_event_descs[] = {
- 	{ /* end: all zeroes */ },
- };
- 
-+static u64 *perf_iommu_cnts;
-+
- /*---------------------------------------------
-  * sysfs cpumask attributes
-  *---------------------------------------------*/
-@@ -423,10 +426,14 @@ static __init int _init_events_attrs(struct perf_amd_iommu *perf_iommu)
- 
- static __init void amd_iommu_pc_exit(void)
- {
--	if (__perf_iommu.events_group != NULL) {
--		kfree(__perf_iommu.events_group);
--		__perf_iommu.events_group = NULL;
--	}
-+	kfree(__perf_iommu.events_group);
-+	__perf_iommu.events_group = NULL;
-+
-+	kfree(__perf_iommu.prev_cnts);
-+	__perf_iommu.prev_cnts = NULL;
-+
-+	kfree(perf_iommu_cnts);
-+	perf_iommu_cnts = NULL;
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 275c0f5..9c62613 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -2244,6 +2244,22 @@ bool amd_iommu_v2_supported(void)
  }
+ EXPORT_SYMBOL(amd_iommu_v2_supported);
  
- static __init int _init_perf_amd_iommu(
-@@ -456,6 +463,17 @@ static __init int _init_perf_amd_iommu(
- 	perf_iommu->null_group = NULL;
- 	perf_iommu->pmu.attr_groups = perf_iommu->attr_groups;
++static int amd_iommu_cnt;
++
++int amd_iommu_get_num_iommus(void)
++{
++	struct amd_iommu *iommu;
++
++	if (amd_iommu_cnt)
++		return amd_iommu_cnt;
++
++	for_each_iommu(iommu)
++		amd_iommu_cnt++;
++
++	return amd_iommu_cnt;
++}
++EXPORT_SYMBOL(amd_iommu_get_num_iommus);
++
+ /****************************************************************************
+  *
+  * IOMMU EFR Performance Counter support functionality. This code allows
+diff --git a/include/linux/perf/perf_event_amd_iommu.h b/include/linux/perf/perf_event_amd_iommu.h
+index 815eabb..cb820c2 100644
+--- a/include/linux/perf/perf_event_amd_iommu.h
++++ b/include/linux/perf/perf_event_amd_iommu.h
+@@ -25,6 +25,8 @@
+ #define PC_MAX_SPEC_CNTRS			16
  
-+	perf_iommu->prev_cnts = kzalloc(sizeof(*perf_iommu->prev_cnts) *
-+		(amd_iommu_get_num_iommus() * perf_iommu->max_banks *
-+		perf_iommu->max_counters), GFP_KERNEL);
-+	if (!perf_iommu->prev_cnts)
-+		return -ENOMEM;
+ /* amd_iommu_init.c external support functions */
++extern int amd_iommu_get_num_iommus(void);
 +
-+	perf_iommu_cnts = kzalloc(sizeof(*perf_iommu_cnts) *
-+				  amd_iommu_get_num_iommus(), GFP_KERNEL);
-+	if (!perf_iommu_cnts)
-+		return -ENOMEM;
-+
- 	ret = perf_pmu_register(&perf_iommu->pmu, name, -1);
- 	if (ret) {
- 		pr_err("perf: amd_iommu: Failed to initialized.\n");
+ extern bool amd_iommu_pc_supported(void);
+ 
+ extern u8 amd_iommu_pc_get_max_banks(void);
 -- 
 1.9.1
