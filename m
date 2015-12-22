@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 16/23] iommu/amd: Optimize dma_ops_free_addresses
-Date: Tue, 22 Dec 2015 23:21:21 +0100
-Message-ID: <1450822888-22590-17-git-send-email-joro@8bytes.org>
+Subject: [PATCH 17/23] iommu/amd: Allocate new aperture ranges in
+	dma_ops_alloc_addresses
+Date: Tue, 22 Dec 2015 23:21:22 +0100
+Message-ID: <1450822888-22590-18-git-send-email-joro@8bytes.org>
 References: <1450822888-22590-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,38 +24,67 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Don't flush the iommu tlb when we free something behind the
-current next_bit pointer. Update the next_bit pointer
-instead and let the flush happen on the next wraparound in
-the allocation path.
+It really belongs there and not in __map_single.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/iommu/amd_iommu.c | 29 ++++++++++-------------------
+ 1 file changed, 10 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 39a2048..c657e48 100644
+index c657e48..4c926da 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -1633,8 +1633,7 @@ static void dma_ops_free_addresses(struct dma_ops_domain *dom,
- 		return;
+@@ -1597,13 +1597,19 @@ static unsigned long dma_ops_alloc_addresses(struct device *dev,
+ 					     unsigned long align_mask,
+ 					     u64 dma_mask)
+ {
+-	unsigned long address;
++	unsigned long address = -1;
+ 
+ #ifdef CONFIG_IOMMU_STRESS
+ 	dom->next_index = 0;
  #endif
  
--	if (amd_iommu_unmap_flush ||
--	    (address + pages > range->next_bit)) {
-+	if (amd_iommu_unmap_flush) {
- 		domain_flush_tlb(&dom->domain);
- 		domain_flush_complete(&dom->domain);
- 	}
-@@ -1642,6 +1641,8 @@ static void dma_ops_free_addresses(struct dma_ops_domain *dom,
- 	address = (address % APERTURE_RANGE_SIZE) >> PAGE_SHIFT;
+-	address = dma_ops_area_alloc(dev, dom, pages, align_mask, dma_mask);
++	while (address == -1) {
++		address = dma_ops_area_alloc(dev, dom, pages,
++					     align_mask, dma_mask);
++
++		if (address == -1 && alloc_new_range(dom, true, GFP_ATOMIC))
++			break;
++	}
  
- 	spin_lock_irqsave(&range->bitmap_lock, flags);
-+	if (address + pages > range->next_bit)
-+		range->next_bit = address + pages;
- 	bitmap_clear(range->bitmap, address, pages);
- 	spin_unlock_irqrestore(&range->bitmap_lock, flags);
+ 	if (unlikely(address == -1))
+ 		address = DMA_ERROR_CODE;
+@@ -2460,26 +2466,11 @@ static dma_addr_t __map_single(struct device *dev,
+ 	if (align)
+ 		align_mask = (1UL << get_order(size)) - 1;
  
+-retry:
+ 	address = dma_ops_alloc_addresses(dev, dma_dom, pages, align_mask,
+ 					  dma_mask);
+-	if (unlikely(address == DMA_ERROR_CODE)) {
+-		if (alloc_new_range(dma_dom, false, GFP_ATOMIC))
+-			goto out;
+-
+-		/*
+-		 * setting next_index here will let the address
+-		 * allocator only scan the new allocated range in the
+-		 * first run. This is a small optimization.
+-		 */
+-		dma_dom->next_index = dma_dom->aperture_size >> APERTURE_RANGE_SHIFT;
+ 
+-		/*
+-		 * aperture was successfully enlarged by 128 MB, try
+-		 * allocation again
+-		 */
+-		goto retry;
+-	}
++	if (address == DMA_ERROR_CODE)
++		goto out;
+ 
+ 	start = address;
+ 	for (i = 0; i < pages; ++i) {
 -- 
 1.9.1
