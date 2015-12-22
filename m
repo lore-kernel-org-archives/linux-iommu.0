@@ -1,7 +1,7 @@
 From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 3/6] iommu/amd: Introduce amd_iommu_get_num_iommus()
-Date: Tue, 22 Dec 2015 13:19:14 -0600
-Message-ID: <1450811957-1511-4-git-send-email-Suravee.Suthikulpanit@amd.com>
+Subject: [PATCH 5/6] perf/amd/iommu: Introduce get_iommu_bnk_cnt_evt_idx
+Date: Tue, 22 Dec 2015 13:19:16 -0600
+Message-ID: <1450811957-1511-6-git-send-email-Suravee.Suthikulpanit@amd.com>
 References: <1450811957-1511-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,54 +21,51 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@publ
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch introduces amd_iommu_get_num_iommus(). Initially, this is
-intended to be used by Perf AMD IOMMU driver.
+Introduce a helper function to calculate bit-index for assigning
+performance counter assignment.
 
 Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c            | 16 ++++++++++++++++
- include/linux/perf/perf_event_amd_iommu.h |  2 ++
- 2 files changed, 18 insertions(+)
+ arch/x86/kernel/cpu/perf_event_amd_iommu.c | 20 +++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 275c0f5..9c62613 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -2244,6 +2244,22 @@ bool amd_iommu_v2_supported(void)
- }
- EXPORT_SYMBOL(amd_iommu_v2_supported);
+diff --git a/arch/x86/kernel/cpu/perf_event_amd_iommu.c b/arch/x86/kernel/cpu/perf_event_amd_iommu.c
+index 99fcd10..8af7149 100644
+--- a/arch/x86/kernel/cpu/perf_event_amd_iommu.c
++++ b/arch/x86/kernel/cpu/perf_event_amd_iommu.c
+@@ -153,18 +153,28 @@ static struct attribute_group amd_iommu_cpumask_group = {
  
-+static int amd_iommu_cnt;
-+
-+int amd_iommu_get_num_iommus(void)
+ /*---------------------------------------------*/
+ 
++static inline
++int get_iommu_bnk_cnt_evt_idx(struct perf_amd_iommu *perf_iommu,
++				  int iommu_index, int bank_index,
++				  int cntr_index)
 +{
-+	struct amd_iommu *iommu;
++	int cntrs_per_iommu = perf_iommu->max_banks * perf_iommu->max_counters;
++	int index = (perf_iommu->max_counters * bank_index) + cntr_index;
 +
-+	if (amd_iommu_cnt)
-+		return amd_iommu_cnt;
-+
-+	for_each_iommu(iommu)
-+		amd_iommu_cnt++;
-+
-+	return amd_iommu_cnt;
++	return (cntrs_per_iommu * iommu_index) + index;
 +}
-+EXPORT_SYMBOL(amd_iommu_get_num_iommus);
 +
- /****************************************************************************
-  *
-  * IOMMU EFR Performance Counter support functionality. This code allows
-diff --git a/include/linux/perf/perf_event_amd_iommu.h b/include/linux/perf/perf_event_amd_iommu.h
-index 815eabb..cb820c2 100644
---- a/include/linux/perf/perf_event_amd_iommu.h
-+++ b/include/linux/perf/perf_event_amd_iommu.h
-@@ -25,6 +25,8 @@
- #define PC_MAX_SPEC_CNTRS			16
+ static int get_next_avail_iommu_bnk_cntr(struct perf_amd_iommu *perf_iommu)
+ {
+ 	unsigned long flags;
+ 	int shift, bank, cntr, retval;
+-	int max_banks = perf_iommu->max_banks;
+-	int max_cntrs = perf_iommu->max_counters;
  
- /* amd_iommu_init.c external support functions */
-+extern int amd_iommu_get_num_iommus(void);
-+
- extern bool amd_iommu_pc_supported(void);
+ 	raw_spin_lock_irqsave(&perf_iommu->lock, flags);
  
- extern u8 amd_iommu_pc_get_max_banks(void);
+-	for (bank = 0, shift = 0; bank < max_banks; bank++) {
+-		for (cntr = 0; cntr < max_cntrs; cntr++) {
+-			shift = bank + (bank*3) + cntr;
++	for (bank = 0, shift = 0; bank < perf_iommu->max_banks; bank++) {
++		for (cntr = 0; cntr < perf_iommu->max_counters; cntr++) {
++			shift = get_iommu_bnk_cnt_evt_idx(perf_iommu,
++							      0, bank, cntr);
+ 			if (perf_iommu->cntr_assign_mask & (1ULL<<shift)) {
+ 				continue;
+ 			} else {
 -- 
 1.9.1
