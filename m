@@ -1,96 +1,89 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 03/23] iommu/amd: Introduce bitmap_lock in struct
-	aperture_range
-Date: Tue, 22 Dec 2015 23:21:08 +0100
-Message-ID: <1450822888-22590-4-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 22/23] iommu/amd: Use trylock to aquire bitmap_lock
+Date: Tue, 22 Dec 2015 23:21:27 +0100
+Message-ID: <1450822888-22590-23-git-send-email-joro@8bytes.org>
 References: <1450822888-22590-1-git-send-email-joro@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1450822888-22590-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1450822888-22590-1-git-send-email-joro@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-kernel@vger.kernel.org, joro@8bytes.org, jroedel@suse.de
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+From: Joerg Roedel <jroedel@suse.de>
 
-This lock only protects the address allocation bitmap in one
-aperture.
+First search for a non-contended aperture with trylock
+before spinning.
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/amd_iommu.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/iommu/amd_iommu.c | 20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 9ce51eb..8ff3331 100644
+index 84c7da1..eed355c 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -120,6 +120,8 @@ static int protection_domain_init(struct protection_domain *domain);
-  */
- struct aperture_range {
+@@ -1542,7 +1542,8 @@ static dma_addr_t dma_ops_aperture_alloc(struct dma_ops_domain *dom,
+ 					 unsigned long pages,
+ 					 unsigned long dma_mask,
+ 					 unsigned long boundary_size,
+-					 unsigned long align_mask)
++					 unsigned long align_mask,
++					 bool trylock)
+ {
+ 	unsigned long offset, limit, flags;
+ 	dma_addr_t address;
+@@ -1552,7 +1553,13 @@ static dma_addr_t dma_ops_aperture_alloc(struct dma_ops_domain *dom,
+ 	limit  = iommu_device_max_index(APERTURE_RANGE_PAGES, offset,
+ 					dma_mask >> PAGE_SHIFT);
  
-+	spinlock_t bitmap_lock;
+-	spin_lock_irqsave(&range->bitmap_lock, flags);
++	if (trylock) {
++		if (!spin_trylock_irqsave(&range->bitmap_lock, flags))
++			return -1;
++	} else {
++		spin_lock_irqsave(&range->bitmap_lock, flags);
++	}
 +
- 	/* address allocation bitmap */
- 	unsigned long *bitmap;
- 
-@@ -1436,6 +1438,8 @@ static int alloc_new_range(struct dma_ops_domain *dma_dom,
- 
- 	dma_dom->aperture[index]->offset = dma_dom->aperture_size;
- 
-+	spin_lock_init(&dma_dom->aperture[index]->bitmap_lock);
-+
- 	if (populate) {
- 		unsigned long address = dma_dom->aperture_size;
- 		int i, num_ptes = APERTURE_RANGE_PAGES / 512;
-@@ -1527,6 +1531,7 @@ static unsigned long dma_ops_area_alloc(struct device *dev,
+ 	address = iommu_area_alloc(range->bitmap, limit, range->next_bit,
+ 				   pages, offset, boundary_size, align_mask);
+ 	if (address == -1) {
+@@ -1584,12 +1591,14 @@ static unsigned long dma_ops_area_alloc(struct device *dev,
+ {
  	unsigned long boundary_size, mask;
  	unsigned long address = -1;
- 	unsigned long limit;
-+	unsigned long flags;
++	bool first = true;
+ 	u32 start, i;
  
- 	next_bit >>= PAGE_SHIFT;
+ 	preempt_disable();
  
-@@ -1544,9 +1549,11 @@ static unsigned long dma_ops_area_alloc(struct device *dev,
- 		limit = iommu_device_max_index(APERTURE_RANGE_PAGES, offset,
- 					       dma_mask >> PAGE_SHIFT);
+ 	mask = dma_get_seg_boundary(dev);
  
-+		spin_lock_irqsave(&dom->aperture[i]->bitmap_lock, flags);
- 		address = iommu_area_alloc(dom->aperture[i]->bitmap,
- 					   limit, next_bit, pages, 0,
- 					    boundary_size, align_mask);
-+		spin_unlock_irqrestore(&dom->aperture[i]->bitmap_lock, flags);
++again:
+ 	start = this_cpu_read(*dom->next_index);
+ 
+ 	/* Sanity check - is it really necessary? */
+@@ -1614,7 +1623,7 @@ static unsigned long dma_ops_area_alloc(struct device *dev,
+ 
+ 		address = dma_ops_aperture_alloc(dom, range, pages,
+ 						 dma_mask, boundary_size,
+-						 align_mask);
++						 align_mask, first);
  		if (address != -1) {
- 			address = dom->aperture[i]->offset +
- 				  (address << PAGE_SHIFT);
-@@ -1602,6 +1609,7 @@ static void dma_ops_free_addresses(struct dma_ops_domain *dom,
- {
- 	unsigned i = address >> APERTURE_RANGE_SHIFT;
- 	struct aperture_range *range = dom->aperture[i];
-+	unsigned long flags;
+ 			address = range->offset + (address << PAGE_SHIFT);
+ 			this_cpu_write(*dom->next_index, index);
+@@ -1622,6 +1631,11 @@ static unsigned long dma_ops_area_alloc(struct device *dev,
+ 		}
+ 	}
  
- 	BUG_ON(i >= APERTURE_MAX_RANGES || range == NULL);
++	if (address == -1 && first) {
++		first = false;
++		goto again;
++	}
++
+ 	preempt_enable();
  
-@@ -1615,7 +1623,9 @@ static void dma_ops_free_addresses(struct dma_ops_domain *dom,
- 
- 	address = (address % APERTURE_RANGE_SIZE) >> PAGE_SHIFT;
- 
-+	spin_lock_irqsave(&range->bitmap_lock, flags);
- 	bitmap_clear(range->bitmap, address, pages);
-+	spin_unlock_irqrestore(&range->bitmap_lock, flags);
- 
- }
- 
+ 	return address;
 -- 
 1.9.1
