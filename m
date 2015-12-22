@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 13/23] iommu/amd: Flush iommu tlb in dma_ops_free_addresses
-Date: Tue, 22 Dec 2015 23:21:18 +0100
-Message-ID: <1450822888-22590-14-git-send-email-joro@8bytes.org>
+Subject: [PATCH 06/23] iommu/amd: Pass correct shift to iommu_area_alloc()
+Date: Tue, 22 Dec 2015 23:21:11 +0100
+Message-ID: <1450822888-22590-7-git-send-email-joro@8bytes.org>
 References: <1450822888-22590-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,30 +23,25 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Instead of setting need_flush, do the flush directly in
-dma_ops_free_addresses.
+The page-offset of the aperture must be passed instead of 0.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/iommu/amd_iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index a26cd76..62a4079 100644
+index 69021ec..1d1ef37 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -1648,8 +1648,10 @@ static void dma_ops_free_addresses(struct dma_ops_domain *dom,
- 		return;
- #endif
+@@ -1551,7 +1551,7 @@ static unsigned long dma_ops_area_alloc(struct device *dev,
  
--	if ((address >> APERTURE_RANGE_SHIFT) >= dom->next_index)
--		dom->need_flush = true;
-+	if (address + pages > range->next_bit) {
-+		domain_flush_tlb(&dom->domain);
-+		domain_flush_complete(&dom->domain);
-+	}
- 
- 	address = (address % APERTURE_RANGE_SIZE) >> PAGE_SHIFT;
- 
+ 		spin_lock_irqsave(&dom->aperture[i]->bitmap_lock, flags);
+ 		address = iommu_area_alloc(dom->aperture[i]->bitmap,
+-					   limit, next_bit, pages, 0,
++					   limit, next_bit, pages, offset,
+ 					    boundary_size, align_mask);
+ 		spin_unlock_irqrestore(&dom->aperture[i]->bitmap_lock, flags);
+ 		if (address != -1) {
 -- 
 1.9.1
