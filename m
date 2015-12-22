@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 18/23] iommu/amd: Build io page-tables with cmpxchg64
-Date: Tue, 22 Dec 2015 23:21:23 +0100
-Message-ID: <1450822888-22590-19-git-send-email-joro@8bytes.org>
+Subject: [PATCH 19/23] iommu/amd: Initialize new aperture range before making
+	it visible
+Date: Tue, 22 Dec 2015 23:21:24 +0100
+Message-ID: <1450822888-22590-20-git-send-email-joro@8bytes.org>
 References: <1450822888-22590-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,51 +24,95 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-This allows to build up the page-tables without holding any
-locks. As a consequence it removes the need to pre-populate
-dma_ops page-tables.
+Make sure the aperture range is fully initialized before it
+is visible to the address allocator.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ drivers/iommu/amd_iommu.c | 33 ++++++++++++++++++++-------------
+ 1 file changed, 20 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 4c926da..ecdd3f7 100644
+index ecdd3f7..11ee885 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -1206,11 +1206,21 @@ static u64 *alloc_pte(struct protection_domain *domain,
- 	end_lvl = PAGE_SIZE_LEVEL(page_size);
+@@ -1425,8 +1425,10 @@ static int alloc_new_range(struct dma_ops_domain *dma_dom,
+ 			   bool populate, gfp_t gfp)
+ {
+ 	int index = dma_dom->aperture_size >> APERTURE_RANGE_SHIFT;
+-	struct amd_iommu *iommu;
+ 	unsigned long i, old_size, pte_pgsize;
++	struct aperture_range *range;
++	struct amd_iommu *iommu;
++	unsigned long flags;
  
- 	while (level > end_lvl) {
--		if (!IOMMU_PTE_PRESENT(*pte)) {
-+		u64 __pte, __npte;
-+
-+		__pte = *pte;
-+
-+		if (!IOMMU_PTE_PRESENT(__pte)) {
- 			page = (u64 *)get_zeroed_page(gfp);
- 			if (!page)
- 				return NULL;
--			*pte = PM_LEVEL_PDE(level, virt_to_phys(page));
-+
-+			__npte = PM_LEVEL_PDE(level, virt_to_phys(page));
-+
-+			if (cmpxchg64(pte, __pte, __npte)) {
-+				free_page((unsigned long)page);
-+				continue;
-+			}
+ #ifdef CONFIG_IOMMU_STRESS
+ 	populate = false;
+@@ -1435,17 +1437,17 @@ static int alloc_new_range(struct dma_ops_domain *dma_dom,
+ 	if (index >= APERTURE_MAX_RANGES)
+ 		return -ENOMEM;
+ 
+-	dma_dom->aperture[index] = kzalloc(sizeof(struct aperture_range), gfp);
+-	if (!dma_dom->aperture[index])
++	range = kzalloc(sizeof(struct aperture_range), gfp);
++	if (!range)
+ 		return -ENOMEM;
+ 
+-	dma_dom->aperture[index]->bitmap = (void *)get_zeroed_page(gfp);
+-	if (!dma_dom->aperture[index]->bitmap)
++	range->bitmap = (void *)get_zeroed_page(gfp);
++	if (!range->bitmap)
+ 		goto out_free;
+ 
+-	dma_dom->aperture[index]->offset = dma_dom->aperture_size;
++	range->offset = dma_dom->aperture_size;
+ 
+-	spin_lock_init(&dma_dom->aperture[index]->bitmap_lock);
++	spin_lock_init(&range->bitmap_lock);
+ 
+ 	if (populate) {
+ 		unsigned long address = dma_dom->aperture_size;
+@@ -1458,14 +1460,18 @@ static int alloc_new_range(struct dma_ops_domain *dma_dom,
+ 			if (!pte)
+ 				goto out_free;
+ 
+-			dma_dom->aperture[index]->pte_pages[i] = pte_page;
++			range->pte_pages[i] = pte_page;
+ 
+ 			address += APERTURE_RANGE_SIZE / 64;
  		}
- 
- 		/* No level skipping support yet */
-@@ -1607,7 +1617,7 @@ static unsigned long dma_ops_alloc_addresses(struct device *dev,
- 		address = dma_ops_area_alloc(dev, dom, pages,
- 					     align_mask, dma_mask);
- 
--		if (address == -1 && alloc_new_range(dom, true, GFP_ATOMIC))
-+		if (address == -1 && alloc_new_range(dom, false, GFP_ATOMIC))
- 			break;
  	}
  
+-	old_size                = dma_dom->aperture_size;
+-	dma_dom->aperture_size += APERTURE_RANGE_SIZE;
++	/* First take the bitmap_lock and then publish the range */
++	spin_lock_irqsave(&range->bitmap_lock, flags);
++
++	old_size                 = dma_dom->aperture_size;
++	dma_dom->aperture[index] = range;
++	dma_dom->aperture_size  += APERTURE_RANGE_SIZE;
+ 
+ 	/* Reserve address range used for MSI messages */
+ 	if (old_size < MSI_ADDR_BASE_LO &&
+@@ -1512,15 +1518,16 @@ static int alloc_new_range(struct dma_ops_domain *dma_dom,
+ 
+ 	update_domain(&dma_dom->domain);
+ 
++	spin_unlock_irqrestore(&range->bitmap_lock, flags);
++
+ 	return 0;
+ 
+ out_free:
+ 	update_domain(&dma_dom->domain);
+ 
+-	free_page((unsigned long)dma_dom->aperture[index]->bitmap);
++	free_page((unsigned long)range->bitmap);
+ 
+-	kfree(dma_dom->aperture[index]);
+-	dma_dom->aperture[index] = NULL;
++	kfree(range);
+ 
+ 	return -ENOMEM;
+ }
 -- 
 1.9.1
