@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 17/23] iommu/amd: Allocate new aperture ranges in
-	dma_ops_alloc_addresses
-Date: Tue, 22 Dec 2015 23:21:22 +0100
-Message-ID: <1450822888-22590-18-git-send-email-joro@8bytes.org>
+Subject: [PATCH 18/23] iommu/amd: Build io page-tables with cmpxchg64
+Date: Tue, 22 Dec 2015 23:21:23 +0100
+Message-ID: <1450822888-22590-19-git-send-email-joro@8bytes.org>
 References: <1450822888-22590-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,67 +23,51 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-It really belongs there and not in __map_single.
+This allows to build up the page-tables without holding any
+locks. As a consequence it removes the need to pre-populate
+dma_ops page-tables.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 29 ++++++++++-------------------
- 1 file changed, 10 insertions(+), 19 deletions(-)
+ drivers/iommu/amd_iommu.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index c657e48..4c926da 100644
+index 4c926da..ecdd3f7 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -1597,13 +1597,19 @@ static unsigned long dma_ops_alloc_addresses(struct device *dev,
- 					     unsigned long align_mask,
- 					     u64 dma_mask)
- {
--	unsigned long address;
-+	unsigned long address = -1;
+@@ -1206,11 +1206,21 @@ static u64 *alloc_pte(struct protection_domain *domain,
+ 	end_lvl = PAGE_SIZE_LEVEL(page_size);
  
- #ifdef CONFIG_IOMMU_STRESS
- 	dom->next_index = 0;
- #endif
- 
--	address = dma_ops_area_alloc(dev, dom, pages, align_mask, dma_mask);
-+	while (address == -1) {
-+		address = dma_ops_area_alloc(dev, dom, pages,
-+					     align_mask, dma_mask);
+ 	while (level > end_lvl) {
+-		if (!IOMMU_PTE_PRESENT(*pte)) {
++		u64 __pte, __npte;
 +
-+		if (address == -1 && alloc_new_range(dom, true, GFP_ATOMIC))
-+			break;
-+	}
++		__pte = *pte;
++
++		if (!IOMMU_PTE_PRESENT(__pte)) {
+ 			page = (u64 *)get_zeroed_page(gfp);
+ 			if (!page)
+ 				return NULL;
+-			*pte = PM_LEVEL_PDE(level, virt_to_phys(page));
++
++			__npte = PM_LEVEL_PDE(level, virt_to_phys(page));
++
++			if (cmpxchg64(pte, __pte, __npte)) {
++				free_page((unsigned long)page);
++				continue;
++			}
+ 		}
  
- 	if (unlikely(address == -1))
- 		address = DMA_ERROR_CODE;
-@@ -2460,26 +2466,11 @@ static dma_addr_t __map_single(struct device *dev,
- 	if (align)
- 		align_mask = (1UL << get_order(size)) - 1;
+ 		/* No level skipping support yet */
+@@ -1607,7 +1617,7 @@ static unsigned long dma_ops_alloc_addresses(struct device *dev,
+ 		address = dma_ops_area_alloc(dev, dom, pages,
+ 					     align_mask, dma_mask);
  
--retry:
- 	address = dma_ops_alloc_addresses(dev, dma_dom, pages, align_mask,
- 					  dma_mask);
--	if (unlikely(address == DMA_ERROR_CODE)) {
--		if (alloc_new_range(dma_dom, false, GFP_ATOMIC))
--			goto out;
--
--		/*
--		 * setting next_index here will let the address
--		 * allocator only scan the new allocated range in the
--		 * first run. This is a small optimization.
--		 */
--		dma_dom->next_index = dma_dom->aperture_size >> APERTURE_RANGE_SHIFT;
+-		if (address == -1 && alloc_new_range(dom, true, GFP_ATOMIC))
++		if (address == -1 && alloc_new_range(dom, false, GFP_ATOMIC))
+ 			break;
+ 	}
  
--		/*
--		 * aperture was successfully enlarged by 128 MB, try
--		 * allocation again
--		 */
--		goto retry;
--	}
-+	if (address == DMA_ERROR_CODE)
-+		goto out;
- 
- 	start = address;
- 	for (i = 0; i < pages; ++i) {
 -- 
 1.9.1
