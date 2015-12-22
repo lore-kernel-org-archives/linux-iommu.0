@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 11/23] iommu/amd: Remove 'start' parameter from
-	dma_ops_area_alloc
-Date: Tue, 22 Dec 2015 23:21:16 +0100
-Message-ID: <1450822888-22590-12-git-send-email-joro@8bytes.org>
+Subject: [PATCH 10/23] iommu/amd: Flush iommu tlb in dma_ops_aperture_alloc()
+Date: Tue, 22 Dec 2015 23:21:15 +0100
+Message-ID: <1450822888-22590-11-git-send-email-joro@8bytes.org>
 References: <1450822888-22590-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,47 +23,79 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Parameter is not needed because the value is part of the
-already passed in struct dma_ops_domain.
+Since the allocator wraparound happens in this function now,
+flush the iommu tlb there too.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/iommu/amd_iommu.c | 21 ++++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index eb11996..2962c62 100644
+index 58d7d82..eb11996 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -1561,11 +1561,10 @@ static unsigned long dma_ops_area_alloc(struct device *dev,
- 					struct dma_ops_domain *dom,
- 					unsigned int pages,
- 					unsigned long align_mask,
--					u64 dma_mask,
--					unsigned long start)
-+					u64 dma_mask)
+@@ -1518,7 +1518,8 @@ out_free:
+ 	return -ENOMEM;
+ }
+ 
+-static dma_addr_t dma_ops_aperture_alloc(struct aperture_range *range,
++static dma_addr_t dma_ops_aperture_alloc(struct dma_ops_domain *dom,
++					 struct aperture_range *range,
+ 					 unsigned long pages,
+ 					 unsigned long dma_mask,
+ 					 unsigned long boundary_size,
+@@ -1526,6 +1527,7 @@ static dma_addr_t dma_ops_aperture_alloc(struct aperture_range *range,
  {
- 	int max_index = dom->aperture_size >> APERTURE_RANGE_SHIFT;
--	int i = start >> APERTURE_RANGE_SHIFT;
-+	int i = dom->next_address >> APERTURE_RANGE_SHIFT;
- 	unsigned long next_bit, boundary_size, mask;
- 	unsigned long address = -1;
+ 	unsigned long offset, limit, flags;
+ 	dma_addr_t address;
++	bool flush = false;
  
-@@ -1612,13 +1611,12 @@ static unsigned long dma_ops_alloc_addresses(struct device *dev,
- 	dom->need_flush = true;
- #endif
+ 	offset = range->offset >> PAGE_SHIFT;
+ 	limit  = iommu_device_max_index(APERTURE_RANGE_PAGES, offset,
+@@ -1534,17 +1536,24 @@ static dma_addr_t dma_ops_aperture_alloc(struct aperture_range *range,
+ 	spin_lock_irqsave(&range->bitmap_lock, flags);
+ 	address = iommu_area_alloc(range->bitmap, limit, range->next_bit,
+ 				   pages, offset, boundary_size, align_mask);
+-	if (address == -1)
++	if (address == -1) {
+ 		/* Nothing found, retry one time */
+ 		address = iommu_area_alloc(range->bitmap, limit,
+ 					   0, pages, offset, boundary_size,
+ 					   align_mask);
++		flush = true;
++	}
  
--	address = dma_ops_area_alloc(dev, dom, pages, align_mask,
--				     dma_mask, dom->next_address);
-+	address = dma_ops_area_alloc(dev, dom, pages, align_mask, dma_mask);
+ 	if (address != -1)
+ 		range->next_bit = address + pages;
  
- 	if (address == -1) {
- 		dom->next_address = 0;
- 		address = dma_ops_area_alloc(dev, dom, pages, align_mask,
--					     dma_mask, 0);
-+					     dma_mask);
- 		dom->need_flush = true;
- 	}
+ 	spin_unlock_irqrestore(&range->bitmap_lock, flags);
  
++	if (flush) {
++		domain_flush_tlb(&dom->domain);
++		domain_flush_complete(&dom->domain);
++	}
++
+ 	return address;
+ }
+ 
+@@ -1566,12 +1575,14 @@ static unsigned long dma_ops_area_alloc(struct device *dev,
+ 				   1UL << (BITS_PER_LONG - PAGE_SHIFT);
+ 
+ 	for (;i < max_index; ++i) {
+-		if (dom->aperture[i]->offset >= dma_mask)
++		struct aperture_range *range = dom->aperture[i];
++
++		if (range->offset >= dma_mask)
+ 			break;
+ 
+-		next_bit = dom->aperture[i]->next_bit;
++		next_bit  = range->next_bit;
+ 
+-		address = dma_ops_aperture_alloc(dom->aperture[i], pages,
++		address = dma_ops_aperture_alloc(dom, dom->aperture[i], pages,
+ 						 dma_mask, boundary_size,
+ 						 align_mask);
+ 		if (address != -1) {
 -- 
 1.9.1
