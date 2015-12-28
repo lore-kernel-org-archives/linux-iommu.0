@@ -1,7 +1,8 @@
 From: Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
-Subject: [PATCH 4/7] iommu: only unmap mapped entries
-Date: Mon, 28 Dec 2015 18:16:47 +0200
-Message-ID: <20151228161647.GA27885@cs.technion.ac.il>
+Subject: [PATCH 5/7] iommu: avoid dev iotlb logic in intel-iommu for domains
+	with no dev iotlbs
+Date: Mon, 28 Dec 2015 18:17:03 +0200
+Message-ID: <20151228161703.GA27900@cs.technion.ac.il>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -22,147 +23,92 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Omer Peleg <omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
 
-Current unmap implementation unmaps the entire area covered by the IOVA range,
-which is a power-of-2 aligned region. The corresponding map, however, only maps
-those pages originally mapped by the user. This discrepancy can lead to
-unmapping of already unmapped entries, which is unneeded work.
-
-With this patch, only mapped pages are unmapped. This is also a baseline for a
-map/unmap implementation based on IOVAs and not iova structures, which will
-allow caching.
+This patch avoids taking the device_domain_lock in iommu_flush_dev_iotlb()
+for domains with no dev iotlb devices.
 
 Signed-off-by: Omer Peleg <omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
 [mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org: rebased and reworded the commit message]
 Signed-off-by: Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 36 +++++++++++++++++++++++++-----------
- 1 file changed, 25 insertions(+), 11 deletions(-)
+ drivers/iommu/intel-iommu.c | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 6d6229e..e4d023b 100644
+index c2a6f9e..fc23adc 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -455,6 +455,7 @@ static void flush_unmaps_timeout(unsigned long data);
+@@ -391,6 +391,7 @@ struct dmar_domain {
+ 					 * to VT-d spec, section 9.3 */
  
- struct deferred_flush_entry {
- 	struct iova *iova;
-+	unsigned long nrpages;
- 	struct dmar_domain *domain;
- 	struct page *freelist;
- };
-@@ -3457,6 +3458,7 @@ static void flush_unmaps(struct deferred_flush_data *flush_data)
- 			struct deferred_flush_entry *entry =
- 						&flush_table->entries[j];
- 			struct iova *iova = entry->iova;
-+			unsigned long nrpages = entry->nrpages;
- 			struct dmar_domain *domain = entry->domain;
- 			struct page *freelist = entry->freelist;
+ 	struct list_head devices;	/* all devices' list */
++	bool has_iotlb_device;
+ 	struct iova_domain iovad;	/* iova's that belong to this domain */
  
-@@ -3464,10 +3466,9 @@ static void flush_unmaps(struct deferred_flush_data *flush_data)
- 			if (cap_caching_mode(iommu->cap))
- 				iommu_flush_iotlb_psi(iommu, domain,
- 					mm_to_dma_pfn(iova->pfn_lo),
--					mm_to_dma_pfn(iova_size(iova)),
--					!freelist, 0);
-+					nrpages, !freelist, 0);
- 			else {
--				mask = ilog2(mm_to_dma_pfn(iova_size(iova)));
-+				mask = ilog2(nrpages);
- 				iommu_flush_dev_iotlb(domain,
- 						(uint64_t)iova->pfn_lo << PAGE_SHIFT, mask);
- 			}
-@@ -3491,7 +3492,8 @@ static void flush_unmaps_timeout(unsigned long cpuid)
- 	spin_unlock_irqrestore(&flush_data->lock, flags);
+ 	struct dma_pte	*pgd;		/* virtual address */
+@@ -1463,6 +1464,30 @@ iommu_support_dev_iotlb (struct dmar_domain *domain, struct intel_iommu *iommu,
+ 	return NULL;
  }
  
--static void add_unmap(struct dmar_domain *dom, struct iova *iova, struct page *freelist)
-+static void add_unmap(struct dmar_domain *dom, struct iova *iova,
-+		      unsigned long nrpages, struct page *freelist)
- {
- 	unsigned long flags;
- 	int entry_id, iommu_id;
-@@ -3516,6 +3518,7 @@ static void add_unmap(struct dmar_domain *dom, struct iova *iova, struct page *f
- 	entry = &flush_data->tables[iommu_id].entries[entry_id];
- 	entry->domain = dom;
- 	entry->iova = iova;
-+	entry->nrpages = nrpages;
- 	entry->freelist = freelist;
- 
- 	if (!flush_data->timer_on) {
-@@ -3528,10 +3531,11 @@ static void add_unmap(struct dmar_domain *dom, struct iova *iova, struct page *f
- 	put_cpu();
- }
- 
--static void intel_unmap(struct device *dev, dma_addr_t dev_addr)
-+static void intel_unmap(struct device *dev, dma_addr_t dev_addr, size_t size)
- {
- 	struct dmar_domain *domain;
- 	unsigned long start_pfn, last_pfn;
-+	unsigned long nrpages;
- 	struct iova *iova;
- 	struct intel_iommu *iommu;
- 	struct page *freelist;
-@@ -3549,8 +3553,9 @@ static void intel_unmap(struct device *dev, dma_addr_t dev_addr)
- 		      (unsigned long long)dev_addr))
- 		return;
- 
-+	nrpages = aligned_nrpages(dev_addr, size);
- 	start_pfn = mm_to_dma_pfn(iova->pfn_lo);
--	last_pfn = mm_to_dma_pfn(iova->pfn_hi + 1) - 1;
-+	last_pfn = start_pfn + nrpages - 1;
- 
- 	pr_debug("Device %s unmapping: pfn %lx-%lx\n",
- 		 dev_name(dev), start_pfn, last_pfn);
-@@ -3559,12 +3564,12 @@ static void intel_unmap(struct device *dev, dma_addr_t dev_addr)
- 
- 	if (intel_iommu_strict) {
- 		iommu_flush_iotlb_psi(iommu, domain, start_pfn,
--				      last_pfn - start_pfn + 1, !freelist, 0);
-+				      nrpages, !freelist, 0);
- 		/* free iova */
- 		__free_iova(&domain->iovad, iova);
- 		dma_free_pagelist(freelist);
- 	} else {
--		add_unmap(domain, iova, freelist);
-+		add_unmap(domain, iova, nrpages, freelist);
- 		/*
- 		 * queue up the release of the unmap to save the 1/6th of the
- 		 * cpu used up by the iotlb flush operation...
-@@ -3576,7 +3581,7 @@ static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
- 			     size_t size, enum dma_data_direction dir,
- 			     struct dma_attrs *attrs)
- {
--	intel_unmap(dev, dev_addr);
-+	intel_unmap(dev, dev_addr, size);
- }
- 
- static void *intel_alloc_coherent(struct device *dev, size_t size,
-@@ -3635,7 +3640,7 @@ static void intel_free_coherent(struct device *dev, size_t size, void *vaddr,
- 	size = PAGE_ALIGN(size);
- 	order = get_order(size);
- 
--	intel_unmap(dev, dma_handle);
-+	intel_unmap(dev, dma_handle, size);
- 	if (!dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT))
- 		__free_pages(page, order);
- }
-@@ -3644,7 +3649,16 @@ static void intel_unmap_sg(struct device *dev, struct scatterlist *sglist,
- 			   int nelems, enum dma_data_direction dir,
- 			   struct dma_attrs *attrs)
- {
--	intel_unmap(dev, sglist[0].dma_address);
-+	unsigned long nrpages = 0;
-+	dma_addr_t startaddr = sglist[0].dma_address - sglist[0].offset;
-+	struct scatterlist *sg;
-+	int i;
++static void domain_update_iotlb(struct dmar_domain *domain)
++{
++	struct device_domain_info *info;
++	bool has_iotlb_device = false;
++	unsigned long flags;
 +
-+	for_each_sg(sglist, sg, nelems, i) {
-+		nrpages += aligned_nrpages(sg->offset, sg->length);
++	spin_lock_irqsave(&device_domain_lock, flags);
++	list_for_each_entry(info, &domain->devices, link) {
++		struct pci_dev *pdev;
++
++		if (!info->dev || !dev_is_pci(info->dev))
++			continue;
++
++		pdev = to_pci_dev(info->dev);
++		if (pdev->ats_enabled) {
++			has_iotlb_device = true;
++			break;
++		}
 +	}
 +
-+	intel_unmap(dev, startaddr, nrpages << VTD_PAGE_SHIFT);
++	domain->has_iotlb_device = has_iotlb_device;
++	spin_unlock_irqrestore(&device_domain_lock, flags);
++}
++
+ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
+ {
+ 	struct pci_dev *pdev;
+@@ -1486,6 +1511,7 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
+ #endif
+ 	if (info->ats_supported && !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
+ 		info->ats_enabled = 1;
++		domain_update_iotlb(info);
+ 		info->ats_qdep = pci_ats_queue_depth(pdev);
+ 	}
  }
+@@ -1502,6 +1528,7 @@ static void iommu_disable_dev_iotlb(struct device_domain_info *info)
+ 	if (info->ats_enabled) {
+ 		pci_disable_ats(pdev);
+ 		info->ats_enabled = 0;
++		domain_update_iotlb(info);
+ 	}
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ 	if (info->pri_enabled) {
+@@ -1522,6 +1549,9 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
+ 	unsigned long flags;
+ 	struct device_domain_info *info;
  
- static int intel_nontranslate_map_sg(struct device *hddev,
++	if (!domain->has_iotlb_device)
++		return;
++
+ 	spin_lock_irqsave(&device_domain_lock, flags);
+ 	list_for_each_entry(info, &domain->devices, link) {
+ 		if (!info->ats_enabled)
+@@ -1739,6 +1769,7 @@ static struct dmar_domain *alloc_domain(int flags)
+ 	memset(domain, 0, sizeof(*domain));
+ 	domain->nid = -1;
+ 	domain->flags = flags;
++	domain->has_iotlb_device = false;
+ 	INIT_LIST_HEAD(&domain->devices);
+ 
+ 	return domain;
 -- 
 1.9.1
