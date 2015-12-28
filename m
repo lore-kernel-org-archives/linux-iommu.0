@@ -1,15 +1,15 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 3/6] iommu/amd: Introduce amd_iommu_get_num_iommus()
-Date: Mon, 28 Dec 2015 16:43:00 +0100
-Message-ID: <20151228154300.GK18805@8bytes.org>
-References: <1450811957-1511-1-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<1450811957-1511-4-git-send-email-Suravee.Suthikulpanit@amd.com>
+Subject: Re: [PATCH 2/3] iommu/dma: Use correct offset in map_sg
+Date: Mon, 28 Dec 2015 17:05:52 +0100
+Message-ID: <20151228160551.GA17673@8bytes.org>
+References: <9a84191ed813c23db7901f8c73f514d081495bdf.1450457730.git.robin.murphy@arm.com>
+	<4812a34857b081e45c36d7e887840f3675da74dc.1450457730.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1450811957-1511-4-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <4812a34857b081e45c36d7e887840f3675da74dc.1450457730.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,43 +19,36 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Dec 22, 2015 at 01:19:14PM -0600, Suthikulpanit, Suravee wrote:
-> This patch introduces amd_iommu_get_num_iommus(). Initially, this is
-> intended to be used by Perf AMD IOMMU driver.
+On Fri, Dec 18, 2015 at 05:01:47PM +0000, Robin Murphy wrote:
+> When mapping a non-page-aligned scatterlist entry, we copy the original
+> offset to the output DMA address before aligning it to hand off to
+> iommu_map_sg(), then later adding the IOVA page address portion to get
+> the final mapped address. However, when the IOVA page size is smaller
+> than the CPU page size, it is the offset within the IOVA page we want,
+> not that within the CPU page, which can easily be larger than an IOVA
+> page and thus result in an incorrect final address.
 > 
-> Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> Fix the bug by taking only the IOVA-aligned part of the offset as the
+> basis of the DMA address, not the whole thing.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 > ---
->  drivers/iommu/amd_iommu_init.c            | 16 ++++++++++++++++
->  include/linux/perf/perf_event_amd_iommu.h |  2 ++
->  2 files changed, 18 insertions(+)
+>  drivers/iommu/dma-iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-> index 275c0f5..9c62613 100644
-> --- a/drivers/iommu/amd_iommu_init.c
-> +++ b/drivers/iommu/amd_iommu_init.c
-> @@ -2244,6 +2244,22 @@ bool amd_iommu_v2_supported(void)
->  }
->  EXPORT_SYMBOL(amd_iommu_v2_supported);
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 982e716..03811e3 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -458,7 +458,7 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+>  		size_t s_length = s->length;
+>  		size_t pad_len = (mask - iova_len + 1) & mask;
 >  
-> +static int amd_iommu_cnt;
-> +
-> +int amd_iommu_get_num_iommus(void)
-> +{
-> +	struct amd_iommu *iommu;
-> +
-> +	if (amd_iommu_cnt)
-> +		return amd_iommu_cnt;
-> +
-> +	for_each_iommu(iommu)
-> +		amd_iommu_cnt++;
+> -		sg_dma_address(s) = s->offset;
+> +		sg_dma_address(s) = s_offset;
 
-It is better to set amd_iommu_cnt during IOMMU initialization. You can
-just increment this value after an IOMMU has been set up.
-
-
-
-	Joerg
+Does not apply on v4.4-rc7.
