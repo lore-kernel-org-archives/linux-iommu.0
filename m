@@ -1,14 +1,11 @@
-From: Wan ZongShun <mcuos.com-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] iommu:Check that iommu_device_create has completed
-	successfully in alloc_iommu
-Date: Tue, 29 Dec 2015 15:15:46 +0800
-Message-ID: <CAKT61h-n6=enWPAmEkPE36VZvrGFn9_Zj0y4+DdkOB33jyELUw@mail.gmail.com>
-References: <1451365811-19111-1-git-send-email-xerofoify@gmail.com>
+From: Wan Zongshun <vincent.wan-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH] iommu/amd: set AMD iommu-callbacks for the amba bus
+Date: Tue, 29 Dec 2015 11:54:53 -0500
+Message-ID: <1451408093-2802-1-git-send-email-vincent.wan@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1451365811-19111-1-git-send-email-xerofoify-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,54 +15,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Nicholas Krause <xerofoify-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>, Ray Huang <ray.huang-5C7GfCeVMHo@public.gmane.org>, ken.xue-5C7GfCeVMHo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-2015-12-29 13:10 GMT+08:00 Nicholas Krause <xerofoify-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>:
-> This adds the proper check to alloc_iommu to make sure that the call
-> to iommu_device_create has completed successfully and if not return
-> to the caller the error code returned after freeing up resources
-> allocated previously by alloc_iommu.
->
-> Signed-off-by: Nicholas Krause <xerofoify-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->  drivers/iommu/dmar.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> index 80e3c17..27333b6 100644
-> --- a/drivers/iommu/dmar.c
-> +++ b/drivers/iommu/dmar.c
-> @@ -1069,9 +1069,12 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
->                 iommu->iommu_dev = iommu_device_create(NULL, iommu,
->                                                        intel_iommu_groups,
->                                                        "%s", iommu->name);
-> +       if (IS_ERR(iommu->iommu_dev)) {
-> +               err = PTR_ERR(iommu->iommu_dev);
-> +               goto err_unmap;
-> +       }
+From: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
 
-If so, will this bad 'iommu->iommu_dev' break your iommu work?  It
-seems not necessary.
+Since uart dma is using AMD iommu, and it bases on amba bus.
+So we need set callbacks for amba bus type firstly.
 
->
->         return 0;
-> -
->  err_unmap:
->         unmap_iommu(iommu);
->  error_free_seq_id:
-> --
-> 2.5.0
->
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-
-
-
--- 
+Signed-off-by: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
 ---
-Vincent Wan(Zongshun)
-www.mcuos.com
+ drivers/iommu/amd_iommu.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 8b2be1e..9097b11 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -35,6 +35,7 @@
+ #include <linux/msi.h>
+ #include <linux/dma-contiguous.h>
+ #include <linux/irqdomain.h>
++#include <linux/amba/bus.h>
+ #include <asm/irq_remapping.h>
+ #include <asm/io_apic.h>
+ #include <asm/apic.h>
+@@ -2758,7 +2759,17 @@ static struct dma_map_ops amd_iommu_dma_ops = {
+ 
+ int __init amd_iommu_init_api(void)
+ {
+-	return bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
++	int err = 0;
++
++	err = bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
++	if (err)
++		return err;
++#ifdef CONFIG_ARM_AMBA
++	err = bus_set_iommu(&amba_bustype, &amd_iommu_ops);
++	if (err)
++		return err;
++#endif
++	return 0;
+ }
+ 
+ int __init amd_iommu_init_dma_ops(void)
+-- 
+1.9.1
