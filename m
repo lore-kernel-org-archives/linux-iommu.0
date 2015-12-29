@@ -1,13 +1,13 @@
 From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 04/06] iommu/ipmmu-vmsa: Rework interrupt code and use bitmap for context
-Date: Tue, 29 Dec 2015 02:14:22 +0200
-Message-ID: <2341043.PcEjBaApc7@avalon>
-References: <20151215120212.26216.61530.sendpatchset@little-apple> <20151215120249.26216.25148.sendpatchset@little-apple>
+Subject: Re: [PATCH 05/06] iommu/ipmmu-vmsa: Break out 32-bit ARM mapping code
+Date: Tue, 29 Dec 2015 02:26 +0200
+Message-ID: <6578620.dM6vFThBVn@avalon>
+References: <20151215120212.26216.61530.sendpatchset@little-apple> <20151215120258.26216.81905.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7Bit
 Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <20151215120249.26216.25148.sendpatchset@little-apple>
+In-Reply-To: <20151215120258.26216.81905.sendpatchset@little-apple>
 Sender: linux-sh-owner@vger.kernel.org
 To: Magnus Damm <magnus.damm@gmail.com>
 Cc: iommu@lists.linux-foundation.org, laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, linux-sh@vger.kernel.org, joro@8bytes.org, linux-kernel@vger.kernel.org, horms+renesas@verge.net.au
@@ -17,144 +17,172 @@ Hi Magnus,
 
 Thank you for the patch.
 
-On Tuesday 15 December 2015 21:02:49 Magnus Damm wrote:
+On Tuesday 15 December 2015 21:02:58 Magnus Damm wrote:
 > From: Magnus Damm <damm+renesas@opensource.se>
 > 
-> Introduce a bitmap for context handing and convert the
-> interrupt routine to go handle all registered contexts.
-> 
-> At this point the number of contexts are still limited.
+> Make the driver compile on more than just 32-bit ARM
+> by breaking out and wrapping ARM specific functions
+> in #ifdefs. Needed to be able to use the driver on
+> other architectures.
 
-That's all nice, but without seeing support for multiple contexts it's hard to 
-tell if the implementation is correct for multiple context purpose.
-
-> The purpose of this patch is to remove the use of the
-> ARM specific mapping variable from ipmmu_irq().
-
-Why do you want to do that ?
+The only other architecture where we need to use the driver is ARM64, and I'm 
+not sure this is the right fix to correctly support ARM and ARM64. I believe 
+we should instead improve the ARM implementation to get rid of 
+arm_iommu_create_mapping() and arm_iommu_attach_device() the same way that 
+ARM64 did.
 
 > Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
 > ---
 > 
->  drivers/iommu/ipmmu-vmsa.c |   37 ++++++++++++++++++++++++++-----------
->  1 file changed, 26 insertions(+), 11 deletions(-)
+> drivers/iommu/ipmmu-vmsa.c |   94 ++++++++++++++++++++++++++---------------
+> 1 file changed, 62 insertions(+), 32 deletions(-)
 > 
 > --- 0007/drivers/iommu/ipmmu-vmsa.c
-> +++ work/drivers/iommu/ipmmu-vmsa.c	2015-12-15 13:14:35.540513000 +0900
-> @@ -8,6 +8,7 @@
->   * the Free Software Foundation; version 2 of the License.
->   */
+> +++ work/drivers/iommu/ipmmu-vmsa.c	2015-12-15 13:20:26.580513000 +0900
+> @@ -22,8 +22,10 @@
+>  #include <linux/sizes.h>
+>  #include <linux/slab.h>
 > 
-> +#include <linux/bitmap.h>
->  #include <linux/delay.h>
->  #include <linux/dma-mapping.h>
->  #include <linux/err.h>
-> @@ -26,12 +27,16 @@
+> +#ifdef CONFIG_ARM
+>  #include <asm/dma-iommu.h>
+>  #include <asm/pgalloc.h>
+> +#endif
 > 
 >  #include "io-pgtable.h"
 > 
-> +#define IPMMU_CTX_MAX 1
-> +
->  struct ipmmu_vmsa_device {
->  	struct device *dev;
->  	void __iomem *base;
->  	struct list_head list;
+> @@ -38,7 +40,9 @@ struct ipmmu_vmsa_device {
+>  	DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
+>  	struct ipmmu_vmsa_domain *domains[IPMMU_CTX_MAX];
 > 
->  	unsigned int num_utlbs;
-> +	DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
-
-We have up to 4 context on Gen2 and 8 on Gen3, a bitmap might be slightly 
-overkill.
-
-> +	struct ipmmu_vmsa_domain *domains[IPMMU_CTX_MAX];
-> 
+> +#ifdef CONFIG_ARM
 >  	struct dma_iommu_mapping *mapping;
+> +#endif
 >  };
-> @@ -319,6 +324,7 @@ static struct iommu_gather_ops ipmmu_gat
->  static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
->  {
->  	phys_addr_t ttbr;
-> +	int ret;
 > 
->  	/*
->  	 * Allocate the page table operations.
-> @@ -348,10 +354,16 @@ static int ipmmu_domain_init_context(str
->  		return -EINVAL;
-> 
->  	/*
-> -	 * TODO: When adding support for multiple contexts, find an unused
-> -	 * context.
-> +	 * Find an unused context.
-
-We need to support multiple devices per context or we will very soon run out 
-of contexts. How to pick a proper context is a topic that needs to be 
-researched, I believe IOMMU groups might come into play.
-
->  	 */
-> -	domain->context_id = 0;
-> +	ret = bitmap_find_free_region(domain->mmu->ctx, IPMMU_CTX_MAX, 0);
-> +	if (ret < 0) {
-> +		free_io_pgtable_ops(domain->iop);
-> +		return ret;
-> +	}
-> +
-> +	domain->context_id = ret;
-> +	domain->mmu->domains[ret] = domain;
-
-This requires locking to protect against races with the interrupt handler.
-
-> 
->  	/* TTBR0 */
->  	ttbr = domain->cfg.arm_lpae_s1_cfg.ttbr[0];
-> @@ -395,6 +407,8 @@ static int ipmmu_domain_init_context(str
-> 
->  static void ipmmu_domain_destroy_context(struct ipmmu_vmsa_domain *domain)
->  {
-> +	bitmap_release_region(domain->mmu->ctx, domain->context_id, 0);
-> +
->  	/*
->  	 * Disable the context. Flush the TLB as required when modifying the
->  	 * context registers.
-> @@ -460,16 +474,16 @@ static irqreturn_t ipmmu_domain_irq(stru
->  static irqreturn_t ipmmu_irq(int irq, void *dev)
->  {
->  	struct ipmmu_vmsa_device *mmu = dev;
-> -	struct iommu_domain *io_domain;
-> -	struct ipmmu_vmsa_domain *domain;
-> -
-> -	if (!mmu->mapping)
-> -		return IRQ_NONE;
-> +	irqreturn_t status = IRQ_NONE;
-> +	unsigned int k;
-
-i is a perfectly fine loop counter :-)
-
-> -	io_domain = mmu->mapping->domain;
-> -	domain = to_vmsa_domain(io_domain);
-> +	/* Check interrupts for all active contexts */
-> +	for (k = find_first_bit(mmu->ctx, IPMMU_CTX_MAX);
-> +	     k < IPMMU_CTX_MAX && status == IRQ_NONE;
-> +	     k = find_next_bit(mmu->ctx, IPMMU_CTX_MAX, k))
-
-You can just loop over mmu->domains and skip NULL entries.
-
-> +		status = ipmmu_domain_irq(mmu->domains[k]);
-
-Only the status of the last domain is taken into account.
-
-> -	return ipmmu_domain_irq(domain);
-> +	return status;
+>  struct ipmmu_vmsa_domain {
+> @@ -621,6 +625,60 @@ static int ipmmu_find_utlbs(struct ipmmu
+>  	return 0;
 >  }
 > 
->  /* ------------------------------------------------------------------------
-> @@ -788,6 +802,7 @@ static int ipmmu_probe(struct platform_d
+> +#ifdef CONFIG_ARM
+> +static int ipmmu_map_attach(struct device *dev, struct ipmmu_vmsa_device
+> *mmu)
+> +{
+> +	int ret;
+> +
+> +	/*
+> +	 * Create the ARM mapping, used by the ARM DMA mapping core to allocate
+> +	 * VAs. This will allocate a corresponding IOMMU domain.
+> +	 *
+> +	 * TODO:
+> +	 * - Create one mapping per context (TLB).
+> +	 * - Make the mapping size configurable ? We currently use a 2GB mapping
+> +	 *   at a 1GB offset to ensure that NULL VAs will fault.
+> +	 */
+> +	if (!mmu->mapping) {
+> +		struct dma_iommu_mapping *mapping;
+> +
+> +		mapping = arm_iommu_create_mapping(&platform_bus_type,
+> +						   SZ_1G, SZ_2G);
+> +		if (IS_ERR(mapping)) {
+> +			dev_err(mmu->dev, "failed to create ARM IOMMU mapping\n");
+> +			return PTR_ERR(mapping);
+> +		}
+> +
+> +		mmu->mapping = mapping;
+> +	}
+> +
+> +	/* Attach the ARM VA mapping to the device. */
+> +	ret = arm_iommu_attach_device(dev, mmu->mapping);
+> +	if (ret < 0) {
+> +		dev_err(dev, "Failed to attach device to VA mapping\n");
+> +		arm_iommu_release_mapping(mmu->mapping);
+> +	}
+> +
+> +	return ret;
+> +}
+> +static inline void ipmmu_detach(struct device *dev)
+> +{
+> +	arm_iommu_detach_device(dev);
+> +}
+> +static inline void ipmmu_release_mapping(struct ipmmu_vmsa_device *mmu)
+> +{
+> +	arm_iommu_release_mapping(mmu->mapping);
+> +}
+> +#else
+> +static inline int ipmmu_map_attach(struct device *dev,
+> +				   struct ipmmu_vmsa_device *mmu)
+> +{
+> +	return 0;
+> +}
+> +static inline void ipmmu_detach(struct device *dev) {}
+> +static inline void ipmmu_release_mapping(struct ipmmu_vmsa_device *mmu) {}
+> +#endif
+> +
+>  static int ipmmu_add_device(struct device *dev)
+>  {
+>  	struct ipmmu_vmsa_dev_data *dev_data = get_dev_data(dev);
+> @@ -701,41 +759,13 @@ static int ipmmu_add_device(struct devic
+>  	dev_data->num_utlbs = num_utlbs;
+>  	set_dev_data(dev, dev_data);
 > 
->  	mmu->dev = &pdev->dev;
->  	mmu->num_utlbs = 32;
-> +	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
+> -	/*
+> -	 * Create the ARM mapping, used by the ARM DMA mapping core to allocate
+> -	 * VAs. This will allocate a corresponding IOMMU domain.
+> -	 *
+> -	 * TODO:
+> -	 * - Create one mapping per context (TLB).
+> -	 * - Make the mapping size configurable ? We currently use a 2GB mapping
+> -	 *   at a 1GB offset to ensure that NULL VAs will fault.
+> -	 */
+> -	if (!mmu->mapping) {
+> -		struct dma_iommu_mapping *mapping;
+> -
+> -		mapping = arm_iommu_create_mapping(&platform_bus_type,
+> -						   SZ_1G, SZ_2G);
+> -		if (IS_ERR(mapping)) {
+> -			dev_err(mmu->dev, "failed to create ARM IOMMU mapping\n");
+> -			ret = PTR_ERR(mapping);
+> -			goto error;
+> -		}
+> -
+> -		mmu->mapping = mapping;
+> -	}
+> -
+> -	/* Attach the ARM VA mapping to the device. */
+> -	ret = arm_iommu_attach_device(dev, mmu->mapping);
+> -	if (ret < 0) {
+> -		dev_err(dev, "Failed to attach device to VA mapping\n");
+> +	ret = ipmmu_map_attach(dev, mmu);
+> +	if (ret < 0)
+>  		goto error;
+> -	}
 > 
->  	/* Map I/O memory and request IRQ. */
->  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>  	return 0;
+> 
+>  error:
+> -	arm_iommu_release_mapping(mmu->mapping);
+> -
+>  	kfree(dev_data);
+>  	kfree(utlbs);
+> 
+> @@ -751,7 +781,7 @@ static void ipmmu_remove_device(struct d
+>  {
+>  	struct ipmmu_vmsa_dev_data *dev_data = get_dev_data(dev);
+> 
+> -	arm_iommu_detach_device(dev);
+> +	ipmmu_detach(dev);
+>  	iommu_group_remove_device(dev);
+> 
+>  	kfree(dev_data->utlbs);
+> @@ -862,7 +892,7 @@ static int ipmmu_remove(struct platform_
+>  	list_del(&mmu->list);
+>  	spin_unlock(&ipmmu_devices_lock);
+> 
+> -	arm_iommu_release_mapping(mmu->mapping);
+> +	ipmmu_release_mapping(mmu);
+> 
+>  	ipmmu_device_reset(mmu);
 
 -- 
 Regards,
