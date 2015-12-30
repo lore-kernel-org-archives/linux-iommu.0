@@ -1,15 +1,12 @@
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH 3/6] iommu/amd: Introduce amd_iommu_get_num_iommus()
-Date: Tue, 29 Dec 2015 15:20:49 -0600
-Message-ID: <5682F931.3010400@amd.com>
-References: <1450811957-1511-1-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<1450811957-1511-4-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<20151228154300.GK18805@8bytes.org>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v2] iommu/dma: Map scatterlists more parsimoniously
+Date: Wed, 30 Dec 2015 09:42:06 +0800
+Message-ID: <1451439726.27665.3.camel@mhfsdcap03>
+References: <cf89e25139683d85862302e75f9923d101ba233e.1448016328.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============6297533530914261196=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20151228154300.GK18805-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <cf89e25139683d85862302e75f9923d101ba233e.1448016328.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,52 +16,110 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jorge,
+--===============6297533530914261196==
+Content-Type: multipart/alternative; boundary="=-Rx0Mlvgrn8asgprt0H2u"
 
-On 12/28/15 09:43, Joerg Roedel wrote:
-> On Tue, Dec 22, 2015 at 01:19:14PM -0600, Suthikulpanit, Suravee wrote:
->> This patch introduces amd_iommu_get_num_iommus(). Initially, this is
->> intended to be used by Perf AMD IOMMU driver.
->>
->> Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
->> ---
->>   drivers/iommu/amd_iommu_init.c            | 16 ++++++++++++++++
->>   include/linux/perf/perf_event_amd_iommu.h |  2 ++
->>   2 files changed, 18 insertions(+)
->>
->> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
->> index 275c0f5..9c62613 100644
->> --- a/drivers/iommu/amd_iommu_init.c
->> +++ b/drivers/iommu/amd_iommu_init.c
->> @@ -2244,6 +2244,22 @@ bool amd_iommu_v2_supported(void)
->>   }
->>   EXPORT_SYMBOL(amd_iommu_v2_supported);
->>
->> +static int amd_iommu_cnt;
->> +
->> +int amd_iommu_get_num_iommus(void)
->> +{
->> +	struct amd_iommu *iommu;
->> +
->> +	if (amd_iommu_cnt)
->> +		return amd_iommu_cnt;
->> +
->> +	for_each_iommu(iommu)
->> +		amd_iommu_cnt++;
->
-> It is better to set amd_iommu_cnt during IOMMU initialization. You can
-> just increment this value after an IOMMU has been set up.
->
->
->
-> 	Joerg
->
+--=-Rx0Mlvgrn8asgprt0H2u
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 
-Sure. I'll take care of this in V2.
+On Fri, 2015-11-20 at 10:57 +0000, Robin Murphy wrote:
 
-Thanks,
-Suravee
+> Whilst blindly assuming the worst case for segment boundaries and
+> aligning every segment individually is safe from the point of view
+> of respecting the device's parameters, it is also undeniably a waste
+> of IOVA space. Futhermore, the knock-on effects of more pages than
+> necessary being exposed to device access, additional overhead in page
+> table updates and TLB invalidations, etc., are even more undesirable.
+> 
+> Improve matters by taking the actual boundary mask into account to
+> actively detect the cases in which we really do need to adjust a
+> segment, and avoid wasting space in the remainder.
+> 
+> Tested-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+
+
+Hi Robin,
+    What's the status of this patch? Could we know whether it will be
+merged into v4.5?
+ 
+
+> ---
+> 
+> Minor change: removed the now-redundant null check on prev, since we no
+> longer dereference it unconditionally and pad_len is guaranteed to be
+> zero the first time around.
+> 
+>  drivers/iommu/dma-iommu.c | 16 ++++++++--------
+>  1 file changed, 8 insertions(+), 8 deletions(-)
+> 
+
+[...]
+
+
+--=-Rx0Mlvgrn8asgprt0H2u
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 TRANSITIONAL//EN">
+<HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=UTF-8">
+  <META NAME="GENERATOR" CONTENT="GtkHTML/4.2.2">
+</HEAD>
+<BODY>
+On Fri, 2015-11-20 at 10:57 +0000, Robin Murphy wrote:
+<BLOCKQUOTE TYPE=CITE>
+<PRE>
+Whilst blindly assuming the worst case for segment boundaries and
+aligning every segment individually is safe from the point of view
+of respecting the device's parameters, it is also undeniably a waste
+of IOVA space. Futhermore, the knock-on effects of more pages than
+necessary being exposed to device access, additional overhead in page
+table updates and TLB invalidations, etc., are even more undesirable.
+
+Improve matters by taking the actual boundary mask into account to
+actively detect the cases in which we really do need to adjust a
+segment, and avoid wasting space in the remainder.
+
+Tested-by: Yong Wu &lt;<A HREF="mailto:yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org">yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org</A>&gt;
+Signed-off-by: Robin Murphy &lt;<A HREF="mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org">robin.murphy-5wv7dgnIgG8@public.gmane.org</A>&gt;
+</PRE>
+</BLOCKQUOTE>
+<BR>
+Hi Robin,<BR>
+&nbsp;&nbsp;&nbsp; What's the status of this patch? Could we know whether it will be merged into v4.5?<BR>
+ 
+<BLOCKQUOTE TYPE=CITE>
+<PRE>
+---
+
+Minor change: removed the now-redundant null check on prev, since we no
+longer dereference it unconditionally and pad_len is guaranteed to be
+zero the first time around.
+
+ drivers/iommu/dma-iommu.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+</PRE>
+</BLOCKQUOTE>
+[...]<BR>
+<BR>
+</BODY>
+</HTML>
+
+--=-Rx0Mlvgrn8asgprt0H2u--
+
+--===============6297533530914261196==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============6297533530914261196==--
