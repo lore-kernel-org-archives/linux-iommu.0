@@ -1,14 +1,15 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v7 3/5] memory: mediatek: Add SMI driver
-Date: Mon, 4 Jan 2016 14:56:38 +0800
-Message-ID: <1451890598.11799.3.camel@mhfsdcap03>
-References: <1450426183-1571-1-git-send-email-yong.wu@mediatek.com>
-	<1450426183-1571-4-git-send-email-yong.wu@mediatek.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 2/3] iommu/dma: Use correct offset in map_sg
+Date: Mon, 4 Jan 2016 16:08:23 +0000
+Message-ID: <568A98F7.3050902@arm.com>
+References: <9a84191ed813c23db7901f8c73f514d081495bdf.1450457730.git.robin.murphy@arm.com>
+	<4812a34857b081e45c36d7e887840f3675da74dc.1450457730.git.robin.murphy@arm.com>
+	<20151228160551.GA17673@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1450426183-1571-4-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+In-Reply-To: <20151228160551.GA17673-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,29 +19,49 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 2015-12-18 at 16:09 +0800, Yong Wu wrote:
-> This patch add SMI(Smart Multimedia Interface) driver. This driver
-> is responsible to enable/disable iommu and control the power domain
-> and clocks of each local arbiter.
+On 28/12/15 16:05, Joerg Roedel wrote:
+> On Fri, Dec 18, 2015 at 05:01:47PM +0000, Robin Murphy wrote:
+>> When mapping a non-page-aligned scatterlist entry, we copy the original
+>> offset to the output DMA address before aligning it to hand off to
+>> iommu_map_sg(), then later adding the IOVA page address portion to get
+>> the final mapped address. However, when the IOVA page size is smaller
+>> than the CPU page size, it is the offset within the IOVA page we want,
+>> not that within the CPU page, which can easily be larger than an IOVA
+>> page and thus result in an incorrect final address.
+>>
+>> Fix the bug by taking only the IOVA-aligned part of the offset as the
+>> basis of the DMA address, not the whole thing.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> ---
+>>   drivers/iommu/dma-iommu.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>> index 982e716..03811e3 100644
+>> --- a/drivers/iommu/dma-iommu.c
+>> +++ b/drivers/iommu/dma-iommu.c
+>> @@ -458,7 +458,7 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+>>   		size_t s_length = s->length;
+>>   		size_t pad_len = (mask - iova_len + 1) & mask;
+>>
+>> -		sg_dma_address(s) = s->offset;
+>> +		sg_dma_address(s) = s_offset;
+>
+> Does not apply on v4.4-rc7.
 
-Hi Matthias,
-    What's your opinion about the SMI in this version?
-    Sorry to disturb you again since SMI need your review before Joerg
-accept it.
+Ah, I did these on top of the map_sg tweak[1] locally, and failed to 
+spot that that leaks into a context line here. There's no actual 
+dependency so I'll rebase and repost this bugfix momentarily - as that 
+other thread seems to have stalled, I'll probably have another crack at 
+a proper scatterlist segment merging implementation sometime after the 
+merge window.
 
-> 
-> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> ---
->  drivers/memory/Kconfig     |   8 ++
->  drivers/memory/Makefile    |   1 +
->  drivers/memory/mtk-smi.c   | 268 +++++++++++++++++++++++++++++++++++++++++++++
->  include/soc/mediatek/smi.h |  58 ++++++++++
->  4 files changed, 335 insertions(+)
->  create mode 100644 drivers/memory/mtk-smi.c
->  create mode 100644 include/soc/mediatek/smi.h
-> 
-[...]
+Thanks,
+Robin.
+
+[1]:http://thread.gmane.org/gmane.linux.kernel.iommu/11512
