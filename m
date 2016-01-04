@@ -1,17 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu:Check that iommu_device_create has completed
-	successfully in alloc_iommu
-Date: Mon, 4 Jan 2016 17:38:16 +0100
-Message-ID: <20160104163816.GS18805@8bytes.org>
-References: <1451365811-19111-1-git-send-email-xerofoify@gmail.com>
-	<20160104161616.GP18805@8bytes.org>
-	<6B8E4732-8366-4981-8A38-BA542A09F1E0@gmail.com>
+Subject: Re: [PATCH 0/7] Intel IOMMU scalability improvements
+Date: Mon, 4 Jan 2016 18:35:10 +0100
+Message-ID: <20160104173510.GT18805@8bytes.org>
+References: <20151228161421.GA27829@cs.technion.ac.il>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <6B8E4732-8366-4981-8A38-BA542A09F1E0-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20151228161421.GA27829-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,16 +18,34 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Nicholas Krause <xerofoify-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
+Cc: serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dan-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 04, 2016 at 11:27:10AM -0500, Nicholas Krause wrote:
-> Yes that's true and was wondering if you want me to fix it up to set
-> the pointer back to null first or if preferred around safe state. 
+Hi Adam,
 
-The best solution is to set the dmar->iommu pointer after the error
-check for iommu_device_create().
+On Mon, Dec 28, 2015 at 06:14:21PM +0200, Adam Morrison wrote:
+> This patchset improves the scalability of the Intel IOMMU code by
+> resolving two spinlock bottlenecks, yielding up to ~10x performance
+> improvement and approaching iommu=off performance.
+> 
+> For example, here's the throughput obtained by 16 memcached instances
+> running on a 16-core Sandy Bridge system, accessed using memslap on
+> another machine that has iommu=off, using the default memslap config
+> (64-byte keys, 1024-byte values, and 10%/90% SET/GET ops):
+> 
+>     stock iommu=off:
+>        1,088,996 memcached transactions/sec (=100%, median of 10 runs).
+>     stock iommu=on:
+>        123,760 memcached transactions/sec (=11%).
+>        [perf: 43.56%    0.86%  memcached       [kernel.kallsyms]      [k] _raw_spin_lock_irqsave]
+>     patched iommu=on:
+>        1,067,586 memcached transactions/sec (=98%).
+>        [perf: 0.75%     0.75%  memcached       [kernel.kallsyms]      [k] _raw_spin_lock_irqsave]
+>
+
+Thanks for the patches, the results look pretty impressive. I'll have a
+closer look at your changes this week.
 
 
 
