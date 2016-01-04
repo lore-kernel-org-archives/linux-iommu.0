@@ -1,11 +1,11 @@
-From: David Binderman <dcb314-PkbjNfxxIARBDgjK7y7TUQ@public.gmane.org>
-Subject: linux-4.4-rc8/drivers/iommu/intel-iommu.c:151: possible int/long
-	mixup ?
-Date: Mon, 4 Jan 2016 18:03:52 +0000
-Message-ID: <DUB128-W2445D6DAB9A25EF150ABAE9CF20@phx.gbl>
+From: Nicholas Krause <xerofoify-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] iommu:Check that iommu_device_create has completed
+	successfully in alloc_iommu
+Date: Mon,  4 Jan 2016 18:27:57 -0500
+Message-ID: <1451950077-22025-1-git-send-email-xerofoify@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -16,30 +16,36 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello there,
+This adds the proper check to alloc_iommu to make sure that the call
+to iommu_device_create has completed successfully and if not return
+to the caller the error code returned after freeing up resources
+allocated previously by alloc_iommu.
 
-[linux-4.4-rc8/drivers/iommu/intel-iommu.c:151]: (style) int result is retu=
-rned as long value. If the return value is long to avoid loss of informatio=
-n, then you have loss of information.
+Signed-off-by: Nicholas Krause <xerofoify-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ drivers/iommu/dmar.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Source code is
-
-=A0=A0=A0 return=A0 1 << min_t(int, (lvl - 1) * LEVEL_STRIDE, MAX_AGAW_PFN_=
-WIDTH);
-
-This code only works if the result of the min_t expression < 31. =
-
-For larger values, maybe the following would work up to 63.
-
-=A0=A0=A0 return=A0 1UL << min_t(int, (lvl - 1) * LEVEL_STRIDE, MAX_AGAW_PF=
-N_WIDTH);
-
-
-Regards
-
-David Binderman
-
- 		 	   		  =
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 80e3c17..a496d73 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -1069,6 +1069,12 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 		iommu->iommu_dev = iommu_device_create(NULL, iommu,
+ 						       intel_iommu_groups,
+ 						       "%s", iommu->name);
++
++	if (IS_ERR(iommu->iommu_dev)) {
++		drhd->iommu = NULL;
++		err = PTR_ERR(iommu->iommu_dev);
++		goto err_unmap;
++	}
+ 
+ 	return 0;
+ 
+-- 
+2.5.0
