@@ -1,14 +1,14 @@
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v2 4/6] perf/amd/iommu: Introduce data structure for tracking
-	prev count.
-Date: Fri, 1 Jan 2016 12:13:38 -0600
-Message-ID: <1451672020-2150-5-git-send-email-Suravee.Suthikulpanit@amd.com>
-References: <1451672020-2150-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v7 3/5] memory: mediatek: Add SMI driver
+Date: Mon, 4 Jan 2016 14:56:38 +0800
+Message-ID: <1451890598.11799.3.camel@mhfsdcap03>
+References: <1450426183-1571-1-git-send-email-yong.wu@mediatek.com>
+	<1450426183-1571-4-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1451672020-2150-1-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <1450426183-1571-4-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,79 +18,29 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-To enable AMD IOMMU PMU to support multiple IOMMUs, this patch introduces
-a new data structure, perf_amd_iommu.prev_cnts, to track previous counts
-of IOMMU performance counters in multi-IOMMU environment.
+On Fri, 2015-12-18 at 16:09 +0800, Yong Wu wrote:
+> This patch add SMI(Smart Multimedia Interface) driver. This driver
+> is responsible to enable/disable iommu and control the power domain
+> and clocks of each local arbiter.
 
-Also, this patch allocates perf_iommu_cnts for internal use
-when manages counters.
+Hi Matthias,
+    What's your opinion about the SMI in this version?
+    Sorry to disturb you again since SMI need your review before Joerg
+accept it.
 
-Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
----
- arch/x86/kernel/cpu/perf_event_amd_iommu.c | 26 ++++++++++++++++++++++----
- 1 file changed, 22 insertions(+), 4 deletions(-)
-
-diff --git a/arch/x86/kernel/cpu/perf_event_amd_iommu.c b/arch/x86/kernel/cpu/perf_event_amd_iommu.c
-index e6d2485..99fcd10 100644
---- a/arch/x86/kernel/cpu/perf_event_amd_iommu.c
-+++ b/arch/x86/kernel/cpu/perf_event_amd_iommu.c
-@@ -42,6 +42,7 @@ struct perf_amd_iommu {
- 	u64 cntr_assign_mask;
- 	raw_spinlock_t lock;
- 	const struct attribute_group *attr_groups[4];
-+	local64_t *prev_cnts;
- };
- 
- #define format_group	attr_groups[0]
-@@ -126,6 +127,8 @@ static struct amd_iommu_event_desc amd_iommu_v2_event_descs[] = {
- 	{ /* end: all zeroes */ },
- };
- 
-+static u64 *perf_iommu_cnts;
-+
- /*---------------------------------------------
-  * sysfs cpumask attributes
-  *---------------------------------------------*/
-@@ -423,10 +426,14 @@ static __init int _init_events_attrs(struct perf_amd_iommu *perf_iommu)
- 
- static __init void amd_iommu_pc_exit(void)
- {
--	if (__perf_iommu.events_group != NULL) {
--		kfree(__perf_iommu.events_group);
--		__perf_iommu.events_group = NULL;
--	}
-+	kfree(__perf_iommu.events_group);
-+	__perf_iommu.events_group = NULL;
-+
-+	kfree(__perf_iommu.prev_cnts);
-+	__perf_iommu.prev_cnts = NULL;
-+
-+	kfree(perf_iommu_cnts);
-+	perf_iommu_cnts = NULL;
- }
- 
- static __init int _init_perf_amd_iommu(
-@@ -456,6 +463,17 @@ static __init int _init_perf_amd_iommu(
- 	perf_iommu->null_group = NULL;
- 	perf_iommu->pmu.attr_groups = perf_iommu->attr_groups;
- 
-+	perf_iommu->prev_cnts = kzalloc(sizeof(*perf_iommu->prev_cnts) *
-+		(amd_iommu_get_num_iommus() * perf_iommu->max_banks *
-+		perf_iommu->max_counters), GFP_KERNEL);
-+	if (!perf_iommu->prev_cnts)
-+		return -ENOMEM;
-+
-+	perf_iommu_cnts = kzalloc(sizeof(*perf_iommu_cnts) *
-+				  amd_iommu_get_num_iommus(), GFP_KERNEL);
-+	if (!perf_iommu_cnts)
-+		return -ENOMEM;
-+
- 	ret = perf_pmu_register(&perf_iommu->pmu, name, -1);
- 	if (ret) {
- 		pr_err("perf: amd_iommu: Failed to initialized.\n");
--- 
-1.9.1
+> 
+> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> ---
+>  drivers/memory/Kconfig     |   8 ++
+>  drivers/memory/Makefile    |   1 +
+>  drivers/memory/mtk-smi.c   | 268 +++++++++++++++++++++++++++++++++++++++++++++
+>  include/soc/mediatek/smi.h |  58 ++++++++++
+>  4 files changed, 335 insertions(+)
+>  create mode 100644 drivers/memory/mtk-smi.c
+>  create mode 100644 include/soc/mediatek/smi.h
+> 
+[...]
