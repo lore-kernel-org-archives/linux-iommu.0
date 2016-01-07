@@ -1,15 +1,16 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH RESEND] iommu/dma: Use correct offset in map_sg
-Date: Thu, 7 Jan 2016 13:38:25 +0100
-Message-ID: <20160107123824.GI19149@8bytes.org>
-References: <4812a34857b081e45c36d7e887840f3675da74dc.1450457730.git.robin.murphy@arm.com>
-	<8317d001da4f48831fa23d8d7729a4659ac72b49.1451924092.git.robin.murphy@arm.com>
+From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH v2 2/6] perf/amd/iommu: Modify functions to query max
+	banks and counters
+Date: Thu, 7 Jan 2016 09:28:33 -0600
+Message-ID: <568E8421.5020506@amd.com>
+References: <1451672020-2150-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<1451672020-2150-3-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<20160107123411.GH19149@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <8317d001da4f48831fa23d8d7729a4659ac72b49.1451924092.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20160107123411.GH19149-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,22 +20,35 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 04, 2016 at 04:19:42PM +0000, Robin Murphy wrote:
-> When mapping a non-page-aligned scatterlist entry, we copy the original
-> offset to the output DMA address before aligning it to hand off to
-> iommu_map_sg(), then later adding the IOVA page address portion to get
-> the final mapped address. However, when the IOVA page size is smaller
-> than the CPU page size, it is the offset within the IOVA page we want,
-> not that within the CPU page, which can easily be larger than an IOVA
-> page and thus result in an incorrect final address.
-> 
-> Fix the bug by taking only the IOVA-aligned part of the offset as the
-> basis of the DMA address, not the whole thing.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-Applied, thanks.
+
+On 01/07/2016 06:34 AM, Joerg Roedel wrote:
+> On Fri, Jan 01, 2016 at 12:13:36PM -0600, Suravee Suthikulpanit wrote:
+>> Currently, amd_iommu_pc_get_max_[banks|counters]() require devid,
+>> which should not be the case. Also, these don't properly support
+>> multi-IOMMU system.
+>>
+>> Current and future AMD systems with IOMMU that support perf counter
+>> would likely contain homogeneous IOMMUs where multiple IOMMUs are
+>> availalbe. So, this patch modifies these function to iterate all IOMMU
+>> to check the max banks and counters reported by the hardware.
+>>
+>> Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+>> ---
+>>   arch/x86/kernel/cpu/perf_event_amd_iommu.c | 17 +++++++----------
+>>   drivers/iommu/amd_iommu_init.c             | 20 ++++++++++++--------
+>>   include/linux/perf/perf_event_amd_iommu.h  |  7 ++-----
+>>   3 files changed, 21 insertions(+), 23 deletions(-)
+>
+> Reviewed-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+>
+> This looks like the fix for the CZ issue, right? If true, it is
+> probably v4.5 material.
+
+Yes in deed :)
+
+Suravee
