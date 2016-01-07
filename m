@@ -1,15 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 6/6] iommu/amd: Manage iommu_group for non-pci devices
-Date: Thu, 7 Jan 2016 13:06:59 +0100
-Message-ID: <20160107120659.GC19149@8bytes.org>
-References: <1451988444-4694-1-git-send-email-vincent.wan@amd.com>
-	<1451988444-4694-7-git-send-email-vincent.wan@amd.com>
+Subject: Re: [patch] iommu/amd: remove an unneeded condition
+Date: Thu, 7 Jan 2016 13:08:45 +0100
+Message-ID: <20160107120845.GD19149@8bytes.org>
+References: <20160107093606.GB27186@mwanda>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1451988444-4694-7-git-send-email-vincent.wan-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <20160107093606.GB27186@mwanda>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,32 +18,14 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Wan Zongshun <vincent.wan-5C7GfCeVMHo@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ray Huang <ray.huang-5C7GfCeVMHo@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>, ken.xue-5C7GfCeVMHo@public.gmane.org
+To: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kernel-janitors-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 05, 2016 at 05:07:24AM -0500, Wan Zongshun wrote:
-> +static struct iommu_group *amd_iommu_device_group(struct device *dev)
-> +{
-> +	if (dev_is_pci(dev))
-> +		return pci_device_group(dev);
-> +
-> +	return acpihid_device_group(dev);
-> +}
-> +
->  /*****************************************************************************
->   *
->   * The next functions belong to the dma_ops mapping/unmapping code.
-> @@ -3202,7 +3233,7 @@ static const struct iommu_ops amd_iommu_ops = {
->  	.iova_to_phys = amd_iommu_iova_to_phys,
->  	.add_device = amd_iommu_add_device,
->  	.remove_device = amd_iommu_remove_device,
-> -	.device_group = pci_device_group,
-> +	.device_group = amd_iommu_device_group,
+On Thu, Jan 07, 2016 at 12:36:06PM +0300, Dan Carpenter wrote:
+> get_device_id() returns an unsigned short device id.  It never fails and
+> it never returns a negative so we can remove this condition.
+> 
+> Signed-off-by: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 
-Does this work? Which bus do the ACPIHID devices belong to (what does
-dev->bus point to)? If it is not &pci_bus_type, then the iommu core code
-will not create an iommu group for the devices.
-
-
-	Joerg
+Applied, thanks.
