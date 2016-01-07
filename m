@@ -1,54 +1,45 @@
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v2 2/6] perf/amd/iommu: Modify functions to query max
-	banks and counters
-Date: Thu, 7 Jan 2016 09:28:33 -0600
-Message-ID: <568E8421.5020506@amd.com>
-References: <1451672020-2150-1-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<1451672020-2150-3-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<20160107123411.GH19149@8bytes.org>
+From: Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Subject: Re: [PATCH v7 3/5] memory: mediatek: Add SMI driver
+Date: Thu, 07 Jan 2016 17:24:54 +0100
+Message-ID: <1452183894.4776.29.camel@pengutronix.de>
+References: <1450426183-1571-1-git-send-email-yong.wu@mediatek.com>
+	 <1450426183-1571-4-git-send-email-yong.wu@mediatek.com>
+	 <1451890598.11799.3.camel@mhfsdcap03>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160107123411.GH19149-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1451890598.11799.3.camel@mhfsdcap03>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+Hi,
 
+Am Montag, den 04.01.2016, 14:56 +0800 schrieb Yong Wu:
+> On Fri, 2015-12-18 at 16:09 +0800, Yong Wu wrote:
+> > This patch add SMI(Smart Multimedia Interface) driver. This driver
+> > is responsible to enable/disable iommu and control the power domain
+> > and clocks of each local arbiter.
+> 
+> Hi Matthias,
+>     What's your opinion about the SMI in this version?
+>     Sorry to disturb you again since SMI need your review before Joerg
+> accept it.
 
-On 01/07/2016 06:34 AM, Joerg Roedel wrote:
-> On Fri, Jan 01, 2016 at 12:13:36PM -0600, Suravee Suthikulpanit wrote:
->> Currently, amd_iommu_pc_get_max_[banks|counters]() require devid,
->> which should not be the case. Also, these don't properly support
->> multi-IOMMU system.
->>
->> Current and future AMD systems with IOMMU that support perf counter
->> would likely contain homogeneous IOMMUs where multiple IOMMUs are
->> availalbe. So, this patch modifies these function to iterate all IOMMU
->> to check the max banks and counters reported by the hardware.
->>
->> Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
->> ---
->>   arch/x86/kernel/cpu/perf_event_amd_iommu.c | 17 +++++++----------
->>   drivers/iommu/amd_iommu_init.c             | 20 ++++++++++++--------
->>   include/linux/perf/perf_event_amd_iommu.h  |  7 ++-----
->>   3 files changed, 21 insertions(+), 23 deletions(-)
->
-> Reviewed-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
->
-> This looks like the fix for the CZ issue, right? If true, it is
-> probably v4.5 material.
+How is this going to be merged, eventually? If it could be put on a
+separate branch, that would allow me to also include it in the DRM pull
+request that will build-depend on the SMI driver.
 
-Yes in deed :)
+> > Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 
-Suravee
+Tested-by: Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+
+regards
+Philipp
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
