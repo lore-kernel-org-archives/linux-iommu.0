@@ -1,110 +1,64 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [git pull] IOMMU Fixes for Linux v4.4-rc8
-Date: Thu, 7 Jan 2016 20:28:06 +0100
-Message-ID: <20160107192806.GA16147@8bytes.org>
+From: Wan ZongShun <mcuos.com@gmail.com>
+Subject: Re: [PATCH 6/6] iommu/amd: Manage iommu_group for non-pci devices
+Date: Fri, 8 Jan 2016 09:44:40 +0800
+Message-ID: <CAKT61h9ju3W1KWoCuNEksZqCCOfJfiQ=nOYixuNGnhWzvyQgdQ@mail.gmail.com>
+References: <1451988444-4694-1-git-send-email-vincent.wan@amd.com>
+ <1451988444-4694-7-git-send-email-vincent.wan@amd.com> <20160107120659.GC19149@8bytes.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============5860592323473128346=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160107120659.GC19149@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Wan Zongshun <vincent.wan@amd.com>, linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, Ray Huang <ray.huang@amd.com>, Borislav Petkov <bp@suse.de>, ken.xue@amd.com, vw@iommu.org
 List-Id: iommu@lists.linux-foundation.org
 
+2016-01-07 20:06 GMT+08:00 Joerg Roedel <joro@8bytes.org>:
+> On Tue, Jan 05, 2016 at 05:07:24AM -0500, Wan Zongshun wrote:
+>> +static struct iommu_group *amd_iommu_device_group(struct device *dev)
+>> +{
+>> +     if (dev_is_pci(dev))
+>> +             return pci_device_group(dev);
+>> +
+>> +     return acpihid_device_group(dev);
+>> +}
+>> +
+>>  /*****************************************************************************
+>>   *
+>>   * The next functions belong to the dma_ops mapping/unmapping code.
+>> @@ -3202,7 +3233,7 @@ static const struct iommu_ops amd_iommu_ops = {
+>>       .iova_to_phys = amd_iommu_iova_to_phys,
+>>       .add_device = amd_iommu_add_device,
+>>       .remove_device = amd_iommu_remove_device,
+>> -     .device_group = pci_device_group,
+>> +     .device_group = amd_iommu_device_group,
+>
+> Does this work? Which bus do the ACPIHID devices belong to (what does
+> dev->bus point to)? If it is not &pci_bus_type, then the iommu core code
+> will not create an iommu group for the devices.
 
---===============5860592323473128346==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="UlVJffcvxoiEqYs2"
-Content-Disposition: inline
+Yes, it works, we have already done validation on AMD platform.
+Please refer to my previous patch :
+[PATCH] iommu/amd: set AMD iommu-callbacks for the amba bus.
 
+Currently, The UART DMA is the use case of ACPIHID device, the
+dev->bus is amba_bus, so I add bus_set_iommu for this bus type.
 
---UlVJffcvxoiEqYs2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+We will do create iommu group in acpihid_device_group which will call
+generic_device_group to alloc group.
 
-Hi Linus,
-
-The following changes since commit 74bf8efb5fa6e958d2d7c7917b8bb672085ec0c6:
-
-  Linux 4.4-rc7 (2015-12-27 18:17:37 -0800)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.4-rc8
-
-for you to fetch changes up to 164afb1d85b872907cfac048b46c094db596d529:
-
-  iommu/dma: Use correct offset in map_sg (2016-01-07 13:36:41 +0100)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v4.4-rc8
-
-The patches include fixes for:
-
-	* Two build issues, one in the ipmmu-vmsa driver and one for the
-	  new generic dma-api implemention used on arm64
-
-	* A performance fix for said dma-api implemention
-
-	* An issue caused by a wrong offset in map_sg in the same code
-	  as above
-
-----------------------------------------------------------------
-Geert Uytterhoeven (1):
-      iommu/ipmmu-vmsa: Don't truncate ttbr if LPAE is not enabled
-
-Robin Murphy (3):
-      iommu/dma: Add some missing #includes
-      iommu/dma: Avoid unlikely high-order allocations
-      iommu/dma: Use correct offset in map_sg
-
- drivers/iommu/dma-iommu.c  | 11 ++++++++---
- drivers/iommu/ipmmu-vmsa.c |  2 +-
- 2 files changed, 9 insertions(+), 4 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
+>
+>
+>         Joerg
+>
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 
 
---UlVJffcvxoiEqYs2
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJWjrxGAAoJECvwRC2XARrjNWMP/j3hqvyxxqPTmxGcqFF15Gri
-8slbwrwy5+rqCBYzw7Qv2BUbMT5VwiyHfFwQ3ws7PL5j9gQ1UzEhwlKehhgYcSW0
-80ek4V7DNwXXvp7mKD8fIVvZTxLRD7Sa671k7TegHATk6GemQX6PglxYgfg2CgR/
-0gmcDJpXTI37lx0APKPjRKWtWGXY5+ixiAJOJz8zfi+aNpZHGEgi9mx0+zN9nSi0
-pQvCZmgvR/TusbY7Nvqoz3U0KdmKQtvncSGCs+Ur7QHqrfsS06oVH53vLygtWmLa
-YqfsKVphzSHTXik5TL0erYr42LDGW5sR2ibDxOI6YtdX3UK9GaWpbZk59hPIFc0P
-WIgyNAi8pJaI7YIZpNn81Tp9HzW9q+TnowD4QZTLg9b8n57Xe0sAnxGQe2gSWV8g
-EurLURRgvp1H4UEbV3DGIoZojOTVlbuaXXroPMJPHcIgk79L4u9o/8P8s34oJ5L8
-uZZ8Y08cs2Xm+3HGnkDY24i9VSbTliY/9UvPqBoQRcx97gq7OOsJLGU7fXjVRBd+
-GL8pScxYG4RsbXE4m1HKIMQ4xzkEuiO4kVHQPg5jVTKriFpXUNN1ygW3jgXG6wiP
-EBWqsya/uExk2cpNH8bENZxrLakOQ+BTP+pudZHfTd/bkCtzMpXKG5V0l11nl960
-Jne6rFqdlxLhoUH+qlYT
-=rlsu
------END PGP SIGNATURE-----
-
---UlVJffcvxoiEqYs2--
-
---===============5860592323473128346==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============5860592323473128346==--
+-- 
+---
+Vincent Wan(Zongshun)
+www.mcuos.com
