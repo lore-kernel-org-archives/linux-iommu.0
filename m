@@ -1,61 +1,66 @@
-From: Wan Zongshun <vw@iommu.org>
-Subject: Re: [PATCH 5/6] iommu/amd: Add support for non-pci devices
-Date: Sat, 9 Jan 2016 17:47:15 +0800
-Message-ID: <5690D723.7020003@iommu.org>
-References: <1451988444-4694-1-git-send-email-vincent.wan@amd.com>
- <1451988444-4694-6-git-send-email-vincent.wan@amd.com>
- <20160107120422.GB19149@8bytes.org>
- <CAKT61h9retMxx8JiWEHYRVkX7ROXVvsYDJ3WZDoL17YhdjJdBA@mail.gmail.com>
- <20160108121855.GU18805@8bytes.org> <568FCD4B.4000807@iommu.org>
- <20160108170145.GW18805@8bytes.org>
+From: Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
+Subject: Re: [PATCH V2 0/4]IOMMU: avoid lock contention in iova allocation
+Date: Mon, 11 Jan 2016 00:56:12 +0200
+Message-ID: <20160110225610.GA16778@cs.technion.ac.il>
+References: <cover.1452297604.git.shli@fb.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160108170145.GW18805@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Wan Zongshun <vincent.wan@amd.com>, linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, Ray Huang <ray.huang@amd.com>, Borislav Petkov <bp@suse.de>, ken.xue@amd.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <cover.1452297604.git.shli-b10kYP2dOMg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Shaohua Li <shli-b10kYP2dOMg@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kernel-team-b10kYP2dOMg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+Hi,
 
+> iova alloc/free causes big lock contention, which could be easily demonstrated
+> with iperf workload. Previously I posted a patchset:
+> http://lists.linuxfoundation.org/pipermail/iommu/2015-November/014984.html
+> 
+> the concern is it's not generic. This is another try for the issue. This
+> version implements a per-cpu iova cache for small size DMA allocation (<= 64k),
+> which should be generic enough and so we can do batch allocation. iova free
+> could be easily batched too. With batch alloc/free, iova lock contention
+> disappears. Performance result with this patchset is nearly the same as the
+> previous one in the same test.
+> 
+> After this patchset, async_umap_flush_lock becomes the hotest lock in
+> intel-iommu, but not very bad. That will be something we need work on in the
+> future.
 
--------- Original Message --------
-> On Fri, Jan 08, 2016 at 10:52:59PM +0800, Wan Zongshun wrote:
->> Actually I am supposing the '.add_device' will be the first called
->> in iommu initializing stage, so I think as long as having no error
->> of check device here, any call-sites of get_device_id() will be
->> fine, because adding device successfully should be the pre-condition
->> of any iommu function can be performed, please correct me.
->>
->> static int amd_iommu_add_device(struct device *dev)
->> {
->> 	struct iommu_dev_data *dev_data;
->> 	struct iommu_domain *domain;
->> 	struct amd_iommu *iommu;
->> 	u16 devid;
->> 	int ret;
->>
->> 	if (!check_device(dev) || get_dev_data(dev))
->> 		return 0;
->>
->> 	devid = get_device_id(dev);
->> 	iommu = amd_iommu_rlookup_table[devid];
->
-> There are places in the interrupt remapping code that call get_device_id
-> without calling check_device first. See get_irq_domain and get_devid.
->
+There can still be significant spinlock contention with this patchset.
+For example, here's the throughput obtained when accessing 16 memcached
+instances running on a 16-core Sandy Bridge with an Intel XL710 NIC.
+The client machine has iommu=off and runs memslap with the default
+config (64-byte keys, 1024-byte values, and 10%/90% SET/GET ops):
 
-Okay, I will change this get_device_id return to int, and judge this 
-return value in caller of this function like get_devid style.
+  stock (4.4.0-rc5) iommu=off:
+   1,088,996 memcached transactions/sec (=100%, median of 10 runs).
 
-If so we will modify some existing amd iommu driver codes, and Can I 
-merge those into this patch 5/6? or I will create another dedicated 
-patch to take this action?
+  this patch, iommu=on:
+   313,161 memcached transactions/sec (=29%).
+   perf: 21.87%    0.57%  memcached       [kernel.kallsyms]      [k] _raw_spin_lock_irqsave
+                    |
+                    ---_raw_spin_lock_irqsave
+                       |
+                       |--67.84%-- intel_unmap  (async_umap_flush_lock)
+                       |--17.54%-- alloc_iova
+                       |--12.85%-- free_iova_array
 
-Vincent.
+For reference, the patchset I posted two weeks ago gets almost the same
+throughput as with iommu=off:
 
->
-> 	Joerg
->
->
+  http://lists.linuxfoundation.org/pipermail/iommu/2015-December/015271.html:
+   1,067,586 memcached transactions/sec (=98%).
+   perf: 0.75%     0.75%  memcached       [kernel.kallsyms]      [k] _raw_spin_lock_irqsave]
