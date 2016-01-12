@@ -1,52 +1,54 @@
-From: Huang Shijie <shijie.huang@arm.com>
-Subject: [PATCH] iommu/arm-smmu: add a shortcut when the @dev_node is NULL
-Date: Tue, 12 Jan 2016 10:15:05 +0800
-Message-ID: <1452564905-2662-1-git-send-email-shijie.huang@arm.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 3/3] iommu/io-pgtable: Avoid redundant TLB syncs
+Date: Tue, 12 Jan 2016 18:27:55 +0000
+Message-ID: <20160112182754.GC22186@arm.com>
+References: <cover.1450383740.git.robin.murphy@arm.com>
+	<eb7458ed51b800f035976e879530ab1e90d02858.1450383740.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: will.deacon@arm.com
-Cc: joro@8bytes.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Huang Shijie <shijie.huang@arm.com>, nd@arm.com, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <eb7458ed51b800f035976e879530ab1e90d02858.1450383740.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When a device is added to a bus, it will trigger the chain notifier hook,
-such as iommu_bus_notifier. The find_smmu_for_device() can be called here.
+On Thu, Dec 17, 2015 at 08:50:59PM +0000, Robin Murphy wrote:
+> In certain unmapping situations it is quite possible to end up issuing
+> back-to-back TLB synchronisations, which at best is a waste of time and
+> effort, and at worst causes some hardware to get rather confused. Whilst
+> the pagetable implementations, or the IOMMU drivers, or both, could keep
+> track of things to avoid this happening, it seems to make the most sense
+> to prevent code duplication and add some simple state tracking in the
+> common interface between the two.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/iommu/io-pgtable.h | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+> index 95c5565..d06219b 100644
+> --- a/drivers/iommu/io-pgtable.h
+> +++ b/drivers/iommu/io-pgtable.h
+> @@ -132,12 +132,14 @@ void free_io_pgtable_ops(struct io_pgtable_ops *ops);
+>   * @fmt:    The page table format.
+>   * @cookie: An opaque token provided by the IOMMU driver and passed back to
+>   *          any callback routines.
+> + * @sync_flag: Private flag for optimising out redundant syncs.
 
-In some cases, the @device_node can be NULL. For example, when the device
-is one of the following:
-    alarmtime, serial, rtc or snd_soc.
+It makes sense to factor this out like you're proposing, but maybe we
+can think of a better name? How about "tlb_sync_pending", to follow
+"tlb_flush_pending" in the core code?
 
-This patch adds a shortcut for the code when the @device_node is NULL.
-In my juno-r1 board, the boot time can be faster by 0.004014s.
-
-Signed-off-by: Huang Shijie <shijie.huang@arm.com>
----
- drivers/iommu/arm-smmu.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 59ee4b8..6724a46 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -506,6 +506,9 @@ static struct arm_smmu_device *find_smmu_for_device(struct device *dev)
- 	struct arm_smmu_master *master = NULL;
- 	struct device_node *dev_node = dev_get_dev_node(dev);
- 
-+	if (!dev_node)
-+		return NULL;
-+
- 	spin_lock(&arm_smmu_devices_lock);
- 	list_for_each_entry(smmu, &arm_smmu_devices, list) {
- 		master = find_smmu_master(smmu, dev_node);
--- 
-2.5.0
+Will
