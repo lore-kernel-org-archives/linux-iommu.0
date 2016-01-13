@@ -1,14 +1,15 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: Can't boot new 4.4 kernel with IOMMU enabled
-Date: Wed, 13 Jan 2016 11:09:50 +0800
-Message-ID: <20160113030950.GB11902@dhcp-128-28.nay.redhat.com>
-References: <56957209.1080202@compro.net>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 3/3] iommu/io-pgtable: Avoid redundant TLB syncs
+Date: Wed, 13 Jan 2016 11:18:47 +0000
+Message-ID: <56963297.7090605@arm.com>
+References: <cover.1450383740.git.robin.murphy@arm.com>
+	<eb7458ed51b800f035976e879530ab1e90d02858.1450383740.git.robin.murphy@arm.com>
+	<20160112182754.GC22186@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <56957209.1080202-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
+In-Reply-To: <20160112182754.GC22186-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,51 +19,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mark Hounschell <markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Seems 0f:00.0 is not attached to a group so that it get a domain. Can
-you also paste your "lspci -t" and "lspci -vvv" output? Here 0f:00.0
-should be a pci bridge which need set the same domain with its
-peripheral 0000:0f:04.0.
+On 12/01/16 18:27, Will Deacon wrote:
+> On Thu, Dec 17, 2015 at 08:50:59PM +0000, Robin Murphy wrote:
+>> In certain unmapping situations it is quite possible to end up issuing
+>> back-to-back TLB synchronisations, which at best is a waste of time and
+>> effort, and at worst causes some hardware to get rather confused. Whilst
+>> the pagetable implementations, or the IOMMU drivers, or both, could keep
+>> track of things to avoid this happening, it seems to make the most sense
+>> to prevent code duplication and add some simple state tracking in the
+>> common interface between the two.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> ---
+>>   drivers/iommu/io-pgtable.h | 9 ++++++++-
+>>   1 file changed, 8 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+>> index 95c5565..d06219b 100644
+>> --- a/drivers/iommu/io-pgtable.h
+>> +++ b/drivers/iommu/io-pgtable.h
+>> @@ -132,12 +132,14 @@ void free_io_pgtable_ops(struct io_pgtable_ops *ops);
+>>    * @fmt:    The page table format.
+>>    * @cookie: An opaque token provided by the IOMMU driver and passed back to
+>>    *          any callback routines.
+>> + * @sync_flag: Private flag for optimising out redundant syncs.
+>
+> It makes sense to factor this out like you're proposing, but maybe we
+> can think of a better name? How about "tlb_sync_pending", to follow
+> "tlb_flush_pending" in the core code?
 
-Please apply this patch and try again.
+Ooh, tlb_flush_pending is a much nicer name indeed. It's almost as if I 
+threw this together in a pre-holiday rush and put very little thought 
+into it...
 
+I've fixed it up locally, but I'll save the repost until after -rc1, 
+especially in case Yong has any further comments in the meantime.
 
->From 6740bc427ddfeecc4b557fcb3ceb0832f73ab33a Mon Sep 17 00:00:00 2001
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Date: Wed, 13 Jan 2016 11:02:28 +0800
-Subject: [PATCH] iommu/amd: Correct the wrong setting of alias DTE in
- do_attach
-
-In below commit Joerg tried to set alias DTE when its peripheral
-is setting DTE. But there's a code bug here to wrongly set the
-alias DTE, correct it in this patch.
-
-commit e25bfb56ea7f046b71414e02f80f620deb5c6362
-Author: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Date:   Tue Oct 20 17:33:38 2015 +0200
-
-    iommu/amd: Set alias DTE in do_attach/do_detach
-
-Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/amd_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 8b2be1e..fc836f5 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -1905,7 +1905,7 @@ static void do_attach(struct iommu_dev_data *dev_data,
- 	/* Update device table */
- 	set_dte_entry(dev_data->devid, domain, ats);
- 	if (alias != dev_data->devid)
--		set_dte_entry(dev_data->devid, domain, ats);
-+		set_dte_entry(alias, domain, ats);
- 
- 	device_flush_dte(dev_data);
- }
--- 
-2.1.0
+Thanks,
+Robin.
