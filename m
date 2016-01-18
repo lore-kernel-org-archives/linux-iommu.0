@@ -1,16 +1,14 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v2 1/3] iommu/io-pgtable: Add ARMv7 short descriptor
-	support
-Date: Mon, 18 Jan 2016 15:22:40 +0800
-Message-ID: <1453101760.10698.4.camel@mhfsdcap03>
-References: <cover.1450383740.git.robin.murphy@arm.com>
-	<ddfe960ef1da22e5264811bfcafeb412fa976f4a.1450383740.git.robin.murphy@arm.com>
-	<1452776704.15636.59.camel@mhfsdcap03> <56990CAC.5020606@arm.com>
+From: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v7 3/5] memory: mediatek: Add SMI driver
+Date: Mon, 18 Jan 2016 11:11:28 +0100
+Message-ID: <569CBA50.7000400@gmail.com>
+References: <1450426183-1571-1-git-send-email-yong.wu@mediatek.com>
+	<1450426183-1571-4-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <56990CAC.5020606-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1450426183-1571-4-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,129 +18,409 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 2016-01-15 at 15:13 +0000, Robin Murphy wrote:
-> On 14/01/16 13:05, Yong Wu wrote:
-> > On Thu, 2015-12-17 at 20:50 +0000, Robin Murphy wrote:
-> >> Add a nearly-complete ARMv7 short descriptor implementation, omitting
-> >> only a few legacy and CPU-centric aspects which shouldn't be necessary
-> >> for IOMMU API use anyway.
 
-[...]
 
-> >> +static int arm_v7s_split_blk_unmap(struct arm_v7s_io_pgtable *data,
-> >> +				   unsigned long iova, size_t size,
-> >> +				   arm_v7s_iopte *ptep)
-> >> +{
-> >> +	unsigned long blk_start, blk_end, blk_size;
-> >> +	phys_addr_t blk_paddr;
-> >> +	arm_v7s_iopte table = 0;
-> >> +	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-> >> +	int prot = arm_v7s_pte_to_prot(*ptep, 1);
-> >> +
-> >> +	blk_size = ARM_V7S_BLOCK_SIZE(1);
-> >> +	blk_start = iova & ARM_V7S_LVL_MASK(1);
-> >> +	blk_end = blk_start + ARM_V7S_BLOCK_SIZE(1);
-> >> +	blk_paddr = *ptep & ARM_V7S_LVL_MASK(1);
-> >> +
-> >> +	for (; blk_start < blk_end; blk_start += size, blk_paddr += size) {
-> >> +		arm_v7s_iopte *tablep;
-> >> +
-> >> +		/* Unmap! */
-> >> +		if (blk_start == iova)
-> >> +			continue;
-> >> +
-> >> +		/* __arm_v7s_map expects a pointer to the start of the table */
-> >> +		tablep = &table - ARM_V7S_LVL_IDX(blk_start, 1);
-> >
-> >     The "table" seems not be initialized here. (LPAE too.) maybe I don't
-> > get it here.
-> 
-> It took me about 2 hours of staring at the original code to fully get my 
-> head round it, too ;) The comment would perhaps be better worded as 
-> "__arm_v7s_map expects a pointer to the start of *a* table". What we're 
-> doing is building up the whole level 2 table (with the relevant pages 
-> mapped) in advance _before_ touching the live level 1 table. Since 
-> __arm_v7s_map() is going to take the table pointer we pass and write an 
-> entry for the new level 2 table at the relevant index, we construct 
-> _just that entry_ ("arm_v7s_iopte table = 0;") and fake up a 
-> corresponding 'level 1 table pointer' - chances are that tablep itself 
-> is dangling way off the bottom of the stack somewhere, but the only 
-> entry in that 'table' that's going to be dereferenced is the one backed 
-> by the local variable.
+On 18/12/15 09:09, Yong Wu wrote:
+> This patch add SMI(Smart Multimedia Interface) driver. This driver
+> is responsible to enable/disable iommu and control the power domain
+> and clocks of each local arbiter.
+>
+> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> ---
+>   drivers/memory/Kconfig     |   8 ++
+>   drivers/memory/Makefile    |   1 +
+>   drivers/memory/mtk-smi.c   | 268 +++++++++++++++++++++++++++++++++++++++++++++
+>   include/soc/mediatek/smi.h |  58 ++++++++++
+>   4 files changed, 335 insertions(+)
+>   create mode 100644 drivers/memory/mtk-smi.c
+>   create mode 100644 include/soc/mediatek/smi.h
+>
+> diff --git a/drivers/memory/Kconfig b/drivers/memory/Kconfig
+> index 6f31546..51d5cd2 100644
+> --- a/drivers/memory/Kconfig
+> +++ b/drivers/memory/Kconfig
+> @@ -114,6 +114,14 @@ config JZ4780_NEMC
+>   	  the Ingenic JZ4780. This controller is used to handle external
+>   	  memory devices such as NAND and SRAM.
+>
+> +config MTK_SMI
+> +	bool
+> +	depends on ARCH_MEDIATEK || COMPILE_TEST
+> +	help
+> +	  This driver is for the Memory Controller module in MediaTek SoCs,
+> +	  mainly help enable/disable iommu and control the power domain and
+> +	  clocks for each local arbiter.
+> +
+>   source "drivers/memory/tegra/Kconfig"
+>
+>   endif
+> diff --git a/drivers/memory/Makefile b/drivers/memory/Makefile
+> index 1c46af5..890bdf4 100644
+> --- a/drivers/memory/Makefile
+> +++ b/drivers/memory/Makefile
+> @@ -15,5 +15,6 @@ obj-$(CONFIG_FSL_IFC)		+= fsl_ifc.o
+>   obj-$(CONFIG_MVEBU_DEVBUS)	+= mvebu-devbus.o
+>   obj-$(CONFIG_TEGRA20_MC)	+= tegra20-mc.o
+>   obj-$(CONFIG_JZ4780_NEMC)	+= jz4780-nemc.o
+> +obj-$(CONFIG_MTK_SMI)		+= mtk-smi.o
+>
+>   obj-$(CONFIG_TEGRA_MC)		+= tegra/
+> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+> new file mode 100644
+> index 0000000..3714f604
+> --- /dev/null
+> +++ b/drivers/memory/mtk-smi.c
+> @@ -0,0 +1,268 @@
+> +/*
+> + * Copyright (c) 2014-2015 MediaTek Inc.
+> + * Author: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + */
+> +#include <linux/clk.h>
+> +#include <linux/component.h>
+> +#include <linux/err.h>
+> +#include <linux/io.h>
+> +#include <linux/of_address.h>
+> +#include <linux/of_platform.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/pm_runtime.h>
+> +#include <soc/mediatek/smi.h>
+> +
+> +#define SMI_LARB_MMU_EN		0xf00
+> +
+> +struct mtk_smi {
+> +	struct device	*dev;
+> +	struct clk	*clk_apb, *clk_smi;
+> +};
+> +
+> +struct mtk_smi_larb { /* larb: local arbiter */
+> +	struct mtk_smi  smi;
+> +	void __iomem	*base;
+> +	struct device	*smi_common_dev;
+> +	u32		*mmu;
+> +};
+> +
+> +static int mtk_smi_enable(const struct mtk_smi *smi)
+> +{
+> +	int ret;
+> +
+> +	ret = pm_runtime_get_sync(smi->dev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = clk_prepare_enable(smi->clk_apb);
+> +	if (ret)
+> +		goto err_put_pm;
+> +
+> +	ret = clk_prepare_enable(smi->clk_smi);
+> +	if (ret)
+> +		goto err_disable_apb;
+> +
+> +	return 0;
+> +
+> +err_disable_apb:
+> +	clk_disable_unprepare(smi->clk_apb);
+> +err_put_pm:
+> +	pm_runtime_put_sync(smi->dev);
+> +	return ret;
+> +}
+> +
+> +static void mtk_smi_disable(const struct mtk_smi *smi)
+> +{
+> +	clk_disable_unprepare(smi->clk_smi);
+> +	clk_disable_unprepare(smi->clk_apb);
+> +	pm_runtime_put_sync(smi->dev);
+> +}
+> +
+> +int mtk_smi_larb_get(struct device *larbdev)
+> +{
+> +	struct mtk_smi_larb *larb = dev_get_drvdata(larbdev);
+> +	struct mtk_smi *common = dev_get_drvdata(larb->smi_common_dev);
+> +	int ret;
+> +
+> +	/* Enable the smi-common's power and clocks */
+> +	ret = mtk_smi_enable(common);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Enable the larb's power and clocks */
+> +	ret = mtk_smi_enable(&larb->smi);
+> +	if (ret) {
+> +		mtk_smi_disable(common);
+> +		return ret;
+> +	}
+> +
+> +	/* Configure the iommu info */
+> +	if (larb->mmu)
+> +		writel(*larb->mmu, larb->base + SMI_LARB_MMU_EN);
 
-(Resend since some words are wrong.)
+Can there be a larb that does not have a mmu id defined?
+Phandles for the iommu need always to have a mtk_m4u_id defined, so I 
+don't see the case where this can happen?
 
-Thanks for this comment, I get it.
+Why did you changed this value to a pointer and added the if?
 
-It works well but I still don't think "tablep" is safe here. Currently
-it must rely on "ptep += ARM_V7S_LVL_IDX(iova, lvl)" in the
-__arm_v7s_map. this may be dangerous if __arm_v7s_map is changed in the
-future. and at least it is not readable, 2 hours is needed even though
-it's you;).
+> +
+> +	return 0;
+> +}
+> +
+> +void mtk_smi_larb_put(struct device *larbdev)
+> +{
+> +	struct mtk_smi_larb *larb = dev_get_drvdata(larbdev);
+> +	struct mtk_smi *common = dev_get_drvdata(larb->smi_common_dev);
+> +
 
-And the lvl is always 1 in the __arm_v7s_map below, so "tablep" is
-expected to be the start of the lvl1 table rather than the start of *a*
-table.
+Would it make sense to write SMI_LARB_MMU_EN here again to eventually 
+turn off mmus?
 
-> 
-> >     If we would like to get the start of the table, maybe :
-> >
-> >     tablep = ptep - ARM_V7S_LVL_IDX(blk_start, 1);
-> >
-> >      Even though we change "tablep" here, it will also fail in the
-> > __arm_v7s_map since there is a value in current ptep(the pa of the
-> > section), then it will call iopte_deref instread of creating a new
-> > pgtable in the __arm_v7s_map below, then it will abort.
-> >
-> > so maybe we need unmap the ptep before this "for" loop.
-> > __arm_v7s_set_pte(ptep, 0, 1, cfg);
-> >
-> >> +		if (__arm_v7s_map(data, blk_start, blk_paddr, size, prot, 1,
-> >> +				  tablep) < 0) {
-> >> +			if (table) {
-> >> +				/* Free the table we allocated */
-> >> +				tablep = iopte_deref(table, 1);
-> >> +				__arm_v7s_free_table(tablep, 2, data);
-> >
-> > Following Will's quesion before, do we need flush tlb here?
-> 
-> No; this is just cleaning up the uncommitted preparatory work if map 
-> failure left a partially-created next-level table - in fact, now that I 
-> look at it, with only two levels the only way that can happen is if we 
-> allocate a new empty table but find nonzero entries when installing the 
-> PTEs, and that suggests a level of system corruption I'm not sure it's 
-> even worth trying to handle.
-> 
-> Anyway, from the IOMMU's perspective, at this point it knows nothing 
-> about the new table and the section mapping is still live...
-> 
-> >> +			}
-> >> +			return 0; /* Bytes unmapped */
-> >> +		}
-> >> +	}
-> >> +
-> >> +	__arm_v7s_set_pte(ptep, table, 1, cfg);
-> >
-> >      Is this in order to update the lvl2 pgtable base address? why it's
-> > not updated in __arm_v7s_map which create a lvl2 pgtable?
-> 
-> ...until here, when we drop the table entry over the top of the section 
-> entry and TLBI the section, for an atomic valid->valid transition.
-> 
-> >> +	iova &= ~(blk_size - 1);
-> >> +	cfg->tlb->tlb_add_flush(iova, blk_size, blk_size, true, data->iop.cookie);
-> >> +	return size;
-> >> +}
-> >> +
-> >
-> > All the others looks good for me. Thanks.
-> 
-> Cool, thanks. I'll send out a proper v3 once everyone's finished with 
-> merge window stuff, but below is the local diff I now have.
-> 
-> Robin.
-[...]
+Other then this, the driver looks fine to me.
+
+Regards,
+Matthias
+
+> +	mtk_smi_disable(&larb->smi);
+> +	mtk_smi_disable(common);
+> +}
+> +
+> +static int
+> +mtk_smi_larb_bind(struct device *dev, struct device *master, void *data)
+> +{
+> +	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
+> +	struct mtk_smi_iommu *smi_iommu = data;
+> +	unsigned int         i;
+> +
+> +	for (i = 0; i < smi_iommu->larb_nr; i++) {
+> +		if (dev == smi_iommu->larb_imu[i].dev) {
+> +			larb->mmu = &smi_iommu->larb_imu[i].mmu;
+> +			return 0;
+> +		}
+> +	}
+> +	return -ENODEV;
+> +}
+> +
+> +static void
+> +mtk_smi_larb_unbind(struct device *dev, struct device *master, void *data)
+> +{
+> +	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
+> +
+> +	larb->mmu = NULL;
+> +}
+> +
+> +static const struct component_ops mtk_smi_larb_component_ops = {
+> +	.bind = mtk_smi_larb_bind,
+> +	.unbind = mtk_smi_larb_unbind,
+> +};
+> +
+> +static int mtk_smi_larb_probe(struct platform_device *pdev)
+> +{
+> +	struct mtk_smi_larb *larb;
+> +	struct resource *res;
+> +	struct device *dev = &pdev->dev;
+> +	struct device_node *smi_node;
+> +	struct platform_device *smi_pdev;
+> +
+> +	if (!dev->pm_domain)
+> +		return -EPROBE_DEFER;
+> +
+> +	larb = devm_kzalloc(dev, sizeof(*larb), GFP_KERNEL);
+> +	if (!larb)
+> +		return -ENOMEM;
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	larb->base = devm_ioremap_resource(dev, res);
+> +	if (IS_ERR(larb->base))
+> +		return PTR_ERR(larb->base);
+> +
+> +	larb->smi.clk_apb = devm_clk_get(dev, "apb");
+> +	if (IS_ERR(larb->smi.clk_apb))
+> +		return PTR_ERR(larb->smi.clk_apb);
+> +
+> +	larb->smi.clk_smi = devm_clk_get(dev, "smi");
+> +	if (IS_ERR(larb->smi.clk_smi))
+> +		return PTR_ERR(larb->smi.clk_smi);
+> +	larb->smi.dev = dev;
+> +
+> +	smi_node = of_parse_phandle(dev->of_node, "mediatek,smi", 0);
+> +	if (!smi_node)
+> +		return -EINVAL;
+> +
+> +	smi_pdev = of_find_device_by_node(smi_node);
+> +	of_node_put(smi_node);
+> +	if (smi_pdev) {
+> +		larb->smi_common_dev = &smi_pdev->dev;
+> +	} else {
+> +		dev_err(dev, "Failed to get the smi_common device\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	pm_runtime_enable(dev);
+> +	platform_set_drvdata(pdev, larb);
+> +	return component_add(dev, &mtk_smi_larb_component_ops);
+> +}
+> +
+> +static int mtk_smi_larb_remove(struct platform_device *pdev)
+> +{
+> +	pm_runtime_disable(&pdev->dev);
+> +	component_del(&pdev->dev, &mtk_smi_larb_component_ops);
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id mtk_smi_larb_of_ids[] = {
+> +	{ .compatible = "mediatek,mt8173-smi-larb",},
+> +	{}
+> +};
+> +
+> +static struct platform_driver mtk_smi_larb_driver = {
+> +	.probe	= mtk_smi_larb_probe,
+> +	.remove = mtk_smi_larb_remove,
+> +	.driver	= {
+> +		.name = "mtk-smi-larb",
+> +		.of_match_table = mtk_smi_larb_of_ids,
+> +	}
+> +};
+> +
+> +static int mtk_smi_common_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct mtk_smi *common;
+> +
+> +	if (!dev->pm_domain)
+> +		return -EPROBE_DEFER;
+> +
+> +	common = devm_kzalloc(dev, sizeof(*common), GFP_KERNEL);
+> +	if (!common)
+> +		return -ENOMEM;
+> +	common->dev = dev;
+> +
+> +	common->clk_apb = devm_clk_get(dev, "apb");
+> +	if (IS_ERR(common->clk_apb))
+> +		return PTR_ERR(common->clk_apb);
+> +
+> +	common->clk_smi = devm_clk_get(dev, "smi");
+> +	if (IS_ERR(common->clk_smi))
+> +		return PTR_ERR(common->clk_smi);
+> +
+> +	pm_runtime_enable(dev);
+> +	platform_set_drvdata(pdev, common);
+> +	return 0;
+> +}
+> +
+> +static int mtk_smi_common_remove(struct platform_device *pdev)
+> +{
+> +	pm_runtime_disable(&pdev->dev);
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id mtk_smi_common_of_ids[] = {
+> +	{ .compatible = "mediatek,mt8173-smi-common", },
+> +	{}
+> +};
+> +
+> +static struct platform_driver mtk_smi_common_driver = {
+> +	.probe	= mtk_smi_common_probe,
+> +	.remove = mtk_smi_common_remove,
+> +	.driver	= {
+> +		.name = "mtk-smi-common",
+> +		.of_match_table = mtk_smi_common_of_ids,
+> +	}
+> +};
+> +
+> +static int __init mtk_smi_init(void)
+> +{
+> +	int ret;
+> +
+> +	ret = platform_driver_register(&mtk_smi_common_driver);
+> +	if (ret != 0) {
+> +		pr_err("Failed to register SMI driver\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = platform_driver_register(&mtk_smi_larb_driver);
+> +	if (ret != 0) {
+> +		pr_err("Failed to register SMI-LARB driver\n");
+> +		goto err_unreg_smi;
+> +	}
+> +	return ret;
+> +
+> +err_unreg_smi:
+> +	platform_driver_unregister(&mtk_smi_common_driver);
+> +	return ret;
+> +}
+> +subsys_initcall(mtk_smi_init);
+> diff --git a/include/soc/mediatek/smi.h b/include/soc/mediatek/smi.h
+> new file mode 100644
+> index 0000000..6ab11fa
+> --- /dev/null
+> +++ b/include/soc/mediatek/smi.h
+> @@ -0,0 +1,58 @@
+> +/*
+> + * Copyright (c) 2014-2015 MediaTek Inc.
+> + * Author: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + */
+> +#ifndef MTK_IOMMU_SMI_H
+> +#define MTK_IOMMU_SMI_H
+> +
+> +#include <linux/bitops.h>
+> +#include <linux/device.h>
+> +
+> +#ifdef CONFIG_MTK_SMI
+> +
+> +#define MTK_LARB_NR_MAX		8
+> +
+> +#define MTK_SMI_MMU_EN(port)	BIT(port)
+> +
+> +struct mtk_smi_larb_iommu {
+> +	struct device *dev;
+> +	unsigned int   mmu;
+> +};
+> +
+> +struct mtk_smi_iommu {
+> +	unsigned int larb_nr;
+> +	struct mtk_smi_larb_iommu larb_imu[MTK_LARB_NR_MAX];
+> +};
+> +
+> +/*
+> + * mtk_smi_larb_get: Enable the power domain and clocks for this local arbiter.
+> + *                   It also initialize some basic setting(like iommu).
+> + * mtk_smi_larb_put: Disable the power domain and clocks for this local arbiter.
+> + * Both should be called in non-atomic context.
+> + *
+> + * Returns 0 if successful, negative on failure.
+> + */
+> +int mtk_smi_larb_get(struct device *larbdev);
+> +void mtk_smi_larb_put(struct device *larbdev);
+> +
+> +#else
+> +
+> +static inline int mtk_smi_larb_get(struct device *larbdev)
+> +{
+> +	return 0;
+> +}
+> +
+> +static inline void mtk_smi_larb_put(struct device *larbdev) { }
+> +
+> +#endif
+> +
+> +#endif
+>
