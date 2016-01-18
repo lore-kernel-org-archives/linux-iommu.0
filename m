@@ -1,15 +1,16 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH v2 3/3] iommu/io-pgtable: Avoid redundant TLB syncs
-Date: Sat, 16 Jan 2016 01:26:37 +0200
-Message-ID: <1525049.idULaytocz@avalon>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v2 1/3] iommu/io-pgtable: Add ARMv7 short descriptor
+	support
+Date: Mon, 18 Jan 2016 14:28:55 +0800
+Message-ID: <1453098535.10156.21.camel@mhfsdcap03>
 References: <cover.1450383740.git.robin.murphy@arm.com>
-	<eb7458ed51b800f035976e879530ab1e90d02858.1450383740.git.robin.murphy@arm.com>
-	<20160112182754.GC22186@arm.com>
+	<ddfe960ef1da22e5264811bfcafeb412fa976f4a.1450383740.git.robin.murphy@arm.com>
+	<1452776704.15636.59.camel@mhfsdcap03> <56990CAC.5020606@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160112182754.GC22186-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <56990CAC.5020606-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,52 +21,126 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+On Fri, 2016-01-15 at 15:13 +0000, Robin Murphy wrote:
+> On 14/01/16 13:05, Yong Wu wrote:
+> > On Thu, 2015-12-17 at 20:50 +0000, Robin Murphy wrote:
+> >> Add a nearly-complete ARMv7 short descriptor implementation, omitting
+> >> only a few legacy and CPU-centric aspects which shouldn't be necessary
+> >> for IOMMU API use anyway.
 
-Thank you for the patch.
+[...]
 
-On Tuesday 12 January 2016 18:27:55 Will Deacon wrote:
-> On Thu, Dec 17, 2015 at 08:50:59PM +0000, Robin Murphy wrote:
-> > In certain unmapping situations it is quite possible to end up issuing
-> > back-to-back TLB synchronisations, which at best is a waste of time and
-> > effort, and at worst causes some hardware to get rather confused. Whilst
-> > the pagetable implementations, or the IOMMU drivers, or both, could keep
-> > track of things to avoid this happening, it seems to make the most sense
-> > to prevent code duplication and add some simple state tracking in the
-> > common interface between the two.
-> > 
-> > Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> > ---
-> > 
-> >  drivers/iommu/io-pgtable.h | 9 ++++++++-
-> >  1 file changed, 8 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-> > index 95c5565..d06219b 100644
-> > --- a/drivers/iommu/io-pgtable.h
-> > +++ b/drivers/iommu/io-pgtable.h
-> > @@ -132,12 +132,14 @@ void free_io_pgtable_ops(struct io_pgtable_ops
-> > *ops);
-> > 
-> >   * @fmt:    The page table format.
-> >   * @cookie: An opaque token provided by the IOMMU driver and passed back
-> >   to
-> >   *          any callback routines.
-> > 
-> > + * @sync_flag: Private flag for optimising out redundant syncs.
+> >> +static int arm_v7s_split_blk_unmap(struct arm_v7s_io_pgtable *data,
+> >> +				   unsigned long iova, size_t size,
+> >> +				   arm_v7s_iopte *ptep)
+> >> +{
+> >> +	unsigned long blk_start, blk_end, blk_size;
+> >> +	phys_addr_t blk_paddr;
+> >> +	arm_v7s_iopte table = 0;
+> >> +	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+> >> +	int prot = arm_v7s_pte_to_prot(*ptep, 1);
+> >> +
+> >> +	blk_size = ARM_V7S_BLOCK_SIZE(1);
+> >> +	blk_start = iova & ARM_V7S_LVL_MASK(1);
+> >> +	blk_end = blk_start + ARM_V7S_BLOCK_SIZE(1);
+> >> +	blk_paddr = *ptep & ARM_V7S_LVL_MASK(1);
+> >> +
+> >> +	for (; blk_start < blk_end; blk_start += size, blk_paddr += size) {
+> >> +		arm_v7s_iopte *tablep;
+> >> +
+> >> +		/* Unmap! */
+> >> +		if (blk_start == iova)
+> >> +			continue;
+> >> +
+> >> +		/* __arm_v7s_map expects a pointer to the start of the table */
+> >> +		tablep = &table - ARM_V7S_LVL_IDX(blk_start, 1);
+> >
+> >     The "table" seems not be initialized here. (LPAE too.) maybe I don't
+> > get it here.
 > 
-> It makes sense to factor this out like you're proposing, but maybe we
-> can think of a better name? How about "tlb_sync_pending", to follow
-> "tlb_flush_pending" in the core code?
+> It took me about 2 hours of staring at the original code to fully get my 
+> head round it, too ;) The comment would perhaps be better worded as 
+> "__arm_v7s_map expects a pointer to the start of *a* table". What we're 
+> doing is building up the whole level 2 table (with the relevant pages 
+> mapped) in advance _before_ touching the live level 1 table. Since 
+> __arm_v7s_map() is going to take the table pointer we pass and write an 
+> entry for the new level 2 table at the relevant index, we construct 
+> _just that entry_ ("arm_v7s_iopte table = 0;") and fake up a 
+> corresponding 'level 1 table pointer' - chances are that tablep itself 
+> is dangling way off the bottom of the stack somewhere, but the only 
+> entry in that 'table' that's going to be dereferenced is the one backed 
+> by the local variable.
 
-With tlb_sync_pending,
+Thanks for this comment, I get it.
 
-Reviewed-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+It works well but I still don't think "tablep" is safe here. Currently
+it must rely on "ptep += ARM_V7S_LVL_IDX(iova, lvl)" in the
+__arm_v7s_map. this may be danger if __arm_v7s_map is changed in the
+further. and at least it is not readable, 2 hours is needed even though
+it's you;).
 
--- 
-Regards,
+And the lvl is always 1 in the __arm_v7s_map below, so "tablep" is
+expected to be the start of the lvl1 table rather than *a* start of the
+table.
 
-Laurent Pinchart
+> 
+> >     If we would like to get the start of the table, maybe :
+> >
+> >     tablep = ptep - ARM_V7S_LVL_IDX(blk_start, 1);
+> >
+> >      Even though we change "tablep" here, it will also fail in the
+> > __arm_v7s_map since there is a value in current ptep(the pa of the
+> > section), then it will call iopte_deref instread of creating a new
+> > pgtable in the __arm_v7s_map below, then it will abort.
+> >
+> > so maybe we need unmap the ptep before this "for" loop.
+> > __arm_v7s_set_pte(ptep, 0, 1, cfg);
+> >
+> >> +		if (__arm_v7s_map(data, blk_start, blk_paddr, size, prot, 1,
+> >> +				  tablep) < 0) {
+> >> +			if (table) {
+> >> +				/* Free the table we allocated */
+> >> +				tablep = iopte_deref(table, 1);
+> >> +				__arm_v7s_free_table(tablep, 2, data);
+> >
+> > Following Will's quesion before, do we need flush tlb here?
+> 
+> No; this is just cleaning up the uncommitted preparatory work if map 
+> failure left a partially-created next-level table - in fact, now that I 
+> look at it, with only two levels the only way that can happen is if we 
+> allocate a new empty table but find nonzero entries when installing the 
+> PTEs, and that suggests a level of system corruption I'm not sure it's 
+> even worth trying to handle.
+> 
+> Anyway, from the IOMMU's perspective, at this point it knows nothing 
+> about the new table and the section mapping is still live...
+> 
+> >> +			}
+> >> +			return 0; /* Bytes unmapped */
+> >> +		}
+> >> +	}
+> >> +
+> >> +	__arm_v7s_set_pte(ptep, table, 1, cfg);
+> >
+> >      Is this in order to update the lvl2 pgtable base address? why it's
+> > not updated in __arm_v7s_map which create a lvl2 pgtable?
+> 
+> ...until here, when we drop the table entry over the top of the section 
+> entry and TLBI the section, for an atomic valid->valid transition.
+> 
+> >> +	iova &= ~(blk_size - 1);
+> >> +	cfg->tlb->tlb_add_flush(iova, blk_size, blk_size, true, data->iop.cookie);
+> >> +	return size;
+> >> +}
+> >> +
+> >
+> > All the others looks good for me. Thanks.
+> 
+> Cool, thanks. I'll send out a proper v3 once everyone's finished with 
+> merge window stuff, but below is the local diff I now have.
+> 
+> Robin.
+> 
