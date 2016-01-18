@@ -1,8 +1,8 @@
 From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 Subject: Re: [PATCH v2 1/3] iommu/io-pgtable: Add ARMv7 short descriptor
 	support
-Date: Mon, 18 Jan 2016 14:28:55 +0800
-Message-ID: <1453098535.10156.21.camel@mhfsdcap03>
+Date: Mon, 18 Jan 2016 15:22:40 +0800
+Message-ID: <1453101760.10698.4.camel@mhfsdcap03>
 References: <cover.1450383740.git.robin.murphy@arm.com>
 	<ddfe960ef1da22e5264811bfcafeb412fa976f4a.1450383740.git.robin.murphy@arm.com>
 	<1452776704.15636.59.camel@mhfsdcap03> <56990CAC.5020606@arm.com>
@@ -74,16 +74,18 @@ On Fri, 2016-01-15 at 15:13 +0000, Robin Murphy wrote:
 > entry in that 'table' that's going to be dereferenced is the one backed 
 > by the local variable.
 
+(Resend since some words are wrong.)
+
 Thanks for this comment, I get it.
 
 It works well but I still don't think "tablep" is safe here. Currently
 it must rely on "ptep += ARM_V7S_LVL_IDX(iova, lvl)" in the
-__arm_v7s_map. this may be danger if __arm_v7s_map is changed in the
-further. and at least it is not readable, 2 hours is needed even though
+__arm_v7s_map. this may be dangerous if __arm_v7s_map is changed in the
+future. and at least it is not readable, 2 hours is needed even though
 it's you;).
 
 And the lvl is always 1 in the __arm_v7s_map below, so "tablep" is
-expected to be the start of the lvl1 table rather than *a* start of the
+expected to be the start of the lvl1 table rather than the start of *a*
 table.
 
 > 
@@ -143,4 +145,4 @@ table.
 > merge window stuff, but below is the local diff I now have.
 > 
 > Robin.
-> 
+[...]
