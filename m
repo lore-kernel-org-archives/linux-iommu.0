@@ -1,426 +1,167 @@
-From: Shunqian Zheng <zhengsq@rock-chips.com>
-Subject: [PATCH v1] iommu/rockchip: reconstruct to support multi slaves
-Date: Tue, 19 Jan 2016 15:03:00 +0800
-Message-ID: <1453186980-21055-1-git-send-email-zhengsq@rock-chips.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org, heiko@sntech.de
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, djkurtz@chromium.org, ZhengShunQian <zhengsq@rock-chips.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v7 3/5] memory: mediatek: Add SMI driver
+Date: Tue, 19 Jan 2016 17:43:29 +0800
+Message-ID: <1453196609.17894.39.camel@mhfsdcap03>
+References: <1450426183-1571-1-git-send-email-yong.wu@mediatek.com>
+	 <1450426183-1571-4-git-send-email-yong.wu@mediatek.com>
+	 <569CBA50.7000400@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <569CBA50.7000400-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: ZhengShunQian <zhengsq@rock-chips.com>
+On Mon, 2016-01-18 at 11:11 +0100, Matthias Brugger wrote:
+>=20
+> On 18/12/15 09:09, Yong Wu wrote:
+> > This patch add SMI(Smart Multimedia Interface) driver. This driver
+> > is responsible to enable/disable iommu and control the power domain
+> > and clocks of each local arbiter.
+> >
+> > Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 
-There are some IPs, such as video encoder/decoder, contains 2 slave iommus,
-one for reading and the other for writing. They share the same irq and
-clock with master.
+[...]
 
-This patch reconstructs to support this case by making them share the same
-Page Directory, Page Tables and even the register operations.
-That means every instruction to the reading MMU registers would be
-duplicated to the writing MMU and vice versa.
+> > +int mtk_smi_larb_get(struct device *larbdev)
+> > +{
+> > +	struct mtk_smi_larb *larb =3D dev_get_drvdata(larbdev);
+> > +	struct mtk_smi *common =3D dev_get_drvdata(larb->smi_common_dev);
+> > +	int ret;
+> > +
+> > +	/* Enable the smi-common's power and clocks */
+> > +	ret =3D mtk_smi_enable(common);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	/* Enable the larb's power and clocks */
+> > +	ret =3D mtk_smi_enable(&larb->smi);
+> > +	if (ret) {
+> > +		mtk_smi_disable(common);
+> > +		return ret;
+> > +	}
+> > +
+> > +	/* Configure the iommu info */
+> > +	if (larb->mmu)
+> > +		writel(*larb->mmu, larb->base + SMI_LARB_MMU_EN);
+>=20
+> Can there be a larb that does not have a mmu id defined?
+> Phandles for the iommu need always to have a mtk_m4u_id defined, so I=
+=20
+> don't see the case where this can happen?
 
-Signed-off-by: ZhengShunQian <zhengsq@rock-chips.com>
----
- drivers/iommu/rockchip-iommu.c | 214 ++++++++++++++++++++++++++---------------
- 1 file changed, 135 insertions(+), 79 deletions(-)
+  No. In current IC(mt8173), All the larbs have the mmu info register.
 
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index ebf0adb..a6f593a 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -86,7 +86,8 @@ struct rk_iommu_domain {
- 
- struct rk_iommu {
- 	struct device *dev;
--	void __iomem *base;
-+	void __iomem **bases;
-+	int num_mmu;
- 	int irq;
- 	struct list_head node; /* entry in rk_iommu_domain.iommus */
- 	struct iommu_domain *domain; /* domain to which iommu is attached */
-@@ -271,47 +272,70 @@ static u32 rk_iova_page_offset(dma_addr_t iova)
- 	return (u32)(iova & RK_IOVA_PAGE_MASK) >> RK_IOVA_PAGE_SHIFT;
- }
- 
--static u32 rk_iommu_read(struct rk_iommu *iommu, u32 offset)
-+static u32 rk_iommu_read(void __iomem *base, u32 offset)
- {
--	return readl(iommu->base + offset);
-+	return readl(base + offset);
- }
- 
--static void rk_iommu_write(struct rk_iommu *iommu, u32 offset, u32 value)
-+static void rk_iommu_write(void __iomem *base, u32 offset, u32 value)
- {
--	writel(value, iommu->base + offset);
-+	writel(value, base + offset);
- }
- 
- static void rk_iommu_command(struct rk_iommu *iommu, u32 command)
- {
--	writel(command, iommu->base + RK_MMU_COMMAND);
-+	int i;
-+
-+	for (i = 0; i < iommu->num_mmu; i++)
-+		writel(command, iommu->bases[i] + RK_MMU_COMMAND);
- }
- 
-+static void rk_iommu_base_command(void __iomem *base, u32 command)
-+{
-+	writel(command, base + RK_MMU_COMMAND);
-+}
- static void rk_iommu_zap_lines(struct rk_iommu *iommu, dma_addr_t iova,
- 			       size_t size)
- {
-+	int i;
-+
- 	dma_addr_t iova_end = iova + size;
- 	/*
- 	 * TODO(djkurtz): Figure out when it is more efficient to shootdown the
- 	 * entire iotlb rather than iterate over individual iovas.
- 	 */
--	for (; iova < iova_end; iova += SPAGE_SIZE)
--		rk_iommu_write(iommu, RK_MMU_ZAP_ONE_LINE, iova);
-+	for (i = 0; i < iommu->num_mmu; i++)
-+		for (; iova < iova_end; iova += SPAGE_SIZE)
-+			rk_iommu_write(iommu->bases[i], RK_MMU_ZAP_ONE_LINE, iova);
- }
- 
- static bool rk_iommu_is_stall_active(struct rk_iommu *iommu)
- {
--	return rk_iommu_read(iommu, RK_MMU_STATUS) & RK_MMU_STATUS_STALL_ACTIVE;
-+	bool active = true;
-+	int i;
-+
-+	for (i = 0; i < iommu->num_mmu; i++)
-+		active &= rk_iommu_read(iommu->bases[i], RK_MMU_STATUS) &
-+					RK_MMU_STATUS_STALL_ACTIVE;
-+
-+	return active;
- }
- 
- static bool rk_iommu_is_paging_enabled(struct rk_iommu *iommu)
- {
--	return rk_iommu_read(iommu, RK_MMU_STATUS) &
--			     RK_MMU_STATUS_PAGING_ENABLED;
-+	bool enable = true;
-+	int i;
-+
-+	for (i = 0; i < iommu->num_mmu; i++)
-+		enable &= rk_iommu_read(iommu->bases[i], RK_MMU_STATUS) &
-+					RK_MMU_STATUS_PAGING_ENABLED;
-+
-+	return enable;
- }
- 
- static int rk_iommu_enable_stall(struct rk_iommu *iommu)
- {
--	int ret;
-+	int ret, i;
- 
- 	if (rk_iommu_is_stall_active(iommu))
- 		return 0;
-@@ -324,15 +348,16 @@ static int rk_iommu_enable_stall(struct rk_iommu *iommu)
- 
- 	ret = rk_wait_for(rk_iommu_is_stall_active(iommu), 1);
- 	if (ret)
--		dev_err(iommu->dev, "Enable stall request timed out, status: %#08x\n",
--			rk_iommu_read(iommu, RK_MMU_STATUS));
-+		for (i = 0; i < iommu->num_mmu; i++)
-+			dev_err(iommu->dev, "Enable stall request timed out, status: %#08x\n",
-+				rk_iommu_read(iommu->bases[i], RK_MMU_STATUS));
- 
- 	return ret;
- }
- 
- static int rk_iommu_disable_stall(struct rk_iommu *iommu)
- {
--	int ret;
-+	int ret, i;
- 
- 	if (!rk_iommu_is_stall_active(iommu))
- 		return 0;
-@@ -341,15 +366,16 @@ static int rk_iommu_disable_stall(struct rk_iommu *iommu)
- 
- 	ret = rk_wait_for(!rk_iommu_is_stall_active(iommu), 1);
- 	if (ret)
--		dev_err(iommu->dev, "Disable stall request timed out, status: %#08x\n",
--			rk_iommu_read(iommu, RK_MMU_STATUS));
-+		for (i = 0; i < iommu->num_mmu; i++)
-+			dev_err(iommu->dev, "Disable stall request timed out, status: %#08x\n",
-+				rk_iommu_read(iommu->bases[i], RK_MMU_STATUS));
- 
- 	return ret;
- }
- 
- static int rk_iommu_enable_paging(struct rk_iommu *iommu)
- {
--	int ret;
-+	int ret, i;
- 
- 	if (rk_iommu_is_paging_enabled(iommu))
- 		return 0;
-@@ -358,15 +384,16 @@ static int rk_iommu_enable_paging(struct rk_iommu *iommu)
- 
- 	ret = rk_wait_for(rk_iommu_is_paging_enabled(iommu), 1);
- 	if (ret)
--		dev_err(iommu->dev, "Enable paging request timed out, status: %#08x\n",
--			rk_iommu_read(iommu, RK_MMU_STATUS));
-+		for (i = 0; i < iommu->num_mmu; i++)
-+			dev_err(iommu->dev, "Enable paging request timed out, status: %#08x\n",
-+				rk_iommu_read(iommu->bases[i], RK_MMU_STATUS));
- 
- 	return ret;
- }
- 
- static int rk_iommu_disable_paging(struct rk_iommu *iommu)
- {
--	int ret;
-+	int ret, i;
- 
- 	if (!rk_iommu_is_paging_enabled(iommu))
- 		return 0;
-@@ -375,41 +402,49 @@ static int rk_iommu_disable_paging(struct rk_iommu *iommu)
- 
- 	ret = rk_wait_for(!rk_iommu_is_paging_enabled(iommu), 1);
- 	if (ret)
--		dev_err(iommu->dev, "Disable paging request timed out, status: %#08x\n",
--			rk_iommu_read(iommu, RK_MMU_STATUS));
-+		for (i = 0; i < iommu->num_mmu; i++)
-+			dev_err(iommu->dev, "Disable paging request timed out, status: %#08x\n",
-+				rk_iommu_read(iommu->bases[i], RK_MMU_STATUS));
- 
- 	return ret;
- }
- 
- static int rk_iommu_force_reset(struct rk_iommu *iommu)
- {
--	int ret;
-+	int ret, i;
- 	u32 dte_addr;
- 
- 	/*
- 	 * Check if register DTE_ADDR is working by writing DTE_ADDR_DUMMY
- 	 * and verifying that upper 5 nybbles are read back.
- 	 */
--	rk_iommu_write(iommu, RK_MMU_DTE_ADDR, DTE_ADDR_DUMMY);
-+	for (i = 0; i < iommu->num_mmu; i++) {
-+		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR, DTE_ADDR_DUMMY);
- 
--	dte_addr = rk_iommu_read(iommu, RK_MMU_DTE_ADDR);
--	if (dte_addr != (DTE_ADDR_DUMMY & RK_DTE_PT_ADDRESS_MASK)) {
--		dev_err(iommu->dev, "Error during raw reset. MMU_DTE_ADDR is not functioning\n");
--		return -EFAULT;
-+		dte_addr = rk_iommu_read(iommu->bases[i], RK_MMU_DTE_ADDR);
-+		if (dte_addr != (DTE_ADDR_DUMMY & RK_DTE_PT_ADDRESS_MASK)) {
-+			dev_err(iommu->dev, "Error during raw reset. MMU_DTE_ADDR is not functioning\n");
-+			return -EFAULT;
-+		}
- 	}
- 
- 	rk_iommu_command(iommu, RK_MMU_CMD_FORCE_RESET);
- 
--	ret = rk_wait_for(rk_iommu_read(iommu, RK_MMU_DTE_ADDR) == 0x00000000,
--			  FORCE_RESET_TIMEOUT);
--	if (ret)
--		dev_err(iommu->dev, "FORCE_RESET command timed out\n");
-+	for (i = 0; i < iommu->num_mmu; i++) {
-+		ret = rk_wait_for(rk_iommu_read(iommu->bases[i], RK_MMU_DTE_ADDR) == 0x00000000,
-+				  FORCE_RESET_TIMEOUT);
-+		if (ret) {
-+			dev_err(iommu->dev, "FORCE_RESET command timed out\n");
-+			return ret;
-+		}
-+	}
- 
--	return ret;
-+	return 0;
- }
- 
--static void log_iova(struct rk_iommu *iommu, dma_addr_t iova)
-+static void log_iova(struct rk_iommu *iommu, int index, dma_addr_t iova)
- {
-+	void __iomem *base = iommu->bases[index];
- 	u32 dte_index, pte_index, page_offset;
- 	u32 mmu_dte_addr;
- 	phys_addr_t mmu_dte_addr_phys, dte_addr_phys;
-@@ -425,7 +460,7 @@ static void log_iova(struct rk_iommu *iommu, dma_addr_t iova)
- 	pte_index = rk_iova_pte_index(iova);
- 	page_offset = rk_iova_page_offset(iova);
- 
--	mmu_dte_addr = rk_iommu_read(iommu, RK_MMU_DTE_ADDR);
-+	mmu_dte_addr = rk_iommu_read(base, RK_MMU_DTE_ADDR);
- 	mmu_dte_addr_phys = (phys_addr_t)mmu_dte_addr;
- 
- 	dte_addr_phys = mmu_dte_addr_phys + (4 * dte_index);
-@@ -460,51 +495,56 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_id)
- 	u32 status;
- 	u32 int_status;
- 	dma_addr_t iova;
-+	irqreturn_t ret = IRQ_NONE;
-+	int i;
- 
--	int_status = rk_iommu_read(iommu, RK_MMU_INT_STATUS);
--	if (int_status == 0)
--		return IRQ_NONE;
-+	for (i = 0; i < iommu->num_mmu; i++) {
-+		int_status = rk_iommu_read(iommu->bases[i], RK_MMU_INT_STATUS);
-+		if (int_status == 0)
-+			continue;
- 
--	iova = rk_iommu_read(iommu, RK_MMU_PAGE_FAULT_ADDR);
-+		ret = IRQ_HANDLED;
-+		iova = rk_iommu_read(iommu->bases[i], RK_MMU_PAGE_FAULT_ADDR);
- 
--	if (int_status & RK_MMU_IRQ_PAGE_FAULT) {
--		int flags;
-+		if (int_status & RK_MMU_IRQ_PAGE_FAULT) {
-+			int flags;
- 
--		status = rk_iommu_read(iommu, RK_MMU_STATUS);
--		flags = (status & RK_MMU_STATUS_PAGE_FAULT_IS_WRITE) ?
--				IOMMU_FAULT_WRITE : IOMMU_FAULT_READ;
-+			status = rk_iommu_read(iommu->bases[i], RK_MMU_STATUS);
-+			flags = (status & RK_MMU_STATUS_PAGE_FAULT_IS_WRITE) ?
-+					IOMMU_FAULT_WRITE : IOMMU_FAULT_READ;
- 
--		dev_err(iommu->dev, "Page fault at %pad of type %s\n",
--			&iova,
--			(flags == IOMMU_FAULT_WRITE) ? "write" : "read");
-+			dev_err(iommu->dev, "Page fault at %pad of type %s\n",
-+				&iova,
-+				(flags == IOMMU_FAULT_WRITE) ? "write" : "read");
- 
--		log_iova(iommu, iova);
-+			log_iova(iommu, i, iova);
- 
--		/*
--		 * Report page fault to any installed handlers.
--		 * Ignore the return code, though, since we always zap cache
--		 * and clear the page fault anyway.
--		 */
--		if (iommu->domain)
--			report_iommu_fault(iommu->domain, iommu->dev, iova,
--					   flags);
--		else
--			dev_err(iommu->dev, "Page fault while iommu not attached to domain?\n");
-+			/*
-+			 * Report page fault to any installed handlers.
-+			 * Ignore the return code, though, since we always zap cache
-+			 * and clear the page fault anyway.
-+			 */
-+			if (iommu->domain)
-+				report_iommu_fault(iommu->domain, iommu->dev, iova,
-+						   flags);
-+			else
-+				dev_err(iommu->dev, "Page fault while iommu not attached to domain?\n");
- 
--		rk_iommu_command(iommu, RK_MMU_CMD_ZAP_CACHE);
--		rk_iommu_command(iommu, RK_MMU_CMD_PAGE_FAULT_DONE);
--	}
-+			rk_iommu_base_command(iommu->bases[i], RK_MMU_CMD_ZAP_CACHE);
-+			rk_iommu_base_command(iommu->bases[i], RK_MMU_CMD_PAGE_FAULT_DONE);
-+		}
- 
--	if (int_status & RK_MMU_IRQ_BUS_ERROR)
--		dev_err(iommu->dev, "BUS_ERROR occurred at %pad\n", &iova);
-+		if (int_status & RK_MMU_IRQ_BUS_ERROR)
-+			dev_err(iommu->dev, "BUS_ERROR occurred at %pad\n", &iova);
- 
--	if (int_status & ~RK_MMU_IRQ_MASK)
--		dev_err(iommu->dev, "unexpected int_status: %#08x\n",
--			int_status);
-+		if (int_status & ~RK_MMU_IRQ_MASK)
-+			dev_err(iommu->dev, "unexpected int_status: %#08x\n",
-+				int_status);
- 
--	rk_iommu_write(iommu, RK_MMU_INT_CLEAR, int_status);
-+		rk_iommu_write(iommu->bases[i], RK_MMU_INT_CLEAR, int_status);
-+	}
- 
--	return IRQ_HANDLED;
-+	return ret;
- }
- 
- static phys_addr_t rk_iommu_iova_to_phys(struct iommu_domain *domain,
-@@ -746,7 +786,7 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
- 	struct rk_iommu *iommu;
- 	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
- 	unsigned long flags;
--	int ret;
-+	int ret, i;
- 	phys_addr_t dte_addr;
- 
- 	/*
-@@ -773,9 +813,11 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
- 		return ret;
- 
- 	dte_addr = virt_to_phys(rk_domain->dt);
--	rk_iommu_write(iommu, RK_MMU_DTE_ADDR, dte_addr);
--	rk_iommu_command(iommu, RK_MMU_CMD_ZAP_CACHE);
--	rk_iommu_write(iommu, RK_MMU_INT_MASK, RK_MMU_IRQ_MASK);
-+	for (i = 0; i < iommu->num_mmu; i++) {
-+		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR, dte_addr);
-+		rk_iommu_command(iommu->bases[i], RK_MMU_CMD_ZAP_CACHE);
-+		rk_iommu_write(iommu->bases[i], RK_MMU_INT_MASK, RK_MMU_IRQ_MASK);
-+	}
- 
- 	ret = rk_iommu_enable_paging(iommu);
- 	if (ret)
-@@ -798,6 +840,7 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
- 	struct rk_iommu *iommu;
- 	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
- 	unsigned long flags;
-+	int i;
- 
- 	/* Allow 'virtual devices' (eg drm) to detach from domain */
- 	iommu = rk_iommu_from_dev(dev);
-@@ -811,8 +854,10 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
- 	/* Ignore error while disabling, just keep going */
- 	rk_iommu_enable_stall(iommu);
- 	rk_iommu_disable_paging(iommu);
--	rk_iommu_write(iommu, RK_MMU_INT_MASK, 0);
--	rk_iommu_write(iommu, RK_MMU_DTE_ADDR, 0);
-+	for (i = 0; i < iommu->num_mmu; i++) {
-+		rk_iommu_write(iommu->bases[i], RK_MMU_INT_MASK, 0);
-+		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR, 0);
-+	}
- 	rk_iommu_disable_stall(iommu);
- 
- 	devm_free_irq(dev, iommu->irq, iommu);
-@@ -988,6 +1033,7 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	struct rk_iommu *iommu;
- 	struct resource *res;
-+	int i;
- 
- 	iommu = devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
- 	if (!iommu)
-@@ -995,11 +1041,21 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, iommu);
- 	iommu->dev = dev;
-+	iommu->num_mmu = 0;
-+	iommu->bases = devm_kzalloc(dev, sizeof(*iommu->bases) * iommu->num_mmu,
-+				    GFP_KERNEL);
-+	if (!iommu->bases)
-+		return -ENOMEM;
- 
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	iommu->base = devm_ioremap_resource(&pdev->dev, res);
--	if (IS_ERR(iommu->base))
--		return PTR_ERR(iommu->base);
-+	for (i = 0; i < pdev->num_resources; i++) {
-+		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
-+		iommu->bases[i] = devm_ioremap_resource(&pdev->dev, res);
-+		if (IS_ERR(iommu->bases[i]))
-+			continue;
-+		iommu->num_mmu++;
-+	}
-+	if (iommu->num_mmu == 0)
-+		return PTR_ERR(iommu->bases[0]);
- 
- 	iommu->irq = platform_get_irq(pdev, 0);
- 	if (iommu->irq < 0) {
--- 
-1.9.1
+> Why did you changed this value to a pointer and added the if?
+
+  I changed it to a pointer in order to support
+iommu_attach_device/iommu_detach_device dynamically.
+
+  In our v6, there is a interface called mtk_smi_config_port in which
+the iommu(M4U) could tell SMI which ports should enable iommu.
+  In this version, we use the additional data of component to finish
+this job(the third parameter of the mtk_smi_larb_bind). then we could
+delete that interface.
+
+  larb->mmu is a pointer that point to the mmu in "struct mtk_smi_iommu
+smi_imu" of "struct mtk_iommu_data". This "smi_imu" is used to record
+that which ports has already enabled iommu for each larb and it will be
+updated during the iommu_attach_device/iommu_detach_device.
+=20
+   Why add the if?
+  -> This pointer may be null in the mtk_smi_larb_unbind.
+  I'm also not sure when it will enter mtk_smi_larb_unbind, maybe while
+the iommu device is removed, then it call component_master_del, or the
+larb device itself is removed, or some other error case in component.
+but there really is a path it will be null, so I add this *if*.
+   If you think it is unnecessary, I can delete it.
+
+>=20
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +void mtk_smi_larb_put(struct device *larbdev)
+> > +{
+> > +	struct mtk_smi_larb *larb =3D dev_get_drvdata(larbdev);
+> > +	struct mtk_smi *common =3D dev_get_drvdata(larb->smi_common_dev);
+> > +
+>=20
+> Would it make sense to write SMI_LARB_MMU_EN here again to eventually=
+=20
+> turn off mmus?
+
+I think no. As you know, there may be some modules in one larb, so we
+cann't write 0 in SMI_LARB_MMU_EN here to turn off mmus for all modules=
+=2E
+
+mtk_smi_larb_get/mtk_smi_larb_put mainly enable/disable the power domai=
+n
+and clocks for this local arbiter. And the larb is a unit here, SMI
+cann=E2=80=99t detect which module calls mtk_smi_larb_put and disable h=
+is
+special iommu bits. so do mtk_smi_larb_get.
+=20
+I know that the module=E2=80=99s special iommu bit wasn=E2=80=99t wrote=
+ to 0 here, but
+if this module would like to work again, he have to call
+mtk_smi_larb_get again, and currently all the multimedia modules always
+works via iommu, we don=E2=80=99t need to write 0 here.
+
+
+> Other then this, the driver looks fine to me.
+
+Thanks very much for your reply. I could send the new version if we get
+a conclusion for the two issue above here, like you really don't like
+that *if*.
+
+>=20
+> Regards,
+> Matthias
+>=20
+> > +	mtk_smi_disable(&larb->smi);
+> > +	mtk_smi_disable(common);
+> > +}
+> > +
+> > +static int
+> > +mtk_smi_larb_bind(struct device *dev, struct device *master, void =
+*data)
+> > +{
+> > +	struct mtk_smi_larb *larb =3D dev_get_drvdata(dev);
+> > +	struct mtk_smi_iommu *smi_iommu =3D data;
+> > +	unsigned int         i;
+> > +
+> > +	for (i =3D 0; i < smi_iommu->larb_nr; i++) {
+> > +		if (dev =3D=3D smi_iommu->larb_imu[i].dev) {
+> > +			larb->mmu =3D &smi_iommu->larb_imu[i].mmu;
+> > +			return 0;
+> > +		}
+> > +	}
+> > +	return -ENODEV;
+> > +}
+> > +
+> > +static void
+> > +mtk_smi_larb_unbind(struct device *dev, struct device *master, voi=
+d *data)
+> > +{
+> > +	struct mtk_smi_larb *larb =3D dev_get_drvdata(dev);
+> > +
+> > +	larb->mmu =3D NULL;
+> > +}
+> > +
+> > +static const struct component_ops mtk_smi_larb_component_ops =3D {
+> > +	.bind =3D mtk_smi_larb_bind,
+> > +	.unbind =3D mtk_smi_larb_unbind,
+> > +};
+
+[...]
+
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" i=
+n
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
