@@ -1,167 +1,209 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v7 3/5] memory: mediatek: Add SMI driver
-Date: Tue, 19 Jan 2016 17:43:29 +0800
-Message-ID: <1453196609.17894.39.camel@mhfsdcap03>
-References: <1450426183-1571-1-git-send-email-yong.wu@mediatek.com>
-	 <1450426183-1571-4-git-send-email-yong.wu@mediatek.com>
-	 <569CBA50.7000400@gmail.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Updates for Linux v4.5
+Date: Tue, 19 Jan 2016 17:00:11 +0100
+Message-ID: <20160119160010.GA11000@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <569CBA50.7000400-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+Content-Type: multipart/mixed; boundary="===============1494066612793660398=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2016-01-18 at 11:11 +0100, Matthias Brugger wrote:
->=20
-> On 18/12/15 09:09, Yong Wu wrote:
-> > This patch add SMI(Smart Multimedia Interface) driver. This driver
-> > is responsible to enable/disable iommu and control the power domain
-> > and clocks of each local arbiter.
-> >
-> > Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 
-[...]
-
-> > +int mtk_smi_larb_get(struct device *larbdev)
-> > +{
-> > +	struct mtk_smi_larb *larb =3D dev_get_drvdata(larbdev);
-> > +	struct mtk_smi *common =3D dev_get_drvdata(larb->smi_common_dev);
-> > +	int ret;
-> > +
-> > +	/* Enable the smi-common's power and clocks */
-> > +	ret =3D mtk_smi_enable(common);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	/* Enable the larb's power and clocks */
-> > +	ret =3D mtk_smi_enable(&larb->smi);
-> > +	if (ret) {
-> > +		mtk_smi_disable(common);
-> > +		return ret;
-> > +	}
-> > +
-> > +	/* Configure the iommu info */
-> > +	if (larb->mmu)
-> > +		writel(*larb->mmu, larb->base + SMI_LARB_MMU_EN);
->=20
-> Can there be a larb that does not have a mmu id defined?
-> Phandles for the iommu need always to have a mtk_m4u_id defined, so I=
-=20
-> don't see the case where this can happen?
-
-  No. In current IC(mt8173), All the larbs have the mmu info register.
-
-> Why did you changed this value to a pointer and added the if?
-
-  I changed it to a pointer in order to support
-iommu_attach_device/iommu_detach_device dynamically.
-
-  In our v6, there is a interface called mtk_smi_config_port in which
-the iommu(M4U) could tell SMI which ports should enable iommu.
-  In this version, we use the additional data of component to finish
-this job(the third parameter of the mtk_smi_larb_bind). then we could
-delete that interface.
-
-  larb->mmu is a pointer that point to the mmu in "struct mtk_smi_iommu
-smi_imu" of "struct mtk_iommu_data". This "smi_imu" is used to record
-that which ports has already enabled iommu for each larb and it will be
-updated during the iommu_attach_device/iommu_detach_device.
-=20
-   Why add the if?
-  -> This pointer may be null in the mtk_smi_larb_unbind.
-  I'm also not sure when it will enter mtk_smi_larb_unbind, maybe while
-the iommu device is removed, then it call component_master_del, or the
-larb device itself is removed, or some other error case in component.
-but there really is a path it will be null, so I add this *if*.
-   If you think it is unnecessary, I can delete it.
-
->=20
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +void mtk_smi_larb_put(struct device *larbdev)
-> > +{
-> > +	struct mtk_smi_larb *larb =3D dev_get_drvdata(larbdev);
-> > +	struct mtk_smi *common =3D dev_get_drvdata(larb->smi_common_dev);
-> > +
->=20
-> Would it make sense to write SMI_LARB_MMU_EN here again to eventually=
-=20
-> turn off mmus?
-
-I think no. As you know, there may be some modules in one larb, so we
-cann't write 0 in SMI_LARB_MMU_EN here to turn off mmus for all modules=
-=2E
-
-mtk_smi_larb_get/mtk_smi_larb_put mainly enable/disable the power domai=
-n
-and clocks for this local arbiter. And the larb is a unit here, SMI
-cann=E2=80=99t detect which module calls mtk_smi_larb_put and disable h=
-is
-special iommu bits. so do mtk_smi_larb_get.
-=20
-I know that the module=E2=80=99s special iommu bit wasn=E2=80=99t wrote=
- to 0 here, but
-if this module would like to work again, he have to call
-mtk_smi_larb_get again, and currently all the multimedia modules always
-works via iommu, we don=E2=80=99t need to write 0 here.
+--===============1494066612793660398==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="uAKRQypu60I7Lcqm"
+Content-Disposition: inline
 
 
-> Other then this, the driver looks fine to me.
+--uAKRQypu60I7Lcqm
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Thanks very much for your reply. I could send the new version if we get
-a conclusion for the two issue above here, like you really don't like
-that *if*.
+Hi Linus,
 
->=20
-> Regards,
-> Matthias
->=20
-> > +	mtk_smi_disable(&larb->smi);
-> > +	mtk_smi_disable(common);
-> > +}
-> > +
-> > +static int
-> > +mtk_smi_larb_bind(struct device *dev, struct device *master, void =
-*data)
-> > +{
-> > +	struct mtk_smi_larb *larb =3D dev_get_drvdata(dev);
-> > +	struct mtk_smi_iommu *smi_iommu =3D data;
-> > +	unsigned int         i;
-> > +
-> > +	for (i =3D 0; i < smi_iommu->larb_nr; i++) {
-> > +		if (dev =3D=3D smi_iommu->larb_imu[i].dev) {
-> > +			larb->mmu =3D &smi_iommu->larb_imu[i].mmu;
-> > +			return 0;
-> > +		}
-> > +	}
-> > +	return -ENODEV;
-> > +}
-> > +
-> > +static void
-> > +mtk_smi_larb_unbind(struct device *dev, struct device *master, voi=
-d *data)
-> > +{
-> > +	struct mtk_smi_larb *larb =3D dev_get_drvdata(dev);
-> > +
-> > +	larb->mmu =3D NULL;
-> > +}
-> > +
-> > +static const struct component_ops mtk_smi_larb_component_ops =3D {
-> > +	.bind =3D mtk_smi_larb_bind,
-> > +	.unbind =3D mtk_smi_larb_unbind,
-> > +};
+The following changes since commit afd2ff9b7e1b367172f18ba7f693dfb62bdcb2dc:
 
-[...]
+  Linux 4.4 (2016-01-10 15:01:32 -0800)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v4.5
+
+for you to fetch changes up to 32704253dc008dfedead71da016b00d10cd1854f:
+
+  Merge branches 's390', 'arm/renesas', 'arm/msm', 'arm/shmobile', 'arm/smmu', 'x86/amd' and 'x86/vt-d' into next (2016-01-19 15:30:43 +0100)
+
+----------------------------------------------------------------
+
+IOMMU Updates for Linux v4.5
+
+The updates include:
+
+	* Small code cleanups in the AMD IOMMUv2 driver
+
+	* Scalability improvements for the DMA-API implementation of the
+	  AMD IOMMU driver. This is just a starting point, but already
+	  showed some good improvements in my tests.
+
+	* Removal of the unused Renesas IPMMU/IPMMUI driver
+
+	* Updates for ARM-SMMU include:
+
+		* Some fixes to get the driver working nicely on
+		  Broadcom hardware
+
+		* A change to the io-pgtable API to indicate the unit in
+		  which to flush (all callers converted, with Ack from
+		  Laurent)
+
+		* Use of devm_* for allocating/freeing the SMMUv3
+		  buffers
+
+	* Some other small fixes and improvements for other drivers
+
+----------------------------------------------------------------
+Dan Carpenter (1):
+      iommu/amd: Remove an unneeded condition
+
+Geert Uytterhoeven (1):
+      iommu/shmobile: Remove unused Renesas IPMMU/IPMMUI driver
+
+Joerg Roedel (28):
+      iommu/amd: Correctly set flags for handle_mm_fault call
+      iommu/amd: Cleanup error handling in do_fault()
+      Merge branch 'for-joerg/arm-smmu/updates' of git://git.kernel.org/.../will/linux into arm/smmu
+      iommu/amd: Warn only once on unexpected pte value
+      iommu/amd: Move 'struct dma_ops_domain' definition to amd_iommu.c
+      iommu/amd: Introduce bitmap_lock in struct aperture_range
+      iommu/amd: Flush IOMMU TLB on __map_single error path
+      iommu/amd: Flush the IOMMU TLB before the addresses are freed
+      iommu/amd: Pass correct shift to iommu_area_alloc()
+      iommu/amd: Add dma_ops_aperture_alloc() function
+      iommu/amd: Move aperture_range.offset to another cache-line
+      iommu/amd: Retry address allocation within one aperture
+      iommu/amd: Flush iommu tlb in dma_ops_aperture_alloc()
+      iommu/amd: Remove 'start' parameter from dma_ops_area_alloc
+      iommu/amd: Rename dma_ops_domain->next_address to next_index
+      iommu/amd: Flush iommu tlb in dma_ops_free_addresses
+      iommu/amd: Iterate over all aperture ranges in dma_ops_area_alloc
+      iommu/amd: Remove need_flush from struct dma_ops_domain
+      iommu/amd: Optimize dma_ops_free_addresses
+      iommu/amd: Allocate new aperture ranges in dma_ops_alloc_addresses
+      iommu/amd: Build io page-tables with cmpxchg64
+      iommu/amd: Initialize new aperture range before making it visible
+      iommu/amd: Relax locking in dma_ops path
+      iommu/amd: Make dma_ops_domain->next_index percpu
+      iommu/amd: Use trylock to aquire bitmap_lock
+      iommu/amd: Preallocate dma_ops apertures based on dma_mask
+      iommu/vt-d: Fix up error handling in alloc_iommu
+      Merge branches 's390', 'arm/renesas', 'arm/msm', 'arm/shmobile', 'arm/smmu', 'x86/amd' and 'x86/vt-d' into next
+
+Julia Lawall (1):
+      iommu/amd: Constify mmu_notifier_ops structures
+
+Magnus Damm (1):
+      iommu/ipmmu-vmsa: Include SoC part number in DT binding docs
+
+Markus Elfring (1):
+      iommu/arm-smmu: Delete an unnecessary check before free_io_pgtable_ops()
+
+Nicholas Krause (1):
+      iommu/vt-d: Check the return value of iommu_device_create()
+
+Peng Fan (1):
+      iommu/arm-smmu: Correct group reference count
+
+Prem Mallappa (2):
+      iommu/arm-smmu: Fix write to GERRORN register
+      iommu/arm-smmu: Use STE.S1STALLD only when supported
+
+Robin Murphy (4):
+      iommu/io-pgtable-arm: Avoid dereferencing bogus PTEs
+      iommu/io-pgtable: Indicate granule for TLB maintenance
+      iommu/arm-smmu: Invalidate TLBs properly
+      iommu/io-pgtable: Make io_pgtable_ops_to_pgtable() macro common
+
+Sebastian Ott (1):
+      iommu/s390: Fix sparse warnings
+
+Thierry Reding (1):
+      iommu/msm: Use platform_register/unregister_drivers()
+
+Will Deacon (5):
+      iommu/arm-smmu: Remove #define for non-existent PRIQ_0_OF field
+      iommu/arm-smmu: Convert DMA buffer allocations to the managed API
+      iommu/arm-smmu: Use incoming shareability attributes in bypass mode
+      iommu/arm-smmu: Handle unknown CERROR values gracefully
+      iommu/io-pgtable-arm: Ensure we free the final level on teardown
+
+ .../bindings/iommu/renesas,ipmmu-vmsa.txt          |  12 +-
+ drivers/iommu/Kconfig                              |  75 ----
+ drivers/iommu/Makefile                             |   2 -
+ drivers/iommu/amd_iommu.c                          | 396 ++++++++++++--------
+ drivers/iommu/amd_iommu_types.h                    |  40 --
+ drivers/iommu/amd_iommu_v2.c                       |  38 +-
+ drivers/iommu/arm-smmu-v3.c                        | 210 ++++-------
+ drivers/iommu/arm-smmu.c                           |  23 +-
+ drivers/iommu/dmar.c                               |  12 +-
+ drivers/iommu/io-pgtable-arm.c                     |  49 +--
+ drivers/iommu/io-pgtable.h                         |   6 +-
+ drivers/iommu/ipmmu-vmsa.c                         |   4 +-
+ drivers/iommu/msm_iommu_dev.c                      |  25 +-
+ drivers/iommu/s390-iommu.c                         |   4 +-
+ drivers/iommu/shmobile-iommu.c                     | 402 ---------------------
+ drivers/iommu/shmobile-ipmmu.c                     | 129 -------
+ drivers/iommu/shmobile-ipmmu.h                     |  34 --
+ 17 files changed, 411 insertions(+), 1050 deletions(-)
+ delete mode 100644 drivers/iommu/shmobile-iommu.c
+ delete mode 100644 drivers/iommu/shmobile-ipmmu.c
+ delete mode 100644 drivers/iommu/shmobile-ipmmu.h
+
+Please pull.
+
+Thanks,
+
+	Joerg
 
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" i=
-n
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--uAKRQypu60I7Lcqm
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJWnl2KAAoJECvwRC2XARrjVTUP/1aBoIdd/7ei24TRKomCwphZ
++YR+97qavevjy4Bbja0TBRriuCOYusHCnxWKJ46rsNNmhlpNUznDWDhfKFiURBrK
+uVubtmAwakOdCddurciEsP5jy/4zwyE0GrxmP3Em8Uf4ZXGC8c3ZDRTOB4jdC3zy
+feeydJa3SJawZhfsVcddkmOFZcfmuScFJJuPA3JF+1fEzp/ZTpTt1XHb7EnTuO4F
+osa+XF7iWjZ78vFat5RZYMf0IsmbX5EW08G30GBxzRUEm/0OOow+JIEHI2wHsGec
+vgaEJ4JuUD+6IkM0zDIb8b8uFg0q10sdU1x88TTAJTf3D8Xo1kTYMyAEmldAF+pD
+RGpfB1UbVDSvJaGK/D8yPxbGQucPXNBrkaJUxKmbb9NdPoaqiAW9XBQm4HihaAA9
+iERCr69MO5ARKL+8cOI42uloJDF8gvIDsbFMoHNwViDELurKSKzdpdMkVxl4+Lw8
+zIDB0YJUvfXqob2+wfHbWiL/OMv6RJlb38GlaOSKOX6yeP3Dw7uk/CLZdmd+FNP6
+2Ok79sO93z4FygiS9afgXxDgP4kYKGtTF4htj2E0PVy/ROPi5WWj1QCsbjDmvbb6
+7CFQCUAM+o5k54igZFVbVve3vKJg/aXJYZSIWrRuCMHb85LPF6tiGWalyxEjYk9c
+kp8/4IELJ11aNymkTASI
+=FTbq
+-----END PGP SIGNATURE-----
+
+--uAKRQypu60I7Lcqm--
+
+--===============1494066612793660398==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============1494066612793660398==--
