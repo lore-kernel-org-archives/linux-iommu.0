@@ -1,15 +1,16 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: Can't boot new 4.4 kernel with IOMMU enabled
-Date: Wed, 20 Jan 2016 13:31:16 +0100
-Message-ID: <20160120123116.GF18805@8bytes.org>
-References: <56957209.1080202@compro.net>
-	<20160113030950.GB11902@dhcp-128-28.nay.redhat.com>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: Regression in kernel 4.2.3+ (relative to 4.1.10) on AMD 990FX
+	system with IOMMU enabled
+Date: Wed, 20 Jan 2016 13:39:37 +0100
+Message-ID: <20160120123937.GB2562@suse.de>
+References: <563A3F64.50808@redhat.com> <5644CD81.2020304@redhat.com>
+	<20151118151841.GA2517@suse.de> <565F4CF5.90107@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20160113030950.GB11902-0VdLhd/A9PlfpSRLqpFUpR/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
+In-Reply-To: <565F4CF5.90107-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,23 +20,29 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: Laine Stump <laine-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Baoquan,
+Hi Laine,
 
-On Wed, Jan 13, 2016 at 11:09:50AM +0800, Baoquan He wrote:
-> Seems 0f:00.0 is not attached to a group so that it get a domain. Can
-> you also paste your "lspci -t" and "lspci -vvv" output? Here 0f:00.0
-> should be a pci bridge which need set the same domain with its
-> peripheral 0000:0f:04.0.
-> 
-> Please apply this patch and try again.
+On Wed, Dec 02, 2015 at 02:56:37PM -0500, Laine Stump wrote:
+> On 11/08/2015 11:52 AM, Laine Stump wrote:
+> > Here is the dmesg
+> > with IOMMU enabled in the BIOS (i.e. the devices *don't* work):
+> >
+> >    http://fpaste.org/296772/14490851/
+> >
+> > and here is is when IOMMU has been *disabled* in the BIOS (the
+> > devices *do* work):
+> >
+> >    http://fpaste.org/296774/44908550/
+> >
 
-Thanks for the fix, mind submitting it so that I can queue it and send
-it upstream after the merge window closes?
+Sorry, it took me long to look into this problem and now the links above
+disappeared. Can you please upload a dmesg with iommu enabled again?
 
 
+Thanks,
 
 	Joerg
