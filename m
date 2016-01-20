@@ -1,18 +1,17 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: Can't boot new 4.4 kernel with IOMMU enabled
-Date: Wed, 20 Jan 2016 17:19:04 +0100
-Message-ID: <20160120161904.GI18805@8bytes.org>
-References: <56957209.1080202@compro.net>
-	<20160113030950.GB11902@dhcp-128-28.nay.redhat.com>
-	<56966244.80700@compro.net> <20160114000520.GA2449@x1.redhat.com>
-	<5697AAD8.1000105@compro.net> <20160120153823.GG18805@8bytes.org>
-	<20160120154658.GH18805@8bytes.org> <569FB013.4050709@compro.net>
+From: Shaohua Li <shli-b10kYP2dOMg@public.gmane.org>
+Subject: Re: [PATCH V2 0/4]IOMMU: avoid lock contention in iova allocation
+Date: Wed, 20 Jan 2016 10:10:06 -0800
+Message-ID: <20160120180956.GA230160@devbig084.prn1.facebook.com>
+References: <cover.1452297604.git.shli@fb.com>
+	<20160110225610.GA16778@cs.technion.ac.il>
+	<20160111033749.GA1811285@devbig084.prn1.facebook.com>
+	<20160120122103.GE18805@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <569FB013.4050709-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
+In-Reply-To: <20160120122103.GE18805-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,20 +21,22 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mark Hounschell <markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, Kernel-team-b10kYP2dOMg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 20, 2016 at 11:04:35AM -0500, Mark Hounschell wrote:
+On Wed, Jan 20, 2016 at 01:21:03PM +0100, Joerg Roedel wrote:
+> On Sun, Jan 10, 2016 at 07:37:59PM -0800, Shaohua Li wrote:
+> > I don't know you already posted one. Roughly looked at the patches. We
+> > are using exactly the same idea. I'm happy we pursue your patches. At
+> > the first look, the per-cpu allocation in your patch doesn't check
+> > pfn_limit, that could be wrong, but should be easy to fix. I'll take a
+> > close look tomorrow.
 > 
-> amd_iommu=fullflush does not help.
-> 
-> iommu=soft allows it to boot
+> Sounds great. Your approaches with the per-cpu are pretty similar, so I
+> would appreciate if you two come up with a combined patch-set?
 
-Okay, good to know, so it is not an issue with stale TLB entries in the
-IOMMU.
-
+I'll do this if Adam doesn't object.
 
 Thanks,
-
-	Joerg
+Shaohua
