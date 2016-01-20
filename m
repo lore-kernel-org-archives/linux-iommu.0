@@ -1,36 +1,33 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 5/6] iommu/amd: Add support for non-pci devices
-Date: Wed, 20 Jan 2016 13:00:09 +0100
-Message-ID: <20160120120008.GC18805@8bytes.org>
-References: <1451988444-4694-1-git-send-email-vincent.wan@amd.com>
- <1451988444-4694-6-git-send-email-vincent.wan@amd.com>
- <20160107120422.GB19149@8bytes.org>
- <CAKT61h9retMxx8JiWEHYRVkX7ROXVvsYDJ3WZDoL17YhdjJdBA@mail.gmail.com>
- <20160108121855.GU18805@8bytes.org>
- <568FCD4B.4000807@iommu.org>
- <20160108170145.GW18805@8bytes.org>
- <5690D723.7020003@iommu.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu: add a shortcut when the @dev_node is NULL
+Date: Wed, 20 Jan 2016 13:02:25 +0100
+Message-ID: <20160120120225.GD18805@8bytes.org>
+References: <1452564905-2662-1-git-send-email-shijie.huang@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <5690D723.7020003@iommu.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Wan Zongshun <vw@iommu.org>
-Cc: Wan Zongshun <vincent.wan@amd.com>, linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, Ray Huang <ray.huang@amd.com>, Borislav Petkov <bp@suse.de>, ken.xue@amd.com
+In-Reply-To: <1452564905-2662-1-git-send-email-shijie.huang-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Huang Shijie <shijie.huang-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, nd-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Vincent,
+On Tue, Jan 12, 2016 at 10:15:05AM +0800, Huang Shijie wrote:
+> This patch adds a shortcut for the code when the @device_node is NULL.
+> In my juno-r1 board, the boot time can be faster by 0.004014s.
 
-On Sat, Jan 09, 2016 at 05:47:15PM +0800, Wan Zongshun wrote:
-> If so we will modify some existing amd iommu driver codes, and Can I
-> merge those into this patch 5/6? or I will create another dedicated
-> patch to take this action?
-
-I think its best to make a seperate patch which makes the call-sites of
-get_device_id() aware of negative return values. Please queue this patch
-before the patch that actually converts get_device_id() to return
-something negative.
+How have you made sure this number is reliable and not just noise in the
+boot process?
 
 
 	Joerg
