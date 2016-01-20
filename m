@@ -1,36 +1,36 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/amd: set AMD iommu-callbacks for the amba bus
-Date: Wed, 20 Jan 2016 12:58:11 +0100
-Message-ID: <20160120115811.GB18805@8bytes.org>
-References: <1451408093-2802-1-git-send-email-vincent.wan@amd.com>
-	<CAKT61h8AWzChE7eqiYwDMYPSoHM9HM2EvpWiD0kjkKtR+1-TRQ@mail.gmail.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH 5/6] iommu/amd: Add support for non-pci devices
+Date: Wed, 20 Jan 2016 13:00:09 +0100
+Message-ID: <20160120120008.GC18805@8bytes.org>
+References: <1451988444-4694-1-git-send-email-vincent.wan@amd.com>
+ <1451988444-4694-6-git-send-email-vincent.wan@amd.com>
+ <20160107120422.GB19149@8bytes.org>
+ <CAKT61h9retMxx8JiWEHYRVkX7ROXVvsYDJ3WZDoL17YhdjJdBA@mail.gmail.com>
+ <20160108121855.GU18805@8bytes.org>
+ <568FCD4B.4000807@iommu.org>
+ <20160108170145.GW18805@8bytes.org>
+ <5690D723.7020003@iommu.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAKT61h8AWzChE7eqiYwDMYPSoHM9HM2EvpWiD0kjkKtR+1-TRQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Wan ZongShun <mcuos.com-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Wan Zongshun <vincent.wan-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ray Huang <ray.huang-5C7GfCeVMHo@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>, ken.xue-5C7GfCeVMHo@public.gmane.org
+In-Reply-To: <5690D723.7020003@iommu.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Wan Zongshun <vw@iommu.org>
+Cc: Wan Zongshun <vincent.wan@amd.com>, linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, Ray Huang <ray.huang@amd.com>, Borislav Petkov <bp@suse.de>, ken.xue@amd.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Hi Vincent,
 
-On Tue, Jan 19, 2016 at 09:49:08AM +0800, Wan ZongShun wrote:
-> It is a separating patch to our acpihid device support patches.
+On Sat, Jan 09, 2016 at 05:47:15PM +0800, Wan Zongshun wrote:
+> If so we will modify some existing amd iommu driver codes, and Can I
+> merge those into this patch 5/6? or I will create another dedicated
+> patch to take this action?
 
-Please re-submit it after the merge window together with the acpihid
-support patches. This stuff can be merged together.
+I think its best to make a seperate patch which makes the call-sites of
+get_device_id() aware of negative return values. Please queue this patch
+before the patch that actually converts get_device_id() to return
+something negative.
 
-Thanks,
 
 	Joerg
