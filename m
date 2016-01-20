@@ -1,16 +1,15 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: Can't boot new 4.4 kernel with IOMMU enabled
-Date: Wed, 20 Jan 2016 21:18:58 +0800
-Message-ID: <20160120131858.GB10598@x1.redhat.com>
-References: <56957209.1080202@compro.net>
-	<20160113030950.GB11902@dhcp-128-28.nay.redhat.com>
-	<20160120123116.GF18805@8bytes.org> <569F858E.4060701@compro.net>
+From: Huang Shijie <shijie.huang-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu: add a shortcut when the @dev_node is NULL
+Date: Wed, 20 Jan 2016 21:34:03 +0800
+Message-ID: <20160120133401.GA3487@localhost.localdomain>
+References: <1452564905-2662-1-git-send-email-shijie.huang@arm.com>
+	<20160120120225.GD18805@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160120120225.GD18805-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <569F858E.4060701-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,38 +19,24 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mark Hounschell <markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, nd-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/20/16 at 08:03am, Mark Hounschell wrote:
-> On 01/20/2016 07:31 AM, Joerg Roedel wrote:
-> >Hi Baoquan,
-> >
-> >On Wed, Jan 13, 2016 at 11:09:50AM +0800, Baoquan He wrote:
-> >>Seems 0f:00.0 is not attached to a group so that it get a domain. Can
-> >>you also paste your "lspci -t" and "lspci -vvv" output? Here 0f:00.0
-> >>should be a pci bridge which need set the same domain with its
-> >>peripheral 0000:0f:04.0.
-> >>
-> >>Please apply this patch and try again.
-> >
-> >Thanks for the fix, mind submitting it so that I can queue it and send
-> >it upstream after the merge window closes?
-> >
-> >
-> >
-> >	Joerg
+On Wed, Jan 20, 2016 at 01:02:25PM +0100, Joerg Roedel wrote:
+> On Tue, Jan 12, 2016 at 10:15:05AM +0800, Huang Shijie wrote:
+> > This patch adds a shortcut for the code when the @device_node is NULL.
+> > In my juno-r1 board, the boot time can be faster by 0.004014s.
 > 
-> I suspect the fix is just not complete yet as my box is still hosed.
+> How have you made sure this number is reliable and not just noise in the
+> boot process?
+In the boot process, there are 5 or more modules whose @dev_node are
+NULL. Without the patch, the kernel will waste some cycles to do the
+meaningless calculations for all these modules. In theory, it is not noise.
+If you have interest, I can send you the kernel boot logs. :)
 
-No, the io_page_fault is caused by the not correct alias setting so that
-the scsi storage controller like 0f:04.0/0a:0a.0 can't be handled
-correclty. You can see that their alias are 0f:00.0 and 09:00.0 which
-are reported in io_page_fualt.
-
-But the other 2 disks still didn't come up, I suspect if the irq is not
-set right. This should be another different issue, no any idea yet.
+Of course, the 0.004014s maybe not accurate enough, it is just an
+approximate number.
 
 Thanks
-Baoquan
+Huang Shijie
