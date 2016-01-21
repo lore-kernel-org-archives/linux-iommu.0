@@ -1,19 +1,17 @@
-From: Shaohua Li <shli-b10kYP2dOMg@public.gmane.org>
-Subject: Re: [PATCH V2 0/4]IOMMU: avoid lock contention in iova allocation
-Date: Wed, 20 Jan 2016 13:14:35 -0800
-Message-ID: <20160120211421.GA684235@devbig084.prn1.facebook.com>
-References: <cover.1452297604.git.shli@fb.com>
-	<20160110225610.GA16778@cs.technion.ac.il>
-	<20160111033749.GA1811285@devbig084.prn1.facebook.com>
-	<20160120122103.GE18805@8bytes.org>
-	<20160120180956.GA230160@devbig084.prn1.facebook.com>
-	<CAHMfzJmAUWT8X4492_84smUgQMW9pW1yNfOxC6e7ur9TitA2cA@mail.gmail.com>
+From: Huang Shijie <shijie.huang-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu: add a shortcut when the @dev_node is NULL
+Date: Thu, 21 Jan 2016 10:04:11 +0800
+Message-ID: <20160121020409.GA7792@sha-win-210.asiapac.arm.com>
+References: <1452564905-2662-1-git-send-email-shijie.huang@arm.com>
+	<20160120120225.GD18805@8bytes.org>
+	<20160120133401.GA3487@localhost.localdomain>
+	<569F9DCA.3030808@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <569F9DCA.3030808-5wv7dgnIgG8@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAHMfzJmAUWT8X4492_84smUgQMW9pW1yNfOxC6e7ur9TitA2cA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,43 +21,36 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
-Cc: Kernel-team-b10kYP2dOMg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 20, 2016 at 10:47:45PM +0200, Adam Morrison wrote:
-> On Wed, Jan 20, 2016 at 8:10 PM, Shaohua Li <shli-b10kYP2dOMg@public.gmane.org> wrote:
-> > On Wed, Jan 20, 2016 at 01:21:03PM +0100, Joerg Roedel wrote:
-> >> On Sun, Jan 10, 2016 at 07:37:59PM -0800, Shaohua Li wrote:
-> >> > I don't know you already posted one. Roughly looked at the patches. We
-> >> > are using exactly the same idea. I'm happy we pursue your patches. At
-> >> > the first look, the per-cpu allocation in your patch doesn't check
-> >> > pfn_limit, that could be wrong, but should be easy to fix. I'll take a
-> >> > close look tomorrow.
+On Wed, Jan 20, 2016 at 02:46:34PM +0000, Robin Murphy wrote:
+> On 20/01/16 13:34, Huang Shijie wrote:
+> >On Wed, Jan 20, 2016 at 01:02:25PM +0100, Joerg Roedel wrote:
+> >>On Tue, Jan 12, 2016 at 10:15:05AM +0800, Huang Shijie wrote:
+> >>>This patch adds a shortcut for the code when the @device_node is NULL.
+> >>>In my juno-r1 board, the boot time can be faster by 0.004014s.
 > >>
-> >> Sounds great. Your approaches with the per-cpu are pretty similar, so I
-> >> would appreciate if you two come up with a combined patch-set?
-> >
-> > I'll do this if Adam doesn't object.
-> 
-> My understanding from the above is that the only issue with our
-> patchset was not dealing with pfn_limit.  I can just fix that and
-> repost, sounds good?
+> >>How have you made sure this number is reliable and not just noise in the
+> >>boot process?
+> >In the boot process, there are 5 or more modules whose @dev_node are
+> >NULL. Without the patch, the kernel will waste some cycles to do the
+> >meaningless calculations for all these modules.
+>
+> With a quick counting hack, booting 4.4 on my r1 indeed shows 5 calls where
+> dev_node is null. Plus 68 calls in which we waste cycles doing meaningless
+> calculations when dev_node is non-null. The fundamental issue at hand is
 
-Sure, please do it. For the patches, I'm not comformatable about the
-per-cpu deferred invalidation. One important benefit of IOMMU is
-isolation. Deferred invalidation already loose the isolation, per-cpu
-invalidation loose further. It would be better we can flush all per-cpu
-invalidation entries if one cpu hits its per-cpu limit. Also you'd
-better look at CPU hotplug. We don't want to lose the invalidation
-entries if one cpu is hot removed.
+The 68 calls are just compare instructions, such as "b.eq".
+But if the code runs to the followng branch when the @dev_node is NULL, the
+instructions executed will more the 68 calls (even including
+some read memory instructions when try to grab the locks).
 
-The per-cpu iova implementation looks unnecessary complicated. I know
-you are referring the paper, but the whole point is batch
-allocation/free.
+> that the "platform bus" is a rubbish abstraction.
+This is just a small trivial patch, please ignore it if we think it is
+no use. :)
 
-Please cc me if you post the patches again. I don't subscribe the iommu
-list.
-
-Thanks,
-Shaohua
+thanks
+Huang Shijie
+IMPORTANT NOTICE: The contents of this email and any attachments are confidential and may also be privileged. If you are not the intended recipient, please notify the sender immediately and do not disclose the contents to any other person, use it for any purpose, or store or copy the information in any medium. Thank you.
