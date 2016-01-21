@@ -1,20 +1,11 @@
-From: Mark Hounschell <markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
-Subject: Re: Can't boot new 4.4 kernel with IOMMU enabled
-Date: Thu, 21 Jan 2016 09:58:41 -0500
-Message-ID: <56A0F221.10502@compro.net>
-References: <56957209.1080202@compro.net>
-	<20160113030950.GB11902@dhcp-128-28.nay.redhat.com>
-	<56966244.80700@compro.net> <20160114000520.GA2449@x1.redhat.com>
-	<5697AAD8.1000105@compro.net> <20160120153823.GG18805@8bytes.org>
-	<20160120154658.GH18805@8bytes.org> <569FB013.4050709@compro.net>
-	<20160120161904.GI18805@8bytes.org> <569FCFC8.2000606@compro.net>
-	<20160120182602.GJ18805@8bytes.org> <56A0F03C.8010109@compro.net>
-Reply-To: markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org
+From: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Subject: iommu/arm-smmu-v2 ASID/VMID calculation
+Date: Thu, 21 Jan 2016 18:52:34 +0000
+Message-ID: <198F501C-8D30-4EB5-BC40-4F40BB75D40B@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============5220079526690254476=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <56A0F03C.8010109-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,51 +15,115 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/21/2016 09:50 AM, Mark Hounschell wrote:
-> On 01/20/2016 01:26 PM, Joerg Roedel wrote:
->> On Wed, Jan 20, 2016 at 01:19:52PM -0500, Mark Hounschell wrote:
->>>
->>> Would you like me to do anything more right now?
->>
->> Would be great if you find the time to bisect the issue.
->>
->> To speed thing up you can test commit b67ad2f and use it as the bad one
->> if it shows the same problem.
->>
->> As good commit you can use the v4.3 tag, this will only bisect in the
->> iommu related changes which went into v4.4-rc1.
->>
->> If commit b67ad2f works for you, then please bisect between v4.3 and
->> v4.4.
->>
->>
->>     Joerg
->>
->>
->
-> Here ya go.
->
-> 150952f96941cb13371770ce0cf47906647d8bba is the first bad commit
-> commit 150952f96941cb13371770ce0cf47906647d8bba
-> Author: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> Date:   Tue Oct 20 17:33:35 2015 +0200
->
->      iommu/amd: Do not iterate over alias-list in __[attach|detach]_device
->
->      The alias list is handled aleady by iommu core code. No need
->      anymore to handle it in this part of the AMD IOMMU code
->
->      Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
->
-> :040000 040000 334ffdc0d7ff9389478d3ce6096eb81227d8eafc
-> cb6fce5d7e94ce3e44a6a64092ba8eb32dd0978b M      drivers
->
+--===============5220079526690254476==
+Content-Language: en-US
+Content-Type: multipart/alternative;
+	boundary="_000_198F501C8D304EB5BC404F40BB75D40Bcaviumnetworkscom_"
 
-FYI, this commit also had tons of IO_PAGE_FAULTS booting but eventually 
-all the disks but the 2 in question actually ended up being mounted.
+--_000_198F501C8D304EB5BC404F40BB75D40Bcaviumnetworkscom_
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-Mark
+SGkgV2lsbCwNCg0KQ3VycmVudCBBU0lEL1ZNSUQgY2FsY3VsYXRpb24gbG9naWMgbWFrZXMgbG90
+IG9mIGFzc3VtcHRpb24gYWJvdXQgaW50ZXJuYWwgVExCIGltcGxlbWVudGF0aW9uIG9mIFNNTVUs
+DQpTeXN0ZW1zIGxpa2UgVGh1bmRlclggaGF2ZSBtb3JlIHRoYW4gb25lIHNtbXUgaW4gdGhlIHN5
+c3RlbSBhbmQgaXQgY2FuIHVzZSBzYW1lIFRMQnMgd2l0aCBtb3JlIHRoYW4gb25lIG9mIHRoZW0g
+YW5kIGV4cGVjdHMgQVNJRCB0byBiZSB1bmlxdWUNCg0KQ3VycmVudCBsb2dpYw0KDQojZGVmaW5l
+IEFSTV9TTU1VX0NCX0FTSUQoY2ZnKSAgICAgICAgICAgKChjZmcpLT5jYm5keCkNCiNkZWZpbmUg
+QVJNX1NNTVVfQ0JfVk1JRChjZmcpICAgICAgICAgICAoKGNmZyktPmNibmR4ICsgMSkNCg0KDQpD
+YW4gdGhpcyBiZSByZXBsYWNlZCBieSBzb21ldGhpbmcgbGlrZQ0KDQoNCiNkZWZpbmUgQVJNX1NN
+TVVfQ0JfQVNJRChjZmcsIHNtbXUpICAgICAgICAgICAgICgoKHNtbXUpLT5pZHggPDwgKHNtbXUp
+LT5hc2lkX3NoaWZ0KSB8IChjZmcpLT5jYm5keCkNCiNkZWZpbmUgQVJNX1NNTVVfQ0JfVk1JRChj
+ZmcsIHNtbXUpICAgICAgICAgICAgICgoKHNtbXUpLT5pZHggPDwgKHNtbXUpLT52bWlkX3NoaWZ0
+KSB8IChjZmcpLT5jYm5keCArIDEpDQoNCg0KSWR4IGFuZCBzaGlmdCBjYW4gYmUgcGFzc2VkIGZy
+b20gZGV2aWNlLXRyZWUuDQoNCg0KUGxlYXNlIGxldCBtZSBrbm93IGlmIHRoaXMgaXMgYWNjZXB0
+YWJsZSwgSSB3aWxsIHByZXBhcmUgYSBwcm9wZXIgcGF0Y2ggYW5kIHNlbmQgdG8gbGlzdC4NCg0K
+DQpJZiB0aGlzIGlzIG5vdCBhY2NlcHRhYmxlIHRocm91Z2ggYW4gYWx0ZXJuYXRpdmUgc3VnZ2Vz
+dGlvbi4NCg0KDQoNClRoYW5rcywNCg0KVGlydW1hbGVzaC4NCg==
+
+--_000_198F501C8D304EB5BC404F40BB75D40Bcaviumnetworkscom_
+Content-Type: text/html; charset="utf-8"
+Content-ID: <80260297B519B6428F5DF860B02C1945-Tk6F3M/euE6cE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
+Content-Transfer-Encoding: base64
+
+PGh0bWw+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIgY29udGVudD0i
+dGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjwvaGVhZD4NCjxib2R5IHN0eWxlPSJ3b3JkLXdy
+YXA6IGJyZWFrLXdvcmQ7IC13ZWJraXQtbmJzcC1tb2RlOiBzcGFjZTsgLXdlYmtpdC1saW5lLWJy
+ZWFrOiBhZnRlci13aGl0ZS1zcGFjZTsiPg0KPGRpdiBzdHlsZT0iY29sb3I6IHJnYigwLCAwLCAw
+KTsgZm9udC1mYW1pbHk6IENhbGlicmksIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTRweDsiPg0K
+SGkgV2lsbCw8L2Rpdj4NCjxkaXYgc3R5bGU9ImNvbG9yOiByZ2IoMCwgMCwgMCk7IGZvbnQtZmFt
+aWx5OiBDYWxpYnJpLCBzYW5zLXNlcmlmOyBmb250LXNpemU6IDE0cHg7Ij4NCjxicj4NCjwvZGl2
+Pg0KPGRpdiBzdHlsZT0iY29sb3I6IHJnYigwLCAwLCAwKTsgZm9udC1mYW1pbHk6IENhbGlicmks
+IHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTRweDsiPg0KQ3VycmVudCBBU0lEL1ZNSUQgY2FsY3Vs
+YXRpb24gbG9naWMgbWFrZXMgbG90IG9mIGFzc3VtcHRpb24gYWJvdXQgaW50ZXJuYWwgVExCIGlt
+cGxlbWVudGF0aW9uIG9mIFNNTVUsPC9kaXY+DQo8ZGl2IHN0eWxlPSJjb2xvcjogcmdiKDAsIDAs
+IDApOyBmb250LWZhbWlseTogQ2FsaWJyaSwgc2Fucy1zZXJpZjsgZm9udC1zaXplOiAxNHB4OyI+
+DQpTeXN0ZW1zIGxpa2UgVGh1bmRlclggaGF2ZSBtb3JlIHRoYW4gb25lIHNtbXUgaW4gdGhlIHN5
+c3RlbSBhbmQgaXQgY2FuIHVzZSBzYW1lIFRMQnMgd2l0aCBtb3JlIHRoYW4gb25lIG9mIHRoZW0g
+YW5kIGV4cGVjdHMgQVNJRCB0byBiZSB1bmlxdWUmbmJzcDs8L2Rpdj4NCjxkaXYgc3R5bGU9ImNv
+bG9yOiByZ2IoMCwgMCwgMCk7IGZvbnQtZmFtaWx5OiBDYWxpYnJpLCBzYW5zLXNlcmlmOyBmb250
+LXNpemU6IDE0cHg7Ij4NCjxicj4NCjwvZGl2Pg0KPGRpdiBzdHlsZT0iY29sb3I6IHJnYigwLCAw
+LCAwKTsgZm9udC1mYW1pbHk6IENhbGlicmksIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTRweDsi
+Pg0KQ3VycmVudCBsb2dpYzwvZGl2Pg0KPGRpdiBzdHlsZT0iY29sb3I6IHJnYigwLCAwLCAwKTsg
+Zm9udC1mYW1pbHk6IENhbGlicmksIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTRweDsiPg0KPHBy
+ZSBzdHlsZT0icGFkZGluZzogMHB4OyBtYXJnaW4tdG9wOiAwcHg7IG1hcmdpbi1ib3R0b206IDBw
+eDsgZm9udC1zaXplOiAxM3B4OyI+PGNvZGU+PHNwYW4gY2xhc3M9ImhsIHBwYyI+I2RlZmluZSBB
+Uk1fU01NVV9DQl9BU0lEKGNmZykJCSgoY2ZnKS0mZ3Q7Y2JuZHgpPC9zcGFuPg0KPHNwYW4gY2xh
+c3M9ImhsIHBwYyI+I2RlZmluZSBBUk1fU01NVV9DQl9WTUlEKGNmZykJCSgoY2ZnKS0mZ3Q7Y2Ju
+ZHggJiM0MzsgMSk8L3NwYW4+PC9jb2RlPjwvcHJlPg0KPHByZSBzdHlsZT0icGFkZGluZzogMHB4
+OyBtYXJnaW4tdG9wOiAwcHg7IG1hcmdpbi1ib3R0b206IDBweDsgZm9udC1zaXplOiAxM3B4OyI+
+PGNvZGU+PHNwYW4gY2xhc3M9ImhsIHBwYyI+PGJyPjwvc3Bhbj48L2NvZGU+PC9wcmU+DQo8cHJl
+IHN0eWxlPSJwYWRkaW5nOiAwcHg7IG1hcmdpbi10b3A6IDBweDsgbWFyZ2luLWJvdHRvbTogMHB4
+OyBmb250LXNpemU6IDEzcHg7Ij48Y29kZT48c3BhbiBjbGFzcz0iaGwgcHBjIj5DYW4gdGhpcyBi
+ZSByZXBsYWNlZCBieSBzb21ldGhpbmcgbGlrZTwvc3Bhbj48L2NvZGU+PC9wcmU+DQo8cHJlIHN0
+eWxlPSJwYWRkaW5nOiAwcHg7IG1hcmdpbi10b3A6IDBweDsgbWFyZ2luLWJvdHRvbTogMHB4OyBm
+b250LXNpemU6IDEzcHg7Ij48Y29kZT48c3BhbiBjbGFzcz0iaGwgcHBjIj48YnI+PC9zcGFuPjwv
+Y29kZT48L3ByZT4NCjxwcmUgc3R5bGU9InBhZGRpbmc6IDBweDsgbWFyZ2luLXRvcDogMHB4OyBt
+YXJnaW4tYm90dG9tOiAwcHg7IGZvbnQtc2l6ZTogMTNweDsiPjxjb2RlPjxzcGFuIGNsYXNzPSJo
+bCBwcGMiPjxwcmUgc3R5bGU9InBhZGRpbmc6IDBweDsgbWFyZ2luLXRvcDogMHB4OyBtYXJnaW4t
+Ym90dG9tOiAwcHg7Ij48Y29kZT48c3BhbiBjbGFzcz0iaGwgcHBjIj4jZGVmaW5lIEFSTV9TTU1V
+X0NCX0FTSUQoY2ZnLCBzbW11KQkJKCgoc21tdSktJmd0O2lkeCAmbHQ7Jmx0OyAoc21tdSktJmd0
+O2FzaWRfc2hpZnQpIHwgKGNmZyktJmd0O2NibmR4KTwvc3Bhbj4NCjxzcGFuIGNsYXNzPSJobCBw
+cGMiPiNkZWZpbmUgQVJNX1NNTVVfQ0JfVk1JRChjZmcsIHNtbXUpCQkoKChzbW11KS0mZ3Q7aWR4
+ICZsdDsmbHQ7IChzbW11KS0mZ3Q7dm1pZF9zaGlmdCkgfCAoY2ZnKS0mZ3Q7Y2JuZHggJiM0Mzsg
+MSk8L3NwYW4+PC9jb2RlPjwvcHJlPjwvc3Bhbj48L2NvZGU+PC9wcmU+DQo8cHJlIHN0eWxlPSJw
+YWRkaW5nOiAwcHg7IG1hcmdpbi10b3A6IDBweDsgbWFyZ2luLWJvdHRvbTogMHB4OyBmb250LXNp
+emU6IDEzcHg7Ij48Y29kZT48c3BhbiBjbGFzcz0iaGwgcHBjIj48YnI+PC9zcGFuPjwvY29kZT48
+L3ByZT4NCjxwcmUgc3R5bGU9InBhZGRpbmc6IDBweDsgbWFyZ2luLXRvcDogMHB4OyBtYXJnaW4t
+Ym90dG9tOiAwcHg7IGZvbnQtc2l6ZTogMTNweDsiPjxjb2RlPjxzcGFuIGNsYXNzPSJobCBwcGMi
+PklkeCBhbmQgc2hpZnQgY2FuIGJlIHBhc3NlZCBmcm9tIGRldmljZS10cmVlLjwvc3Bhbj48L2Nv
+ZGU+PC9wcmU+DQo8cHJlIHN0eWxlPSJwYWRkaW5nOiAwcHg7IG1hcmdpbi10b3A6IDBweDsgbWFy
+Z2luLWJvdHRvbTogMHB4OyBmb250LXNpemU6IDEzcHg7Ij48Y29kZT48c3BhbiBjbGFzcz0iaGwg
+cHBjIj48YnI+PC9zcGFuPjwvY29kZT48L3ByZT4NCjxwcmUgc3R5bGU9InBhZGRpbmc6IDBweDsg
+bWFyZ2luLXRvcDogMHB4OyBtYXJnaW4tYm90dG9tOiAwcHg7IGZvbnQtc2l6ZTogMTNweDsiPlBs
+ZWFzZSBsZXQgbWUga25vdyBpZiB0aGlzIGlzIGFjY2VwdGFibGUsIEkgd2lsbCBwcmVwYXJlIGEg
+cHJvcGVyIHBhdGNoIGFuZCBzZW5kIHRvIGxpc3QuPC9wcmU+DQo8cHJlIHN0eWxlPSJwYWRkaW5n
+OiAwcHg7IG1hcmdpbi10b3A6IDBweDsgbWFyZ2luLWJvdHRvbTogMHB4OyBmb250LXNpemU6IDEz
+cHg7Ij48YnI+PC9wcmU+DQo8cHJlIHN0eWxlPSJwYWRkaW5nOiAwcHg7IG1hcmdpbi10b3A6IDBw
+eDsgbWFyZ2luLWJvdHRvbTogMHB4OyBmb250LXNpemU6IDEzcHg7Ij5JZiB0aGlzIGlzIG5vdCBh
+Y2NlcHRhYmxlIHRocm91Z2ggYW4gYWx0ZXJuYXRpdmUgc3VnZ2VzdGlvbi4gPC9wcmU+DQo8cHJl
+IHN0eWxlPSJwYWRkaW5nOiAwcHg7IG1hcmdpbi10b3A6IDBweDsgbWFyZ2luLWJvdHRvbTogMHB4
+OyBmb250LXNpemU6IDEzcHg7Ij48YnI+PC9wcmU+DQo8cHJlIHN0eWxlPSJwYWRkaW5nOiAwcHg7
+IG1hcmdpbi10b3A6IDBweDsgbWFyZ2luLWJvdHRvbTogMHB4OyBmb250LXNpemU6IDEzcHg7Ij48
+YnI+PC9wcmU+DQo8cHJlIHN0eWxlPSJwYWRkaW5nOiAwcHg7IG1hcmdpbi10b3A6IDBweDsgbWFy
+Z2luLWJvdHRvbTogMHB4OyBmb250LXNpemU6IDEzcHg7Ij5UaGFua3MsPC9wcmU+DQo8cHJlIHN0
+eWxlPSJwYWRkaW5nOiAwcHg7IG1hcmdpbi10b3A6IDBweDsgbWFyZ2luLWJvdHRvbTogMHB4OyBm
+b250LXNpemU6IDEzcHg7Ij5UaXJ1bWFsZXNoLiA8L3ByZT4NCjwvZGl2Pg0KPGRpdiBzdHlsZT0i
+Y29sb3I6IHJnYigwLCAwLCAwKTsgZm9udC1mYW1pbHk6IENhbGlicmksIHNhbnMtc2VyaWY7IGZv
+bnQtc2l6ZTogMTRweDsiPg0KPGRpdiBpZD0iTUFDX09VVExPT0tfU0lHTkFUVVJFIj48L2Rpdj4N
+CjwvZGl2Pg0KPC9ib2R5Pg0KPC9odG1sPg0K
+
+--_000_198F501C8D304EB5BC404F40BB75D40Bcaviumnetworkscom_--
+
+--===============5220079526690254476==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============5220079526690254476==--
