@@ -1,8 +1,8 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [Patch v3 10/12] iommu/amd: Update related domain info to dev when
-	dev driver init
-Date: Tue, 26 Jan 2016 18:29:24 +0800
-Message-ID: <1453804166-25646-11-git-send-email-bhe@redhat.com>
+Subject: [Patch v3 09/12] iommu/amd: Don't update the domain information to
+	iommu dev before dev init
+Date: Tue, 26 Jan 2016 18:29:23 +0800
+Message-ID: <1453804166-25646-10-git-send-email-bhe@redhat.com>
 References: <1453804166-25646-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,36 +21,55 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Whatever it does to initialize dev to alloc coherent memory or map allocated
-memory to io addr __map_single need be called. So update the related domain
-information to its DTE entry and alias when __map_single is firstly called.
+Don't update the domain information to the related DTE entry before
+iommu dev initialization. For this a new member 'domain_updated' is
+added to iommu_dev_data.
 
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/iommu/amd_iommu.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index b6e669c..0880500 100644
+index c0b96e0..b6e669c 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -2529,6 +2529,17 @@ static dma_addr_t __map_single(struct device *dev,
- 	unsigned int pages;
- 	unsigned long align_mask = 0;
- 	int i;
-+	struct iommu_dev_data *dev_data = get_dev_data(dev);
-+	struct protection_domain *domain = get_domain(dev);
-+	u16 alias = amd_iommu_alias_table[dev_data->devid];
-+
-+	if (translation_pre_enabled() && !dev_data->domain_updated) {
-+		set_dte_entry(dev_data->devid, domain, dev_data->ats.enabled);
-+		if (alias != dev_data->devid)
-+			set_dte_entry(alias, domain, dev_data->ats.enabled);
-+		device_flush_dte(dev_data);
-+		dev_data->domain_updated = true;
-+	}
+@@ -101,6 +101,7 @@ struct iommu_dev_data {
+ 	bool pri_tlp;			  /* PASID TLB required for
+ 					     PPR completions */
+ 	u32 errata;			  /* Bitmap for errata to apply */
++	bool domain_updated;
+ };
  
- 	pages = iommu_num_pages(paddr, size, PAGE_SIZE);
- 	paddr &= PAGE_MASK;
+ /*
+@@ -2046,12 +2047,14 @@ static void do_attach(struct iommu_dev_data *dev_data,
+ 	domain->dev_iommu[iommu->index] += 1;
+ 	domain->dev_cnt                 += 1;
+ 
+-	/* Update device table */
+-	set_dte_entry(dev_data->devid, domain, ats);
+-	if (alias != dev_data->devid)
++	if (!translation_pre_enabled() || dev_data->domain_updated) {
++		/* Update device table */
+ 		set_dte_entry(dev_data->devid, domain, ats);
++		if (alias != dev_data->devid)
++			set_dte_entry(dev_data->devid, domain, ats);
+ 
+-	device_flush_dte(dev_data);
++		device_flush_dte(dev_data);
++	}
+ }
+ 
+ static void do_detach(struct iommu_dev_data *dev_data)
+@@ -2402,7 +2405,8 @@ static void update_device_table(struct protection_domain *domain)
+ 	struct iommu_dev_data *dev_data;
+ 
+ 	list_for_each_entry(dev_data, &domain->dev_list, list)
+-		set_dte_entry(dev_data->devid, domain, dev_data->ats.enabled);
++		if (!translation_pre_enabled() || dev_data->domain_updated)
++			set_dte_entry(dev_data->devid, domain, dev_data->ats.enabled);
+ }
+ 
+ static void update_domain(struct protection_domain *domain)
 -- 
 2.1.0
