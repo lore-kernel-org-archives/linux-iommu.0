@@ -1,8 +1,8 @@
 From: Wan Zongshun <vincent.wan-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH V2 1/8] iommu/amd: Modify ivhd_header structure to support
-	type 11h and 40h
-Date: Tue, 26 Jan 2016 18:14:30 -0500
-Message-ID: <1453850077-2539-2-git-send-email-vincent.wan@amd.com>
+Subject: [PATCH V2 3/8] iommu/amd: Add new map for storing IVHD dev entry type
+	HID
+Date: Tue, 26 Jan 2016 18:14:32 -0500
+Message-ID: <1453850077-2539-4-git-send-email-vincent.wan@amd.com>
 References: <1453850077-2539-1-git-send-email-vincent.wan@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,121 +19,238 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ray Huang <ray.huang-5C7GfCeVMHo@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>, ken.xue-5C7GfCeVMHo@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>, Ray Huang <ray.huang-5C7GfCeVMHo@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>, ken.xue-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+From: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
 
-This patch modifies the existing struct ivhd_header, which currently
-only support IVHD type 0x10, to add new fields from IVHD type 11h and 40h.
-It also modifies the pointer calculation to allow support for IVHD type
-11h and 40h
+This patch introduces acpihid_map, which is used to store
+the new IVHD device entry extracted from BIOS IVRS table.
 
+It also provides a utility function add_acpi_hid_device(),
+to add this types of devices to the map.
+
+Signed-off-by: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
 Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c | 47 +++++++++++++++++++++++++++++++++++-------
- 1 file changed, 40 insertions(+), 7 deletions(-)
+ drivers/iommu/amd_iommu.c       |   1 +
+ drivers/iommu/amd_iommu_init.c  | 122 ++++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/amd_iommu_types.h |  14 +++++
+ 3 files changed, 137 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 013bdff..2ff7000 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -88,7 +88,7 @@
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 539b0de..8063ab2 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -72,6 +72,7 @@ static DEFINE_SPINLOCK(dev_data_list_lock);
+ 
+ LIST_HEAD(ioapic_map);
+ LIST_HEAD(hpet_map);
++LIST_HEAD(acpihid_map);
  
  /*
-  * structure describing one IOMMU in the ACPI table. Typically followed by one
-- * or more ivhd_entrys.
-+ * or more ivhd_entrys. This struct supports both IVHD type 10h, 11h and 40h.
-  */
- struct ivhd_header {
- 	u8 type;
-@@ -99,7 +99,11 @@ struct ivhd_header {
- 	u64 mmio_phys;
- 	u16 pci_seg;
- 	u16 info;
--	u32 efr;
-+	u32 efr_attr;
+  * Domain for untranslated devices - only allocated
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 146f3ee..0a8e033 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -60,6 +60,10 @@
+ #define IVHD_DEV_SPECIAL		0x48
+ #define IVHD_DEV_ACPI_HID		0xf0
+ 
++#define UID_NOT_PRESENT                 0
++#define UID_IS_INTEGER                  1
++#define UID_IS_CHARACTER                2
 +
-+	/* Following only valid on IVHD type 11h and 40h */
-+	u64 efr_reg_img; /* Exact copy of MMIO_EXT_FEATURES */
-+	u64 res;
+ #define IVHD_SPECIAL_IOAPIC		1
+ #define IVHD_SPECIAL_HPET		2
+ 
+@@ -116,6 +120,11 @@ struct ivhd_entry {
+ 	u16 devid;
+ 	u8 flags;
+ 	u32 ext;
++	u32 hidh;
++	u64 cid;
++	u8 uidf;
++	u8 uidl;
++	u8 uid;
  } __attribute__((packed));
  
  /*
-@@ -399,6 +403,22 @@ static void __init iommu_unmap_mmio_space(struct amd_iommu *iommu)
-  *
-  ****************************************************************************/
- 
-+static inline u32 get_ivhd_header_size(struct ivhd_header *h)
-+{
-+	u32 size = 0;
+@@ -224,8 +233,12 @@ enum iommu_init_state {
+ #define EARLY_MAP_SIZE		4
+ static struct devid_map __initdata early_ioapic_map[EARLY_MAP_SIZE];
+ static struct devid_map __initdata early_hpet_map[EARLY_MAP_SIZE];
++static struct acpihid_map_entry __initdata early_acpihid_map[EARLY_MAP_SIZE];
 +
-+	switch (h->type) {
-+	case 0x10:
-+		size = 24;
-+		break;
-+	case 0x11:
-+	case 0x40:
-+		size = 40;
-+		break;
+ static int __initdata early_ioapic_map_size;
+ static int __initdata early_hpet_map_size;
++static int __initdata early_acpihid_map_size;
++
+ static bool __initdata cmdline_maps;
+ 
+ static enum iommu_init_state init_state = IOMMU_START_STATE;
+@@ -760,6 +773,42 @@ static int __init add_special_device(u8 type, u8 id, u16 *devid, bool cmd_line)
+ 	return 0;
+ }
+ 
++static int __init add_acpi_hid_device(u8 *hid, u8 *uid, u16 *devid,
++				      bool cmd_line)
++{
++	struct acpihid_map_entry *entry;
++	struct list_head *list = &acpihid_map;
++
++	list_for_each_entry(entry, list, list) {
++		if (strcmp(entry->hid, hid) ||
++		    (*uid && *entry->uid && strcmp(entry->uid, uid)) ||
++		    !entry->cmd_line)
++			continue;
++
++		pr_info("AMD-Vi: Command-line override for hid:%s uid:%s\n",
++			hid, uid);
++		*devid = entry->devid;
++		return 0;
 +	}
-+	return size;
++
++	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
++	if (!entry)
++		return -ENOMEM;
++
++	memcpy(entry->uid, uid, strlen(uid));
++	memcpy(entry->hid, hid, strlen(hid));
++	entry->devid = *devid;
++	entry->cmd_line	= cmd_line;
++	entry->root_devid = (entry->devid & (~0x7));
++
++	pr_info("AMD-Vi:%s, add hid:%s, uid:%s, rdevid:%d\n",
++		entry->cmd_line ? "cmd" : "ivrs",
++		entry->hid, entry->uid, entry->root_devid);
++
++	list_add_tail(&entry->list, list);
++	return 0;
 +}
 +
- /*
-  * This function calculates the length of a given IVHD entry
-  */
-@@ -415,8 +435,14 @@ static int __init find_last_devid_from_ivhd(struct ivhd_header *h)
+ static int __init add_early_maps(void)
  {
- 	u8 *p = (void *)h, *end = (void *)h;
- 	struct ivhd_entry *dev;
-+	u32 ivhd_size = get_ivhd_header_size(h);
-+
-+	if (!ivhd_size) {
-+		pr_err("AMD-Vi: Unsupported IVHD type %#x\n", h->type);
-+		return -EINVAL;
-+	}
+ 	int i, ret;
+@@ -782,6 +831,15 @@ static int __init add_early_maps(void)
+ 			return ret;
+ 	}
  
--	p += sizeof(*h);
-+	p += ivhd_size;
- 	end += h->length;
- 
- 	while (p < end) {
-@@ -781,6 +807,7 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
- 	u32 dev_i, ext_flags = 0;
- 	bool alias = false;
- 	struct ivhd_entry *e;
-+	u32 ivhd_size;
- 	int ret;
- 
- 
-@@ -796,7 +823,13 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
- 	/*
- 	 * Done. Now parse the device entries
- 	 */
--	p += sizeof(struct ivhd_header);
-+	ivhd_size = get_ivhd_header_size(h);
-+	if (!ivhd_size) {
-+		pr_err("AMD-Vi: Unsupported IVHD type %#x\n", h->type);
-+		return -EINVAL;
++	for (i = 0; i < early_acpihid_map_size; ++i) {
++		ret = add_acpi_hid_device(early_acpihid_map[i].hid,
++					  early_acpihid_map[i].uid,
++					  &early_acpihid_map[i].devid,
++					  early_acpihid_map[i].cmd_line);
++		if (ret)
++			return ret;
 +	}
 +
-+	p += ivhd_size;
- 	end += h->length;
+ 	return 0;
+ }
  
+@@ -1001,6 +1059,70 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
  
-@@ -1047,9 +1080,9 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
- 	iommu->mmio_phys = h->mmio_phys;
+ 			break;
+ 		}
++		case IVHD_DEV_ACPI_HID: {
++			u16 devid;
++			u8 hid[ACPIHID_HID_LEN] = {0};
++			u8 uid[ACPIHID_UID_LEN] = {0};
++			int ret;
++
++			if (h->type != 0x40) {
++				pr_err(FW_BUG "Invalid IVHD device type %#x\n",
++				       e->type);
++				break;
++			}
++
++			memcpy(hid, (u8 *)(&e->ext), ACPIHID_HID_LEN - 1);
++			hid[ACPIHID_HID_LEN - 1] = '\0';
++
++			if (!(*hid)) {
++				pr_err(FW_BUG "Invalid HID.\n");
++				break;
++			}
++
++			switch (e->uidf) {
++			case UID_NOT_PRESENT:
++
++				if (e->uidl != 0)
++					pr_warn(FW_BUG "Invalid UID length.\n");
++
++				break;
++			case UID_IS_INTEGER:
++
++				sprintf(uid, "%d", e->uid);
++
++				break;
++			case UID_IS_CHARACTER:
++
++				memcpy(uid, (u8 *)(&e->uid), ACPIHID_UID_LEN - 1);
++				uid[ACPIHID_UID_LEN - 1] = '\0';
++
++				break;
++			default:
++				break;
++			}
++
++			DUMP_printk("  DEV_ACPI_HID(%s[%s])\t\tdevid: %02x:%02x.%x\n",
++				    hid, uid,
++				    PCI_BUS_NUM(devid),
++				    PCI_SLOT(devid),
++				    PCI_FUNC(devid));
++
++			devid  = e->devid;
++			flags = e->flags;
++
++			ret = add_acpi_hid_device(hid, uid, &devid, false);
++			if (ret)
++				return ret;
++
++			/*
++			 * add_special_device might update the devid in case a
++			 * command-line override is present. So call
++			 * set_dev_entry_from_acpi after add_special_device.
++			 */
++			set_dev_entry_from_acpi(iommu, devid, e->flags, 0);
++
++			break;
++		}
+ 		default:
+ 			break;
+ 		}
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index 9d32b20..b6b14d2 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -527,6 +527,19 @@ struct amd_iommu {
+ #endif
+ };
  
- 	/* Check if IVHD EFR contains proper max banks/counters */
--	if ((h->efr != 0) &&
--	    ((h->efr & (0xF << 13)) != 0) &&
--	    ((h->efr & (0x3F << 17)) != 0)) {
-+	if ((h->efr_attr != 0) &&
-+	    ((h->efr_attr & (0xF << 13)) != 0) &&
-+	    ((h->efr_attr & (0x3F << 17)) != 0)) {
- 		iommu->mmio_phys_end = MMIO_REG_END_OFFSET;
- 	} else {
- 		iommu->mmio_phys_end = MMIO_CNTR_CONF_OFFSET;
++#define ACPIHID_UID_LEN 256
++#define ACPIHID_HID_LEN 9
++
++struct acpihid_map_entry {
++	struct list_head list;
++	u8 uid[ACPIHID_UID_LEN];
++	u8 hid[ACPIHID_HID_LEN];
++	u16 devid;
++	u16 root_devid;
++	bool cmd_line;
++	struct iommu_group *group;
++};
++
+ struct devid_map {
+ 	struct list_head list;
+ 	u8 id;
+@@ -537,6 +550,7 @@ struct devid_map {
+ /* Map HPET and IOAPIC ids to the devid used by the IOMMU */
+ extern struct list_head ioapic_map;
+ extern struct list_head hpet_map;
++extern struct list_head acpihid_map;
+ 
+ /*
+  * List with all IOMMUs in the system. This list is not locked because it is
 -- 
 1.9.1
