@@ -1,17 +1,14 @@
-From: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: Re: iommu/arm-smmu-v2 ASID/VMID calculation
-Date: Tue, 26 Jan 2016 03:11:27 +0000
-Message-ID: <6F24A28A-6302-4C48-A933-B47A9735808C@caviumnetworks.com>
-References: <198F501C-8D30-4EB5-BC40-4F40BB75D40B@caviumnetworks.com>
-	<20160125170312.GJ22927@arm.com>
-	<E978AB4F-5CB0-42D8-8152-04C77DB664A1@caviumnetworks.com>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [Patch v3 01/12] iommu/amd: Use standard bitmap operation to set
+	bitmap
+Date: Tue, 26 Jan 2016 18:29:15 +0800
+Message-ID: <1453804166-25646-2-git-send-email-bhe@redhat.com>
+References: <1453804166-25646-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <E978AB4F-5CB0-42D8-8152-04C77DB664A1-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Content-Language: en-US
-Content-ID: <34E7D60D72A7B04A8429486D87C5BFB1-Tk6F3M/euE6cE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
+In-Reply-To: <1453804166-25646-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,61 +18,51 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-b25lIG15IGNvbGxlYWd1ZSBwb2ludHMgb3V0LCBBU0lEUE5FIGFsc28gaW1wbGVtZW50YXRpb24g
-ZGVmaW5lZC4gDQoNClRoYW5rcywNClRpcnVtYWxlc2guICANCg0KDQoNCk9uIDEvMjUvMTYsIDQ6
-NDggUE0sICJsaW51eC1hcm0ta2VybmVsIG9uIGJlaGFsZiBvZiBDaGFsYW1hcmxhLCBUaXJ1bWFs
-ZXNoIiA8bGludXgtYXJtLWtlcm5lbC1ib3VuY2VzQGxpc3RzLmluZnJhZGVhZC5vcmcgb24gYmVo
-YWxmIG9mIFRpcnVtYWxlc2guQ2hhbGFtYXJsYUBjYXZpdW1uZXR3b3Jrcy5jb20+IHdyb3RlOg0K
-DQo+SSBkb27igJl0IHRoaW5rIGl0IGZvbGxvd2VkIHNwZWMuDQo+DQo+VGhlIFNNTVUgc3BlYyAo
-SUhJMDA2MkMpIHNheXMgKHNlY3Rpb24gMi4yKToNCj4NCj4gICAtIFRoZSBleGFjdCBiZWhhdmlv
-ciBvZiBhbnkgVExCIGZ1bmN0aW9uYWxpdHkgaXMgSU1QTEVNRU5UQVRJT04gREVGSU5FRA0KPg0K
-PlNlY3Rpb24gMi4yIGRlc2NyaWJlcyB0aGUgY29uc3RyYWludHMgb24gc2hhcmluZyAoZS5nLiBt
-dWx0aXBsZSBjb250ZXh0cw0KPnVzaW5nIHRoZSBzYW1lIEFTSUQgc2F5cyk6DQo+DQo+ICAgICAg
-IklmIG11bHRpcGxlIGNvbnRleHQgYmFua3MgaGF2ZSBodGUgc2FtZSBhdHRyaWJ1dGVzIGJ1dCBk
-ZXNjcmliZQ0KPiAgICAgICBkaWZmZXJlbnQgdHJhbnNsYXRpb25zLCB0aGUgcmVzdWx0cyBvZiBh
-IFRMQiBsb29rdXAgYXJlIFVOUFJFRElDVEFCTEUiLg0KPg0KPg0KPg0KPlRoZSBwcmVzZW50IHNt
-bXUgZHJpdmVyIGFzc3VtZXMgQVNJRCBzaG91bGQgb25seSBiZSB1bmlxdWUgcGVyIFNNTVUsIHRo
-aXMgbWlnaHQgbm90IGJlIHRydWUgZm9yIGFsbCANCj5JbXBsZW1lbnRhdGlvbnMuIA0KPg0KPg0K
-Pg0KPg0KPk9uIDEvMjUvMTYsIDk6MDMgQU0sICJXaWxsIERlYWNvbiIgPHdpbGwuZGVhY29uQGFy
-bS5jb20+IHdyb3RlOg0KPg0KPj5PbiBUaHUsIEphbiAyMSwgMjAxNiBhdCAwNjo1MjozNFBNICsw
-MDAwLCBDaGFsYW1hcmxhLCBUaXJ1bWFsZXNoIHdyb3RlOg0KPj4+IEhpIFdpbGwsDQo+Pg0KPj5I
-ZWxsbywNCj4+DQo+Pj4gQ3VycmVudCBBU0lEL1ZNSUQgY2FsY3VsYXRpb24gbG9naWMgbWFrZXMg
-bG90IG9mIGFzc3VtcHRpb24gYWJvdXQgaW50ZXJuYWwgVExCDQo+Pj4gaW1wbGVtZW50YXRpb24g
-b2YgU01NVSwNCj4+DQo+Pk5vdCByZWFsbHkuIEl0IG1ha2VzIGFzc3VtcHRpb25zIHRoYXQgdGhl
-IGhhcmR3YXJlIGZvbGxvd3MgdGhlIGFyY2hpdGVjdHVyZSwNCj4+d2hpY2ggaXMgaGFyZGx5IHVu
-cmVhc29uYWJsZSBhcyBhIHN0YXJ0aW5nIHBvaW50Lg0KPj4NCj4+PiBTeXN0ZW1zIGxpa2UgVGh1
-bmRlclggaGF2ZSBtb3JlIHRoYW4gb25lIHNtbXUgaW4gdGhlIHN5c3RlbSBhbmQgaXQgY2FuIHVz
-ZSBzYW1lDQo+Pj4gVExCcyB3aXRoIG1vcmUgdGhhbiBvbmUgb2YgdGhlbSBhbmQgZXhwZWN0cyBB
-U0lEIHRvIGJlIHVuaXF1ZSANCj4+DQo+Pi4uLiBidXQgdGhhdCdzIGJyb2tlbi4gSWYgeW91IGJ1
-aWx0IGEgc3lzdGVtIHdoZXJlIHRoZSBDUFVzIHNoYXJlZCBhIFRMQiwNCj4+eW91IHdvdWxkIHJ1
-biBpbnRvIGlzc3VlcyBhcyB3ZWxsLg0KPj4NCj4+SG93IGRvZXMgdGhpcyB3b3JrIHdpdGggdGhp
-bmdzIGxpa2UgYXJtX3NtbXVfdGxiX3N5bmMgYW5kIHRoZSBUTEJHU1RBVFVTDQo+PnJlZ2lzdGVy
-Pw0KPj4NCj4+PiBDdXJyZW50IGxvZ2ljDQo+Pj4gDQo+Pj4gI2RlZmluZSBBUk1fU01NVV9DQl9B
-U0lEKGNmZykgICAgICAgICAgICgoY2ZnKS0+Y2JuZHgpDQo+Pj4gI2RlZmluZSBBUk1fU01NVV9D
-Ql9WTUlEKGNmZykgICAgICAgICAgICgoY2ZnKS0+Y2JuZHggKyAxKQ0KPj4+IA0KPj4+IA0KPj4+
-IENhbiB0aGlzIGJlIHJlcGxhY2VkIGJ5IHNvbWV0aGluZyBsaWtlDQo+Pj4gDQo+Pj4gDQo+Pj4g
-I2RlZmluZSBBUk1fU01NVV9DQl9BU0lEKGNmZywgc21tdSkgICAgICAgICAgICAgKCgoc21tdSkt
-PmlkeCA8PCAoc21tdSktPmFzaWRfc2hpZnQpIHwgKGNmZyktPmNibmR4KQ0KPj4+ICNkZWZpbmUg
-QVJNX1NNTVVfQ0JfVk1JRChjZmcsIHNtbXUpICAgICAgICAgICAgICgoKHNtbXUpLT5pZHggPDwg
-KHNtbXUpLT52bWlkX3NoaWZ0KSB8IChjZmcpLT5jYm5keCArIDEpDQo+Pj4gDQo+Pj4gDQo+Pj4g
-SWR4IGFuZCBzaGlmdCBjYW4gYmUgcGFzc2VkIGZyb20gZGV2aWNlLXRyZWUuDQo+Pj4gDQo+Pj4g
-DQo+Pj4gUGxlYXNlIGxldCBtZSBrbm93IGlmIHRoaXMgaXMgYWNjZXB0YWJsZSwgSSB3aWxsIHBy
-ZXBhcmUgYSBwcm9wZXIgcGF0Y2gNCj4+PiBhbmQgc2VuZCB0byBsaXN0Lg0KPj4+IA0KPj4+IA0K
-Pj4+IElmIHRoaXMgaXMgbm90IGFjY2VwdGFibGUgdGhyb3VnaCBhbiBhbHRlcm5hdGl2ZSBzdWdn
-ZXN0aW9uLg0KPj4NCj4+SWYgd2UncmUgZ29pbmcgdG8gcHV0IHNvbWV0aGluZyBpbnRvIHRoZSBk
-ZXZpY2UtdHJlZSwgdGhlbiBpdCBzaG91bGQgYmUNCj4+YW4gZXJyYXR1bSBwcm9wZXJ0eSBkZXNj
-cmliaW5nIHRoZSBvZmZzZXQgdG8gYmUgYXBwbGllZCB0byBBU0lEL1ZNSURzLg0KPj5Zb3UgYWxz
-byBuZWVkIHRvIHRha2UgY2FyZSBub3QgdG8gZGVzY3JpYmUgb3ZlcmxhcHBpbmcgbnVtYmVyc3Bh
-Y2VzLg0KPkkgZG9u4oCZdCB0aGluayB0aGF0IGlzIGFuIGVycmF0YS4gDQo+Pg0KPj5Ib3cgbWFu
-eSBjb250ZXh0IGJhbmtzIGRvIHlvdSBpbXBsZW1lbnQgaW4gZWFjaCBTTU1VPw0KPjEyOC4NCj4+
-DQo+PldpbGwNCj5fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-Xw0KPmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0DQo+bGludXgtYXJtLWtlcm5lbEBsaXN0
-cy5pbmZyYWRlYWQub3JnDQo+aHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0
-aW5mby9saW51eC1hcm0ta2VybmVsDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRh
-dGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGlu
-Zm8vaW9tbXU=
+It will be more readable then the old setting.
+
+Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c      | 2 +-
+ drivers/iommu/amd_iommu_init.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 539b0de..dd869fe 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1946,7 +1946,7 @@ static struct dma_ops_domain *dma_ops_domain_alloc(void)
+ 	 * mark the first page as allocated so we never return 0 as
+ 	 * a valid dma-address. So we can use 0 as error value
+ 	 */
+-	dma_dom->aperture[0]->bitmap[0] = 1;
++	__set_bit(0, dma_dom->aperture[0]->bitmap);
+ 
+ 	for_each_possible_cpu(cpu)
+ 		*per_cpu_ptr(dma_dom->next_index, cpu) = 0;
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 013bdff..fd99f910 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -20,6 +20,7 @@
+ #include <linux/pci.h>
+ #include <linux/acpi.h>
+ #include <linux/list.h>
++#include <linux/bitmap.h>
+ #include <linux/slab.h>
+ #include <linux/syscore_ops.h>
+ #include <linux/interrupt.h>
+@@ -1875,8 +1876,7 @@ static int __init early_amd_iommu_init(void)
+ 	 * never allocate domain 0 because its used as the non-allocated and
+ 	 * error value placeholder
+ 	 */
+-	amd_iommu_pd_alloc_bitmap[0] = 1;
+-
++	 __set_bit(0, amd_iommu_pd_alloc_bitmap);
+ 	spin_lock_init(&amd_iommu_pd_lock);
+ 
+ 	/*
+-- 
+2.1.0
