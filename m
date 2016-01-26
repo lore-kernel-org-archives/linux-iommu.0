@@ -1,7 +1,7 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [Patch v3 04/12] iommu/amd: add copy_irq_table function
-Date: Tue, 26 Jan 2016 18:29:18 +0800
-Message-ID: <1453804166-25646-5-git-send-email-bhe@redhat.com>
+Subject: [Patch v3 05/12] iommu/amd: change IOMMU_PTE_P to IOMMU_PTE_V
+Date: Tue, 26 Jan 2016 18:29:19 +0800
+Message-ID: <1453804166-25646-6-git-send-email-bhe@redhat.com>
 References: <1453804166-25646-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,93 +20,89 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-If irq table exists in old kernel create a new one and copy the content
-of old irq table to the newly created.
+In amd-vi spec the name of bit0 in DTE is V. But in code it's defined
+as IOMMU_PTE_P. Here change it to IOMMU_PTE_V to make it be consistent
+with spec.
 
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c       |  2 +-
- drivers/iommu/amd_iommu_init.c  | 43 +++++++++++++++++++++++++++++++++++++++++
- drivers/iommu/amd_iommu_proto.h |  1 +
- 3 files changed, 45 insertions(+), 1 deletion(-)
+ drivers/iommu/amd_iommu.c       | 10 +++++-----
+ drivers/iommu/amd_iommu_types.h |  6 +++---
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index aeae07a..63f4c6b 100644
+index 63f4c6b..f02d4b1 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -3628,7 +3628,7 @@ struct amd_ir_data {
- static struct irq_chip amd_ir_chip;
+@@ -1331,9 +1331,9 @@ static int iommu_map_page(struct protection_domain *dom,
  
+ 	if (count > 1) {
+ 		__pte = PAGE_SIZE_PTE(phys_addr, page_size);
+-		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_P | IOMMU_PTE_FC;
++		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_V | IOMMU_PTE_FC;
+ 	} else
+-		__pte = phys_addr | IOMMU_PTE_P | IOMMU_PTE_FC;
++		__pte = phys_addr | IOMMU_PTE_V | IOMMU_PTE_FC;
  
--static void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
-+void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
+ 	if (prot & IOMMU_PROT_IR)
+ 		__pte |= IOMMU_PTE_IR;
+@@ -1978,7 +1978,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
+ 
+ 	pte_root |= (domain->mode & DEV_ENTRY_MODE_MASK)
+ 		    << DEV_ENTRY_MODE_SHIFT;
+-	pte_root |= IOMMU_PTE_IR | IOMMU_PTE_IW | IOMMU_PTE_P | IOMMU_PTE_TV;
++	pte_root |= IOMMU_PTE_IR | IOMMU_PTE_IW | IOMMU_PTE_V | IOMMU_PTE_TV;
+ 
+ 	flags = amd_iommu_dev_table[devid].data[1];
+ 
+@@ -2021,7 +2021,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
+ static void clear_dte_entry(u16 devid)
  {
- 	u64 dte;
+ 	/* remove entry from the device table seen by the hardware */
+-	amd_iommu_dev_table[devid].data[0]  = IOMMU_PTE_P | IOMMU_PTE_TV;
++	amd_iommu_dev_table[devid].data[0]  = IOMMU_PTE_V | IOMMU_PTE_TV;
+ 	amd_iommu_dev_table[devid].data[1] &= DTE_FLAG_MASK;
  
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 91659d8..450adad 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -660,6 +660,49 @@ static int get_dev_entry_bit(u16 devid, u8 bit)
- 	return (amd_iommu_dev_table[devid].data[i] & (1UL << _bit)) >> _bit;
- }
+ 	amd_iommu_apply_erratum_63(devid);
+@@ -2463,7 +2463,7 @@ static dma_addr_t dma_ops_domain_map(struct dma_ops_domain *dom,
+ 	if (!pte)
+ 		return DMA_ERROR_CODE;
  
-+static void copy_irq_table(u16 devid)
-+{
-+	struct irq_remap_table *table = NULL;
-+	u16 alias;
-+	u64 dte;
-+	u64 *old_intr_virt;
-+
-+	alias = amd_iommu_alias_table[devid];
-+	table = irq_lookup_table[alias];
-+	if (table) {
-+	        irq_lookup_table[devid] = table;
-+		set_dte_irq_entry(devid, table);
-+	        return;
-+	}
-+	dte     = amd_iommu_dev_table[devid].data[2];
-+	dte &= DTE_IRQ_PHYS_ADDR_MASK;
-+	if( (!dte&DTE_IRQ_REMAP_ENABLE) || ( dte == 0) )
-+	        return;
-+
-+	table = kzalloc(sizeof(*table), GFP_ATOMIC);
-+	if (!table){
-+	        pr_warn("AMD-Vi: amd irq table allocation failed\n");
-+	        return;
-+	}
-+
-+	table->table = kmem_cache_alloc(amd_iommu_irq_cache, GFP_ATOMIC);
-+        if (!table->table) {
-+                kfree(table);
-+                table = NULL;
-+		return;
-+        }
-+	memset(table->table, 0, MAX_IRQS_PER_TABLE * sizeof(u32));
-+
-+	old_intr_virt = memremap(dte, MAX_IRQS_PER_TABLE * sizeof(u32), MEMREMAP_WB);
-+	memcpy(table->table, old_intr_virt, MAX_IRQS_PER_TABLE * sizeof(u32));
-+	irq_lookup_table[devid] = table;
-+	set_dte_irq_entry(devid, table);
-+	if (devid != alias) {
-+                irq_lookup_table[alias] = table;
-+		set_dte_irq_entry(alias, table);
-+        }
-+	memunmap(old_intr_virt);
-+}
+-	__pte = paddr | IOMMU_PTE_P | IOMMU_PTE_FC;
++	__pte = paddr | IOMMU_PTE_V | IOMMU_PTE_FC;
  
- void amd_iommu_apply_erratum_63(u16 devid)
- {
-diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
-index 743e209..ab562e0 100644
---- a/drivers/iommu/amd_iommu_proto.h
-+++ b/drivers/iommu/amd_iommu_proto.h
-@@ -101,5 +101,6 @@ static inline bool iommu_feature(struct amd_iommu *iommu, u64 f)
- /* kdump checking  */
- extern bool translation_pre_enabled(void);
- extern void clear_translation_pre_enabled(void);
-+extern void set_dte_irq_entry(u16 devid, struct irq_remap_table *table);
+ 	if (direction == DMA_TO_DEVICE)
+ 		__pte |= IOMMU_PTE_IR;
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index 9b8ace4..65f7988 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -244,7 +244,7 @@
+ #define PM_LEVEL_INDEX(x, a)	(((a) >> PM_LEVEL_SHIFT((x))) & 0x1ffULL)
+ #define PM_LEVEL_ENC(x)		(((x) << 9) & 0xe00ULL)
+ #define PM_LEVEL_PDE(x, a)	((a) | PM_LEVEL_ENC((x)) | \
+-				 IOMMU_PTE_P | IOMMU_PTE_IR | IOMMU_PTE_IW)
++				 IOMMU_PTE_V | IOMMU_PTE_IR | IOMMU_PTE_IW)
+ #define PM_PTE_LEVEL(pte)	(((pte) >> 9) & 0x7ULL)
  
- #endif /* _ASM_X86_AMD_IOMMU_PROTO_H  */
+ #define PM_MAP_4k		0
+@@ -293,7 +293,7 @@
+ #define PTE_LEVEL_PAGE_SIZE(level)			\
+ 	(1ULL << (12 + (9 * (level))))
+ 
+-#define IOMMU_PTE_P  (1ULL << 0)
++#define IOMMU_PTE_V  (1ULL << 0)
+ #define IOMMU_PTE_TV (1ULL << 1)
+ #define IOMMU_PTE_U  (1ULL << 59)
+ #define IOMMU_PTE_FC (1ULL << 60)
+@@ -321,7 +321,7 @@
+ #define GCR3_VALID		0x01ULL
+ 
+ #define IOMMU_PAGE_MASK (((1ULL << 52) - 1) & ~0xfffULL)
+-#define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_P)
++#define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_V)
+ #define IOMMU_PTE_PAGE(pte) (phys_to_virt((pte) & IOMMU_PAGE_MASK))
+ #define IOMMU_PTE_MODE(pte) (((pte) >> 9) & 0x07)
+ 
 -- 
 2.1.0
