@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 4/4] iommu/arm-smmu: Use per-context TLB sync as appropriate
-Date: Tue, 26 Jan 2016 18:06:37 +0000
-Message-ID: <fc2ede950aea2e84a0b7cf93e4cd605f0cbdf3c3.1453830752.git.robin.murphy@arm.com>
+Subject: [PATCH 3/4] iommu/arm-smmu: Support DMA-API domains
+Date: Tue, 26 Jan 2016 18:06:36 +0000
+Message-ID: <713b480816536d959b31befe2758b526eabcf0ab.1453830752.git.robin.murphy@arm.com>
 References: <cover.1453830752.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,91 +21,99 @@ To: will.deacon-5wv7dgnIgG8@public.gmane.org
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-TLB synchronisation is a mighty big hammmer to bring down on the
-transaction stream, typically stalling all in-flight transactions until
-the sync completes. Since in most cases (except at stage 2 on SMMUv1)
-a per-context sync operation is available, prefer that over the global
-operation when performing TLB maintenance for a single domain, to avoid
-unecessarily disrupting ongoing traffic in other contexts.
+With DMA mapping ops provided by the iommu-dma code, only a minimal
+contribution from the IOMMU driver is needed to create a suitable
+DMA-API domain for them to use. Implement this for the ARM SMMUs.
 
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 32 ++++++++++++++++++++++++--------
- 1 file changed, 24 insertions(+), 8 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 10 +++++++++-
+ drivers/iommu/arm-smmu.c    | 10 +++++++++-
+ 2 files changed, 18 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 18e0e10..bf1895c 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -219,6 +219,8 @@
- #define ARM_SMMU_CB_S1_TLBIVAL		0x620
- #define ARM_SMMU_CB_S2_TLBIIPAS2	0x630
- #define ARM_SMMU_CB_S2_TLBIIPAS2L	0x638
-+#define ARM_SMMU_CB_TLBSYNC		0x7f0
-+#define ARM_SMMU_CB_TLBSTATUS		0x7f4
- #define ARM_SMMU_CB_ATS1PR		0x800
- #define ARM_SMMU_CB_ATSR		0x8f0
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 2087534..f003b3a 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -21,6 +21,7 @@
+  */
  
-@@ -546,14 +548,22 @@ static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
- }
- 
- /* Wait for any pending TLB invalidations to complete */
--static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
-+static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu, int cbndx)
+ #include <linux/delay.h>
++#include <linux/dma-iommu.h>
+ #include <linux/err.h>
+ #include <linux/interrupt.h>
+ #include <linux/iommu.h>
+@@ -1396,7 +1397,7 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
  {
- 	int count = 0;
--	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
-+	void __iomem *base, __iomem *status;
+ 	struct arm_smmu_domain *smmu_domain;
  
--	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_sTLBGSYNC);
--	while (readl_relaxed(gr0_base + ARM_SMMU_GR0_sTLBGSTATUS)
--	       & sTLBGSTATUS_GSACTIVE) {
-+	if (cbndx < 0) {
-+		base = ARM_SMMU_GR0(smmu);
-+		status = base + ARM_SMMU_GR0_sTLBGSTATUS;
-+		writel_relaxed(0, base + ARM_SMMU_GR0_sTLBGSYNC);
-+	} else {
-+		base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cbndx);
-+		status = base + ARM_SMMU_CB_TLBSTATUS;
-+		writel_relaxed(0, base + ARM_SMMU_CB_TLBSYNC);
+-	if (type != IOMMU_DOMAIN_UNMANAGED)
++	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
+ 		return NULL;
+ 
+ 	/*
+@@ -1408,6 +1409,12 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ 	if (!smmu_domain)
+ 		return NULL;
+ 
++	if (type == IOMMU_DOMAIN_DMA &&
++	    iommu_get_dma_cookie(&smmu_domain->domain)) {
++		kfree(smmu_domain);
++		return NULL;
 +	}
 +
-+	while (readl_relaxed(status) & sTLBGSTATUS_GSACTIVE) {
- 		cpu_relax();
- 		if (++count == TLB_LOOP_TIMEOUT) {
- 			dev_err_ratelimited(smmu->dev,
-@@ -567,7 +577,13 @@ static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
- static void arm_smmu_tlb_sync(void *cookie)
+ 	mutex_init(&smmu_domain->init_mutex);
+ 	spin_lock_init(&smmu_domain->pgtbl_lock);
+ 	return &smmu_domain->domain;
+@@ -1436,6 +1443,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+ 
++	iommu_put_dma_cookie(domain);
+ 	free_io_pgtable_ops(smmu_domain->pgtbl_ops);
+ 
+ 	/* Free the CD and ASID, if we allocated them */
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index d1b7dc1..18e0e10 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -29,6 +29,7 @@
+ #define pr_fmt(fmt) "arm-smmu: " fmt
+ 
+ #include <linux/delay.h>
++#include <linux/dma-iommu.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/err.h>
+ #include <linux/interrupt.h>
+@@ -976,7 +977,7 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
  {
- 	struct arm_smmu_domain *smmu_domain = cookie;
--	__arm_smmu_tlb_sync(smmu_domain->smmu);
-+	int cbndx = smmu_domain->cfg.cbndx;
+ 	struct arm_smmu_domain *smmu_domain;
+ 
+-	if (type != IOMMU_DOMAIN_UNMANAGED)
++	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
+ 		return NULL;
+ 	/*
+ 	 * Allocate the domain and initialise some of its data structures.
+@@ -987,6 +988,12 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ 	if (!smmu_domain)
+ 		return NULL;
+ 
++	if (type == IOMMU_DOMAIN_DMA &&
++	    iommu_get_dma_cookie(&smmu_domain->domain)) {
++		kfree(smmu_domain);
++		return NULL;
++	}
 +
-+	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S2 &&
-+	    smmu_domain->smmu->version < ARM_SMMU_V2)
-+		cbndx = -1;
-+
-+	__arm_smmu_tlb_sync(smmu_domain->smmu, cbndx);
+ 	mutex_init(&smmu_domain->init_mutex);
+ 	spin_lock_init(&smmu_domain->pgtbl_lock);
+ 
+@@ -1001,6 +1008,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
+ 	 * Free the domain resources. We assume that all devices have
+ 	 * already been detached.
+ 	 */
++	iommu_put_dma_cookie(domain);
+ 	arm_smmu_destroy_domain_context(domain);
+ 	kfree(smmu_domain);
  }
- 
- static void arm_smmu_tlb_inv_context(void *cookie)
-@@ -588,7 +604,7 @@ static void arm_smmu_tlb_inv_context(void *cookie)
- 			       base + ARM_SMMU_GR0_TLBIVMID);
- 	}
- 
--	__arm_smmu_tlb_sync(smmu);
-+	__arm_smmu_tlb_sync(smmu, cfg->cbndx);
- }
- 
- static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
-@@ -1534,7 +1550,7 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 	reg &= ~(sCR0_BSU_MASK << sCR0_BSU_SHIFT);
- 
- 	/* Push the button */
--	__arm_smmu_tlb_sync(smmu);
-+	__arm_smmu_tlb_sync(smmu, -1);
- 	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
- }
- 
 -- 
 2.7.0.25.gfc10eb5.dirty
