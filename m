@@ -1,8 +1,7 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [Patch v3 11/12] iommu/amd: No need to wait iommu completion if no
-	dte irq entry change
-Date: Tue, 26 Jan 2016 18:29:25 +0800
-Message-ID: <1453804166-25646-12-git-send-email-bhe@redhat.com>
+Subject: [Patch v3 12/12] iommu/amd: fix a code bug in do_attach
+Date: Tue, 26 Jan 2016 18:29:26 +0800
+Message-ID: <1453804166-25646-13-git-send-email-bhe@redhat.com>
 References: <1453804166-25646-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,44 +20,23 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This is a clean up. In get_irq_table() only if DTE entry is changed
-iommu_completion_wait() need be called. Otherwise no need to do it.
-
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iommu/amd_iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 0880500..dda703b 100644
+index dda703b..02c6ed9 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -3674,7 +3674,7 @@ static struct irq_remap_table *get_irq_table(u16 devid, bool ioapic)
+@@ -2051,7 +2051,7 @@ static void do_attach(struct iommu_dev_data *dev_data,
+ 		/* Update device table */
+ 		set_dte_entry(dev_data->devid, domain, ats);
+ 		if (alias != dev_data->devid)
+-			set_dte_entry(dev_data->devid, domain, ats);
++			set_dte_entry(alias, domain, ats);
  
- 	table = irq_lookup_table[devid];
- 	if (table)
--		goto out;
-+		goto out_unlock;
- 
- 	alias = amd_iommu_alias_table[devid];
- 	table = irq_lookup_table[alias];
-@@ -3688,7 +3688,7 @@ static struct irq_remap_table *get_irq_table(u16 devid, bool ioapic)
- 	/* Nothing there yet, allocate new irq remapping table */
- 	table = kzalloc(sizeof(*table), GFP_ATOMIC);
- 	if (!table)
--		goto out;
-+		goto out_unlock;
- 
- 	/* Initialize table spin-lock */
- 	spin_lock_init(&table->lock);
-@@ -3701,7 +3701,7 @@ static struct irq_remap_table *get_irq_table(u16 devid, bool ioapic)
- 	if (!table->table) {
- 		kfree(table);
- 		table = NULL;
--		goto out;
-+		goto out_unlock;
+ 		device_flush_dte(dev_data);
  	}
- 
- 	memset(table->table, 0, MAX_IRQS_PER_TABLE * sizeof(u32));
 -- 
 2.1.0
