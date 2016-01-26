@@ -1,8 +1,8 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [Patch v3 08/12] iommu/amd: set the device table and re-enable
-	event/cmd buffer
-Date: Tue, 26 Jan 2016 18:29:22 +0800
-Message-ID: <1453804166-25646-9-git-send-email-bhe@redhat.com>
+Subject: [Patch v3 10/12] iommu/amd: Update related domain info to dev when
+	dev driver init
+Date: Tue, 26 Jan 2016 18:29:24 +0800
+Message-ID: <1453804166-25646-11-git-send-email-bhe@redhat.com>
 References: <1453804166-25646-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,63 +21,36 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Here several things need be done:
-1) Initialize amd_iommu_dev_table because it was set several times
-since kdump kernel reboot. We don't need the set because we will
-copy the content from old kernel.
-2) Re-enable event/cmd buffer
-3) Install the DTE table to reg
-4) Flush all caches
+Whatever it does to initialize dev to alloc coherent memory or map allocated
+memory to io addr __map_single need be called. So update the related domain
+information to its DTE entry and alias when __map_single is firstly called.
 
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c | 34 ++++++++++++++++++++++++----------
- 1 file changed, 24 insertions(+), 10 deletions(-)
+ drivers/iommu/amd_iommu.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index e5d28ec..26ba00e 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1731,16 +1731,30 @@ static void iommu_apply_resume_quirks(struct amd_iommu *iommu)
- static void early_enable_iommus(void)
- {
- 	struct amd_iommu *iommu;
--
--	for_each_iommu(iommu) {
--		iommu_disable(iommu);
--		iommu_init_flags(iommu);
--		iommu_set_device_table(iommu);
--		iommu_enable_command_buffer(iommu);
--		iommu_enable_event_buffer(iommu);
--		iommu_set_exclusion_range(iommu);
--		iommu_enable(iommu);
--		iommu_flush_all_caches(iommu);
-+	if ( !translation_pre_enabled() ) {
-+		for_each_iommu(iommu) {
-+			iommu_disable(iommu);
-+			iommu_init_flags(iommu);
-+			iommu_set_device_table(iommu);
-+			iommu_enable_command_buffer(iommu);
-+			iommu_enable_event_buffer(iommu);
-+			iommu_set_exclusion_range(iommu);
-+			iommu_enable(iommu);
-+			iommu_flush_all_caches(iommu);
-+		}
-+	} else {
-+		memset(amd_iommu_dev_table, 0, dev_table_size);
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index b6e669c..0880500 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2529,6 +2529,17 @@ static dma_addr_t __map_single(struct device *dev,
+ 	unsigned int pages;
+ 	unsigned long align_mask = 0;
+ 	int i;
++	struct iommu_dev_data *dev_data = get_dev_data(dev);
++	struct protection_domain *domain = get_domain(dev);
++	u16 alias = amd_iommu_alias_table[dev_data->devid];
 +
-+		for_each_iommu(iommu) {
-+			if (copy_dev_tables(iommu))
-+				break;
-+			iommu_feature_disable(iommu, CONTROL_CMDBUF_EN);
-+			iommu_feature_disable(iommu, CONTROL_EVT_LOG_EN);
-+			iommu_enable_command_buffer(iommu);
-+			iommu_enable_event_buffer(iommu);
-+			iommu_set_device_table(iommu);
-+			iommu_flush_all_caches(iommu);
-+		}
- 	}
- }
++	if (translation_pre_enabled() && !dev_data->domain_updated) {
++		set_dte_entry(dev_data->devid, domain, dev_data->ats.enabled);
++		if (alias != dev_data->devid)
++			set_dte_entry(alias, domain, dev_data->ats.enabled);
++		device_flush_dte(dev_data);
++		dev_data->domain_updated = true;
++	}
  
+ 	pages = iommu_num_pages(paddr, size, PAGE_SIZE);
+ 	paddr &= PAGE_MASK;
 -- 
 2.1.0
