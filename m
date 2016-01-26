@@ -1,14 +1,16 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [Patch v3 00/12] Fix AMD IOMMU faults in kdump kernel
-Date: Tue, 26 Jan 2016 18:52:43 +0800
-Message-ID: <20160126105243.GC18314@dhcp-128-28.nay.redhat.com>
-References: <1453804166-25646-1-git-send-email-bhe@redhat.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: iommu/arm-smmu-v2 ASID/VMID calculation
+Date: Tue, 26 Jan 2016 11:48:26 +0000
+Message-ID: <56A75D0A.7000806@arm.com>
+References: <198F501C-8D30-4EB5-BC40-4F40BB75D40B@caviumnetworks.com>
+	<20160125170312.GJ22927@arm.com>
+	<E978AB4F-5CB0-42D8-8152-04C77DB664A1@caviumnetworks.com>
+	<6F24A28A-6302-4C48-A933-B47A9735808C@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1453804166-25646-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <6F24A28A-6302-4C48-A933-B47A9735808C-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,47 +20,80 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, xlpang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-CC more people who is interested
-
-On 01/26/16 at 06:29pm, Baoquan He wrote:
-> This is v3 post. Now the situation is patchset test on amd-vi v2 machine
-> is OK, however still some IO_PAGE_FAULT warning is printed out on v1
-> machine. The log will be attached later.
-> 
-> I didn't figure out what caused the warning, so post them to ask for help.
-> 
-> The strategy is unchanged:
-> 1) Copy old dev tables and old irq tables to kdump kernel
-> 2) Insatll this newly copied DTE to iommu
-> 3) Hold the updating of domain info to iommu dev, mainly the io page table
-> 4) Update domain info to iommu dev as soon as dev is initialized
-> 
-> 
-> Baoquan He (12):
->   iommu/amd: Use standard bitmap operation to set bitmap
->   iommu/amd: Detect pre enabled translation
->   iommu/amd: move dte irq macro defitions to amd_iommu_types.h
->   iommu/amd: add copy_irq_table function
->   iommu/amd: change IOMMU_PTE_P to IOMMU_PTE_V
->   iommu/amd: Clean up the useless IOMMU_PTE_U/IOMMU_PTE_FC
->   iommu/amd: Add function copy_dev_tables
->   iommu/amd: set the device table and re-enable event/cmd buffer
->   iommu/amd: Don't update the domain information to iommu dev before dev
->     init
->   iommu/amd: Update related domain info to dev when dev driver init
->   iommu/amd: No need to wait iommu completion if no dte irq entry change
->   iommu/amd: fix a code bug in do_attach
-> 
->  drivers/iommu/amd_iommu.c       |  51 ++++++++------
->  drivers/iommu/amd_iommu_init.c  | 147 ++++++++++++++++++++++++++++++++++++----
->  drivers/iommu/amd_iommu_proto.h |   5 ++
->  drivers/iommu/amd_iommu_types.h |  14 ++--
->  4 files changed, 180 insertions(+), 37 deletions(-)
-> 
-> -- 
-> 2.1.0
-> 
+T24gMjYvMDEvMTYgMDM6MTEsIENoYWxhbWFybGEsIFRpcnVtYWxlc2ggd3JvdGU6Cj4gb25lIG15
+IGNvbGxlYWd1ZSBwb2ludHMgb3V0LCBBU0lEUE5FIGFsc28gaW1wbGVtZW50YXRpb24gZGVmaW5l
+ZC4KCkFTSURQTkUgb25seSBjb3ZlcnMgd2hldGhlciB0aGUgU01NVSdzIFRMQnMgbWF5IGlnbm9y
+ZSBicm9hZGNhc3QgCl9pbnZhbGlkYXRpb25fIG9yIG5vdCwgbm90IGxvb2t1cHMuIEJyb2FkY2Fz
+dCBUTEIgbG9va3VwcyBhcmUgbm90IGEgdGhpbmcuCgo+IFRoYW5rcywKPiBUaXJ1bWFsZXNoLgo+
+Cj4KPgo+IE9uIDEvMjUvMTYsIDQ6NDggUE0sICJsaW51eC1hcm0ta2VybmVsIG9uIGJlaGFsZiBv
+ZiBDaGFsYW1hcmxhLCBUaXJ1bWFsZXNoIiA8bGludXgtYXJtLWtlcm5lbC1ib3VuY2VzQGxpc3Rz
+LmluZnJhZGVhZC5vcmcgb24gYmVoYWxmIG9mIFRpcnVtYWxlc2guQ2hhbGFtYXJsYUBjYXZpdW1u
+ZXR3b3Jrcy5jb20+IHdyb3RlOgo+Cj4+IEkgZG9u4oCZdCB0aGluayBpdCBmb2xsb3dlZCBzcGVj
+Lgo+Pgo+PiBUaGUgU01NVSBzcGVjIChJSEkwMDYyQykgc2F5cyAoc2VjdGlvbiAyLjIpOgo+Pgo+
+PiAgICAtIFRoZSBleGFjdCBiZWhhdmlvciBvZiBhbnkgVExCIGZ1bmN0aW9uYWxpdHkgaXMgSU1Q
+TEVNRU5UQVRJT04gREVGSU5FRAo+Pgo+PiBTZWN0aW9uIDIuMiBkZXNjcmliZXMgdGhlIGNvbnN0
+cmFpbnRzIG9uIHNoYXJpbmcgKGUuZy4gbXVsdGlwbGUgY29udGV4dHMKPj4gdXNpbmcgdGhlIHNh
+bWUgQVNJRCBzYXlzKToKPj4KPj4gICAgICAgIklmIG11bHRpcGxlIGNvbnRleHQgYmFua3MgaGF2
+ZSBodGUgc2FtZSBhdHRyaWJ1dGVzIGJ1dCBkZXNjcmliZQo+PiAgICAgICAgZGlmZmVyZW50IHRy
+YW5zbGF0aW9ucywgdGhlIHJlc3VsdHMgb2YgYSBUTEIgbG9va3VwIGFyZSBVTlBSRURJQ1RBQkxF
+Ii4KCk11bHRpcGxlIGNvbnRleHQgYmFua3Mgd2l0aGluIHRoZSBzYW1lIFNNTVUsIHRoYXQgaXMu
+Cgo+PiBUaGUgcHJlc2VudCBzbW11IGRyaXZlciBhc3N1bWVzIEFTSUQgc2hvdWxkIG9ubHkgYmUg
+dW5pcXVlIHBlciBTTU1VLCB0aGlzIG1pZ2h0IG5vdCBiZSB0cnVlIGZvciBhbGwKPj4gSW1wbGVt
+ZW50YXRpb25zLgoKV2hlcmUgIlNNTVUiIGltcGxpZXMgInNldCBvZiBjb250ZXh0IGJhbmtzIGJl
+aGluZCBhIHNpbmdsZSBwcm9ncmFtbWluZyAKaW50ZXJmYWNlIiwgaS5lLiBpdCBzaG91bGQgYmUg
+dHJ1ZSBmb3IgYWxsIGFyY2hpdGVjdHVyYWxseS1jb21wbGlhbnQgCmltcGxlbWVudGF0aW9ucy4K
+CldoYXQgaWYgeW91IHRha2UgeW91ciBzeXN0ZW0sIGZpcmUgdXAgdHdvIGNvcmVzIHdpdGggU01Q
+IGRpc2FibGVkLCBhbmQgCnJ1biBhbiBpbmRlcGVuZGVudCBpbnN0YW5jZSBvZiBMaW51eCBvbiBl
+YWNoLCB3aXRoIGFsbCB0aGUgc3lzdGVtIApyZXNvdXJjZXMgZGl2aWRlZCB1cCBlcXVhbGx5IGJl
+dHdlZW4gdGhlbSBhbmQgbm8gY29tbXVuaWNhdGlvbj8gSWYgb25lIApPUyB1c2luZyBvbmUgU01N
+VSBjYW4gbWFrZSB0aGUgb3RoZXIgT1MgdXNpbmcgYSBkaWZmZXJlbnQgU01NVSBnbyB3cm9uZywg
+CnRoZW4gdGhlIGhhcmR3YXJlIGlzIHNpbXBseSBicm9rZW4uIFN1cmUsIHdlIGNhbiBwcm9iYWJs
+eSBxdWlyayBBU0lEIAphbGxvY2F0aW9uIGluIHRoZSBkcml2ZXIsIGJ1dCBpdCByYWlzZXMgdGhl
+IHF1ZXN0aW9uIG9mIHdoYXQgZWxzZSB3ZSAKd291bGQgbmVlZCB0byBkbyB0byBrZWVwIFNNTVVz
+IHdoaWNoIGJlbGlldmUgdGhleSdyZSBzdXBwb3NlZCB0byBiZSAKaW5kZXBlbmRlbnQgZnJvbSBE
+b1MnaW5nIGVhY2ggb3RoZXIuLgoKUm9iaW4uCgo+PiBPbiAxLzI1LzE2LCA5OjAzIEFNLCAiV2ls
+bCBEZWFjb24iIDx3aWxsLmRlYWNvbkBhcm0uY29tPiB3cm90ZToKPj4KPj4+IE9uIFRodSwgSmFu
+IDIxLCAyMDE2IGF0IDA2OjUyOjM0UE0gKzAwMDAsIENoYWxhbWFybGEsIFRpcnVtYWxlc2ggd3Jv
+dGU6Cj4+Pj4gSGkgV2lsbCwKPj4+Cj4+PiBIZWxsbywKPj4+Cj4+Pj4gQ3VycmVudCBBU0lEL1ZN
+SUQgY2FsY3VsYXRpb24gbG9naWMgbWFrZXMgbG90IG9mIGFzc3VtcHRpb24gYWJvdXQgaW50ZXJu
+YWwgVExCCj4+Pj4gaW1wbGVtZW50YXRpb24gb2YgU01NVSwKPj4+Cj4+PiBOb3QgcmVhbGx5LiBJ
+dCBtYWtlcyBhc3N1bXB0aW9ucyB0aGF0IHRoZSBoYXJkd2FyZSBmb2xsb3dzIHRoZSBhcmNoaXRl
+Y3R1cmUsCj4+PiB3aGljaCBpcyBoYXJkbHkgdW5yZWFzb25hYmxlIGFzIGEgc3RhcnRpbmcgcG9p
+bnQuCj4+Pgo+Pj4+IFN5c3RlbXMgbGlrZSBUaHVuZGVyWCBoYXZlIG1vcmUgdGhhbiBvbmUgc21t
+dSBpbiB0aGUgc3lzdGVtIGFuZCBpdCBjYW4gdXNlIHNhbWUKPj4+PiBUTEJzIHdpdGggbW9yZSB0
+aGFuIG9uZSBvZiB0aGVtIGFuZCBleHBlY3RzIEFTSUQgdG8gYmUgdW5pcXVlCj4+Pgo+Pj4gLi4u
+IGJ1dCB0aGF0J3MgYnJva2VuLiBJZiB5b3UgYnVpbHQgYSBzeXN0ZW0gd2hlcmUgdGhlIENQVXMg
+c2hhcmVkIGEgVExCLAo+Pj4geW91IHdvdWxkIHJ1biBpbnRvIGlzc3VlcyBhcyB3ZWxsLgo+Pj4K
+Pj4+IEhvdyBkb2VzIHRoaXMgd29yayB3aXRoIHRoaW5ncyBsaWtlIGFybV9zbW11X3RsYl9zeW5j
+IGFuZCB0aGUgVExCR1NUQVRVUwo+Pj4gcmVnaXN0ZXI/Cj4+Pgo+Pj4+IEN1cnJlbnQgbG9naWMK
+Pj4+Pgo+Pj4+ICNkZWZpbmUgQVJNX1NNTVVfQ0JfQVNJRChjZmcpICAgICAgICAgICAoKGNmZykt
+PmNibmR4KQo+Pj4+ICNkZWZpbmUgQVJNX1NNTVVfQ0JfVk1JRChjZmcpICAgICAgICAgICAoKGNm
+ZyktPmNibmR4ICsgMSkKPj4+Pgo+Pj4+Cj4+Pj4gQ2FuIHRoaXMgYmUgcmVwbGFjZWQgYnkgc29t
+ZXRoaW5nIGxpa2UKPj4+Pgo+Pj4+Cj4+Pj4gI2RlZmluZSBBUk1fU01NVV9DQl9BU0lEKGNmZywg
+c21tdSkgICAgICAgICAgICAgKCgoc21tdSktPmlkeCA8PCAoc21tdSktPmFzaWRfc2hpZnQpIHwg
+KGNmZyktPmNibmR4KQo+Pj4+ICNkZWZpbmUgQVJNX1NNTVVfQ0JfVk1JRChjZmcsIHNtbXUpICAg
+ICAgICAgICAgICgoKHNtbXUpLT5pZHggPDwgKHNtbXUpLT52bWlkX3NoaWZ0KSB8IChjZmcpLT5j
+Ym5keCArIDEpCj4+Pj4KPj4+Pgo+Pj4+IElkeCBhbmQgc2hpZnQgY2FuIGJlIHBhc3NlZCBmcm9t
+IGRldmljZS10cmVlLgo+Pj4+Cj4+Pj4KPj4+PiBQbGVhc2UgbGV0IG1lIGtub3cgaWYgdGhpcyBp
+cyBhY2NlcHRhYmxlLCBJIHdpbGwgcHJlcGFyZSBhIHByb3BlciBwYXRjaAo+Pj4+IGFuZCBzZW5k
+IHRvIGxpc3QuCj4+Pj4KPj4+Pgo+Pj4+IElmIHRoaXMgaXMgbm90IGFjY2VwdGFibGUgdGhyb3Vn
+aCBhbiBhbHRlcm5hdGl2ZSBzdWdnZXN0aW9uLgo+Pj4KPj4+IElmIHdlJ3JlIGdvaW5nIHRvIHB1
+dCBzb21ldGhpbmcgaW50byB0aGUgZGV2aWNlLXRyZWUsIHRoZW4gaXQgc2hvdWxkIGJlCj4+PiBh
+biBlcnJhdHVtIHByb3BlcnR5IGRlc2NyaWJpbmcgdGhlIG9mZnNldCB0byBiZSBhcHBsaWVkIHRv
+IEFTSUQvVk1JRHMuCj4+PiBZb3UgYWxzbyBuZWVkIHRvIHRha2UgY2FyZSBub3QgdG8gZGVzY3Jp
+YmUgb3ZlcmxhcHBpbmcgbnVtYmVyc3BhY2VzLgo+PiBJIGRvbuKAmXQgdGhpbmsgdGhhdCBpcyBh
+biBlcnJhdGEuCj4+Pgo+Pj4gSG93IG1hbnkgY29udGV4dCBiYW5rcyBkbyB5b3UgaW1wbGVtZW50
+IGluIGVhY2ggU01NVT8KPj4gMTI4Lgo+Pj4KPj4+IFdpbGwKPj4gX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KPj4gbGludXgtYXJtLWtlcm5lbCBtYWlsaW5n
+IGxpc3QKPj4gbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCj4+IGh0dHA6Ly9s
+aXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo+IF9f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4gaW9tbXUgbWFp
+bGluZyBsaXN0Cj4gaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKPiBodHRwczovL2xp
+c3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQo+CgpfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxp
+c3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZv
+dW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
