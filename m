@@ -1,14 +1,16 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+From: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 Subject: Re: iommu/arm-smmu-v2 ASID/VMID calculation
-Date: Mon, 25 Jan 2016 17:03:13 +0000
-Message-ID: <20160125170312.GJ22927@arm.com>
+Date: Tue, 26 Jan 2016 00:48:13 +0000
+Message-ID: <E978AB4F-5CB0-42D8-8152-04C77DB664A1@caviumnetworks.com>
 References: <198F501C-8D30-4EB5-BC40-4F40BB75D40B@caviumnetworks.com>
+	<20160125170312.GJ22927@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <198F501C-8D30-4EB5-BC40-4F40BB75D40B-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+In-Reply-To: <20160125170312.GJ22927-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+Content-ID: <EC4E30C1EA5C2549BF690F074650AC38-Tk6F3M/euE6cE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,56 +20,51 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 21, 2016 at 06:52:34PM +0000, Chalamarla, Tirumalesh wrote:
-> Hi Will,
-
-Hello,
-
-> Current ASID/VMID calculation logic makes lot of assumption about internal TLB
-> implementation of SMMU,
-
-Not really. It makes assumptions that the hardware follows the architecture,
-which is hardly unreasonable as a starting point.
-
-> Systems like ThunderX have more than one smmu in the system and it can use same
-> TLBs with more than one of them and expects ASID to be unique 
-
-... but that's broken. If you built a system where the CPUs shared a TLB,
-you would run into issues as well.
-
-How does this work with things like arm_smmu_tlb_sync and the TLBGSTATUS
-register?
-
-> Current logic
-> 
-> #define ARM_SMMU_CB_ASID(cfg)           ((cfg)->cbndx)
-> #define ARM_SMMU_CB_VMID(cfg)           ((cfg)->cbndx + 1)
-> 
-> 
-> Can this be replaced by something like
-> 
-> 
-> #define ARM_SMMU_CB_ASID(cfg, smmu)             (((smmu)->idx << (smmu)->asid_shift) | (cfg)->cbndx)
-> #define ARM_SMMU_CB_VMID(cfg, smmu)             (((smmu)->idx << (smmu)->vmid_shift) | (cfg)->cbndx + 1)
-> 
-> 
-> Idx and shift can be passed from device-tree.
-> 
-> 
-> Please let me know if this is acceptable, I will prepare a proper patch
-> and send to list.
-> 
-> 
-> If this is not acceptable through an alternative suggestion.
-
-If we're going to put something into the device-tree, then it should be
-an erratum property describing the offset to be applied to ASID/VMIDs.
-You also need to take care not to describe overlapping numberspaces.
-
-How many context banks do you implement in each SMMU?
-
-Will
+SSBkb27igJl0IHRoaW5rIGl0IGZvbGxvd2VkIHNwZWMuDQoNClRoZSBTTU1VIHNwZWMgKElISTAw
+NjJDKSBzYXlzIChzZWN0aW9uIDIuMik6DQoNCiAgIC0gVGhlIGV4YWN0IGJlaGF2aW9yIG9mIGFu
+eSBUTEIgZnVuY3Rpb25hbGl0eSBpcyBJTVBMRU1FTlRBVElPTiBERUZJTkVEDQoNClNlY3Rpb24g
+Mi4yIGRlc2NyaWJlcyB0aGUgY29uc3RyYWludHMgb24gc2hhcmluZyAoZS5nLiBtdWx0aXBsZSBj
+b250ZXh0cw0KdXNpbmcgdGhlIHNhbWUgQVNJRCBzYXlzKToNCg0KICAgICAgIklmIG11bHRpcGxl
+IGNvbnRleHQgYmFua3MgaGF2ZSBodGUgc2FtZSBhdHRyaWJ1dGVzIGJ1dCBkZXNjcmliZQ0KICAg
+ICAgIGRpZmZlcmVudCB0cmFuc2xhdGlvbnMsIHRoZSByZXN1bHRzIG9mIGEgVExCIGxvb2t1cCBh
+cmUgVU5QUkVESUNUQUJMRSIuDQoNCg0KDQpUaGUgcHJlc2VudCBzbW11IGRyaXZlciBhc3N1bWVz
+IEFTSUQgc2hvdWxkIG9ubHkgYmUgdW5pcXVlIHBlciBTTU1VLCB0aGlzIG1pZ2h0IG5vdCBiZSB0
+cnVlIGZvciBhbGwgDQpJbXBsZW1lbnRhdGlvbnMuIA0KDQoNCg0KDQpPbiAxLzI1LzE2LCA5OjAz
+IEFNLCAiV2lsbCBEZWFjb24iIDx3aWxsLmRlYWNvbkBhcm0uY29tPiB3cm90ZToNCg0KPk9uIFRo
+dSwgSmFuIDIxLCAyMDE2IGF0IDA2OjUyOjM0UE0gKzAwMDAsIENoYWxhbWFybGEsIFRpcnVtYWxl
+c2ggd3JvdGU6DQo+PiBIaSBXaWxsLA0KPg0KPkhlbGxvLA0KPg0KPj4gQ3VycmVudCBBU0lEL1ZN
+SUQgY2FsY3VsYXRpb24gbG9naWMgbWFrZXMgbG90IG9mIGFzc3VtcHRpb24gYWJvdXQgaW50ZXJu
+YWwgVExCDQo+PiBpbXBsZW1lbnRhdGlvbiBvZiBTTU1VLA0KPg0KPk5vdCByZWFsbHkuIEl0IG1h
+a2VzIGFzc3VtcHRpb25zIHRoYXQgdGhlIGhhcmR3YXJlIGZvbGxvd3MgdGhlIGFyY2hpdGVjdHVy
+ZSwNCj53aGljaCBpcyBoYXJkbHkgdW5yZWFzb25hYmxlIGFzIGEgc3RhcnRpbmcgcG9pbnQuDQo+
+DQo+PiBTeXN0ZW1zIGxpa2UgVGh1bmRlclggaGF2ZSBtb3JlIHRoYW4gb25lIHNtbXUgaW4gdGhl
+IHN5c3RlbSBhbmQgaXQgY2FuIHVzZSBzYW1lDQo+PiBUTEJzIHdpdGggbW9yZSB0aGFuIG9uZSBv
+ZiB0aGVtIGFuZCBleHBlY3RzIEFTSUQgdG8gYmUgdW5pcXVlIA0KPg0KPi4uLiBidXQgdGhhdCdz
+IGJyb2tlbi4gSWYgeW91IGJ1aWx0IGEgc3lzdGVtIHdoZXJlIHRoZSBDUFVzIHNoYXJlZCBhIFRM
+QiwNCj55b3Ugd291bGQgcnVuIGludG8gaXNzdWVzIGFzIHdlbGwuDQo+DQo+SG93IGRvZXMgdGhp
+cyB3b3JrIHdpdGggdGhpbmdzIGxpa2UgYXJtX3NtbXVfdGxiX3N5bmMgYW5kIHRoZSBUTEJHU1RB
+VFVTDQo+cmVnaXN0ZXI/DQo+DQo+PiBDdXJyZW50IGxvZ2ljDQo+PiANCj4+ICNkZWZpbmUgQVJN
+X1NNTVVfQ0JfQVNJRChjZmcpICAgICAgICAgICAoKGNmZyktPmNibmR4KQ0KPj4gI2RlZmluZSBB
+Uk1fU01NVV9DQl9WTUlEKGNmZykgICAgICAgICAgICgoY2ZnKS0+Y2JuZHggKyAxKQ0KPj4gDQo+
+PiANCj4+IENhbiB0aGlzIGJlIHJlcGxhY2VkIGJ5IHNvbWV0aGluZyBsaWtlDQo+PiANCj4+IA0K
+Pj4gI2RlZmluZSBBUk1fU01NVV9DQl9BU0lEKGNmZywgc21tdSkgICAgICAgICAgICAgKCgoc21t
+dSktPmlkeCA8PCAoc21tdSktPmFzaWRfc2hpZnQpIHwgKGNmZyktPmNibmR4KQ0KPj4gI2RlZmlu
+ZSBBUk1fU01NVV9DQl9WTUlEKGNmZywgc21tdSkgICAgICAgICAgICAgKCgoc21tdSktPmlkeCA8
+PCAoc21tdSktPnZtaWRfc2hpZnQpIHwgKGNmZyktPmNibmR4ICsgMSkNCj4+IA0KPj4gDQo+PiBJ
+ZHggYW5kIHNoaWZ0IGNhbiBiZSBwYXNzZWQgZnJvbSBkZXZpY2UtdHJlZS4NCj4+IA0KPj4gDQo+
+PiBQbGVhc2UgbGV0IG1lIGtub3cgaWYgdGhpcyBpcyBhY2NlcHRhYmxlLCBJIHdpbGwgcHJlcGFy
+ZSBhIHByb3BlciBwYXRjaA0KPj4gYW5kIHNlbmQgdG8gbGlzdC4NCj4+IA0KPj4gDQo+PiBJZiB0
+aGlzIGlzIG5vdCBhY2NlcHRhYmxlIHRocm91Z2ggYW4gYWx0ZXJuYXRpdmUgc3VnZ2VzdGlvbi4N
+Cj4NCj5JZiB3ZSdyZSBnb2luZyB0byBwdXQgc29tZXRoaW5nIGludG8gdGhlIGRldmljZS10cmVl
+LCB0aGVuIGl0IHNob3VsZCBiZQ0KPmFuIGVycmF0dW0gcHJvcGVydHkgZGVzY3JpYmluZyB0aGUg
+b2Zmc2V0IHRvIGJlIGFwcGxpZWQgdG8gQVNJRC9WTUlEcy4NCj5Zb3UgYWxzbyBuZWVkIHRvIHRh
+a2UgY2FyZSBub3QgdG8gZGVzY3JpYmUgb3ZlcmxhcHBpbmcgbnVtYmVyc3BhY2VzLg0KSSBkb27i
+gJl0IHRoaW5rIHRoYXQgaXMgYW4gZXJyYXRhLiANCj4NCj5Ib3cgbWFueSBjb250ZXh0IGJhbmtz
+IGRvIHlvdSBpbXBsZW1lbnQgaW4gZWFjaCBTTU1VPw0KMTI4Lg0KPg0KPldpbGwNCl9fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlz
+dAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91
+bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
