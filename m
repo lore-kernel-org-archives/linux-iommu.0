@@ -1,36 +1,55 @@
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH] Intel-IOMMU.txt: fix link
-Date: Tue, 26 Jan 2016 18:33:04 +0200
-Message-ID: <1453825916-16269-1-git-send-email-mst@redhat.com>
+From: Eric Auger <eric.auger@linaro.org>
+Subject: Re: [PATCH 06/10] vfio: introduce
+ vfio_group_alloc_map_/unmap_free_reserved_iova
+Date: Tue, 26 Jan 2016 17:37:49 +0100
+Message-ID: <56A7A0DD.2080504@linaro.org>
+References: <201601270035.rJBZW1lE%fengguang.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-doc-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-doc-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
+In-Reply-To: <201601270035.rJBZW1lE%fengguang.wu@intel.com>
+List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
+List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
+List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
+List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
+List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
+Errors-To: kvmarm-bounces@lists.cs.columbia.edu
+Sender: kvmarm-bounces@lists.cs.columbia.edu
+To: kbuild test robot <lkp@intel.com>
+Cc: linux-arm-kernel@lists.infradead.org, eric.auger@st.com, kvm@vger.kernel.org, patches@linaro.org, marc.zyngier@arm.com, will.deacon@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com, kbuild-all@01.org, kvmarm@lists.cs.columbia.edu
 List-Id: iommu@lists.linux-foundation.org
 
-Looks like the VT-D spec at intel.com got moved.
-Update the link.
+Hi,
+On 01/26/2016 05:17 PM, kbuild test robot wrote:
+> Hi Eric,
+> 
+> [auto build test ERROR on v4.5-rc1]
+> [also build test ERROR on next-20160125]
+> [cannot apply to iommu/next]
+> [if your patch is applied to the wrong git tree, please drop us a note to help improving the system]
+> 
+> url:    https://github.com/0day-ci/linux/commits/Eric-Auger/KVM-PCIe-MSI-passthrough-on-ARM-ARM64/20160126-211921
+> config: x86_64-randconfig-s3-01262306 (attached as .config)
+> reproduce:
+>         # save the attached .config to linux build tree
+>         make ARCH=x86_64 
+> 
+> All errors (new ones prefixed by >>):
+> 
+>>> ERROR: "alloc_iova" [drivers/vfio/vfio_iommu_type1.ko] undefined!
+>>> ERROR: "free_iova" [drivers/vfio/vfio_iommu_type1.ko] undefined!
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- Documentation/Intel-IOMMU.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I will protect the code with CONFIG_IOMMU_IOVA if the usage of those
+functions is acknowledged.
 
-diff --git a/Documentation/Intel-IOMMU.txt b/Documentation/Intel-IOMMU.txt
-index 7b57fc0..49585b6 100644
---- a/Documentation/Intel-IOMMU.txt
-+++ b/Documentation/Intel-IOMMU.txt
-@@ -3,7 +3,7 @@ Linux IOMMU Support
- 
- The architecture spec can be obtained from the below location.
- 
--http://www.intel.com/technology/virtualization/
-+http://www.intel.com/content/dam/www/public/us/en/documents/product-specifications/vt-directed-io-spec.pdf
- 
- This guide gives a quick cheat sheet for some basic understanding.
- 
--- 
-MST
+Thanks
+
+Eric
+> 
+> ---
+> 0-DAY kernel test infrastructure                Open Source Technology Center
+> https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+> 
