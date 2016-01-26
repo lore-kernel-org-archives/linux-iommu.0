@@ -1,82 +1,43 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v3 3/3] iommu/io-pgtable: Avoid redundant TLB syncs
-Date: Tue, 26 Jan 2016 17:13:15 +0000
-Message-ID: <81a5e784494a04713e152659c95b34e92d944f32.1453723096.git.robin.murphy@arm.com>
-References: <cover.1453723096.git.robin.murphy@arm.com>
+From: Pavel Fedin <p.fedin@samsung.com>
+Subject: RE: [PATCH 00/10] KVM PCIe/MSI passthrough on ARM/ARM64
+Date: Tue, 26 Jan 2016 20:25:06 +0300
+Message-ID: <000001d1585e$8097d7e0$81c787a0$@samsung.com>
+References: <1453813968-2024-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1453723096.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
+In-reply-to: <1453813968-2024-1-git-send-email-eric.auger@linaro.org>
+Content-language: ru
+List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
+List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
+List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
+List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
+List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
+Errors-To: kvmarm-bounces@lists.cs.columbia.edu
+Sender: kvmarm-bounces@lists.cs.columbia.edu
+To: 'Eric Auger' <eric.auger@linaro.org>, eric.auger@st.com, alex.williamson@redhat.com, will.deacon@arm.com, christoffer.dall@linaro.org, marc.zyngier@arm.com, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org
+Cc: patches@linaro.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-In certain unmapping situations it is quite possible to end up issuing
-back-to-back TLB synchronisations, which at best is a waste of time and
-effort, and at worst causes some hardware to get rather confused. Whilst
-the pagetable implementations, or the IOMMU drivers, or both, could keep
-track of things to avoid this happening, it seems to make the most sense
-to prevent code duplication and add some simple state tracking in the
-common interface between the two.
+ Hello!
+ I'd like just to clarify some things for myself and better wrap my head around it...
 
-Reviewed-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/io-pgtable.h | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+> On x86 all accesses to the 1MB PA region [FEE0_0000h - FEF0_000h] are directed
+> as interrupt messages: accesses to this special PA window directly target the
+> APIC configuration space and not DRAM, meaning the downstream IOMMU is bypassed.
 
-diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-index 95c5565..4faee7d 100644
---- a/drivers/iommu/io-pgtable.h
-+++ b/drivers/iommu/io-pgtable.h
-@@ -132,12 +132,14 @@ void free_io_pgtable_ops(struct io_pgtable_ops *ops);
-  * @fmt:    The page table format.
-  * @cookie: An opaque token provided by the IOMMU driver and passed back to
-  *          any callback routines.
-+ * @tlb_sync_pending: Private flag for optimising out redundant syncs.
-  * @cfg:    A copy of the page table configuration.
-  * @ops:    The page table operations in use for this set of page tables.
-  */
- struct io_pgtable {
- 	enum io_pgtable_fmt	fmt;
- 	void			*cookie;
-+	bool			tlb_sync_pending;
- 	struct io_pgtable_cfg	cfg;
- 	struct io_pgtable_ops	ops;
- };
-@@ -147,17 +149,22 @@ struct io_pgtable {
- static inline void io_pgtable_tlb_flush_all(struct io_pgtable *iop)
- {
- 	iop->cfg.tlb->tlb_flush_all(iop->cookie);
-+	iop->tlb_sync_pending = true;
- }
- 
- static inline void io_pgtable_tlb_add_flush(struct io_pgtable *iop,
- 		unsigned long iova, size_t size, size_t granule, bool leaf)
- {
- 	iop->cfg.tlb->tlb_add_flush(iova, size, granule, leaf, iop->cookie);
-+	iop->tlb_sync_pending = true;
- }
- 
- static inline void io_pgtable_tlb_sync(struct io_pgtable *iop)
- {
--	iop->cfg.tlb->tlb_sync(iop->cookie);
-+	if (iop->tlb_sync_pending) {
-+		iop->cfg.tlb->tlb_sync(iop->cookie);
-+		iop->tlb_sync_pending = false;
-+	}
- }
- 
- /**
--- 
-2.7.0.25.gfc10eb5
+ So, this is effectively the same as always having hardwired 1:1 mappings on all IOMMUs, isn't it ?
+ If so, then we can't we just do the same, just by forcing similar 1:1 mapping? This is what i tried to do in my patchset. All of
+you are talking about a situation which arises when we are emulating different machine with different physical addresses layout. And
+e. g. if our host has MSI at 0xABADCAFE, our target could have valid RAM at the same location, and we need to handle it somehow,
+therefore we have to move our MSI window out of target's RAM. But how does this work on a PC then? What if our host is PC, and we
+want to emulate some ARM board, which has RAM at FE00 0000 ? Or does it mean that PC architecture is flawed and can reliably handle
+PCI passthrough only for itself ?
+
+Kind regards,
+Pavel Fedin
+Senior Engineer
+Samsung Electronics Research center Russia
