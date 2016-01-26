@@ -1,7 +1,8 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [Patch v3 02/12] iommu/amd: Detect pre enabled translation
-Date: Tue, 26 Jan 2016 18:29:16 +0800
-Message-ID: <1453804166-25646-3-git-send-email-bhe@redhat.com>
+Subject: [Patch v3 03/12] iommu/amd: move dte irq macro defitions to
+	amd_iommu_types.h
+Date: Tue, 26 Jan 2016 18:29:17 +0800
+Message-ID: <1453804166-25646-4-git-send-email-bhe@redhat.com>
 References: <1453804166-25646-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,70 +21,45 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add functions to check whether translation is already enabled in IOMMU.
+These macro definitions are also needed by irq table copy function
+later, so move them to amd_iommu_types.h.
 
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c  | 26 ++++++++++++++++++++++++++
- drivers/iommu/amd_iommu_proto.h |  4 ++++
- 2 files changed, 30 insertions(+)
+ drivers/iommu/amd_iommu.c       | 4 ----
+ drivers/iommu/amd_iommu_types.h | 5 +++++
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index fd99f910..91659d8 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -229,6 +229,27 @@ static int amd_iommu_enable_interrupts(void);
- static int __init iommu_go_to_state(enum iommu_init_state state);
- static void init_device_table_dma(void);
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index dd869fe..aeae07a 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3627,10 +3627,6 @@ struct amd_ir_data {
  
-+static bool g_pre_enabled;
-+
-+bool translation_pre_enabled(void)
-+{
-+        return g_pre_enabled;
-+}
-+
-+void clear_translation_pre_enabled(void)
-+{
-+        g_pre_enabled = false;
-+}
-+
-+static void init_translation_status(struct amd_iommu *iommu)
-+{
-+        u32 ctrl;
-+
-+        ctrl = readl(iommu->mmio_base + MMIO_CONTROL_OFFSET);
-+        if (ctrl & (1<<CONTROL_IOMMU_EN))
-+                g_pre_enabled = true;
-+}
-+
- static inline void update_last_devid(u16 devid)
+ static struct irq_chip amd_ir_chip;
+ 
+-#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
+-#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
+-#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
+-#define DTE_IRQ_REMAP_ENABLE    1ULL
+ 
+ static void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
  {
- 	if (devid > amd_iommu_last_bdf)
-@@ -1069,6 +1090,11 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index 9d32b20..9b8ace4 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -224,6 +224,11 @@
  
- 	iommu->int_enabled = false;
+ #define PPR_REQ_FAULT		0x01
  
-+	init_translation_status(iommu);
++#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
++#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
++#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
++#define DTE_IRQ_REMAP_ENABLE    1ULL
 +
-+	if (translation_pre_enabled())
-+		pr_warn("Translation is already enabled - trying to copy translation structures\n");
-+
- 	ret = init_iommu_from_acpi(iommu, h);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
-index 0bd9eb3..743e209 100644
---- a/drivers/iommu/amd_iommu_proto.h
-+++ b/drivers/iommu/amd_iommu_proto.h
-@@ -98,4 +98,8 @@ static inline bool iommu_feature(struct amd_iommu *iommu, u64 f)
- 	return !!(iommu->features & f);
- }
- 
-+/* kdump checking  */
-+extern bool translation_pre_enabled(void);
-+extern void clear_translation_pre_enabled(void);
-+
- #endif /* _ASM_X86_AMD_IOMMU_PROTO_H  */
+ #define PAGE_MODE_NONE    0x00
+ #define PAGE_MODE_1_LEVEL 0x01
+ #define PAGE_MODE_2_LEVEL 0x02
 -- 
 2.1.0
