@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger@linaro.org>
-Subject: [PATCH 08/10] vfio: introduce vfio_group_require_msi_mapping
-Date: Tue, 26 Jan 2016 13:12:46 +0000
-Message-ID: <1453813968-2024-9-git-send-email-eric.auger@linaro.org>
+Subject: [PATCH 07/10] vfio: pci: cache the vfio_group in vfio_pci_device
+Date: Tue, 26 Jan 2016 13:12:45 +0000
+Message-ID: <1453813968-2024-8-git-send-email-eric.auger@linaro.org>
 References: <1453813968-2024-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,94 +21,90 @@ To: eric.auger@st.com, eric.auger@linaro.org, alex.williamson@redhat.com, will.d
 Cc: patches@linaro.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-This new function enables to know whether msi write transaction
-addresses must be mapped.
+Add a new set_group operation which allows to cache the vfio_group
+handle within the vfio_pci_device struct. This is useful to do
+iommu operations from the vfio_pci device.
 
 Signed-off-by: Eric Auger <eric.auger@linaro.org>
 ---
- drivers/vfio/vfio.c             | 22 ++++++++++++++++++++++
- drivers/vfio/vfio_iommu_type1.c |  8 ++++++++
- include/linux/vfio.h            |  2 ++
- 3 files changed, 32 insertions(+)
+ drivers/vfio/pci/vfio_pci.c         | 8 ++++++++
+ drivers/vfio/pci/vfio_pci_private.h | 1 +
+ drivers/vfio/vfio.c                 | 3 +++
+ include/linux/vfio.h                | 3 +++
+ 4 files changed, 15 insertions(+)
 
+diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
+index 2760a7b..2a32856 100644
+--- a/drivers/vfio/pci/vfio_pci.c
++++ b/drivers/vfio/pci/vfio_pci.c
+@@ -920,6 +920,13 @@ static void vfio_pci_request(void *device_data, unsigned int count)
+ 	mutex_unlock(&vdev->igate);
+ }
+ 
++static void vfio_pci_set_group(void *device_data, struct vfio_group *group)
++{
++	struct vfio_pci_device *vdev = device_data;
++
++	vdev->vfio_group = group;
++}
++
+ static const struct vfio_device_ops vfio_pci_ops = {
+ 	.name		= "vfio-pci",
+ 	.open		= vfio_pci_open,
+@@ -929,6 +936,7 @@ static const struct vfio_device_ops vfio_pci_ops = {
+ 	.write		= vfio_pci_write,
+ 	.mmap		= vfio_pci_mmap,
+ 	.request	= vfio_pci_request,
++	.set_group	= vfio_pci_set_group,
+ };
+ 
+ static int vfio_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+diff --git a/drivers/vfio/pci/vfio_pci_private.h b/drivers/vfio/pci/vfio_pci_private.h
+index 0e7394f..2893b10 100644
+--- a/drivers/vfio/pci/vfio_pci_private.h
++++ b/drivers/vfio/pci/vfio_pci_private.h
+@@ -35,6 +35,7 @@ struct vfio_pci_irq_ctx {
+ 
+ struct vfio_pci_device {
+ 	struct pci_dev		*pdev;
++	struct vfio_group	*vfio_group;
+ 	void __iomem		*barmap[PCI_STD_RESOURCE_END + 1];
+ 	u8			*pci_config_map;
+ 	u8			*vconfig;
 diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-index 2760d4c..f3df5a10 100644
+index 3d9de00..2760d4c 100644
 --- a/drivers/vfio/vfio.c
 +++ b/drivers/vfio/vfio.c
-@@ -793,6 +793,28 @@ static int vfio_iommu_group_notifier(struct notifier_block *nb,
- 	return NOTIFY_OK;
- }
+@@ -548,6 +548,9 @@ struct vfio_device *vfio_group_create_device(struct vfio_group *group,
+ 	/* No need to get group_lock, caller has group reference */
+ 	vfio_group_get(group);
  
-+bool vfio_group_require_msi_mapping(struct vfio_group *group)
-+{
-+	struct vfio_container *container = group->container;
-+	struct vfio_iommu_driver *driver;
-+	bool ret;
++	if (device->ops->set_group)
++		device->ops->set_group(device_data, group);
 +
-+	down_read(&container->group_lock);
-+
-+	driver = container->iommu_driver;
-+	if (!driver || !driver->ops || !driver->ops->require_msi_mapping) {
-+		ret = -EINVAL;
-+		goto up;
-+	}
-+
-+	ret = driver->ops->require_msi_mapping(container->iommu_data);
-+
-+up:
-+	up_read(&container->group_lock);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(vfio_group_require_msi_mapping);
-+
- /**
-  * VFIO driver API
-  */
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index a79e2a8..2f085d3 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -1179,6 +1179,13 @@ unlock:
- 	return ret;
- }
- 
-+static bool vfio_iommu_type1_require_msi_mapping(void *iommu_data)
-+{
-+	struct vfio_iommu *iommu = iommu_data;
-+
-+	return vfio_domains_require_msi_mapping(iommu);
-+}
-+
- static void *vfio_iommu_type1_open(unsigned long arg)
- {
- 	struct vfio_iommu *iommu;
-@@ -1336,6 +1343,7 @@ static const struct vfio_iommu_driver_ops vfio_iommu_driver_ops_type1 = {
- 		vfio_iommu_type1_alloc_map_reserved_iova,
- 	.unmap_free_reserved_iova	=
- 		vfio_iommu_type1_unmap_free_reserved_iova,
-+	.require_msi_mapping		= vfio_iommu_type1_require_msi_mapping,
- };
- 
- static int __init vfio_iommu_type1_init(void)
+ 	mutex_lock(&group->device_lock);
+ 	list_add(&device->group_next, &group->device_list);
+ 	mutex_unlock(&group->device_lock);
 diff --git a/include/linux/vfio.h b/include/linux/vfio.h
-index f7eaf30..3e6cbeb 100644
+index 0020f81..f7eaf30 100644
 --- a/include/linux/vfio.h
 +++ b/include/linux/vfio.h
-@@ -58,6 +58,7 @@ extern void *vfio_del_group_dev(struct device *dev);
- extern struct vfio_device *vfio_device_get_from_dev(struct device *dev);
- extern void vfio_device_put(struct vfio_device *device);
- extern void *vfio_device_data(struct vfio_device *device);
-+extern bool vfio_group_require_msi_mapping(struct vfio_group *group);
+@@ -18,6 +18,8 @@
+ #include <linux/poll.h>
+ #include <uapi/linux/vfio.h>
  
++struct vfio_group;
++
  /**
-  * struct vfio_iommu_driver_ops - VFIO IOMMU driver callbacks
-@@ -85,6 +86,7 @@ struct vfio_iommu_driver_ops {
- 	int		(*unmap_free_reserved_iova)(void *iommu_data,
- 						    struct iommu_group *group,
- 						    dma_addr_t iova);
-+	bool		(*require_msi_mapping)(void *iommu_data);
+  * struct vfio_device_ops - VFIO bus driver device callbacks
+  *
+@@ -42,6 +44,7 @@ struct vfio_device_ops {
+ 			 unsigned long arg);
+ 	int	(*mmap)(void *device_data, struct vm_area_struct *vma);
+ 	void	(*request)(void *device_data, unsigned int count);
++	void	(*set_group)(void *device_data, struct vfio_group *group);
  };
  
- extern int vfio_register_iommu_driver(const struct vfio_iommu_driver_ops *ops);
+ extern struct iommu_group *vfio_iommu_group_get(struct device *dev);
 -- 
 1.9.1
