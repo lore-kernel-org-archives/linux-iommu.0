@@ -1,11 +1,14 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH] iommu/io-pgtable-arm: Fix io-pgtable-arm build failure
-Date: Wed, 27 Jan 2016 11:10:32 +0000
-Message-ID: <1453893032-4459-1-git-send-email-will.deacon@arm.com>
+From: Wan Zongshun <vw-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
+Subject: Re: [Patch v3 04/12] iommu/amd: add copy_irq_table function
+Date: Wed, 27 Jan 2016 19:23:02 +0800
+Message-ID: <56A8A896.70405@iommu.org>
+References: <1453804166-25646-1-git-send-email-bhe@redhat.com>
+	<1453804166-25646-5-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1453804166-25646-5-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,40 +18,108 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: Lada.Trimasova-HKixBCOQz3hWk0Htik3J/w@public.gmane.org, Vineet Gupta <vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Lada Trimasova <ltrimas-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Alexey Brodkin <abrodkin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-RnJvbTogTGFkYSBUcmltYXNvdmEgPExhZGEuVHJpbWFzb3ZhQHN5bm9wc3lzLmNvbT4KClRyeWlu
-ZyB0byBidWlsZCBhIGtlcm5lbCBmb3IgQVJDIHdpdGggYm90aCBvcHRpb25zIENPTkZJR19DT01Q
-SUxFX1RFU1QKYW5kIENPTkZJR19JT01NVV9JT19QR1RBQkxFX0xQQUUgZW5hYmxlZCAoZS5nLiBh
-cyBhIHJlc3VsdCBvZiAibWFrZQphbGx5ZXNjb25maWciKSByZXN1bHRzIGluIHRoZSBmb2xsb3dp
-bmcgYnVpbGQgZmFpbHVyZToKCiB8IENDIGRyaXZlcnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0ubwog
-fCBsaW51eC9kcml2ZXJzL2lvbW11L2lvLXBndGFibGUtYXJtLmM6IEluCiB8IGZ1bmN0aW9uIOKA
-mF9fYXJtX2xwYWVfYWxsb2NfcGFnZXPigJk6CiB8IGxpbnV4L2RyaXZlcnMvaW9tbXUvaW8tcGd0
-YWJsZS1hcm0uYzoyMjE6MzoKIHwgZXJyb3I6IGltcGxpY2l0IGRlY2xhcmF0aW9uIG9mIGZ1bmN0
-aW9uIOKAmGRtYV9tYXBfc2luZ2xl4oCZCiB8IFstV2Vycm9yPWltcGxpY2l0LWZ1bmN0aW9uLWRl
-Y2xhcmF0aW9uXQogfCBkbWEgPSBkbWFfbWFwX3NpbmdsZShkZXYsIHBhZ2VzLCBzaXplLCBETUFf
-VE9fREVWSUNFKTsKIHwgXgogfCBsaW51eC9kcml2ZXJzL2lvbW11L2lvLXBndGFibGUtYXJtLmM6
-MjIxOjQyOgogfCBlcnJvcjog4oCYRE1BX1RPX0RFVklDReKAmSB1bmRlY2xhcmVkIChmaXJzdCB1
-c2UgaW4gdGhpcyBmdW5jdGlvbikKIHwgZG1hID0gZG1hX21hcF9zaW5nbGUoZGV2LCBwYWdlcywg
-c2l6ZSwgRE1BX1RPX0RFVklDRSk7CiB8IF4KClNpbmNlIElPTU1VX0lPX1BHVEFCTEVfTFBBRSBk
-ZXBlbmRzIG9uIERNQSBBUEksIGlvLXBndGFibGUtYXJtLmMgc2hvdWxkCmluY2x1ZGUgbGludXgv
-ZG1hLW1hcHBpbmcuaC4gVGhpcyBmaXhlcyB0aGUgcmVwb3J0ZWQgZmFpbHVyZS4KCkNjOiBBbGV4
-ZXkgQnJvZGtpbiA8YWJyb2RraW5Ac3lub3BzeXMuY29tPgpDYzogVmluZWV0IEd1cHRhIDx2Z3Vw
-dGFAc3lub3BzeXMuY29tPgpDYzogSm9lcmcgUm9lZGVsIDxqb3JvQDhieXRlcy5vcmc+ClNpZ25l
-ZC1vZmYtYnk6IExhZGEgVHJpbWFzb3ZhIDxsdHJpbWFzQHN5bm9wc3lzLmNvbT4KU2lnbmVkLW9m
-Zi1ieTogV2lsbCBEZWFjb24gPHdpbGwuZGVhY29uQGFybS5jb20+Ci0tLQoKSm9lcmcgLS0gY2Fu
-IHlvdSBwaWNrIHRoaXMgdXAgYXMgYSBmaXggZm9yIDQuNSwgcGxlYXNlPyBJIGRvbid0IGhhdmUK
-ICAgICAgICAgYW55IG90aGVyIGZpeGVzIHF1ZXVlZCwgc28gYSBwdWxsIHJlcXVlc3Qgc2VlbXMg
-YSBiaXQgT1RULgoKIGRyaXZlcnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0uYyB8IDEgKwogMSBmaWxl
-IGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pby1w
-Z3RhYmxlLWFybS5jIGIvZHJpdmVycy9pb21tdS9pby1wZ3RhYmxlLWFybS5jCmluZGV4IDhiYmNi
-ZmU3Njk1Yy4uMzgxY2E1YTM3YTdiIDEwMDY0NAotLS0gYS9kcml2ZXJzL2lvbW11L2lvLXBndGFi
-bGUtYXJtLmMKKysrIGIvZHJpdmVycy9pb21tdS9pby1wZ3RhYmxlLWFybS5jCkBAIC0yNSw2ICsy
-NSw3IEBACiAjaW5jbHVkZSA8bGludXgvc2l6ZXMuaD4KICNpbmNsdWRlIDxsaW51eC9zbGFiLmg+
-CiAjaW5jbHVkZSA8bGludXgvdHlwZXMuaD4KKyNpbmNsdWRlIDxsaW51eC9kbWEtbWFwcGluZy5o
-PgogCiAjaW5jbHVkZSA8YXNtL2JhcnJpZXIuaD4KIAotLSAKMi4xLjQKCl9fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21t
-dUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlv
-bi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+
+
+-------- Original Message --------
+> If irq table exists in old kernel create a new one and copy the content
+> of old irq table to the newly created.
+>
+> Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> ---
+>   drivers/iommu/amd_iommu.c       |  2 +-
+>   drivers/iommu/amd_iommu_init.c  | 43 +++++++++++++++++++++++++++++++++++++++++
+>   drivers/iommu/amd_iommu_proto.h |  1 +
+>   3 files changed, 45 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> index aeae07a..63f4c6b 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -3628,7 +3628,7 @@ struct amd_ir_data {
+>   static struct irq_chip amd_ir_chip;
+>
+>
+> -static void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
+> +void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
+>   {
+>   	u64 dte;
+>
+> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+> index 91659d8..450adad 100644
+> --- a/drivers/iommu/amd_iommu_init.c
+> +++ b/drivers/iommu/amd_iommu_init.c
+> @@ -660,6 +660,49 @@ static int get_dev_entry_bit(u16 devid, u8 bit)
+>   	return (amd_iommu_dev_table[devid].data[i] & (1UL << _bit)) >> _bit;
+>   }
+>
+> +static void copy_irq_table(u16 devid)
+> +{
+> +	struct irq_remap_table *table = NULL;
+> +	u16 alias;
+> +	u64 dte;
+> +	u64 *old_intr_virt;
+> +
+> +	alias = amd_iommu_alias_table[devid];
+> +	table = irq_lookup_table[alias];
+> +	if (table) {
+> +	        irq_lookup_table[devid] = table;
+> +		set_dte_irq_entry(devid, table);
+> +	        return;
+> +	}
+> +	dte     = amd_iommu_dev_table[devid].data[2];
+> +	dte &= DTE_IRQ_PHYS_ADDR_MASK;
+> +	if( (!dte&DTE_IRQ_REMAP_ENABLE) || ( dte == 0) )
+> +	        return;
+> +
+
+here: dte&DTE_IRQ_REMAP_ENABLE
+
+style?
+dte & DTE_IRQ_REMAP_ENABLE
+
+> +	table = kzalloc(sizeof(*table), GFP_ATOMIC);
+> +	if (!table){
+> +	        pr_warn("AMD-Vi: amd irq table allocation failed\n");
+> +	        return;
+> +	}
+> +
+> +	table->table = kmem_cache_alloc(amd_iommu_irq_cache, GFP_ATOMIC);
+> +        if (!table->table) {
+> +                kfree(table);
+> +                table = NULL;
+> +		return;
+> +        }
+> +	memset(table->table, 0, MAX_IRQS_PER_TABLE * sizeof(u32));
+> +
+> +	old_intr_virt = memremap(dte, MAX_IRQS_PER_TABLE * sizeof(u32), MEMREMAP_WB);
+
+Here if rename the 'dte' to 'irte',  better to read?
+
+
+> +	memcpy(table->table, old_intr_virt, MAX_IRQS_PER_TABLE * sizeof(u32));
+> +	irq_lookup_table[devid] = table;
+> +	set_dte_irq_entry(devid, table);
+> +	if (devid != alias) {
+> +                irq_lookup_table[alias] = table;
+> +		set_dte_irq_entry(alias, table);
+> +        }
+> +	memunmap(old_intr_virt);
+> +}
+>
+>   void amd_iommu_apply_erratum_63(u16 devid)
+>   {
+> diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
+> index 743e209..ab562e0 100644
+> --- a/drivers/iommu/amd_iommu_proto.h
+> +++ b/drivers/iommu/amd_iommu_proto.h
+> @@ -101,5 +101,6 @@ static inline bool iommu_feature(struct amd_iommu *iommu, u64 f)
+>   /* kdump checking  */
+>   extern bool translation_pre_enabled(void);
+>   extern void clear_translation_pre_enabled(void);
+> +extern void set_dte_irq_entry(u16 devid, struct irq_remap_table *table);
+>
+>   #endif /* _ASM_X86_AMD_IOMMU_PROTO_H  */
+>
