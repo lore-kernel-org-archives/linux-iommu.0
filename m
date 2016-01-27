@@ -1,94 +1,82 @@
-From: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Subject: RE: [PATCH 1/4] iommu/arm-smmu: Treat all device transactions as
-	unprivileged
-Date: Wed, 27 Jan 2016 06:00:11 +0000
-Message-ID: <39063E8F96E11742B35A201CC5D095B7BAE0C0@SJEXCHMB10.corp.ad.broadcom.com>
-References: <cover.1453830752.git.robin.murphy@arm.com>
-	<6c5730256333b8d941f2c0371c1ab709a454938c.1453830752.git.robin.murphy@arm.com>
+From: Eric Auger <eric.auger@linaro.org>
+Subject: Re: [PATCH 00/10] KVM PCIe/MSI passthrough on ARM/ARM64
+Date: Wed, 27 Jan 2016 09:52:31 +0100
+Message-ID: <56A8854F.3030209@linaro.org>
+References: <1453813968-2024-1-git-send-email-eric.auger@linaro.org>
+ <000001d1585e$8097d7e0$81c787a0$@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <6c5730256333b8d941f2c0371c1ab709a454938c.1453830752.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, bcm-kernel-feedback-list <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
+In-Reply-To: <000001d1585e$8097d7e0$81c787a0$@samsung.com>
+List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
+List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
+List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
+List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
+List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
+Errors-To: kvmarm-bounces@lists.cs.columbia.edu
+Sender: kvmarm-bounces@lists.cs.columbia.edu
+To: Pavel Fedin <p.fedin@samsung.com>, eric.auger@st.com, alex.williamson@redhat.com, will.deacon@arm.com, christoffer.dall@linaro.org, marc.zyngier@arm.com, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org
+Cc: patches@linaro.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+Hi Pavel,
+On 01/26/2016 06:25 PM, Pavel Fedin wrote:
+>  Hello!
+>  I'd like just to clarify some things for myself and better wrap my head around it...
+> 
+>> On x86 all accesses to the 1MB PA region [FEE0_0000h - FEF0_000h] are directed
+>> as interrupt messages: accesses to this special PA window directly target the
+>> APIC configuration space and not DRAM, meaning the downstream IOMMU is bypassed.
+> 
+>  So, this is effectively the same as always having hardwired 1:1 mappings on all IOMMUs, isn't it ?
+>  If so, then we can't we just do the same, just by forcing similar 1:1 mapping? This is what i tried to do in my patchset. All of
+> you are talking about a situation which arises when we are emulating different machine with different physical addresses layout. And
+> e. g. if our host has MSI at 0xABADCAFE, our target could have valid RAM at the same location, and we need to handle it somehow,
+> therefore we have to move our MSI window out of target's RAM. But how does this work on a PC then? What if our host is PC, and we
+> want to emulate some ARM board, which has RAM at FE00 0000 ? Or does it mean that PC architecture is flawed and can reliably handle
+> PCI passthrough only for itself ?
+Alex answered to this I think:
+"
+x86 isn't problem-free in this space.  An x86 VM is going to know that
+the 0xfee00000 address range is special, it won't be backed by RAM and
+won't be a DMA target, thus we'll never attempt to map it for an iova
+address.  However, if we run a non-x86 VM or a userspace driver, it
+doesn't necessarily know that there's anything special about that range
+of iovas.  I intend to resolve this with an extension to the iommu info
+ioctl that describes the available iova space for the iommu.  The
+interrupt region would simply be excluded.
+"
 
-> -----Original Message-----
-> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
-> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Robin Murphy
-> Sent: 26 January 2016 23:37
-> To: will.deacon-5wv7dgnIgG8@public.gmane.org
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org;
-> tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
-> Subject: [PATCH 1/4] iommu/arm-smmu: Treat all device transactions as
-> unprivileged
-> 
-> The IOMMU API has no concept of privilege so assumes all devices and
-> mappings are equal, and indeed most non-CPU master devices on an AMBA
-> interconnect make little use of the attribute bits on the bus thus by default
-> perform unprivileged data accesses.
-> 
-> Some devices, however, believe themselves more equal than others, such as
-> programmable DMA controllers whose 'master' thread issues bus transactions
-> marked as privileged instruction fetches, while the data accesses of its channel
-> threads (under the control of Linux, at least) are marked as unprivileged. This
-> poses a problem for implementing the DMA API on an IOMMU conforming to
-> ARM VMSAv8, under which a page that is unprivileged-writeable is also implicitly
-> privileged-execute-never.
-> Given that, there is no one set of attributes with which iommu_map() can
-> implement, say, dma_alloc_coherent() that will allow every possible type of
-> access without something running into unexecepted permission faults.
-> 
-> Fortunately the SMMU architecture provides a means to mitigate such issues by
-> overriding the incoming attributes of a transaction; make use of that to strip the
-> privileged/unprivileged status off incoming transactions, leaving just the
-> instruction/data dichotomy which the IOMMU API does at least understand;
-> Four states good, two states better.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c index
-> 59ee4b8..1f9093d 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -167,6 +167,9 @@
->  #define S2CR_TYPE_BYPASS		(1 << S2CR_TYPE_SHIFT)
->  #define S2CR_TYPE_FAULT			(2 << S2CR_TYPE_SHIFT)
-> 
-> +#define S2CR_PRIVCFG_SHIFT		24
-> +#define S2CR_PRIVCFG_UNPRIV		(2 << S2CR_PRIVCFG_SHIFT)
-> +
->  /* Context bank attribute registers */
->  #define ARM_SMMU_GR1_CBAR(n)		(0x0 + ((n) << 2))
->  #define CBAR_VMID_SHIFT			0
-> @@ -1083,7 +1086,7 @@ static int arm_smmu_domain_add_master(struct
-> arm_smmu_domain *smmu_domain,
->  		u32 idx, s2cr;
-> 
->  		idx = cfg->smrs ? cfg->smrs[i].idx : cfg->streamids[i];
-> -		s2cr = S2CR_TYPE_TRANS |
-> +		s2cr = S2CR_TYPE_TRANS | S2CR_PRIVCFG_UNPRIV |
->  		       (smmu_domain->cfg.cbndx << S2CR_CBNDX_SHIFT);
+I am not sure I've addressed this requirement yet but it seems more
+future proof to have an IOMMU mapping for those addresses.
 
-Treating all MMU master access as unprivileged sounds more
-conservative. Alternate approach would be to treat instruction
-fetches as data reads.
+For the ARM use case I think Marc gave guidance:
+"
+We want userspace to be in control of the memory map, and it
+is the kernel's job to tell us whether or not this matches the HW
+capabilities or not. A fixed mapping may completely clash with the
+memory map I want (think emulating HW x on platform y), and there is no
+reason why we should have the restrictions x86 has.
+"
 
-Regards,
-Anup
+That's the rationale behind respining that way.
+
+Waiting for other comments & discussions, I am going to address the iova
+and dma_addr_t kbuilt reported compilation issues. Please apologize for
+those.
+
+Best Regards
+
+Eric
+
+
+> 
+> Kind regards,
+> Pavel Fedin
+> Senior Engineer
+> Samsung Electronics Research center Russia
+> 
+> 
