@@ -1,15 +1,15 @@
 From: Wan Zongshun <vw-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
-Subject: Re: [Patch v3 06/12] iommu/amd: Clean up the useless
-	IOMMU_PTE_U/IOMMU_PTE_FC
-Date: Wed, 27 Jan 2016 18:22:44 +0800
-Message-ID: <56A89A74.6060501@iommu.org>
+Subject: Re: [Patch v3 03/12] iommu/amd: move dte irq macro defitions to
+	amd_iommu_types.h
+Date: Wed, 27 Jan 2016 18:25:35 +0800
+Message-ID: <56A89B1F.6010004@iommu.org>
 References: <1453804166-25646-1-git-send-email-bhe@redhat.com>
-	<1453804166-25646-7-git-send-email-bhe@redhat.com>
+	<1453804166-25646-4-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1453804166-25646-7-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1453804166-25646-4-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,58 +25,47 @@ List-Id: iommu@lists.linux-foundation.org
 
 
 -------- Original Message --------
-> In amd-vi spec bit[60:58] are only used to store the bit[14:12] of GCR3.
-> No any other useage is found in several versions of amd-vi spec. So remove
-> them in this patch.
+> These macro definitions are also needed by irq table copy function
+> later, so move them to amd_iommu_types.h.
 
-Also,this patch also made me confusion, please keep FC bit here, bit[60] 
-should be PTE's FC bit.
-
-Vincent.
+Typo for your subject (defitions?).
 
 >
 > Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 > ---
->   drivers/iommu/amd_iommu.c       | 6 +++---
->   drivers/iommu/amd_iommu_types.h | 2 --
->   2 files changed, 3 insertions(+), 5 deletions(-)
+>   drivers/iommu/amd_iommu.c       | 4 ----
+>   drivers/iommu/amd_iommu_types.h | 5 +++++
+>   2 files changed, 5 insertions(+), 4 deletions(-)
 >
 > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index f02d4b1..93bc690 100644
+> index dd869fe..aeae07a 100644
 > --- a/drivers/iommu/amd_iommu.c
 > +++ b/drivers/iommu/amd_iommu.c
-> @@ -1331,9 +1331,9 @@ static int iommu_map_page(struct protection_domain *dom,
+> @@ -3627,10 +3627,6 @@ struct amd_ir_data {
 >
->   	if (count > 1) {
->   		__pte = PAGE_SIZE_PTE(phys_addr, page_size);
-> -		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_V | IOMMU_PTE_FC;
-> +		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_V;
->   	} else
-> -		__pte = phys_addr | IOMMU_PTE_V | IOMMU_PTE_FC;
-> +		__pte = phys_addr | IOMMU_PTE_V;
+>   static struct irq_chip amd_ir_chip;
 >
->   	if (prot & IOMMU_PROT_IR)
->   		__pte |= IOMMU_PTE_IR;
-> @@ -2463,7 +2463,7 @@ static dma_addr_t dma_ops_domain_map(struct dma_ops_domain *dom,
->   	if (!pte)
->   		return DMA_ERROR_CODE;
+> -#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
+> -#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
+> -#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
+> -#define DTE_IRQ_REMAP_ENABLE    1ULL
 >
-> -	__pte = paddr | IOMMU_PTE_V | IOMMU_PTE_FC;
-> +	__pte = paddr | IOMMU_PTE_V;
->
->   	if (direction == DMA_TO_DEVICE)
->   		__pte |= IOMMU_PTE_IR;
+>   static void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
+>   {
 > diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-> index 65f7988..42cd3d5 100644
+> index 9d32b20..9b8ace4 100644
 > --- a/drivers/iommu/amd_iommu_types.h
 > +++ b/drivers/iommu/amd_iommu_types.h
-> @@ -295,8 +295,6 @@
+> @@ -224,6 +224,11 @@
 >
->   #define IOMMU_PTE_V  (1ULL << 0)
->   #define IOMMU_PTE_TV (1ULL << 1)
-> -#define IOMMU_PTE_U  (1ULL << 59)
-> -#define IOMMU_PTE_FC (1ULL << 60)
->   #define IOMMU_PTE_IR (1ULL << 61)
->   #define IOMMU_PTE_IW (1ULL << 62)
+>   #define PPR_REQ_FAULT		0x01
 >
+> +#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
+> +#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
+> +#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
+> +#define DTE_IRQ_REMAP_ENABLE    1ULL
+> +
+>   #define PAGE_MODE_NONE    0x00
+>   #define PAGE_MODE_1_LEVEL 0x01
+>   #define PAGE_MODE_2_LEVEL 0x02
 >
