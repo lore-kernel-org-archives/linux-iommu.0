@@ -1,15 +1,15 @@
 From: Wan Zongshun <vw-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
-Subject: Re: [Patch v3 03/12] iommu/amd: move dte irq macro defitions to
-	amd_iommu_types.h
-Date: Wed, 27 Jan 2016 18:25:35 +0800
-Message-ID: <56A89B1F.6010004@iommu.org>
+Subject: Re: [Patch v3 11/12] iommu/amd: No need to wait iommu completion if
+	no dte irq entry change
+Date: Wed, 27 Jan 2016 19:03:08 +0800
+Message-ID: <56A8A3EC.7090701@iommu.org>
 References: <1453804166-25646-1-git-send-email-bhe@redhat.com>
-	<1453804166-25646-4-git-send-email-bhe@redhat.com>
+	<1453804166-25646-12-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1453804166-25646-4-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1453804166-25646-12-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,47 +25,49 @@ List-Id: iommu@lists.linux-foundation.org
 
 
 -------- Original Message --------
-> These macro definitions are also needed by irq table copy function
-> later, so move them to amd_iommu_types.h.
-
-Typo for your subject (defitions?).
-
+> This is a clean up. In get_irq_table() only if DTE entry is changed
+> iommu_completion_wait() need be called. Otherwise no need to do it.
 >
 > Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 > ---
->   drivers/iommu/amd_iommu.c       | 4 ----
->   drivers/iommu/amd_iommu_types.h | 5 +++++
->   2 files changed, 5 insertions(+), 4 deletions(-)
+>   drivers/iommu/amd_iommu.c | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
 >
 > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index dd869fe..aeae07a 100644
+> index 0880500..dda703b 100644
 > --- a/drivers/iommu/amd_iommu.c
 > +++ b/drivers/iommu/amd_iommu.c
-> @@ -3627,10 +3627,6 @@ struct amd_ir_data {
+> @@ -3674,7 +3674,7 @@ static struct irq_remap_table *get_irq_table(u16 devid, bool ioapic)
 >
->   static struct irq_chip amd_ir_chip;
+>   	table = irq_lookup_table[devid];
+>   	if (table)
+> -		goto out;
+> +		goto out_unlock;
 >
-> -#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
-> -#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
-> -#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
-> -#define DTE_IRQ_REMAP_ENABLE    1ULL
+>   	alias = amd_iommu_alias_table[devid];
+>   	table = irq_lookup_table[alias];
+> @@ -3688,7 +3688,7 @@ static struct irq_remap_table *get_irq_table(u16 devid, bool ioapic)
+>   	/* Nothing there yet, allocate new irq remapping table */
+>   	table = kzalloc(sizeof(*table), GFP_ATOMIC);
+>   	if (!table)
+> -		goto out;
+> +		goto out_unlock;
 >
->   static void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
->   {
-> diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-> index 9d32b20..9b8ace4 100644
-> --- a/drivers/iommu/amd_iommu_types.h
-> +++ b/drivers/iommu/amd_iommu_types.h
-> @@ -224,6 +224,11 @@
+>   	/* Initialize table spin-lock */
+>   	spin_lock_init(&table->lock);
+> @@ -3701,7 +3701,7 @@ static struct irq_remap_table *get_irq_table(u16 devid, bool ioapic)
+>   	if (!table->table) {
+>   		kfree(table);
+>   		table = NULL;
+> -		goto out;
+> +		goto out_unlock;
+>   	}
 >
->   #define PPR_REQ_FAULT		0x01
+>   	memset(table->table, 0, MAX_IRQS_PER_TABLE * sizeof(u32));
 >
-> +#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
-> +#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
-> +#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
-> +#define DTE_IRQ_REMAP_ENABLE    1ULL
-> +
->   #define PAGE_MODE_NONE    0x00
->   #define PAGE_MODE_1_LEVEL 0x01
->   #define PAGE_MODE_2_LEVEL 0x02
->
+
+So here the 'out:' label text should also remove, since no err need goto 
+it, right?
+
+out:
+	iommu_completion_wait(iommu);
