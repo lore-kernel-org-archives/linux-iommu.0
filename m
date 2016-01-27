@@ -1,19 +1,19 @@
-From: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Subject: Re: iommu/arm-smmu-v2 ASID/VMID calculation
-Date: Wed, 27 Jan 2016 19:06:48 +0000
-Message-ID: <E0484253-BE37-476A-9F4A-ABE6B74EC174@caviumnetworks.com>
+Date: Wed, 27 Jan 2016 19:08:50 +0000
+Message-ID: <20160127190849.GF25545@arm.com>
 References: <198F501C-8D30-4EB5-BC40-4F40BB75D40B@caviumnetworks.com>
 	<20160125170312.GJ22927@arm.com>
 	<E978AB4F-5CB0-42D8-8152-04C77DB664A1@caviumnetworks.com>
 	<6F24A28A-6302-4C48-A933-B47A9735808C@caviumnetworks.com>
 	<20160126115435.GB21553@arm.com>
+	<E0484253-BE37-476A-9F4A-ABE6B74EC174@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160126115435.GB21553-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-Content-ID: <F4E28ACE236FF847BA70F82897B169A5-Tk6F3M/euE6cE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <E0484253-BE37-476A-9F4A-ABE6B74EC174-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,49 +23,19 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+To: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-DQoNCg0KDQoNCk9uIDEvMjYvMTYsIDM6NTQgQU0sICJXaWxsIERlYWNvbiIgPHdpbGwuZGVhY29u
-QGFybS5jb20+IHdyb3RlOg0KDQo+T24gVHVlLCBKYW4gMjYsIDIwMTYgYXQgMDM6MTE6MjdBTSAr
-MDAwMCwgQ2hhbGFtYXJsYSwgVGlydW1hbGVzaCB3cm90ZToNCj4+IG9uZSBteSBjb2xsZWFndWUg
-cG9pbnRzIG91dCwgQVNJRFBORSBhbHNvIGltcGxlbWVudGF0aW9uIGRlZmluZWQuIA0KPg0KPkl0
-IGxvb2tzIHByZXR0eSB3ZWxsIGRlZmluZWQgdG8gbWUsIGRlc3BpdGUgYmVpbmcgYSBoaW50Og0K
-Pg0KPiAgVGhpcyBBU0lEUE5FIGluZGljYXRpb24gaXMgb25seSBhIGhpbnQsIGFuZCBhbiBTTU1V
-IGNhbiBpZ25vcmUgaXQuIEluDQo+ICBwYXJ0aWN1bGFyLCBpZiB0aGUgU01NVSBpbXBsZW1lbnRh
-dGlvbiBkb2VzIG5vdCBzdXBwb3J0IHRoZSBBU0lEUE5FDQo+ICBmZWF0dXJlLCBicm9hZGNhc3Qg
-VExCIGludmFsaWRhdGUgb3BlcmF0aW9ucyBpZ25vcmUgdGhpcyBoaW50IGFuZA0KPiAgaW52YWxp
-ZGF0ZSBtYXRjaGluZyBUTEIgZW50cmllcyB3aGVuIGJyb2FkY2FzdCBUTEIgaW52YWxpZGF0aW9u
-IGlzDQo+ICBlbmFibGVkLg0KPg0KPkJ1dCB3aGF0IGRvZXMgdGhpcyBoYXZlIHRvIGRvIHdpdGgg
-dGhlIHByb2JsZW0gYXQgaGFuZD8NCj4NCj4+ID5JIGRvbuKAmXQgdGhpbmsgaXQgZm9sbG93ZWQg
-c3BlYy4NCj4+ID4NCj4+ID5UaGUgU01NVSBzcGVjIChJSEkwMDYyQykgc2F5cyAoc2VjdGlvbiAy
-LjIpOg0KPj4gPg0KPj4gPiAgIC0gVGhlIGV4YWN0IGJlaGF2aW9yIG9mIGFueSBUTEIgZnVuY3Rp
-b25hbGl0eSBpcyBJTVBMRU1FTlRBVElPTiBERUZJTkVEDQo+DQo+Li4uIGFuZCBpbW1lZGlhdGVs
-eSBxdWFsaWZpZXMgdGhhdCB3aXRoOg0KPg0KPiAgVGhlIFNNTVUgYXJjaGl0ZWN0dXJlIGRvZXMg
-bm90IGxpbWl0IGhvdyBhIFRMQiBpcyBpbXBsZW1lbnRlZCwgcHJvdmlkZWQNCj4gIGl0IG9iZXlz
-IHRoZSBUTEIgSW52YWxpZGF0ZSBvcGVyYXRpb25zLg0KPg0KPndoaWNoIGlzIHRvIHNheSwgeW91
-IGNhbiBidWlsZCB0aGUgVExCIGhvdyB5b3UgbGlrZSwgcHJvdmlkaW5nIHRoYXQgaXQNCj5mb2xs
-b3dzIHRoZSBwcm9ncmFtbWVycyBtb2RlbCBmb3IgaW52YWxpZGF0aW9uLiBPdGhlcndpc2UgcG9y
-dGFibGUNCj5zb2Z0d2FyZSB3aWxsIGJyZWFrIGFuZCBwZW9wbGUgd2lsbCBzZW5kIHBhdGNoZXMg
-dG8gImZpeCIgaXQuDQo+DQo+PiA+U2VjdGlvbiAyLjIgZGVzY3JpYmVzIHRoZSBjb25zdHJhaW50
-cyBvbiBzaGFyaW5nIChlLmcuIG11bHRpcGxlIGNvbnRleHRzDQo+PiA+dXNpbmcgdGhlIHNhbWUg
-QVNJRCBzYXlzKToNCj4+ID4NCj4+ID4gICAgICAiSWYgbXVsdGlwbGUgY29udGV4dCBiYW5rcyBo
-YXZlIGh0ZSBzYW1lIGF0dHJpYnV0ZXMgYnV0IGRlc2NyaWJlDQo+PiA+ICAgICAgIGRpZmZlcmVu
-dCB0cmFuc2xhdGlvbnMsIHRoZSByZXN1bHRzIG9mIGEgVExCIGxvb2t1cCBhcmUgVU5QUkVESUNU
-QUJMRSIuDQo+DQo+VGhhdCdzIGRlc2NyaWJpbmcgYSBUTEIgY29uZmxpY3QuIFRoZXNlIGRvbid0
-IG9jY3VyLCBiZWNhdXNlIHdlIGVuc3VyZQ0KPmVhY2ggb2YgeW91ciAxMjggY29udGV4dCBiYW5r
-cyBoYXMgZGlmZmVyZW50IGF0dHJpYnV0ZXMgKGkuZS4gQVNJRC9WTUlEKS4NCj4NCj5UaGUgcHJv
-YmxlbSBpcyB0aGF0IHlvdSBoYXZlIHNoYXJlZCBzdGF0ZSBiZXR3ZWVuIG11bHRpcGxlIFNNTVUg
-aW5zdGFuY2VzLA0KPndoaWNoIEkgZG9uJ3QgdGhpbmsgaXMgY29ycmVjdC4gSSdtIGZpbmUgd2l0
-aCBhIHdvcmthcm91bmQsIGJ1dCBJIGRvbid0DQo+d2FudCB0aGlzIGxvZ2ljIHRvIGJlIHVzZWQg
-b24gb3RoZXIgaW1wbGVtZW50YXRpb25zIHdoZXJlIGl0IGlzIG5vdA0KPm5lZWRlZC4NCg0KT2ss
-IEkgd2lsbCB0cmVhdCBpdCBhcyBFcnJhdGEgYW5kIHByb3ZpZGUgYSBwYXRjaCBmb3Igd29ya2Fy
-b3VuZCB0aGlzLiANCj4NCj4+ID5UaGUgcHJlc2VudCBzbW11IGRyaXZlciBhc3N1bWVzIEFTSUQg
-c2hvdWxkIG9ubHkgYmUgdW5pcXVlIHBlciBTTU1VLCB0aGlzDQo+PiA+bWlnaHQgbm90IGJlIHRy
-dWUgZm9yIGFsbCBJbXBsZW1lbnRhdGlvbnMuIA0KPg0KPlNvIGZhciwgaXQgYXBwZWFycyB0byBi
-ZSB0cnVlIGZvciBhbGwgSW1wbGVtZW50YXRpb25zIGFwYXJ0IGZyb20geW91cnMNCj5hbmQgdGhl
-cmVmb3JlIG5lZWRzIHRvIGJlIHF1aXJrZWQuDQo+DQo+V2lsbA0KX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxp
-c3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9y
-Zy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Wed, Jan 27, 2016 at 07:06:48PM +0000, Chalamarla, Tirumalesh wrote:
+> On 1/26/16, 3:54 AM, "Will Deacon" <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> >The problem is that you have shared state between multiple SMMU instances,
+> >which I don't think is correct. I'm fine with a workaround, but I don't
+> >want this logic to be used on other implementations where it is not
+> >needed.
+> 
+> Ok, I will treat it as Errata and provide a patch for workaround this. 
+
+Thank you.
+
+Will
