@@ -1,72 +1,112 @@
-From: Anup Patel <anup.patel@broadcom.com>
-Subject: RE: [RFC PATCH 6/6] iommu/arm-smmu: Update bindings document for
- smmu-inst-as-data DT option
-Date: Wed, 27 Jan 2016 14:22:23 +0000
-Message-ID: <39063E8F96E11742B35A201CC5D095B7BAEAEE@SJEXCHMB10.corp.ad.broadcom.com>
-References: <1453872079-27140-1-git-send-email-anup.patel@broadcom.com>
- <1453872079-27140-7-git-send-email-anup.patel@broadcom.com>
- <20160127122842.GA21064@leverpostej>
+From: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Subject: Re: iommu/arm-smmu-v2 ASID/VMID calculation
+Date: Wed, 27 Jan 2016 19:05:41 +0000
+Message-ID: <4074E06E-82EE-45D5-A817-26462CBAADDA@caviumnetworks.com>
+References: <198F501C-8D30-4EB5-BC40-4F40BB75D40B@caviumnetworks.com>
+	<20160125170312.GJ22927@arm.com>
+	<E978AB4F-5CB0-42D8-8152-04C77DB664A1@caviumnetworks.com>
+	<6F24A28A-6302-4C48-A933-B47A9735808C@caviumnetworks.com>
+	<56A75D0A.7000806@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160127122842.GA21064@leverpostej>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <56A75D0A.7000806-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Sricharan R <sricharan@codeaurora.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Device Tree <devicetree@vger.kernel.org>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Vikram Prakash <vikramp@broadcom.com>, Linux Kernel <linux-kernel@vger.kernel.org>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>
+Content-ID: <3687675AD04B404380DD8F25ED10A660-Tk6F3M/euE6cE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-> -----Original Message-----
-> From: Mark Rutland [mailto:mark.rutland@arm.com]
-> Sent: 27 January 2016 17:59
-> To: Anup Patel
-> Cc: Catalin Marinas; Joerg Roedel; Will Deacon; Robin Murphy; Sricharan R;
-> Linux IOMMU; Linux ARM Kernel; Rob Herring; Pawel Moll; Ian Campbell; Kumar
-> Gala; Device Tree; Ray Jui; Scott Branden; Vikram Prakash; Linux Kernel; bcm-
-> kernel-feedback-list
-> Subject: Re: [RFC PATCH 6/6] iommu/arm-smmu: Update bindings document for
-> smmu-inst-as-data DT option
-> 
-> On Wed, Jan 27, 2016 at 10:51:19AM +0530, Anup Patel wrote:
-> > This patch adds info about 'smmu-inst-as-data' DT option in ARM
-> > SMMUv1/SMMUv2 driver bindings document.
-> >
-> > Signed-off-by: Anup Patel <anup.patel@broadcom.com>
-> > Reviewed-by: Ray Jui <rjui@broadcom.com>
-> > Reviewed-by: Vikram Prakash <vikramp@broadcom.com>
-> > Reviewed-by: Scott Branden <sbranden@broadcom.com>
-> > ---
-> >  Documentation/devicetree/bindings/iommu/arm,smmu.txt | 8 ++++++++
-> >  1 file changed, 8 insertions(+)
-> >
-> > diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> > b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> > index 7180745..4c4d03e 100644
-> > --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> > +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> > @@ -49,6 +49,14 @@ conditions.
-> >                    NOTE: this only applies to the SMMU itself, not
-> >                    masters connected upstream of the SMMU.
-> >
-> > +- smmu-inst-as-data : Treat privilege/unprivilege instruction fetch as
-> > +                  data read for SMMUv2. The SMMU driver by default provides
-> > +                  unprivilege read-write permission in page table entries.
-> > +                  For SMMUv2, privilege instruction fetch from MMU masters
-> > +                  will cause a context fault for unprivilege read-write
-> > +                  pages. To allow both privilege and unprivilege instruction
-> > +                  fetch, we have to forcefully treat it as data read.
-> 
-> What is this needed for? Which masters do instruction fetches through the
-> SMMU, and when?
-> 
-> Surely this should only need to aplly to a subset of transactions?
-
-The boot_manager of PL330 does privileged instruction fetches which
-cause privilege-level context fault in SMMU because current SMMU
-driver provides unprivileged read-write permissions.
-
-Regards,
-Anup
+DQoNCg0KDQoNCk9uIDEvMjYvMTYsIDM6NDggQU0sICJSb2JpbiBNdXJwaHkiIDxyb2Jpbi5tdXJw
+aHlAYXJtLmNvbT4gd3JvdGU6DQoNCj5PbiAyNi8wMS8xNiAwMzoxMSwgQ2hhbGFtYXJsYSwgVGly
+dW1hbGVzaCB3cm90ZToNCj4+IG9uZSBteSBjb2xsZWFndWUgcG9pbnRzIG91dCwgQVNJRFBORSBh
+bHNvIGltcGxlbWVudGF0aW9uIGRlZmluZWQuDQo+DQo+QVNJRFBORSBvbmx5IGNvdmVycyB3aGV0
+aGVyIHRoZSBTTU1VJ3MgVExCcyBtYXkgaWdub3JlIGJyb2FkY2FzdCANCj5faW52YWxpZGF0aW9u
+XyBvciBub3QsIG5vdCBsb29rdXBzLiBCcm9hZGNhc3QgVExCIGxvb2t1cHMgYXJlIG5vdCBhIHRo
+aW5nLg0KQWdyZWVkLg0KPg0KPj4gVGhhbmtzLA0KPj4gVGlydW1hbGVzaC4NCj4+DQo+Pg0KPj4N
+Cj4+IE9uIDEvMjUvMTYsIDQ6NDggUE0sICJsaW51eC1hcm0ta2VybmVsIG9uIGJlaGFsZiBvZiBD
+aGFsYW1hcmxhLCBUaXJ1bWFsZXNoIiA8bGludXgtYXJtLWtlcm5lbC1ib3VuY2VzQGxpc3RzLmlu
+ZnJhZGVhZC5vcmcgb24gYmVoYWxmIG9mIFRpcnVtYWxlc2guQ2hhbGFtYXJsYUBjYXZpdW1uZXR3
+b3Jrcy5jb20+IHdyb3RlOg0KPj4NCj4+PiBJIGRvbuKAmXQgdGhpbmsgaXQgZm9sbG93ZWQgc3Bl
+Yy4NCj4+Pg0KPj4+IFRoZSBTTU1VIHNwZWMgKElISTAwNjJDKSBzYXlzIChzZWN0aW9uIDIuMik6
+DQo+Pj4NCj4+PiAgICAtIFRoZSBleGFjdCBiZWhhdmlvciBvZiBhbnkgVExCIGZ1bmN0aW9uYWxp
+dHkgaXMgSU1QTEVNRU5UQVRJT04gREVGSU5FRA0KPj4+DQo+Pj4gU2VjdGlvbiAyLjIgZGVzY3Jp
+YmVzIHRoZSBjb25zdHJhaW50cyBvbiBzaGFyaW5nIChlLmcuIG11bHRpcGxlIGNvbnRleHRzDQo+
+Pj4gdXNpbmcgdGhlIHNhbWUgQVNJRCBzYXlzKToNCj4+Pg0KPj4+ICAgICAgICJJZiBtdWx0aXBs
+ZSBjb250ZXh0IGJhbmtzIGhhdmUgaHRlIHNhbWUgYXR0cmlidXRlcyBidXQgZGVzY3JpYmUNCj4+
+PiAgICAgICAgZGlmZmVyZW50IHRyYW5zbGF0aW9ucywgdGhlIHJlc3VsdHMgb2YgYSBUTEIgbG9v
+a3VwIGFyZSBVTlBSRURJQ1RBQkxFIi4NCj4NCj5NdWx0aXBsZSBjb250ZXh0IGJhbmtzIHdpdGhp
+biB0aGUgc2FtZSBTTU1VLCB0aGF0IGlzLg0KPg0KPj4+IFRoZSBwcmVzZW50IHNtbXUgZHJpdmVy
+IGFzc3VtZXMgQVNJRCBzaG91bGQgb25seSBiZSB1bmlxdWUgcGVyIFNNTVUsIHRoaXMgbWlnaHQg
+bm90IGJlIHRydWUgZm9yIGFsbA0KPj4+IEltcGxlbWVudGF0aW9ucy4NCj4NCj5XaGVyZSAiU01N
+VSIgaW1wbGllcyAic2V0IG9mIGNvbnRleHQgYmFua3MgYmVoaW5kIGEgc2luZ2xlIHByb2dyYW1t
+aW5nIA0KPmludGVyZmFjZSIsIGkuZS4gaXQgc2hvdWxkIGJlIHRydWUgZm9yIGFsbCBhcmNoaXRl
+Y3R1cmFsbHktY29tcGxpYW50IA0KPmltcGxlbWVudGF0aW9ucy4NCj4NCj5XaGF0IGlmIHlvdSB0
+YWtlIHlvdXIgc3lzdGVtLCBmaXJlIHVwIHR3byBjb3JlcyB3aXRoIFNNUCBkaXNhYmxlZCwgYW5k
+IA0KPnJ1biBhbiBpbmRlcGVuZGVudCBpbnN0YW5jZSBvZiBMaW51eCBvbiBlYWNoLCB3aXRoIGFs
+bCB0aGUgc3lzdGVtIA0KPnJlc291cmNlcyBkaXZpZGVkIHVwIGVxdWFsbHkgYmV0d2VlbiB0aGVt
+IGFuZCBubyBjb21tdW5pY2F0aW9uPyBJZiBvbmUgDQo+T1MgdXNpbmcgb25lIFNNTVUgY2FuIG1h
+a2UgdGhlIG90aGVyIE9TIHVzaW5nIGEgZGlmZmVyZW50IFNNTVUgZ28gd3JvbmcsIA0KPnRoZW4g
+dGhlIGhhcmR3YXJlIGlzIHNpbXBseSBicm9rZW4uIFN1cmUsIHdlIGNhbiBwcm9iYWJseSBxdWly
+ayBBU0lEIA0KPmFsbG9jYXRpb24gaW4gdGhlIGRyaXZlciwgYnV0IGl0IHJhaXNlcyB0aGUgcXVl
+c3Rpb24gb2Ygd2hhdCBlbHNlIHdlIA0KPndvdWxkIG5lZWQgdG8gZG8gdG8ga2VlcCBTTU1VcyB3
+aGljaCBiZWxpZXZlIHRoZXkncmUgc3VwcG9zZWQgdG8gYmUgDQo+aW5kZXBlbmRlbnQgZnJvbSBE
+b1MnaW5nIGVhY2ggb3RoZXIuLg0KDQpUaGlzIGFuYWxvZ3kgaXMgd3JvbmcsIGlmIDIgZGlmZmVy
+ZW50IGVudGl0aWVzIHJ1bm5pbmcgb24gdHdvIGNvcmVzLCBTTU1VIGlzIHRoZSBsZWFzdCB0aGlu
+ZyB0aGF0IG5lZWRzIHRvIGJlIHdvcnJpZWQuDQpSZXN0IGFzaWRlIHRoZXkgbXVzdCBjb29wZXJh
+dGUgd2l0aCBlYWNoIG90aGVyIHRvIGNvZXhpc3RzLiB0aGF04oCZcyB3aHkgd2UgbmVlZGVkIGFs
+bCB0aGUgZ2xvcnkgVmlydHVhbGl6YXRpb24uICANCj4NCj5Sb2Jpbi4NCj4NCj4+PiBPbiAxLzI1
+LzE2LCA5OjAzIEFNLCAiV2lsbCBEZWFjb24iIDx3aWxsLmRlYWNvbkBhcm0uY29tPiB3cm90ZToN
+Cj4+Pg0KPj4+PiBPbiBUaHUsIEphbiAyMSwgMjAxNiBhdCAwNjo1MjozNFBNICswMDAwLCBDaGFs
+YW1hcmxhLCBUaXJ1bWFsZXNoIHdyb3RlOg0KPj4+Pj4gSGkgV2lsbCwNCj4+Pj4NCj4+Pj4gSGVs
+bG8sDQo+Pj4+DQo+Pj4+PiBDdXJyZW50IEFTSUQvVk1JRCBjYWxjdWxhdGlvbiBsb2dpYyBtYWtl
+cyBsb3Qgb2YgYXNzdW1wdGlvbiBhYm91dCBpbnRlcm5hbCBUTEINCj4+Pj4+IGltcGxlbWVudGF0
+aW9uIG9mIFNNTVUsDQo+Pj4+DQo+Pj4+IE5vdCByZWFsbHkuIEl0IG1ha2VzIGFzc3VtcHRpb25z
+IHRoYXQgdGhlIGhhcmR3YXJlIGZvbGxvd3MgdGhlIGFyY2hpdGVjdHVyZSwNCj4+Pj4gd2hpY2gg
+aXMgaGFyZGx5IHVucmVhc29uYWJsZSBhcyBhIHN0YXJ0aW5nIHBvaW50Lg0KPj4+Pg0KPj4+Pj4g
+U3lzdGVtcyBsaWtlIFRodW5kZXJYIGhhdmUgbW9yZSB0aGFuIG9uZSBzbW11IGluIHRoZSBzeXN0
+ZW0gYW5kIGl0IGNhbiB1c2Ugc2FtZQ0KPj4+Pj4gVExCcyB3aXRoIG1vcmUgdGhhbiBvbmUgb2Yg
+dGhlbSBhbmQgZXhwZWN0cyBBU0lEIHRvIGJlIHVuaXF1ZQ0KPj4+Pg0KPj4+PiAuLi4gYnV0IHRo
+YXQncyBicm9rZW4uIElmIHlvdSBidWlsdCBhIHN5c3RlbSB3aGVyZSB0aGUgQ1BVcyBzaGFyZWQg
+YSBUTEIsDQo+Pj4+IHlvdSB3b3VsZCBydW4gaW50byBpc3N1ZXMgYXMgd2VsbC4NCj4+Pj4NCj4+
+Pj4gSG93IGRvZXMgdGhpcyB3b3JrIHdpdGggdGhpbmdzIGxpa2UgYXJtX3NtbXVfdGxiX3N5bmMg
+YW5kIHRoZSBUTEJHU1RBVFVTDQo+Pj4+IHJlZ2lzdGVyPw0KPj4+Pg0KPj4+Pj4gQ3VycmVudCBs
+b2dpYw0KPj4+Pj4NCj4+Pj4+ICNkZWZpbmUgQVJNX1NNTVVfQ0JfQVNJRChjZmcpICAgICAgICAg
+ICAoKGNmZyktPmNibmR4KQ0KPj4+Pj4gI2RlZmluZSBBUk1fU01NVV9DQl9WTUlEKGNmZykgICAg
+ICAgICAgICgoY2ZnKS0+Y2JuZHggKyAxKQ0KPj4+Pj4NCj4+Pj4+DQo+Pj4+PiBDYW4gdGhpcyBi
+ZSByZXBsYWNlZCBieSBzb21ldGhpbmcgbGlrZQ0KPj4+Pj4NCj4+Pj4+DQo+Pj4+PiAjZGVmaW5l
+IEFSTV9TTU1VX0NCX0FTSUQoY2ZnLCBzbW11KSAgICAgICAgICAgICAoKChzbW11KS0+aWR4IDw8
+IChzbW11KS0+YXNpZF9zaGlmdCkgfCAoY2ZnKS0+Y2JuZHgpDQo+Pj4+PiAjZGVmaW5lIEFSTV9T
+TU1VX0NCX1ZNSUQoY2ZnLCBzbW11KSAgICAgICAgICAgICAoKChzbW11KS0+aWR4IDw8IChzbW11
+KS0+dm1pZF9zaGlmdCkgfCAoY2ZnKS0+Y2JuZHggKyAxKQ0KPj4+Pj4NCj4+Pj4+DQo+Pj4+PiBJ
+ZHggYW5kIHNoaWZ0IGNhbiBiZSBwYXNzZWQgZnJvbSBkZXZpY2UtdHJlZS4NCj4+Pj4+DQo+Pj4+
+Pg0KPj4+Pj4gUGxlYXNlIGxldCBtZSBrbm93IGlmIHRoaXMgaXMgYWNjZXB0YWJsZSwgSSB3aWxs
+IHByZXBhcmUgYSBwcm9wZXIgcGF0Y2gNCj4+Pj4+IGFuZCBzZW5kIHRvIGxpc3QuDQo+Pj4+Pg0K
+Pj4+Pj4NCj4+Pj4+IElmIHRoaXMgaXMgbm90IGFjY2VwdGFibGUgdGhyb3VnaCBhbiBhbHRlcm5h
+dGl2ZSBzdWdnZXN0aW9uLg0KPj4+Pg0KPj4+PiBJZiB3ZSdyZSBnb2luZyB0byBwdXQgc29tZXRo
+aW5nIGludG8gdGhlIGRldmljZS10cmVlLCB0aGVuIGl0IHNob3VsZCBiZQ0KPj4+PiBhbiBlcnJh
+dHVtIHByb3BlcnR5IGRlc2NyaWJpbmcgdGhlIG9mZnNldCB0byBiZSBhcHBsaWVkIHRvIEFTSUQv
+Vk1JRHMuDQo+Pj4+IFlvdSBhbHNvIG5lZWQgdG8gdGFrZSBjYXJlIG5vdCB0byBkZXNjcmliZSBv
+dmVybGFwcGluZyBudW1iZXJzcGFjZXMuDQo+Pj4gSSBkb27igJl0IHRoaW5rIHRoYXQgaXMgYW4g
+ZXJyYXRhLg0KPj4+Pg0KPj4+PiBIb3cgbWFueSBjb250ZXh0IGJhbmtzIGRvIHlvdSBpbXBsZW1l
+bnQgaW4gZWFjaCBTTU1VPw0KPj4+IDEyOC4NCj4+Pj4NCj4+Pj4gV2lsbA0KPj4+IF9fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo+Pj4gbGludXgtYXJtLWtl
+cm5lbCBtYWlsaW5nIGxpc3QNCj4+PiBsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5v
+cmcNCj4+PiBodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4
+LWFybS1rZXJuZWwNCj4+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fDQo+PiBpb21tdSBtYWlsaW5nIGxpc3QNCj4+IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5k
+YXRpb24ub3JnDQo+PiBodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9s
+aXN0aW5mby9pb21tdQ0KPj4NCj4NCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0
+aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5m
+by9pb21tdQ==
