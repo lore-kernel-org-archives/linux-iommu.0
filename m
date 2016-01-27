@@ -1,82 +1,50 @@
-From: Eric Auger <eric.auger@linaro.org>
-Subject: Re: [PATCH 00/10] KVM PCIe/MSI passthrough on ARM/ARM64
-Date: Wed, 27 Jan 2016 09:52:31 +0100
-Message-ID: <56A8854F.3030209@linaro.org>
-References: <1453813968-2024-1-git-send-email-eric.auger@linaro.org>
- <000001d1585e$8097d7e0$81c787a0$@samsung.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v3 1/3] iommu/io-pgtable: Add ARMv7 short descriptor
+	support
+Date: Wed, 27 Jan 2016 09:16:26 +0800
+Message-ID: <1453857386.28284.4.camel@mhfsdcap03>
+References: <cover.1453723096.git.robin.murphy@arm.com>
+	<066c4af0e29c9cc658bd5e48edc5e2d7ba7140a1.1453723096.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
-In-Reply-To: <000001d1585e$8097d7e0$81c787a0$@samsung.com>
-List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
-List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
-List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
-List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
-List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
-Errors-To: kvmarm-bounces@lists.cs.columbia.edu
-Sender: kvmarm-bounces@lists.cs.columbia.edu
-To: Pavel Fedin <p.fedin@samsung.com>, eric.auger@st.com, alex.williamson@redhat.com, will.deacon@arm.com, christoffer.dall@linaro.org, marc.zyngier@arm.com, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org
-Cc: patches@linaro.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <066c4af0e29c9cc658bd5e48edc5e2d7ba7140a1.1453723096.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Pavel,
-On 01/26/2016 06:25 PM, Pavel Fedin wrote:
->  Hello!
->  I'd like just to clarify some things for myself and better wrap my head around it...
+On Tue, 2016-01-26 at 17:13 +0000, Robin Murphy wrote:
+> Add a nearly-complete ARMv7 short descriptor implementation, omitting
+> only a few legacy and CPU-centric aspects which shouldn't be necessary
+> for IOMMU API use anyway.
 > 
->> On x86 all accesses to the 1MB PA region [FEE0_0000h - FEF0_000h] are directed
->> as interrupt messages: accesses to this special PA window directly target the
->> APIC configuration space and not DRAM, meaning the downstream IOMMU is bypassed.
-> 
->  So, this is effectively the same as always having hardwired 1:1 mappings on all IOMMUs, isn't it ?
->  If so, then we can't we just do the same, just by forcing similar 1:1 mapping? This is what i tried to do in my patchset. All of
-> you are talking about a situation which arises when we are emulating different machine with different physical addresses layout. And
-> e. g. if our host has MSI at 0xABADCAFE, our target could have valid RAM at the same location, and we need to handle it somehow,
-> therefore we have to move our MSI window out of target's RAM. But how does this work on a PC then? What if our host is PC, and we
-> want to emulate some ARM board, which has RAM at FE00 0000 ? Or does it mean that PC architecture is flawed and can reliably handle
-> PCI passthrough only for itself ?
-Alex answered to this I think:
-"
-x86 isn't problem-free in this space.  An x86 VM is going to know that
-the 0xfee00000 address range is special, it won't be backed by RAM and
-won't be a DMA target, thus we'll never attempt to map it for an iova
-address.  However, if we run a non-x86 VM or a userspace driver, it
-doesn't necessarily know that there's anything special about that range
-of iovas.  I intend to resolve this with an extension to the iommu info
-ioctl that describes the available iova space for the iommu.  The
-interrupt region would simply be excluded.
-"
+> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-I am not sure I've addressed this requirement yet but it seems more
-future proof to have an IOMMU mapping for those addresses.
+This looks good to me.
+And actually our disp/vdec/venc works well on your v2.
 
-For the ARM use case I think Marc gave guidance:
-"
-We want userspace to be in control of the memory map, and it
-is the kernel's job to tell us whether or not this matches the HW
-capabilities or not. A fixed mapping may completely clash with the
-memory map I want (think emulating HW x on platform y), and there is no
-reason why we should have the restrictions x86 has.
-"
+You could choose the two below,
+Reviewed-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Tested-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 
-That's the rationale behind respining that way.
+Thanks.
 
-Waiting for other comments & discussions, I am going to address the iova
-and dma_addr_t kbuilt reported compilation issues. Please apologize for
-those.
-
-Best Regards
-
-Eric
-
-
-> 
-> Kind regards,
-> Pavel Fedin
-> Senior Engineer
-> Samsung Electronics Research center Russia
-> 
-> 
+> ---
+>  drivers/iommu/Kconfig              |  19 +
+>  drivers/iommu/Makefile             |   1 +
+>  drivers/iommu/io-pgtable-arm-v7s.c | 849 +++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/io-pgtable.c         |   3 +
+>  drivers/iommu/io-pgtable.h         |  14 +-
+>  5 files changed, 885 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/iommu/io-pgtable-arm-v7s.c
