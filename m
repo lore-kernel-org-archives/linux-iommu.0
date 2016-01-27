@@ -1,15 +1,11 @@
-From: Wan Zongshun <vw-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
-Subject: Re: [Patch v3 11/12] iommu/amd: No need to wait iommu completion if
-	no dte irq entry change
-Date: Wed, 27 Jan 2016 19:03:08 +0800
-Message-ID: <56A8A3EC.7090701@iommu.org>
-References: <1453804166-25646-1-git-send-email-bhe@redhat.com>
-	<1453804166-25646-12-git-send-email-bhe@redhat.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu/io-pgtable-arm: Fix io-pgtable-arm build failure
+Date: Wed, 27 Jan 2016 11:10:32 +0000
+Message-ID: <1453893032-4459-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1453804166-25646-12-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,55 +15,40 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: Lada.Trimasova-HKixBCOQz3hWk0Htik3J/w@public.gmane.org, Vineet Gupta <vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Lada Trimasova <ltrimas-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Alexey Brodkin <abrodkin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-
--------- Original Message --------
-> This is a clean up. In get_irq_table() only if DTE entry is changed
-> iommu_completion_wait() need be called. Otherwise no need to do it.
->
-> Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> ---
->   drivers/iommu/amd_iommu.c | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index 0880500..dda703b 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -3674,7 +3674,7 @@ static struct irq_remap_table *get_irq_table(u16 devid, bool ioapic)
->
->   	table = irq_lookup_table[devid];
->   	if (table)
-> -		goto out;
-> +		goto out_unlock;
->
->   	alias = amd_iommu_alias_table[devid];
->   	table = irq_lookup_table[alias];
-> @@ -3688,7 +3688,7 @@ static struct irq_remap_table *get_irq_table(u16 devid, bool ioapic)
->   	/* Nothing there yet, allocate new irq remapping table */
->   	table = kzalloc(sizeof(*table), GFP_ATOMIC);
->   	if (!table)
-> -		goto out;
-> +		goto out_unlock;
->
->   	/* Initialize table spin-lock */
->   	spin_lock_init(&table->lock);
-> @@ -3701,7 +3701,7 @@ static struct irq_remap_table *get_irq_table(u16 devid, bool ioapic)
->   	if (!table->table) {
->   		kfree(table);
->   		table = NULL;
-> -		goto out;
-> +		goto out_unlock;
->   	}
->
->   	memset(table->table, 0, MAX_IRQS_PER_TABLE * sizeof(u32));
->
-
-So here the 'out:' label text should also remove, since no err need goto 
-it, right?
-
-out:
-	iommu_completion_wait(iommu);
+RnJvbTogTGFkYSBUcmltYXNvdmEgPExhZGEuVHJpbWFzb3ZhQHN5bm9wc3lzLmNvbT4KClRyeWlu
+ZyB0byBidWlsZCBhIGtlcm5lbCBmb3IgQVJDIHdpdGggYm90aCBvcHRpb25zIENPTkZJR19DT01Q
+SUxFX1RFU1QKYW5kIENPTkZJR19JT01NVV9JT19QR1RBQkxFX0xQQUUgZW5hYmxlZCAoZS5nLiBh
+cyBhIHJlc3VsdCBvZiAibWFrZQphbGx5ZXNjb25maWciKSByZXN1bHRzIGluIHRoZSBmb2xsb3dp
+bmcgYnVpbGQgZmFpbHVyZToKCiB8IENDIGRyaXZlcnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0ubwog
+fCBsaW51eC9kcml2ZXJzL2lvbW11L2lvLXBndGFibGUtYXJtLmM6IEluCiB8IGZ1bmN0aW9uIOKA
+mF9fYXJtX2xwYWVfYWxsb2NfcGFnZXPigJk6CiB8IGxpbnV4L2RyaXZlcnMvaW9tbXUvaW8tcGd0
+YWJsZS1hcm0uYzoyMjE6MzoKIHwgZXJyb3I6IGltcGxpY2l0IGRlY2xhcmF0aW9uIG9mIGZ1bmN0
+aW9uIOKAmGRtYV9tYXBfc2luZ2xl4oCZCiB8IFstV2Vycm9yPWltcGxpY2l0LWZ1bmN0aW9uLWRl
+Y2xhcmF0aW9uXQogfCBkbWEgPSBkbWFfbWFwX3NpbmdsZShkZXYsIHBhZ2VzLCBzaXplLCBETUFf
+VE9fREVWSUNFKTsKIHwgXgogfCBsaW51eC9kcml2ZXJzL2lvbW11L2lvLXBndGFibGUtYXJtLmM6
+MjIxOjQyOgogfCBlcnJvcjog4oCYRE1BX1RPX0RFVklDReKAmSB1bmRlY2xhcmVkIChmaXJzdCB1
+c2UgaW4gdGhpcyBmdW5jdGlvbikKIHwgZG1hID0gZG1hX21hcF9zaW5nbGUoZGV2LCBwYWdlcywg
+c2l6ZSwgRE1BX1RPX0RFVklDRSk7CiB8IF4KClNpbmNlIElPTU1VX0lPX1BHVEFCTEVfTFBBRSBk
+ZXBlbmRzIG9uIERNQSBBUEksIGlvLXBndGFibGUtYXJtLmMgc2hvdWxkCmluY2x1ZGUgbGludXgv
+ZG1hLW1hcHBpbmcuaC4gVGhpcyBmaXhlcyB0aGUgcmVwb3J0ZWQgZmFpbHVyZS4KCkNjOiBBbGV4
+ZXkgQnJvZGtpbiA8YWJyb2RraW5Ac3lub3BzeXMuY29tPgpDYzogVmluZWV0IEd1cHRhIDx2Z3Vw
+dGFAc3lub3BzeXMuY29tPgpDYzogSm9lcmcgUm9lZGVsIDxqb3JvQDhieXRlcy5vcmc+ClNpZ25l
+ZC1vZmYtYnk6IExhZGEgVHJpbWFzb3ZhIDxsdHJpbWFzQHN5bm9wc3lzLmNvbT4KU2lnbmVkLW9m
+Zi1ieTogV2lsbCBEZWFjb24gPHdpbGwuZGVhY29uQGFybS5jb20+Ci0tLQoKSm9lcmcgLS0gY2Fu
+IHlvdSBwaWNrIHRoaXMgdXAgYXMgYSBmaXggZm9yIDQuNSwgcGxlYXNlPyBJIGRvbid0IGhhdmUK
+ICAgICAgICAgYW55IG90aGVyIGZpeGVzIHF1ZXVlZCwgc28gYSBwdWxsIHJlcXVlc3Qgc2VlbXMg
+YSBiaXQgT1RULgoKIGRyaXZlcnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0uYyB8IDEgKwogMSBmaWxl
+IGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pby1w
+Z3RhYmxlLWFybS5jIGIvZHJpdmVycy9pb21tdS9pby1wZ3RhYmxlLWFybS5jCmluZGV4IDhiYmNi
+ZmU3Njk1Yy4uMzgxY2E1YTM3YTdiIDEwMDY0NAotLS0gYS9kcml2ZXJzL2lvbW11L2lvLXBndGFi
+bGUtYXJtLmMKKysrIGIvZHJpdmVycy9pb21tdS9pby1wZ3RhYmxlLWFybS5jCkBAIC0yNSw2ICsy
+NSw3IEBACiAjaW5jbHVkZSA8bGludXgvc2l6ZXMuaD4KICNpbmNsdWRlIDxsaW51eC9zbGFiLmg+
+CiAjaW5jbHVkZSA8bGludXgvdHlwZXMuaD4KKyNpbmNsdWRlIDxsaW51eC9kbWEtbWFwcGluZy5o
+PgogCiAjaW5jbHVkZSA8YXNtL2JhcnJpZXIuaD4KIAotLSAKMi4xLjQKCl9fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21t
+dUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlv
+bi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
