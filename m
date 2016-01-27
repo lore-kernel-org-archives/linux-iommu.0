@@ -1,30 +1,43 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v8 2/5] dt-bindings: mediatek: Add smi dts binding
-Date: Tue, 26 Jan 2016 16:00:19 -0600
-Message-ID: <20160126220019.GA23765@rob-hp-laptop>
-References: <1453781562-23556-1-git-send-email-yong.wu@mediatek.com>
- <1453781562-23556-3-git-send-email-yong.wu@mediatek.com>
+From: Anup Patel <anup.patel@broadcom.com>
+Subject: [RFC PATCH 0/6] iommu/arm-smmu: Add support for DMA domains and instruction fetch
+Date: Wed, 27 Jan 2016 10:51:13 +0530
+Message-ID: <1453872079-27140-1-git-send-email-anup.patel@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1453781562-23556-3-git-send-email-yong.wu@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yong Wu <yong.wu@mediatek.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Lucas Stach <l.stach@pengutronix.de>, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org, Sasha Hauer <kernel@pengutronix.de>, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, pebolle@tiscali.nl, arnd@arndb.de, mitchelh@codeaurora.org, p.zabel@pengutronix.de, youhua.li@mediatek.com, kendrick.hsu@mediatek.com
+To: Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Sricharan R <sricharan@codeaurora.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Device Tree <devicetree@vger.kernel.org>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Vikram Prakash <vikramp@broadcom.com>, Linux Kernel <linux-kernel@vger.kernel.org>, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, Anup Patel <anup.patel@broadcom.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 26, 2016 at 12:12:39PM +0800, Yong Wu wrote:
-> This patch add smi binding document and smi local arbiter header file.
-> 
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> ---
->  .../memory-controllers/mediatek,smi-common.txt     |  24 +++++
->  .../memory-controllers/mediatek,smi-larb.txt       |  25 +++++
->  include/dt-bindings/memory/mt8173-larb-port.h      | 111 +++++++++++++++++++++
->  3 files changed, 160 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
->  create mode 100644 Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
->  create mode 100644 include/dt-bindings/memory/mt8173-larb-port.h
+This patchset adds following to SMMUv1/SMMUv2 driver:
+1. Support for domain type IOMMU_DOMAIN_DMA
+2. Allow privilege instruction fetchs from MMU masters by having
+a DT option to treat instruction fetch as data read
 
-Acked-by: Rob Herring <robh@kernel.org>
+The patchset is based on '4.5-rc1' tag of linux mainline tree
+and is available in smmu_v1 branch of
+https://github.com/Broadcom/arm64-linux.git
+
+All patches have been tested on Broadcom SoCs having SMMU-500.
+
+Anup Patel (5):
+  iommu/arm-smmu: Invoke DT probe from arm_smmu_of_setup()
+  of: iommu: Increment DT node refcount in of_iommu_set_ops()
+  iommu/arm-smmu: Add support for IOMMU_DOMAIN_DMA in SMMUv1/SMMUv2
+    driver
+  iommu/arm-smmu: Option to treat instruction fetch as data read for
+    SMMUv2
+  iommu/arm-smmu: Update bindings document for smmu-inst-as-data DT
+    option
+
+Sricharan R (1):
+  iommu/arm-smmu: Init driver using IOMMU_OF_DECLARE
+
+ .../devicetree/bindings/iommu/arm,smmu.txt         |  8 +++
+ drivers/iommu/arm-smmu.c                           | 70 +++++++++++++++++-----
+ drivers/iommu/of_iommu.c                           |  1 +
+ 3 files changed, 65 insertions(+), 14 deletions(-)
+
+-- 
+1.9.1
