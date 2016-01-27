@@ -1,8 +1,8 @@
 From: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Subject: [RFC PATCH 5/6] iommu/arm-smmu: Option to treat instruction fetch as
-	data read for SMMUv2
-Date: Wed, 27 Jan 2016 10:51:18 +0530
-Message-ID: <1453872079-27140-6-git-send-email-anup.patel@broadcom.com>
+Subject: [RFC PATCH 4/6] iommu/arm-smmu: Add support for IOMMU_DOMAIN_DMA in
+	SMMUv1/SMMUv2 driver
+Date: Wed, 27 Jan 2016 10:51:17 +0530
+Message-ID: <1453872079-27140-5-git-send-email-anup.patel@broadcom.com>
 References: <1453872079-27140-1-git-send-email-anup.patel@broadcom.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,62 +22,85 @@ To: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel
 Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Device Tree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Scott Branden <sbranden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Ray Jui <rjui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Vikram Prakash <vikramp-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, BCM Kernel Feedback <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Currently, the SMMU driver by default provides unprivilege read-write
-permission in page table entries of stage1 page table. For SMMUv2 with
-aarch64 long descriptor format, a privilege instruction fetch will
-generate context fault. To allow privilege instruction fetch from a
-MMU master we need to treat instruction fetch as data read.
+To allow use of large memory (> 4Gb) with 32bit devices we need to use
+some kind of iommu for such 32bit devices.
 
-This patch adds an optional DT attribute 'smmu-inst-as-data' to treat
-privilege/unprivilege instruction fetch as data read for SMMUv2.
+This patch extends SMMUv1/SMMUv2 driver to support DMA domains which
+in-turn will allows us to use iommu based DMA mappings for 32bit devices.
 
 Signed-off-by: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Reviewed-by: Ray Jui <rjui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Reviewed-by: Vikram Prakash <vikramp-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Reviewed-by: Scott Branden <sbranden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/iommu/arm-smmu.c | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 43424fe..a14850b 100644
+index 9bdf6b2..43424fe 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -169,6 +169,9 @@
- #define S2CR_TYPE_TRANS			(0 << S2CR_TYPE_SHIFT)
- #define S2CR_TYPE_BYPASS		(1 << S2CR_TYPE_SHIFT)
- #define S2CR_TYPE_FAULT			(2 << S2CR_TYPE_SHIFT)
-+#define S2CR_INSTCFG_SHIFT		26
-+#define S2CR_INSTCFG_MASK		0x3
-+#define S2CR_INSTCFG_DATA		(0x2 << S2CR_INSTCFG_SHIFT)
+@@ -29,6 +29,7 @@
+ #define pr_fmt(fmt) "arm-smmu: " fmt
  
- /* Context bank attribute registers */
- #define ARM_SMMU_GR1_CBAR(n)		(0x0 + ((n) << 2))
-@@ -305,6 +308,7 @@ struct arm_smmu_device {
- 	u32				features;
+ #include <linux/delay.h>
++#include <linux/dma-iommu.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/err.h>
+ #include <linux/interrupt.h>
+@@ -967,7 +968,7 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ {
+ 	struct arm_smmu_domain *smmu_domain;
  
- #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
-+#define ARM_SMMU_OPT_INST_AS_DATA      (1 << 1)
- 	u32				options;
- 	enum arm_smmu_arch_version	version;
+-	if (type != IOMMU_DOMAIN_UNMANAGED)
++	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
+ 		return NULL;
+ 	/*
+ 	 * Allocate the domain and initialise some of its data structures.
+@@ -978,6 +979,12 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ 	if (!smmu_domain)
+ 		return NULL;
  
-@@ -366,6 +370,7 @@ struct arm_smmu_option_prop {
++	if (type == IOMMU_DOMAIN_DMA &&
++	    iommu_get_dma_cookie(&smmu_domain->domain)) {
++		kfree(smmu_domain);
++		return NULL;
++	}
++
+ 	mutex_init(&smmu_domain->init_mutex);
+ 	spin_lock_init(&smmu_domain->pgtbl_lock);
  
- static struct arm_smmu_option_prop arm_smmu_options[] = {
- 	{ ARM_SMMU_OPT_SECURE_CFG_ACCESS, "calxeda,smmu-secure-config-access" },
-+	{ ARM_SMMU_OPT_INST_AS_DATA, "smmu-inst-as-data" },
- 	{ 0, NULL},
- };
+@@ -992,6 +999,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
+ 	 * Free the domain resources. We assume that all devices have
+ 	 * already been detached.
+ 	 */
++	iommu_put_dma_cookie(domain);
+ 	arm_smmu_destroy_domain_context(domain);
+ 	kfree(smmu_domain);
+ }
+@@ -1361,6 +1369,16 @@ static int arm_smmu_init_platform_device(struct device *dev,
+ 	return 0;
+ }
  
-@@ -1097,6 +1102,9 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
- 		idx = cfg->smrs ? cfg->smrs[i].idx : cfg->streamids[i];
- 		s2cr = S2CR_TYPE_TRANS |
- 		       (smmu_domain->cfg.cbndx << S2CR_CBNDX_SHIFT);
-+		if ((smmu->version == ARM_SMMU_V2) &&
-+		    (smmu->options & ARM_SMMU_OPT_INST_AS_DATA))
-+			s2cr |= S2CR_INSTCFG_DATA;
- 		writel_relaxed(s2cr, gr0_base + ARM_SMMU_GR0_S2CR(idx));
- 	}
- 
++int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
++{
++	/*
++	 * Nothing to do here because SMMU is already aware of all
++	 * MMU masters and their stream IDs using mmu-master attibute
++	 * SMMU DT node.
++	 */
++	return 0;
++}
++
+ static int arm_smmu_add_device(struct device *dev)
+ {
+ 	struct iommu_group *group;
+@@ -1458,6 +1476,7 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.unmap			= arm_smmu_unmap,
+ 	.map_sg			= default_iommu_map_sg,
+ 	.iova_to_phys		= arm_smmu_iova_to_phys,
++	.of_xlate		= arm_smmu_of_xlate,
+ 	.add_device		= arm_smmu_add_device,
+ 	.remove_device		= arm_smmu_remove_device,
+ 	.device_group		= arm_smmu_device_group,
 -- 
 1.9.1
