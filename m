@@ -1,98 +1,89 @@
-From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [RFC PATCH 4/6] iommu/arm-smmu: Add support for IOMMU_DOMAIN_DMA
- in SMMUv1/SMMUv2 driver
-Date: Thu, 28 Jan 2016 17:48:59 +0000
-Message-ID: <20160128174858.GU17123@leverpostej>
-References: <1453872079-27140-1-git-send-email-anup.patel@broadcom.com>
- <1453872079-27140-5-git-send-email-anup.patel@broadcom.com>
- <56AA4FBE.6090702@arm.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 00/10] KVM PCIe/MSI passthrough on ARM/ARM64
+Date: Thu, 28 Jan 2016 14:51:39 -0700
+Message-ID: <1454017899.23148.0.camel@redhat.com>
+References: <1453813968-2024-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <56AA4FBE.6090702@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Anup Patel <anup.patel@broadcom.com>, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Sricharan R <sricharan@codeaurora.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Device Tree <devicetree@vger.kernel.org>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Vikram Prakash <vikramp@broadcom.com>, Linux Kernel <linux-kernel@vger.kernel.org>, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1453813968-2024-1-git-send-email-eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, eric.auger-qxv4g6HH51o@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 28, 2016 at 05:28:30PM +0000, Robin Murphy wrote:
-> On 27/01/16 05:21, Anup Patel wrote:
-> >To allow use of large memory (> 4Gb) with 32bit devices we need to use
-> >some kind of iommu for such 32bit devices.
-> >
-> >This patch extends SMMUv1/SMMUv2 driver to support DMA domains which
-> >in-turn will allows us to use iommu based DMA mappings for 32bit devices.
-> >
-> >Signed-off-by: Anup Patel <anup.patel@broadcom.com>
-> >Reviewed-by: Ray Jui <rjui@broadcom.com>
-> >Reviewed-by: Scott Branden <sbranden@broadcom.com>
-> >---
-> >  drivers/iommu/arm-smmu.c | 21 ++++++++++++++++++++-
-> >  1 file changed, 20 insertions(+), 1 deletion(-)
-> >
-> >diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> >index 9bdf6b2..43424fe 100644
-> >--- a/drivers/iommu/arm-smmu.c
-> >+++ b/drivers/iommu/arm-smmu.c
-> >@@ -29,6 +29,7 @@
-> >  #define pr_fmt(fmt) "arm-smmu: " fmt
-> >
-> >  #include <linux/delay.h>
-> >+#include <linux/dma-iommu.h>
-> >  #include <linux/dma-mapping.h>
-> >  #include <linux/err.h>
-> >  #include <linux/interrupt.h>
-> >@@ -967,7 +968,7 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
-> >  {
-> >  	struct arm_smmu_domain *smmu_domain;
-> >
-> >-	if (type != IOMMU_DOMAIN_UNMANAGED)
-> >+	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
-> >  		return NULL;
-> >  	/*
-> >  	 * Allocate the domain and initialise some of its data structures.
-> >@@ -978,6 +979,12 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
-> >  	if (!smmu_domain)
-> >  		return NULL;
-> >
-> >+	if (type == IOMMU_DOMAIN_DMA &&
-> >+	    iommu_get_dma_cookie(&smmu_domain->domain)) {
-> >+		kfree(smmu_domain);
-> >+		return NULL;
-> >+	}
-> >+
-> >  	mutex_init(&smmu_domain->init_mutex);
-> >  	spin_lock_init(&smmu_domain->pgtbl_lock);
-> >
-> >@@ -992,6 +999,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
-> >  	 * Free the domain resources. We assume that all devices have
-> >  	 * already been detached.
-> >  	 */
-> >+	iommu_put_dma_cookie(domain);
-> >  	arm_smmu_destroy_domain_context(domain);
-> >  	kfree(smmu_domain);
-> >  }
-> >@@ -1361,6 +1369,16 @@ static int arm_smmu_init_platform_device(struct device *dev,
-> >  	return 0;
-> >  }
-> >
-> >+int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
-> >+{
-> >+	/*
-> >+	 * Nothing to do here because SMMU is already aware of all
-> >+	 * MMU masters and their stream IDs using mmu-master attibute
-> >+	 * SMMU DT node.
-> >+	 */
-> 
-> ...but on the same hand this will also never get called if there's
-> no "iommus" property on the master. Maintaining support for existing
-> users of the "mmu-masters" binding is one thing (namely the thing
-> that's been slowing down my efforts to clean up the really hacky
-> generic binding support I did all the DMA stuff with), but having
-> _both_ bindings in a single DT is something I don't think anybody
-> wants to see
-
-Indeed. NAK to the mixed case.
-
-Mark.
+T24gVHVlLCAyMDE2LTAxLTI2IGF0IDEzOjEyICswMDAwLCBFcmljIEF1Z2VyIHdyb3RlOgo+IFRo
+aXMgc2VyaWVzIGFkZHJlc3NlcyBLVk0gUENJZSBwYXNzdGhyb3VnaCB3aXRoIE1TSSBlbmFibGVk
+IG9uIEFSTS9BUk02NC4KPiBJdCBwdXJzdWVzIHRoZSBlZmZvcnRzIGRvbmUgb24gWzFdLCBbMl0s
+IFszXS4gSXQgYWxzbyBhaW1zIGF0IGNvdmVyaW5nIHRoZQo+IHNhbWUgbmVlZCBvbiBzb21lIFBv
+d2VyUEMgcGxhdGZvcm1zLgo+wqAKPiBPbiB4ODYgYWxsIGFjY2Vzc2VzIHRvIHRoZSAxTUIgUEEg
+cmVnaW9uIFtGRUUwXzAwMDBoIC0gRkVGMF8wMDBoXSBhcmUgZGlyZWN0ZWQKPiBhcyBpbnRlcnJ1
+cHQgbWVzc2FnZXM6IGFjY2Vzc2VzIHRvIHRoaXMgc3BlY2lhbCBQQSB3aW5kb3cgZGlyZWN0bHkg
+dGFyZ2V0IHRoZQo+IEFQSUMgY29uZmlndXJhdGlvbiBzcGFjZSBhbmQgbm90IERSQU0sIG1lYW5p
+bmcgdGhlIGRvd25zdHJlYW0gSU9NTVUgaXMgYnlwYXNzZWQuCj7CoAo+IFRoaXMgaXMgbm90IHRo
+ZSBjYXNlIG9uIGFib3ZlIG1lbnRpb25uZWQgcGxhdGZvcm1zIHdoZXJlIE1TSSBtZXNzYWdlcyBl
+bWl0dGVkCj4gYnkgZGV2aWNlcyBhcmUgY29udmV5ZWQgdGhyb3VnaCB0aGUgSU9NTVUuIFRoaXMg
+bWVhbnMgYW4gSU9WQS9ob3N0IFBBIG1hcHBpbmcKPiBtdXN0IGV4aXN0IGZvciB0aGUgTVNJIHRv
+IHJlYWNoIHRoZSBNU0kgY29udHJvbGxlci4gTm9ybWFsIHdheSB0byBjcmVhdGUKPiBJT1ZBIGJp
+bmRpbmdzIGNvbnNpc3RzIGluIHVzaW5nIFZGSU8gRE1BIE1BUCBBUEkuIEhvd2V2ZXIgaW4gdGhp
+cyBjYXNlCj4gdGhlIE1TSSBJT1ZBIGlzIG5vdCBtYXBwZWQgb250byBndWVzdCBSQU0gYnV0IG9u
+IGhvc3QgcGh5c2ljYWwgcGFnZSAodGhlIE1TSQo+IGNvbnRyb2xsZXIgZnJhbWUpLgo+wqAKPiBG
+b2xsb3dpbmcgZmlyc3QgY29tbWVudHMsIHRoZSBzcGlyaXQgb2YgWzJdIGlzIGtlcHQ6IHRoZSBn
+dWVzdCByZWdpc3RlcnMKPiBhbiBJT1ZBIHJhbmdlIHJlc2VydmVkIGZvciBNU0kgbWFwcGluZy4g
+V2hlbiB0aGUgVkZJTy1QQ0llIGRyaXZlciBhbGxvY2F0ZXMKPiBpdHMgTVNJIHZlY3RvcnMsIGl0
+IG92ZXJ3cml0ZXMgdGhlIE1TSSBjb250cm9sbGVyIHBoeXNpY2FsIGFkZHJlc3Mgd2l0aCBhbiBJ
+T1ZBLAo+IGFsbG9jYXRlZCB3aXRoaW4gdGhlIHdpbmRvdyBwcm92aWRlZCBieSB0aGUgdXNlcnNw
+YWNlLiBUaGlzIElPVkEgaXMgbWFwcGVkCj4gb250byB0aGUgTVNJIGNvbnRyb2xsZXIgZnJhbWUg
+cGh5c2ljYWwgcGFnZS4KPsKgCj4gVGhlIHNlcmllcyBkb2VzIG5vdCBhZGRyZXNzIHlldCB0aGUg
+cHJvYmxlbWF0aWMgb2YgdGVsbGluZyB0aGUgdXNlcnNwYWNlIGhvdwo+IG11Y2ggSU9WQSBoZSBz
+aG91bGQgcHJvdmlzaW9uLgoKSSdtIHNvcnQgb2Ygb24gYSB0aGluay1kaWZmZXJlbnQgYXBwcm9h
+Y2ggdG9kYXksIHNvIGJlYXIgd2l0aCBtZTsgaG93IGlzCml0IHRoYXQgeDg2IGNhbiBtYWtlIGlu
+dGVycnVwdCByZW1hcHBpbmcgc28gdHJhbnNwYXJlbnQgdG8gZHJpdmVycyBsaWtlCnZmaW8tcGNp
+IHdoaWxlIGZvciBBUk0gYW5kIHBwYyB3ZSBzZWVtIHRvIGJlIHN0dWNrIHdpdGggZG9pbmcgdGhl
+c2UKZml4dXBzIG9mIHRoZSBwaHlzaWNhbCB2ZWN0b3Igb3Vyc2VsdmVzLCBpbXBseWluZyB1Z2x5
+IChubyBvZmZlbnNlKQpwYXRocyBib3VuY2luZyB0aHJvdWdoIHZmaW8gdG8gY29ubmVjdCB0aGUg
+ZHJpdmVyIGFuZCBpb21tdSBiYWNrZW5kcz8KCldlIGtub3cgdGhhdCB4ODYgaGFuZGxlcyBNU0kg
+dmVjdG9ycyBzcGVjaWFsbHksIHNvIHRoZXJlIGlzIHNvbWUKaGFyZHdhcmUgdGhhdCBoZWxwcyB0
+aGUgc2l0dWF0aW9uLsKgwqBJdCdzIG5vdCBqdXN0IHRoYXQgeDg2IGhhcyBhIGZpeGVkCnJhbmdl
+IGZvciBNU0ksIGl0J3MgaG93IGl0IG1hbmFnZXMgdGhhdCByYW5nZSB3aGVuIGludGVycnVwdCBy
+ZW1hcHBpbmcKaGFyZHdhcmUgaXMgZW5hYmxlZC7CoMKgQSBkZXZpY2UgdGFibGUgaW5kZXhlZCBi
+eSBzb3VyY2UtSUQgcmVmZXJlbmNlcyBhCnBlciBkZXZpY2UgdGFibGUgaW5kZXhlZCBieSBkYXRh
+IGZyb20gdGhlIE1TSSB3cml0ZSBpdHNlbGYuwqDCoFNvIHdlIGdldAptdWNoLCBtdWNoIGZpbmVy
+IGdyYW51bGFyaXR5LCBidXQgdGhlcmUncyBzdGlsbCBlZmZlY3RpdmVseSBhbiBpbnRlcnJ1cHQK
+ZG9tYWluIHBlciBkZXZpY2UgdGhhdCdzIGJlaW5nIHRyYW5zcGFyZW50bHkgbWFuYWdlZCB1bmRl
+ciB0aGUgY292ZXJzCndoZW5ldmVyIHdlIHJlcXVlc3QgYW4gTVNJIHZlY3RvciBmb3IgYSBkZXZp
+Y2UuCgpTbyB3aHkgY2FuJ3Qgd2UgZG8gc29tZXRoaW5nIG1vcmUgbGlrZSB0aGF0IGhlcmU/wqDC
+oFRoZXJlJ3Mgbm8gcHJlZGVmaW5lZApNU0kgdmVjdG9yIHJhbmdlLCBzbyBkZWZpbmluZyBhbiBp
+bnRlcmZhY2UgZm9yIHRoZSB1c2VyIHRvIHNwZWNpZnkgdGhhdAppcyB1bmF2b2lkYWJsZS7CoMKg
+QnV0IHdoeSBzaG91bGRuJ3QgZXZlcnl0aGluZyBlbHNlIGJlIHRyYW5zcGFyZW50P8KgwqBXZQpj
+b3VsZCBhZGQgYW4gaW50ZXJmYWNlIHRvIHRoZSBJT01NVSBBUEkgdGhhdCBhbGxvd3MgdXMgdG8g
+cmVnaXN0ZXIgdGhhdApyZXNlcnZlZCByYW5nZSBmb3IgdGhlIElPTU1VIGRvbWFpbi7CoMKgSU9N
+TVUtY29yZSAob3IgbWF5YmUgaW50ZXJydXB0CnJlbWFwcGluZykgY29kZSBtaWdodCBhbGxvY2F0
+ZSBhbiBJT1ZBIGRvbWFpbiBmb3IgdGhpcyBqdXN0IGFzIHlvdSd2ZQpkb25lIGluIHRoZSB0eXBl
+MSBjb2RlIGhlcmUuwqDCoEJ1dCByYXRoZXIgdGhhbiBoYXZpbmcgYW55IGludGVyYWN0aW9uCndp
+dGggdmZpby1wY2ksIHdoeSBub3QgZG8gdGhpcyBhdCBsb3dlciBsZXZlbHMgc3VjaCB0aGF0IHRo
+ZSBwbGF0Zm9ybQppbnRlcnJ1cHQgdmVjdG9yIGFsbG9jYXRpb24gY29kZSBhdXRvbWF0aWNhbGx5
+IHVzZXMgb25lIG9mIHRob3NlIElPVkEKcmFuZ2VzIGFuZCByZXR1cm5zIHRoZSBJT1ZBIHJhdGhl
+ciB0aGFuIHRoZSBwaHlzaWNhbCBhZGRyZXNzIGZvciB0aGUgUENJCmNvZGUgdG8gcHJvZ3JhbSBp
+bnRvIHRoZSBkZXZpY2U/wqDCoEkgdGhpbmsgd2Uga25vdyB3aGF0IG5lZWRzIHRvIGJlIGRvbmUs
+CmJ1dCB3ZSdyZSB0YWtpbmcgdGhlIGFwcHJvYWNoIG9mIG1hbmFnaW5nIHRoZSBzcGFjZSBvdXJz
+ZWx2ZXMgYW5kIGRvaW5nCmEgZml4dXAgb2YgdGhlIGRldmljZSBhZnRlciB0aGUgY29yZSBjb2Rl
+IGhhcyBkb25lIGl0cyBqb2Igd2hlbiB3ZQpyZWFsbHkgb3VnaHQgdG8gYmUgbGV0dGluZyB0aGUg
+Y29yZSBjb2RlIG1hbmFnZSBhIHNwYWNlIHRoYXQgd2UgZGVmaW5lCmFuZCBwcm9ncmFtbWluZyB0
+aGUgZGV2aWNlIHNvIHRoYXQgaXQgZG9lc24ndCBuZWVkIGEgZml4dXAgaW4gdGhlCnZmaW8tcGNp
+IGNvZGUuwqDCoFdvdWxkbid0IGl0IGJlIG5pY2VyIGlmIHBjaV9lbmFibGVfbXNpeF9yYW5nZSgp
+IHJldHVybmVkCndpdGggdGhlIGRldmljZSBwcm9wZXJseSBwcm9ncmFtbWVkIG9yIGdlbmVyYXRl
+IGFuIGVycm9yIGlmIHRoZXJlJ3Mgbm90CmVub3VnaCByZXNlcnZlZCBtYXBwaW5nIHNwYWNlIGlu
+IElPTU1VIGRvbWFpbj8gIENhbiBpdCBiZSBkb25lP8KgwqBUaGFua3MsCgpBbGV4CgpfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxp
+c3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZv
+dW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
