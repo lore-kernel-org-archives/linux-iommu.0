@@ -1,26 +1,52 @@
-From: Daniel Kurtz <djkurtz@google.com>
-Subject: Re: [PATCH v8 3/5] memory: mediatek: Add SMI driver
-Date: Thu, 28 Jan 2016 20:34:54 +0800
-Message-ID: <CAGS+omBroFU2no3iHKogOV9c_aAxULiYKKYDjTCmVgeJ-ryGHw@mail.gmail.com>
-References: <1453781562-23556-1-git-send-email-yong.wu@mediatek.com> <1453781562-23556-4-git-send-email-yong.wu@mediatek.com>
+From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v2 1/1] iommu/vt-d: use lo_hi_readq() / lo_hi_writeq()
+Date: Thu, 28 Jan 2016 14:35:10 +0200
+Message-ID: <1453984510.2521.290.camel@linux.intel.com>
+References: <1447950167-111241-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1453781562-23556-4-git-send-email-yong.wu@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Yong Wu <yong.wu@mediatek.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Tomasz Figa <tfiga@google.com>, Lucas Stach <l.stach@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>, Sasha Hauer <kernel@pengutronix.de>, srv_heupstream <srv_heupstream@mediatek.com>, "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Paul Bolle <pebolle@tiscali.nl>, Arnd Bergmann <arnd@arndb.de>, mitchelh@cod
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1447950167-111241-1-git-send-email-andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 26, 2016 at 12:12 PM, Yong Wu <yong.wu@mediatek.com> wrote:
-> This patch add SMI(Smart Multimedia Interface) driver. This driver
-> is responsible to enable/disable iommu and control the power domain
-> and clocks of each local arbiter.
->
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> Tested-by: Philipp Zabel <p.zabel@pengutronix.de>
-
-Reviewed-by: Daniel Kurtz <djkurtz@chromium.org>
-Tested-by: Daniel Kurtz <djkurtz@chromium.org>
-
-Thanks!
+T24gVGh1LCAyMDE1LTExLTE5IGF0IDE4OjIyICswMjAwLCBBbmR5IFNoZXZjaGVua28gd3JvdGU6
+Cj4gVGhlcmUgaXMgYWxyZWFkeSBoZWxwZXIgZnVuY3Rpb25zIHRvIGRvIDY0LWJpdCBJL08gb24g
+MzItYml0IG1hY2hpbmVzCj4gb3IgYnVzZXMsCj4gdGh1cyB3ZSBkb24ndCBuZWVkIHRvIHJlaW52
+ZW50IHRoZSB3aGVlbC4KPiAKCkFueSBjb21tZW50IG9uIHRoaXM/Cgo+IFNpZ25lZC1vZmYtYnk6
+IEFuZHkgU2hldmNoZW5rbyA8YW5kcml5LnNoZXZjaGVua29AbGludXguaW50ZWwuY29tPgo+IC0t
+LQo+IENhaG5nZWxvZyB2MjoKPiAtIHJlYmFzZSBvbiB0b3Agb2YgcmVjZW50IGxpbnV4LW5leHQK
+PiDCoGluY2x1ZGUvbGludXgvaW50ZWwtaW9tbXUuaCB8IDE4ICsrLS0tLS0tLS0tLS0tLS0tLQo+
+IMKgMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgMTYgZGVsZXRpb25zKC0pCj4gCj4g
+ZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvaW50ZWwtaW9tbXUuaCBiL2luY2x1ZGUvbGludXgv
+aW50ZWwtCj4gaW9tbXUuaAo+IGluZGV4IDgyMTI3M2MuLjM0MDY2ZWUgMTAwNjQ0Cj4gLS0tIGEv
+aW5jbHVkZS9saW51eC9pbnRlbC1pb21tdS5oCj4gKysrIGIvaW5jbHVkZS9saW51eC9pbnRlbC1p
+b21tdS5oCj4gQEAgLTI5LDYgKzI5LDggQEAKPiDCoCNpbmNsdWRlIDxsaW51eC9kbWFfcmVtYXBw
+aW5nLmg+Cj4gwqAjaW5jbHVkZSA8bGludXgvbW11X25vdGlmaWVyLmg+Cj4gwqAjaW5jbHVkZSA8
+bGludXgvbGlzdC5oPgo+ICsjaW5jbHVkZSA8bGludXgvaW8tNjQtbm9uYXRvbWljLWxvLWhpLmg+
+Cj4gKwo+IMKgI2luY2x1ZGUgPGFzbS9jYWNoZWZsdXNoLmg+Cj4gwqAjaW5jbHVkZSA8YXNtL2lv
+bW11Lmg+Cj4gwqAKPiBAQCAtNzEsMjQgKzczLDggQEAKPiDCoAo+IMKgI2RlZmluZSBPRkZTRVRf
+U1RSSURFCQkoOSkKPiDCoAo+IC0jaWZkZWYgQ09ORklHXzY0QklUCj4gwqAjZGVmaW5lIGRtYXJf
+cmVhZHEoYSkgcmVhZHEoYSkKPiDCoCNkZWZpbmUgZG1hcl93cml0ZXEoYSx2KSB3cml0ZXEodixh
+KQo+IC0jZWxzZQo+IC1zdGF0aWMgaW5saW5lIHU2NCBkbWFyX3JlYWRxKHZvaWQgX19pb21lbSAq
+YWRkcikKPiAtewo+IC0JdTMyIGxvLCBoaTsKPiAtCWxvID0gcmVhZGwoYWRkcik7Cj4gLQloaSA9
+IHJlYWRsKGFkZHIgKyA0KTsKPiAtCXJldHVybiAoKCh1NjQpIGhpKSA8PCAzMikgKyBsbzsKPiAt
+fQo+IC0KPiAtc3RhdGljIGlubGluZSB2b2lkIGRtYXJfd3JpdGVxKHZvaWQgX19pb21lbSAqYWRk
+ciwgdTY0IHZhbCkKPiAtewo+IC0Jd3JpdGVsKCh1MzIpdmFsLCBhZGRyKTsKPiAtCXdyaXRlbCgo
+dTMyKSh2YWwgPj4gMzIpLCBhZGRyICsgNCk7Cj4gLX0KPiAtI2VuZGlmCj4gwqAKPiDCoCNkZWZp
+bmUgRE1BUl9WRVJfTUFKT1IodikJCSgoKHYpICYgMHhmMCkgPj4gNCkKPiDCoCNkZWZpbmUgRE1B
+Ul9WRVJfTUlOT1IodikJCSgodikgJiAweDBmKQoKLS0gCkFuZHkgU2hldmNoZW5rbyA8YW5kcml5
+LnNoZXZjaGVua29AbGludXguaW50ZWwuY29tPgpJbnRlbCBGaW5sYW5kIE95CgpfX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QK
+aW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5k
+YXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
