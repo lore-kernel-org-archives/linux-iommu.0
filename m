@@ -1,17 +1,16 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [Patch v3 03/12] iommu/amd: move dte irq macro defitions to
-	amd_iommu_types.h
-Date: Thu, 28 Jan 2016 17:50:36 +0800
-Message-ID: <20160128095036.GB3851@x1.redhat.com>
+Subject: Re: [Patch v3 04/12] iommu/amd: add copy_irq_table function
+Date: Thu, 28 Jan 2016 17:52:42 +0800
+Message-ID: <20160128095242.GC3851@x1.redhat.com>
 References: <1453804166-25646-1-git-send-email-bhe@redhat.com>
-	<1453804166-25646-4-git-send-email-bhe@redhat.com>
-	<56A89B1F.6010004@iommu.org>
+	<1453804166-25646-5-git-send-email-bhe@redhat.com>
+	<56A8A896.70405@iommu.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <56A89B1F.6010004-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
+In-Reply-To: <56A8A896.70405-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,56 +24,94 @@ To: Wan Zongshun <vw-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Thanks a lot for your review, Zongshun.
-
-On 01/27/16 at 06:25pm, Wan Zongshun wrote:
+On 01/27/16 at 07:23pm, Wan Zongshun wrote:
 > 
 > 
 > -------- Original Message --------
-> >These macro definitions are also needed by irq table copy function
-> >later, so move them to amd_iommu_types.h.
-> 
-> Typo for your subject (defitions?).
-
-Yeah, this is typo, will change.
-
-> 
+> >If irq table exists in old kernel create a new one and copy the content
+> >of old irq table to the newly created.
 > >
 > >Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 > >---
-> >  drivers/iommu/amd_iommu.c       | 4 ----
-> >  drivers/iommu/amd_iommu_types.h | 5 +++++
-> >  2 files changed, 5 insertions(+), 4 deletions(-)
+> >diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+> >index 91659d8..450adad 100644
+> >--- a/drivers/iommu/amd_iommu_init.c
+> >+++ b/drivers/iommu/amd_iommu_init.c
+> >@@ -660,6 +660,49 @@ static int get_dev_entry_bit(u16 devid, u8 bit)
+> >  	return (amd_iommu_dev_table[devid].data[i] & (1UL << _bit)) >> _bit;
+> >  }
 > >
-> >diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> >index dd869fe..aeae07a 100644
-> >--- a/drivers/iommu/amd_iommu.c
-> >+++ b/drivers/iommu/amd_iommu.c
-> >@@ -3627,10 +3627,6 @@ struct amd_ir_data {
-> >
-> >  static struct irq_chip amd_ir_chip;
-> >
-> >-#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
-> >-#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
-> >-#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
-> >-#define DTE_IRQ_REMAP_ENABLE    1ULL
-> >
-> >  static void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
-> >  {
-> >diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-> >index 9d32b20..9b8ace4 100644
-> >--- a/drivers/iommu/amd_iommu_types.h
-> >+++ b/drivers/iommu/amd_iommu_types.h
-> >@@ -224,6 +224,11 @@
-> >
-> >  #define PPR_REQ_FAULT		0x01
-> >
-> >+#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
-> >+#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
-> >+#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
-> >+#define DTE_IRQ_REMAP_ENABLE    1ULL
+> >+static void copy_irq_table(u16 devid)
+> >+{
+> >+	struct irq_remap_table *table = NULL;
+> >+	u16 alias;
+> >+	u64 dte;
+> >+	u64 *old_intr_virt;
 > >+
-> >  #define PAGE_MODE_NONE    0x00
-> >  #define PAGE_MODE_1_LEVEL 0x01
-> >  #define PAGE_MODE_2_LEVEL 0x02
+> >+	alias = amd_iommu_alias_table[devid];
+> >+	table = irq_lookup_table[alias];
+> >+	if (table) {
+> >+	        irq_lookup_table[devid] = table;
+> >+		set_dte_irq_entry(devid, table);
+> >+	        return;
+> >+	}
+> >+	dte     = amd_iommu_dev_table[devid].data[2];
+> >+	dte &= DTE_IRQ_PHYS_ADDR_MASK;
+> >+	if( (!dte&DTE_IRQ_REMAP_ENABLE) || ( dte == 0) )
+> >+	        return;
+> >+
+> 
+> here: dte&DTE_IRQ_REMAP_ENABLE
+> 
+> style?
+> dte & DTE_IRQ_REMAP_ENABLE
+
+Yeah, will change to use yours.
+
+> 
+> >+	table = kzalloc(sizeof(*table), GFP_ATOMIC);
+> >+	if (!table){
+> >+	        pr_warn("AMD-Vi: amd irq table allocation failed\n");
+> >+	        return;
+> >+	}
+> >+
+> >+	table->table = kmem_cache_alloc(amd_iommu_irq_cache, GFP_ATOMIC);
+> >+        if (!table->table) {
+> >+                kfree(table);
+> >+                table = NULL;
+> >+		return;
+> >+        }
+> >+	memset(table->table, 0, MAX_IRQS_PER_TABLE * sizeof(u32));
+> >+
+> >+	old_intr_virt = memremap(dte, MAX_IRQS_PER_TABLE * sizeof(u32), MEMREMAP_WB);
+> 
+> Here if rename the 'dte' to 'irte',  better to read?
+
+Agree, will change.
+
+> 
+> 
+> >+	memcpy(table->table, old_intr_virt, MAX_IRQS_PER_TABLE * sizeof(u32));
+> >+	irq_lookup_table[devid] = table;
+> >+	set_dte_irq_entry(devid, table);
+> >+	if (devid != alias) {
+> >+                irq_lookup_table[alias] = table;
+> >+		set_dte_irq_entry(alias, table);
+> >+        }
+> >+	memunmap(old_intr_virt);
+> >+}
+> >
+> >  void amd_iommu_apply_erratum_63(u16 devid)
+> >  {
+> >diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
+> >index 743e209..ab562e0 100644
+> >--- a/drivers/iommu/amd_iommu_proto.h
+> >+++ b/drivers/iommu/amd_iommu_proto.h
+> >@@ -101,5 +101,6 @@ static inline bool iommu_feature(struct amd_iommu *iommu, u64 f)
+> >  /* kdump checking  */
+> >  extern bool translation_pre_enabled(void);
+> >  extern void clear_translation_pre_enabled(void);
+> >+extern void set_dte_irq_entry(u16 devid, struct irq_remap_table *table);
+> >
+> >  #endif /* _ASM_X86_AMD_IOMMU_PROTO_H  */
 > >
