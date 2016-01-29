@@ -1,163 +1,93 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [Patch v3 05/12] iommu/amd: change IOMMU_PTE_P to IOMMU_PTE_V
-Date: Fri, 29 Jan 2016 11:12:40 +0800
-Message-ID: <20160129031240.GA2506@x1.redhat.com>
-References: <1453804166-25646-1-git-send-email-bhe@redhat.com>
-	<1453804166-25646-6-git-send-email-bhe@redhat.com>
-	<56A89981.5010007@iommu.org> <20160128100533.GD3851@x1.redhat.com>
-	<56AAD4B8.8050701@iommu.org>
+From: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Subject: RE: [RFC PATCH 5/6] iommu/arm-smmu: Option to treat instruction
+ fetch as data read for SMMUv2
+Date: Fri, 29 Jan 2016 03:42:15 +0000
+Message-ID: <39063E8F96E11742B35A201CC5D095B7BB2252@SJEXCHMB10.corp.ad.broadcom.com>
+References: <1453872079-27140-1-git-send-email-anup.patel@broadcom.com>
+ <1453872079-27140-6-git-send-email-anup.patel@broadcom.com>
+ <56AA4B89.3040400@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <56AAD4B8.8050701-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Wan Zongshun <vw-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ray Huang <ray.huang-5C7GfCeVMHo@public.gmane.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <56AA4B89.3040400-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Device Tree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Scott Branden <sbranden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Ray Jui <rjui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Vikram Prakash <vikramp-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, bcm-kernel-feedback-list <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/29/16 at 10:55am, Wan Zongshun wrote:
-> 
-> 
-> -------- Original Message --------
-> >On 01/27/16 at 06:18pm, Wan Zongshun wrote:
-> >>
-> >>
-> >>-------- Original Message --------
-> >>>In amd-vi spec the name of bit0 in DTE is V. But in code it's defined
-> >>>as IOMMU_PTE_P. Here change it to IOMMU_PTE_V to make it be consistent
-> >>>with spec.
-> >>
-> >>Hi, Baoquan
-> >>
-> >>This should be PR bit which means present, So maybe you got
-> >>confusion between DTE and PTE table, right?
-> >
-> >Well, I got it. In fact the MACRO definition and current code confused
-> >me. IOMMU_PTE_P is not only used for PTE table, but used for DTE entry.
-> >
-> >You can check functions set_dte_entry()/clear_dte_entry() where
-> >IOMMU_PTE_P and IOMMU_PTE_TV are set in DTE entry to indicate the DTE
-> >entry and translation is valid. Meanwhile I saw in iommu_map_page
-> >IOMMU_PTE_P is used to incidate pte is present. This makes us confused. I
-> >will post a patch to clean up this, defining new specific MACRO for DTE
-> >use only. Do you agree on this?
-> >
-> 
-> Baoquan,
-> 
-> It is fine to me, is it better to add a lot of explanation for those
-> bits MACRO? like:
-> 
-> /* PTE bit value definition*/
-> #define IOMMU_PTE_P  (1ULL << 0)
-> #define IOMMU_PTE_TV (1ULL << 1)
-> 
-> /* DTE bit value definition*/
-> #define IOMMU_DTE_TV (1ULL << 1)
 
-Agree. It makes sense to make code more read-able. Will add.
 
+> -----Original Message-----
+> From: Robin Murphy [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org]
+> Sent: 28 January 2016 22:41
+> To: Anup Patel; Catalin Marinas; Joerg Roedel; Will Deacon; Robin Murphy;
+> Sricharan R; Linux IOMMU; Linux ARM Kernel
+> Cc: Mark Rutland; Device Tree; Scott Branden; Pawel Moll; Ian Campbell; Ray
+> Jui; Linux Kernel; Vikram Prakash; Rob Herring; bcm-kernel-feedback-list; Kumar
+> Gala
+> Subject: Re: [RFC PATCH 5/6] iommu/arm-smmu: Option to treat instruction
+> fetch as data read for SMMUv2
 > 
-> >>
-> >>So please don't change the IOMMU_PTE_P to IOMMU_PTE_V firstly, maybe
-> >>you should rename IOMMU_PTE_TV to IOMMU_DTE_TV, or just keep those
-> >>codes here, does make sense?
+> On 27/01/16 05:21, Anup Patel wrote:
+> > Currently, the SMMU driver by default provides unprivilege read-write
+> > permission in page table entries of stage1 page table. For SMMUv2 with
+> > aarch64 long descriptor format, a privilege instruction fetch will
+> > generate context fault. To allow privilege instruction fetch from a
+> > MMU master we need to treat instruction fetch as data read.
 > >
-> >As you said, IOMMU_PTE_P need be kept, also IOMMU_DTE_V/IOMMU_DTE_TV are
-> >also necessary to re-define separately.
-> >>
-> >>Vincent.
-> >>
-> >>>
-> >>>Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> >>>---
-> >>>  drivers/iommu/amd_iommu.c       | 10 +++++-----
-> >>>  drivers/iommu/amd_iommu_types.h |  6 +++---
-> >>>  2 files changed, 8 insertions(+), 8 deletions(-)
-> >>>
-> >>>diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> >>>index 63f4c6b..f02d4b1 100644
-> >>>--- a/drivers/iommu/amd_iommu.c
-> >>>+++ b/drivers/iommu/amd_iommu.c
-> >>>@@ -1331,9 +1331,9 @@ static int iommu_map_page(struct protection_domain *dom,
-> >>>
-> >>>  	if (count > 1) {
-> >>>  		__pte = PAGE_SIZE_PTE(phys_addr, page_size);
-> >>>-		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_P | IOMMU_PTE_FC;
-> >>>+		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_V | IOMMU_PTE_FC;
-> >>>  	} else
-> >>>-		__pte = phys_addr | IOMMU_PTE_P | IOMMU_PTE_FC;
-> >>>+		__pte = phys_addr | IOMMU_PTE_V | IOMMU_PTE_FC;
-> >>>
-> >>>  	if (prot & IOMMU_PROT_IR)
-> >>>  		__pte |= IOMMU_PTE_IR;
-> >>>@@ -1978,7 +1978,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
-> >>>
-> >>>  	pte_root |= (domain->mode & DEV_ENTRY_MODE_MASK)
-> >>>  		    << DEV_ENTRY_MODE_SHIFT;
-> >>>-	pte_root |= IOMMU_PTE_IR | IOMMU_PTE_IW | IOMMU_PTE_P | IOMMU_PTE_TV;
-> >>>+	pte_root |= IOMMU_PTE_IR | IOMMU_PTE_IW | IOMMU_PTE_V | IOMMU_PTE_TV;
-> >>>
-> >>>  	flags = amd_iommu_dev_table[devid].data[1];
-> >>>
-> >>>@@ -2021,7 +2021,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
-> >>>  static void clear_dte_entry(u16 devid)
-> >>>  {
-> >>>  	/* remove entry from the device table seen by the hardware */
-> >>>-	amd_iommu_dev_table[devid].data[0]  = IOMMU_PTE_P | IOMMU_PTE_TV;
-> >>>+	amd_iommu_dev_table[devid].data[0]  = IOMMU_PTE_V | IOMMU_PTE_TV;
-> >>>  	amd_iommu_dev_table[devid].data[1] &= DTE_FLAG_MASK;
-> >>>
-> >>>  	amd_iommu_apply_erratum_63(devid);
-> >>>@@ -2463,7 +2463,7 @@ static dma_addr_t dma_ops_domain_map(struct dma_ops_domain *dom,
-> >>>  	if (!pte)
-> >>>  		return DMA_ERROR_CODE;
-> >>>
-> >>>-	__pte = paddr | IOMMU_PTE_P | IOMMU_PTE_FC;
-> >>>+	__pte = paddr | IOMMU_PTE_V | IOMMU_PTE_FC;
-> >>>
-> >>>  	if (direction == DMA_TO_DEVICE)
-> >>>  		__pte |= IOMMU_PTE_IR;
-> >>>diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-> >>>index 9b8ace4..65f7988 100644
-> >>>--- a/drivers/iommu/amd_iommu_types.h
-> >>>+++ b/drivers/iommu/amd_iommu_types.h
-> >>>@@ -244,7 +244,7 @@
-> >>>  #define PM_LEVEL_INDEX(x, a)	(((a) >> PM_LEVEL_SHIFT((x))) & 0x1ffULL)
-> >>>  #define PM_LEVEL_ENC(x)		(((x) << 9) & 0xe00ULL)
-> >>>  #define PM_LEVEL_PDE(x, a)	((a) | PM_LEVEL_ENC((x)) | \
-> >>>-				 IOMMU_PTE_P | IOMMU_PTE_IR | IOMMU_PTE_IW)
-> >>>+				 IOMMU_PTE_V | IOMMU_PTE_IR | IOMMU_PTE_IW)
-> >>>  #define PM_PTE_LEVEL(pte)	(((pte) >> 9) & 0x7ULL)
-> >>>
-> >>>  #define PM_MAP_4k		0
-> >>>@@ -293,7 +293,7 @@
-> >>>  #define PTE_LEVEL_PAGE_SIZE(level)			\
-> >>>  	(1ULL << (12 + (9 * (level))))
-> >>>
-> >>>-#define IOMMU_PTE_P  (1ULL << 0)
-> >>>+#define IOMMU_PTE_V  (1ULL << 0)
-> >>>  #define IOMMU_PTE_TV (1ULL << 1)
-> >>>  #define IOMMU_PTE_U  (1ULL << 59)
-> >>>  #define IOMMU_PTE_FC (1ULL << 60)
-> >>>@@ -321,7 +321,7 @@
-> >>>  #define GCR3_VALID		0x01ULL
-> >>>
-> >>>  #define IOMMU_PAGE_MASK (((1ULL << 52) - 1) & ~0xfffULL)
-> >>>-#define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_P)
-> >>>+#define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_V)
-> >>>  #define IOMMU_PTE_PAGE(pte) (phys_to_virt((pte) & IOMMU_PAGE_MASK))
-> >>>  #define IOMMU_PTE_MODE(pte) (((pte) >> 9) & 0x07)
-> >>>
-> >>>
-> >
+> > This patch adds an optional DT attribute 'smmu-inst-as-data' to treat
+> > privilege/unprivilege instruction fetch as data read for SMMUv2.
+> 
+> What's the use-case for retaining the privilege attribute over the instruction
+> attribute? The pagetable code still maps everything with unprivileged
+> permissions, and it isn't going to be relevant for the vast majority of devices.
+> Conversely, the instruction/data distinction is likely to be useful in a lot more
+> cases - there's a veritable class of exploits around tricking a
+> DSP/GPU/VPU/whatever into executing malicious firmware/shaders/etc. - and
+> the IOMMU API does already have support for that which this change subtly
+> undermines: if you override INSTCFG this way, you also need to stop the SMMU
+> from claiming to support IOMMU_NOEXEC, because it no longer will.
+
+Currently, there is no provision in IOMMU framework to specify privilege level
+of a mapping. I thought in future someone might certainly add such a thing
+because theoretically we can have accesses from a microcontroller or
+coprocessor going through SMMU and microcontroller or coprocessor can
+have two privilege levels.
+
+Now, the list of all possible access types would be:
+1. Privileged read
+2. Privileged write
+3. Privileged instruction fetch
+4. Unprivileged read
+5. Unprivileged write
+6. Unprivileged instruction fetch
+
+If we treat instruction fetch as data read then above would reduce to:
+1. Privileged read
+2. Privileged write
+3. Unprivileged read
+4. Unprivileged write
+
+If we treat all privileged access as unprivileged then above would reduce to:
+1. Unprivileged read
+2. Unprivileged write
+3. Unprivileged instruction fetch
+
+The possible access types were reducing more if treated privileged accesses
+as unprivileged accesses. This motivated me to prefer "treat instruction
+fetch as data read" over "treat privileged access as unprivileged".
+
+I am fine with both approaches. If we envision that IOMMU framework
+no use for privileged accesses then we should go with "treat privileged
+access as unprivileged" approach. In fact, I was already planning to base
+this patchset upon your patchset and remove duplicate changes from
+my patchset.
+
+Regards,
+Anup
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
