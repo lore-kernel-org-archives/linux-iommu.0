@@ -1,14 +1,15 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v1] iommu/rockchip: reconstruct to support multi slaves
-Date: Fri, 29 Jan 2016 12:26:45 +0100
-Message-ID: <20160129112645.GC4204@8bytes.org>
-References: <1453186980-21055-1-git-send-email-zhengsq@rock-chips.com>
+Subject: Re: [PATCH] iommu/amd: Correct the wrong setting of alias DTE in
+	do_attach
+Date: Fri, 29 Jan 2016 12:28:57 +0100
+Message-ID: <20160129112856.GD4204@8bytes.org>
+References: <1453298479-15434-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1453186980-21055-1-git-send-email-zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+In-Reply-To: <1453298479-15434-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,25 +19,22 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Cc: heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 19, 2016 at 03:03:00PM +0800, Shunqian Zheng wrote:
-> From: ZhengShunQian <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+On Wed, Jan 20, 2016 at 10:01:19PM +0800, Baoquan He wrote:
+> In below commit alias DTE is set when its peripheral is
+> setting DTE. However there's a code bug here to wrongly
+> set the alias DTE, correct it in this patch.
 > 
-> There are some IPs, such as video encoder/decoder, contains 2 slave iommus,
-> one for reading and the other for writing. They share the same irq and
-> clock with master.
+> commit e25bfb56ea7f046b71414e02f80f620deb5c6362
+> Author: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> Date:   Tue Oct 20 17:33:38 2015 +0200
 > 
-> This patch reconstructs to support this case by making them share the same
-> Page Directory, Page Tables and even the register operations.
-> That means every instruction to the reading MMU registers would be
-> duplicated to the writing MMU and vice versa.
+>     iommu/amd: Set alias DTE in do_attach/do_detach
 > 
-> Signed-off-by: ZhengShunQian <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-> ---
->  drivers/iommu/rockchip-iommu.c | 214 ++++++++++++++++++++++++++---------------
->  1 file changed, 135 insertions(+), 79 deletions(-)
+> Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Tested-by: Mark Hounschell <markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
 
 Applied, thanks.
