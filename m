@@ -1,13 +1,15 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 00/10] KVM PCIe/MSI passthrough on ARM/ARM64
-Date: Thu, 28 Jan 2016 14:51:39 -0700
-Message-ID: <1454017899.23148.0.camel@redhat.com>
-References: <1453813968-2024-1-git-send-email-eric.auger@linaro.org>
+From: Wan Zongshun <vw-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
+Subject: Re: [Patch v3 05/12] iommu/amd: change IOMMU_PTE_P to IOMMU_PTE_V
+Date: Fri, 29 Jan 2016 10:55:52 +0800
+Message-ID: <56AAD4B8.8050701@iommu.org>
+References: <1453804166-25646-1-git-send-email-bhe@redhat.com>
+	<1453804166-25646-6-git-send-email-bhe@redhat.com>
+	<56A89981.5010007@iommu.org> <20160128100533.GD3851@x1.redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1453813968-2024-1-git-send-email-eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20160128100533.GD3851-ejN7fcUYdH/by3iVrkZq2A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,73 +19,139 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, eric.auger-qxv4g6HH51o@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ray Huang <ray.huang-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCAyMDE2LTAxLTI2IGF0IDEzOjEyICswMDAwLCBFcmljIEF1Z2VyIHdyb3RlOgo+IFRo
-aXMgc2VyaWVzIGFkZHJlc3NlcyBLVk0gUENJZSBwYXNzdGhyb3VnaCB3aXRoIE1TSSBlbmFibGVk
-IG9uIEFSTS9BUk02NC4KPiBJdCBwdXJzdWVzIHRoZSBlZmZvcnRzIGRvbmUgb24gWzFdLCBbMl0s
-IFszXS4gSXQgYWxzbyBhaW1zIGF0IGNvdmVyaW5nIHRoZQo+IHNhbWUgbmVlZCBvbiBzb21lIFBv
-d2VyUEMgcGxhdGZvcm1zLgo+wqAKPiBPbiB4ODYgYWxsIGFjY2Vzc2VzIHRvIHRoZSAxTUIgUEEg
-cmVnaW9uIFtGRUUwXzAwMDBoIC0gRkVGMF8wMDBoXSBhcmUgZGlyZWN0ZWQKPiBhcyBpbnRlcnJ1
-cHQgbWVzc2FnZXM6IGFjY2Vzc2VzIHRvIHRoaXMgc3BlY2lhbCBQQSB3aW5kb3cgZGlyZWN0bHkg
-dGFyZ2V0IHRoZQo+IEFQSUMgY29uZmlndXJhdGlvbiBzcGFjZSBhbmQgbm90IERSQU0sIG1lYW5p
-bmcgdGhlIGRvd25zdHJlYW0gSU9NTVUgaXMgYnlwYXNzZWQuCj7CoAo+IFRoaXMgaXMgbm90IHRo
-ZSBjYXNlIG9uIGFib3ZlIG1lbnRpb25uZWQgcGxhdGZvcm1zIHdoZXJlIE1TSSBtZXNzYWdlcyBl
-bWl0dGVkCj4gYnkgZGV2aWNlcyBhcmUgY29udmV5ZWQgdGhyb3VnaCB0aGUgSU9NTVUuIFRoaXMg
-bWVhbnMgYW4gSU9WQS9ob3N0IFBBIG1hcHBpbmcKPiBtdXN0IGV4aXN0IGZvciB0aGUgTVNJIHRv
-IHJlYWNoIHRoZSBNU0kgY29udHJvbGxlci4gTm9ybWFsIHdheSB0byBjcmVhdGUKPiBJT1ZBIGJp
-bmRpbmdzIGNvbnNpc3RzIGluIHVzaW5nIFZGSU8gRE1BIE1BUCBBUEkuIEhvd2V2ZXIgaW4gdGhp
-cyBjYXNlCj4gdGhlIE1TSSBJT1ZBIGlzIG5vdCBtYXBwZWQgb250byBndWVzdCBSQU0gYnV0IG9u
-IGhvc3QgcGh5c2ljYWwgcGFnZSAodGhlIE1TSQo+IGNvbnRyb2xsZXIgZnJhbWUpLgo+wqAKPiBG
-b2xsb3dpbmcgZmlyc3QgY29tbWVudHMsIHRoZSBzcGlyaXQgb2YgWzJdIGlzIGtlcHQ6IHRoZSBn
-dWVzdCByZWdpc3RlcnMKPiBhbiBJT1ZBIHJhbmdlIHJlc2VydmVkIGZvciBNU0kgbWFwcGluZy4g
-V2hlbiB0aGUgVkZJTy1QQ0llIGRyaXZlciBhbGxvY2F0ZXMKPiBpdHMgTVNJIHZlY3RvcnMsIGl0
-IG92ZXJ3cml0ZXMgdGhlIE1TSSBjb250cm9sbGVyIHBoeXNpY2FsIGFkZHJlc3Mgd2l0aCBhbiBJ
-T1ZBLAo+IGFsbG9jYXRlZCB3aXRoaW4gdGhlIHdpbmRvdyBwcm92aWRlZCBieSB0aGUgdXNlcnNw
-YWNlLiBUaGlzIElPVkEgaXMgbWFwcGVkCj4gb250byB0aGUgTVNJIGNvbnRyb2xsZXIgZnJhbWUg
-cGh5c2ljYWwgcGFnZS4KPsKgCj4gVGhlIHNlcmllcyBkb2VzIG5vdCBhZGRyZXNzIHlldCB0aGUg
-cHJvYmxlbWF0aWMgb2YgdGVsbGluZyB0aGUgdXNlcnNwYWNlIGhvdwo+IG11Y2ggSU9WQSBoZSBz
-aG91bGQgcHJvdmlzaW9uLgoKSSdtIHNvcnQgb2Ygb24gYSB0aGluay1kaWZmZXJlbnQgYXBwcm9h
-Y2ggdG9kYXksIHNvIGJlYXIgd2l0aCBtZTsgaG93IGlzCml0IHRoYXQgeDg2IGNhbiBtYWtlIGlu
-dGVycnVwdCByZW1hcHBpbmcgc28gdHJhbnNwYXJlbnQgdG8gZHJpdmVycyBsaWtlCnZmaW8tcGNp
-IHdoaWxlIGZvciBBUk0gYW5kIHBwYyB3ZSBzZWVtIHRvIGJlIHN0dWNrIHdpdGggZG9pbmcgdGhl
-c2UKZml4dXBzIG9mIHRoZSBwaHlzaWNhbCB2ZWN0b3Igb3Vyc2VsdmVzLCBpbXBseWluZyB1Z2x5
-IChubyBvZmZlbnNlKQpwYXRocyBib3VuY2luZyB0aHJvdWdoIHZmaW8gdG8gY29ubmVjdCB0aGUg
-ZHJpdmVyIGFuZCBpb21tdSBiYWNrZW5kcz8KCldlIGtub3cgdGhhdCB4ODYgaGFuZGxlcyBNU0kg
-dmVjdG9ycyBzcGVjaWFsbHksIHNvIHRoZXJlIGlzIHNvbWUKaGFyZHdhcmUgdGhhdCBoZWxwcyB0
-aGUgc2l0dWF0aW9uLsKgwqBJdCdzIG5vdCBqdXN0IHRoYXQgeDg2IGhhcyBhIGZpeGVkCnJhbmdl
-IGZvciBNU0ksIGl0J3MgaG93IGl0IG1hbmFnZXMgdGhhdCByYW5nZSB3aGVuIGludGVycnVwdCBy
-ZW1hcHBpbmcKaGFyZHdhcmUgaXMgZW5hYmxlZC7CoMKgQSBkZXZpY2UgdGFibGUgaW5kZXhlZCBi
-eSBzb3VyY2UtSUQgcmVmZXJlbmNlcyBhCnBlciBkZXZpY2UgdGFibGUgaW5kZXhlZCBieSBkYXRh
-IGZyb20gdGhlIE1TSSB3cml0ZSBpdHNlbGYuwqDCoFNvIHdlIGdldAptdWNoLCBtdWNoIGZpbmVy
-IGdyYW51bGFyaXR5LCBidXQgdGhlcmUncyBzdGlsbCBlZmZlY3RpdmVseSBhbiBpbnRlcnJ1cHQK
-ZG9tYWluIHBlciBkZXZpY2UgdGhhdCdzIGJlaW5nIHRyYW5zcGFyZW50bHkgbWFuYWdlZCB1bmRl
-ciB0aGUgY292ZXJzCndoZW5ldmVyIHdlIHJlcXVlc3QgYW4gTVNJIHZlY3RvciBmb3IgYSBkZXZp
-Y2UuCgpTbyB3aHkgY2FuJ3Qgd2UgZG8gc29tZXRoaW5nIG1vcmUgbGlrZSB0aGF0IGhlcmU/wqDC
-oFRoZXJlJ3Mgbm8gcHJlZGVmaW5lZApNU0kgdmVjdG9yIHJhbmdlLCBzbyBkZWZpbmluZyBhbiBp
-bnRlcmZhY2UgZm9yIHRoZSB1c2VyIHRvIHNwZWNpZnkgdGhhdAppcyB1bmF2b2lkYWJsZS7CoMKg
-QnV0IHdoeSBzaG91bGRuJ3QgZXZlcnl0aGluZyBlbHNlIGJlIHRyYW5zcGFyZW50P8KgwqBXZQpj
-b3VsZCBhZGQgYW4gaW50ZXJmYWNlIHRvIHRoZSBJT01NVSBBUEkgdGhhdCBhbGxvd3MgdXMgdG8g
-cmVnaXN0ZXIgdGhhdApyZXNlcnZlZCByYW5nZSBmb3IgdGhlIElPTU1VIGRvbWFpbi7CoMKgSU9N
-TVUtY29yZSAob3IgbWF5YmUgaW50ZXJydXB0CnJlbWFwcGluZykgY29kZSBtaWdodCBhbGxvY2F0
-ZSBhbiBJT1ZBIGRvbWFpbiBmb3IgdGhpcyBqdXN0IGFzIHlvdSd2ZQpkb25lIGluIHRoZSB0eXBl
-MSBjb2RlIGhlcmUuwqDCoEJ1dCByYXRoZXIgdGhhbiBoYXZpbmcgYW55IGludGVyYWN0aW9uCndp
-dGggdmZpby1wY2ksIHdoeSBub3QgZG8gdGhpcyBhdCBsb3dlciBsZXZlbHMgc3VjaCB0aGF0IHRo
-ZSBwbGF0Zm9ybQppbnRlcnJ1cHQgdmVjdG9yIGFsbG9jYXRpb24gY29kZSBhdXRvbWF0aWNhbGx5
-IHVzZXMgb25lIG9mIHRob3NlIElPVkEKcmFuZ2VzIGFuZCByZXR1cm5zIHRoZSBJT1ZBIHJhdGhl
-ciB0aGFuIHRoZSBwaHlzaWNhbCBhZGRyZXNzIGZvciB0aGUgUENJCmNvZGUgdG8gcHJvZ3JhbSBp
-bnRvIHRoZSBkZXZpY2U/wqDCoEkgdGhpbmsgd2Uga25vdyB3aGF0IG5lZWRzIHRvIGJlIGRvbmUs
-CmJ1dCB3ZSdyZSB0YWtpbmcgdGhlIGFwcHJvYWNoIG9mIG1hbmFnaW5nIHRoZSBzcGFjZSBvdXJz
-ZWx2ZXMgYW5kIGRvaW5nCmEgZml4dXAgb2YgdGhlIGRldmljZSBhZnRlciB0aGUgY29yZSBjb2Rl
-IGhhcyBkb25lIGl0cyBqb2Igd2hlbiB3ZQpyZWFsbHkgb3VnaHQgdG8gYmUgbGV0dGluZyB0aGUg
-Y29yZSBjb2RlIG1hbmFnZSBhIHNwYWNlIHRoYXQgd2UgZGVmaW5lCmFuZCBwcm9ncmFtbWluZyB0
-aGUgZGV2aWNlIHNvIHRoYXQgaXQgZG9lc24ndCBuZWVkIGEgZml4dXAgaW4gdGhlCnZmaW8tcGNp
-IGNvZGUuwqDCoFdvdWxkbid0IGl0IGJlIG5pY2VyIGlmIHBjaV9lbmFibGVfbXNpeF9yYW5nZSgp
-IHJldHVybmVkCndpdGggdGhlIGRldmljZSBwcm9wZXJseSBwcm9ncmFtbWVkIG9yIGdlbmVyYXRl
-IGFuIGVycm9yIGlmIHRoZXJlJ3Mgbm90CmVub3VnaCByZXNlcnZlZCBtYXBwaW5nIHNwYWNlIGlu
-IElPTU1VIGRvbWFpbj8gIENhbiBpdCBiZSBkb25lP8KgwqBUaGFua3MsCgpBbGV4CgpfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxp
-c3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZv
-dW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+
+
+-------- Original Message --------
+> On 01/27/16 at 06:18pm, Wan Zongshun wrote:
+>>
+>>
+>> -------- Original Message --------
+>>> In amd-vi spec the name of bit0 in DTE is V. But in code it's defined
+>>> as IOMMU_PTE_P. Here change it to IOMMU_PTE_V to make it be consistent
+>>> with spec.
+>>
+>> Hi, Baoquan
+>>
+>> This should be PR bit which means present, So maybe you got
+>> confusion between DTE and PTE table, right?
+>
+> Well, I got it. In fact the MACRO definition and current code confused
+> me. IOMMU_PTE_P is not only used for PTE table, but used for DTE entry.
+>
+> You can check functions set_dte_entry()/clear_dte_entry() where
+> IOMMU_PTE_P and IOMMU_PTE_TV are set in DTE entry to indicate the DTE
+> entry and translation is valid. Meanwhile I saw in iommu_map_page
+> IOMMU_PTE_P is used to incidate pte is present. This makes us confused. I
+> will post a patch to clean up this, defining new specific MACRO for DTE
+> use only. Do you agree on this?
+>
+
+Baoquan,
+
+It is fine to me, is it better to add a lot of explanation for those 
+bits MACRO? like:
+
+/* PTE bit value definition*/
+#define IOMMU_PTE_P  (1ULL << 0)
+#define IOMMU_PTE_TV (1ULL << 1)
+
+/* DTE bit value definition*/
+#define IOMMU_DTE_TV (1ULL << 1)
+
+>>
+>> So please don't change the IOMMU_PTE_P to IOMMU_PTE_V firstly, maybe
+>> you should rename IOMMU_PTE_TV to IOMMU_DTE_TV, or just keep those
+>> codes here, does make sense?
+>
+> As you said, IOMMU_PTE_P need be kept, also IOMMU_DTE_V/IOMMU_DTE_TV are
+> also necessary to re-define separately.
+>>
+>> Vincent.
+>>
+>>>
+>>> Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+>>> ---
+>>>   drivers/iommu/amd_iommu.c       | 10 +++++-----
+>>>   drivers/iommu/amd_iommu_types.h |  6 +++---
+>>>   2 files changed, 8 insertions(+), 8 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+>>> index 63f4c6b..f02d4b1 100644
+>>> --- a/drivers/iommu/amd_iommu.c
+>>> +++ b/drivers/iommu/amd_iommu.c
+>>> @@ -1331,9 +1331,9 @@ static int iommu_map_page(struct protection_domain *dom,
+>>>
+>>>   	if (count > 1) {
+>>>   		__pte = PAGE_SIZE_PTE(phys_addr, page_size);
+>>> -		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_P | IOMMU_PTE_FC;
+>>> +		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_V | IOMMU_PTE_FC;
+>>>   	} else
+>>> -		__pte = phys_addr | IOMMU_PTE_P | IOMMU_PTE_FC;
+>>> +		__pte = phys_addr | IOMMU_PTE_V | IOMMU_PTE_FC;
+>>>
+>>>   	if (prot & IOMMU_PROT_IR)
+>>>   		__pte |= IOMMU_PTE_IR;
+>>> @@ -1978,7 +1978,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
+>>>
+>>>   	pte_root |= (domain->mode & DEV_ENTRY_MODE_MASK)
+>>>   		    << DEV_ENTRY_MODE_SHIFT;
+>>> -	pte_root |= IOMMU_PTE_IR | IOMMU_PTE_IW | IOMMU_PTE_P | IOMMU_PTE_TV;
+>>> +	pte_root |= IOMMU_PTE_IR | IOMMU_PTE_IW | IOMMU_PTE_V | IOMMU_PTE_TV;
+>>>
+>>>   	flags = amd_iommu_dev_table[devid].data[1];
+>>>
+>>> @@ -2021,7 +2021,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
+>>>   static void clear_dte_entry(u16 devid)
+>>>   {
+>>>   	/* remove entry from the device table seen by the hardware */
+>>> -	amd_iommu_dev_table[devid].data[0]  = IOMMU_PTE_P | IOMMU_PTE_TV;
+>>> +	amd_iommu_dev_table[devid].data[0]  = IOMMU_PTE_V | IOMMU_PTE_TV;
+>>>   	amd_iommu_dev_table[devid].data[1] &= DTE_FLAG_MASK;
+>>>
+>>>   	amd_iommu_apply_erratum_63(devid);
+>>> @@ -2463,7 +2463,7 @@ static dma_addr_t dma_ops_domain_map(struct dma_ops_domain *dom,
+>>>   	if (!pte)
+>>>   		return DMA_ERROR_CODE;
+>>>
+>>> -	__pte = paddr | IOMMU_PTE_P | IOMMU_PTE_FC;
+>>> +	__pte = paddr | IOMMU_PTE_V | IOMMU_PTE_FC;
+>>>
+>>>   	if (direction == DMA_TO_DEVICE)
+>>>   		__pte |= IOMMU_PTE_IR;
+>>> diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+>>> index 9b8ace4..65f7988 100644
+>>> --- a/drivers/iommu/amd_iommu_types.h
+>>> +++ b/drivers/iommu/amd_iommu_types.h
+>>> @@ -244,7 +244,7 @@
+>>>   #define PM_LEVEL_INDEX(x, a)	(((a) >> PM_LEVEL_SHIFT((x))) & 0x1ffULL)
+>>>   #define PM_LEVEL_ENC(x)		(((x) << 9) & 0xe00ULL)
+>>>   #define PM_LEVEL_PDE(x, a)	((a) | PM_LEVEL_ENC((x)) | \
+>>> -				 IOMMU_PTE_P | IOMMU_PTE_IR | IOMMU_PTE_IW)
+>>> +				 IOMMU_PTE_V | IOMMU_PTE_IR | IOMMU_PTE_IW)
+>>>   #define PM_PTE_LEVEL(pte)	(((pte) >> 9) & 0x7ULL)
+>>>
+>>>   #define PM_MAP_4k		0
+>>> @@ -293,7 +293,7 @@
+>>>   #define PTE_LEVEL_PAGE_SIZE(level)			\
+>>>   	(1ULL << (12 + (9 * (level))))
+>>>
+>>> -#define IOMMU_PTE_P  (1ULL << 0)
+>>> +#define IOMMU_PTE_V  (1ULL << 0)
+>>>   #define IOMMU_PTE_TV (1ULL << 1)
+>>>   #define IOMMU_PTE_U  (1ULL << 59)
+>>>   #define IOMMU_PTE_FC (1ULL << 60)
+>>> @@ -321,7 +321,7 @@
+>>>   #define GCR3_VALID		0x01ULL
+>>>
+>>>   #define IOMMU_PAGE_MASK (((1ULL << 52) - 1) & ~0xfffULL)
+>>> -#define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_P)
+>>> +#define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_V)
+>>>   #define IOMMU_PTE_PAGE(pte) (phys_to_virt((pte) & IOMMU_PAGE_MASK))
+>>>   #define IOMMU_PTE_MODE(pte) (((pte) >> 9) & 0x07)
+>>>
+>>>
+>
