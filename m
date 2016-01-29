@@ -1,10 +1,14 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [git pull] IOMMU Fixes for Linux v4.5-rc1
-Date: Fri, 29 Jan 2016 15:22:24 +0100
-Message-ID: <20160129142224.GF4204@8bytes.org>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 00/10] KVM PCIe/MSI passthrough on ARM/ARM64
+Date: Fri, 29 Jan 2016 15:35:29 +0100
+Message-ID: <56AB78B1.2030202@linaro.org>
+References: <1453813968-2024-1-git-send-email-eric.auger@linaro.org>
+	<1454017899.23148.0.camel@redhat.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0669010142912888915=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1454017899.23148.0.camel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -14,106 +18,103 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, eric.auger-qxv4g6HH51o@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Alex,
+On 01/28/2016 10:51 PM, Alex Williamson wrote:
+> On Tue, 2016-01-26 at 13:12 +0000, Eric Auger wrote:
+>> This series addresses KVM PCIe passthrough with MSI enabled on ARM/ARM64.
+>> It pursues the efforts done on [1], [2], [3]. It also aims at covering the
+>> same need on some PowerPC platforms.
+>>  
+>> On x86 all accesses to the 1MB PA region [FEE0_0000h - FEF0_000h] are directed
+>> as interrupt messages: accesses to this special PA window directly target the
+>> APIC configuration space and not DRAM, meaning the downstream IOMMU is bypassed.
+>>  
+>> This is not the case on above mentionned platforms where MSI messages emitted
+>> by devices are conveyed through the IOMMU. This means an IOVA/host PA mapping
+>> must exist for the MSI to reach the MSI controller. Normal way to create
+>> IOVA bindings consists in using VFIO DMA MAP API. However in this case
+>> the MSI IOVA is not mapped onto guest RAM but on host physical page (the MSI
+>> controller frame).
+>>  
+>> Following first comments, the spirit of [2] is kept: the guest registers
+>> an IOVA range reserved for MSI mapping. When the VFIO-PCIe driver allocates
+>> its MSI vectors, it overwrites the MSI controller physical address with an IOVA,
+>> allocated within the window provided by the userspace. This IOVA is mapped
+>> onto the MSI controller frame physical page.
+>>  
+>> The series does not address yet the problematic of telling the userspace how
+>> much IOVA he should provision.
+> 
+> I'm sort of on a think-different approach today, so bear with me; how is
+> it that x86 can make interrupt remapping so transparent to drivers like
+> vfio-pci while for ARM and ppc we seem to be stuck with doing these
+> fixups of the physical vector ourselves, implying ugly (no offense)
+> paths bouncing through vfio to connect the driver and iommu backends?
+> 
+> We know that x86 handles MSI vectors specially, so there is some
+> hardware that helps the situation.  It's not just that x86 has a fixed
+> range for MSI, it's how it manages that range when interrupt remapping
+> hardware is enabled.  A device table indexed by source-ID references a
+> per device table indexed by data from the MSI write itself.  So we get
+> much, much finer granularity,
+About the granularity, I think ARM GICv3 now provides a similar
+capability with GICv3 ITS (interrupt translation service). Along with
+the MSI MSG write transaction, the device outputs a DeviceID conveyed on
+the bus. This DeviceID (~ your source-ID) enables to index a device
+table. The entry in the device table points to a DeviceId interrupt
+translation table indexed by the EventID found in the msi msg. So the
+entry in the interrupt translation table eventually gives you the
+eventual interrupt ID targeted by the MSI MSG.
+This translation capability if not available in GICv2M though, ie. the
+one I am currently using.
 
---===============0669010142912888915==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ew6BAiZeqk4r7MaW"
-Content-Disposition: inline
+Those tables currently are built by the ITS irqchip (irq-gic-v3-its.c)
 
+ but there's still effectively an interrupt
+> domain per device that's being transparently managed under the covers
+> whenever we request an MSI vector for a device.
+> 
+> So why can't we do something more like that here?  There's no predefined
+> MSI vector range, so defining an interface for the user to specify that
+> is unavoidable.
+Do you confirm that VFIO user API still still is the good choice to
+provide that IOVA range?
+  But why shouldn't everything else be transparent?  We
+> could add an interface to the IOMMU API that allows us to register that
+> reserved range for the IOMMU domain.  IOMMU-core (or maybe interrupt
+> remapping) code might allocate an IOVA domain for this just as you've
+> done in the type1 code here.
+I have no objection to move that iova allocation scheme somewhere else.
+I just need to figure out how to deal with the fact iova.c is not
+compiled everywhere as I noticed too late ;-)
 
---ew6BAiZeqk4r7MaW
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+  But rather than having any interaction
+> with vfio-pci, why not do this at lower levels such that the platform
+> interrupt vector allocation code automatically uses one of those IOVA
+> ranges and returns the IOVA rather than the physical address for the PCI
+> code to program into the device?  I think we know what needs to be done,
+> but we're taking the approach of managing the space ourselves and doing
+> a fixup of the device after the core code has done its job when we
+> really ought to be letting the core code manage a space that we define
+> and programming the device so that it doesn't need a fixup in the
+> vfio-pci code.  Wouldn't it be nicer if pci_enable_msix_range() returned
+> with the device properly programmed or generate an error if there's not
+> enough reserved mapping space in IOMMU domain?  Can it be done?
+I agree with you on the fact it would be cleaner to manage that natively
+at MSI controller level instead of patching the address value in
+vfio_pci_intrs.c. I will investigate in that direction but I need some
+more time to understand the links between the MSI controller, the PCI
+device and the IOMMU.
 
-Hi Linus,
+Best Regards
 
-The following changes since commit 92e963f50fc74041b5e9e744c330dca48e04f08d:
+Eric
 
-  Linux 4.5-rc1 (2016-01-24 13:06:47 -0800)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.5-rc1
-
-for you to fetch changes up to 0d9bacb6c8265e7aa75ac28ae9b5d7748065942f:
-
-  iommu: Update struct iommu_ops comments (2016-01-29 12:34:29 +0100)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v4.5-rc1
-
-Five patches queued up:
-
-	* Two patches for the AMD and Intel IOMMU drivers to fix alias
-	  handling and ATS handling.
-
-	* Fix build error with arm io-pgtable code
-
-	* Two documentation fixes
-
-----------------------------------------------------------------
-Baoquan He (1):
-      iommu/amd: Correct the wrong setting of alias DTE in do_attach
-
-Jeremy McNicoll (1):
-      iommu/vt-d: Don't skip PCI devices when disabling IOTLB
-
-Lada Trimasova (1):
-      iommu/io-pgtable-arm: Fix io-pgtable-arm build failure
-
-Magnus Damm (1):
-      iommu: Update struct iommu_ops comments
-
-Michael S. Tsirkin (1):
-      iommu/vt-d: Fix link to Intel IOMMU Specification
-
- Documentation/Intel-IOMMU.txt  |  2 +-
- drivers/iommu/amd_iommu.c      |  2 +-
- drivers/iommu/intel-iommu.c    |  2 +-
- drivers/iommu/io-pgtable-arm.c |  1 +
- include/linux/iommu.h          | 16 ++++++++++++----
- 5 files changed, 16 insertions(+), 7 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
-
---ew6BAiZeqk4r7MaW
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJWq3WgAAoJECvwRC2XARrjk60QALi32ut/eb1csiLJfeayAerd
-FPAUx9osDxFIDl4cskh0/Wv8EriCynYA8rf19qg6gGxbxKBFsRakOI8YVW2u4A1Z
-HcjtDtugx3AKl06P79mkzTF8z4jwgBzJiyjk3a5yKbh+lIo3vqlsZeclvTdKUA52
-53WHMpOox1okx5+WUCddcW20CfCyGr7Y3bF5Mx1bB8X9Wu4E7Z/yPmxaW4dnfu7O
-VqdOZOT6aWE4bxE3FtJiZAiLbqxdz3AYaGB5ar/vOJxI5TmMP6oQGxTLDHlBwzmb
-23dtkGCmimfooFV/t/nCANhnOSlsWgCGJxDKMoYPsvUlgnvgLshTM0n0s82A30Wa
-63UOXJt1T0Kijrmx1O/fPRb9Vrt9Tt3LrK0rha55yl5JuwBYDb3PVzxbwyPR26ru
-sPSQjF5c/bKNYfnyqe1Qwd/dbsg9PJP4yKvjW3kX8TC/o4GQgYrcB/NqeO5PDjq4
-E/uzVQVYnVa2lLRjn6m8rFcKNgqcgSIkywoH7gXSXhgbqnA/aG1SxZJ57OeMeG8M
-ZBh7ZLqZln+HsTfdEi8J223AH69G8kuEvafFwa3PQoqMAgHXKDSY7YQ4A6gNQaZE
-Nyw3HHypt83RgEH1hvMrpjgLvdqJwrITAbNL5rS3HpTfTB+IuLY5OhIie70kLPYZ
-/1KhAQ+df6hdQ/7bojXL
-=xAyU
------END PGP SIGNATURE-----
-
---ew6BAiZeqk4r7MaW--
-
---===============0669010142912888915==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============0669010142912888915==--
+  Thanks,
+> 
+> Alex
+> 
