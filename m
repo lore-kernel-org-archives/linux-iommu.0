@@ -1,14 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Fix io-pgtable-arm build failure
-Date: Fri, 29 Jan 2016 12:14:53 +0100
-Message-ID: <20160129111452.GA4204@8bytes.org>
-References: <1453893032-4459-1-git-send-email-will.deacon@arm.com>
+Subject: Re: [PATCH] iommu/vt-d: Don't skip PCI devices when disabling IOTLB
+Date: Fri, 29 Jan 2016 12:18:57 +0100
+Message-ID: <20160129111857.GB4204@8bytes.org>
+References: <1452835986-8731-1-git-send-email-jmcnicol@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1453893032-4459-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1452835986-8731-1-git-send-email-jmcnicol-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,35 +18,17 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Vineet Gupta <vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Lada.Trimasova-HKixBCOQz3hWk0Htik3J/w@public.gmane.org, Lada Trimasova <ltrimas-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Alexey Brodkin <abrodkin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jeremy McNicoll <jmcnicol-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gV2VkLCBKYW4gMjcsIDIwMTYgYXQgMTE6MTA6MzJBTSArMDAwMCwgV2lsbCBEZWFjb24gd3Jv
-dGU6Cj4gRnJvbTogTGFkYSBUcmltYXNvdmEgPExhZGEuVHJpbWFzb3ZhQHN5bm9wc3lzLmNvbT4K
-PiAKPiBUcnlpbmcgdG8gYnVpbGQgYSBrZXJuZWwgZm9yIEFSQyB3aXRoIGJvdGggb3B0aW9ucyBD
-T05GSUdfQ09NUElMRV9URVNUCj4gYW5kIENPTkZJR19JT01NVV9JT19QR1RBQkxFX0xQQUUgZW5h
-YmxlZCAoZS5nLiBhcyBhIHJlc3VsdCBvZiAibWFrZQo+IGFsbHllc2NvbmZpZyIpIHJlc3VsdHMg
-aW4gdGhlIGZvbGxvd2luZyBidWlsZCBmYWlsdXJlOgo+IAo+ICB8IENDIGRyaXZlcnMvaW9tbXUv
-aW8tcGd0YWJsZS1hcm0ubwo+ICB8IGxpbnV4L2RyaXZlcnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0u
-YzogSW4KPiAgfCBmdW5jdGlvbiDigJhfX2FybV9scGFlX2FsbG9jX3BhZ2Vz4oCZOgo+ICB8IGxp
-bnV4L2RyaXZlcnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0uYzoyMjE6MzoKPiAgfCBlcnJvcjogaW1w
-bGljaXQgZGVjbGFyYXRpb24gb2YgZnVuY3Rpb24g4oCYZG1hX21hcF9zaW5nbGXigJkKPiAgfCBb
-LVdlcnJvcj1pbXBsaWNpdC1mdW5jdGlvbi1kZWNsYXJhdGlvbl0KPiAgfCBkbWEgPSBkbWFfbWFw
-X3NpbmdsZShkZXYsIHBhZ2VzLCBzaXplLCBETUFfVE9fREVWSUNFKTsKPiAgfCBeCj4gIHwgbGlu
-dXgvZHJpdmVycy9pb21tdS9pby1wZ3RhYmxlLWFybS5jOjIyMTo0MjoKPiAgfCBlcnJvcjog4oCY
-RE1BX1RPX0RFVklDReKAmSB1bmRlY2xhcmVkIChmaXJzdCB1c2UgaW4gdGhpcyBmdW5jdGlvbikK
-PiAgfCBkbWEgPSBkbWFfbWFwX3NpbmdsZShkZXYsIHBhZ2VzLCBzaXplLCBETUFfVE9fREVWSUNF
-KTsKPiAgfCBeCj4gCj4gU2luY2UgSU9NTVVfSU9fUEdUQUJMRV9MUEFFIGRlcGVuZHMgb24gRE1B
-IEFQSSwgaW8tcGd0YWJsZS1hcm0uYyBzaG91bGQKPiBpbmNsdWRlIGxpbnV4L2RtYS1tYXBwaW5n
-LmguIFRoaXMgZml4ZXMgdGhlIHJlcG9ydGVkIGZhaWx1cmUuCj4gCj4gQ2M6IEFsZXhleSBCcm9k
-a2luIDxhYnJvZGtpbkBzeW5vcHN5cy5jb20+Cj4gQ2M6IFZpbmVldCBHdXB0YSA8dmd1cHRhQHN5
-bm9wc3lzLmNvbT4KPiBDYzogSm9lcmcgUm9lZGVsIDxqb3JvQDhieXRlcy5vcmc+Cj4gU2lnbmVk
-LW9mZi1ieTogTGFkYSBUcmltYXNvdmEgPGx0cmltYXNAc3lub3BzeXMuY29tPgo+IFNpZ25lZC1v
-ZmYtYnk6IFdpbGwgRGVhY29uIDx3aWxsLmRlYWNvbkBhcm0uY29tPgo+IC0tLQo+IAo+IEpvZXJn
-IC0tIGNhbiB5b3UgcGljayB0aGlzIHVwIGFzIGEgZml4IGZvciA0LjUsIHBsZWFzZT8gSSBkb24n
-dCBoYXZlCj4gICAgICAgICAgYW55IG90aGVyIGZpeGVzIHF1ZXVlZCwgc28gYSBwdWxsIHJlcXVl
-c3Qgc2VlbXMgYSBiaXQgT1RULgoKQXBwbGllZCwgdGhhbmtzIFdpbGwuCgpfX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9t
-bXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRp
-b24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Thu, Jan 14, 2016 at 09:33:06PM -0800, Jeremy McNicoll wrote:
+> Fix a simple typo when disabling IOTLB on PCI(e) devices.
+> 
+> Fixes: b16d0cb9e2fc ("iommu/vt-d: Always enable PASID/PRI PCI capabilities before ATS")
+> Signed-off-by: Jeremy McNicoll <jmcnicol-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/iommu/intel-iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Applied, thanks.
