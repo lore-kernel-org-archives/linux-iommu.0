@@ -1,15 +1,19 @@
-From: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH] iommu/dma: Map scatterlists more parsimoniously
-Date: Tue, 2 Feb 2016 15:04:56 +0800
-Message-ID: <CAGS+omDhZPxQvyVE6DgcRXJach2euWsxPxUZPJMgyPYsyMwcfA@mail.gmail.com>
-References: <104b4682056bc5b4aa0afadd39196c03fc06555d.1447249098.git.robin.murphy@arm.com>
-	<1447307229.27650.5.camel@mhfsdcap03>
-	<CAGS+omBWFgpQQKV2=qL9G6qPbW_EL2bSjkLPq6KwQGAdHEDSHw@mail.gmail.com>
+From: Mark Hounschell <markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
+Subject: Re: Can't boot new 4.4 kernel with IOMMU enabled
+Date: Tue, 2 Feb 2016 10:49:11 -0500
+Message-ID: <56B0CFF7.80907@compro.net>
+References: <20160114000520.GA2449@x1.redhat.com>
+	<5697AAD8.1000105@compro.net> <20160120153823.GG18805@8bytes.org>
+	<20160120154658.GH18805@8bytes.org> <569FB013.4050709@compro.net>
+	<20160120161904.GI18805@8bytes.org> <569FCFC8.2000606@compro.net>
+	<20160120182602.GJ18805@8bytes.org> <56A0F03C.8010109@compro.net>
+	<56A0F221.10502@compro.net> <20160121223958.GL18805@8bytes.org>
+Reply-To: markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAGS+omBWFgpQQKV2=qL9G6qPbW_EL2bSjkLPq6KwQGAdHEDSHw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <20160121223958.GL18805-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,49 +23,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Tiffany Lin <tiffany.lin-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Dec 10, 2015 at 8:49 PM, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
-> On Thu, Nov 12, 2015 at 1:47 PM, Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
->> On Wed, 2015-11-11 at 14:54 +0000, Robin Murphy wrote:
->>> Whilst blindly assuming the worst case for segment boundaries and
->>> aligning every segment individually is safe from the point of view
->>> of respecting the device's parameters, it is also undeniably a waste
->>> of IOVA space. Futhermore, the knock-on effects of more pages than
->
-> "Furthermore" (checkpatch actually caught this, not me ;-) )
->
->>> necessary being exposed to device access, additional overhead in page
->>> table updates and TLB invalidations, etc., are even more undesirable.
+On 01/21/2016 05:39 PM, Joerg Roedel wrote:
+> On Thu, Jan 21, 2016 at 09:58:41AM -0500, Mark Hounschell wrote:
+>>> Here ya go.
 >>>
->>> Improve matters by taking the actual boundary mask into account to
->>> actively detect the cases in which we really do need to adjust a
->>> segment, and avoid wasting space in the remainder.
+>>> 150952f96941cb13371770ce0cf47906647d8bba is the first bad commit
+>>> commit 150952f96941cb13371770ce0cf47906647d8bba
+>>> Author: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+>>> Date:   Tue Oct 20 17:33:35 2015 +0200
 >>>
->>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->>> ---
+>>>      iommu/amd: Do not iterate over alias-list in __[attach|detach]_device
 >>>
->>> Hi all,
+>>>      The alias list is handled aleady by iommu core code. No need
+>>>      anymore to handle it in this part of the AMD IOMMU code
 >>>
->>> I've given this some brief testing on Juno with USB and (via magic
->>> PCI hacks) SATA to confirm that all the +1s and -1s at least seem to
->>> be in the right places, so I'm throwing it out now for a head-start on
->>> checking whether it also helps the media folks with the v4l portability
->>> issues they're up against (I'm confident it should). If all goes well I
->>> figure I'll repost next week based on rc1 instead of some random local
->>> development commit.
+>>>      Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 >>>
->>> Robin.
+>>> :040000 040000 334ffdc0d7ff9389478d3ce6096eb81227d8eafc
+>>> cb6fce5d7e94ce3e44a6a64092ba8eb32dd0978b M      drivers
+>>>
 >>
->> It works well on MT8173. containing
->> VDA/VEA(VideoDecodeAccelerator/VideoEncodeAccelerator) unit test.
->>
->> Tested-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+>> FYI, this commit also had tons of IO_PAGE_FAULTS booting but
+>> eventually all the disks but the 2 in question actually ended up
+>> being mounted.
 >
-> Reviewed-by: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> I see, thanks for your effort. I'll take a closer look and hopefully
+> come up with a fix for you to test.
+>
+>
+> 	Joerg
+>
+>
 
+Hey Joerg,
 
-Did this patch get lost?
-Can we pick it up as a fix for v4.5?
+Just wondering if this issue is still being considered?
+
+Regards
+Mark
