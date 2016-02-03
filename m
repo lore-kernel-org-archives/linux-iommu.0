@@ -1,67 +1,61 @@
-From: Mark Hounschell <markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
-Subject: Re: Can't boot new 4.4 kernel with IOMMU enabled
-Date: Tue, 2 Feb 2016 10:49:11 -0500
-Message-ID: <56B0CFF7.80907@compro.net>
-References: <20160114000520.GA2449@x1.redhat.com>
-	<5697AAD8.1000105@compro.net> <20160120153823.GG18805@8bytes.org>
-	<20160120154658.GH18805@8bytes.org> <569FB013.4050709@compro.net>
-	<20160120161904.GI18805@8bytes.org> <569FCFC8.2000606@compro.net>
-	<20160120182602.GJ18805@8bytes.org> <56A0F03C.8010109@compro.net>
-	<56A0F221.10502@compro.net> <20160121223958.GL18805@8bytes.org>
-Reply-To: markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org
+From: Christoffer Dall <christoffer.dall@linaro.org>
+Subject: Re: [PATCH 00/10] KVM PCIe/MSI passthrough on ARM/ARM64
+Date: Wed, 3 Feb 2016 13:50:47 +0100
+Message-ID: <20160203125047.GB13974@cbox>
+References: <1453813968-2024-1-git-send-email-eric.auger@linaro.org>
+ <1454017899.23148.0.camel@redhat.com> <56AB78B1.2030202@linaro.org>
+ <1454096004.9301.1.camel@redhat.com> <56ABD8E0.6080409@linaro.org>
+ <20160201140351.GE6828@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160121223958.GL18805-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
+Content-Disposition: inline
+In-Reply-To: <20160201140351.GE6828@arm.com>
+List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
+List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
+List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
+List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
+List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
+Errors-To: kvmarm-bounces@lists.cs.columbia.edu
+Sender: kvmarm-bounces@lists.cs.columbia.edu
+To: Will Deacon <will.deacon@arm.com>
+Cc: eric.auger@st.com, kvm@vger.kernel.org, marc.zyngier@arm.com, patches@linaro.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Alex Williamson <alex.williamson@redhat.com>, kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/21/2016 05:39 PM, Joerg Roedel wrote:
-> On Thu, Jan 21, 2016 at 09:58:41AM -0500, Mark Hounschell wrote:
->>> Here ya go.
->>>
->>> 150952f96941cb13371770ce0cf47906647d8bba is the first bad commit
->>> commit 150952f96941cb13371770ce0cf47906647d8bba
->>> Author: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
->>> Date:   Tue Oct 20 17:33:35 2015 +0200
->>>
->>>      iommu/amd: Do not iterate over alias-list in __[attach|detach]_device
->>>
->>>      The alias list is handled aleady by iommu core code. No need
->>>      anymore to handle it in this part of the AMD IOMMU code
->>>
->>>      Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
->>>
->>> :040000 040000 334ffdc0d7ff9389478d3ce6096eb81227d8eafc
->>> cb6fce5d7e94ce3e44a6a64092ba8eb32dd0978b M      drivers
->>>
->>
->> FYI, this commit also had tons of IO_PAGE_FAULTS booting but
->> eventually all the disks but the 2 in question actually ended up
->> being mounted.
->
-> I see, thanks for your effort. I'll take a closer look and hopefully
-> come up with a fix for you to test.
->
->
-> 	Joerg
->
->
+On Mon, Feb 01, 2016 at 02:03:51PM +0000, Will Deacon wrote:
+> On Fri, Jan 29, 2016 at 10:25:52PM +0100, Eric Auger wrote:
+> > On 01/29/2016 08:33 PM, Alex Williamson wrote:
+> > >>> We know that x86 handles MSI vectors specially, so there is some
+> > >>> hardware that helps the situation.  It's not just that x86 has a fixed
+> > >>> range for MSI, it's how it manages that range when interrupt remapping
+> > >>> hardware is enabled.  A device table indexed by source-ID references a
+> > >>> per device table indexed by data from the MSI write itself.  So we get
+> > >>> much, much finer granularity,
+> > >> About the granularity, I think ARM GICv3 now provides a similar
+> > >> capability with GICv3 ITS (interrupt translation service). Along with
+> > >> the MSI MSG write transaction, the device outputs a DeviceID conveyed on
+> > >> the bus. This DeviceID (~ your source-ID) enables to index a device
+> > >> table. The entry in the device table points to a DeviceId interrupt
+> > >> translation table indexed by the EventID found in the msi msg. So the
+> > >> entry in the interrupt translation table eventually gives you the
+> > >> eventual interrupt ID targeted by the MSI MSG.
+> > >> This translation capability if not available in GICv2M though, ie. the
+> > >> one I am currently using.
+> > >>  
+> > >> Those tables currently are built by the ITS irqchip (irq-gic-v3-its.c)
+> 
+> That's right. GICv3/ITS disambiguates the interrupt source using the
+> DeviceID, which for PCI is derived from the Requester ID of the endpoint.
+> GICv2m is less flexible and requires a separate physical frame per guest
+> to achieve isolation.
+> 
+We should still support MSI passthrough with a single MSI frame host
+system though, right?
 
-Hey Joerg,
+(Users should just be aware that guests are not fully protected against
+misbehaving hardware in that case).
 
-Just wondering if this issue is still being considered?
-
-Regards
-Mark
+-Christoffer
