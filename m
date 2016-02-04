@@ -1,18 +1,14 @@
-From: Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 00/10] KVM PCIe/MSI passthrough on ARM/ARM64
-Date: Wed, 3 Feb 2016 16:36:06 +0100
-Message-ID: <20160203153606.GC13974@cbox>
-References: <1453813968-2024-1-git-send-email-eric.auger@linaro.org>
-	<1454017899.23148.0.camel@redhat.com> <56AB78B1.2030202@linaro.org>
-	<1454096004.9301.1.camel@redhat.com> <56ABD8E0.6080409@linaro.org>
-	<20160201140351.GE6828@arm.com> <20160203125047.GB13974@cbox>
-	<20160203131057.GA20217@arm.com>
+From: Vijay Kumar <iamcurious456-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: Bus error at 0x0 by sysmmu_fimd (Page table base 0x000 0x00
+	ad808000)
+Date: Thu, 4 Feb 2016 09:32:03 +0530
+Message-ID: <CAAVm-g0zjGfhkNyk=+CW=4imWNmvvz6pcqED1ohtsLSOJC9L8g@mail.gmail.com>
+References: <CAAVm-g0+YP6pFJbY-28TX9FWuP+My2Vb7aciO_iYx7y_5e4UTw@mail.gmail.com>
+	<56AA12E9.5070601@foss.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============1816103607185437730=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20160203131057.GA20217-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <56AA12E9.5070601-VeJGdqYn5oNWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,56 +18,137 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: eric.auger-qxv4g6HH51o@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, marc.zyngier-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Robin Murphy <robin.murphy-VeJGdqYn5oNWk0Htik3J/w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Feb 03, 2016 at 01:10:58PM +0000, Will Deacon wrote:
-> On Wed, Feb 03, 2016 at 01:50:47PM +0100, Christoffer Dall wrote:
-> > On Mon, Feb 01, 2016 at 02:03:51PM +0000, Will Deacon wrote:
-> > > On Fri, Jan 29, 2016 at 10:25:52PM +0100, Eric Auger wrote:
-> > > > On 01/29/2016 08:33 PM, Alex Williamson wrote:
-> > > > >>> We know that x86 handles MSI vectors specially, so there is some
-> > > > >>> hardware that helps the situation.  It's not just that x86 has a fixed
-> > > > >>> range for MSI, it's how it manages that range when interrupt remapping
-> > > > >>> hardware is enabled.  A device table indexed by source-ID references a
-> > > > >>> per device table indexed by data from the MSI write itself.  So we get
-> > > > >>> much, much finer granularity,
-> > > > >> About the granularity, I think ARM GICv3 now provides a similar
-> > > > >> capability with GICv3 ITS (interrupt translation service). Along with
-> > > > >> the MSI MSG write transaction, the device outputs a DeviceID conveyed on
-> > > > >> the bus. This DeviceID (~ your source-ID) enables to index a device
-> > > > >> table. The entry in the device table points to a DeviceId interrupt
-> > > > >> translation table indexed by the EventID found in the msi msg. So the
-> > > > >> entry in the interrupt translation table eventually gives you the
-> > > > >> eventual interrupt ID targeted by the MSI MSG.
-> > > > >> This translation capability if not available in GICv2M though, ie. the
-> > > > >> one I am currently using.
-> > > > >>  
-> > > > >> Those tables currently are built by the ITS irqchip (irq-gic-v3-its.c)
-> > > 
-> > > That's right. GICv3/ITS disambiguates the interrupt source using the
-> > > DeviceID, which for PCI is derived from the Requester ID of the endpoint.
-> > > GICv2m is less flexible and requires a separate physical frame per guest
-> > > to achieve isolation.
-> > > 
-> > We should still support MSI passthrough with a single MSI frame host
-> > system though, right?
-> 
-> I think we should treat the frame as an exclusive resource and assign it
-> to a single VM.
+--===============1816103607185437730==
+Content-Type: multipart/alternative; boundary=001a114220161dab10052ae9cc0a
 
-so on a single frame GICv2m system, either your host or a single VM gets
-to do MSIs...
+--001a114220161dab10052ae9cc0a
+Content-Type: text/plain; charset=UTF-8
 
-> 
-> > (Users should just be aware that guests are not fully protected against
-> > misbehaving hardware in that case).
-> 
-> Is it confined to misbehaving hardware? What if a malicious/buggy guest
-> configures its device to DMA all over the doorbell?
-> 
-I guess not, I suppose we can't trap any configuration access and
-mediate that for any device.  Bummer.
+Hii Robin,
+                   I debugged  iommu_map function in iommu.c .In that
+function exynos_iommu_map is not called .I noticed that is because of size
+variable value 0.I made changes but after in exynos_iommu_map function is
+throwing an error "Trying Mapping on 1MB@0xc0000000 that is mapped" .Please
+help me to solve this issue.I am unable to find why this error occured .
 
--Christoffer
+Thanks and Regards,
+Vijay Kumar Prathipati.
+
+On Thu, Jan 28, 2016 at 6:38 PM, Robin Murphy <robin.murphy-VeJGdqYn5oNWk0Htik3J/w@public.gmane.org>
+wrote:
+
+> On 28/01/16 04:54, Vijay Kumar wrote:
+>
+>> Hii all,
+>>             I am new to this mailing list and i need some help.I am trying
+>> to add exynos iommu support for my board with exynos5250-soc for fimd.I am
+>> getting this error at exynos_sysmmu_irq.I am pretty confused with it and
+>> didn't know what to do.I strucked at this point.So please explain why this
+>> error occurs.My device is attaced correctly to iommu.
+>>
+>
+> It looks like something (either the client device or the sysmmu itself,
+> I'm not familiar with that hardware) has tried to access physical address
+> 0, and the MMU is raising the interrupt to report that it got an error
+> response back for that access. On Exynos 5 that's where the boot ROM stuff
+> lives, so there may well be nothing there at all in the non-secure memory
+> map. Either way, it's a long way from RAM (which will be somewhere above
+> 0x20000000), so you've almost certainly wound up with some bogus mapping in
+> your sysmmu page table. First thing I'd try is adding a check in
+> exynos_iommu_map() to scream if someone passes in a dodgy-looking physical
+> address, then work backwards from there.
+>
+> Robin.
+>
+>
+>> Thanks and Regards,
+>> Vijay Kumar Prathipati.
+>>
+>>
+>>
+>> _______________________________________________
+>> iommu mailing list
+>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>>
+>>
+>
+
+--001a114220161dab10052ae9cc0a
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hii Robin,<div>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0I debugged =C2=A0iommu_map function in iommu.c .=
+In that function exynos_iommu_map is not called .I noticed that is because =
+of size variable value 0.I made changes but after in exynos_iommu_map funct=
+ion is throwing an error &quot;Trying Mapping on 1MB@0xc0000000 that is map=
+ped&quot; .Please help me to solve this issue.I am unable to find why this =
+error occured .</div><div><br></div><div>Thanks and Regards,</div><div>Vija=
+y Kumar Prathipati.</div></div><div class=3D"gmail_extra"><br><div class=3D=
+"gmail_quote">On Thu, Jan 28, 2016 at 6:38 PM, Robin Murphy <span dir=3D"lt=
+r">&lt;<a href=3D"mailto:robin.murphy-VeJGdqYn5oNWk0Htik3J/w@public.gmane.org" target=3D"_blank">robin=
+.murphy-VeJGdqYn5oNWk0Htik3J/w@public.gmane.org</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_qu=
+ote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex=
+"><span class=3D"">On 28/01/16 04:54, Vijay Kumar wrote:<br>
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex">
+Hii all,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 I am new to this mailing list and=
+ i need some help.I am trying<br>
+to add exynos iommu support for my board with exynos5250-soc for fimd.I am<=
+br>
+getting this error at exynos_sysmmu_irq.I am pretty confused with it and<br=
+>
+didn&#39;t know what to do.I strucked at this point.So please explain why t=
+his<br>
+error occurs.My device is attaced correctly to iommu.<br>
+</blockquote>
+<br></span>
+It looks like something (either the client device or the sysmmu itself, I&#=
+39;m not familiar with that hardware) has tried to access physical address =
+0, and the MMU is raising the interrupt to report that it got an error resp=
+onse back for that access. On Exynos 5 that&#39;s where the boot ROM stuff =
+lives, so there may well be nothing there at all in the non-secure memory m=
+ap. Either way, it&#39;s a long way from RAM (which will be somewhere above=
+ 0x20000000), so you&#39;ve almost certainly wound up with some bogus mappi=
+ng in your sysmmu page table. First thing I&#39;d try is adding a check in =
+exynos_iommu_map() to scream if someone passes in a dodgy-looking physical =
+address, then work backwards from there.<br>
+<br>
+Robin.<br>
+<br>
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex"><span class=3D"">
+<br>
+Thanks and Regards,<br>
+Vijay Kumar Prathipati.<br>
+<br>
+<br>
+<br></span>
+_______________________________________________<br>
+iommu mailing list<br>
+<a href=3D"mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" target=3D"_blank">iommu=
+@lists.linux-foundation.org</a><br>
+<a href=3D"https://lists.linuxfoundation.org/mailman/listinfo/iommu" rel=3D=
+"noreferrer" target=3D"_blank">https://lists.linuxfoundation.org/mailman/li=
+stinfo/iommu</a><br>
+<br>
+</blockquote>
+<br>
+</blockquote></div><br></div>
+
+--001a114220161dab10052ae9cc0a--
+
+--===============1816103607185437730==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============1816103607185437730==--
