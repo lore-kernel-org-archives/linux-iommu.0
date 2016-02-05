@@ -1,18 +1,11 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: ARM PCI/MSI KVM passthrough with GICv2M
-Date: Fri, 5 Feb 2016 11:17:00 -0700
-Message-ID: <20160205111700.726ac061@t450s.home>
-References: <1453813968-2024-1-git-send-email-eric.auger@linaro.org>
-	<1454017899.23148.0.camel@redhat.com> <56AB78B1.2030202@linaro.org>
-	<1454096004.9301.1.camel@redhat.com> <56ABD8E0.6080409@linaro.org>
-	<20160201140351.GE6828@arm.com> <20160203125047.GB13974@cbox>
-	<20160203131057.GA20217@arm.com> <20160203153606.GC13974@cbox>
-	<56B4DC97.60904@linaro.org>
+From: <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Subject: [PATCH] iommu/arm-smmu-v2: Workaround for ThunderX errata#27704
+Date: Fri, 5 Feb 2016 10:47:07 -0800
+Message-ID: <1454698027-20911-1-git-send-email-tchalamarla@caviumnetworks.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <56B4DC97.60904-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,114 +15,195 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: eric.auger-qxv4g6HH51o@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 5 Feb 2016 18:32:07 +0100
-Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+From: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 
-> Hi Alex,
-> 
-> I tried to sketch a proposal for guaranteeing the IRQ integrity when
-> doing ARM PCI/MSI passthrough with ARM GICv2M msi-controller. This is
-> based on extended VFIO group viability control, as detailed below.
-> 
-> As opposed to ARM GICv3 ITS, this MSI controller does *not* support IRQ
-> remapping. It can expose 1 or more 4kB MSI frame. Each frame contains a
-> single register where the msi data is written.
-> 
-> I would be grateful to you if you could tell me whether it makes any sense.
-> 
-> Thanks in advance
-> 
-> Best Regards
-> 
-> Eric
-> 
-> 
-> 1) GICv2m with a single 4kB single frame
->    all devices having this msi-controller as msi-parent share this
->    single MSI frame. Those devices can work on behalf of the host
->    or work on behalf of 1 or more guests (KVM assigned devices). We
->    must make sure either the host only or 1 single VM can access to the
->    single frame to guarantee interrupt integrity: a device assigned
->    to 1 VM should not be able to trigger MSI targeted to the host
->    or another VM.
-> 
->    I would propose to extend the VFIO notion of group viability.
->    Currently a VFIO group is viable if:
->    all devices belonging to the same group are bound to a VFIO driver
->    or unbound.
-> 
->    Let's imagine we extend the viability check as follows:
-> 
->    0) keep the current viable check: all the devices belonging to
->       the group must be vfio bound or unbound.
->    1) retrieve the MSI parent of the device and list all the
->       other devices using that MSI controller as MSI-parent (does not
->       look straightforward):
->    2) they must be VFIO driver bound or unbound as well (meaning
->       they are not used by the host). If not, reject device attachment
->    - in case they are VFIO bound (a VFIO group is set):
->      x if all VFIO containers are the same as the one of the device's
->        we try to attach, that's OK. This means the other devices
->        use different IOMMU mappings, eventually will target the
->        MSI frame but they all work for the same user space client/VM.
->      x 1 or more devices has a different container than the device
->        under attachment:
->        It works on behalf of a different user space client/VM,
->        we can't attach the new device. I think there is a case however
->        where severals containers can be opened by a single QEMU.
-> 
-> Of course the dynamic aspects, ie a new device showing up or an unbind
-> event bring significant complexity.
-> 
-> 2) GICv2M with multiple 4kB frames
->    Each msi-frame is enumerated as msi-controller. The device tree
->    statically defines which device is attached to each msi frame.
->    In case devices are assigned we cannot change this attachment
->    anyway since there might be physical contraints behind.
->    So devices likely to be assigned to guests should be linked to a
->    different MSI frame than devices that are not.
-> 
->    I think extended viability concept can be used as well.
-> 
->    This model still is not ideal: in case we have a SR-IOV device
->    plugged onto an host bridge attached to a single MSI parent you won't
->    be able anyway to have 1 Virtual Function working for host and 1 VF
->    working for a guest. Only Interrupt translation (ITS) will bring that
->    feature.
-> 
-> 3) GICv3 ITS
->    This one supports interrupt translation service ~ Intel
->    IRQ remapping.
->    This means a single frame can be used by all devices. A deviceID is
->    used exclusively by the host or a guest. I assume the ITS driver
->    allocates/populates deviceid interrupt translation table featuring
->    separate LPI spaces ie by construction different ITT cannot feature
->    same LPIs. So no need to do the extended viability test.
-> 
->    The MSI controller should have a property telling whether
->    it supports interrupt translation. This kind of property currently
->    exists on IOMMU side for INTEL remapping.
-> 
+An issue exists whereby the Linux kernel requires that ASIDs are a
+unique namespace per SMMU.  That ASID-local choice conflicts with the
+CN88xx SMMU, where only shared ASID namespaces are supported;
+specifically within a given node SMMU0 and SMMU1 share, as does SMMU2
+and SMMU3. CN88xx SMMU also requires global VMIDs.
 
-Hi Eric,
+This patch tries to address these issuee by supplying asid and vmid
+transformations from devicetree.
 
-Would anyone be terribly upset if we simply assume the worst case
-scenario on GICv2m/M, have the IOMMU not claim IOMMU_CAP_INTR_REMAP, and
-require the user to opt-in via the allow_unsafe_interrupts on the
-vfio_iommu_type1 module?  That would make it very compatible with what
-we already do on x86, where it really is all or nothing.  My assumption
-is that GICv2 would be phased out in favor of GICv3, so there's always
-a hardware upgrade path to having more complete isolation, but the
-return on investment for figuring out whether a given device really has
-this sort of isolation seems pretty low.  Often users already have some
-degree of trust in the VMs they use for device assignment anyway.  An
-especially prudent user can still look at the hardware specs for their
-specific system to understand whether any devices are fully isolated
-and only make use of those for device assignment.  Does that seem like
-a reasonable alternative?  Thanks,
+Signed-off-by: Akula Geethasowjanya <Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Signed-off-by: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+---
+ .../devicetree/bindings/iommu/arm,smmu.txt         | 16 ++++++
+ drivers/iommu/arm-smmu.c                           | 59 ++++++++++++++++++----
+ 2 files changed, 65 insertions(+), 10 deletions(-)
 
-Alex
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+index 7180745..eef06d0 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+@@ -55,6 +55,22 @@ conditions.
+                   aliases of secure registers have to be used during
+                   SMMU configuration.
+ 
++- thunderx,smmu-asid-transform	: Enable proper handling for buggy
++		  implementations that require special transformations
++		  for smmu asid. if this property exists asid-transform
++		  property must be present.
++
++- thunderx,smmu-vmid-transform	: Enable proper handling for buggy
++		  implementations that require special transformations
++		  for smmu vmid. if this property exists vmid-transform
++		  property must be present.
++
++- asid-transform 	: Transform mask that needs to be applied to asid.
++			This property has to be specified as '/bits/ 8' value.
++
++- vmid-transform 	: Transform mask that needs to be applied to vmid.
++			This property has to be specified as '/bits/ 8' value.
++
+ Example:
+ 
+         smmu {
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 59ee4b8..8047834 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -300,8 +300,12 @@ struct arm_smmu_device {
+ 	u32				features;
+ 
+ #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
++#define ARM_SMMU_OPT_TRANSFORM_ASID	(1 << 1)
++#define ARM_SMMU_OPT_TRANSFORM_VMID	(1 << 2)
+ 	u32				options;
+ 	enum arm_smmu_arch_version	version;
++	u8				asid_transform;
++	u8				vmid_transform;
+ 
+ 	u32				num_context_banks;
+ 	u32				num_s2_context_banks;
+@@ -330,8 +334,25 @@ struct arm_smmu_cfg {
+ };
+ #define INVALID_IRPTNDX			0xff
+ 
+-#define ARM_SMMU_CB_ASID(cfg)		((cfg)->cbndx)
+-#define ARM_SMMU_CB_VMID(cfg)		((cfg)->cbndx + 1)
++/*
++ * ThunderX has a unique requirement because of ERRATA#27704
++ * An issue exists whereby the Linux kernel requires that ASIDs are a
++ * unique namespace per SMMU.  That ASID-local choice conflicts with the
++ * CN88xx SMMU, where only shared ASID namespaces are supported;
++ * specifically within a given node SMMU0 and SMMU1 share, as does SMMU2
++ * and SMMU3.
++ * CN88xx SMMU also requires global VMIDs.
++ */
++
++#define ARM_SMMU_CB_ASID(smmu, cfg)					\
++		(((smmu)->options & ARM_SMMU_OPT_TRANSFORM_ASID)	\
++		? ((cfg)->cbndx | (smmu)->asid_transform)		\
++		: ((cfg)->cbndx))
++
++#define ARM_SMMU_CB_VMID(smmu, cfg)					\
++		(((smmu)->options & ARM_SMMU_OPT_TRANSFORM_VMID)	\
++		? (((cfg)->cbndx + 1) | (smmu)->vmid_transform)		\
++		: ((cfg)->cbndx + 1))
+ 
+ enum arm_smmu_domain_stage {
+ 	ARM_SMMU_DOMAIN_S1 = 0,
+@@ -361,6 +382,8 @@ struct arm_smmu_option_prop {
+ 
+ static struct arm_smmu_option_prop arm_smmu_options[] = {
+ 	{ ARM_SMMU_OPT_SECURE_CFG_ACCESS, "calxeda,smmu-secure-config-access" },
++	{ ARM_SMMU_OPT_TRANSFORM_ASID, "thunderx,smmu-asid-transform" },
++	{ ARM_SMMU_OPT_TRANSFORM_VMID, "thunderx,smmu-vmid-transform" },
+ 	{ 0, NULL},
+ };
+ 
+@@ -570,11 +593,11 @@ static void arm_smmu_tlb_inv_context(void *cookie)
+ 
+ 	if (stage1) {
+ 		base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
+-		writel_relaxed(ARM_SMMU_CB_ASID(cfg),
++		writel_relaxed(ARM_SMMU_CB_ASID(smmu, cfg),
+ 			       base + ARM_SMMU_CB_S1_TLBIASID);
+ 	} else {
+ 		base = ARM_SMMU_GR0(smmu);
+-		writel_relaxed(ARM_SMMU_CB_VMID(cfg),
++		writel_relaxed(ARM_SMMU_CB_VMID(smmu, cfg),
+ 			       base + ARM_SMMU_GR0_TLBIVMID);
+ 	}
+ 
+@@ -596,7 +619,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 
+ 		if (!IS_ENABLED(CONFIG_64BIT) || smmu->version == ARM_SMMU_V1) {
+ 			iova &= ~12UL;
+-			iova |= ARM_SMMU_CB_ASID(cfg);
++			iova |= ARM_SMMU_CB_ASID(smmu, cfg);
+ 			do {
+ 				writel_relaxed(iova, reg);
+ 				iova += granule;
+@@ -604,7 +627,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ #ifdef CONFIG_64BIT
+ 		} else {
+ 			iova >>= 12;
+-			iova |= (u64)ARM_SMMU_CB_ASID(cfg) << 48;
++			iova |= (u64)ARM_SMMU_CB_ASID(smmu, cfg) << 48;
+ 			do {
+ 				writeq_relaxed(iova, reg);
+ 				iova += granule >> 12;
+@@ -624,7 +647,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ #endif
+ 	} else {
+ 		reg = ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_TLBIVMID;
+-		writel_relaxed(ARM_SMMU_CB_VMID(cfg), reg);
++		writel_relaxed(ARM_SMMU_CB_VMID(smmu, cfg), reg);
+ 	}
+ }
+ 
+@@ -752,7 +775,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 		reg |= (CBAR_S1_BPSHCFG_NSH << CBAR_S1_BPSHCFG_SHIFT) |
+ 			(CBAR_S1_MEMATTR_WB << CBAR_S1_MEMATTR_SHIFT);
+ 	} else {
+-		reg |= ARM_SMMU_CB_VMID(cfg) << CBAR_VMID_SHIFT;
++		reg |= ARM_SMMU_CB_VMID(smmu, cfg) << CBAR_VMID_SHIFT;
+ 	}
+ 	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(cfg->cbndx));
+ 
+@@ -760,11 +783,11 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 	if (stage1) {
+ 		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
+ 
+-		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
++		reg64 |= ((u64)ARM_SMMU_CB_ASID(smmu, cfg)) << TTBRn_ASID_SHIFT;
+ 		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR0);
+ 
+ 		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
+-		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
++		reg64 |= ((u64)ARM_SMMU_CB_ASID(smmu, cfg)) << TTBRn_ASID_SHIFT;
+ 		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR1);
+ 	} else {
+ 		reg64 = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
+@@ -1793,6 +1816,22 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 
+ 	parse_driver_options(smmu);
+ 
++	if (smmu->options & ARM_SMMU_OPT_TRANSFORM_ASID) {
++		if (of_property_read_u8(dev->of_node, "#asid-transform",
++					 &smmu->asid_transform)) {
++			dev_err(dev, "missing #asid-transform property\n");
++			return -ENODEV;
++		}
++	}
++
++	if (smmu->options & ARM_SMMU_OPT_TRANSFORM_VMID) {
++		if (of_property_read_u8(dev->of_node, "#vmid-transform",
++					 &smmu->vmid_transform)) {
++			dev_err(dev, "missing #vmid-transform property\n");
++			return -ENODEV;
++		}
++	}
++
+ 	if (smmu->version > ARM_SMMU_V1 &&
+ 	    smmu->num_context_banks != smmu->num_context_irqs) {
+ 		dev_err(dev,
+-- 
+2.1.0
