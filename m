@@ -1,51 +1,46 @@
-From: Suravee Suthikulanit <suravee.suthikulpanit@amd.com>
-Subject: Re: AMD-Vi: Unable to write to IOMMU perf counter.
-Date: Thu, 4 Feb 2016 12:11:52 -0600
-Message-ID: <56B39468.7080902@amd.com>
-References: <56B365E0.4020100@01019freenet.de> <56B37292.1000201@amd.com>
- <56B39009.90401@maya.org>
+From: Andy Fleming <afleming-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] powerpc: Fix incorrect PPC32 PAMU dependency
+Date: Thu,  4 Feb 2016 20:16:06 -0600
+Message-ID: <1454638566-1953-1-git-send-email-afleming@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <56B39009.90401@maya.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: Andreas Hartmann <andihartmann@freenet.de>, linux-pci@vger.kernel.org
-Cc: Joerg Roedel <joro@8bytes.org>, Bjorn Helgaas <helgaas@kernel.org>, iommu <iommu@lists.linux-foundation.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2/4/2016 11:53 AM, Andreas Hartmann wrote:
-> On 02/04/2016 at 04:47 PM, Suravee Suthikulanit wrote:
->> Hi Andreas,
->>
->> On 2/4/2016 8:53 AM, Andreas Hartmann wrote:
->>> Hello!
->>>
->>> The following happens with Linux 4.4.1 during boot on an MSI A78M-E35
->>> board. Additionally, I attached the complete dmesg.
->>
->> I was working on upstreaming changes to the AMD IOMMU Perf to fix some
->> of the similar issue I saw on a different platform.  Would you please
->> check to see if this patch series would fix this?
->>
->> https://lkml.org/lkml/2016/1/1/141
->
->
-> This patchset seems to fix the problem.
->
-> [    1.264639] AMD-Vi: IOMMU performance counters supported
->
-> But there seems to be a problem with the location of
-> perf_event_amd_iommu.h in the patch - I had to fix the complete
-> perf_event_amd_iommu.h related patches to get them applied to 4.4. and
-> finally compiled.
->
->
-> Thanks,
-> Andreas
->
+The Freescale PAMU can also be enabled on 64-bit power
+chips. Commit 477ab7a19cec8409e4e2dd10e7348e4cac3c06e5
+(iommu: Make more drivers depend on COMPILE_TEST)
+added this false dependency. Fixed it by allowing PPC64, too.
 
-Ok, I'll clean up and resend this patch series. Thanks for testing.
+Signed-off-by: Andy Fleming <afleming-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ drivers/iommu/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-Suravee
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index a1e75cb..63ec7ae 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -57,7 +57,7 @@ config IOMMU_DMA
+ 
+ config FSL_PAMU
+ 	bool "Freescale IOMMU support"
+-	depends on PPC32
++	depends on PPC32 || PPC64
+ 	depends on PPC_E500MC || COMPILE_TEST
+ 	select IOMMU_API
+ 	select GENERIC_ALLOCATOR
+-- 
+1.9.1
