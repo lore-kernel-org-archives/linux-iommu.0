@@ -1,41 +1,111 @@
-From: Andreas Hartmann <andihartmann@freenet.de>
-Subject: Re: AMD-Vi: Unable to write to IOMMU perf counter.
-Date: Fri, 5 Feb 2016 07:37:36 +0100
-Message-ID: <56B44330.4020507@maya.org>
-References: <56B365E0.4020100@01019freenet.de>
- <20160204152309.GA27351@localhost>
+From: Eric Auger <eric.auger@linaro.org>
+Subject: ARM PCI/MSI KVM passthrough with GICv2M
+Date: Fri, 5 Feb 2016 18:32:07 +0100
+Message-ID: <56B4DC97.60904@linaro.org>
+References: <1453813968-2024-1-git-send-email-eric.auger@linaro.org>
+ <1454017899.23148.0.camel@redhat.com> <56AB78B1.2030202@linaro.org>
+ <1454096004.9301.1.camel@redhat.com> <56ABD8E0.6080409@linaro.org>
+ <20160201140351.GE6828@arm.com> <20160203125047.GB13974@cbox>
+ <20160203131057.GA20217@arm.com> <20160203153606.GC13974@cbox>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20160204152309.GA27351@localhost>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: linux-pci@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
+In-Reply-To: <20160203153606.GC13974@cbox>
+List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
+List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
+List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
+List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
+List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
+Errors-To: kvmarm-bounces@lists.cs.columbia.edu
+Sender: kvmarm-bounces@lists.cs.columbia.edu
+To: Christoffer Dall <christoffer.dall@linaro.org>, Will Deacon <will.deacon@arm.com>
+Cc: eric.auger@st.com, kvm@vger.kernel.org, patches@linaro.org, marc.zyngier@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Alex Williamson <alex.williamson@redhat.com>, kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello Bjorn,
+Hi Alex,
 
-On 02/04/2016 at 04:23 PM Bjorn Helgaas wrote:
-> [+cc Joerg, iommu list]
-> 
-> Hi Andreas,
-> 
-> On Thu, Feb 04, 2016 at 03:53:20PM +0100, Andreas Hartmann wrote:
->> Hello!
->>
->> The following happens with Linux 4.4.1 during boot on an MSI A78M-E35
->> board. Additionally, I attached the complete dmesg.
-> 
-> Thanks a lot for the report!  I cc'd some folks who know more about
-> this than I do.  Is this a regression?
+I tried to sketch a proposal for guaranteeing the IRQ integrity when
+doing ARM PCI/MSI passthrough with ARM GICv2M msi-controller. This is
+based on extended VFIO group viability control, as detailed below.
 
-Problem doesn't happen in 4.2 - I didn't test 4.3 because I actually
-don't have a 4.3 kernel and Suravee Suthikulanit patchset fixes the
-problem as I already wrote.
+As opposed to ARM GICv3 ITS, this MSI controller does *not* support IRQ
+remapping. It can expose 1 or more 4kB MSI frame. Each frame contains a
+single register where the msi data is written.
 
-Therefore the problem could be there since 4.3 or maybe firstly at 4.4.
+I would be grateful to you if you could tell me whether it makes any sense.
+
+Thanks in advance
+
+Best Regards
+
+Eric
 
 
-Regards,
-Andreas
+1) GICv2m with a single 4kB single frame
+   all devices having this msi-controller as msi-parent share this
+   single MSI frame. Those devices can work on behalf of the host
+   or work on behalf of 1 or more guests (KVM assigned devices). We
+   must make sure either the host only or 1 single VM can access to the
+   single frame to guarantee interrupt integrity: a device assigned
+   to 1 VM should not be able to trigger MSI targeted to the host
+   or another VM.
+
+   I would propose to extend the VFIO notion of group viability.
+   Currently a VFIO group is viable if:
+   all devices belonging to the same group are bound to a VFIO driver
+   or unbound.
+
+   Let's imagine we extend the viability check as follows:
+
+   0) keep the current viable check: all the devices belonging to
+      the group must be vfio bound or unbound.
+   1) retrieve the MSI parent of the device and list all the
+      other devices using that MSI controller as MSI-parent (does not
+      look straightforward):
+   2) they must be VFIO driver bound or unbound as well (meaning
+      they are not used by the host). If not, reject device attachment
+   - in case they are VFIO bound (a VFIO group is set):
+     x if all VFIO containers are the same as the one of the device's
+       we try to attach, that's OK. This means the other devices
+       use different IOMMU mappings, eventually will target the
+       MSI frame but they all work for the same user space client/VM.
+     x 1 or more devices has a different container than the device
+       under attachment:
+       It works on behalf of a different user space client/VM,
+       we can't attach the new device. I think there is a case however
+       where severals containers can be opened by a single QEMU.
+
+Of course the dynamic aspects, ie a new device showing up or an unbind
+event bring significant complexity.
+
+2) GICv2M with multiple 4kB frames
+   Each msi-frame is enumerated as msi-controller. The device tree
+   statically defines which device is attached to each msi frame.
+   In case devices are assigned we cannot change this attachment
+   anyway since there might be physical contraints behind.
+   So devices likely to be assigned to guests should be linked to a
+   different MSI frame than devices that are not.
+
+   I think extended viability concept can be used as well.
+
+   This model still is not ideal: in case we have a SR-IOV device
+   plugged onto an host bridge attached to a single MSI parent you won't
+   be able anyway to have 1 Virtual Function working for host and 1 VF
+   working for a guest. Only Interrupt translation (ITS) will bring that
+   feature.
+
+3) GICv3 ITS
+   This one supports interrupt translation service ~ Intel
+   IRQ remapping.
+   This means a single frame can be used by all devices. A deviceID is
+   used exclusively by the host or a guest. I assume the ITS driver
+   allocates/populates deviceid interrupt translation table featuring
+   separate LPI spaces ie by construction different ITT cannot feature
+   same LPIs. So no need to do the extended viability test.
+
+   The MSI controller should have a property telling whether
+   it supports interrupt translation. This kind of property currently
+   exists on IOMMU side for INTEL remapping.
