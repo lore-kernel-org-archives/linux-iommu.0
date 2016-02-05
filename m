@@ -1,17 +1,16 @@
 From: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 Subject: Re: [PATCH] iommu/arm-smmu-v2: Workaround for ThunderX errata#27704
-Date: Fri, 5 Feb 2016 20:29:19 +0000
-Message-ID: <9A2E9B16-A69C-456B-8DBD-75F0A2C3FA02@caviumnetworks.com>
+Date: Fri, 5 Feb 2016 20:32:00 +0000
+Message-ID: <812E9BBE-CFA6-4B90-A38F-2CA27FE04752@caviumnetworks.com>
 References: <1454698027-20911-1-git-send-email-tchalamarla@caviumnetworks.com>
 	<20160205200142.GA8647@leverpostej>
-	<20160205201532.GA10389@leverpostej>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160205201532.GA10389@leverpostej>
+In-Reply-To: <20160205200142.GA8647@leverpostej>
 Content-Language: en-US
-Content-ID: <13CDE373C67532449172C82AB23C4E2B-Tk6F3M/euE6cE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
+Content-ID: <43B93B8D8C13AC4383A938DCD8BD2EB5-Tk6F3M/euE6cE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,81 +21,246 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Cc: "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "Akula,
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "Akula,
 	Geethasowjanya" <Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-DQoNCg0KDQoNCk9uIDIvNS8xNiwgMTI6MTUgUE0sICJNYXJrIFJ1dGxhbmQiIDxtYXJrLnJ1dGxh
-bmRAYXJtLmNvbT4gd3JvdGU6DQoNCj5PbiBGcmksIEZlYiAwNSwgMjAxNiBhdCAwODowMjowOVBN
-ICswMDAwLCBNYXJrIFJ1dGxhbmQgd3JvdGU6DQo+PiBPbiBGcmksIEZlYiAwNSwgMjAxNiBhdCAx
-MDo0NzowN0FNIC0wODAwLCB0Y2hhbGFtYXJsYUBjYXZpdW1uZXR3b3Jrcy5jb20gd3JvdGU6DQo+
-PiA+IEZyb206IFRpcnVtYWxlc2ggQ2hhbGFtYXJsYSA8dGNoYWxhbWFybGFAY2F2aXVtbmV0d29y
-a3MuY29tPg0KPj4gPiANCj4+ID4gQW4gaXNzdWUgZXhpc3RzIHdoZXJlYnkgdGhlIExpbnV4IGtl
-cm5lbCByZXF1aXJlcyB0aGF0IEFTSURzIGFyZSBhDQo+PiA+IHVuaXF1ZSBuYW1lc3BhY2UgcGVy
-IFNNTVUuICANCj4+IA0KPj4gVGhlIFNNTVUgYXJjaGl0ZWN0dXJlIHJlcXVpcmVzIHRoaXMsIGFu
-ZCBMaW51eCByZWxpZXMgb24gaGFyZHdhcmUNCj4+IGZvbGxvd2luZyB0aGUgYXJjaGl0ZWN0dXJl
-Lg0KPj4gDQo+PiBQbGVhc2UgZGVzY3JpYmUgdGhlIHByb2JsZW0gY29ycmVjdGx5LiBpLmUuIHRo
-YXQgdGhlIGhhcmR3YXJlDQo+PiBlcnJvbmVvdXNseSBzaGFyZXMgVExCcyBiZXR3ZWVuIFNNTVUg
-aW5zdGFuY2VzLg0KPj4gDQo+PiA+IFRoYXQgQVNJRC1sb2NhbCBjaG9pY2UgY29uZmxpY3RzIHdp
-dGggdGhlDQo+PiA+IENOODh4eCBTTU1VLCB3aGVyZSBvbmx5IHNoYXJlZCBBU0lEIG5hbWVzcGFj
-ZXMgYXJlIHN1cHBvcnRlZDsNCj4+ID4gc3BlY2lmaWNhbGx5IHdpdGhpbiBhIGdpdmVuIG5vZGUg
-U01NVTAgYW5kIFNNTVUxIHNoYXJlLCBhcyBkb2VzIFNNTVUyDQo+PiA+IGFuZCBTTU1VMy4gQ044
-OHh4IFNNTVUgYWxzbyByZXF1aXJlcyBnbG9iYWwgVk1JRHMuDQo+PiA+IA0KPj4gPiBUaGlzIHBh
-dGNoIHRyaWVzIHRvIGFkZHJlc3MgdGhlc2UgaXNzdWVlIGJ5IHN1cHBseWluZyBhc2lkIGFuZCB2
-bWlkDQo+PiA+IHRyYW5zZm9ybWF0aW9ucyBmcm9tIGRldmljZXRyZWUuDQo+PiA+IA0KPj4gPiBT
-aWduZWQtb2ZmLWJ5OiBBa3VsYSBHZWV0aGFzb3dqYW55YSA8R2VldGhhc293amFueWEuQWt1bGFA
-Y2F2aXVtbmV0d29ya3MuY29tPg0KPj4gPiBTaWduZWQtb2ZmLWJ5OiBUaXJ1bWFsZXNoIENoYWxh
-bWFybGEgPHRjaGFsYW1hcmxhQGNhdml1bW5ldHdvcmtzLmNvbT4NCj4+ID4gLS0tDQo+PiA+ICAu
-Li4vZGV2aWNldHJlZS9iaW5kaW5ncy9pb21tdS9hcm0sc21tdS50eHQgICAgICAgICB8IDE2ICsr
-KysrKw0KPj4gPiAgZHJpdmVycy9pb21tdS9hcm0tc21tdS5jICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgfCA1OSArKysrKysrKysrKysrKysrKystLS0tDQo+PiA+ICAyIGZpbGVzIGNoYW5nZWQs
-IDY1IGluc2VydGlvbnMoKyksIDEwIGRlbGV0aW9ucygtKQ0KPj4gPiANCj4+ID4gZGlmZiAtLWdp
-dCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9pb21tdS9hcm0sc21tdS50eHQg
-Yi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaW9tbXUvYXJtLHNtbXUudHh0DQo+
-PiA+IGluZGV4IDcxODA3NDUuLmVlZjA2ZDAgMTAwNjQ0DQo+PiA+IC0tLSBhL0RvY3VtZW50YXRp
-b24vZGV2aWNldHJlZS9iaW5kaW5ncy9pb21tdS9hcm0sc21tdS50eHQNCj4+ID4gKysrIGIvRG9j
-dW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2lvbW11L2FybSxzbW11LnR4dA0KPj4gPiBA
-QCAtNTUsNiArNTUsMjIgQEAgY29uZGl0aW9ucy4NCj4+ID4gICAgICAgICAgICAgICAgICAgIGFs
-aWFzZXMgb2Ygc2VjdXJlIHJlZ2lzdGVycyBoYXZlIHRvIGJlIHVzZWQgZHVyaW5nDQo+PiA+ICAg
-ICAgICAgICAgICAgICAgICBTTU1VIGNvbmZpZ3VyYXRpb24uDQo+PiA+ICANCj4+ID4gKy0gdGh1
-bmRlcngsc21tdS1hc2lkLXRyYW5zZm9ybQk6IEVuYWJsZSBwcm9wZXIgaGFuZGxpbmcgZm9yIGJ1
-Z2d5DQo+PiA+ICsJCSAgaW1wbGVtZW50YXRpb25zIHRoYXQgcmVxdWlyZSBzcGVjaWFsIHRyYW5z
-Zm9ybWF0aW9ucw0KPj4gPiArCQkgIGZvciBzbW11IGFzaWQuIGlmIHRoaXMgcHJvcGVydHkgZXhp
-c3RzIGFzaWQtdHJhbnNmb3JtDQo+PiA+ICsJCSAgcHJvcGVydHkgbXVzdCBiZSBwcmVzZW50Lg0K
-Pj4gPiArDQo+PiA+ICstIHRodW5kZXJ4LHNtbXUtdm1pZC10cmFuc2Zvcm0JOiBFbmFibGUgcHJv
-cGVyIGhhbmRsaW5nIGZvciBidWdneQ0KPj4gPiArCQkgIGltcGxlbWVudGF0aW9ucyB0aGF0IHJl
-cXVpcmUgc3BlY2lhbCB0cmFuc2Zvcm1hdGlvbnMNCj4+ID4gKwkJICBmb3Igc21tdSB2bWlkLiBp
-ZiB0aGlzIHByb3BlcnR5IGV4aXN0cyB2bWlkLXRyYW5zZm9ybQ0KPj4gPiArCQkgIHByb3BlcnR5
-IG11c3QgYmUgcHJlc2VudC4NCj4+ID4gKw0KPj4gPiArLSBhc2lkLXRyYW5zZm9ybSAJOiBUcmFu
-c2Zvcm0gbWFzayB0aGF0IG5lZWRzIHRvIGJlIGFwcGxpZWQgdG8gYXNpZC4NCj4+ID4gKwkJCVRo
-aXMgcHJvcGVydHkgaGFzIHRvIGJlIHNwZWNpZmllZCBhcyAnL2JpdHMvIDgnIHZhbHVlLg0KPj4g
-PiArDQo+PiA+ICstIHZtaWQtdHJhbnNmb3JtIAk6IFRyYW5zZm9ybSBtYXNrIHRoYXQgbmVlZHMg
-dG8gYmUgYXBwbGllZCB0byB2bWlkLg0KPj4gPiArCQkJVGhpcyBwcm9wZXJ0eSBoYXMgdG8gYmUg
-c3BlY2lmaWVkIGFzICcvYml0cy8gOCcgdmFsdWUuDQo+PiANCj4+IERvbid0IGJvdGhlciB3aXRo
-IC9iaXRzLyA4LiBJdCBzYXZlcyBubyBzcGFjZSBpbiB0aGUgRFRCIGFuZCBvbmx5IGFkZHMNCj4+
-IHRvIGNvbmZ1c2lvbi4gVXNlIGEgZnVsbCBjZWxsLCBhbmQgb2ZfcHJvcGVydHlfcmVhZF91MzIs
-IGFuZCB2YWxpZGF0ZQ0KPj4gdGhhdCB0aGUgdmFsdWUgaXMgaW4gcmFuZ2UuDQo+PiANCj4+IEhh
-dmluZyB0d28gcHJvcGVydGllcyBmb3IgZWFjaCBzZWVtcyByZWR1bmRhbnQuIFRoZSBwcmVzZW5j
-ZSBvZiBhIG1hc2sNCj4+IHNob3VsZCBiZSBzdWZmaWNpZW50IHRvIG1ha2UgaXQgY2xlYXIgdGhh
-dCB0aGUgdXNlIG9mIHRoZSBtYXNrIGlzDQo+PiByZXF1aXJlZC4NCj4+IA0KPj4gVGhlc2UgcHJv
-cGVydGllcyBhcmVuJ3Qgc3VmZmljaWVudGx5IGRlc2NyaWJlZC4gSG93IGlzIHRoZSBtYXNrDQo+
-PiAiYXBwbGllZCIsIGFuZCB3aGF0IGlzIGl0IGFwcGxpZWQgdG8/IFdoYXQgY29uc3RyYWludHMg
-ZG9lcyBpdCBpbXBvc2UNCj4+IG9uIHRoZSBPUydzIHNlbGVjdGlvbiBvZiBBU0lEcy9WTUlEcz8N
-Cj4+IA0KPj4gRnJvbSB0aGUgbG9va3Mgb2YgdGhlIHBhdGNoLCBpdCdzIEFORGVkIGludG8gdGhl
-IHZhbHVlIExpbnV4IGhhcw0KPj4gc2VsZWN0ZWQsIHNvIGl0IHNvdW5kcyBsaWtlIGFuIE9TIG11
-c3QgYXZvaWQgdXNpbmcgYW55IGJpdHMgc2V0IGluIGFueQ0KPj4gbWFzayBvbiBhbnkgU01NVSBp
-bnN0YW5jZS4gVGhhdCBzb3VuZHMgdmVyeSBkaWZmaWN1bHQgdG8gZW5zdXJlIGluDQo+PiBnZW5l
-cmFsLCBhbmQgdmVyeSBmcmFnaWxlLg0KPg0KPkEgbXVjaCBiZXR0ZXIgYXBwcm9hY2ggd291bGQg
-YmUgdG8gaGF2ZSBzb21ldGhpbmcgbGlrZToNCj4NCj52YWxpZC1hc2lkLXJhbmdlIDogdHdvIHUz
-MiBjZWxscyBkZXNjcmliaW5nIHRoZSBtaW5pbXVtIGFuZCBtYXhpbXVtDQo+ICAgICAgICAgICAg
-ICAgICAgIEFTSURzIHRoYXQgbWF5IGJlIHVzZWQgb24gdGhpcyBTTU1VIGluc3RhbmNlLiBUaGUg
-T1MNCj4JCSAgIG11c3QgYWxsb2NhdGUgQVNJRHMgaW4gdGhlIGludGVydmFsIFttaW5pbXVtLA0K
-PgkJICAgbWF4aW11bV0uDQo+DQo+VGhhdCB3YXkgdGhlIE9TIGNhbiBwcmV2ZW50IGl0c2VsZiBm
-cm9tIGFsbG9jYXRpbmcgY29uZmxpY3RpbmcgQVNJRHMsDQo+d2hpY2ggaXMgbm90IHBvc3NpYmxl
-IHdpdGggYSBzaW5nbGUgYmFzZSB2YWx1ZSBhcyB5b3UgaGF2ZSB3aXRoIHlvdXINCj5hc2lkLXRy
-YW5zZm9ybSBwcm9wZXJ0eS4NCg0KVGhlIHByb2JsZW0gaXMsIFdpbGwgZG9u4oCZdCB3YW50IHRo
-aXMgdG8gYmUgcGFydCBvZiBnZW5lcmFsIGNoYW5nZSwgaGUgd2FudCB0byB0cmVhdCBpdCBhcyBF
-cnJhdGEuIA0KPg0KPk1hcmsuDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlv
-bi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8v
-aW9tbXU=
+
+
+
+
+
+On 2/5/16, 12:02 PM, "Mark Rutland" <mark.rutland-5wv7dgnIgG8@public.gmane.org> wrote:
+
+>On Fri, Feb 05, 2016 at 10:47:07AM -0800, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org wrote:
+>> From: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+>> 
+>> An issue exists whereby the Linux kernel requires that ASIDs are a
+>> unique namespace per SMMU.  
+>
+>The SMMU architecture requires this, and Linux relies on hardware
+>following the architecture.
+>
+>Please describe the problem correctly. i.e. that the hardware
+>erroneously shares TLBs between SMMU instances.
+>
+>> That ASID-local choice conflicts with the
+>> CN88xx SMMU, where only shared ASID namespaces are supported;
+>> specifically within a given node SMMU0 and SMMU1 share, as does SMMU2
+>> and SMMU3. CN88xx SMMU also requires global VMIDs.
+>> 
+>> This patch tries to address these issuee by supplying asid and vmid
+>> transformations from devicetree.
+>> 
+>> Signed-off-by: Akula Geethasowjanya <Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+>> Signed-off-by: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+>> ---
+>>  .../devicetree/bindings/iommu/arm,smmu.txt         | 16 ++++++
+>>  drivers/iommu/arm-smmu.c                           | 59 ++++++++++++++++++----
+>>  2 files changed, 65 insertions(+), 10 deletions(-)
+>> 
+>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>> index 7180745..eef06d0 100644
+>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>> @@ -55,6 +55,22 @@ conditions.
+>>                    aliases of secure registers have to be used during
+>>                    SMMU configuration.
+>>  
+>> +- thunderx,smmu-asid-transform	: Enable proper handling for buggy
+>> +		  implementations that require special transformations
+>> +		  for smmu asid. if this property exists asid-transform
+>> +		  property must be present.
+>> +
+>> +- thunderx,smmu-vmid-transform	: Enable proper handling for buggy
+>> +		  implementations that require special transformations
+>> +		  for smmu vmid. if this property exists vmid-transform
+>> +		  property must be present.
+>> +
+>> +- asid-transform 	: Transform mask that needs to be applied to asid.
+>> +			This property has to be specified as '/bits/ 8' value.
+>> +
+>> +- vmid-transform 	: Transform mask that needs to be applied to vmid.
+>> +			This property has to be specified as '/bits/ 8' value.
+>
+>Don't bother with /bits/ 8. It saves no space in the DTB and only adds
+>to confusion. Use a full cell, and of_property_read_u32, and validate
+>that the value is in range.
+>
+>Having two properties for each seems redundant. The presence of a mask
+>should be sufficient to make it clear that the use of the mask is
+>required.
+
+Sure. 
+>
+>These properties aren't sufficiently described. How is the mask
+>"applied", and what is it applied to? What constraints does it impose
+>on the OS's selection of ASIDs/VMIDs?
+>
+>From the looks of the patch, it's ANDed into the value Linux has
+>selected, so it sounds like an OS must avoid using any bits set in any
+>mask on any SMMU instance. That sounds very difficult to ensure in
+>general, and very fragile.
+
+For now it is only specific to ThunderX errata, its not a general requirement.
+So ThunderX DTS will make sure it defined proper values. 
+
+If all agree to make it a general requirement, I am happy to re write it with ASID and VMID coming from
+DTS. 
+>
+>Mark.
+>
+>> +
+>>  Example:
+>>  
+>>          smmu {
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index 59ee4b8..8047834 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -300,8 +300,12 @@ struct arm_smmu_device {
+>>  	u32				features;
+>>  
+>>  #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
+>> +#define ARM_SMMU_OPT_TRANSFORM_ASID	(1 << 1)
+>> +#define ARM_SMMU_OPT_TRANSFORM_VMID	(1 << 2)
+>>  	u32				options;
+>>  	enum arm_smmu_arch_version	version;
+>> +	u8				asid_transform;
+>> +	u8				vmid_transform;
+>>  
+>>  	u32				num_context_banks;
+>>  	u32				num_s2_context_banks;
+>> @@ -330,8 +334,25 @@ struct arm_smmu_cfg {
+>>  };
+>>  #define INVALID_IRPTNDX			0xff
+>>  
+>> -#define ARM_SMMU_CB_ASID(cfg)		((cfg)->cbndx)
+>> -#define ARM_SMMU_CB_VMID(cfg)		((cfg)->cbndx + 1)
+>> +/*
+>> + * ThunderX has a unique requirement because of ERRATA#27704
+>> + * An issue exists whereby the Linux kernel requires that ASIDs are a
+>> + * unique namespace per SMMU.  That ASID-local choice conflicts with the
+>> + * CN88xx SMMU, where only shared ASID namespaces are supported;
+>> + * specifically within a given node SMMU0 and SMMU1 share, as does SMMU2
+>> + * and SMMU3.
+>> + * CN88xx SMMU also requires global VMIDs.
+>> + */
+>> +
+>> +#define ARM_SMMU_CB_ASID(smmu, cfg)					\
+>> +		(((smmu)->options & ARM_SMMU_OPT_TRANSFORM_ASID)	\
+>> +		? ((cfg)->cbndx | (smmu)->asid_transform)		\
+>> +		: ((cfg)->cbndx))
+>> +
+>> +#define ARM_SMMU_CB_VMID(smmu, cfg)					\
+>> +		(((smmu)->options & ARM_SMMU_OPT_TRANSFORM_VMID)	\
+>> +		? (((cfg)->cbndx + 1) | (smmu)->vmid_transform)		\
+>> +		: ((cfg)->cbndx + 1))
+>>  
+>>  enum arm_smmu_domain_stage {
+>>  	ARM_SMMU_DOMAIN_S1 = 0,
+>> @@ -361,6 +382,8 @@ struct arm_smmu_option_prop {
+>>  
+>>  static struct arm_smmu_option_prop arm_smmu_options[] = {
+>>  	{ ARM_SMMU_OPT_SECURE_CFG_ACCESS, "calxeda,smmu-secure-config-access" },
+>> +	{ ARM_SMMU_OPT_TRANSFORM_ASID, "thunderx,smmu-asid-transform" },
+>> +	{ ARM_SMMU_OPT_TRANSFORM_VMID, "thunderx,smmu-vmid-transform" },
+>>  	{ 0, NULL},
+>>  };
+>>  
+>> @@ -570,11 +593,11 @@ static void arm_smmu_tlb_inv_context(void *cookie)
+>>  
+>>  	if (stage1) {
+>>  		base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
+>> -		writel_relaxed(ARM_SMMU_CB_ASID(cfg),
+>> +		writel_relaxed(ARM_SMMU_CB_ASID(smmu, cfg),
+>>  			       base + ARM_SMMU_CB_S1_TLBIASID);
+>>  	} else {
+>>  		base = ARM_SMMU_GR0(smmu);
+>> -		writel_relaxed(ARM_SMMU_CB_VMID(cfg),
+>> +		writel_relaxed(ARM_SMMU_CB_VMID(smmu, cfg),
+>>  			       base + ARM_SMMU_GR0_TLBIVMID);
+>>  	}
+>>  
+>> @@ -596,7 +619,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+>>  
+>>  		if (!IS_ENABLED(CONFIG_64BIT) || smmu->version == ARM_SMMU_V1) {
+>>  			iova &= ~12UL;
+>> -			iova |= ARM_SMMU_CB_ASID(cfg);
+>> +			iova |= ARM_SMMU_CB_ASID(smmu, cfg);
+>>  			do {
+>>  				writel_relaxed(iova, reg);
+>>  				iova += granule;
+>> @@ -604,7 +627,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+>>  #ifdef CONFIG_64BIT
+>>  		} else {
+>>  			iova >>= 12;
+>> -			iova |= (u64)ARM_SMMU_CB_ASID(cfg) << 48;
+>> +			iova |= (u64)ARM_SMMU_CB_ASID(smmu, cfg) << 48;
+>>  			do {
+>>  				writeq_relaxed(iova, reg);
+>>  				iova += granule >> 12;
+>> @@ -624,7 +647,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+>>  #endif
+>>  	} else {
+>>  		reg = ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_TLBIVMID;
+>> -		writel_relaxed(ARM_SMMU_CB_VMID(cfg), reg);
+>> +		writel_relaxed(ARM_SMMU_CB_VMID(smmu, cfg), reg);
+>>  	}
+>>  }
+>>  
+>> @@ -752,7 +775,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>>  		reg |= (CBAR_S1_BPSHCFG_NSH << CBAR_S1_BPSHCFG_SHIFT) |
+>>  			(CBAR_S1_MEMATTR_WB << CBAR_S1_MEMATTR_SHIFT);
+>>  	} else {
+>> -		reg |= ARM_SMMU_CB_VMID(cfg) << CBAR_VMID_SHIFT;
+>> +		reg |= ARM_SMMU_CB_VMID(smmu, cfg) << CBAR_VMID_SHIFT;
+>>  	}
+>>  	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(cfg->cbndx));
+>>  
+>> @@ -760,11 +783,11 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>>  	if (stage1) {
+>>  		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
+>>  
+>> -		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
+>> +		reg64 |= ((u64)ARM_SMMU_CB_ASID(smmu, cfg)) << TTBRn_ASID_SHIFT;
+>>  		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR0);
+>>  
+>>  		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
+>> -		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
+>> +		reg64 |= ((u64)ARM_SMMU_CB_ASID(smmu, cfg)) << TTBRn_ASID_SHIFT;
+>>  		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR1);
+>>  	} else {
+>>  		reg64 = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
+>> @@ -1793,6 +1816,22 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+>>  
+>>  	parse_driver_options(smmu);
+>>  
+>> +	if (smmu->options & ARM_SMMU_OPT_TRANSFORM_ASID) {
+>> +		if (of_property_read_u8(dev->of_node, "#asid-transform",
+>> +					 &smmu->asid_transform)) {
+>> +			dev_err(dev, "missing #asid-transform property\n");
+>> +			return -ENODEV;
+>> +		}
+>> +	}
+>> +
+>> +	if (smmu->options & ARM_SMMU_OPT_TRANSFORM_VMID) {
+>> +		if (of_property_read_u8(dev->of_node, "#vmid-transform",
+>> +					 &smmu->vmid_transform)) {
+>> +			dev_err(dev, "missing #vmid-transform property\n");
+>> +			return -ENODEV;
+>> +		}
+>> +	}
+>> +
+>`  	if (smmu->version > ARM_SMMU_V1 &&
+>>  	    smmu->num_context_banks != smmu->num_context_irqs) {
+>>  		dev_err(dev,
+>> -- 
+>> 2.1.0
+>> 
+>> 
+>> _______________________________________________
+>> linux-arm-kernel mailing list
+>> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>> 
