@@ -1,16 +1,16 @@
-From: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu-v2: Workaround for ThunderX errata#27704
-Date: Fri, 5 Feb 2016 20:32:00 +0000
-Message-ID: <812E9BBE-CFA6-4B90-A38F-2CA27FE04752@caviumnetworks.com>
-References: <1454698027-20911-1-git-send-email-tchalamarla@caviumnetworks.com>
-	<20160205200142.GA8647@leverpostej>
+From: Laine Stump <laine-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: Regression in kernel 4.2.3+ (relative to 4.1.10) on AMD 990FX
+	system with IOMMU enabled
+Date: Fri, 5 Feb 2016 16:09:50 -0500
+Message-ID: <56B50F9E.4040800@redhat.com>
+References: <563A3F64.50808@redhat.com> <5644CD81.2020304@redhat.com>
+	<20151118151841.GA2517@suse.de> <565F4CF5.90107@redhat.com>
+	<20160120141025.GA13677@x1.redhat.com> <569F9D0E.20309@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160205200142.GA8647@leverpostej>
-Content-Language: en-US
-Content-ID: <43B93B8D8C13AC4383A938DCD8BD2EB5-Tk6F3M/euE6cE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
+In-Reply-To: <569F9D0E.20309-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,247 +20,64 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "Akula,
-	Geethasowjanya" <Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-
-
-
-On 2/5/16, 12:02 PM, "Mark Rutland" <mark.rutland-5wv7dgnIgG8@public.gmane.org> wrote:
-
->On Fri, Feb 05, 2016 at 10:47:07AM -0800, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org wrote:
->> From: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
->> 
->> An issue exists whereby the Linux kernel requires that ASIDs are a
->> unique namespace per SMMU.  
+On 01/20/2016 09:43 AM, Laine Stump wrote:
+> On 01/20/2016 09:10 AM, Baoquan He wrote:
+>> I found it archived in this place well:
+>>
+>> https://www.mail-archive.com/iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org/msg10687.html
+>>
+>>
+>> But pasted dmesg has been lost. putting "lspci -tv" and "lspci -vvv" is
+>> more helpful.
 >
->The SMMU architecture requires this, and Linux relies on hardware
->following the architecture.
+> Sure, I'll boot it with the two kernels again today and recollect
+> everything.
 >
->Please describe the problem correctly. i.e. that the hardware
->erroneously shares TLBs between SMMU instances.
 >
->> That ASID-local choice conflicts with the
->> CN88xx SMMU, where only shared ASID namespaces are supported;
->> specifically within a given node SMMU0 and SMMU1 share, as does SMMU2
->> and SMMU3. CN88xx SMMU also requires global VMIDs.
->> 
->> This patch tries to address these issuee by supplying asid and vmid
->> transformations from devicetree.
->> 
->> Signed-off-by: Akula Geethasowjanya <Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
->> Signed-off-by: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
->> ---
->>  .../devicetree/bindings/iommu/arm,smmu.txt         | 16 ++++++
->>  drivers/iommu/arm-smmu.c                           | 59 ++++++++++++++++++----
->>  2 files changed, 65 insertions(+), 10 deletions(-)
->> 
->> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
->> index 7180745..eef06d0 100644
->> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
->> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
->> @@ -55,6 +55,22 @@ conditions.
->>                    aliases of secure registers have to be used during
->>                    SMMU configuration.
->>  
->> +- thunderx,smmu-asid-transform	: Enable proper handling for buggy
->> +		  implementations that require special transformations
->> +		  for smmu asid. if this property exists asid-transform
->> +		  property must be present.
->> +
->> +- thunderx,smmu-vmid-transform	: Enable proper handling for buggy
->> +		  implementations that require special transformations
->> +		  for smmu vmid. if this property exists vmid-transform
->> +		  property must be present.
->> +
->> +- asid-transform 	: Transform mask that needs to be applied to asid.
->> +			This property has to be specified as '/bits/ 8' value.
->> +
->> +- vmid-transform 	: Transform mask that needs to be applied to vmid.
->> +			This property has to be specified as '/bits/ 8' value.
+>> Besides does it work with latest kernel?
 >
->Don't bother with /bits/ 8. It saves no space in the DTB and only adds
->to confusion. Use a full cell, and of_property_read_u32, and validate
->that the value is in range.
+> I haven't tried the latest upstream recently, but the latest available
+> pre-built for Fedora 23 (4.2.8-300.fc23) is even worse - at the place
+> where it would previously hang for ~3 minutes, it now hangs "forever" (I
+> accidentally rebooted with that kernel and left without checking;
+> several hours later when I returned it was still hung).
 >
->Having two properties for each seems redundant. The presence of a mask
->should be sufficient to make it clear that the use of the mask is
->required.
+> I'll also grab the latest upstream sources and build/test that today.
 
-Sure. 
->
->These properties aren't sufficiently described. How is the mask
->"applied", and what is it applied to? What constraints does it impose
->on the OS's selection of ASIDs/VMIDs?
->
->From the looks of the patch, it's ANDed into the value Linux has
->selected, so it sounds like an OS must avoid using any bits set in any
->mask on any SMMU instance. That sounds very difficult to ensure in
->general, and very fragile.
+I finally built a 4.5.0-rc2+ kernel, and found that the problem has 
+disappeared. So I also tried a locally built 4.3.0 (broken) and 4.4.0 
+(works).
 
-For now it is only specific to ThunderX errata, its not a general requirement.
-So ThunderX DTS will make sure it defined proper values. 
+After another day of git bisect between v4.3 and v4.4, here's what I found:
 
-If all agree to make it a general requirement, I am happy to re write it with ASID and VMID coming from
-DTS. 
->
->Mark.
->
->> +
->>  Example:
->>  
->>          smmu {
->> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->> index 59ee4b8..8047834 100644
->> --- a/drivers/iommu/arm-smmu.c
->> +++ b/drivers/iommu/arm-smmu.c
->> @@ -300,8 +300,12 @@ struct arm_smmu_device {
->>  	u32				features;
->>  
->>  #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
->> +#define ARM_SMMU_OPT_TRANSFORM_ASID	(1 << 1)
->> +#define ARM_SMMU_OPT_TRANSFORM_VMID	(1 << 2)
->>  	u32				options;
->>  	enum arm_smmu_arch_version	version;
->> +	u8				asid_transform;
->> +	u8				vmid_transform;
->>  
->>  	u32				num_context_banks;
->>  	u32				num_s2_context_banks;
->> @@ -330,8 +334,25 @@ struct arm_smmu_cfg {
->>  };
->>  #define INVALID_IRPTNDX			0xff
->>  
->> -#define ARM_SMMU_CB_ASID(cfg)		((cfg)->cbndx)
->> -#define ARM_SMMU_CB_VMID(cfg)		((cfg)->cbndx + 1)
->> +/*
->> + * ThunderX has a unique requirement because of ERRATA#27704
->> + * An issue exists whereby the Linux kernel requires that ASIDs are a
->> + * unique namespace per SMMU.  That ASID-local choice conflicts with the
->> + * CN88xx SMMU, where only shared ASID namespaces are supported;
->> + * specifically within a given node SMMU0 and SMMU1 share, as does SMMU2
->> + * and SMMU3.
->> + * CN88xx SMMU also requires global VMIDs.
->> + */
->> +
->> +#define ARM_SMMU_CB_ASID(smmu, cfg)					\
->> +		(((smmu)->options & ARM_SMMU_OPT_TRANSFORM_ASID)	\
->> +		? ((cfg)->cbndx | (smmu)->asid_transform)		\
->> +		: ((cfg)->cbndx))
->> +
->> +#define ARM_SMMU_CB_VMID(smmu, cfg)					\
->> +		(((smmu)->options & ARM_SMMU_OPT_TRANSFORM_VMID)	\
->> +		? (((cfg)->cbndx + 1) | (smmu)->vmid_transform)		\
->> +		: ((cfg)->cbndx + 1))
->>  
->>  enum arm_smmu_domain_stage {
->>  	ARM_SMMU_DOMAIN_S1 = 0,
->> @@ -361,6 +382,8 @@ struct arm_smmu_option_prop {
->>  
->>  static struct arm_smmu_option_prop arm_smmu_options[] = {
->>  	{ ARM_SMMU_OPT_SECURE_CFG_ACCESS, "calxeda,smmu-secure-config-access" },
->> +	{ ARM_SMMU_OPT_TRANSFORM_ASID, "thunderx,smmu-asid-transform" },
->> +	{ ARM_SMMU_OPT_TRANSFORM_VMID, "thunderx,smmu-vmid-transform" },
->>  	{ 0, NULL},
->>  };
->>  
->> @@ -570,11 +593,11 @@ static void arm_smmu_tlb_inv_context(void *cookie)
->>  
->>  	if (stage1) {
->>  		base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
->> -		writel_relaxed(ARM_SMMU_CB_ASID(cfg),
->> +		writel_relaxed(ARM_SMMU_CB_ASID(smmu, cfg),
->>  			       base + ARM_SMMU_CB_S1_TLBIASID);
->>  	} else {
->>  		base = ARM_SMMU_GR0(smmu);
->> -		writel_relaxed(ARM_SMMU_CB_VMID(cfg),
->> +		writel_relaxed(ARM_SMMU_CB_VMID(smmu, cfg),
->>  			       base + ARM_SMMU_GR0_TLBIVMID);
->>  	}
->>  
->> @@ -596,7 +619,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
->>  
->>  		if (!IS_ENABLED(CONFIG_64BIT) || smmu->version == ARM_SMMU_V1) {
->>  			iova &= ~12UL;
->> -			iova |= ARM_SMMU_CB_ASID(cfg);
->> +			iova |= ARM_SMMU_CB_ASID(smmu, cfg);
->>  			do {
->>  				writel_relaxed(iova, reg);
->>  				iova += granule;
->> @@ -604,7 +627,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
->>  #ifdef CONFIG_64BIT
->>  		} else {
->>  			iova >>= 12;
->> -			iova |= (u64)ARM_SMMU_CB_ASID(cfg) << 48;
->> +			iova |= (u64)ARM_SMMU_CB_ASID(smmu, cfg) << 48;
->>  			do {
->>  				writeq_relaxed(iova, reg);
->>  				iova += granule >> 12;
->> @@ -624,7 +647,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
->>  #endif
->>  	} else {
->>  		reg = ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_TLBIVMID;
->> -		writel_relaxed(ARM_SMMU_CB_VMID(cfg), reg);
->> +		writel_relaxed(ARM_SMMU_CB_VMID(smmu, cfg), reg);
->>  	}
->>  }
->>  
->> @@ -752,7 +775,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
->>  		reg |= (CBAR_S1_BPSHCFG_NSH << CBAR_S1_BPSHCFG_SHIFT) |
->>  			(CBAR_S1_MEMATTR_WB << CBAR_S1_MEMATTR_SHIFT);
->>  	} else {
->> -		reg |= ARM_SMMU_CB_VMID(cfg) << CBAR_VMID_SHIFT;
->> +		reg |= ARM_SMMU_CB_VMID(smmu, cfg) << CBAR_VMID_SHIFT;
->>  	}
->>  	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(cfg->cbndx));
->>  
->> @@ -760,11 +783,11 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
->>  	if (stage1) {
->>  		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
->>  
->> -		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
->> +		reg64 |= ((u64)ARM_SMMU_CB_ASID(smmu, cfg)) << TTBRn_ASID_SHIFT;
->>  		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR0);
->>  
->>  		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
->> -		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
->> +		reg64 |= ((u64)ARM_SMMU_CB_ASID(smmu, cfg)) << TTBRn_ASID_SHIFT;
->>  		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR1);
->>  	} else {
->>  		reg64 = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
->> @@ -1793,6 +1816,22 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
->>  
->>  	parse_driver_options(smmu);
->>  
->> +	if (smmu->options & ARM_SMMU_OPT_TRANSFORM_ASID) {
->> +		if (of_property_read_u8(dev->of_node, "#asid-transform",
->> +					 &smmu->asid_transform)) {
->> +			dev_err(dev, "missing #asid-transform property\n");
->> +			return -ENODEV;
->> +		}
->> +	}
->> +
->> +	if (smmu->options & ARM_SMMU_OPT_TRANSFORM_VMID) {
->> +		if (of_property_read_u8(dev->of_node, "#vmid-transform",
->> +					 &smmu->vmid_transform)) {
->> +			dev_err(dev, "missing #vmid-transform property\n");
->> +			return -ENODEV;
->> +		}
->> +	}
->> +
->`  	if (smmu->version > ARM_SMMU_V1 &&
->>  	    smmu->num_context_banks != smmu->num_context_irqs) {
->>  		dev_err(dev,
->> -- 
->> 2.1.0
->> 
->> 
->> _______________________________________________
->> linux-arm-kernel mailing list
->> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
->> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
->> 
+commit 30e2561b95295258890b4e0366ce867e04d34a97 fails to boot
+commit cbfe360a1541a32e9e28f8f8ac925d2b7979d767 works
+
+It's notable that cbfe360a is in the igb driver, and I have an 82576 
+card (which uses the igb driver) in my system. However:
+
+1) That's not really related to the commit that seems to have caused the 
+breakage (aafd8ba0ca74894b9397e412bbd7f8ea2662ead8) is it?
+
+2) If I create a branch off of aafd8ba0c (or even v4.2) and cherry-pick 
+commit cbfe360a (and ceee3450 to avoid a merge conflict) the result 
+still fails to boot, so it's not a simple thing that just a patch or two 
+can fix.
+
+3) The good news: if I cherry-pick commit cbfe360a on top of v4.3 
+(Fedora is currently using kernel 4.3) then the problem will be solved 
+without needing to constantly switch back to a locally built kernel 
+after every update.
+
+My current working theory is that the changes in AMD iommu uncovered a 
+latent bug in the igb driver, and that a series of patches to the igb 
+driver (ending with cbfe360a) fixed that bug. I can't think of any other 
+way to explain it (and I've rebuilt/retested on either side of every 
+involved commit multiple times to verify the behavior).
+
+So thanks for your interest, but I'm happy to say that this seems to be 
+someone else's problem :-)
