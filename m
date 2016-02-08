@@ -1,83 +1,116 @@
-From: Laine Stump <laine-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: Regression in kernel 4.2.3+ (relative to 4.1.10) on AMD 990FX
-	system with IOMMU enabled
-Date: Fri, 5 Feb 2016 16:09:50 -0500
-Message-ID: <56B50F9E.4040800@redhat.com>
-References: <563A3F64.50808@redhat.com> <5644CD81.2020304@redhat.com>
-	<20151118151841.GA2517@suse.de> <565F4CF5.90107@redhat.com>
-	<20160120141025.GA13677@x1.redhat.com> <569F9D0E.20309@redhat.com>
+From: Anup Patel <anup.patel@broadcom.com>
+Subject: [PATCH v2 1/4] iommu/arm-smmu: Init driver using IOMMU_OF_DECLARE
+Date: Mon,  8 Feb 2016 10:47:29 +0530
+Message-ID: <1454908652-15317-2-git-send-email-anup.patel@broadcom.com>
+References: <1454908652-15317-1-git-send-email-anup.patel@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <569F9D0E.20309-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1454908652-15317-1-git-send-email-anup.patel@broadcom.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Sricharan R <sricharan@codeaurora.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, Device Tree <devicetree@vger.kernel.org>, Scott Branden <sbranden@broadcom.com>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Ray Jui <rjui@broadcom.com>, Linux Kernel <linux-kernel@vger.kernel.org>, Vikram Prakash <vikramp@broadcom.com>, Rob Herring <robh+dt@kernel.org>, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, Kumar Gala <galak@codeaurora.org>, Anup Patel <anup.patel@broadcom.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/20/2016 09:43 AM, Laine Stump wrote:
-> On 01/20/2016 09:10 AM, Baoquan He wrote:
->> I found it archived in this place well:
->>
->> https://www.mail-archive.com/iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org/msg10687.html
->>
->>
->> But pasted dmesg has been lost. putting "lspci -tv" and "lspci -vvv" is
->> more helpful.
->
-> Sure, I'll boot it with the two kernels again today and recollect
-> everything.
->
->
->> Besides does it work with latest kernel?
->
-> I haven't tried the latest upstream recently, but the latest available
-> pre-built for Fedora 23 (4.2.8-300.fc23) is even worse - at the place
-> where it would previously hang for ~3 minutes, it now hangs "forever" (I
-> accidentally rebooted with that kernel and left without checking;
-> several hours later when I returned it was still hung).
->
-> I'll also grab the latest upstream sources and build/test that today.
+From: Sricharan R <sricharan@codeaurora.org>
 
-I finally built a 4.5.0-rc2+ kernel, and found that the problem has 
-disappeared. So I also tried a locally built 4.3.0 (broken) and 4.4.0 
-(works).
+This patch uses IOMMU_OF_DECLARE to register the driver
+and the iommu_ops. So when master devices of the iommu are
+registered, of_xlate callback can be used to add the master
+configurations to the smmu driver.
 
-After another day of git bisect between v4.3 and v4.4, here's what I found:
+Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+Signed-off-by: Anup Patel <anup.patel@broadcom.com>
+Tested-by: Anup Patel <anup.patel@broadcom.com>
+---
+ drivers/iommu/arm-smmu.c | 35 ++++++++++++++++++++++-------------
+ 1 file changed, 22 insertions(+), 13 deletions(-)
 
-commit 30e2561b95295258890b4e0366ce867e04d34a97 fails to boot
-commit cbfe360a1541a32e9e28f8f8ac925d2b7979d767 works
-
-It's notable that cbfe360a is in the igb driver, and I have an 82576 
-card (which uses the igb driver) in my system. However:
-
-1) That's not really related to the commit that seems to have caused the 
-breakage (aafd8ba0ca74894b9397e412bbd7f8ea2662ead8) is it?
-
-2) If I create a branch off of aafd8ba0c (or even v4.2) and cherry-pick 
-commit cbfe360a (and ceee3450 to avoid a merge conflict) the result 
-still fails to boot, so it's not a simple thing that just a patch or two 
-can fix.
-
-3) The good news: if I cherry-pick commit cbfe360a on top of v4.3 
-(Fedora is currently using kernel 4.3) then the problem will be solved 
-without needing to constantly switch back to a locally built kernel 
-after every update.
-
-My current working theory is that the changes in AMD iommu uncovered a 
-latent bug in the igb driver, and that a series of patches to the igb 
-driver (ending with cbfe360a) fixed that bug. I can't think of any other 
-way to explain it (and I've rebuilt/retested on either side of every 
-involved commit multiple times to verify the behavior).
-
-So thanks for your interest, but I'm happy to say that this seems to be 
-someone else's problem :-)
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index bf1895c..2c8f871 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -39,6 +39,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
++#include <linux/of_iommu.h>
+ #include <linux/pci.h>
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
+@@ -265,6 +266,8 @@
+ #define FSYNR0_WNR			(1 << 4)
+ 
+ static int force_stage;
++static bool init_done;
++
+ module_param_named(force_stage, force_stage, int, S_IRUGO);
+ MODULE_PARM_DESC(force_stage,
+ 	"Force SMMU mappings to be installed at a particular stage of translation. A value of '1' or '2' forces the corresponding stage. All other values are ignored (i.e. no stage is forced). Note that selecting a specific stage will disable support for nested translation.");
+@@ -1926,20 +1929,8 @@ static struct platform_driver arm_smmu_driver = {
+ 
+ static int __init arm_smmu_init(void)
+ {
+-	struct device_node *np;
+ 	int ret;
+ 
+-	/*
+-	 * Play nice with systems that don't have an ARM SMMU by checking that
+-	 * an ARM SMMU exists in the system before proceeding with the driver
+-	 * and IOMMU bus operation registration.
+-	 */
+-	np = of_find_matching_node(NULL, arm_smmu_of_match);
+-	if (!np)
+-		return 0;
+-
+-	of_node_put(np);
+-
+ 	ret = platform_driver_register(&arm_smmu_driver);
+ 	if (ret)
+ 		return ret;
+@@ -1958,15 +1949,33 @@ static int __init arm_smmu_init(void)
+ 		bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
+ #endif
+ 
++	init_done = true;
++
+ 	return 0;
+ }
+ 
++static int __init arm_smmu_of_setup(struct device_node *np)
++{
++
++	if (!init_done)
++		arm_smmu_init();
++
++	of_iommu_set_ops(np, &arm_smmu_ops);
++
++	return 0;
++}
++
++IOMMU_OF_DECLARE(arm_smmu_v1, "arm,smmu-v1", arm_smmu_of_setup);
++IOMMU_OF_DECLARE(arm_smmu_v2, "arm,smmu-v2", arm_smmu_of_setup);
++IOMMU_OF_DECLARE(arm_smmu_400, "arm,mmu-400", arm_smmu_of_setup);
++IOMMU_OF_DECLARE(arm_smmu_401, "arm,mmu-401", arm_smmu_of_setup);
++IOMMU_OF_DECLARE(arm_smmu_500, "arm,mmu-500", arm_smmu_of_setup);
++
+ static void __exit arm_smmu_exit(void)
+ {
+ 	return platform_driver_unregister(&arm_smmu_driver);
+ }
+ 
+-subsys_initcall(arm_smmu_init);
+ module_exit(arm_smmu_exit);
+ 
+ MODULE_DESCRIPTION("IOMMU API for ARM architected SMMU implementations");
+-- 
+1.9.1
