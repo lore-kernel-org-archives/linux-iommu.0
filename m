@@ -1,16 +1,16 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 1/4] iommu/arm-smmu: Treat all device transactions as
-	unprivileged
-Date: Tue, 9 Feb 2016 14:08:17 +0000
-Message-ID: <20160209140817.GN22874@arm.com>
+Subject: Re: [PATCH 4/4] iommu/arm-smmu: Use per-context TLB sync as
+	appropriate
+Date: Tue, 9 Feb 2016 14:15:09 +0000
+Message-ID: <20160209141508.GO22874@arm.com>
 References: <cover.1453830752.git.robin.murphy@arm.com>
-	<6c5730256333b8d941f2c0371c1ab709a454938c.1453830752.git.robin.murphy@arm.com>
+	<fc2ede950aea2e84a0b7cf93e4cd605f0cbdf3c3.1453830752.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <6c5730256333b8d941f2c0371c1ab709a454938c.1453830752.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <fc2ede950aea2e84a0b7cf93e4cd605f0cbdf3c3.1453830752.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,58 +24,74 @@ To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 26, 2016 at 06:06:34PM +0000, Robin Murphy wrote:
-> The IOMMU API has no concept of privilege so assumes all devices and
-> mappings are equal, and indeed most non-CPU master devices on an AMBA
-> interconnect make little use of the attribute bits on the bus thus by
-> default perform unprivileged data accesses.
-> 
-> Some devices, however, believe themselves more equal than others, such
-> as programmable DMA controllers whose 'master' thread issues bus
-> transactions marked as privileged instruction fetches, while the data
-> accesses of its channel threads (under the control of Linux, at least)
-> are marked as unprivileged. This poses a problem for implementing the
-> DMA API on an IOMMU conforming to ARM VMSAv8, under which a page that is
-> unprivileged-writeable is also implicitly privileged-execute-never.
-> Given that, there is no one set of attributes with which iommu_map() can
-> implement, say, dma_alloc_coherent() that will allow every possible type
-> of access without something running into unexecepted permission faults.
-> 
-> Fortunately the SMMU architecture provides a means to mitigate such
-> issues by overriding the incoming attributes of a transaction; make use
-> of that to strip the privileged/unprivileged status off incoming
-> transactions, leaving just the instruction/data dichotomy which the
-> IOMMU API does at least understand; Four states good, two states better.
+On Tue, Jan 26, 2016 at 06:06:37PM +0000, Robin Murphy wrote:
+> TLB synchronisation is a mighty big hammmer to bring down on the
+> transaction stream, typically stalling all in-flight transactions until
+> the sync completes. Since in most cases (except at stage 2 on SMMUv1)
+> a per-context sync operation is available, prefer that over the global
+> operation when performing TLB maintenance for a single domain, to avoid
+> unecessarily disrupting ongoing traffic in other contexts.
 > 
 > Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 > ---
->  drivers/iommu/arm-smmu.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
+>  drivers/iommu/arm-smmu.c | 32 ++++++++++++++++++++++++--------
+>  1 file changed, 24 insertions(+), 8 deletions(-)
 > 
 > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 59ee4b8..1f9093d 100644
+> index 18e0e10..bf1895c 100644
 > --- a/drivers/iommu/arm-smmu.c
 > +++ b/drivers/iommu/arm-smmu.c
-> @@ -167,6 +167,9 @@
->  #define S2CR_TYPE_BYPASS		(1 << S2CR_TYPE_SHIFT)
->  #define S2CR_TYPE_FAULT			(2 << S2CR_TYPE_SHIFT)
+> @@ -219,6 +219,8 @@
+>  #define ARM_SMMU_CB_S1_TLBIVAL		0x620
+>  #define ARM_SMMU_CB_S2_TLBIIPAS2	0x630
+>  #define ARM_SMMU_CB_S2_TLBIIPAS2L	0x638
+> +#define ARM_SMMU_CB_TLBSYNC		0x7f0
+> +#define ARM_SMMU_CB_TLBSTATUS		0x7f4
+>  #define ARM_SMMU_CB_ATS1PR		0x800
+>  #define ARM_SMMU_CB_ATSR		0x8f0
 >  
-> +#define S2CR_PRIVCFG_SHIFT		24
-> +#define S2CR_PRIVCFG_UNPRIV		(2 << S2CR_PRIVCFG_SHIFT)
+> @@ -546,14 +548,22 @@ static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
+>  }
+>  
+>  /* Wait for any pending TLB invalidations to complete */
+> -static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
+> +static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu, int cbndx)
+>  {
+>  	int count = 0;
+> -	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
+> +	void __iomem *base, __iomem *status;
+>  
+> -	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_sTLBGSYNC);
+> -	while (readl_relaxed(gr0_base + ARM_SMMU_GR0_sTLBGSTATUS)
+> -	       & sTLBGSTATUS_GSACTIVE) {
+> +	if (cbndx < 0) {
+> +		base = ARM_SMMU_GR0(smmu);
+> +		status = base + ARM_SMMU_GR0_sTLBGSTATUS;
+> +		writel_relaxed(0, base + ARM_SMMU_GR0_sTLBGSYNC);
+> +	} else {
+> +		base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cbndx);
+> +		status = base + ARM_SMMU_CB_TLBSTATUS;
+> +		writel_relaxed(0, base + ARM_SMMU_CB_TLBSYNC);
+> +	}
 > +
->  /* Context bank attribute registers */
->  #define ARM_SMMU_GR1_CBAR(n)		(0x0 + ((n) << 2))
->  #define CBAR_VMID_SHIFT			0
-> @@ -1083,7 +1086,7 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
->  		u32 idx, s2cr;
->  
->  		idx = cfg->smrs ? cfg->smrs[i].idx : cfg->streamids[i];
-> -		s2cr = S2CR_TYPE_TRANS |
-> +		s2cr = S2CR_TYPE_TRANS | S2CR_PRIVCFG_UNPRIV |
->  		       (smmu_domain->cfg.cbndx << S2CR_CBNDX_SHIFT);
->  		writel_relaxed(s2cr, gr0_base + ARM_SMMU_GR0_S2CR(idx));
+> +	while (readl_relaxed(status) & sTLBGSTATUS_GSACTIVE) {
+>  		cpu_relax();
+>  		if (++count == TLB_LOOP_TIMEOUT) {
+>  			dev_err_ratelimited(smmu->dev,
+> @@ -567,7 +577,13 @@ static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
+>  static void arm_smmu_tlb_sync(void *cookie)
+>  {
+>  	struct arm_smmu_domain *smmu_domain = cookie;
+> -	__arm_smmu_tlb_sync(smmu_domain->smmu);
+> +	int cbndx = smmu_domain->cfg.cbndx;
+> +
+> +	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S2 &&
+> +	    smmu_domain->smmu->version < ARM_SMMU_V2)
+> +		cbndx = -1;
 
-Hmm, do we also need to worry about the bypass case? I guess not for the
-moment, but I anticipate horrible things.
+I think it would be cleaner just to override the sync function pointer
+when we initialise a stage-2 page table for an SMMUv1 implementation.
+
+Any reason not to go that way?
 
 Will
