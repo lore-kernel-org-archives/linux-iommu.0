@@ -1,11 +1,13 @@
 From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH V3 0/5] perf/amd/iommu: Enable multi-IOMMU support
-Date: Tue, 9 Feb 2016 16:53:50 -0600
-Message-ID: <1455058435-8716-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+Subject: [PATCH V3 4/5] perf/amd/iommu: Introduce get_iommu_bnk_cnt_evt_idx
+Date: Tue, 9 Feb 2016 16:53:54 -0600
+Message-ID: <1455058435-8716-5-git-send-email-Suravee.Suthikulpanit@amd.com>
+References: <1455058435-8716-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1455058435-8716-1-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,52 +21,51 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@publ
 Cc: andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Introduce a helper function to calculate bit-index for assigning
+performance counter assignment.
 
-This patch series modifies the existing perf_event_amd_iommu driver
-to support systems with multiple IOMMUs. It introduces new AMD IOMMU APIs,
-which will are used by the AMD IOMMU Perf driver to access performance
-counters in multiple IOMMUs.
+Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+---
+ arch/x86/kernel/cpu/perf_event_amd_iommu.c | 20 +++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
 
-In addition, this series should also fix current AMD IOMMU PMU driver
-initialization issue in some existing KV and CZ platform.
-
-Note that this patch also fixes the issue where IOMMU driver fails
-to write to IOMMU perf counter as reported by Andreas Hartmann here
-(http://comments.gmane.org/gmane.linux.kernel.pci/49147).
-
-Git branch containing this patch series is available here:
-
-    https://github.com/ssuthiku/linux.git  perf-iommu-v3
-
-Changes from V2 ( https://lkml.org/lkml/2016/1/1/141)
-  * Ported to 4.5.0-rc2
-  * Add reviewed by Joerg for patch 1 and 2
-  * Remove EXPORT_SYMBOL from patch 3 (per Joerg suggestion)
-  * Merge patch 4/6 and 6/6 from V2 into 5/5 in V3 and add
-    more description in the commit message and in code comment.
-  * Patch 5: modify the logic to update counts to get rid off
-    un-necessary local64_cmpxchg().
-
-Changes from V1 (https://lkml.org/lkml/2015/12/22/535):
-  * Update patch3 and 6 to use amd_iommus_present instead of introducing
-    amd_iommu_cnt static variable since they are the same thing
-
-Suravee Suthikulpanit (5):
-  perf/amd/iommu: Consolidate and move perf_event_amd_iommu header
-  perf/amd/iommu: Modify functions to query max banks and counters
-  iommu/amd: Introduce amd_iommu_get_num_iommus()
-  perf/amd/iommu: Introduce get_iommu_bnk_cnt_evt_idx
-  perf/amd/iommu: Enable support for multiple IOMMUs
-
- arch/x86/kernel/cpu/perf_event_amd_iommu.c | 164 ++++++++++++++++++++---------
- arch/x86/kernel/cpu/perf_event_amd_iommu.h |  40 -------
- drivers/iommu/amd_iommu_init.c             | 116 ++++++++++++++++----
- drivers/iommu/amd_iommu_proto.h            |   7 --
- include/linux/perf/perf_event_amd_iommu.h  |  43 ++++++++
- 5 files changed, 254 insertions(+), 116 deletions(-)
- delete mode 100644 arch/x86/kernel/cpu/perf_event_amd_iommu.h
- create mode 100644 include/linux/perf/perf_event_amd_iommu.h
-
+diff --git a/arch/x86/kernel/cpu/perf_event_amd_iommu.c b/arch/x86/kernel/cpu/perf_event_amd_iommu.c
+index 2d59e20..791bbcf 100644
+--- a/arch/x86/kernel/cpu/perf_event_amd_iommu.c
++++ b/arch/x86/kernel/cpu/perf_event_amd_iommu.c
+@@ -145,18 +145,28 @@ static struct attribute_group amd_iommu_cpumask_group = {
+ 
+ /*---------------------------------------------*/
+ 
++static inline
++int get_iommu_bnk_cnt_evt_idx(struct perf_amd_iommu *perf_iommu,
++				  int iommu_index, int bank_index,
++				  int cntr_index)
++{
++	int cntrs_per_iommu = perf_iommu->max_banks * perf_iommu->max_counters;
++	int index = (perf_iommu->max_counters * bank_index) + cntr_index;
++
++	return (cntrs_per_iommu * iommu_index) + index;
++}
++
+ static int get_next_avail_iommu_bnk_cntr(struct perf_amd_iommu *perf_iommu)
+ {
+ 	unsigned long flags;
+ 	int shift, bank, cntr, retval;
+-	int max_banks = perf_iommu->max_banks;
+-	int max_cntrs = perf_iommu->max_counters;
+ 
+ 	raw_spin_lock_irqsave(&perf_iommu->lock, flags);
+ 
+-	for (bank = 0, shift = 0; bank < max_banks; bank++) {
+-		for (cntr = 0; cntr < max_cntrs; cntr++) {
+-			shift = bank + (bank*3) + cntr;
++	for (bank = 0, shift = 0; bank < perf_iommu->max_banks; bank++) {
++		for (cntr = 0; cntr < perf_iommu->max_counters; cntr++) {
++			shift = get_iommu_bnk_cnt_evt_idx(perf_iommu,
++							      0, bank, cntr);
+ 			if (perf_iommu->cntr_assign_mask & (1ULL<<shift)) {
+ 				continue;
+ 			} else {
 -- 
 2.5.0
