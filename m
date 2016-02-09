@@ -1,13 +1,11 @@
 From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH V3 3/5] iommu/amd: Introduce amd_iommu_get_num_iommus()
-Date: Tue, 9 Feb 2016 16:53:53 -0600
-Message-ID: <1455058435-8716-4-git-send-email-Suravee.Suthikulpanit@amd.com>
-References: <1455058435-8716-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+Subject: [PATCH V3 0/5] perf/amd/iommu: Enable multi-IOMMU support
+Date: Tue, 9 Feb 2016 16:53:50 -0600
+Message-ID: <1455058435-8716-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1455058435-8716-1-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,52 +19,52 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@publ
 Cc: andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch introduces amd_iommu_get_num_iommus(). Initially, this is
-intended to be used by Perf AMD IOMMU driver.
+From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 
-Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
----
- drivers/iommu/amd_iommu_init.c            | 7 ++++++-
- include/linux/perf/perf_event_amd_iommu.h | 2 ++
- 2 files changed, 8 insertions(+), 1 deletion(-)
+This patch series modifies the existing perf_event_amd_iommu driver
+to support systems with multiple IOMMUs. It introduces new AMD IOMMU APIs,
+which will are used by the AMD IOMMU Perf driver to access performance
+counters in multiple IOMMUs.
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 275c0f5..531b2e1 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1030,7 +1030,7 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
- 
- 	/* Add IOMMU to internal data structures */
- 	list_add_tail(&iommu->list, &amd_iommu_list);
--	iommu->index             = amd_iommus_present++;
-+	iommu->index = amd_iommus_present++;
- 
- 	if (unlikely(iommu->index >= MAX_IOMMUS)) {
- 		WARN(1, "AMD-Vi: System has more IOMMUs than supported by this driver\n");
-@@ -2244,6 +2244,11 @@ bool amd_iommu_v2_supported(void)
- }
- EXPORT_SYMBOL(amd_iommu_v2_supported);
- 
-+int amd_iommu_get_num_iommus(void)
-+{
-+	return amd_iommus_present;
-+}
-+
- /****************************************************************************
-  *
-  * IOMMU EFR Performance Counter support functionality. This code allows
-diff --git a/include/linux/perf/perf_event_amd_iommu.h b/include/linux/perf/perf_event_amd_iommu.h
-index 815eabb..cb820c2 100644
---- a/include/linux/perf/perf_event_amd_iommu.h
-+++ b/include/linux/perf/perf_event_amd_iommu.h
-@@ -25,6 +25,8 @@
- #define PC_MAX_SPEC_CNTRS			16
- 
- /* amd_iommu_init.c external support functions */
-+extern int amd_iommu_get_num_iommus(void);
-+
- extern bool amd_iommu_pc_supported(void);
- 
- extern u8 amd_iommu_pc_get_max_banks(void);
+In addition, this series should also fix current AMD IOMMU PMU driver
+initialization issue in some existing KV and CZ platform.
+
+Note that this patch also fixes the issue where IOMMU driver fails
+to write to IOMMU perf counter as reported by Andreas Hartmann here
+(http://comments.gmane.org/gmane.linux.kernel.pci/49147).
+
+Git branch containing this patch series is available here:
+
+    https://github.com/ssuthiku/linux.git  perf-iommu-v3
+
+Changes from V2 ( https://lkml.org/lkml/2016/1/1/141)
+  * Ported to 4.5.0-rc2
+  * Add reviewed by Joerg for patch 1 and 2
+  * Remove EXPORT_SYMBOL from patch 3 (per Joerg suggestion)
+  * Merge patch 4/6 and 6/6 from V2 into 5/5 in V3 and add
+    more description in the commit message and in code comment.
+  * Patch 5: modify the logic to update counts to get rid off
+    un-necessary local64_cmpxchg().
+
+Changes from V1 (https://lkml.org/lkml/2015/12/22/535):
+  * Update patch3 and 6 to use amd_iommus_present instead of introducing
+    amd_iommu_cnt static variable since they are the same thing
+
+Suravee Suthikulpanit (5):
+  perf/amd/iommu: Consolidate and move perf_event_amd_iommu header
+  perf/amd/iommu: Modify functions to query max banks and counters
+  iommu/amd: Introduce amd_iommu_get_num_iommus()
+  perf/amd/iommu: Introduce get_iommu_bnk_cnt_evt_idx
+  perf/amd/iommu: Enable support for multiple IOMMUs
+
+ arch/x86/kernel/cpu/perf_event_amd_iommu.c | 164 ++++++++++++++++++++---------
+ arch/x86/kernel/cpu/perf_event_amd_iommu.h |  40 -------
+ drivers/iommu/amd_iommu_init.c             | 116 ++++++++++++++++----
+ drivers/iommu/amd_iommu_proto.h            |   7 --
+ include/linux/perf/perf_event_amd_iommu.h  |  43 ++++++++
+ 5 files changed, 254 insertions(+), 116 deletions(-)
+ delete mode 100644 arch/x86/kernel/cpu/perf_event_amd_iommu.h
+ create mode 100644 include/linux/perf/perf_event_amd_iommu.h
+
 -- 
 2.5.0
