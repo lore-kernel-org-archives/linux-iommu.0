@@ -1,33 +1,38 @@
-From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: Re: [PATCH v3 2/8] dma-mapping: add {map,unmap}_resource to
- dma_map_ops
-Date: Wed, 10 Feb 2016 15:11:03 +0300
-Message-ID: <56BB28D7.1090608@cogentembedded.com>
-References: <1455065878-11906-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
- <1455065878-11906-3-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH V3 0/5] perf/amd/iommu: Enable multi-IOMMU support
+Date: Wed, 10 Feb 2016 07:43:41 -0600
+Message-ID: <56BB3E8D.5060701@amd.com>
+References: <1455058435-8716-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<20160210000852.GI4119@pd.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1455065878-11906-3-git-send-email-niklas.soderlund+renesas@ragnatech.se>
-Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund+renesas@ragnatech.se>, linux-renesas-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org
-Cc: robin.murphy@arm.com, vinod.koul@intel.com, laurent.pinchart@ideasonboard.com, geert+renesas@glider.be, linus.walleij@linaro.org, dan.j.williams@intel.com, arnd@arndb.de, linux-arch@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160210000852.GI4119-fF5Pk5pvG8Y@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello.
+Hi Boris,
 
-On 2/10/2016 3:57 AM, Niklas S=C3=B6derlund wrote:
-
-> Add methods to handle mapping of device resources from a physical
-> address. This is needed for example to map be able to map MMIO FIFO
-                                          ^^^ not needed
-
-> registers to a IOMMU.
+On 02/09/2016 06:08 PM, Borislav Petkov wrote:
+> You probably want to redo those against latest tip/master:
 >
-> Signed-off-by: Niklas S=C3=B6derlund <niklas.soderlund+renesas@ragnat=
-ech.se>
-[...]
+> http://git.kernel.org/tip/5b26547dd7faa84e1293baa144a0f3e74ed7d4c7
+>
+> -- Regards/Gruss, Boris.
 
-MBR, Sergei
+Sure, I'll re-base this. By the way, do you have any other comments 
+regarding the changes?
+
+Thanks,
+Suravee
