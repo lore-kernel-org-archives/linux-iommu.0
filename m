@@ -1,187 +1,63 @@
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH V4 1/6] perf/amd/iommu: Consolidate and move
-	perf_event_amd_iommu header
-Date: Thu, 11 Feb 2016 16:15:22 +0700
-Message-ID: <1455182127-17551-2-git-send-email-Suravee.Suthikulpanit@amd.com>
+From: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
+Subject: [PATCH V4 3/6] iommu/amd: Introduce amd_iommu_get_num_iommus()
+Date: Thu, 11 Feb 2016 16:15:24 +0700
+Message-ID: <1455182127-17551-4-git-send-email-Suravee.Suthikulpanit@amd.com>
 References: <1455182127-17551-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1455182127-17551-1-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1455182127-17551-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, bp@alien8.de, peterz@infradead.org, mingo@redhat.com, acme@kernel.org
+Cc: andihartmann@freenet.de, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+This patch introduces amd_iommu_get_num_iommus(). Initially, this is
+intended to be used by Perf AMD IOMMU driver.
 
-First, this patch move arch/x86/events/amd/iommu.h to
-arch/x86/include/asm/perf/amd/iommu.h so that we easily include
-it in both perf-amd-iommu and amd-iommu drivers.
-
-Then, we consolidate declarion of AMD IOMMU performance counter
-APIs into one file.
-
-Reviewed-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
 ---
- arch/x86/events/amd/iommu.c           |  2 +-
- arch/x86/events/amd/iommu.h           | 40 ---------------------------------
- arch/x86/include/asm/perf/amd/iommu.h | 42 +++++++++++++++++++++++++++++++++++
- drivers/iommu/amd_iommu_init.c        |  2 ++
- drivers/iommu/amd_iommu_proto.h       |  7 ------
- 5 files changed, 45 insertions(+), 48 deletions(-)
- delete mode 100644 arch/x86/events/amd/iommu.h
- create mode 100644 arch/x86/include/asm/perf/amd/iommu.h
+ arch/x86/include/asm/perf/amd/iommu.h | 2 ++
+ drivers/iommu/amd_iommu_init.c        | 7 ++++++-
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
-index 629bc70..2f96072 100644
---- a/arch/x86/events/amd/iommu.c
-+++ b/arch/x86/events/amd/iommu.c
-@@ -15,9 +15,9 @@
- #include <linux/module.h>
- #include <linux/cpumask.h>
- #include <linux/slab.h>
-+#include <asm/perf/amd/iommu.h>
- 
- #include "../../kernel/cpu/perf_event.h"
--#include "iommu.h"
- 
- #define COUNTER_SHIFT		16
- 
-diff --git a/arch/x86/events/amd/iommu.h b/arch/x86/events/amd/iommu.h
-deleted file mode 100644
-index 845d173..0000000
---- a/arch/x86/events/amd/iommu.h
-+++ /dev/null
-@@ -1,40 +0,0 @@
--/*
-- * Copyright (C) 2013 Advanced Micro Devices, Inc.
-- *
-- * Author: Steven Kinney <Steven.Kinney-5C7GfCeVMHo@public.gmane.org>
-- * Author: Suravee Suthikulpanit <Suraveee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License version 2 as
-- * published by the Free Software Foundation.
-- */
--
--#ifndef _PERF_EVENT_AMD_IOMMU_H_
--#define _PERF_EVENT_AMD_IOMMU_H_
--
--/* iommu pc mmio region register indexes */
--#define IOMMU_PC_COUNTER_REG			0x00
--#define IOMMU_PC_COUNTER_SRC_REG		0x08
--#define IOMMU_PC_PASID_MATCH_REG		0x10
--#define IOMMU_PC_DOMID_MATCH_REG		0x18
--#define IOMMU_PC_DEVID_MATCH_REG		0x20
--#define IOMMU_PC_COUNTER_REPORT_REG		0x28
--
--/* maximun specified bank/counters */
--#define PC_MAX_SPEC_BNKS			64
--#define PC_MAX_SPEC_CNTRS			16
--
--/* iommu pc reg masks*/
--#define IOMMU_BASE_DEVID			0x0000
--
--/* amd_iommu_init.c external support functions */
--extern bool amd_iommu_pc_supported(void);
--
--extern u8 amd_iommu_pc_get_max_banks(u16 devid);
--
--extern u8 amd_iommu_pc_get_max_counters(u16 devid);
--
--extern int amd_iommu_pc_get_set_reg_val(u16 devid, u8 bank, u8 cntr,
--			u8 fxn, u64 *value, bool is_write);
--
--#endif /*_PERF_EVENT_AMD_IOMMU_H_*/
 diff --git a/arch/x86/include/asm/perf/amd/iommu.h b/arch/x86/include/asm/perf/amd/iommu.h
-new file mode 100644
-index 0000000..72f64b7
---- /dev/null
+index 97e1be5..40919eb 100644
+--- a/arch/x86/include/asm/perf/amd/iommu.h
 +++ b/arch/x86/include/asm/perf/amd/iommu.h
-@@ -0,0 +1,42 @@
-+/*
-+ * Copyright (C) 2013 Advanced Micro Devices, Inc.
-+ *
-+ * Author: Steven Kinney <Steven.Kinney-5C7GfCeVMHo@public.gmane.org>
-+ * Author: Suravee Suthikulpanit <Suraveee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
+@@ -25,6 +25,8 @@
+ #define PC_MAX_SPEC_CNTRS			16
+ 
+ /* amd_iommu_init.c external support functions */
++int amd_iommu_get_num_iommus(void);
 +
-+#ifndef _PERF_EVENT_AMD_IOMMU_H_
-+#define _PERF_EVENT_AMD_IOMMU_H_
-+
-+/* iommu pc mmio region register indexes */
-+#define IOMMU_PC_COUNTER_REG			0x00
-+#define IOMMU_PC_COUNTER_SRC_REG		0x08
-+#define IOMMU_PC_PASID_MATCH_REG		0x10
-+#define IOMMU_PC_DOMID_MATCH_REG		0x18
-+#define IOMMU_PC_DEVID_MATCH_REG		0x20
-+#define IOMMU_PC_COUNTER_REPORT_REG		0x28
-+
-+/* maximum specified bank/counters */
-+#define PC_MAX_SPEC_BNKS			64
-+#define PC_MAX_SPEC_CNTRS			16
-+
-+/* iommu pc reg masks*/
-+#define IOMMU_BASE_DEVID			0x0000
-+
-+/* amd_iommu_init.c external support functions */
-+bool amd_iommu_pc_supported(void);
-+
-+u8 amd_iommu_pc_get_max_banks(u16 devid);
-+
-+u8 amd_iommu_pc_get_max_counters(u16 devid);
-+
-+int amd_iommu_pc_set_reg_val(u16 devid, u8 bank, u8 cntr, u8 fxn, u64 *value);
-+
-+int amd_iommu_pc_get_set_reg_val(u16 devid, u8 bank, u8 cntr, u8 fxn,
-+				 u64 *value, bool is_write);
-+
-+#endif /*_PERF_EVENT_AMD_IOMMU_H_*/
+ bool amd_iommu_pc_supported(void);
+ 
+ u8 amd_iommu_pc_get_max_banks(void);
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 013bdff..d30f4b2 100644
+index a62b5ce..ffa057e 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -27,6 +27,8 @@
- #include <linux/amd-iommu.h>
- #include <linux/export.h>
- #include <linux/iommu.h>
-+#include <asm/perf/amd/iommu.h>
-+
- #include <asm/pci-direct.h>
- #include <asm/iommu.h>
- #include <asm/gart.h>
-diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
-index 0bd9eb3..ac2da91 100644
---- a/drivers/iommu/amd_iommu_proto.h
-+++ b/drivers/iommu/amd_iommu_proto.h
-@@ -55,13 +55,6 @@ extern int amd_iommu_domain_set_gcr3(struct iommu_domain *dom, int pasid,
- extern int amd_iommu_domain_clear_gcr3(struct iommu_domain *dom, int pasid);
- extern struct iommu_domain *amd_iommu_get_v2_domain(struct pci_dev *pdev);
+@@ -1030,7 +1030,7 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
  
--/* IOMMU Performance Counter functions */
--extern bool amd_iommu_pc_supported(void);
--extern u8 amd_iommu_pc_get_max_banks(u16 devid);
--extern u8 amd_iommu_pc_get_max_counters(u16 devid);
--extern int amd_iommu_pc_get_set_reg_val(u16 devid, u8 bank, u8 cntr, u8 fxn,
--				    u64 *value, bool is_write);
--
- #ifdef CONFIG_IRQ_REMAP
- extern int amd_iommu_create_irq_domain(struct amd_iommu *iommu);
- #else
+ 	/* Add IOMMU to internal data structures */
+ 	list_add_tail(&iommu->list, &amd_iommu_list);
+-	iommu->index             = amd_iommus_present++;
++	iommu->index = amd_iommus_present++;
+ 
+ 	if (unlikely(iommu->index >= MAX_IOMMUS)) {
+ 		WARN(1, "AMD-Vi: System has more IOMMUs than supported by this driver\n");
+@@ -2244,6 +2244,11 @@ bool amd_iommu_v2_supported(void)
+ }
+ EXPORT_SYMBOL(amd_iommu_v2_supported);
+ 
++int amd_iommu_get_num_iommus(void)
++{
++	return amd_iommus_present;
++}
++
+ /****************************************************************************
+  *
+  * IOMMU EFR Performance Counter support functionality. This code allows
 -- 
 2.5.0
