@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger@linaro.org>
-Subject: [RFC v2 11/15] msi: Add a new MSI_FLAG_IRQ_REMAPPING flag
-Date: Thu, 11 Feb 2016 14:34:18 +0000
-Message-ID: <1455201262-5259-12-git-send-email-eric.auger@linaro.org>
+Subject: [RFC v2 12/15] msi: export msi_get_domain_info
+Date: Thu, 11 Feb 2016 14:34:19 +0000
+Message-ID: <1455201262-5259-13-git-send-email-eric.auger@linaro.org>
 References: <1455201262-5259-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,43 +21,39 @@ To: eric.auger@st.com, eric.auger@linaro.org, alex.williamson@redhat.com, will.d
 Cc: Thomas.Lendacky@amd.com, brijesh.singh@amd.com, patches@linaro.org, Manish.Jaggi@caviumnetworks.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, leo.duran@amd.com, sherry.hurwitz@amd.com
 List-Id: iommu@lists.linux-foundation.org
 
-Let's introduce a new msi_domain_info flag value, MSI_FLAG_IRQ_REMAPPING
-meant to tell the domain supports IRQ REMAPPING, also known as Interrupt
-Translation Service. On Intel HW this capability is abstracted on IOMMU
-side while on ARM it is abstracted on MSI controller side.
-
-GICv3 ITS HW is the first HW advertising that feature.
+We plan to use msi_get_domain_info in VFIO module so let's export it.
 
 Signed-off-by: Eric Auger <eric.auger@linaro.org>
 ---
- drivers/irqchip/irq-gic-v3-its.c | 1 +
- include/linux/msi.h              | 2 ++
- 2 files changed, 3 insertions(+)
+ include/linux/msi.h | 4 ++++
+ kernel/irq/msi.c    | 1 +
+ 2 files changed, 5 insertions(+)
 
-diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-index 3447549..a5e0d8b 100644
---- a/drivers/irqchip/irq-gic-v3-its.c
-+++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -1544,6 +1544,7 @@ static int its_probe(struct device_node *node, struct irq_domain *parent)
- 		inner_domain->parent = parent;
- 		inner_domain->bus_token = DOMAIN_BUS_NEXUS;
- 		info->ops = &its_msi_domain_ops;
-+		info->flags |= MSI_FLAG_IRQ_REMAPPING;
- 		info->data = its;
- 		inner_domain->host_data = info;
- 	}
 diff --git a/include/linux/msi.h b/include/linux/msi.h
-index a2a0068..03eda72 100644
+index 03eda72..df19315 100644
 --- a/include/linux/msi.h
 +++ b/include/linux/msi.h
-@@ -261,6 +261,8 @@ enum {
- 	MSI_FLAG_MULTI_PCI_MSI		= (1 << 3),
- 	/* Support PCI MSIX interrupts */
- 	MSI_FLAG_PCI_MSIX		= (1 << 4),
-+	/* Support MSI IRQ remapping service */
-+	MSI_FLAG_IRQ_REMAPPING		= (1 << 5),
- };
+@@ -323,6 +323,10 @@ static inline struct irq_domain *pci_msi_get_device_domain(struct pci_dev *pdev)
+ {
+ 	return NULL;
+ }
++static struct msi_domain_info *msi_get_domain_info(struct irq_domain *domain)
++{
++	return NULL;
++}
+ #endif /* CONFIG_PCI_MSI_IRQ_DOMAIN */
  
- int msi_domain_set_affinity(struct irq_data *data, const struct cpumask *mask,
+ #endif /* LINUX_MSI_H */
+diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
+index 38e89ce..9b0ba4a 100644
+--- a/kernel/irq/msi.c
++++ b/kernel/irq/msi.c
+@@ -400,5 +400,6 @@ struct msi_domain_info *msi_get_domain_info(struct irq_domain *domain)
+ {
+ 	return (struct msi_domain_info *)domain->host_data;
+ }
++EXPORT_SYMBOL_GPL(msi_get_domain_info);
+ 
+ #endif /* CONFIG_GENERIC_MSI_IRQ_DOMAIN */
 -- 
 1.9.1
