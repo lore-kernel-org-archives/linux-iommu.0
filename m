@@ -1,15 +1,11 @@
 From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH V3 5/5] perf/amd/iommu: Enable support for multiple IOMMUs
-Date: Thu, 11 Feb 2016 15:34:38 +0700
-Message-ID: <56BC479E.2070004@amd.com>
-References: <1455058435-8716-1-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<1455058435-8716-6-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<20160210171401.GI23914@pd.tnic>
+Subject: [PATCH V4 0/6] perf/amd/iommu: Enable multi-IOMMU support
+Date: Thu, 11 Feb 2016 16:15:21 +0700
+Message-ID: <1455182127-17551-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160210171401.GI23914-fF5Pk5pvG8Y@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,127 +15,64 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Boris,
+From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 
-Thank you very much for catching several styling issues. I should have 
-taken care of that earlier.  I'll clean them up.  Please see my other 
-comments below.
+This patch series modifies the existing perf_event_amd_iommu driver
+to support systems with multiple IOMMUs. It introduces new AMD IOMMU APIs,
+which are used by the AMD IOMMU Perf driver to access performance
+counters in multiple IOMMUs.
 
-Thanks,
-Suravee
+In addition, this series should also fix current AMD IOMMU PMU driver
+initialization issue in some existing KV and CZ platform, where it fails
+to write to IOMMU perf counter as reported by Andreas Hartmann here
+(http://comments.gmane.org/gmane.linux.kernel.pci/49147).
 
-On 02/11/2016 12:14 AM, Borislav Petkov wrote:
-> On Tue, Feb 09, 2016 at 04:53:55PM -0600, Suravee Suthikulpanit wrote:
->> [...]
->>
->> -	/* IOMMU pc counter register is only 48 bits */
->> -	count &= 0xFFFFFFFFFFFFULL;
->> +	pr_debug("perf: amd_iommu:perf_iommu_read\n");
->
-> What is that debug statement good for? Can it go?
->
->  From looking at that file, it has a bunch more which are completely
-> useless and can be deleted. In a separate patch.
+Git branch containing this patch series is available here:
 
-Sure. I'll add a new patch to remove all these pr_debug.
+    https://github.com/ssuthiku/linux.git  perf-iommu-v4
 
->> [...]
->> +	if (!perf_iommu_cnts)
->> +		return -ENOMEM;
->> +
->>   	ret = perf_pmu_register(&perf_iommu->pmu, name, -1);
->>   	if (ret) {
->>   		pr_err("perf: amd_iommu: Failed to initialized.\n");
->
-> You can define pr_fmt to "perf/amd_iommu: " at the beginning of this
-> file and then you don't need to supply that prefix each time you call
-> pr_*
+Changes from V3 (https://lkml.org/lkml/2016/2/9/845)
+  * Rebase the code to tip/master per Boris suggestion
+  * Most changes are in patch 5/6:
+    * Fix several spelling and styling issues per Boris review comment
+    * Remove unnecessary pr_debug in the perf amd iommu driver (per Boris)
+    * Rename several function to make it less confusing (per Boris)
+    * Properly handle errors when fails to set registers/counters
+      on multiple IOMMUs. (per Boris)
 
-Good point. I'll take care of this.
+Changes from V2 ( https://lkml.org/lkml/2016/1/1/141)
+  * Ported to 4.5.0-rc2
+  * Add reviewed by Joerg for patch 1 and 2
+  * Remove EXPORT_SYMBOL from patch 3 (per Joerg suggestion)
+  * Merge patch 4/6 and 6/6 from V2 into 5/5 in V3 and add
+    more description in the commit message and in code comment.
+  * Patch 5: modify the logic to update counts to get rid off
+    un-necessary local64_cmpxchg().
 
-> And that sentence above it wrong. It should be:
->
-> 	pr_err("Error initializing AMD IOMMU perf counters.\n");
->
-> or something like that.
->
+Changes from V1 (https://lkml.org/lkml/2015/12/22/535):
+  * Update patch3 and 6 to use amd_iommus_present instead of introducing
+    amd_iommu_cnt static variable since they are the same thing
 
-OK.
+Suravee Suthikulpanit (6):
+  perf/amd/iommu: Consolidate and move perf_event_amd_iommu header
+  perf/amd/iommu: Modify functions to query max banks and counters
+  iommu/amd: Introduce amd_iommu_get_num_iommus()
+  perf/amd/iommu: Introduce get_iommu_bnk_cnt_evt_idx
+  perf/amd/iommu: Enable support for multiple IOMMUs
+  perf/amd/iommu: Declar pr_fmt and remove unnecessary pr_debug
 
->> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
->> index 531b2e1..7b1b561 100644
->> --- a/drivers/iommu/amd_iommu_init.c
->> +++ b/drivers/iommu/amd_iommu_init.c
->> @@ -1133,6 +1133,9 @@ static int __init init_iommu_all(struct acpi_table_header *table)
->>   	return 0;
->>   }
->>
->> +static int _amd_iommu_pc_get_set_reg_val(struct amd_iommu *iommu,
->> +					 u8 bank, u8 cntr, u8 fxn,
->> +					 u64 *value, bool is_write);
->
-> static int _amd_iommu_this_func_name_is_def_too_long
->
+ arch/x86/events/amd/iommu.c           | 197 ++++++++++++++++++++++------------
+ arch/x86/events/amd/iommu.h           |  40 -------
+ arch/x86/include/asm/perf/amd/iommu.h |  42 ++++++++
+ drivers/iommu/amd_iommu_init.c        | 136 +++++++++++++++++++----
+ drivers/iommu/amd_iommu_proto.h       |   7 --
+ 5 files changed, 286 insertions(+), 136 deletions(-)
+ delete mode 100644 arch/x86/events/amd/iommu.h
+ create mode 100644 arch/x86/include/asm/perf/amd/iommu.h
 
-I'll rename all these functions to make it shorter and less confusing.
-
->> [...]
->> +
->> +int amd_iommu_pc_set_reg_val(u16 devid, u8 bank, u8 cntr, u8 fxn, u64 *value)
->> +{
->> +	struct amd_iommu *iommu;
->> +
->> +	for_each_iommu(iommu) {
->> +		int ret = _amd_iommu_pc_get_set_reg_val(iommu, bank, cntr,
->> +							fxn, value, true);
->> +		if (ret)
->> +			return ret;
->> +	}
->> +
->> +	return 0;
->> +}
->> +EXPORT_SYMBOL(amd_iommu_pc_set_reg_val);
->
-> Why isn't this EXPORT_SYMBOL_GPL?
-
-Actually, I am just trying to match other exported functions in the AMD 
-IOMMU driver. May be Joerg can let us know why these functions are not 
-EXPORT_SYMBOL_GPL to begin with.
-
->> +	 * which should have been programmed the same way.
->> +	 * and aggregate the counter values.
->
-> That comment is a sentence with a fullstop in the middle.
->
->> +	 */
->> +	for_each_iommu(iommu) {
->> +		u64 tmp;
->> +
->> +		if (i >= num)
->> +			return -EINVAL;
->> +
->> +		ret = _amd_iommu_pc_get_set_reg_val(iommu, bank, cntr,
->> +							IOMMU_PC_COUNTER_REG,
->> +							&tmp, false);
->> +		if (ret)
->> +			return ret;
->
-> So if one of those intermediary calls of _amd_iommu_pc_get_set_reg_val()
-> fails, we return here not having read all counters. Unwind and handle
-> that error properly maybe?
->
-> Same issue above.
-
-Good point. So, for writing, I'll make sure to unset the 
-registers/counters when we encounter errors.
-
-For reading counters, I think it is acceptable to say that users cannot 
-rely on the return values in the array if the function returns non-zero 
-value (success).
-
-Thanks,
-Suravee
+-- 
+2.5.0
