@@ -1,103 +1,142 @@
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH V4 6/6] perf/amd/iommu: Clean up print messages pr_debug
-Date: Thu, 11 Feb 2016 16:15:27 +0700
-Message-ID: <1455182127-17551-7-git-send-email-Suravee.Suthikulpanit@amd.com>
-References: <1455182127-17551-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+From: Eric Auger <eric.auger@linaro.org>
+Subject: [RFC v2 00/15] KVM PCIe/MSI passthrough on ARM/ARM64
+Date: Thu, 11 Feb 2016 14:34:07 +0000
+Message-ID: <1455201262-5259-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1455182127-17551-1-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
+List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
+List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
+List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
+List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
+List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
+Errors-To: kvmarm-bounces@lists.cs.columbia.edu
+Sender: kvmarm-bounces@lists.cs.columbia.edu
+To: eric.auger@st.com, eric.auger@linaro.org, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org
+Cc: Thomas.Lendacky@amd.com, brijesh.singh@amd.com, patches@linaro.org, Manish.Jaggi@caviumnetworks.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, leo.duran@amd.com, sherry.hurwitz@amd.com
 List-Id: iommu@lists.linux-foundation.org
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+This series addresses KVM PCIe passthrough with MSI enabled on ARM/ARM64.
+It pursues the efforts done on [1], [2], [3]. It also aims at covering the
+same need on PowerPC platforms although the same kind of integration
+should be carried out.
 
-This patch declares pr_fmt for perf/amd_iommu, removes unnecessary
-pr_debug, and clean up error messages.
+On x86 all accesses to the 1MB PA region [FEE0_0000h - FEF0_000h] are directed
+as interrupt messages: accesses to this special PA window directly target the
+APIC configuration space and not DRAM, meaning the downstream IOMMU is bypassed.
 
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
----
- arch/x86/events/amd/iommu.c | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+This is not the case on above mentionned platforms where MSI messages emitted
+by devices are conveyed through the IOMMU. This means an IOVA/host PA mapping
+must exist for the MSI to reach the MSI controller. Normal way to create
+IOVA bindings consists in using VFIO DMA MAP API. However in this case
+the MSI IOVA is not mapped onto guest RAM but on host physical page (the MSI
+controller frame).
 
-diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
-index 947ae8a..3e00925 100644
---- a/arch/x86/events/amd/iommu.c
-+++ b/arch/x86/events/amd/iommu.c
-@@ -11,6 +11,8 @@
-  * published by the Free Software Foundation.
-  */
- 
-+#define pr_fmt(fmt)	"perf/amd_iommu: " fmt
-+
- #include <linux/perf_event.h>
- #include <linux/module.h>
- #include <linux/cpumask.h>
-@@ -305,7 +307,6 @@ static void perf_iommu_start(struct perf_event *event, int flags)
- 							 struct perf_amd_iommu,
- 							 pmu);
- 
--	pr_debug("perf: amd_iommu:perf_iommu_start\n");
- 	if (WARN_ON_ONCE(!(hwc->state & PERF_HES_STOPPED)))
- 		return;
- 
-@@ -381,8 +382,6 @@ static void perf_iommu_stop(struct perf_event *event, int flags)
- 	struct hw_perf_event *hwc = &event->hw;
- 	u64 config;
- 
--	pr_debug("perf: amd_iommu:perf_iommu_stop\n");
--
- 	if (hwc->state & PERF_HES_UPTODATE)
- 		return;
- 
-@@ -404,7 +403,6 @@ static int perf_iommu_add(struct perf_event *event, int flags)
- 	struct perf_amd_iommu *perf_iommu =
- 			container_of(event->pmu, struct perf_amd_iommu, pmu);
- 
--	pr_debug("perf: amd_iommu:perf_iommu_add\n");
- 	event->hw.state = PERF_HES_UPTODATE | PERF_HES_STOPPED;
- 
- 	/* request an iommu bank/counter */
-@@ -425,7 +423,6 @@ static void perf_iommu_del(struct perf_event *event, int flags)
- 	struct perf_amd_iommu *perf_iommu =
- 			container_of(event->pmu, struct perf_amd_iommu, pmu);
- 
--	pr_debug("perf: amd_iommu:perf_iommu_del\n");
- 	perf_iommu_stop(event, PERF_EF_UPDATE);
- 
- 	/* clear the assigned iommu bank/counter */
-@@ -489,7 +486,7 @@ static __init int _init_perf_amd_iommu(
- 
- 	/* Init events attributes */
- 	if (_init_events_attrs(perf_iommu) != 0)
--		pr_err("perf: amd_iommu: Only support raw events.\n");
-+		pr_err("Only support raw events.\n");
- 
- 	perf_iommu->max_banks = amd_iommu_pc_get_max_banks();
- 	perf_iommu->max_counters = amd_iommu_pc_get_max_counters();
-@@ -514,10 +511,10 @@ static __init int _init_perf_amd_iommu(
- 
- 	ret = perf_pmu_register(&perf_iommu->pmu, name, -1);
- 	if (ret) {
--		pr_err("perf: amd_iommu: Failed to initialized.\n");
-+		pr_err("Error initializing AMD IOMMU perf counters.\n");
- 		amd_iommu_pc_exit();
- 	} else {
--		pr_info("perf: amd_iommu: Detected. (%d banks, %d counters/bank)\n",
-+		pr_info("Detected. (%d banks, %d counters/bank)\n",
- 			amd_iommu_pc_get_max_banks(),
- 			amd_iommu_pc_get_max_counters());
- 	}
+In a nutshell, this series does:
+- introduce an IOMMU API to register a IOVA window usable for reserved mapping
+- reuse VFIO DMA MAP ioctl with a new flag to plug onto that new API
+- check if the device MSI-parent controllers allow IRQ remapping
+  (allow unsafe interrupt modality) for a given group
+- introduce a new IOMMU API to allocate reserved IOVAs and bind them onto
+  a physical address
+- allow the GICv2M and GICv3-ITS PCI irqchip to map/unmap the MSI frame
+  on irq_write_msi_msg
+
+Best Regards
+
+Eric
+
+Testing:
+- functional on ARM64 AMD Overdrive HW (single GICv2m frame) with an e1000e
+  PCIe card.
+- tested there is no regresion on
+  x non assigned PCIe driver
+  x platform device passthrough
+- Not tested: ARM with SR-IOV, ARM GICv3 ITS
+
+References:
+[1] [RFC 0/2] VFIO: Add virtual MSI doorbell support
+    (https://lkml.org/lkml/2015/7/24/135)
+[2] [RFC PATCH 0/6] vfio: Add interface to map MSI pages
+    (https://lists.cs.columbia.edu/pipermail/kvmarm/2015-September/016607.html)
+[3] [PATCH v2 0/3] Introduce MSI hardware mapping for VFIO
+    (http://permalink.gmane.org/gmane.comp.emulators.kvm.arm.devel/3858)
+
+Git:
+https://git.linaro.org/people/eric.auger/linux.git/shortlog/refs/heads/v4.5-rc3-pcie-passthrough-rfcv2
+
+previous version at
+https://git.linaro.org/people/eric.auger/linux.git/shortlog/refs/heads/v4.5-rc1-pcie-passthrough-v1
+
+QEMU Integration:
+[RFC v2 0/8] KVM PCI/MSI passthrough with mach-virt
+(http://lists.gnu.org/archive/html/qemu-arm/2016-01/msg00444.html)
+https://git.linaro.org/people/eric.auger/qemu.git/shortlog/refs/heads/v2.5.0-pci-passthrough-rfc-v2
+
+User Hints:
+To allow PCI/MSI passthrough with GICv2M, compile VFIO as a module and
+load the vfio_iommu_type1 module with allow_unsafe_interrupts param:
+sudo modprobe -v vfio_iommu_type1 allow_unsafe_interrupts=1
+sudo modprobe -v vfio-pci
+
+History:
+
+PATCH v1 -> RFC v2:
+- reverted to RFC since it looks more reasonable ;-) the code is split
+  between VFIO, IOMMU, MSI controller and I am not sure I did the right
+  choices. Also API need to be further discussed.
+- iova API usage in arm-smmu.c.
+- MSI controller natively programs the MSI addr with either the PA or IOVA.
+  This is not done anymore in vfio-pci driver as suggested by Alex.
+- check irq remapping capability of the group
+
+RFC v1 [2] -> PATCH v1:
+- use the existing dma map/unmap ioctl interface with a flag to register a
+  reserved IOVA range. Use the legacy Rb to store this special vfio_dma.
+- a single reserved IOVA contiguous region now is allowed
+- use of an RB tree indexed by PA to store allocated reserved slots
+- use of a vfio_domain iova_domain to manage iova allocation within the
+  window provided by the userspace
+- vfio alloc_map/unmap_free take a vfio_group handle
+- vfio_group handle is cached in vfio_pci_device
+- add ref counting to bindings
+- user modality enabled at the end of the series
+
+
+Eric Auger (15):
+  iommu: Add DOMAIN_ATTR_MSI_MAPPING attribute
+  vfio: expose MSI mapping requirement through VFIO_IOMMU_GET_INFO
+  vfio: introduce VFIO_IOVA_RESERVED vfio_dma type
+  iommu: add alloc/free_reserved_iova_domain
+  iommu/arm-smmu: implement alloc/free_reserved_iova_domain
+  iommu/arm-smmu: add a reserved binding RB tree
+  iommu: iommu_get/put_single_reserved
+  iommu/arm-smmu: implement iommu_get/put_single_reserved
+  iommu/arm-smmu: relinquish reserved resources on domain deletion
+  vfio: allow the user to register reserved iova range for MSI mapping
+  msi: Add a new MSI_FLAG_IRQ_REMAPPING flag
+  msi: export msi_get_domain_info
+  vfio/type1: also check IRQ remapping capability at msi domain
+  iommu/arm-smmu: do not advertise IOMMU_CAP_INTR_REMAP
+  irqchip/gicv2m/v3-its-pci-msi: IOMMU map the MSI frame when needed
+
+ drivers/iommu/arm-smmu.c                 | 292 +++++++++++++++++++++++++++++--
+ drivers/iommu/fsl_pamu_domain.c          |   2 +
+ drivers/iommu/iommu.c                    |  43 +++++
+ drivers/irqchip/irq-gic-common.c         |  60 +++++++
+ drivers/irqchip/irq-gic-common.h         |   5 +
+ drivers/irqchip/irq-gic-v2m.c            |   3 +-
+ drivers/irqchip/irq-gic-v3-its-pci-msi.c |   3 +-
+ drivers/irqchip/irq-gic-v3-its.c         |   1 +
+ drivers/vfio/vfio_iommu_type1.c          | 156 ++++++++++++++++-
+ include/linux/iommu.h                    |  53 ++++++
+ include/linux/msi.h                      |   6 +
+ include/uapi/linux/vfio.h                |  10 ++
+ kernel/irq/msi.c                         |   1 +
+ 13 files changed, 613 insertions(+), 22 deletions(-)
+
 -- 
-2.5.0
+1.9.1
