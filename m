@@ -1,11 +1,14 @@
 From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH V4 0/6] perf/amd/iommu: Enable multi-IOMMU support
-Date: Thu, 11 Feb 2016 16:15:21 +0700
-Message-ID: <1455182127-17551-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+Subject: [PATCH V4 2/6] perf/amd/iommu: Modify functions to query max banks
+	and counters
+Date: Thu, 11 Feb 2016 16:15:23 +0700
+Message-ID: <1455182127-17551-3-git-send-email-Suravee.Suthikulpanit@amd.com>
+References: <1455182127-17551-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1455182127-17551-1-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,60 +22,134 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@publ
 Cc: andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Currently, amd_iommu_pc_get_max_[banks|counters]() require devid,
+which should not be the case. Also, these don't properly support
+multi-IOMMU system.
 
-This patch series modifies the existing perf_event_amd_iommu driver
-to support systems with multiple IOMMUs. It introduces new AMD IOMMU APIs,
-which are used by the AMD IOMMU Perf driver to access performance
-counters in multiple IOMMUs.
+Current and future AMD systems with IOMMU that support perf counter
+would likely contain homogeneous IOMMUs where multiple IOMMUs are
+availalbe. So, this patch modifies these function to iterate all IOMMU
+to check the max banks and counters reported by the hardware.
 
-In addition, this series should also fix current AMD IOMMU PMU driver
-initialization issue in some existing KV and CZ platform, where it fails
-to write to IOMMU perf counter as reported by Andreas Hartmann here
-(http://comments.gmane.org/gmane.linux.kernel.pci/49147).
+Reviewed-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+---
+ arch/x86/events/amd/iommu.c           | 17 +++++++----------
+ arch/x86/include/asm/perf/amd/iommu.h |  7 ++-----
+ drivers/iommu/amd_iommu_init.c        | 20 ++++++++++++--------
+ 3 files changed, 21 insertions(+), 23 deletions(-)
 
-Git branch containing this patch series is available here:
-
-    https://github.com/ssuthiku/linux.git  perf-iommu-v4
-
-Changes from V3 (https://lkml.org/lkml/2016/2/9/845)
-  * Rebase the code to tip/master per Boris suggestion
-  * Most changes are in patch 5/6:
-    * Fix several spelling and styling issues per Boris review comment
-    * Remove unnecessary pr_debug in the perf amd iommu driver (per Boris)
-    * Rename several function to make it less confusing (per Boris)
-    * Properly handle errors when fails to set registers/counters
-      on multiple IOMMUs. (per Boris)
-
-Changes from V2 ( https://lkml.org/lkml/2016/1/1/141)
-  * Ported to 4.5.0-rc2
-  * Add reviewed by Joerg for patch 1 and 2
-  * Remove EXPORT_SYMBOL from patch 3 (per Joerg suggestion)
-  * Merge patch 4/6 and 6/6 from V2 into 5/5 in V3 and add
-    more description in the commit message and in code comment.
-  * Patch 5: modify the logic to update counts to get rid off
-    un-necessary local64_cmpxchg().
-
-Changes from V1 (https://lkml.org/lkml/2015/12/22/535):
-  * Update patch3 and 6 to use amd_iommus_present instead of introducing
-    amd_iommu_cnt static variable since they are the same thing
-
-Suravee Suthikulpanit (6):
-  perf/amd/iommu: Consolidate and move perf_event_amd_iommu header
-  perf/amd/iommu: Modify functions to query max banks and counters
-  iommu/amd: Introduce amd_iommu_get_num_iommus()
-  perf/amd/iommu: Introduce get_iommu_bnk_cnt_evt_idx
-  perf/amd/iommu: Enable support for multiple IOMMUs
-  perf/amd/iommu: Declar pr_fmt and remove unnecessary pr_debug
-
- arch/x86/events/amd/iommu.c           | 197 ++++++++++++++++++++++------------
- arch/x86/events/amd/iommu.h           |  40 -------
- arch/x86/include/asm/perf/amd/iommu.h |  42 ++++++++
- drivers/iommu/amd_iommu_init.c        | 136 +++++++++++++++++++----
- drivers/iommu/amd_iommu_proto.h       |   7 --
- 5 files changed, 286 insertions(+), 136 deletions(-)
- delete mode 100644 arch/x86/events/amd/iommu.h
- create mode 100644 arch/x86/include/asm/perf/amd/iommu.h
-
+diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
+index 2f96072..debf22d 100644
+--- a/arch/x86/events/amd/iommu.c
++++ b/arch/x86/events/amd/iommu.c
+@@ -232,14 +232,6 @@ static int perf_iommu_event_init(struct perf_event *event)
+ 		return -EINVAL;
+ 	}
+ 
+-	/* integrate with iommu base devid (0000), assume one iommu */
+-	perf_iommu->max_banks =
+-		amd_iommu_pc_get_max_banks(IOMMU_BASE_DEVID);
+-	perf_iommu->max_counters =
+-		amd_iommu_pc_get_max_counters(IOMMU_BASE_DEVID);
+-	if ((perf_iommu->max_banks == 0) || (perf_iommu->max_counters == 0))
+-		return -EINVAL;
+-
+ 	/* update the hw_perf_event struct with the iommu config data */
+ 	hwc->config = config;
+ 	hwc->extra_reg.config = config1;
+@@ -450,6 +442,11 @@ static __init int _init_perf_amd_iommu(
+ 	if (_init_events_attrs(perf_iommu) != 0)
+ 		pr_err("perf: amd_iommu: Only support raw events.\n");
+ 
++	perf_iommu->max_banks = amd_iommu_pc_get_max_banks();
++	perf_iommu->max_counters = amd_iommu_pc_get_max_counters();
++	if ((perf_iommu->max_banks == 0) || (perf_iommu->max_counters == 0))
++		return -EINVAL;
++
+ 	/* Init null attributes */
+ 	perf_iommu->null_group = NULL;
+ 	perf_iommu->pmu.attr_groups = perf_iommu->attr_groups;
+@@ -460,8 +457,8 @@ static __init int _init_perf_amd_iommu(
+ 		amd_iommu_pc_exit();
+ 	} else {
+ 		pr_info("perf: amd_iommu: Detected. (%d banks, %d counters/bank)\n",
+-			amd_iommu_pc_get_max_banks(IOMMU_BASE_DEVID),
+-			amd_iommu_pc_get_max_counters(IOMMU_BASE_DEVID));
++			amd_iommu_pc_get_max_banks(),
++			amd_iommu_pc_get_max_counters());
+ 	}
+ 
+ 	return ret;
+diff --git a/arch/x86/include/asm/perf/amd/iommu.h b/arch/x86/include/asm/perf/amd/iommu.h
+index 72f64b7..97e1be5 100644
+--- a/arch/x86/include/asm/perf/amd/iommu.h
++++ b/arch/x86/include/asm/perf/amd/iommu.h
+@@ -24,15 +24,12 @@
+ #define PC_MAX_SPEC_BNKS			64
+ #define PC_MAX_SPEC_CNTRS			16
+ 
+-/* iommu pc reg masks*/
+-#define IOMMU_BASE_DEVID			0x0000
+-
+ /* amd_iommu_init.c external support functions */
+ bool amd_iommu_pc_supported(void);
+ 
+-u8 amd_iommu_pc_get_max_banks(u16 devid);
++u8 amd_iommu_pc_get_max_banks(void);
+ 
+-u8 amd_iommu_pc_get_max_counters(u16 devid);
++u8 amd_iommu_pc_get_max_counters(void);
+ 
+ int amd_iommu_pc_set_reg_val(u16 devid, u8 bank, u8 cntr, u8 fxn, u64 *value);
+ 
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index d30f4b2..a62b5ce 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -2251,15 +2251,17 @@ EXPORT_SYMBOL(amd_iommu_v2_supported);
+  *
+  ****************************************************************************/
+ 
+-u8 amd_iommu_pc_get_max_banks(u16 devid)
++u8 amd_iommu_pc_get_max_banks(void)
+ {
+ 	struct amd_iommu *iommu;
+ 	u8 ret = 0;
+ 
+-	/* locate the iommu governing the devid */
+-	iommu = amd_iommu_rlookup_table[devid];
+-	if (iommu)
++	for_each_iommu(iommu) {
++		if (!iommu->max_banks ||
++		    (ret && (iommu->max_banks != ret)))
++			return 0;
+ 		ret = iommu->max_banks;
++	}
+ 
+ 	return ret;
+ }
+@@ -2271,15 +2273,17 @@ bool amd_iommu_pc_supported(void)
+ }
+ EXPORT_SYMBOL(amd_iommu_pc_supported);
+ 
+-u8 amd_iommu_pc_get_max_counters(u16 devid)
++u8 amd_iommu_pc_get_max_counters(void)
+ {
+ 	struct amd_iommu *iommu;
+ 	u8 ret = 0;
+ 
+-	/* locate the iommu governing the devid */
+-	iommu = amd_iommu_rlookup_table[devid];
+-	if (iommu)
++	for_each_iommu(iommu) {
++		if (!iommu->max_counters ||
++		    (ret && (iommu->max_counters != ret)))
++			return 0;
+ 		ret = iommu->max_counters;
++	}
+ 
+ 	return ret;
+ }
 -- 
 2.5.0
