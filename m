@@ -1,7 +1,7 @@
 From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH V4 4/6] perf/amd/iommu: Introduce get_iommu_bnk_cnt_evt_idx
-Date: Thu, 11 Feb 2016 16:15:25 +0700
-Message-ID: <1455182127-17551-5-git-send-email-Suravee.Suthikulpanit@amd.com>
+Subject: [PATCH V4 6/6] perf/amd/iommu: Clean up print messages pr_debug
+Date: Thu, 11 Feb 2016 16:15:27 +0700
+Message-ID: <1455182127-17551-7-git-send-email-Suravee.Suthikulpanit@amd.com>
 References: <1455182127-17551-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,50 +21,83 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@publ
 Cc: andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Introduce a helper function to calculate bit-index for assigning
-performance counter assignment.
+From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 
-Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+This patch declares pr_fmt for perf/amd_iommu, removes unnecessary
+pr_debug, and clean up error messages.
+
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 ---
- arch/x86/events/amd/iommu.c | 19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
+ arch/x86/events/amd/iommu.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
 diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
-index debf22d..812eff2 100644
+index 947ae8a..3e00925 100644
 --- a/arch/x86/events/amd/iommu.c
 +++ b/arch/x86/events/amd/iommu.c
-@@ -145,18 +145,27 @@ static struct attribute_group amd_iommu_cpumask_group = {
+@@ -11,6 +11,8 @@
+  * published by the Free Software Foundation.
+  */
  
- /*---------------------------------------------*/
- 
-+static inline
-+int get_iommu_bnk_cnt_evt_idx(struct perf_amd_iommu *perf_iommu,
-+				  int iommu_index, int bank_index,
-+				  int cntr_index)
-+{
-+	int cntrs_per_iommu = perf_iommu->max_banks * perf_iommu->max_counters;
-+	int index = (perf_iommu->max_counters * bank_index) + cntr_index;
++#define pr_fmt(fmt)	"perf/amd_iommu: " fmt
 +
-+	return (cntrs_per_iommu * iommu_index) + index;
-+}
-+
- static int get_next_avail_iommu_bnk_cntr(struct perf_amd_iommu *perf_iommu)
- {
- 	unsigned long flags;
- 	int shift, bank, cntr, retval;
--	int max_banks = perf_iommu->max_banks;
--	int max_cntrs = perf_iommu->max_counters;
+ #include <linux/perf_event.h>
+ #include <linux/module.h>
+ #include <linux/cpumask.h>
+@@ -305,7 +307,6 @@ static void perf_iommu_start(struct perf_event *event, int flags)
+ 							 struct perf_amd_iommu,
+ 							 pmu);
  
- 	raw_spin_lock_irqsave(&perf_iommu->lock, flags);
+-	pr_debug("perf: amd_iommu:perf_iommu_start\n");
+ 	if (WARN_ON_ONCE(!(hwc->state & PERF_HES_STOPPED)))
+ 		return;
  
--	for (bank = 0, shift = 0; bank < max_banks; bank++) {
--		for (cntr = 0; cntr < max_cntrs; cntr++) {
--			shift = bank + (bank*3) + cntr;
-+	for (bank = 0, shift = 0; bank < perf_iommu->max_banks; bank++) {
-+		for (cntr = 0; cntr < perf_iommu->max_counters; cntr++) {
-+			shift = get_iommu_bnk_cnt_evt_idx(perf_iommu, 0, bank, cntr);
- 			if (perf_iommu->cntr_assign_mask & (1ULL<<shift)) {
- 				continue;
- 			} else {
+@@ -381,8 +382,6 @@ static void perf_iommu_stop(struct perf_event *event, int flags)
+ 	struct hw_perf_event *hwc = &event->hw;
+ 	u64 config;
+ 
+-	pr_debug("perf: amd_iommu:perf_iommu_stop\n");
+-
+ 	if (hwc->state & PERF_HES_UPTODATE)
+ 		return;
+ 
+@@ -404,7 +403,6 @@ static int perf_iommu_add(struct perf_event *event, int flags)
+ 	struct perf_amd_iommu *perf_iommu =
+ 			container_of(event->pmu, struct perf_amd_iommu, pmu);
+ 
+-	pr_debug("perf: amd_iommu:perf_iommu_add\n");
+ 	event->hw.state = PERF_HES_UPTODATE | PERF_HES_STOPPED;
+ 
+ 	/* request an iommu bank/counter */
+@@ -425,7 +423,6 @@ static void perf_iommu_del(struct perf_event *event, int flags)
+ 	struct perf_amd_iommu *perf_iommu =
+ 			container_of(event->pmu, struct perf_amd_iommu, pmu);
+ 
+-	pr_debug("perf: amd_iommu:perf_iommu_del\n");
+ 	perf_iommu_stop(event, PERF_EF_UPDATE);
+ 
+ 	/* clear the assigned iommu bank/counter */
+@@ -489,7 +486,7 @@ static __init int _init_perf_amd_iommu(
+ 
+ 	/* Init events attributes */
+ 	if (_init_events_attrs(perf_iommu) != 0)
+-		pr_err("perf: amd_iommu: Only support raw events.\n");
++		pr_err("Only support raw events.\n");
+ 
+ 	perf_iommu->max_banks = amd_iommu_pc_get_max_banks();
+ 	perf_iommu->max_counters = amd_iommu_pc_get_max_counters();
+@@ -514,10 +511,10 @@ static __init int _init_perf_amd_iommu(
+ 
+ 	ret = perf_pmu_register(&perf_iommu->pmu, name, -1);
+ 	if (ret) {
+-		pr_err("perf: amd_iommu: Failed to initialized.\n");
++		pr_err("Error initializing AMD IOMMU perf counters.\n");
+ 		amd_iommu_pc_exit();
+ 	} else {
+-		pr_info("perf: amd_iommu: Detected. (%d banks, %d counters/bank)\n",
++		pr_info("Detected. (%d banks, %d counters/bank)\n",
+ 			amd_iommu_pc_get_max_banks(),
+ 			amd_iommu_pc_get_max_counters());
+ 	}
 -- 
 2.5.0
