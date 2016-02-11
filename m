@@ -1,83 +1,90 @@
-From: Jay Cornwall <jay@jcornwall.me>
-Subject: [PATCH] iommu/amd: Apply workaround for ATS write permission check
-Date: Wed, 10 Feb 2016 15:48:01 -0600
-Message-ID: <1455140881-17041-1-git-send-email-jay@jcornwall.me>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH v3 1/8] iommu: Add MMIO mapping type
+Date: Thu, 11 Feb 2016 02:02:11 +0200
+Message-ID: <13740597.5lZXKsEG19@avalon>
+References: <1455065878-11906-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+	<1455065878-11906-2-git-send-email-niklas.soderlund+renesas@ragnatech.se>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: Joerg Roedel <jroedel@suse.de>, Jay Cornwall <jay@jcornwall.me>, stable@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1455065878-11906-2-git-send-email-niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Niklas =?ISO-8859-1?Q?S=F6derlund?= <niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The AMD Family 15h Models 30h-3Fh (Kaveri) BIOS and Kernel Developer's
-Guide omitted part of the BIOS IOMMU L2 register setup specification.
-Without this setup the IOMMU L2 does not fully respect write permissions
-when handling an ATS translation request.
+Hi Niklas,
 
-The IOMMU L2 will set PTE dirty bit when handling an ATS translation with
-write permission request, even when PTE RW bit is clear. This may occur by
-direct translation (which would cause a PPR) or by prefetch request from
-the ATC.
+Thank you for the patch.
 
-This is observed in practice when the IOMMU L2 modifies a PTE which maps a
-pagecache page. The ext4 filesystem driver BUGs when asked to writeback
-these (non-modified) pages.
+On Wednesday 10 February 2016 01:57:51 Niklas S=F6derlund wrote:
+> From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> =
 
-Enable ATS write permission check in the Kaveri IOMMU L2 if BIOS has not.
+> On some platforms, MMIO regions might need slightly different treatment
+> compared to mapping regular memory; add the notion of MMIO mappings to
+> the IOMMU API's memory type flags, so that callers can let the IOMMU
+> drivers know to do the right thing.
+> =
 
-Signed-off-by: Jay Cornwall <jay@jcornwall.me>
-Cc: <stable@vger.kernel.org> # v3.19+
----
- drivers/iommu/amd_iommu_init.c | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 013bdff..0c4257e 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1016,6 +1016,34 @@ static void amd_iommu_erratum_746_workaround(struct amd_iommu *iommu)
- }
- 
- /*
-+ * Family15h Model 30h-3fh (IOMMU Mishandles ATS Write Permission)
-+ * Workaround:
-+ *     BIOS should enable ATS write permission check by setting
-+ *     L2_DEBUG_3[AtsIgnoreIWDis](D0F2xF4_x47[0]) = 1b
-+ */
-+static void amd_iommu_ats_write_check_workaround(struct amd_iommu *iommu)
-+{
-+	u32 value;
-+
-+	if ((boot_cpu_data.x86 != 0x15) ||
-+	    (boot_cpu_data.x86_model < 0x30) ||
-+	    (boot_cpu_data.x86_model > 0x3f))
-+		return;
-+
-+	/* Test L2_DEBUG_3[AtsIgnoreIWDis] == 1 */
-+	value = iommu_read_l2(iommu, 0x47);
-+
-+	if (value & BIT(0))
-+		return;
-+
-+	/* Set L2_DEBUG_3[AtsIgnoreIWDis] = 1 */
-+	iommu_write_l2(iommu, 0x47, value | BIT(0));
-+
-+	pr_info("AMD-Vi: Applying ATS write check workaround for IOMMU at %s\n",
-+		dev_name(&iommu->dev->dev));
-+}
-+
-+/*
-  * This function clues the initialization function for one IOMMU
-  * together and also allocates the command buffer and programs the
-  * hardware. It does NOT enable the IOMMU. This is done afterwards.
-@@ -1284,6 +1312,7 @@ static int iommu_init_pci(struct amd_iommu *iommu)
- 	}
- 
- 	amd_iommu_erratum_746_workaround(iommu);
-+	amd_iommu_ats_write_check_workaround(iommu);
- 
- 	iommu->iommu_dev = iommu_device_create(&iommu->dev->dev, iommu,
- 					       amd_iommu_groups, "ivhd%d",
--- 
-1.9.1
+Answering the question from the cover letter, yes, it's totally fine to pic=
+k =
+
+the ack, that's actually expected.
+
+> ---
+>  drivers/iommu/io-pgtable-arm.c | 4 +++-
+>  include/linux/iommu.h          | 1 +
+
+You might be asked to split this patch in two.
+
+>  2 files changed, 4 insertions(+), 1 deletion(-)
+> =
+
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-ar=
+m.c
+> index 381ca5a..3ff4f87 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -364,7 +364,9 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct
+> arm_lpae_io_pgtable *data, pte |=3D ARM_LPAE_PTE_HAP_READ;
+>  		if (prot & IOMMU_WRITE)
+>  			pte |=3D ARM_LPAE_PTE_HAP_WRITE;
+> -		if (prot & IOMMU_CACHE)
+> +		if (prot & IOMMU_MMIO)
+> +			pte |=3D ARM_LPAE_PTE_MEMATTR_DEV;
+> +		else if (prot & IOMMU_CACHE)
+>  			pte |=3D ARM_LPAE_PTE_MEMATTR_OIWB;
+>  		else
+>  			pte |=3D ARM_LPAE_PTE_MEMATTR_NC;
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index a5c539f..34b6432 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -30,6 +30,7 @@
+>  #define IOMMU_WRITE	(1 << 1)
+>  #define IOMMU_CACHE	(1 << 2) /* DMA cache coherency */
+>  #define IOMMU_NOEXEC	(1 << 3)
+> +#define IOMMU_MMIO	(1 << 4) /* e.g. things like MSI doorbells */
+> =
+
+>  struct iommu_ops;
+>  struct iommu_group;
+
+-- =
+
+Regards,
+
+Laurent Pinchart
