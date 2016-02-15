@@ -1,49 +1,82 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2] iommu/io-pgtable: Rationalise quirk handling
-Date: Fri, 12 Feb 2016 17:27:17 +0000
-Message-ID: <20160212172716.GH17901@arm.com>
-References: <cover.1453723096.git.robin.murphy@arm.com>
-	<62860b753f304beef7b4b6f1e13d7094252f2f37.1455294748.git.robin.murphy@arm.com>
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [RFC PATCH 1/2] PCI: Add PCI device flag
+ PCI_DEV_FLAGS_BRIDGE_SKIP_ALIAS
+Date: Mon, 15 Feb 2016 12:20:23 -0600
+Message-ID: <20160215182023.GB12641@localhost>
+References: <1455487501-28630-1-git-send-email-jchandra@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <62860b753f304beef7b4b6f1e13d7094252f2f37.1455294748.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+In-Reply-To: <1455487501-28630-1-git-send-email-jchandra@broadcom.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Jayachandran C <jchandra@broadcom.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Feb 12, 2016 at 05:09:46PM +0000, Robin Murphy wrote:
-> As the number of io-pgtable implementations grows beyond 1, it's time
-> to rationalise the quirks mechanism before things have a chance to
-> start getting really ugly and out-of-hand.
+[+cc Alex, iommu list]
+
+On Mon, Feb 15, 2016 at 03:35:00AM +0530, Jayachandran C wrote:
+> Add a new flag PCI_DEV_FLAGS_BRIDGE_SKIP_ALIAS to indicate bridges
+> that should not be considered during DMA alias search. This is
+> to support hardware (in this case Broadcom Vulcan PCIe subsystem)
+> that has internal bridges which have either missing or wrong PCIe
+> capabilities.
+
+This needs more explanation, like what exactly is wrong with this
+device?  A missing PCIe capability might cause other problems.
+
+What problem does this fix?  Without these patches, do we merely add
+aliases that are unnecessary?  Do we crash because something goes
+wrong in the pci_pcie_type() switch because of the incorrect
+capability?
+
+> Update the function pci_for_each_dma_alias() to skip bridges with
+> this flag set.
 > 
-> To that end:
-> - Indicate exactly which quirks each format can/does support.
-> - Fail creating a table if a caller wants unsupported quirks.
-> - Properly document where each quirk applies and why.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Jayachandran C <jchandra@broadcom.com>
 > ---
 > 
-> Just to allay any confusion, I intend this as a followup to the
-> short-descriptor[1] and Mediatek IOMMU[2] patches, rather than a
-> crucial addition, so it can either get picked up along with those
-> or wait 'til later.
-
-I'd like to see it included in whichever tree takes the short-descriptor
-code so, in case that's not my tree:
-
-Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-
-Will
+> This patch is an RFC, if there is a better way to do this, please
+> let me know.
+> 
+> Thanks,
+> JC.
+> 
+>  drivers/pci/search.c | 2 ++
+>  include/linux/pci.h  | 2 ++
+>  2 files changed, 4 insertions(+)
+> 
+> diff --git a/drivers/pci/search.c b/drivers/pci/search.c
+> index a20ce7d..e5296aa 100644
+> --- a/drivers/pci/search.c
+> +++ b/drivers/pci/search.c
+> @@ -55,6 +55,8 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
+>  			continue;
+>  
+>  		tmp = bus->self;
+> +		if (tmp->dev_flags & PCI_DEV_FLAGS_BRIDGE_SKIP_ALIAS)
+> +			continue;
+>  
+>  		/*
+>  		 * PCIe-to-PCI/X bridges alias transactions from downstream
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 27df4a6..b4d8215 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -182,6 +182,8 @@ enum pci_dev_flags {
+>  	PCI_DEV_FLAGS_NO_PM_RESET = (__force pci_dev_flags_t) (1 << 7),
+>  	/* Get VPD from function 0 VPD */
+>  	PCI_DEV_FLAGS_VPD_REF_F0 = (__force pci_dev_flags_t) (1 << 8),
+> +	/* Bridge should be ignored for alias search  */
+> +	PCI_DEV_FLAGS_BRIDGE_SKIP_ALIAS = (__force pci_dev_flags_t) (1 << 9),
+>  };
+>  
+>  enum pci_irq_reroute_variant {
+> -- 
+> 1.9.1
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-pci" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
