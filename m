@@ -1,124 +1,230 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH 05/11] iommu: exynos: refactor code (no direct register access)
-Date: Tue, 16 Feb 2016 15:56:58 +0100
-Message-ID: <1455634624-18130-6-git-send-email-m.szyprowski@samsung.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH 03/11] iommu: exynos: remove ARM-specific cache flush interface
+Date: Tue, 16 Feb 2016 15:56:56 +0100
+Message-ID: <1455634624-18130-4-git-send-email-m.szyprowski@samsung.com>
 References: <1455634624-18130-1-git-send-email-m.szyprowski@samsung.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1455634624-18130-1-git-send-email-m.szyprowski@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <1455634624-18130-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch changes some internal functions to have access to the state of
-sysmmu device instead of having only it's registers. This will make the
-code ready for future extensions.
+This patch replaces custom ARM-specific code for performing CPU cache flush
+operations with generic code based on DMA-mapping. Domain managing code
+is independent of particular SYSMMU device, so the first registered SYSMMU
+device is used for DMA-mapping calls. This simplification works fine
+because all SYSMMU controllers are in the same address space (where
+DMA address equals physical address) and the DMA-mapping calls are done
+mainly to flush CPU cache to make changes visible to SYSMMU controllers.
 
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c | 40 +++++++++++++++++++---------------------
- 1 file changed, 19 insertions(+), 21 deletions(-)
+ drivers/iommu/exynos-iommu.c | 74 +++++++++++++++++++++++++++++---------------
+ 1 file changed, 49 insertions(+), 25 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index bf6b826..4275222 100644
+index 595e0da..8c8a7f7 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -254,50 +254,49 @@ static bool is_sysmmu_active(struct sysmmu_drvdata *data)
- 	return data->activations > 0;
+@@ -27,9 +27,6 @@
+ #include <linux/slab.h>
+ #include <linux/dma-iommu.h>
+ 
+-#include <asm/cacheflush.h>
+-#include <asm/pgtable.h>
+-
+ typedef u32 sysmmu_iova_t;
+ typedef u32 sysmmu_pte_t;
+ 
+@@ -83,6 +80,7 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
+ 	return (iova >> SPAGE_ORDER) & (NUM_LV2ENTRIES - 1);
  }
  
--static void sysmmu_unblock(void __iomem *sfrbase)
-+static void sysmmu_unblock(struct sysmmu_drvdata *data)
++#define LV1TABLE_SIZE (NUM_LV1ENTRIES * sizeof(sysmmu_pte_t))
+ #define LV2TABLE_SIZE (NUM_LV2ENTRIES * sizeof(sysmmu_pte_t))
+ 
+ #define SPAGES_PER_LPAGE (LPAGE_SIZE / SPAGE_SIZE)
+@@ -134,6 +132,7 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
+ 
+ #define has_sysmmu(dev)		(dev->archdata.iommu != NULL)
+ 
++static struct device *dma_dev;
+ static struct kmem_cache *lv2table_kmem_cache;
+ static sysmmu_pte_t *zero_lv2_table;
+ #define ZERO_LV2LINK mk_lv1ent_page(virt_to_phys(zero_lv2_table))
+@@ -650,16 +649,19 @@ static struct platform_driver exynos_sysmmu_driver __refdata = {
+ 	}
+ };
+ 
+-static inline void pgtable_flush(void *vastart, void *vaend)
++static inline void update_pte(sysmmu_pte_t *ent, sysmmu_pte_t val)
  {
--	__raw_writel(CTRL_ENABLE, sfrbase + REG_MMU_CTRL);
-+	__raw_writel(CTRL_ENABLE, data->sfrbase + REG_MMU_CTRL);
+-	dmac_flush_range(vastart, vaend);
+-	outer_flush_range(virt_to_phys(vastart),
+-				virt_to_phys(vaend));
++	dma_sync_single_for_cpu(dma_dev, virt_to_phys(ent), sizeof(*ent),
++				DMA_TO_DEVICE);
++	*ent = val;
++	dma_sync_single_for_device(dma_dev, virt_to_phys(ent), sizeof(*ent),
++				   DMA_TO_DEVICE);
  }
  
--static bool sysmmu_block(void __iomem *sfrbase)
-+static bool sysmmu_block(struct sysmmu_drvdata *data)
+ static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
  {
- 	int i = 120;
+ 	struct exynos_iommu_domain *domain;
++	dma_addr_t handle;
+ 	int i;
  
--	__raw_writel(CTRL_BLOCK, sfrbase + REG_MMU_CTRL);
--	while ((i > 0) && !(__raw_readl(sfrbase + REG_MMU_STATUS) & 1))
-+	__raw_writel(CTRL_BLOCK, data->sfrbase + REG_MMU_CTRL);
-+	while ((i > 0) && !(__raw_readl(data->sfrbase + REG_MMU_STATUS) & 1))
- 		--i;
  
--	if (!(__raw_readl(sfrbase + REG_MMU_STATUS) & 1)) {
--		sysmmu_unblock(sfrbase);
-+	if (!(__raw_readl(data->sfrbase + REG_MMU_STATUS) & 1)) {
-+		sysmmu_unblock(data);
- 		return false;
+@@ -694,7 +696,10 @@ static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
+ 		domain->pgtable[i + 7] = ZERO_LV2LINK;
  	}
  
- 	return true;
- }
+-	pgtable_flush(domain->pgtable, domain->pgtable + NUM_LV1ENTRIES);
++	handle = dma_map_single(dma_dev, domain->pgtable, LV1TABLE_SIZE,
++				DMA_TO_DEVICE);
++	/* For mapping page table entries we rely on dma == phys */
++	BUG_ON(handle != virt_to_phys(domain->pgtable));
  
--static void __sysmmu_tlb_invalidate(void __iomem *sfrbase)
-+static void __sysmmu_tlb_invalidate(struct sysmmu_drvdata *data)
- {
--	__raw_writel(0x1, sfrbase + REG_MMU_FLUSH);
-+	__raw_writel(0x1, data->sfrbase + REG_MMU_FLUSH);
- }
+ 	spin_lock_init(&domain->lock);
+ 	spin_lock_init(&domain->pgtablelock);
+@@ -738,10 +743,18 @@ static void exynos_iommu_domain_free(struct iommu_domain *iommu_domain)
+ 	if (iommu_domain->type == IOMMU_DOMAIN_DMA)
+ 		iommu_put_dma_cookie(iommu_domain);
  
--static void __sysmmu_tlb_invalidate_entry(void __iomem *sfrbase,
-+static void __sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
- 				sysmmu_iova_t iova, unsigned int num_inv)
- {
- 	unsigned int i;
++	dma_unmap_single(dma_dev, virt_to_phys(domain->pgtable), LV1TABLE_SIZE,
++			 DMA_TO_DEVICE);
++
+ 	for (i = 0; i < NUM_LV1ENTRIES; i++)
+-		if (lv1ent_page(domain->pgtable + i))
++		if (lv1ent_page(domain->pgtable + i)) {
++			phys_addr_t base = lv2table_base(domain->pgtable + i);
++
++			dma_unmap_single(dma_dev, base, LV2TABLE_SIZE,
++					 DMA_TO_DEVICE);
+ 			kmem_cache_free(lv2table_kmem_cache,
+-				phys_to_virt(lv2table_base(domain->pgtable + i)));
++					phys_to_virt(base));
++		}
  
- 	for (i = 0; i < num_inv; i++) {
- 		__raw_writel((iova & SPAGE_MASK) | 1,
--				sfrbase + REG_MMU_FLUSH_ENTRY);
-+				data->sfrbase + REG_MMU_FLUSH_ENTRY);
- 		iova += SPAGE_SIZE;
+ 	free_pages((unsigned long)domain->pgtable, 2);
+ 	free_pages((unsigned long)domain->lv2entcnt, 1);
+@@ -834,11 +847,10 @@ static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *domain,
+ 		if (!pent)
+ 			return ERR_PTR(-ENOMEM);
+ 
+-		*sent = mk_lv1ent_page(virt_to_phys(pent));
++		update_pte(sent, mk_lv1ent_page(virt_to_phys(pent)));
+ 		kmemleak_ignore(pent);
+ 		*pgcounter = NUM_LV2ENTRIES;
+-		pgtable_flush(pent, pent + NUM_LV2ENTRIES);
+-		pgtable_flush(sent, sent + 1);
++		dma_map_single(dma_dev, pent, LV2TABLE_SIZE, DMA_TO_DEVICE);
+ 
+ 		/*
+ 		 * If pre-fetched SLPD is a faulty SLPD in zero_l2_table,
+@@ -891,9 +903,7 @@ static int lv1set_section(struct exynos_iommu_domain *domain,
+ 		*pgcnt = 0;
  	}
- }
  
--static void __sysmmu_set_ptbase(void __iomem *sfrbase,
--				       phys_addr_t pgd)
-+static void __sysmmu_set_ptbase(struct sysmmu_drvdata *data, phys_addr_t pgd)
- {
--	__raw_writel(pgd, sfrbase + REG_PT_BASE_ADDR);
-+	__raw_writel(pgd, data->sfrbase + REG_PT_BASE_ADDR);
+-	*sent = mk_lv1ent_sect(paddr);
+-
+-	pgtable_flush(sent, sent + 1);
++	update_pte(sent, mk_lv1ent_sect(paddr));
  
--	__sysmmu_tlb_invalidate(sfrbase);
-+	__sysmmu_tlb_invalidate(data);
- }
+ 	spin_lock(&domain->lock);
+ 	if (lv1ent_page_zero(sent)) {
+@@ -917,12 +927,15 @@ static int lv2set_page(sysmmu_pte_t *pent, phys_addr_t paddr, size_t size,
+ 		if (WARN_ON(!lv2ent_fault(pent)))
+ 			return -EADDRINUSE;
  
- static void show_fault_information(const char *name,
-@@ -363,7 +362,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
+-		*pent = mk_lv2ent_spage(paddr);
+-		pgtable_flush(pent, pent + 1);
++		update_pte(pent, mk_lv2ent_spage(paddr));
+ 		*pgcnt -= 1;
+ 	} else { /* size == LPAGE_SIZE */
+ 		int i;
++		dma_addr_t pent_base = virt_to_phys(pent);
  
- 	__raw_writel(1 << itype, data->sfrbase + REG_INT_CLEAR);
++		dma_sync_single_for_cpu(dma_dev, pent_base,
++					sizeof(*pent) * SPAGES_PER_LPAGE,
++					DMA_TO_DEVICE);
+ 		for (i = 0; i < SPAGES_PER_LPAGE; i++, pent++) {
+ 			if (WARN_ON(!lv2ent_fault(pent))) {
+ 				if (i > 0)
+@@ -932,7 +945,9 @@ static int lv2set_page(sysmmu_pte_t *pent, phys_addr_t paddr, size_t size,
  
--	sysmmu_unblock(data->sfrbase);
-+	sysmmu_unblock(data);
- 
- 	clk_disable(data->clk_master);
- 
-@@ -440,7 +439,7 @@ static void __sysmmu_enable_nocount(struct sysmmu_drvdata *data)
- 
- 	__sysmmu_init_config(data);
- 
--	__sysmmu_set_ptbase(data->sfrbase, data->pgtable);
-+	__sysmmu_set_ptbase(data, data->pgtable);
- 
- 	__raw_writel(CTRL_ENABLE, data->sfrbase + REG_MMU_CTRL);
- 
-@@ -521,10 +520,9 @@ static void sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
- 		if (MMU_MAJ_VER(data->version) == 2)
- 			num_inv = min_t(unsigned int, size / PAGE_SIZE, 64);
- 
--		if (sysmmu_block(data->sfrbase)) {
--			__sysmmu_tlb_invalidate_entry(
--				data->sfrbase, iova, num_inv);
--			sysmmu_unblock(data->sfrbase);
-+		if (sysmmu_block(data)) {
-+			__sysmmu_tlb_invalidate_entry(data, iova, num_inv);
-+			sysmmu_unblock(data);
+ 			*pent = mk_lv2ent_lpage(paddr);
  		}
- 		clk_disable(data->clk_master);
- 	} else {
+-		pgtable_flush(pent - SPAGES_PER_LPAGE, pent);
++		dma_sync_single_for_device(dma_dev, pent_base,
++					   sizeof(*pent) * SPAGES_PER_LPAGE,
++					   DMA_TO_DEVICE);
+ 		*pgcnt -= SPAGES_PER_LPAGE;
+ 	}
+ 
+@@ -1042,8 +1057,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *iommu_domain,
+ 		}
+ 
+ 		/* workaround for h/w bug in System MMU v3.3 */
+-		*ent = ZERO_LV2LINK;
+-		pgtable_flush(ent, ent + 1);
++		update_pte(ent, ZERO_LV2LINK);
+ 		size = SECT_SIZE;
+ 		goto done;
+ 	}
+@@ -1064,9 +1078,8 @@ static size_t exynos_iommu_unmap(struct iommu_domain *iommu_domain,
+ 	}
+ 
+ 	if (lv2ent_small(ent)) {
+-		*ent = 0;
++		update_pte(ent, 0);
+ 		size = SPAGE_SIZE;
+-		pgtable_flush(ent, ent + 1);
+ 		domain->lv2entcnt[lv1ent_offset(iova)] += 1;
+ 		goto done;
+ 	}
+@@ -1077,9 +1090,13 @@ static size_t exynos_iommu_unmap(struct iommu_domain *iommu_domain,
+ 		goto err;
+ 	}
+ 
++	dma_sync_single_for_cpu(dma_dev, virt_to_phys(ent),
++				sizeof(*ent) * SPAGES_PER_LPAGE,
++				DMA_TO_DEVICE);
+ 	memset(ent, 0, sizeof(*ent) * SPAGES_PER_LPAGE);
+-	pgtable_flush(ent, ent + SPAGES_PER_LPAGE);
+-
++	dma_sync_single_for_device(dma_dev, virt_to_phys(ent),
++				   sizeof(*ent) * SPAGES_PER_LPAGE,
++				   DMA_TO_DEVICE);
+ 	size = LPAGE_SIZE;
+ 	domain->lv2entcnt[lv1ent_offset(iova)] += SPAGES_PER_LPAGE;
+ done:
+@@ -1261,6 +1278,13 @@ static int __init exynos_iommu_of_setup(struct device_node *np)
+ 	if (IS_ERR(pdev))
+ 		return PTR_ERR(pdev);
+ 
++	/*
++	 * use the first registered sysmmu device for performing
++	 * dma mapping operations on iommu page tables (cpu cache flush)
++	 */
++	if (!dma_dev)
++		dma_dev = &pdev->dev;
++
+ 	of_iommu_set_ops(np, &exynos_iommu_ops);
+ 	return 0;
+ }
 -- 
 1.9.2
