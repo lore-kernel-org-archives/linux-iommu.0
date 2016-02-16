@@ -1,143 +1,46 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 04/11] iommu: exynos: simplify master clock operations
-Date: Tue, 16 Feb 2016 15:56:57 +0100
-Message-ID: <1455634624-18130-5-git-send-email-m.szyprowski@samsung.com>
-References: <1455634624-18130-1-git-send-email-m.szyprowski@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1455634624-18130-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCH 00/11] SYSMMU driver update and support for Exynos 5433
+Date: Tue, 16 Feb 2016 15:56:53 +0100
+Message-ID: <1455634624-18130-1-git-send-email-m.szyprowski@samsung.com>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-All clock API function can be called on NULL clock, so simplify code avoid
-checking of master clock presence.
+Hello,
 
-Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
----
- drivers/iommu/exynos-iommu.c | 32 ++++++++++++--------------------
- 1 file changed, 12 insertions(+), 20 deletions(-)
+This patchset updates Exynos SYSMMU (IOMMU) driver to make use of the
+new features in the IOMMU core (support for IOMMU_DOMAIN_DMA) and adds
+support for SYSMMU v5 controllers, which are available in Samsung Exynos
+5433 SoCs. The driver has been also updated to compile and work on ARM64
+architecture.
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 8c8a7f7..bf6b826 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -333,8 +333,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
- 
- 	spin_lock(&data->lock);
- 
--	if (!IS_ERR(data->clk_master))
--		clk_enable(data->clk_master);
-+	clk_enable(data->clk_master);
- 
- 	itype = (enum exynos_sysmmu_inttype)
- 		__ffs(__raw_readl(data->sfrbase + REG_INT_STATUS));
-@@ -366,8 +365,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
- 
- 	sysmmu_unblock(data->sfrbase);
- 
--	if (!IS_ERR(data->clk_master))
--		clk_disable(data->clk_master);
-+	clk_disable(data->clk_master);
- 
- 	spin_unlock(&data->lock);
- 
-@@ -376,15 +374,13 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
- 
- static void __sysmmu_disable_nocount(struct sysmmu_drvdata *data)
- {
--	if (!IS_ERR(data->clk_master))
--		clk_enable(data->clk_master);
-+	clk_enable(data->clk_master);
- 
- 	__raw_writel(CTRL_DISABLE, data->sfrbase + REG_MMU_CTRL);
- 	__raw_writel(0, data->sfrbase + REG_MMU_CFG);
- 
- 	clk_disable(data->clk);
--	if (!IS_ERR(data->clk_master))
--		clk_disable(data->clk_master);
-+	clk_disable(data->clk_master);
- }
- 
- static bool __sysmmu_disable(struct sysmmu_drvdata *data)
-@@ -437,8 +433,7 @@ static void __sysmmu_init_config(struct sysmmu_drvdata *data)
- 
- static void __sysmmu_enable_nocount(struct sysmmu_drvdata *data)
- {
--	if (!IS_ERR(data->clk_master))
--		clk_enable(data->clk_master);
-+	clk_enable(data->clk_master);
- 	clk_enable(data->clk);
- 
- 	__raw_writel(CTRL_BLOCK, data->sfrbase + REG_MMU_CTRL);
-@@ -449,8 +444,7 @@ static void __sysmmu_enable_nocount(struct sysmmu_drvdata *data)
- 
- 	__raw_writel(CTRL_ENABLE, data->sfrbase + REG_MMU_CTRL);
- 
--	if (!IS_ERR(data->clk_master))
--		clk_disable(data->clk_master);
-+	clk_disable(data->clk_master);
- }
- 
- static int __sysmmu_enable(struct sysmmu_drvdata *data, phys_addr_t pgtable,
-@@ -493,16 +487,14 @@ static void sysmmu_tlb_invalidate_flpdcache(struct sysmmu_drvdata *data,
- {
- 	unsigned long flags;
- 
--	if (!IS_ERR(data->clk_master))
--		clk_enable(data->clk_master);
-+	clk_enable(data->clk_master);
- 
- 	spin_lock_irqsave(&data->lock, flags);
- 	if (is_sysmmu_active(data))
- 		__sysmmu_tlb_invalidate_flpdcache(data, iova);
- 	spin_unlock_irqrestore(&data->lock, flags);
- 
--	if (!IS_ERR(data->clk_master))
--		clk_disable(data->clk_master);
-+	clk_disable(data->clk_master);
- }
- 
- static void sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
-@@ -514,8 +506,7 @@ static void sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
- 	if (is_sysmmu_active(data)) {
- 		unsigned int num_inv = 1;
- 
--		if (!IS_ERR(data->clk_master))
--			clk_enable(data->clk_master);
-+		clk_enable(data->clk_master);
- 
- 		/*
- 		 * L2TLB invalidation required
-@@ -535,8 +526,7 @@ static void sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
- 				data->sfrbase, iova, num_inv);
- 			sysmmu_unblock(data->sfrbase);
- 		}
--		if (!IS_ERR(data->clk_master))
--			clk_disable(data->clk_master);
-+		clk_disable(data->clk_master);
- 	} else {
- 		dev_dbg(data->master,
- 			"disabled. Skipping TLB invalidation @ %#x\n", iova);
-@@ -593,6 +583,8 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
- 			dev_err(dev, "Failed to prepare master's clk\n");
- 			return ret;
- 		}
-+	} else {
-+		data->clk_master = NULL;
- 	}
- 
- 	data->sysmmu = dev;
+Best regards
+Marek Szyprowski
+Samsung R&D Institute Poland
+
+
+Patch summary:
+
+Marek Szyprowski (11):
+  iommu: exynos: rework iommu group initialization
+  iommu: exynos: add support for IOMMU_DOMAIN_DMA domain type
+  iommu: exynos: remove ARM-specific cache flush interface
+  iommu: exynos: simplify master clock operations
+  iommu: exynos: refactor code (no direct register access)
+  iommu: exynos: refactor fault handling code
+  iommu: exynos: refactor init config code
+  iommu: exynos: unify code for fldp cache invalidation
+  iommu: exynos: update device tree documentation
+  iommu: exynos: add support for v5 SYSMMU
+  iommu: exynos: add Maintainers entry for Exynos SYSMMU driver
+
+ .../devicetree/bindings/iommu/samsung,sysmmu.txt   |  22 +-
+ MAINTAINERS                                        |   6 +
+ drivers/iommu/Kconfig                              |   2 +-
+ drivers/iommu/exynos-iommu.c                       | 514 ++++++++++++---------
+ 4 files changed, 318 insertions(+), 226 deletions(-)
+
 -- 
 1.9.2
