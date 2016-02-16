@@ -1,60 +1,49 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v8 3/5] memory: mediatek: Add SMI driver
-Date: Tue, 16 Feb 2016 15:32:11 +0000
-Message-ID: <56C340FB.1050607@arm.com>
-References: <1453781562-23556-1-git-send-email-yong.wu@mediatek.com>
- <1453781562-23556-4-git-send-email-yong.wu@mediatek.com>
- <56ADE959.2050309@gmail.com> <20160216141059.GT18805@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu: call detach also for default_domain before
+	attaching to new one
+Date: Tue, 16 Feb 2016 16:59:22 +0100
+Message-ID: <20160216155922.GV18805@8bytes.org>
+References: <1455633632-16873-1-git-send-email-m.szyprowski@samsung.com>
+	<1455633632-16873-2-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160216141059.GT18805@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Will Deacon <will.deacon@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, youhua.li@mediatek.com, Thierry Reding <treding@nvidia.com>, devicetree@vger.kernel.org, kendrick.hsu@mediatek.com, Sasha Hauer <kernel@pengutronix.de>, arnd@arndb.de, Tomasz Figa <tfiga@google.com>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, pebolle@tiscali.nl, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Daniel Kurtz <djkurtz@google.com>, p.zabel@pengutronix.de, Lucas Stach <l.stach@pengutronix.de>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1455633632-16873-2-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+On Tue, Feb 16, 2016 at 03:40:31PM +0100, Marek Szyprowski wrote:
+> This patch ensures that devices attached to the default_domain will be
+> first detached from it before attaching to new domain. To avoid forward
+> declaration, __iommu_attach_group() function has been moved to new place
+> in the source code.
 
-On 16/02/16 14:11, Joerg Roedel wrote:
-> On Sun, Jan 31, 2016 at 12:00:41PM +0100, Matthias Brugger wrote:
->>
->>
->> On 26/01/16 05:12, Yong Wu wrote:
->>> This patch add SMI(Smart Multimedia Interface) driver. This driver
->>> is responsible to enable/disable iommu and control the power domain
->>> and clocks of each local arbiter.
->>>
->>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
->>> Tested-by: Philipp Zabel <p.zabel@pengutronix.de>
->>> ---
->>
->> Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
->>
->> Joerg would you mind to take this through your branch?
->
-> Hmm, I somehow missed the patch-set, at least I can't find the v8
-> patches in my inbox.
->
-> Yong, can you please re-send with all Acks and other tags added?
+Actually it was intentional to not invoke the detach_device call-back in
+the attach_device path.
 
-Just to note patch 4 of this series also depends on the v3 io-pgtable 
-short-descriptor series posted separately[1] - is that on your radar 
-already or would you like that resent as well?
+The reason is that detaching first and than attaching again leaves the
+device without a domain for a short period of time, until it is attached
+to the new domain.
 
-Robin.
+The attach_device call-back is supposed to handle this situation and
+just silently overwrite any other domain->device binding it finds for
+the device.
 
-[1]:http://thread.gmane.org/gmane.linux.kernel.iommu/12007
+This allows to do re-attachment with less iommu flushes and to get rid
+of the detach_device call-back at some point.
 
->
->
-> Thanks,
->
-> 	Joerg
->
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->
+
+
+	Joerg
