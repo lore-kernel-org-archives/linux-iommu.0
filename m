@@ -1,8 +1,7 @@
 From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH 02/11] iommu: exynos: add support for IOMMU_DOMAIN_DMA domain
- type
-Date: Tue, 16 Feb 2016 15:56:55 +0100
-Message-ID: <1455634624-18130-3-git-send-email-m.szyprowski@samsung.com>
+Subject: [PATCH 05/11] iommu: exynos: refactor code (no direct register access)
+Date: Tue, 16 Feb 2016 15:56:58 +0100
+Message-ID: <1455634624-18130-6-git-send-email-m.szyprowski@samsung.com>
 References: <1455634624-18130-1-git-send-email-m.szyprowski@samsung.com>
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 In-reply-to: <1455634624-18130-1-git-send-email-m.szyprowski@samsung.com>
@@ -11,73 +10,115 @@ To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-a
 Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds support for DMA domain type. Such domain have DMA cookie
-prepared and can be used by generic DMA-IOMMU glue layer.
+This patch changes some internal functions to have access to the state of
+sysmmu device instead of having only it's registers. This will make the
+code ready for future extensions.
 
 Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- drivers/iommu/exynos-iommu.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
+ drivers/iommu/exynos-iommu.c | 40 +++++++++++++++++++---------------------
+ 1 file changed, 19 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 4fc0790..595e0da 100644
+index bf6b826..4275222 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -25,9 +25,9 @@
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
- #include <linux/slab.h>
-+#include <linux/dma-iommu.h>
+@@ -254,50 +254,49 @@ static bool is_sysmmu_active(struct sysmmu_drvdata *data)
+ 	return data->activations > 0;
+ }
  
- #include <asm/cacheflush.h>
--#include <asm/dma-iommu.h>
- #include <asm/pgtable.h>
+-static void sysmmu_unblock(void __iomem *sfrbase)
++static void sysmmu_unblock(struct sysmmu_drvdata *data)
+ {
+-	__raw_writel(CTRL_ENABLE, sfrbase + REG_MMU_CTRL);
++	__raw_writel(CTRL_ENABLE, data->sfrbase + REG_MMU_CTRL);
+ }
  
- typedef u32 sysmmu_iova_t;
-@@ -662,16 +662,21 @@ static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
- 	struct exynos_iommu_domain *domain;
- 	int i;
+-static bool sysmmu_block(void __iomem *sfrbase)
++static bool sysmmu_block(struct sysmmu_drvdata *data)
+ {
+ 	int i = 120;
  
--	if (type != IOMMU_DOMAIN_UNMANAGED)
--		return NULL;
+-	__raw_writel(CTRL_BLOCK, sfrbase + REG_MMU_CTRL);
+-	while ((i > 0) && !(__raw_readl(sfrbase + REG_MMU_STATUS) & 1))
++	__raw_writel(CTRL_BLOCK, data->sfrbase + REG_MMU_CTRL);
++	while ((i > 0) && !(__raw_readl(data->sfrbase + REG_MMU_STATUS) & 1))
+ 		--i;
  
- 	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
- 	if (!domain)
- 		return NULL;
+-	if (!(__raw_readl(sfrbase + REG_MMU_STATUS) & 1)) {
+-		sysmmu_unblock(sfrbase);
++	if (!(__raw_readl(data->sfrbase + REG_MMU_STATUS) & 1)) {
++		sysmmu_unblock(data);
+ 		return false;
+ 	}
  
-+	if (type == IOMMU_DOMAIN_DMA) {
-+		if (iommu_get_dma_cookie(&domain->domain) != 0)
-+			goto err_pgtable;
-+	} else if (type != IOMMU_DOMAIN_UNMANAGED) {
-+		goto err_pgtable;
-+	}
-+
- 	domain->pgtable = (sysmmu_pte_t *)__get_free_pages(GFP_KERNEL, 2);
- 	if (!domain->pgtable)
--		goto err_pgtable;
-+		goto err_dma_cookie;
+ 	return true;
+ }
  
- 	domain->lv2entcnt = (short *)__get_free_pages(GFP_KERNEL | __GFP_ZERO, 1);
- 	if (!domain->lv2entcnt)
-@@ -703,6 +708,9 @@ static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
+-static void __sysmmu_tlb_invalidate(void __iomem *sfrbase)
++static void __sysmmu_tlb_invalidate(struct sysmmu_drvdata *data)
+ {
+-	__raw_writel(0x1, sfrbase + REG_MMU_FLUSH);
++	__raw_writel(0x1, data->sfrbase + REG_MMU_FLUSH);
+ }
  
- err_counter:
- 	free_pages((unsigned long)domain->pgtable, 2);
-+err_dma_cookie:
-+	if (type == IOMMU_DOMAIN_DMA)
-+		iommu_put_dma_cookie(&domain->domain);
- err_pgtable:
- 	kfree(domain);
- 	return NULL;
-@@ -727,6 +735,9 @@ static void exynos_iommu_domain_free(struct iommu_domain *iommu_domain)
+-static void __sysmmu_tlb_invalidate_entry(void __iomem *sfrbase,
++static void __sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
+ 				sysmmu_iova_t iova, unsigned int num_inv)
+ {
+ 	unsigned int i;
  
- 	spin_unlock_irqrestore(&domain->lock, flags);
+ 	for (i = 0; i < num_inv; i++) {
+ 		__raw_writel((iova & SPAGE_MASK) | 1,
+-				sfrbase + REG_MMU_FLUSH_ENTRY);
++				data->sfrbase + REG_MMU_FLUSH_ENTRY);
+ 		iova += SPAGE_SIZE;
+ 	}
+ }
  
-+	if (iommu_domain->type == IOMMU_DOMAIN_DMA)
-+		iommu_put_dma_cookie(iommu_domain);
-+
- 	for (i = 0; i < NUM_LV1ENTRIES; i++)
- 		if (lv1ent_page(domain->pgtable + i))
- 			kmem_cache_free(lv2table_kmem_cache,
+-static void __sysmmu_set_ptbase(void __iomem *sfrbase,
+-				       phys_addr_t pgd)
++static void __sysmmu_set_ptbase(struct sysmmu_drvdata *data, phys_addr_t pgd)
+ {
+-	__raw_writel(pgd, sfrbase + REG_PT_BASE_ADDR);
++	__raw_writel(pgd, data->sfrbase + REG_PT_BASE_ADDR);
+ 
+-	__sysmmu_tlb_invalidate(sfrbase);
++	__sysmmu_tlb_invalidate(data);
+ }
+ 
+ static void show_fault_information(const char *name,
+@@ -363,7 +362,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
+ 
+ 	__raw_writel(1 << itype, data->sfrbase + REG_INT_CLEAR);
+ 
+-	sysmmu_unblock(data->sfrbase);
++	sysmmu_unblock(data);
+ 
+ 	clk_disable(data->clk_master);
+ 
+@@ -440,7 +439,7 @@ static void __sysmmu_enable_nocount(struct sysmmu_drvdata *data)
+ 
+ 	__sysmmu_init_config(data);
+ 
+-	__sysmmu_set_ptbase(data->sfrbase, data->pgtable);
++	__sysmmu_set_ptbase(data, data->pgtable);
+ 
+ 	__raw_writel(CTRL_ENABLE, data->sfrbase + REG_MMU_CTRL);
+ 
+@@ -521,10 +520,9 @@ static void sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
+ 		if (MMU_MAJ_VER(data->version) == 2)
+ 			num_inv = min_t(unsigned int, size / PAGE_SIZE, 64);
+ 
+-		if (sysmmu_block(data->sfrbase)) {
+-			__sysmmu_tlb_invalidate_entry(
+-				data->sfrbase, iova, num_inv);
+-			sysmmu_unblock(data->sfrbase);
++		if (sysmmu_block(data)) {
++			__sysmmu_tlb_invalidate_entry(data, iova, num_inv);
++			sysmmu_unblock(data);
+ 		}
+ 		clk_disable(data->clk_master);
+ 	} else {
 -- 
 1.9.2
