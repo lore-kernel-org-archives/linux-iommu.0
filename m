@@ -1,41 +1,46 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v8 3/5] memory: mediatek: Add SMI driver
-Date: Tue, 16 Feb 2016 16:28:02 +0000
-Message-ID: <20160216162801.GJ14509@arm.com>
-References: <1453781562-23556-1-git-send-email-yong.wu@mediatek.com>
- <1453781562-23556-4-git-send-email-yong.wu@mediatek.com>
- <56ADE959.2050309@gmail.com>
- <20160216141059.GT18805@8bytes.org>
- <56C340FB.1050607@arm.com>
- <20160216161009.GW18805@8bytes.org>
- <20160216162000.GI14509@arm.com>
- <20160216162641.GY18805@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: DMAR error messages after 'shutdown -r'.
+Date: Tue, 16 Feb 2016 17:47:45 +0100
+Message-ID: <20160216164745.GZ18805@8bytes.org>
+References: <38172.1455047940@turing-police.cc.vt.edu>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20160216162641.GY18805-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+In-Reply-To: <38172.1455047940-+bZmOdGhbsPr6rcHtW+onFJE71vCis6O@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Valdis Kletnieks <Valdis.Kletnieks-PjAqaU27lzQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 16, 2016 at 05:26:41PM +0100, Joerg Roedel wrote:
-> On Tue, Feb 16, 2016 at 04:20:00PM +0000, Will Deacon wrote:
-> > I'm more than happy to bake a branch containing all the page table stuff,
-> > but Yong's stuff depends on it so I'll work with whatever is easiest for
-> > you.
-> 
-> Okay, to the best is if you would collect all the page table patches and
-> send me a pull-request. I pull that into my tree then and put Yong's
-> stuff on-top.
+On Tue, Feb 09, 2016 at 02:59:00PM -0500, Valdis Kletnieks wrote:
+> [    0.027629] Freeing SMP alternatives memory: 28K (ffffffff8e111000 - ffffffff8e118000)
+> [    0.048199] ftrace: allocating 31090 entries in 122 pages
+> [    0.061837] DMAR: Host address width 36
+> [    0.061841] DMAR: DRHD base: 0x000000fed90000 flags: 0x1
+> [    0.061894] DMAR: dmar0: reg_base_addr fed90000 ver 1:0 cap c9008020660262 ecap f0105a
+> [    0.061896] DMAR: RMRR base: 0x000000cdb11000 end: 0x000000cdb30fff
+> [    0.061899] DMAR-IR: IOAPIC id 2 under DRHD base  0xfed90000 IOMMU 0
+> [    0.061901] DMAR-IR: HPET id 0 under DRHD base 0xfed90000
+> [    0.061903] DMAR-IR: Queued invalidation will be enabled to support x2apic and Intr-remapping.
+> ---- Error here....
+> [    0.062027] DMAR: DRHD: handling fault status reg 2
+> [    0.062034] DMAR: DMAR:[DMA Read] Request device [00:1f.2] fault addr cdacd000
+>                DMAR:[fault reason 06] PTE Read access is not set
+> ----
 
-Okey doke, I'll put something together this week.
+This is probably from a missing RMRR entry for device 00:1f.2. Can you
+please post full dmesg after boot?
 
-Cheers,
+Thanks,
 
-Will
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+	Joerg
