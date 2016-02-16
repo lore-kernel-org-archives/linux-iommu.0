@@ -1,42 +1,75 @@
-From: Mark Hounschell <markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
-Subject: Re: Can't boot new 4.4 kernel with IOMMU enabled
-Date: Tue, 16 Feb 2016 12:32:10 -0500
-Message-ID: <56C35D1A.9080307@compro.net>
-References: <20160120153823.GG18805@8bytes.org>
-	<20160120154658.GH18805@8bytes.org> <569FB013.4050709@compro.net>
-	<20160120161904.GI18805@8bytes.org> <569FCFC8.2000606@compro.net>
-	<20160120182602.GJ18805@8bytes.org> <56A0F03C.8010109@compro.net>
-	<56A0F221.10502@compro.net> <20160121223958.GL18805@8bytes.org>
-	<56B0CFF7.80907@compro.net> <20160216162455.GX18805@8bytes.org>
-Reply-To: markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org
+From: =?UTF-8?q?Niklas=20S=C3=B6derlund?=
+	<niklas.soderlund+renesas@ragnatech.se>
+Subject: [PATCH v4 1/8] iommu: Add MMIO mapping type
+Date: Tue, 16 Feb 2016 21:39:37 +0100
+Message-ID: <1455655184-14478-2-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+References: <1455655184-14478-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160216162455.GX18805-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <1455655184-14478-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+Sender: linux-arch-owner@vger.kernel.org
+To: vinod.koul@intel.com, linux-renesas-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: robin.murphy@arm.com, laurent.pinchart@ideasonboard.com, geert+renesas@glider.be, linus.walleij@linaro.org, dan.j.williams@intel.com, arnd@arndb.de, linux-arch@vger.kernel.org, =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund+renesas@ragnatech.se>
 List-Id: iommu@lists.linux-foundation.org
 
-On 02/16/2016 11:24 AM, Joerg Roedel wrote:
-> On Tue, Feb 02, 2016 at 10:49:11AM -0500, Mark Hounschell wrote:
->> Just wondering if this issue is still being considered?
->
-> Yes it is, I just went through a move and have a few other issues on the
-> plate. But I this is still on the list.
->
->
->
+=46rom: Robin Murphy <robin.murphy@arm.com>
 
-Thanks, I'll be standing by.
+On some platforms, MMIO regions might need slightly different treatment
+compared to mapping regular memory; add the notion of MMIO mappings to
+the IOMMU API's memory type flags, so that callers can let the IOMMU
+drivers know to do the right thing.
 
-Mark
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Niklas S=C3=B6derlund <niklas.soderlund+renesas@ragnatec=
+h.se>
+---
+ drivers/iommu/io-pgtable-arm.c | 9 +++++++--
+ include/linux/iommu.h          | 1 +
+ 2 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-=
+arm.c
+index 381ca5a..9c19989 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -355,7 +355,10 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct =
+arm_lpae_io_pgtable *data,
+ 		if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
+ 			pte |=3D ARM_LPAE_PTE_AP_RDONLY;
+=20
+-		if (prot & IOMMU_CACHE)
++		if (prot & IOMMU_MMIO)
++			pte |=3D (ARM_LPAE_MAIR_ATTR_IDX_DEV
++				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
++		else if (prot & IOMMU_CACHE)
+ 			pte |=3D (ARM_LPAE_MAIR_ATTR_IDX_CACHE
+ 				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
+ 	} else {
+@@ -364,7 +367,9 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct a=
+rm_lpae_io_pgtable *data,
+ 			pte |=3D ARM_LPAE_PTE_HAP_READ;
+ 		if (prot & IOMMU_WRITE)
+ 			pte |=3D ARM_LPAE_PTE_HAP_WRITE;
+-		if (prot & IOMMU_CACHE)
++		if (prot & IOMMU_MMIO)
++			pte |=3D ARM_LPAE_PTE_MEMATTR_DEV;
++		else if (prot & IOMMU_CACHE)
+ 			pte |=3D ARM_LPAE_PTE_MEMATTR_OIWB;
+ 		else
+ 			pte |=3D ARM_LPAE_PTE_MEMATTR_NC;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index a5c539f..34b6432 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -30,6 +30,7 @@
+ #define IOMMU_WRITE	(1 << 1)
+ #define IOMMU_CACHE	(1 << 2) /* DMA cache coherency */
+ #define IOMMU_NOEXEC	(1 << 3)
++#define IOMMU_MMIO	(1 << 4) /* e.g. things like MSI doorbells */
+=20
+ struct iommu_ops;
+ struct iommu_group;
+--=20
+2.7.1
