@@ -1,55 +1,96 @@
-From: =?UTF-8?q?Niklas=20S=C3=B6derlund?=
-	<niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
-Subject: [PATCH v4 8/8] ARM: dts: r8a7791: add iommus to dmac0 and dmac1
-Date: Tue, 16 Feb 2016 21:39:44 +0100
-Message-ID: <1455655184-14478-9-git-send-email-niklas.soderlund+renesas@ragnatech.se>
-References: <1455655184-14478-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+From: Jayachandran Chandrashekaran Nair
+	<jayachandran.chandrashekaran@broadcom.com>
+Subject: Re: [RFC PATCH 1/2] PCI: Add PCI device flag PCI_DEV_FLAGS_BRIDGE_SKIP_ALIAS
+Date: Wed, 17 Feb 2016 02:38:24 +0530
+Message-ID: <CAKc_7PUtm7443qv40DNWKqJneWnVT6Do7s7vr_hOerkGLOgkJg@mail.gmail.com>
+References: <1455487501-28630-1-git-send-email-jchandra@broadcom.com>
+ <20160215182023.GB12641@localhost> <20160215123901.1600f86f@t450s.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1455655184-14478-1-git-send-email-niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20160215123901.1600f86f@t450s.home>
+Sender: linux-pci-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Bjorn Helgaas <helgaas@kernel.org>, Jayachandran C <jchandra@broadcom.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-QSB1bmNvbmZpcm1lZCBoYXJkd2FyZSBidWcgcHJldmVudHMgY2hhbm5lbCAwIGFuZCAxNSB0byBi
-ZSB1c2VkIGJ5IHRoZQpETUFDIHRvZ2V0aGVyIHdpdGggdGhlIElQTU1VLiBUaGUgRE1BQyBkcml2
-ZXIgd2lsbCBkaXNhYmxlIHRoZSBjaGFubmVscwpyZWR1Y2luZyB0aGUgZWZmZWN0aXZlIG51bWJl
-ciBvZiBjaGFubmVscyB0byAxNCBwZXIgRE1BQy4KClNpZ25lZC1vZmYtYnk6IE5pa2xhcyBTw7Zk
-ZXJsdW5kIDxuaWtsYXMuc29kZXJsdW5kK3JlbmVzYXNAcmFnbmF0ZWNoLnNlPgpBY2tlZC1ieTog
-TGF1cmVudCBQaW5jaGFydCA8bGF1cmVudC5waW5jaGFydEBpZGVhc29uYm9hcmQuY29tPgotLS0K
-IGFyY2gvYXJtL2Jvb3QvZHRzL3I4YTc3OTEuZHRzaSB8IDMwICsrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKwogMSBmaWxlIGNoYW5nZWQsIDMwIGluc2VydGlvbnMoKykKCmRpZmYgLS1naXQg
-YS9hcmNoL2FybS9ib290L2R0cy9yOGE3NzkxLmR0c2kgYi9hcmNoL2FybS9ib290L2R0cy9yOGE3
-NzkxLmR0c2kKaW5kZXggMmEzNjlkZC4uNmRmZjA2MSAxMDA2NDQKLS0tIGEvYXJjaC9hcm0vYm9v
-dC9kdHMvcjhhNzc5MS5kdHNpCisrKyBiL2FyY2gvYXJtL2Jvb3QvZHRzL3I4YTc3OTEuZHRzaQpA
-QCAtMjgzLDYgKzI4MywyMSBAQAogCQlwb3dlci1kb21haW5zID0gPCZjcGdfY2xvY2tzPjsKIAkJ
-I2RtYS1jZWxscyA9IDwxPjsKIAkJZG1hLWNoYW5uZWxzID0gPDE1PjsKKwkJaW9tbXVzID0gPCZp
-cG1tdV9kcyAwPiwKKwkJCSA8JmlwbW11X2RzIDE+LAorCQkJIDwmaXBtbXVfZHMgMj4sCisJCQkg
-PCZpcG1tdV9kcyAzPiwKKwkJCSA8JmlwbW11X2RzIDQ+LAorCQkJIDwmaXBtbXVfZHMgNT4sCisJ
-CQkgPCZpcG1tdV9kcyA2PiwKKwkJCSA8JmlwbW11X2RzIDc+LAorCQkJIDwmaXBtbXVfZHMgOD4s
-CisJCQkgPCZpcG1tdV9kcyA5PiwKKwkJCSA8JmlwbW11X2RzIDEwPiwKKwkJCSA8JmlwbW11X2Rz
-IDExPiwKKwkJCSA8JmlwbW11X2RzIDEyPiwKKwkJCSA8JmlwbW11X2RzIDEzPiwKKwkJCSA8Jmlw
-bW11X2RzIDE0PjsKIAl9OwogCiAJZG1hYzE6IGRtYS1jb250cm9sbGVyQGU2NzIwMDAwIHsKQEAg
-LTMxNCw2ICszMjksMjEgQEAKIAkJcG93ZXItZG9tYWlucyA9IDwmY3BnX2Nsb2Nrcz47CiAJCSNk
-bWEtY2VsbHMgPSA8MT47CiAJCWRtYS1jaGFubmVscyA9IDwxNT47CisJCWlvbW11cyA9IDwmaXBt
-bXVfZHMgMTU+LAorCQkJIDwmaXBtbXVfZHMgMTY+LAorCQkJIDwmaXBtbXVfZHMgMTc+LAorCQkJ
-IDwmaXBtbXVfZHMgMTg+LAorCQkJIDwmaXBtbXVfZHMgMTk+LAorCQkJIDwmaXBtbXVfZHMgMjA+
-LAorCQkJIDwmaXBtbXVfZHMgMjE+LAorCQkJIDwmaXBtbXVfZHMgMjI+LAorCQkJIDwmaXBtbXVf
-ZHMgMjM+LAorCQkJIDwmaXBtbXVfZHMgMjQ+LAorCQkJIDwmaXBtbXVfZHMgMjU+LAorCQkJIDwm
-aXBtbXVfZHMgMjY+LAorCQkJIDwmaXBtbXVfZHMgMjc+LAorCQkJIDwmaXBtbXVfZHMgMjg+LAor
-CQkJIDwmaXBtbXVfZHMgMjk+OwogCX07CiAKIAlhdWRtYTA6IGRtYS1jb250cm9sbGVyQGVjNzAw
-MDAwIHsKLS0gCjIuNy4xCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5v
-cmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9t
-bXU=
+On Tue, Feb 16, 2016 at 1:09 AM, Alex Williamson
+<alex.williamson@redhat.com> wrote:
+> On Mon, 15 Feb 2016 12:20:23 -0600
+> Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+>> [+cc Alex, iommu list]
+>>
+>> On Mon, Feb 15, 2016 at 03:35:00AM +0530, Jayachandran C wrote:
+>> > Add a new flag PCI_DEV_FLAGS_BRIDGE_SKIP_ALIAS to indicate bridges
+>> > that should not be considered during DMA alias search. This is
+>> > to support hardware (in this case Broadcom Vulcan PCIe subsystem)
+>> > that has internal bridges which have either missing or wrong PCIe
+>> > capabilities.
+>
+> I figured this would come at some point, the right answer is of course
+> to follow the PCIe spec and implement the required PCIe capability in
+> the hardware.
+
+There are  PCIe controllers on the chip that follows the spec, the issue is
+how it is integrated to the northbridge (equivalent) on the chip, I have
+tried to explain it below.
+
+>> This needs more explanation, like what exactly is wrong with this
+>> device?  A missing PCIe capability might cause other problems.
+>>
+>> What problem does this fix?  Without these patches, do we merely add
+>> aliases that are unnecessary?  Do we crash because something goes
+>> wrong in the pci_pcie_type() switch because of the incorrect
+>> capability?
+
+Here's how (for example) how the PCI enumeration of a 2 node Vulcan
+processor will look like:
+
+
+[0] +-0.0.0--[1]---+--1.a.0----[2]-----2.0.0---[3]----3.0.0
+    |              +--1.a.1----[4]-----4.0.0---[5]----5.0.0
+    |              .
+    |              ... etc...
+    |
+    +-0.0.1--[10]--+-10.a.0----[11]---11.0.0---[12]---12.0.0
+                   +-10.a.1----[13]---13.0.0---[14]---14.0.0
+                   .
+                   ... etc...
+
+The devices 0.0.x and x.a.x are glue bridges that are there to
+bring the real PCIe controllers (pcie cap type 4) 2.0.0, 4.0.0,
+11.0.0, 13.0.0 under a single PCI hierarchy. The x.a.x bridges
+have a PCIe capability (type 8) and 0.0.x does not have any pcie
+capability.
+
+In case of Vulcan, both the GICv3 ITS driver code and the SMMUv3
+driver code does dma alias walk to find the device id to use
+in ITS and SMMU. In both cases it will ignore the x.0.0 bridges
+since they are type root port, but will continue on up and end
+up with incorrect device id.
+
+The flag I have added is to make the pci_for_each_dma_alias()
+ignore the last 2 levels of glue/internal bridges.
+
+> The change takes the same code path as it would for a real PCIe bridge
+> port (downstream/upstream/root), which means they want to skip adding
+> this bridge as an alias of the device.  So we're adding in aliases that
+> don't exist, the bridge itself.
+>
+> If anything I'd suggest a flag that actually tries to address the
+> problem rather than a symptom of the problem.  For example, maybe the
+> flag should be PCI_DEV_FLAGS_IS_PCIE.  Maybe pci_is_pcie() should even
+> take that into account.  That has some trickle through for
+> pci_pcie_type() and all the accessor functions, but maybe it's a
+> cleaner solution overall (or maybe it explodes further).  Thanks,
+
+I didn't really want to mark the glue bridges as PCIe or have fake
+PCIe capability there, the obvious simple solution was to add
+the flag PCI_DEV_FLAGS_BRIDGE_SKIP_ALIAS
+
+Any suggestions/comments on how to do this better would be welcome.
+
+Thanks,
+JC.
+[Using gmail due to IT transition, hope the ascii art makes it thru]
