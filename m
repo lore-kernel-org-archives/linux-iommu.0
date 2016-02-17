@@ -1,100 +1,83 @@
-From: Yong Wu <yong.wu@mediatek.com>
-Subject: [PATCH v9 2/5] dt-bindings: mediatek: Add smi dts binding
-Date: Wed, 17 Feb 2016 08:46:11 +0800
-Message-ID: <1455669974-1527-3-git-send-email-yong.wu@mediatek.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH v9 3/5] memory: mediatek: Add SMI driver
+Date: Wed, 17 Feb 2016 08:46:12 +0800
+Message-ID: <1455669974-1527-4-git-send-email-yong.wu@mediatek.com>
 References: <1455669974-1527-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1455669974-1527-1-git-send-email-yong.wu@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Lucas Stach <l.stach@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org, Sasha Hauer <kernel@pengutronix.de>, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, pebolle@tiscali.nl, arnd@arndb.de, mitchelh@codeaurora.org, p.zabel@pengutronix.de, youhua.li@mediatek.com, kendrick.hsu@mediatek.com, Yong Wu <yong.wu@mediatek.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1455669974-1527-1-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch add smi binding document and smi local arbiter header file.
+This patch add SMI(Smart Multimedia Interface) driver. This driver
+is responsible to enable/disable iommu and control the power domain
+and clocks of each local arbiter.
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Tested-by: Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Reviewed-by: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Tested-by: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Signed-off-by: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- .../memory-controllers/mediatek,smi-common.txt     |  24 +++++
- .../memory-controllers/mediatek,smi-larb.txt       |  25 +++++
- include/dt-bindings/memory/mt8173-larb-port.h      | 111 +++++++++++++++++++++
- 3 files changed, 160 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
- create mode 100644 Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
- create mode 100644 include/dt-bindings/memory/mt8173-larb-port.h
+ drivers/memory/Kconfig     |   8 ++
+ drivers/memory/Makefile    |   1 +
+ drivers/memory/mtk-smi.c   | 272 +++++++++++++++++++++++++++++++++++++++++++++
+ include/soc/mediatek/smi.h |  58 ++++++++++
+ 4 files changed, 339 insertions(+)
+ create mode 100644 drivers/memory/mtk-smi.c
+ create mode 100644 include/soc/mediatek/smi.h
 
-diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
+diff --git a/drivers/memory/Kconfig b/drivers/memory/Kconfig
+index 6f31546..51d5cd2 100644
+--- a/drivers/memory/Kconfig
++++ b/drivers/memory/Kconfig
+@@ -114,6 +114,14 @@ config JZ4780_NEMC
+ 	  the Ingenic JZ4780. This controller is used to handle external
+ 	  memory devices such as NAND and SRAM.
+ 
++config MTK_SMI
++	bool
++	depends on ARCH_MEDIATEK || COMPILE_TEST
++	help
++	  This driver is for the Memory Controller module in MediaTek SoCs,
++	  mainly help enable/disable iommu and control the power domain and
++	  clocks for each local arbiter.
++
+ source "drivers/memory/tegra/Kconfig"
+ 
+ endif
+diff --git a/drivers/memory/Makefile b/drivers/memory/Makefile
+index 1c46af5..890bdf4 100644
+--- a/drivers/memory/Makefile
++++ b/drivers/memory/Makefile
+@@ -15,5 +15,6 @@ obj-$(CONFIG_FSL_IFC)		+= fsl_ifc.o
+ obj-$(CONFIG_MVEBU_DEVBUS)	+= mvebu-devbus.o
+ obj-$(CONFIG_TEGRA20_MC)	+= tegra20-mc.o
+ obj-$(CONFIG_JZ4780_NEMC)	+= jz4780-nemc.o
++obj-$(CONFIG_MTK_SMI)		+= mtk-smi.o
+ 
+ obj-$(CONFIG_TEGRA_MC)		+= tegra/
+diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
 new file mode 100644
-index 0000000..06a83ce
+index 0000000..702f0d2
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
-@@ -0,0 +1,24 @@
-+SMI (Smart Multimedia Interface) Common
-+
-+The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
-+
-+Required properties:
-+- compatible : must be "mediatek,mt8173-smi-common"
-+- reg : the register and size of the SMI block.
-+- power-domains : a phandle to the power domain of this local arbiter.
-+- clocks : Must contain an entry for each entry in clock-names.
-+- clock-names : must contain 2 entries, as follows:
-+  - "apb" : Advanced Peripheral Bus clock, It's the clock for setting
-+	    the register.
-+  - "smi" : It's the clock for transfer data and command.
-+  They may be the same if both source clocks are the same.
-+
-+Example:
-+	smi_common: smi@14022000 {
-+		compatible = "mediatek,mt8173-smi-common";
-+		reg = <0 0x14022000 0 0x1000>;
-+		power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
-+		clocks = <&mmsys CLK_MM_SMI_COMMON>,
-+			 <&mmsys CLK_MM_SMI_COMMON>;
-+		clock-names = "apb", "smi";
-+	};
-diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
-new file mode 100644
-index 0000000..55ff3b7
---- /dev/null
-+++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
-@@ -0,0 +1,25 @@
-+SMI (Smart Multimedia Interface) Local Arbiter
-+
-+The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
-+
-+Required properties:
-+- compatible : must be "mediatek,mt8173-smi-larb"
-+- reg : the register and size of this local arbiter.
-+- mediatek,smi : a phandle to the smi_common node.
-+- power-domains : a phandle to the power domain of this local arbiter.
-+- clocks : Must contain an entry for each entry in clock-names.
-+- clock-names: must contain 2 entries, as follows:
-+  - "apb" : Advanced Peripheral Bus clock, It's the clock for setting
-+	    the register.
-+  - "smi" : It's the clock for transfer data and command.
-+
-+Example:
-+	larb1: larb@16010000 {
-+		compatible = "mediatek,mt8173-smi-larb";
-+		reg = <0 0x16010000 0 0x1000>;
-+		mediatek,smi = <&smi_common>;
-+		power-domains = <&scpsys MT8173_POWER_DOMAIN_VDEC>;
-+		clocks = <&vdecsys CLK_VDEC_CKEN>,
-+			 <&vdecsys CLK_VDEC_LARB_CKEN>;
-+		clock-names = "apb", "smi";
-+	};
-diff --git a/include/dt-bindings/memory/mt8173-larb-port.h b/include/dt-bindings/memory/mt8173-larb-port.h
-new file mode 100644
-index 0000000..5fef5d1
---- /dev/null
-+++ b/include/dt-bindings/memory/mt8173-larb-port.h
-@@ -0,0 +1,111 @@
++++ b/drivers/memory/mtk-smi.c
+@@ -0,0 +1,272 @@
 +/*
 + * Copyright (c) 2015-2016 MediaTek Inc.
-+ * Author: Yong Wu <yong.wu@mediatek.com>
++ * Author: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 + *
 + * This program is free software; you can redistribute it and/or modify
 + * it under the terms of the GNU General Public License version 2 as
@@ -105,102 +88,327 @@ index 0000000..5fef5d1
 + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 + * GNU General Public License for more details.
 + */
-+#ifndef __DTS_IOMMU_PORT_MT8173_H
-+#define __DTS_IOMMU_PORT_MT8173_H
++#include <linux/clk.h>
++#include <linux/component.h>
++#include <linux/err.h>
++#include <linux/io.h>
++#include <linux/of_address.h>
++#include <linux/of_platform.h>
++#include <linux/platform_device.h>
++#include <linux/pm_runtime.h>
++#include <soc/mediatek/smi.h>
 +
-+#define MTK_M4U_ID(larb, port)		(((larb) << 5) | (port))
-+/* Local arbiter ID */
-+#define MTK_M4U_TO_LARB(id)		(((id) >> 5) & 0x7)
-+/* PortID within the local arbiter */
-+#define MTK_M4U_TO_PORT(id)		((id) & 0x1f)
++#define SMI_LARB_MMU_EN		0xf00
 +
-+#define M4U_LARB0_ID			0
-+#define M4U_LARB1_ID			1
-+#define M4U_LARB2_ID			2
-+#define M4U_LARB3_ID			3
-+#define M4U_LARB4_ID			4
-+#define M4U_LARB5_ID			5
++struct mtk_smi {
++	struct device	*dev;
++	struct clk	*clk_apb, *clk_smi;
++};
 +
-+/* larb0 */
-+#define M4U_PORT_DISP_OVL0		MTK_M4U_ID(M4U_LARB0_ID, 0)
-+#define M4U_PORT_DISP_RDMA0		MTK_M4U_ID(M4U_LARB0_ID, 1)
-+#define M4U_PORT_DISP_WDMA0		MTK_M4U_ID(M4U_LARB0_ID, 2)
-+#define M4U_PORT_DISP_OD_R		MTK_M4U_ID(M4U_LARB0_ID, 3)
-+#define M4U_PORT_DISP_OD_W		MTK_M4U_ID(M4U_LARB0_ID, 4)
-+#define M4U_PORT_MDP_RDMA0		MTK_M4U_ID(M4U_LARB0_ID, 5)
-+#define M4U_PORT_MDP_WDMA		MTK_M4U_ID(M4U_LARB0_ID, 6)
-+#define M4U_PORT_MDP_WROT0		MTK_M4U_ID(M4U_LARB0_ID, 7)
++struct mtk_smi_larb { /* larb: local arbiter */
++	struct mtk_smi  smi;
++	void __iomem	*base;
++	struct device	*smi_common_dev;
++	u32		*mmu;
++};
 +
-+/* larb1 */
-+#define M4U_PORT_HW_VDEC_MC_EXT		MTK_M4U_ID(M4U_LARB1_ID, 0)
-+#define M4U_PORT_HW_VDEC_PP_EXT		MTK_M4U_ID(M4U_LARB1_ID, 1)
-+#define M4U_PORT_HW_VDEC_UFO_EXT	MTK_M4U_ID(M4U_LARB1_ID, 2)
-+#define M4U_PORT_HW_VDEC_VLD_EXT	MTK_M4U_ID(M4U_LARB1_ID, 3)
-+#define M4U_PORT_HW_VDEC_VLD2_EXT	MTK_M4U_ID(M4U_LARB1_ID, 4)
-+#define M4U_PORT_HW_VDEC_AVC_MV_EXT	MTK_M4U_ID(M4U_LARB1_ID, 5)
-+#define M4U_PORT_HW_VDEC_PRED_RD_EXT	MTK_M4U_ID(M4U_LARB1_ID, 6)
-+#define M4U_PORT_HW_VDEC_PRED_WR_EXT	MTK_M4U_ID(M4U_LARB1_ID, 7)
-+#define M4U_PORT_HW_VDEC_PPWRAP_EXT	MTK_M4U_ID(M4U_LARB1_ID, 8)
-+#define M4U_PORT_HW_VDEC_TILE		MTK_M4U_ID(M4U_LARB1_ID, 9)
++static int mtk_smi_enable(const struct mtk_smi *smi)
++{
++	int ret;
 +
-+/* larb2 */
-+#define M4U_PORT_IMGO			MTK_M4U_ID(M4U_LARB2_ID, 0)
-+#define M4U_PORT_RRZO			MTK_M4U_ID(M4U_LARB2_ID, 1)
-+#define M4U_PORT_AAO			MTK_M4U_ID(M4U_LARB2_ID, 2)
-+#define M4U_PORT_LCSO			MTK_M4U_ID(M4U_LARB2_ID, 3)
-+#define M4U_PORT_ESFKO			MTK_M4U_ID(M4U_LARB2_ID, 4)
-+#define M4U_PORT_IMGO_D			MTK_M4U_ID(M4U_LARB2_ID, 5)
-+#define M4U_PORT_LSCI			MTK_M4U_ID(M4U_LARB2_ID, 6)
-+#define M4U_PORT_LSCI_D			MTK_M4U_ID(M4U_LARB2_ID, 7)
-+#define M4U_PORT_BPCI			MTK_M4U_ID(M4U_LARB2_ID, 8)
-+#define M4U_PORT_BPCI_D			MTK_M4U_ID(M4U_LARB2_ID, 9)
-+#define M4U_PORT_UFDI			MTK_M4U_ID(M4U_LARB2_ID, 10)
-+#define M4U_PORT_IMGI			MTK_M4U_ID(M4U_LARB2_ID, 11)
-+#define M4U_PORT_IMG2O			MTK_M4U_ID(M4U_LARB2_ID, 12)
-+#define M4U_PORT_IMG3O			MTK_M4U_ID(M4U_LARB2_ID, 13)
-+#define M4U_PORT_VIPI			MTK_M4U_ID(M4U_LARB2_ID, 14)
-+#define M4U_PORT_VIP2I			MTK_M4U_ID(M4U_LARB2_ID, 15)
-+#define M4U_PORT_VIP3I			MTK_M4U_ID(M4U_LARB2_ID, 16)
-+#define M4U_PORT_LCEI			MTK_M4U_ID(M4U_LARB2_ID, 17)
-+#define M4U_PORT_RB			MTK_M4U_ID(M4U_LARB2_ID, 18)
-+#define M4U_PORT_RP			MTK_M4U_ID(M4U_LARB2_ID, 19)
-+#define M4U_PORT_WR			MTK_M4U_ID(M4U_LARB2_ID, 20)
++	ret = pm_runtime_get_sync(smi->dev);
++	if (ret < 0)
++		return ret;
 +
-+/* larb3 */
-+#define M4U_PORT_VENC_RCPU		MTK_M4U_ID(M4U_LARB3_ID, 0)
-+#define M4U_PORT_VENC_REC		MTK_M4U_ID(M4U_LARB3_ID, 1)
-+#define M4U_PORT_VENC_BSDMA		MTK_M4U_ID(M4U_LARB3_ID, 2)
-+#define M4U_PORT_VENC_SV_COMV		MTK_M4U_ID(M4U_LARB3_ID, 3)
-+#define M4U_PORT_VENC_RD_COMV		MTK_M4U_ID(M4U_LARB3_ID, 4)
-+#define M4U_PORT_JPGENC_RDMA		MTK_M4U_ID(M4U_LARB3_ID, 5)
-+#define M4U_PORT_JPGENC_BSDMA		MTK_M4U_ID(M4U_LARB3_ID, 6)
-+#define M4U_PORT_JPGDEC_WDMA		MTK_M4U_ID(M4U_LARB3_ID, 7)
-+#define M4U_PORT_JPGDEC_BSDMA		MTK_M4U_ID(M4U_LARB3_ID, 8)
-+#define M4U_PORT_VENC_CUR_LUMA		MTK_M4U_ID(M4U_LARB3_ID, 9)
-+#define M4U_PORT_VENC_CUR_CHROMA	MTK_M4U_ID(M4U_LARB3_ID, 10)
-+#define M4U_PORT_VENC_REF_LUMA		MTK_M4U_ID(M4U_LARB3_ID, 11)
-+#define M4U_PORT_VENC_REF_CHROMA	MTK_M4U_ID(M4U_LARB3_ID, 12)
-+#define M4U_PORT_VENC_NBM_RDMA		MTK_M4U_ID(M4U_LARB3_ID, 13)
-+#define M4U_PORT_VENC_NBM_WDMA		MTK_M4U_ID(M4U_LARB3_ID, 14)
++	ret = clk_prepare_enable(smi->clk_apb);
++	if (ret)
++		goto err_put_pm;
 +
-+/* larb4 */
-+#define M4U_PORT_DISP_OVL1		MTK_M4U_ID(M4U_LARB4_ID, 0)
-+#define M4U_PORT_DISP_RDMA1		MTK_M4U_ID(M4U_LARB4_ID, 1)
-+#define M4U_PORT_DISP_RDMA2		MTK_M4U_ID(M4U_LARB4_ID, 2)
-+#define M4U_PORT_DISP_WDMA1		MTK_M4U_ID(M4U_LARB4_ID, 3)
-+#define M4U_PORT_MDP_RDMA1		MTK_M4U_ID(M4U_LARB4_ID, 4)
-+#define M4U_PORT_MDP_WROT1		MTK_M4U_ID(M4U_LARB4_ID, 5)
++	ret = clk_prepare_enable(smi->clk_smi);
++	if (ret)
++		goto err_disable_apb;
 +
-+/* larb5 */
-+#define M4U_PORT_VENC_RCPU_SET2		MTK_M4U_ID(M4U_LARB5_ID, 0)
-+#define M4U_PORT_VENC_REC_FRM_SET2	MTK_M4U_ID(M4U_LARB5_ID, 1)
-+#define M4U_PORT_VENC_REF_LUMA_SET2	MTK_M4U_ID(M4U_LARB5_ID, 2)
-+#define M4U_PORT_VENC_REC_CHROMA_SET2	MTK_M4U_ID(M4U_LARB5_ID, 3)
-+#define M4U_PORT_VENC_BSDMA_SET2	MTK_M4U_ID(M4U_LARB5_ID, 4)
-+#define M4U_PORT_VENC_CUR_LUMA_SET2	MTK_M4U_ID(M4U_LARB5_ID, 5)
-+#define M4U_PORT_VENC_CUR_CHROMA_SET2	MTK_M4U_ID(M4U_LARB5_ID, 6)
-+#define M4U_PORT_VENC_RD_COMA_SET2	MTK_M4U_ID(M4U_LARB5_ID, 7)
-+#define M4U_PORT_VENC_SV_COMA_SET2	MTK_M4U_ID(M4U_LARB5_ID, 8)
++	return 0;
++
++err_disable_apb:
++	clk_disable_unprepare(smi->clk_apb);
++err_put_pm:
++	pm_runtime_put_sync(smi->dev);
++	return ret;
++}
++
++static void mtk_smi_disable(const struct mtk_smi *smi)
++{
++	clk_disable_unprepare(smi->clk_smi);
++	clk_disable_unprepare(smi->clk_apb);
++	pm_runtime_put_sync(smi->dev);
++}
++
++int mtk_smi_larb_get(struct device *larbdev)
++{
++	struct mtk_smi_larb *larb = dev_get_drvdata(larbdev);
++	struct mtk_smi *common = dev_get_drvdata(larb->smi_common_dev);
++	int ret;
++
++	/* Enable the smi-common's power and clocks */
++	ret = mtk_smi_enable(common);
++	if (ret)
++		return ret;
++
++	/* Enable the larb's power and clocks */
++	ret = mtk_smi_enable(&larb->smi);
++	if (ret) {
++		mtk_smi_disable(common);
++		return ret;
++	}
++
++	/* Configure the iommu info for this larb */
++	writel(*larb->mmu, larb->base + SMI_LARB_MMU_EN);
++
++	return 0;
++}
++
++void mtk_smi_larb_put(struct device *larbdev)
++{
++	struct mtk_smi_larb *larb = dev_get_drvdata(larbdev);
++	struct mtk_smi *common = dev_get_drvdata(larb->smi_common_dev);
++
++	/*
++	 * Don't de-configure the iommu info for this larb since there may be
++	 * several modules in this larb.
++	 * The iommu info will be reset after power off.
++	 */
++
++	mtk_smi_disable(&larb->smi);
++	mtk_smi_disable(common);
++}
++
++static int
++mtk_smi_larb_bind(struct device *dev, struct device *master, void *data)
++{
++	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
++	struct mtk_smi_iommu *smi_iommu = data;
++	unsigned int         i;
++
++	for (i = 0; i < smi_iommu->larb_nr; i++) {
++		if (dev == smi_iommu->larb_imu[i].dev) {
++			/* The 'mmu' may be updated in iommu-attach/detach. */
++			larb->mmu = &smi_iommu->larb_imu[i].mmu;
++			return 0;
++		}
++	}
++	return -ENODEV;
++}
++
++static void
++mtk_smi_larb_unbind(struct device *dev, struct device *master, void *data)
++{
++	/* Do nothing as the iommu is always enabled. */
++}
++
++static const struct component_ops mtk_smi_larb_component_ops = {
++	.bind = mtk_smi_larb_bind,
++	.unbind = mtk_smi_larb_unbind,
++};
++
++static int mtk_smi_larb_probe(struct platform_device *pdev)
++{
++	struct mtk_smi_larb *larb;
++	struct resource *res;
++	struct device *dev = &pdev->dev;
++	struct device_node *smi_node;
++	struct platform_device *smi_pdev;
++
++	if (!dev->pm_domain)
++		return -EPROBE_DEFER;
++
++	larb = devm_kzalloc(dev, sizeof(*larb), GFP_KERNEL);
++	if (!larb)
++		return -ENOMEM;
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	larb->base = devm_ioremap_resource(dev, res);
++	if (IS_ERR(larb->base))
++		return PTR_ERR(larb->base);
++
++	larb->smi.clk_apb = devm_clk_get(dev, "apb");
++	if (IS_ERR(larb->smi.clk_apb))
++		return PTR_ERR(larb->smi.clk_apb);
++
++	larb->smi.clk_smi = devm_clk_get(dev, "smi");
++	if (IS_ERR(larb->smi.clk_smi))
++		return PTR_ERR(larb->smi.clk_smi);
++	larb->smi.dev = dev;
++
++	smi_node = of_parse_phandle(dev->of_node, "mediatek,smi", 0);
++	if (!smi_node)
++		return -EINVAL;
++
++	smi_pdev = of_find_device_by_node(smi_node);
++	of_node_put(smi_node);
++	if (smi_pdev) {
++		larb->smi_common_dev = &smi_pdev->dev;
++	} else {
++		dev_err(dev, "Failed to get the smi_common device\n");
++		return -EINVAL;
++	}
++
++	pm_runtime_enable(dev);
++	platform_set_drvdata(pdev, larb);
++	return component_add(dev, &mtk_smi_larb_component_ops);
++}
++
++static int mtk_smi_larb_remove(struct platform_device *pdev)
++{
++	pm_runtime_disable(&pdev->dev);
++	component_del(&pdev->dev, &mtk_smi_larb_component_ops);
++	return 0;
++}
++
++static const struct of_device_id mtk_smi_larb_of_ids[] = {
++	{ .compatible = "mediatek,mt8173-smi-larb",},
++	{}
++};
++
++static struct platform_driver mtk_smi_larb_driver = {
++	.probe	= mtk_smi_larb_probe,
++	.remove = mtk_smi_larb_remove,
++	.driver	= {
++		.name = "mtk-smi-larb",
++		.of_match_table = mtk_smi_larb_of_ids,
++	}
++};
++
++static int mtk_smi_common_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct mtk_smi *common;
++
++	if (!dev->pm_domain)
++		return -EPROBE_DEFER;
++
++	common = devm_kzalloc(dev, sizeof(*common), GFP_KERNEL);
++	if (!common)
++		return -ENOMEM;
++	common->dev = dev;
++
++	common->clk_apb = devm_clk_get(dev, "apb");
++	if (IS_ERR(common->clk_apb))
++		return PTR_ERR(common->clk_apb);
++
++	common->clk_smi = devm_clk_get(dev, "smi");
++	if (IS_ERR(common->clk_smi))
++		return PTR_ERR(common->clk_smi);
++
++	pm_runtime_enable(dev);
++	platform_set_drvdata(pdev, common);
++	return 0;
++}
++
++static int mtk_smi_common_remove(struct platform_device *pdev)
++{
++	pm_runtime_disable(&pdev->dev);
++	return 0;
++}
++
++static const struct of_device_id mtk_smi_common_of_ids[] = {
++	{ .compatible = "mediatek,mt8173-smi-common", },
++	{}
++};
++
++static struct platform_driver mtk_smi_common_driver = {
++	.probe	= mtk_smi_common_probe,
++	.remove = mtk_smi_common_remove,
++	.driver	= {
++		.name = "mtk-smi-common",
++		.of_match_table = mtk_smi_common_of_ids,
++	}
++};
++
++static int __init mtk_smi_init(void)
++{
++	int ret;
++
++	ret = platform_driver_register(&mtk_smi_common_driver);
++	if (ret != 0) {
++		pr_err("Failed to register SMI driver\n");
++		return ret;
++	}
++
++	ret = platform_driver_register(&mtk_smi_larb_driver);
++	if (ret != 0) {
++		pr_err("Failed to register SMI-LARB driver\n");
++		goto err_unreg_smi;
++	}
++	return ret;
++
++err_unreg_smi:
++	platform_driver_unregister(&mtk_smi_common_driver);
++	return ret;
++}
++subsys_initcall(mtk_smi_init);
+diff --git a/include/soc/mediatek/smi.h b/include/soc/mediatek/smi.h
+new file mode 100644
+index 0000000..8893c5e
+--- /dev/null
++++ b/include/soc/mediatek/smi.h
+@@ -0,0 +1,58 @@
++/*
++ * Copyright (c) 2015-2016 MediaTek Inc.
++ * Author: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++#ifndef MTK_IOMMU_SMI_H
++#define MTK_IOMMU_SMI_H
++
++#include <linux/bitops.h>
++#include <linux/device.h>
++
++#ifdef CONFIG_MTK_SMI
++
++#define MTK_LARB_NR_MAX		8
++
++#define MTK_SMI_MMU_EN(port)	BIT(port)
++
++struct mtk_smi_larb_iommu {
++	struct device *dev;
++	unsigned int   mmu;
++};
++
++struct mtk_smi_iommu {
++	unsigned int larb_nr;
++	struct mtk_smi_larb_iommu larb_imu[MTK_LARB_NR_MAX];
++};
++
++/*
++ * mtk_smi_larb_get: Enable the power domain and clocks for this local arbiter.
++ *                   It also initialize some basic setting(like iommu).
++ * mtk_smi_larb_put: Disable the power domain and clocks for this local arbiter.
++ * Both should be called in non-atomic context.
++ *
++ * Returns 0 if successful, negative on failure.
++ */
++int mtk_smi_larb_get(struct device *larbdev);
++void mtk_smi_larb_put(struct device *larbdev);
++
++#else
++
++static inline int mtk_smi_larb_get(struct device *larbdev)
++{
++	return 0;
++}
++
++static inline void mtk_smi_larb_put(struct device *larbdev) { }
++
++#endif
 +
 +#endif
 -- 
