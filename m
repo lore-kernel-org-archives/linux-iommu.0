@@ -1,153 +1,48 @@
-From: Yong Wu <yong.wu@mediatek.com>
-Subject: [PATCH v9 5/5] dts: mt8173: Add iommu/smi nodes for mt8173
-Date: Wed, 17 Feb 2016 08:46:14 +0800
-Message-ID: <1455669974-1527-6-git-send-email-yong.wu@mediatek.com>
-References: <1455669974-1527-1-git-send-email-yong.wu@mediatek.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu: call detach also for default_domain before
+	attaching to new one
+Date: Wed, 17 Feb 2016 12:14:50 +0100
+Message-ID: <20160217111450.GA18805@8bytes.org>
+References: <1455633632-16873-1-git-send-email-m.szyprowski@samsung.com>
+	<1455633632-16873-2-git-send-email-m.szyprowski@samsung.com>
+	<20160216155922.GV18805@8bytes.org> <56C422AE.9000108@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1455669974-1527-1-git-send-email-yong.wu@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Lucas Stach <l.stach@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org, Sasha Hauer <kernel@pengutronix.de>, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, pebolle@tiscali.nl, arnd@arndb.de, mitchelh@codeaurora.org, p.zabel@pengutronix.de, youhua.li@mediatek.com, kendrick.hsu@mediatek.com, Yong Wu <yong.wu@mediatek.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <56C422AE.9000108-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch add the iommu/larbs nodes for mt8173
+On Wed, Feb 17, 2016 at 08:35:10AM +0100, Marek Szyprowski wrote:
+> Huh, I wasn't aware of this change in the iommu drivers api. For some
+> drivers attach/detach callbacks does something more than just programming
+> page table base register, like for example in case of exynos iommu it is
+> enabling runtime power management and clocks. The code is really
+> much simpler
+> if those calls are balanced, but if the goal is to allow multiple
+> unballanced
+> attach calls, I will try to fix this in our driver.
+> 
+> Maybe it should be documented somewhere, that attach calls can be
+> unbalanced?
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: Daniel Kurtz <djkurtz@chromium.org>
----
- arch/arm64/boot/dts/mediatek/mt8173.dtsi | 81 ++++++++++++++++++++++++++++++++
- 1 file changed, 81 insertions(+)
+Well, when your driver uses default-domains, the detach_dev call-back is
+not used anymore. The attach_dev call-back is supposed to just overwrite
+any existing binding that may exist for the device. So the calls are not
+unbalanced, the detach_dev calls just don't happen anymore.
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-index ec135ea..8048811 100644
---- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-@@ -14,6 +14,7 @@
- #include <dt-bindings/clock/mt8173-clk.h>
- #include <dt-bindings/interrupt-controller/irq.h>
- #include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include <dt-bindings/memory/mt8173-larb-port.h>
- #include <dt-bindings/phy/phy.h>
- #include <dt-bindings/power/mt8173-power.h>
- #include <dt-bindings/reset/mt8173-resets.h>
-@@ -277,6 +278,17 @@
- 			reg = <0 0x10200620 0 0x20>;
- 		};
- 
-+		iommu: iommu@10205000 {
-+			compatible = "mediatek,mt8173-m4u";
-+			reg = <0 0x10205000 0 0x1000>;
-+			interrupts = <GIC_SPI 139 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&infracfg CLK_INFRA_M4U>;
-+			clock-names = "bclk";
-+			mediatek,larbs = <&larb0 &larb1 &larb2
-+					  &larb3 &larb4 &larb5>;
-+			#iommu-cells = <1>;
-+		};
-+
- 		apmixedsys: clock-controller@10209000 {
- 			compatible = "mediatek,mt8173-apmixedsys";
- 			reg = <0 0x10209000 0 0x1000>;
-@@ -589,29 +601,98 @@
- 			status = "disabled";
- 		};
- 
-+		larb0: larb@14021000 {
-+			compatible = "mediatek,mt8173-smi-larb";
-+			reg = <0 0x14021000 0 0x1000>;
-+			mediatek,smi = <&smi_common>;
-+			power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
-+			clocks = <&mmsys CLK_MM_SMI_LARB0>,
-+				 <&mmsys CLK_MM_SMI_LARB0>;
-+			clock-names = "apb", "smi";
-+		};
-+
-+		smi_common: smi@14022000 {
-+			compatible = "mediatek,mt8173-smi-common";
-+			reg = <0 0x14022000 0 0x1000>;
-+			power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
-+			clocks = <&mmsys CLK_MM_SMI_COMMON>,
-+				 <&mmsys CLK_MM_SMI_COMMON>;
-+			clock-names = "apb", "smi";
-+		};
-+
-+		larb4: larb@14027000 {
-+			compatible = "mediatek,mt8173-smi-larb";
-+			reg = <0 0x14027000 0 0x1000>;
-+			mediatek,smi = <&smi_common>;
-+			power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
-+			clocks = <&mmsys CLK_MM_SMI_LARB4>,
-+				 <&mmsys CLK_MM_SMI_LARB4>;
-+			clock-names = "apb", "smi";
-+		};
-+
- 		imgsys: clock-controller@15000000 {
- 			compatible = "mediatek,mt8173-imgsys", "syscon";
- 			reg = <0 0x15000000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
- 
-+		larb2: larb@15001000 {
-+			compatible = "mediatek,mt8173-smi-larb";
-+			reg = <0 0x15001000 0 0x1000>;
-+			mediatek,smi = <&smi_common>;
-+			power-domains = <&scpsys MT8173_POWER_DOMAIN_ISP>;
-+			clocks = <&imgsys CLK_IMG_LARB2_SMI>,
-+				 <&imgsys CLK_IMG_LARB2_SMI>;
-+			clock-names = "apb", "smi";
-+		};
-+
- 		vdecsys: clock-controller@16000000 {
- 			compatible = "mediatek,mt8173-vdecsys", "syscon";
- 			reg = <0 0x16000000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
- 
-+		larb1: larb@16010000 {
-+			compatible = "mediatek,mt8173-smi-larb";
-+			reg = <0 0x16010000 0 0x1000>;
-+			mediatek,smi = <&smi_common>;
-+			power-domains = <&scpsys MT8173_POWER_DOMAIN_VDEC>;
-+			clocks = <&vdecsys CLK_VDEC_CKEN>,
-+				 <&vdecsys CLK_VDEC_LARB_CKEN>;
-+			clock-names = "apb", "smi";
-+		};
-+
- 		vencsys: clock-controller@18000000 {
- 			compatible = "mediatek,mt8173-vencsys", "syscon";
- 			reg = <0 0x18000000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
- 
-+		larb3: larb@18001000 {
-+			compatible = "mediatek,mt8173-smi-larb";
-+			reg = <0 0x18001000 0 0x1000>;
-+			mediatek,smi = <&smi_common>;
-+			power-domains = <&scpsys MT8173_POWER_DOMAIN_VENC>;
-+			clocks = <&vencsys CLK_VENC_CKE1>,
-+				 <&vencsys CLK_VENC_CKE0>;
-+			clock-names = "apb", "smi";
-+		};
-+
- 		vencltsys: clock-controller@19000000 {
- 			compatible = "mediatek,mt8173-vencltsys", "syscon";
- 			reg = <0 0x19000000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
-+
-+		larb5: larb@19001000 {
-+			compatible = "mediatek,mt8173-smi-larb";
-+			reg = <0 0x19001000 0 0x1000>;
-+			mediatek,smi = <&smi_common>;
-+			power-domains = <&scpsys MT8173_POWER_DOMAIN_VENC_LT>;
-+			clocks = <&vencltsys CLK_VENCLT_CKE1>,
-+				 <&vencltsys CLK_VENCLT_CKE0>;
-+			clock-names = "apb", "smi";
-+		};
- 	};
- };
- 
--- 
-1.8.1.1.dirty
+
+
+	Joerg
