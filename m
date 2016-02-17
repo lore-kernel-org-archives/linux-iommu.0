@@ -1,83 +1,75 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v9 3/5] memory: mediatek: Add SMI driver
-Date: Wed, 17 Feb 2016 08:46:12 +0800
-Message-ID: <1455669974-1527-4-git-send-email-yong.wu@mediatek.com>
+From: Yong Wu <yong.wu@mediatek.com>
+Subject: [PATCH v9 4/5] iommu/mediatek: Add mt8173 IOMMU driver
+Date: Wed, 17 Feb 2016 08:46:13 +0800
+Message-ID: <1455669974-1527-5-git-send-email-yong.wu@mediatek.com>
 References: <1455669974-1527-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1455669974-1527-1-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1455669974-1527-1-git-send-email-yong.wu@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Thierry Reding <treding@nvidia.com>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Lucas Stach <l.stach@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org, Sasha Hauer <kernel@pengutronix.de>, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, pebolle@tiscali.nl, arnd@arndb.de, mitchelh@codeaurora.org, p.zabel@pengutronix.de, youhua.li@mediatek.com, kendrick.hsu@mediatek.com, Yong Wu <yong.wu@mediatek.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch add SMI(Smart Multimedia Interface) driver. This driver
-is responsible to enable/disable iommu and control the power domain
-and clocks of each local arbiter.
+This patch adds support for mediatek m4u (MultiMedia Memory Management
+Unit).
 
-Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Tested-by: Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Reviewed-by: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Tested-by: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Signed-off-by: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/memory/Kconfig     |   8 ++
- drivers/memory/Makefile    |   1 +
- drivers/memory/mtk-smi.c   | 272 +++++++++++++++++++++++++++++++++++++++++++++
- include/soc/mediatek/smi.h |  58 ++++++++++
- 4 files changed, 339 insertions(+)
- create mode 100644 drivers/memory/mtk-smi.c
- create mode 100644 include/soc/mediatek/smi.h
+ drivers/iommu/Kconfig     |  16 +
+ drivers/iommu/Makefile    |   1 +
+ drivers/iommu/mtk_iommu.c | 732 ++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 749 insertions(+)
+ create mode 100644 drivers/iommu/mtk_iommu.c
 
-diff --git a/drivers/memory/Kconfig b/drivers/memory/Kconfig
-index 6f31546..51d5cd2 100644
---- a/drivers/memory/Kconfig
-+++ b/drivers/memory/Kconfig
-@@ -114,6 +114,14 @@ config JZ4780_NEMC
- 	  the Ingenic JZ4780. This controller is used to handle external
- 	  memory devices such as NAND and SRAM.
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index a1e75cb..4922aa8 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -318,4 +318,20 @@ config S390_IOMMU
+ 	help
+ 	  Support for the IOMMU API for s390 PCI devices.
  
-+config MTK_SMI
-+	bool
++config MTK_IOMMU
++	bool "MTK IOMMU Support"
++	depends on ARM || ARM64
 +	depends on ARCH_MEDIATEK || COMPILE_TEST
++	select IOMMU_API
++	select IOMMU_DMA
++	select IOMMU_IO_PGTABLE_ARMV7S
++	select MEMORY
++	select MTK_SMI
 +	help
-+	  This driver is for the Memory Controller module in MediaTek SoCs,
-+	  mainly help enable/disable iommu and control the power domain and
-+	  clocks for each local arbiter.
++	  Support for the M4U on certain Mediatek SOCs. M4U is MultiMedia
++	  Memory Management Unit. This option enables remapping of DMA memory
++	  accesses for the multimedia subsystem.
 +
- source "drivers/memory/tegra/Kconfig"
- 
- endif
-diff --git a/drivers/memory/Makefile b/drivers/memory/Makefile
-index 1c46af5..890bdf4 100644
---- a/drivers/memory/Makefile
-+++ b/drivers/memory/Makefile
-@@ -15,5 +15,6 @@ obj-$(CONFIG_FSL_IFC)		+= fsl_ifc.o
- obj-$(CONFIG_MVEBU_DEVBUS)	+= mvebu-devbus.o
- obj-$(CONFIG_TEGRA20_MC)	+= tegra20-mc.o
- obj-$(CONFIG_JZ4780_NEMC)	+= jz4780-nemc.o
-+obj-$(CONFIG_MTK_SMI)		+= mtk-smi.o
- 
- obj-$(CONFIG_TEGRA_MC)		+= tegra/
-diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
++	  If unsure, say N here.
++
+ endif # IOMMU_SUPPORT
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 42fc0c2..44ae2e0 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -16,6 +16,7 @@ obj-$(CONFIG_INTEL_IOMMU) += intel-iommu.o
+ obj-$(CONFIG_INTEL_IOMMU_SVM) += intel-svm.o
+ obj-$(CONFIG_IPMMU_VMSA) += ipmmu-vmsa.o
+ obj-$(CONFIG_IRQ_REMAP) += intel_irq_remapping.o irq_remapping.o
++obj-$(CONFIG_MTK_IOMMU) += mtk_iommu.o
+ obj-$(CONFIG_OMAP_IOMMU) += omap-iommu.o
+ obj-$(CONFIG_OMAP_IOMMU_DEBUG) += omap-iommu-debug.o
+ obj-$(CONFIG_ROCKCHIP_IOMMU) += rockchip-iommu.o
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
 new file mode 100644
-index 0000000..702f0d2
+index 0000000..60fe97b
 --- /dev/null
-+++ b/drivers/memory/mtk-smi.c
-@@ -0,0 +1,272 @@
++++ b/drivers/iommu/mtk_iommu.c
+@@ -0,0 +1,732 @@
 +/*
 + * Copyright (c) 2015-2016 MediaTek Inc.
-+ * Author: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
++ * Author: Yong Wu <yong.wu@mediatek.com>
 + *
 + * This program is free software; you can redistribute it and/or modify
 + * it under the terms of the GNU General Public License version 2 as
@@ -90,326 +82,722 @@ index 0000000..702f0d2
 + */
 +#include <linux/clk.h>
 +#include <linux/component.h>
-+#include <linux/err.h>
++#include <linux/dma-iommu.h>
++#include <linux/interrupt.h>
 +#include <linux/io.h>
++#include <linux/iommu.h>
++#include <linux/iopoll.h>
++#include <linux/list.h>
++#include <linux/module.h>
 +#include <linux/of_address.h>
++#include <linux/of_iommu.h>
++#include <linux/of_irq.h>
 +#include <linux/of_platform.h>
 +#include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
 +#include <soc/mediatek/smi.h>
++#include <dt-bindings/memory/mt8173-larb-port.h>
 +
-+#define SMI_LARB_MMU_EN		0xf00
++#include "io-pgtable.h"
 +
-+struct mtk_smi {
-+	struct device	*dev;
-+	struct clk	*clk_apb, *clk_smi;
++#define REG_MMU_PT_BASE_ADDR			0x000
++
++#define REG_MMU_INVALIDATE			0x020
++#define F_ALL_INVLD				0x2
++#define F_MMU_INV_RANGE				0x1
++
++#define REG_MMU_INVLD_START_A			0x024
++#define REG_MMU_INVLD_END_A			0x028
++
++#define REG_MMU_INV_SEL				0x038
++#define F_INVLD_EN0				BIT(0)
++#define F_INVLD_EN1				BIT(1)
++
++#define REG_MMU_STANDARD_AXI_MODE		0x048
++#define REG_MMU_DCM_DIS				0x050
++
++#define REG_MMU_CTRL_REG			0x110
++#define F_MMU_PREFETCH_RT_REPLACE_MOD		BIT(4)
++#define F_MMU_TF_PROTECT_SEL(prot)		(((prot) & 0x3) << 5)
++
++#define REG_MMU_IVRP_PADDR			0x114
++#define F_MMU_IVRP_PA_SET(pa)			((pa) >> 1)
++
++#define REG_MMU_INT_CONTROL0			0x120
++#define F_L2_MULIT_HIT_EN			BIT(0)
++#define F_TABLE_WALK_FAULT_INT_EN		BIT(1)
++#define F_PREETCH_FIFO_OVERFLOW_INT_EN		BIT(2)
++#define F_MISS_FIFO_OVERFLOW_INT_EN		BIT(3)
++#define F_PREFETCH_FIFO_ERR_INT_EN		BIT(5)
++#define F_MISS_FIFO_ERR_INT_EN			BIT(6)
++#define F_INT_CLR_BIT				BIT(12)
++
++#define REG_MMU_INT_MAIN_CONTROL		0x124
++#define F_INT_TRANSLATION_FAULT			BIT(0)
++#define F_INT_MAIN_MULTI_HIT_FAULT		BIT(1)
++#define F_INT_INVALID_PA_FAULT			BIT(2)
++#define F_INT_ENTRY_REPLACEMENT_FAULT		BIT(3)
++#define F_INT_TLB_MISS_FAULT			BIT(4)
++#define F_INT_MISS_TRANSACTION_FIFO_FAULT	BIT(5)
++#define F_INT_PRETETCH_TRANSATION_FIFO_FAULT	BIT(6)
++
++#define REG_MMU_CPE_DONE			0x12C
++
++#define REG_MMU_FAULT_ST1			0x134
++
++#define REG_MMU_FAULT_VA			0x13c
++#define F_MMU_FAULT_VA_MSK			0xfffff000
++#define F_MMU_FAULT_VA_WRITE_BIT		BIT(1)
++#define F_MMU_FAULT_VA_LAYER_BIT		BIT(0)
++
++#define REG_MMU_INVLD_PA			0x140
++#define REG_MMU_INT_ID				0x150
++#define F_MMU0_INT_ID_LARB_ID(a)		(((a) >> 7) & 0x7)
++#define F_MMU0_INT_ID_PORT_ID(a)		(((a) >> 2) & 0x1f)
++
++#define MTK_PROTECT_PA_ALIGN			128
++
++struct mtk_iommu_suspend_reg {
++	u32				standard_axi_mode;
++	u32				dcm_dis;
++	u32				ctrl_reg;
++	u32				int_control0;
++	u32				int_main_control;
 +};
 +
-+struct mtk_smi_larb { /* larb: local arbiter */
-+	struct mtk_smi  smi;
-+	void __iomem	*base;
-+	struct device	*smi_common_dev;
-+	u32		*mmu;
++struct mtk_iommu_client_priv {
++	struct list_head		client;
++	unsigned int			mtk_m4u_id;
++	struct device			*m4udev;
 +};
 +
-+static int mtk_smi_enable(const struct mtk_smi *smi)
++struct mtk_iommu_domain {
++	spinlock_t			pgtlock; /* lock for page table */
++
++	struct io_pgtable_cfg		cfg;
++	struct io_pgtable_ops		*iop;
++
++	struct iommu_domain		domain;
++};
++
++struct mtk_iommu_data {
++	void __iomem			*base;
++	int				irq;
++	struct device			*dev;
++	struct clk			*bclk;
++	phys_addr_t			protect_base; /* protect memory base */
++	struct mtk_iommu_suspend_reg	reg;
++	struct mtk_iommu_domain		*m4u_dom;
++	struct iommu_group		*m4u_group;
++	struct mtk_smi_iommu		smi_imu;      /* SMI larb iommu info */
++};
++
++static struct iommu_ops mtk_iommu_ops;
++
++static struct mtk_iommu_domain *to_mtk_domain(struct iommu_domain *dom)
 +{
++	return container_of(dom, struct mtk_iommu_domain, domain);
++}
++
++static void mtk_iommu_tlb_flush_all(void *cookie)
++{
++	struct mtk_iommu_data *data = cookie;
++
++	writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0, data->base + REG_MMU_INV_SEL);
++	writel_relaxed(F_ALL_INVLD, data->base + REG_MMU_INVALIDATE);
++	wmb(); /* Make sure the tlb flush all done */
++}
++
++static void mtk_iommu_tlb_add_flush_nosync(unsigned long iova, size_t size,
++					   size_t granule, bool leaf,
++					   void *cookie)
++{
++	struct mtk_iommu_data *data = cookie;
++
++	writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0, data->base + REG_MMU_INV_SEL);
++
++	writel_relaxed(iova, data->base + REG_MMU_INVLD_START_A);
++	writel_relaxed(iova + size - 1, data->base + REG_MMU_INVLD_END_A);
++	writel_relaxed(F_MMU_INV_RANGE, data->base + REG_MMU_INVALIDATE);
++}
++
++static void mtk_iommu_tlb_sync(void *cookie)
++{
++	struct mtk_iommu_data *data = cookie;
++	int ret;
++	u32 tmp;
++
++	ret = readl_poll_timeout_atomic(data->base + REG_MMU_CPE_DONE, tmp,
++					tmp != 0, 10, 100000);
++	if (ret) {
++		dev_warn(data->dev,
++			 "Partial TLB flush timed out, falling back to full flush\n");
++		mtk_iommu_tlb_flush_all(cookie);
++	}
++	/* Clear the CPE status */
++	writel_relaxed(0, data->base + REG_MMU_CPE_DONE);
++}
++
++static const struct iommu_gather_ops mtk_iommu_gather_ops = {
++	.tlb_flush_all = mtk_iommu_tlb_flush_all,
++	.tlb_add_flush = mtk_iommu_tlb_add_flush_nosync,
++	.tlb_sync = mtk_iommu_tlb_sync,
++};
++
++static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
++{
++	struct mtk_iommu_data *data = dev_id;
++	struct mtk_iommu_domain *dom = data->m4u_dom;
++	u32 int_state, regval, fault_iova, fault_pa;
++	unsigned int fault_larb, fault_port;
++	bool layer, write;
++
++	/* Read error info from registers */
++	int_state = readl_relaxed(data->base + REG_MMU_FAULT_ST1);
++	fault_iova = readl_relaxed(data->base + REG_MMU_FAULT_VA);
++	layer = fault_iova & F_MMU_FAULT_VA_LAYER_BIT;
++	write = fault_iova & F_MMU_FAULT_VA_WRITE_BIT;
++	fault_iova &= F_MMU_FAULT_VA_MSK;
++	fault_pa = readl_relaxed(data->base + REG_MMU_INVLD_PA);
++	regval = readl_relaxed(data->base + REG_MMU_INT_ID);
++	fault_larb = F_MMU0_INT_ID_LARB_ID(regval);
++	fault_port = F_MMU0_INT_ID_PORT_ID(regval);
++
++	if (report_iommu_fault(&dom->domain, data->dev, fault_iova,
++			       write ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ)) {
++		dev_err_ratelimited(
++			data->dev,
++			"fault type=0x%x iova=0x%x pa=0x%x larb=%d port=%d layer=%d %s\n",
++			int_state, fault_iova, fault_pa, fault_larb, fault_port,
++			layer, write ? "write" : "read");
++	}
++
++	/* Interrupt clear */
++	regval = readl_relaxed(data->base + REG_MMU_INT_CONTROL0);
++	regval |= F_INT_CLR_BIT;
++	writel_relaxed(regval, data->base + REG_MMU_INT_CONTROL0);
++
++	mtk_iommu_tlb_flush_all(data);
++
++	return IRQ_HANDLED;
++}
++
++static void mtk_iommu_config(struct mtk_iommu_data *data,
++			     struct device *dev, bool enable)
++{
++	struct mtk_iommu_client_priv *head, *cur, *next;
++	struct mtk_smi_larb_iommu    *larb_mmu;
++	unsigned int                 larbid, portid;
++
++	head = dev->archdata.iommu;
++	list_for_each_entry_safe(cur, next, &head->client, client) {
++		larbid = MTK_M4U_TO_LARB(cur->mtk_m4u_id);
++		portid = MTK_M4U_TO_PORT(cur->mtk_m4u_id);
++		larb_mmu = &data->smi_imu.larb_imu[larbid];
++
++		dev_dbg(dev, "%s iommu port: %d\n",
++			enable ? "enable" : "disable", portid);
++
++		if (enable)
++			larb_mmu->mmu |= MTK_SMI_MMU_EN(portid);
++		else
++			larb_mmu->mmu &= ~MTK_SMI_MMU_EN(portid);
++	}
++}
++
++static int mtk_iommu_domain_finalise(struct mtk_iommu_data *data)
++{
++	struct mtk_iommu_domain *dom = data->m4u_dom;
++
++	spin_lock_init(&dom->pgtlock);
++
++	dom->cfg = (struct io_pgtable_cfg) {
++		.quirks = IO_PGTABLE_QUIRK_ARM_NS |
++			IO_PGTABLE_QUIRK_NO_PERMS |
++			IO_PGTABLE_QUIRK_TLBI_ON_MAP,
++		.pgsize_bitmap = mtk_iommu_ops.pgsize_bitmap,
++		.ias = 32,
++		.oas = 32,
++		.tlb = &mtk_iommu_gather_ops,
++		.iommu_dev = data->dev,
++	};
++
++	dom->iop = alloc_io_pgtable_ops(ARM_V7S, &dom->cfg, data);
++	if (!dom->iop) {
++		dev_err(data->dev, "Failed to alloc io pgtable\n");
++		return -EINVAL;
++	}
++
++	/* Update our support page sizes bitmap */
++	mtk_iommu_ops.pgsize_bitmap = dom->cfg.pgsize_bitmap;
++
++	writel(data->m4u_dom->cfg.arm_v7s_cfg.ttbr[0],
++	       data->base + REG_MMU_PT_BASE_ADDR);
++	return 0;
++}
++
++static struct iommu_domain *mtk_iommu_domain_alloc(unsigned type)
++{
++	struct mtk_iommu_domain *dom;
++
++	if (type != IOMMU_DOMAIN_DMA)
++		return NULL;
++
++	dom = kzalloc(sizeof(*dom), GFP_KERNEL);
++	if (!dom)
++		return NULL;
++
++	if (iommu_get_dma_cookie(&dom->domain)) {
++		kfree(dom);
++		return NULL;
++	}
++
++	dom->domain.geometry.aperture_start = 0;
++	dom->domain.geometry.aperture_end = DMA_BIT_MASK(32);
++	dom->domain.geometry.force_aperture = true;
++
++	return &dom->domain;
++}
++
++static void mtk_iommu_domain_free(struct iommu_domain *domain)
++{
++	iommu_put_dma_cookie(domain);
++	kfree(to_mtk_domain(domain));
++}
++
++static int mtk_iommu_attach_device(struct iommu_domain *domain,
++				   struct device *dev)
++{
++	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
++	struct mtk_iommu_client_priv *priv = dev->archdata.iommu;
++	struct mtk_iommu_data *data;
 +	int ret;
 +
-+	ret = pm_runtime_get_sync(smi->dev);
-+	if (ret < 0)
-+		return ret;
++	if (!priv)
++		return -ENODEV;
 +
-+	ret = clk_prepare_enable(smi->clk_apb);
-+	if (ret)
-+		goto err_put_pm;
++	data = dev_get_drvdata(priv->m4udev);
++	if (!data->m4u_dom) {
++		data->m4u_dom = dom;
++		ret = mtk_iommu_domain_finalise(data);
++		if (ret) {
++			data->m4u_dom = NULL;
++			return ret;
++		}
++	} else if (data->m4u_dom != dom) {
++		/* All the client devices should be in the same m4u domain */
++		dev_err(dev, "try to attach into the error iommu domain\n");
++		return -EPERM;
++	}
 +
-+	ret = clk_prepare_enable(smi->clk_smi);
-+	if (ret)
-+		goto err_disable_apb;
-+
++	mtk_iommu_config(data, dev, true);
 +	return 0;
++}
 +
-+err_disable_apb:
-+	clk_disable_unprepare(smi->clk_apb);
-+err_put_pm:
-+	pm_runtime_put_sync(smi->dev);
++static void mtk_iommu_detach_device(struct iommu_domain *domain,
++				    struct device *dev)
++{
++	struct mtk_iommu_client_priv *priv = dev->archdata.iommu;
++	struct mtk_iommu_data *data;
++
++	if (!priv)
++		return;
++
++	data = dev_get_drvdata(priv->m4udev);
++	mtk_iommu_config(data, dev, false);
++}
++
++static int mtk_iommu_map(struct iommu_domain *domain, unsigned long iova,
++			 phys_addr_t paddr, size_t size, int prot)
++{
++	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
++	unsigned long flags;
++	int ret;
++
++	spin_lock_irqsave(&dom->pgtlock, flags);
++	ret = dom->iop->map(dom->iop, iova, paddr, size, prot);
++	spin_unlock_irqrestore(&dom->pgtlock, flags);
++
 +	return ret;
 +}
 +
-+static void mtk_smi_disable(const struct mtk_smi *smi)
++static size_t mtk_iommu_unmap(struct iommu_domain *domain,
++			      unsigned long iova, size_t size)
 +{
-+	clk_disable_unprepare(smi->clk_smi);
-+	clk_disable_unprepare(smi->clk_apb);
-+	pm_runtime_put_sync(smi->dev);
++	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
++	unsigned long flags;
++	size_t unmapsz;
++
++	spin_lock_irqsave(&dom->pgtlock, flags);
++	unmapsz = dom->iop->unmap(dom->iop, iova, size);
++	spin_unlock_irqrestore(&dom->pgtlock, flags);
++
++	return unmapsz;
 +}
 +
-+int mtk_smi_larb_get(struct device *larbdev)
++static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
++					  dma_addr_t iova)
 +{
-+	struct mtk_smi_larb *larb = dev_get_drvdata(larbdev);
-+	struct mtk_smi *common = dev_get_drvdata(larb->smi_common_dev);
++	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
++	unsigned long flags;
++	phys_addr_t pa;
++
++	spin_lock_irqsave(&dom->pgtlock, flags);
++	pa = dom->iop->iova_to_phys(dom->iop, iova);
++	spin_unlock_irqrestore(&dom->pgtlock, flags);
++
++	return pa;
++}
++
++static int mtk_iommu_add_device(struct device *dev)
++{
++	struct iommu_group *group;
++
++	if (!dev->archdata.iommu) /* Not a iommu client device */
++		return -ENODEV;
++
++	group = iommu_group_get_for_dev(dev);
++	if (IS_ERR(group))
++		return PTR_ERR(group);
++
++	iommu_group_put(group);
++	return 0;
++}
++
++static void mtk_iommu_remove_device(struct device *dev)
++{
++	struct mtk_iommu_client_priv *head, *cur, *next;
++
++	head = dev->archdata.iommu;
++	if (!head)
++		return;
++
++	list_for_each_entry_safe(cur, next, &head->client, client) {
++		list_del(&cur->client);
++		kfree(cur);
++	}
++	kfree(head);
++	dev->archdata.iommu = NULL;
++
++	iommu_group_remove_device(dev);
++}
++
++static struct iommu_group *mtk_iommu_device_group(struct device *dev)
++{
++	struct mtk_iommu_data *data;
++	struct mtk_iommu_client_priv *priv;
++
++	priv = dev->archdata.iommu;
++	if (!priv)
++		return ERR_PTR(-ENODEV);
++
++	/* All the client devices are in the same m4u iommu-group */
++	data = dev_get_drvdata(priv->m4udev);
++	if (!data->m4u_group) {
++		data->m4u_group = iommu_group_alloc();
++		if (IS_ERR(data->m4u_group))
++			dev_err(dev, "Failed to allocate M4U IOMMU group\n");
++	}
++	return data->m4u_group;
++}
++
++static int mtk_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
++{
++	struct mtk_iommu_client_priv *head, *priv, *next;
++	struct platform_device *m4updev;
++
++	if (args->args_count != 1) {
++		dev_err(dev, "invalid #iommu-cells(%d) property for IOMMU\n",
++			args->args_count);
++		return -EINVAL;
++	}
++
++	if (!dev->archdata.iommu) {
++		/* Get the m4u device */
++		m4updev = of_find_device_by_node(args->np);
++		of_node_put(args->np);
++		if (WARN_ON(!m4updev))
++			return -EINVAL;
++
++		head = kzalloc(sizeof(*head), GFP_KERNEL);
++		if (!head)
++			return -ENOMEM;
++
++		dev->archdata.iommu = head;
++		INIT_LIST_HEAD(&head->client);
++		head->m4udev = &m4updev->dev;
++	} else {
++		head = dev->archdata.iommu;
++	}
++
++	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		goto err_free_mem;
++
++	priv->mtk_m4u_id = args->args[0];
++	list_add_tail(&priv->client, &head->client);
++
++	return 0;
++
++err_free_mem:
++	list_for_each_entry_safe(priv, next, &head->client, client)
++		kfree(priv);
++	kfree(head);
++	dev->archdata.iommu = NULL;
++	return -ENOMEM;
++}
++
++static struct iommu_ops mtk_iommu_ops = {
++	.domain_alloc	= mtk_iommu_domain_alloc,
++	.domain_free	= mtk_iommu_domain_free,
++	.attach_dev	= mtk_iommu_attach_device,
++	.detach_dev	= mtk_iommu_detach_device,
++	.map		= mtk_iommu_map,
++	.unmap		= mtk_iommu_unmap,
++	.map_sg		= default_iommu_map_sg,
++	.iova_to_phys	= mtk_iommu_iova_to_phys,
++	.add_device	= mtk_iommu_add_device,
++	.remove_device	= mtk_iommu_remove_device,
++	.device_group	= mtk_iommu_device_group,
++	.of_xlate	= mtk_iommu_of_xlate,
++	.pgsize_bitmap	= SZ_4K | SZ_64K | SZ_1M | SZ_16M,
++};
++
++static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
++{
++	u32 regval;
 +	int ret;
 +
-+	/* Enable the smi-common's power and clocks */
-+	ret = mtk_smi_enable(common);
-+	if (ret)
-+		return ret;
-+
-+	/* Enable the larb's power and clocks */
-+	ret = mtk_smi_enable(&larb->smi);
++	ret = clk_prepare_enable(data->bclk);
 +	if (ret) {
-+		mtk_smi_disable(common);
++		dev_err(data->dev, "Failed to enable iommu bclk(%d)\n", ret);
 +		return ret;
 +	}
 +
-+	/* Configure the iommu info for this larb */
-+	writel(*larb->mmu, larb->base + SMI_LARB_MMU_EN);
++	regval = F_MMU_PREFETCH_RT_REPLACE_MOD |
++		F_MMU_TF_PROTECT_SEL(2);
++	writel_relaxed(regval, data->base + REG_MMU_CTRL_REG);
++
++	regval = F_L2_MULIT_HIT_EN |
++		F_TABLE_WALK_FAULT_INT_EN |
++		F_PREETCH_FIFO_OVERFLOW_INT_EN |
++		F_MISS_FIFO_OVERFLOW_INT_EN |
++		F_PREFETCH_FIFO_ERR_INT_EN |
++		F_MISS_FIFO_ERR_INT_EN;
++	writel_relaxed(regval, data->base + REG_MMU_INT_CONTROL0);
++
++	regval = F_INT_TRANSLATION_FAULT |
++		F_INT_MAIN_MULTI_HIT_FAULT |
++		F_INT_INVALID_PA_FAULT |
++		F_INT_ENTRY_REPLACEMENT_FAULT |
++		F_INT_TLB_MISS_FAULT |
++		F_INT_MISS_TRANSACTION_FIFO_FAULT |
++		F_INT_PRETETCH_TRANSATION_FIFO_FAULT;
++	writel_relaxed(regval, data->base + REG_MMU_INT_MAIN_CONTROL);
++
++	writel_relaxed(F_MMU_IVRP_PA_SET(data->protect_base),
++		       data->base + REG_MMU_IVRP_PADDR);
++
++	writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
++	writel_relaxed(0, data->base + REG_MMU_STANDARD_AXI_MODE);
++
++	if (devm_request_irq(data->dev, data->irq, mtk_iommu_isr, 0,
++			     dev_name(data->dev), (void *)data)) {
++		writel_relaxed(0, data->base + REG_MMU_PT_BASE_ADDR);
++		clk_disable_unprepare(data->bclk);
++		dev_err(data->dev, "Failed @ IRQ-%d Request\n", data->irq);
++		return -ENODEV;
++	}
 +
 +	return 0;
 +}
 +
-+void mtk_smi_larb_put(struct device *larbdev)
++static int compare_of(struct device *dev, void *data)
 +{
-+	struct mtk_smi_larb *larb = dev_get_drvdata(larbdev);
-+	struct mtk_smi *common = dev_get_drvdata(larb->smi_common_dev);
-+
-+	/*
-+	 * Don't de-configure the iommu info for this larb since there may be
-+	 * several modules in this larb.
-+	 * The iommu info will be reset after power off.
-+	 */
-+
-+	mtk_smi_disable(&larb->smi);
-+	mtk_smi_disable(common);
++	return dev->of_node == data;
 +}
 +
-+static int
-+mtk_smi_larb_bind(struct device *dev, struct device *master, void *data)
++static int mtk_iommu_bind(struct device *dev)
 +{
-+	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
-+	struct mtk_smi_iommu *smi_iommu = data;
-+	unsigned int         i;
++	struct mtk_iommu_data *data = dev_get_drvdata(dev);
 +
-+	for (i = 0; i < smi_iommu->larb_nr; i++) {
-+		if (dev == smi_iommu->larb_imu[i].dev) {
-+			/* The 'mmu' may be updated in iommu-attach/detach. */
-+			larb->mmu = &smi_iommu->larb_imu[i].mmu;
-+			return 0;
-+		}
-+	}
-+	return -ENODEV;
++	return component_bind_all(dev, &data->smi_imu);
 +}
 +
-+static void
-+mtk_smi_larb_unbind(struct device *dev, struct device *master, void *data)
++static void mtk_iommu_unbind(struct device *dev)
 +{
-+	/* Do nothing as the iommu is always enabled. */
++	struct mtk_iommu_data *data = dev_get_drvdata(dev);
++
++	component_unbind_all(dev, &data->smi_imu);
 +}
 +
-+static const struct component_ops mtk_smi_larb_component_ops = {
-+	.bind = mtk_smi_larb_bind,
-+	.unbind = mtk_smi_larb_unbind,
++static const struct component_master_ops mtk_iommu_com_ops = {
++	.bind		= mtk_iommu_bind,
++	.unbind		= mtk_iommu_unbind,
 +};
 +
-+static int mtk_smi_larb_probe(struct platform_device *pdev)
++static int mtk_iommu_probe(struct platform_device *pdev)
 +{
-+	struct mtk_smi_larb *larb;
-+	struct resource *res;
-+	struct device *dev = &pdev->dev;
-+	struct device_node *smi_node;
-+	struct platform_device *smi_pdev;
++	struct mtk_iommu_data   *data;
++	struct device           *dev = &pdev->dev;
++	struct resource         *res;
++	struct component_match  *match = NULL;
++	void                    *protect;
++	unsigned int            i, larb_nr;
++	int                     ret;
 +
-+	if (!dev->pm_domain)
-+		return -EPROBE_DEFER;
-+
-+	larb = devm_kzalloc(dev, sizeof(*larb), GFP_KERNEL);
-+	if (!larb)
++	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
++	if (!data)
 +		return -ENOMEM;
++	data->dev = dev;
++
++	/* Protect memory. HW will access here while translation fault.*/
++	protect = devm_kzalloc(dev, MTK_PROTECT_PA_ALIGN * 2, GFP_KERNEL);
++	if (!protect)
++		return -ENOMEM;
++	data->protect_base = ALIGN(virt_to_phys(protect), MTK_PROTECT_PA_ALIGN);
 +
 +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	larb->base = devm_ioremap_resource(dev, res);
-+	if (IS_ERR(larb->base))
-+		return PTR_ERR(larb->base);
++	data->base = devm_ioremap_resource(dev, res);
++	if (IS_ERR(data->base))
++		return PTR_ERR(data->base);
 +
-+	larb->smi.clk_apb = devm_clk_get(dev, "apb");
-+	if (IS_ERR(larb->smi.clk_apb))
-+		return PTR_ERR(larb->smi.clk_apb);
++	data->irq = platform_get_irq(pdev, 0);
++	if (data->irq < 0)
++		return data->irq;
 +
-+	larb->smi.clk_smi = devm_clk_get(dev, "smi");
-+	if (IS_ERR(larb->smi.clk_smi))
-+		return PTR_ERR(larb->smi.clk_smi);
-+	larb->smi.dev = dev;
++	data->bclk = devm_clk_get(dev, "bclk");
++	if (IS_ERR(data->bclk))
++		return PTR_ERR(data->bclk);
 +
-+	smi_node = of_parse_phandle(dev->of_node, "mediatek,smi", 0);
-+	if (!smi_node)
-+		return -EINVAL;
++	larb_nr = of_count_phandle_with_args(dev->of_node,
++					     "mediatek,larbs", NULL);
++	if (larb_nr < 0)
++		return larb_nr;
++	data->smi_imu.larb_nr = larb_nr;
 +
-+	smi_pdev = of_find_device_by_node(smi_node);
-+	of_node_put(smi_node);
-+	if (smi_pdev) {
-+		larb->smi_common_dev = &smi_pdev->dev;
-+	} else {
-+		dev_err(dev, "Failed to get the smi_common device\n");
-+		return -EINVAL;
++	for (i = 0; i < larb_nr; i++) {
++		struct device_node *larbnode;
++		struct platform_device *plarbdev;
++
++		larbnode = of_parse_phandle(dev->of_node, "mediatek,larbs", i);
++		if (!larbnode)
++			return -EINVAL;
++
++		if (!of_device_is_available(larbnode))
++			continue;
++
++		plarbdev = of_find_device_by_node(larbnode);
++		of_node_put(larbnode);
++		if (!plarbdev) {
++			plarbdev = of_platform_device_create(
++						larbnode, NULL,
++						platform_bus_type.dev_root);
++			if (IS_ERR(plarbdev))
++				return -EPROBE_DEFER;
++		}
++		data->smi_imu.larb_imu[i].dev = &plarbdev->dev;
++
++		component_match_add(dev, &match, compare_of, larbnode);
 +	}
 +
-+	pm_runtime_enable(dev);
-+	platform_set_drvdata(pdev, larb);
-+	return component_add(dev, &mtk_smi_larb_component_ops);
++	platform_set_drvdata(pdev, data);
++
++	ret = mtk_iommu_hw_init(data);
++	if (ret)
++		return ret;
++
++	if (!iommu_present(&platform_bus_type))
++		bus_set_iommu(&platform_bus_type, &mtk_iommu_ops);
++
++	return component_master_add_with_match(dev, &mtk_iommu_com_ops, match);
 +}
 +
-+static int mtk_smi_larb_remove(struct platform_device *pdev)
++static int mtk_iommu_remove(struct platform_device *pdev)
 +{
-+	pm_runtime_disable(&pdev->dev);
-+	component_del(&pdev->dev, &mtk_smi_larb_component_ops);
++	struct mtk_iommu_data *data = platform_get_drvdata(pdev);
++
++	if (iommu_present(&platform_bus_type))
++		bus_set_iommu(&platform_bus_type, NULL);
++
++	free_io_pgtable_ops(data->m4u_dom->iop);
++	clk_disable_unprepare(data->bclk);
++	devm_free_irq(&pdev->dev, data->irq, data);
++	component_master_del(&pdev->dev, &mtk_iommu_com_ops);
 +	return 0;
 +}
 +
-+static const struct of_device_id mtk_smi_larb_of_ids[] = {
-+	{ .compatible = "mediatek,mt8173-smi-larb",},
++static int mtk_iommu_suspend(struct device *dev)
++{
++	struct mtk_iommu_data *data = dev_get_drvdata(dev);
++	struct mtk_iommu_suspend_reg *reg = &data->reg;
++	void __iomem *base = data->base;
++
++	reg->standard_axi_mode = readl_relaxed(base +
++					       REG_MMU_STANDARD_AXI_MODE);
++	reg->dcm_dis = readl_relaxed(base + REG_MMU_DCM_DIS);
++	reg->ctrl_reg = readl_relaxed(base + REG_MMU_CTRL_REG);
++	reg->int_control0 = readl_relaxed(base + REG_MMU_INT_CONTROL0);
++	reg->int_main_control = readl_relaxed(base + REG_MMU_INT_MAIN_CONTROL);
++	return 0;
++}
++
++static int mtk_iommu_resume(struct device *dev)
++{
++	struct mtk_iommu_data *data = dev_get_drvdata(dev);
++	struct mtk_iommu_suspend_reg *reg = &data->reg;
++	void __iomem *base = data->base;
++
++	writel_relaxed(data->m4u_dom->cfg.arm_v7s_cfg.ttbr[0],
++		       base + REG_MMU_PT_BASE_ADDR);
++	writel_relaxed(reg->standard_axi_mode,
++		       base + REG_MMU_STANDARD_AXI_MODE);
++	writel_relaxed(reg->dcm_dis, base + REG_MMU_DCM_DIS);
++	writel_relaxed(reg->ctrl_reg, base + REG_MMU_CTRL_REG);
++	writel_relaxed(reg->int_control0, base + REG_MMU_INT_CONTROL0);
++	writel_relaxed(reg->int_main_control, base + REG_MMU_INT_MAIN_CONTROL);
++	writel_relaxed(F_MMU_IVRP_PA_SET(data->protect_base),
++		       base + REG_MMU_IVRP_PADDR);
++	return 0;
++}
++
++const struct dev_pm_ops mtk_iommu_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(mtk_iommu_suspend, mtk_iommu_resume)
++};
++
++static const struct of_device_id mtk_iommu_of_ids[] = {
++	{ .compatible = "mediatek,mt8173-m4u", },
 +	{}
 +};
 +
-+static struct platform_driver mtk_smi_larb_driver = {
-+	.probe	= mtk_smi_larb_probe,
-+	.remove = mtk_smi_larb_remove,
++static struct platform_driver mtk_iommu_driver = {
++	.probe	= mtk_iommu_probe,
++	.remove	= mtk_iommu_remove,
 +	.driver	= {
-+		.name = "mtk-smi-larb",
-+		.of_match_table = mtk_smi_larb_of_ids,
++		.name = "mtk-iommu",
++		.of_match_table = mtk_iommu_of_ids,
++		.pm = &mtk_iommu_pm_ops,
 +	}
 +};
 +
-+static int mtk_smi_common_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct mtk_smi *common;
-+
-+	if (!dev->pm_domain)
-+		return -EPROBE_DEFER;
-+
-+	common = devm_kzalloc(dev, sizeof(*common), GFP_KERNEL);
-+	if (!common)
-+		return -ENOMEM;
-+	common->dev = dev;
-+
-+	common->clk_apb = devm_clk_get(dev, "apb");
-+	if (IS_ERR(common->clk_apb))
-+		return PTR_ERR(common->clk_apb);
-+
-+	common->clk_smi = devm_clk_get(dev, "smi");
-+	if (IS_ERR(common->clk_smi))
-+		return PTR_ERR(common->clk_smi);
-+
-+	pm_runtime_enable(dev);
-+	platform_set_drvdata(pdev, common);
-+	return 0;
-+}
-+
-+static int mtk_smi_common_remove(struct platform_device *pdev)
-+{
-+	pm_runtime_disable(&pdev->dev);
-+	return 0;
-+}
-+
-+static const struct of_device_id mtk_smi_common_of_ids[] = {
-+	{ .compatible = "mediatek,mt8173-smi-common", },
-+	{}
-+};
-+
-+static struct platform_driver mtk_smi_common_driver = {
-+	.probe	= mtk_smi_common_probe,
-+	.remove = mtk_smi_common_remove,
-+	.driver	= {
-+		.name = "mtk-smi-common",
-+		.of_match_table = mtk_smi_common_of_ids,
-+	}
-+};
-+
-+static int __init mtk_smi_init(void)
++static int mtk_iommu_init_fn(struct device_node *np)
 +{
 +	int ret;
++	struct platform_device *pdev;
 +
-+	ret = platform_driver_register(&mtk_smi_common_driver);
-+	if (ret != 0) {
-+		pr_err("Failed to register SMI driver\n");
++	pdev = of_platform_device_create(np, NULL, platform_bus_type.dev_root);
++	if (IS_ERR(pdev))
++		return PTR_ERR(pdev);
++
++	ret = platform_driver_register(&mtk_iommu_driver);
++	if (ret) {
++		pr_err("%s: Failed to register driver\n", __func__);
 +		return ret;
 +	}
 +
-+	ret = platform_driver_register(&mtk_smi_larb_driver);
-+	if (ret != 0) {
-+		pr_err("Failed to register SMI-LARB driver\n");
-+		goto err_unreg_smi;
-+	}
-+	return ret;
-+
-+err_unreg_smi:
-+	platform_driver_unregister(&mtk_smi_common_driver);
-+	return ret;
-+}
-+subsys_initcall(mtk_smi_init);
-diff --git a/include/soc/mediatek/smi.h b/include/soc/mediatek/smi.h
-new file mode 100644
-index 0000000..8893c5e
---- /dev/null
-+++ b/include/soc/mediatek/smi.h
-@@ -0,0 +1,58 @@
-+/*
-+ * Copyright (c) 2015-2016 MediaTek Inc.
-+ * Author: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
-+#ifndef MTK_IOMMU_SMI_H
-+#define MTK_IOMMU_SMI_H
-+
-+#include <linux/bitops.h>
-+#include <linux/device.h>
-+
-+#ifdef CONFIG_MTK_SMI
-+
-+#define MTK_LARB_NR_MAX		8
-+
-+#define MTK_SMI_MMU_EN(port)	BIT(port)
-+
-+struct mtk_smi_larb_iommu {
-+	struct device *dev;
-+	unsigned int   mmu;
-+};
-+
-+struct mtk_smi_iommu {
-+	unsigned int larb_nr;
-+	struct mtk_smi_larb_iommu larb_imu[MTK_LARB_NR_MAX];
-+};
-+
-+/*
-+ * mtk_smi_larb_get: Enable the power domain and clocks for this local arbiter.
-+ *                   It also initialize some basic setting(like iommu).
-+ * mtk_smi_larb_put: Disable the power domain and clocks for this local arbiter.
-+ * Both should be called in non-atomic context.
-+ *
-+ * Returns 0 if successful, negative on failure.
-+ */
-+int mtk_smi_larb_get(struct device *larbdev);
-+void mtk_smi_larb_put(struct device *larbdev);
-+
-+#else
-+
-+static inline int mtk_smi_larb_get(struct device *larbdev)
-+{
++	of_iommu_set_ops(np, &mtk_iommu_ops);
 +	return 0;
 +}
 +
-+static inline void mtk_smi_larb_put(struct device *larbdev) { }
-+
-+#endif
-+
-+#endif
++IOMMU_OF_DECLARE(mtkm4u, "mediatek,mt8173-m4u", mtk_iommu_init_fn);
 -- 
 1.8.1.1.dirty
